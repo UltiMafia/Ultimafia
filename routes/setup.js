@@ -16,6 +16,7 @@ const router = express.Router();
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const Diff = require("diff");
+const { getFortunePayouts } = require("../lib/fortunePayouts");
 
 function markFavSetups(userId, setups) {
   return new Promise(async (resolve, reject) => {
@@ -372,6 +373,50 @@ function calculateStats(setupVersion, gameType) {
   return stats;
 }
 
+router.get("/:id/lineage", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const setupId = req.params.id;
+    const setup = await models.Setup.findOne({ id: setupId })
+      .select("id copiedFrom copiedAt")
+      .lean();
+
+    if (!setup) {
+      res.status(404).send("Setup not found.");
+      return;
+    }
+
+    const result = { copiedFrom: null, copiedTo: [] };
+
+    if (setup.copiedFrom) {
+      const parent = await models.Setup.findOne({ id: setup.copiedFrom })
+        .select("-__v -hash -count")
+        .populate("creator", "id name avatar -_id")
+        .lean();
+      if (parent) {
+        parent.roles = parent.roles && JSON.parse(parent.roles);
+        result.copiedFrom = { setup: parent, copiedAt: setup.copiedAt };
+      }
+    }
+
+    const children = await models.Setup.find({ copiedFrom: setupId })
+      .select("-__v -hash -count")
+      .populate("creator", "id name avatar -_id")
+      .sort({ copiedAt: -1 })
+      .lean();
+
+    for (const child of children) {
+      if (child.roles) child.roles = JSON.parse(child.roles);
+      result.copiedTo.push({ setup: child, copiedAt: child.copiedAt });
+    }
+
+    res.send(result);
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error getting lineage.");
+  }
+});
+
 router.get("/:id", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -404,6 +449,9 @@ router.get("/:id", async function (req, res) {
 
       if (req.get("includeStats") == "true") {
         setup.stats = calculateStats(setupVersion, setup.gameType);
+        if (setup.gameType === "Mafia" && setup.factionRatings?.length) {
+          setup.fortunePayouts = getFortunePayouts(setup.factionRatings);
+        }
       }
 
       // Count completed games with no leavers/veg for "Played X times!"
@@ -618,6 +666,35 @@ router.post("/delete", async function (req, res) {
   }
 });
 
+router.post("/description", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const setupId = String(req.body.id);
+    const description = String(req.body.description ?? "");
+
+    const setup = await models.Setup.findOne({ id: setupId })
+      .select("creator")
+      .populate("creator", "id");
+    if (!setup || !setup.creator) {
+      res.status(404).send("Setup not found.");
+      return;
+    }
+    if (setup.creator.id !== userId) {
+      res.status(403).send("Only the setup creator can edit the description.");
+      return;
+    }
+
+    await models.Setup.updateOne(
+      { id: setupId },
+      { $set: { description: description.slice(0, 5000) } }
+    ).exec();
+    res.send({ description: description });
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error updating description.");
+  }
+});
+
 router.post("/create", async function (req, res) {
   var responseId = null;
   try {
@@ -822,6 +899,7 @@ router.post("/create", async function (req, res) {
     } else {
       obj.id = shortid.generate();
       obj.creator = req.session.user._id;
+      if (obj.copiedFrom) obj.copiedAt = new Date();
 
       setup = new models.Setup(obj);
       await setup.save();

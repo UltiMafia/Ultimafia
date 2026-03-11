@@ -173,6 +173,7 @@ export default function CreateMafiaSetup() {
         GameEndEvent: formFields[13].value,
         editing: editing,
         id: params.get("edit"),
+        copiedFrom: !editing ? params.get("copy") || undefined : undefined,
       })
       .then((res) => {
         siteInfo.showAlert(

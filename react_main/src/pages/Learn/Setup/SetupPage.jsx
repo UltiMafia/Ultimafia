@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import {
+  Link as RouterLink,
   Route,
   Routes,
   Navigate,
@@ -42,6 +43,7 @@ import {
   FullRoleList,
   SetupManipulationButtons,
 } from "components/Setup";
+import SetupDisplay from "components/Setup";
 import GameIcon from "components/GameIcon";
 import HostGameDialogue from "components/HostGameDialogue";
 import { UserContext, SiteInfoContext } from "Contexts";
@@ -49,6 +51,8 @@ import { UserContext, SiteInfoContext } from "Contexts";
 import Comments from "pages/Community/Comments";
 import { SetupStrategiesSection } from "components/Strategies";
 import { NameWithAvatar } from "pages/User/User";
+import { TextEditor } from "components/Form";
+import CustomMarkdown from "components/CustomMarkdown";
 import { Loading } from "components/Loading";
 import { VoteWidget } from "components/VoteWidget";
 import {
@@ -70,46 +74,6 @@ export default function Setups() {
       </div>
     </>
   );
-}
-
-function getBasicPieStats(alignmentWinrate, roleWinrate, rolesRaw) {
-  const data = {};
-  const colors = {};
-
-  if (!alignmentWinrate || !roleWinrate || !rolesRaw) {
-    return null;
-  }
-
-  Object.keys(alignmentWinrate).forEach(function (alignment) {
-    if (alignment === "Independent") {
-      return;
-    }
-
-    if (alignment === "Village") {
-      colors[alignment] = getAlignmentColor(alignment);
-      data[alignment] = `${alignmentWinrate[alignment]}`;
-    } else if (alignment === "Mafia") {
-      colors[alignment] = getAlignmentColor(alignment);
-      data[alignment] = `${alignmentWinrate[alignment]}`;
-    } else if (alignment === "Cult") {
-      colors[alignment] = getAlignmentColor(alignment);
-      data[alignment] = `${alignmentWinrate[alignment]}`;
-    }
-  });
-
-  Object.keys(roleWinrate).forEach(function (roleName) {
-    if (roleWinrate[roleName] === 0) {
-      return;
-    }
-
-    const alignment = rolesRaw[roleName].alignment;
-    if (alignment === "Independent") {
-      colors[roleName] = getAlignmentColor(alignment);
-      data[roleName] = `${roleWinrate[roleName]}`;
-    }
-  });
-
-  return { data: data, colors: colors };
 }
 
 function getEloPieStats(factionRatings) {
@@ -136,6 +100,24 @@ function getEloPieStats(factionRatings) {
   return { data: data, colors: colors };
 }
 
+/** Shared two-column profile-style layout for Info and Version History tabs. */
+function SetupProfileLayout({ left, right }) {
+  return (
+    <Grid container rowSpacing={1} columnSpacing={1} className="profile" sx={{ mt: 0 }}>
+      <Grid item xs={12} md={8}>
+        <Stack direction="column" spacing={1}>
+          {left}
+        </Stack>
+      </Grid>
+      <Grid item xs={12} md={4}>
+        <Stack direction="column" spacing={1}>
+          {right}
+        </Stack>
+      </Grid>
+    </Grid>
+  );
+}
+
 export function SetupPage() {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -146,7 +128,6 @@ export function SetupPage() {
 
   const [setup, setSetup] = useState();
   const [gameType, setGameType] = useState("");
-  const [pieData, setPieData] = useState(null);
   const [eloPieData, setEloPieData] = useState(null);
   const [currentVersionNum, setCurrentVersionNum] = useState(0);
   const [selectedVersionNum, setSelectedVersionNum] = useState(0);
@@ -159,6 +140,10 @@ export function SetupPage() {
   const [setupStats, setSetupStats] = useState(null);
   const [statsView, setStatsView] = useState("alignment"); // "alignment" | "role"
   const [statsGameTypeFilter, setStatsGameTypeFilter] = useState("all"); // "all" | "unranked" | "ranked" | "competitive"
+  const [lineage, setLineage] = useState(null); // { copiedFrom: { setup, copiedAt } | null, copiedTo: [] }
+  const [description, setDescription] = useState("");
+  const [editingDescription, setEditingDescription] = useState(false);
+  const [oldDescription, setOldDescription] = useState("");
 
   const allVersions = Array.from(Array(currentVersionNum + 1).keys()).reverse();
   const localDateString = new Date(
@@ -188,18 +173,12 @@ export function SetupPage() {
           setVersionTimestamp(setup.setupVersion.timestamp);
           setVersionGamesPlayed(setup.setupVersion.played);
           setSetupStats(setup.setupVersion?.setupStats ?? null);
+          setDescription(setup.description ?? "");
 
           document.title = `Setup | ${res.data.name} | UltiMafia`;
 
           if (setup.gameType === "Mafia") {
             setEloPieData(getEloPieStats(setup.factionRatings));
-            setPieData(
-              getBasicPieStats(
-                setup.stats.alignmentWinrate,
-                setup.stats.roleWinrate,
-                siteInfo.rolesRaw["Mafia"]
-              )
-            );
 
             const changelog = setup.setupVersion.changelog;
             if (changelog) {
@@ -210,13 +189,46 @@ export function SetupPage() {
     }
   }, [setupId]);
 
+  useEffect(() => {
+    if (setupId && tabValue === 3) {
+      axios
+        .get(`/api/setup/${setupId}/lineage`)
+        .then((res) => setLineage(res.data))
+        .catch(() => setLineage({ copiedFrom: null, copiedTo: [] }));
+    }
+  }, [setupId, tabValue]);
+
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
   // TODO if setupId not set, redirect to a setup page
 
   if (!setup || !user.loaded) return <Loading small />;
 
   let commentLocation = `setup/${setupId}`;
-// TODO add button to host it
+  const isSetupCreator = user.loggedIn && setup?.creator && user.id === setup.creator.id;
+
+  function onSaveDescription() {
+    axios
+      .post("/api/setup/description", { id: setupId, description })
+      .then(() => {
+        setEditingDescription(false);
+        setSetup((prev) => (prev ? { ...prev, description } : prev));
+      })
+      .catch(errorAlert);
+  }
+
+  function onCancelEditDescription() {
+    setEditingDescription(false);
+    setDescription(oldDescription);
+  }
+
+  function onDescriptionClick() {
+    if (isSetupCreator && !editingDescription) {
+      setOldDescription(description);
+      setEditingDescription(true);
+    }
+  }
+
+  // TODO add button to host it
   function onFavSetup(favSetup) {
     axios.post("/api/setup/favorite", { id: favSetup.id }).catch(errorAlert);
     setSetup((prev) => (prev?.id === favSetup.id ? { ...prev, favorite: !prev.favorite } : prev));
@@ -273,14 +285,6 @@ export function SetupPage() {
           setSetupStats(setupVersion.setupStats ?? null);
 
           if (gameType === "Mafia") {
-            setPieData(
-              getBasicPieStats(
-                setupVersion.stats.alignmentWinrate,
-                setupVersion.stats.roleWinrate,
-                siteInfo.rolesRaw["Mafia"]
-              )
-            );
-
             const changelog = setupVersion.changelog;
             if (changelog) {
               setDiff(JSON.parse(changelog));
@@ -364,6 +368,16 @@ export function SetupPage() {
     }
     filteredStatsRows.sort((a, b) => b.total - a.total);
   }
+  // Bar color for Statistics: alignment name -> getAlignmentColor; role name (e.g. "Villager:Strong") -> role's alignment color
+  const getStatsBarColor = (name) => {
+    if (statsView === "alignment") return getAlignmentColor(name);
+    const roleName = String(name).split(":")[0];
+    const alignment =
+      siteInfo?.rolesRaw?.[setup?.gameType]?.[roleName]?.alignment;
+    return alignment != null
+      ? getAlignmentColor(alignment)
+      : getAlignmentColor("Independent");
+  };
   const gameLengths = setupStats?.gameLengths || [];
   const filteredGameLengths =
     statsGameTypeFilter === "all"
@@ -522,92 +536,74 @@ export function SetupPage() {
         <Tab label="Info" />
         <Tab label="Statistics" />
         <Tab label="Night Order" />
-        <Tab label="Forks" />
+        <Tab label="Version History" />
       </Tabs>
       {tabValue === 0 && (
-        <Box>
-          <FullRoleList setup={setup} compact={isPhoneDevice} />
-          <Box sx={{ mt: 1 }}>
-            <Grid container spacing={1}>
-              <Grid item xs={12} md={3}>
-                <Stack direction="column" spacing={1}>
-                  {closedRoleInfo.length > 0 && (
-                    <div className="box-panel">
-                      <div className="heading">Closed Setup Info</div>
-                      <div className="content">{closedRoleInfo}</div>
+        <SetupProfileLayout
+          left={
+            <>
+              <div className="box-panel">
+                <div className="heading">Description</div>
+                <div
+                  className={`content${isSetupCreator && !editingDescription ? " edit" : ""}`}
+                  onClick={onDescriptionClick}
+                  style={{ cursor: isSetupCreator && !editingDescription ? "pointer" : undefined }}
+                >
+                  {!editingDescription ? (
+                    <div className="md-content">
+                      <CustomMarkdown>{description || (isSetupCreator ? "Click to edit description (e.g. theme, house rules, notes)." : "No description.")}</CustomMarkdown>
                     </div>
+                  ) : (
+                    <>
+                      <TextEditor value={description} onChange={setDescription} />
+                      <div className="buttons" style={{ marginTop: 8 }}>
+                        <div className="btn btn-theme" onClick={onSaveDescription}>
+                          Submit
+                        </div>
+                        <div className="btn btn-theme-sec" onClick={onCancelEditDescription}>
+                          Cancel
+                        </div>
+                      </div>
+                    </>
                   )}
-                </Stack>
-              </Grid>
-              <Grid item xs={12} md={3}>
-                {shouldDisplayStats && (
-                  <Stack direction="column" spacing={1}>
-                    <div className="box-panel">
-                      <div className="heading">Select Version</div>
-                      <select onChange={handleVersionChange}>
-                        {allVersions.map((oldVersionNum) => (
-                          <option value={oldVersionNum}>{oldVersionNum}</option>
-                        ))}
-                      </select>
-                    </div>
-                    {pieData && Object.keys(pieData.data).length > 0 && (
-                      <div className="box-panel">
-                        <div className="heading">
-                          v{selectedVersionNum} Winrate (n = {versionGamesPlayed})
-                        </div>
-                        <div
-                          className="content"
-                          style={{ padding: "0", justifyContent: "center" }}
-                        >
-                          <PieChart
-                            data={pieData.data}
-                            colors={pieData.colors}
-                            displayPieChart={true}
-                            suffixFn={(value) =>
-                              ` ${(100 * Number.parseFloat(value)).toFixed(0)}%`
-                            }
-                          />
-                        </div>
-                      </div>
-                    )}
-                    {eloPieData && Object.keys(eloPieData.data).length > 0 && (
-                      <div className="box-panel">
-                        <div className="heading">Faction Elo</div>
-                        <div
-                          className="content"
-                          style={{ padding: "0", justifyContent: "center" }}
-                        >
-                          <PieChart
-                            data={eloPieData.data}
-                            colors={eloPieData.colors}
-                            displayPieChart={true}
-                            suffixFn={(value) =>
-                              ` ${Number.parseFloat(value).toFixed(0)}`
-                            }
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </Stack>
-                )}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                {shouldDisplayChangelog && (
-                  <div className="side column">
-                    <div className="box-panel">
-                      <div className="heading">
-                        Changelog for v{selectedVersionNum} ({localDateString})
-                      </div>
-                      <div>
-                        <Changelog diff={diff} />
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </Grid>
-            </Grid>
-          </Box>
-        </Box>
+                </div>
+              </div>
+              <Box sx={{ mt: 1 }}>
+                <Comments fullWidth location={commentLocation} />
+              </Box>
+            </>
+          }
+          right={
+            <>
+              <div className="box-panel">
+                <div className="heading">Roles</div>
+                <div className="content">
+                  <FullRoleList setup={setup} compact={isPhoneDevice} />
+                </div>
+              </div>
+              {closedRoleInfo.length > 0 && (
+                <div className="box-panel">
+                  <div className="heading">Closed Setup Info</div>
+                  <div className="content">{closedRoleInfo}</div>
+                </div>
+              )}
+              {shouldDisplayStats && (
+                <div className="box-panel">
+                  <div className="heading">Select Version</div>
+                  <select
+                    value={selectedVersionNum}
+                    onChange={handleVersionChange}
+                  >
+                    {allVersions.map((v) => (
+                      <option key={v} value={v}>{v}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <SetupStrategiesSection setupId={setupId} />
+            </>
+          }
+        />
       )}
       {tabValue === 1 && (
         <Box>
@@ -669,27 +665,17 @@ export function SetupPage() {
                           with no abandonments.
                         </Typography>
                       ) : (
-                        <Stack spacing={1} sx={{ width: "100%" }}>
+                        <Stack spacing={2} sx={{ width: "100%" }}>
                           {filteredStatsRows.map((row) => (
                             <Box key={row.name}>
-                              <Stack
-                                direction="row"
-                                justifyContent="space-between"
-                                sx={{ mb: 0.25 }}
-                              >
-                                <Typography variant="body2">
-                                  {row.name}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                  {row.wins}/{row.total} (
-                                  {(100 * row.winRate).toFixed(0)}%)
-                                </Typography>
-                              </Stack>
+                              <Typography variant="body2" sx={{ mb: 0.5 }}>
+                                {row.name}: {(100 * row.winRate).toFixed(0)}%
+                              </Typography>
                               <Box
                                 sx={{
-                                  height: 8,
+                                  height: 12,
                                   bgcolor: "action.hover",
-                                  borderRadius: 1,
+                                  borderRadius: 0.5,
                                   overflow: "hidden",
                                 }}
                               >
@@ -697,11 +683,19 @@ export function SetupPage() {
                                   sx={{
                                     height: "100%",
                                     width: `${100 * row.winRate}%`,
-                                    bgcolor: "primary.main",
-                                    borderRadius: 1,
+                                    bgcolor: getStatsBarColor(row.name),
+                                    borderRadius: 0.5,
+                                    minWidth: row.winRate > 0 ? 4 : 0,
                                   }}
                                 />
                               </Box>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ mt: 0.25 }}
+                              >
+                                Total: {row.total}
+                              </Typography>
                             </Box>
                           ))}
                         </Stack>
@@ -712,7 +706,7 @@ export function SetupPage() {
                 <Grid item xs={12} md={4}>
                   <Stack spacing={1}>
                     <div className="box-panel">
-                      <div className="heading">Game length</div>
+                      <div className="heading">Game statistics</div>
                       <div className="content">
                         {filteredGameLengths.length === 0 ? (
                           <Typography variant="body2" color="text.secondary">
@@ -720,20 +714,61 @@ export function SetupPage() {
                           </Typography>
                         ) : (
                           <Typography variant="body2">
-                            {filteredGameLengths.length} game
-                            {filteredGameLengths.length !== 1 ? "s" : ""}
-                            {avgGameLengthMs != null && (
-                              <>
-                                {" "}
-                                · avg{" "}
-                                {Math.round(avgGameLengthMs / 60000)} min
-                              </>
-                            )}
+                            Average length:{" "}
+                            {avgGameLengthMs != null
+                              ? (avgGameLengthMs / 60000).toFixed(1)
+                              : "—"}{" "}
+                            minutes
                           </Typography>
                         )}
                       </div>
                     </div>
-                    </Stack>
+                    {setup?.fortunePayouts && Object.keys(setup.fortunePayouts).length > 0 && (
+                      <div className="box-panel">
+                        <div className="heading">Point Payouts</div>
+                        <div className="content">
+                          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                            Points earned by a winning player in each faction (ranked/competitive).
+                          </Typography>
+                          <Stack spacing={0.5}>
+                            {Object.entries(setup.fortunePayouts).map(([factionName, payout]) => (
+                              <Stack
+                                key={factionName}
+                                direction="row"
+                                justifyContent="space-between"
+                                alignItems="center"
+                              >
+                                <Typography variant="body2" sx={{ color: getAlignmentColor(factionName) }}>
+                                  {factionName}
+                                </Typography>
+                                <Typography variant="body2" fontWeight="500">
+                                  {payout} pts
+                                </Typography>
+                              </Stack>
+                            ))}
+                          </Stack>
+                        </div>
+                      </div>
+                    )}
+                    {eloPieData && Object.keys(eloPieData.data).length > 0 && (
+                      <div className="box-panel">
+                        <div className="heading">Faction Elo</div>
+                        <div
+                          className="content"
+                          style={{ padding: "0", justifyContent: "center" }}
+                        >
+                          <PieChart
+                            data={eloPieData.data}
+                            colors={eloPieData.colors}
+                            displayPieChart={true}
+                            suffixFn={(value) =>
+                              ` ${Number.parseFloat(value).toFixed(0)}`
+                            }
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </Stack>
                 </Grid>
               </Grid>
             </>
@@ -784,9 +819,113 @@ export function SetupPage() {
           </Box>
         </Box>
       )}
-      {tabValue === 3 && <Box />}
-      <Comments location={commentLocation} />
-      <SetupStrategiesSection setupId={setupId} />
+      {tabValue === 3 && (
+        <SetupProfileLayout
+          left={
+            <>
+              {shouldDisplayChangelog && (
+                <div className="box-panel">
+                  <div className="heading">Select Version</div>
+                  <select
+                    value={selectedVersionNum}
+                    onChange={handleVersionChange}
+                  >
+                    {allVersions.map((v) => (
+                      <option key={v} value={v}>
+                        {v}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              {shouldDisplayChangelog ? (
+                <div className="box-panel">
+                  <div className="heading">
+                    Changelog for v{selectedVersionNum} ({localDateString})
+                  </div>
+                  <div>
+                    <Changelog diff={diff} />
+                  </div>
+                </div>
+              ) : (
+                <div className="box-panel">
+                  <div className="content">
+                    <Typography color="text.secondary">
+                      Version history is only available for Mafia setups.
+                    </Typography>
+                  </div>
+                </div>
+              )}
+            </>
+          }
+          right={
+            <div className="box-panel">
+              <div className="heading">Lineage</div>
+              <div className="content">
+                {lineage == null ? (
+                  <Typography variant="body2" color="text.secondary">
+                    Loading…
+                  </Typography>
+                ) : (lineage.copiedFrom || lineage.copiedTo?.length > 0) ? (
+                  <>
+                    {lineage.copiedFrom && (
+                      <Box sx={{ mb: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                          Copied from
+                        </Typography>
+                        <Link
+                          component={RouterLink}
+                          to={`/learn/setup/${lineage.copiedFrom.setup.id}`}
+                          underline="hover"
+                          sx={{ display: "block" }}
+                        >
+                          <Box sx={{ p: 1, borderRadius: 1, bgcolor: "action.hover" }}>
+                            <SetupDisplay setup={lineage.copiedFrom.setup} disablePopover />
+                            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block" }}>
+                              {lineage.copiedFrom.copiedAt
+                                ? new Date(lineage.copiedFrom.copiedAt).toLocaleDateString()
+                                : ""}
+                            </Typography>
+                          </Box>
+                        </Link>
+                      </Box>
+                    )}
+                    {lineage.copiedTo?.length > 0 && (
+                      <Box>
+                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                          Copied to
+                        </Typography>
+                        <Stack spacing={1}>
+                          {lineage.copiedTo.map(({ setup: s, copiedAt }) => (
+                            <Link
+                              key={s.id}
+                              component={RouterLink}
+                              to={`/learn/setup/${s.id}`}
+                              underline="hover"
+                              sx={{ display: "block" }}
+                            >
+                              <Box sx={{ p: 1, borderRadius: 1, bgcolor: "action.hover" }}>
+                                <SetupDisplay setup={s} disablePopover />
+                                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block" }}>
+                                  {copiedAt ? new Date(copiedAt).toLocaleDateString() : ""}
+                                </Typography>
+                              </Box>
+                            </Link>
+                          ))}
+                        </Stack>
+                      </Box>
+                    )}
+                  </>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No lineage to display.
+                  </Typography>
+                )}
+              </div>
+            </div>
+          }
+        />
+      )}
     </Stack>
   );
 }

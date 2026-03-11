@@ -232,6 +232,9 @@ var schemas = {
       roleWins: {},
       factionRatings: factionRatings,
       lockedFactionRatings: factionRatings,
+      copiedFrom: { type: String, index: true },
+      copiedAt: Date,
+      description: { type: String, default: "" },
     },
     { minimize: false }
   ),
