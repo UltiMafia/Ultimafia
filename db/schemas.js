@@ -468,6 +468,7 @@ var schemas = {
     updatedAt: { type: Number, index: true },
     voteCount: { type: Number, default: 0, index: true },
     deleted: { type: Boolean, default: false },
+    deletedAt: { type: Number, default: null },
   }),
   Comment: new mongoose.Schema({
     id: { type: String, index: true },

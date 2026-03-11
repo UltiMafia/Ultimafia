@@ -539,7 +539,7 @@ export function SetupPage() {
           )}
         </Grid>
       </Card>
-      <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)} sx={{ borderBottom: 1, borderColor: "divider" }}>
+      <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)}>
         <Tab label="Info" />
         <Tab label="Statistics" />
         <Tab label="Night Order" />

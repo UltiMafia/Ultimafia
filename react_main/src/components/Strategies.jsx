@@ -34,6 +34,9 @@ function sortStrategies(strategies) {
   if (!Array.isArray(strategies)) return [];
 
   return strategies.slice().sort((a, b) => {
+    const deletedDiff = (a.deleted ? 1 : 0) - (b.deleted ? 1 : 0);
+    if (deletedDiff !== 0) return deletedDiff;
+
     const voteDiff = (b.voteCount || 0) - (a.voteCount || 0);
     if (voteDiff !== 0) return voteDiff;
 
@@ -290,6 +293,11 @@ function StrategiesBase({
         key={strategy.id}
         disableGutters
         expanded={isExpanded}
+        sx={
+          strategy.deleted
+            ? { backgroundColor: "#9b4c4c !important" }
+            : undefined
+        }
         onChange={() => {
           setExpandedIds((prev) => {
             const next = new Set(prev);
