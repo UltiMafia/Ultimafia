@@ -398,7 +398,7 @@ router.get("/:id", async function (req, res) {
         setup: new ObjectID(setup._id),
         version: setupVersionNum,
       }).select(
-        "-_id timestamp changelog manifest played rolePlays roleWins alignmentPlays alignmentWins dayCountWins"
+        "-_id timestamp changelog manifest played rolePlays roleWins alignmentPlays alignmentWins dayCountWins setupStats"
       );
       setup.setupVersion = setupVersion || {};
 
@@ -440,7 +440,7 @@ router.get("/:id/version/:setupVersionNum", async function (req, res) {
         setup: new ObjectID(setup._id),
         version: req.params.setupVersionNum,
       }).select(
-        "-_id timestamp changelog manifest played rolePlays roleWins alignmentPlays alignmentWins dayCountWins"
+        "-_id timestamp changelog manifest played rolePlays roleWins alignmentPlays alignmentWins dayCountWins setupStats"
       );
 
       if (setupVersion) {

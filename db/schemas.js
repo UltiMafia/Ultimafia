@@ -247,6 +247,12 @@ var schemas = {
     alignmentPlays: {},
     alignmentWins: {},
     dayCountWins: {},
+    // Per-game stats (only for games with no abandonments). Arrays are [gameType, value].
+    setupStats: {
+      alignmentWinRates: { type: mongoose.Schema.Types.Mixed, default: {} },
+      roleWinRates: { type: mongoose.Schema.Types.Mixed, default: {} },
+      gameLengths: { type: Array, default: [] },
+    },
   }),
   AnonymousDeck: anonymousDeck,
   CustomEmote: new mongoose.Schema({

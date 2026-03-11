@@ -13,10 +13,22 @@ import {
   Button,
   Card,
   Divider,
+  FormControl,
   Grid,
   IconButton,
+  InputLabel,
   Link,
+  MenuItem,
+  Select,
   Stack,
+  Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tabs,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -44,6 +56,7 @@ import {
   getSetupBackgroundColor,
 } from "pages/Play/LobbyBrowser/gameRowColors";
 
+import { RoleCount } from "components/Roles";
 import { PieChart } from "./PieChart";
 
 import "css/setupPage.css";
@@ -142,6 +155,10 @@ export function SetupPage() {
   const [versionGamesPlayed, setVersionGamesPlayed] = useState(0);
   const [diff, setDiff] = useState([]); // Changelog diff
   const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
+  const [tabValue, setTabValue] = useState(0);
+  const [setupStats, setSetupStats] = useState(null);
+  const [statsView, setStatsView] = useState("alignment"); // "alignment" | "role"
+  const [statsGameTypeFilter, setStatsGameTypeFilter] = useState("all"); // "all" | "unranked" | "ranked" | "competitive"
 
   const allVersions = Array.from(Array(currentVersionNum + 1).keys()).reverse();
   const localDateString = new Date(
@@ -170,6 +187,7 @@ export function SetupPage() {
           setSelectedVersionNum(setup.version);
           setVersionTimestamp(setup.setupVersion.timestamp);
           setVersionGamesPlayed(setup.setupVersion.played);
+          setSetupStats(setup.setupVersion?.setupStats ?? null);
 
           document.title = `Setup | ${res.data.name} | UltiMafia`;
 
@@ -252,6 +270,7 @@ export function SetupPage() {
           setSelectedVersionNum(newVersionNum);
           setVersionTimestamp(setupVersion.timestamp);
           setVersionGamesPlayed(setupVersion.played);
+          setSetupStats(setupVersion.setupStats ?? null);
 
           if (gameType === "Mafia") {
             setPieData(
@@ -278,6 +297,83 @@ export function SetupPage() {
 
   const iconSize = isPhoneDevice ? 30 : 60;
 
+  // Night order: flatten setup roles with siteInfo, collect night actions, sort by priority
+  let useingRoles = [];
+  if (setup && siteInfo?.rolesRaw?.[setup.gameType]) {
+    for (let i = 0; i < setup.roles.length; i++) {
+      useingRoles = useingRoles.concat(
+        Object.keys(setup.roles[i]).map((key) => [
+          key,
+          siteInfo.rolesRaw[setup.gameType][key.split(":")[0]],
+        ])
+      );
+    }
+  }
+  const roles = useingRoles;
+  const hasMafia = roles.filter((r) => r[1].alignment === "Mafia").length > 0;
+  const nightRoles = roles.filter((r) => r[1].nightOrder != null);
+  let nightActions = [];
+  if (hasMafia) {
+    nightActions.push(["Mafia", ["Mafia Kill", -1]]);
+  }
+  for (const role of nightRoles) {
+    for (const item of role[1].nightOrder) {
+      nightActions.push([role[0], item]);
+    }
+  }
+  for (let j = 0; j < nightActions.length; j++) {
+    for (let u = 0; u < nightActions.length; u++) {
+      if (nightActions[u][1][1] > nightActions[j][1][1]) {
+        const temp = nightActions[j];
+        nightActions[j] = nightActions[u];
+        nightActions[u] = temp;
+      }
+    }
+  }
+  const nightOrderTableRows = nightActions.map((key) => ({
+    roleIcon: (
+      <RoleCount key={0} scheme="vivid" role={key[0]} gameType={setup.gameType} />
+    ),
+    roleName: key[0],
+    actionName: key[1][0],
+    nightOrder: key[1][1],
+  }));
+
+  // Compute filtered win rates from setupStats for Statistics tab (per-game data)
+  const statsSource =
+    setupStats && statsView === "role"
+      ? setupStats.roleWinRates
+      : setupStats?.alignmentWinRates;
+  const filteredStatsRows = [];
+  if (statsSource && typeof statsSource === "object") {
+    for (const [name, entries] of Object.entries(statsSource)) {
+      if (!Array.isArray(entries)) continue;
+      const filtered = statsGameTypeFilter === "all"
+        ? entries
+        : entries.filter((e) => e && e[0] === statsGameTypeFilter);
+      const wins = filtered.filter((e) => e[1] === true).length;
+      const total = filtered.length;
+      if (total > 0) {
+        filteredStatsRows.push({
+          name,
+          wins,
+          total,
+          winRate: wins / total,
+        });
+      }
+    }
+    filteredStatsRows.sort((a, b) => b.total - a.total);
+  }
+  const gameLengths = setupStats?.gameLengths || [];
+  const filteredGameLengths =
+    statsGameTypeFilter === "all"
+      ? gameLengths
+      : gameLengths.filter((e) => e && e[0] === statsGameTypeFilter);
+  const avgGameLengthMs =
+    filteredGameLengths.length > 0
+      ? filteredGameLengths.reduce((s, e) => s + (e[1] || 0), 0) /
+        filteredGameLengths.length
+      : null;
   return (
     <Stack
       spacing={1}
@@ -422,97 +518,273 @@ export function SetupPage() {
           )}
         </Grid>
       </Card>
-      <Box>
-        <FullRoleList setup={setup} compact={isPhoneDevice} />
-      </Box>
-      <Box>
-        <Grid container spacing={1}>
-          <Grid item xs={12} md={3}>
-            <Stack direction="column" spacing={1}>
-              {closedRoleInfo.length > 0 && (
-                <div className="box-panel">
-                  <div className="heading">Closed Setup Info</div>
-                  <div className="content">{closedRoleInfo}</div>
-                </div>
-              )}
-              <div className="box-panel">
-                <div className="heading">Night Order</div>
-                <div className="content">
-                  <Link href={`/learn/setup/${setupId}/nightorder`}>
-                    Click to Show
-                  </Link>
-                </div>
-              </div>
-            </Stack>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            {shouldDisplayStats && (
-              <Stack direction="column" spacing={1}>
+      <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)} sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Tab label="Info" />
+        <Tab label="Statistics" />
+        <Tab label="Night Order" />
+        <Tab label="Forks" />
+      </Tabs>
+      {tabValue === 0 && (
+        <Box>
+          <FullRoleList setup={setup} compact={isPhoneDevice} />
+          <Box sx={{ mt: 1 }}>
+            <Grid container spacing={1}>
+              <Grid item xs={12} md={3}>
+                <Stack direction="column" spacing={1}>
+                  {closedRoleInfo.length > 0 && (
+                    <div className="box-panel">
+                      <div className="heading">Closed Setup Info</div>
+                      <div className="content">{closedRoleInfo}</div>
+                    </div>
+                  )}
+                </Stack>
+              </Grid>
+              <Grid item xs={12} md={3}>
+                {shouldDisplayStats && (
+                  <Stack direction="column" spacing={1}>
+                    <div className="box-panel">
+                      <div className="heading">Select Version</div>
+                      <select onChange={handleVersionChange}>
+                        {allVersions.map((oldVersionNum) => (
+                          <option value={oldVersionNum}>{oldVersionNum}</option>
+                        ))}
+                      </select>
+                    </div>
+                    {pieData && Object.keys(pieData.data).length > 0 && (
+                      <div className="box-panel">
+                        <div className="heading">
+                          v{selectedVersionNum} Winrate (n = {versionGamesPlayed})
+                        </div>
+                        <div
+                          className="content"
+                          style={{ padding: "0", justifyContent: "center" }}
+                        >
+                          <PieChart
+                            data={pieData.data}
+                            colors={pieData.colors}
+                            displayPieChart={true}
+                            suffixFn={(value) =>
+                              ` ${(100 * Number.parseFloat(value)).toFixed(0)}%`
+                            }
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {eloPieData && Object.keys(eloPieData.data).length > 0 && (
+                      <div className="box-panel">
+                        <div className="heading">Faction Elo</div>
+                        <div
+                          className="content"
+                          style={{ padding: "0", justifyContent: "center" }}
+                        >
+                          <PieChart
+                            data={eloPieData.data}
+                            colors={eloPieData.colors}
+                            displayPieChart={true}
+                            suffixFn={(value) =>
+                              ` ${Number.parseFloat(value).toFixed(0)}`
+                            }
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </Stack>
+                )}
+              </Grid>
+              <Grid item xs={12} md={6}>
+                {shouldDisplayChangelog && (
+                  <div className="side column">
+                    <div className="box-panel">
+                      <div className="heading">
+                        Changelog for v{selectedVersionNum} ({localDateString})
+                      </div>
+                      <div>
+                        <Changelog diff={diff} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+      )}
+      {tabValue === 1 && (
+        <Box>
+          {shouldDisplayStats && (
+            <>
+              <Stack direction="row" flexWrap="wrap" gap={2} sx={{ mb: 2 }}>
                 <div className="box-panel">
                   <div className="heading">Select Version</div>
-                  <select onChange={handleVersionChange}>
-                    {allVersions.map((oldVersionNum) => (
-                      <option value={oldVersionNum}>{oldVersionNum}</option>
+                  <select
+                    value={selectedVersionNum}
+                    onChange={handleVersionChange}
+                  >
+                    {allVersions.map((v) => (
+                      <option key={v} value={v}>
+                        {v}
+                      </option>
                     ))}
                   </select>
                 </div>
-                {pieData && Object.keys(pieData.data).length > 0 && (
+                <FormControl size="small" sx={{ minWidth: 160 }}>
+                  <InputLabel>View</InputLabel>
+                  <Select
+                    value={statsView}
+                    label="View"
+                    onChange={(e) => setStatsView(e.target.value)}
+                  >
+                    <MenuItem value="alignment">Alignment</MenuItem>
+                    <MenuItem value="role">Role</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl size="small" sx={{ minWidth: 160 }}>
+                  <InputLabel>Filter</InputLabel>
+                  <Select
+                    value={statsGameTypeFilter}
+                    label="Filter"
+                    onChange={(e) => setStatsGameTypeFilter(e.target.value)}
+                  >
+                    <MenuItem value="all">All</MenuItem>
+                    <MenuItem value="unranked">Unranked</MenuItem>
+                    <MenuItem value="ranked">Ranked</MenuItem>
+                    <MenuItem value="competitive">Competitive</MenuItem>
+                  </Select>
+                </FormControl>
+              </Stack>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={8}>
                   <div className="box-panel">
                     <div className="heading">
-                      v{selectedVersionNum} Winrate (n = {versionGamesPlayed})
+                      {statsView === "alignment"
+                        ? "Alignment"
+                        : "Role"}{" "}
+                      win rates
+                      {statsGameTypeFilter !== "all" && ` (${statsGameTypeFilter})`}
                     </div>
-                    <div
-                      className="content"
-                      style={{ padding: "0", justifyContent: "center" }}
+                    <div className="content">
+                      {filteredStatsRows.length === 0 ? (
+                        <Typography color="text.secondary">
+                          Stats are recorded only for games
+                          with no abandonments.
+                        </Typography>
+                      ) : (
+                        <Stack spacing={1} sx={{ width: "100%" }}>
+                          {filteredStatsRows.map((row) => (
+                            <Box key={row.name}>
+                              <Stack
+                                direction="row"
+                                justifyContent="space-between"
+                                sx={{ mb: 0.25 }}
+                              >
+                                <Typography variant="body2">
+                                  {row.name}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                  {row.wins}/{row.total} (
+                                  {(100 * row.winRate).toFixed(0)}%)
+                                </Typography>
+                              </Stack>
+                              <Box
+                                sx={{
+                                  height: 8,
+                                  bgcolor: "action.hover",
+                                  borderRadius: 1,
+                                  overflow: "hidden",
+                                }}
+                              >
+                                <Box
+                                  sx={{
+                                    height: "100%",
+                                    width: `${100 * row.winRate}%`,
+                                    bgcolor: "primary.main",
+                                    borderRadius: 1,
+                                  }}
+                                />
+                              </Box>
+                            </Box>
+                          ))}
+                        </Stack>
+                      )}
+                    </div>
+                  </div>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Stack spacing={1}>
+                    <div className="box-panel">
+                      <div className="heading">Game length</div>
+                      <div className="content">
+                        {filteredGameLengths.length === 0 ? (
+                          <Typography variant="body2" color="text.secondary">
+                            No data
+                          </Typography>
+                        ) : (
+                          <Typography variant="body2">
+                            {filteredGameLengths.length} game
+                            {filteredGameLengths.length !== 1 ? "s" : ""}
+                            {avgGameLengthMs != null && (
+                              <>
+                                {" "}
+                                · avg{" "}
+                                {Math.round(avgGameLengthMs / 60000)} min
+                              </>
+                            )}
+                          </Typography>
+                        )}
+                      </div>
+                    </div>
+                    </Stack>
+                </Grid>
+              </Grid>
+            </>
+          )}
+          {!shouldDisplayStats && (
+            <Typography color="text.secondary">
+              Statistics are only available for Mafia setups.
+            </Typography>
+          )}
+        </Box>
+      )}
+      {tabValue === 2 && (
+        <Box>
+          <Typography variant="h2" gutterBottom>
+            Setup Night Order
+          </Typography>
+          <Typography paragraph>
+            The night order resolves from the lowest priority to the highest. Ties
+            in priority are resolved by the player list
+          </Typography>
+          <Box className="paragraph">
+            <TableContainer>
+              <Table aria-label="night order">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Role</TableCell>
+                    <TableCell>Action</TableCell>
+                    <TableCell>Priority</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {nightOrderTableRows.map((row, idx) => (
+                    <TableRow
+                      key={`${row.roleName}-${row.actionName}-${idx}`}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      <PieChart
-                        data={pieData.data}
-                        colors={pieData.colors}
-                        displayPieChart={true}
-                        suffixFn={(value) =>
-                          ` ${(100 * Number.parseFloat(value)).toFixed(0)}%`
-                        }
-                      />
-                    </div>
-                  </div>
-                )}
-                {eloPieData && Object.keys(eloPieData.data).length > 0 && (
-                  <div className="box-panel">
-                    <div className="heading">Faction Elo</div>
-                    <div
-                      className="content"
-                      style={{ padding: "0", justifyContent: "center" }}
-                    >
-                      <PieChart
-                        data={eloPieData.data}
-                        colors={eloPieData.colors}
-                        displayPieChart={true}
-                        suffixFn={(value) =>
-                          ` ${Number.parseFloat(value).toFixed(0)}`
-                        }
-                      />
-                    </div>
-                  </div>
-                )}
-              </Stack>
-            )}
-          </Grid>
-          <Grid item xs={12} md={6}>
-            {shouldDisplayChangelog && (
-              <div className="side column">
-                <div className="box-panel">
-                  <div className="heading">
-                    Changelog for v{selectedVersionNum} ({localDateString})
-                  </div>
-                  <div>
-                    <Changelog diff={diff} />
-                  </div>
-                </div>
-              </div>
-            )}
-          </Grid>
-        </Grid>
-      </Box>
+                      <TableCell component="th" scope="row" align="center">
+                        {row.roleIcon}
+                        {row.roleName}
+                      </TableCell>
+                      <TableCell align="center">{row.actionName}</TableCell>
+                      <TableCell align="center">{row.nightOrder}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+        </Box>
+      )}
+      {tabValue === 3 && <Box />}
       <Comments location={commentLocation} />
       <SetupStrategiesSection setupId={setupId} />
     </Stack>
