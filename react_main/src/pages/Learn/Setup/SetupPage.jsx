@@ -546,10 +546,10 @@ export function SetupPage() {
         <Tab label="Version History" />
       </Tabs>
       {tabValue === 0 && (
+        <><FullRoleList setup={setup} compact={isPhoneDevice} />
         <SetupProfileLayout
           left={
             <>
-              <FullRoleList setup={setup} compact={isPhoneDevice} />
               <div className="box-panel">
                 <div className="heading">Description</div>
                 <div
@@ -607,6 +607,7 @@ export function SetupPage() {
             </>
           }
         />
+        </>
       )}
       {tabValue === 1 && (
         <Box>
