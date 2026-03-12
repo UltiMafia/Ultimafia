@@ -443,7 +443,7 @@ export default function HostBrowser(props) {
               </FormControl>
               <FormControl size="small" sx={{ minWidth: 220 }}>
                 <UserSearchSelect
-                  key={filters.creatorId || "no-creator"}
+                  value={filters.creatorName ?? ""}
                   onChange={onCreatorSelect}
                   placeholder="Filter by creator"
                 />

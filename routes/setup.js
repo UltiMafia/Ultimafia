@@ -162,6 +162,7 @@ router.get("/search", async function (req, res) {
     }
 
     const sort = {};
+    const sortBy = (req.query.sortBy || "").toLowerCase();
 
     if (req.query.query) {
       search["$or"] = [
@@ -186,18 +187,18 @@ router.get("/search", async function (req, res) {
           switch (option.toLowerCase()) {
             case "featured":
               search.featured = true;
-              sort._id = -1;
+              if (!sortBy) sort._id = -1;
               break;
             case "popular":
-              sort.played = -1;
+              if (!sortBy) sort.played = -1;
               break;
             case "ranked":
               search.ranked = true;
-              sort._id = -1;
+              if (!sortBy) sort._id = -1;
               break;
             case "competitive":
               search.competitive = true;
-              sort._id = -1;
+              if (!sortBy) sort._id = -1;
               break;
             case "favorites":
               const favSetupsIds = (
@@ -206,10 +207,10 @@ router.get("/search", async function (req, res) {
                 }).select("favSetups")
               )?.favSetups?.map((e) => e._id);
               search._id = { $in: favSetupsIds };
-              sort._id = -1;
+              if (!sortBy) sort._id = -1;
               break;
             case "yours":
-              sort._id = -1;
+              if (!sortBy) sort._id = -1;
               search.creator = new mongoose.Types.ObjectId(sessionUserId);
               break;
             default:
@@ -220,7 +221,6 @@ router.get("/search", async function (req, res) {
       );
     }
 
-    const sortBy = (req.query.sortBy || "").toLowerCase();
     if (sortBy) {
       switch (sortBy) {
         case "newest":

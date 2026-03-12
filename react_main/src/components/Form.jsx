@@ -892,11 +892,6 @@ export function UserSearchSelect(props) {
       .catch(useErrorAlert);
   }, [query]);
 
-  function onInputChange(e) {
-    setQuery(e.target.value);
-    setInputValue(e.target.value);
-  }
-
   function onChange(event, value) {
     if (props.onChange) {
       if (value != null) {
@@ -906,13 +901,24 @@ export function UserSearchSelect(props) {
         props.onChange(null, null);
       }
     }
-    setInputValue("");
+    setInputValue(value ?? "");
   }
+
+  const selectedName = props.value ?? "";
+  const displayInputValue = selectedName !== "" ? selectedName : inputValue;
 
   return (
     <Autocomplete
+      value={selectedName || null}
+      inputValue={displayInputValue}
+      onInputChange={(e, newInputValue, reason) => {
+        if (reason === "reset" && selectedName) return;
+        setInputValue(newInputValue);
+        setQuery(newInputValue);
+        if (newInputValue !== selectedName && props.onChange)
+          props.onChange(null, null);
+      }}
       options={matchingOptions}
-      onInputChange={onInputChange}
       onChange={onChange}
       renderInput={(params) => (
         <TextField {...params} label={props.placeholder} />

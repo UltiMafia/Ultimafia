@@ -59,6 +59,9 @@ export const mafiaMusicConfig: AudioEntry[] = [
   { fileName: "music/NightHostile", loop: true },
   { fileName: "music/NightGeneric", loop: true },
 
+  // Pregame (competitive only)
+  { fileName: "music/PregameCompetitive", loop: true },
+
   // Win / end-game tracks
   { fileName: "music/Draw" },
   { fileName: "music/WinAlien" },

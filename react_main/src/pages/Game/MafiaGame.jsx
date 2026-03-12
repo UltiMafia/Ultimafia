@@ -275,6 +275,11 @@ export default function MafiaGame() {
         currentState.name.startsWith("Dawn"))
     ) {
       //Night Music Contiunes at Give Clue and Dawn
+    } else if (
+      history.currentState === -1 &&
+      game.options?.competitive
+    ) {
+      game.playAudio("music/PregameCompetitive");
     } else {
       game.stopAudio();
     }
