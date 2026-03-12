@@ -1032,6 +1032,29 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Fix Ranked Access": {
+      perm: "approveRanked",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/fixRankedAccess", argValues)
+          .then((res) => {
+            siteInfo.showAlert(
+              res.data && typeof res.data === "string" ? res.data : "Ranked access restored.",
+              "success"
+            );
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Competitive Approve": {
       perm: "approveCompetitive",
       category: "User Management",

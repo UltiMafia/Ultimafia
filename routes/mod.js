@@ -2451,6 +2451,57 @@ router.post("/rankedApprove", async function (req, res) {
   }
 });
 
+// Fix ranked access for returning approved players (e.g. stale cache after long inactivity)
+router.post("/fixRankedAccess", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdToFix = String(req.body.userId);
+    var perm = "approveRanked";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    var userToFix = await models.User.findOne({
+      id: userIdToFix,
+      deleted: false,
+    }).select("_id");
+
+    if (!userToFix) {
+      res.status(500);
+      res.send("User does not exist.");
+      return;
+    }
+
+    var group = await models.Group.findOne({ name: "Ranked Player" }).select(
+      "_id"
+    );
+    var inGroup = await models.InGroup.findOne({
+      user: userToFix._id,
+      group: group._id,
+    });
+
+    if (!inGroup) {
+      res.status(400);
+      res.send(
+        "User is not in Ranked Player group. Approve them for ranked first, then use this if they still cannot play."
+      );
+      return;
+    }
+
+    await redis.cacheUserInfo(userIdToFix, true);
+    await redis.cacheUserPermissions(userIdToFix);
+
+    routeUtils.createModAction(userId, "Fix Ranked Access", [userIdToFix]);
+    res.send(
+      "Ranked access cache refreshed for user. They should be able to join ranked games now."
+    );
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error fixing ranked access: " + e.message);
+  }
+});
+
 router.post("/competitiveApprove", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
