@@ -154,6 +154,9 @@ export default function StateSwitcher({ stateRange = null }) {
         <Tabs
           value={reverseStateNums[stateViewing]}
           onChange={handleChange}
+          variant="standard"
+          scrollButtons={false}
+          allowScrollButtonsMobile={false}
           sx={{
             maxWidth: "100%",
             minHeight: 0,
