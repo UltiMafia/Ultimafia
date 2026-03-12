@@ -92,7 +92,7 @@ export function CellSearch({
             {tabButtons}
           </Tabs>
         )}
-        <Box sx={{ ml: hasTabs && !isPhoneDevice ? "auto !important" : undefined, flex: useTagAutocomplete ? 1 : undefined, minWidth: useTagAutocomplete ? 0 : undefined }}>
+        <Box sx={{ ml: !isPhoneDevice ? "auto !important" : undefined, flex: useTagAutocomplete ? 1 : undefined, minWidth: useTagAutocomplete ? 0 : undefined }}>
           {searchControl}
         </Box>
       </Stack>
