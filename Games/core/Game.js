@@ -3235,21 +3235,30 @@ module.exports = class Game {
         var pointsEarnedByPlayer = playerWon
           ? pointsWonByFactions[memberFactions[playerId]]
           : pointsLostByFactions[memberFactions[playerId]];
-        if (pointsEarnedByPlayer > maxEarnedPoints) {
+        const hadRareCap = pointsEarnedByPlayer > maxEarnedPoints;
+        if (hadRareCap) {
           pointsEarnedByPlayer = maxEarnedPoints;
+        }
 
-          if (playerWon) {
-            // Rare occurrence - notify everyone of the player's winnings
+        // ----- COMPETITIVE POINT NORMALIZER (optional, remove if reverting) -----
+        // Restrict competitive game payouts to 50-70 so high underdog payouts (e.g. 120) are capped.
+        // Underlying formula is unchanged; only the final payout range is clamped. Alerts below use clamped value.
+        if (this.competitive) {
+          const magnitude = Math.abs(pointsEarnedByPlayer);
+          const clampedMagnitude = Math.max(50, Math.min(70, magnitude));
+          pointsEarnedByPlayer = pointsEarnedByPlayer >= 0 ? clampedMagnitude : -clampedMagnitude;
+        }
+        // ----- END COMPETITIVE POINT NORMALIZER -----
+
+        if (playerWon) {
+          if (hadRareCap) {
             this.sendAlert(
               `${player.name} just earned ${pointsEarnedByPlayer} fortune!!`,
               undefined,
               undefined,
               ["info"]
             );
-          }
-        } else {
-          if (playerWon) {
-            // Notify the player of their winnings
+          } else {
             player.sendAlert(
               `You have earned ${pointsEarnedByPlayer} fortune!`,
               undefined,
