@@ -850,6 +850,7 @@ module.exports = class Player {
     }
 
     if (
+      this.game.started &&
       !(
         noReveal ||
         (oldAppearanceSelf && oldAppearanceSelf === this.role.appearance.self)
