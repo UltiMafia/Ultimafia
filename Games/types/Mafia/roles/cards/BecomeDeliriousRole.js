@@ -23,7 +23,7 @@ module.exports = class BecomeDeliriousRole extends Card {
         switchRoleBefore(this.player.role);
         this.data.reroll = true;
         let role = this.player.addExtraRole(this.player.role.newRole);
-        this.giveEffect(player, "Delirious", Infinity, this);
+        this.giveEffect(this.player, "Delirious", this.player, Infinity, null, this);
         this.player.passiveExtraRoles.push(role);
 
         /*
@@ -55,7 +55,7 @@ module.exports = class BecomeDeliriousRole extends Card {
         this.hasGainedBraggartRole = true;
         if (!this.player.role.newRole) switchRoleBefore(this.player.role);
         let role = this.player.addExtraRole(this.player.role.newRole);
-        this.giveEffect(player, "Delirious", Infinity, this);
+        this.giveEffect(this.player, "Delirious", this.player, Infinity, null, this);
         this.player.passiveExtraRoles.push(role);
 
         /*
@@ -85,7 +85,7 @@ module.exports = class BecomeDeliriousRole extends Card {
             (e) => e.name == "Delirious" && e.source == this
           ).length <= 0
         ) {
-          this.giveEffect(this.player, "Delirious", Infinity, this);
+          this.giveEffect(this.player, "Delirious", this.player, Infinity, null, this);
         }
 
         var action2 = new Action({

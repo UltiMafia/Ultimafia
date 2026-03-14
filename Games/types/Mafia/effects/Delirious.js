@@ -21,7 +21,34 @@ module.exports = class Delirious extends Effect {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
+        this.game.queueAlert("State thing");
         var action = new Action({
+          actor: this.effecter,
+          target: this.player,
+          game: this.player.game,
+          effect: this,
+          priority: -999,
+          labels: ["block", "hidden"],
+          run: function () {
+            if (!this.target.isDelirious()) {
+              return;
+            }
+            if (this.actor.hasAbility(this.effect.types) || this.actor == this.target) {
+              this.blockWithDelirium(this.target, true);
+            }
+          },
+        });
+
+        this.game.queueAction(action);
+      },
+    };
+  }
+
+  apply(player) {
+    super.apply(player);
+    this.falseModeEffect = player.giveEffect("FalseMode", Infinity);
+    if(player.game.getStateName() == "Night"){
+      var action = new Action({
           actor: this.effecter,
           target: this.player,
           game: this.player.game,
@@ -39,14 +66,7 @@ module.exports = class Delirious extends Effect {
         });
 
         this.game.queueAction(action);
-      },
-    };
-  }
-
-  apply(player) {
-    super.apply(player);
-
-    this.falseModeEffect = player.giveEffect("FalseMode", Infinity);
+    }
   }
 
   remove() {
