@@ -5563,7 +5563,7 @@ export function useActivity() {
 }
 
 async function requestNotificationAccess() {
-  if (!Notification) return;
+  if (!window.Notification) return;
 
   await Notification.requestPermission();
 }
