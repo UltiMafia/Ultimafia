@@ -45,17 +45,24 @@ module.exports = class KillorPass extends Card {
 
               if (cultTargets.length > 0) {
                 const randomTarget = Random.randArrayVal(cultTargets);
-              if(action.dominates(randomTarget)){
-                randomTarget.setRole(
-                  `${this.role.name}:${this.role.modifier}`,
-                  this.role.data,
-                  null,
-                  null,
-                  null,
-                  "No Change"
-                );
-              }
-                this.actor.kill("basic");
+                if (action.dominates(randomTarget)) {
+                  randomTarget.setRole(
+                    `${this.role.name}:${this.role.modifier}`,
+                    this.role.data,
+                    null,
+                    null,
+                    null,
+                    "No Change"
+                  );
+                }
+                const tempKillImmunity =
+                  this.actor.tempImmunity &&
+                  this.actor.tempImmunity["kill"] != null &&
+                  this.actor.tempImmunity["kill"] > 0;
+
+                if (!tempKillImmunity) {
+                  this.actor.kill("basic");
+                }
               }
             }
 

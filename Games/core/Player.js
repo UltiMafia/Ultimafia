@@ -685,7 +685,17 @@ module.exports = class Player {
         }
 
         const meeting = this.game.getMeeting(cmd.raw.meetingId);
-        const recipients = meeting ? meeting.getPlayers() : [this];
+        let recipients;
+
+        if (!this.alive) {
+          // Dead players' /diceroll results should only be visible in the graveyard
+          recipients = this.game.players.filter(
+            (p) => !p.alive && !p.exorcised
+          );
+        } else {
+          recipients = meeting ? meeting.getPlayers() : [this];
+        }
+
         this.game.sendAlert(rollsOutput, recipients);
 
         return;
