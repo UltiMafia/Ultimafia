@@ -429,7 +429,6 @@ export function RoleThings() {
               <div className="span-panel main">
                 <div className="heading">Role Info</div>
                 <div className="meta">
-                  <SetupRowInfo title="Name" content={RoleName} />
                   <Form
                     fields={siteFields}
                     deps={{ user }}
