@@ -29,6 +29,9 @@ router.post("/", async function (req, res) {
       case "setup":
         itemModel = models.Setup;
         break;
+      case "role":
+        itemModel = models.RoleVote;
+        break;
       default:
         res.status(500);
         res.send("Invalid item type.");
@@ -39,7 +42,7 @@ router.post("/", async function (req, res) {
 
     if (itemType === "strategy") {
       itemQuery = itemQuery.select("deleted");
-    } else if (itemType === "setup") {
+    } else if (itemType === "setup" || itemType === "role") {
       itemQuery = itemQuery.select("id");
     } else {
       let populates = [];
@@ -80,7 +83,7 @@ router.post("/", async function (req, res) {
 
     var requiredRank = 0;
 
-    if (itemType !== "strategy" && itemType !== "setup") {
+    if (itemType !== "strategy" && itemType !== "setup" && itemType !== "role") {
       requiredRank =
         (item.board && item.board.rank) ||
         (item.thread && item.thread.board && item.thread.board.rank) ||
@@ -103,7 +106,7 @@ router.post("/", async function (req, res) {
     var vote = await models.ForumVote.findOne({ voter: userId, item: itemId });
 
     let incVoteCount, incUp, incDown;
-    if (itemType === "setup") {
+    if (itemType === "setup" || itemType === "role") {
       if (!vote) {
         incVoteCount = direction;
         incUp = direction === 1 ? 1 : 0;
@@ -127,7 +130,7 @@ router.post("/", async function (req, res) {
       });
       await vote.save();
 
-      if (itemType === "setup") {
+      if (itemType === "setup" || itemType === "role") {
         await models.Setup.updateOne(
           { id: itemId },
           [
@@ -158,7 +161,7 @@ router.post("/", async function (req, res) {
         { $set: { direction: direction } }
       ).exec();
 
-      if (itemType === "setup") {
+      if (itemType === "setup" || itemType === "role") {
         await models.Setup.updateOne(
           { id: itemId },
           [

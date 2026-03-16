@@ -470,6 +470,15 @@ var schemas = {
     deleted: { type: Boolean, default: false },
     deletedAt: { type: Number, default: null },
   }),
+  RoleVote: new mongoose.Schema({
+    id: { type: String, index: true },
+    roleName: { type: String, index: true },
+    alignment: { type: String },
+    voteCount: { type: Number, default: 0 },
+    upVotes: { type: Number, default: 0 },
+    downVotes: { type: Number, default: 0 },
+    controversialScore: { type: Number, default: 0, index: true },
+  }),
   Comment: new mongoose.Schema({
     id: { type: String, index: true },
     author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

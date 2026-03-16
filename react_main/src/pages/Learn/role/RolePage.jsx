@@ -14,6 +14,7 @@ import {
   AccordionDetails,
   Box,
   Button,
+  Card,
   Typography,
   FormControl,
   InputLabel,
@@ -39,7 +40,9 @@ import "css/setupPage.css";
 import { useErrorAlert } from "../../../components/Alerts";
 import { Loading } from "../../../components/Loading";
 import { RoleCount } from "../../../components/Roles";
+import { getAlignmentColor } from "../../../components/Setup";
 import { ExtraRoleData } from "../../../constants/ExtraRoleData";
+import { VoteWidget } from "../../../components/VoteWidget";
 
 export default function RolePage() {
   return (
@@ -313,9 +316,74 @@ export function RoleThings() {
     examples = "";
   }
 
+  const alignmentColor = getAlignmentColor(role[1].alignment);
+
+  const roleVoteItem = {
+    id: `Mafia:${RoleName}`,
+    vote: role[1].vote ?? 0,
+    voteCount: role[1].voteCount ?? 0,
+  };
+
   return (
     <Stack direction="column" spacing={1}>
-      <RoleCount key={0} scheme="vivid" role={role[0]} gameType={"Mafia"} />
+      <Card
+        variant="outlined"
+        sx={{
+          backgroundColor: alignmentColor,
+          mb: 1,
+          p: 1,
+        }}
+      >
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            alignItems: "center",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              mr: 1,
+            }}
+          >
+            <VoteWidget
+              item={roleVoteItem}
+              itemType="role"
+              setItemHolder={() => {}}
+            />
+          </Box>
+          <Box
+            sx={{
+              borderRadius: "50%",
+              p: 1,
+              backgroundColor: "rgba(0, 0, 0, 0.2)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <RoleCount
+              key={0}
+              scheme="vivid"
+              role={role[0]}
+              gameType={"Mafia"}
+              large
+            />
+          </Box>
+          <Typography
+            variant="h2"
+            sx={{
+              ml: "auto !important",
+            }}
+          >
+            {RoleName}
+          </Typography>
+        </Stack>
+      </Card>
       <div className="setup-page">
         <div className="span-panel main">
           <div className="heading">Role Info</div>
