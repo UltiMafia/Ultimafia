@@ -15,6 +15,8 @@ import {
   Box,
   Button,
   Card,
+  Grid,
+  IconButton,
   Typography,
   FormControl,
   InputLabel,
@@ -43,6 +45,7 @@ import { RoleCount } from "../../../components/Roles";
 import { getAlignmentColor } from "../../../components/Setup";
 import { ExtraRoleData } from "../../../constants/ExtraRoleData";
 import { VoteWidget } from "../../../components/VoteWidget";
+import TwoPanelLayout from "../../../components/SetupProfileLayout";
 
 export default function RolePage() {
   return (
@@ -62,6 +65,7 @@ export function RoleThings() {
   const [loaded, setLoaded] = useState(false);
 
   const [achievements, setAchievements] = useState(null);
+  const [favoriteRoles, setFavoriteRoles] = useState([]);
   const [tempSkins, setTempSkins] = useState([
     { label: "Vivid", value: "vivid" },
   ]);
@@ -90,6 +94,16 @@ export function RoleThings() {
         navigate("/play");
       });
   }, [user?.id]);
+
+  useEffect(() => {
+    if (!user?.id || !user.loggedIn) return;
+    axios
+      .get("/api/user/me/favorite-roles")
+      .then((res) =>
+        setFavoriteRoles(Array.isArray(res.data) ? res.data : [])
+      )
+      .catch(() => setFavoriteRoles([]));
+  }, [user?.id, user?.loggedIn]);
 
   useEffect(() => {
     if (!role || !achievements) return;
@@ -318,11 +332,36 @@ export function RoleThings() {
 
   const alignmentColor = getAlignmentColor(role[1].alignment);
 
+  function getHeaderTextColor(bg) {
+    // Simple luminance check assuming hex color like #rrggbb
+    if (!bg || bg[0] !== "#" || bg.length !== 7) return "#ffffff";
+    const r = parseInt(bg.slice(1, 3), 16) / 255;
+    const g = parseInt(bg.slice(3, 5), 16) / 255;
+    const b = parseInt(bg.slice(5, 7), 16) / 255;
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+    return luminance > 0.6 ? "#000000" : "#ffffff";
+  }
+
+  const headerTextColor = getHeaderTextColor(alignmentColor);
+
   const roleVoteItem = {
     id: `Mafia:${RoleName}`,
     vote: role[1].vote ?? 0,
     voteCount: role[1].voteCount ?? 0,
   };
+
+  const roleId = `Mafia:${RoleName}`;
+  const isFavorited = favoriteRoles.indexOf(roleId) !== -1;
+
+  function onFavRole() {
+    if (!user.loggedIn) return;
+    axios
+      .post("/api/user/role-favorite", { id: roleId })
+      .then((res) =>
+        setFavoriteRoles(Array.isArray(res.data) ? res.data : [])
+      )
+      .catch(errorAlert);
+  }
 
   return (
     <Stack direction="column" spacing={1}>
@@ -332,6 +371,7 @@ export function RoleThings() {
           backgroundColor: alignmentColor,
           mb: 1,
           p: 1,
+          color: headerTextColor,
         }}
       >
         <Stack
@@ -344,28 +384,25 @@ export function RoleThings() {
           <Box
             sx={{
               display: "flex",
-              flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              mr: 1,
+              gap: 1,
             }}
           >
-            <VoteWidget
-              item={roleVoteItem}
-              itemType="role"
-              setItemHolder={() => {}}
-            />
-          </Box>
-          <Box
-            sx={{
-              borderRadius: "50%",
-              p: 1,
-              backgroundColor: "rgba(0, 0, 0, 0.2)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <VoteWidget
+                item={roleVoteItem}
+                itemType="role"
+                setItemHolder={() => {}}
+              />
+            </Box>
             <RoleCount
               key={0}
               scheme="vivid"
@@ -377,38 +414,67 @@ export function RoleThings() {
           <Typography
             variant="h2"
             sx={{
-              ml: "auto !important",
+              ml: 2,
+              color: headerTextColor,
             }}
           >
             {RoleName}
           </Typography>
         </Stack>
       </Card>
-      <div className="setup-page">
-        <div className="span-panel main">
-          <div className="heading">Role Info</div>
-          <div className="meta">
-            <SetupRowInfo title="Name" content={RoleName} />
-            <Form
-              fields={siteFields}
-              deps={{ user }}
-              onChange={(action) =>
-                onRoleSkinChange(action, RoleName, null, user, roleSkins)
-              }
-            />
-            <SetupRowInfo
-              title="Tags"
-              content={role[1].tags.sort().join(", ")}
-            />
-            <SetupRowInfo title="Description" content={description} />
-            {examples}
-            {specialBox}
-            {overrideBox}
-            <SetupRowInfo title="Icon Artists" content={artists} />
-          </div>
-        </div>
-      </div>
-      <Comments location={commentLocation} />
+      <TwoPanelLayout
+        left={
+          <>
+            <div className="setup-page">
+              <div className="span-panel main">
+                <div className="heading">Role Info</div>
+                <div className="meta">
+                  <SetupRowInfo title="Name" content={RoleName} />
+                  <Form
+                    fields={siteFields}
+                    deps={{ user }}
+                    onChange={(action) =>
+                      onRoleSkinChange(action, RoleName, null, user, roleSkins)
+                    }
+                  />
+                  <SetupRowInfo
+                    title="Tags"
+                    content={role[1].tags.sort().join(", ")}
+                  />
+                  <SetupRowInfo title="Description" content={description} />
+                  {examples}
+                  {specialBox}
+                  {overrideBox}
+                  <SetupRowInfo title="Icon Artists" content={artists} />
+                </div>
+              </div>
+            </div>
+            <Box sx={{ mt: 1 }}>
+              <Comments location={commentLocation} />
+            </Box>
+          </>
+        }
+        right={
+          user.loggedIn && (
+            <div className="box-panel">
+              <div className="heading">Role Panel</div>
+              <div className="content">
+                <Grid container sx={{ width: "8rem" }}>
+                  <Grid item xs={3}>
+                    <IconButton aria-label="favorite" onClick={onFavRole}>
+                      <i
+                        className={`setup-btn fav-setup fa-star ${
+                          isFavorited ? "fas" : "far"
+                        }`}
+                      />
+                    </IconButton>
+                  </Grid>
+                </Grid>
+              </div>
+            </div>
+          )
+        }
+      />
     </Stack>
   );
 }

@@ -32,6 +32,8 @@ import ReportDialog from "../../components/ReportDialog";
 import RapSheet from "../../components/RapSheet";
 import TrophyCase from "components/TrophyCase";
 import { AchievementPanel } from "components/Achievements";
+import CasePanel from "components/CasePanel";
+import { RoleCount } from "components/Roles";
 import { PieChart } from "./PieChart";
 import AdminVisuals from "./AdminVisuals";
 import { Loading } from "components/Loading";
@@ -57,6 +59,38 @@ export const PRESTIGE_ICON = require(`images/prestige.png`);
 export const ACHIEVEMENTS_ICON = require(`images/achievements.png`);
 export const DAILY_ICON = require(`images/dailyChallenges.png`);
 
+function FavoritedRolesPanel({
+  favoriteRoles = [],
+  panelStyle = {},
+  headingStyle = {},
+  siteInfo,
+}) {
+  const rolesRaw = siteInfo?.rolesRaw || {};
+  const items = (favoriteRoles || [])
+    .map((id) => {
+      if (typeof id !== "string" || !id.includes(":")) return null;
+      const [gameType, roleName] = id.split(":");
+      if (!gameType || !roleName || !rolesRaw[gameType]?.[roleName])
+        return null;
+      return { gameType, roleName, id };
+    })
+    .filter(Boolean);
+
+  return (
+    <CasePanel
+      title={`Favorited Roles (${items.length})`}
+      panelStyle={panelStyle}
+      headingStyle={headingStyle}
+      className="box-panel favorited-roles"
+      emptyMessage="No favorited roles"
+    >
+      {items.map(({ gameType, roleName, id }) => (
+        <RoleCount key={id} role={roleName} gameType={gameType} />
+      ))}
+    </CasePanel>
+  );
+}
+
 export default function Profile() {
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [name, setName] = useState();
@@ -77,6 +111,7 @@ export default function Profile() {
   const [pointsNegative, setPointsNegative] = useState(0);
   const [championshipPoints, setChampionshipPoints] = useState(0);
   const [achievements, setAchievements] = useState([]);
+  const [favoriteRoles, setFavoriteRoles] = useState([]);
   const [trophies, setTrophies] = useState([]);
   const [karmaInfo, setKarmaInfo] = useState({});
   const [settings, setSettings] = useState({});
@@ -250,6 +285,9 @@ export default function Profile() {
           setLove(res.data.love);
           setCurrentUserLove(res.data.currentLove);
           setAchievements(res.data.achievements);
+          setFavoriteRoles(
+            Array.isArray(res.data.favoriteRoles) ? res.data.favoriteRoles : []
+          );
           setTrophies(res.data.trophies || []);
           setProfileFamily(res.data.family || null);
           setJoined(res.data.joined || null);
@@ -1517,6 +1555,12 @@ export default function Profile() {
               achievements={achievements}
               panelStyle={panelStyle}
               headingStyle={headingStyle}
+            />
+            <FavoritedRolesPanel
+              favoriteRoles={favoriteRoles}
+              panelStyle={panelStyle}
+              headingStyle={headingStyle}
+              siteInfo={siteInfo}
             />
             {archivedGamesRows.length !== 0 && (
               <div className="box-panel archived-games" style={panelStyle}>

@@ -106,6 +106,7 @@ export function VoteWidget(props) {
         className={`fas fa-arrow-up`}
         sx={{
           fontSize: "1em",
+          color: "inherit",
           ...(item.vote === 1 ? { color: theme.palette.info.main } : {}),
         }}
         onClick={() => onVote(item.id, 1)}
@@ -115,6 +116,7 @@ export function VoteWidget(props) {
         sx={{
           position: "relative",
           fontSize: "1em",
+          color: "inherit",
           minWidth: "2em",
           minHeight: "2em",
         }}
@@ -123,6 +125,7 @@ export function VoteWidget(props) {
           sx={{
             position: "absolute",
             lineHeight: "1",
+            color: "inherit",
           }}
         >
           {item.voteCount ?? 0}
@@ -132,6 +135,7 @@ export function VoteWidget(props) {
         className={`fas fa-arrow-down`}
         sx={{
           fontSize: "1em",
+          color: "inherit",
           ...(item.vote === -1 ? { color: theme.palette.info.main } : {}),
         }}
         onClick={() => onVote(item.id, -1)}

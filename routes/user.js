@@ -94,6 +94,67 @@ router.get("/info", async function (req, res) {
   }
 });
 
+router.get("/me/favorite-roles", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var user = await models.User.findOne({ id: userId, deleted: false })
+      .select("favoriteRoles -_id")
+      .lean();
+    res.send(user?.favoriteRoles ?? []);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error loading favorite roles.");
+  }
+});
+
+router.post("/role-favorite", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var roleId = String(req.body.id || "").trim();
+    if (!roleId || !roleId.includes(":")) {
+      res.status(400);
+      res.send("Invalid role id.");
+      return;
+    }
+    if (!(await routeUtils.rateLimit(userId, "favRole", res))) return;
+
+    var user = await models.User.findOne({ id: userId, deleted: false })
+      .select("favoriteRoles -_id");
+    if (!user) {
+      res.status(500);
+      res.send("User not found.");
+      return;
+    }
+    var list = user.favoriteRoles || [];
+    var idx = list.indexOf(roleId);
+    if (idx !== -1) {
+      list.splice(idx, 1);
+    } else {
+      if (list.length >= (constants.maxFavRoles || 100)) {
+        res.status(400);
+        res.send(
+          "You may only favorite a maximum of " +
+            (constants.maxFavRoles || 100) +
+            " roles."
+        );
+        return;
+      }
+      list.push(roleId);
+    }
+    await models.User.updateOne(
+      { id: userId },
+      { $set: { favoriteRoles: list } }
+    );
+    res.send(list);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error favoriting role.");
+  }
+});
+
 router.get("/leaderboard", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -266,7 +327,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive joined _id"
+        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive joined favoriteRoles _id"
       )
       .populate({
         path: "setups",
