@@ -104,8 +104,8 @@ export function Timer(props) {
 
         if (
           info.name === "pregameCountdown" &&
-          Notification &&
-          Notification.permission === "granted" &&
+          window.Notification &&
+          window.Notification.permission === "granted" &&
           !document.hasFocus()
         ) {
           new Notification("Your game is starting!");
