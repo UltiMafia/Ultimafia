@@ -359,53 +359,87 @@ export function RoleThings() {
           color: headerTextColor,
         }}
       >
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{
-            alignItems: "center",
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 1,
-            }}
-          >
-            <Box
+        <Grid container spacing={1} alignItems="center">
+          <Grid item xs={12} md={8}>
+            <Stack
+              direction="row"
+              spacing={1}
               sx={{
-                display: "flex",
-                flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "center",
               }}
             >
-              <VoteWidget
-                item={roleVoteItem}
-                itemType="role"
-                setItemHolder={() => {}}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 1,
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <VoteWidget
+                    item={roleVoteItem}
+                    itemType="role"
+                    setItemHolder={() => {}}
+                  />
+                </Box>
+                <RoleCount
+                  key={0}
+                  scheme="vivid"
+                  role={role[0]}
+                  gameType={"Mafia"}
+                  large
+                />
+              </Box>
+              <Typography
+                variant="h2"
+                sx={{
+                  ml: 2,
+                  color: headerTextColor,
+                }}
+              >
+                {RoleName}
+              </Typography>
+            </Stack>
+            <Box sx={{ mt: 1, maxWidth: 320 }}>
+              <Form
+                fields={siteFields}
+                deps={{ user }}
+                onChange={(action) =>
+                  onRoleSkinChange(action, RoleName, null, user, roleSkins)
+                }
               />
             </Box>
-            <RoleCount
-              key={0}
-              scheme="vivid"
-              role={role[0]}
-              gameType={"Mafia"}
-              large
-            />
-          </Box>
-          <Typography
-            variant="h2"
-            sx={{
-              ml: 2,
-              color: headerTextColor,
-            }}
-          >
-            {RoleName}
-          </Typography>
-        </Stack>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Stack
+              direction="column"
+              spacing={0.5}
+              sx={{
+                textAlign: { xs: "left", md: "right" },
+                color: headerTextColor,
+              }}
+            >
+              <Typography
+                variant="italicRelation"
+                sx={{
+                  fontStyle: "italic",
+                  opacity: 0.85,
+                }}
+              >
+                Icon Artists
+              </Typography>
+              <Typography variant="body2">{artists}</Typography>
+            </Stack>
+          </Grid>
+        </Grid>
       </Card>
       <TwoPanelLayout
         left={
@@ -414,13 +448,6 @@ export function RoleThings() {
               <div className="span-panel main">
                 <div className="heading">Role Info</div>
                 <div className="meta">
-                  <Form
-                    fields={siteFields}
-                    deps={{ user }}
-                    onChange={(action) =>
-                      onRoleSkinChange(action, RoleName, null, user, roleSkins)
-                    }
-                  />
                   <SetupRowInfo
                     title="Tags"
                     content={role[1].tags.sort().join(", ")}
@@ -429,7 +456,6 @@ export function RoleThings() {
                   {examples}
                   {specialBox}
                   {overrideBox}
-                  <SetupRowInfo title="Icon Artists" content={artists} />
                 </div>
               </div>
             </div>
@@ -442,7 +468,7 @@ export function RoleThings() {
           user.loggedIn && (
             <Stack direction="column" spacing={1}>
               <div className="box-panel">
-                <div className="heading">Role Panel</div>
+                <div className="heading">Favorite this Role</div>
                 <div className="content">
                   <Grid container sx={{ width: "8rem" }}>
                     <Grid item xs={3}>
@@ -458,7 +484,6 @@ export function RoleThings() {
                 </div>
               </div>
               <div className="box-panel">
-                <div className="heading">Fanart</div>
                 <div className="content">
                   <FanartPanel roleId={roleId} />
                 </div>

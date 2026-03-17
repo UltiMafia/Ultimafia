@@ -3,6 +3,10 @@ import axios from "axios";
 import {
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Grid,
   IconButton,
   Stack,
@@ -25,6 +29,7 @@ export default function FanartPanel({ roleId }) {
   const [file, setFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [viewerUrl, setViewerUrl] = useState(null);
+   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -85,6 +90,7 @@ export default function FanartPanel({ roleId }) {
         setItems((prev) => [created, ...(Array.isArray(prev) ? prev : [])]);
         setTitle("");
         setFile(null);
+        setDialogOpen(false);
       })
       .catch(errorAlert)
       .finally(() => setSubmitting(false));
@@ -115,40 +121,25 @@ export default function FanartPanel({ roleId }) {
   return (
     <>
       <Stack direction="column" spacing={1}>
-        {canCreate && (
-          <Stack direction="column" spacing={1}>
-            <TextField
-              label="Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{ alignItems: "center", width: "100%" }}
+        >
+          <Typography sx={{ flexGrow: 1 }}>Fanart</Typography>
+          {canCreate && (
+            <IconButton
               size="small"
-              inputProps={{ maxLength: 80 }}
-              fullWidth
-            />
-            <Grid container spacing={1} alignItems="center">
-              <Grid item xs={8}>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={onFileChange}
-                  style={{ width: "100%" }}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  disabled={
-                    submitting || !title.trim() || !file || !canCreate
-                  }
-                  onClick={onSubmit}
-                >
-                  Post Fanart
-                </Button>
-              </Grid>
-            </Grid>
-          </Stack>
-        )}
+              onClick={() => {
+                setTitle("");
+                setFile(null);
+                setDialogOpen(true);
+              }}
+            >
+              <i className="fas fa-plus" />
+            </IconButton>
+          )}
+        </Stack>
 
         {loading ? (
           <Typography variant="body2" sx={{ opacity: 0.7 }}>
@@ -228,6 +219,54 @@ export default function FanartPanel({ roleId }) {
       </Stack>
       {viewerUrl && (
         <ImageViewer imageUrl={viewerUrl} onClose={() => setViewerUrl(null)} />
+      )}
+      {canCreate && (
+        <Dialog
+          open={dialogOpen}
+          onClose={() => {
+            if (!submitting) setDialogOpen(false);
+          }}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle>Post Fanart</DialogTitle>
+          <DialogContent dividers>
+            <Stack direction="column" spacing={2}>
+              <TextField
+                label="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                inputProps={{ maxLength: 80 }}
+                fullWidth
+                autoFocus
+              />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={onFileChange}
+                style={{ width: "100%" }}
+              />
+            </Stack>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => {
+                if (!submitting) setDialogOpen(false);
+              }}
+              disabled={submitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={onSubmit}
+              disabled={
+                submitting || !title.trim() || !file || !canCreate
+              }
+            >
+              Post Fanart
+            </Button>
+          </DialogActions>
+        </Dialog>
       )}
     </>
   );
