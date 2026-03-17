@@ -20,6 +20,7 @@ import axios from "axios";
 import { UserContext, SiteInfoContext } from "../../../Contexts";
 import Comments from "../../Community/Comments";
 
+import "css/buttons.css";
 import "css/setupPage.css";
 
 import { useErrorAlert } from "../../../components/Alerts";

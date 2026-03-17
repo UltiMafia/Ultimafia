@@ -59,6 +59,7 @@ import {
 import { RoleCount } from "components/Roles";
 import { PieChart } from "./PieChart";
 
+import "css/buttons.css";
 import "css/setupPage.css";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import TwoPanelLayout from "components/SetupProfileLayout";

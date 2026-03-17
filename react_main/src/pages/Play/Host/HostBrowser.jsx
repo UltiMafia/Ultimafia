@@ -9,6 +9,7 @@ import { UserSearchSelect } from "components/Form";
 import HostGameDialogue from "components/HostGameDialogue";
 import { useErrorAlert } from "components/Alerts";
 
+import "css/buttons.css";
 import "css/host.css";
 import { clamp } from "../../../lib/MathExt";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";

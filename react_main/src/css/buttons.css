@@ -1,0 +1,20 @@
+.setup-btn {
+  font-size: 1.5rem;
+}
+
+.fav-setup {
+  color: #ebd722;
+}
+
+.edit-setup {
+  color: #2baf48;
+}
+
+.copy-setup {
+  color: #62a0db;
+}
+
+.del-setup {
+  color: #e45050;
+}
+

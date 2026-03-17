@@ -11,19 +11,3 @@
   padding: 8px;
   gap: 8px;
 }
-
-.host .setup-row .setup-btn {
-  font-size: 1.5rem;
-}
-
-.host .setup-row .fav-setup {
-  color: #ebd722;
-}
-
-.host .setup-row .edit-setup {
-  color: #2baf48;
-}
-
-.host .setup-row .del-setup {
-  color: #e45050;
-}
