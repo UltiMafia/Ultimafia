@@ -338,6 +338,26 @@ export function RoleThings() {
   const roleId = `Mafia:${RoleName}`;
   const isFavorited = favoriteRoles.indexOf(roleId) !== -1;
 
+  const roleSkinField = siteFields.find((f) => f.ref === "roleSkins");
+  const roleSkinOptions = roleSkinField?.options || [];
+
+  let currentRoleSkin = "vivid";
+  if (user?.settings && typeof user.settings.roleSkins === "string") {
+    const userRoleSkins = user.settings.roleSkins.split(",");
+    const matched = userRoleSkins.find((s) => s.split(":")[0] === RoleName);
+    if (matched && matched.split(":")[1]) {
+      currentRoleSkin = matched.split(":")[1];
+    }
+  }
+
+  if (
+    roleSkinField &&
+    roleSkinField.value &&
+    roleSkinOptions.some((o) => o.value === roleSkinField.value)
+  ) {
+    currentRoleSkin = roleSkinField.value;
+  }
+
   function onFavRole() {
     if (!user.loggedIn) return;
     axios
@@ -361,62 +381,104 @@ export function RoleThings() {
       >
         <Grid container spacing={1} alignItems="center">
           <Grid item xs={12} md={8}>
-            <Stack
-              direction="row"
-              spacing={1}
-              sx={{
-                alignItems: "center",
-              }}
-            >
-              <Box
+            <Stack direction="column" spacing={1}>
+              <Stack
+                direction="row"
+                spacing={1}
                 sx={{
-                  display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
-                  gap: 1,
                 }}
               >
                 <Box
                   sx={{
                     display: "flex",
-                    flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "center",
+                    gap: 1,
                   }}
                 >
-                  <VoteWidget
-                    item={roleVoteItem}
-                    itemType="role"
-                    setItemHolder={() => {}}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <VoteWidget
+                      item={roleVoteItem}
+                      itemType="role"
+                      setItemHolder={() => {}}
+                    />
+                  </Box>
+                  <RoleCount
+                    key={0}
+                    scheme="vivid"
+                    role={role[0]}
+                    gameType={"Mafia"}
+                    large
                   />
                 </Box>
-                <RoleCount
-                  key={0}
-                  scheme="vivid"
-                  role={role[0]}
-                  gameType={"Mafia"}
-                  large
-                />
-              </Box>
-              <Typography
-                variant="h2"
-                sx={{
-                  ml: 2,
-                  color: headerTextColor,
-                }}
+                <Typography
+                  variant="h2"
+                  sx={{
+                    ml: 2,
+                    color: headerTextColor,
+                  }}
+                >
+                  {RoleName}
+                </Typography>
+              </Stack>
+              <Stack
+                direction={{ xs: "column", md: "row" }}
+                alignItems={{ xs: "flex-start", md: "center" }}
+                spacing={1}
+                sx={{ mt: 0.5, maxWidth: 320 }}
               >
-                {RoleName}
-              </Typography>
+                <Typography
+                  component="label"
+                  variant="body2"
+                  sx={{ whiteSpace: "nowrap" }}
+                >
+                  Role Skin
+                </Typography>
+                <Box
+                  sx={{
+                    width: { xs: "100%", md: "auto" },
+                    minWidth: 72,
+                  }}
+                >
+                  <select
+                    value={currentRoleSkin}
+                    onChange={(e) =>
+                      onRoleSkinChange(
+                        {
+                          prop: "value",
+                          value: e.target.value,
+                          ref: "roleSkins",
+                          localOnly: false,
+                        },
+                        RoleName,
+                        null,
+                        user,
+                        roleSkins
+                      )
+                    }
+                    style={{
+                      width: "100%",
+                      minWidth: 72,
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    {roleSkinOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </Box>
+              </Stack>
             </Stack>
-            <Box sx={{ mt: 1, maxWidth: 320 }}>
-              <Form
-                fields={siteFields}
-                deps={{ user }}
-                onChange={(action) =>
-                  onRoleSkinChange(action, RoleName, null, user, roleSkins)
-                }
-              />
-            </Box>
           </Grid>
           <Grid item xs={12} md={4}>
             <Stack
@@ -430,8 +492,7 @@ export function RoleThings() {
               <Typography
                 variant="italicRelation"
                 sx={{
-                  fontStyle: "italic",
-                  opacity: 0.85,
+                  ml: isPhoneDevice ? "auto" : 1,
                 }}
               >
                 Icon Artists
