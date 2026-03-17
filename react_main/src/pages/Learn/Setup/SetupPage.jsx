@@ -192,7 +192,7 @@ export function SetupPage() {
           setVersionGamesPlayed(setup.setupVersion.played);
           setDescription(setup.description ?? "");
 
-          document.title = `Setup | ${res.data.name} | UltiMafia`;
+          document.title = `${res.data.name} | UltiMafia`;
 
           if (setup.gameType === "Mafia") {
             setEloPieData(getEloPieStats(setup.factionRatings));

@@ -8,7 +8,7 @@ const axios = require("axios");
 
 const logger = require("../modules/logging")(".");
 const constants = require("../data/constants");
-const routeUtils = require("../modules/routeUtils");
+const routeUtils = require("./utils");
 const models = require("../db/models");
 
 const router = express.Router();
