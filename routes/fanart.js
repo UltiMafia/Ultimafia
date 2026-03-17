@@ -71,11 +71,13 @@ router.post("/", async function (req, res) {
     if (!(await routeUtils.verifyPermission(res, userId, "postReply"))) return;
     if (!(await routeUtils.rateLimit(userId, "postFanart", res))) return;
 
-    const form = new formidable.IncomingForm();
+    // Match existing upload routes (avatar/banner/background/family avatar)
+    // to avoid version-specific formidable API differences.
+    var form = new formidable();
     form.maxFileSize = 5 * 1024 * 1024;
     form.maxFields = 2;
 
-    const [fields, files] = await form.parseAsync(req);
+    var [fields, files] = await form.parseAsync(req);
 
     const rawRoleId = sanitizeString(fields.roleId).slice(
       0,
