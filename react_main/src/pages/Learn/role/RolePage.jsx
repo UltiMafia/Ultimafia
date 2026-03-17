@@ -1,29 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import {
-  Route,
-  Routes,
-  Navigate,
-  useParams,
-  useNavigate,
-  Link,
-} from "react-router-dom";
+import { Navigate, useParams, useNavigate } from "react-router-dom";
 import { NameWithAvatar } from "../../User/User";
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Box,
-  Button,
   Card,
   Grid,
   IconButton,
   Typography,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  LinearProgress,
   Stack,
   List,
   ListItem,
@@ -46,6 +29,7 @@ import { getAlignmentColor } from "../../../components/Setup";
 import { ExtraRoleData } from "../../../constants/ExtraRoleData";
 import { VoteWidget } from "../../../components/VoteWidget";
 import TwoPanelLayout from "../../../components/SetupProfileLayout";
+import FanartPanel from "../../../components/FanartPanel";
 
 export default function RolePage() {
   return (
@@ -455,22 +439,30 @@ export function RoleThings() {
         }
         right={
           user.loggedIn && (
-            <div className="box-panel">
-              <div className="heading">Role Panel</div>
-              <div className="content">
-                <Grid container sx={{ width: "8rem" }}>
-                  <Grid item xs={3}>
-                    <IconButton aria-label="favorite" onClick={onFavRole}>
-                      <i
-                        className={`setup-btn fav-setup fa-star ${
-                          isFavorited ? "fas" : "far"
-                        }`}
-                      />
-                    </IconButton>
+            <Stack direction="column" spacing={1}>
+              <div className="box-panel">
+                <div className="heading">Role Panel</div>
+                <div className="content">
+                  <Grid container sx={{ width: "8rem" }}>
+                    <Grid item xs={3}>
+                      <IconButton aria-label="favorite" onClick={onFavRole}>
+                        <i
+                          className={`setup-btn fav-setup fa-star ${
+                            isFavorited ? "fas" : "far"
+                          }`}
+                        />
+                      </IconButton>
+                    </Grid>
                   </Grid>
-                </Grid>
+                </div>
               </div>
-            </div>
+              <div className="box-panel">
+                <div className="heading">Fanart</div>
+                <div className="content">
+                  <FanartPanel roleId={roleId} />
+                </div>
+              </div>
+            </Stack>
           )
         }
       />

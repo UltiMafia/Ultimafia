@@ -29,6 +29,7 @@ const pollRouter = require("./routes/poll");
 const competitiveRouter = require("./routes/competitive");
 const vanityUrlRouter = require("./routes/vanityUrl");
 const familyRouter = require("./routes/family");
+const fanartRouter = require("./routes/fanart");
 const compression = require("compression");
 const cors = require("cors");
 const itemsRouter = require("./routes/items");
@@ -89,6 +90,7 @@ apiRouter.use("/competitive", competitiveRouter);
 apiRouter.use("/vanityUrl", vanityUrlRouter);
 apiRouter.use("/family", familyRouter);
 apiRouter.use("/items", itemsRouter);
+apiRouter.use("/fanart", fanartRouter);
 
 app.use("/api", apiRouter);
 

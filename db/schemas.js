@@ -185,6 +185,15 @@ var schemas = {
     lastModified: Date,
     session: mongoose.Schema.Types.Mixed,
   }),
+  Fanart: new mongoose.Schema({
+    id: { type: String, index: true },
+    roleId: { type: String, index: true },
+    title: { type: String, default: "" },
+    imagePath: { type: String, default: "" },
+    author: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
+    createdAt: { type: Number, index: true },
+    deleted: { type: Boolean, default: false, index: true },
+  }),
   Setup: new mongoose.Schema(
     {
       id: { type: String, index: true },
