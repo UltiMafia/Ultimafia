@@ -16,6 +16,8 @@ import {
   MenuItem,
   Paper,
   IconButton,
+  Button,
+  TextField,
 } from "@mui/material";
 import { NameWithAvatar, Avatar } from "../User/User";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
@@ -23,8 +25,9 @@ import Setup from "components/Setup";
 import { Loading } from "components/Loading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
 import { Link, useSearchParams } from "react-router-dom";
-import { UserContext } from "Contexts";
+import { UserContext, SiteInfoContext } from "Contexts";
 import { PageNav, SearchBar } from "components/Nav";
+import { useErrorAlert } from "components/Alerts";
 
 export const QUERY_PARAM_SEASON = "season";
 export const QUERY_PARAM_ROUND = "round";
@@ -290,7 +293,7 @@ function Overview({ roundInfo, seasonInfo }) {
   );
 }
 
-function GameHistory({ roundInfo }) {
+function GameHistory({ roundInfo, canManageCompetitive, reloadRoundInfo }) {
   const isPhoneDevice = useIsPhoneDevice();
   const [playerFilter, setPlayerFilter] = useState("");
 
@@ -367,12 +370,21 @@ function GameHistory({ roundInfo }) {
                 spacing={isPhoneDevice ? 1 : 4}
               >
                 <Grid2 size={1}>
-                  <GameRow
-                    game={gameCompletion.game}
-                    lobby={"Competitive"}
-                    showGameTypeIcon
-                    showGameState
-                  />
+                  <Stack direction="column" spacing={1}>
+                    <GameRow
+                      game={gameCompletion.game}
+                      lobby={"Competitive"}
+                      showGameTypeIcon
+                      showGameState
+                    />
+                    {canManageCompetitive && (
+                      <PointsAdjustmentForm
+                        gameCompletion={gameCompletion}
+                        roundInfo={roundInfo}
+                        reloadRoundInfo={reloadRoundInfo}
+                      />
+                    )}
+                  </Stack>
                 </Grid2>
                 <Grid2 size={1}>
                   {gameCompletion.pointsEarnedByPlayers.map(
@@ -513,6 +525,8 @@ export default function Competitive() {
   const [currentSeasonInfo, setCurrentSeasonInfo] = useState(null);
   const isPhoneDevice = useIsPhoneDevice();
   const user = useContext(UserContext);
+  const errorAlert = useErrorAlert();
+  const canManageCompetitive = Boolean(user?.perms?.manageCompetitive);
 
   const seasonNumber = searchParams.get("season")
     ? Number.parseInt(searchParams.get("season"))
@@ -531,8 +545,23 @@ export default function Competitive() {
       })
       .then((response) => {
         setCurrentRoundInfo(response.data);
-      });
+      })
+      .catch(errorAlert);
   }, [seasonNumber, roundNumber]);
+
+  const reloadRoundInfo = () => {
+    axios
+      .get(`/api/competitive/roundInfo`, {
+        params: {
+          seasonNumber: seasonNumber,
+          roundNumber: roundNumber,
+        },
+      })
+      .then((response) => {
+        setCurrentRoundInfo(response.data);
+      })
+      .catch(errorAlert);
+  };
 
   useEffect(() => {
     if (currentRoundInfo && currentRoundInfo.seasonNumber) {
@@ -735,10 +764,146 @@ export default function Competitive() {
             />
           </Stack>
           <Box sx={{ display: tab === "gameHistory" ? undefined : "none" }}>
-            <GameHistory roundInfo={currentRoundInfo} />
+            <GameHistory
+              roundInfo={currentRoundInfo}
+              canManageCompetitive={canManageCompetitive}
+              reloadRoundInfo={reloadRoundInfo}
+            />
           </Box>
         </>
       )}
     </Stack>
+  );
+}
+
+function PointsAdjustmentForm({ gameCompletion, roundInfo, reloadRoundInfo }) {
+  const siteInfo = useContext(SiteInfoContext);
+  const errorAlert = useErrorAlert();
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [operation, setOperation] = useState("+");
+  const [points, setPoints] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const players = (gameCompletion.pointsEarnedByPlayers || []).map(
+    (pointsEarnedByPlayer) => {
+      const userId = pointsEarnedByPlayer.userId;
+      const user = roundInfo.users[userId]?.user || {};
+      return {
+        userId: String(userId),
+        name: user.name || `User ${userId}`,
+      };
+    }
+  );
+
+  const onSubmit = () => {
+    const trimmedPoints = String(points).trim();
+    const numericPoints = Number(trimmedPoints);
+
+    if (!selectedUserId) {
+      siteInfo.showAlert("Please select a player.", "warning");
+      return;
+    }
+
+    if (!trimmedPoints || Number.isNaN(numericPoints) || numericPoints <= 0) {
+      siteInfo.showAlert("Please enter a positive point amount.", "warning");
+      return;
+    }
+
+    const delta = operation === "-" ? -numericPoints : numericPoints;
+
+    setSubmitting(true);
+    axios
+      .post("/api/competitive/adjustPoints", {
+        gameId: gameCompletion.game.id,
+        userId: selectedUserId,
+        delta,
+      })
+      .then(() => {
+        siteInfo.showAlert("Points adjustment applied.", "success");
+        setSelectedUserId("");
+        setOperation("+");
+        setPoints("");
+        if (typeof reloadRoundInfo === "function") {
+          reloadRoundInfo();
+        }
+      })
+      .catch(errorAlert)
+      .finally(() => {
+        setSubmitting(false);
+      });
+  };
+
+  if (players.length === 0) {
+    return null;
+  }
+
+  return (
+    <Box
+      sx={{
+        mt: 1,
+        p: 1,
+        borderRadius: 1,
+        backgroundColor: "var(--scheme-color)",
+      }}
+    >
+      <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+        Points Adjustment
+      </Typography>
+      <Stack
+        direction={{ xs: "column", md: "row" }}
+        spacing={1}
+        sx={{ alignItems: { xs: "stretch", md: "center" } }}
+      >
+        <FormControl size="small" sx={{ minWidth: 140 }}>
+          <InputLabel id={`points-adjust-player-${gameCompletion.game.id}`}>
+            Player
+          </InputLabel>
+          <Select
+            labelId={`points-adjust-player-${gameCompletion.game.id}`}
+            value={selectedUserId}
+            label="Player"
+            onChange={(e) => setSelectedUserId(e.target.value)}
+          >
+            {players.map((p) => (
+              <MenuItem key={p.userId} value={p.userId}>
+                {p.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl size="small" sx={{ minWidth: 70 }}>
+          <InputLabel id={`points-adjust-op-${gameCompletion.game.id}`}>
+            +/- 
+          </InputLabel>
+          <Select
+            labelId={`points-adjust-op-${gameCompletion.game.id}`}
+            value={operation}
+            label="+/-"
+            onChange={(e) => setOperation(e.target.value)}
+          >
+            <MenuItem value="+">+</MenuItem>
+            <MenuItem value="-">-</MenuItem>
+          </Select>
+        </FormControl>
+        <TextField
+          size="small"
+          type="number"
+          label="Points"
+          inputProps={{ min: 1 }}
+          value={points}
+          onChange={(e) => setPoints(e.target.value)}
+          sx={{ width: 100 }}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={onSubmit}
+          disabled={submitting}
+          sx={{ whiteSpace: "nowrap" }}
+        >
+          {submitting ? "Updating..." : "Apply"}
+        </Button>
+      </Stack>
+    </Box>
   );
 }

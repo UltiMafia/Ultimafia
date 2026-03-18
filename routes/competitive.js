@@ -195,6 +195,87 @@ router.post("/refund", async function (req, res) {
   }
 });
 
+// Adjust points for a specific user's competitive game completion
+router.post("/adjustPoints", async function (req, res) {
+  try {
+    const modUserId = await routeUtils.verifyLoggedIn(req);
+
+    if (
+      !(await routeUtils.verifyPermission(res, modUserId, "manageCompetitive"))
+    )
+      return;
+
+    const gameId = String(req.body.gameId || "").trim();
+    const targetUserId = String(req.body.userId || "").trim();
+    const deltaRaw = req.body.delta;
+    const delta = Number(deltaRaw);
+
+    if (!gameId) {
+      res.status(400);
+      res.send("Game ID is required.");
+      return;
+    }
+
+    if (!targetUserId) {
+      res.status(400);
+      res.send("User ID is required.");
+      return;
+    }
+
+    if (!Number.isFinite(delta) || delta === 0) {
+      res.status(400);
+      res.send("Delta must be a non-zero number.");
+      return;
+    }
+
+    const game = await models.Game.findOne({ id: gameId }).select("_id").lean();
+
+    if (!game) {
+      res.status(404);
+      res.send("Game not found.");
+      return;
+    }
+
+    const completion = await models.CompetitiveGameCompletion.findOne({
+      game: game._id,
+      userId: targetUserId,
+      valid: true,
+    });
+
+    if (!completion) {
+      res.status(404);
+      res.send(
+        "No valid competitive game completion found for that game and user."
+      );
+      return;
+    }
+
+    completion.points = (completion.points || 0) + delta;
+    await completion.save();
+
+    await redis.invalidateCompRoundCache(completion.season, completion.round);
+
+    routeUtils.createModAction(modUserId, "Adjust Competitive Points", [
+      gameId,
+      targetUserId,
+      String(delta),
+    ]);
+
+    res.json({
+      success: true,
+      season: completion.season,
+      round: completion.round,
+      userId: completion.userId,
+      gameId,
+      updatedPoints: completion.points,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error adjusting competitive points.");
+  }
+});
+
 // Disqualify a user from a round (set their completions for that round to invalid)
 router.post("/disqualify", async function (req, res) {
   try {
