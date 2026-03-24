@@ -423,6 +423,58 @@ router.get("/:id/profile", async function (req, res) {
       };
     });
 
+    // Fetch stamps sorted by creation time to preserve acquisition order
+    var stamps = await models.Stamp.find({ userId })
+      .select("gameType role hidden _id createdAt")
+      .sort("createdAt")
+      .lean();
+
+    // Aggregate by gameType:role, preserving first-occurrence order
+    var visibleOrder = [];
+    var visibleGroups = {};
+    var hiddenOrder = [];
+    var hiddenGroups = {};
+    var stampDetails = [];
+
+    for (var s of stamps) {
+      var stampKey = `${s.gameType}:${s.role}`;
+      if (s.hidden) {
+        if (!hiddenGroups[stampKey]) {
+          hiddenGroups[stampKey] = {
+            gameType: s.gameType,
+            role: s.role,
+            count: 0,
+          };
+          hiddenOrder.push(stampKey);
+        }
+        hiddenGroups[stampKey].count++;
+      } else {
+        if (!visibleGroups[stampKey]) {
+          visibleGroups[stampKey] = {
+            gameType: s.gameType,
+            role: s.role,
+            count: 0,
+          };
+          visibleOrder.push(stampKey);
+        }
+        visibleGroups[stampKey].count++;
+      }
+      if (isSelf) {
+        stampDetails.push({
+          id: s._id,
+          gameType: s.gameType,
+          role: s.role,
+          hidden: s.hidden,
+        });
+      }
+    }
+
+    user.stamps = visibleOrder.map((k) => visibleGroups[k]);
+    if (isSelf) {
+      user.hiddenStamps = hiddenOrder.map((k) => hiddenGroups[k]);
+      user.stampDetails = stampDetails;
+    }
+
     var karmaInfo = { voteCount: user.karma, vote: 0 };
     var karmaVote = await models.KarmaVote.findOne({
       voterId: reqUserId,

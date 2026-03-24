@@ -1,0 +1,69 @@
+.scrapbook-panel .content {
+  padding: 8px;
+}
+
+.scrapbook-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stamp {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  background-color: #fdf6e3;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  cursor: default;
+}
+
+.stamp-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stamp-icon .role {
+  margin: 0;
+}
+
+/* Folded corner at bottom-right */
+.stamp-fold {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 0 8px 8px;
+  border-color: transparent transparent #e8dfc5 transparent;
+}
+
+.stamp-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  line-height: 1;
+  z-index: 1;
+}
+
+.stamp-badge.star {
+  background: #d4a017;
+  color: #fff;
+  font-size: 11px;
+}

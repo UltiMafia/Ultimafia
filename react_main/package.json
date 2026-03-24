@@ -9,6 +9,7 @@
     "@fullcalendar/daygrid": "^6.1.19",
     "@fullcalendar/react": "^6.1.19",
     "@iconify/react": "^4.1.1",
+    "@mui/icons-material": "^6.5.0",
     "@mui/material": "^6.5.0",
     "axios": ">=0.21.2",
     "color": "3.2.1",

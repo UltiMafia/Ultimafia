@@ -32,6 +32,7 @@ import ReportDialog from "../../components/ReportDialog";
 import RapSheet from "../../components/RapSheet";
 import TrophyCase from "components/TrophyCase";
 import { AchievementPanel } from "components/Achievements";
+import Scrapbook from "components/Scrapbook";
 import CasePanel from "components/CasePanel";
 import { RoleCount } from "components/Roles";
 import { PieChart } from "./PieChart";
@@ -112,6 +113,8 @@ export default function Profile() {
   const [championshipPoints, setChampionshipPoints] = useState(0);
   const [achievements, setAchievements] = useState([]);
   const [favoriteRoles, setFavoriteRoles] = useState([]);
+  const [stamps, setStamps] = useState([]);
+  const [hiddenStamps, setHiddenStamps] = useState([]);
   const [trophies, setTrophies] = useState([]);
   const [karmaInfo, setKarmaInfo] = useState({});
   const [settings, setSettings] = useState({});
@@ -289,6 +292,8 @@ export default function Profile() {
             Array.isArray(res.data.favoriteRoles) ? res.data.favoriteRoles : []
           );
           setTrophies(res.data.trophies || []);
+          setStamps(res.data.stamps || []);
+          setHiddenStamps(res.data.hiddenStamps || []);
           setProfileFamily(res.data.family || null);
           setJoined(res.data.joined || null);
           setFriendsPage(1);
@@ -1278,6 +1283,13 @@ export default function Profile() {
         </Grid>
         <Grid item xs={12} md={8}>
           <Stack direction="column" spacing={1}>
+            <Scrapbook
+              stamps={stamps}
+              hiddenStamps={hiddenStamps}
+              isSelf={isSelf}
+              panelStyle={panelStyle}
+              headingStyle={headingStyle}
+            />
             <div className="box-panel" style={panelStyle}>
               <div
                 className={`bio${isSelf && !editingBio ? " edit" : ""}`}

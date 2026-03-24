@@ -18,11 +18,25 @@ import {
   Grid2,
   CardActionArea,
   Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 
 import { Loading } from "../../components/Loading";
 
 import coin from "images/umcoin.png";
+
+function parseGameId(input) {
+  const trimmed = (input || "").trim();
+  if (!trimmed) return "";
+  const match = trimmed.match(/\/game\/([^/?\s]+)/);
+  if (match) return match[1];
+  // If no URL pattern, treat the whole input as a raw game ID (no slashes/spaces)
+  if (/^[^\s/]+$/.test(trimmed)) return trimmed;
+  return "";
+}
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 export default function Shop(props) {
@@ -31,6 +45,8 @@ export default function Shop(props) {
 
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
+  const [stampGameUrl, setStampGameUrl] = useState("");
+  const [stampDialogOpen, setStampDialogOpen] = useState(false);
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -255,7 +271,173 @@ export default function Shop(props) {
 
       <Grid2 container spacing={1}>
         {shopItems}
+        <Grid2
+          size={{
+            xs: 12,
+            sm: 6,
+            md: 3,
+          }}
+        >
+          <Card
+            variant="outlined"
+            sx={{
+              height: "100%",
+              width: "100%",
+              minHeight: isPhoneDevice ? undefined : "15em",
+            }}
+          >
+            <CardActionArea
+              onClick={() => setStampDialogOpen(true)}
+              sx={{ height: "100%", width: "100%" }}
+            >
+              <CardContent sx={{ height: "100%", width: "100%" }}>
+                <Stack
+                  direction={isPhoneDevice ? "row" : "column"}
+                  spacing={1}
+                  sx={{ height: "100%", width: "100%" }}
+                >
+                  <Stack
+                    direction="column"
+                    spacing={1}
+                    sx={{
+                      height: "100%",
+                      flex: "1",
+                      marginBottom: isPhoneDevice ? undefined : 1,
+                    }}
+                  >
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Typography
+                        variant="h3"
+                        sx={{ flex: isPhoneDevice ? "1" : undefined }}
+                      >
+                        Scrapbook Stamp
+                      </Typography>
+                      {isPhoneDevice && (
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          sx={{ alignItems: "center", justifyContent: "center" }}
+                        >
+                          <Typography>5</Typography>
+                          <img
+                            src={coin}
+                            style={{ width: "20px", height: "20px" }}
+                          />
+                        </Stack>
+                      )}
+                    </Stack>
+                    <Typography variant="caption">Unlimited</Typography>
+                    <Paper
+                      sx={{
+                        p: 1,
+                        flex: isPhoneDevice ? undefined : "1",
+                      }}
+                    >
+                      <Typography variant="body2">
+                        Commemorate a Mafia game win with a stamp of your role.
+                        Displayed on your profile scrapbook.
+                      </Typography>
+                    </Paper>
+                  </Stack>
+                  {!isPhoneDevice && (
+                    <Box sx={{ pt: 1 }}>
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Typography>5</Typography>
+                        <img
+                          src={coin}
+                          style={{ width: "20px", height: "20px" }}
+                        />
+                      </Stack>
+                    </Box>
+                  )}
+                </Stack>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Grid2>
       </Grid2>
+
+      <Dialog
+        open={stampDialogOpen}
+        onClose={() => {
+          setStampDialogOpen(false);
+          setStampGameUrl("");
+        }}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Buy Scrapbook Stamp</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            Enter the URL or ID of a Mafia game you won. You will receive a
+            stamp of the role you played.
+          </Typography>
+          <TextField
+            autoFocus
+            fullWidth
+            label="Game URL or ID"
+            value={stampGameUrl}
+            onChange={(e) => setStampGameUrl(e.target.value)}
+            placeholder="e.g. http://localhost:3001/game/VYkiIeKEs or VYkiIeKEs"
+          />
+          {stampGameUrl.trim() && (
+            <Typography
+              variant="caption"
+              sx={{ mt: 1, display: "block" }}
+              color={parseGameId(stampGameUrl) ? "textSecondary" : "error"}
+            >
+              {parseGameId(stampGameUrl)
+                ? `Game ID: ${parseGameId(stampGameUrl)}`
+                : "Could not parse a game ID from this input."}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setStampDialogOpen(false);
+              setStampGameUrl("");
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            disabled={!parseGameId(stampGameUrl)}
+            onClick={() => {
+              const gameId = parseGameId(stampGameUrl);
+              if (!gameId) {
+                siteInfo.showAlert("Could not parse a game ID.", "error");
+                return;
+              }
+              axios
+                .post("/api/shop/buyStamp", { gameId })
+                .then((res) => {
+                  siteInfo.showAlert(
+                    `Stamp purchased: ${res.data.role}!`,
+                    "success"
+                  );
+                  setStampGameUrl("");
+                  setStampDialogOpen(false);
+                  setShopInfo((prev) => ({
+                    ...prev,
+                    balance: prev.balance - 5,
+                  }));
+                })
+                .catch(errorAlert);
+            }}
+          >
+            Buy Now (5 coins)
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Divider flexItem orientation="horizontal" />
 

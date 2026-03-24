@@ -362,4 +362,141 @@ router.post(
   })
 );
 
+router.post("/buyStamp", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+
+    // Parse gameId from URL or raw ID
+    let gameId = String(req.body.gameId || "").trim();
+    const urlMatch = gameId.match(/\/game\/([^/?\s]+)/);
+    if (urlMatch) gameId = urlMatch[1];
+
+    if (!gameId) {
+      return res.status(400).send("Please provide a game URL or ID.");
+    }
+
+    // Find the game
+    const game = await models.Game.findOne({ id: gameId }).select(
+      "type endTime broken players winners playerIdMap playerRoleMap history"
+    );
+
+    if (!game) {
+      return res.status(404).send("Game not found.");
+    }
+    if (!game.endTime) {
+      return res.status(400).send("This game has not finished yet.");
+    }
+    if (game.type !== "Mafia") {
+      return res.status(400).send("Stamps are only available for Mafia games.");
+    }
+    if (game.broken) {
+      return res.status(400).send("Cannot purchase a stamp from a broken game.");
+    }
+
+    // Check user was a player
+    const playerIdMap = JSON.parse(game.playerIdMap || "{}");
+    const playerId = playerIdMap[userId];
+    if (!playerId) {
+      return res.status(400).send("You were not a player in this game.");
+    }
+
+    // Check user won
+    if (!game.winners.includes(playerId)) {
+      return res.status(400).send("You did not win this game.");
+    }
+
+    // Resolve role
+    let role;
+    const playerRoleMap = JSON.parse(game.playerRoleMap || "{}");
+    if (playerRoleMap[userId]) {
+      role = playerRoleMap[userId];
+    } else {
+      // Fall back to parsing history for old games
+      try {
+        const history = JSON.parse(game.history || "{}");
+        const stateKeys = Object.keys(history)
+          .filter((k) => !isNaN(k))
+          .sort((a, b) => Number(b) - Number(a));
+        for (const key of stateKeys) {
+          const stateRoles = history[key]?.roles;
+          if (stateRoles && stateRoles[playerId]) {
+            role = stateRoles[playerId].split(":")[0];
+            break;
+          }
+        }
+      } catch (e) {
+        // history parsing failed
+      }
+    }
+
+    if (!role) {
+      return res.status(400).send("Could not determine your role in this game.");
+    }
+
+    // Check for duplicate stamp
+    const existing = await models.Stamp.findOne({ userId, gameId });
+    if (existing) {
+      return res
+        .status(400)
+        .send("You already have a stamp from this game.");
+    }
+
+    // Check balance and deduct coins
+    const price = constants.stampPrice;
+    const debitResult = await models.User.updateOne(
+      { id: userId, coins: { $gte: price } },
+      { $inc: { coins: -price } }
+    ).exec();
+
+    const modified =
+      debitResult.modifiedCount ?? debitResult.nModified ?? 0;
+    if (!modified) {
+      return res.status(400).send("You do not have enough coins.");
+    }
+
+    // Find user ObjectId for the stamp
+    const userDoc = await models.User.findOne({ id: userId }).select("_id");
+
+    // Create stamp
+    await models.Stamp.create({
+      user: userDoc._id,
+      userId,
+      gameId,
+      gameType: game.type,
+      role,
+    });
+
+    await redis.cacheUserInfo(userId, true);
+
+    res.send({ gameType: game.type, role });
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error purchasing stamp.");
+  }
+});
+
+router.post("/stamp/toggle-hide", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    const { stampId } = req.body;
+
+    if (!stampId) {
+      return res.status(400).send("Missing stamp ID.");
+    }
+
+    const stamp = await models.Stamp.findById(stampId);
+    if (!stamp || stamp.userId !== userId) {
+      return res.status(404).send("Stamp not found.");
+    }
+
+    stamp.hidden = !stamp.hidden;
+    await stamp.save();
+
+    res.send({ hidden: stamp.hidden });
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error toggling stamp visibility.");
+  }
+});
+
 module.exports = router;

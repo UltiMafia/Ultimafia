@@ -309,6 +309,7 @@ var schemas = {
     },
     playerIdMap: { type: String, default: "{}" },
     playerAlignmentMap: { type: String, default: "{}" },
+    playerRoleMap: { type: String, default: "{}" },
     history: String,
     startTime: Number,
     endTime: { type: Number, index: true },
@@ -340,6 +341,15 @@ var schemas = {
     },
     description: { type: String, default: "" },
   }),
+  Stamp: new mongoose.Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
+    userId: { type: String, index: true },
+    gameId: { type: String, index: true },
+    gameType: { type: String },
+    role: { type: String },
+    hidden: { type: Boolean, default: false },
+    createdAt: { type: Number, default: Date.now },
+  }).index({ userId: 1, gameId: 1 }, { unique: true }),
   ForumCategory: new mongoose.Schema({
     id: { type: String, index: true },
     name: String,
