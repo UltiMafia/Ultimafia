@@ -108,6 +108,37 @@ function ConnectFourBoardWrapper() {
 
   if (stateViewing < 0) return <TextMeetingLayout />;
 
+  const currentState = history.states[stateViewing];
+  const meetings = currentState ? currentState.meetings : {};
+  const isCurrentState = stateViewing === history.currentState;
+
+  // Find the "Choose Column" meeting for click-to-drop
+  let columnMeeting = null;
+  if (isCurrentState) {
+    columnMeeting = Object.values(meetings).find(
+      (m) => m.voting && m.amMember && m.canVote
+    );
+  }
+
+  function onColumnClick(colIndex) {
+    if (!columnMeeting) return;
+
+    const selection = String(colIndex + 1);
+    const isUnvote = columnMeeting.votes[game.self] === selection;
+
+    if (!isUnvote) {
+      game.socket.send("vote", {
+        meetingId: columnMeeting.id,
+        selection,
+      });
+    } else {
+      game.socket.send("unvote", {
+        meetingId: columnMeeting.id,
+        selection,
+      });
+    }
+  }
+
   return (
     <SideMenu
       title="Board"
@@ -118,6 +149,7 @@ function ConnectFourBoardWrapper() {
             history={history}
             stateViewing={stateViewing}
             players={players}
+            onColumnClick={columnMeeting ? onColumnClick : null}
           />
         </>
       }
@@ -128,12 +160,23 @@ function ConnectFourBoardWrapper() {
 function ConnectFourBoard(props) {
   const extraInfo = props.history.states[props.stateViewing].extraInfo;
   const rows = extraInfo.board;
+  const [hoveredCol, setHoveredCol] = useState(null);
 
   return (
     <>
-      <div className="connectFour-board">
-        {rows.map((row) => (
-          <BoardRow columns={row} players={props.players} />
+      <div
+        className="connectFour-board"
+        onMouseLeave={() => setHoveredCol(null)}
+      >
+        {rows.map((row, rowIndex) => (
+          <BoardRow
+            key={rowIndex}
+            columns={row}
+            players={props.players}
+            onColumnClick={props.onColumnClick}
+            hoveredCol={props.onColumnClick ? hoveredCol : null}
+            setHoveredCol={props.onColumnClick ? setHoveredCol : undefined}
+          />
         ))}
       </div>
     </>
@@ -143,26 +186,45 @@ function ConnectFourBoard(props) {
 function BoardRow(props) {
   const columns = props.columns;
 
-  let rowData = [];
-  for (let column of columns) {
-    rowData.push(<BoardBox column={column} players={props.players} />);
-  }
-
   return (
-    <>
-      <div className="connectFour-board-row">{rowData}</div>
-    </>
+    <div className="connectFour-board-row">
+      {columns.map((column, colIndex) => (
+        <BoardBox
+          key={colIndex}
+          column={column}
+          players={props.players}
+          onClick={
+            props.onColumnClick
+              ? () => props.onColumnClick(colIndex)
+              : undefined
+          }
+          clickable={!!props.onColumnClick}
+          highlighted={props.hoveredCol === colIndex}
+          onMouseEnter={
+            props.setHoveredCol
+              ? () => props.setHoveredCol(colIndex)
+              : undefined
+          }
+        />
+      ))}
+    </div>
   );
 }
 
 function BoardBox(props) {
   const column = props.column;
+  const clickable = props.clickable;
+
+  const classNames = ["connectFour-board-box"];
+  if (clickable) classNames.push("clickable");
+  if (props.highlighted) classNames.push("highlighted");
+  const className = classNames.join(" ");
 
   if (column == " " || !props.players) {
     return (
-      <>
-        <div className="connectFour-board-box">{column}</div>
-      </>
+      <div className={className} onClick={props.onClick} onMouseEnter={props.onMouseEnter}>
+        {column}
+      </div>
     );
   } else {
     let temp;
@@ -173,11 +235,9 @@ function BoardBox(props) {
       }
     }
     return (
-      <>
-        <div className="connectFour-board-box">
-          {<PlayerAvatar player={temp} />}
-        </div>
-      </>
+      <div className={className} onClick={props.onClick} onMouseEnter={props.onMouseEnter}>
+        {<PlayerAvatar player={temp} />}
+      </div>
     );
   }
 }

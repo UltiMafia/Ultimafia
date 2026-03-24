@@ -23,3 +23,11 @@
   background-image: url("/src/images/ConnectFourBackground.png");
   background-size: 70px 70px;
 }
+
+.game .connectFour-board-box.clickable {
+  cursor: pointer;
+}
+
+.game .connectFour-board-box.highlighted {
+  filter: brightness(1.3);
+}
