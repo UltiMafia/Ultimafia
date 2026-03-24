@@ -3489,6 +3489,7 @@ module.exports = class Game {
 
       let playerIdMap = {};
       let playerAlignmentMap = {};
+      let playerRoleMap = {};
       for (let player of players) {
         const roleName = this.originalRoles[player.id].split(":")[0];
         const alignment = this.getRoleAlignment(roleName);
@@ -3497,6 +3498,7 @@ module.exports = class Game {
         let user = await models.User.findOne({ id: userId }).select("_id");
         playerIdMap[userId] = player.id;
         playerAlignmentMap[userId] = alignment;
+        playerRoleMap[userId] = roleName;
 
         if (user) users.push(user._id);
       }
@@ -3533,6 +3535,7 @@ module.exports = class Game {
         winnersInfo: this.winners.getWinnersInfo(),
         playerIdMap: JSON.stringify(playerIdMap),
         playerAlignmentMap: JSON.stringify(playerAlignmentMap),
+        playerRoleMap: JSON.stringify(playerRoleMap),
         history: JSON.stringify(history),
         startTime: this.startTime,
         endTime: Date.now(),
