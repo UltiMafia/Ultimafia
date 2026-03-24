@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Box,
   Tooltip,
@@ -6,6 +6,7 @@ import {
   Collapse,
   IconButton,
 } from "@mui/material";
+import { SiteInfoContext } from "Contexts";
 import { RoleCount } from "components/Roles";
 import { PageNav } from "components/Nav";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -13,7 +14,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 import "css/scrapbook.css";
 
-const STAMPS_PER_PAGE = 20;
+const STAMPS_PER_PAGE = 22;
 
 function StampItem({ gameType, role, count }) {
   const label = gameType === "Mafia" ? role : `${gameType} - ${role}`;
@@ -44,10 +45,18 @@ export default function Scrapbook({
 }) {
   const [showHidden, setShowHidden] = useState(false);
   const [page, setPage] = useState(1);
+  const siteInfo = useContext(SiteInfoContext);
   const hasVisible = stamps.length > 0;
   const hasHidden = hiddenStamps.length > 0;
 
   if (!hasVisible && !hasHidden) return null;
+
+  // Count unique stamp types across visible and hidden
+  const uniqueRoles = new Set();
+  for (const s of stamps) uniqueRoles.add(`${s.gameType}:${s.role}`);
+  for (const s of hiddenStamps) uniqueRoles.add(`${s.gameType}:${s.role}`);
+  const uniqueCount = uniqueRoles.size;
+  const totalRoles = Object.keys(siteInfo?.rolesRaw?.["Mafia"] || {}).length;
 
   const maxPage = Math.max(Math.ceil(stamps.length / STAMPS_PER_PAGE), 1);
   const pageStamps = stamps.slice(
@@ -58,7 +67,7 @@ export default function Scrapbook({
   return (
     <div className="box-panel scrapbook-panel" style={panelStyle}>
       <Typography variant="h3" style={headingStyle}>
-        Scrapbook
+        Scrapbook {totalRoles > 0 && `(${uniqueCount}/${totalRoles})`}
       </Typography>
       <div className="content">
         {hasVisible ? (
