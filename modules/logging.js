@@ -34,14 +34,23 @@ module.exports = function (directory) {
         new winston.transports.File({
           filename: path.join(__dirname, "../logs", directory, "error.log"),
           level: "error",
+          maxsize: 10 * 1024 * 1024, // 10MB per file
+          maxFiles: 3, // keep 3 rotated files
+          tailable: true,
         }),
         new winston.transports.File({
           filename: path.join(__dirname, "../logs", directory, "warn.log"),
           level: "warn",
+          maxsize: 10 * 1024 * 1024,
+          maxFiles: 3,
+          tailable: true,
         }),
         new winston.transports.File({
           filename: path.join(__dirname, "../logs", directory, "http.log"),
           level: "http",
+          maxsize: 10 * 1024 * 1024,
+          maxFiles: 3,
+          tailable: true,
         }),
         new winston.transports.Console(),
       ],

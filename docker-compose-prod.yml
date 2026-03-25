@@ -23,6 +23,11 @@ services:
     env_file: ./react_main/.env
     networks:
       - my_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
   certbot:
     image: certbot/certbot
     container_name: "certbot"
@@ -31,3 +36,22 @@ services:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Prunes dangling docker images every 24 hours to prevent disk buildup
+  docker-pruner:
+    image: docker:cli
+    container_name: "docker-pruner"
+    restart: "no"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    entrypoint: "/bin/sh -c 'docker image prune -f'"
+    logging:
+      driver: json-file
+      options:
+        max-size: "1m"
+        max-file: "1"

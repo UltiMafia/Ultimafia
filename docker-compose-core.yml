@@ -17,6 +17,11 @@ services:
       - ./scripts/mongo:/scripts
     networks:
       - my_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # Redis service
   redis:
@@ -27,6 +32,11 @@ services:
       - redis:/data
     networks:
       - my_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # Backend service
   backend:
@@ -42,6 +52,11 @@ services:
       - ./:/home/um/
     networks:
       - my_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   mongodb:
