@@ -327,7 +327,13 @@ router.post(
 
       var context;
       if (item.validate) {
-        context = await item.validate(userId, req.body);
+        try {
+          context = await item.validate(userId, req.body);
+        } catch (e) {
+          res.status(400);
+          res.send(e.message);
+          return;
+        }
       }
 
       let userChanges = {
@@ -460,13 +466,14 @@ router.post("/checkStampEligibility", async function (req, res) {
       return res.status(400).send("Please provide a game URL or ID.");
     }
 
-    const result = await checkStampEligibility(userId, gameId);
-    res.send({ gameId, gameType: result.gameType, role: result.role });
-  } catch (e) {
-    // Mongoose/infra errors have a name like MongoError, MongooseError, etc.
-    if (e.name === "Error") {
+    var result;
+    try {
+      result = await checkStampEligibility(userId, gameId);
+    } catch (e) {
       return res.status(400).send(e.message);
     }
+    res.send({ gameId, gameType: result.gameType, role: result.role });
+  } catch (e) {
     logger.error(e);
     res.status(500).send("Error checking stamp eligibility.");
   }
