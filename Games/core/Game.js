@@ -82,7 +82,7 @@ module.exports = class Game {
     this.pregameCountdownLength =
       options.settings.pregameCountdownLength != null
         ? options.settings.pregameCountdownLength
-        : 10000;
+        : process.env.NODE_ENV.includes("development") ? 1000 : 10000;
     // 5 minutes, if no one kicks the time is up
     this.vegKickCountdownLength =
       options.settings.vegKickCountdownLength != null

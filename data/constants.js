@@ -357,9 +357,9 @@ module.exports = {
   dailyChallengesRefreshIntervalMillis: 82800000,
 
   // Penalty starts at 10 minutes with level 0, up to 60 minutes with level 5
-  leavePenaltyMinimumMillis: 600000,
-  leavePenaltyMaximumMillis: 3600000,
-  leavePenaltyPerLevelMillis: 600000,
+  leavePenaltyMinimumMillis: process.env.NODE_ENV.includes("development") ? 1000 : 600000,
+  leavePenaltyMaximumMillis: process.env.NODE_ENV.includes("development") ? 5000 : 3600000,
+  leavePenaltyPerLevelMillis: process.env.NODE_ENV.includes("development") ? 1000 : 600000,
   leavePenaltyForgivenessAmount: 1,
   // Penalties reset in level after 3 days
   leavePenaltyDurationMillis: 259200000,
