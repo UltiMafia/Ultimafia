@@ -181,7 +181,7 @@ export default function Shop(props) {
         >
           <CardActionArea
             disabled={disabled}
-            onClick={() => onBuyItem(i)}
+            onClick={() => item.key === "stamp" ? setStampDialogOpen(true) : onBuyItem(i)}
             sx={{
               height: "100%",
               width: "100%",
@@ -271,97 +271,6 @@ export default function Shop(props) {
 
       <Grid2 container spacing={1}>
         {shopItems}
-        <Grid2
-          size={{
-            xs: 12,
-            sm: 6,
-            md: 3,
-          }}
-        >
-          <Card
-            variant="outlined"
-            sx={{
-              height: "100%",
-              width: "100%",
-              minHeight: isPhoneDevice ? undefined : "15em",
-            }}
-          >
-            <CardActionArea
-              onClick={() => setStampDialogOpen(true)}
-              sx={{ height: "100%", width: "100%" }}
-            >
-              <CardContent sx={{ height: "100%", width: "100%" }}>
-                <Stack
-                  direction={isPhoneDevice ? "row" : "column"}
-                  spacing={1}
-                  sx={{ height: "100%", width: "100%" }}
-                >
-                  <Stack
-                    direction="column"
-                    spacing={1}
-                    sx={{
-                      height: "100%",
-                      flex: "1",
-                      marginBottom: isPhoneDevice ? undefined : 1,
-                    }}
-                  >
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <Typography
-                        variant="h3"
-                        sx={{ flex: isPhoneDevice ? "1" : undefined }}
-                      >
-                        Scrapbook Stamp
-                      </Typography>
-                      {isPhoneDevice && (
-                        <Stack
-                          direction="row"
-                          spacing={1}
-                          sx={{ alignItems: "center", justifyContent: "center" }}
-                        >
-                          <Typography>5</Typography>
-                          <img
-                            src={coin}
-                            style={{ width: "20px", height: "20px" }}
-                          />
-                        </Stack>
-                      )}
-                    </Stack>
-                    <Typography variant="caption">Unlimited</Typography>
-                    <Paper
-                      sx={{
-                        p: 1,
-                        flex: isPhoneDevice ? undefined : "1",
-                      }}
-                    >
-                      <Typography variant="body2">
-                        Commemorate a Mafia game win with a stamp of your role.
-                        Displayed on your profile scrapbook.
-                      </Typography>
-                    </Paper>
-                  </Stack>
-                  {!isPhoneDevice && (
-                    <Box sx={{ pt: 1 }}>
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        sx={{
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Typography>5</Typography>
-                        <img
-                          src={coin}
-                          style={{ width: "20px", height: "20px" }}
-                        />
-                      </Stack>
-                    </Box>
-                  )}
-                </Stack>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid2>
       </Grid2>
 
       <Dialog
@@ -426,15 +335,16 @@ export default function Shop(props) {
                   );
                   setStampGameUrl("");
                   setStampDialogOpen(false);
+                  const stampItem = shopInfo.shopItems.find((si) => si.key === "stamp");
                   setShopInfo((prev) => ({
                     ...prev,
-                    balance: prev.balance - 5,
+                    balance: prev.balance - (stampItem ? stampItem.price : 0),
                   }));
                 })
                 .catch(errorAlert);
             }}
           >
-            Buy Now (5 coins)
+            Buy Now ({(shopInfo.shopItems.find((si) => si.key === "stamp") || {}).price || 0} coins)
           </Button>
         </DialogActions>
       </Dialog>

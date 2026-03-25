@@ -282,7 +282,6 @@ module.exports = {
   maxNameLengthInDeck: 20, // maxUserNameLength
   maxTrophyNameLength: 40,
   maxBonusRedHearts: 5,
-  stampPrice: 5,
 
   maxGameMessageLength: 240,
   maxGameTextInputLength: 100,

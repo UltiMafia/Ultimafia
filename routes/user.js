@@ -424,7 +424,8 @@ router.get("/:id/profile", async function (req, res) {
     });
 
     // Fetch stamps sorted by creation time to preserve acquisition order
-    var stamps = await models.Stamp.find({ userId })
+    var stampQuery = isSelf ? { userId } : { userId, hidden: { $ne: true } };
+    var stamps = await models.Stamp.find(stampQuery)
       .select("gameType role hidden _id createdAt")
       .sort("createdAt")
       .lean();

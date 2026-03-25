@@ -189,6 +189,14 @@ const shopItems = [
     limit: 1,
     onBuy: async function (userId) {},
   },
+  {
+    name: "Scrapbook Stamp",
+    desc: "Commemorate a Mafia game win with a stamp of your role. Displayed on your profile scrapbook.",
+    key: "stamp",
+    price: 5,
+    limit: null,
+    onBuy: async function (userId) {},
+  },
 ];
 
 router.get("/info", async function (req, res) {
@@ -442,7 +450,8 @@ router.post("/buyStamp", async function (req, res) {
     }
 
     // Check balance and deduct coins
-    const price = constants.stampPrice;
+    const stampItem = shopItems.find((i) => i.key === "stamp");
+    const price = stampItem.price;
     const debitResult = await models.User.updateOne(
       { id: userId, coins: { $gte: price } },
       { $inc: { coins: -price } }
