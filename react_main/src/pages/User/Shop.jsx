@@ -27,6 +27,7 @@ import {
 import { Loading } from "../../components/Loading";
 
 import coin from "images/umcoin.png";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 function parseGameId(input) {
   const trimmed = (input || "").trim();
@@ -37,7 +38,6 @@ function parseGameId(input) {
   if (/^[^\s/]+$/.test(trimmed)) return trimmed;
   return "";
 }
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 export default function Shop(props) {
   const [shopInfo, setShopInfo] = useState({ shopItems: [], balance: 0 });
@@ -294,7 +294,7 @@ export default function Shop(props) {
             label="Game URL or ID"
             value={stampGameUrl}
             onChange={(e) => setStampGameUrl(e.target.value)}
-            placeholder="e.g. http://localhost:3001/game/VYkiIeKEs or VYkiIeKEs"
+            placeholder="e.g. https://ultimafia.com/game/abc123 or abc123"
           />
           {stampGameUrl.trim() && (
             <Typography
@@ -326,25 +326,37 @@ export default function Shop(props) {
                 siteInfo.showAlert("Could not parse a game ID.", "error");
                 return;
               }
+              const stampIndex = shopInfo.shopItems.findIndex((si) => si.key === "stamp");
+              const stampItem = shopInfo.shopItems[stampIndex];
               axios
-                .post("/api/shop/buyStamp", { gameId })
+                .post("/api/shop/checkStampEligibility", { gameId })
+                .then((eligibility) => {
+                  const shouldBuy = window.confirm(
+                    `You will receive a stamp for ${eligibility.data.role}. Purchase for ${stampItem.price} coins?`
+                  );
+                  if (!shouldBuy) return;
+                  return axios.post("/api/shop/spendCoins", {
+                    item: stampIndex,
+                    gameId: eligibility.data.gameId,
+                  });
+                })
                 .then((res) => {
+                  if (!res) return;
                   siteInfo.showAlert(
                     `Stamp purchased: ${res.data.role}!`,
                     "success"
                   );
                   setStampGameUrl("");
                   setStampDialogOpen(false);
-                  const stampItem = shopInfo.shopItems.find((si) => si.key === "stamp");
                   setShopInfo((prev) => ({
                     ...prev,
-                    balance: prev.balance - (stampItem ? stampItem.price : 0),
+                    balance: prev.balance - stampItem.price,
                   }));
                 })
                 .catch(errorAlert);
             }}
           >
-            Buy Now ({(shopInfo.shopItems.find((si) => si.key === "stamp") || {}).price || 0} coins)
+            Check Eligibility
           </Button>
         </DialogActions>
       </Dialog>
