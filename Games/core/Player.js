@@ -1172,7 +1172,7 @@ module.exports = class Player {
     var targetToSend = info.hideTarget ? null : info.target;
 
     this.send("unvote", {
-      voterId: info.voter.id,
+      voterId: voterId,
       meetingId: info.meeting.id,
       target: targetToSend,
     });
