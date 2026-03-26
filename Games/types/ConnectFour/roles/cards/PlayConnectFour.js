@@ -27,6 +27,11 @@ module.exports = class PlayConnectFour extends Card {
               this.game.CheckForConnections(this.actor, values[0], values[1])
             ) {
               this.actor.Has4InaRow = true;
+              this.game.winningLine = this.game.getWinningLine(
+                this.actor,
+                values[0],
+                values[1]
+              );
             }
           },
         },

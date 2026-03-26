@@ -2912,6 +2912,7 @@ module.exports = class Game {
       stateInfo.winners = winnersInfo;
       this.broadcastState(stateInfo);
       this.addStateToHistories(stateInfo.name);
+      this.addStateExtraInfoToHistories(stateInfo.extraInfo);
       this.broadcast("winners", winnersInfo);
       redis.setGameState(this.id, stateInfo.name);
       redis.setWinnersInfo(this.id, winnersInfo);

@@ -106,9 +106,10 @@ function ConnectFourBoardWrapper() {
   const history = game.history;
   const stateViewing = game.stateViewing;
 
-  if (stateViewing < 0) return <TextMeetingLayout />;
+  if (stateViewing === -1) return <TextMeetingLayout />;
 
   const currentState = history.states[stateViewing];
+  if (!currentState?.extraInfo?.board) return <TextMeetingLayout />;
   const meetings = currentState ? currentState.meetings : {};
   const isCurrentState = stateViewing === history.currentState;
 
@@ -150,6 +151,7 @@ function ConnectFourBoardWrapper() {
             stateViewing={stateViewing}
             players={players}
             onColumnClick={columnMeeting ? onColumnClick : null}
+            winningLine={currentState?.extraInfo?.winningLine}
           />
         </>
       }
@@ -162,6 +164,13 @@ function ConnectFourBoard(props) {
   const rows = extraInfo.board;
   const [hoveredCol, setHoveredCol] = useState(null);
 
+  const winningCells = new Set();
+  if (props.winningLine) {
+    for (const [r, c] of props.winningLine) {
+      winningCells.add(`${r},${c}`);
+    }
+  }
+
   return (
     <>
       <div
@@ -171,11 +180,13 @@ function ConnectFourBoard(props) {
         {rows.map((row, rowIndex) => (
           <BoardRow
             key={rowIndex}
+            rowIndex={rowIndex}
             columns={row}
             players={props.players}
             onColumnClick={props.onColumnClick}
             hoveredCol={props.onColumnClick ? hoveredCol : null}
             setHoveredCol={props.onColumnClick ? setHoveredCol : undefined}
+            winningCells={winningCells}
           />
         ))}
       </div>
@@ -200,6 +211,7 @@ function BoardRow(props) {
           }
           clickable={!!props.onColumnClick}
           highlighted={props.hoveredCol === colIndex}
+          isWinning={props.winningCells.has(`${props.rowIndex},${colIndex}`)}
           onMouseEnter={
             props.setHoveredCol
               ? () => props.setHoveredCol(colIndex)
@@ -218,6 +230,7 @@ function BoardBox(props) {
   const classNames = ["connectFour-board-box"];
   if (clickable) classNames.push("clickable");
   if (props.highlighted) classNames.push("highlighted");
+  if (props.isWinning) classNames.push("winning");
   const className = classNames.join(" ");
 
   if (column == " " || !props.players) {

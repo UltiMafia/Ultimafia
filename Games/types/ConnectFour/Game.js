@@ -31,6 +31,7 @@ module.exports = class ConnectFourGame extends Game {
 
     this.boardX = options.settings.boardX;
     this.boardY = options.settings.boardY;
+    this.winningLine = null;
   }
 
   start() {
@@ -85,6 +86,50 @@ module.exports = class ConnectFourGame extends Game {
         return [this.boardX - 1 - i, colNum];
       }
     }
+  }
+
+  getWinningLine(player, row, col) {
+    // Each axis is [[Direction1, Direction2], [Direction1, Direction2]]
+    // Mirrors the 4 checks in CheckForConnections
+    const axes = [
+      [["Up", null], ["Down", null]],
+      [[null, "Left"], [null, "Right"]],
+      [["Up", "Left"], ["Down", "Right"]],
+      [["Up", "Right"], ["Down", "Left"]],
+    ];
+
+    for (const [dir1, dir2] of axes) {
+      let cells = [[row, col]];
+      cells = cells.concat(
+        this.collectRecursive(player, row, col, dir1[0], dir1[1])
+      );
+      cells = cells.concat(
+        this.collectRecursive(player, row, col, dir2[0], dir2[1])
+      );
+      if (cells.length >= 4) return cells;
+    }
+    return null;
+  }
+
+  collectRecursive(player, row, col, Direction1, Direction2) {
+    let r = row;
+    let c = col;
+    const cells = [];
+
+    // Step once in the direction from the starting cell
+    if (Direction1 === "Up") r--;
+    else if (Direction1 === "Down") r++;
+    if (Direction2 === "Left") c--;
+    else if (Direction2 === "Right") c++;
+
+    while (this.board[r] && this.board[r][c] === player.name) {
+      cells.push([r, c]);
+      if (Direction1 === "Up") r--;
+      else if (Direction1 === "Down") r++;
+      if (Direction2 === "Left") c--;
+      else if (Direction2 === "Right") c++;
+    }
+    return cells;
   }
 
   CheckForConnections(player, row, col) {
@@ -174,6 +219,7 @@ module.exports = class ConnectFourGame extends Game {
     let board = this.board;
     info.extraInfo = {
       board,
+      winningLine: this.winningLine,
     };
     return info;
   }
