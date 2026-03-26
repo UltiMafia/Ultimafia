@@ -44,7 +44,7 @@ module.exports = class NightMatron extends Card {
         meetingName: "Common Room",
         actionName: "End Common Room Meeting?",
         states: ["Night"],
-        flags: ["group", "speech", "voting", "mustAct", "noVeg"],
+        flags: ["group", "speech", "voting", "mustAct"],
         inputType: "boolean",
         priority: MEETING_PRIORITY_MATRON,
         shouldMeet: function () {

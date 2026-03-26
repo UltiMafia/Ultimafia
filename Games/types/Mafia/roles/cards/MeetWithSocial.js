@@ -8,7 +8,7 @@ module.exports = class MeetWithSocial extends Card {
       "Social Gathering": {
         actionName: "End Social Gathering?",
         states: ["Night"],
-        flags: ["group", "speech", "voting", "mustAct", "noVeg"],
+        flags: ["group", "speech", "voting", "mustAct"],
         inputType: "boolean",
       },
     };

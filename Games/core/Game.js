@@ -70,6 +70,8 @@ module.exports = class Game {
     this.noVeg = options.settings.noVeg;
     this.anonymousGame = options.settings.anonymousGame;
     this.anonymousDeck = options.settings.anonymousDeck;
+    this.heartsChargedAtStart = false;
+    this.heartsRefundedOnIntegrityBreak = false;
     this.readyCountdownLength =
       options.settings.readyCountdownLength != null
         ? options.settings.readyCountdownLength
@@ -637,10 +639,17 @@ module.exports = class Game {
       }
     } else {
       if (this.started && !this.finished && (player.alive || (this.graveyardParticipation == true && !player.exorcised) || (this.type == "Mafia" && player.requiresGraveyardParticipation()))) {
+        const wasRanked = this.ranked;
+        const wasCompetitive = this.competitive;
         this.makeUnranked();
         this.makeUncompetitive();
 
         if (this.breakIntegrity()) {
+          await this.refundHeartsForIntegrityBreak(
+            player,
+            wasRanked,
+            wasCompetitive
+          );
           if (!player.isBot) {
             const userId = player.userId || player.user.id;
             this.penalizePlayerForLeaving(userId);
@@ -683,10 +692,13 @@ module.exports = class Game {
   async vegPlayer(player) {
     if (player.hasEffect("Unveggable")) return;
     if (player.left) return;
+    const wasRanked = this.ranked;
+    const wasCompetitive = this.competitive;
     this.makeUnranked();
     this.makeUncompetitive();
 
     if (this.breakIntegrity()) {
+      await this.refundHeartsForIntegrityBreak(player, wasRanked, wasCompetitive);
       if (!player.isBot) {
         const userId = player.userId || player.user.id;
         this.penalizePlayerForLeaving(userId);
@@ -738,6 +750,31 @@ module.exports = class Game {
     }
 
     return hadIntegrity;
+  }
+
+  async refundHeartsForIntegrityBreak(excludedPlayer, wasRanked, wasCompetitive) {
+    if (!this.heartsChargedAtStart) return;
+    if (this.heartsRefundedOnIntegrityBreak) return;
+    if (!wasRanked && !wasCompetitive) return;
+
+    this.heartsRefundedOnIntegrityBreak = true;
+
+    for (let player of this.players) {
+      if (!player || player.left || player.isBot) continue;
+      if (excludedPlayer && player.id === excludedPlayer.id) continue;
+
+      const userId = player.userId || player.user.id;
+      await models.User.updateOne(
+        { id: userId },
+        {
+          $inc: {
+            redHearts: wasRanked ? 1 : 0,
+            goldHearts: wasCompetitive ? 1 : 0,
+          },
+        }
+      ).exec();
+      await redis.cacheUserInfo(userId, true);
+    }
   }
 
   makeUnranked() {
@@ -1050,6 +1087,7 @@ module.exports = class Game {
           await redis.cacheUserInfo(userId, true);
         }
       }
+      this.heartsChargedAtStart = true;
     }
 
     // Tell clients the game started, assign roles, and move to the next state

@@ -8,7 +8,7 @@ module.exports = class MeetWithTemplars extends Card {
       "Templar Meeting": {
         actionName: "End Templar Meeting?",
         states: ["Night"],
-        flags: ["group", "speech", "voting", "mustAct", "noVeg"],
+        flags: ["group", "speech", "voting", "mustAct"],
         inputType: "boolean",
       },
     };
