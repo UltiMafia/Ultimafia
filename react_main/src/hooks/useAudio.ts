@@ -5,6 +5,7 @@ import type { AudioEntry } from "../audio/AudioManager";
 export interface AudioSettings {
   sfxVolume: number;
   musicVolume: number;
+  pregameMusicVolume: number;
 }
 
 interface UseAudioReturn {
@@ -39,8 +40,17 @@ export function useAudio(settings: AudioSettings): UseAudioReturn {
   const loadCountRef = useRef(0);
 
   useEffect(() => {
-    manager.syncVolume(settings.sfxVolume, settings.musicVolume);
-  }, [settings.sfxVolume, settings.musicVolume, loadCountRef.current]);
+    manager.syncVolume(
+      settings.sfxVolume,
+      settings.musicVolume,
+      settings.pregameMusicVolume
+    );
+  }, [
+    settings.sfxVolume,
+    settings.musicVolume,
+    settings.pregameMusicVolume,
+    loadCountRef.current,
+  ]);
 
   // --- Public API ---------------------------------------------------------
 
@@ -54,9 +64,18 @@ export function useAudio(settings: AudioSettings): UseAudioReturn {
       loadCountRef.current += 1;
 
       // Immediately apply volumes to newly loaded files.
-      manager.syncVolume(settings.sfxVolume, settings.musicVolume);
+      manager.syncVolume(
+        settings.sfxVolume,
+        settings.musicVolume,
+        settings.pregameMusicVolume
+      );
     },
-    [manager, settings.sfxVolume, settings.musicVolume]
+    [
+      manager,
+      settings.sfxVolume,
+      settings.musicVolume,
+      settings.pregameMusicVolume,
+    ]
   );
 
   const playAudio = useCallback(

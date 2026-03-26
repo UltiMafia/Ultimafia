@@ -5,7 +5,7 @@
  * audio.
  */
 
-export type AudioChannel = "sfx" | "music" | "important";
+export type AudioChannel = "sfx" | "music" | "pregameMusic" | "important";
 
 export interface AudioEntry {
   fileName: string;
@@ -31,6 +31,7 @@ export default class AudioManager {
 
   /** Infer a default channel from a filename when none is provided. */
   static inferChannel(fileName: string): AudioChannel {
+    if (fileName.includes("music/Pregame")) return "pregameMusic";
     if (fileName.includes("music")) return "music";
     return "sfx";
   }
@@ -144,9 +145,14 @@ export default class AudioManager {
    * Synchronise every loaded element's actual volume with the current slider
    * values.
    */
-  syncVolume(sfxVolume: number, musicVolume: number): void {
+  syncVolume(
+    sfxVolume: number,
+    musicVolume: number,
+    pregameMusicVolume: number
+  ): void {
     const _sfxVolume = AudioManager.clamp(sfxVolume);
-    const _musicVolume   = AudioManager.clamp(musicVolume);
+    const _musicVolume = AudioManager.clamp(musicVolume);
+    const _pregameMusicVolume = AudioManager.clamp(pregameMusicVolume);
 
     for (const name in this.tracks) {
       const { el, volume, channel } = this.tracks[name];
@@ -157,7 +163,12 @@ export default class AudioManager {
         continue;
       }
 
-      const slider = channel === "music" ? _musicVolume : _sfxVolume;
+      const slider =
+        channel === "music"
+          ? _musicVolume
+          : channel === "pregameMusic"
+            ? _pregameMusicVolume
+            : _sfxVolume;
       el.volume = volume * slider;
     }
   }

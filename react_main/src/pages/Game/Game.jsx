@@ -4581,6 +4581,15 @@ function SettingsForm({ handleClose = null }) {
       step: 0.1,
       value: settings.musicVolume,
     },
+    {
+      label: "Pregame Music Volume",
+      ref: "pregameMusicVolume",
+      type: "range",
+      min: 0,
+      max: 1,
+      step: 0.1,
+      value: settings.pregameMusicVolume,
+    },
   ]);
 
   function cancel() {
@@ -5425,6 +5434,7 @@ export function useSettingsReducer() {
     timestamps: true,
     sfxVolume: 1,
     musicVolume: 1,
+    pregameMusicVolume: 1,
     terminologyEmoticons: true,
     roleMentions: true,
     messageLayout: "default",
@@ -5468,9 +5478,19 @@ export function useSettingsReducer() {
             : 0
           : baseMusicVolume
       );
+      const derivedPregameMusic = clampVolume(
+        copy.pregameMusicVolume,
+        derivedMusic
+      );
 
       for (const key of Object.keys(normalized)) {
-        if (key === "sfxVolume" || key === "musicVolume") continue;
+        if (
+          key === "sfxVolume" ||
+          key === "musicVolume" ||
+          key === "pregameMusicVolume"
+        ) {
+          continue;
+        }
         if (copy[key] !== undefined) {
           normalized[key] = copy[key];
         }
@@ -5478,6 +5498,7 @@ export function useSettingsReducer() {
 
       normalized.sfxVolume = derivedSfx;
       normalized.musicVolume = derivedMusic;
+      normalized.pregameMusicVolume = derivedPregameMusic;
     }
 
     return normalized;

@@ -59,7 +59,8 @@ export const mafiaMusicConfig: AudioEntry[] = [
   { fileName: "music/NightHostile", loop: true },
   { fileName: "music/NightGeneric", loop: true },
 
-  // Pregame (competitive only)
+  // Pregame tracks are routed to the dedicated pregameMusic channel by
+  // AudioManager.inferChannel via the "music/Pregame" filename prefix.
   { fileName: "music/PregameCompetitive", loop: true },
 
   // Win / end-game tracks
