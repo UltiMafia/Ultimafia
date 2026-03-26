@@ -9,8 +9,6 @@ import {
 import { SiteInfoContext } from "Contexts";
 import { RoleCount } from "components/Roles";
 import { PageNav } from "components/Nav";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 import "css/scrapbook.css";
 
@@ -110,13 +108,6 @@ export default function Scrapbook({
               <Typography variant="body2" color="textSecondary">
                 Hidden ({hiddenStamps.reduce((sum, s) => sum + s.count, 0)})
               </Typography>
-              <IconButton size="small">
-                {showHidden ? (
-                  <ExpandLessIcon fontSize="small" />
-                ) : (
-                  <ExpandMoreIcon fontSize="small" />
-                )}
-              </IconButton>
             </Box>
             <Collapse in={showHidden}>
               <Box className="scrapbook-grid" sx={{ mt: 0.5 }}>
