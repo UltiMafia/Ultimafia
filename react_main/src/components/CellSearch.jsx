@@ -126,58 +126,6 @@ export function CellSearch({
   );
 }
 
-function CellBanner(props) {
-  const text = props.text;
-  const type = props.type;
-
-  return (
-    <>
-      <div className={`role-banner ${type}`}>
-        <div className="role-banner-text">{text}</div>
-      </div>
-    </>
-  );
-}
-
-function CellBanners(props) {
-  const newlyAdded = props.newlyAdded;
-  const recentlyUpdated = props.recentlyUpdated;
-  const featured = props.featured;
-
-  var banners = [];
-  if (newlyAdded) {
-    banners.push(<CellBanner key="newlyAdded" type="newlyAdded" text="new" />);
-  }
-
-  if (recentlyUpdated) {
-    banners.push(
-      <CellBanner
-        key="recentlyUpdated"
-        type="recentlyUpdated"
-        text={<i className="fas fa-sync" />}
-      />
-    );
-  }
-
-  if (featured) {
-    banners.push(
-      <CellBanner
-        key="featured"
-        type="featured"
-        text={<i className="fas fa-star" />}
-      />
-    );
-  }
-
-  return (
-    <>
-      <div className="role-banner-wrapper">
-        <div className="role-banners">{banners}</div>
-      </div>
-    </>
-  );
-}
-
 export function Cell(props) {
   const iconLength = props.iconLength || "2em";
   const item = props.item;
@@ -278,14 +226,6 @@ export function Cell(props) {
           {item.name}
         </Typography>
       </Stack>
-      {(item.newlyAdded || item.recentlyUpdated || item.featured) && (
-        <CellBanners
-          newlyAdded={item.newlyAdded}
-          recentlyUpdated={item.recentlyUpdated}
-          featured={item.featured}
-          sx={{ padding: "2px" }}
-        />
-      )}
     </Paper>
   );
 }

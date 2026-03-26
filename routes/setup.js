@@ -5,6 +5,7 @@ const models = require("../db/models");
 const routeUtils = require("./utils");
 const constants = require("../data/constants");
 const roleData = require("../data/roles");
+const { isRoleDisabled } = require("../modules/roleAvailability");
 const modifierData = require("../data/modifiers");
 const gamesettingsData = require("../data/gamesettings");
 const redis = require("../modules/redis");
@@ -1218,7 +1219,8 @@ function verifyRole(role, gameType, alignment) {
     }
   }
 
-  if (roleData[gameType][roleName].disabled) return false;
+  if (isRoleDisabled(gameType, roleName, roleData[gameType][roleName]))
+    return false;
 
   if (alignment && roleData[gameType][roleName].alignment != alignment)
     return false;

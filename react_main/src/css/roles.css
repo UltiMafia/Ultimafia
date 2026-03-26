@@ -19,39 +19,6 @@
   align-items: center;
 }
 
-.role-cell .role-banner-wrapper {
-  display: flex;
-  align-self: flex-start;
-  align-items: flex-end;
-
-  width: auto;
-  height: 10px;
-  z-index: 1;
-}
-
-.role-cell .role-banners {
-  display: flex;
-}
-
-.role-cell .role-banner {
-  align-self: flex-end;
-  font-size: 1rem;
-  border-radius: 5px;
-  padding: 0px 3px;
-}
-
-.role-cell .role-banner.newlyAdded {
-  background-color: cadetblue;
-}
-
-.role-cell .role-banner.recentlyUpdated {
-  background-color: rgb(245, 150, 27);
-}
-
-.role-cell .role-banner.featured {
-  background-color: rgb(176, 179, 2);
-}
-
 .role-list .role-count-wrap {
   margin-right: 3px;
 

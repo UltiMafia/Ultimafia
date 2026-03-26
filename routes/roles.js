@@ -4,6 +4,7 @@ const roleData = require("..//data/roles");
 const modifierData = require("../data/modifiers");
 const tagData = require("../data/roletags");
 const gameSettingData = require("../data/gamesettings");
+const { isRoleDisabled } = require("../modules/roleAvailability");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 
@@ -21,10 +22,7 @@ for (let gameType in roleData) {
       alignment: roleData[gameType][roleName].alignment,
       category: roleData[gameType][roleName].category,
       tags: roleData[gameType][roleName].tags,
-      featured: roleData[gameType][roleName].featured,
-      newlyAdded: roleData[gameType][roleName].newlyAdded,
-      recentlyUpdated: roleData[gameType][roleName].recentlyUpdated,
-      disabled: roleData[gameType][roleName].disabled,
+      disabled: isRoleDisabled(gameType, roleName, roleData[gameType][roleName]),
     });
   }
 }

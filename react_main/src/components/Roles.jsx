@@ -963,6 +963,52 @@ const roleAbbreviations = {
   hk: ["Housekeeper"],
 };
 
+const mafiaDefaultRoleByAlignment = {
+  Village: "Villager",
+  Mafia: "Mafioso",
+  Cult: "Cultist",
+  Independent: "Fool",
+  Event: "No-Event",
+};
+
+const mafiaBanishedRoleByAlignment = {
+  Village: "Banished Village",
+  Mafia: "Banished Mafia",
+  Cult: "Banished Cult",
+  Independent: "Banished Independent",
+  Event: "Banished Any",
+};
+
+function normalizeRoleName(name) {
+  return (name || "").toLowerCase().replace(/[\s-]+/g, "");
+}
+
+function compareByName(a, b) {
+  return a.name.localeCompare(b.name);
+}
+
+function sortMafiaRolesForAlignment(items, alignment) {
+  const defaultRoleName = mafiaDefaultRoleByAlignment[alignment];
+  const banishedRoleName = mafiaBanishedRoleByAlignment[alignment];
+  const normalizedDefault = normalizeRoleName(defaultRoleName);
+  const normalizedBanished = normalizeRoleName(banishedRoleName);
+
+  return [...items].sort((a, b) => {
+    const aName = normalizeRoleName(a.name);
+    const bName = normalizeRoleName(b.name);
+
+    const aIsDefault = aName === normalizedDefault;
+    const bIsDefault = bName === normalizedDefault;
+    if (aIsDefault !== bIsDefault) return aIsDefault ? -1 : 1;
+
+    const aIsBanished = aName === normalizedBanished;
+    const bIsBanished = bName === normalizedBanished;
+    if (aIsBanished !== bIsBanished) return aIsBanished ? 1 : -1;
+
+    return compareByName(a, b);
+  });
+}
+
 export function RoleSearch(props) {
   const [roleListType, setRoleListType] = useState(
     Alignments[props.gameType][0]
@@ -1001,7 +1047,7 @@ export function RoleSearch(props) {
   if (!siteInfo.roles) return <Loading small />;
 
   const filteredItems = useMemo(() => {
-    return siteInfo.roles[props.gameType].filter((role) => {
+    const filtered = siteInfo.roles[props.gameType].filter((role) => {
       const searchTerms = searchVal
         .split(",")
         .filter((term) => term.trim() !== "")
@@ -1032,6 +1078,19 @@ export function RoleSearch(props) {
           (roleListType === "" && matchesSearch))
       );
     });
+
+    if (
+      props.gameType === "Mafia" &&
+      !searchVal &&
+      Object.prototype.hasOwnProperty.call(
+        mafiaDefaultRoleByAlignment,
+        roleListType
+      )
+    ) {
+      return sortMafiaRolesForAlignment(filtered, roleListType);
+    }
+
+    return [...filtered].sort(compareByName);
   }, [siteInfo.roles, props.gameType, searchVal, roleListType, selectedTagsCount]);
 
   const tagOptionNames = siteInfo.tags[props.gameType].map((t) => t.name);
@@ -1112,7 +1171,7 @@ export function ModifierSearch(props) {
   );
 
   const filteredItems = useMemo(() => {
-    return siteInfo.modifiers[props.gameType].filter((role) => {
+    const filtered = siteInfo.modifiers[props.gameType].filter((role) => {
       const searchTerms = searchVal
         .split(",")
         .filter((term) => term.trim() !== "")
@@ -1132,6 +1191,8 @@ export function ModifierSearch(props) {
             (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch)))
       );
     });
+
+    return [...filtered].sort(compareByName);
   }, [
     siteInfo.modifiers,
     props.gameType,
