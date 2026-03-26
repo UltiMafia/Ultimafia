@@ -8,6 +8,7 @@ import {
   IconButton,
   Typography,
   Stack,
+  Chip,
   List,
   ListItem,
   ListItemIcon,
@@ -50,6 +51,7 @@ export function RoleThings() {
   const isPhoneDevice = useIsPhoneDevice();
   const [contributors, setContributors] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [selectedRoleSkin, setSelectedRoleSkin] = useState("vivid");
 
   const [achievements, setAchievements] = useState(null);
   const [favoriteRoles, setFavoriteRoles] = useState([]);
@@ -134,8 +136,6 @@ export function RoleThings() {
   */
 
   useEffect(() => {
-    document.title = "Contributors | UltiMafia";
-
     axios
       .get("/api/site/contributors/art")
       .then((res) => {
@@ -148,8 +148,11 @@ export function RoleThings() {
       });
   }, []);
 
+  useEffect(() => {
+    document.title = `${RoleName || "Role"} | UltiMafia`;
+  }, [RoleName]);
+
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
-  // TODO if setupId not set, redirect to a setup page
 
   if (!role || !user.loaded) return <Loading small />;
 
@@ -160,42 +163,7 @@ export function RoleThings() {
   } else {
     temproleSkins = null;
   }
-
   const roleSkins = temproleSkins;
-  let artArrays = contributors?.map((artist) => [artist.user, artist.roles]);
-  let tempArtists = artArrays?.filter(
-    (item) =>
-      item[1]["Mafia"]?.filter((r) => r.split(":")[0] == RoleName).length > 0
-  );
-  const artists = tempArtists?.map((item, index) => {
-    return (
-      <div key={index}>
-        {
-          <NameWithAvatar
-            small
-            id={item[0].id}
-            name={item[0].name}
-            avatar={item[0].avatar}
-          />
-        }{" "}
-        {
-          <Box display="flex" flexWrap="wrap" justifyContent="left" mt={1}>
-            {item[1]["Mafia"]
-              ?.filter((r) => r.split(":")[0] == RoleName)
-              .map((roleToUse, i) => (
-                <RoleCount
-                  key={i}
-                  scheme={roleToUse.split(":")[1]}
-                  role={roleToUse.split(":")[0]}
-                  gameType={"Mafia"}
-                  skin={roleToUse.split(":")[1] || "vivid"}
-                />
-              ))}
-          </Box>
-        }
-      </div>
-    );
-  });
 
   // favourites <SetupRowInfo title="Current Skins" content={roleSkins} />
 
@@ -205,6 +173,15 @@ export function RoleThings() {
         return <ListItem>{line}</ListItem>;
       })}
     </List>
+  );
+
+  const sortedTags = Array.isArray(role[1].tags) ? [...role[1].tags].sort() : [];
+  const tagsChips = (
+    <Box display="flex" flexWrap="wrap" gap={0.75}>
+      {sortedTags.map((tag) => (
+        <Chip key={tag} label={tag} size="small" />
+      ))}
+    </Box>
   );
 
   let specialBox;
@@ -343,22 +320,61 @@ export function RoleThings() {
   const roleSkinField = siteFields.find((f) => f.ref === "roleSkins");
   const roleSkinOptions = roleSkinField?.options || [];
 
-  let currentRoleSkin = "vivid";
-  if (user?.settings && typeof user.settings.roleSkins === "string") {
-    const userRoleSkins = user.settings.roleSkins.split(",");
-    const matched = userRoleSkins.find((s) => s.split(":")[0] === RoleName);
-    if (matched && matched.split(":")[1]) {
-      currentRoleSkin = matched.split(":")[1];
-    }
-  }
+  useEffect(() => {
+    let nextRoleSkin = "vivid";
 
-  if (
-    roleSkinField &&
-    roleSkinField.value &&
-    roleSkinOptions.some((o) => o.value === roleSkinField.value)
-  ) {
-    currentRoleSkin = roleSkinField.value;
-  }
+    if (user?.settings && typeof user.settings.roleSkins === "string") {
+      const userRoleSkins = user.settings.roleSkins.split(",");
+      const matched = userRoleSkins.find((s) => s.split(":")[0] === RoleName);
+      if (matched && matched.split(":")[1]) {
+        nextRoleSkin = matched.split(":")[1];
+      }
+    }
+
+    if (
+      roleSkinField &&
+      roleSkinField.value &&
+      roleSkinOptions.some((o) => o.value === roleSkinField.value)
+    ) {
+      nextRoleSkin = roleSkinField.value;
+    }
+
+    if (
+      roleSkinOptions.length > 0 &&
+      !roleSkinOptions.some((o) => o.value === nextRoleSkin)
+    ) {
+      nextRoleSkin = roleSkinOptions[0].value;
+    }
+
+    setSelectedRoleSkin((prev) =>
+      prev === nextRoleSkin ? prev : nextRoleSkin
+    );
+  }, [RoleName, roleSkinField, roleSkinOptions, user?.settings?.roleSkins]);
+
+  const activeRoleSkin = roleSkinOptions.some(
+    (o) => o.value === selectedRoleSkin
+  )
+    ? selectedRoleSkin
+    : "vivid";
+
+  const artists = (contributors || [])
+    .filter((artist) =>
+      artist.roles?.Mafia?.some((entry) => {
+        const [entryRole, entrySkin] = entry.split(":");
+        const normalizedSkin = entrySkin || "vivid";
+        return entryRole === RoleName && normalizedSkin === activeRoleSkin;
+      })
+    )
+    .map((artist) => (
+      <Box key={artist.user?.id || artist.user?.name} sx={{ mt: 0.5 }}>
+        <NameWithAvatar
+          small
+          id={artist.user?.id}
+          name={artist.user?.name}
+          avatar={artist.user?.avatar}
+        />
+      </Box>
+    ));
 
   function onFavRole() {
     if (!user.loggedIn) return;
@@ -415,9 +431,10 @@ export function RoleThings() {
                   </Box>
                   <RoleCount
                     key={0}
-                    scheme="vivid"
+                    scheme={activeRoleSkin}
                     role={role[0]}
                     gameType={"Mafia"}
+                    skin={activeRoleSkin}
                     large
                   />
                 </Box>
@@ -451,12 +468,14 @@ export function RoleThings() {
                   }}
                 >
                   <select
-                    value={currentRoleSkin}
-                    onChange={(e) =>
+                    value={activeRoleSkin}
+                    onChange={(e) => {
+                      const newSkin = e.target.value;
+                      setSelectedRoleSkin(newSkin);
                       onRoleSkinChange(
                         {
                           prop: "value",
-                          value: e.target.value,
+                          value: newSkin,
                           ref: "roleSkins",
                           localOnly: false,
                         },
@@ -464,8 +483,8 @@ export function RoleThings() {
                         null,
                         user,
                         roleSkins
-                      )
-                    }
+                      );
+                    }}
                     style={{
                       width: "100%",
                       minWidth: 72,
@@ -484,10 +503,11 @@ export function RoleThings() {
           </Grid>
           <Grid item xs={12} md={4}>
             <Stack
-              direction="column"
+              direction={isPhoneDevice ? "row" : "column"}
               spacing={0.5}
               sx={{
                 textAlign: { xs: "left", md: "right" },
+                alignItems: "center",
                 color: headerTextColor,
               }}
             >
@@ -499,7 +519,7 @@ export function RoleThings() {
               >
                 Icon Artists
               </Typography>
-              <Typography variant="body2">{artists}</Typography>
+              <Box sx={{ ml: 1 }}>{artists}</Box>
             </Stack>
           </Grid>
         </Grid>
@@ -508,13 +528,10 @@ export function RoleThings() {
         left={
           <>
             <div className="setup-page">
-              <div className="span-panel main">
+              <div className="box-panel">
                 <div className="heading">Role Info</div>
                 <div className="meta">
-                  <SetupRowInfo
-                    title="Tags"
-                    content={role[1].tags.sort().join(", ")}
-                  />
+                  <SetupRowInfo title="Tags" content={tagsChips} />
                   <SetupRowInfo title="Description" content={description} />
                   {examples}
                   {specialBox}
