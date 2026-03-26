@@ -1025,13 +1025,32 @@ module.exports = class Game {
     );
   }
 
-  start() {
+  async start() {
     // Set game in progress in redis db
     redis.setGameStatus(this.id, "In Progress");
 
     // Record start time
     this.startTime = Date.now();
     this.clearTimer("pregameWait");
+
+    // Charge hearts at game start so players cannot queue extra games before deduction.
+    if (this.ranked || this.competitive) {
+      for (let player of this.players) {
+        if (!player.isBot) {
+          const userId = player.userId || player.user.id;
+          await models.User.updateOne(
+            { id: userId },
+            {
+              $inc: {
+                redHearts: this.ranked ? -1 : 0,
+                goldHearts: this.competitive ? -1 : 0,
+              },
+            }
+          ).exec();
+          await redis.cacheUserInfo(userId, true);
+        }
+      }
+    }
 
     // Tell clients the game started, assign roles, and move to the next state
     this.assignRoles();
@@ -2989,24 +3008,6 @@ module.exports = class Game {
 
       if (this.ranked || this.competitive) {
         await this.adjustSkillRatings();
-      }
-
-      if (this.ranked || this.competitive) {
-        for (let player of this.players) {
-          if (!player.isBot) {
-            const userId = player.userId || player.user.id;
-            await models.User.updateOne(
-              { id: userId },
-              {
-                $inc: {
-                  redHearts: this.ranked ? -1 : 0,
-                  goldHearts: this.competitive ? -1 : 0,
-                },
-              }
-            ).exec();
-            await redis.cacheUserInfo(userId, true);
-          }
-        }
       }
 
       if (this.isTest) {
