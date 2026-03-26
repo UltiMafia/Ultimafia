@@ -46,8 +46,8 @@ export default function ConnectFourGame(props) {
   }, [history.currentState]);
 
   useEffect(() => {
-    // Make game review start at pregame
-    if (game.review) updateStateViewing({ type: "first" });
+    // Make game review start at postgame to show final board
+    if (game.review) updateStateViewing({ type: "current" });
   }, []);
 
   useSocketListeners((socket) => {
