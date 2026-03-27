@@ -1,4 +1,5 @@
 const logger = require("../../modules/logging")("games");
+const gameContext = require("../../modules/gameContext");
 
 module.exports = class Timer {
   constructor(options) {
@@ -16,7 +17,7 @@ module.exports = class Timer {
     clearInterval(this.syncInterval);
 
     this.timeout = setTimeout(() => {
-      this.end();
+      gameContext.run({ gameId: this.game.id }, () => this.end());
     }, this.delay);
 
     this.syncInterval = setInterval(() => {

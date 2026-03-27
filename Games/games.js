@@ -12,6 +12,7 @@ const User = require("./core/User");
 const { removeSpaces } = require("./core/Utils");
 const publisher = redis.client.duplicate();
 const axios = require("axios");
+const gameContext = require("../modules/gameContext");
 
 const serverId = Number(process.env.NODE_APP_INSTANCE) || 0;
 const port = Number(process.env.GAME_PORT || "3010") + serverId;
@@ -39,13 +40,19 @@ var deprecated = false;
         return;
       }
 
+      const store = gameContext.getStore();
+      const gameId = store?.gameId;
+      const gameLink = gameId
+        ? `\nGame Link: ${process.env.BASE_URL}/game/${gameId}/review`
+        : "";
+
       const discordAlert = JSON.parse(process.env.DISCORD_ERROR_HOOK);
       try {
         await axios({
           method: "post",
           url: discordAlert.hook,
           data: {
-            content: `Error stack: \`\`\` ${stack}\`\`\``,
+            content: `Error stack: \`\`\` ${stack}\`\`\`${gameLink}`,
             username: "Errorbot",
             thread_name: `Game Error! ${e.message.split("'", "\n")[0]}`,
           },

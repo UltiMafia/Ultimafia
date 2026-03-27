@@ -9,6 +9,7 @@ const deathMessages = require("./death");
 const revivalMessages = require("./revival");
 const constants = require("../../data/constants");
 const logger = require("../../modules/logging")("games");
+const gameContext = require("../../modules/gameContext");
 const dbStats = require("../../db/stats");
 const roleData = require("../../data/roles");
 const gameAchievements = require("../../data/Achievements");
@@ -128,6 +129,12 @@ module.exports = class Player {
 
   socketListeners() {
     const socket = this.socket;
+    const gameId = this.game.id;
+    const originalOn = socket.on.bind(socket);
+    socket.on = (event, handler) =>
+      originalOn(event, (...args) =>
+        gameContext.run({ gameId }, () => handler(...args))
+      );
     var speechPast = [];
     var votePast = [];
 
