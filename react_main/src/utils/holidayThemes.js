@@ -27,3 +27,7 @@ export function isRetroAprilFoolsActive(date = new Date()) {
 
   return isAprilFools || isTestingDate;
 }
+
+export function isRetroThemeLockActive(date = new Date()) {
+  return isRetroAprilFoolsActive(date);
+}

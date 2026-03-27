@@ -6,7 +6,6 @@ import surprised from "images/emotes/surprised.webp";
 import sad from "images/emotes/sad.webp";
 import {
   isHalloweenThemeActive,
-  isRetroAprilFoolsActive,
   isValentinesThemeActive,
 } from "../utils/holidayThemes";
 
@@ -36,13 +35,9 @@ const CUSTOM_EXPAND_ICON = (
 export function getSiteTheme(customPrimaryColor) {
   const isValentines = isValentinesThemeActive();
   const isHalloween = isHalloweenThemeActive();
-  const isRetroAprilFools = isRetroAprilFoolsActive();
 
   // Determine primary color based on custom color, Halloween, or default
   const getPrimaryColor = (mode) => {
-    if (isRetroAprilFools) {
-      return mode === "light" ? "#5357a5" : "#62a0db";
-    }
     if (customPrimaryColor) {
       return customPrimaryColor;
     }
@@ -57,9 +52,6 @@ export function getSiteTheme(customPrimaryColor) {
   };
 
   const getSecondaryColor = (mode) => {
-    if (isRetroAprilFools) {
-      return mode === "light" ? "#3f3961" : "#5357a5";
-    }
     if (customPrimaryColor) {
       return customPrimaryColor;
     }
@@ -215,6 +207,28 @@ export function getSiteTheme(customPrimaryColor) {
         },
         palette: {
           ...darkPalette,
+          activeAppBarText: {
+            main: "var(--mui-palette-primary-main)",
+          },
+        },
+      },
+      retro: {
+        components: {
+          ...commonComponents,
+        },
+        palette: {
+          primary: {
+            main: "#D50032",
+          },
+          secondary: {
+            main: "#B80028",
+          },
+          info: {
+            main: "#DAA520",
+          },
+          text: {
+            main: "#F1F1F1",
+          },
           activeAppBarText: {
             main: "var(--mui-palette-primary-main)",
           },

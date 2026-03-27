@@ -11,7 +11,6 @@ import { Link } from "react-router-dom";
 import {
   isHalloweenThemeActive,
   isPrideThemeActive,
-  isRetroAprilFoolsActive,
   isValentinesThemeActive,
   isWinterThemeActive,
 } from "../utils/holidayThemes";
@@ -22,7 +21,7 @@ export default function SiteLogo({
   newTab = false,
 }) {
   const getLogoSrc = () => {
-    if (isRetroAprilFoolsActive()) return logobm; // Retro April Fools
+    if (document.documentElement.classList.contains("retro-mode")) return logobm;
     if (isValentinesThemeActive()) return logovalentines; // February: Valentine's
     if (isPrideThemeActive()) return logopride; // June: Pride
     if (isHalloweenThemeActive()) return logohalloween; // October: Halloween

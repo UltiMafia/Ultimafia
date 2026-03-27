@@ -8,6 +8,7 @@ import axios from "axios";
 import { GlobalStyles, useColorScheme, useTheme } from "@mui/material";
 import { getIconFilter } from "utilsFolder/iconFilter";
 import { generateContrastLookup, autoContrastColor } from "utilsFolder/autoContrast";
+import { isRetroThemeLockActive } from "./utils/holidayThemes";
 
 export const UserContext = React.createContext();
 export const SiteInfoContext = React.createContext();
@@ -201,12 +202,25 @@ export function UserProvider({
     }
   }, [user.settings]);
 
-  const { mode, systemMode } = useColorScheme();
+  const { mode, systemMode, setMode } = useColorScheme();
   useEffect(() => {
-    const colorScheme = mode === "system" ? systemMode : mode;
-    document.documentElement.classList.remove("dark-mode", "light-mode");
+    if (isRetroThemeLockActive() && mode !== "retro") {
+      setMode("retro");
+      return;
+    }
+
+    const colorScheme = isRetroThemeLockActive()
+      ? "retro"
+      : mode === "system"
+      ? systemMode
+      : mode;
+    document.documentElement.classList.remove(
+      "dark-mode",
+      "light-mode",
+      "retro-mode"
+    );
     document.documentElement.classList.add(`${colorScheme}-mode`);
-  }, [mode]);
+  }, [mode, systemMode, setMode]);
 
   return (
     <>
