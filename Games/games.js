@@ -42,8 +42,13 @@ var deprecated = false;
 
       const store = gameContext.getStore();
       const gameId = store?.gameId;
+      const game = gameId ? games[gameId] : null;
       const gameLink = gameId
         ? `\nGame Link: ${process.env.BASE_URL}/game/${gameId}/review`
+        : "";
+      const playerSummary = game?.getPlayerSummary?.();
+      const playerBlock = playerSummary
+        ? `\nState: ${game.getStateName()}\nPlayers:\n\`\`\`\n${playerSummary}\n\`\`\``
         : "";
 
       const discordAlert = JSON.parse(process.env.DISCORD_ERROR_HOOK);
@@ -52,7 +57,7 @@ var deprecated = false;
           method: "post",
           url: discordAlert.hook,
           data: {
-            content: `Error stack: \`\`\` ${stack}\`\`\`${gameLink}`,
+            content: `Error stack: \`\`\` ${stack}\`\`\`${gameLink}${playerBlock}`,
             username: "Errorbot",
             thread_name: `Game Error! ${e.message.split("'", "\n")[0]}`,
           },

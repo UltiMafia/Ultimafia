@@ -191,14 +191,39 @@ module.exports = class Game {
     }
   }
 
+  getPlayerSummary() {
+    try {
+      const lines = [];
+      for (const p of this.players) {
+        const role = p.role?.name ?? "Unknown";
+        const dead = p.alive ? "" : "*";
+        const actions = this.actions[0]
+          ? [...this.actions[0]]
+              .filter((a) => a.actors?.includes(p))
+              .map(
+                (a) =>
+                  `${a.labels.join("/")}${a.target ? ` → ${a.target.name}` : ""}`
+              )
+          : [];
+        const actionStr =
+          actions.length > 0 ? ` | ${actions.join(", ")}` : "";
+        lines.push(`${dead}${p.name} (${role})${actionStr}`);
+      }
+      return lines.join("\n");
+    } catch {
+      return "Unable to retrieve player summary";
+    }
+  }
+
   async handleError(e) {
     var stack = e.stack.split("\n").slice(0, 6).join("\n");
+    const playerSummary = this.getPlayerSummary();
     const discordAlert = JSON.parse(process.env.DISCORD_ERROR_HOOK);
     await axios({
       method: "post",
       url: discordAlert.hook,
       data: {
-        content: `Error stack: \`\`\` ${stack}\`\`\`\nSetup: ${this.setup.name} (${this.setup.id})\nGame Link: ${process.env.BASE_URL}/game/${this.id}/review`,
+        content: `Error stack: \`\`\` ${stack}\`\`\`\nSetup: ${this.setup.name} (${this.setup.id})\nGame Link: ${process.env.BASE_URL}/game/${this.id}/review\nState: ${this.getStateName()}\nPlayers:\n\`\`\`\n${playerSummary}\n\`\`\``,
         username: "Errorbot",
         attachments: [],
         thread_name: `Game Error! ${e}`,
