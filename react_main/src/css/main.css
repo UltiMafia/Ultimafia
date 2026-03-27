@@ -17,6 +17,15 @@
   --gold-heart-color: rgb(237, 179, 52);
 }
 
+html.retro-april-fools {
+  --theme-color: #5357a5;
+  --theme-color-sec: #3f3961;
+  --theme-color-third: #2a2640;
+  --theme-color-light: #62a0db;
+  --theme-color-text: #97bde1;
+  --scroll-color: #8b8b8b;
+}
+
 .light-mode {
   --scheme-color: #fff;
   --scheme-color-sec: #bddadb;
@@ -27,6 +36,14 @@
   --gradient-color: var(--gradient-color-light);
 }
 
+html.retro-april-fools.light-mode {
+  --scheme-color: #fff;
+  --scheme-color-sec: #f3f3f3;
+  --scheme-color-background: #f3f3f3;
+  --scheme-color-text: black;
+  --scheme-color-border: #c7c7c7;
+}
+
 .dark-mode {
   --scheme-color: #181a1b;
   --scheme-color-sec: #1f2123;
@@ -35,6 +52,14 @@
   --scheme-color-border: #404548;
   --scheme-color-code: #3d3d3d;
   --gradient-color: var(--gradient-color-dark);
+}
+
+html.retro-april-fools.dark-mode {
+  --scheme-color: #181a1b;
+  --scheme-color-sec: #1f2123;
+  --scheme-color-background: #1f2123;
+  --scheme-color-text: #ffffff;
+  --scheme-color-border: #404548;
 }
 
 @media (prefers-color-scheme: light) {

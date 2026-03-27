@@ -4,6 +4,11 @@ import { Box } from "@mui/material";
 
 import surprised from "images/emotes/surprised.webp";
 import sad from "images/emotes/sad.webp";
+import {
+  isHalloweenThemeActive,
+  isRetroAprilFoolsActive,
+  isValentinesThemeActive,
+} from "../utils/holidayThemes";
 
 const CUSTOM_EXPAND_ICON = (
   <Box
@@ -29,12 +34,15 @@ const CUSTOM_EXPAND_ICON = (
 );
 
 export function getSiteTheme(customPrimaryColor) {
-  const currentMonth = new Date().getMonth();
-  const isValentines = currentMonth === 1;
-  const isHalloween = currentMonth === 9;
+  const isValentines = isValentinesThemeActive();
+  const isHalloween = isHalloweenThemeActive();
+  const isRetroAprilFools = isRetroAprilFoolsActive();
 
   // Determine primary color based on custom color, Halloween, or default
   const getPrimaryColor = (mode) => {
+    if (isRetroAprilFools) {
+      return mode === "light" ? "#5357a5" : "#62a0db";
+    }
     if (customPrimaryColor) {
       return customPrimaryColor;
     }
@@ -49,6 +57,9 @@ export function getSiteTheme(customPrimaryColor) {
   };
 
   const getSecondaryColor = (mode) => {
+    if (isRetroAprilFools) {
+      return mode === "light" ? "#3f3961" : "#5357a5";
+    }
     if (customPrimaryColor) {
       return customPrimaryColor;
     }

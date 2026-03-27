@@ -39,6 +39,10 @@ import { useSnowstorm } from "./hooks/useSnowstorm";
 import { GuestAuthButtons } from "./components/GuestAuthButtons";
 
 import spiderweb from "images/holiday/spiderweb.gif";
+import {
+  isHalloweenThemeActive,
+  isRetroAprilFoolsActive,
+} from "./utils/holidayThemes";
 
 // Component to handle snowstorm with user settings
 function SnowstormController() {
@@ -106,6 +110,17 @@ function Main(props) {
   useEffect(() => {
     setSiteTheme(getSiteTheme(customPrimaryColor));
   }, [customPrimaryColor]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (!root) return;
+
+    if (isRetroAprilFoolsActive()) {
+      root.classList.add("retro-april-fools");
+    } else {
+      root.classList.remove("retro-april-fools");
+    }
+  }, []);
 
   const isPhoneDevice = useIsPhoneDevice();
 
@@ -236,7 +251,7 @@ function Header({ setShowAnnouncementTemporarily }) {
       backgroundColor: "background.paper",
       color: "text.primary",
     }}>
-      {new Date().getMonth() === 9 && (
+      {isHalloweenThemeActive() && (
         <img
           src={spiderweb}
           alt="Holiday Spider"

@@ -365,8 +365,11 @@ export function RoleThings() {
         return entryRole === RoleName && normalizedSkin === activeRoleSkin;
       })
     )
-    .map((artist) => (
-      <Box key={artist.user?.id || artist.user?.name} sx={{ mt: 0.5 }}>
+    .map((artist, index) => (
+      <Box
+        key={artist.user?.id || artist.user?.name}
+        sx={{ mt: index === 0 ? 0 : 0.5 }}
+      >
         <NameWithAvatar
           small
           id={artist.user?.id}
@@ -501,12 +504,12 @@ export function RoleThings() {
               </Stack>
             </Stack>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item md={2} sx={{ display: { xs: "none", md: "block" } }} />
+          <Grid item xs={12} md={2}>
             <Stack
               direction={isPhoneDevice ? "row" : "column"}
               spacing={0.5}
               sx={{
-                textAlign: { xs: "left", md: "right" },
                 alignItems: "center",
                 color: headerTextColor,
               }}
