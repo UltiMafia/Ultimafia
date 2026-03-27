@@ -17,24 +17,6 @@
   --gold-heart-color: rgb(237, 179, 52);
 }
 
-html.retro-mode {
-  --theme-color: #5357a5;
-  --theme-color-sec: #3f3961;
-  --theme-color-third: #2a2640;
-  --theme-color-light: #62a0db;
-  --theme-color-text: #97bde1;
-  --scroll-color: #8b8b8b;
-
-  /* Retro foregrounds use BM blues (no light/dark split) */
-  --scheme-color: #5357a5;
-  --scheme-color-sec: #3f3961;
-  --scheme-color-background: #2a2640;
-  --scheme-color-text: #62a0db;
-  --scheme-color-border: #97bde1;
-  --scheme-color-code: #8b8b8b;
-  --gradient-color: var(--theme-color-light);
-}
-
 .light-mode {
   --scheme-color: #fff;
   --scheme-color-sec: #bddadb;
@@ -116,12 +98,6 @@ a {
 
 .site-wrapper {
   background-image: url("/src/images/white-diamond-dark.png");
-}
-
-html.retro-mode .site-wrapper {
-  background-image: url("/src/images/bg-bm.jpg");
-  background-repeat: repeat;
-  background-position: top center;
 }
 
 .header {

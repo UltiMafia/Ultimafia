@@ -24,7 +24,6 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
-import { isRetroThemeLockActive } from "../../utils/holidayThemes";
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import Form, { useForm, HiddenUpload, UserSearchSelect } from "components/Form";
@@ -218,7 +217,6 @@ export default function Settings() {
   const [familyLoaded, setFamilyLoaded] = useState(false);
   const [transferLeaderUserId, setTransferLeaderUserId] = useState("");
   const { mode, setMode } = useColorScheme();
-  const isRetroLocked = isRetroThemeLockActive();
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -266,38 +264,23 @@ export default function Settings() {
       type: "select",
       groupName: "Appearance",
       onChange: (event) => {
-        if (isRetroLocked) {
-          setMode("retro");
-          return;
-        }
         setMode(event.target.value);
       },
-      options: isRetroLocked
-        ? [
-            {
-              label: "Retro (Event Active)",
-              value: "retro",
-            },
-          ]
-        : [
-            {
-              label: "System",
-              value: "system",
-            },
-            {
-              label: "Light",
-              value: "light",
-            },
-            {
-              label: "Dark",
-              value: "dark",
-            },
-            {
-              label: "Retro",
-              value: "retro",
-            },
-          ],
-      value: isRetroLocked ? "retro" : mode,
+      options: [
+        {
+          label: "System",
+          value: "system",
+        },
+        {
+          label: "Light",
+          value: "light",
+        },
+        {
+          label: "Dark",
+          value: "dark",
+        },
+      ],
+      value: mode,
     },
     {
       label: "Minimum WCAG contrast",

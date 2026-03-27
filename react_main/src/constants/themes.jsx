@@ -35,7 +35,6 @@ const CUSTOM_EXPAND_ICON = (
 export function getSiteTheme(customPrimaryColor) {
   const isValentines = isValentinesThemeActive();
   const isHalloween = isHalloweenThemeActive();
-  const baseDarkMuiPalette = createTheme({ palette: { mode: "dark" } }).palette;
 
   // Determine primary color based on custom color, Halloween, or default
   const getPrimaryColor = (mode) => {
@@ -175,6 +174,7 @@ export function getSiteTheme(customPrimaryColor) {
     },
   };
 
+
   return createTheme({
     colorSchemes: {
       light: {
@@ -208,36 +208,6 @@ export function getSiteTheme(customPrimaryColor) {
         },
         palette: {
           ...darkPalette,
-          activeAppBarText: {
-            main: "var(--mui-palette-primary-main)",
-          },
-        },
-      },
-      retro: {
-        components: {
-          ...commonComponents,
-        },
-        palette: {
-          ...baseDarkMuiPalette,
-          mode: "dark",
-          primary: {
-            main: "#D50032",
-          },
-          secondary: {
-            main: "#B80028",
-          },
-          info: {
-            main: "#DAA520",
-          },
-          background: {
-            default: "var(--scheme-color-background)",
-            paper: "var(--scheme-color)",
-          },
-          text: {
-            primary: "var(--scheme-color-text)",
-            secondary: "#d1d8e6",
-          },
-          divider: "var(--scheme-color-border)",
           activeAppBarText: {
             main: "var(--mui-palette-primary-main)",
           },
