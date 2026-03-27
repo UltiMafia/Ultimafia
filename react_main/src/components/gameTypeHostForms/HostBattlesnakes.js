@@ -17,6 +17,12 @@ export default function HostBattlesnakes() {
       value: defaults.boardSize,
     },
     {
+      label: "Dead Snakes Block",
+      ref: "deadSnakeObstacles",
+      type: "boolean",
+      value: defaults.deadSnakeObstacles,
+    },
+    {
       label: "Lobby",
       ref: "lobby",
       type: "select",
@@ -130,6 +136,7 @@ export default function HostBattlesnakes() {
           Day: getFormFieldValue("dayLength"),
         },
         boardSize: getFormFieldValue("boardSize"),
+        deadSnakeObstacles: getFormFieldValue("deadSnakeObstacles"),
         anonymousGame: getFormFieldValue("anonymousGame"),
         anonymousDeckId: getFormFieldValue("anonymousDeckId"),
       });

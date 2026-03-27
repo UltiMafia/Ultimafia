@@ -1307,9 +1307,11 @@ const settingsChecks = {
   },
   Battlesnakes: (settings, setup) => {
     const boardSize = settings.boardSize;
+    const deadSnakeObstacles = settings.deadSnakeObstacles ?? true;
 
     return {
       boardSize,
+      deadSnakeObstacles,
     };
   },
   "Dice Wars": (settings, setup) => {

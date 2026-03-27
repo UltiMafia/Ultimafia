@@ -5,7 +5,6 @@ import {
   ThreePanelLayout,
   TopBar,
   TextMeetingLayout,
-  ActionList,
   PlayerList,
   Timer,
   GameTypeContext,
@@ -49,6 +48,10 @@ function SnakeGame(props) {
     socket.on("start", () => {
       game.playAudio("music/14_Minigame");
     });
+
+    socket.on("winners", () => {
+      game.stopAudio();
+    });
   }, game.socket);
 
   if (isPhoneDevice) {
@@ -69,7 +72,6 @@ function SnakeGame(props) {
         leftPanelContent={
           <>
             <PlayerList />
-            <ActionList />
           </>
         }
         centerPanelContent={

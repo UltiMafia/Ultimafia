@@ -154,6 +154,7 @@ var defaultOptions = {
   Battlesnakes: existingHostOptions["Battlesnakes"] || {
     ...commonHostOptions,
     boardSize: 20,
+    deadSnakeObstacles: true,
     dayLength: 60,
     nightLength: 0.5,
   },

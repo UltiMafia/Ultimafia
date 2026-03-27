@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { useSocketListeners } from "./Game";
+import { SiteInfoContext } from "../../Contexts";
+import foodImage from "../../images/minigames/battlesnakes_food.png";
 
 // Helper: Assign each player a unique color (supports up to 10+ players)
 function snakeColor(index) {
@@ -25,6 +27,7 @@ export default function SnakeGameDisplay({ player, players, gameSocket }) {
   const [playerId, setPlayerId] = useState(player || -1);
   const svgRef = useRef();
   const [cellSize, setCellSize] = useState(24); // pixels per grid square
+  const siteInfo = useContext(SiteInfoContext);
 
   useSocketListeners((socket) => {
     socket.on("gameState", (state) => {
@@ -123,22 +126,17 @@ export default function SnakeGameDisplay({ player, players, gameSocket }) {
     horizLines.exit().remove();
 
     // --- Draw Food ---
-    // --- Draw Food --- (modified to handle multiple foods)
     let foodSel = svg.selectAll(".food").data(gameState.foods || []);
     foodSel
       .enter()
-      .append("rect")
+      .append("image")
       .attr("class", "food")
-      .attr("rx", cellSize / 5)
-      .attr("ry", cellSize / 5)
+      .attr("href", foodImage)
       .merge(foodSel)
       .attr("x", (d) => cellToPx(d.x, cellSize))
       .attr("y", (d) => cellToPx(d.y, cellSize))
       .attr("width", cellSize)
-      .attr("height", cellSize)
-      .attr("fill", "#e83")
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 2);
+      .attr("height", cellSize);
     foodSel.exit().remove();
 
     // --- Draw Snakes ---
@@ -159,9 +157,12 @@ export default function SnakeGameDisplay({ player, players, gameSocket }) {
       allSegs.push(...segs);
     });
 
-    // One color per player
+    // One color per player — use their text colour if set, otherwise fallback to palette
     const colorMap = {};
-    snakePlayerIds.forEach((id, idx) => (colorMap[id] = snakeColor(idx)));
+    snakePlayerIds.forEach((id, idx) => {
+      const p = players && players[id];
+      colorMap[id] = (p && p.textColor) || snakeColor(idx);
+    });
 
     let segsSel = svg
       .selectAll(".snake-seg")
@@ -188,39 +189,44 @@ export default function SnakeGameDisplay({ player, players, gameSocket }) {
         d.player === playerId && d.isHead ? "drop-shadow(0 0 4px #fff)" : null
       );
 
-    // --- Draw player names at snake heads ---
-    let headNames = [];
+    // --- Draw player avatars at snake heads ---
+    let headData = [];
     snakePlayerIds.forEach((id, idx) => {
       const snake = gameState.snakes[id];
       if (snake.segments.length > 0) {
-        headNames.push({
+        const p = players && players[id];
+        const hasAvatar = p && p.avatar && p.userId;
+        headData.push({
           x: snake.segments[0].x,
           y: snake.segments[0].y,
           id,
-          name:
-            players && players[id] && players[id].name
-              ? players[id].name
-              : `Player ${idx + 1}`,
+          name: p && p.name ? p.name : `Player ${idx + 1}`,
+          avatarUrl: hasAvatar
+            ? `/uploads/${p.userId}_avatar.webp${siteInfo ? `?t=${siteInfo.cacheVal}` : ""}`
+            : null,
         });
       }
     });
 
-    let nameSel = svg.selectAll(".snake-name").data(headNames, (d) => d.id);
-    nameSel
-      .enter()
-      .append("text")
-      .attr("class", "snake-name")
-      .attr("text-anchor", "middle")
-      .attr("dominant-baseline", "central")
-      .style("pointer-events", "none")
-      .style("font-size", Math.max(cellSize * 0.5, 10))
-      .style("fill", "#fff")
-      .style("font-weight", 600)
-      .merge(nameSel)
-      .attr("x", (d) => cellToPx(d.x + 0.5, cellSize))
-      .attr("y", (d) => cellToPx(d.y + 0.5, cellSize))
-      .text((d) => d.name);
-    nameSel.exit().remove();
+    // Remove old avatars before redrawing
+    svg.selectAll(".snake-avatar").remove();
+
+    // Draw avatar images on heads
+    headData.forEach((d) => {
+      if (d.avatarUrl) {
+        svg
+          .append("image")
+          .attr("class", "snake-avatar")
+          .attr("x", cellToPx(d.x, cellSize))
+          .attr("y", cellToPx(d.y, cellSize))
+          .attr("width", cellSize)
+          .attr("height", cellSize)
+          .attr("href", d.avatarUrl)
+          .attr("preserveAspectRatio", "xMidYMid slice")
+          .style("pointer-events", "none");
+      }
+
+    });
   }, [gameState, cellSize, playerId, players]);
 
   useEffect(() => {

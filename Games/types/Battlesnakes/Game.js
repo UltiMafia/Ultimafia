@@ -15,6 +15,7 @@ module.exports = class BattlesnakesGame extends Game {
     this.type = "Battlesnakes";
     this.Player = Player;
     this.gridSize = parseInt(options.settings.boardSize) || 20;
+    this.deadSnakeObstacles = options.settings.deadSnakeObstacles ?? true;
     this.gameStarted = false;
     this.states = [
       { name: "Postgame" },
@@ -153,11 +154,12 @@ module.exports = class BattlesnakesGame extends Game {
         continue;
       }
 
-      // Check collision with other snakes
+      // Check collision with other snakes (and dead snakes if obstacles enabled)
       for (const [otherId, otherSnake] of Object.entries(this.positions)) {
+        if (otherId === playerId) continue;
+        if (!otherSnake.alive && !this.deadSnakeObstacles) continue;
+
         if (
-          otherId !== playerId &&
-          otherSnake.alive &&
           otherSnake.segments.some(
             (seg) => seg.x === head.x && seg.y === head.y && seg.active
           )
@@ -217,11 +219,13 @@ module.exports = class BattlesnakesGame extends Game {
 
     if (alivePlayers.length <= 1) {
       clearInterval(this.tickInterval);
-      const winners = new Winners();
+      const winners = new Winners(this);
       const winner = this.players[alivePlayers[0]];
-      // if (winner){
-      //   winners.addPlayer(winner, 'snakes')
-      // }
+      if (winner) {
+        winners.addPlayer(winner, winner.name);
+      } else {
+        winners.addGroup("No one");
+      }
       this.endGame(winners);
     }
   }
