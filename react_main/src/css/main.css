@@ -25,13 +25,13 @@ html.retro-mode {
   --theme-color-text: #97bde1;
   --scroll-color: #8b8b8b;
 
-  /* Retro native theme: blue surfaces regardless of light/dark mode */
-  --scheme-color: #2a2640;
+  /* Retro foregrounds use BM blues (no light/dark split) */
+  --scheme-color: #5357a5;
   --scheme-color-sec: #3f3961;
-  --scheme-color-background: #5357a5;
-  --scheme-color-text: #ffffff;
-  --scheme-color-border: #62a0db;
-  --scheme-color-code: #3f3961;
+  --scheme-color-background: #2a2640;
+  --scheme-color-text: #62a0db;
+  --scheme-color-border: #97bde1;
+  --scheme-color-code: #8b8b8b;
   --gradient-color: var(--theme-color-light);
 }
 
@@ -116,6 +116,12 @@ a {
 
 .site-wrapper {
   background-image: url("/src/images/white-diamond-dark.png");
+}
+
+html.retro-mode .site-wrapper {
+  background-image: url("/src/images/bg-bm.jpg");
+  background-repeat: repeat;
+  background-position: top center;
 }
 
 .header {
