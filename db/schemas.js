@@ -95,6 +95,7 @@ var schemas = {
       hideKarma: { type: Boolean, default: false },
       hidePointsNegative: { type: Boolean, default: true },
       hideJoinDate: { type: Boolean, default: false },
+      disablePokes: { type: Boolean, default: false },
       deathMessage: String,
       vanityUrl: { type: String, default: "" },
       backgroundRepeatMode: { type: String, default: "repeat" },
@@ -544,6 +545,17 @@ var schemas = {
       toJSON: { virtuals: true },
     }
   ),
+  Poke: new mongoose.Schema({
+    userA: { type: String, index: true },
+    userB: { type: String, index: true },
+    from: String,
+    to: String,
+    status: { type: String, enum: ["pending", "dismissed"], default: "pending" },
+    count: { type: Number, default: 1 },
+    dismissedAt: { type: Number, default: null },
+    createdAt: { type: Number, default: Date.now },
+    updatedAt: { type: Number, default: Date.now },
+  }),
   DocSave: new mongoose.Schema(
     {
       userId: { type: String, index: true },
@@ -1124,6 +1136,10 @@ schemas.VanityUrl.virtual("user", {
   foreignField: "id",
   justOne: true,
 });
+
+// Compound indexes for Poke schema
+schemas.Poke.index({ userA: 1, userB: 1 }, { unique: true });
+schemas.Poke.index({ to: 1, status: 1 });
 
 schemas.CompetitiveRound.index({ season: 1, number: 1 }, { unique: true });
 schemas.CompetitiveSeasonStanding.index(

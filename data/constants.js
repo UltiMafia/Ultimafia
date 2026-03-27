@@ -35,6 +35,7 @@ if (process.env.NODE_ENV.includes("development")) {
     fileReport: 5 * 60 * 100,
     fileAppeal: 5 * 60 * 100,
     staffApplication: 24 * 60 * 60 * 100,
+    poke: 5 * 100,
   };
 } else {
   rates = {
@@ -53,6 +54,7 @@ if (process.env.NODE_ENV.includes("development")) {
     fileReport: 5 * 60 * 1000,
     fileAppeal: 5 * 60 * 1000,
     staffApplication: 24 * 60 * 60 * 1000,
+    poke: 5 * 1000,
   };
 }
 
@@ -355,6 +357,10 @@ module.exports = {
   redHeartRefreshIntervalMillis: 82800000,
   goldHeartRefreshIntervalMillis: 82800000,
   dailyChallengesRefreshIntervalMillis: 82800000,
+
+  // Poke feature
+  pokeExpiryMillis: 7 * 24 * 60 * 60 * 1000, // 7 days
+  pokeDismissCooldownMillis: 30 * 24 * 60 * 60 * 1000, // 30 days
 
   // Penalty starts at 10 minutes with level 0, up to 60 minutes with level 5
   leavePenaltyMinimumMillis: process.env.NODE_ENV.includes("development") ? 1000 : 600000,

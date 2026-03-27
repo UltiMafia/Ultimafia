@@ -50,6 +50,20 @@ async function resolveUserId(identifier) {
 
   return null;
 }
+function pokePairIds(id1, id2) {
+  return id1 < id2 ? { userA: id1, userB: id2 } : { userA: id2, userB: id1 };
+}
+
+function isPokeExpired(poke) {
+  return poke.status === "pending" &&
+    Date.now() - poke.updatedAt > constants.pokeExpiryMillis;
+}
+
+function isDismissCooldownActive(poke) {
+  return poke.status === "dismissed" && poke.dismissedAt &&
+    Date.now() - poke.dismissedAt < constants.pokeDismissCooldownMillis;
+}
+
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 
@@ -635,6 +649,22 @@ router.get("/:id/profile", async function (req, res) {
           })) != null;
     } else user.isFriend = false;
 
+    user.pokeStatus = { status: "none" };
+    if (reqUserId && !isSelf && user.isFriend) {
+      const pair = pokePairIds(reqUserId, userId);
+      const poke = await models.Poke.findOne(pair);
+      if (poke) {
+        if (poke.status === "pending" && !isPokeExpired(poke)) {
+          user.pokeStatus = poke.to === reqUserId
+            ? { status: "pending_received", count: poke.count }
+            : { status: "pending_sent", count: poke.count };
+        } else if (poke.status === "dismissed" && isDismissCooldownActive(poke) && poke.from === reqUserId) {
+          user.pokeStatus = { status: "cooldown" };
+        }
+      }
+    }
+    user.pokesDisabled = (!isSelf && user.settings?.disablePokes) || false;
+
     user.isLove = false;
     user.isMarried = false;
     if (userId) {
@@ -692,6 +722,23 @@ router.get("/:id/profile", async function (req, res) {
       };
     } else {
       user.family = null;
+    }
+
+    if (isSelf) {
+      const incomingPokes = await models.Poke.find({ to: userId, status: "pending" }).lean();
+      user.incomingPokes = [];
+      for (const poke of incomingPokes) {
+        if (isPokeExpired(poke)) continue;
+        const sender = await models.User.findOne({ id: poke.from, deleted: false })
+          .select("id name avatar -_id");
+        if (sender) {
+          user.incomingPokes.push({
+            from: sender.toJSON(),
+            count: poke.count,
+            updatedAt: poke.updatedAt,
+          });
+        }
+      }
     }
 
     res.send(user);
@@ -2872,6 +2919,177 @@ router.post("/appeals", async function (req, res) {
   } catch (e) {
     logger.error(e);
     res.status(500).send("Error submitting appeal.");
+  }
+});
+
+router.post("/poke", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.rateLimit(userId, "poke", res))) return;
+
+    var targetId = String(req.body.targetId);
+
+    if (userId === targetId) {
+      res.status(400);
+      res.send("You cannot poke yourself.");
+      return;
+    }
+
+    // Confirm mutual friendship
+    var friendship = await models.Friend.findOne({
+      userId: userId,
+      friendId: targetId,
+    }).select("_id");
+
+    if (!friendship) {
+      res.status(400);
+      res.send("You can only poke friends.");
+      return;
+    }
+
+    // Check target user's disablePokes setting
+    var targetUser = await models.User.findOne({
+      id: targetId,
+      deleted: false,
+    }).select("settings -_id");
+
+    if (!targetUser) {
+      res.status(400);
+      res.send("User not found.");
+      return;
+    }
+
+    if (targetUser.settings?.disablePokes) {
+      res.status(400);
+      res.send("This user has disabled pokes.");
+      return;
+    }
+
+    // Look up existing poke
+    var pair = pokePairIds(userId, targetId);
+    var existingPoke = await models.Poke.findOne(pair);
+
+    if (existingPoke) {
+      if (existingPoke.status === "pending" && !isPokeExpired(existingPoke)) {
+        res.status(400);
+        res.send("You already have an active poke with this person.");
+        return;
+      }
+
+      if (
+        existingPoke.status === "dismissed" &&
+        isDismissCooldownActive(existingPoke) &&
+        existingPoke.from === userId
+      ) {
+        res.status(400);
+        res.send("You cannot poke this person yet.");
+        return;
+      }
+    }
+
+    // Upsert poke
+    await models.Poke.updateOne(pair, {
+      $set: {
+        ...pair,
+        from: userId,
+        to: targetId,
+        status: "pending",
+        count: 1,
+        updatedAt: Date.now(),
+        dismissedAt: null,
+      },
+    }, { upsert: true });
+
+    var userName = await redis.getUserName(userId);
+    await routeUtils.createNotification(
+      {
+        content: `${userName} poked you!`,
+        icon: "fas fa-hand-pointer",
+        link: `/user/${userId}`,
+      },
+      [targetId]
+    );
+
+    res.send("Poke sent!");
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error sending poke.");
+  }
+});
+
+router.post("/poke/back", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.rateLimit(userId, "poke", res))) return;
+
+    var targetId = String(req.body.targetId);
+
+    var pair = pokePairIds(userId, targetId);
+    var poke = await models.Poke.findOne(pair);
+
+    if (!poke || poke.status !== "pending" || poke.to !== userId || isPokeExpired(poke)) {
+      res.status(400);
+      res.send("No active poke to respond to.");
+      return;
+    }
+
+    await models.Poke.updateOne(pair, {
+      $set: {
+        from: userId,
+        to: targetId,
+        count: poke.count + 1,
+        updatedAt: Date.now(),
+      },
+    });
+
+    var userName = await redis.getUserName(userId);
+    await routeUtils.createNotification(
+      {
+        content: `${userName} poked you back!`,
+        icon: "fas fa-hand-pointer",
+        link: `/user/${userId}`,
+      },
+      [targetId]
+    );
+
+    res.send("Poked back!");
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error poking back.");
+  }
+});
+
+router.post("/poke/dismiss", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.rateLimit(userId, "poke", res))) return;
+
+    var targetId = String(req.body.targetId);
+
+    var pair = pokePairIds(userId, targetId);
+    var poke = await models.Poke.findOne(pair);
+
+    if (!poke || poke.status !== "pending" || poke.to !== userId || isPokeExpired(poke)) {
+      res.status(400);
+      res.send("No active poke to dismiss.");
+      return;
+    }
+
+    await models.Poke.updateOne(pair, {
+      $set: {
+        status: "dismissed",
+        dismissedAt: Date.now(),
+        updatedAt: Date.now(),
+      },
+    });
+
+    res.send("Poke dismissed.");
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error dismissing poke.");
   }
 });
 

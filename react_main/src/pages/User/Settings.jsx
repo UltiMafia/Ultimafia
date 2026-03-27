@@ -239,6 +239,11 @@ export default function Settings() {
       type: "boolean",
     },
     {
+      label: "Disable Pokes",
+      ref: "disablePokes",
+      type: "boolean",
+    },
+    {
       label: "Disable PG-13 Censor",
       ref: "disablePg13Censor",
       type: "boolean",

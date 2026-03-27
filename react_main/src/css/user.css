@@ -601,3 +601,24 @@ iframe {
   height: 30px;
   image-rendering: auto;
 }
+
+.poke-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.poke-count {
+  font-size: 0.85em;
+  opacity: 0.75;
+}
+
+.btn-poke {
+  cursor: pointer;
+}
+
+.btn-poke.disabled {
+  opacity: 0.4;
+  cursor: default;
+}
