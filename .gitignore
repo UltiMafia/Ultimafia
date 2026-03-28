@@ -29,3 +29,6 @@ firebase.json
 *.ai
 *.aseprite
 *.svg
+
+.DS_Store
+.claude

@@ -6,7 +6,6 @@ import {
   ThreePanelLayout,
   TopBar,
   TextMeetingLayout,
-  ActionList,
   PlayerList,
   Timer,
   GameTypeContext,
@@ -53,15 +52,14 @@ export default function DiceWarsGame(props) {
   return (
     <GameTypeContext.Provider
       value={{
-        singleState: true,
+        singleState: false,
       }}
     >
-      <TopBar hideStateSwitcher />
+      <TopBar />
       <ThreePanelLayout
         leftPanelContent={
           <>
             <PlayerList />
-            <ActionList />
           </>
         }
         centerPanelContent={
@@ -73,6 +71,7 @@ export default function DiceWarsGame(props) {
                 gameSocket={game.socket}
                 history={history}
                 stateViewing={stateViewing}
+                isReview={game.review}
               />
             )}
           </>
@@ -93,6 +92,7 @@ function DiceWarsBoardWrapper({
   gameSocket,
   history,
   stateViewing,
+  isReview,
 }) {
   const [gameState, setGameState] = useState(null);
   const [selectedTerritoryId, setSelectedTerritoryId] = useState(null);
@@ -102,11 +102,6 @@ function DiceWarsBoardWrapper({
 
   useSocketListeners((socket) => {
     socket.on("gameState", (state) => {
-      console.log("Frontend received gameState update:", {
-        turnNumber: state.turnNumber,
-        currentTurnPlayerId: state.currentTurnPlayerId,
-        roundNumber: state.roundNumber,
-      });
       setGameState(state);
     });
   }, gameSocket);
@@ -117,16 +112,18 @@ function DiceWarsBoardWrapper({
     }
   }, [player]);
 
-  // Update game state from history when viewing past states
+  // Update game state from history when navigating states (review mode)
+  // Only trigger on stateViewing change, NOT on every history update.
+  // During live play, the gameState socket event provides current state;
+  // history's extraInfo is only set at state creation and becomes stale after attacks.
   useEffect(() => {
-    if (history && stateViewing >= 0 && history.states[stateViewing]) {
+    if (history && history.states[stateViewing]) {
       const extraInfo = history.states[stateViewing].extraInfo;
       if (extraInfo && extraInfo.territories) {
-        console.log("Loading game state from history - state:", stateViewing);
         setGameState(extraInfo);
       }
     }
-  }, [history, stateViewing]);
+  }, [stateViewing]);
 
   // Convert offset hex coordinates to pixel position (flat-top orientation)
   const hexToPixel = (col, row) => {
@@ -276,6 +273,9 @@ function DiceWarsBoardWrapper({
 
   // Handle hex click (can be territory or ocean)
   const handleHexClick = (hex) => {
+    // No interactions during review
+    if (isReview) return;
+
     // Ocean tiles can't be clicked
     if (hex.isOcean || hex.territoryId === null) {
       return;
@@ -286,16 +286,13 @@ function DiceWarsBoardWrapper({
     );
     if (!territory) return;
 
-    console.log("Territory clicked:", territory.id);
     if (!gameState || gameState.currentTurnPlayerId !== playerId) {
-      console.log("Not your turn or no game state");
       return;
     }
 
     // If no territory selected, select this one (if owned by current player)
-    if (!selectedTerritoryId) {
+    if (selectedTerritoryId == null) {
       if (territory.playerId === playerId && territory.dice >= 2) {
-        console.log("Selecting territory:", territory.id);
         setSelectedTerritoryId(territory.id);
       }
       return;
@@ -303,7 +300,6 @@ function DiceWarsBoardWrapper({
 
     // If clicking the same territory, deselect
     if (selectedTerritoryId === territory.id) {
-      console.log("Deselecting territory");
       setSelectedTerritoryId(null);
       return;
     }
@@ -317,23 +313,14 @@ function DiceWarsBoardWrapper({
       fromTerritory.neighbors.includes(territory.id) &&
       territory.playerId !== playerId
     ) {
-      console.log(
-        "Sending attack from",
-        selectedTerritoryId,
-        "to",
-        territory.id
-      );
       gameSocket.send("attack", {
         fromId: selectedTerritoryId,
         toId: territory.id,
       });
       setSelectedTerritoryId(null);
     } else if (territory.playerId === playerId && territory.dice >= 2) {
-      // Select a different owned territory
-      console.log("Switching selection to:", territory.id);
       setSelectedTerritoryId(territory.id);
     } else {
-      console.log("Invalid action, deselecting");
       setSelectedTerritoryId(null);
     }
   };
@@ -422,7 +409,7 @@ function DiceWarsBoardWrapper({
       const isCurrentPlayer = gameState.currentTurnPlayerId === playerId;
       const canSelect = isOwned && territory.dice >= 2 && isCurrentPlayer;
       const isNeighborOfSelected =
-        selectedTerritoryId &&
+        selectedTerritoryId != null &&
         territoryMap[selectedTerritoryId]?.neighbors.includes(territory.id);
       const isValidAttackTarget =
         isNeighborOfSelected && !isOwned && isCurrentPlayer;
@@ -523,18 +510,29 @@ function DiceWarsBoardWrapper({
   }, [gameState, selectedTerritoryId, playerId, hexSize]);
 
   // Get player name by ID
-  const getPlayerName = (playerId) => {
-    return players && players[playerId] ? players[playerId].name : "Unknown";
+  const getPlayerName = (pId) => {
+    return players && players[pId] ? players[pId].name : "Unknown";
   };
 
-  // Get current turn player name
-  const getCurrentTurnPlayerName = () => {
+  // Get board title based on current state
+  const getBoardTitle = () => {
     if (!gameState) return "";
-    return getPlayerName(gameState.currentTurnPlayerId);
+    if (stateViewing === -2) return "Game Over";
+    return `${getPlayerName(gameState.currentTurnPlayerId)}'s Turn`;
   };
 
-  // Don't render until game has started
-  if (!gameState || !gameState.territories || gameState.turnNumber === 0) {
+  // Compute territory counts per player
+  const territoryCounts = {};
+  if (gameState && gameState.territories && gameState.playerColors) {
+    for (const t of gameState.territories) {
+      if (t.playerId) {
+        territoryCounts[t.playerId] = (territoryCounts[t.playerId] || 0) + 1;
+      }
+    }
+  }
+
+  // Don't render until game state is available
+  if (!gameState || !gameState.territories) {
     return (
       <SideMenu
         title="Pregame"
@@ -561,7 +559,7 @@ function DiceWarsBoardWrapper({
 
   return (
     <SideMenu
-      title={`${getCurrentTurnPlayerName()}'s Turn`}
+      title={getBoardTitle()}
       scrollable
       content={
         <div
@@ -575,8 +573,86 @@ function DiceWarsBoardWrapper({
             boxShadow: "0 2px 8px #000a",
           }}
         >
+          {/* Territory count scoreboard */}
+          {gameState && gameState.turnOrder && gameState.playerColors && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "16px",
+                flexWrap: "wrap",
+                marginBottom: "12px",
+                padding: "8px",
+                background: "#111",
+                borderRadius: 6,
+              }}
+            >
+              {gameState.turnOrder.map((pId) => (
+                <div
+                  key={pId}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    padding: "4px 10px",
+                    borderRadius: 4,
+                    border:
+                      pId === gameState.currentTurnPlayerId
+                        ? "2px solid #FFD700"
+                        : "2px solid transparent",
+                    opacity: territoryCounts[pId] ? 1 : 0.4,
+                  }}
+                >
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: 12,
+                      height: 12,
+                      borderRadius: "50%",
+                      background: gameState.playerColors[pId] || "#888",
+                    }}
+                  />
+                  <span style={{ color: "#CCC", fontSize: "13px" }}>
+                    {getPlayerName(pId)}
+                  </span>
+                  <span
+                    style={{
+                      color: "#FFF",
+                      fontSize: "14px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {territoryCounts[pId] || 0}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
           {/* Game board */}
           <svg ref={svgRef} style={{ display: "block", margin: "0 auto" }} />
+          {/* End Turn button */}
+          {!isReview &&
+            stateViewing !== -2 &&
+            gameState &&
+            gameState.currentTurnPlayerId === playerId && (
+              <button
+                onClick={() => gameSocket.send("endTurn", {})}
+                style={{
+                  display: "block",
+                  margin: "12px auto 0",
+                  padding: "10px 32px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  background: "#444",
+                  color: "#FFF",
+                  border: "2px solid #666",
+                  borderRadius: 6,
+                  cursor: "pointer",
+                }}
+              >
+                End Turn
+              </button>
+            )}
         </div>
       }
     />

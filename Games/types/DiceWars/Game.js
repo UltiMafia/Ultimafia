@@ -54,10 +54,6 @@ module.exports = class DiceWarsGame extends Game {
     const gridHeight = Math.ceil(Math.sqrt(totalHexes / aspectRatio));
     const gridWidth = Math.ceil(totalHexes / gridHeight);
 
-    console.log(
-      `Generating ${gridWidth}x${gridHeight} hex grid for ${this.mapSize} territories`
-    );
-
     // First, create a full rectangular grid of hexes (offset coordinates)
     const hexGrid = [];
     for (let row = 0; row < gridHeight; row++) {
@@ -84,6 +80,12 @@ module.exports = class DiceWarsGame extends Game {
       gridHeight
     );
 
+    // Build hex lookup map for O(1) access
+    const hexLookup = new Map();
+    for (const hex of hexGrid) {
+      hexLookup.set(`${hex.col},${hex.row}`, hex);
+    }
+
     // Build territory neighbor relationships by checking hex adjacency
     for (let territory of territories) {
       const territoryHexes = hexGrid.filter(
@@ -99,8 +101,8 @@ module.exports = class DiceWarsGame extends Game {
         for (let dir of directions) {
           const neighborCol = hex.col + dir.col;
           const neighborRow = hex.row + dir.row;
-          const neighbor = hexGrid.find(
-            (h) => h.col === neighborCol && h.row === neighborRow
+          const neighbor = hexLookup.get(
+            `${neighborCol},${neighborRow}`
           );
 
           // If neighbor is land and belongs to a different territory, add it
@@ -132,26 +134,26 @@ module.exports = class DiceWarsGame extends Game {
    * Even and odd columns have different offset patterns
    */
   getHexDirections(col, row) {
+    // Odd-q offset layout (flat-top hexes, odd columns shifted down)
+    // Reference: https://www.redblobgames.com/grids/hexagons/#coordinates-offset
     const isEvenCol = col % 2 === 0;
     if (isEvenCol) {
-      // Even columns (not offset)
       return [
-        { col: 1, row: 0 }, // E
+        { col: 1, row: 0 }, // SE
         { col: 1, row: -1 }, // NE
-        { col: 0, row: -1 }, // NW
-        { col: -1, row: 0 }, // W
-        { col: 0, row: 1 }, // SW
-        { col: 1, row: 1 }, // SE
+        { col: 0, row: -1 }, // N
+        { col: -1, row: -1 }, // NW
+        { col: -1, row: 0 }, // SW
+        { col: 0, row: 1 }, // S
       ];
     } else {
-      // Odd columns (offset down by 0.5)
       return [
-        { col: 1, row: 0 }, // E
-        { col: 0, row: -1 }, // NE
-        { col: -1, row: -1 }, // NW
-        { col: -1, row: 0 }, // W
+        { col: 1, row: 1 }, // SE
+        { col: 1, row: 0 }, // NE
+        { col: 0, row: -1 }, // N
+        { col: -1, row: 0 }, // NW
         { col: -1, row: 1 }, // SW
-        { col: 0, row: 1 }, // SE
+        { col: 0, row: 1 }, // S
       ];
     }
   }
@@ -165,7 +167,6 @@ module.exports = class DiceWarsGame extends Game {
     const targetLandHexes = Math.floor(totalHexes * 0.7); // 70% land, 30% ocean
 
     // Step 1: Create a connected land mass
-    console.log(`Creating connected land mass with ~${targetLandHexes} hexes`);
     const landHexes = this.createConnectedLandMass(
       hexGrid,
       gridWidth,
@@ -174,7 +175,6 @@ module.exports = class DiceWarsGame extends Game {
     );
 
     // Step 2: Divide land into territories (1-5 hexes each)
-    console.log(`Dividing land into ${this.mapSize} territories`);
     const territories = this.divideLandIntoTerritories(
       landHexes,
       hexGrid,
@@ -185,15 +185,6 @@ module.exports = class DiceWarsGame extends Game {
     const validTerritories = this.validateAndFixTerritories(
       territories,
       hexGrid
-    );
-
-    // Final stats
-    const finalLandHexes = hexGrid.filter((h) => !h.isOcean).length;
-    const oceanHexes = totalHexes - finalLandHexes;
-    const percentLand = ((finalLandHexes / totalHexes) * 100).toFixed(1);
-    const percentOcean = ((oceanHexes / totalHexes) * 100).toFixed(1);
-    console.log(
-      `Generated ${validTerritories.length} territories using ${finalLandHexes}/${totalHexes} hexes (${percentLand}% land, ${percentOcean}% ocean)`
     );
 
     return validTerritories;
@@ -275,110 +266,134 @@ module.exports = class DiceWarsGame extends Game {
    * Divides land mass into territories
    */
   divideLandIntoTerritories(landHexes, hexGrid, targetCount) {
-    const territories = [];
-    const availableLand = new Set(landHexes.map((h) => `${h.col},${h.row}`));
-    let territoryId = 0;
+    // Build a lookup map for fast hex access
+    const hexLookup = new Map();
+    for (const hex of hexGrid) {
+      hexLookup.set(`${hex.col},${hex.row}`, hex);
+    }
 
-    // Create seed points for territories
+    const assigned = new Set();
+
+    // Step 1: Pick well-spaced seed hexes using farthest-point sampling
     const seeds = [];
-    const shuffledLand = [...landHexes].sort(() => Math.random() - 0.5);
+    const firstSeed = landHexes[Math.floor(Math.random() * landHexes.length)];
+    seeds.push(firstSeed);
+    assigned.add(`${firstSeed.col},${firstSeed.row}`);
 
-    for (let i = 0; i < targetCount && i < shuffledLand.length; i++) {
-      const seed = shuffledLand[i];
-      const key = `${seed.col},${seed.row}`;
+    // Track minimum distance from each land hex to any seed
+    const minDist = new Map();
+    for (const hex of landHexes) {
+      const key = `${hex.col},${hex.row}`;
+      const dist =
+        Math.abs(hex.col - firstSeed.col) + Math.abs(hex.row - firstSeed.row);
+      minDist.set(key, dist);
+    }
 
-      if (availableLand.has(key)) {
-        seeds.push(seed);
-        availableLand.delete(key);
+    while (seeds.length < targetCount && seeds.length < landHexes.length) {
+      // Pick the land hex farthest from all existing seeds
+      let bestHex = null;
+      let bestDist = -1;
+      for (const hex of landHexes) {
+        const key = `${hex.col},${hex.row}`;
+        if (assigned.has(key)) continue;
+        const dist = minDist.get(key) || 0;
+        if (dist > bestDist) {
+          bestDist = dist;
+          bestHex = hex;
+        }
+      }
+      if (!bestHex) break;
+
+      seeds.push(bestHex);
+      const seedKey = `${bestHex.col},${bestHex.row}`;
+      assigned.add(seedKey);
+
+      // Update minimum distances with new seed
+      for (const hex of landHexes) {
+        const key = `${hex.col},${hex.row}`;
+        const dist =
+          Math.abs(hex.col - bestHex.col) + Math.abs(hex.row - bestHex.row);
+        minDist.set(key, Math.min(minDist.get(key) || Infinity, dist));
       }
     }
 
-    // Grow territories from seeds
-    for (let seed of seeds) {
-      // Determine territory size (1-5 hexes, weighted toward smaller)
-      const sizeRoll = Math.random();
-      let targetSize;
-      if (sizeRoll < 0.4) targetSize = 1;
-      else if (sizeRoll < 0.7) targetSize = 2;
-      else if (sizeRoll < 0.85) targetSize = 3;
-      else if (sizeRoll < 0.95) targetSize = 4;
-      else targetSize = 5;
+    // Step 2: Assign seeds to territory IDs
+    const territoryHexSets = []; // territoryId -> [hex, ...]
+    const frontiers = []; // territoryId -> [hex, ...]
 
-      const territoryHexes = [seed];
-      seed.territoryId = territoryId;
+    for (let i = 0; i < seeds.length; i++) {
+      const seed = seeds[i];
+      seed.territoryId = i;
+      territoryHexSets.push([seed]);
+      frontiers.push([seed]);
+    }
 
-      // Grow territory
-      const frontier = [seed];
+    // Step 3: Simultaneous BFS — grow all territories at once until every
+    //         land hex is assigned (Voronoi-style flood fill, no gaps)
+    const unassignedLand = new Set(
+      landHexes
+        .filter((h) => h.territoryId === null)
+        .map((h) => `${h.col},${h.row}`)
+    );
 
-      while (territoryHexes.length < targetSize && frontier.length > 0) {
-        const currentHex =
-          frontier[Math.floor(Math.random() * frontier.length)];
-        const directions = this.getHexDirections(
-          currentHex.col,
-          currentHex.row
-        );
-        let foundNeighbor = false;
+    while (unassignedLand.size > 0) {
+      let anyProgress = false;
 
-        // Shuffle directions for variety
-        const shuffled = [...directions].sort(() => Math.random() - 0.5);
+      // Each territory expands one layer per round (fair growth)
+      for (let tid = 0; tid < frontiers.length; tid++) {
+        const frontier = frontiers[tid];
+        if (frontier.length === 0) continue;
 
-        for (let dir of shuffled) {
-          const neighborCol = currentHex.col + dir.col;
-          const neighborRow = currentHex.row + dir.row;
-          const key = `${neighborCol},${neighborRow}`;
+        const nextFrontier = [];
+        // Shuffle frontier for organic shapes
+        const shuffled = [...frontier].sort(() => Math.random() - 0.5);
 
-          if (availableLand.has(key)) {
-            const neighbor = hexGrid.find(
-              (h) => h.col === neighborCol && h.row === neighborRow
-            );
-            if (neighbor && !neighbor.isOcean) {
-              neighbor.territoryId = territoryId;
-              territoryHexes.push(neighbor);
-              availableLand.delete(key);
-              frontier.push(neighbor);
-              foundNeighbor = true;
-              break;
-            }
+        for (const hex of shuffled) {
+          const directions = this.getHexDirections(hex.col, hex.row);
+          // Shuffle directions for variety
+          const shuffledDirs = [...directions].sort(() => Math.random() - 0.5);
+
+          for (const dir of shuffledDirs) {
+            const nCol = hex.col + dir.col;
+            const nRow = hex.row + dir.row;
+            const key = `${nCol},${nRow}`;
+
+            if (!unassignedLand.has(key)) continue;
+            const neighbor = hexLookup.get(key);
+            if (!neighbor || neighbor.isOcean) continue;
+
+            neighbor.territoryId = tid;
+            territoryHexSets[tid].push(neighbor);
+            nextFrontier.push(neighbor);
+            unassignedLand.delete(key);
+            anyProgress = true;
           }
         }
 
-        // Remove from frontier if can't expand
-        if (!foundNeighbor) {
-          const idx = frontier.findIndex(
-            (h) => h.col === currentHex.col && h.row === currentHex.row
-          );
-          if (idx !== -1) frontier.splice(idx, 1);
-        }
+        frontiers[tid] = nextFrontier;
       }
 
-      // Create territory object
-      const centerHex = territoryHexes[Math.floor(territoryHexes.length / 2)];
+      if (!anyProgress) break;
+    }
+
+    // Step 4: Build territory objects
+    const territories = [];
+    for (let tid = 0; tid < territoryHexSets.length; tid++) {
+      const hexes = territoryHexSets[tid];
+      if (hexes.length === 0) continue;
+      const centerHex = hexes[Math.floor(hexes.length / 2)];
 
       territories.push({
-        id: territoryId,
+        id: tid,
         playerId: null,
         dice: 1,
         col: centerHex.col,
         row: centerHex.row,
         q: centerHex.q,
         r: centerHex.r,
-        hexes: territoryHexes.length,
+        hexes: hexes.length,
         neighbors: [],
       });
-
-      territoryId++;
-    }
-
-    // Convert any remaining unassigned land hexes to ocean
-    // This ensures all territories remain contiguous (no fragmentation)
-    const remaining = [...availableLand];
-    for (let key of remaining) {
-      const [col, row] = key.split(",").map(Number);
-      const hex = hexGrid.find((h) => h.col === col && h.row === row);
-
-      if (hex && !hex.isOcean && hex.territoryId === null) {
-        hex.isOcean = true;
-      }
     }
 
     return territories;
@@ -426,7 +441,6 @@ module.exports = class DiceWarsGame extends Game {
         validated.push(territory);
       } else {
         // Convert isolated territory back to ocean
-        console.log(`Removing isolated territory ${territory.id}`);
         for (let hex of territoryHexes) {
           hex.territoryId = null;
           hex.isOcean = true;
@@ -469,18 +483,30 @@ module.exports = class DiceWarsGame extends Game {
     }
     // 2-4 players: no bonus
 
-    let playerIndex = 0;
-    for (let territory of shuffledTerritories) {
-      const player = activePlayers[playerIndex % activePlayers.length];
-      territory.playerId = player.id;
+    // Distribute territories as evenly as possible
+    const numTerritories = shuffledTerritories.length;
+    const baseCount = Math.floor(numTerritories / numPlayers);
+    let remainder = numTerritories % numPlayers;
 
-      // Base random dice: 1-3
-      const baseDice = Math.floor(Math.random() * 3) + 1;
-      // Add 1 bonus die for eligible players based on player count
-      const bonusDice = bonusPlayerIds.has(player.id) ? 1 : 0;
-      territory.dice = Math.min(baseDice + bonusDice, this.maxDicePerTerritory);
+    let territoryIndex = 0;
+    for (let i = 0; i < numPlayers; i++) {
+      // First 'remainder' players get one extra territory
+      const count = baseCount + (i < remainder ? 1 : 0);
+      for (let j = 0; j < count; j++) {
+        const territory = shuffledTerritories[territoryIndex];
+        territory.playerId = activePlayers[i].id;
 
-      playerIndex++;
+        // Base random dice: 1-3
+        const baseDice = Math.floor(Math.random() * 3) + 1;
+        // Add 1 bonus die for eligible players based on player count
+        const bonusDice = bonusPlayerIds.has(activePlayers[i].id) ? 1 : 0;
+        territory.dice = Math.min(
+          baseDice + bonusDice,
+          this.maxDicePerTerritory
+        );
+
+        territoryIndex++;
+      }
     }
 
     // Initialize surplus dice storage for all players
@@ -536,9 +562,10 @@ module.exports = class DiceWarsGame extends Game {
     const info = super.getStateInfo(state);
 
     // Add game state to extraInfo so it's stored in history
+    // Deep copy territories so history entries don't share mutable references
     if (this.gameStarted) {
       info.extraInfo = {
-        territories: this.territories,
+        territories: JSON.parse(JSON.stringify(this.territories)),
         hexGrid: this.hexGrid,
         gridWidth: this.gridWidth,
         gridHeight: this.gridHeight,
@@ -560,14 +587,10 @@ module.exports = class DiceWarsGame extends Game {
    * Sends the current game state to all players
    */
   sendGameState() {
-    // Don't send game state until game has started
-    if (!this.gameStarted) {
-      console.log("Not sending game state - game not started");
-      return;
-    }
+    if (!this.gameStarted) return;
 
     const state = {
-      territories: this.territories,
+      territories: JSON.parse(JSON.stringify(this.territories)),
       hexGrid: this.hexGrid,
       gridWidth: this.gridWidth,
       gridHeight: this.gridHeight,
@@ -581,12 +604,6 @@ module.exports = class DiceWarsGame extends Game {
       maxDicePerTerritory: this.maxDicePerTerritory,
     };
 
-    console.log(
-      "Broadcasting game state - Turn:",
-      this.turnNumber,
-      "Current player:",
-      this.currentTurnPlayerId
-    );
     this.broadcast("gameState", state);
   }
 
@@ -803,83 +820,54 @@ module.exports = class DiceWarsGame extends Game {
 
   endTurn(playerId) {
     if (playerId !== this.currentTurnPlayerId) {
-      console.log(
-        "Not your turn! Current turn:",
-        this.currentTurnPlayerId,
-        "Attempted:",
-        playerId
-      );
       return { success: false, message: "Not your turn!" };
     }
 
-    console.log("Ending turn for", playerId);
+    // Award reinforcement dice to the player ending their turn
+    this.awardBonusDice(playerId);
 
     // Check if game should end before advancing turn
     if (this.checkGameEnd()) {
       return { success: true };
     }
 
-    // Move to next player in turn order
-    this.turnIndex++;
-
-    // Filter turn order to only include alive players
-    const aliveTurnOrder = this.turnOrder.filter((id) => {
+    // Update turn order to only include alive players
+    this.turnOrder = this.turnOrder.filter((id) => {
       const player = this.players.array().find((p) => p.id === id);
       return player && player.alive;
     });
-
-    console.log(
-      "Turn index:",
-      this.turnIndex,
-      "Alive players:",
-      aliveTurnOrder.length
-    );
-
-    // Check if round is complete
-    const isRoundComplete = this.turnIndex >= aliveTurnOrder.length;
-    if (isRoundComplete) {
-      this.turnIndex = 0;
-      this.roundNumber++;
-      console.log(
-        "Round complete, resetting to index 0, new round:",
-        this.roundNumber
-      );
-
-      // Award bonus dice to all players at the end of the round
-      this.awardBonusDiceToAllPlayers();
-    }
-
-    // Update turn order if players have been eliminated
-    if (aliveTurnOrder.length < this.turnOrder.length) {
-      this.turnOrder = aliveTurnOrder;
-    }
 
     // Check again if game should end after turn order update
     if (this.checkGameEnd()) {
       return { success: true };
     }
 
+    // Find current player's position in the updated turn order and advance
+    const currentIndex = this.turnOrder.indexOf(playerId);
+    this.turnIndex =
+      currentIndex === -1
+        ? 0
+        : (currentIndex + 1) % this.turnOrder.length;
+
+    // Check if round is complete (wrapped back to start)
+    if (this.turnIndex === 0) {
+      this.roundNumber++;
+    }
+
     this.currentTurnPlayerId = this.turnOrder[this.turnIndex];
     this.hasAttacked = false;
     this.turnNumber++;
-
-    const currentPlayer = this.players
-      .array()
-      .find((p) => p.id === this.currentTurnPlayerId);
-
-    console.log(
-      "New current turn player:",
-      this.currentTurnPlayerId,
-      currentPlayer?.name
-    );
 
     // Update history with new turn state
     const stateInfo = this.getStateInfo();
     this.addStateExtraInfoToHistories(stateInfo.extraInfo);
 
     this.sendGameState();
+    const nextPlayer = this.players
+      .array()
+      .find((p) => p.id === this.currentTurnPlayerId);
     this.sendAlert(
-      `Round ${this.roundNumber}, Turn ${this.turnNumber}: ${currentPlayer.name}'s turn`
+      `Round ${this.roundNumber}, Turn ${this.turnNumber}: ${nextPlayer?.name}'s turn`
     );
 
     return { success: true };
