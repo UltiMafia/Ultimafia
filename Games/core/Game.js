@@ -3515,23 +3515,27 @@ module.exports = class Game {
   async endPostgame() {
     try {
       if (this.postgameOver) return;
-
-      var kudosTarget = null;
-      if (this.isKudosEligible()) {
-        this.postgame.finish(true);
-        if (this.postgame.finalTarget && this.postgame.finalTarget !== "*") {
-          kudosTarget = this.postgame.finalTarget;
-          this.sendAlert(
-            `${kudosTarget.name} has received kudos!`,
-            undefined,
-            undefined,
-            ["info"]
-          );
-        }
-      }
-
       this.postgameOver = true;
       this.clearTimers();
+
+      var kudosTarget = null;
+      try {
+        if (this.isKudosEligible() && this.postgame) {
+          this.postgame.finish(true);
+          if (this.postgame.finalTarget && this.postgame.finalTarget !== "*") {
+            kudosTarget = this.postgame.finalTarget;
+            this.sendAlert(
+              `${kudosTarget.name} has received kudos!`,
+              undefined,
+              undefined,
+              ["info"]
+            );
+          }
+        }
+      } catch (e) {
+        logger.error(e);
+      }
+
       this.broadcast("finished");
       await redis.deleteGame(this.id);
 
