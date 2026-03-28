@@ -1,8 +1,12 @@
 import React, { useContext } from "react";
+import { Divider, Popover, Stack, Typography } from "@mui/material";
 
 import { emotify } from "../Emotes";
 import { Avatar } from "../../pages/User/User";
-import { GameContext } from "Contexts";
+import { GameContext, SiteInfoContext, UserContext } from "Contexts";
+import { usePopoverOpen } from "../../hooks/usePopoverOpen";
+import { PopoverContent } from "../Popover";
+import { hyphenDelimit } from "../../utils";
 
 import "css/newspaper.css";
 
@@ -197,11 +201,11 @@ export default function Newspaper(props) {
       </div>
       {death.revealMessage && (
         <div className="newspaper-paragraph">
-          {formatRevealMessage(
-            death.revealMessage,
-            death.name,
-            isAlignmentReveal
-          )}
+          <RevealMessage
+            revealMessage={death.revealMessage}
+            playerName={death.name}
+            isAlignmentReveal={isAlignmentReveal}
+          />
         </div>
       )}
 
@@ -226,15 +230,195 @@ export default function Newspaper(props) {
 }
 
 // --- Helper Functions ---
-function formatRevealMessage(revealMessage, playerName, isAlignmentReveal) {
+
+const ALIGNMENT_TEXT_MAP = {
+  Village: "Village 💙",
+  Mafia: "Mafia 🔪",
+  Cult: "Cult 🦑",
+  Independent: "Independent ✨",
+  Event: "Event ⚡",
+  Resistance: "Resistance ✊",
+  Spies: "Spies 🕵️",
+  Town: "Village 💙",
+  Host: "Host 🎤",
+  Liberals: "Liberals 🇺🇸",
+  Fascists: "Fascists 🛠️",
+  Liars: "Liars 🤥",
+  Army: "Army ⚔️",
+};
+
+function RoleNamePopover({ roleName, gameType }) {
+  const user = useContext(UserContext);
+  const siteInfo = useContext(SiteInfoContext);
+  const {
+    popoverOpen,
+    openByClick,
+    anchorEl,
+    handleClick,
+    handleMouseEnter,
+    handleMouseLeave,
+    closePopover,
+  } = usePopoverOpen();
+
+  const baseRoleName = roleName.trim().split(":")[0].trim();
+  const modifierTokens = roleName.trim().split(":");
+  const modifierNames =
+    modifierTokens.length > 1 ? modifierTokens[1].split("/") : [];
+
+  const roleData = siteInfo?.rolesRaw?.[gameType]?.[baseRoleName];
+
+  if (!roleData) {
+    return (
+      <span className="newspaper-emphasis">
+        {" "}
+        {reformatRoleName(roleName)}
+      </span>
+    );
+  }
+
+  // Determine role skin
+  let roleSkin = null;
+  if (user.settings && typeof user.settings.roleSkins == "string") {
+    const userRoleSkins = user.settings.roleSkins.split(",");
+    const matched = userRoleSkins.filter(
+      (s) => s.split(":")[0] == baseRoleName
+    );
+    if (matched.length > 0) {
+      roleSkin = matched[0].split(":")[1];
+    }
+  }
+  if (roleSkin === null) {
+    roleSkin = "vivid";
+  }
+
+  const roleClass = `${hyphenDelimit(gameType)}-${hyphenDelimit(baseRoleName)}`;
+  const roleAlignment = ALIGNMENT_TEXT_MAP[roleData?.alignment];
+  const roleTags = roleData?.tags ? roleData.tags.sort().join(", ") : "";
+
+  const mappedModifiers = siteInfo.modifiers?.[gameType]
+    ? siteInfo.modifiers[gameType].filter((m) => modifierNames.includes(m.name))
+    : [];
+
+  const DescriptionLines = (
+    <Stack direction="column" spacing={1}>
+      {roleData?.description?.map((text, i) => (
+        <Stack direction="row" spacing={1} key={i} sx={{ alignItems: "center" }}>
+          <i className={"fas fa-info-circle"} />
+          <Typography>{text}</Typography>
+        </Stack>
+      ))}
+    </Stack>
+  );
+
+  const Modifiers =
+    mappedModifiers.length > 0 ? (
+      <Stack direction="column" spacing={1}>
+        {mappedModifiers.map((modifier) => {
+          const count = modifierNames.filter((m) => m === modifier.name).length;
+          return (
+            <Stack
+              direction="row"
+              spacing={1}
+              key={modifier.name}
+              sx={{ alignItems: "center" }}
+            >
+              <i
+                className={`modifier modifier-${gameType}-${modifier.name}`}
+              />
+              <Typography>
+                <span style={{ fontWeight: "bold" }}>
+                  {count > 1 ? modifier.name + " x" + count : modifier.name}
+                </span>
+                :{" "}
+                {(roleData?.alignment === "Event" &&
+                modifier.eventDescription != null
+                  ? modifier.eventDescription
+                  : modifier.description
+                )?.replace("[X]", "" + count)}
+              </Typography>
+            </Stack>
+          );
+        })}
+      </Stack>
+    ) : null;
+
+  const popoverContent = (
+    <Stack
+      direction="column"
+      spacing={1}
+      divider={<Divider orientation="horizontal" flexItem />}
+    >
+      <Typography>
+        <span style={{ fontWeight: "bold" }}>Tags</span>: {roleTags}
+      </Typography>
+      {DescriptionLines}
+      {Modifiers}
+    </Stack>
+  );
+
+  return (
+    <>
+      <span
+        className="newspaper-emphasis newspaper-role-hover"
+        onClick={handleClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {" "}
+        {reformatRoleName(roleName)}
+      </span>
+      <Popover
+        open={popoverOpen}
+        sx={{ pointerEvents: openByClick ? "auto" : "none" }}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        onClose={closePopover}
+        disableScrollLock
+        disableRestoreFocus
+      >
+        <PopoverContent
+          title={baseRoleName}
+          content={popoverContent}
+          page={`/learn/role/${baseRoleName}`}
+          icon={<div className={`role role-icon-${roleSkin}-${roleClass}`} />}
+          subTitle={
+            <Typography>
+              <span style={{ fontWeight: "bold" }}>Alignment</span>:{" "}
+              {roleAlignment}
+            </Typography>
+          }
+        />
+      </Popover>
+    </>
+  );
+}
+
+function RevealMessage({ revealMessage, playerName, isAlignmentReveal }) {
+  const game = useContext(GameContext);
   const revealType = isAlignmentReveal ? "alignment" : "role";
-  const revealResult = isAlignmentReveal
-    ? getAlignmentName(revealMessage)
-    : reformatRoleName(getRoleName(revealMessage));
+
+  if (isAlignmentReveal) {
+    const alignmentResult = getAlignmentName(revealMessage);
+    return (
+      <>
+        {playerName}'s {revealType} was:
+        <span className="newspaper-emphasis"> {alignmentResult}</span>
+      </>
+    );
+  }
+
+  const rawRoleName = getRoleName(revealMessage);
   return (
     <>
       {playerName}'s {revealType} was:
-      <span className="newspaper-emphasis"> {revealResult}</span>
+      <RoleNamePopover roleName={rawRoleName} gameType={game.gameType} />.
     </>
   );
 }
@@ -243,7 +427,7 @@ function getRoleName(text) {
   if (!text) return "???";
   const indexStart = text.lastIndexOf(ROLE_SEARCH_TERM);
   const indexEnd = indexStart + ROLE_SEARCH_TERM.length;
-  return text.substring(indexEnd);
+  return text.substring(indexEnd).replace(/\.$/, "");
 }
 const ALIGNMENT_SEARCH_TERM = "'s alignment is ";
 function getAlignmentName(text) {
