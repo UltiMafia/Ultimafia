@@ -329,6 +329,19 @@ export default function Profile() {
     return true;
   }
 
+  function onClearBanner(e) {
+    e.stopPropagation();
+    axios
+      .post("/api/user/banner/clear")
+      .then(() => {
+        setBanner(false);
+        siteInfo.clearCache();
+      })
+      .catch((e) => {
+        errorAlert(e);
+      });
+  }
+
   function onFileUpload(files, type) {
     if (files.length) {
       const formData = new FormData();
@@ -1230,6 +1243,11 @@ export default function Profile() {
           onFileUpload={onFileUpload}
         >
           <i className="far fa-file-image" />
+          {banner && (
+            <span className="clear-banner" onClick={onClearBanner}>
+              <i className="fas fa-times" /> Clear
+            </span>
+          )}
         </HiddenUpload>
       )}
     </>
@@ -1270,7 +1288,7 @@ export default function Profile() {
                 )}
                 {!banner && (
                   <Box
-                    className="banner"
+                    className="banner no-banner"
                     sx={{ width: "100%", height: "24px !important" }}
                   >
                     {bannerUpload}

@@ -1888,6 +1888,23 @@ router.post("/banner", async function (req, res) {
   }
 });
 
+router.post("/banner/clear", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+
+    var bannerPath = `${process.env.UPLOAD_PATH}/${userId}_banner.webp`;
+    if (fs.existsSync(bannerPath)) fs.unlinkSync(bannerPath);
+
+    await models.User.updateOne({ id: userId }, { $set: { banner: false } });
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error clearing banner");
+  }
+});
+
 router.post("/avatar", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
