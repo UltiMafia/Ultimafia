@@ -635,18 +635,17 @@ router.get("/:id/profile", async function (req, res) {
     }
 
     if (userId) {
-      user.isFriend =
+      user.isFriendRequested =
         (await models.FriendRequest.findOne({
           userId: reqUserId,
           targetId: userId,
         })) != null;
 
-      if (!user.isFriend)
-        user.isFriend =
-          (await models.Friend.findOne({
-            userId: reqUserId,
-            friendId: userId,
-          })) != null;
+      user.isFriend =
+        (await models.Friend.findOne({
+          userId: reqUserId,
+          friendId: userId,
+        })) != null;
     } else user.isFriend = false;
 
     user.pokeStatus = { status: "none" };
@@ -730,10 +729,10 @@ router.get("/:id/profile", async function (req, res) {
       for (const poke of incomingPokes) {
         if (isPokeExpired(poke)) continue;
         const sender = await models.User.findOne({ id: poke.from, deleted: false })
-          .select("id name avatar -_id");
-        if (sender) {
+          .select("id name avatar settings -_id");
+        if (sender && !sender.settings?.disablePokes) {
           user.incomingPokes.push({
-            from: sender.toJSON(),
+            from: { id: sender.id, name: sender.name, avatar: sender.avatar },
             count: poke.count,
             updatedAt: poke.updatedAt,
           });
@@ -2947,15 +2946,21 @@ router.post("/poke", async function (req, res) {
       return;
     }
 
-    // Check target user's disablePokes setting
-    var targetUser = await models.User.findOne({
-      id: targetId,
-      deleted: false,
-    }).select("settings -_id");
+    // Check both users' disablePokes settings
+    var [selfUser, targetUser] = await Promise.all([
+      models.User.findOne({ id: userId, deleted: false }).select("settings -_id"),
+      models.User.findOne({ id: targetId, deleted: false }).select("settings -_id"),
+    ]);
 
     if (!targetUser) {
       res.status(400);
       res.send("User not found.");
+      return;
+    }
+
+    if (selfUser?.settings?.disablePokes) {
+      res.status(400);
+      res.send("You have disabled pokes.");
       return;
     }
 
@@ -3034,11 +3039,26 @@ router.post("/poke/back", async function (req, res) {
       return;
     }
 
+    // Check if either user has disabled pokes
+    var [selfUser, targetUser] = await Promise.all([
+      models.User.findOne({ id: userId, deleted: false }).select("settings -_id"),
+      models.User.findOne({ id: targetId, deleted: false }).select("settings -_id"),
+    ]);
+
+    if (selfUser?.settings?.disablePokes || targetUser?.settings?.disablePokes) {
+      res.status(400);
+      res.send("Pokes are disabled.");
+      return;
+    }
+
+    var maxPokes = 1000000;
+    var newCount = Math.min(poke.count + 1, maxPokes);
+
     await models.Poke.updateOne(pair, {
       $set: {
         from: userId,
         to: targetId,
-        count: poke.count + 1,
+        count: newCount,
         updatedAt: Date.now(),
       },
     });

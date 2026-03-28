@@ -609,16 +609,83 @@ iframe {
   padding: 4px 0;
 }
 
-.poke-count {
-  font-size: 0.85em;
-  opacity: 0.75;
+.poke-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.poke-dismiss {
+  margin-left: auto;
+  padding-right: 8px;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.15s ease;
+}
+
+.poke-dismiss:hover {
+  opacity: 1;
+}
+
+.poke-name-wrapper {
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+}
+
+.poke-streak-badge {
+  background: #e65100;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -4px;
+  margin-bottom: -2px;
+  line-height: 1;
+}
+
+.poke-streak-badge.trophy {
+  background: #ffd700;
+  color: #5d4200;
+  font-size: 11px;
 }
 
 .btn-poke {
   cursor: pointer;
+  transform: rotate(-30deg);
+  transition: transform 0.15s ease;
+}
+
+.btn-poke:hover {
+  transform: rotate(-30deg) scale(1.2);
+}
+
+.btn-poke.sel {
+  animation: poke-bounce 0.6s ease infinite alternate;
 }
 
 .btn-poke.disabled {
   opacity: 0.4;
   cursor: default;
+  transform: rotate(-30deg);
+}
+
+.btn-poke.disabled:hover {
+  transform: rotate(-30deg);
+}
+
+@keyframes poke-bounce {
+  0% {
+    transform: rotate(-30deg) scale(1);
+  }
+  100% {
+    transform: rotate(-15deg) scale(1.15);
+  }
 }
