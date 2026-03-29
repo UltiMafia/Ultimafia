@@ -1295,7 +1295,7 @@ async function getNextGameServerPort() {
 
   index = Math.abs(index % ports.length);
 
-  if (index === NaN || index === undefined || index === null) {
+  if (isNaN(index) || index === undefined || index === null) {
     index = 0;
   }
 
