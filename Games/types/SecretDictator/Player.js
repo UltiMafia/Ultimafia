@@ -7,4 +7,10 @@ module.exports = class SecretDictatorPlayer extends Player {
 
     this.deathMessages = deathMessages;
   }
+
+  getRevealType(deathType) {
+    // Non-Dictator deaths never reveal role — return a key with no appearance entry
+    if (this.role.name !== "Dictator") return "none";
+    return super.getRevealType(deathType);
+  }
 };

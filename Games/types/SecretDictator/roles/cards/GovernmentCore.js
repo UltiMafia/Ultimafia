@@ -27,14 +27,17 @@ module.exports = class GovernmentCore extends Card {
             let votes = {};
             votes["Ja!"] = [];
             votes["Nein!"] = [];
+            let voteResults = {};
             let electionVoteMeeting =
               this.game.getMeetingByName("Election Vote");
             for (let member of electionVoteMeeting.members) {
               let vote = electionVoteMeeting.votes[member.id];
               if (vote) {
                 votes[vote].push(member.player.name);
+                voteResults[member.id] = vote;
               }
             }
+            this.game.lastVoteResults = voteResults;
 
             for (const v in votes) {
               if (votes[v].length > 0) {

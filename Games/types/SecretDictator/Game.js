@@ -59,6 +59,7 @@ module.exports = class SecretDictatorGame extends Game {
     this.drawnPolicies = [];
 
     this.presidentialPowersBoard = {};
+    this.lastVoteResults = null;
   }
 
   start() {
@@ -185,6 +186,10 @@ module.exports = class SecretDictatorGame extends Game {
   incrementState() {
     super.incrementState();
 
+    if (this.getStateName() == "Election") {
+      this.lastVoteResults = null;
+    }
+
     if (this.getStateName() == "Nomination" && !this.specialElection) {
       this.moveToNextPresidentialNominee();
     }
@@ -225,6 +230,7 @@ module.exports = class SecretDictatorGame extends Game {
         chancellorNominee: this.chancellorNominee?.name,
       },
       presidentialPowersBoard: this.presidentialPowersBoard,
+      lastVoteResults: this.lastVoteResults,
     };
     return info;
   }
