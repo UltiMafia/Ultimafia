@@ -37,8 +37,18 @@
   --gradient-color: var(--gradient-color-dark);
 }
 
+.retro-mode {
+  --scheme-color: #5357a5;
+  --scheme-color-sec: #5d61b3;
+  --scheme-color-background: #454978;
+  --scheme-color-text: #f1f1f1;
+  --scheme-color-border: #6a6eb8;
+  --scheme-color-code: #484c8a;
+  --gradient-color: var(--gradient-color-dark);
+}
+
 @media (prefers-color-scheme: light) {
-  html:not(.dark-mode) {
+  html:not(.dark-mode):not(.retro-mode) {
     --scheme-color: #ffffff;
     --scheme-color-sec: #bddadb;
     --scheme-color-background: #f3f3f3;
@@ -49,7 +59,7 @@
   }
 }
 @media (prefers-color-scheme: dark) {
-  html:not(.light-mode) {
+  html:not(.light-mode):not(.retro-mode) {
     --scheme-color: rgb(36, 36, 36);
     --scheme-color-sec: rgb(46, 46, 50);
     --scheme-color-background: #3b3b3b;

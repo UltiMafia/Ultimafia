@@ -201,15 +201,31 @@ export function UserProvider({
     }
   }, [user.settings]);
 
-  const { mode, systemMode } = useColorScheme();
+  const { mode, systemMode, setMode } = useColorScheme();
   useEffect(() => {
     const colorScheme = mode === "system" ? systemMode : mode;
     document.documentElement.classList.remove(
       "dark-mode",
-      "light-mode"
+      "light-mode",
+      "retro-mode"
     );
-    document.documentElement.classList.add(`${colorScheme}-mode`);
+    if (colorScheme === "retro") {
+      document.documentElement.classList.add("retro-mode");
+    } else if (colorScheme === "light" || colorScheme === "dark") {
+      document.documentElement.classList.add(`${colorScheme}-mode`);
+    }
   }, [mode, systemMode]);
+
+  useEffect(() => {
+    if (
+      user.loaded &&
+      user.loggedIn &&
+      user.settings?.siteColorScheme &&
+      ["system", "light", "dark", "retro"].includes(user.settings.siteColorScheme)
+    ) {
+      setMode(user.settings.siteColorScheme);
+    }
+  }, [user.loaded, user.loggedIn, user.settings?.siteColorScheme, setMode]);
 
   return (
     <>

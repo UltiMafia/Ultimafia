@@ -2948,7 +2948,10 @@ export function PlayerRows({ players, className = "" }) {
       colorAutoScheme = true;
     } else {
       if (!document.documentElement.classList.contains("light-mode")) {
-        if (!document.documentElement.classList.contains("dark-mode")) {
+        if (
+          !document.documentElement.classList.contains("dark-mode") &&
+          !document.documentElement.classList.contains("retro-mode")
+        ) {
           colorAutoScheme = true;
         } else {
           bubbleColor = "white";

@@ -284,6 +284,10 @@ export default function Settings() {
           label: "Dark",
           value: "dark",
         },
+        {
+          label: "Retro",
+          value: "retro",
+        },
       ],
       value: mode,
     },

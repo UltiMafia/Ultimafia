@@ -47,6 +47,9 @@ export function getSiteTheme(customPrimaryColor) {
     else if (isValentines) {
       return "#fc007e";
     }
+    if (mode === "retro") {
+      return "#D50032";
+    }
     // Different colors for light and dark modes
     else return mode === "light" ? "#D50032" : "#EFBF04";
   };
@@ -60,6 +63,9 @@ export function getSiteTheme(customPrimaryColor) {
     }
     else if (isValentines) {
       return "#fc007e";
+    }
+    if (mode === "retro") {
+      return "#B80028";
     }
     // Different colors for light and dark modes that complement the primary
     return mode === "light" ? "#B80028" : "#D4A704";
@@ -92,6 +98,26 @@ export function getSiteTheme(customPrimaryColor) {
     },
     text: {
       main: "#F1F1F1",
+    },
+  };
+
+  const retroPalette = {
+    mode: "dark",
+    primary: {
+      main: getPrimaryColor("retro"),
+    },
+    secondary: {
+      main: getSecondaryColor("retro"),
+    },
+    info: {
+      main: "#DAA520",
+    },
+    text: {
+      main: "#F1F1F1",
+    },
+    background: {
+      default: "#454978",
+      paper: "#5357a5",
     },
   };
 
@@ -208,6 +234,31 @@ export function getSiteTheme(customPrimaryColor) {
         },
         palette: {
           ...darkPalette,
+          activeAppBarText: {
+            main: "var(--mui-palette-primary-main)",
+          },
+        },
+      },
+      retro: {
+        components: {
+          ...commonComponents,
+          MuiPaper: {
+            styleOverrides: {
+              root: {
+                variants: [
+                  {
+                    props: { variant: "outlined" },
+                    style: {
+                      backgroundColor: "var(--scheme-color-sec)",
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+        palette: {
+          ...retroPalette,
           activeAppBarText: {
             main: "var(--mui-palette-primary-main)",
           },
