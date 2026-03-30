@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import {
   isHalloweenThemeActive,
   isPrideThemeActive,
+  isRetroThemeForcedByCalendar,
   isValentinesThemeActive,
   isWinterThemeActive,
 } from "../utils/holidayThemes";
@@ -24,7 +25,9 @@ export default function SiteLogo({
   const user = useContext(UserContext);
 
   const getLogoSrc = () => {
-    if (user?.settings?.siteColorScheme === "retro") return logobm;
+    if (isRetroThemeForcedByCalendar() || user?.settings?.siteColorScheme === "retro") {
+      return logobm;
+    }
     if (isValentinesThemeActive()) return logovalentines; // February: Valentine's
     if (isPrideThemeActive()) return logopride; // June: Pride
     if (isHalloweenThemeActive()) return logohalloween; // October: Halloween

@@ -31,6 +31,8 @@ import { useErrorAlert } from "components/Alerts";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import AvatarUpload from "components/AvatarUpload";
 import { useCookieConsent } from "../../hooks/useCookieConsent";
+import { useCalendarTick } from "../../hooks/useCalendarTick";
+import { isRetroThemeForcedByCalendar } from "../../utils/holidayThemes";
 
 import "css/settings.css";
 import { setCaptchaVisible } from "utils";
@@ -206,6 +208,7 @@ function SettingsSection({ sections, activeSection }) {
 }
 
 export default function Settings() {
+  useCalendarTick();
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [accountsLoaded, setAccountsLoaded] = useState(false);
   const [accounts, setAccounts] = useState({});
@@ -268,6 +271,7 @@ export default function Settings() {
       ref: "siteColorScheme",
       type: "select",
       groupName: "Appearance",
+      showIf: () => !isRetroThemeForcedByCalendar(),
       onChange: (event) => {
         const v = event.target.value;
         setMode(v === "retro" ? "dark" : v);
@@ -291,6 +295,19 @@ export default function Settings() {
         },
       ],
       value: "dark",
+    },
+    {
+      label: "Site Color Scheme",
+      ref: "siteColorSchemeRetroLock",
+      type: "custom",
+      groupName: "Appearance",
+      showIf: () => isRetroThemeForcedByCalendar(),
+      render: () => (
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          Retro site is required for everyone today (April 1). March 30 uses the
+          same lock for testing. You cannot change the site color scheme.
+        </Typography>
+      ),
     },
     {
       label: "Minimum WCAG contrast",

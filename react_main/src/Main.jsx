@@ -12,6 +12,7 @@ import {
   UserProvider,
 } from "./Contexts";
 import { getSiteTheme } from "./constants/themes";
+import { isRetroThemeForcedByCalendar } from "./utils/holidayThemes";
 import { AlertList, useErrorAlert } from "./components/Alerts";
 import { Nav } from "./components/Nav";
 import UserNavSection from "./pages/User/UserNavSection";
@@ -98,7 +99,9 @@ function Main(props) {
   const errorContent = props.errorContent;
 
   const [isUserLoading, setUserLoading] = useState(true);
-  const [siteTheme, setSiteTheme] = useState(() => getSiteTheme());
+  const [siteTheme, setSiteTheme] = useState(() =>
+    getSiteTheme(null, isRetroThemeForcedByCalendar() ? "retro" : "dark")
+  );
   const [isSiteInfoLoading, setSiteInfoLoading] = useState(true);
   const [showAnnouncementTemporarily, setShowAnnouncementTemporarily] =
     useState(false);

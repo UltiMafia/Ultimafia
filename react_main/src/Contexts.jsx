@@ -9,6 +9,8 @@ import { GlobalStyles, useColorScheme, useTheme } from "@mui/material";
 import { getIconFilter } from "utilsFolder/iconFilter";
 import { generateContrastLookup, autoContrastColor } from "utilsFolder/autoContrast";
 import { getSiteTheme } from "./constants/themes";
+import { isRetroThemeForcedByCalendar } from "./utils/holidayThemes";
+import { useCalendarTick } from "./hooks/useCalendarTick";
 
 export const UserContext = React.createContext();
 export const SiteInfoContext = React.createContext();
@@ -19,6 +21,7 @@ export function UserProvider({
   setUserLoading,
   setSiteTheme,
 }) {
+  const calendarTick = useCalendarTick();
   const siteInfo = useContext(SiteInfoContext);
   const theme = useTheme();
   const [inGame, setInGame] = useState(null);
@@ -204,8 +207,9 @@ export function UserProvider({
       user.settings.customPrimaryColor !== "none"
         ? user.settings.customPrimaryColor
         : null;
-    const palette =
-      user.loggedIn && user.settings
+    const palette = isRetroThemeForcedByCalendar()
+      ? "retro"
+      : user.loggedIn && user.settings
         ? user.settings.siteColorScheme || "dark"
         : "dark";
     setSiteTheme(getSiteTheme(custom, palette));
@@ -215,6 +219,7 @@ export function UserProvider({
     user.settings?.siteColorScheme,
     user.settings?.customPrimaryColor,
     setSiteTheme,
+    calendarTick,
   ]);
 
   const { mode, systemMode, setMode } = useColorScheme();
@@ -225,14 +230,21 @@ export function UserProvider({
       "light-mode",
       "retro-mode"
     );
-    if (user.settings?.siteColorScheme === "retro") {
+    if (
+      isRetroThemeForcedByCalendar() ||
+      user.settings?.siteColorScheme === "retro"
+    ) {
       document.documentElement.classList.add("retro-mode");
     } else if (resolved === "light" || resolved === "dark") {
       document.documentElement.classList.add(`${resolved}-mode`);
     }
-  }, [mode, systemMode, user.settings?.siteColorScheme]);
+  }, [mode, systemMode, user.settings?.siteColorScheme, calendarTick]);
 
   useEffect(() => {
+    if (isRetroThemeForcedByCalendar()) {
+      setMode("dark");
+      return;
+    }
     if (
       user.loaded &&
       user.loggedIn &&
@@ -245,7 +257,7 @@ export function UserProvider({
           : user.settings.siteColorScheme
       );
     }
-  }, [user.loaded, user.loggedIn, user.settings?.siteColorScheme, setMode]);
+  }, [user.loaded, user.loggedIn, user.settings?.siteColorScheme, setMode, calendarTick]);
 
   return (
     <>

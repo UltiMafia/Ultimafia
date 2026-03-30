@@ -19,6 +19,13 @@ const { colorHasGoodContrastForBothThemes } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 
+/** Keep in sync with `isRetroThemeForcedByCalendar` in react_main/src/utils/holidayThemes.js */
+function isRetroThemeForcedByCalendar(date = new Date()) {
+  const month = date.getMonth();
+  const day = date.getDate();
+  return (month === 2 && day === 30) || (month === 3 && day === 1);
+}
+
 // Helper function to resolve user ID from identifier (ID or vanity URL)
 async function resolveUserId(identifier) {
   // First try to find user by ID
@@ -1666,6 +1673,12 @@ router.post("/settings/update", async function (req, res) {
       logger.warn(`Invalid settings prop by ${userId}: ${prop}`);
       res.status(500);
       res.send("Error updating settings.");
+      return;
+    }
+
+    if (prop === "siteColorScheme" && isRetroThemeForcedByCalendar()) {
+      res.status(403);
+      res.send("Site color scheme is locked on this date.");
       return;
     }
 

@@ -1479,7 +1479,8 @@ export function TextMeetingLayout() {
   useEffect(() => doAutoScroll());
 
   useEffect(() => {
-    if (stateViewing != null && !selTab && speechMeetings.length) {
+    // Use == null so meeting id 0 is not treated as "no tab" (0 is falsy with !selTab).
+    if (stateViewing != null && selTab == null && speechMeetings.length) {
       updateHistory({
         type: "selTab",
         state: stateViewing,
@@ -1636,7 +1637,8 @@ export function TextMeetingLayout() {
     game.pinnedMessages,
   ]);
 
-  var canSpeak = selTab && meetings[selTab];
+  var canSpeak =
+    selTab != null && selTab !== "" && meetings[selTab];
   canSpeak =
     canSpeak &&
     (meetings[selTab].members.length > 1 || history.currentState == -1 || meetings[selTab].name == "Spectator Meeting");
@@ -1657,7 +1659,7 @@ export function TextMeetingLayout() {
         }}
       >
         <Tabs
-          value={selTab || false}
+          value={selTab ?? false}
           onChange={onTabChange}
           sx={{
             flexGrow: 1,
@@ -1799,7 +1801,7 @@ function getMessagesToDisplay(
 ) {
   var messages;
 
-  if (selTab && meetings[selTab]?.messages) {
+  if (selTab != null && selTab !== "" && meetings[selTab]?.messages) {
     messages = [...meetings[selTab].messages];
   } else {
     messages = [];
@@ -1873,8 +1875,11 @@ function getMessagesToDisplay(
 
   var voteRecord;
 
-  if (selTab && meetings[selTab]) voteRecord = meetings[selTab].voteRecord || [];
-  else voteRecord = [];
+  if (selTab != null && selTab !== "" && meetings[selTab]) {
+    voteRecord = meetings[selTab].voteRecord || [];
+  } else {
+    voteRecord = [];
+  }
 
   for (let meetingId in meetings)
     if (!meetings[meetingId].speech)
@@ -2491,7 +2496,7 @@ function SpeechInput(props) {
     const defaultOptions = [
       { label: "Say", id: "Say", placeholder: "to everyone" },
     ];
-    if (!selTab || !meetings[selTab]) {
+    if (selTab == null || selTab === "" || !meetings[selTab]) {
       setSpeechDropdownOptions(defaultOptions);
       return;
     }
@@ -2596,7 +2601,7 @@ function SpeechInput(props) {
   }
 
   function onSpeechSubmit(e) {
-    if (e.key === "Enter" && selTab && speechInput.length) {
+    if (e.key === "Enter" && selTab != null && selTab !== "" && speechInput.length) {
       const abilityInfo = speechDropdownValue.split(":");
       var abilityName = abilityInfo[0];
       var abilityTarget = abilityInfo[1];
@@ -3025,7 +3030,10 @@ export function PlayerRows({ players, className = "" }) {
           includeMiniprofile
           newTab
         />
-        {selTab && showBubbles && visibleTyping[player.id] === selTab && (
+        {selTab != null &&
+          selTab !== "" &&
+          showBubbles &&
+          visibleTyping[player.id] === selTab && (
           <ReactLoading
             className={`typing-icon ${stateViewing != -1 ? "has-role" : ""}`}
             type="bubbles"
