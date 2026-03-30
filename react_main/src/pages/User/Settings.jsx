@@ -269,7 +269,8 @@ export default function Settings() {
       type: "select",
       groupName: "Appearance",
       onChange: (event) => {
-        setMode(event.target.value);
+        const v = event.target.value;
+        setMode(v === "retro" ? "dark" : v);
       },
       options: [
         {
@@ -285,11 +286,11 @@ export default function Settings() {
           value: "dark",
         },
         {
-          label: "Retro",
+          label: "Retro site",
           value: "retro",
         },
       ],
-      value: mode,
+      value: "dark",
     },
     {
       label: "Minimum WCAG contrast",

@@ -8,6 +8,7 @@ import axios from "axios";
 import { GlobalStyles, useColorScheme, useTheme } from "@mui/material";
 import { getIconFilter } from "utilsFolder/iconFilter";
 import { generateContrastLookup, autoContrastColor } from "utilsFolder/autoContrast";
+import { getSiteTheme } from "./constants/themes";
 
 export const UserContext = React.createContext();
 export const SiteInfoContext = React.createContext();
@@ -16,7 +17,7 @@ export const GameContext = React.createContext();
 export function UserProvider({
   children,
   setUserLoading,
-  setCustomPrimaryColor,
+  setSiteTheme,
 }) {
   const siteInfo = useContext(SiteInfoContext);
   const theme = useTheme();
@@ -192,29 +193,44 @@ export function UserProvider({
     if (user.settings && user.settings.iconFilter) {
       setIconFilter(getIconFilter(user.settings.iconFilter));
     }
-    if (
-      user.settings &&
-      user.settings.customPrimaryColor &&
-      user.settings.customPrimaryColor !== "none"
-    ) {
-      setCustomPrimaryColor(user.settings.customPrimaryColor);
-    }
   }, [user.settings]);
+
+  useEffect(() => {
+    if (!setSiteTheme) {
+      return;
+    }
+    const custom =
+      user.settings?.customPrimaryColor &&
+      user.settings.customPrimaryColor !== "none"
+        ? user.settings.customPrimaryColor
+        : null;
+    const palette =
+      user.loggedIn && user.settings
+        ? user.settings.siteColorScheme || "dark"
+        : "dark";
+    setSiteTheme(getSiteTheme(custom, palette));
+  }, [
+    user.loaded,
+    user.loggedIn,
+    user.settings?.siteColorScheme,
+    user.settings?.customPrimaryColor,
+    setSiteTheme,
+  ]);
 
   const { mode, systemMode, setMode } = useColorScheme();
   useEffect(() => {
-    const colorScheme = mode === "system" ? systemMode : mode;
+    const resolved = mode === "system" ? systemMode : mode;
     document.documentElement.classList.remove(
       "dark-mode",
       "light-mode",
       "retro-mode"
     );
-    if (colorScheme === "retro") {
+    if (user.settings?.siteColorScheme === "retro") {
       document.documentElement.classList.add("retro-mode");
-    } else if (colorScheme === "light" || colorScheme === "dark") {
-      document.documentElement.classList.add(`${colorScheme}-mode`);
+    } else if (resolved === "light" || resolved === "dark") {
+      document.documentElement.classList.add(`${resolved}-mode`);
     }
-  }, [mode, systemMode]);
+  }, [mode, systemMode, user.settings?.siteColorScheme]);
 
   useEffect(() => {
     if (
@@ -223,7 +239,11 @@ export function UserProvider({
       user.settings?.siteColorScheme &&
       ["system", "light", "dark", "retro"].includes(user.settings.siteColorScheme)
     ) {
-      setMode(user.settings.siteColorScheme);
+      setMode(
+        user.settings.siteColorScheme === "retro"
+          ? "dark"
+          : user.settings.siteColorScheme
+      );
     }
   }, [user.loaded, user.loggedIn, user.settings?.siteColorScheme, setMode]);
 

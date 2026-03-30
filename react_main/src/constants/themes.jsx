@@ -32,7 +32,7 @@ const CUSTOM_EXPAND_ICON = (
   </Box>
 );
 
-export function getSiteTheme(customPrimaryColor) {
+export function getSiteTheme(customPrimaryColor, sitePalette = "dark") {
   const isValentines = isValentinesThemeActive();
   const isHalloween = isHalloweenThemeActive();
 
@@ -120,6 +120,8 @@ export function getSiteTheme(customPrimaryColor) {
       paper: "#5357a5",
     },
   };
+
+  const useRetroAsDarkPalette = sitePalette === "retro";
 
   const commonComponents = {
     MuiAccordion: {
@@ -231,34 +233,27 @@ export function getSiteTheme(customPrimaryColor) {
       dark: {
         components: {
           ...commonComponents,
-        },
-        palette: {
-          ...darkPalette,
-          activeAppBarText: {
-            main: "var(--mui-palette-primary-main)",
-          },
-        },
-      },
-      retro: {
-        components: {
-          ...commonComponents,
-          MuiPaper: {
-            styleOverrides: {
-              root: {
-                variants: [
-                  {
-                    props: { variant: "outlined" },
-                    style: {
-                      backgroundColor: "var(--scheme-color-sec)",
+          ...(useRetroAsDarkPalette
+            ? {
+                MuiPaper: {
+                  styleOverrides: {
+                    root: {
+                      variants: [
+                        {
+                          props: { variant: "outlined" },
+                          style: {
+                            backgroundColor: "var(--scheme-color-sec)",
+                          },
+                        },
+                      ],
                     },
                   },
-                ],
-              },
-            },
-          },
+                },
+              }
+            : {}),
         },
         palette: {
-          ...retroPalette,
+          ...(useRetroAsDarkPalette ? retroPalette : darkPalette),
           activeAppBarText: {
             main: "var(--mui-palette-primary-main)",
           },
