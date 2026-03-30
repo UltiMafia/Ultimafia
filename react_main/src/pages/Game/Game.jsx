@@ -1636,7 +1636,7 @@ export function TextMeetingLayout() {
     game.pinnedMessages,
   ]);
 
-  var canSpeak = selTab;
+  var canSpeak = selTab && meetings[selTab];
   canSpeak =
     canSpeak &&
     (meetings[selTab].members.length > 1 || history.currentState == -1 || meetings[selTab].name == "Spectator Meeting");
@@ -1799,8 +1799,11 @@ function getMessagesToDisplay(
 ) {
   var messages;
 
-  if (selTab) messages = [...meetings[selTab].messages];
-  else messages = [];
+  if (selTab && meetings[selTab]?.messages) {
+    messages = [...meetings[selTab].messages];
+  } else {
+    messages = [];
+  }
 
   if (filters && (filters.from || filters.contains))
     messages = messages.filter((m) => {
@@ -1870,7 +1873,7 @@ function getMessagesToDisplay(
 
   var voteRecord;
 
-  if (selTab) voteRecord = meetings[selTab].voteRecord;
+  if (selTab && meetings[selTab]) voteRecord = meetings[selTab].voteRecord || [];
   else voteRecord = [];
 
   for (let meetingId in meetings)
@@ -2485,12 +2488,16 @@ function SpeechInput(props) {
   }
 
   useEffect(() => {
-    if (!selTab) return <></>;
-
-    const speechAbilities = meetings[selTab].speechAbilities;
-    const newDropdownOptions = [
+    const defaultOptions = [
       { label: "Say", id: "Say", placeholder: "to everyone" },
     ];
+    if (!selTab || !meetings[selTab]) {
+      setSpeechDropdownOptions(defaultOptions);
+      return;
+    }
+
+    const speechAbilities = meetings[selTab].speechAbilities || [];
+    const newDropdownOptions = [...defaultOptions];
 
     for (let ability of speechAbilities) {
       newDropdownOptions.push("divider");
@@ -2519,7 +2526,7 @@ function SpeechInput(props) {
     }
 
     setSpeechDropdownOptions(newDropdownOptions);
-  }, [selTab]);
+  }, [selTab, meetings, players, props.whispersEnabled]);
 
   useEffect(() => {
     if (lastTyped > 0) {
@@ -2581,7 +2588,7 @@ function SpeechInput(props) {
     if (
       e.target.value.length > 0 &&
       (e.target.value[0] !== "/" || e.target.value.slice(0, 4) === "/me ") &&
-      !meetings[selTab].anonymous &&
+      !meetings[selTab]?.anonymous &&
       speechDropdownValue === "Say"
     ) {
       setLastTyped(Date.now());

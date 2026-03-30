@@ -10,6 +10,10 @@
   background-image: url("/src/images/white-diamond-dark.png");
 }
 
+html.retro-mode .game {
+  background-image: url("/src/images/bg-bm.png");
+}
+
 .game a {
   color: var(--theme-color-light);
 }

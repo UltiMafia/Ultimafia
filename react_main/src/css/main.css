@@ -110,6 +110,10 @@ a {
   background-image: url("/src/images/white-diamond-dark.png");
 }
 
+html.retro-mode .site-wrapper {
+  background-image: url("/src/images/bg-bm.png");
+}
+
 .header {
   flex-shrink: 0;
   display: flex;
