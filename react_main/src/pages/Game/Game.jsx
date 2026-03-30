@@ -1479,8 +1479,7 @@ export function TextMeetingLayout() {
   useEffect(() => doAutoScroll());
 
   useEffect(() => {
-    // Use == null so meeting id 0 is not treated as "no tab" (0 is falsy with !selTab).
-    if (stateViewing != null && selTab == null && speechMeetings.length) {
+    if (stateViewing != null && !selTab && speechMeetings.length) {
       updateHistory({
         type: "selTab",
         state: stateViewing,
@@ -1637,8 +1636,7 @@ export function TextMeetingLayout() {
     game.pinnedMessages,
   ]);
 
-  var canSpeak =
-    selTab != null && selTab !== "" && meetings[selTab];
+  var canSpeak = selTab;
   canSpeak =
     canSpeak &&
     (meetings[selTab].members.length > 1 || history.currentState == -1 || meetings[selTab].name == "Spectator Meeting");
@@ -1659,7 +1657,7 @@ export function TextMeetingLayout() {
         }}
       >
         <Tabs
-          value={selTab ?? false}
+          value={selTab || false}
           onChange={onTabChange}
           sx={{
             flexGrow: 1,
@@ -1801,11 +1799,8 @@ function getMessagesToDisplay(
 ) {
   var messages;
 
-  if (selTab != null && selTab !== "" && meetings[selTab]?.messages) {
-    messages = [...meetings[selTab].messages];
-  } else {
-    messages = [];
-  }
+  if (selTab) messages = [...meetings[selTab].messages];
+  else messages = [];
 
   if (filters && (filters.from || filters.contains))
     messages = messages.filter((m) => {
@@ -1875,11 +1870,8 @@ function getMessagesToDisplay(
 
   var voteRecord;
 
-  if (selTab != null && selTab !== "" && meetings[selTab]) {
-    voteRecord = meetings[selTab].voteRecord || [];
-  } else {
-    voteRecord = [];
-  }
+  if (selTab) voteRecord = meetings[selTab].voteRecord;
+  else voteRecord = [];
 
   for (let meetingId in meetings)
     if (!meetings[meetingId].speech)
@@ -2493,16 +2485,12 @@ function SpeechInput(props) {
   }
 
   useEffect(() => {
-    const defaultOptions = [
+    if (!selTab) return <></>;
+
+    const speechAbilities = meetings[selTab].speechAbilities;
+    const newDropdownOptions = [
       { label: "Say", id: "Say", placeholder: "to everyone" },
     ];
-    if (selTab == null || selTab === "" || !meetings[selTab]) {
-      setSpeechDropdownOptions(defaultOptions);
-      return;
-    }
-
-    const speechAbilities = meetings[selTab].speechAbilities || [];
-    const newDropdownOptions = [...defaultOptions];
 
     for (let ability of speechAbilities) {
       newDropdownOptions.push("divider");
@@ -2531,7 +2519,7 @@ function SpeechInput(props) {
     }
 
     setSpeechDropdownOptions(newDropdownOptions);
-  }, [selTab, meetings, players, props.whispersEnabled]);
+  }, [selTab]);
 
   useEffect(() => {
     if (lastTyped > 0) {
@@ -2593,7 +2581,7 @@ function SpeechInput(props) {
     if (
       e.target.value.length > 0 &&
       (e.target.value[0] !== "/" || e.target.value.slice(0, 4) === "/me ") &&
-      !meetings[selTab]?.anonymous &&
+      !meetings[selTab].anonymous &&
       speechDropdownValue === "Say"
     ) {
       setLastTyped(Date.now());
@@ -2601,7 +2589,7 @@ function SpeechInput(props) {
   }
 
   function onSpeechSubmit(e) {
-    if (e.key === "Enter" && selTab != null && selTab !== "" && speechInput.length) {
+    if (e.key === "Enter" && selTab && speechInput.length) {
       const abilityInfo = speechDropdownValue.split(":");
       var abilityName = abilityInfo[0];
       var abilityTarget = abilityInfo[1];
@@ -2960,10 +2948,7 @@ export function PlayerRows({ players, className = "" }) {
       colorAutoScheme = true;
     } else {
       if (!document.documentElement.classList.contains("light-mode")) {
-        if (
-          !document.documentElement.classList.contains("dark-mode") &&
-          !document.documentElement.classList.contains("retro-mode")
-        ) {
+        if (!document.documentElement.classList.contains("dark-mode")) {
           colorAutoScheme = true;
         } else {
           bubbleColor = "white";
@@ -3030,10 +3015,7 @@ export function PlayerRows({ players, className = "" }) {
           includeMiniprofile
           newTab
         />
-        {selTab != null &&
-          selTab !== "" &&
-          showBubbles &&
-          visibleTyping[player.id] === selTab && (
+        {selTab && showBubbles && visibleTyping[player.id] === selTab && (
           <ReactLoading
             className={`typing-icon ${stateViewing != -1 ? "has-role" : ""}`}
             type="bubbles"
