@@ -585,6 +585,7 @@ export default function Game() {
         type: "add",
         player,
       });
+      playAudio("join");
     });
 
     socket.on("playerLeave", (playerId) => {
@@ -592,6 +593,7 @@ export default function Game() {
         type: "remove",
         playerId,
       });
+      playAudio("leave");
     });
 
     socket.on("spectatorCount", (count) => {
@@ -819,6 +821,13 @@ export default function Game() {
         ...prev,
         readyPlayers: { ...prev.readyPlayers, [data.playerId]: true },
       }));
+      playAudio("readyCheck");
+    });
+
+    socket.on("audio", (audioName) => {
+      if (typeof audioName === "string" && audioName.length > 0) {
+        playAudio(audioName);
+      }
     });
   }, [connected]);
 

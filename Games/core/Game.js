@@ -664,6 +664,7 @@ module.exports = class Game {
       }
     } else {
       if (this.started && !this.finished && (player.alive || (this.graveyardParticipation == true && !player.exorcised) || (this.type == "Mafia" && player.requiresGraveyardParticipation()))) {
+        this.broadcast("audio", "veg");
         const wasRanked = this.ranked;
         const wasCompetitive = this.competitive;
         this.makeUnranked();
@@ -717,6 +718,7 @@ module.exports = class Game {
   async vegPlayer(player) {
     if (player.hasEffect("Unveggable")) return;
     if (player.left) return;
+    this.broadcast("audio", "veg");
     const wasRanked = this.ranked;
     const wasCompetitive = this.competitive;
     this.makeUnranked();

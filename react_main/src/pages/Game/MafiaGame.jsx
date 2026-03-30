@@ -280,6 +280,11 @@ export default function MafiaGame() {
       game.options?.competitive
     ) {
       game.playAudio("music/PregameCompetitive");
+    } else if (
+      history.currentState === -1 &&
+      game.options?.lobby === "Sandbox"
+    ) {
+      game.playAudio("music/PregameSandbox");
     } else {
       game.stopAudio();
     }
