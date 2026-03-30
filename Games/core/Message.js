@@ -131,15 +131,22 @@ module.exports = class Message {
       }
     } else return;
 
-    return this.parseMessageInfoObj(version, senderId);
+    return this.parseMessageInfoObj(version, senderId, player);
   }
 
-  parseMessageInfoObj(version, senderId) {
+  parseMessageInfoObj(version, senderId, player) {
+    const meetingId =
+      version.meeting &&
+      player &&
+      player.toClientMeetingId
+        ? player.toClientMeetingId(version.meeting.id)
+        : version.meeting && version.meeting.id;
+
     return {
       id: version.id,
       senderId: senderId,
       content: version.content,
-      meetingId: version.meeting && version.meeting.id,
+      meetingId,
       prefix: version.prefix,
       time: version.timeSent,
       quotable: version.quotable,

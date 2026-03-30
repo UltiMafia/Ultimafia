@@ -299,7 +299,7 @@ module.exports = class Meeting {
     }
 
     return {
-      id: this.id,
+      id: player && player.toClientMeetingId ? player.toClientMeetingId(this.id) : this.id,
       name: this.getName(member),
       actionName: this.getActionName(member),
       members: this.getMembers(),

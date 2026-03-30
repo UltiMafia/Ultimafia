@@ -43,13 +43,26 @@ module.exports = class Quote extends Message {
     this.game.events.emit("message", this);
   }
 
-  parseMessageInfoObj(version, senderId) {
+  parseMessageInfoObj(version, senderId, player) {
+    const toMeetingId =
+      version.meeting &&
+      player &&
+      player.toClientMeetingId
+        ? player.toClientMeetingId(version.meeting.id)
+        : version.meeting && version.meeting.id;
+    const fromMeetingId =
+      version.fromMeetingId &&
+      player &&
+      player.toClientMeetingId
+        ? player.toClientMeetingId(version.fromMeetingId)
+        : version.fromMeetingId;
+
     return {
       isQuote: true,
       senderId: senderId,
       messageId: version.messageId,
-      toMeetingId: version.meeting && version.meeting.id,
-      fromMeetingId: version.fromMeetingId,
+      toMeetingId,
+      fromMeetingId,
       fromState: version.fromState,
       time: version.timeSent,
       textColor: version.textColor,

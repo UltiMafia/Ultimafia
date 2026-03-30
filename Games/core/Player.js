@@ -59,6 +59,8 @@ module.exports = class Player {
     this.passiveExtraRoles = [];
     this.joinTime = Date.now(); // Track when player joined for host reassignment
     this.youAreBeingVoteKicked = false;
+    this.clientMeetingByServerId = {};
+    this.serverMeetingByClientId = {};
   }
 
   init() {
@@ -194,7 +196,8 @@ module.exports = class Player {
 
         speechPast.push(Date.now());
 
-        var meeting = this.game.getMeeting(message.meetingId);
+        const meetingId = this.fromClientMeetingId(message.meetingId);
+        var meeting = this.game.getMeeting(meetingId);
         if (!meeting) return;
 
         meeting.speak({
@@ -241,6 +244,9 @@ module.exports = class Player {
 
         speechPast.push(Date.now());
 
+        quote.toMeetingId = this.fromClientMeetingId(quote.toMeetingId);
+        quote.fromMeetingId = this.fromClientMeetingId(quote.fromMeetingId);
+
         var meeting = this.game.getMeeting(quote.toMeetingId);
         if (!meeting) return;
 
@@ -276,6 +282,7 @@ module.exports = class Player {
 
         votePast.push(Date.now());
 
+        vote.meetingId = this.fromClientMeetingId(vote.meetingId);
         var meeting = this.game.getMeeting(vote.meetingId);
         if (!meeting) return;
 
@@ -301,7 +308,7 @@ module.exports = class Player {
 
         if (!Utils.validProp(meetingId)) return;
 
-        var meeting = this.game.getMeeting(meetingId);
+        var meeting = this.game.getMeeting(this.fromClientMeetingId(meetingId));
         if (!meeting) return;
 
         meeting.unvote(this, target);
@@ -337,7 +344,7 @@ module.exports = class Player {
 
         if (!Utils.validProp(meetingId)) return;
 
-        var meeting = this.game.getMeeting(meetingId);
+        var meeting = this.game.getMeeting(this.fromClientMeetingId(meetingId));
         if (!meeting) return;
 
         meeting.typing(this.id, isTyping);
@@ -692,7 +699,9 @@ module.exports = class Player {
           }
         }
 
-        const meeting = this.game.getMeeting(cmd.raw.meetingId);
+        const meeting = this.game.getMeeting(
+          this.fromClientMeetingId(cmd.raw.meetingId)
+        );
         let recipients;
 
         if (!this.alive) {
@@ -784,6 +793,23 @@ module.exports = class Player {
     }
 
     return info;
+  }
+
+  toClientMeetingId(meetingId) {
+    if (meetingId == null) return meetingId;
+    const normalizedMeetingId = String(meetingId);
+    if (!this.clientMeetingByServerId[normalizedMeetingId]) {
+      const clientMeetingId = shortid.generate();
+      this.clientMeetingByServerId[normalizedMeetingId] = clientMeetingId;
+      this.serverMeetingByClientId[clientMeetingId] = normalizedMeetingId;
+    }
+    return this.clientMeetingByServerId[normalizedMeetingId];
+  }
+
+  fromClientMeetingId(meetingId) {
+    if (meetingId == null) return meetingId;
+    const normalizedMeetingId = String(meetingId);
+    return this.serverMeetingByClientId[normalizedMeetingId] || normalizedMeetingId;
   }
 
   setRole(roleName, roleData, noReveal, noAlert, noEmit, faction, items) {
@@ -1143,7 +1169,7 @@ module.exports = class Player {
     this.send("vote", {
       voterId: voterId,
       target: targetToSend,
-      meetingId: vote.meeting.id,
+      meetingId: this.toClientMeetingId(vote.meeting.id),
       noLog,
     });
 
@@ -1181,7 +1207,7 @@ module.exports = class Player {
 
     this.send("unvote", {
       voterId: voterId,
-      meetingId: info.meeting.id,
+      meetingId: this.toClientMeetingId(info.meeting.id),
       target: targetToSend,
     });
 
@@ -1205,7 +1231,10 @@ module.exports = class Player {
       if (info.cancel) return;
     }
 
-    this.send("typing", clientTyping);
+    this.send("typing", {
+      playerId: info.playerId,
+      meetingId: this.toClientMeetingId(info.meetingId),
+    });
   }
 
   sendAlert(message, extraStyle) {
@@ -1491,12 +1520,12 @@ module.exports = class Player {
 
   leftMeeting(meeting) {
     this.history.removeMeeting(meeting);
-    this.send("leftMeeting", meeting.id);
+    this.send("leftMeeting", this.toClientMeetingId(meeting.id));
   }
 
   sendMeetingMembers(meeting) {
     this.send("members", {
-      meetingId: meeting.id,
+      meetingId: this.toClientMeetingId(meeting.id),
       members: meeting.getMembers(),
     });
   }
