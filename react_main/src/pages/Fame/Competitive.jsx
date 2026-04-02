@@ -15,7 +15,6 @@ import {
   Select,
   MenuItem,
   Paper,
-  IconButton,
   Button,
   TextField,
 } from "@mui/material";
@@ -24,10 +23,11 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import Setup from "components/Setup";
 import { Loading } from "components/Loading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { UserContext, SiteInfoContext } from "Contexts";
 import { PageNav, SearchBar } from "components/Nav";
 import { useErrorAlert } from "components/Alerts";
+import { CompetitiveFaqContent } from "./CompetitiveFaq";
 
 export const QUERY_PARAM_SEASON = "season";
 export const QUERY_PARAM_ROUND = "round";
@@ -595,6 +595,17 @@ export default function Competitive() {
     }
   }, [currentRoundInfo ? currentRoundInfo.seasonNumber : null]);
 
+  useEffect(() => {
+    if (!currentRoundInfo || Object.keys(currentRoundInfo).length === 0) return;
+    if (currentRoundInfo.seasonNumber !== null && !currentSeasonInfo) return;
+    const hasRound = Boolean(currentRoundInfo.round);
+    const roundHasStarted =
+      currentRoundInfo.round && currentRoundInfo.round.currentDay > 0;
+    if (tab === "gameHistory" && !(hasRound && roundHasStarted)) {
+      setTab("overview");
+    }
+  }, [currentRoundInfo, currentSeasonInfo, tab]);
+
   if (!currentRoundInfo || Object.keys(currentRoundInfo).length === 0) {
     return <Loading />;
   }
@@ -603,8 +614,11 @@ export default function Competitive() {
     return <Loading />;
   }
 
+  const isOffseason = !currentRoundInfo.seasonNumber;
+  const hasRound = Boolean(currentRoundInfo.round);
   const roundHasStarted =
     currentRoundInfo.round && currentRoundInfo.round.currentDay > 0;
+  const activeTab = isOffseason ? "faq" : tab;
 
   let displayTitle = null;
   let caption = null;
@@ -750,49 +764,48 @@ export default function Competitive() {
                   )}
                 </Stack>
               </Stack>
-              <Box
-                sx={{
-                  marginLeft: "auto !important",
-                }}
-              >
-                <IconButton component={Link} to="faq" aria-label="faq">
-                  <i className="fas fa-question-circle" />
-                </IconButton>
-              </Box>
             </Stack>
           </Grid2>
         )}
       </Grid2>
-      {currentRoundInfo.round && (
-        <>
-          <Tabs
-            centered
-            value={tab}
-            onChange={(_, newValue) => setTab(newValue)}
-            sx={{
-              borderBottom: 1,
-              borderColor: "divider",
-            }}
-          >
-            <Tab label="Overview" value="overview" />
-            {roundHasStarted && (
-              <Tab label="Round History" value="gameHistory" />
-            )}
-          </Tabs>
-          <Stack spacing={1} sx={{ display: tab === "overview" ? undefined : "none" }}>
-            <Overview
-              roundInfo={currentRoundInfo}
-              seasonInfo={currentSeasonInfo}
-            />
-          </Stack>
-          <Box sx={{ display: tab === "gameHistory" ? undefined : "none" }}>
-            <GameHistory
-              roundInfo={currentRoundInfo}
-              canManageCompetitive={canManageCompetitive}
-              reloadRoundInfo={reloadRoundInfo}
-            />
-          </Box>
-        </>
+      <Tabs
+        centered
+        value={activeTab}
+        onChange={(_, newValue) => {
+          if (!isOffseason) setTab(newValue);
+        }}
+        sx={{
+          borderBottom: 1,
+          borderColor: "divider",
+        }}
+      >
+        {!isOffseason && <Tab label="Overview" value="overview" />}
+        {!isOffseason && hasRound && roundHasStarted && (
+          <Tab label="Round History" value="gameHistory" />
+        )}
+        <Tab label="FAQ" value="faq" />
+      </Tabs>
+      {!isOffseason && activeTab === "overview" && (
+        <Stack spacing={1}>
+          <Overview
+            roundInfo={currentRoundInfo}
+            seasonInfo={currentSeasonInfo}
+          />
+        </Stack>
+      )}
+      {!isOffseason && hasRound && roundHasStarted && activeTab === "gameHistory" && (
+        <Box>
+          <GameHistory
+            roundInfo={currentRoundInfo}
+            canManageCompetitive={canManageCompetitive}
+            reloadRoundInfo={reloadRoundInfo}
+          />
+        </Box>
+      )}
+      {activeTab === "faq" && (
+        <Box sx={{ mt: 1 }}>
+          <CompetitiveFaqContent />
+        </Box>
       )}
     </Stack>
   );
