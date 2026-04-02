@@ -37,6 +37,18 @@ const PRESTIGE_ICON = require(`images/prestige.png`);
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 25, 50, 100];
 
+/** Stable order for round history: completion time, then game id string. */
+function compareRoundHistoryGames(a, b) {
+  const endA = a.game?.endTime;
+  const endB = b.game?.endTime;
+  if (endA != null && endB != null && endA !== endB) {
+    return endA - endB;
+  }
+  const idA = String(a.game?.id ?? "");
+  const idB = String(b.game?.id ?? "");
+  return idA.localeCompare(idB);
+}
+
 function Overview({ roundInfo, seasonInfo }) {
   const isPhoneDevice = useIsPhoneDevice();
   const [userSearch, setUserSearch] = useState("");
@@ -338,7 +350,14 @@ function GameHistory({ roundInfo, canManageCompetitive, reloadRoundInfo }) {
       }
       currentRoundGamesByDay[gameCompletion.day].push(gameCompletion);
     }
+    for (const day of Object.keys(currentRoundGamesByDay)) {
+      currentRoundGamesByDay[day].sort(compareRoundHistoryGames);
+    }
   }
+
+  const dayKeysSorted = Object.keys(currentRoundGamesByDay).sort(
+    (a, b) => Number(a) - Number(b)
+  );
 
   return (
     <Stack direction="column" spacing={1}>
@@ -352,7 +371,7 @@ function GameHistory({ roundInfo, canManageCompetitive, reloadRoundInfo }) {
           Showing {gameCompletionsFiltered.length} game(s) with both players
         </Typography>
       )}
-      {Object.keys(currentRoundGamesByDay).map((day) => (
+      {dayKeysSorted.map((day) => (
         <Stack direction="column" spacing={1} key={day}>
           <Typography variant="h3">Day {day}</Typography>
           {currentRoundGamesByDay[day].map((gameCompletion) => (
@@ -362,15 +381,18 @@ function GameHistory({ roundInfo, canManageCompetitive, reloadRoundInfo }) {
                 p: 2,
                 height: "100%",
               }}
+              key={gameCompletion.game.id}
             >
               <Grid2
                 container
                 columns={isPhoneDevice ? 1 : 2}
-                key={gameCompletion.game.id}
                 spacing={isPhoneDevice ? 1 : 4}
               >
                 <Grid2 size={1}>
                   <Stack direction="column" spacing={1}>
+                    <Typography variant="body2" color="text.secondary">
+                      Game {gameCompletion.game.id}
+                    </Typography>
                     <GameRow
                       game={gameCompletion.game}
                       lobby={"Competitive"}

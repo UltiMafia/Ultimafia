@@ -715,6 +715,13 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
       },
     },
     { $unwind: { path: "$game.setup" } },
+    {
+      $sort: {
+        day: 1,
+        "game.endTime": 1,
+        "game.id": 1,
+      },
+    },
   ]);
 
   for (let gameCompletion of roundInfo.gameCompletions) {
