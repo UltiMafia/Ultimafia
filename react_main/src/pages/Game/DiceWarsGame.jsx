@@ -10,16 +10,14 @@ import {
   Timer,
   GameTypeContext,
   SideMenu,
+  MobileLayout,
 } from "./Game";
 import { GameContext } from "../../Contexts";
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/gameBattlesnakes.css"; // Reuse Battlesnakes CSS as placeholder
 
 export default function DiceWarsGame(props) {
   const game = useContext(GameContext);
-  const isPhoneDevice = useIsPhoneDevice();
-
   const history = game.history;
   const updateHistory = game.updateHistory;
   const stateViewing = game.stateViewing;
@@ -41,13 +39,6 @@ export default function DiceWarsGame(props) {
     // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });
   }, []);
-
-  if (isPhoneDevice) {
-    // Unsupported
-    game.leaveGame();
-    alert("Dice Wars is not presently supported on mobile devices.");
-    return <></>;
-  }
 
   return (
     <GameTypeContext.Provider
@@ -77,6 +68,27 @@ export default function DiceWarsGame(props) {
           </>
         }
         rightPanelContent={
+          <>
+            <TextMeetingLayout combineMessagesFromAllMeetings />
+          </>
+        }
+      />
+      <MobileLayout
+        centerContent={
+          <>
+            {players && game.socket && (
+              <DiceWarsBoardWrapper
+                player={self}
+                players={players}
+                gameSocket={game.socket}
+                history={history}
+                stateViewing={stateViewing}
+                isReview={game.review}
+              />
+            )}
+          </>
+        }
+        innerRightContent={
           <>
             <TextMeetingLayout combineMessagesFromAllMeetings />
           </>
@@ -359,9 +371,8 @@ function DiceWarsBoardWrapper({
 
     const svg = d3
       .select(svgRef.current)
-      .attr("width", width)
-      .attr("height", height)
-      .attr("viewBox", `0 0 ${width} ${height}`);
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("preserveAspectRatio", "xMidYMid meet");
 
     // Clear previous content
     svg.selectAll("*").remove();
@@ -567,7 +578,8 @@ function DiceWarsBoardWrapper({
             background: "#181818",
             border: "2px solid #222",
             borderRadius: 8,
-            width: "fit-content",
+            width: "100%",
+            maxWidth: 900,
             margin: "24px auto",
             padding: "16px",
             boxShadow: "0 2px 8px #000a",
@@ -579,7 +591,7 @@ function DiceWarsBoardWrapper({
               style={{
                 display: "flex",
                 justifyContent: "center",
-                gap: "16px",
+                gap: "8px",
                 flexWrap: "wrap",
                 marginBottom: "12px",
                 padding: "8px",
@@ -629,7 +641,7 @@ function DiceWarsBoardWrapper({
             </div>
           )}
           {/* Game board */}
-          <svg ref={svgRef} style={{ display: "block", margin: "0 auto" }} />
+          <svg ref={svgRef} style={{ display: "block", margin: "0 auto", width: "100%", height: "auto" }} />
           {/* End Turn button */}
           {!isReview &&
             stateViewing !== -2 &&
