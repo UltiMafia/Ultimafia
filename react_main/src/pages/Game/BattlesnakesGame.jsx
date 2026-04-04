@@ -40,8 +40,8 @@ function SnakeGame(props) {
   useEffect(() => {
     game.loadAudioFiles(battlesnakesAudioConfig);
 
-    // Make game review start at pregame
-    if (game.review) updateStateViewing({ type: "first" });
+    // Make game review start at the final state (shows the board)
+    if (game.review) updateStateViewing({ type: "current" });
   }, []);
 
   useSocketListeners((socket) => {
@@ -76,11 +76,12 @@ function SnakeGame(props) {
         }
         centerPanelContent={
           <>
-            {players && game.socket && (
+            {players && (
               <SnakeGameDisplay
                 player={self}
                 players={players}
-                gameSocket={game.socket}
+                gameSocket={!game.review ? game.socket : undefined}
+                extraInfo={history.states[stateViewing]?.extraInfo}
               />
             )}
           </>
