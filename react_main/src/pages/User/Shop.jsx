@@ -22,6 +22,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 
 import { Loading } from "../../components/Loading";
@@ -49,6 +51,7 @@ export default function Shop(props) {
   const [stampDialogOpen, setStampDialogOpen] = useState(false);
   const [stampSuggestions, setStampSuggestions] = useState([]);
   const [selectedSuggestion, setSelectedSuggestion] = useState(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -186,6 +189,7 @@ export default function Shop(props) {
             onClick={() => {
               if (item.key === "stamp") {
                 setStampDialogOpen(true);
+                setShowSuggestions(true);
                 axios.get("/api/shop/stampSuggestions")
                   .then((res) => setStampSuggestions(res.data))
                   .catch(() => setStampSuggestions([]));
@@ -296,45 +300,74 @@ export default function Shop(props) {
         fullWidth
       >
         <DialogTitle>Buy Scrapbook Stamp</DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ overflow: "visible" }}>
           <Typography variant="body2" sx={{ mb: 2 }}>
             Enter the URL or ID of a Mafia game you won. You will receive a
             stamp of the role you played.
           </Typography>
-          {stampSuggestions.length > 0 && (
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="caption" color="textSecondary" sx={{ mb: 0.5, display: "block" }}>
-                Recent wins without stamps:
-              </Typography>
-              <Stack spacing={0.5}>
+          <Box sx={{ position: "relative" }}>
+            <TextField
+              autoFocus
+              fullWidth
+              label="Game URL or ID"
+              value={stampGameUrl}
+              onChange={(e) => {
+                setStampGameUrl(e.target.value);
+                setSelectedSuggestion(null);
+                setShowSuggestions(false);
+              }}
+              placeholder="e.g. https://ultimafia.com/game/abc123 or abc123"
+              InputProps={stampSuggestions.length > 0 ? {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      size="small"
+                      onClick={() => setShowSuggestions((v) => !v)}
+                    >
+                      <i
+                        className={`fas fa-chevron-${showSuggestions ? "up" : "down"}`}
+                        style={{ fontSize: "12px" }}
+                      />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              } : undefined}
+            />
+            {showSuggestions && stampSuggestions.length > 0 && (
+              <Paper
+                sx={{
+                  position: "absolute",
+                  zIndex: 1301,
+                  left: 0,
+                  right: 0,
+                  maxHeight: 200,
+                  overflowY: "auto",
+                }}
+              >
                 {stampSuggestions.map((s) => (
-                  <Button
+                  <Box
                     key={s.gameId}
-                    variant={selectedSuggestion?.gameId === s.gameId ? "contained" : "outlined"}
-                    size="small"
-                    sx={{ justifyContent: "flex-start", textTransform: "none" }}
-                    onClick={() => {
+                    sx={{
+                      px: 2,
+                      py: 1,
+                      cursor: "pointer",
+                      "&:hover": { bgcolor: "action.hover" },
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
                       setStampGameUrl(s.gameId);
                       setSelectedSuggestion(s);
+                      setShowSuggestions(false);
                     }}
                   >
-                    {s.gameId} — {s.role}
-                  </Button>
+                    <Typography variant="body2">
+                      {s.gameId} — {s.role}
+                    </Typography>
+                  </Box>
                 ))}
-              </Stack>
-            </Box>
-          )}
-          <TextField
-            autoFocus
-            fullWidth
-            label="Game URL or ID"
-            value={stampGameUrl}
-            onChange={(e) => {
-              setStampGameUrl(e.target.value);
-              setSelectedSuggestion(null);
-            }}
-            placeholder="e.g. https://ultimafia.com/game/abc123 or abc123"
-          />
+              </Paper>
+            )}
+          </Box>
           {selectedSuggestion && (
             <Typography
               variant="caption"
