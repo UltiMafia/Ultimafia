@@ -47,6 +47,8 @@ export default function Shop(props) {
   const [amount, setAmount] = useState("");
   const [stampGameUrl, setStampGameUrl] = useState("");
   const [stampDialogOpen, setStampDialogOpen] = useState(false);
+  const [stampSuggestions, setStampSuggestions] = useState([]);
+  const [selectedSuggestion, setSelectedSuggestion] = useState(null);
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -181,7 +183,16 @@ export default function Shop(props) {
         >
           <CardActionArea
             disabled={disabled}
-            onClick={() => item.key === "stamp" ? setStampDialogOpen(true) : onBuyItem(i)}
+            onClick={() => {
+              if (item.key === "stamp") {
+                setStampDialogOpen(true);
+                axios.get("/api/shop/stampSuggestions")
+                  .then((res) => setStampSuggestions(res.data))
+                  .catch(() => setStampSuggestions([]));
+              } else {
+                onBuyItem(i);
+              }
+            }}
             sx={{
               height: "100%",
               width: "100%",
@@ -278,6 +289,8 @@ export default function Shop(props) {
         onClose={() => {
           setStampDialogOpen(false);
           setStampGameUrl("");
+          setSelectedSuggestion(null);
+          setStampSuggestions([]);
         }}
         maxWidth="sm"
         fullWidth
@@ -288,15 +301,50 @@ export default function Shop(props) {
             Enter the URL or ID of a Mafia game you won. You will receive a
             stamp of the role you played.
           </Typography>
+          {stampSuggestions.length > 0 && (
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="caption" color="textSecondary" sx={{ mb: 0.5, display: "block" }}>
+                Recent wins without stamps:
+              </Typography>
+              <Stack spacing={0.5}>
+                {stampSuggestions.map((s) => (
+                  <Button
+                    key={s.gameId}
+                    variant={selectedSuggestion?.gameId === s.gameId ? "contained" : "outlined"}
+                    size="small"
+                    sx={{ justifyContent: "flex-start", textTransform: "none" }}
+                    onClick={() => {
+                      setStampGameUrl(s.gameId);
+                      setSelectedSuggestion(s);
+                    }}
+                  >
+                    {s.gameId} — {s.role}
+                  </Button>
+                ))}
+              </Stack>
+            </Box>
+          )}
           <TextField
             autoFocus
             fullWidth
             label="Game URL or ID"
             value={stampGameUrl}
-            onChange={(e) => setStampGameUrl(e.target.value)}
+            onChange={(e) => {
+              setStampGameUrl(e.target.value);
+              setSelectedSuggestion(null);
+            }}
             placeholder="e.g. https://ultimafia.com/game/abc123 or abc123"
           />
-          {stampGameUrl.trim() && (
+          {selectedSuggestion && (
+            <Typography
+              variant="caption"
+              sx={{ mt: 1, display: "block" }}
+              color="success.main"
+            >
+              Stamp role: {selectedSuggestion.role}
+            </Typography>
+          )}
+          {!selectedSuggestion && stampGameUrl.trim() && (
             <Typography
               variant="caption"
               sx={{ mt: 1, display: "block" }}
@@ -313,6 +361,8 @@ export default function Shop(props) {
             onClick={() => {
               setStampDialogOpen(false);
               setStampGameUrl("");
+              setSelectedSuggestion(null);
+              setStampSuggestions([]);
             }}
           >
             Cancel
@@ -347,6 +397,8 @@ export default function Shop(props) {
                     "success"
                   );
                   setStampGameUrl("");
+                  setSelectedSuggestion(null);
+                  setStampSuggestions([]);
                   setStampDialogOpen(false);
                   setShopInfo((prev) => ({
                     ...prev,
