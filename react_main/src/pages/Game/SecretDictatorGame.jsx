@@ -120,7 +120,6 @@ export default function SecretDictatorGame(props) {
             <Notes />
           </>
         }
-        chatTab
       />
       {peekedPolicies && (
         <PolicyPeekModal
