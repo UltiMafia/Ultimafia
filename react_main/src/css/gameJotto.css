@@ -148,3 +148,17 @@
   display: flex;
   flex-direction: column;
 }
+
+/* Mobile layout */
+.game .jotto-mobile-panels {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+  overflow-x: auto;
+}
+
+.game .jotto-mobile-panels .jotto-history-panel {
+  min-width: 50%;
+  flex: 1 0 50%;
+}

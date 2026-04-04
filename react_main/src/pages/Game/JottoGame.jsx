@@ -218,10 +218,52 @@ export default function JottoGame() {
         </div>
       )}
       <MobileLayout
+        innerRightNavigationProps={{
+          label: "Game",
+          value: "actions",
+          icon: <i className="fas fa-gamepad" />,
+        }}
         innerRightContent={
           <>
-            <HistoryKeeper history={history} stateViewing={stateViewing} review={game.review} />
-            <ActionList />
+            {history.currentState === -1 ? (
+              <PlayerList />
+            ) : turnOrder.length > 0 ? (
+              <div className="jotto-mobile-panels">
+                {turnOrder.map((name) => (
+                  <JottoHistoryPanel
+                    key={name}
+                    name={name}
+                    guessHistory={extraInfo.guessHistoryByNames[name]}
+                    guessMeeting={guessMeeting}
+                    socket={game.socket}
+                    self={game.self}
+                    players={game.players}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="jotto-select-word">
+                <JottoGuessInput
+                  meeting={selectWordMeeting}
+                  socket={game.socket}
+                  self={game.self}
+                  isMyTurn={
+                    selectWordMeeting &&
+                    selectWordMeeting.amMember &&
+                    selectWordMeeting.canVote
+                  }
+                  placeholder="Select word"
+                  label={selectWordMeeting?.actionName || "Select Word"}
+                />
+              </div>
+            )}
+            <div className="action-list">
+              {(filteredDescriptors || []).map(
+                ({ Component, props, key }) => (
+                  <Component key={key} {...props} />
+                )
+              )}
+            </div>
           </>
         }
         additionalInfoContent={
@@ -230,6 +272,7 @@ export default function JottoGame() {
             <Notes />
           </>
         }
+        chatTab
       />
     </GameTypeContext.Provider>
   );
