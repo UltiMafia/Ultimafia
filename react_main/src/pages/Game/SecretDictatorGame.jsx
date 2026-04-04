@@ -106,10 +106,13 @@ export default function SecretDictatorGame(props) {
             <SpeechFilter />
           </>
         }
+        innerRightNavigationProps={{
+          label: "Game",
+          value: "actions",
+          icon: <i className="fas fa-gamepad" />,
+        }}
         innerRightContent={
-          <>
-            <GameBoard history={history} stateViewing={stateViewing} />
-          </>
+          <GameBoard history={history} stateViewing={stateViewing} />
         }
         additionalInfoContent={
           <>
@@ -117,6 +120,7 @@ export default function SecretDictatorGame(props) {
             <Notes />
           </>
         }
+        chatTab
       />
       {peekedPolicies && (
         <PolicyPeekModal
@@ -183,6 +187,7 @@ function LoyaltyRevealModal({ name, alignment, onClose }) {
 
 function GameBoard({ history, stateViewing }) {
   const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
   if (stateViewing === -1) return null;
 
@@ -224,6 +229,37 @@ function GameBoard({ history, stateViewing }) {
     (m) => m.actionName === "Assent Veto" && m.canVote && m.voting
   );
 
+  if (isPhoneDevice) {
+    return (
+      <div className="sd-game-board sd-game-board--mobile">
+        <PolicyTracks
+          policyInfo={extraInfo.policyInfo}
+          presidentialPowersBoard={extraInfo.presidentialPowersBoard}
+          electionTracker={extraInfo.electionInfo?.electionTracker}
+          deckInfo={extraInfo.deckInfo}
+        />
+        <SDPolicyAction
+          discardMeeting={discardMeeting}
+          enactMeeting={enactMeeting}
+          vetoMeeting={vetoMeeting}
+          socket={game.socket}
+        />
+        <PlayerCircle
+          players={players}
+          candidateInfo={extraInfo.candidateInfo}
+          nominationMeeting={nominationMeeting}
+          executiveMeeting={executiveMeeting}
+          electionMeeting={electionMeeting}
+          voteResults={extraInfo.lastVoteResults}
+          selfId={game.self}
+          socket={game.socket}
+          roles={state.roles || {}}
+          mobile
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="sd-game-board">
       <div className="sd-game-board-inner">
@@ -237,7 +273,6 @@ function GameBoard({ history, stateViewing }) {
           selfId={game.self}
           socket={game.socket}
           roles={state.roles || {}}
-         
         />
         <div className="sd-tracks-center-overlay">
           <PolicyTracks

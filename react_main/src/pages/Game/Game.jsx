@@ -1310,6 +1310,8 @@ export function MobileLayout({
   },
   innerRightContent = <ActionList />,
   additionalInfoContent = <></>,
+  hideInfoTab = false,
+  chatTab = false,
 }) {
   const game = useContext(GameContext);
   const { singleState } = useContext(GameTypeContext);
@@ -1343,10 +1345,12 @@ export function MobileLayout({
       >
         {outerLeftContent}
       </Stack>
-      <Box sx={{ display: selectedPanel === "info" ? undefined : "none" }}>
-        {/* The additionalInfoContent displays after the mobile version of TopBar */}
-        {additionalInfoContent}
-      </Box>
+      {!hideInfoTab && (
+        <Box sx={{ display: selectedPanel === "info" ? undefined : "none" }}>
+          {/* The additionalInfoContent displays after the mobile version of TopBar */}
+          {additionalInfoContent}
+        </Box>
+      )}
       <Stack
         sx={{
           flex: "1",
@@ -1388,22 +1392,32 @@ export function MobileLayout({
           }}
         >
           <BottomNavigationAction {...outerLeftNavigationProps} />
-          <BottomNavigationAction
-            label="Info"
-            value="info"
-            icon={<i className="fas fa-info" />}
-          />
-          <Stack
-            direction="row"
-            onClick={() => setSelectedPanel("chat")}
-            sx={{
-              filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
-            }}
-          >
-            {!singleState && <Divider orientation="vertical" flexItem />}
-            <StateSwitcher stateRange={singleState ? 0 : undefined} />
-            {!singleState && <Divider orientation="vertical" flexItem />}
-          </Stack>
+          {!hideInfoTab && (
+            <BottomNavigationAction
+              label="Info"
+              value="info"
+              icon={<i className="fas fa-info" />}
+            />
+          )}
+          {chatTab ? (
+            <BottomNavigationAction
+              label="Chat"
+              value="chat"
+              icon={<i className="fas fa-comments" />}
+            />
+          ) : (
+            <Stack
+              direction="row"
+              onClick={() => setSelectedPanel("chat")}
+              sx={{
+                filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
+              }}
+            >
+              {!singleState && <Divider orientation="vertical" flexItem />}
+              <StateSwitcher stateRange={singleState ? 0 : undefined} />
+              {!singleState && <Divider orientation="vertical" flexItem />}
+            </Stack>
+          )}
           <BottomNavigationAction {...innerRightNavigationProps} />
           <BottomNavigationAction
             label="Menu"

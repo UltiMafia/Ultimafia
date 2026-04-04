@@ -19,6 +19,7 @@ export function PlayerCircle({
   selfId,
   socket,
   roles,
+  mobile,
 }) {
   const siteInfo = useContext(SiteInfoContext);
   const [confirmTarget, setConfirmTarget] = useState(null);
@@ -63,13 +64,14 @@ export function PlayerCircle({
   };
 
   const n = players.length;
-  const radius = 200;
-  const cx = 250;
-  const cy = 250;
+  const radius = mobile ? 120 : 200;
+  const cx = mobile ? 160 : 250;
+  const cy = mobile ? 160 : 250;
+  const containerSize = mobile ? 320 : 560;
 
   return (
     <>
-      <div className="sd-circle-container" style={{ width: 560, height: 560, position: "relative" }}>
+      <div className={`sd-circle-container${mobile ? " sd-circle-container--mobile" : ""}`} style={{ width: containerSize, height: containerSize, position: "relative" }}>
         {players.map((player, i) => {
           const angle = (2 * Math.PI * i) / n - Math.PI / 2;
           const left = cx + radius * Math.cos(angle);
@@ -100,11 +102,20 @@ export function PlayerCircle({
           }
 
           let prevCornerIcon = null;
+          const aliveCount = players.filter(p => !p.dead).length;
           if (!isPresidentialNominee && !isChancellorNominee) {
-            if (isLastPresident) {
-              prevCornerIcon = <div className="sd-prev-corner sd-prev-corner--president" title="Previous President"><i className="fas fa-crown" /></div>;
+            if (isLastPresident && aliveCount > 5) {
+              prevCornerIcon = (
+                <div className="sd-prev-corner sd-prev-corner--president" data-tooltip={`${player.name} cannot be Chancellor this round`}>
+                  <i className="fas fa-crown" />
+                </div>
+              );
             } else if (isLastChancellor) {
-              prevCornerIcon = <div className="sd-prev-corner sd-prev-corner--chancellor" title="Previous Chancellor"><i className="fas fa-landmark" /></div>;
+              prevCornerIcon = (
+                <div className="sd-prev-corner sd-prev-corner--chancellor" data-tooltip={`${player.name} cannot be Chancellor this round`}>
+                  <i className="fas fa-landmark" />
+                </div>
+              );
             }
           }
 
@@ -119,13 +130,13 @@ export function PlayerCircle({
               voteCard = (
                 <div className="sd-vote-buttons">
                   <button
-                    className={`sd-vote-btn sd-vote-btn--ja${myVote === "Ja!" ? " sd-vote-btn--selected" : ""}`}
+                    className={`sd-vote-btn sd-vote-btn--ja${myVote === "Ja!" ? " sd-vote-btn--selected" : ""}${!myVote ? " sd-vote-btn--pending" : ""}`}
                     onClick={(e) => { e.stopPropagation(); handleVote("Ja!"); }}
                   >
                     Ja!
                   </button>
                   <button
-                    className={`sd-vote-btn sd-vote-btn--nein${myVote === "Nein!" ? " sd-vote-btn--selected" : ""}`}
+                    className={`sd-vote-btn sd-vote-btn--nein${myVote === "Nein!" ? " sd-vote-btn--selected" : ""}${!myVote ? " sd-vote-btn--pending" : ""}`}
                     onClick={(e) => { e.stopPropagation(); handleVote("Nein!"); }}
                   >
                     Nein!
