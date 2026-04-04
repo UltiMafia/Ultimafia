@@ -66,3 +66,18 @@
   background-color: #6b6b6b;
   color: white;
 }
+
+.game .jotto-layout .left-panel {
+  width: 16vw;
+}
+
+.game .jotto-layout .center-panel {
+  flex-grow: 1;
+  flex-basis: 0px;
+}
+
+.game .jotto-layout .right-panel {
+  flex-grow: 1;
+  flex-basis: 0px;
+  width: auto;
+}

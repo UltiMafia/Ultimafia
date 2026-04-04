@@ -90,7 +90,7 @@ export default function JottoGame() {
               updateCheatSheet={updateCheatSheet}
             />
           }
-          flex="1 0"
+          flex="0 0 auto"
         />
       )}
     </>
@@ -103,23 +103,29 @@ export default function JottoGame() {
       }}
     >
       <TopBar />
-      <ThreePanelLayout
-        leftPanelContent={
-          <>
-            {history.currentState == -1 && <PlayerList />}
-            <HistoryKeeper history={history} stateViewing={stateViewing} />
-            <ActionList />
-            <SettingsMenu />
-          </>
-        }
-        centerPanelContent={<TextMeetingLayout />}
-        rightPanelContent={
-          <>
-            {jottoCheatSheet}
-            <Notes />
-          </>
-        }
-      />
+      <div className="jotto-layout">
+        <ThreePanelLayout
+          leftPanelContent={
+            <>
+              {jottoCheatSheet}
+            </>
+          }
+          centerPanelContent={
+            <>
+              {history.currentState == -1 && <PlayerList />}
+              <HistoryKeeper history={history} stateViewing={stateViewing} />
+              <ActionList />
+              <SettingsMenu />
+            </>
+          }
+          rightPanelContent={
+            <>
+              <TextMeetingLayout />
+              <Notes />
+            </>
+          }
+        />
+      </div>
       <MobileLayout
         innerRightContent={
           <>
