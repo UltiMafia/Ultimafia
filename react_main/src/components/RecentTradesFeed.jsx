@@ -14,7 +14,7 @@ export default function RecentTradesFeed() {
       axios
         .get("/api/stampTrades/recent")
         .then((res) => {
-          if (!cancelled) setTrades(res.data || []);
+          if (!cancelled) setTrades(Array.isArray(res.data) ? res.data : []);
         })
         .catch(() => {});
     }

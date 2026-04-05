@@ -147,7 +147,7 @@ router.get("/recent", async (req, res) => {
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error loading recent trades.");
+    res.send([]);
   }
 });
 
