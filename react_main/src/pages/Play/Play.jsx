@@ -33,8 +33,11 @@ export default function Play(props) {
       !params.get("edit") &&
       !params.get("copy") &&
       params.get("game") !== gameType
-    )
-      navigate(location.pathname + `?game=${gameType}`);
+    ) {
+      const newParams = new URLSearchParams(location.search);
+      newParams.set("game", gameType);
+      navigate(location.pathname + "?" + newParams.toString());
+    }
   }, [location.pathname, gameType]);
   // Allow logged-out users to access Play page
 

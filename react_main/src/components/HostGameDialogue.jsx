@@ -38,7 +38,7 @@ import HostConnectFour from "./gameTypeHostForms/HostConnectFour";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { getSetupBackgroundColor } from "pages/Play/LobbyBrowser/gameRowColors";
 
-export default function HostGameDialogue({ open, setOpen, setup }) {
+export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck }) {
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
@@ -87,9 +87,15 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
   useEffect(
     function () {
       const [newFormFields, newOnHostGame] = GameTypeHostForm(setup.gameType);
+      if (preSelectedDeck) {
+        for (let field of newFormFields) {
+          if (field.ref === "anonymousGame") field.value = true;
+          if (field.ref === "anonymousDeckId") field.value = preSelectedDeck;
+        }
+      }
       updateFormFields({ type: "setFields", fields: newFormFields });
     },
-    [setup.gameType]
+    [setup.gameType, preSelectedDeck]
   );
 
   function getFormFieldValue(ref) {

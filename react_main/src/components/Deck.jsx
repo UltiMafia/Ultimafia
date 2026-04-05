@@ -20,7 +20,7 @@ export default function AnonymousDeck(props) {
       ? deck.profileCount
       : (deck.profiles && deck.profiles.length) || 0;
 
-  let displayName = `${deck.name} (${deck.id})`;
+  let displayName = deck.name;
   return (
     <div className="deck deck-listing">
       <InfoPopover

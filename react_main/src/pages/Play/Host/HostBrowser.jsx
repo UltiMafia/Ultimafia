@@ -150,20 +150,6 @@ export default function HostBrowser(props) {
   };
 
   useEffect(() => {
-    if (preSelectedDeck) {
-      let anonymousGameField = formFields.find(
-        (field) => field.ref === "anonymousGame"
-      );
-      if (anonymousGameField) {
-        anonymousGameField.value = true;
-      }
-      let anonymousDeckIdField = formFields.find(
-        (field) => field.ref === "anonymousDeckId"
-      );
-      if (anonymousDeckIdField) {
-        anonymousDeckIdField.value = preSelectedDeck;
-      }
-    }
     const timeout = window.setTimeout(() => {
       getSetupList(filters);
     }, 100);
@@ -530,6 +516,7 @@ export default function HostBrowser(props) {
             open={ishostGameDialogueOpen}
             setOpen={setIshostGameDialogueOpen}
             setup={selSetup}
+            preSelectedDeck={preSelectedDeck}
           />
         )}
       </Stack>
