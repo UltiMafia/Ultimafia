@@ -44,7 +44,11 @@ export default function AnonymousDeck(props) {
         >
           {displayName}
         </Typography>
-        <div className="deck-preview-row">
+        <div
+          className="deck-preview-row"
+          onClick={handleClick}
+          style={{ cursor: "pointer" }}
+        >
           {previews.map((profile) => (
             <div
               key={profile.id}
