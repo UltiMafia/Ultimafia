@@ -518,8 +518,12 @@ router.get("/search", async function (req, res) {
       userId,
       "disableDeck"
     );
+    let query = String(req.query.query);
     let searchClause = {
-      name: { $regex: String(req.query.query), $options: "i" },
+      $or: [
+        { name: { $regex: query, $options: "i" } },
+        { id: query },
+      ],
     };
     if (!canSeeDisabled) {
       searchClause.disabled = false;
