@@ -22,7 +22,7 @@ function cellToPx(cell, cellSize) {
  *              Calls onGameState(state) with latest state,
  *              calls onPlayerId(id) when player id assigned.
  */
-export default function SnakeGameDisplay({ player, players, gameSocket }) {
+export default function SnakeGameDisplay({ player, players, gameSocket, extraInfo }) {
   const [gameState, setGameState] = useState(null);
   const [playerId, setPlayerId] = useState(player || -1);
   const svgRef = useRef();
@@ -33,57 +33,67 @@ export default function SnakeGameDisplay({ player, players, gameSocket }) {
     socket.on("gameState", (state) => {
       setGameState(state);
     });
-  }, gameSocket);
+  }, gameSocket || {});
+
+  // Use extraInfo from history when in review mode or postgame
+  useEffect(() => {
+    if (extraInfo?.snakes) {
+      setGameState({
+        snakes: extraInfo.snakes,
+        foods: extraInfo.foods,
+        gridSize: extraInfo.gridSize,
+      });
+    }
+  }, [extraInfo]);
 
   useEffect(() => {
-    if (!gameSocket) {
-      let demoPlayerId = "you";
-      setPlayerId(demoPlayerId);
-      let otherId = "other";
-      let demoState = {
-        gridSize: 20,
-        snakes: {
-          [demoPlayerId]: {
-            direction: "right",
-            segments: [
-              { x: 2, y: 10 },
-              { x: 1, y: 10 },
-              { x: 0, y: 10 },
-            ],
-            alive: true,
-          },
-          [otherId]: {
-            direction: "down",
-            segments: [
-              { x: 6, y: 12 },
-              { x: 6, y: 11 },
-              { x: 6, y: 10 },
-            ],
-            alive: true,
-          },
+    if (gameSocket || extraInfo) return;
+
+    let demoPlayerId = "you";
+    setPlayerId(demoPlayerId);
+    let otherId = "other";
+    let demoState = {
+      gridSize: 20,
+      snakes: {
+        [demoPlayerId]: {
+          direction: "right",
+          segments: [
+            { x: 2, y: 10 },
+            { x: 1, y: 10 },
+            { x: 0, y: 10 },
+          ],
+          alive: true,
         },
-        food: { x: 12, y: 8 },
-        foods: [
-          { x: 12, y: 8 },
-          { x: 5, y: 5 },
-        ],
-      };
-      let tick = 0;
-      const intv = setInterval(() => {
-        demoState.snakes[demoPlayerId].segments = demoState.snakes[
-          demoPlayerId
-        ].segments.map((s) => ({ ...s, x: s.x + 1 }));
-        demoState.food.x = (demoState.food.x + 1) % demoState.gridSize;
-        demoState.foods.forEach((f, i) => {
-          f.x = (f.x + 1 + i) % demoState.gridSize;
-        });
-        setGameState({ ...demoState });
-        tick += 1;
-      }, 400);
-      return () => clearInterval(intv);
-    }
-    // else: real connect to backend not implemented in this file
-  }, [gameSocket]);
+        [otherId]: {
+          direction: "down",
+          segments: [
+            { x: 6, y: 12 },
+            { x: 6, y: 11 },
+            { x: 6, y: 10 },
+          ],
+          alive: true,
+        },
+      },
+      food: { x: 12, y: 8 },
+      foods: [
+        { x: 12, y: 8 },
+        { x: 5, y: 5 },
+      ],
+    };
+    let tick = 0;
+    const intv = setInterval(() => {
+      demoState.snakes[demoPlayerId].segments = demoState.snakes[
+        demoPlayerId
+      ].segments.map((s) => ({ ...s, x: s.x + 1 }));
+      demoState.food.x = (demoState.food.x + 1) % demoState.gridSize;
+      demoState.foods.forEach((f, i) => {
+        f.x = (f.x + 1 + i) % demoState.gridSize;
+      });
+      setGameState({ ...demoState });
+      tick += 1;
+    }, 400);
+    return () => clearInterval(intv);
+  }, [gameSocket, extraInfo]);
 
   useEffect(() => {
     if (!gameState) return;

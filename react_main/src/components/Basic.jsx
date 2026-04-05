@@ -351,15 +351,26 @@ export function iconUsername(text, players) {
           return curPlayer.name === checkName;
         });
 
-        if (matchedPlayer && matchedPlayer.avatar) {
-          replaced = true;
+        if (matchedPlayer) {
+          if (matchedPlayer.avatar) {
+            replaced = true;
 
-          words[j] = (
-            <InlineAvatar
+            words[j] = (
+              <InlineAvatar
               url={`url(/uploads/${matchedPlayer.userId}_avatar.webp)`}
               username={matchedPlayer.name}
-            />
-          );
+              />
+            );
+          } else {
+            // no avatar
+            replaced = true;
+
+            words[j] = (
+              <InlineAvatar
+              username={matchedPlayer.name}
+              />
+            );
+          }
         }
       }
 
@@ -376,11 +387,40 @@ export function iconUsername(text, players) {
 }
 
 function InlineAvatar(props) {
+  let style = {};
+  if (props.url) {
+    style.backgroundImage = props.url;
+  } else {
+    // Same as the list in react_main/src/pages/User/User.jsx
+    const colors = [
+      "#fff59d",
+      "#ef9a9a",
+      "#9fa8da",
+      "#ce93d8",
+      "#a5d6a7",
+      "#f48fb1",
+      "#ffcc80",
+      "#90deea",
+      "#80cbc4",
+    ]; //yellow, red, blue, purple, green, pink, orange, cyan, teal
+    let rand = 0;
+    let name = props.username;
+
+    for (let i = 0; i < name.length; i++) rand ^= name.charCodeAt(i);
+
+    rand ^= name.charCodeAt(1);
+    rand ^= rand << 13;
+    rand ^= rand >> 7;
+    rand ^= rand << 17;
+    rand = Math.abs(rand) / Math.pow(2, 31);
+
+    style.backgroundColor = colors[Math.floor(rand * colors.length)];
+  }
   return (
     <div
       className="avatar small inline"
       title={props.username}
-      style={{ backgroundImage: props.url }}
+      style={style}
     >
       &#8203;
     </div>

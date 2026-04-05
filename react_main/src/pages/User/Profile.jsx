@@ -899,15 +899,34 @@ export default function Profile() {
     });
   }
 
-  const recentGamesRows = recentGames.map((game) => {
+  const recentGamesRows = recentGames.map((game, index) => {
     return (
-      <GameRow
-        game={game}
-        type={game.status || "Finished"}
-        key={game.id}
-        odd={recentGames.indexOf(game) % 2 === 1}
-        small
-      />
+      <div key={game.id} style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ width: "20px", textAlign: "center", flexShrink: 0 }}>
+          {game.won === true && (
+            <i
+              className="fas fa-check"
+              style={{ color: "#4caf50", fontSize: "14px" }}
+              title="Win"
+            />
+          )}
+          {game.won === false && (
+            <i
+              className="fas fa-times"
+              style={{ color: "#f44336", fontSize: "14px" }}
+              title="Loss"
+            />
+          )}
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <GameRow
+            game={game}
+            type={game.status || "Finished"}
+            odd={index % 2 === 1}
+            small
+          />
+        </div>
+      </div>
     );
   });
 

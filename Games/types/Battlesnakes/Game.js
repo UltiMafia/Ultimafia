@@ -230,6 +230,18 @@ module.exports = class BattlesnakesGame extends Game {
     }
   }
 
+  getStateInfo(state) {
+    var info = super.getStateInfo(state);
+    if (this.gameStarted) {
+      info.extraInfo = {
+        snakes: JSON.parse(JSON.stringify(this.positions)),
+        foods: JSON.parse(JSON.stringify(this.foods)),
+        gridSize: this.gridSize,
+      };
+    }
+    return info;
+  }
+
   /**
    * Starts the game; called by main game flow.
    */

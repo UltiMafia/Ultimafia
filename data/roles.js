@@ -827,6 +827,15 @@ const roleData = {
         ["Learn Evil Pairs", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10],
       ],
     },
+    Arbiter: {
+      alignment: "Village",
+      category: "Investigative",
+      tags: ["Information", "Voting", "Basic"],
+      description: [
+        "At the start of each night, learn how many players in the most recent vote appeared evil.",
+      ],
+      nightOrder: [["Arbiter", PRIORITY_INVESTIGATIVE_DEFAULT]],
+    },
     Bloodhound: {
       alignment: "Village",
       category: "Investigative",
@@ -1216,10 +1225,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Conversion", "Visiting", "Basic"],
       description: [
-        "Each night, choose a Village-aligned player to tutor.",
-        "They will temporarily become a random Information role for the rest of that night and the following day.",
-        "They will be informed of their new role at the start of day.",
-        "You receive no feedback on your action.",
+        "Each night, choose a Village-aligned player to tutor. They will temporarily become a random Information role for the rest of that night and the following day. They will be informed of their new role at the start of day. You receive no feedback on your action.",
       ],
       nightOrder: [["Tutor", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
@@ -2885,6 +2891,19 @@ const roleData = {
           value: "halloween",
         },
       ],
+    },
+    Liquidator: {
+      alignment: "Mafia",
+      category: "Support",
+      tags: ["Items", "Information", "Advanced"],
+      description: [
+        "Gain 1 Gold whenever a Village-aligned player is killed or condemned.",
+        "Each day, a shop opens with 3 randomly selected items and abilities to purchase.",
+        "Items purchased are delivered at the start of the following night.",
+        "You may gift purchased items to any player.",
+        "Once per game, you may reroll the shop for free.",
+      ],
+      nightOrder: [],
     },
     Pimp: {
       alignment: "Mafia",
@@ -4925,6 +4944,19 @@ const roleData = {
         "All players will learn if an Autocrat is in the game.",
         "If Village wins, you win instead.",
       ],
+    },
+    Banker: {
+      alignment: "Independent",
+      tags: ["Information", "Items", "Advanced"],
+      description: [
+        "You start with 2 Gold. Gain 1 Gold for each day and night you survive.",
+        "Each day, a shop opens with 3 randomly selected items plus the Golden Ticket.",
+        "Each night, you may invest any amount of Gold. Results are revealed the following day.",
+        "If you purchase the Golden Ticket (10 Gold), you win and leave the village.",
+        "All other players also have access to a rotating item shop each day.",
+        "Win by purchasing the Golden Ticket or being one of the last two players alive.",
+      ],
+      nightOrder: [["Invest Gold", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
     Palladist: {
       alignment: "Independent",

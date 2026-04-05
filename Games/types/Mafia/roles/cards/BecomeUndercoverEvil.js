@@ -95,7 +95,7 @@ module.exports = class BecomeUndercoverEvil extends Card {
         };
         this.editAppearance(tempApp);
         this.player.role.revealToSelf(true);
-        this.game.graveyardParticipation = true;
+        this.game.setGraveyardParticipation(true);
       },
       roleAssigned: function (player) {
         if (player !== this.player) {

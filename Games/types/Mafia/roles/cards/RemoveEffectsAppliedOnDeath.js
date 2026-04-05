@@ -22,6 +22,29 @@ module.exports = class RemoveEffectsAppliedOnDeath extends Card {
           }
         }
       },
+      death: function (player) {
+        if (player != this.player) {
+          return;
+        }
+        for (let p of this.game.players) {
+          for (let effect of p.effects) {
+            if (effect.source && effect.source == this) {
+              effect.remove();
+            }
+          }
+        }
+      },
+      state: function () {
+        if (!this.player.alive) {
+          for (let p of this.game.players) {
+            for (let effect of p.effects) {
+              if (effect.source && effect.source == this) {
+                effect.remove();
+              }
+            }
+          }
+        }
+      },
       RoleBeingRemoved: function (role, player, isExtraRole) {
         if (role == this) {
           for (let player of this.game.players) {

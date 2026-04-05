@@ -929,10 +929,8 @@ module.exports = class Game {
     return allPlayerInfo;
   }
 
-  sendAllGameInfo(player) {
-    player.sendSelf();
-    player.send("players", this.getAllPlayerInfo(player));
-    player.send("options", {
+  getOptionsPayload() {
+    return {
       lobby: this.lobby,
       private: this.private,
       ranked: this.ranked,
@@ -943,7 +941,24 @@ module.exports = class Game {
       gameTypeOptions: this.getGameTypeOptions(),
       anonymousGame: this.anonymousGame,
       anonymousDeck: this.anonymousDeck,
-    });
+      graveyardParticipation: this.graveyardParticipation,
+    };
+  }
+
+  broadcastOptions() {
+    this.broadcast("options", this.getOptionsPayload());
+  }
+
+  setGraveyardParticipation(value) {
+    if (this.graveyardParticipation === value) return;
+    this.graveyardParticipation = value;
+    this.broadcastOptions();
+  }
+
+  sendAllGameInfo(player) {
+    player.sendSelf();
+    player.send("players", this.getAllPlayerInfo(player));
+    player.send("options", this.getOptionsPayload());
     player.sendHistory();
     player.sendStateInfo();
     player.send("stateEvents", Object.keys(this.stateEvents));
@@ -1116,6 +1131,7 @@ module.exports = class Game {
     this.assignRoles();
     this.started = true;
     this.broadcast("start");
+    this.broadcastOptions();
     this.events.emit("start");
 
     // Got to initial state

@@ -454,6 +454,66 @@ router.post(
   })
 );
 
+router.get("/stampSuggestions", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userDoc = await models.User.findOne({ id: userId, deleted: false })
+      .select("_id")
+      .lean();
+
+    if (!userDoc) {
+      return res.status(404).send("User not found.");
+    }
+
+    // Get last 30 finished Mafia games
+    var games = await models.Game.find({
+      users: userDoc._id,
+      type: "Mafia",
+      endTime: { $exists: true },
+      broken: { $ne: true },
+    })
+      .sort("-endTime")
+      .limit(30)
+      .select("id users players winners playerRoleMap")
+      .lean();
+
+    // Filter to games the user won
+    var wonGames = [];
+    for (var game of games) {
+      var userIdx = (game.users || []).findIndex(
+        (u) => u && u.toString() === userDoc._id.toString()
+      );
+      if (userIdx === -1 || !game.players || !game.players[userIdx]) continue;
+      var playerId = game.players[userIdx];
+      if (!game.winners || !game.winners.includes(playerId)) continue;
+
+      var roleMap = JSON.parse(game.playerRoleMap || "{}");
+      var role = roleMap[userId];
+      if (!role) continue;
+
+      wonGames.push({ gameId: game.id, role });
+    }
+
+    // Remove games where user already has a stamp
+    var gameIds = wonGames.map((g) => g.gameId);
+    var existingStamps = await models.Stamp.find({
+      userId,
+      gameId: { $in: gameIds },
+    })
+      .select("gameId")
+      .lean();
+    var stampedGameIds = new Set(existingStamps.map((s) => s.gameId));
+
+    var suggestions = wonGames.filter((g) => !stampedGameIds.has(g.gameId));
+
+    res.send(suggestions);
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error loading stamp suggestions.");
+  }
+});
+
 router.post("/checkStampEligibility", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);

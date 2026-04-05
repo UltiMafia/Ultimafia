@@ -118,12 +118,6 @@ var defaultOptions = {
     MaxRounds: 0,
     playCardsLength: 2,
   },
-  "Connect Four": existingHostOptions["Connect Four"] || {
-    ...commonHostOptions,
-    boardX: 5,
-    boardY: 5,
-    turnLength: 1,
-  },
   Resistance: existingHostOptions["Resistance"] || {
     ...commonHostOptions,
     teamSelLength: 2,
@@ -166,8 +160,8 @@ var defaultOptions = {
     },
   "Connect Four": existingHostOptions["Connect Four"] || {
     ...commonHostOptions,
-    boardX: 4,
-    boardY: 4,
+    boardX: 6,
+    boardY: 7,
     turnLength: 1,
   },
 };

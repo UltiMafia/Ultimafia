@@ -4,15 +4,21 @@
 
 .game .jotto-guess-history {
   margin: 5px;
+  display: inline-flex;
+  flex-direction: column;
 }
 
 .game .jotto-guess-history-name {
   font-weight: bold;
   display: block;
+  font-size: 1.1em;
 }
 
 .game .jotto-guess {
   display: flex;
+  align-items: center;
+  padding: 2px 0;
+  font-size: 1.2em;
 }
 
 .game .jotto-guess-value {
@@ -22,14 +28,18 @@
 }
 
 .game .jotto-guess-score {
-  width: 20px;
-  height: 20px;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  border-radius: 10px;
+  width: 28px;
+  height: 28px;
+  -moz-border-radius: 14px;
+  -webkit-border-radius: 14px;
+  border-radius: 14px;
   text-align: center;
+  line-height: 28px;
+  font-size: 1em;
+  font-weight: bold;
   color: black;
-  margin-right: 5px;
+  margin-right: 8px;
+  flex-shrink: 0;
 }
 
 .game .jotto-guess .guess-score-0 {
@@ -65,4 +75,90 @@
 .game .jotto-guess-score.forbidden {
   background-color: #6b6b6b;
   color: white;
+}
+
+/* Custom Jotto desktop layout */
+.game .jotto-desktop {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0 var(--mui-spacing);
+  gap: var(--mui-spacing);
+}
+
+.game .jotto-main-row {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  gap: var(--mui-spacing);
+  min-height: 0;
+}
+
+.game .jotto-sidebar {
+  width: 27vw;
+  min-width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.game .jotto-center {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: row;
+  min-height: 0;
+  background-color: var(--scheme-color);
+  border-radius: var(--mui-shape-borderRadius);
+}
+
+.game .jotto-history-panel {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.game .jotto-panel-header {
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.game .jotto-guess-input-spacer {
+  height: 30px;
+}
+
+.game .jotto-panel-guesses {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 8px;
+  text-align: center;
+}
+
+.game .jotto-select-word {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game .jotto-pregame {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Mobile layout */
+.game .jotto-mobile-panels {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+  overflow-x: auto;
+}
+
+.game .jotto-mobile-panels .jotto-history-panel {
+  min-width: 50%;
+  flex: 1 0 50%;
 }

@@ -138,7 +138,7 @@ const L_WORD_TO_DISPLAY = {
 };
 
 const TERMINOLOGY_ABBREVS = [
-  [/\bLYLO\b/gi, "COLO"],
+  [/\bLYLO\b/gi, "CYLO"],
   [/\bML\b/gi, "MC"],
   [/\bNL\b/gi, "NC"],
   [/\bRL\b/gi, "RC"],

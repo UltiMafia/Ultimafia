@@ -361,7 +361,7 @@ router.get("/:id/profile", async function (req, res) {
       .populate({
         path: "games",
         select:
-          "id setup lobby endTime private broken ranked competitive spectating anonymousGame -_id",
+          "id setup lobby endTime private broken ranked competitive spectating anonymousGame users players winners -_id",
         populate: {
           path: "setup",
           select:
@@ -386,6 +386,21 @@ router.get("/:id/profile", async function (req, res) {
 
     var userMongoId = user._id;
     delete user._id;
+
+    // Compute win/loss for each game
+    user.games = (user.games || []).map((game) => {
+      let won = null;
+      if (!game.broken && game.winners && game.winners.length > 0) {
+        const userIdx = (game.users || []).findIndex(
+          (u) => u && u.toString() === userMongoId.toString()
+        );
+        if (userIdx !== -1 && game.players && game.players[userIdx]) {
+          won = game.winners.includes(game.players[userIdx]);
+        }
+      }
+      const { users, players, winners, ...rest } = game;
+      return { ...rest, won };
+    });
 
     const totalSetups = await models.Setup.countDocuments({
       creator: userMongoId,
@@ -425,7 +440,7 @@ router.get("/:id/profile", async function (req, res) {
       .populate({
         path: "game",
         select:
-          "id setup lobby endTime private broken ranked competitive spectating anonymousGame -_id",
+          "id setup lobby endTime private broken ranked competitive spectating anonymousGame users players winners -_id",
         populate: {
           path: "setup",
           select:
@@ -437,8 +452,20 @@ router.get("/:id/profile", async function (req, res) {
         },
       });
     user.archivedGames = archivedGames.map((item) => {
+      const game = item.game._doc;
+      let won = null;
+      if (!game.broken && game.winners && game.winners.length > 0) {
+        const userIdx = (game.users || []).findIndex(
+          (u) => u && u.toString() === userMongoId.toString()
+        );
+        if (userIdx !== -1 && game.players && game.players[userIdx]) {
+          won = game.winners.includes(game.players[userIdx]);
+        }
+      }
+      const { users, players, winners, ...rest } = game;
       return {
-        ...item.game._doc,
+        ...rest,
+        won,
         description: item.description,
         status: "Finished",
       };
@@ -1042,7 +1069,7 @@ router.get("/:id/games", async function (req, res) {
         .skip(skip)
         .limit(pageSize)
         .select(
-          "id setup lobby endTime private broken ranked competitive spectating anonymousGame status"
+          "id setup lobby endTime private broken ranked competitive spectating anonymousGame status users players winners"
         )
         .populate({
           path: "setup",
@@ -1051,10 +1078,19 @@ router.get("/:id/games", async function (req, res) {
         })
         .lean();
 
-      games = games.map((game) => ({
-        ...game,
-        status: game.status || "Finished",
-      }));
+      games = games.map((game) => {
+        let won = null;
+        if (!game.broken && game.winners && game.winners.length > 0) {
+          const userIdx = (game.users || []).findIndex(
+            (u) => u && u.toString() === userMongoId.toString()
+          );
+          if (userIdx !== -1 && game.players && game.players[userIdx]) {
+            won = game.winners.includes(game.players[userIdx]);
+          }
+        }
+        const { users, players, winners, ...rest } = game;
+        return { ...rest, won, status: game.status || "Finished" };
+      });
     }
 
     res.send({

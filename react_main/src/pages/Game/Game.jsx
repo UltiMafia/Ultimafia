@@ -447,6 +447,7 @@ export default function Game() {
             private: false,
             anonymousGame: data.anonymousGame,
             anonymousDeck: data.anonymousDeck,
+            graveyardParticipation: data.graveyardParticipation,
           });
 
           updateHistory({
@@ -995,6 +996,16 @@ export default function Game() {
           open={leaveDialogOpen}
           onClose={() => setLeaveDialogOpen(false)}
           onConfirm={leaveGame}
+          isParticipationRequired={(() => {
+            const currentStateInfo = history.states[history.currentState];
+            const isAlive =
+              !!self && currentStateInfo && !currentStateInfo.dead?.[self];
+            return isAlive || !!options.graveyardParticipation;
+          })()}
+          lockSeconds={
+            (!options.ranked && !options.competitive) || dev ? 2 : 10
+          }
+          isPenaltyEnforced={!!(options.ranked || options.competitive)}
         />
         {(gameType === "Mafia" ||
           gameType === "Resistance" ||
@@ -1310,6 +1321,8 @@ export function MobileLayout({
   },
   innerRightContent = <ActionList />,
   additionalInfoContent = <></>,
+  hideInfoTab = false,
+  chatTab = false,
 }) {
   const game = useContext(GameContext);
   const { singleState } = useContext(GameTypeContext);
@@ -1343,10 +1356,12 @@ export function MobileLayout({
       >
         {outerLeftContent}
       </Stack>
-      <Box sx={{ display: selectedPanel === "info" ? undefined : "none" }}>
-        {/* The additionalInfoContent displays after the mobile version of TopBar */}
-        {additionalInfoContent}
-      </Box>
+      {!hideInfoTab && (
+        <Box sx={{ display: selectedPanel === "info" ? undefined : "none" }}>
+          {/* The additionalInfoContent displays after the mobile version of TopBar */}
+          {additionalInfoContent}
+        </Box>
+      )}
       <Stack
         sx={{
           flex: "1",
@@ -1388,22 +1403,32 @@ export function MobileLayout({
           }}
         >
           <BottomNavigationAction {...outerLeftNavigationProps} />
-          <BottomNavigationAction
-            label="Info"
-            value="info"
-            icon={<i className="fas fa-info" />}
-          />
-          <Stack
-            direction="row"
-            onClick={() => setSelectedPanel("chat")}
-            sx={{
-              filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
-            }}
-          >
-            {!singleState && <Divider orientation="vertical" flexItem />}
-            <StateSwitcher stateRange={singleState ? 0 : undefined} />
-            {!singleState && <Divider orientation="vertical" flexItem />}
-          </Stack>
+          {!hideInfoTab && (
+            <BottomNavigationAction
+              label="Info"
+              value="info"
+              icon={<i className="fas fa-info" />}
+            />
+          )}
+          {chatTab ? (
+            <BottomNavigationAction
+              label="Chat"
+              value="chat"
+              icon={<i className="fas fa-comments" />}
+            />
+          ) : (
+            <Stack
+              direction="row"
+              onClick={() => setSelectedPanel("chat")}
+              sx={{
+                filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
+              }}
+            >
+              {!singleState && <Divider orientation="vertical" flexItem />}
+              <StateSwitcher stateRange={singleState ? 0 : undefined} />
+              {!singleState && <Divider orientation="vertical" flexItem />}
+            </Stack>
+          )}
           <BottomNavigationAction {...innerRightNavigationProps} />
           <BottomNavigationAction
             label="Menu"
@@ -3269,6 +3294,9 @@ export function ActionList({
   title = "Actions",
   actionStyle = {},
   descriptors,
+  meetingFilter,
+  hideIfEmpty = false,
+  scrollable = true,
 }) {
   const game = useContext(GameContext);
 
@@ -3289,8 +3317,14 @@ export function ActionList({
   let regularActionDescriptors = descriptors;
 
   if (!regularActionDescriptors) {
+    const filteredMeetings = meetingFilter
+      ? Object.fromEntries(
+          Object.entries(meetings || {}).filter(([, m]) => meetingFilter(m))
+        )
+      : meetings;
+
     const descriptorResult = buildActionDescriptors({
-      meetings,
+      meetings: filteredMeetings,
       baseActionProps,
       actionStyle,
       inventoryActionStyle: actionStyle,
@@ -3307,13 +3341,17 @@ export function ActionList({
     }
   }
 
+  if (hideIfEmpty && (!regularActionDescriptors || regularActionDescriptors.length === 0)) {
+    return null;
+  }
+
   const actionElements = (regularActionDescriptors || []).map(
     ({ Component, props, key }) => <Component key={key} {...props} />
   );
 
   return (
     <SideMenu
-      scrollable
+      scrollable={scrollable}
       title={
         <UnresolvedActionCount>{title || "Actions"}</UnresolvedActionCount>
       }

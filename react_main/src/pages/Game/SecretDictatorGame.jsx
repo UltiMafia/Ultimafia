@@ -15,6 +15,11 @@ import {
   MobileLayout,
   GameTypeContext,
 } from "./Game";
+
+const isKickMeeting = (m) => m && m.name === "Vote Kick";
+const KickActionList = () => (
+  <ActionList meetingFilter={isKickMeeting} hideIfEmpty scrollable={false} />
+);
 import { GameContext } from "../../Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { PolicyTracks } from "./SDPolicyTracks";
@@ -84,6 +89,7 @@ export default function SecretDictatorGame(props) {
         leftPanelContent={
           <>
             <PlayerList />
+            <KickActionList />
             <SpeechFilter />
             <SettingsMenu />
           </>
@@ -103,13 +109,17 @@ export default function SecretDictatorGame(props) {
         outerLeftContent={
           <>
             <PlayerList />
+            <KickActionList />
             <SpeechFilter />
           </>
         }
+        innerRightNavigationProps={{
+          label: "Game",
+          value: "actions",
+          icon: <i className="fas fa-gamepad" />,
+        }}
         innerRightContent={
-          <>
-            <GameBoard history={history} stateViewing={stateViewing} />
-          </>
+          <GameBoard history={history} stateViewing={stateViewing} />
         }
         additionalInfoContent={
           <>
@@ -183,8 +193,9 @@ function LoyaltyRevealModal({ name, alignment, onClose }) {
 
 function GameBoard({ history, stateViewing }) {
   const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
-  if (stateViewing === -1) return null;
+  if (stateViewing === -1) return <div className="sd-game-board sd-game-board--pregame" />;
 
   const state = history.states[stateViewing];
   const extraInfo = state.extraInfo;
@@ -224,6 +235,44 @@ function GameBoard({ history, stateViewing }) {
     (m) => m.actionName === "Assent Veto" && m.canVote && m.voting
   );
 
+  if (isPhoneDevice) {
+    return (
+      <div className="sd-game-board sd-game-board--mobile">
+        <PolicyTracks
+          policyInfo={extraInfo.policyInfo}
+          presidentialPowersBoard={extraInfo.presidentialPowersBoard}
+          electionTracker={extraInfo.electionInfo?.electionTracker}
+          deckInfo={extraInfo.deckInfo}
+        />
+        <SDPolicyAction
+          discardMeeting={discardMeeting}
+          enactMeeting={enactMeeting}
+          vetoMeeting={vetoMeeting}
+          socket={game.socket}
+        />
+        <SDElectionVote
+          electionMeeting={electionMeeting}
+          selfId={game.self}
+          socket={game.socket}
+          mobile
+        />
+        <PlayerCircle
+          players={players}
+          candidateInfo={extraInfo.candidateInfo}
+          nominationMeeting={nominationMeeting}
+          executiveMeeting={executiveMeeting}
+          electionMeeting={electionMeeting}
+          voteResults={extraInfo.lastVoteResults}
+          selfId={game.self}
+          socket={game.socket}
+          roles={state.roles || {}}
+          mobile
+          externalVoteButtons
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="sd-game-board">
       <div className="sd-game-board-inner">
@@ -237,7 +286,7 @@ function GameBoard({ history, stateViewing }) {
           selfId={game.self}
           socket={game.socket}
           roles={state.roles || {}}
-         
+          externalVoteButtons
         />
         <div className="sd-tracks-center-overlay">
           <PolicyTracks
@@ -247,12 +296,54 @@ function GameBoard({ history, stateViewing }) {
             deckInfo={extraInfo.deckInfo}
           />
         </div>
+        <SDElectionVote
+          electionMeeting={electionMeeting}
+          selfId={game.self}
+          socket={game.socket}
+        />
         <SDPolicyAction
           discardMeeting={discardMeeting}
           enactMeeting={enactMeeting}
           vetoMeeting={vetoMeeting}
           socket={game.socket}
         />
+      </div>
+    </div>
+  );
+}
+
+function SDElectionVote({ electionMeeting, selfId, socket, mobile }) {
+  if (!electionMeeting || !selfId) return null;
+  const electionMemberIds = new Set(
+    (electionMeeting.members || []).map((m) => m.id)
+  );
+  if (!electionMemberIds.has(selfId)) return null;
+
+  const myVote = electionMeeting.votes?.[selfId];
+
+  const handleVote = (choice) => {
+    socket.send("vote", {
+      meetingId: electionMeeting.id,
+      selection: choice,
+    });
+  };
+
+  return (
+    <div className={`sd-election-vote${mobile ? " sd-election-vote--mobile" : ""}`}>
+      <div className="sd-election-vote-label">YOUR VOTE</div>
+      <div className="sd-vote-buttons sd-vote-buttons--large">
+        <button
+          className={`sd-vote-btn sd-vote-btn--large sd-vote-btn--ja${myVote === "Ja!" ? " sd-vote-btn--selected" : ""}${!myVote ? " sd-vote-btn--pending" : ""}`}
+          onClick={() => handleVote("Ja!")}
+        >
+          Ja!
+        </button>
+        <button
+          className={`sd-vote-btn sd-vote-btn--large sd-vote-btn--nein${myVote === "Nein!" ? " sd-vote-btn--selected" : ""}${!myVote ? " sd-vote-btn--pending" : ""}`}
+          onClick={() => handleVote("Nein!")}
+        >
+          Nein!
+        </button>
       </div>
     </div>
   );
