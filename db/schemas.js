@@ -370,6 +370,7 @@ var schemas = {
         "PENDING_CONFIRMATION",
         "COMPLETED",
         "REJECTED",
+        "FAILED",
       ],
       index: true,
     },
@@ -379,7 +380,26 @@ var schemas = {
   })
     .index({ status: 1, recipientId: 1 })
     .index({ status: 1, initiatorId: 1 })
-    .index({ status: 1, completedAt: -1 }),
+    .index({ status: 1, completedAt: -1 })
+    // Prevent the same physical stamp from being attached to two active trades.
+    .index(
+      { initiatorStamp: 1 },
+      {
+        unique: true,
+        partialFilterExpression: {
+          status: { $in: ["PENDING_RESPONSE", "PENDING_CONFIRMATION"] },
+        },
+      }
+    )
+    .index(
+      { recipientStamp: 1 },
+      {
+        unique: true,
+        partialFilterExpression: {
+          status: { $in: ["PENDING_RESPONSE", "PENDING_CONFIRMATION"] },
+        },
+      }
+    ),
   ForumCategory: new mongoose.Schema({
     id: { type: String, index: true },
     name: String,

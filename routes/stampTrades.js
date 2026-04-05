@@ -3,9 +3,26 @@ const routeUtils = require("./utils");
 const models = require("../db/models");
 const logger = require("../modules/logging")(".");
 const shortid = require("shortid");
+const roleData = require("../data/roles");
 const router = express.Router();
 
 const ACTIVE_STATUSES = ["PENDING_RESPONSE", "PENDING_CONFIRMATION"];
+const MAX_ACTIVE_TRADES_PER_PAIR = 3;
+
+function validateStampRole(gameType, role) {
+  if (
+    !gameType ||
+    !role ||
+    !Object.prototype.hasOwnProperty.call(roleData, gameType) ||
+    !Object.prototype.hasOwnProperty.call(roleData[gameType], role)
+  ) {
+    return "Unknown stamp role.";
+  }
+  const info = roleData[gameType][role];
+  if (!info) return "Unknown stamp role.";
+  if (info.alignment === "Event") return "Events cannot be traded.";
+  return null;
+}
 
 async function getLockedStampIds(userId) {
   const trades = await models.StampTrade.find({
@@ -20,7 +37,11 @@ async function getLockedStampIds(userId) {
   return set;
 }
 
-async function pickUnlockedStamp(userId, gameType, role) {
+// Returns the list of candidate stamp ids (as strings) of a role the user owns
+// that are not currently attached to an active trade. Caller is responsible
+// for attempting to reserve one of them; reservations can still race, so the
+// caller should be prepared for the DB-level unique index to reject a pick.
+async function getAvailableStampIds(userId, gameType, role) {
   const stamps = await models.Stamp.find({ userId, gameType, role }).select(
     "_id"
   );
@@ -28,13 +49,28 @@ async function pickUnlockedStamp(userId, gameType, role) {
     throw new Error("You need at least 2 of this stamp to trade.");
   }
   const lockedIds = await getLockedStampIds(userId);
-  const available = stamps.filter((s) => !lockedIds.has(String(s._id)));
+  const available = stamps
+    .map((s) => String(s._id))
+    .filter((id) => !lockedIds.has(id));
   if (available.length < 2) {
     throw new Error(
       "Not enough unlocked copies of this stamp (need 2+ available)."
     );
   }
-  return available[0]._id;
+  return available;
+}
+
+// Detects whether a recent insert collided with another active trade that
+// already referenced the same stamp (cross-field case where the DB partial
+// unique indexes on initiatorStamp / recipientStamp cannot help because the
+// stamp was attached to the *opposite* field on a sibling trade).
+async function stampHasCrossFieldConflict(stampId, ownTradeDocId) {
+  const conflict = await models.StampTrade.findOne({
+    _id: { $ne: ownTradeDocId },
+    status: { $in: ACTIVE_STATUSES },
+    $or: [{ initiatorStamp: stampId }, { recipientStamp: stampId }],
+  }).select("_id");
+  return !!conflict;
 }
 
 async function populateTradeForDisplay(trade) {
@@ -127,6 +163,12 @@ router.post("/initiate", async (req, res) => {
       res.send("Stamp gameType and role are required.");
       return;
     }
+    const roleErr = validateStampRole(gameType, role);
+    if (roleErr) {
+      res.status(400);
+      res.send(roleErr);
+      return;
+    }
     if (!recipientUserId) {
       res.status(400);
       res.send("Recipient is required.");
@@ -151,10 +193,31 @@ router.post("/initiate", async (req, res) => {
     const recipient = await models.User.findOne({
       id: recipientUserId,
       deleted: false,
-    }).select("_id id name");
+    }).select("_id id name blockedUsers");
     if (!recipient) {
       res.status(404);
       res.send("Recipient not found.");
+      return;
+    }
+    if ((recipient.blockedUsers || []).includes(userId)) {
+      res.status(403);
+      res.send("You cannot trade with this user.");
+      return;
+    }
+
+    // Cap active trades between this user pair to prevent spam.
+    const activeBetween = await models.StampTrade.countDocuments({
+      $or: [
+        { initiatorId: userId, recipientId: recipientUserId },
+        { initiatorId: recipientUserId, recipientId: userId },
+      ],
+      status: { $in: ACTIVE_STATUSES },
+    });
+    if (activeBetween >= MAX_ACTIVE_TRADES_PER_PAIR) {
+      res.status(429);
+      res.send(
+        `You already have ${MAX_ACTIVE_TRADES_PER_PAIR} active trades with this user.`
+      );
       return;
     }
 
@@ -162,28 +225,86 @@ router.post("/initiate", async (req, res) => {
       "_id name"
     );
 
-    let stampId;
+    let availableStampIds;
     try {
-      stampId = await pickUnlockedStamp(userId, gameType, role);
+      availableStampIds = await getAvailableStampIds(userId, gameType, role);
     } catch (e) {
       res.status(400);
       res.send(e.message);
       return;
     }
 
-    const trade = await models.StampTrade.create({
-      id: shortid.generate(),
-      initiatorId: userId,
-      initiator: initiatorUser._id,
-      initiatorStamp: stampId,
-      initiatorGameType: gameType,
-      initiatorRole: role,
-      recipientId: recipientUserId,
-      recipient: recipient._id,
-      status: "PENDING_RESPONSE",
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    });
+    // Try each available stamp; the partial unique index on initiatorStamp
+    // will throw E11000 if another concurrent request already reserved it.
+    let trade = null;
+    let lastErr = null;
+    for (const stampId of availableStampIds) {
+      try {
+        trade = await models.StampTrade.create({
+          id: shortid.generate(),
+          initiatorId: userId,
+          initiator: initiatorUser._id,
+          initiatorStamp: stampId,
+          initiatorGameType: gameType,
+          initiatorRole: role,
+          recipientId: recipientUserId,
+          recipient: recipient._id,
+          status: "PENDING_RESPONSE",
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
+      } catch (e) {
+        if (e && e.code === 11000) {
+          lastErr = e;
+          continue;
+        }
+        throw e;
+      }
+
+      // Cover the cross-field race: another active trade may already have
+      // this stamp in recipientStamp. If so, release ours and try again.
+      if (await stampHasCrossFieldConflict(stampId, trade._id)) {
+        await models.StampTrade.deleteOne({ _id: trade._id });
+        trade = null;
+        lastErr = new Error("stamp already locked");
+        continue;
+      }
+      break;
+    }
+
+    if (!trade) {
+      res.status(409);
+      res.send(
+        "Could not reserve a stamp — please try again (it may be locked in another trade)."
+      );
+      if (lastErr) logger.error(lastErr);
+      return;
+    }
+
+    // Enforce MAX_ACTIVE_TRADES_PER_PAIR after create to close the count race.
+    // Fetch active trades ordered by creation; only delete ours if it is past
+    // the cap (so concurrent creators don't all delete each other).
+    const activeList = await models.StampTrade.find({
+      $or: [
+        { initiatorId: userId, recipientId: recipientUserId },
+        { initiatorId: recipientUserId, recipientId: userId },
+      ],
+      status: { $in: ACTIVE_STATUSES },
+    })
+      .sort({ createdAt: 1, _id: 1 })
+      .select("_id")
+      .limit(MAX_ACTIVE_TRADES_PER_PAIR + 5);
+    const ourIdx = activeList.findIndex(
+      (t) => String(t._id) === String(trade._id)
+    );
+    if (ourIdx >= MAX_ACTIVE_TRADES_PER_PAIR) {
+      await models.StampTrade.deleteOne({ _id: trade._id });
+      res.status(429);
+      res.send(
+        `You already have ${MAX_ACTIVE_TRADES_PER_PAIR} active trades with this user.`
+      );
+      return;
+    }
 
     await routeUtils.createNotification(
       {
@@ -215,6 +336,12 @@ router.post("/respond", async (req, res) => {
       res.send("Trade id, gameType, and role are required.");
       return;
     }
+    const roleErr = validateStampRole(gameType, role);
+    if (roleErr) {
+      res.status(400);
+      res.send(roleErr);
+      return;
+    }
 
     const trade = await models.StampTrade.findOne({ id: tradeId });
     if (!trade) {
@@ -233,21 +360,82 @@ router.post("/respond", async (req, res) => {
       return;
     }
 
-    let stampId;
+    let availableStampIds;
     try {
-      stampId = await pickUnlockedStamp(userId, gameType, role);
+      availableStampIds = await getAvailableStampIds(userId, gameType, role);
     } catch (e) {
       res.status(400);
       res.send(e.message);
       return;
     }
 
-    trade.recipientStamp = stampId;
-    trade.recipientGameType = gameType;
-    trade.recipientRole = role;
-    trade.status = "PENDING_CONFIRMATION";
-    trade.updatedAt = Date.now();
-    await trade.save();
+    // Try each available stamp; the partial unique index on recipientStamp
+    // rejects E11000 if another concurrent request already reserved it.
+    let updated = null;
+    let transitionErr = null;
+    for (const stampId of availableStampIds) {
+      try {
+        updated = await models.StampTrade.findOneAndUpdate(
+          { id: tradeId, status: "PENDING_RESPONSE" },
+          {
+            $set: {
+              recipientStamp: stampId,
+              recipientGameType: gameType,
+              recipientRole: role,
+              status: "PENDING_CONFIRMATION",
+              updatedAt: Date.now(),
+            },
+          },
+          { new: true }
+        );
+      } catch (e) {
+        if (e && e.code === 11000) {
+          transitionErr = e;
+          continue;
+        }
+        throw e;
+      }
+      if (!updated) break; // trade no longer pending — handled below
+
+      // Cross-field race: the stamp may already be attached (as initiatorStamp
+      // or recipientStamp) to a different active trade. Revert and retry.
+      if (await stampHasCrossFieldConflict(stampId, updated._id)) {
+        await models.StampTrade.updateOne(
+          { _id: updated._id, status: "PENDING_CONFIRMATION" },
+          {
+            $set: { status: "PENDING_RESPONSE", updatedAt: Date.now() },
+            $unset: {
+              recipientStamp: "",
+              recipientGameType: "",
+              recipientRole: "",
+            },
+          }
+        );
+        updated = null;
+        transitionErr = new Error("stamp already locked");
+        continue;
+      }
+      break;
+    }
+
+    if (!updated) {
+      // Either the trade is no longer PENDING_RESPONSE, or we couldn't
+      // reserve any stamp.
+      const current = await models.StampTrade.findOne({ id: tradeId }).select(
+        "status"
+      );
+      if (current && current.status !== "PENDING_RESPONSE") {
+        res.status(409);
+        res.send("This trade is no longer awaiting a response.");
+      } else {
+        if (transitionErr) logger.error(transitionErr);
+        res.status(409);
+        res.send(
+          "Could not reserve a stamp — please try again (it may be locked in another trade)."
+        );
+      }
+      return;
+    }
 
     const responder = await models.User.findOne({ id: userId }).select("name");
     await routeUtils.createNotification(
@@ -290,22 +478,44 @@ router.post("/confirm", async (req, res) => {
       return;
     }
 
+    // Claim the trade atomically so only one confirm request proceeds.
+    const claimed = await models.StampTrade.findOneAndUpdate(
+      { id: tradeId, status: "PENDING_CONFIRMATION" },
+      { $set: { status: "COMPLETED", completedAt: Date.now(), updatedAt: Date.now() } },
+      { new: true }
+    );
+    if (!claimed) {
+      res.status(409);
+      res.send("This trade is no longer awaiting confirmation.");
+      return;
+    }
+
+    async function markFailed(reason) {
+      // Move trade out of COMPLETED so it isn't left orphaned. Use FAILED
+      // (distinct from REJECTED, which implies a party opted out).
+      await models.StampTrade.updateOne(
+        { id: tradeId, status: "COMPLETED", completedAt: claimed.completedAt },
+        {
+          $set: { status: "FAILED", updatedAt: Date.now() },
+          $unset: { completedAt: "" },
+        }
+      );
+      res.status(400);
+      res.send(reason);
+    }
+
     const [iStamp, rStamp] = await Promise.all([
       models.Stamp.findById(trade.initiatorStamp),
       models.Stamp.findById(trade.recipientStamp),
     ]);
     if (!iStamp || !rStamp) {
-      res.status(400);
-      res.send("One of the stamps no longer exists.");
-      return;
+      return markFailed("One of the stamps no longer exists.");
     }
     if (
       iStamp.userId !== trade.initiatorId ||
       rStamp.userId !== trade.recipientId
     ) {
-      res.status(400);
-      res.send("Stamp ownership has changed.");
-      return;
+      return markFailed("Stamp ownership has changed.");
     }
 
     const initiatorUser = await models.User.findOne({
@@ -315,25 +525,48 @@ router.post("/confirm", async (req, res) => {
       id: trade.recipientId,
     }).select("_id name");
 
-    // Swap ownership.
+    // Capture previous ownership so we can roll the first save back if the
+    // second save fails mid-swap.
+    const iPrev = { user: iStamp.user, userId: iStamp.userId, hidden: iStamp.hidden };
+    const rPrev = { user: rStamp.user, userId: rStamp.userId, hidden: rStamp.hidden };
+
     iStamp.user = recipientUser._id;
     iStamp.userId = trade.recipientId;
     iStamp.hidden = false;
     rStamp.user = initiatorUser._id;
     rStamp.userId = trade.initiatorId;
     rStamp.hidden = false;
-    await Promise.all([iStamp.save(), rStamp.save()]);
 
-    trade.status = "COMPLETED";
-    trade.completedAt = Date.now();
-    trade.updatedAt = Date.now();
-    await trade.save();
+    // Sequential so we can compensate if the second save fails.
+    try {
+      await iStamp.save();
+    } catch (e) {
+      logger.error(e);
+      return markFailed("Failed to transfer stamp — please try again.");
+    }
+    try {
+      await rStamp.save();
+    } catch (e) {
+      logger.error(e);
+      // Restore iStamp to its prior owner.
+      try {
+        iStamp.user = iPrev.user;
+        iStamp.userId = iPrev.userId;
+        iStamp.hidden = iPrev.hidden;
+        await iStamp.save();
+      } catch (restoreErr) {
+        logger.error(
+          `CRITICAL: stamp swap inconsistent for trade ${trade.id}: ${restoreErr}`
+        );
+      }
+      return markFailed("Failed to transfer stamp — please try again.");
+    }
 
     await routeUtils.createNotification(
       {
         content: `Trade completed with ${recipientUser.name}: you received a ${trade.recipientRole}.`,
         icon: "fas fa-exchange-alt",
-        link: `/user/${trade.initiatorId}`,
+        link: `/user/${trade.recipientId}`,
       },
       [trade.initiatorId]
     );
@@ -341,12 +574,12 @@ router.post("/confirm", async (req, res) => {
       {
         content: `Trade completed with ${initiatorUser.name}: you received a ${trade.initiatorRole}.`,
         icon: "fas fa-exchange-alt",
-        link: `/user/${trade.recipientId}`,
+        link: `/user/${trade.initiatorId}`,
       },
       [trade.recipientId]
     );
 
-    res.send({ id: trade.id, status: trade.status });
+    res.send({ id: claimed.id, status: claimed.status });
   } catch (e) {
     logger.error(e);
     res.status(500);
@@ -377,16 +610,27 @@ router.post("/reject", async (req, res) => {
       return;
     }
 
-    trade.status = "REJECTED";
-    trade.updatedAt = Date.now();
-    await trade.save();
+    // Atomic transition: only reject if still active.
+    const updated = await models.StampTrade.findOneAndUpdate(
+      { id: tradeId, status: { $in: ACTIVE_STATUSES } },
+      { $set: { status: "REJECTED", updatedAt: Date.now() } },
+      { new: true }
+    );
+    if (!updated) {
+      res.status(409);
+      res.send("This trade cannot be rejected.");
+      return;
+    }
 
     const rejector = await models.User.findOne({ id: userId }).select("name");
     const otherUserId =
       userId === trade.initiatorId ? trade.recipientId : trade.initiatorId;
+    const tradeDesc = trade.recipientRole
+      ? `${trade.initiatorRole} for ${trade.recipientRole}`
+      : `${trade.initiatorRole}`;
     await routeUtils.createNotification(
       {
-        content: `${rejector.name} rejected the stamp trade.`,
+        content: `${rejector.name} rejected the stamp trade (${tradeDesc}).`,
         icon: "fas fa-exchange-alt",
         link: `/user/${otherUserId}`,
       },
