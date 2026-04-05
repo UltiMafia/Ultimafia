@@ -222,9 +222,15 @@ router.post("/initiate", async (req, res) => {
       return;
     }
 
-    const initiatorUser = await models.User.findOne({ id: userId }).select(
-      "_id name"
-    );
+    const initiatorUser = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("_id name");
+    if (!initiatorUser) {
+      res.status(404);
+      res.send("User not found.");
+      return;
+    }
 
     let availableStampIds;
     try {
@@ -438,7 +444,15 @@ router.post("/respond", async (req, res) => {
       return;
     }
 
-    const responder = await models.User.findOne({ id: userId }).select("name");
+    const responder = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("name");
+    if (!responder) {
+      res.status(404);
+      res.send("User not found.");
+      return;
+    }
     await routeUtils.createNotification(
       {
         content: `${responder.name} offered their ${role} stamp. Confirm the trade on your profile.`,
@@ -506,8 +520,8 @@ router.post("/confirm", async (req, res) => {
     }
 
     const [iStamp, rStamp] = await Promise.all([
-      models.Stamp.findById(trade.initiatorStamp),
-      models.Stamp.findById(trade.recipientStamp),
+      models.Stamp.findById(trade.initiatorStamp).select("_id userId"),
+      models.Stamp.findById(trade.recipientStamp).select("_id userId"),
     ]);
     if (!iStamp || !rStamp) {
       return markFailed("One of the stamps no longer exists.");
@@ -519,48 +533,67 @@ router.post("/confirm", async (req, res) => {
       return markFailed("Stamp ownership has changed.");
     }
 
-    const initiatorUser = await models.User.findOne({
-      id: trade.initiatorId,
-    }).select("_id name");
-    const recipientUser = await models.User.findOne({
-      id: trade.recipientId,
-    }).select("_id name");
-
-    // Capture previous ownership so we can roll the first save back if the
-    // second save fails mid-swap.
-    const iPrev = { user: iStamp.user, userId: iStamp.userId, hidden: iStamp.hidden };
-    const rPrev = { user: rStamp.user, userId: rStamp.userId, hidden: rStamp.hidden };
-
-    iStamp.user = recipientUser._id;
-    iStamp.userId = trade.recipientId;
-    iStamp.hidden = false;
-    rStamp.user = initiatorUser._id;
-    rStamp.userId = trade.initiatorId;
-    rStamp.hidden = false;
-
-    // Sequential so we can compensate if the second save fails.
-    try {
-      await iStamp.save();
-    } catch (e) {
-      logger.error(e);
-      return markFailed("Failed to transfer stamp — please try again.");
+    const [initiatorUser, recipientUser] = await Promise.all([
+      models.User.findOne({ id: trade.initiatorId, deleted: false }).select(
+        "_id name"
+      ),
+      models.User.findOne({ id: trade.recipientId, deleted: false }).select(
+        "_id name"
+      ),
+    ]);
+    if (!initiatorUser || !recipientUser) {
+      return markFailed("One of the trade participants no longer exists.");
     }
-    try {
-      await rStamp.save();
-    } catch (e) {
-      logger.error(e);
-      // Restore iStamp to its prior owner.
-      try {
-        iStamp.user = iPrev.user;
-        iStamp.userId = iPrev.userId;
-        iStamp.hidden = iPrev.hidden;
-        await iStamp.save();
-      } catch (restoreErr) {
+
+    // Atomic swap via conditional updates: each update is guarded by the
+    // current userId, so concurrent ownership changes cause the update to
+    // return null instead of overwriting. If the second leg fails, we revert
+    // the first leg via an equivalently-guarded update.
+    const iSwap = await models.Stamp.findOneAndUpdate(
+      { _id: iStamp._id, userId: trade.initiatorId },
+      {
+        $set: {
+          user: recipientUser._id,
+          userId: trade.recipientId,
+          hidden: false,
+        },
+      },
+      { new: true }
+    );
+    if (!iSwap) {
+      return markFailed("Stamp ownership has changed.");
+    }
+
+    const rSwap = await models.Stamp.findOneAndUpdate(
+      { _id: rStamp._id, userId: trade.recipientId },
+      {
+        $set: {
+          user: initiatorUser._id,
+          userId: trade.initiatorId,
+          hidden: false,
+        },
+      },
+      { new: true }
+    );
+    if (!rSwap) {
+      // Revert the first leg. Guard by the new userId so we don't clobber an
+      // unrelated change that may have slipped in between the two updates.
+      const reverted = await models.Stamp.findOneAndUpdate(
+        { _id: iStamp._id, userId: trade.recipientId },
+        {
+          $set: {
+            user: initiatorUser._id,
+            userId: trade.initiatorId,
+          },
+        },
+        { new: true }
+      );
+      if (!reverted) {
         logger.error(
-          `CRITICAL: stamp swap inconsistent for trade ${trade.id}: ${restoreErr}`
+          `CRITICAL: stamp swap inconsistent for trade ${trade.id}: could not revert iStamp ${iStamp._id}`
         );
       }
-      return markFailed("Failed to transfer stamp — please try again.");
+      return markFailed("Stamp ownership has changed.");
     }
 
     await routeUtils.createNotification(
@@ -623,7 +656,15 @@ router.post("/reject", async (req, res) => {
       return;
     }
 
-    const rejector = await models.User.findOne({ id: userId }).select("name");
+    const rejector = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("name");
+    if (!rejector) {
+      res.status(404);
+      res.send("User not found.");
+      return;
+    }
     const otherUserId =
       userId === trade.initiatorId ? trade.recipientId : trade.initiatorId;
     const tradeDesc = trade.recipientRole
