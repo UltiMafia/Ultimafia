@@ -298,7 +298,7 @@ export default function CreateDecks() {
                       className="btn deck-buy-btn"
                       href="/user/shop?buy=anonymousDeck"
                     >
-                      Buy Decks
+                      Buy More Decks
                     </a>
                   )}
                 </div>

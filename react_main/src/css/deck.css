@@ -251,19 +251,21 @@
   justify-content: center;
   padding: 6px 12px;
   border-radius: 6px;
-  background-color: var(--theme-color);
-  color: #ffffff;
+  background-color: transparent;
+  color: var(--mui-palette-primary-main);
+  border: 2px solid var(--mui-palette-primary-main);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 120ms ease;
+  transition: background-color 120ms ease, color 120ms ease;
 }
 
 .deck .deck-buy-btn:hover {
-  background-color: var(--theme-color-light);
+  background-color: var(--mui-palette-primary-main);
+  color: var(--scheme-color-background);
 }
 
 .deck .deck-field-label {
