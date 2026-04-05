@@ -143,6 +143,7 @@ export default function Profile() {
   const [stats, setStats] = useState();
   const [groups, setGroups] = useState([]);
   const [showStatsModal, setShowStatsModal] = useState(false);
+  const [ratingsTab, setRatingsTab] = useState("wins");
   const [mediaUrl, setMediaUrl] = useState("");
   const [autoplay, setAutoplay] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -1588,25 +1589,47 @@ export default function Profile() {
                   <Typography variant="h3" sx={headingStyle}>
                     Mafia Ratings
                   </Typography>
-                  <div className="content">
-                    {ratings}
+                  <div className="ratings-tabs">
                     <div
-                      className="expand-icon-wrapper"
-                      onClick={() => setShowStatsModal(true)}
+                      className={
+                        "ratings-tab" +
+                        (ratingsTab === "wins" ? " active" : "")
+                      }
+                      onClick={() => setRatingsTab("wins")}
+                    >
+                      Wins:{" "}
+                      {Math.round(
+                        (mafiaStats.wins.count / totalGames) * 100
+                      )}
+                      %
+                    </div>
+                    <div
+                      className={
+                        "ratings-tab" +
+                        (ratingsTab === "query" ? " active" : "")
+                      }
+                      onClick={() => setRatingsTab("query")}
                     >
                       <i className="fas fa-expand-arrows-alt" />
                     </div>
                   </div>
-                  <div
-                    className="content"
-                    style={{ padding: "0", justifyContent: "center" }}
-                  >
-                    <PieChart
-                      wins={mafiaStats.wins.count}
-                      losses={mafiaStats.wins.total - mafiaStats.wins.count}
-                      abandons={mafiaStats.abandons.total}
-                    />
-                  </div>
+                  {ratingsTab === "wins" && (
+                    <div
+                      className="content"
+                      style={{ padding: "0", justifyContent: "center" }}
+                    >
+                      <PieChart
+                        wins={mafiaStats.wins.count}
+                        losses={
+                          mafiaStats.wins.total - mafiaStats.wins.count
+                        }
+                        abandons={mafiaStats.abandons.total}
+                      />
+                    </div>
+                  )}
+                  {ratingsTab === "query" && (
+                    <StatsQueryView stats={stats} />
+                  )}
                 </div>
               )}
             {isSelf && pendingConfirmationTrades.length > 0 && (
@@ -2050,5 +2073,127 @@ function StatsModal(props) {
       content={content}
       footer={footer}
     />
+  );
+}
+
+function StatsQueryView({ stats }) {
+  const [queryType, setQueryType] = useState("bySetup");
+  const [selectedKey, setSelectedKey] = useState("");
+  const [setupNames, setSetupNames] = useState({});
+
+  const typeNames = {
+    bySetup: "Setup",
+    byRole: "Role",
+    byAlignment: "Alignment",
+  };
+
+  const data = stats?.["Mafia"]?.[queryType] || {};
+  const keys = Object.keys(data);
+
+  // fetch setup names when viewing Setup tab
+  useEffect(() => {
+    if (queryType !== "bySetup") return;
+    const setupKeys = Object.keys(stats?.["Mafia"]?.bySetup || {});
+    const missing = setupKeys.filter((id) => !(id in setupNames));
+    if (missing.length === 0) return;
+
+    Promise.all(
+      missing.map((id) =>
+        axios
+          .get(`/api/setup/${id}`)
+          .then((res) => [id, res.data?.name || id])
+          .catch(() => [id, id])
+      )
+    ).then((pairs) => {
+      setSetupNames((prev) => {
+        const next = { ...prev };
+        pairs.forEach(([id, name]) => (next[id] = name));
+        return next;
+      });
+    });
+  }, [queryType, stats]);
+
+  const displayKey = (k) =>
+    queryType === "bySetup" ? setupNames[k] || k : k;
+
+  // default to first available key when type changes
+  useEffect(() => {
+    if (keys.length > 0 && !keys.includes(selectedKey)) {
+      setSelectedKey(keys[0]);
+    } else if (keys.length === 0) {
+      setSelectedKey("");
+    }
+  }, [queryType, keys.join("|")]);
+
+  const selectedStats = selectedKey ? data[selectedKey] : null;
+  const totalUnabandoned = selectedStats
+    ? (selectedStats.wins?.total || 0) + (selectedStats.abandons?.total || 0)
+    : 0;
+  const winPct =
+    selectedStats && totalUnabandoned
+      ? Math.round((selectedStats.wins.count / totalUnabandoned) * 100)
+      : 0;
+  const abandonPct =
+    selectedStats && totalUnabandoned
+      ? Math.round((selectedStats.abandons.total / totalUnabandoned) * 100)
+      : 0;
+  const lossPct =
+    selectedStats && totalUnabandoned
+      ? 100 - winPct - abandonPct
+      : 0;
+
+  return (
+    <div className="stats-query">
+      <div className="query-type-tabs">
+        {Object.keys(typeNames).map((t) => (
+          <div
+            key={t}
+            className={"query-type-tab" + (queryType === t ? " active" : "")}
+            onClick={() => setQueryType(t)}
+          >
+            {typeNames[t]}
+          </div>
+        ))}
+      </div>
+      {keys.length === 0 ? (
+        <div className="query-empty">No {typeNames[queryType]} data yet.</div>
+      ) : (
+        <>
+          <select
+            className="query-select"
+            value={selectedKey}
+            onChange={(e) => setSelectedKey(e.target.value)}
+          >
+            {keys.map((k) => (
+              <option key={k} value={k}>
+                {displayKey(k)}
+              </option>
+            ))}
+          </select>
+          {selectedStats && (
+            <div className="query-stats">
+              <div className="query-stat">
+                <span className="query-stat-label">Games</span>
+                <span className="query-stat-value">
+                  {selectedStats.totalGames || totalUnabandoned}
+                </span>
+              </div>
+              <div className="query-stat">
+                <span className="query-stat-label">Wins</span>
+                <span className="query-stat-value">{winPct}%</span>
+              </div>
+              <div className="query-stat">
+                <span className="query-stat-label">Losses</span>
+                <span className="query-stat-value">{lossPct}%</span>
+              </div>
+              <div className="query-stat">
+                <span className="query-stat-label">Abandons</span>
+                <span className="query-stat-value">{abandonPct}%</span>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
   );
 }
