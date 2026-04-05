@@ -155,6 +155,7 @@ router.post("/initiate", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.rateLimit(userId, "tradeStamp", res))) return;
     const gameType = String(req.body.gameType || "").trim();
     const role = String(req.body.role || "").trim();
     const recipientUserId = String(req.body.recipientUserId || "").trim();
@@ -334,6 +335,7 @@ router.post("/respond", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.rateLimit(userId, "tradeStamp", res))) return;
     const tradeId = String(req.body.tradeId || "").trim();
     const gameType = String(req.body.gameType || "").trim();
     const role = String(req.body.role || "").trim();
@@ -474,6 +476,7 @@ router.post("/confirm", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.rateLimit(userId, "tradeStamp", res))) return;
     const tradeId = String(req.body.tradeId || "").trim();
 
     const trade = await models.StampTrade.findOne({ id: tradeId });
@@ -625,6 +628,7 @@ router.post("/reject", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.rateLimit(userId, "tradeStamp", res))) return;
     const tradeId = String(req.body.tradeId || "").trim();
 
     const trade = await models.StampTrade.findOne({ id: tradeId });
