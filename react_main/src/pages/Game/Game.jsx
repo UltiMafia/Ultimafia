@@ -447,6 +447,7 @@ export default function Game() {
             private: false,
             anonymousGame: data.anonymousGame,
             anonymousDeck: data.anonymousDeck,
+            graveyardParticipation: data.graveyardParticipation,
           });
 
           updateHistory({
@@ -995,6 +996,16 @@ export default function Game() {
           open={leaveDialogOpen}
           onClose={() => setLeaveDialogOpen(false)}
           onConfirm={leaveGame}
+          showPenaltyWarning={(() => {
+            const currentStateInfo = history.states[history.currentState];
+            const isAlive =
+              !!self && currentStateInfo && !currentStateInfo.dead?.[self];
+            return isAlive || !!options.graveyardParticipation;
+          })()}
+          lockSeconds={
+            (!options.ranked && !options.competitive) || dev ? 2 : 10
+          }
+          ranked={!!(options.ranked || options.competitive)}
         />
         {(gameType === "Mafia" ||
           gameType === "Resistance" ||
