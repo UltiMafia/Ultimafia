@@ -6,6 +6,7 @@ import axios from "axios";
 import CustomMarkdown from "components/CustomMarkdown";
 import { useOnOutsideClick } from "./Basic";
 import { useErrorAlert } from "./Alerts";
+import DeckPicker from "./DeckPicker";
 
 import "react-mde/lib/styles/css/react-mde.css";
 import "react-mde/lib/styles/css/react-mde-editor.css";
@@ -250,6 +251,31 @@ export default function Form({
                   label={compact ? field.label : undefined}
                 />
               )}
+            </FormField>
+          );
+        case "deckPicker":
+          return (
+            <FormField
+              field={field}
+              deps={deps}
+              compact={compact}
+              key={field.ref}
+            >
+              <DeckPicker
+                value={value || ""}
+                onChange={(newValue) => {
+                  if (field.fixed) return;
+                  onChange({
+                    ref: field.ref,
+                    prop: "value",
+                    value: newValue,
+                  });
+                }}
+                disabled={disabled}
+                placeholder={field.placeholder}
+                label={compact ? field.label : undefined}
+                helperText={field.extraInfo}
+              />
             </FormField>
           );
         case "emoteUpload":

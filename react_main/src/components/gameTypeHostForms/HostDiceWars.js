@@ -55,7 +55,7 @@ export default function HostDiceWars() {
     {
       label: "Deck ID",
       ref: "anonymousDeckId",
-      type: "text",
+      type: "deckPicker",
       value: defaults.anonymousDeckId,
       showIf: "anonymousGame",
     },

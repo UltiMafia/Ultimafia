@@ -36,7 +36,7 @@ export default function HostSecretDictator() {
     {
       label: "Deck ID",
       ref: "anonymousDeckId",
-      type: "text",
+      type: "deckPicker",
       value: defaults.anonymousDeckId,
       showIf: "anonymousGame",
     },

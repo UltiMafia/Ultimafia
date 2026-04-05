@@ -52,7 +52,7 @@ export default function HostConnectFour() {
     {
       label: "Deck ID",
       ref: "anonymousDeckId",
-      type: "text",
+      type: "deckPicker",
       value: defaults.anonymousDeckId,
       showIf: "anonymousGame",
     },

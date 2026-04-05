@@ -56,7 +56,7 @@ export default function HostLiarsDice() {
     {
       label: "Deck ID",
       ref: "anonymousDeckId",
-      type: "text",
+      type: "deckPicker",
       value: defaults.anonymousDeckId,
       showIf: "anonymousGame",
     },
