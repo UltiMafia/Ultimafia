@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 
@@ -57,6 +57,8 @@ export default function Shop(props) {
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
+  const location = useLocation();
+  const [autoBuyTriggered, setAutoBuyTriggered] = useState(false);
 
   useEffect(() => {
     document.title = "Shop | UltiMafia";
@@ -73,6 +75,20 @@ export default function Shop(props) {
         .catch(errorAlert);
     }
   }, [user.loaded]);
+
+  useEffect(() => {
+    if (!loaded || autoBuyTriggered) return;
+    const params = new URLSearchParams(location.search);
+    const buyKey = params.get("buy");
+    if (!buyKey) return;
+    const index = shopInfo.shopItems.findIndex((item) => item.key === buyKey);
+    if (index < 0) return;
+    const item = shopInfo.shopItems[index];
+    const numOwned = user.itemsOwned[item.key] || 0;
+    if (item.disabled || numOwned === item.limit) return;
+    setAutoBuyTriggered(true);
+    onBuyItem(index);
+  }, [loaded, location.search]);
 
   const handleTransferCoins = () => {
     if (!recipient || !amount) {
