@@ -274,7 +274,7 @@ iframe {
 
 .profile .trophies-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   flex: 1;
   min-width: 0;
@@ -304,7 +304,7 @@ iframe {
 
 .profile .trophy-tile-prestige {
   position: relative;
-  overflow: hidden;
+  clip-path: inset(0 round 8px);
   background: linear-gradient(
     135deg,
     #fff7d4 0%,
