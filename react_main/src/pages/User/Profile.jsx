@@ -1490,92 +1490,106 @@ export default function Profile() {
               </div>
             )}
             <div className="box-panel" style={panelStyle}>
-              <div className="content">
-                <Stack
-                  direction="row"
-                  spacing={2}
-                  sx={{ alignItems: "stretch" }}
-                >
-                  {karmaInfo && (
-                    <Stack direction="column" spacing={1}>
-                      <KarmaVoteWidget
-                        item={karmaInfo}
-                        setItem={setKarmaInfo}
-                        userId={profileUserId}
-                      />
-                    </Stack>
-                  )}
-                  <Stack direction="column" spacing={1}>
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{ alignItems: "center" }}
-                    >
+              <div className="content trophies-content">
+                {karmaInfo && (
+                  <div className="karma-vote-wrap">
+                    <KarmaVoteWidget
+                      item={karmaInfo}
+                      setItem={setKarmaInfo}
+                      userId={profileUserId}
+                    />
+                  </div>
+                )}
+                <div className="trophies-grid">
+                  <Tooltip
+                    title="Earned from outstanding performance in ranked and competitive games."
+                    arrow
+                  >
+                    <div className="trophy-tile">
                       <img
                         src={KUDOS_ICON}
-                        style={{ marginRight: "12px" }}
                         alt="Kudos"
+                        className="trophy-icon"
                       />
-                      {kudos}
-                    </Stack>
-                    {karmaInfo && (
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        sx={{ alignItems: "center" }}
-                      >
+                      <div className="trophy-meta">
+                        <div className="trophy-value">{kudos}</div>
+                        <div className="trophy-label">Kudos</div>
+                      </div>
+                    </div>
+                  </Tooltip>
+                  {karmaInfo && (
+                    <Tooltip
+                      title="Upvotes from other players on your profile."
+                      arrow
+                    >
+                      <div className="trophy-tile">
                         <img
                           src={KARMA_ICON}
-                          style={{ marginRight: "12px" }}
                           alt="Karma"
+                          className="trophy-icon"
                         />
-                        {karmaInfo.voteCount}
-                      </Stack>
-                    )}
-                  </Stack>
-                  <Stack direction="column" spacing={1}>
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{ alignItems: "center" }}
-                    >
+                        <div className="trophy-meta">
+                          <div className="trophy-value">
+                            {karmaInfo.voteCount}
+                          </div>
+                          <div className="trophy-label">Karma</div>
+                        </div>
+                      </div>
+                    </Tooltip>
+                  )}
+                  <Tooltip
+                    title="Earned by winning ranked and competitive games. Accumulates toward prestige at the end of a competitive round."
+                    arrow
+                  >
+                    <div className="trophy-tile">
                       <img
                         src={POINTS_ICON}
-                        style={{ marginRight: "12px" }}
                         alt="Fortune"
+                        className="trophy-icon"
                       />
-                      {points}
-                    </Stack>
-                    {pointsNegative !== undefined && (
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        sx={{ alignItems: "center" }}
-                      >
+                      <div className="trophy-meta">
+                        <div className="trophy-value">{points}</div>
+                        <div className="trophy-label">Fortune</div>
+                      </div>
+                    </div>
+                  </Tooltip>
+                  {pointsNegative !== undefined && (
+                    <Tooltip
+                      title="Accumulated from losing ranked and competitive games."
+                      arrow
+                    >
+                      <div className="trophy-tile">
                         <img
                           src={POINTS_NEGATIVE_ICON}
-                          style={{ marginRight: "12px" }}
                           alt="Misfortune"
+                          className="trophy-icon"
                         />
-                        {pointsNegative}
-                      </Stack>
-                    )}
-                  </Stack>
-                  <Stack direction="column" spacing={1}>
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{ alignItems: "center" }}
-                    >
+                        <div className="trophy-meta">
+                          <div className="trophy-value">{pointsNegative}</div>
+                          <div className="trophy-label">Misfortune</div>
+                        </div>
+                      </div>
+                    </Tooltip>
+                  )}
+                  <Tooltip
+                    title="Awarded to the top 10 fortune earners at the end of each competitive round."
+                    arrow
+                  >
+                    <div className="trophy-tile trophy-tile-prestige">
                       <img
                         src={PRESTIGE_ICON}
-                        style={{ marginRight: "12px" }}
                         alt="Prestige"
+                        className="trophy-icon"
                       />
-                      {championshipPoints || 0}
-                    </Stack>
-                  </Stack>
-                </Stack>
+                      <div className="trophy-meta">
+                        <div className="trophy-value">
+                          {championshipPoints || 0}
+                        </div>
+                        <div className="trophy-label">Prestige</div>
+                      </div>
+                    </div>
+                  </Tooltip>
+                </div>
               </div>
             </div>
             {(isSelf || user.perms.seeModPanel) && (
