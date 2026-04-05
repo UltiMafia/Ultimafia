@@ -78,7 +78,12 @@ export default function SearchResults(props) {
       regex.test(part) ? (
         <mark
           key={index}
-          style={{ backgroundColor: "#ffeb3b", padding: "0 2px" }}
+          style={{
+            backgroundColor: "var(--scheme-color)",
+            color: "var(--scheme-color-text)",
+            fontWeight: 700,
+            padding: "0 2px",
+          }}
         >
           {part}
         </mark>
@@ -221,8 +226,10 @@ export default function SearchResults(props) {
                             variant="h6"
                             component="h2"
                             sx={{
-                              "&:hover": { color: "primary.main" },
-                              fontWeight: "bold",
+                              color: "var(--scheme-color-text)",
+                              fontFamily: "var(--primaryFont)",
+                              fontWeight: 700,
+                              "&:hover": { opacity: 0.7 },
                             }}
                           >
                             {highlightText(result.title, query)}
@@ -237,8 +244,10 @@ export default function SearchResults(props) {
                             variant="h6"
                             component="h2"
                             sx={{
-                              "&:hover": { color: "primary.main" },
-                              fontWeight: "bold",
+                              color: "var(--scheme-color-text)",
+                              fontFamily: "var(--primaryFont)",
+                              fontWeight: 700,
+                              "&:hover": { opacity: 0.7 },
                             }}
                           >
                             Reply to:{" "}

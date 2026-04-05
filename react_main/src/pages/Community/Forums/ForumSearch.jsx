@@ -121,7 +121,8 @@ export default function ForumSearch({ open, onClose }) {
             flex: 1,
             fontSize: "1.25rem",
             lineHeight: 1.3,
-            fontWeight: 600,
+            fontFamily: "var(--primaryFont)",
+            fontWeight: 700,
             whiteSpace: "normal",
             wordBreak: "break-word",
           }}
@@ -159,7 +160,7 @@ export default function ForumSearch({ open, onClose }) {
               label="Filter by board"
             >
               <MenuItem value="">
-                <em>All boards</em>
+                <Box sx={{ fontWeight: 700, opacity: 0.7 }}>All boards</Box>
               </MenuItem>
               {Array.isArray(boards) &&
                 boards.map((board) => (
