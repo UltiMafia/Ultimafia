@@ -9,7 +9,7 @@
   background-position: center;
   background-size: 100% 100%;
   background-image: url("/src/images/modifiers/unknown-modifier.png");
-  image-rendering: crisp-edges;
+  image-rendering: pixelated;
 }
 
 .achievement-icon.VillageVictory {

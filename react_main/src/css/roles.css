@@ -40,7 +40,7 @@
 
   background-size: 100% 100%;
   background-image: url("/src/images/modifiers/unknown-modifier.png");
-  image-rendering: crisp-edges;
+  image-rendering: pixelated;
 }
 
 .modifier {
@@ -50,7 +50,7 @@
 
   background-size: 100% 100%;
   background-image: url("/src/images/modifiers/unknown-modifier.png");
-  image-rendering: crisp-edges;
+  image-rendering: pixelated;
 }
 
 .gamesetting {
@@ -62,7 +62,7 @@
 
   background-size: 100% 100%;
   background-image: url("/src/images/modifiers/unknown-modifier.png");
-  image-rendering: crisp-edges;
+  image-rendering: pixelated;
 }
 
 .role-count-wrap {
@@ -88,7 +88,7 @@
 
   background-size: 100% 100%;
   background-image: url("/src/images/roles/01-default-tall.png");
-  image-rendering: crisp-edges;
+  image-rendering: pixelated;
 }
 
 .role.large {
@@ -105,7 +105,7 @@
   height: 1rem;
   background-size: 100% 100%;
   background-image: url("/src/images/modifiers/modified-twice.png");
-  image-rendering: crisp-edges;
+  image-rendering: pixelated;
 }
 
 .role.small .modifier-modified-twice {
@@ -121,7 +121,7 @@
   height: 1rem;
   background-size: 100% 100%;
   background-image: url("/src/images/modifiers/modified-thrice.png");
-  image-rendering: crisp-edges;
+  image-rendering: pixelated;
 }
 
 .role.small .modifier-modified-thrice {

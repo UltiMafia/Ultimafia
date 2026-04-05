@@ -76,6 +76,8 @@
   height: 1.875rem;
 
   background-size: 100%;
+
+  image-rendering: pixelated;
 }
 
 .game-icon.Mafia {
