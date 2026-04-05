@@ -137,6 +137,7 @@ router.get("/pending-confirmation", async (req, res) => {
 router.get("/recent", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
+    await routeUtils.verifyLoggedIn(req);
     const trades = await models.StampTrade.find({ status: "COMPLETED" })
       .sort({ completedAt: -1 })
       .limit(10);
