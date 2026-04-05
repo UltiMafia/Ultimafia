@@ -522,6 +522,62 @@ router.get("/:id/profile", async function (req, res) {
     if (isSelf) {
       user.hiddenStamps = hiddenOrder.map((k) => hiddenGroups[k]);
       user.stampDetails = stampDetails;
+
+      // Locked stamp ids + per-roleKey locked counts from active trades.
+      const activeTrades = await models.StampTrade.find({
+        $or: [{ initiatorId: userId }, { recipientId: userId }],
+        status: { $in: ["PENDING_RESPONSE", "PENDING_CONFIRMATION"] },
+      }).select(
+        "initiatorId initiatorStamp initiatorGameType initiatorRole recipientId recipientStamp recipientGameType recipientRole"
+      );
+
+      const lockedStampIds = [];
+      const lockedCountsByRoleKey = {};
+      const incrementLocked = (gameType, role) => {
+        if (!gameType || !role) return;
+        const k = `${gameType}:${role}`;
+        lockedCountsByRoleKey[k] = (lockedCountsByRoleKey[k] || 0) + 1;
+      };
+      for (const t of activeTrades) {
+        if (t.initiatorId === userId && t.initiatorStamp) {
+          lockedStampIds.push(String(t.initiatorStamp));
+          incrementLocked(t.initiatorGameType, t.initiatorRole);
+        }
+        if (t.recipientId === userId && t.recipientStamp) {
+          lockedStampIds.push(String(t.recipientStamp));
+          incrementLocked(t.recipientGameType, t.recipientRole);
+        }
+      }
+      user.lockedStampIds = lockedStampIds;
+      user.lockedCountsByRoleKey = lockedCountsByRoleKey;
+
+      // Pending confirmation trades (initiator side) for the profile panel.
+      const pendingTrades = await models.StampTrade.find({
+        initiatorId: userId,
+        status: "PENDING_CONFIRMATION",
+      }).sort({ updatedAt: -1 });
+      const pendingConfirmationTrades = [];
+      for (const t of pendingTrades) {
+        const otherUser = await models.User.findOne({
+          id: t.recipientId,
+        }).select("id name avatar");
+        pendingConfirmationTrades.push({
+          id: t.id,
+          initiatorGameType: t.initiatorGameType,
+          initiatorRole: t.initiatorRole,
+          recipientGameType: t.recipientGameType,
+          recipientRole: t.recipientRole,
+          other: otherUser
+            ? {
+                id: otherUser.id,
+                name: otherUser.name,
+                avatar: otherUser.avatar,
+              }
+            : null,
+          updatedAt: t.updatedAt,
+        });
+      }
+      user.pendingConfirmationTrades = pendingConfirmationTrades;
     }
 
     var karmaInfo = { voteCount: user.karma, vote: 0 };

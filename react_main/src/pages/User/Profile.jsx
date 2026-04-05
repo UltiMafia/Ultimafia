@@ -33,6 +33,7 @@ import RapSheet from "../../components/RapSheet";
 import TrophyCase from "components/TrophyCase";
 import { AchievementPanel } from "components/Achievements";
 import Scrapbook from "components/Scrapbook";
+import PendingTradeConfirmations from "components/PendingTradeConfirmations";
 import CasePanel from "components/CasePanel";
 import { RoleCount } from "components/Roles";
 import { PieChart } from "./PieChart";
@@ -116,6 +117,9 @@ export default function Profile() {
   const [favoriteRoles, setFavoriteRoles] = useState([]);
   const [stamps, setStamps] = useState([]);
   const [hiddenStamps, setHiddenStamps] = useState([]);
+  const [lockedCountsByRoleKey, setLockedCountsByRoleKey] = useState({});
+  const [pendingConfirmationTrades, setPendingConfirmationTrades] = useState([]);
+  const [profileRefetchKey, setProfileRefetchKey] = useState(0);
   const [trophies, setTrophies] = useState([]);
   const [karmaInfo, setKarmaInfo] = useState({});
   const [settings, setSettings] = useState({});
@@ -299,6 +303,10 @@ export default function Profile() {
           setTrophies(res.data.trophies || []);
           setStamps(res.data.stamps || []);
           setHiddenStamps(res.data.hiddenStamps || []);
+          setLockedCountsByRoleKey(res.data.lockedCountsByRoleKey || {});
+          setPendingConfirmationTrades(
+            res.data.pendingConfirmationTrades || []
+          );
           setProfileFamily(res.data.family || null);
           setJoined(res.data.joined || null);
           setPokeStatus(res.data.pokeStatus || { status: "none" });
@@ -324,7 +332,9 @@ export default function Profile() {
           navigate("/play");
         });
     }
-  }, [userId]);
+  }, [userId, profileRefetchKey]);
+
+  const refetchProfile = () => setProfileRefetchKey((k) => k + 1);
 
   function onEditBanner(files, type) {
     if (!user.itemsOwned.customProfile) {
@@ -1424,6 +1434,8 @@ export default function Profile() {
               stamps={stamps}
               hiddenStamps={hiddenStamps}
               isSelf={isSelf}
+              lockedCountsByRoleKey={lockedCountsByRoleKey}
+              onTradeAction={refetchProfile}
               panelStyle={panelStyle}
               headingStyle={headingStyle}
             />
@@ -1597,6 +1609,14 @@ export default function Profile() {
                   </div>
                 </div>
               )}
+            {isSelf && pendingConfirmationTrades.length > 0 && (
+              <PendingTradeConfirmations
+                trades={pendingConfirmationTrades}
+                onAction={refetchProfile}
+                panelStyle={panelStyle}
+                headingStyle={headingStyle}
+              />
+            )}
             <div className="box-panel recent-games" style={panelStyle}>
               <Typography variant="h3" style={headingStyle}>
                 Recent Games

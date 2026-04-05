@@ -740,6 +740,44 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Award Stamp": {
+      perm: "awardStamp",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Game Type",
+          name: "gameType",
+          type: "text",
+          default: "Mafia",
+        },
+        {
+          label: "Role",
+          name: "role",
+          type: "role_autocomplete",
+          gameTypeArg: "gameType",
+        },
+        {
+          label: "Quantity",
+          name: "quantity",
+          type: "text",
+          default: "1",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/awardStamp", argValues)
+          .then(() => {
+            siteInfo.showAlert("Stamp(s) awarded.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Revoke Trophy": {
       perm: "awardTrophy",
       category: "User Management",

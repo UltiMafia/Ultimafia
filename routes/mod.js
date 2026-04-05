@@ -1699,6 +1699,104 @@ router.post("/awardTrophy", async (req, res) => {
   }
 });
 
+router.post("/awardStamp", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var perm = "awardStamp";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    var userIdToAward = String(req.body.userId || "").trim();
+    var gameType = String(req.body.gameType || "").trim();
+    var role = String(req.body.role || "").trim();
+    var quantity = parseInt(req.body.quantity, 10);
+    if (!Number.isFinite(quantity) || quantity < 1) quantity = 1;
+    if (quantity > 100) quantity = 100;
+
+    if (!userIdToAward) {
+      res.status(400);
+      res.send("User is required.");
+      return;
+    }
+
+    if (!gameType) {
+      res.status(400);
+      res.send("Game type is required.");
+      return;
+    }
+
+    if (!role) {
+      res.status(400);
+      res.send("Role is required.");
+      return;
+    }
+
+    const roleInfo = roleData?.[gameType]?.[role];
+    if (!roleInfo) {
+      res.status(400);
+      res.send(`Unknown role "${role}" for game type "${gameType}".`);
+      return;
+    }
+    if (roleInfo.alignment === "Event") {
+      res.status(400);
+      res.send("Stamps cannot be awarded for events.");
+      return;
+    }
+
+    const userToAward = await models.User.findOne({
+      id: userIdToAward,
+      deleted: false,
+    }).select("_id id name");
+
+    if (!userToAward) {
+      res.status(404);
+      res.send("User does not exist.");
+      return;
+    }
+
+    const now = Date.now();
+    const stamps = [];
+    for (let i = 0; i < quantity; i++) {
+      stamps.push({
+        user: userToAward._id,
+        userId: userIdToAward,
+        gameId: `admin-${shortid.generate()}`,
+        gameType,
+        role,
+        hidden: false,
+        createdAt: now + i,
+      });
+    }
+    await models.Stamp.insertMany(stamps);
+
+    await routeUtils.createNotification(
+      {
+        content: `You have been awarded ${quantity} ${gameType} ${role} stamp${quantity === 1 ? "" : "s"}!`,
+        icon: "fas fa-stamp",
+        link: `/user/${userIdToAward}`,
+      },
+      [userIdToAward]
+    );
+
+    routeUtils.createModAction(userId, "Award Stamp", [
+      userIdToAward,
+      `${gameType}:${role} x${quantity}`,
+    ]);
+
+    res.send({
+      userId: userIdToAward,
+      gameType,
+      role,
+      quantity,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error awarding stamp.");
+  }
+});
+
 router.post("/revokeTrophy", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {

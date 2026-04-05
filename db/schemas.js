@@ -351,6 +351,35 @@ var schemas = {
     hidden: { type: Boolean, default: false },
     createdAt: { type: Number, default: Date.now },
   }).index({ userId: 1, gameId: 1 }, { unique: true }),
+  StampTrade: new mongoose.Schema({
+    id: { type: String, index: true, unique: true },
+    initiatorId: { type: String, index: true },
+    initiator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    initiatorStamp: { type: mongoose.Schema.Types.ObjectId, ref: "Stamp" },
+    initiatorGameType: String,
+    initiatorRole: String,
+    recipientId: { type: String, index: true },
+    recipient: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    recipientStamp: { type: mongoose.Schema.Types.ObjectId, ref: "Stamp" },
+    recipientGameType: String,
+    recipientRole: String,
+    status: {
+      type: String,
+      enum: [
+        "PENDING_RESPONSE",
+        "PENDING_CONFIRMATION",
+        "COMPLETED",
+        "REJECTED",
+      ],
+      index: true,
+    },
+    createdAt: { type: Number, default: Date.now },
+    updatedAt: { type: Number, default: Date.now },
+    completedAt: { type: Number, default: null },
+  })
+    .index({ status: 1, recipientId: 1 })
+    .index({ status: 1, initiatorId: 1 })
+    .index({ status: 1, completedAt: -1 }),
   ForumCategory: new mongoose.Schema({
     id: { type: String, index: true },
     name: String,
