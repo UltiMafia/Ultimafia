@@ -1612,6 +1612,8 @@ export default function Profile() {
             {isSelf && pendingConfirmationTrades.length > 0 && (
               <PendingTradeConfirmations
                 trades={pendingConfirmationTrades}
+                stamps={stamps}
+                lockedCountsByRoleKey={lockedCountsByRoleKey}
                 onAction={refetchProfile}
                 panelStyle={panelStyle}
                 headingStyle={headingStyle}

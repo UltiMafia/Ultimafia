@@ -551,16 +551,24 @@ router.get("/:id/profile", async function (req, res) {
       user.lockedStampIds = lockedStampIds;
       user.lockedCountsByRoleKey = lockedCountsByRoleKey;
 
-      // Pending confirmation trades (initiator side) for the profile panel.
+      // All active trades involving this user.
       const pendingTrades = await models.StampTrade.find({
-        initiatorId: userId,
-        status: "PENDING_CONFIRMATION",
+        $or: [{ initiatorId: userId }, { recipientId: userId }],
+        status: { $in: ["PENDING_RESPONSE", "PENDING_CONFIRMATION"] },
       }).sort({ updatedAt: -1 });
       const pendingConfirmationTrades = [];
       for (const t of pendingTrades) {
+        const isInitiator = t.initiatorId === userId;
+        const otherUserId = isInitiator ? t.recipientId : t.initiatorId;
         const otherUser = await models.User.findOne({
-          id: t.recipientId,
+          id: otherUserId,
         }).select("id name avatar");
+        // Whose turn is it?
+        // PENDING_RESPONSE: recipient needs to respond.
+        // PENDING_CONFIRMATION: initiator needs to confirm.
+        const waitingOnYou =
+          (t.status === "PENDING_RESPONSE" && !isInitiator) ||
+          (t.status === "PENDING_CONFIRMATION" && isInitiator);
         pendingConfirmationTrades.push({
           id: t.id,
           initiatorGameType: t.initiatorGameType,
@@ -574,6 +582,9 @@ router.get("/:id/profile", async function (req, res) {
                 avatar: otherUser.avatar,
               }
             : null,
+          isInitiator,
+          status: t.status,
+          waitingOnYou,
           updatedAt: t.updatedAt,
         });
       }
