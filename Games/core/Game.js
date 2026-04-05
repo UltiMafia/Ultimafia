@@ -1326,16 +1326,7 @@ module.exports = class Game {
     return roleset;
   }
 
-  makeGameAnonymous() {
-    if (this.anonymousDeck.length == 1) {
-      this.queueAlert(
-        `Randomising names with deck: ${this.anonymousDeck[0].name}`
-      );
-    } else {
-      let Decknames = this.anonymousDeck.map((d) => d.name);
-      this.queueAlert(`Randomising names with decks: ${Decknames.join(", ")}`);
-    }
-    //this.queueAlert(`Randomising names with decks: ${this.anonymousDeck.length}`);
+  getDeduplicatedDeckProfiles() {
     let deckProfiles = [];
     for (let deck of this.anonymousDeck) {
       deckProfiles = deckProfiles.concat(deck.profiles);
@@ -1348,19 +1339,47 @@ module.exports = class Game {
         }
       }
     }
-    deckProfiles = Random.randomizeArray(deckProfiles);
-    let deckIndex = 0;
+    return deckProfiles;
+  }
+
+  makeGameAnonymous(assignments) {
+    if (this.anonymousDeck.length == 1) {
+      this.queueAlert(
+        `Randomising names with deck: ${this.anonymousDeck[0].name}`
+      );
+    } else {
+      let Decknames = this.anonymousDeck.map((d) => d.name);
+      this.queueAlert(`Randomising names with decks: ${Decknames.join(", ")}`);
+    }
+
+    let deckProfiles = this.getDeduplicatedDeckProfiles();
+    assignments = assignments || {};
+
+    // Build the set of profile ids already claimed by the host's assignments
+    let usedProfileIds = new Set();
+    for (let playerId in assignments) {
+      let profile = assignments[playerId];
+      if (profile) usedProfileIds.add(profile.id);
+    }
+
+    // The remaining profiles for players without an assignment
+    let remainingProfiles = Random.randomizeArray(
+      deckProfiles.filter((p) => !usedProfileIds.has(p.id))
+    );
+    let remainingIndex = 0;
 
     for (let playerId in this.players) {
       let p = this.players[playerId];
-      // save mapping for front-end render
       this.beforeAnonPlayerInfo.push(this.createPlayerGoneObj(p));
 
-      p.makeAnonymous(deckProfiles[deckIndex]);
-      deckIndex++;
-      this.players[p.id] = p;
+      let chosen = assignments[p.id];
+      if (!chosen) {
+        chosen = remainingProfiles[remainingIndex];
+        remainingIndex++;
+      }
 
-      // save mapping for reconnect
+      p.makeAnonymous(chosen);
+      this.players[p.id] = p;
       this.anonPlayerMapping[p.originalProfile.userId] = p;
     }
 
@@ -1376,11 +1395,18 @@ module.exports = class Game {
   }
 
   assignRoles() {
-    if (this.anonymousGame) {
+    var roleset = this.generateRoleset();
+
+    var hasHost = Object.keys(roleset).some(
+      (roleName) => roleName.split(":")[0] === "Host"
+    );
+
+    if (this.anonymousGame && !hasHost) {
       this.makeGameAnonymous();
+    } else if (this.anonymousGame && hasHost) {
+      this.deferredAnonymous = true;
     }
 
-    var roleset = this.generateRoleset();
     let players = this.players.array();
     this.StartingRoleset = [];
     for (let r in roleset) {
