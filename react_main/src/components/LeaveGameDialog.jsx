@@ -20,17 +20,17 @@ export default function LeaveGameDialog({
   open,
   onClose,
   onConfirm,
-  showPenaltyWarning = false,
+  isParticipationRequired = false,
   lockSeconds = DEFAULT_LOCK_SECONDS,
   isPenaltyEnforced = true,
 }) {
   const [alertOpen, setAlertOpen] = useState(false);
   const [lockRemaining, setLockRemaining] = useState(
-    showPenaltyWarning ? lockSeconds : 0
+    isParticipationRequired ? lockSeconds : 0
   );
 
   useEffect(() => {
-    if (!open || !showPenaltyWarning) {
+    if (!open || !isParticipationRequired) {
       setLockRemaining(0);
       return;
     }
@@ -45,7 +45,7 @@ export default function LeaveGameDialog({
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [open, showPenaltyWarning, lockSeconds]);
+  }, [open, isParticipationRequired, lockSeconds]);
 
   const isLocked = lockRemaining > 0;
 
@@ -103,7 +103,7 @@ export default function LeaveGameDialog({
           <Typography variant="body2">
             Are you sure you want to leave?
           </Typography>
-          {showPenaltyWarning && (
+          {isParticipationRequired && (
             <Typography
               variant="body2"
               sx={{ color: "error.main", fontWeight: 700, mt: 1 }}

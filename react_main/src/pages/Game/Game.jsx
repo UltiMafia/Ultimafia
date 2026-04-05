@@ -996,7 +996,7 @@ export default function Game() {
           open={leaveDialogOpen}
           onClose={() => setLeaveDialogOpen(false)}
           onConfirm={leaveGame}
-          showPenaltyWarning={(() => {
+          isParticipationRequired={(() => {
             const currentStateInfo = history.states[history.currentState];
             const isAlive =
               !!self && currentStateInfo && !currentStateInfo.dead?.[self];
