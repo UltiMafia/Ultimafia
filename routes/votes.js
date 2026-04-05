@@ -32,6 +32,9 @@ router.post("/", async function (req, res) {
       case "role":
         itemModel = models.RoleVote;
         break;
+      case "deck":
+        itemModel = models.AnonymousDeck;
+        break;
       default:
         res.status(500);
         res.send("Invalid item type.");
@@ -42,7 +45,11 @@ router.post("/", async function (req, res) {
 
     if (itemType === "strategy") {
       itemQuery = itemQuery.select("deleted");
-    } else if (itemType === "setup" || itemType === "role") {
+    } else if (
+      itemType === "setup" ||
+      itemType === "role" ||
+      itemType === "deck"
+    ) {
       itemQuery = itemQuery.select("id");
     } else {
       let populates = [];
@@ -83,7 +90,12 @@ router.post("/", async function (req, res) {
 
     var requiredRank = 0;
 
-    if (itemType !== "strategy" && itemType !== "setup" && itemType !== "role") {
+    if (
+      itemType !== "strategy" &&
+      itemType !== "setup" &&
+      itemType !== "role" &&
+      itemType !== "deck"
+    ) {
       requiredRank =
         (item.board && item.board.rank) ||
         (item.thread && item.thread.board && item.thread.board.rank) ||

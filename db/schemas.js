@@ -9,6 +9,8 @@ const anonymousDeck = new mongoose.Schema({
   name: { type: String, index: true },
   creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
   profiles: [{ type: mongoose.Schema.Types.ObjectId, ref: "DeckProfile" }],
+  coverPhoto: { type: String, default: "" },
+  voteCount: { type: Number, default: 0, index: true },
   disabled: { type: Boolean, default: 0 },
   featured: { type: Boolean, index: true },
 });
