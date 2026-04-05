@@ -53,6 +53,8 @@ export default function UserSearch(props) {
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
+          padding: "8px 12px",
+          "&:last-child": { paddingBottom: "8px" },
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
@@ -142,7 +144,14 @@ function NewestUsers(props) {
       variant="outlined"
       sx={{ marginBottom: 2 }}
     >
-      <CardContent sx={{ display: "flex", flexDirection: "column" }}>
+      <CardContent
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          padding: "8px 12px",
+          "&:last-child": { paddingBottom: "8px" },
+        }}
+      >
         <NameWithAvatar
           id={user.id}
           name={user.name}
