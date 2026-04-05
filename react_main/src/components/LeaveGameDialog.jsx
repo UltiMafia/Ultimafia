@@ -22,7 +22,7 @@ export default function LeaveGameDialog({
   onConfirm,
   showPenaltyWarning = false,
   lockSeconds = DEFAULT_LOCK_SECONDS,
-  ranked = true,
+  isPenaltyEnforced = true,
 }) {
   const [alertOpen, setAlertOpen] = useState(false);
   const [lockRemaining, setLockRemaining] = useState(
@@ -108,7 +108,7 @@ export default function LeaveGameDialog({
               variant="body2"
               sx={{ color: "error.main", fontWeight: 700, mt: 1 }}
             >
-              {ranked
+              {isPenaltyEnforced
                 ? "YOU WILL BE PENALISED FOR LEAVING"
                 : "Your participation is still required"}
             </Typography>

@@ -1005,7 +1005,7 @@ export default function Game() {
           lockSeconds={
             (!options.ranked && !options.competitive) || dev ? 2 : 10
           }
-          ranked={!!(options.ranked || options.competitive)}
+          isPenaltyEnforced={!!(options.ranked || options.competitive)}
         />
         {(gameType === "Mafia" ||
           gameType === "Resistance" ||
