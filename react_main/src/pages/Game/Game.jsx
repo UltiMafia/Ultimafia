@@ -3283,6 +3283,9 @@ export function ActionList({
   title = "Actions",
   actionStyle = {},
   descriptors,
+  meetingFilter,
+  hideIfEmpty = false,
+  scrollable = true,
 }) {
   const game = useContext(GameContext);
 
@@ -3303,8 +3306,14 @@ export function ActionList({
   let regularActionDescriptors = descriptors;
 
   if (!regularActionDescriptors) {
+    const filteredMeetings = meetingFilter
+      ? Object.fromEntries(
+          Object.entries(meetings || {}).filter(([, m]) => meetingFilter(m))
+        )
+      : meetings;
+
     const descriptorResult = buildActionDescriptors({
-      meetings,
+      meetings: filteredMeetings,
       baseActionProps,
       actionStyle,
       inventoryActionStyle: actionStyle,
@@ -3321,13 +3330,17 @@ export function ActionList({
     }
   }
 
+  if (hideIfEmpty && (!regularActionDescriptors || regularActionDescriptors.length === 0)) {
+    return null;
+  }
+
   const actionElements = (regularActionDescriptors || []).map(
     ({ Component, props, key }) => <Component key={key} {...props} />
   );
 
   return (
     <SideMenu
-      scrollable
+      scrollable={scrollable}
       title={
         <UnresolvedActionCount>{title || "Actions"}</UnresolvedActionCount>
       }

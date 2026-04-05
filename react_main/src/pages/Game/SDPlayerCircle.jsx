@@ -20,6 +20,7 @@ export function PlayerCircle({
   socket,
   roles,
   mobile,
+  externalVoteButtons,
 }) {
   const siteInfo = useContext(SiteInfoContext);
   const [confirmTarget, setConfirmTarget] = useState(null);
@@ -64,10 +65,10 @@ export function PlayerCircle({
   };
 
   const n = players.length;
-  const radius = mobile ? 120 : 200;
-  const cx = mobile ? 160 : 250;
-  const cy = mobile ? 160 : 250;
-  const containerSize = mobile ? 320 : 560;
+  const radius = mobile ? 80 : 220;
+  const cx = mobile ? 115 : 290;
+  const cy = mobile ? 115 : 290;
+  const containerSize = mobile ? 230 : 580;
 
   return (
     <>
@@ -124,7 +125,7 @@ export function PlayerCircle({
           if (i === 0) console.log("[SD votes]", { electionMeeting: !!electionMeeting, voteResults, playerIds: players.map(p => p.id) });
 
           if (electionMeeting && electionMemberIds.has(player.id)) {
-            if (isSelf) {
+            if (isSelf && !externalVoteButtons) {
               // Always show both cards; highlight the selected one in yellow
               const myVote = electionMeeting.votes?.[selfId];
               voteCard = (
