@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 
 import { SiteInfoContext, UserContext } from "Contexts";
-import { RoleCount } from "components/Roles";
+import { StampItem } from "components/Scrapbook";
 import { useErrorAlert } from "components/Alerts";
 import { NameWithAvatar } from "pages/User/User";
 
@@ -102,14 +102,7 @@ export default function StampTradeModal({ open, onClose, stamp, onTradeAction })
       <DialogTitle>
         <Stack direction="row" alignItems="center" spacing={1.5}>
           <span>Trade</span>
-          <Box sx={{ display: "inline-flex", alignItems: "center" }}>
-            <RoleCount
-              role={stamp.role}
-              gameType={stamp.gameType}
-              small
-              showPopover={false}
-            />
-          </Box>
+          <StampItem role={stamp.role} gameType={stamp.gameType} size="small" />
           <Typography variant="body2" sx={{ opacity: 0.7 }}>
             {stamp.role}
           </Typography>
@@ -150,14 +143,11 @@ export default function StampTradeModal({ open, onClose, stamp, onTradeAction })
                     <Typography variant="caption" sx={{ opacity: 0.7 }}>
                       offers
                     </Typography>
-                    <Box sx={{ display: "inline-flex", alignItems: "center" }}>
-                      <RoleCount
-                        role={t.initiatorRole}
-                        gameType={t.initiatorGameType}
-                        small
-                        showPopover={false}
-                      />
-                    </Box>
+                    <StampItem
+                      role={t.initiatorRole}
+                      gameType={t.initiatorGameType}
+                      size="small"
+                    />
                     <Typography variant="caption">
                       {t.initiatorRole}
                     </Typography>

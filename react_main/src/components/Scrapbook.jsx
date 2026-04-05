@@ -18,11 +18,12 @@ const ITEMS_PER_PAGE = 20;
 const ITEMS_PER_SPREAD = ITEMS_PER_PAGE * 2;
 const FLIP_DURATION_MS = 550;
 
-function StampItem({ gameType, role, count, hasLock, clickable, onClick }) {
+export function StampItem({ gameType, role, count, hasLock, clickable, onClick, size }) {
   const label = gameType === "Mafia" ? role : `${gameType} - ${role}`;
   const classNames = ["stamp"];
   if (clickable) classNames.push("stamp--clickable");
   if (hasLock) classNames.push("stamp--locked");
+  if (size === "small") classNames.push("stamp--small");
 
   return (
     <Tooltip title={label} arrow>

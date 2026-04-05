@@ -210,6 +210,20 @@
   cursor: default;
 }
 
+.stamp--small {
+  width: 28px;
+  height: 28px;
+}
+
+.stamp--small .stamp-icon .role {
+  transform: scale(0.58);
+  transform-origin: center;
+}
+
+.stamp--small .stamp-fold {
+  border-width: 0 0 5px 5px;
+}
+
 .stamp-icon {
   display: flex;
   align-items: center;

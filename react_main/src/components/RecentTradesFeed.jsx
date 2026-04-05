@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Box, Typography, Stack } from "@mui/material";
 
-import { RoleCount } from "components/Roles";
+import { StampItem } from "components/Scrapbook";
 import { NameWithAvatar } from "pages/User/User";
 
 export default function RecentTradesFeed() {
@@ -28,7 +28,10 @@ export default function RecentTradesFeed() {
 
   return (
     <div className="box-panel">
-      <Typography variant="h3">Recent Trades</Typography>
+      <Typography variant="h3" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <i className="fas fa-stamp" style={{ fontSize: "0.9em", opacity: 0.8 }} />
+        Stamp Exchange
+      </Typography>
       <div className="content" style={{ padding: "8px" }}>
         {trades.length === 0 ? (
           <Typography variant="body2" color="textSecondary">
@@ -40,41 +43,46 @@ export default function RecentTradesFeed() {
               <Box
                 key={t.id}
                 sx={{
-                  display: "flex",
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto 1fr",
                   alignItems: "center",
-                  gap: 0.75,
-                  flexWrap: "wrap",
-                  fontSize: "0.85rem",
+                  gap: 1,
+                  fontSize: "0.75rem",
+                  "& .user-name .MuiTypography-root": { fontSize: "0.75rem" },
                 }}
               >
-                <NameWithAvatar
-                  id={t.initiator?.id}
-                  name={t.initiator?.name}
-                  avatar={t.initiator?.avatar}
-                  small
-                />
-                <RoleCount
-                  role={t.initiatorRole}
-                  gameType={t.initiatorGameType}
-                  small
-                  showPopover={false}
-                />
-                <i
-                  className="fas fa-exchange-alt"
-                  style={{ fontSize: 11, opacity: 0.6 }}
-                />
-                <RoleCount
-                  role={t.recipientRole}
-                  gameType={t.recipientGameType}
-                  small
-                  showPopover={false}
-                />
-                <NameWithAvatar
-                  id={t.recipient?.id}
-                  name={t.recipient?.name}
-                  avatar={t.recipient?.avatar}
-                  small
-                />
+                <Box sx={{ display: "flex", justifyContent: "flex-end", minWidth: 0 }}>
+                  <NameWithAvatar
+                    id={t.initiator?.id}
+                    name={t.initiator?.name}
+                    avatar={t.initiator?.avatar}
+                    small
+                  />
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  <StampItem
+                    role={t.initiatorRole}
+                    gameType={t.initiatorGameType}
+                    size="small"
+                  />
+                  <i
+                    className="fas fa-exchange-alt"
+                    style={{ fontSize: 10, opacity: 0.6 }}
+                  />
+                  <StampItem
+                    role={t.recipientRole}
+                    gameType={t.recipientGameType}
+                    size="small"
+                  />
+                </Box>
+                <Box sx={{ display: "flex", justifyContent: "flex-start", minWidth: 0 }}>
+                  <NameWithAvatar
+                    id={t.recipient?.id}
+                    name={t.recipient?.name}
+                    avatar={t.recipient?.avatar}
+                    small
+                  />
+                </Box>
               </Box>
             ))}
           </Stack>
