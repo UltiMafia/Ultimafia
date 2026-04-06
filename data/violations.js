@@ -2,8 +2,18 @@ const violationDefinitions = [
   {
     id: "personal-attacks-harassment",
     name: "Personal Attacks & Harassment (PA)",
-    description:
-      "Repeatedly antagonizing or harassing a user or multiple users in a specific, targeted manner. Victims of harassment are not required to ask for the behavior to stop for it to be considered harassment.",
+    description: [
+      {
+        type: "paragraph",
+        content:
+          "Repeatedly antagonizing, targeting, or harassing an individual user or multiple users in a deliberate and sustained manner. Targeted conduct intended to intimidate, demean, or isolate others is not welcomed at UltiMafia, regardless of whether the individual engaging in the behavior believes it is 'justified'.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "A behavior may be considered harassment regardless of whether the affected individual has explicitly asked to stop or not. Deliberately joining multiple games with people who are trying to avoid you in order to antagonize them is also considered to fall under this category.",
+      },
+    ],
     offenses: [
       "1 day",
       "3 days",
@@ -18,8 +28,23 @@ const violationDefinitions = [
   {
     id: "intolerance",
     name: "Intolerance",
-    description:
-      "Any disrespectful behavior on the basis of group identity. Includes bigotry of any kind (racism, homophobia, transphobia, misogyny, etc.), bypassing slur filters, and genocide denial. Please note that one is not permitted to use slurs or bigoted phrases despite belonging to affected groups (i.e. reclamation).",
+    description: [
+      {
+        type: "paragraph",
+        content:
+          'Discrimination or disrespectful conduct based on group identity. Prohibited behavior includes, but is not limited to, racism, homophobia, transphobia, misogyny, religious discrimination, xenophobia, ableism, or any other form of bigotry otherwise not listed. Per section 2 of the staff handbook, our mission statement intends to, "maintain[ing] a community free from prejudice or bias based on sex, age, gender identity, sexual orientation, skin color, ability, religion, nationality, or any other characteristic."',
+      },
+      {
+        type: "paragraph",
+        content:
+          'Intolerance also includes bypassing slur filters, as well as the denial or minimization of acts of genocide or systemic oppression of minority groups. The use of slurs, derogatory language, or bigoted expressions also falls into this rule, including instances where an individual belongs to the affected group or claims the language is being "reclaimed."',
+      },
+      {
+        type: "paragraph",
+        content:
+          "Breaking of this rule may result in punishment dependent on severity [Idk how we will change scale of punishment here]",
+      },
+    ],
     offenses: [
       "1 day",
       "3 days",
@@ -34,8 +59,29 @@ const violationDefinitions = [
   {
     id: "adult-content",
     name: "Adult Content",
-    description:
-      "Graphic or textual descriptions of adult behavior, including explicit sex acts, drug use, lewd word, mentions or descriptions of content intended to shock or disturb, pornographic websites, or descriptions of real violence or assault.",
+    description: [
+      {
+        type: "paragraph",
+        content:
+          "Content or material not appropriate for users under the age of 18. You may not create, share, display, or distribute content otherwise considered 'Not Safe for Work'. This includes, but is not limited to:",
+      },
+      {
+        type: "list",
+        items: [
+          "Graphic, written, or visual depictions of sexual activity or explicit acts",
+          "Descriptions or portrayals of illegal drug use and/or behavior that promotes substance abuse",
+          "Lewd, obscene, or sexually explicit language",
+          "Content intended to shock, disturb, or offend others (i.e. shock sites, gore, etc.)",
+          "Access to or promotion of pornographic websites",
+          "Descriptions or depictions of real violence or assault",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "Breaking of this rule may result in punishment dependent on severity [Idk how we will change scale of punishment here]",
+      },
+    ],
     offenses: [
       "1 day",
       "3 days",
@@ -50,8 +96,18 @@ const violationDefinitions = [
   {
     id: "instigation",
     name: "Instigation",
-    description:
-      "Intentionally baiting conflict between users, including concern trolling, mass arguments in public spaces, or disingenuously encouraging drama. The report function exists for a reason.",
+    description: [
+      {
+        type: "paragraph",
+        content:
+          "Intentionally provoking or escalating conflict between users, whether between yourself and another, or two separate parties. This includes among others from the moderation's discretion: engaging in trolling behavior (including concern trolling, political trolling, spamming, etc.), initiating or encouraging large-scale public arguments, or disingenuously promoting drama and/or division within community spaces.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Concerns regarding user behavior should be addressed through the appropriate reporting channels. The designated reporting tools exist to ensure issues are reviewed and handled in a fair and consistent manner. Breaking of this rule may result in punishment dependent on severity [Idk how we will change scale of punishment here]",
+      },
+    ],
     offenses: [
       "1 day",
       "3 days",
@@ -66,8 +122,18 @@ const violationDefinitions = [
   {
     id: "hazing",
     name: "Hazing",
-    description:
-      "Discriminating against or mistreating users on new accounts. Includes policy-voting, falsely accusing a new account of rule-breaking, and promoting an anti-growth mindset.",
+    description: [
+      {
+        type: "paragraph",
+        content:
+          "Hazing includes any behavior that discriminates against or mistreats users based solely on the fact that they are a new user, case and point. Prohibited conduct includes, but is not limited to: engaging in policy-based voting against new users without merit, falsely accusing new users of rule violations, or promoting attitudes or practices that discourage community growth. Potential harassment may incur multiple violations along side Hazing.",
+      },
+      {
+        type: "paragraph",
+        content:
+          "Breaking of this rule may result in punishment dependent on severity [Idk how we will change scale of punishment here]",
+      },
+    ],
     offenses: [
       "1 day",
       "3 days",
@@ -99,7 +165,7 @@ const violationDefinitions = [
     id: "coercion",
     name: "Coercion",
     description:
-      "Threatening or blackmailing users with social consequences, especially those with off-site ramifications.",
+      "Threatening, pressuring, or blackmailing users in order to influence their actions, decisions, or participation within the community. Conduct considered as coercion specifically includes leveraging or threatening social, reputational, or other consequences, particularly those extending off-site (online or offline), in order to gain compliance or exert control from other users.",
     offenses: [
       "1 day",
       "3 days",
@@ -130,8 +196,27 @@ const violationDefinitions = [
   {
     id: "illegal-content-activity",
     name: "Illegal Content & Activity (IC)",
-    description:
-      "Posting, linking to, or participating in illegal or potentially illegal activity (e.g. inappropriate conduct with a minor). Law enforcement will be notified when possible.",
+    description: [
+      {
+        type: "paragraph",
+        content:
+          "The sharing, linking to, or participation in illegal or potentially illegal activity is strictly prohibited and will not be tolerated if a user is suspected to have partaken in illegal content and/or activity. Unlawful conduct, include but are not limited to:",
+      },
+      {
+        type: "list",
+        items: [
+          "Inappropriate or unlawful interactions involving a minor",
+          "The distribution, solicitation, or possession of CSAM",
+          "Promotion or facilitation of terrorism or organized criminal activity",
+          "Credible threats of violence or otherwise real world harm",
+        ],
+      },
+      {
+        type: "paragraph",
+        content:
+          "Moderation reserves the right to report suspected illegal activity to appropriate law enforcement authorities whenever possible and as required by law.",
+      },
+    ],
     offenses: [
       "Permaban",
       "Permaban",

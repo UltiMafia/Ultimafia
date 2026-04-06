@@ -1,28 +1,3 @@
-const developmentContributors = [
-  "rend",
-  "DrSharky",
-  "eggsushi",
-  "Golbolco",
-  "Fsalker",
-  "risk",
-  "RH9",
-  "Starry",
-  "kirigiri",
-  "Linke",
-  "sand",
-  "Shwartz99",
-  "Nou",
-  "Pyrrhic",
-  "caitelatte",
-  "Wine",
-  "melodice",
-  "SawJester",
-  "DarkB",
-  "ruthless",
-  "drewsworth",
-  "nearbear",
-];
-
 const artContributors = {
   ammico: {
     Mafia: [
@@ -546,7 +521,6 @@ const artContributors = {
 };
 
 const contributorData = {
-  dev: developmentContributors,
   art: artContributors,
 };
 
