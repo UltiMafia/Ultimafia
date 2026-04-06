@@ -45,11 +45,13 @@ const defaultLobby =
   !existingLobby || existingLobby === "All" ? "Main" : existingLobby;
 
 // These options are common to all
+const isDev = import.meta.env.REACT_APP_ENVIRONMENT === "development";
+
 const commonHostOptions = {
   private: false,
   guests: false,
   spectating: true,
-  readyCheck: true,
+  readyCheck: !isDev,
   configureDuration: false,
   anonymousGame: false,
   anonymousDeckId: PreferredDeckId,
