@@ -912,6 +912,44 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Unlink Accounts": {
+      perm: "viewAlts",
+      category: "User Management",
+      args: [
+        {
+          label: "User A",
+          name: "userId1",
+          type: "user_search",
+        },
+        {
+          label: "User B",
+          name: "userId2",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/unlinkAccounts", argValues)
+          .then((res) => {
+            const removed = res.data && res.data.removed;
+            const n = Array.isArray(removed) ? removed.length : 0;
+            if (n === 0) {
+              siteInfo.showAlert(
+                (res.data && res.data.message) ||
+                  "No shared IPs removed.",
+                "success"
+              );
+            } else {
+              siteInfo.showAlert(
+                `Removed ${n} shared IP address(es) from both users.`,
+                "success"
+              );
+            }
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     Blacklist: {
       perm: "whitelist",
       category: "User Management",

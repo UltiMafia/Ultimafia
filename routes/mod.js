@@ -2047,6 +2047,78 @@ router.post("/clearAllIPs", async (req, res) => {
   }
 });
 
+// Removes shared stored login IPs from both users so getAltAccountIds no longer
+// associates them (until they share a new IP on a future login).
+router.post("/unlinkAccounts", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var modId = await routeUtils.verifyLoggedIn(req);
+    var perm = "viewAlts";
+
+    if (!(await routeUtils.verifyPermission(res, modId, perm))) return;
+
+    var userId1 = String(req.body.userId1 || "").trim();
+    var userId2 = String(req.body.userId2 || "").trim();
+
+    if (!userId1 || !userId2) {
+      res.status(400);
+      res.send("Both users are required.");
+      return;
+    }
+
+    if (userId1 === userId2) {
+      res.status(400);
+      res.send("Users must be different.");
+      return;
+    }
+
+    const user1 = await models.User.findOne({
+      id: userId1,
+      deleted: false,
+    }).select("ip");
+    const user2 = await models.User.findOne({
+      id: userId2,
+      deleted: false,
+    }).select("ip");
+
+    if (!user1 || !user2) {
+      res.status(404);
+      res.send("One or both users do not exist.");
+      return;
+    }
+
+    const ips1 = user1.ip || [];
+    const ips2 = user2.ip || [];
+    const set2 = new Set(ips2);
+    const intersection = [...new Set(ips1.filter((ip) => set2.has(ip)))];
+
+    if (intersection.length === 0) {
+      res.send({
+        removed: [],
+        message:
+          "No shared IPs to remove; accounts were not linked by stored IPs.",
+      });
+      return;
+    }
+
+    await models.User.updateOne(
+      { id: userId1 },
+      { $pullAll: { ip: intersection } }
+    ).exec();
+    await models.User.updateOne(
+      { id: userId2 },
+      { $pullAll: { ip: intersection } }
+    ).exec();
+
+    routeUtils.createModAction(modId, "Unlink Accounts", [userId1, userId2]);
+    res.send({ removed: intersection });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error unlinking accounts.");
+  }
+});
+
 router.post("/refundGame", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);

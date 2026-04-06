@@ -2786,45 +2786,6 @@ router.post("/referred", async function (req, res) {
   }
 });
 
-router.post("/unlink", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var user = await models.User.findOne({ id: userId, deleted: false }).select(
-      "accounts"
-    );
-    var account = String(req.body.account);
-    var accountCount = 0;
-
-    if (user) {
-      user = user.toJSON();
-
-      for (let accountName in user.accounts)
-        if (user.accounts[accountName] && user.accounts[accountName].id)
-          accountCount++;
-
-      if (accountCount > 1) {
-        delete user.accounts[account];
-        models.User.updateOne(
-          { id: userId },
-          { $unset: { [`accounts.${account}`]: "" } }
-        ).exec();
-        res.send(user.accounts);
-      } else {
-        res.status(500);
-        res.send("You must have at least one linked account.");
-      }
-    } else {
-      res.status(500);
-      res.send("Error unlinking account.");
-    }
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error unlinking account.");
-  }
-});
-
 router.post("/logout", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
