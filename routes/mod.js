@@ -11,6 +11,7 @@ const fs = require("fs");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
+const roleIconCreditUtils = require("../modules/roleIconCreditUtils");
 const { getBasicUserInfo } = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
@@ -456,6 +457,91 @@ router.post("/assignCredit", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Error updating contributor credit.");
+  }
+});
+
+router.post("/roleIconCredit", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdTarget = String(req.body.userId || "").trim();
+    var roleInput = req.body.roleName ?? req.body.role;
+    var styleInput = req.body.style ?? req.body.skin;
+    var perm = "changeUsersName";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    if (!userIdTarget) {
+      res.status(400);
+      res.send("User is required.");
+      return;
+    }
+
+    const roleName = roleIconCreditUtils.canonicalRoleName(roleInput);
+    if (!roleName) {
+      res.status(400);
+      res.send("Invalid or unknown Mafia role name.");
+      return;
+    }
+
+    const skin = roleIconCreditUtils.normalizeSkinForRole(roleName, styleInput);
+    if (!skin) {
+      res.status(400);
+      res.send(
+        "Invalid style for this role. Use a skin that exists for the role (e.g. vivid), or check spelling."
+      );
+      return;
+    }
+
+    const key = roleIconCreditUtils.makeCreditKey(roleName, skin);
+
+    var userToUpdate = await models.User.findOne({
+      id: userIdTarget,
+      deleted: false,
+    });
+
+    if (!userToUpdate) {
+      res.status(500);
+      res.send("User does not exist.");
+      return;
+    }
+
+    const list = [...(userToUpdate.roleIconCredits || [])];
+    const idx = list.findIndex((e) => {
+      const i = String(e).lastIndexOf(":");
+      if (i <= 0) return false;
+      return (
+        e.slice(0, i) === roleName &&
+        e.slice(i + 1).toLowerCase() === skin
+      );
+    });
+
+    let assigned;
+    if (idx >= 0) {
+      list.splice(idx, 1);
+      assigned = false;
+    } else {
+      list.push(key);
+      assigned = true;
+    }
+
+    list.sort((a, b) => String(a).localeCompare(String(b)));
+    userToUpdate.roleIconCredits = list;
+    await userToUpdate.save();
+
+    await redis.cacheUserInfo(userIdTarget, true);
+
+    routeUtils.createModAction(userId, "Manage Role Icon Credit", [
+      userIdTarget,
+      roleName,
+      skin,
+      assigned ? "assigned" : "revoked",
+    ]);
+
+    res.json({ assigned, roleIconCredits: list });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error updating role icon credit.");
   }
 });
 

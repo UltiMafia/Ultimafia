@@ -1373,6 +1373,46 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Manage Role Icon Credit": {
+      perm: "changeUsersName",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Role name",
+          name: "roleName",
+          type: "role_autocomplete",
+          defaultGameType: "Mafia",
+        },
+        {
+          label: "Style (skin)",
+          name: "style",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/roleIconCredit", {
+            userId: argValues.userId,
+            roleName: argValues.roleName,
+            style: argValues.style,
+          })
+          .then((res) => {
+            siteInfo.showAlert(
+              res.data?.assigned
+                ? "Role icon credit assigned."
+                : "Role icon credit revoked.",
+              "success"
+            );
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Clear Family Content": {
       perm: "clearFamilyContent",
       category: "Family Management",

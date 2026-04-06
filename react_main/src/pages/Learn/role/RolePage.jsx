@@ -360,9 +360,14 @@ export function RoleThings() {
   const artists = (contributors || [])
     .filter((artist) =>
       artist.roles?.Mafia?.some((entry) => {
-        const [entryRole, entrySkin] = entry.split(":");
-        const normalizedSkin = entrySkin || "vivid";
-        return entryRole === RoleName && normalizedSkin === activeRoleSkin;
+        const i = String(entry).lastIndexOf(":");
+        if (i <= 0) return false;
+        const entryRole = entry.slice(0, i);
+        const entrySkin = entry.slice(i + 1) || "vivid";
+        const normalizedSkin = entrySkin.toLowerCase();
+        return (
+          entryRole === RoleName && normalizedSkin === activeRoleSkin.toLowerCase()
+        );
       })
     )
     .map((artist, index) => (

@@ -165,6 +165,7 @@ var schemas = {
     achievements: [],
     achievementCount: { type: Number, default: 0 },
     favoriteRoles: { type: [String], default: [] },
+    roleIconCredits: { type: [String], default: [] },
     redHearts: { type: Number, default: 0 },
     goldHearts: { type: Number, default: 0 },
     kudos: { type: Number, default: 0 },

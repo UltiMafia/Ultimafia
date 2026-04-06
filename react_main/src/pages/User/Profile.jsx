@@ -93,6 +93,40 @@ function FavoritedRolesPanel({
   );
 }
 
+function RoleIconCreditsPanel({
+  roleIconCredits = [],
+  panelStyle = {},
+  headingStyle = {},
+  siteInfo,
+}) {
+  const rolesRaw = siteInfo?.rolesRaw || {};
+  const items = (roleIconCredits || [])
+    .map((entry) => {
+      if (typeof entry !== "string") return null;
+      const i = entry.lastIndexOf(":");
+      if (i <= 0) return null;
+      const roleName = entry.slice(0, i);
+      const skin = entry.slice(i + 1);
+      if (!roleName || !skin || !rolesRaw.Mafia?.[roleName]) return null;
+      return { roleName, skin, key: entry };
+    })
+    .filter(Boolean);
+
+  return (
+    <CasePanel
+      title={`Role Icon Credits (${items.length})`}
+      panelStyle={panelStyle}
+      headingStyle={headingStyle}
+      className="box-panel role-icon-credits"
+      emptyMessage="No role icon credits"
+    >
+      {items.map(({ roleName, skin, key }) => (
+        <RoleCount key={key} role={roleName} gameType="Mafia" skin={skin} />
+      ))}
+    </CasePanel>
+  );
+}
+
 export default function Profile() {
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [name, setName] = useState();
@@ -115,6 +149,7 @@ export default function Profile() {
   const [championshipPoints, setChampionshipPoints] = useState(0);
   const [achievements, setAchievements] = useState([]);
   const [favoriteRoles, setFavoriteRoles] = useState([]);
+  const [roleIconCredits, setRoleIconCredits] = useState([]);
   const [stamps, setStamps] = useState([]);
   const [hiddenStamps, setHiddenStamps] = useState([]);
   const [lockedCountsByRoleKey, setLockedCountsByRoleKey] = useState({});
@@ -300,6 +335,11 @@ export default function Profile() {
           setAchievements(res.data.achievements);
           setFavoriteRoles(
             Array.isArray(res.data.favoriteRoles) ? res.data.favoriteRoles : []
+          );
+          setRoleIconCredits(
+            Array.isArray(res.data.roleIconCredits)
+              ? res.data.roleIconCredits
+              : []
           );
           setTrophies(res.data.trophies || []);
           setStamps(res.data.stamps || []);
@@ -1804,6 +1844,12 @@ export default function Profile() {
             />
             <FavoritedRolesPanel
               favoriteRoles={favoriteRoles}
+              panelStyle={panelStyle}
+              headingStyle={headingStyle}
+              siteInfo={siteInfo}
+            />
+            <RoleIconCreditsPanel
+              roleIconCredits={roleIconCredits}
               panelStyle={panelStyle}
               headingStyle={headingStyle}
               siteInfo={siteInfo}
