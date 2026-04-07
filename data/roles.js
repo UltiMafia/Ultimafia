@@ -5502,15 +5502,6 @@ const roleData = {
         },
       ],
     },
-    Ripper: {
-      alignment: "Independent",
-      tags: ["Killing", "Independent", "Visiting", "Hostile", "Advanced"],
-      description: [
-        "Each night, you can choose to visit one player and kill them.",
-        "You win if all other Hostile Independents are dead.",
-      ],
-      nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
-    },
     Blob: {
       alignment: "Independent",
       tags: [
