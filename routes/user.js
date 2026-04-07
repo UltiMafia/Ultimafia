@@ -1245,6 +1245,12 @@ router.get("/:id/reports", async function (req, res) {
     const { getBasicUserInfo } = require("../modules/redis");
     for (const report of reports) {
       try {
+        const reportedUserInfo = await getBasicUserInfo(report.reportedUserId);
+        if (reportedUserInfo) {
+          report.reportedUserName = reportedUserInfo.name;
+          report.reportedUserAvatar = reportedUserInfo.avatar;
+        }
+
         const reporterInfo = await getBasicUserInfo(report.reporterId);
         if (reporterInfo) {
           report.reporterName = reporterInfo.name;
