@@ -380,6 +380,8 @@ module.exports = {
   defaultSkillRatingSigma: 250,
 
   pointsNominalAmount: 60,
+  /** Fortune points scale (ranked/competitive); payouts derived from empirical setup win rates. */
+  fortunePointsNominalK: 120,
 
   // Perms given to all users
   defaultPerms: [

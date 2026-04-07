@@ -1658,6 +1658,10 @@ module.exports = class Player {
   kill(killType, killer, instant) {
     if (!this.alive) return;
 
+    if (killType === "veg") {
+      this.game.hadVegKill = true;
+    }
+
     this.game.resetLastDeath = true;
     this.game.queueDeath(this);
 

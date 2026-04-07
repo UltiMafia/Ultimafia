@@ -264,11 +264,15 @@ var schemas = {
     alignmentPlays: {},
     alignmentWins: {},
     dayCountWins: {},
-    // Per-game stats (only for games with no abandonments). Arrays are [gameType, value].
+    // Per-game stats (clean games only: no leavers, no veg). Rows are [factionOrRoleKey, gameType, wonBool] or [gameType, lengthMs].
     setupStats: {
       alignmentWinRates: { type: mongoose.Schema.Types.Mixed, default: {} },
       roleWinRates: { type: mongoose.Schema.Types.Mixed, default: {} },
       gameLengths: { type: Array, default: [] },
+      alignmentRows: { type: [mongoose.Schema.Types.Mixed], default: [] },
+      roleRows: { type: [mongoose.Schema.Types.Mixed], default: [] },
+      gameLengthRows: { type: [mongoose.Schema.Types.Mixed], default: [] },
+      totalVegs: { type: Number, default: 0 },
     },
   }),
   AnonymousDeck: anonymousDeck,
@@ -331,6 +335,11 @@ var schemas = {
     anonymousGame: Boolean,
     // This is a mongoose subdocument. It won't change if the anonyonous deck that the game was started with changes.
     anonymousDeck: [anonymousDeck],
+    /** True if any in-game veg kill occurred (stats excluded when true). */
+    hadVeg: { type: Boolean, default: false },
+    /** Setup version manifest at game end (for backfill / audits). */
+    setupVersion: { type: Number, default: null },
+    setupStatsBackfilled: { type: Boolean, default: false },
   }),
   ArchivedGame: new mongoose.Schema({
     user: {

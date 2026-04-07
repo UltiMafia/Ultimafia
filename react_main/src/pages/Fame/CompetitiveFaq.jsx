@@ -92,9 +92,10 @@ export function CompetitiveFaqContent() {
       </Stack>
       <Typography paragraph>
         Fortune points are earned when players win a competitive game. The
-        amount of points awarded depends on how likely your starting faction was
-        to win the game based on its faction elo. The more unlikely your faction
-        was to win, the more fortune points you earn. Players will need to
+        amount of points awarded depends on how often your starting faction
+        historically wins on that setup, using all recorded ranked and
+        competitive games combined. The less often your faction wins in those
+        statistics, the more fortune you gain when you do win. Players need to
         accumulate fortune points to earn prestige at the end of a round.
       </Typography>
       <Typography paragraph>
@@ -102,15 +103,16 @@ export function CompetitiveFaqContent() {
         contribute to your competitive standing.
       </Typography>
       <Typography variant="h3" gutterBottom>
-        What is faction elo?
+        How are payouts calculated?
       </Typography>
       <Typography paragraph>
-        Faction elo is a hidden rating assigned to each faction that indicates
-        how well that faction performs in ranked and competitive games. Players
-        belonging to factions with a higher elo will not receive as many fortune
-        points for winning as players in factions with a lower elo. Faction elo
-        is adjusted after each ranked or competitive game based on the
-        performance of each faction in that game.
+        Payouts use a fixed scale (K = 120) and empirical win rates from the
+        setup’s statistics (all game types combined). In a two-faction game,
+        your faction’s payout when you win is proportional to how often the
+        opposing faction wins in the historical data. With more than two
+        scoring groups, payouts use each group’s own historical win rate.
+        Certain independent roles have a maximum fortune award of 120 points per
+        win so rare roles do not pay out extreme values.
       </Typography>
       <Stack
         direction="row"
@@ -206,34 +208,16 @@ export function CompetitiveFaqContent() {
         For now this is allowed, but the rule may be changed in the future.
       </Typography>
       <Typography variant="h3" gutterBottom>
-        How does the faction elo and fortune point payout algorithm work?
+        How does the fortune point payout algorithm work?
       </Typography>
       <Typography paragraph>
-        Faction elo is calculated using openskill, which is a ranking system
-        similar to Microsoft's Trueskill. Each faction starts with a default elo
-        rating, and the ratings are updated after each ranked or competitive
-        game depending on how many of the players that started as that faction
-        won or lost. Factions are scored from 0% to 100%, where 0% means that no
-        players starting as that faction won the game, and 100% means that all
-        players starting as that faction won the game.
-      </Typography>
-      <Typography paragraph>
-        Going into a match, openskill predicts the likelihood of each faction
-        winning based on their current elo ratings. This likelihood is used to
-        determine how many fortune points players belonging to a faction will
-        earn if that faction wins the game. The following formula is used:
-      </Typography>
-      <Typography
-        paragraph
-        sx={{
-          fontFamily: "monospace",
-        }}
-      >
-        Points Earned = 30 / Win Percentage
-      </Typography>
-      <Typography paragraph>
-        Using this formula, a faction with a 50% win rate would earn 60 fortune
-        points and a faction with a 10% win rate would earn 300 fortune points.
+        The game reads historical win rates for each starting faction (or role
+        for independents) from that setup’s stored statistics across unranked,
+        ranked, and competitive games. Those rates drive a K = 120 payout: in
+        two-way matchups, winners earn roughly K times the opponent’s historical
+        win rate; with several factions, each faction’s win payout ties to its
+        own historical frequency. If there is not enough data yet, the game falls
+        back to a neutral split between the factions in play.
       </Typography>
     </>
   );

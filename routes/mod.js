@@ -15,7 +15,7 @@ const roleIconCreditUtils = require("../modules/roleIconCreditUtils");
 const { getBasicUserInfo } = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
-const { rating, rate, ordinal, predictWin } = require("openskill");
+const fortunePoints = require("../modules/fortunePoints");
 const router = express.Router();
 
 router.get("/groups", async function (req, res) {
@@ -2163,6 +2163,60 @@ router.post("/refundGame", async (req, res) => {
       return;
     }
 
+    let precomputedFortune = null;
+    if (game.history && game.setup) {
+      try {
+        const history = JSON.parse(game.history);
+        const originalRoles = history.originalRoles || {};
+        const memberFactionsByPlayerId = {};
+        for (let uid in playerIdMap) {
+          const pid = playerIdMap[uid];
+          if (!originalRoles[pid]) continue;
+          const roleName = originalRoles[pid].split(":")[0];
+          const alignment = playerAlignmentMap[uid] || "";
+          const alignmentIsFaction =
+            alignment === "Village" ||
+            alignment === "Mafia" ||
+            alignment === "Cult";
+          let factionName = alignmentIsFaction ? alignment : roleName;
+          if (factionName === "Traitor") {
+            factionName = "Mafia";
+          }
+          memberFactionsByPlayerId[pid] = factionName;
+        }
+        const factionNames = [
+          ...new Set(Object.values(memberFactionsByPlayerId)),
+        ].sort();
+        const setupDoc = await models.Setup.findOne({ _id: game.setup })
+          .select("version")
+          .lean();
+        const sv =
+          setupDoc &&
+          (await models.SetupVersion.findOne({
+            setup: game.setup,
+            version: setupDoc.version || 0,
+          })
+            .select("setupStats")
+            .lean());
+        const alignmentWinRates = fortunePoints.alignmentRowsToWinRateMap(
+          sv && sv.setupStats
+        );
+        const { pointsWonByFactions, pointsLostByFactions } =
+          fortunePoints.computeFactionFortunePoints({
+            factionNames,
+            alignmentWinRates,
+            K: constants.fortunePointsNominalK,
+          });
+        precomputedFortune = {
+          memberFactionsByPlayerId,
+          pointsWonByFactions,
+          pointsLostByFactions,
+        };
+      } catch (e) {
+        logger.error(`Error precomputing fortune for refund game ${gameId}:`, e);
+      }
+    }
+
     // Load game-specific data for calculations
     const dbStats = require("../db/stats");
     const gameAchievements = require("../data/Achievements");
@@ -2283,141 +2337,24 @@ router.post("/refundGame", async (req, res) => {
         let pointsToRevert = 0;
         let pointsNegativeToRevert = 0;
 
-        if (game.history) {
-          try {
-            const history = JSON.parse(game.history);
+        if (precomputedFortune) {
+          const playerFaction =
+            precomputedFortune.memberFactionsByPlayerId[playerId];
+          if (playerFaction) {
+            const maxEarnedPoints = constants.fortunePointsNominalK * 20;
+            let pointsEarned = won
+              ? precomputedFortune.pointsWonByFactions[playerFaction]
+              : precomputedFortune.pointsLostByFactions[playerFaction];
 
-            // Extract role information from history
-            // History structure varies, but we can get it from the playerAlignmentMap and originalRoles
-            const roleFromHistory = null; // We'll extract this if needed
-
-            // Recalculate fortune/misfortune using the same algorithm as adjustSkillRatings
-            // This requires the setup's faction ratings AT THE TIME of the game
-            const setup = await models.Setup.findOne({
-              _id: game.setup,
-            }).select("id factionRatings");
-
-            if (setup && setup.factionRatings) {
-              const factionRatingsRaw = setup.factionRatings || [];
-              const factionRatings = new Map(
-                factionRatingsRaw.map((factionRating) => [
-                  factionRating.factionName,
-                  factionRating.skillRating,
-                ])
-              );
-
-              // Rebuild the faction structure from the game data
-              const factionWinnerFractions = {};
-              const memberFactions = {};
-
-              // Parse history to get originalRoles
-              let originalRoles = {};
-              if (history.originalRoles) {
-                originalRoles = history.originalRoles;
-              }
-
-              // Build faction membership
-              for (let userId in playerIdMap) {
-                const playerId = playerIdMap[userId];
-                if (originalRoles[playerId]) {
-                  const roleName = originalRoles[playerId].split(":")[0];
-                  const alignment = playerAlignmentMap[userId] || "";
-
-                  // Determine faction name (same logic as in adjustSkillRatings)
-                  const alignmentIsFaction =
-                    alignment === "Village" ||
-                    alignment === "Mafia" ||
-                    alignment === "Cult";
-                  const factionName = alignmentIsFaction ? alignment : roleName;
-                  memberFactions[playerId] = factionName;
-
-                  if (factionWinnerFractions[factionName] === undefined) {
-                    factionWinnerFractions[factionName] = {
-                      originalCount: 0,
-                      winnerCount: 0,
-                    };
-                  }
-
-                  factionWinnerFractions[factionName].originalCount++;
-                  if (won) {
-                    factionWinnerFractions[factionName].winnerCount++;
-                  }
-                }
-              }
-
-              const factionNames = Object.keys(factionWinnerFractions);
-
-              // Calculate faction ratings
-              const factionsToBeRated = factionNames.map((factionName) => {
-                if (factionRatings.has(factionName)) {
-                  const factionRating = factionRatings.get(factionName);
-                  return [
-                    rating({
-                      mu: factionRating.mu,
-                      sigma: factionRating.sigma,
-                    }),
-                  ];
-                } else {
-                  return [
-                    rating({
-                      mu: constants.defaultSkillRatingMu,
-                      sigma: constants.defaultSkillRatingSigma,
-                    }),
-                  ];
-                }
-              });
-
-              const factionScores = factionNames.map((factionName) => {
-                const factionWinnerFraction =
-                  factionWinnerFractions[factionName];
-                return (
-                  factionWinnerFraction.winnerCount /
-                  factionWinnerFraction.originalCount
-                );
-              });
-
-              const predictions = predictWin(factionsToBeRated);
-
-              const pointsWonByFactions = {};
-              const pointsLostByFactions = {};
-
-              for (let i = 0; i < factionNames.length; i++) {
-                const factionName = factionNames[i];
-                const winPredictionPercent = predictions[i];
-
-                pointsWonByFactions[factionName] = Math.round(
-                  constants.pointsNominalAmount / 2 / winPredictionPercent
-                );
-                pointsLostByFactions[factionName] = Math.round(
-                  constants.pointsNominalAmount / 2 / (1 - winPredictionPercent)
-                );
-              }
-
-              // Calculate points for this specific player
-              const playerFaction = memberFactions[playerId];
-              if (playerFaction) {
-                const maxEarnedPoints = constants.pointsNominalAmount * 20;
-                let pointsEarned = won
-                  ? pointsWonByFactions[playerFaction]
-                  : pointsLostByFactions[playerFaction];
-
-                if (pointsEarned > maxEarnedPoints) {
-                  pointsEarned = maxEarnedPoints;
-                }
-
-                if (won) {
-                  pointsToRevert = pointsEarned;
-                } else {
-                  pointsNegativeToRevert = pointsEarned;
-                }
-              }
+            if (pointsEarned > maxEarnedPoints) {
+              pointsEarned = maxEarnedPoints;
             }
-          } catch (e) {
-            logger.error(
-              `Error calculating fortune/misfortune for game ${gameId}:`,
-              e
-            );
-            // Continue without reverting points if calculation fails
+
+            if (won) {
+              pointsToRevert = pointsEarned;
+            } else {
+              pointsNegativeToRevert = pointsEarned;
+            }
           }
         }
 
