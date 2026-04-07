@@ -447,7 +447,6 @@ const artContributors = {
       "Queen:vivid",
       "Gambler:vivid",
       "Joker:vivid",
-      "Ripper:vivid",
     ],
   },
   Draculaura: {

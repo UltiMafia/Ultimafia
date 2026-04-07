@@ -1179,6 +1179,7 @@ router.get("/:id/reports", async function (req, res) {
     const reqUserId = await routeUtils.verifyLoggedIn(req, true);
     const identifier = String(req.params.id);
     const profileUserId = await resolveUserId(identifier);
+    let isModViewer = false;
 
     if (!profileUserId) {
       res.status(404).send("User not found.");
@@ -1194,22 +1195,32 @@ router.get("/:id/reports", async function (req, res) {
       if (!(await routeUtils.verifyPermission(res, reqUserId, "seeModPanel"))) {
         return;
       }
+      isModViewer = true;
+    } else if (reqUserId) {
+      // Mods viewing their own profile should still see linked-account history.
+      isModViewer = await redis.hasPermission(reqUserId, "seeModPanel");
     }
 
-    // Fetch all completed reports for this user (including dismissed)
+    const reportUserIds = isModViewer
+      ? Array.from(new Set(await routeUtils.getAltAccountIds(profileUserId)))
+      : [profileUserId];
+
+    // Fetch all completed reports for this user (including dismissed).
+    // For mods, include reports across linked accounts.
     const reports = await models.Report.find({
-      reportedUserId: profileUserId,
+      reportedUserId: { $in: reportUserIds },
       status: "complete",
     })
       .sort({ completedAt: -1 })
       .lean()
       .select(
-        "id status completedAt finalRuling rule description createdAt reporterId gameId linkedViolationTicketId"
+        "id status completedAt finalRuling rule description createdAt reporterId gameId linkedViolationTicketId reportedUserId"
       );
 
-    // Fetch all violation tickets for this user (excluding appealed ones)
+    // Fetch all violation tickets for this user (excluding appealed ones).
+    // For mods, include tickets across linked accounts.
     const violationTickets = await models.ViolationTicket.find({
-      userId: profileUserId,
+      userId: { $in: reportUserIds },
       $or: [{ appealed: { $exists: false } }, { appealed: false }],
     })
       .sort({ createdAt: -1 })
@@ -1246,12 +1257,16 @@ router.get("/:id/reports", async function (req, res) {
         ) {
           report.violationTicket = violationMap[report.linkedViolationTicketId];
         }
+        report.isLinkedAccountReport = report.reportedUserId !== profileUserId;
       } catch (e) {
         // Ignore errors fetching reporter info
       }
     }
 
-    res.send({ reports });
+    res.send({
+      reports,
+      linkedAccountIds: isModViewer ? reportUserIds : [profileUserId],
+    });
   } catch (e) {
     logger.error(e);
     res.status(500).send("Error loading reports.");
