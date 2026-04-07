@@ -77,7 +77,7 @@
 
   background-size: 100%;
 
-  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 .game-icon.Mafia {
