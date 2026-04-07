@@ -255,6 +255,7 @@ const artContributors = {
       "Mutation:vivid",
       "Underboss:vivid",
       "Profiler:vivid",
+      "Secret Santa:vivid",
       //Skins
     ],
   },

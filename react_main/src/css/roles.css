@@ -2123,6 +2123,10 @@
   background-image: url("/src/images/roles/event/sabbath-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Secret-Santa {
+  background-image: url("/src/images/roles/event/secret-santa-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Flood {
   background-image: url("/src/images/roles/event/flood-vivid.png");
 }

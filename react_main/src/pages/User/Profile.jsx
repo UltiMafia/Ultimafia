@@ -1471,15 +1471,6 @@ export default function Profile() {
         </Grid>
         <Grid item xs={12} md={8}>
           <Stack direction="column" spacing={1}>
-            <Scrapbook
-              stamps={stamps}
-              hiddenStamps={hiddenStamps}
-              isSelf={isSelf}
-              lockedCountsByRoleKey={lockedCountsByRoleKey}
-              onTradeAction={refetchProfile}
-              panelStyle={panelStyle}
-              headingStyle={headingStyle}
-            />
             <div className="box-panel" style={panelStyle}>
               <div
                 className={`bio${isSelf && !editingBio ? " edit" : ""}`}
@@ -1508,6 +1499,15 @@ export default function Profile() {
                 )}
               </div>
             </div>
+            <Scrapbook
+              stamps={stamps}
+              hiddenStamps={hiddenStamps}
+              isSelf={isSelf}
+              lockedCountsByRoleKey={lockedCountsByRoleKey}
+              onTradeAction={refetchProfile}
+              panelStyle={panelStyle}
+              headingStyle={headingStyle}
+            />
             {!isPhoneDevice && (
               <Box
                 sx={{

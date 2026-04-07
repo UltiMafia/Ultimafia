@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef, useEffect } from "react";
+import React, { useState, useContext, useRef, useEffect, useMemo } from "react";
 import axios from "axios";
 
 import { Box, Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
@@ -49,6 +49,15 @@ function Miniprofile(props) {
   const [isFriend, setIsFriend] = useState(user.isFriend || false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const gameId = game?.gameId || null;
+
+  const reportPrefilledArgs = useMemo(
+    () => ({
+      userId: id,
+      userName: name,
+      game: gameId,
+    }),
+    [id, name, gameId]
+  );
 
   // Update friend status when user prop changes
   useEffect(() => {
@@ -140,11 +149,7 @@ function Miniprofile(props) {
       <ReportDialog
         open={reportDialogOpen}
         onClose={() => setReportDialogOpen(false)}
-        prefilledArgs={{
-          userId: id,
-          userName: name,
-          game: gameId,
-        }}
+        prefilledArgs={reportPrefilledArgs}
       />
       {!hasDefaultPronouns && <div className="pronouns">({pronouns})</div>}
       {pieChart}
