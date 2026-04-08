@@ -2042,4 +2042,81 @@ describe("Games/Mafia", function () {
       should.not.exist(game.winners.groups["Village"]);
     });
   });
+
+  describe("Templar", function () {
+    it("should veg a Templar who does not vote in the Templar Meeting", async function () {
+      await db.promise;
+      await redis.client.flushdbAsync();
+
+      const setup = { total: 4, roles: [{ Templar: 2, Villager: 1, Mafioso: 1 }] };
+      const game = await makeGame(setup);
+      const roles = getRoles(game);
+
+      const templar0 = roles["Templar"][0];
+      const templar1 = roles["Templar"][1];
+      const voted = {};
+
+      addListenerToPlayer(templar1, "meeting", function (meeting) {
+        if (voted[meeting.id + ":" + this.id]) return;
+        voted[meeting.id + ":" + this.id] = true;
+
+        if (meeting.name == "Templar Meeting") {
+          this.sendToServer("vote", {
+            selection: "Yes",
+            meetingId: meeting.id,
+          });
+        } else if (meeting.name == "Village") {
+          this.sendToServer("vote", {
+            selection: meeting.targets[0],
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      addListenerToPlayer(templar0, "meeting", function (meeting) {
+        if (voted[meeting.id + ":" + this.id]) return;
+        voted[meeting.id + ":" + this.id] = true;
+
+        // templar0 does NOT vote in Templar Meeting
+        if (meeting.name == "Village") {
+          this.sendToServer("vote", {
+            selection: meeting.targets[0],
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      addListenerToRoles(game, ["Mafioso"], "meeting", function (meeting) {
+        if (voted[meeting.id + ":" + this.id]) return;
+        voted[meeting.id + ":" + this.id] = true;
+
+        if (meeting.name == "Mafia Kill") {
+          this.sendToServer("vote", {
+            selection: meeting.targets[0],
+            meetingId: meeting.id,
+          });
+        } else {
+          this.sendToServer("vote", {
+            selection: "*",
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      addListenerToRoles(game, ["Villager"], "meeting", function (meeting) {
+        if (voted[meeting.id + ":" + this.id]) return;
+        voted[meeting.id + ":" + this.id] = true;
+
+        this.sendToServer("vote", {
+          selection: meeting.targets[0],
+          meetingId: meeting.id,
+        });
+      });
+
+      await waitForGameEnd(game);
+
+      // templar0 should have been vegged for not voting
+      expect(templar0.alive).to.be.false;
+    });
+  });
 });
