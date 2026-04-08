@@ -123,6 +123,7 @@ export default class AudioManager {
       if (track) track.el.pause();
     } else {
       for (const name in this.tracks) {
+        if (this.tracks[name].channel === "important") continue;
         this.tracks[name].el.pause();
       }
     }

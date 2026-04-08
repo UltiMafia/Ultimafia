@@ -15,7 +15,7 @@ import type { AudioEntry } from "./AudioManager";
 // Core — loaded for every game
 // ---------------------------------------------------------------------------
 export const coreAudioConfig: AudioEntry[] = [
-  { fileName: "bell" },
+  { fileName: "bell", channel: "important" },
   { fileName: "ping" },
   { fileName: "tick" },
   { fileName: "join" },
