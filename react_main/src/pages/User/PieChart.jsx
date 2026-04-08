@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-export const PieChart = ({ wins, losses, abandons }) => {
+export const PieChart = ({ wins, losses, abandons, showTotal }) => {
   const svgRef = useRef();
   const totalGames = wins + losses + abandons;
 
@@ -151,9 +151,12 @@ export const PieChart = ({ wins, losses, abandons }) => {
       .style("pointer-events", "none")
       .style("opacity", 0);
 
-    // hover: expand + glow + reveal label for that slice
+    // fade in labels after slice animation
+    labels.transition().delay(650).duration(300).style("opacity", 1);
+
+    // hover: expand + glow
     slices
-      .on("mouseenter", function (event, hovered) {
+      .on("mouseenter", function () {
         d3.select(this)
           .style("filter", `url(#pie-glow-${uid})`)
           .transition()
@@ -162,14 +165,8 @@ export const PieChart = ({ wins, losses, abandons }) => {
           .attrTween("d", function (d) {
             return () => arcHover(d);
           });
-
-        labels
-          .filter((d) => d.data[0] === hovered.data[0])
-          .transition()
-          .duration(150)
-          .style("opacity", 1);
       })
-      .on("mouseleave", function (event, hovered) {
+      .on("mouseleave", function () {
         d3.select(this)
           .style("filter", null)
           .transition()
@@ -178,12 +175,6 @@ export const PieChart = ({ wins, losses, abandons }) => {
           .attrTween("d", function (d) {
             return () => arcGenerator(d);
           });
-
-        labels
-          .filter((d) => d.data[0] === hovered.data[0])
-          .transition()
-          .duration(150)
-          .style("opacity", 0);
       });
   }, [wins, losses, abandons, totalGames]);
 
@@ -191,6 +182,11 @@ export const PieChart = ({ wins, losses, abandons }) => {
     <div className="pie-chart">
       <div style={{ display: displayPieChart ? "block" : "none" }}>
         <svg ref={svgRef} />
+        {showTotal && (
+          <div style={{ textAlign: "right", fontSize: "12px", opacity: 0.5 }}>
+            {totalGames} games
+          </div>
+        )}
       </div>
       {noPieChartMsg}
     </div>

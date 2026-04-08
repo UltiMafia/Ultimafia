@@ -29,13 +29,16 @@ function Miniprofile(props) {
   const vanityUrl = user.vanityUrl;
 
   let pieChart = <></>;
+  let totalGames = 0;
   if (user.stats) {
     const mafiaStats = user.stats["Mafia"].all;
+    totalGames = mafiaStats.wins.total + mafiaStats.abandons.total || 0;
     pieChart = (
       <PieChart
         wins={mafiaStats.wins.count}
         losses={mafiaStats.wins.total - mafiaStats.wins.count}
         abandons={mafiaStats.abandons.total}
+        showTotal
       />
     );
   }

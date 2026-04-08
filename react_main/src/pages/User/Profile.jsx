@@ -1642,6 +1642,9 @@ export default function Profile() {
                 <div className="box-panel ratings" style={panelStyle}>
                   <Typography variant="h3" sx={headingStyle}>
                     Mafia Ratings
+                    <Typography component="span" variant="body2" sx={{ opacity: 0.5, ml: 1 }}>
+                      {totalGames} games
+                    </Typography>
                   </Typography>
                   <div className="ratings-tabs">
                     <div
