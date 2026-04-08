@@ -47,6 +47,7 @@ function Miniprofile(props) {
 
   const isSelf = currentUser.loggedIn && currentUser.id === id;
   const [isFriend, setIsFriend] = useState(user.isFriend || false);
+  const [isFriendRequested, setIsFriendRequested] = useState(user.isFriendRequested || false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const gameId = game?.gameId || null;
 
@@ -62,21 +63,35 @@ function Miniprofile(props) {
   // Update friend status when user prop changes
   useEffect(() => {
     setIsFriend(user.isFriend || false);
-  }, [user.isFriend]);
+    setIsFriendRequested(user.isFriendRequested || false);
+  }, [user.isFriend, user.isFriendRequested]);
 
   function onFriendUserClick() {
-    if (isFriend) {
-      var shouldUnfriend = window.confirm(
-        "Are you sure you wish to unfriend or cancel your friend request?"
-      );
-      if (!shouldUnfriend) return;
+    if (isFriend || isFriendRequested) {
+      var confirmMsg = isFriend
+        ? "Are you sure you wish to unfriend this user?"
+        : "Are you sure you wish to cancel your friend request?";
+      if (!window.confirm(confirmMsg)) return;
     }
 
     axios
       .post("/api/user/friend", { user: id })
       .then((res) => {
-        setIsFriend(!isFriend);
-        siteInfo.showAlert(res.data, "success");
+        const msg = res.data;
+        if (msg.includes("cancelled")) {
+          setIsFriend(false);
+          setIsFriendRequested(false);
+        } else if (msg.includes("Unfriended")) {
+          setIsFriend(false);
+          setIsFriendRequested(false);
+        } else if (msg.includes("accepted")) {
+          setIsFriend(true);
+          setIsFriendRequested(false);
+        } else if (msg.includes("sent")) {
+          setIsFriend(false);
+          setIsFriendRequested(true);
+        }
+        siteInfo.showAlert(msg, "success");
       })
       .catch(errorAlert);
   }
@@ -124,15 +139,15 @@ function Miniprofile(props) {
           </Link>
           {!isSelf && currentUser.loggedIn && (
             <Stack direction="row" spacing={0.5}>
-              <Tooltip title={isFriend ? "Unfriend" : "Send Friend Request"}>
+              <Tooltip title={isFriend ? "Unfriend" : isFriendRequested ? "Cancel Friend Request" : "Send Friend Request"}>
                 <IconButton
                   size="small"
                   onClick={onFriendUserClick}
                   sx={{
-                    color: isFriend ? "primary.main" : "text.secondary",
+                    color: (isFriend || isFriendRequested) ? "primary.main" : "text.secondary",
                   }}
                 >
-                  <i className={`fas fa-user-plus ${isFriend ? "sel" : ""}`} />
+                  <i className={`fas fa-user-plus ${(isFriend || isFriendRequested) ? "sel" : ""}`} />
                 </IconButton>
               </Tooltip>
               <Button
