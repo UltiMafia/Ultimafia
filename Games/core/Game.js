@@ -721,14 +721,10 @@ module.exports = class Game {
     this.makeUnranked();
     this.makeUncompetitive();
 
-    if (this.breakIntegrity()) {
-      await this.refundHeartsForIntegrityBreak(player, wasRanked, wasCompetitive);
-      if (!player.isBot) {
-        const userId = player.userId || player.user.id;
-        this.penalizePlayerForLeaving(userId);
-      }
-    }
-
+    // Queue the veg kill action before any async work so it is in the
+    // action queue when processActionQueue() runs synchronously in
+    // gotoNextState(). Previously the queueAction was after the await,
+    // causing it to be deferred past processActionQueue().
     this.queueAction(
       new Action({
         actor: player,
@@ -745,6 +741,14 @@ module.exports = class Game {
         },
       })
     );
+
+    if (this.breakIntegrity()) {
+      await this.refundHeartsForIntegrityBreak(player, wasRanked, wasCompetitive);
+      if (!player.isBot) {
+        const userId = player.userId || player.user.id;
+        this.penalizePlayerForLeaving(userId);
+      }
+    }
   }
 
   exorcisePlayer(player) {

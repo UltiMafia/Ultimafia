@@ -766,6 +766,16 @@ module.exports = class Meeting {
       return false;
     }
 
+    // Reject new votes during kick phase to prevent non-voters from
+    // bypassing veg by voting after the timer expired
+    if (
+      this.game.vegKickMeeting !== undefined &&
+      this.game.vegKickMeeting !== this &&
+      this.votes[voter.id] === undefined
+    ) {
+      return false;
+    }
+
     if (this.inputType != "text") {
       if (this.targets.indexOf(selection) != -1) target = selection;
       else if (
