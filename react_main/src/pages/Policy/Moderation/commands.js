@@ -1377,6 +1377,37 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "End Round Early": {
+      perm: "manageCompetitive",
+      category: "Competitive Management",
+      args: [
+        {
+          label: "Season",
+          name: "season",
+          type: "number",
+        },
+        {
+          label: "Round",
+          name: "round",
+          type: "number",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/competitive/endRoundEarly", {
+            season: Number(argValues.season),
+            round: Number(argValues.round),
+          })
+          .then((res) => {
+            siteInfo.showAlert(
+              res.data?.message || "Round moved to first review day.",
+              "success"
+            );
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Manage Credits": {
       perm: "changeUsersName",
       category: "User Management",

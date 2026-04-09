@@ -336,6 +336,93 @@ router.post("/disqualify", async function (req, res) {
   }
 });
 
+router.post("/endRoundEarly", async function (req, res) {
+  try {
+    const modUserId = await routeUtils.verifyLoggedIn(req);
+
+    if (!(await routeUtils.verifyPermission(res, modUserId, "manageCompetitive")))
+      return;
+
+    const season = Number.parseInt(req.body.season, 10);
+    const round = Number.parseInt(req.body.round, 10);
+
+    if (isNaN(season) || season < 1) {
+      res.status(400);
+      res.send("Season must be a positive number.");
+      return;
+    }
+
+    if (isNaN(round) || round < 1) {
+      res.status(400);
+      res.send("Round must be a positive number.");
+      return;
+    }
+
+    const competitiveRound = await models.CompetitiveRound.findOne({
+      season,
+      number: round,
+    }).lean();
+
+    if (!competitiveRound) {
+      res.status(404);
+      res.send("Round not found.");
+      return;
+    }
+
+    // Only allow this while a round is actively in open days.
+    if (competitiveRound.currentDay < 1 || competitiveRound.completed) {
+      res.status(400);
+      res.send("Round is not live.");
+      return;
+    }
+
+    if (competitiveRound.remainingOpenDays <= 0) {
+      res.status(400);
+      res.send(
+        "Round can only be ended early during open days, not during review days."
+      );
+      return;
+    }
+
+    if (competitiveRound.remainingReviewDays <= 0) {
+      res.status(400);
+      res.send("Round has no review days remaining.");
+      return;
+    }
+
+    const now = new Date();
+
+    await models.CompetitiveRound.updateOne(
+      { _id: ObjectID(competitiveRound._id) },
+      {
+        $set: {
+          completed: true,
+          dateCompleted: now.toISOString().split("T")[0],
+          remainingOpenDays: 0,
+        },
+        $inc: {
+          currentDay: 1,
+          remainingReviewDays: -1,
+        },
+      }
+    );
+
+    await redis.invalidateCompRoundCache(season, round);
+
+    routeUtils.createModAction(modUserId, "End Round Early", [season, round]);
+
+    res.json({
+      message: "Round moved to first review day.",
+      season,
+      round,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error ending round early.");
+  }
+});
+
 // Get all seasons
 router.get("/seasons", async function (req, res) {
   try {
