@@ -1,6 +1,6 @@
 /**
  * Fortune / misfortune points for ranked & competitive games.
- * Uses empirical setup win rates (all modes combined), not openskill.
+ * Uses empirical setup win rates (all modes combined).
  */
 const constants = require("../data/constants");
 

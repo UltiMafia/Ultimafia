@@ -16,7 +16,6 @@ const anonymousDeck = new mongoose.Schema({
 });
 
 const skillRating = new mongoose.Schema({
-  // See: https://www.npmjs.com/package/openskill
   mu: { type: Number }, // mean
   sigma: { type: Number }, // deviation
 });

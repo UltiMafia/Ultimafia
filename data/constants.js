@@ -375,7 +375,6 @@ module.exports = {
   minimumGamesForRanked: 5,
   minimumPointsForCompetitive: 150,
 
-  // See: https://www.npmjs.com/package/openskill
   defaultSkillRatingMu: 750,
   defaultSkillRatingSigma: 250,
 
