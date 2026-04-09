@@ -375,6 +375,7 @@ var schemas = {
     recipientStamp: { type: mongoose.Schema.Types.ObjectId, ref: "Stamp" },
     recipientGameType: String,
     recipientRole: String,
+    expiresAt: { type: Number, default: null },
     status: {
       type: String,
       enum: [
@@ -409,9 +410,11 @@ var schemas = {
         unique: true,
         partialFilterExpression: {
           status: { $in: ["PENDING_RESPONSE", "PENDING_CONFIRMATION"] },
+          recipientStamp: { $type: "objectId" },
         },
       }
-    ),
+    )
+,
   ForumCategory: new mongoose.Schema({
     id: { type: String, index: true },
     name: String,

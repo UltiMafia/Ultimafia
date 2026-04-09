@@ -1505,6 +1505,8 @@ export default function Profile() {
               isSelf={isSelf}
               lockedCountsByRoleKey={lockedCountsByRoleKey}
               onTradeAction={refetchProfile}
+              profileUserId={profileUserId}
+              profileUserName={name}
               panelStyle={panelStyle}
               headingStyle={headingStyle}
             />

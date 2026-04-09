@@ -68,7 +68,10 @@ async function stampHasCrossFieldConflict(stampId, ownTradeDocId) {
   const conflict = await models.StampTrade.findOne({
     _id: { $ne: ownTradeDocId },
     status: { $in: ACTIVE_STATUSES },
-    $or: [{ initiatorStamp: stampId }, { recipientStamp: stampId }],
+    $or: [
+      { initiatorStamp: stampId },
+      { recipientStamp: stampId },
+    ],
   }).select("_id");
   return !!conflict;
 }
@@ -93,14 +96,26 @@ async function populateTradeForDisplay(trade) {
       : null,
     recipientGameType: trade.recipientGameType,
     recipientRole: trade.recipientRole,
+    expiresAt: trade.expiresAt,
     createdAt: trade.createdAt,
     updatedAt: trade.updatedAt,
   };
 }
 
+async function expireOldTrades() {
+  await models.StampTrade.updateMany(
+    {
+      status: { $in: ["PENDING_RESPONSE", "PENDING_CONFIRMATION"] },
+      expiresAt: { $ne: null, $lt: Date.now() },
+    },
+    { $set: { status: "REJECTED", updatedAt: Date.now() } }
+  );
+}
+
 router.get("/incoming", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
+    await expireOldTrades();
     const userId = await routeUtils.verifyLoggedIn(req);
     const trades = await models.StampTrade.find({
       recipientId: userId,
@@ -119,6 +134,7 @@ router.get("/incoming", async (req, res) => {
 router.get("/pending-confirmation", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
+    await expireOldTrades();
     const userId = await routeUtils.verifyLoggedIn(req);
     const trades = await models.StampTrade.find({
       initiatorId: userId,
@@ -151,6 +167,26 @@ router.get("/recent", async (req, res) => {
   }
 });
 
+router.get("/open", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    await expireOldTrades();
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const trades = await models.StampTrade.find({
+      recipientId: null,
+      status: "PENDING_RESPONSE",
+      initiatorId: { $ne: userId },
+    }).sort({ createdAt: -1 }).limit(20);
+    const result = [];
+    for (const t of trades) result.push(await populateTradeForDisplay(t));
+    res.send(result);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error loading open trades.");
+  }
+});
+
 router.post("/initiate", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -159,6 +195,8 @@ router.post("/initiate", async (req, res) => {
     const gameType = String(req.body.gameType || "").trim();
     const role = String(req.body.role || "").trim();
     const recipientUserId = String(req.body.recipientUserId || "").trim();
+    const requestedGameType = String(req.body.requestedGameType || "").trim();
+    const requestedRole = String(req.body.requestedRole || "").trim();
 
     if (!gameType || !role) {
       res.status(400);
@@ -171,56 +209,88 @@ router.post("/initiate", async (req, res) => {
       res.send(roleErr);
       return;
     }
-    if (!recipientUserId) {
-      res.status(400);
-      res.send("Recipient is required.");
-      return;
-    }
-    if (recipientUserId === userId) {
-      res.status(400);
-      res.send("You cannot trade with yourself.");
-      return;
+    if (recipientUserId) {
+      if (recipientUserId === userId) {
+        res.status(400);
+        res.send("You cannot trade with yourself.");
+        return;
+      }
     }
 
-    const friend = await models.Friend.findOne({
-      userId,
-      friendId: recipientUserId,
-    });
-    if (!friend) {
-      res.status(403);
-      res.send("You can only initiate trades with friends.");
-      return;
+    let recipient = null;
+    if (recipientUserId) {
+      recipient = await models.User.findOne({
+        id: recipientUserId,
+        deleted: false,
+      }).select("_id id name blockedUsers");
+      if (!recipient) {
+        res.status(404);
+        res.send("Recipient not found.");
+        return;
+      }
+      if ((recipient.blockedUsers || []).includes(userId)) {
+        res.status(403);
+        res.send("You cannot trade with this user.");
+        return;
+      }
+
+      // Cap active trades between this user pair to prevent spam.
+      const activeBetween = await models.StampTrade.countDocuments({
+        $or: [
+          { initiatorId: userId, recipientId: recipientUserId },
+          { initiatorId: recipientUserId, recipientId: userId },
+        ],
+        status: { $in: ACTIVE_STATUSES },
+      });
+      if (activeBetween >= MAX_ACTIVE_TRADES_PER_PAIR) {
+        res.status(429);
+        res.send(
+          `You already have ${MAX_ACTIVE_TRADES_PER_PAIR} active trades with this user.`
+        );
+        return;
+      }
+    } else {
+      const openOffers = await models.StampTrade.countDocuments({
+        initiatorId: userId,
+        recipientId: null,
+        status: "PENDING_RESPONSE",
+      });
+      if (openOffers >= 1) {
+        res.status(429);
+        res.send("You can only have 1 open public trade.");
+        return;
+      }
     }
 
-    const recipient = await models.User.findOne({
-      id: recipientUserId,
-      deleted: false,
-    }).select("_id id name blockedUsers");
-    if (!recipient) {
-      res.status(404);
-      res.send("Recipient not found.");
-      return;
-    }
-    if ((recipient.blockedUsers || []).includes(userId)) {
-      res.status(403);
-      res.send("You cannot trade with this user.");
-      return;
-    }
-
-    // Cap active trades between this user pair to prevent spam.
-    const activeBetween = await models.StampTrade.countDocuments({
-      $or: [
-        { initiatorId: userId, recipientId: recipientUserId },
-        { initiatorId: recipientUserId, recipientId: userId },
-      ],
-      status: { $in: ACTIVE_STATUSES },
-    });
-    if (activeBetween >= MAX_ACTIVE_TRADES_PER_PAIR) {
-      res.status(429);
-      res.send(
-        `You already have ${MAX_ACTIVE_TRADES_PER_PAIR} active trades with this user.`
-      );
-      return;
+    let requestedStampId = null;
+    if (recipientUserId && requestedGameType && requestedRole) {
+      const roleErr2 = validateStampRole(requestedGameType, requestedRole);
+      if (roleErr2) {
+        res.status(400);
+        res.send(roleErr2);
+        return;
+      }
+      // Find an available stamp from the recipient (only need 1 copy, unlike trading your own)
+      const recipientStamps = await models.Stamp.find({
+        userId: recipientUserId,
+        gameType: requestedGameType,
+        role: requestedRole,
+      }).select("_id");
+      if (recipientStamps.length === 0) {
+        res.status(400);
+        res.send("Recipient does not have this stamp.");
+        return;
+      }
+      const recipientLockedIds = await getLockedStampIds(recipientUserId);
+      const availableRecipient = recipientStamps
+        .map((s) => String(s._id))
+        .filter((id) => !recipientLockedIds.has(id));
+      if (availableRecipient.length === 0) {
+        res.status(400);
+        res.send("That stamp is currently locked in another trade.");
+        return;
+      }
+      requestedStampId = availableRecipient[0];
     }
 
     const initiatorUser = await models.User.findOne({
@@ -242,6 +312,12 @@ router.post("/initiate", async (req, res) => {
       return;
     }
 
+    // When a specific stamp was requested from the recipient (profile trade),
+    // auto-respond: skip PENDING_RESPONSE and go straight to PENDING_CONFIRMATION
+    // so the recipient only needs to confirm.
+    const autoResponded = !!requestedStampId;
+    const tradeStatus = autoResponded ? "PENDING_CONFIRMATION" : "PENDING_RESPONSE";
+
     // Try each available stamp; the partial unique index on initiatorStamp
     // will throw E11000 if another concurrent request already reserved it.
     let trade = null;
@@ -255,9 +331,17 @@ router.post("/initiate", async (req, res) => {
           initiatorStamp: stampId,
           initiatorGameType: gameType,
           initiatorRole: role,
-          recipientId: recipientUserId,
-          recipient: recipient._id,
-          status: "PENDING_RESPONSE",
+          recipientId: recipientUserId || null,
+          recipient: recipient ? recipient._id : null,
+          ...(autoResponded
+            ? {
+                recipientStamp: requestedStampId,
+                recipientGameType: requestedGameType,
+                recipientRole: requestedRole,
+              }
+            : {}),
+          expiresAt: autoResponded ? Date.now() + 2 * 24 * 60 * 60 * 1000 : null,
+          status: tradeStatus,
           createdAt: Date.now(),
           updatedAt: Date.now(),
         });
@@ -277,6 +361,17 @@ router.post("/initiate", async (req, res) => {
         lastErr = new Error("stamp already locked");
         continue;
       }
+
+      // Same cross-field check for the recipient stamp, if present (auto-responded).
+      if (
+        autoResponded &&
+        (await stampHasCrossFieldConflict(requestedStampId, trade._id))
+      ) {
+        await models.StampTrade.deleteOne({ _id: trade._id });
+        trade = null;
+        lastErr = new Error("recipient stamp already locked");
+        continue;
+      }
       break;
     }
 
@@ -290,38 +385,44 @@ router.post("/initiate", async (req, res) => {
     }
 
     // Enforce MAX_ACTIVE_TRADES_PER_PAIR after create to close the count race.
-    // Fetch active trades ordered by creation; only delete ours if it is past
-    // the cap (so concurrent creators don't all delete each other).
-    const activeList = await models.StampTrade.find({
-      $or: [
-        { initiatorId: userId, recipientId: recipientUserId },
-        { initiatorId: recipientUserId, recipientId: userId },
-      ],
-      status: { $in: ACTIVE_STATUSES },
-    })
-      .sort({ createdAt: 1, _id: 1 })
-      .select("_id")
-      .limit(MAX_ACTIVE_TRADES_PER_PAIR + 5);
-    const ourIdx = activeList.findIndex(
-      (t) => String(t._id) === String(trade._id)
-    );
-    if (ourIdx >= MAX_ACTIVE_TRADES_PER_PAIR) {
-      await models.StampTrade.deleteOne({ _id: trade._id });
-      res.status(429);
-      res.send(
-        `You already have ${MAX_ACTIVE_TRADES_PER_PAIR} active trades with this user.`
+    // Only applies to directed trades (with a specific recipient).
+    if (recipientUserId) {
+      const activeList = await models.StampTrade.find({
+        $or: [
+          { initiatorId: userId, recipientId: recipientUserId },
+          { initiatorId: recipientUserId, recipientId: userId },
+        ],
+        status: { $in: ACTIVE_STATUSES },
+      })
+        .sort({ createdAt: 1, _id: 1 })
+        .select("_id")
+        .limit(MAX_ACTIVE_TRADES_PER_PAIR + 1);
+      const ourIdx = activeList.findIndex(
+        (t) => String(t._id) === String(trade._id)
       );
-      return;
+      if (ourIdx >= MAX_ACTIVE_TRADES_PER_PAIR) {
+        await models.StampTrade.deleteOne({ _id: trade._id });
+        res.status(429);
+        res.send(
+          `You already have ${MAX_ACTIVE_TRADES_PER_PAIR} active trades with this user.`
+        );
+        return;
+      }
     }
 
-    await routeUtils.createNotification(
-      {
-        content: `${initiatorUser.name} wants to trade their ${role} stamp with you.`,
-        icon: "fas fa-exchange-alt",
-        link: `/user/${recipientUserId}`,
-      },
-      [recipientUserId]
-    );
+    if (recipientUserId) {
+      const notifContent = autoResponded
+        ? `${initiatorUser.name} wants to trade their ${role} stamp for your ${requestedRole}. Confirm on your profile.`
+        : `${initiatorUser.name} wants to trade their ${role} stamp with you.`;
+      await routeUtils.createNotification(
+        {
+          content: notifContent,
+          icon: "fas fa-exchange-alt",
+          link: `/user/${recipientUserId}`,
+        },
+        [recipientUserId]
+      );
+    }
 
     res.send({ id: trade.id });
   } catch (e) {
@@ -358,14 +459,26 @@ router.post("/respond", async (req, res) => {
       res.send("Trade not found.");
       return;
     }
-    if (trade.recipientId !== userId) {
+    if (trade.recipientId && trade.recipientId !== userId) {
       res.status(403);
       res.send("You are not the recipient of this trade.");
+      return;
+    }
+    if (trade.initiatorId === userId) {
+      res.status(400);
+      res.send("You cannot respond to your own trade.");
       return;
     }
     if (trade.status !== "PENDING_RESPONSE") {
       res.status(400);
       res.send("This trade is no longer awaiting a response.");
+      return;
+    }
+
+    const responderUser = await models.User.findOne({ id: userId, deleted: false }).select("_id");
+    if (!responderUser) {
+      res.status(404);
+      res.send("User not found.");
       return;
     }
 
@@ -393,6 +506,7 @@ router.post("/respond", async (req, res) => {
               recipientRole: role,
               status: "PENDING_CONFIRMATION",
               updatedAt: Date.now(),
+              ...(trade.recipientId ? {} : { recipientId: userId, recipient: responderUser._id }),
             },
           },
           { new: true }
@@ -485,9 +599,19 @@ router.post("/confirm", async (req, res) => {
       res.send("Trade not found.");
       return;
     }
-    if (trade.initiatorId !== userId) {
+    // Auto-responded trades (initiated from profile, indicated by expiresAt)
+    // are confirmed by the recipient. Normal trades are confirmed by the initiator.
+    const autoResponded = !!trade.expiresAt;
+    const canConfirm = autoResponded
+      ? trade.recipientId === userId
+      : trade.initiatorId === userId;
+    if (!canConfirm) {
       res.status(403);
-      res.send("Only the initiator can confirm this trade.");
+      res.send(
+        autoResponded
+          ? "Only the recipient can confirm this trade."
+          : "Only the initiator can confirm this trade."
+      );
       return;
     }
     if (trade.status !== "PENDING_CONFIRMATION") {
@@ -671,17 +795,19 @@ router.post("/reject", async (req, res) => {
     }
     const otherUserId =
       userId === trade.initiatorId ? trade.recipientId : trade.initiatorId;
-    const tradeDesc = trade.recipientRole
-      ? `${trade.initiatorRole} for ${trade.recipientRole}`
-      : `${trade.initiatorRole}`;
-    await routeUtils.createNotification(
-      {
-        content: `${rejector.name} rejected the stamp trade (${tradeDesc}).`,
-        icon: "fas fa-exchange-alt",
-        link: `/user/${otherUserId}`,
-      },
-      [otherUserId]
-    );
+    if (otherUserId) {
+      const tradeDesc = trade.recipientRole
+        ? `${trade.initiatorRole} for ${trade.recipientRole}`
+        : `${trade.initiatorRole}`;
+      await routeUtils.createNotification(
+        {
+          content: `${rejector.name} rejected the stamp trade (${tradeDesc}).`,
+          icon: "fas fa-exchange-alt",
+          link: `/user/${otherUserId}`,
+        },
+        [otherUserId]
+      );
+    }
 
     res.send({ id: trade.id, status: trade.status });
   } catch (e) {

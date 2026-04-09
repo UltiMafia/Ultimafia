@@ -1,14 +1,22 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import axios from "axios";
 import {
   Box,
   Tooltip,
   Typography,
   Collapse,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Stack,
 } from "@mui/material";
-import { SiteInfoContext } from "Contexts";
+import { SiteInfoContext, UserContext } from "Contexts";
 import { RoleCount } from "components/Roles";
 import { PageNav } from "components/Nav";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { useErrorAlert } from "components/Alerts";
 import StampTradeModal from "components/StampTradeModal";
 
 import "css/scrapbook.css";
@@ -50,11 +58,13 @@ export function StampItem({ gameType, role, count, hasLock, clickable, onClick, 
   );
 }
 
-function renderStamp(s, { lockedCountsByRoleKey, isSelf, onStampClick, keyPrefix = "" }) {
+function renderStamp(s, { lockedCountsByRoleKey, isSelf, onStampClick, onRequestTrade, keyPrefix = "" }) {
   const key = `${s.gameType}:${s.role}`;
   const lockedCount = lockedCountsByRoleKey?.[key] || 0;
   const available = s.count - lockedCount;
-  const clickable = isSelf && available > 1;
+  const selfClickable = isSelf && available > 1;
+  const requestable = !isSelf && onRequestTrade && s.count >= 2;
+  const clickable = selfClickable || requestable;
   return (
     <StampItem
       key={`${keyPrefix}${key}`}
@@ -63,7 +73,13 @@ function renderStamp(s, { lockedCountsByRoleKey, isSelf, onStampClick, keyPrefix
       count={s.count}
       hasLock={lockedCount > 0}
       clickable={clickable}
-      onClick={clickable ? () => onStampClick(s) : undefined}
+      onClick={
+        selfClickable
+          ? () => onStampClick(s)
+          : requestable
+            ? () => onRequestTrade(s)
+            : undefined
+      }
     />
   );
 }
@@ -199,12 +215,160 @@ function BookSpread({ stamps, spreadIndex, maxSpreads, onFlip, renderProps }) {
   );
 }
 
+function RequestTradeDialog({ open, onClose, targetStamp, profileUserId, onTradeAction }) {
+  const user = useContext(UserContext);
+  const siteInfo = useContext(SiteInfoContext);
+  const errorAlert = useErrorAlert();
+
+  const [myStamps, setMyStamps] = useState([]);
+  const [selectedStamp, setSelectedStamp] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [stampPage, setStampPage] = useState(0);
+  const STAMPS_PER_PAGE = 30;
+
+  useEffect(() => {
+    if (!open || !user?.id) return;
+    setSelectedStamp(null);
+    setStampPage(0);
+    axios
+      .get(`/api/user/${user.id}/profile`)
+      .then((res) => {
+        const all = res.data?.stamps || [];
+        setMyStamps(all.filter((s) => s.count >= 2));
+      })
+      .catch(() => setMyStamps([]));
+  }, [open, user?.id]);
+
+  function handleConfirm() {
+    if (!selectedStamp || submitting) return;
+    setSubmitting(true);
+    axios
+      .post("/api/stampTrades/initiate", {
+        gameType: selectedStamp.gameType,
+        role: selectedStamp.role,
+        recipientUserId: profileUserId,
+        requestedGameType: targetStamp.gameType,
+        requestedRole: targetStamp.role,
+      })
+      .then(() => {
+        siteInfo.showAlert("Trade sent.", "success");
+        if (onTradeAction) onTradeAction();
+      })
+      .catch(errorAlert)
+      .finally(() => setSubmitting(false));
+  }
+
+  if (!targetStamp) return null;
+
+  const targetLabel =
+    targetStamp.gameType === "Mafia"
+      ? targetStamp.role
+      : `${targetStamp.gameType} - ${targetStamp.role}`;
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>
+        <Stack direction="row" alignItems="center" spacing={1.5}>
+          <Typography variant="body1">Request</Typography>
+          <StampItem
+            role={targetStamp.role}
+            gameType={targetStamp.gameType}
+            size="small"
+          />
+          <Typography variant="body1" sx={{ opacity: 0.7 }}>
+            {targetLabel}
+          </Typography>
+        </Stack>
+      </DialogTitle>
+      <DialogContent dividers>
+        <Typography variant="subtitle2" sx={{ mb: 1 }}>
+          Pick a stamp to offer
+        </Typography>
+        {myStamps.length === 0 ? (
+          <Typography variant="body2" color="textSecondary">
+            You have no stamps with duplicates to trade.
+          </Typography>
+        ) : (
+          <>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+              {myStamps
+                .slice(stampPage * STAMPS_PER_PAGE, (stampPage + 1) * STAMPS_PER_PAGE)
+                .map((s) => {
+                  const key = `${s.gameType}:${s.role}`;
+                  const isSelected =
+                    selectedStamp &&
+                    selectedStamp.gameType === s.gameType &&
+                    selectedStamp.role === s.role;
+                  return (
+                    <Box
+                      key={key}
+                      sx={{
+                        borderRadius: "6px",
+                        border: isSelected
+                          ? "2px solid var(--scheme-color, #90caf9)"
+                          : "2px solid transparent",
+                      }}
+                    >
+                      <StampItem
+                        gameType={s.gameType}
+                        role={s.role}
+                        count={s.count}
+                        clickable
+                        onClick={() => setSelectedStamp(s)}
+                      />
+                    </Box>
+                  );
+                })}
+            </Box>
+            {myStamps.length > STAMPS_PER_PAGE && (
+              <Stack direction="row" justifyContent="center" alignItems="center" spacing={1} sx={{ mt: 1 }}>
+                <Button
+                  size="small"
+                  disabled={stampPage === 0}
+                  onClick={() => setStampPage(stampPage - 1)}
+                >
+                  <i className="fas fa-chevron-left" />
+                </Button>
+                <Typography variant="caption">
+                  {stampPage + 1} / {Math.ceil(myStamps.length / STAMPS_PER_PAGE)}
+                </Typography>
+                <Button
+                  size="small"
+                  disabled={(stampPage + 1) * STAMPS_PER_PAGE >= myStamps.length}
+                  onClick={() => setStampPage(stampPage + 1)}
+                >
+                  <i className="fas fa-chevron-right" />
+                </Button>
+              </Stack>
+            )}
+          </>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="secondary">
+          Cancel
+        </Button>
+        <Button
+          onClick={handleConfirm}
+          variant="contained"
+          color="primary"
+          disabled={!selectedStamp || submitting}
+        >
+          Send Trade
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
 export default function Scrapbook({
   stamps = [],
   hiddenStamps = [],
   isSelf = false,
   lockedCountsByRoleKey = {},
   onTradeAction,
+  profileUserId,
+  profileUserName,
   panelStyle = {},
   headingStyle = {},
 }) {
@@ -212,6 +376,7 @@ export default function Scrapbook({
   const [spreadIndex, setSpreadIndex] = useState(0);
   const [page, setPage] = useState(1);
   const [tradeModalStamp, setTradeModalStamp] = useState(null);
+  const [requestTradeStamp, setRequestTradeStamp] = useState(null);
   const siteInfo = useContext(SiteInfoContext);
   const isPhoneDevice = useIsPhoneDevice();
   const hasVisible = stamps.length > 0;
@@ -254,6 +419,7 @@ export default function Scrapbook({
     lockedCountsByRoleKey,
     isSelf,
     onStampClick: (s) => setTradeModalStamp(s),
+    onRequestTrade: !isSelf && profileUserId ? (s) => setRequestTradeStamp(s) : null,
   };
 
   return (
@@ -335,8 +501,22 @@ export default function Scrapbook({
           open={!!tradeModalStamp}
           stamp={tradeModalStamp}
           onClose={() => setTradeModalStamp(null)}
+          recipientId={profileUserId && !isSelf ? profileUserId : undefined}
+          recipientName={profileUserName && !isSelf ? profileUserName : undefined}
           onTradeAction={() => {
             setTradeModalStamp(null);
+            if (onTradeAction) onTradeAction();
+          }}
+        />
+      )}
+      {requestTradeStamp && (
+        <RequestTradeDialog
+          open={!!requestTradeStamp}
+          targetStamp={requestTradeStamp}
+          profileUserId={profileUserId}
+          onClose={() => setRequestTradeStamp(null)}
+          onTradeAction={() => {
+            setRequestTradeStamp(null);
             if (onTradeAction) onTradeAction();
           }}
         />

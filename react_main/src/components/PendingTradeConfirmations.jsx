@@ -9,6 +9,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 
 import { SiteInfoContext } from "Contexts";
@@ -174,84 +176,60 @@ export default function PendingTradeConfirmations({
   }
 
   function renderActions(t) {
+    const reject = (
+      <Tooltip title="Cancel" arrow>
+        <IconButton
+          size="small"
+          disabled={busyId === t.id}
+          onClick={() => handleReject(t.id)}
+          sx={{ opacity: 0.6 }}
+        >
+          <i className="fas fa-times" />
+        </IconButton>
+      </Tooltip>
+    );
     // PENDING_RESPONSE
     if (t.status === "PENDING_RESPONSE") {
       if (t.isInitiator) {
-        // you initiated, waiting on them
-        return (
-          <Button
-            size="small"
-            variant="outlined"
-            color="secondary"
-            disabled={busyId === t.id}
-            onClick={() => handleReject(t.id)}
-          >
-            Cancel
-          </Button>
-        );
+        return reject;
       }
-      // they initiated, you need to respond
       return (
         <>
-          <Button
-            size="small"
-            variant="outlined"
-            color="secondary"
-            disabled={busyId === t.id}
-            onClick={() => handleReject(t.id)}
-          >
-            Reject
-          </Button>
-          <Button
-            size="small"
-            variant="contained"
-            color="primary"
-            disabled={busyId === t.id}
-            onClick={() => setRespondTrade(t)}
-          >
-            Respond
-          </Button>
+          {reject}
+          <Tooltip title="Respond" arrow>
+            <IconButton
+              size="small"
+              disabled={busyId === t.id}
+              onClick={() => setRespondTrade(t)}
+              color="primary"
+            >
+              <i className="fas fa-sync-alt" />
+            </IconButton>
+          </Tooltip>
         </>
       );
     }
     // PENDING_CONFIRMATION
-    if (t.isInitiator) {
-      // they responded, you confirm
+    // waitingOnYou indicates this user should confirm (initiator for normal
+    // trades, recipient for auto-responded profile trades).
+    if (t.waitingOnYou) {
       return (
         <>
-          <Button
-            size="small"
-            variant="outlined"
-            color="secondary"
-            disabled={busyId === t.id}
-            onClick={() => handleReject(t.id)}
-          >
-            Reject
-          </Button>
-          <Button
-            size="small"
-            variant="contained"
-            color="primary"
-            disabled={busyId === t.id}
-            onClick={() => handleConfirm(t.id)}
-          >
-            Confirm
-          </Button>
+          {reject}
+          <Tooltip title="Confirm" arrow>
+            <IconButton
+              size="small"
+              disabled={busyId === t.id}
+              onClick={() => handleConfirm(t.id)}
+              color="primary"
+            >
+              <i className="fas fa-check" />
+            </IconButton>
+          </Tooltip>
         </>
       );
     }
-    // you responded, waiting on them
-    return (
-      <Button
-        size="small"
-        variant="outlined"
-        color="secondary"
-        disabled={busyId === t.id}
-        onClick={() => handleReject(t.id)}
-      >
-        Cancel
-      </Button>
-    );
+    return reject;
   }
 
   return (
@@ -263,78 +241,65 @@ export default function PendingTradeConfirmations({
         <Stack spacing={1}>
           {trades.map((t) => {
             // Your sticker / their sticker from your perspective.
-            const yourRole = t.isInitiator ? t.initiatorRole : t.recipientRole;
+            const yourRole = t.isInitiator
+              ? t.initiatorRole
+              : (t.recipientRole || t.requestedRole);
             const yourGameType = t.isInitiator
               ? t.initiatorGameType
-              : t.recipientGameType;
-            const theirRole = t.isInitiator ? t.recipientRole : t.initiatorRole;
+              : (t.recipientGameType || t.requestedGameType);
+            const theirRole = t.isInitiator
+              ? (t.recipientRole || t.requestedRole)
+              : t.initiatorRole;
             const theirGameType = t.isInitiator
-              ? t.recipientGameType
+              ? (t.recipientGameType || t.requestedGameType)
               : t.initiatorGameType;
             return (
               <Box
                 key={t.id}
                 sx={{
-                  position: "relative",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 0.75,
-                  p: 1,
+                  display: "grid",
+                  gridTemplateColumns: "1fr 32px auto 32px 56px",
+                  alignItems: "center",
+                  columnGap: 0.75,
+                  p: 0.5,
                   border: "1px solid var(--scheme-color-border)",
                   borderRadius: 1,
                   minWidth: 0,
-                  maxWidth: "100%",
+                  fontSize: "0.75rem",
+                  "& .user-name .MuiTypography-root": { fontSize: "0.75rem" },
                 }}
               >
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: 4,
-                    right: 8,
-                    maxWidth: "60%",
-                    "& .user-name .MuiTypography-root": { fontSize: "0.7rem" },
-                    "& .user-name": {
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    },
-                  }}
-                >
-                  <NameWithAvatar
-                    id={t.other?.id}
-                    name={t.other?.name}
-                    avatar={t.other?.avatar}
-                    small
-                  />
+                <Box sx={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", justifySelf: "start" }}>
+                  {t.other ? (
+                    <NameWithAvatar
+                      id={t.other.id}
+                      name={t.other.name}
+                      avatar={t.other.avatar}
+                      small
+                    />
+                  ) : (
+                    <Typography variant="caption" sx={{ opacity: 0.5 }}>
+                      Public
+                    </Typography>
+                  )}
                 </Box>
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  spacing={1}
-                  sx={{ justifyContent: "center", mt: 2.5 }}
-                >
-                  {yourRole && yourGameType ? (
-                    <StampItem role={yourRole} gameType={yourGameType} />
-                  ) : (
-                    <StickerPlaceholder />
-                  )}
-                  <i
-                    className="fas fa-exchange-alt"
-                    style={{ fontSize: 12, opacity: 0.6 }}
-                  />
-                  {theirRole && theirGameType ? (
-                    <StampItem role={theirRole} gameType={theirGameType} />
-                  ) : (
-                    <StickerPlaceholder />
-                  )}
-                </Stack>
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  sx={{ justifyContent: "flex-end" }}
-                >
+                {yourRole && yourGameType ? (
+                  <StampItem role={yourRole} gameType={yourGameType} size="small" />
+                ) : (
+                  <StickerPlaceholder size={32} />
+                )}
+                <i
+                  className="fas fa-exchange-alt"
+                  style={{ fontSize: 10, opacity: 0.6, justifySelf: "center" }}
+                />
+                {theirRole && theirGameType ? (
+                  <StampItem role={theirRole} gameType={theirGameType} size="small" />
+                ) : (
+                  <StickerPlaceholder size={32} />
+                )}
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
                   {renderActions(t)}
-                </Stack>
+                </Box>
               </Box>
             );
           })}

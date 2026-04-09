@@ -565,10 +565,14 @@ router.get("/:id/profile", async function (req, res) {
         }).select("id name avatar");
         // Whose turn is it?
         // PENDING_RESPONSE: recipient needs to respond.
-        // PENDING_CONFIRMATION: initiator needs to confirm.
+        // PENDING_CONFIRMATION: depends on whether auto-responded.
+        //   Auto-responded (profile trade): recipient confirms.
+        //   Normal: initiator confirms.
+        const autoResponded = !!t.expiresAt;
         const waitingOnYou =
           (t.status === "PENDING_RESPONSE" && !isInitiator) ||
-          (t.status === "PENDING_CONFIRMATION" && isInitiator);
+          (t.status === "PENDING_CONFIRMATION" && autoResponded && !isInitiator) ||
+          (t.status === "PENDING_CONFIRMATION" && !autoResponded && isInitiator);
         pendingConfirmationTrades.push({
           id: t.id,
           initiatorGameType: t.initiatorGameType,

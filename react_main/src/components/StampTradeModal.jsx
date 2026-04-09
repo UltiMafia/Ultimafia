@@ -18,7 +18,14 @@ import { StampItem } from "components/Scrapbook";
 import { useErrorAlert } from "components/Alerts";
 import { NameWithAvatar } from "pages/User/User";
 
-export default function StampTradeModal({ open, onClose, stamp, onTradeAction }) {
+export default function StampTradeModal({
+  open,
+  onClose,
+  stamp,
+  onTradeAction,
+  recipientId,
+  recipientName,
+}) {
   const siteInfo = useContext(SiteInfoContext);
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
@@ -41,10 +48,12 @@ export default function StampTradeModal({ open, onClose, stamp, onTradeAction })
       .then((res) => setIncomingTrades(res.data || []))
       .catch(() => setIncomingTrades([]));
 
-    axios
-      .get(`/api/user/${user.id}/friends`)
-      .then((res) => setFriends(res.data || []))
-      .catch(() => setFriends([]));
+    if (!recipientId) {
+      axios
+        .get(`/api/user/${user.id}/friends`)
+        .then((res) => setFriends(res.data || []))
+        .catch(() => setFriends([]));
+    }
   }, [open, user?.id]);
 
   if (!stamp) return null;
@@ -81,20 +90,38 @@ export default function StampTradeModal({ open, onClose, stamp, onTradeAction })
   }
 
   function handleStart() {
-    if (!selectedFriendId || submitting) return;
+    if (submitting) return;
     setSubmitting(true);
+    const body = {
+      gameType: stamp.gameType,
+      role: stamp.role,
+    };
+    const targetId = recipientId || selectedFriendId;
+    if (targetId) body.recipientUserId = targetId;
     axios
-      .post("/api/stampTrades/initiate", {
-        gameType: stamp.gameType,
-        role: stamp.role,
-        recipientUserId: selectedFriendId,
-      })
+      .post("/api/stampTrades/initiate", body)
       .then(() => {
-        siteInfo.showAlert("Trade started.", "success");
+        siteInfo.showAlert(
+          targetId ? "Trade sent." : "Trade posted publicly.",
+          "success"
+        );
         if (onTradeAction) onTradeAction();
       })
       .catch(errorAlert)
       .finally(() => setSubmitting(false));
+  }
+
+  const selectedFriend = selectedFriendId
+    ? friends.find((f) => f.id === selectedFriendId)
+    : null;
+
+  let startLabel;
+  if (recipientId) {
+    startLabel = `Send to ${recipientName || "user"}`;
+  } else if (selectedFriend) {
+    startLabel = `Send to ${selectedFriend.name}`;
+  } else {
+    startLabel = "Start public trade";
   }
 
   return (
@@ -158,44 +185,47 @@ export default function StampTradeModal({ open, onClose, stamp, onTradeAction })
           </Stack>
         )}
 
-        <Divider sx={{ my: 1 }} />
-
-        <Typography variant="subtitle2" sx={{ mb: 1, mt: 1 }}>
-          Start new trade
-        </Typography>
-        <TextField
-          value={searchVal}
-          onChange={(e) => setSearchVal(e.target.value)}
-          placeholder="Search friends"
-          size="small"
-          fullWidth
-          sx={{ mb: 1 }}
-        />
-        {filteredFriends.length === 0 ? (
-          <Typography variant="body2" color="textSecondary">
-            {friends.length === 0 ? "No friends yet." : "No matches."}
-          </Typography>
-        ) : (
-          <Stack spacing={0.5} sx={{ maxHeight: 220, overflowY: "auto" }}>
-            {filteredFriends.map((f) => {
-              const selected = selectedFriendId === f.id;
-              return (
-                <Box
-                  key={f.id}
-                  className={`stamp-trade-row${selected ? " stamp-trade-row--selected" : ""}`}
-                  onClick={() => handleSelectFriend(f.id)}
-                >
-                  <NameWithAvatar
-                    id={f.id}
-                    name={f.name}
-                    avatar={f.avatar}
-                    noLink
-                    small
-                  />
-                </Box>
-              );
-            })}
-          </Stack>
+        {!recipientId && (
+          <>
+            <Divider sx={{ my: 1 }} />
+            <Typography variant="subtitle2" sx={{ mb: 1, mt: 1 }}>
+              Send to a friend
+            </Typography>
+            <TextField
+              value={searchVal}
+              onChange={(e) => setSearchVal(e.target.value)}
+              placeholder="Search friends"
+              size="small"
+              fullWidth
+              sx={{ mb: 1 }}
+            />
+            {filteredFriends.length === 0 ? (
+              <Typography variant="body2" color="textSecondary">
+                {friends.length === 0 ? "No friends yet." : "No matches."}
+              </Typography>
+            ) : (
+              <Stack spacing={0.5} sx={{ maxHeight: 220, overflowY: "auto" }}>
+                {filteredFriends.map((f) => {
+                  const selected = selectedFriendId === f.id;
+                  return (
+                    <Box
+                      key={f.id}
+                      className={`stamp-trade-row${selected ? " stamp-trade-row--selected" : ""}`}
+                      onClick={() => handleSelectFriend(f.id)}
+                    >
+                      <NameWithAvatar
+                        id={f.id}
+                        name={f.name}
+                        avatar={f.avatar}
+                        noLink
+                        small
+                      />
+                    </Box>
+                  );
+                })}
+              </Stack>
+            )}
+          </>
         )}
       </DialogContent>
 
@@ -212,18 +242,14 @@ export default function StampTradeModal({ open, onClose, stamp, onTradeAction })
           >
             Respond to Trade
           </Button>
-        ) : selectedFriendId ? (
+        ) : (
           <Button
             onClick={handleStart}
             variant="contained"
             color="primary"
             disabled={submitting}
           >
-            Start Trade
-          </Button>
-        ) : (
-          <Button disabled variant="contained" color="primary">
-            Select someone
+            {startLabel}
           </Button>
         )}
       </DialogActions>
