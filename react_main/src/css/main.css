@@ -701,3 +701,12 @@ input:focus {
   /*    scrollbar-color: #555 #888;*/
   /*}*/
 }
+
+.MuiDialogTitle-root,
+.MuiDialogTitle-root .MuiTypography-root {
+  font-family: inherit;
+}
+
+.MuiDialogContent-root .MuiTypography-root {
+  font-family: inherit;
+}
