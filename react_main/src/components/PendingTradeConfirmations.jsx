@@ -243,15 +243,15 @@ export default function PendingTradeConfirmations({
             // Your sticker / their sticker from your perspective.
             const yourRole = t.isInitiator
               ? t.initiatorRole
-              : (t.recipientRole || t.requestedRole);
+              : t.recipientRole;
             const yourGameType = t.isInitiator
               ? t.initiatorGameType
-              : (t.recipientGameType || t.requestedGameType);
+              : t.recipientGameType;
             const theirRole = t.isInitiator
-              ? (t.recipientRole || t.requestedRole)
+              ? t.recipientRole
               : t.initiatorRole;
             const theirGameType = t.isInitiator
-              ? (t.recipientGameType || t.requestedGameType)
+              ? t.recipientGameType
               : t.initiatorGameType;
             return (
               <Box
