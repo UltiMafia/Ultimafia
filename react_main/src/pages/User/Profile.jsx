@@ -2240,7 +2240,7 @@ function StatsQueryView({ stats }) {
               <div className="query-stat">
                 <span className="query-stat-label">Games</span>
                 <span className="query-stat-value">
-                  {selectedStats.totalGames || totalUnabandoned}
+                  {totalUnabandoned}
                 </span>
               </div>
               <div className="query-stat">
