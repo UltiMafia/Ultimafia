@@ -22,6 +22,12 @@ import { useErrorAlert } from "components/Alerts";
 import { getPageNavFilterArg, PageNav } from "components/Nav";
 import { RatingThresholds, RequiredTotalForStats } from "Constants";
 import { capitalize } from "utils";
+import {
+  getTotalGames,
+  getWins,
+  getLosses,
+  getAbandons,
+} from "utils/mafiaStats";
 import Comments from "../Community/Comments";
 
 import "css/user.css";
@@ -923,7 +929,7 @@ export default function Profile() {
 
   if (stats && stats["Mafia"] && stats["Mafia"].all) {
     var mafiaStats = stats["Mafia"].all;
-    totalGames = mafiaStats?.wins?.total + mafiaStats?.abandons?.total || 0;
+    totalGames = getTotalGames(mafiaStats);
 
     ratings = Object.keys(RatingThresholds).map((statName) => {
       var stat = mafiaStats[statName];
@@ -931,15 +937,11 @@ export default function Profile() {
       if (RatingThresholds[statName] == null) return <></>;
       else if (totalGames < RequiredTotalForStats) stat = "-";
       else if (statName === "wins")
-        stat = `${Math.round((stat.count / totalGames) * 100)}%`;
+        stat = `${Math.round((getWins(mafiaStats) / totalGames) * 100)}%`;
       else if (statName === "abandons")
-        stat = `${Math.round((mafiaStats.abandons.total / totalGames) * 100)}%`;
+        stat = `${Math.round((getAbandons(mafiaStats) / totalGames) * 100)}%`;
       else if (statName === "losses")
-        stat = `${Math.round(
-          ((totalGames - mafiaStats.wins.count - mafiaStats.abandons.total) /
-            totalGames) *
-            100
-        )}%`;
+        stat = `${Math.round((getLosses(mafiaStats) / totalGames) * 100)}%`;
 
       return (
         <div className="rating" key={statName}>
@@ -1658,7 +1660,7 @@ export default function Profile() {
                     >
                       Wins:{" "}
                       {Math.round(
-                        (mafiaStats.wins.count / totalGames) * 100
+                        (getWins(mafiaStats) / totalGames) * 100
                       )}
                       %
                     </div>
@@ -1678,11 +1680,9 @@ export default function Profile() {
                       style={{ padding: "0", justifyContent: "center" }}
                     >
                       <PieChart
-                        wins={mafiaStats.wins.count}
-                        losses={
-                          mafiaStats.wins.total - mafiaStats.wins.count
-                        }
-                        abandons={mafiaStats.abandons.total}
+                        wins={getWins(mafiaStats)}
+                        losses={getLosses(mafiaStats)}
+                        abandons={getAbandons(mafiaStats)}
                       />
                     </div>
                   )}
@@ -2056,21 +2056,22 @@ function StatsModal(props) {
   ));
 
   const statsRows = stats.map((statsObj, i) => {
-    // let totalGames = statsObj.totalGames;
-    let totalGamesUnabandoned =
-      statsObj.wins?.total + statsObj?.abandons?.total;
+    let totalGames = getTotalGames(statsObj);
     let statsList = Object.keys(statsObj).map((statKey) => {
       let statData = statsObj[statKey];
 
       switch (statKey) {
         case "totalGames":
-          statData = <div className="stat-data">{statData}</div>;
+          // statsObj.totalGames is not accurate for legacy data — it was
+          // added after "wins" was already being tracked, so older games
+          // have wins.total > statsObj.totalGames. Derive from helpers.
+          statData = <div className="stat-data">{totalGames}</div>;
           break;
         case "wins":
         case "abandons":
           statData = (
             <div className="stat-data">
-              {statData.count}/{totalGamesUnabandoned}
+              {statData.count}/{totalGames}
             </div>
           );
           break;
@@ -2191,21 +2192,16 @@ function StatsQueryView({ stats }) {
   }, [queryType, keys.join("|")]);
 
   const selectedStats = selectedKey ? data[selectedKey] : null;
-  const totalUnabandoned = selectedStats
-    ? (selectedStats.wins?.total || 0) + (selectedStats.abandons?.total || 0)
+  const totalGames = getTotalGames(selectedStats);
+  const winPct = totalGames
+    ? Math.round((getWins(selectedStats) / totalGames) * 100)
     : 0;
-  const winPct =
-    selectedStats && totalUnabandoned
-      ? Math.round((selectedStats.wins.count / totalUnabandoned) * 100)
-      : 0;
-  const abandonPct =
-    selectedStats && totalUnabandoned
-      ? Math.round((selectedStats.abandons.total / totalUnabandoned) * 100)
-      : 0;
-  const lossPct =
-    selectedStats && totalUnabandoned
-      ? 100 - winPct - abandonPct
-      : 0;
+  const abandonPct = totalGames
+    ? Math.round((getAbandons(selectedStats) / totalGames) * 100)
+    : 0;
+  const lossPct = totalGames
+    ? Math.round((getLosses(selectedStats) / totalGames) * 100)
+    : 0;
 
   return (
     <div className="stats-query">
@@ -2240,7 +2236,7 @@ function StatsQueryView({ stats }) {
               <div className="query-stat">
                 <span className="query-stat-label">Games</span>
                 <span className="query-stat-value">
-                  {totalUnabandoned}
+                  {totalGames}
                 </span>
               </div>
               <div className="query-stat">

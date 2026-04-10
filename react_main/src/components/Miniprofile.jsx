@@ -10,6 +10,12 @@ import { Avatar } from "pages/User/User";
 import { UserContext, SiteInfoContext } from "Contexts";
 import ReportDialog from "components/ReportDialog";
 import { useErrorAlert } from "components/Alerts";
+import {
+  getTotalGames,
+  getWins,
+  getLosses,
+  getAbandons,
+} from "utils/mafiaStats";
 
 function Miniprofile(props) {
   const user = props.user;
@@ -32,12 +38,12 @@ function Miniprofile(props) {
   let totalGames = 0;
   if (user.stats) {
     const mafiaStats = user.stats["Mafia"].all;
-    totalGames = mafiaStats.wins.total + mafiaStats.abandons.total || 0;
+    totalGames = getTotalGames(mafiaStats);
     pieChart = (
       <PieChart
-        wins={mafiaStats.wins.count}
-        losses={mafiaStats.wins.total - mafiaStats.wins.count}
-        abandons={mafiaStats.abandons.total}
+        wins={getWins(mafiaStats)}
+        losses={getLosses(mafiaStats)}
+        abandons={getAbandons(mafiaStats)}
         showTotal
       />
     );
