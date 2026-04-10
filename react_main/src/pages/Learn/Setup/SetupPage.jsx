@@ -13,10 +13,12 @@ import {
   Box,
   Button,
   Card,
-  Divider,
+  Chip,
   Grid,
   IconButton,
   Link,
+  MenuItem,
+  Select,
   Stack,
   Tab,
   Table,
@@ -26,6 +28,9 @@ import {
   TableHead,
   TableRow,
   Tabs,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -34,7 +39,6 @@ import { useTheme } from "@mui/material/styles";
 import ModerationSideDrawer from "components/ModerationSideDrawer";
 import { useErrorAlert } from "components/Alerts";
 import {
-  determineSetupType,
   getAlignmentColor,
   FullRoleList,
   SetupManipulationButtons,
@@ -45,6 +49,7 @@ import HostGameDialogue from "components/HostGameDialogue";
 import { UserContext, SiteInfoContext } from "Contexts";
 
 import Comments from "pages/Community/Comments";
+import vegIcon from "images/emotes/veg.webp";
 import { SetupStrategiesSection } from "components/Strategies";
 import { NameWithAvatar } from "pages/User/User";
 import { TextEditor } from "components/Form";
@@ -117,12 +122,31 @@ function getBasicPieStats(alignmentWinrate, roleWinrate, rolesRaw) {
 
 function formatAvgLengthMs(ms) {
   if (ms == null || Number.isNaN(ms)) return "—";
-  return `${(ms / 60000).toFixed(1)} Minutes`;
+  return `${(ms / 60000).toFixed(1)} min`;
+}
+
+function weightedAvgMs(aMs, aCount, bMs, bCount) {
+  const aValid = aMs != null && !Number.isNaN(aMs) && aCount > 0;
+  const bValid = bMs != null && !Number.isNaN(bMs) && bCount > 0;
+  if (!aValid && !bValid) return null;
+  if (!aValid) return bMs;
+  if (!bValid) return aMs;
+  return (aMs * aCount + bMs * bCount) / (aCount + bCount);
+}
+
+function avgLengthColor(ms) {
+  if (ms == null || Number.isNaN(ms)) return "#888";
+  const minutes = ms / 60000;
+  if (minutes < 10) return "#4caf50";
+  if (minutes < 30) return "#ff9800";
+  return "#e45050";
 }
 
 export function SetupPage() {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
+  const theme = useTheme();
+  const isLightMode = theme.palette.mode === "light";
   const isPhoneDevice = useIsPhoneDevice();
   const navigate = useNavigate();
   const errorAlert = useErrorAlert();
@@ -143,6 +167,7 @@ export function SetupPage() {
   const [statsViewMode, setStatsViewMode] = useState("alignment");
   const [statsGameFilter, setStatsGameFilter] = useState("all");
   const [lineage, setLineage] = useState(null); // { copiedFrom: { setup, copiedAt } | null, copiedTo: [] }
+  const [versionHistory, setVersionHistory] = useState(null); // [{ version, timestamp, diff }] newest first
   const [description, setDescription] = useState("");
   const [editingDescription, setEditingDescription] = useState(false);
   const [oldDescription, setOldDescription] = useState("");
@@ -159,7 +184,16 @@ export function SetupPage() {
     lobby: gameType === "Mafia" ? (setup.closed ? "Sandbox" : "Main") : "Games",
   };
   const setupHeadingIconColor = getRowStubColor(colorInfo);
+  // Intentionally do not pass competitive — the comp state is expressed via
+  // the pill, not the banner. Banner stays whichever ranked/lobby color it
+  // would otherwise have.
   const setupHeadingBackgroundColor = getSetupBackgroundColor(colorInfo, true);
+  // In dark mode, force white + drop shadow so text is readable on any of
+  // the pastel/gold/pink banner colors. In light mode, use near-black text
+  // without a shadow — the same pastels are bright enough that white text
+  // disappears.
+  const headerTextColor = isLightMode ? "#141414" : "#fff";
+  const headerTextShadow = isLightMode ? "none" : "0 1px 3px rgba(0,0,0,0.75)";
 
   useEffect(() => {
     if (setupId) {
@@ -205,6 +239,42 @@ export function SetupPage() {
         .catch(() => setLineage({ copiedFrom: null, copiedTo: [] }));
     }
   }, [setupId, tabValue]);
+
+  useEffect(() => {
+    if (
+      setupId &&
+      tabValue === 3 &&
+      shouldDisplayChangelog &&
+      currentVersionNum != null &&
+      versionHistory == null
+    ) {
+      // v0 is the initial creation — skip it; only show incremental changes.
+      const versions = Array.from(
+        Array(currentVersionNum + 1).keys()
+      )
+        .filter((v) => v > 0)
+        .reverse();
+      Promise.all(
+        versions.map((v) =>
+          axios
+            .get(`/api/setup/${setupId}/version/${v}`)
+            .then((res) => {
+              const sv = res.data;
+              let parsed = [];
+              if (sv.changelog) {
+                try {
+                  parsed = JSON.parse(sv.changelog);
+                } catch (e) {
+                  parsed = [];
+                }
+              }
+              return { version: v, timestamp: sv.timestamp, diff: parsed };
+            })
+            .catch(() => ({ version: v, timestamp: null, diff: [] }))
+        )
+      ).then(setVersionHistory);
+    }
+  }, [setupId, tabValue, shouldDisplayChangelog, currentVersionNum, versionHistory]);
 
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
   if (!setupId) return <Navigate to="/learn/games" replace />;
@@ -256,6 +326,113 @@ export function SetupPage() {
       .then(() => navigate("/play"))
       .catch(errorAlert);
   }
+
+  const canToggleRanked = !!user.perms?.approveRanked;
+  const canToggleComp = !!user.perms?.approveCompetitive;
+
+  function onToggleRanked() {
+    if (!canToggleRanked) return;
+    axios
+      .post("/api/setup/ranked", { setupId })
+      .then(() => {
+        setSetup((prev) => (prev ? { ...prev, ranked: !prev.ranked } : prev));
+        siteInfo.showAlert("Ranked status toggled.", "success");
+      })
+      .catch(errorAlert);
+  }
+
+  function onToggleComp() {
+    if (!canToggleComp) return;
+    axios
+      .post("/api/setup/competitive", { setupId })
+      .then(() => {
+        setSetup((prev) =>
+          prev ? { ...prev, competitive: !prev.competitive } : prev
+        );
+        siteInfo.showAlert("Competitive status toggled.", "success");
+      })
+      .catch(errorAlert);
+  }
+
+  // Preserve the old determineSetupType variants, just rephrased to make
+  // the "open" flag unambiguous with "open to play". "Whole" closed setups
+  // are the default and don't need a suffix.
+  let rolesVisibilityLabel;
+  if (!setup.closed) {
+    rolesVisibilityLabel =
+      Array.isArray(setup.roles) && setup.roles.length > 1
+        ? "Closed Roles | Multi"
+        : "Open Roles";
+  } else if (setup.useRoleGroups) {
+    rolesVisibilityLabel = "Closed Roles | Groups";
+  } else {
+    rolesVisibilityLabel = "Closed Roles";
+  }
+
+  // Map roleKey -> slots per game. Setup keys use trailing ":" for no-modifier
+  // (e.g. "Villager:") while stats rows drop it ("Villager"), so normalize.
+  const roleSlotCounts = {};
+  (Array.isArray(setup.roles) ? setup.roles : []).forEach((group) => {
+    if (!group) return;
+    Object.entries(group).forEach(([roleKey, count]) => {
+      const normalized = roleKey.endsWith(":") ? roleKey.slice(0, -1) : roleKey;
+      roleSlotCounts[normalized] = (roleSlotCounts[normalized] || 0) + count;
+    });
+  });
+
+  function normalizeRoleRows(rows) {
+    if (!rows) return rows;
+    return rows.map((row) => {
+      const slots = roleSlotCounts[row.key];
+      if (!slots || slots <= 1) return row;
+      return { ...row, totalGames: Math.round(row.totalGames / slots) };
+    });
+  }
+
+  function mergeGranularRows(...buckets) {
+    const byKey = new Map();
+    buckets.forEach((bucket) => {
+      (bucket || []).forEach((row) => {
+        const existing = byKey.get(row.key);
+        if (!existing) {
+          byKey.set(row.key, { ...row });
+        } else {
+          const total = existing.totalGames + row.totalGames;
+          const weightedRate =
+            total > 0
+              ? (existing.winRate * existing.totalGames +
+                  row.winRate * row.totalGames) /
+                total
+              : 0;
+          existing.totalGames = total;
+          existing.winRate = weightedRate;
+        }
+      });
+    });
+    return Array.from(byKey.values()).sort((a, b) => b.winRate - a.winRate);
+  }
+
+  function getGranularForFilter(filter) {
+    const granular = statsBundle?.granular;
+    if (!granular) return null;
+    if (filter === "rankedComp") {
+      const ranked = granular.ranked || {};
+      const comp = granular.competitive || {};
+      return {
+        alignment: mergeGranularRows(ranked.alignment, comp.alignment),
+        role: mergeGranularRows(ranked.role, comp.role),
+        averageLengthMs: weightedAvgMs(
+          ranked.averageLengthMs,
+          (ranked.alignment || []).reduce((s, r) => s + r.totalGames, 0),
+          comp.averageLengthMs,
+          (comp.alignment || []).reduce((s, r) => s + r.totalGames, 0)
+        ),
+      };
+    }
+    return granular[filter];
+  }
+
+  const mergedGranular = getGranularForFilter(statsGameFilter);
 
   let closedRoleInfo = [];
   // Roles
@@ -372,6 +549,15 @@ export function SetupPage() {
           backgroundColor: setupHeadingBackgroundColor,
           mb: 1,
           p: 1,
+          // Universal legibility layer: in dark mode, white text with a
+          // drop shadow reads well on pink/gold/pastel banners. In light
+          // mode those same pastels are bright, so switch to dark text.
+          color: headerTextColor,
+          textShadow: headerTextShadow,
+          "& .MuiTypography-root": {
+            color: headerTextColor,
+            textShadow: headerTextShadow,
+          },
         }}
       >
         {setup && (
@@ -386,127 +572,173 @@ export function SetupPage() {
           setOpen={setModerationDrawerOpen}
           prefilledArgs={{ setupId }}
         />
-        <Grid
-          container
-          spacing={1}
-          divider={<Divider orientation="vertical" flexItem />}
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          spacing={2}
+          alignItems={{ xs: "stretch", md: "center" }}
         >
-          <Grid item xs={12} md={8}>
-            <Stack direction="column" spacing={1}>
-              <Stack
-                direction="row"
-                spacing={1}
-                sx={{ height: "100%", alignItems: "center" }}
-              >
-                <VoteWidget
-                  item={{
-                    id: setup.id,
-                    vote: setup.vote ?? 0,
-                    voteCount: setup.voteCount ?? 0,
-                  }}
-                  itemType="setup"
-                  setItemHolder={(newItem) =>
-                    setSetup((prev) =>
-                      prev?.id === newItem.id
-                        ? { ...prev, vote: newItem.vote, voteCount: newItem.voteCount }
-                        : prev
-                    )
-                  }
-                />
-                <IconButton
-                  onClick={() => setIshostGameDialogueOpen(true)}
-                  sx={{
-                    p: isPhoneDevice ? 1 : 2,
-                    borderRadius: "50%",
-                    backgroundColor: setupHeadingIconColor,
-                  }}
-                >
-                  <GameIcon gameType={setup.gameType} size={iconSize} />
-                </IconButton>
-                <Typography
-                  variant="h2"
-                  sx={{
-                    ml: isPhoneDevice ? "auto !important" : undefined,
-                  }}
-                >
-                  {setup.name}
-                </Typography>
-              </Stack>
-            </Stack>
-          </Grid>
-          <Grid item xs={12} md={2}>
-            <Stack direction="column" spacing={0.5} sx={{ textAlign: "right" }}>
-              <Typography sx={{ fontWeight: "600" }}>
-                {determineSetupType(setup)}
+          <Stack direction="row" spacing={1} alignItems="center">
+            <VoteWidget
+              item={{
+                id: setup.id,
+                vote: setup.vote ?? 0,
+                voteCount: setup.voteCount ?? 0,
+              }}
+              itemType="setup"
+              setItemHolder={(newItem) =>
+                setSetup((prev) =>
+                  prev?.id === newItem.id
+                    ? { ...prev, vote: newItem.vote, voteCount: newItem.voteCount }
+                    : prev
+                )
+              }
+            />
+            <IconButton
+              onClick={() => setIshostGameDialogueOpen(true)}
+              sx={{
+                p: isPhoneDevice ? 1 : 2,
+                borderRadius: "50%",
+                backgroundColor: setupHeadingIconColor,
+              }}
+            >
+              <GameIcon gameType={setup.gameType} size={iconSize} />
+            </IconButton>
+          </Stack>
+
+          <Stack direction="column" spacing={0.5} sx={{ flex: 1, minWidth: 0 }}>
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              flexWrap="wrap"
+              useFlexGap
+            >
+              <Typography variant="h2" sx={{ mr: 0.5 }}>
+                {setup.name}
               </Typography>
-              <Typography>
-                {"Players: "}
-                {setup.total}
-              </Typography>
-              <Typography>
-                {"Ranked: "}
-                {setup.ranked ? "✅" : "❌"}
-              </Typography>
-              <Typography>
-                {"Comp: "}
-                {setup.competitive ? "✅" : "❌"}
-              </Typography>
-            </Stack>
-          </Grid>
-          {setup.creator && (
-            <Grid item xs={12} md={2}>
-              <Stack
-                direction={isPhoneDevice ? "row" : "column"}
-                spacing={0.5}
+              <Chip
+                label={rolesVisibilityLabel}
+                size="small"
                 sx={{
-                  alignItems: "center",
+                  backgroundColor: "rgba(0,0,0,0.55)",
+                  color: "#fff",
+                  fontWeight: 600,
+                  border: "1px solid rgba(255,255,255,0.25)",
+                  textShadow: "none",
+                  "& .MuiChip-label": { textShadow: "none" },
+                }}
+              />
+              <StatusPill
+                active={setup.ranked}
+                canToggle={canToggleRanked}
+                onClick={onToggleRanked}
+                icon="fa-trophy"
+                label="Ranked"
+                color="#e45050"
+              />
+              <StatusPill
+                active={setup.competitive}
+                canToggle={canToggleComp}
+                onClick={onToggleComp}
+                icon="fa-crown"
+                label="Comp"
+                color="#ebd722"
+                activeTextColor="#000"
+              />
+            </Stack>
+            {setup.creator && (
+              <Stack direction="row" spacing={0.75} alignItems="center">
+                <Typography variant="caption" sx={{ opacity: 0.85 }}>
+                  Created by
+                </Typography>
+                <NameWithAvatar
+                  small
+                  id={setup.creator.id}
+                  name={setup.creator.name}
+                  avatar={setup.creator.avatar}
+                />
+              </Stack>
+            )}
+          </Stack>
+
+          <Stack
+            direction="column"
+            spacing={1}
+            alignItems={{ xs: "flex-start", md: "flex-end" }}
+          >
+            <Button
+              onClick={() => setIshostGameDialogueOpen(true)}
+              sx={{ textShadow: "none" }}
+            >
+              Host
+            </Button>
+            {shouldDisplayStats && (
+              <Stack
+                direction="column"
+                spacing={0.5}
+                alignItems={{ xs: "flex-start", md: "flex-end" }}
+              >
+              <Typography
+                variant="overline"
+                sx={{
+                  fontSize: "0.65rem",
+                  letterSpacing: "0.12em",
+                  opacity: 0.7,
+                  lineHeight: 1,
                 }}
               >
-                <Typography
-                  variant="italicRelation"
-                  sx={{
-                    ml: isPhoneDevice ? "auto" : 1,
-                  }}
-                >
-                  {"Created by"}
-                </Typography>
-                <Box sx={{ ml: 1 }}>
-                  <NameWithAvatar
-                    small
-                    id={setup.creator.id}
-                    name={setup.creator.name}
-                    avatar={setup.creator.avatar}
+                Version
+              </Typography>
+              <Select
+                value={selectedVersionNum}
+                onChange={(e) =>
+                  handleVersionChange({ target: { value: e.target.value } })
+                }
+                variant="standard"
+                disableUnderline
+                IconComponent={(props) => (
+                  <i
+                    {...props}
+                    className={`fas fa-chevron-down ${props.className || ""}`}
+                    style={{ fontSize: "0.7rem", right: 10 }}
                   />
-                </Box>
-              </Stack>
-            </Grid>
-          )}
-          {shouldDisplayStats && (
-            <Grid item xs={12} md={8} sx={{ alignSelf: "center" }}>
-              <Stack
-                direction={{ xs: "column", md: "row" }}
-                alignItems={{ xs: "stretch", md: "center" }}
-                spacing={1}
-                sx={{ width: { xs: "100%", md: "auto" } }}
+                )}
+                sx={{
+                  minWidth: 72,
+                  backgroundColor: "rgba(0,0,0,0.55)",
+                  borderRadius: 999,
+                  px: 1.5,
+                  py: 0.25,
+                  fontSize: "1.05rem",
+                  fontWeight: 700,
+                  color: "#fff",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  transition: "border-color 120ms, background-color 120ms",
+                  "&:hover": {
+                    borderColor: "rgba(255,255,255,0.45)",
+                    backgroundColor: "rgba(0,0,0,0.35)",
+                  },
+                  "& .MuiSelect-select": {
+                    paddingTop: "2px",
+                    paddingBottom: "2px",
+                    paddingRight: "28px !important",
+                  },
+                  "& .MuiSelect-icon": {
+                    color: "rgba(255,255,255,0.7)",
+                    top: "calc(50% - 0.35em)",
+                  },
+                }}
               >
-                <Typography component="label" variant="body2" sx={{ whiteSpace: "nowrap" }}>
-                  Version
-                </Typography>
-                <Box sx={{ width: { xs: "100%", md: "auto" }, minWidth: 72 }}>
-                  <select
-                    value={selectedVersionNum}
-                    onChange={handleVersionChange}
-                    style={{ width: "100%", minWidth: 72, boxSizing: "border-box" }}
-                  >
-                    {allVersions.map((v) => (
-                      <option key={v} value={v}>{v}</option>
-                    ))}
-                  </select>
-                </Box>
+                {allVersions.map((v) => (
+                  <MenuItem key={v} value={v}>
+                    v{v}
+                  </MenuItem>
+                ))}
+              </Select>
               </Stack>
-            </Grid>
-          )}
-        </Grid>
+            )}
+          </Stack>
+        </Stack>
       </Card>
       <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)}>
         <Tab label="Info" />
@@ -515,7 +747,18 @@ export function SetupPage() {
         <Tab label="Version History" />
       </Tabs>
       {tabValue === 0 && (
-        <><FullRoleList setup={setup} compact={isPhoneDevice} />
+        <>
+          <Box sx={{ mb: 1 }}>
+            <StatBadge
+              icon="fa-users"
+              iconColor="#68a9dc"
+              label="Roster"
+              value={setup.total}
+              suffix="players"
+              compact
+            />
+          </Box>
+          <FullRoleList setup={setup} compact={isPhoneDevice} />
           <TwoPanelLayout
           left={
             <>
@@ -560,7 +803,7 @@ export function SetupPage() {
               )}
               {user.loggedIn && (
                 <div className="box-panel">
-                  <div className="heading">Setup Panel</div>
+                  <div className="heading">Actions</div>
                   <div className="content">
                     <SetupManipulationButtons
                       setup={setup}
@@ -580,76 +823,187 @@ export function SetupPage() {
       )}
       {tabValue === 1 && (
         <Box>
-          <Box className="box-panel" sx={{ mb: 2 }}>
-            <div className="heading">Setup activity</div>
-            <div className="content">
-              <Typography variant="body2" color="text.secondary">
-                {"Favorited "}
-                {setup.favorites ?? 0}
-                {" times!"}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {"Played "}
-                {setup.playedCount ?? 0}
-                {" times!"}
-              </Typography>
-            </div>
-          </Box>
+          {(() => {
+            const avgMs = mergedGranular?.averageLengthMs;
+            const avgColor = avgLengthColor(avgMs);
+            return (
+              <Stack
+                direction="row"
+                spacing={2}
+                flexWrap="wrap"
+                useFlexGap
+                sx={{ mb: 2 }}
+              >
+                <StatBadge
+                  icon="fa-star"
+                  iconColor="#ebd722"
+                  label="Favorited"
+                  value={setup.favorites ?? 0}
+                  suffix="times"
+                />
+                <StatBadge
+                  icon="fa-dice"
+                  iconColor="#4caf50"
+                  label="Played"
+                  value={setup.playedCount ?? 0}
+                  suffix="games"
+                />
+                {shouldDisplayStats && statsBundle && (
+                  <>
+                    <StatBadge
+                      icon="fa-clock"
+                      iconColor={avgColor}
+                      label="Average length"
+                      value={formatAvgLengthMs(avgMs)}
+                    />
+                    <StatBadge
+                      iconImage={vegIcon}
+                      iconColor="#8a8a8a"
+                      label="Vegged games"
+                      value={statsBundle?.totalVegs ?? 0}
+                    />
+                  </>
+                )}
+              </Stack>
+            );
+          })()}
           {shouldDisplayStats && (
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <Stack
-                  direction={{ xs: "column", sm: "row" }}
-                  spacing={1}
-                  alignItems={{ sm: "center" }}
-                  flexWrap="wrap"
-                >
-                  <Typography component="label" variant="body2" sx={{ whiteSpace: "nowrap" }}>
-                    View
-                  </Typography>
-                  <Box sx={{ minWidth: 120 }}>
-                    <select
-                      value={statsViewMode}
-                      onChange={(e) => setStatsViewMode(e.target.value)}
-                      style={{ width: "100%", boxSizing: "border-box" }}
-                    >
-                      <option value="alignment">Alignment</option>
-                      <option value="role">Role</option>
-                    </select>
-                  </Box>
+                <Stack direction="column" spacing={0.75}>
                   <Typography
-                    component="label"
-                    variant="body2"
-                    sx={{ whiteSpace: "nowrap", ml: { sm: 1 } }}
+                    variant="overline"
+                    sx={{
+                      fontSize: "0.7rem",
+                      letterSpacing: "0.1em",
+                      opacity: 0.6,
+                      lineHeight: 1,
+                    }}
                   >
                     Game type
                   </Typography>
-                  <Box sx={{ minWidth: 120 }}>
-                    <select
-                      value={statsGameFilter}
-                      onChange={(e) => setStatsGameFilter(e.target.value)}
-                      style={{ width: "100%", boxSizing: "border-box" }}
-                    >
-                      <option value="all">All</option>
-                      <option value="unranked">Unranked</option>
-                      <option value="ranked">Ranked</option>
-                      <option value="competitive">Competitive</option>
-                    </select>
-                  </Box>
+                  <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                    {[
+                      { value: "all", label: "All" },
+                      { value: "unranked", label: "Unranked" },
+                      { value: "ranked", label: "Ranked", accent: "#e45050" },
+                      { value: "competitive", label: "Competitive", accent: "#ebd722" },
+                      { value: "rankedComp", label: "Ranked + Comp", accent: "#ff9800" },
+                    ].map((opt) => {
+                      const selected = statsGameFilter === opt.value;
+                      const accent = opt.accent;
+                      const g = getGranularForFilter(opt.value);
+                      const hasData =
+                        !!g &&
+                        ((g.alignment && g.alignment.length > 0) ||
+                          (g.role && g.role.length > 0));
+                      return (
+                        <Box
+                          key={opt.value}
+                          component="button"
+                          disabled={!hasData}
+                          onClick={() => hasData && setStatsGameFilter(opt.value)}
+                          sx={{
+                            cursor: hasData ? "pointer" : "not-allowed",
+                            px: 1.75,
+                            py: 0.5,
+                            fontSize: "0.8rem",
+                            fontWeight: 600,
+                            borderRadius: "6px",
+                            border: 1,
+                            borderColor: selected
+                              ? accent || "text.primary"
+                              : "divider",
+                            backgroundColor: selected
+                              ? accent
+                                ? `${accent}22`
+                                : "action.selected"
+                              : "transparent",
+                            color: selected
+                              ? accent || "text.primary"
+                              : "text.secondary",
+                            opacity: hasData ? 1 : 0.35,
+                            filter: hasData ? undefined : "grayscale(1)",
+                            transition: "all 120ms",
+                            "&:hover": hasData
+                              ? {
+                                  borderColor: accent || "text.primary",
+                                  color: accent || "text.primary",
+                                }
+                              : undefined,
+                          }}
+                        >
+                          {opt.label}
+                        </Box>
+                      );
+                    })}
+                  </Stack>
                 </Stack>
               </Grid>
-              <Grid item xs={12} md={8}>
+              <Grid item xs={12}>
                 <div className="box-panel">
-                  <div className="heading">
-                    v{selectedVersionNum} win rates (n = {versionGamesPlayed})
-                  </div>
-                  <div className="content">
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    flexWrap="wrap"
+                    sx={{ px: 2, pt: 1.5, pb: 0.5, gap: 1 }}
+                  >
+                    <Box>
+                      <Typography
+                        component="span"
+                        sx={{ fontWeight: 700, fontSize: "1.25rem" }}
+                      >
+                        Win Rates
+                      </Typography>
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        sx={{ ml: 1, opacity: 0.6, fontWeight: 400 }}
+                      >
+                        {`· Total: ${versionGamesPlayed} games`}
+                      </Typography>
+                    </Box>
+                    <ToggleButtonGroup
+                      size="small"
+                      exclusive
+                      value={statsViewMode}
+                      onChange={(_, v) => v && setStatsViewMode(v)}
+                      sx={{
+                        borderRadius: 999,
+                        backgroundColor: "action.hover",
+                        padding: "3px",
+                        border: 1,
+                        borderColor: "divider",
+                        "& .MuiToggleButton-root": {
+                          px: 2,
+                          py: 0.25,
+                          fontSize: "0.75rem",
+                          textTransform: "none",
+                          fontWeight: 600,
+                          border: "none",
+                          borderRadius: "999px !important",
+                          color: "text.secondary",
+                          "&:hover": { backgroundColor: "action.hover" },
+                        },
+                        "& .MuiToggleButton-root.Mui-selected": {
+                          backgroundColor: "action.selected",
+                          color: "text.primary",
+                          "&:hover": { backgroundColor: "action.selected" },
+                        },
+                      }}
+                    >
+                      <ToggleButton value="alignment">Alignment</ToggleButton>
+                      <ToggleButton value="role">Role</ToggleButton>
+                    </ToggleButtonGroup>
+                  </Stack>
+                  <Box sx={{ maxWidth: 720, px: 2, pb: 2 }}>
                     {statsBundle?.hasGranular ? (
                       <SetupWinRateBars
                         rows={
-                          statsViewMode === "alignment"
-                            ? statsBundle.granular[statsGameFilter]?.alignment
-                            : statsBundle.granular[statsGameFilter]?.role
+                          statsViewMode === "role"
+                            ? normalizeRoleRows(mergedGranular?.role)
+                            : mergedGranular?.alignment
                         }
                         rolesRaw={siteInfo?.rolesRaw?.Mafia}
                         emptyLabel={
@@ -680,23 +1034,7 @@ export function SetupPage() {
                         )}
                       </>
                     )}
-                  </div>
-                </div>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <div className="box-panel">
-                  <div className="heading">Summary</div>
-                  <div className="content">
-                    <Typography variant="body2" color="text.secondary">
-                      Average length:{" "}
-                      {formatAvgLengthMs(
-                        statsBundle?.granular?.[statsGameFilter]?.averageLengthMs
-                      )}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                      Total vegs (games excluded from stats): {statsBundle?.totalVegs ?? 0}
-                    </Typography>
-                  </div>
+                  </Box>
                 </div>
               </Grid>
             </Grid>
@@ -754,14 +1092,42 @@ export function SetupPage() {
           left={
             <>
               {shouldDisplayChangelog ? (
-                <div className="box-panel">
-                  <div className="heading">
-                    Changelog for v{selectedVersionNum} ({localDateString})
+                versionHistory == null ? (
+                  <div className="box-panel">
+                    <div className="content">
+                      <Typography variant="body2" color="text.secondary">
+                        Loading version history…
+                      </Typography>
+                    </div>
                   </div>
-                  <div>
-                    <Changelog diff={diff} />
-                  </div>
-                </div>
+                ) : (
+                  <Stack spacing={1.5}>
+                    {versionHistory.map((entry) => (
+                      <div key={entry.version} className="box-panel">
+                        <div className="heading">
+                          <Stack
+                            direction="row"
+                            alignItems="baseline"
+                            spacing={1}
+                            flexWrap="wrap"
+                          >
+                            <span>{`v${entry.version}`}</span>
+                            {entry.timestamp && (
+                              <Typography
+                                component="span"
+                                variant="body2"
+                                sx={{ opacity: 0.55, fontWeight: 400 }}
+                              >
+                                {new Date(entry.timestamp).toLocaleString()}
+                              </Typography>
+                            )}
+                          </Stack>
+                        </div>
+                        <Changelog diff={entry.diff} />
+                      </div>
+                    ))}
+                  </Stack>
+                )
               ) : (
                 <div className="box-panel">
                   <div className="content">
@@ -845,94 +1211,207 @@ export function SetupPage() {
   );
 }
 
-function postprocessUnchangedLines(diff, contextAmount) {
-  const newDiff = [];
+// Pastel colors like #ebd722 (gold) disappear on a white background, so map
+// them to a darker variant that still reads cleanly in light mode.
+const LIGHT_MODE_COLOR_OVERRIDES = {
+  "#ebd722": "#b8860b", // gold → dark goldenrod
+  "#4caf50": "#2e7d32", // green → darker green
+  "#68a9dc": "#1565c0", // blue → darker blue
+  "#ff9800": "#ed6c02", // orange → darker orange
+  "#e45050": "#c62828", // red → darker red
+};
 
-  var i = 0;
-  diff.forEach((part) => {
-    if (part.added || part.removed) {
-      newDiff.push(part);
-    } else {
-      const unchangedLines = part.value.split("\n");
-
-      var snippet1Index = 0;
-      var snippet2Index = unchangedLines.length - 1;
-
-      // Look at the previous part to see if it was changed or not
-      var prevPartIndex = i - 1;
-      if (prevPartIndex >= 0) {
-        if (diff[prevPartIndex].added || diff[prevPartIndex].removed) {
-          snippet1Index = contextAmount;
-        }
-      }
-
-      // Look at the next part to see if it was changed or not
-      var nextPartIndex = i + 1;
-      if (nextPartIndex < diff.length) {
-        if (diff[nextPartIndex].added || diff[nextPartIndex].removed) {
-          snippet2Index = unchangedLines.length - 1 - contextAmount;
-        }
-      }
-
-      if (snippet1Index >= snippet2Index) {
-        newDiff.push(part);
-      } else {
-        const pushSnippet1 = snippet1Index > 0;
-        const pushSnippet2 = snippet2Index < unchangedLines.length - 1;
-
-        if (pushSnippet1) {
-          newDiff.push({
-            value: unchangedLines.slice(0, snippet1Index).join("\n"),
-            added: false,
-            removed: false,
-          });
-        }
-        if (pushSnippet1 || pushSnippet2) {
-          newDiff.push({
-            value: "...",
-            added: false,
-            removed: false,
-            skipped: true,
-          });
-        }
-        if (pushSnippet2) {
-          newDiff.push({
-            value: unchangedLines.slice(snippet2Index).join("\n"),
-            added: false,
-            removed: false,
-          });
-        }
-      }
-    }
-
-    i++;
-  });
-
-  return newDiff;
+function StatBadge({ icon, iconImage, iconColor, label, value, suffix, compact }) {
+  const theme = useTheme();
+  const isLight = theme.palette.mode === "light";
+  const displayColor = isLight
+    ? LIGHT_MODE_COLOR_OVERRIDES[iconColor] || iconColor
+    : iconColor;
+  const iconSize = compact ? 32 : 44;
+  const iconFont = compact ? "0.95rem" : "1.2rem";
+  const valueVariant = compact ? "h5" : "h3";
+  // Light-mode needs a denser background/border because the alpha blends
+  // against white are otherwise invisible.
+  const cardBgAlpha = isLight ? "22" : "14";
+  const cardBorderAlpha = isLight ? "77" : "40";
+  const iconBgAlpha = isLight ? "33" : "26";
+  return (
+    <Box
+      sx={{
+        flex: compact ? "0 0 auto" : 1,
+        minWidth: compact ? 0 : 140,
+        display: "inline-flex",
+        alignItems: "center",
+        gap: compact ? 1 : 1.5,
+        px: compact ? 1.25 : 2,
+        py: compact ? 0.75 : 1.25,
+        borderRadius: 2,
+        backgroundColor: `${displayColor}${cardBgAlpha}`,
+        border: `1px solid ${displayColor}${cardBorderAlpha}`,
+      }}
+    >
+      <Box
+        sx={{
+          width: iconSize,
+          height: iconSize,
+          borderRadius: "50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: `${displayColor}${iconBgAlpha}`,
+          flexShrink: 0,
+        }}
+      >
+        {iconImage ? (
+          <img
+            src={iconImage}
+            alt={label}
+            style={{
+              width: compact ? 18 : 24,
+              height: compact ? 18 : 24,
+            }}
+          />
+        ) : (
+          <i
+            className={`fas ${icon}`}
+            style={{ color: displayColor, fontSize: iconFont }}
+          />
+        )}
+      </Box>
+      <Stack spacing={0}>
+        <Typography
+          variant="caption"
+          sx={{
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            opacity: 0.65,
+            lineHeight: 1.2,
+            fontSize: compact ? "0.65rem" : undefined,
+          }}
+        >
+          {label}
+        </Typography>
+        <Stack direction="row" alignItems="baseline" spacing={0.75}>
+          <Typography
+            variant={valueVariant}
+            sx={{
+              color: isLight ? "text.primary" : displayColor,
+              fontWeight: 700,
+              lineHeight: 1.1,
+            }}
+          >
+            {value}
+          </Typography>
+          {suffix && (
+            <Typography variant="caption" sx={{ opacity: 0.55 }}>
+              {suffix}
+            </Typography>
+          )}
+        </Stack>
+      </Stack>
+    </Box>
+  );
 }
 
+function StatusPill({ active, canToggle, onClick, icon, label, color, activeTextColor }) {
+  const textColor = activeTextColor || "#fff";
+  const pill = (
+    <Box
+      component="button"
+      type="button"
+      disabled={!canToggle}
+      onClick={canToggle ? onClick : undefined}
+      sx={{
+        display: "inline-flex",
+        alignItems: "center",
+        flex: "0 0 auto",
+        flexShrink: 0,
+        width: "max-content",
+        whiteSpace: "nowrap",
+        gap: 0.5,
+        px: 1,
+        py: 0.25,
+        m: 0,
+        borderRadius: 999,
+        fontFamily: "inherit",
+        fontSize: "0.75rem",
+        fontWeight: 700,
+        lineHeight: 1.4,
+        border: `2px solid ${color}`,
+        backgroundColor: active ? color : "rgba(0,0,0,0.7)",
+        color: active ? textColor : "#fff",
+        opacity: active ? 1 : 0.9,
+        textShadow: "none",
+        boxShadow: active
+          ? "0 1px 4px rgba(0,0,0,0.35)"
+          : "0 1px 2px rgba(0,0,0,0.25)",
+        cursor: canToggle ? "pointer" : "default",
+        textTransform: "uppercase",
+        letterSpacing: "0.03em",
+        transition: "opacity 120ms, background-color 120ms",
+        "&:hover": canToggle ? { opacity: 1 } : undefined,
+        "&:disabled": { cursor: "default" },
+      }}
+    >
+      <i
+        className={`fas ${icon}`}
+        style={{
+          fontSize: "0.7rem",
+          color: active ? textColor : color,
+        }}
+      />
+      {label}
+    </Box>
+  );
+  const tooltipText = `${label}${active ? "" : " (inactive)"}${
+    canToggle ? " — click to toggle" : ""
+  }`;
+  return <Tooltip title={tooltipText}>{pill}</Tooltip>;
+}
+
+// Before the backend manifest generator was fixed, the game-settings block
+// of each manifest used array indices instead of setting names, producing
+// noise like "- 12: false". Relabel them when we encounter one so the diff
+// at least communicates that it is legacy data rather than a real setting.
+const LEGACY_SETTING_LINE = /^(\s*-\s*)(\d+)(\s*:\s*(?:true|false)\s*)$/i;
+
 // Takes a diff object from https://www.npmjs.com/package/diff
+// Renders only added/removed lines — context is stripped for compactness.
 function Changelog({ diff }) {
-  const lines = [];
-
-  const postprocessedDiff = postprocessUnchangedLines(diff, 5);
-
-  var i = 0;
-  postprocessedDiff.forEach((part) => {
-    const className = part.added
-      ? "color-added"
-      : part.removed
-      ? "color-removed"
-      : part.skipped
-      ? "color-skipped"
-      : "color-unchanged";
-    lines.push(
-      <p key={i} className={className}>
-        {part.value}
-      </p>
-    );
-    i++;
+  const changedLines = [];
+  (diff || []).forEach((part) => {
+    if (!part.added && !part.removed) return;
+    const text = part.value.replace(/\n+$/, "");
+    if (!text) return;
+    text.split("\n").forEach((line) => {
+      if (!line.trim()) return;
+      const cleaned = line.replace(
+        LEGACY_SETTING_LINE,
+        (_, before, idx, after) => `${before}legacy setting #${idx}${after}`
+      );
+      changedLines.push({ added: !!part.added, line: cleaned });
+    });
   });
 
-  return <div className="changelog">{lines}</div>;
+  if (changedLines.length === 0) {
+    return (
+      <div className="changelog">
+        <p className="changelog-empty">No changes in this version.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="changelog">
+      {changedLines.map((entry, i) => (
+        <p
+          key={i}
+          className={entry.added ? "color-added" : "color-removed"}
+        >
+          <span className="diff-marker">{entry.added ? "+" : "−"}</span>
+          {entry.line}
+        </p>
+      ))}
+    </div>
+  );
 }

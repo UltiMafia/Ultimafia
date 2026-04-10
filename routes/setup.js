@@ -59,13 +59,14 @@ function generateMafiaSetupManifest(setup, roles) {
     ];
 
     lines.push("Game settings:");
-    for (let gameSettingName in Object.keys(gamesettingsData)) {
-      let setupValue = setup.gameSettings[gameSettingName];
-      if (setupValue === undefined) {
-        setupValue = false;
-      }
+    const mafiaSettings = (gamesettingsData && gamesettingsData.Mafia) || {};
+    for (const gameSettingName of Object.keys(mafiaSettings)) {
       if (gameSettingName.includes("x10")) {
         continue;
+      }
+      let setupValue = setup.gameSettings && setup.gameSettings[gameSettingName];
+      if (setupValue === undefined) {
+        setupValue = false;
       }
       lines.push(`- ${gameSettingName}: ${setupValue}`);
     }
@@ -401,12 +402,13 @@ function aggregateWinRows(rows, filter) {
 }
 
 function averageLengthRows(lengthRows, filter) {
-  const filtered = filterStatRows(lengthRows, filter);
-  if (!filtered.length) return null;
+  // Length rows are shaped [gameType, lengthMs] — gameType at index 0.
+  if (!lengthRows || !lengthRows.length) return null;
   let sum = 0;
   let n = 0;
-  for (const row of filtered) {
+  for (const row of lengthRows) {
     if (!Array.isArray(row) || row.length < 2) continue;
+    if (filter !== "all" && row[0] !== filter) continue;
     sum += row[1];
     n++;
   }

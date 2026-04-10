@@ -756,9 +756,15 @@ export function FullRoleList({ setup, compact = false }) {
         )
       );
 
+      // For closed setups, the actual slot count per alignment lives in
+      // setup.count (e.g. { Village: 4, Mafia: 1, Independent: 1 }).
+      const slotCount = setup.closed ? setup.count?.[alignment] : undefined;
+      const legendText =
+        slotCount != null ? `${alignment} (${slotCount})` : alignment;
+
       return (
         <Grid item xs={12} md={gridItemSize} key={alignment}>
-          <RoleBox color={alignmentColor} legend={alignment}>
+          <RoleBox color={alignmentColor} legend={legendText}>
             {roles}
           </RoleBox>
         </Grid>
@@ -872,57 +878,42 @@ export function SetupManipulationButtons(props) {
   };
 
   return (
-    <Grid container sx={{ width: "8rem" }}>
-      <Grid item xs={3}>
-        <IconButton aria-label="favorite">
-          <i
-            className={`setup-btn fav-setup fa-star ${favIconFormat}`}
-            onClick={() => props.onFav(props.setup)}
-          />
-        </IconButton>
-      </Grid>
-      <Grid item xs={3}>
-        <IconButton
-          aria-label="edit"
-          disabled={!canEditThisSetup}
-          sx={missingEditStyle}
-        >
-          <i
-            className={`setup-btn edit-setup fa-pen-square fas`}
-            onClick={() =>
-              window.open(
-                `/play/create?edit=${props.setup.id}&game=${props.setup.gameType}`,
-                "_blank"
-              )
-            }
-          />
-        </IconButton>
-      </Grid>
-      <Grid item xs={3}>
-        <IconButton aria-label="copy">
-          <i
-            className={`setup-btn copy-setup fa-copy fas`}
-            onClick={() =>
-              window.open(
-                `/play/create?copy=${props.setup.id}&game=${props.setup.gameType}`,
-                "_blank"
-              )
-            }
-          />
-        </IconButton>
-      </Grid>
-      <Grid item xs={3}>
-        <IconButton
-          aria-label="delete"
-          disabled={!isOwner}
-          sx={missingOwnershipStyle}
-        >
-          <i
-            className={`setup-btn del-setup fa-times-circle fas`}
-            onClick={() => props.onDel(props.setup)}
-          />
-        </IconButton>
-      </Grid>
-    </Grid>
+    <Stack direction="row" spacing={1.5} alignItems="center">
+      <IconButton aria-label="favorite" onClick={() => props.onFav(props.setup)}>
+        <i className={`setup-btn fav-setup fa-star ${favIconFormat}`} />
+      </IconButton>
+      <IconButton
+        aria-label="edit"
+        disabled={!canEditThisSetup}
+        sx={missingEditStyle}
+        onClick={() =>
+          window.open(
+            `/play/create?edit=${props.setup.id}&game=${props.setup.gameType}`,
+            "_blank"
+          )
+        }
+      >
+        <i className={`setup-btn edit-setup fa-pen-square fas`} />
+      </IconButton>
+      <IconButton
+        aria-label="copy"
+        onClick={() =>
+          window.open(
+            `/play/create?copy=${props.setup.id}&game=${props.setup.gameType}`,
+            "_blank"
+          )
+        }
+      >
+        <i className={`setup-btn copy-setup fa-copy fas`} />
+      </IconButton>
+      <IconButton
+        aria-label="delete"
+        disabled={!isOwner}
+        sx={missingOwnershipStyle}
+        onClick={() => props.onDel(props.setup)}
+      >
+        <i className={`setup-btn del-setup fa-times-circle fas`} />
+      </IconButton>
+    </Stack>
   );
 }

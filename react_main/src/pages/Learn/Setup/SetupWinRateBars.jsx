@@ -5,9 +5,9 @@ import { getAlignmentColor } from "components/Setup";
 
 function colorForKey(key, rolesRaw) {
   if (!key) return "#888";
-  if (rolesRaw && rolesRaw[key]) {
-    const a = rolesRaw[key].alignment;
-    return getAlignmentColor(a);
+  const baseRole = key.split(":")[0];
+  if (rolesRaw && rolesRaw[baseRole]) {
+    return getAlignmentColor(rolesRaw[baseRole].alignment);
   }
   return getAlignmentColor(key);
 }

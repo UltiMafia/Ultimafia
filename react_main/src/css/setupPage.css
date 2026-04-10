@@ -12,28 +12,58 @@
 }
 
 .setup-page .changelog {
-  white-space: pre-wrap;
-
-  padding: 8px;
+  padding: 4px 0;
   max-height: 540px;
-
   overflow-y: auto;
-  background-color: #121212;
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.setup-page .changelog p {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 3px 10px;
+  border-left: 3px solid transparent;
+}
+
+.setup-page .changelog .diff-marker {
+  flex-shrink: 0;
+  width: 12px;
+  font-weight: 700;
+  text-align: center;
+  opacity: 0.75;
 }
 
 .setup-page .changelog .color-added {
-  color: green;
+  color: #4caf50;
+  border-left-color: #4caf50;
+  background-color: rgba(76, 175, 80, 0.08);
 }
 
 .setup-page .changelog .color-removed {
-  color: red;
+  color: #e45050;
+  border-left-color: #e45050;
+  background-color: rgba(228, 80, 80, 0.08);
 }
 
-.setup-page .changelog .color-skipped {
-  color: var(--theme-color-text);
-  background-color: var(--theme-color);
+@media (prefers-color-scheme: light) {
+  .setup-page .changelog .color-added {
+    color: #1b5e20;
+    border-left-color: #1b5e20;
+    background-color: rgba(27, 94, 32, 0.12);
+  }
+  .setup-page .changelog .color-removed {
+    color: #b71c1c;
+    border-left-color: #b71c1c;
+    background-color: rgba(183, 28, 28, 0.1);
+  }
 }
 
-.setup-page .changelog .color-unchanged {
+.setup-page .changelog .changelog-empty {
   color: var(--theme-color-text);
+  opacity: 0.6;
+  font-style: italic;
 }
