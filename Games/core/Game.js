@@ -3699,19 +3699,23 @@ module.exports = class Game {
           }
         }
 
+        const skipStatsSave = this.type === "Mafia" && this.hadVegKill;
+        const userSet = {
+          playedGame: true,
+          achievementCount: player.user.achievements.length,
+        };
+        if (!skipStatsSave) {
+          userSet.stats = player.user.stats;
+          userSet.winRate =
+            (player.user.stats["Mafia"].all.wins.count || 0) /
+            (player.user.stats["Mafia"].all.wins.total || 1);
+        }
         await models.User.updateOne(
           { id: player.user.id },
           {
             $push: { games: game._id },
             $addToSet: { achievements: { $each: player.EarnedAchievements } },
-            $set: {
-              stats: player.user.stats,
-              playedGame: true,
-              achievementCount: player.user.achievements.length,
-              winRate:
-                (player.user.stats["Mafia"].all.wins.count || 0) /
-                (player.user.stats["Mafia"].all.wins.total || 1),
-            },
+            $set: userSet,
             $inc: {
               coins: coinsEarned,
               kudos:

@@ -1789,7 +1789,12 @@ module.exports = class Player {
   }
 
   recordStat(stat, inc) {
-    if (!this.game.ranked && !this.game.competitive) return;
+    if (
+      this.game.type !== "Mafia" &&
+      !this.game.ranked &&
+      !this.game.competitive
+    )
+      return;
 
     if (!this.user.stats[this.game.type])
       this.user.stats[this.game.type] = dbStats.statsSet(this.game.type);
