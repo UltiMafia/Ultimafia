@@ -206,6 +206,7 @@ export default function JottoGame() {
                     }
                     placeholder="Select word"
                     label={selectWordMeeting?.actionName || "Select Word"}
+                    showChoiceFeedback
                   />
                 </div>
               )}
@@ -254,6 +255,7 @@ export default function JottoGame() {
                   }
                   placeholder="Select word"
                   label={selectWordMeeting?.actionName || "Select Word"}
+                  showChoiceFeedback
                 />
               </div>
             )}
@@ -281,13 +283,11 @@ export default function JottoGame() {
 function JottoCheatSheet({ cheatSheet, updateCheatSheet }) {
   return (
     <Stack
-      direction="row"
       sx={{
-        flexWrap: "wrap",
+        display: "grid",
+        gridTemplateColumns: "repeat(5, 3em)",
         p: 1,
-        rowGap: 0.5,
-        columnGap: 0.5,
-        alignContent: "center",
+        gap: 0.5,
         justifyContent: "center",
       }}
     >
@@ -339,6 +339,8 @@ function JottoCheatSheet({ cheatSheet, updateCheatSheet }) {
         }
         sx={{
           height: "3em",
+          gridColumn: "span 5",
+          justifySelf: "stretch",
         }}
       >
         Reset
@@ -409,7 +411,7 @@ function JottoHistoryPanel({
             {name}
           </Typography>
         </Stack>
-        {isSelf ? (
+        {isSelf && isMyTurn ? (
           <JottoGuessInput
             meeting={guessMeeting}
             socket={socket}
@@ -427,13 +429,48 @@ function JottoHistoryPanel({
   );
 }
 
-function JottoGuessInput({ meeting, socket, self, isMyTurn, placeholder, label }) {
+function JottoGuessInput({
+  meeting,
+  socket,
+  self,
+  isMyTurn,
+  placeholder,
+  label,
+  showChoiceFeedback,
+}) {
   const [textData, setTextData] = useState("");
+  const [lastAccepted, setLastAccepted] = useState(
+    () => meeting?.votes?.[self] || null
+  );
+  const [rejection, setRejection] = useState(null);
+  const pendingSubmitRef = useRef(null);
 
   const textOptions = meeting ? meeting.textOptions || {} : {};
   const minLength = textOptions.minLength || 0;
   const maxLength = textOptions.maxLength || 50;
   const disabled = !isMyTurn || !meeting || meeting.finished;
+  const currentVote = meeting?.votes?.[self];
+  const voteRecordLen = meeting?.voteRecord?.length || 0;
+
+  useEffect(() => {
+    if (!showChoiceFeedback) return;
+
+    const pending = pendingSubmitRef.current;
+
+    if (!pending) {
+      if (currentVote) setLastAccepted(currentVote);
+      return;
+    }
+
+    if (currentVote === pending) {
+      setLastAccepted(currentVote);
+      setRejection(null);
+      pendingSubmitRef.current = null;
+    } else if (!currentVote) {
+      setRejection(`"${pending}" is not a valid dictionary word.`);
+      pendingSubmitRef.current = null;
+    }
+  }, [showChoiceFeedback, currentVote, voteRecordLen]);
 
   function handleOnChange(e) {
     let textInput = e.target.value;
@@ -449,7 +486,12 @@ function JottoGuessInput({ meeting, socket, self, isMyTurn, placeholder, label }
 
   function handleOnSubmit() {
     if (!meeting || textData.length < minLength || disabled) return;
-    meeting.votes[self] = textData;
+    pendingSubmitRef.current = textData;
+    if (showChoiceFeedback) {
+      setRejection(null);
+    } else {
+      meeting.votes[self] = textData;
+    }
     socket.send("vote", {
       meetingId: meeting.id,
       selection: textData,
@@ -502,6 +544,26 @@ function JottoGuessInput({ meeting, socket, self, isMyTurn, placeholder, label }
         {textOptions.submit || "Confirm"}
       </Button>
       </Stack>
+      {showChoiceFeedback && lastAccepted && (
+        <Typography
+          variant="body2"
+          sx={{
+            color: "error.main",
+            fontFamily: "inherit",
+            fontWeight: "bold",
+          }}
+        >
+          You chose: {lastAccepted.toUpperCase()}
+        </Typography>
+      )}
+      {showChoiceFeedback && rejection && (
+        <Typography
+          variant="caption"
+          sx={{ color: "error.main", fontFamily: "inherit" }}
+        >
+          {rejection}
+        </Typography>
+      )}
     </Stack>
   );
 }
