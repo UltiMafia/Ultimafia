@@ -123,7 +123,7 @@ export function RoleThings() {
         value: finalOptions,
       },
     ]);
-  }, [achievements, role]);
+  }, [achievements, RoleName]);
   /*
   const updateFieldsFromData = (data) => {
     let changes = Object.keys(data).map((ref) => ({
