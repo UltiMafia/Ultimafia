@@ -85,7 +85,7 @@ export function RecentForumReplies() {
             return (
               <Box
                 key={`thread-${item.threadId}-${item.date}`}
-                sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0 }}
               >
                 <Avatar
                   small
@@ -93,8 +93,25 @@ export function RecentForumReplies() {
                   id={item.user?.id}
                   name={item.user?.name}
                 />
-                <Box sx={{ display: "flex", flexDirection: "column" }}>
-                  <Link to={link}>{item.title}</Link>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    minWidth: 0,
+                    flex: 1,
+                  }}
+                >
+                  <Link
+                    to={link}
+                    style={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      display: "block",
+                    }}
+                  >
+                    {item.title}
+                  </Link>
                   {item.date ? (
                     <Typography variant="caption" color="text.secondary">
                       <Time millisec={Date.now() - (item.date || 0)} /> ago
@@ -119,7 +136,7 @@ export function RecentForumReplies() {
             return (
               <Box
                 key={`reply-${item.replyId}-${item.date}`}
-                sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0 }}
               >
                 <Avatar
                   small
@@ -127,8 +144,25 @@ export function RecentForumReplies() {
                   id={item.user?.id}
                   name={item.user?.name}
                 />
-                <Box sx={{ display: "flex", flexDirection: "column" }}>
-                  <Link to={link}>{item.title}</Link>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    minWidth: 0,
+                    flex: 1,
+                  }}
+                >
+                  <Link
+                    to={link}
+                    style={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      display: "block",
+                    }}
+                  >
+                    {item.title}
+                  </Link>
                   <Typography variant="caption" color="text.secondary">
                     <Time millisec={Date.now() - (item.date || 0)} /> ago
                   </Typography>
