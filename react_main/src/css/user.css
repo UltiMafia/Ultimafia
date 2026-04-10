@@ -321,6 +321,12 @@ iframe {
 .profile .trophy-tile-prestige .trophy-label {
   color: #3d2f00;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
+  opacity: 1;
+}
+
+.profile .trophy-tile.trophy-tile-prestige .trophy-value,
+.profile .trophy-tile.trophy-tile-prestige .trophy-label {
+  color: #3d2f00;
 }
 
 .profile .trophy-tile-prestige::before {
