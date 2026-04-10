@@ -6549,7 +6549,6 @@ module.exports = [
   "lying",
   "lymes",
   "lymph",
-  "lynch",
   "lynes",
   "lyres",
   "lyric",
