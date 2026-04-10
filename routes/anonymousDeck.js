@@ -48,7 +48,11 @@ router.post("/create", async function (req, res) {
         .select("creator")
         .populate("creator", "id");
 
-      if (!foundDeck || foundDeck.creator.id != userId) {
+      if (
+        (!foundDeck ||
+          (foundDeck.creator && foundDeck.creator.id != userId)) &&
+        !(await routeUtils.verifyPermission(res, userId, "editAnyDeck"))
+      ) {
         res.status(500);
         res.send("You can only edit decks you have created.");
         return;
@@ -673,7 +677,10 @@ router.post("/coverPhoto", async function (req, res) {
       .select("id creator coverPhoto")
       .populate("creator", "id");
 
-    if (!deck || deck.creator.id != userId) {
+    if (
+      (!deck || (deck.creator && deck.creator.id != userId)) &&
+      !(await routeUtils.verifyPermission(res, userId, "editAnyDeck"))
+    ) {
       res.status(403);
       res.send("You can only edit decks you have created.");
       return;
