@@ -74,7 +74,7 @@ module.exports = class EvilVotingInfo extends Information {
   getInfoFormated() {
     super.getInfoRaw();
     if (this.mainInfo == "No majority vote") {
-      return `:invest: Their was no majority yesterday!`;
+      return `:invest: There was no majority yesterday!`;
     }
     if (this.mainInfo == "Yes") {
       return `:invest: You ran the numbers... the forces of Evil did vote with the majority yesterday!`;
