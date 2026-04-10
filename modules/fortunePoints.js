@@ -1,16 +1,24 @@
 /**
  * Fortune / misfortune points for ranked & competitive games.
- * Uses empirical setup win rates (all modes combined).
+ * Uses empirical setup win rates derived only from ranked and competitive
+ * games — unranked games do not influence fortune payouts.
  */
 const constants = require("../data/constants");
+
+const FORTUNE_GAME_TYPES = new Set(["ranked", "competitive"]);
 
 function winRateFromAlignmentEntries(entries) {
   if (!entries || !entries.length) return null;
   let wins = 0;
+  let games = 0;
   for (const row of entries) {
-    if (Array.isArray(row) && row[1] === true) wins++;
+    if (!Array.isArray(row)) continue;
+    if (!FORTUNE_GAME_TYPES.has(row[0])) continue;
+    games++;
+    if (row[1] === true) wins++;
   }
-  return wins / entries.length;
+  if (games === 0) return null;
+  return wins / games;
 }
 
 /**
@@ -116,22 +124,15 @@ function computeFactionFortunePoints(opts) {
 }
 
 /**
- * Build alignmentWinRates-shaped map from SetupVersion.setupStats (legacy object and/or alignmentRows).
+ * Build alignmentWinRates-shaped map from SetupVersion.setupStats.alignmentRows.
  * @param {object} setupStats
  * @returns {object} map factionKey -> Array<[gameType, boolean]>
  */
 function alignmentRowsToWinRateMap(setupStats) {
   const map = {};
   if (!setupStats) return map;
-  const legacy = setupStats.alignmentWinRates;
-  if (legacy && typeof legacy === "object" && !Array.isArray(legacy)) {
-    for (const k of Object.keys(legacy)) {
-      const v = legacy[k];
-      if (Array.isArray(v)) {
-        map[k] = v.slice();
-      }
-    }
-  }
+  // Legacy `alignmentWinRates` stored bare booleans with no gameType tag,
+  // so entries cannot be attributed to ranked/competitive and are skipped.
   const rows = setupStats.alignmentRows;
   if (Array.isArray(rows)) {
     for (const row of rows) {
