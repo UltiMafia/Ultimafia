@@ -191,7 +191,7 @@ export default function Board(props) {
       />
       <div className="board-info">
         <div className="board-title-wrapper">
-          <i className={`fas fa-${boardInfo.icon || "comments"} board-icon`} />
+          <i className={`fas fa-fw fa-${boardInfo.icon || "comments"} board-icon`} />
           <div className="board-title">{boardInfo.name}</div>
         </div>
         <div

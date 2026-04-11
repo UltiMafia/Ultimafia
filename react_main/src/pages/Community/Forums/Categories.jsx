@@ -89,7 +89,7 @@ export default function Categories(props) {
 
       return (
         <div className="board" key={board.id}>
-          <i className={`fas fa-${board.icon || "comments"} board-icon`} />
+          <i className={`fas fa-fw fa-${board.icon || "comments"} board-icon`} />
           <Link
             className="board-info"
             to={`/community/forums/board/${board.id}`}
