@@ -6,7 +6,7 @@ module.exports = class Repoman extends Role {
 
     this.alignment = "Mafia";
     this.cards = [
-      "MafiaCore",
+      "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
       "RepomanShop",

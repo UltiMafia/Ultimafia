@@ -1,9 +1,8 @@
-const Card = require("../../Card");
-const Random = require("../../../../../lib/Random");
-const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
-const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
+const Item = require("../Item");
+const Random = require("../../../../lib/Random");
+const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../const/Priority");
 
-const BANKER_SHOP_POOL = [
+const SHOP_POOL = [
   { name: "Gun",             internal: "Gun",          cost: 3 },
   { name: "Rifle",           internal: "Rifle",        cost: 4 },
   { name: "Knife",           internal: "Knife",        cost: 2 },
@@ -33,250 +32,92 @@ const BANKER_SHOP_POOL = [
   { name: "Notebook",        internal: "Notebook",     cost: 4 },
 ];
 
-const GOLDEN_TICKET = { name: "Golden Ticket", internal: "GoldenTicket", cost: 10 };
+const NO_PURCHASE = "No Purchase";
 
-function rollBankerOptions() {
-  const shuffled = Random.randomizeArray([...BANKER_SHOP_POOL]);
-  return [...shuffled.slice(0, 3), GOLDEN_TICKET];
+function rollShop() {
+  return Random.randomizeArray([...SHOP_POOL]).slice(0, 3);
 }
 
-function rollGlobalOptions() {
-  const shuffled = Random.randomizeArray([...BANKER_SHOP_POOL]);
-  return shuffled.slice(0, 3);
+function optionLabel(o) {
+  return `${o.name} (${o.cost} Gold)`;
 }
 
-module.exports = class BankerShop extends Card {
-  constructor(role) {
-    super(role);
-
-    this.winCheck = {
-      priority: PRIORITY_WIN_CHECK_DEFAULT,
-      againOnFinished: true,
-      check: function (counts, winners, aliveCount, confirmedFinished) {
-        if (this.data.goldenTicketWon) {
-          winners.addPlayer(this.player, "Golden Ticket");
-        }
-      },
-    };
+module.exports = class GlobalShop extends Item {
+  constructor() {
+    super("Global Shop");
+    this.cannotBeStolen = true;
+    this.cannotBeSnooped = true;
 
     this.listeners = {
-      roleAssigned: function (player) {
-        if (player !== this.player) return;
-
-        this.data.bankerShopOptions = rollBankerOptions();
-        this.data.shopAnnounced = false;
-
-        for (let p of this.game.players) {
-          if (p.role.name === "Repoman") continue;
-          p.Gold = p.Gold || 0;
-          p.role.data.globalShopOptions = rollGlobalOptions();
-          p.role.data.globalShopGold = 0;
-          p.holdItem("GlobalShop");
-        }
-      },
-
       state: function (stateInfo) {
-        if (!this.player.alive) return;
+        if (!this.holder || !this.holder.alive) return;
+        if (!stateInfo.name.match(/Day/)) return;
 
-        if (
-          stateInfo.name.match(/Day/) ||
-          stateInfo.name.match(/Night/)
-        ) {
-          this.player.Gold = (this.player.Gold || 0) + 1;
-        }
-
-        if (stateInfo.name.match(/Day/)) {
-          if (!this.data.shopAnnounced) {
-            this.data.shopAnnounced = true;
-            this.game.sendAlert(
-              `:moneybag: The Banker has opened their shop for the duration of this game. Players may purchase items each day!`
-            );
-          }
-
-          this.data.bankerShopOptions = rollBankerOptions();
-
-          for (let p of this.game.alivePlayers()) {
-            if (p.role.name === "Repoman") continue;
-            p.role.data.globalShopOptions = rollGlobalOptions();
-
-            const gold = p.role.data.globalShopGold || 0;
-            const optionsList = p.role.data.globalShopOptions
-              .map((o, i) => `${i + 1}. ${o.name} — ${o.cost} Gold`)
-              .join(" | ");
-
-            p.queueAlert(
-              `:moneybag: You have ${gold} Gold. Today's shop options: ${optionsList}`
-            );
-          }
-
-          const bankerOptions = this.data.bankerShopOptions
-            .map((o, i) => `${i + 1}. ${o.name} — ${o.cost} Gold`)
-            .join(" | ");
-          this.player.queueAlert(
-            `:moneybag: You have ${this.player.Gold} Gold. Your shop options: ${bankerOptions}`
-          );
-        }
+        this.holder.role.data.globalShopOptions = rollShop();
+        const summary = this.holder.role.data.globalShopOptions
+          .map((o, i) => `${i + 1}. ${o.name} — ${o.cost} Gold`)
+          .join(" | ");
+        this.holder.queueAlert(
+          `:moneybag: You have ${this.holder.role.data.gold || 0} Gold. Today's shop: ${summary}`
+        );
       },
 
-      death: function (player, killer, deathType) {
-        if (!this.player.alive) return;
-        if (player === this.player) return;
+      death: function (player) {
+        if (!this.holder || !this.holder.alive) return;
+        if (player === this.holder) return;
+        if (player.role.alignment === this.holder.role.alignment) return;
 
-        for (let p of this.game.alivePlayers()) {
-          if (p.role.name === "Repoman") continue;
-          if (p === player) continue;
-          if (p.role.alignment !== player.role.alignment) {
-            p.role.data.globalShopGold =
-              (p.role.data.globalShopGold || 0) + 1;
-            p.queueAlert(
-              `:moneybag: A player on the opposite alignment has died. You have received 1 Gold. (Total: ${p.role.data.globalShopGold})`
-            );
-          }
+        this.holder.role.data.gold = (this.holder.role.data.gold || 0) + 1;
+        this.holder.queueAlert(
+          `:moneybag: A player on the opposite alignment has fallen. You gained 1 Gold. (Total: ${this.holder.role.data.gold})`
+        );
+      },
+
+      playerHasJoinedMeetings: function (player) {
+        if (player !== this.holder) return;
+
+        const options = player.role.data.globalShopOptions || [];
+        const targets = [...options.map(optionLabel), NO_PURCHASE];
+
+        for (let meeting of player.getMeetings()) {
+          if (meeting.name === "Global Shop") meeting.targets = targets;
         }
       },
     };
 
     this.meetings = {
-      "Banker Shop": {
+      "Global Shop": {
         actionName: "Browse Shop",
         states: ["Day"],
         flags: ["voting", "noVeg"],
         inputType: "custom",
-        targets: function () {
-          return (this.role.data.bankerShopOptions || []).map(
-            (o) => `${o.name} (${o.cost} Gold)`
-          );
-        },
+        targets: [NO_PURCHASE],
         action: {
           labels: ["hidden", "absolute"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
-            const options = this.role.data.bankerShopOptions || [];
-            const selected = this.target;
+            if (this.target === NO_PURCHASE) return;
 
-            const option = options.find(
-              (o) => selected === `${o.name} (${o.cost} Gold)`
-            );
+            const options = this.actor.role.data.globalShopOptions || [];
+            const option = options.find((o) => optionLabel(o) === this.target);
             if (!option) return;
 
-            const currentGold = this.actor.Gold || 0;
-            if (currentGold < option.cost) {
+            const gold = this.actor.role.data.gold || 0;
+            if (gold < option.cost) {
               this.actor.queueAlert(
-                `:moneybag: You cannot afford ${option.name}. You have ${currentGold} Gold and need ${option.cost}.`
+                `:moneybag: You cannot afford ${option.name}. You have ${gold} Gold and need ${option.cost}.`
               );
               return;
             }
 
-            this.actor.Gold -= option.cost;
-
-            if (option.internal === "GoldenTicket") {
-              this.role.data.goldenTicketWon = true;
-              this.game.sendAlert(
-                `:ticket: The Banker has successfully purchased a Golden Ticket and won!`
-              );
-              this.actor.role.revealToAll();
-
-              const isComplacent =
-                this.actor.role.modifier &&
-                this.actor.role.modifier.includes("Complacent");
-
-              if (!isComplacent) {
-                this.game.endGame(null);
-              }
-              return;
-            }
-
+            this.actor.role.data.gold = gold - option.cost;
             this.actor.holdItem(option.internal);
             this.actor.queueAlert(
-              `:moneybag: You purchased ${option.name} for ${option.cost} Gold. Remaining Gold: ${this.actor.Gold}.`
-            );
-          },
-        },
-      },
-
-      "Invest": {
-        actionName: "Invest Gold",
-        states: ["Night"],
-        flags: ["voting", "noVeg"],
-        inputType: "custom",
-        targets: function () {
-          const gold = this.player.Gold || 0;
-          const options = [];
-          for (let i = 1; i <= gold; i++) {
-            options.push(`Invest ${i} Gold`);
-          }
-          options.push("Do not invest");
-          return options;
-        },
-        action: {
-          labels: ["hidden", "absolute"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          run: function () {
-            const selected = this.target;
-            if (selected === "Do not invest") return;
-
-            const amount = parseInt(
-              selected.replace("Invest ", "").replace(" Gold", "")
-            );
-            if (isNaN(amount) || amount <= 0) return;
-
-            const currentGold = this.actor.Gold || 0;
-            if (amount > currentGold) {
-              this.actor.queueAlert(
-                `:moneybag: You do not have enough Gold to invest ${amount}.`
-              );
-              return;
-            }
-
-            this.actor.Gold -= amount;
-            this.role.data.investAmount = amount;
-            this.actor.queueAlert(
-              `:moneybag: You have invested ${amount} Gold. Results will be revealed tomorrow.`
+              `:moneybag: You purchased ${option.name} for ${option.cost} Gold. Remaining Gold: ${this.actor.role.data.gold}.`
             );
           },
         },
       },
     };
-
-    this.passiveActions = [
-      {
-        actor: role.player,
-        state: "Day",
-        game: role.game,
-        role: role,
-        priority: PRIORITY_INVESTIGATIVE_DEFAULT - 5,
-        labels: ["hidden"],
-        run: function () {
-          const amount = this.role.data.investAmount;
-          if (!amount || amount <= 0) return;
-
-          this.role.data.investAmount = 0;
-
-          const roll = Random.randInt(1, 100);
-          let result;
-          let gained;
-
-          if (roll <= 50) {
-            gained = amount * 2;
-            result = `:chart_with_upwards_trend: The market was strong! Your investment of ${amount} Gold doubled to ${gained} Gold!`;
-          } else if (roll <= 60) {
-            gained = amount * 3;
-            result = `:tada: The market was exceptional! Your investment of ${amount} Gold tripled to ${gained} Gold!`;
-          } else if (roll <= 70) {
-            gained = Math.floor(amount / 2);
-            result = `:chart_with_downwards_trend: The market was rough. You lost half your investment and recovered ${gained} Gold.`;
-          } else {
-            gained = 0;
-            result = `:x: The market crashed! Your investment of ${amount} Gold was lost entirely.`;
-          }
-
-          this.actor.Gold = (this.actor.Gold || 0) + gained;
-          this.actor.queueAlert(result);
-          this.actor.queueAlert(
-            `:moneybag: Current Gold: ${this.actor.Gold}`
-          );
-        },
-      },
-    ];
   }
 };

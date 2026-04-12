@@ -1,10 +1,8 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
-const { PRIORITY_MAFIA_KILL } = require("../../const/Priority");
 
 const SHOP_POOL = [
-  // Items - delivered next night
   { name: "Gun",             type: "item", internal: "Gun",          cost: 3 },
   { name: "Rifle",           type: "item", internal: "Rifle",        cost: 4 },
   { name: "Knife",           type: "item", internal: "Knife",        cost: 2 },
@@ -32,15 +30,32 @@ const SHOP_POOL = [
   { name: "Snowball",        type: "item", internal: "Snowball",     cost: 2 },
   { name: "Ice Cream",       type: "item", internal: "IceCream",     cost: 2 },
   { name: "Notebook",        type: "item", internal: "Notebook",     cost: 4 },
-
-  // Misc - usable same day
-  { name: "Reveal a Player's Role to Mafia", type: "misc", internal: "RoleReveal", cost: 2 },
-  { name: "Double Kill Next Night",          type: "misc", internal: "DoubleKill", cost: 5 },
 ];
 
-function rollShopOptions() {
-  const shuffled = Random.randomizeArray([...SHOP_POOL]);
-  return shuffled.slice(0, 3);
+const KEEP_FOR_SELF = "Keep for Yourself";
+
+function rollShop() {
+  return Random.randomizeArray([...SHOP_POOL]).slice(0, 3);
+}
+
+function dropExistingShop(player) {
+  for (let i = player.items.length - 1; i >= 0; i--) {
+    if (player.items[i].name === "Repoman Shop") player.items[i].drop();
+  }
+}
+
+function grantShop(player) {
+  const options = rollShop();
+  player.role.data.shopOptions = options;
+  const rerollAvailable = !player.role.data.rerollUsedThisGame;
+  player.holdItem("RepomanShopItem", options, rerollAvailable);
+
+  const summary = options
+    .map((o, i) => `${i + 1}. ${o.name} — ${o.cost} Gold`)
+    .join(" | ");
+  player.queueAlert(
+    `:moneybag: Shop is open! You have ${player.role.data.gold || 0} Gold. Today's options: ${summary}`
+  );
 }
 
 module.exports = class RepomanShop extends Card {
@@ -51,11 +66,16 @@ module.exports = class RepomanShop extends Card {
       roleAssigned: function (player) {
         if (player !== this.player) return;
 
-        const hasBanker = this.game.players.some(
-          (p) => p.role.name === "Banker"
-        );
+        this.data.gold = this.data.gold || 0;
+        this.data.rerollUsedThisGame = false;
+        this.data.pendingPurchase = null;
+        this.data.shopPool = SHOP_POOL;
+
+        const hasBanker = this.game.players
+          .array()
+          .some((p) => p.role.name === "Banker");
         if (hasBanker) {
-          this.player.Gold = (this.player.Gold || 0) + 3;
+          this.data.gold += 3;
           this.player.queueAlert(
             `:moneybag: A Banker is present in this game. You start with 3 Gold.`
           );
@@ -67,213 +87,89 @@ module.exports = class RepomanShop extends Card {
         if (player === this.player) return;
         if (player.role.alignment !== "Village") return;
 
-        this.player.Gold = (this.player.Gold || 0) + 1;
+        this.data.gold = (this.data.gold || 0) + 2;
         this.player.queueAlert(
-          `:moneybag: A Village player has fallen. You gained 1 Gold. (Total: ${this.player.Gold})`
+          `:moneybag: A Village player has fallen. You gained 2 Gold. (Total: ${this.data.gold})`
         );
       },
 
       state: function (stateInfo) {
         if (!this.player.alive) return;
+        if (!stateInfo.name.match(/Day/)) return;
 
-        if (stateInfo.name.match(/Day/)) {
-          this.data.doubleKillActive = false;
-          this.data.shopOptions = rollShopOptions();
-          this.data.rerollUsedThisGame = this.data.rerollUsedThisGame || false;
+        dropExistingShop(this.player);
+        grantShop(this.player);
+      },
 
-          const optionsList = this.data.shopOptions
-            .map((o, i) => `${i + 1}. ${o.name} — ${o.cost} Gold`)
-            .join(" | ");
+      playerHasJoinedMeetings: function (player) {
+        if (player !== this.player) return;
 
-          this.player.queueAlert(
-            `:moneybag: Shop is open! You have ${this.player.Gold || 0} Gold. Today's options: ${optionsList}`
-          );
+        const giftTargets = [KEEP_FOR_SELF];
+        for (let p of this.game.alivePlayers()) {
+          if (p !== this.player) giftTargets.push(p.name);
+        }
+
+        for (let meeting of this.player.getMeetings()) {
+          if (meeting.name === "Gift Item To?") meeting.targets = giftTargets;
         }
       },
     };
 
     this.meetings = {
-      "Repoman Shop": {
-        actionName: "Browse Shop",
+      "Gift Item To?": {
+        actionName: "Gift item to?",
         states: ["Day"],
-        flags: ["voting", "noVeg"],
+        flags: ["voting", "instant", "noVeg"],
         inputType: "custom",
-        targets: function () {
-          const options = this.role.data.shopOptions || [];
-          const entries = options.map((o) => `${o.name} (${o.cost} Gold)`);
-          if (!this.role.data.rerollUsedThisGame && options.length > 0) {
-            entries.push("Reroll Shop (Free, Once Per Game)");
-          }
-          return entries;
-        },
-        action: {
-          labels: ["hidden", "absolute"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          run: function () {
-            const options = this.role.data.shopOptions || [];
-            const selected = this.target;
-
-            if (selected === "Reroll Shop (Free, Once Per Game)") {
-              if (this.role.data.rerollUsedThisGame) {
-                this.actor.queueAlert(
-                  `:moneybag: You have already used your reroll this game.`
-                );
-                return;
-              }
-              this.role.data.rerollUsedThisGame = true;
-              this.role.data.shopOptions = rollShopOptions();
-              const newList = this.role.data.shopOptions
-                .map((o, i) => `${i + 1}. ${o.name} — ${o.cost} Gold`)
-                .join(" | ");
-              this.actor.queueAlert(
-                `:moneybag: Shop rerolled! New options: ${newList}`
-              );
-              return;
-            }
-
-            const option = options.find(
-              (o) => selected === `${o.name} (${o.cost} Gold)`
-            );
-            if (!option) return;
-
-            const currentGold = this.actor.Gold || 0;
-            if (currentGold < option.cost) {
-              this.actor.queueAlert(
-                `:moneybag: You cannot afford ${option.name}. You have ${currentGold} Gold and need ${option.cost}.`
-              );
-              return;
-            }
-
-            this.actor.Gold -= option.cost;
-            this.actor.queueAlert(
-              `:moneybag: You purchased ${option.name} for ${option.cost} Gold. Remaining Gold: ${this.actor.Gold}.`
-            );
-            this.role.data.pendingPurchase = option;
-          },
-        },
-      },
-
-      "Gift or Keep": {
-        actionName: "Gift or Keep?",
-        states: ["Day"],
-        flags: ["voting", "noVeg"],
-        inputType: "custom",
-        targets: ["Keep for myself", "Gift to a player"],
+        targets: [KEEP_FOR_SELF],
         shouldMeet: function () {
-          return !!this.role.data.pendingPurchase;
+          return !!this.data.pendingPurchase;
         },
         action: {
           labels: ["hidden", "absolute"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
+          role: this.role,
           run: function () {
             const option = this.role.data.pendingPurchase;
             if (!option) return;
+            this.role.data.pendingPurchase = null;
 
-            if (this.target === "Keep for myself") {
-              this._deliverToPlayer(this.actor, option, false);
-              delete this.role.data.pendingPurchase;
-            } else {
-              this.role.data.giftingPurchase = option;
-              delete this.role.data.pendingPurchase;
+            if (this.target === KEEP_FOR_SELF) {
+              deliverToPlayer(this.actor, option, false);
+              return;
             }
-          },
-        },
-      },
 
-      "Select Gift Target": {
-        actionName: "Gift to Player",
-        states: ["Day"],
-        flags: ["voting", "noVeg"],
-        targets: {
-          include: ["alive"],
-          exclude: ["self"],
-        },
-        shouldMeet: function () {
-          return !!this.role.data.giftingPurchase;
-        },
-        action: {
-          labels: ["hidden", "absolute"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT - 2,
-          run: function () {
-            const option = this.role.data.giftingPurchase;
-            if (!option) return;
-
-            this._deliverToPlayer(this.target, option, true);
-            delete this.role.data.giftingPurchase;
-          },
-        },
-      },
-
-      "Mafia Double Kill": {
-        actionName: "Mafia Double Kill",
-        states: ["Night"],
-        flags: ["group", "voting", "multiActor", "Important"],
-        targets: {
-          include: ["alive"],
-          exclude: ["membersIfOpen"],
-        },
-        shouldMeet: function () {
-          const repoman = this.game.players.find(
-            (p) => p.role.name === "Repoman" && p.alive
-          );
-          return repoman?.role.data.doubleKillActive === true;
-        },
-        action: {
-          labels: ["kill", "mafia"],
-          priority: PRIORITY_MAFIA_KILL + 1,
-          run: function () {
-            if (this.dominates()) {
-              this.target.kill("basic", this.actor);
+            const recipient = this.game.players
+              .array()
+              .find((p) => p.name === this.target && p.alive);
+            if (!recipient) {
+              deliverToPlayer(this.actor, option, false);
+              return;
             }
+
+            deliverToPlayer(recipient, option, true);
           },
         },
       },
+
     };
   }
-
-  _deliverToPlayer(player, option, isGift) {
-    const game = player.game;
-
-    if (option.type === "item") {
-      game.once("phaseBegin:Night", function () {
-        player.holdItem(option.internal);
-        if (isGift) {
-          player.queueAlert(
-            `:gift: You have been gifted a ${option.name}!`
-          );
-        } else {
-          player.queueAlert(
-            `:gift: Your ${option.name} has been delivered!`
-          );
-        }
-      });
-      return;
-    }
-
-    switch (option.internal) {
-      case "RoleReveal":
-        player.holdItem("RepomanReveal");
-        if (isGift) {
-          player.queueAlert(
-            `:gift: You have been gifted Repoman Intel. Use it to reveal a player's role to the Mafia!`
-          );
-        } else {
-          player.queueAlert(
-            `:briefcase: You may now reveal a player's role to the Mafia!`
-          );
-        }
-        break;
-
-      case "DoubleKill":
-        this.data.doubleKillActive = true;
-        for (let p of player.game.alivePlayers()) {
-          if (p.role.alignment === "Mafia") {
-            p.queueAlert(
-              `:knife: The Repoman has purchased a Double Kill. The Mafia may kill a second target tonight!`
-            );
-          }
-        }
-        break;
-    }
-  }
 };
+
+function deliverToPlayer(player, option, isGift) {
+  const game = player.game;
+  if (option.type !== "item") return;
+
+  const listener = function (stateInfo) {
+    if (!stateInfo.name.match(/Night/)) return;
+    game.events.removeListener("state", listener);
+    if (!player.alive) return;
+    player.holdItem(option.internal);
+    if (isGift) {
+      player.queueAlert(`:gift: You have been gifted a ${option.name}!`);
+    } else {
+      player.queueAlert(`:gift: Your ${option.name} has been delivered!`);
+    }
+  };
+  game.events.on("state", listener);
+}
