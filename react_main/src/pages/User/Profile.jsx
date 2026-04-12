@@ -2030,7 +2030,11 @@ function StatsModal(props) {
   };
 
   var statsRowNames;
-  var stats = props.stats["Mafia"][statsFilter];
+  const mafia = props.stats["Mafia"];
+  var stats =
+    statsFilter === "all"
+      ? mafia.all
+      : mafia.all?.[statsFilter] || mafia[statsFilter];
 
   if (stats == null) {
     stats = [];

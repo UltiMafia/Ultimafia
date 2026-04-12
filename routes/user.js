@@ -429,9 +429,15 @@ router.get("/:id/profile", async function (req, res) {
       else {
         let statsSet = dbStats.statsSet(gameType);
 
-        for (let objName in statsSet)
+        for (let objName in statsSet) {
           if (!user.stats[gameType][objName])
             user.stats[gameType][objName] = statsSet[objName];
+          else if (typeof statsSet[objName] === "object") {
+            for (let key in statsSet[objName])
+              if (user.stats[gameType][objName][key] == null)
+                user.stats[gameType][objName][key] = statsSet[objName][key];
+          }
+        }
       }
     }
 
