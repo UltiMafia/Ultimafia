@@ -145,39 +145,47 @@ export default function RecentTradesFeed() {
               Open Trades
             </Typography>
             <Stack spacing={0.75} sx={{ mb: 1.5 }}>
-              {openTrades.map((t) => (
-                <Box
-                  key={t.id}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    fontSize: "0.75rem",
-                    "& .user-name .MuiTypography-root": { fontSize: "0.75rem" },
-                  }}
-                >
-                  <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <NameWithAvatar
-                      id={t.initiator?.id}
-                      name={t.initiator?.name}
-                      avatar={t.initiator?.avatar}
-                      small
+              {openTrades.map((t) => {
+                const isOwnOffer = user.loggedIn && t.initiator?.id === user.id;
+                return (
+                  <Box
+                    key={t.id}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      fontSize: "0.75rem",
+                      opacity: isOwnOffer ? 0.75 : 1,
+                      "& .user-name .MuiTypography-root": { fontSize: "0.75rem" },
+                    }}
+                  >
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <NameWithAvatar
+                        id={t.initiator?.id}
+                        name={t.initiator?.name}
+                        avatar={t.initiator?.avatar}
+                        small
+                      />
+                    </Box>
+                    <StampItem
+                      role={t.initiatorRole}
+                      gameType={t.initiatorGameType}
+                      size="small"
+                    />
+                    <i
+                      className="fas fa-exchange-alt"
+                      style={{ fontSize: 10, opacity: 0.6 }}
+                    />
+                    <StickerPlaceholder
+                      onClick={
+                        user.loggedIn && !isOwnOffer
+                          ? () => openRespondDialog(t)
+                          : undefined
+                      }
                     />
                   </Box>
-                  <StampItem
-                    role={t.initiatorRole}
-                    gameType={t.initiatorGameType}
-                    size="small"
-                  />
-                  <i
-                    className="fas fa-exchange-alt"
-                    style={{ fontSize: 10, opacity: 0.6 }}
-                  />
-                  <StickerPlaceholder
-                    onClick={user.loggedIn ? () => openRespondDialog(t) : undefined}
-                  />
-                </Box>
-              ))}
+                );
+              })}
             </Stack>
           </>
         )}

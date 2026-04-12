@@ -171,11 +171,10 @@ router.get("/open", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     await expireOldTrades();
-    const userId = await routeUtils.verifyLoggedIn(req);
+    await routeUtils.verifyLoggedIn(req);
     const trades = await models.StampTrade.find({
       recipientId: null,
       status: "PENDING_RESPONSE",
-      initiatorId: { $ne: userId },
     }).sort({ createdAt: -1 }).limit(20);
     const result = [];
     for (const t of trades) result.push(await populateTradeForDisplay(t));
