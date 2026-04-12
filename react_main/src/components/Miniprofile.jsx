@@ -36,7 +36,7 @@ function Miniprofile(props) {
 
   let pieChart = <></>;
   let totalGames = 0;
-  if (user.stats) {
+  if (user.stats?.["Mafia"]?.all) {
     const mafiaStats = user.stats["Mafia"].all;
     totalGames = getTotalGames(mafiaStats);
     pieChart = (

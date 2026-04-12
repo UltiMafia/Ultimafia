@@ -3706,9 +3706,17 @@ module.exports = class Game {
         };
         if (!skipStatsSave) {
           userSet.stats = player.user.stats;
-          userSet.winRate =
-            (player.user.stats["Mafia"].all.wins.count || 0) /
-            (player.user.stats["Mafia"].all.wins.total || 1);
+          const mafiaStats = player.user.stats["Mafia"];
+          if (mafiaStats) {
+            userSet.winRate =
+              (mafiaStats.all?.wins?.count || 0) /
+              (mafiaStats.all?.wins?.total || 1);
+            if (mafiaStats.unranked) {
+              userSet.unrankedWinRate =
+                (mafiaStats.unranked.wins.count || 0) /
+                (mafiaStats.unranked.wins.total || 1);
+            }
+          }
         }
         await models.User.updateOne(
           { id: player.user.id },
