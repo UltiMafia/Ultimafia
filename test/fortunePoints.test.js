@@ -332,8 +332,8 @@ describe("modules/fortunePoints", function () {
     it("should handle Village 60% vs Mafia 40% win rate", function () {
       // Village 6/10 = 0.6, Mafia 4/10 = 0.4 → weights 0.6, 0.4
       const alignmentWinRates = {
-        Village: Array(6).fill(["ranked", true]).concat(Array(4).fill(["ranked", false])),
-        Mafia: Array(4).fill(["ranked", true]).concat(Array(6).fill(["ranked", false])),
+        Village: Array(4).fill(["ranked", true]).concat(Array(2).fill(["competitive", true])).concat(Array(2).fill(["ranked", false])).concat(Array(2).fill(["competitive", false])),
+        Mafia: Array(2).fill(["competitive", true]).concat(Array(2).fill(["ranked", true])).concat(Array(3).fill(["ranked", false])).concat(Array(3).fill(["competitive", false])),
       };
       const { pointsWonByFactions, pointsLostByFactions } =
         computeFactionFortunePoints({
@@ -349,8 +349,8 @@ describe("modules/fortunePoints", function () {
 
     it("should handle Village 80% vs Mafia 20% win rate", function () {
       const alignmentWinRates = {
-        Village: Array(8).fill(["ranked", true]).concat(Array(2).fill(["ranked", false])),
-        Mafia: Array(2).fill(["ranked", true]).concat(Array(8).fill(["ranked", false])),
+        Village: Array(5).fill(["ranked", true]).concat(Array(3).fill(["competitive", true])).concat(Array(1).fill(["competitive", false])).concat(Array(1).fill(["ranked", false])),
+        Mafia: Array(1).fill(["competitive", true]).concat(Array(1).fill(["ranked", true])).concat(Array(4).fill(["ranked", false])).concat(Array(4).fill(["competitive", false])),
       };
       const { pointsWonByFactions, pointsLostByFactions } =
         computeFactionFortunePoints({
@@ -366,8 +366,8 @@ describe("modules/fortunePoints", function () {
 
     it("should handle Village 100% vs Mafia 0% win rate", function () {
       const alignmentWinRates = {
-        Village: Array(5).fill(["ranked", true]),
-        Mafia: Array(5).fill(["ranked", false]),
+        Village: Array(3).fill(["ranked", true]).concat(Array(2).fill(["competitive", true])),
+        Mafia: Array(2).fill(["competitive", false]).concat(Array(3).fill(["ranked", false])),
       };
       const { pointsWonByFactions, pointsLostByFactions } =
         computeFactionFortunePoints({
@@ -442,9 +442,9 @@ describe("modules/fortunePoints", function () {
 
     it("should handle Village + Mafia + Serial Killer with independent cap", function () {
       const alignmentWinRates = {
-        Village: Array(6).fill(["ranked", true]).concat(Array(4).fill(["ranked", false])),
-        Mafia: Array(3).fill(["ranked", true]).concat(Array(7).fill(["ranked", false])),
-        "Serial Killer": Array(1).fill(["ranked", true]).concat(Array(9).fill(["ranked", false])),
+        Village: Array(3).fill(["ranked", true]).concat(Array(3).fill(["competitive", true])).concat(Array(4).fill(["ranked", false])),
+        Mafia: Array(2).fill(["competitive", true]).concat(Array(1).fill(["ranked", true])).concat(Array(4).fill(["competitive", false])).concat(Array(3).fill(["ranked", false])),
+        "Serial Killer": Array(1).fill(["competitive", true]).concat(Array(5).fill(["ranked", false])).concat(Array(4).fill(["competitive", false])),
       };
       const { pointsWonByFactions } =
         computeFactionFortunePoints({
