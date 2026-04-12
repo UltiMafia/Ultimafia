@@ -1,10 +1,35 @@
 const chai = require("chai"),
   assert = chai.assert,
   should = chai.should();
-const { migrateUserStats } = require("../migrations/migrateStatsBuckets");
+const { migrateUserStats } = require("./migrateStatsBuckets");
 
 describe("migrations/migrateStatsBuckets", function () {
   describe("migrateUserStats", function () {
+    /*
+     * Example: full before/after snapshot of a legacy user's stats.
+     *
+     * BEFORE (legacy — all ranked+comp, maps at top level):
+     * {
+     *   Mafia: {
+     *     all: { totalGames: 10, wins: { count: 5, total: 10 }, abandons: { count: 0, total: 0 } },
+     *     bySetup: { setup1: { totalGames: 3, wins: { count: 2, total: 3 }, abandons: { count: 0, total: 0 } } },
+     *     byRole: { Cop: { totalGames: 4, wins: { count: 2, total: 4 }, abandons: { count: 0, total: 0 } } },
+     *     byAlignment: { Village: { totalGames: 6, wins: { count: 3, total: 6 }, abandons: { count: 0, total: 0 } } },
+     *   }
+     * }
+     *
+     * AFTER (migrated — maps nested inside the all bucket, top-level maps removed):
+     * {
+     *   Mafia: {
+     *     all: {
+     *       totalGames: 10, wins: { count: 5, total: 10 }, abandons: { count: 0, total: 0 },
+     *       bySetup: { setup1: { totalGames: 3, wins: { count: 2, total: 3 }, abandons: { count: 0, total: 0 } } },
+     *       byRole: { Cop: { totalGames: 4, wins: { count: 2, total: 4 }, abandons: { count: 0, total: 0 } } },
+     *       byAlignment: { Village: { totalGames: 6, wins: { count: 3, total: 6 }, abandons: { count: 0, total: 0 } } },
+     *     }
+     *   }
+     * }
+     */
     it("should move legacy bySetup/byRole/byAlignment into all bucket", function () {
       const stats = {
         Mafia: {
