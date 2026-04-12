@@ -7,15 +7,15 @@ const constants = require("../data/constants");
 
 const FORTUNE_GAME_TYPES = new Set(["ranked", "competitive"]);
 
+// entries: Array<[gameType, isFactionWin]>
 function winRateFromAlignmentEntries(entries) {
   if (!entries || !entries.length) return null;
   let wins = 0;
   let games = 0;
-  for (const row of entries) {
-    if (!Array.isArray(row)) continue;
-    if (!FORTUNE_GAME_TYPES.has(row[0])) continue;
+  for (const [gameType, isFactionWin] of entries) {
+    if (!FORTUNE_GAME_TYPES.has(gameType)) continue;
     games++;
-    if (row[1] === true) wins++;
+    if (isFactionWin === true) wins++;
   }
   if (games === 0) return null;
   return wins / games;
@@ -134,12 +134,13 @@ function alignmentRowsToWinRateMap(setupStats) {
   // Legacy `alignmentWinRates` stored bare booleans with no gameType tag,
   // so entries cannot be attributed to ranked/competitive and are skipped.
   const rows = setupStats.alignmentRows;
+  // rows: Array<[factionKey, gameType, isFactionWin]>
   if (Array.isArray(rows)) {
     for (const row of rows) {
       if (!Array.isArray(row) || row.length < 3) continue;
-      const [k, gameType, won] = row;
-      if (!map[k]) map[k] = [];
-      map[k].push([gameType, won]);
+      const [factionKey, gameType, isFactionWin] = row;
+      if (!map[factionKey]) map[factionKey] = [];
+      map[factionKey].push([gameType, isFactionWin]);
     }
   }
   return map;
