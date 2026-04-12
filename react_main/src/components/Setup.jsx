@@ -17,6 +17,7 @@ import {
   Typography,
   useMediaQuery,
   Popover,
+  Tooltip,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
@@ -865,36 +866,55 @@ export function SetupManipulationButtons(props) {
 
   const isOwner = props.setup.creator?.id === user.id;
   const hasEditAnySetupPerm = user.perms?.editAnySetup;
-  const canEditThisSetup = isOwner || hasEditAnySetupPerm;
+  const isRanked = props.setup.ranked || props.setup.competitive;
+  const canEditThisSetup = (isOwner || hasEditAnySetupPerm) && !isRanked;
   const favIconFormat = props.setup.favorite ? "fas" : "far";
 
-  const missingOwnershipStyle = {
-    opacity: !isOwner ? "20%" : undefined,
-    cursor: !isOwner ? "not-allowed" : undefined,
+  const disabledStyle = {
+    opacity: "20%",
+    cursor: "not-allowed",
   };
-  const missingEditStyle = {
-    opacity: !canEditThisSetup ? "20%" : undefined,
-    cursor: !canEditThisSetup ? "not-allowed" : undefined,
-  };
+
+  const editStyle = !canEditThisSetup ? disabledStyle : undefined;
+  const deleteStyle = !isOwner || isRanked ? disabledStyle : undefined;
+
+  const rankedMsg = "Ranked setups cannot be edited";
+
+  const editButton = (
+    <IconButton
+      aria-label="edit"
+      disabled={!canEditThisSetup}
+      sx={editStyle}
+      onClick={() =>
+        window.open(
+          `/play/create?edit=${props.setup.id}&game=${props.setup.gameType}`,
+          "_blank"
+        )
+      }
+    >
+      <i className={`setup-btn edit-setup fa-pen-square fas`} />
+    </IconButton>
+  );
+
+  const deleteButton = (
+    <IconButton
+      aria-label="delete"
+      disabled={!isOwner || isRanked}
+      sx={deleteStyle}
+      onClick={() => props.onDel(props.setup)}
+    >
+      <i className={`setup-btn del-setup fa-times-circle fas`} />
+    </IconButton>
+  );
 
   return (
     <Stack direction="row" spacing={1.5} alignItems="center">
       <IconButton aria-label="favorite" onClick={() => props.onFav(props.setup)}>
         <i className={`setup-btn fav-setup fa-star ${favIconFormat}`} />
       </IconButton>
-      <IconButton
-        aria-label="edit"
-        disabled={!canEditThisSetup}
-        sx={missingEditStyle}
-        onClick={() =>
-          window.open(
-            `/play/create?edit=${props.setup.id}&game=${props.setup.gameType}`,
-            "_blank"
-          )
-        }
-      >
-        <i className={`setup-btn edit-setup fa-pen-square fas`} />
-      </IconButton>
+      {isRanked ? (
+        <Tooltip title={rankedMsg}><span>{editButton}</span></Tooltip>
+      ) : editButton}
       <IconButton
         aria-label="copy"
         onClick={() =>
@@ -906,14 +926,9 @@ export function SetupManipulationButtons(props) {
       >
         <i className={`setup-btn copy-setup fa-copy fas`} />
       </IconButton>
-      <IconButton
-        aria-label="delete"
-        disabled={!isOwner}
-        sx={missingOwnershipStyle}
-        onClick={() => props.onDel(props.setup)}
-      >
-        <i className={`setup-btn del-setup fa-times-circle fas`} />
-      </IconButton>
+      {isRanked ? (
+        <Tooltip title={rankedMsg}><span>{deleteButton}</span></Tooltip>
+      ) : deleteButton}
     </Stack>
   );
 }

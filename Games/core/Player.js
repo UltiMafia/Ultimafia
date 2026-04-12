@@ -1802,8 +1802,13 @@ module.exports = class Player {
     const stats = this.user.stats[this.game.type];
 
     if (!stats.all) stats.all = dbStats.statsObj(this.game.type);
+    if (!stats.unranked) stats.unranked = dbStats.statsObj(this.game.type);
 
-    this.updateStatsObj(stats.all, stat, inc);
+    if (this.game.ranked || this.game.competitive) {
+      this.updateStatsObj(stats.all, stat, inc);
+    } else {
+      this.updateStatsObj(stats.unranked, stat, inc);
+    }
     this.updateStatsMap(stats, "bySetup", this.game.setup.id, stat, inc);
 
     if (!this.role) return;

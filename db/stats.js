@@ -11,7 +11,9 @@ const mafiaStatsObj = {
 };
 
 const mafiaStatsSet = {
+  // "all" is legacy — contains only ranked + competitive stats
   all: mafiaStatsObj,
+  unranked: mafiaStatsObj,
   bySetup: {},
   byRole: {},
   byAlignment: {},
