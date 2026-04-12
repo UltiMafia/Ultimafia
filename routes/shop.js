@@ -247,7 +247,7 @@ const shopItems = [
       if (!gameId) throw new Error("Please provide a game ID.");
 
       const existing = await models.Stamp.findOne({
-        originalOwnerId: userId,
+        $or: [{ originalOwnerId: userId }, { originalOwnerId: null, userId }],
         gameId,
       });
       if (existing) throw new Error("You already have a stamp from this game.");
@@ -503,7 +503,7 @@ router.get("/stampSuggestions", async function (req, res) {
     // Remove games where user already has a stamp
     var gameIds = wonGames.map((g) => g.gameId);
     var existingStamps = await models.Stamp.find({
-      originalOwnerId: userId,
+      $or: [{ originalOwnerId: userId }, { originalOwnerId: null, userId }],
       gameId: { $in: gameIds },
     })
       .select("gameId")
