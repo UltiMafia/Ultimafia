@@ -2034,7 +2034,7 @@ function StatsModal(props) {
   var stats =
     statsFilter === "all"
       ? mafia.all
-      : mafia.all?.[statsFilter] || mafia[statsFilter];
+      : mafia.all?.[statsFilter];
 
   if (stats == null) {
     stats = [];
