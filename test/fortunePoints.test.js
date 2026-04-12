@@ -329,6 +329,153 @@ describe("modules/fortunePoints", function () {
       Object.keys(pointsLostByFactions).length.should.equal(0);
     });
 
+    it("should handle Village 60% vs Mafia 40% win rate", function () {
+      // Village 6/10 = 0.6, Mafia 4/10 = 0.4 → weights 0.6, 0.4
+      const alignmentWinRates = {
+        Village: Array(6).fill(["ranked", true]).concat(Array(4).fill(["ranked", false])),
+        Mafia: Array(4).fill(["ranked", true]).concat(Array(6).fill(["ranked", false])),
+      };
+      const { pointsWonByFactions, pointsLostByFactions } =
+        computeFactionFortunePoints({
+          factionNames: ["Village", "Mafia"],
+          alignmentWinRates,
+        });
+      // weights: V=0.6, M=0.4 → winPts: V=72, M=48 → lossPts: V=48, M=72
+      pointsWonByFactions.Village.should.equal(72);
+      pointsWonByFactions.Mafia.should.equal(48);
+      pointsLostByFactions.Village.should.equal(48);
+      pointsLostByFactions.Mafia.should.equal(72);
+    });
+
+    it("should handle Village 80% vs Mafia 20% win rate", function () {
+      const alignmentWinRates = {
+        Village: Array(8).fill(["ranked", true]).concat(Array(2).fill(["ranked", false])),
+        Mafia: Array(2).fill(["ranked", true]).concat(Array(8).fill(["ranked", false])),
+      };
+      const { pointsWonByFactions, pointsLostByFactions } =
+        computeFactionFortunePoints({
+          factionNames: ["Village", "Mafia"],
+          alignmentWinRates,
+        });
+      // weights: V=0.8, M=0.2 → winPts: V=96, M=24 → lossPts: V=24, M=96
+      pointsWonByFactions.Village.should.equal(96);
+      pointsWonByFactions.Mafia.should.equal(24);
+      pointsLostByFactions.Village.should.equal(24);
+      pointsLostByFactions.Mafia.should.equal(96);
+    });
+
+    it("should handle Village 100% vs Mafia 0% win rate", function () {
+      const alignmentWinRates = {
+        Village: Array(5).fill(["ranked", true]),
+        Mafia: Array(5).fill(["ranked", false]),
+      };
+      const { pointsWonByFactions, pointsLostByFactions } =
+        computeFactionFortunePoints({
+          factionNames: ["Village", "Mafia"],
+          alignmentWinRates,
+        });
+      // weights: V=1.0, M=0.0 → winPts: V=120, M=0 → lossPts: V=0, M=120
+      pointsWonByFactions.Village.should.equal(120);
+      pointsWonByFactions.Mafia.should.equal(0);
+      pointsLostByFactions.Village.should.equal(0);
+      pointsLostByFactions.Mafia.should.equal(120);
+    });
+
+    it("should handle 3-faction Village 50% / Mafia 30% / Cult 20%", function () {
+      const alignmentWinRates = {
+        Village: Array(5).fill(["ranked", true]).concat(Array(5).fill(["ranked", false])),
+        Mafia: Array(3).fill(["ranked", true]).concat(Array(7).fill(["ranked", false])),
+        Cult: Array(2).fill(["ranked", true]).concat(Array(8).fill(["ranked", false])),
+      };
+      const { pointsWonByFactions, pointsLostByFactions } =
+        computeFactionFortunePoints({
+          factionNames: ["Village", "Mafia", "Cult"],
+          alignmentWinRates,
+        });
+      // weights: V=0.5, M=0.3, C=0.2 → winPts: V=60, M=36, C=24
+      pointsWonByFactions.Village.should.equal(60);
+      pointsWonByFactions.Mafia.should.equal(36);
+      pointsWonByFactions.Cult.should.equal(24);
+      pointsLostByFactions.Village.should.equal(60);
+      pointsLostByFactions.Mafia.should.equal(84);
+      pointsLostByFactions.Cult.should.equal(96);
+    });
+
+    it("should handle 3-faction equal win rates", function () {
+      const alignmentWinRates = {
+        Village: Array(5).fill(["ranked", true]).concat(Array(5).fill(["ranked", false])),
+        Mafia: Array(5).fill(["ranked", true]).concat(Array(5).fill(["ranked", false])),
+        Cult: Array(5).fill(["ranked", true]).concat(Array(5).fill(["ranked", false])),
+      };
+      const { pointsWonByFactions, pointsLostByFactions } =
+        computeFactionFortunePoints({
+          factionNames: ["Village", "Mafia", "Cult"],
+          alignmentWinRates,
+        });
+      pointsWonByFactions.Village.should.equal(40);
+      pointsWonByFactions.Mafia.should.equal(40);
+      pointsWonByFactions.Cult.should.equal(40);
+      pointsLostByFactions.Village.should.equal(80);
+      pointsLostByFactions.Mafia.should.equal(80);
+      pointsLostByFactions.Cult.should.equal(80);
+    });
+
+    it("should handle 3-faction Village 70% / Mafia 20% / Cult 10%", function () {
+      const alignmentWinRates = {
+        Village: Array(7).fill(["ranked", true]).concat(Array(3).fill(["ranked", false])),
+        Mafia: Array(2).fill(["ranked", true]).concat(Array(8).fill(["ranked", false])),
+        Cult: Array(1).fill(["ranked", true]).concat(Array(9).fill(["ranked", false])),
+      };
+      const { pointsWonByFactions, pointsLostByFactions } =
+        computeFactionFortunePoints({
+          factionNames: ["Village", "Mafia", "Cult"],
+          alignmentWinRates,
+        });
+      // weights: V=0.7, M=0.2, C=0.1 → winPts: V=84, M=24, C=12
+      pointsWonByFactions.Village.should.equal(84);
+      pointsWonByFactions.Mafia.should.equal(24);
+      pointsWonByFactions.Cult.should.equal(12);
+      pointsLostByFactions.Village.should.equal(36);
+      pointsLostByFactions.Mafia.should.equal(96);
+      pointsLostByFactions.Cult.should.equal(108);
+    });
+
+    it("should handle Village + Mafia + Serial Killer with independent cap", function () {
+      const alignmentWinRates = {
+        Village: Array(6).fill(["ranked", true]).concat(Array(4).fill(["ranked", false])),
+        Mafia: Array(3).fill(["ranked", true]).concat(Array(7).fill(["ranked", false])),
+        "Serial Killer": Array(1).fill(["ranked", true]).concat(Array(9).fill(["ranked", false])),
+      };
+      const { pointsWonByFactions } =
+        computeFactionFortunePoints({
+          factionNames: ["Village", "Mafia", "Serial Killer"],
+          alignmentWinRates,
+        });
+      // weights: V=0.6, M=0.3, SK=0.1 → winPts: V=72, M=36, SK=12 (under cap)
+      pointsWonByFactions.Village.should.equal(72);
+      pointsWonByFactions.Mafia.should.equal(36);
+      pointsWonByFactions["Serial Killer"].should.equal(12);
+    });
+
+    it("should handle one faction with no ranked data falling back to avg of others", function () {
+      const alignmentWinRates = {
+        Village: Array(8).fill(["ranked", true]).concat(Array(2).fill(["ranked", false])),
+        Mafia: Array(2).fill(["ranked", true]).concat(Array(8).fill(["ranked", false])),
+        Cult: [["unranked", true]], // no ranked data
+      };
+      const { pointsWonByFactions } =
+        computeFactionFortunePoints({
+          factionNames: ["Village", "Mafia", "Cult"],
+          alignmentWinRates,
+        });
+      // V=0.8, M=0.2, Cult=null → fill = (0.8+0.2)/2 = 0.5
+      // sum = 0.8+0.2+0.5 = 1.5 → weights: V=0.533, M=0.133, C=0.333
+      // winPts: V=round(64), M=round(16), C=round(40)
+      pointsWonByFactions.Village.should.equal(64);
+      pointsWonByFactions.Mafia.should.equal(16);
+      pointsWonByFactions.Cult.should.equal(40);
+    });
+
     it("should end-to-end filter unranked rows when fed through alignmentRowsToWinRateMap", function () {
       const setupStats = {
         alignmentRows: [
