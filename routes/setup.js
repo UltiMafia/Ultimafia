@@ -18,6 +18,10 @@ const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const Diff = require("diff");
 
+function canModifySetup(setup) {
+  return !setup.ranked && !setup.competitive;
+}
+
 function markFavSetups(userId, setups) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -259,7 +263,7 @@ router.get("/search", async function (req, res) {
       .skip(start)
       .limit(pageSize)
       .select(
-        "id gameType name roles closed useRoleGroups roleGroupSizes gameSettings count total featured -_id"
+        "id gameType name roles closed useRoleGroups roleGroupSizes gameSettings count total featured ranked competitive -_id"
       )
       .populate("creator", "id name avatar tag -_id");
     var count = await models.Setup.countDocuments(search);
@@ -704,7 +708,7 @@ router.post("/delete", async function (req, res) {
       "_id"
     );
     var setup = await models.Setup.findOne({ id: setupId })
-      .select("_id creator")
+      .select("_id creator ranked competitive")
       .populate("creator", "_id id");
     if (!user || !setup || !setup.creator) {
       res.status(500);
@@ -792,8 +796,14 @@ router.post("/create", async function (req, res) {
 
     if (req.body.editing) {
       var setup = await models.Setup.findOne({ id: String(req.body.id) })
-        .select("creator ranked")
+        .select("creator ranked competitive")
         .populate("creator", "id");
+
+      if (setup && !canModifySetup(setup)) {
+        res.status(403);
+        res.send("Ranked/competitive setups cannot be edited.");
+        return;
+      }
 
       if (
         (!setup || (setup.creator && setup.creator.id != userId)) &&

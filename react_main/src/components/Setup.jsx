@@ -876,7 +876,7 @@ export function SetupManipulationButtons(props) {
   };
 
   const editStyle = !canEditThisSetup ? disabledStyle : undefined;
-  const deleteStyle = !isOwner || isRanked ? disabledStyle : undefined;
+  const deleteStyle = !isOwner ? disabledStyle : undefined;
 
   const rankedMsg = "Ranked setups cannot be edited";
 
@@ -899,7 +899,7 @@ export function SetupManipulationButtons(props) {
   const deleteButton = (
     <IconButton
       aria-label="delete"
-      disabled={!isOwner || isRanked}
+      disabled={!isOwner}
       sx={deleteStyle}
       onClick={() => props.onDel(props.setup)}
     >
@@ -926,9 +926,7 @@ export function SetupManipulationButtons(props) {
       >
         <i className={`setup-btn copy-setup fa-copy fas`} />
       </IconButton>
-      {isRanked ? (
-        <Tooltip title={rankedMsg}><span>{deleteButton}</span></Tooltip>
-      ) : deleteButton}
+      {deleteButton}
     </Stack>
   );
 }
