@@ -161,6 +161,7 @@ var schemas = {
     },
     stats: {},
     winRate: { type: Number, default: 0 },
+    unrankedWinRate: { type: Number, default: 0 },
     achievements: [],
     achievementCount: { type: Number, default: 0 },
     favoriteRoles: { type: [String], default: [] },
