@@ -27,6 +27,7 @@ import {
   getWins,
   getLosses,
   getAbandons,
+  mergeStatsBuckets,
 } from "utils/mafiaStats";
 import Comments from "../Community/Comments";
 
@@ -52,6 +53,8 @@ import {
   IconButton,
   Popover,
   Stack,
+  ToggleButton,
+  ToggleButtonGroup,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -185,6 +188,7 @@ export default function Profile() {
   const [groups, setGroups] = useState([]);
   const [showStatsModal, setShowStatsModal] = useState(false);
   const [ratingsTab, setRatingsTab] = useState("wins");
+  const [statsBucket, setStatsBucket] = useState("ranked");
   const [mediaUrl, setMediaUrl] = useState("");
   const [autoplay, setAutoplay] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -928,7 +932,12 @@ export default function Profile() {
   var totalGames = 0;
 
   if (stats && stats["Mafia"] && stats["Mafia"].all) {
-    var mafiaStats = stats["Mafia"].all;
+    var mafiaStats =
+      statsBucket === "ranked"
+        ? stats["Mafia"].all
+        : statsBucket === "unranked"
+          ? stats["Mafia"].unranked || {}
+          : mergeStatsBuckets(stats["Mafia"].all, stats["Mafia"].unranked);
     totalGames = getTotalGames(mafiaStats);
 
     ratings = Object.keys(RatingThresholds).map((statName) => {
@@ -1430,6 +1439,7 @@ export default function Profile() {
       {stats && (
         <StatsModal
           stats={stats}
+          statsBucket={statsBucket}
           show={showStatsModal}
           setShow={setShowStatsModal}
         />
@@ -1650,6 +1660,34 @@ export default function Profile() {
                       {totalGames} games
                     </Typography>
                   </Typography>
+                  <ToggleButtonGroup
+                    size="small"
+                    exclusive
+                    value={statsBucket}
+                    onChange={(e, v) => v && setStatsBucket(v)}
+                    sx={{
+                      mb: 1,
+                      display: "flex",
+                      justifyContent: "center",
+                      "& .MuiToggleButton-root": {
+                        px: 1.5,
+                        py: 0.25,
+                        fontSize: "0.7rem",
+                        textTransform: "none",
+                        border: "1px solid",
+                        borderColor: "divider",
+                        color: "text.secondary",
+                      },
+                      "& .MuiToggleButton-root.Mui-selected": {
+                        backgroundColor: "action.selected",
+                        color: "text.primary",
+                      },
+                    }}
+                  >
+                    <ToggleButton value="ranked">Ranked + Comp</ToggleButton>
+                    <ToggleButton value="unranked">Unranked</ToggleButton>
+                    <ToggleButton value="combined">All Games</ToggleButton>
+                  </ToggleButtonGroup>
                   <div className="ratings-tabs">
                     <div
                       className={
@@ -1687,7 +1725,7 @@ export default function Profile() {
                     </div>
                   )}
                   {ratingsTab === "query" && (
-                    <StatsQueryView stats={stats} />
+                    <StatsQueryView stats={stats} statsBucket={statsBucket} />
                   )}
                 </div>
               )}
@@ -2031,10 +2069,16 @@ function StatsModal(props) {
 
   var statsRowNames;
   const mafia = props.stats["Mafia"];
+  const bucket =
+    props.statsBucket === "ranked"
+      ? mafia.all
+      : props.statsBucket === "unranked"
+        ? mafia.unranked || {}
+        : mergeStatsBuckets(mafia.all, mafia.unranked);
   var stats =
     statsFilter === "all"
-      ? mafia.all
-      : mafia.all?.[statsFilter];
+      ? bucket
+      : bucket?.[statsFilter];
 
   if (stats == null) {
     stats = [];
@@ -2146,7 +2190,7 @@ function StatsModal(props) {
   );
 }
 
-function StatsQueryView({ stats }) {
+function StatsQueryView({ stats, statsBucket }) {
   const [queryType, setQueryType] = useState("bySetup");
   const [selectedKey, setSelectedKey] = useState("");
   const [setupNames, setSetupNames] = useState({});
@@ -2157,13 +2201,19 @@ function StatsQueryView({ stats }) {
     byAlignment: "Alignment",
   };
 
-  const data = stats?.["Mafia"]?.[queryType] || {};
+  const bucketData =
+    statsBucket === "ranked"
+      ? stats?.["Mafia"]?.all
+      : statsBucket === "unranked"
+        ? stats?.["Mafia"]?.unranked || {}
+        : mergeStatsBuckets(stats?.["Mafia"]?.all, stats?.["Mafia"]?.unranked);
+  const data = bucketData?.[queryType] || {};
   const keys = Object.keys(data);
 
   // fetch setup names when viewing Setup tab
   useEffect(() => {
     if (queryType !== "bySetup") return;
-    const setupKeys = Object.keys(stats?.["Mafia"]?.bySetup || {});
+    const setupKeys = Object.keys(bucketData?.bySetup || {});
     const missing = setupKeys.filter((id) => !(id in setupNames));
     if (missing.length === 0) return;
 
