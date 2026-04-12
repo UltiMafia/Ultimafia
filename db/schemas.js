@@ -356,12 +356,16 @@ var schemas = {
   Stamp: new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
     userId: { type: String, index: true },
+    originalOwner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    originalOwnerId: { type: String, index: true },
     gameId: { type: String, index: true },
     gameType: { type: String },
     role: { type: String },
     hidden: { type: Boolean, default: false },
     createdAt: { type: Number, default: Date.now },
-  }).index({ userId: 1, gameId: 1 }, { unique: true }),
+  })
+    .index({ userId: 1, gameId: 1 }, { unique: true })
+    .index({ originalOwnerId: 1, gameId: 1 }, { unique: true }),
   StampTrade: new mongoose.Schema({
     id: { type: String, index: true, unique: true },
     initiatorId: { type: String, index: true },

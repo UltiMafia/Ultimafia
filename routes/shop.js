@@ -246,7 +246,10 @@ const shopItems = [
       const gameId = String(body.gameId || "").trim();
       if (!gameId) throw new Error("Please provide a game ID.");
 
-      const existing = await models.Stamp.findOne({ userId, gameId });
+      const existing = await models.Stamp.findOne({
+        originalOwnerId: userId,
+        gameId,
+      });
       if (existing) throw new Error("You already have a stamp from this game.");
 
       const result = await checkStampEligibility(userId, gameId);
@@ -258,6 +261,8 @@ const shopItems = [
         await models.Stamp.create({
           user: userDoc._id,
           userId,
+          originalOwner: userDoc._id,
+          originalOwnerId: userId,
           gameId: context.gameId,
           gameType: context.gameType,
           role: context.role,
@@ -498,7 +503,7 @@ router.get("/stampSuggestions", async function (req, res) {
     // Remove games where user already has a stamp
     var gameIds = wonGames.map((g) => g.gameId);
     var existingStamps = await models.Stamp.find({
-      userId,
+      originalOwnerId: userId,
       gameId: { $in: gameIds },
     })
       .select("gameId")
