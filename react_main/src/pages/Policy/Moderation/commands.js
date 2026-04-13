@@ -610,6 +610,7 @@ export function useModCommands(argValues, commandRan, setResults) {
             { value: "vanityUrl", label: "Vanity URL" },
             { value: "video", label: "Video" },
             { value: "pronouns", label: "Pronouns" },
+            { value: "donorBio", label: "Donor Bio" },
             { value: "profileBackground", label: "Profile Background" },
             { value: "accountDisplay", label: "Account Display" },
             { value: "all", label: "All User Content" },
@@ -1437,6 +1438,32 @@ export function useModCommands(argValues, commandRan, setResults) {
           })
           .then(() => {
             siteInfo.showAlert("Contributor credit updated.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Manage Donor Status": {
+      perm: "changeUsersName",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/toggleDonor", { userId: argValues.userId })
+          .then((res) => {
+            const assigned = res.data?.isDonor === true;
+            siteInfo.showAlert(
+              assigned
+                ? "Donor status assigned."
+                : "Donor status removed.",
+              "success"
+            );
             commandRan();
           })
           .catch(errorAlert);

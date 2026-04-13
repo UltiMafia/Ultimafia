@@ -2,7 +2,6 @@ const express = require("express");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 const models = require("../db/models");
-const donorData = require("../data/donors");
 const { violationDefinitions } = require("../data/violations");
 
 router.get("/contributors", async function (req, res) {
@@ -77,19 +76,51 @@ router.get("/contributors/art", async function (req, res) {
 router.get("/donors", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
-    var result = [];
-
-    const donors = donorData["donor"];
-    for (let donor of donors) {
-      let user = await models.User.findOne({ name: donor }).select(
-        "id name avatar -_id"
-      );
-      if (!user) {
-        continue;
-      }
-
-      result.push(user.toJSON());
+    const donorGroup = await models.Group.findOne({ name: "Donor" }).select(
+      "_id"
+    );
+    if (!donorGroup) {
+      res.send([]);
+      return;
     }
+
+    const inDonorGroup = await models.InGroup.find({
+      group: donorGroup._id,
+    }).populate({
+      path: "user",
+      match: { deleted: false },
+      select: "id name avatar lastActive donorBio -_id",
+    });
+
+    const users = inDonorGroup
+      .map((ig) => ig.user)
+      .filter((u) => u != null)
+      .sort((a, b) => {
+        const la = a.lastActive != null ? a.lastActive : 0;
+        const lb = b.lastActive != null ? b.lastActive : 0;
+        return lb - la;
+      });
+
+    const ids = users.map((u) => u.id);
+    const vanityDocs = await models.VanityUrl.find({
+      userId: { $in: ids },
+    })
+      .select("userId url -_id")
+      .lean();
+    const vanityByUserId = Object.fromEntries(
+      vanityDocs.map((v) => [v.userId, v.url])
+    );
+
+    const result = users.map((u) => {
+      const j = u.toJSON();
+      return {
+        id: j.id,
+        name: j.name,
+        avatar: j.avatar,
+        vanityUrl: vanityByUserId[j.id] || "",
+        bio: j.donorBio || "",
+      };
+    });
 
     res.send(result);
   } catch (e) {

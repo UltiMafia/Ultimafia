@@ -1998,6 +1998,60 @@ router.post("/contributorBio", async function (req, res) {
   }
 });
 
+router.post("/donorBio", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var bio = String(req.body.bio || "");
+
+    if (bio.length > 240) {
+      res.status(500);
+      res.send("Donor bio must be 240 characters or less.");
+      return;
+    }
+
+    var donorGroup = await models.Group.findOne({ name: "Donor" }).select(
+      "_id"
+    );
+    if (!donorGroup) {
+      res.status(500);
+      res.send("Donor group not configured.");
+      return;
+    }
+
+    var userDoc = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("_id");
+
+    if (!userDoc) {
+      res.status(500);
+      res.send("User not found.");
+      return;
+    }
+
+    var inDonorGroup = await models.InGroup.findOne({
+      user: userDoc._id,
+      group: donorGroup._id,
+    });
+
+    if (!inDonorGroup) {
+      res.status(403);
+      res.send("Only donors can edit the donor blurb.");
+      return;
+    }
+
+    await models.User.updateOne({ id: userId }, { $set: { donorBio: bio } });
+    await redis.cacheUserInfo(userId, true);
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error updating donor blurb.");
+  }
+});
+
 router.post("/pronouns", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {

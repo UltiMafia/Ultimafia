@@ -120,6 +120,11 @@ var schemas = {
       maxlength: 240,
       default: "",
     },
+    donorBio: {
+      type: String,
+      maxlength: 240,
+      default: "",
+    },
     rank: Number,
     permissions: [String],
     setups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Setup" }],

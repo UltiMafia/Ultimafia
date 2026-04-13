@@ -460,6 +460,72 @@ router.post("/assignCredit", async function (req, res) {
   }
 });
 
+router.post("/toggleDonor", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdTarget = String(req.body.userId || "").trim();
+    var perm = "changeUsersName";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    if (!userIdTarget) {
+      res.status(400);
+      res.send("User is required.");
+      return;
+    }
+
+    var donorGroup = await models.Group.findOne({ name: "Donor" }).select(
+      "_id"
+    );
+    if (!donorGroup) {
+      res.status(500);
+      res.send("Donor group does not exist.");
+      return;
+    }
+
+    var userToUpdate = await models.User.findOne({
+      id: userIdTarget,
+      deleted: false,
+    }).select("_id");
+
+    if (!userToUpdate) {
+      res.status(500);
+      res.send("User does not exist.");
+      return;
+    }
+
+    var inGroup = await models.InGroup.findOne({
+      user: userToUpdate._id,
+      group: donorGroup._id,
+    });
+
+    var nowDonor;
+    if (inGroup) {
+      await models.InGroup.deleteOne({ _id: inGroup._id }).exec();
+      nowDonor = false;
+    } else {
+      await new models.InGroup({
+        user: userToUpdate._id,
+        group: donorGroup._id,
+      }).save();
+      nowDonor = true;
+    }
+
+    await redis.cacheUserInfo(userIdTarget, true);
+    await redis.cacheUserPermissions(userIdTarget);
+
+    routeUtils.createModAction(userId, "Manage Donor Status", [
+      userIdTarget,
+      nowDonor ? "assigned" : "revoked",
+    ]);
+    res.json({ isDonor: nowDonor });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error updating donor status.");
+  }
+});
+
 router.post("/roleIconCredit", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
@@ -1347,6 +1413,11 @@ router.post("/clearUserContent", async (req, res) => {
         modActionName = "Clear Pronouns";
         break;
 
+      case "donorBio":
+        updateQuery = { $set: { donorBio: "" } };
+        modActionName = "Clear Donor Bio";
+        break;
+
       case "accountDisplay":
         updateQuery = {};
         modActionName = "Clear Account Display";
@@ -1375,6 +1446,7 @@ router.post("/clearUserContent", async (req, res) => {
             name: routeUtils.nameGen().slice(0, constants.maxUserNameLength),
             avatar: false,
             bio: "",
+            donorBio: "",
             customEmotes: [],
             profileBackground: false,
           },
