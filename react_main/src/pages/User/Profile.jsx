@@ -930,8 +930,10 @@ export default function Profile() {
 
   var ratings = [];
   var totalGames = 0;
+  var hasAnyStats = false;
 
   if (stats && stats["Mafia"] && stats["Mafia"].all) {
+    hasAnyStats = getTotalGames(stats["Mafia"].all) >= RequiredTotalForStats;
     var mafiaStats =
       statsBucket === "ranked"
         ? stats["Mafia"].all
@@ -1651,7 +1653,7 @@ export default function Profile() {
               <RapSheet userId={profileUserId} />
             )}
             {trophyCase}
-            {totalGames >= RequiredTotalForStats &&
+            {hasAnyStats &&
               !settings.hideStatistics && (
                 <div className="box-panel ratings" style={panelStyle}>
                   <Typography variant="h3" sx={headingStyle}>
@@ -1688,44 +1690,55 @@ export default function Profile() {
                     <ToggleButton value="unranked">Unranked</ToggleButton>
                     <ToggleButton value="combined">All Games</ToggleButton>
                   </ToggleButtonGroup>
-                  <div className="ratings-tabs">
-                    <div
-                      className={
-                        "ratings-tab" +
-                        (ratingsTab === "wins" ? " active" : "")
-                      }
-                      onClick={() => setRatingsTab("wins")}
+                  {totalGames < RequiredTotalForStats ? (
+                    <Typography
+                      variant="body2"
+                      sx={{ textAlign: "center", opacity: 0.5, py: 2 }}
                     >
-                      Wins:{" "}
-                      {Math.round(
-                        (getWins(mafiaStats) / totalGames) * 100
+                      No data yet.
+                    </Typography>
+                  ) : (
+                    <>
+                      <div className="ratings-tabs">
+                        <div
+                          className={
+                            "ratings-tab" +
+                            (ratingsTab === "wins" ? " active" : "")
+                          }
+                          onClick={() => setRatingsTab("wins")}
+                        >
+                          Wins:{" "}
+                          {Math.round(
+                            (getWins(mafiaStats) / totalGames) * 100
+                          )}
+                          %
+                        </div>
+                        <div
+                          className={
+                            "ratings-tab" +
+                            (ratingsTab === "query" ? " active" : "")
+                          }
+                          onClick={() => setRatingsTab("query")}
+                        >
+                          <i className="fas fa-expand-arrows-alt" />
+                        </div>
+                      </div>
+                      {ratingsTab === "wins" && (
+                        <div
+                          className="content"
+                          style={{ padding: "0", justifyContent: "center" }}
+                        >
+                          <PieChart
+                            wins={getWins(mafiaStats)}
+                            losses={getLosses(mafiaStats)}
+                            abandons={getAbandons(mafiaStats)}
+                          />
+                        </div>
                       )}
-                      %
-                    </div>
-                    <div
-                      className={
-                        "ratings-tab" +
-                        (ratingsTab === "query" ? " active" : "")
-                      }
-                      onClick={() => setRatingsTab("query")}
-                    >
-                      <i className="fas fa-expand-arrows-alt" />
-                    </div>
-                  </div>
-                  {ratingsTab === "wins" && (
-                    <div
-                      className="content"
-                      style={{ padding: "0", justifyContent: "center" }}
-                    >
-                      <PieChart
-                        wins={getWins(mafiaStats)}
-                        losses={getLosses(mafiaStats)}
-                        abandons={getAbandons(mafiaStats)}
-                      />
-                    </div>
-                  )}
-                  {ratingsTab === "query" && (
-                    <StatsQueryView stats={stats} statsBucket={statsBucket} />
+                      {ratingsTab === "query" && (
+                        <StatsQueryView stats={stats} statsBucket={statsBucket} />
+                      )}
+                    </>
                   )}
                 </div>
               )}
