@@ -118,7 +118,7 @@ export const PieChart = ({ wins, losses, abandons, showTotal }) => {
     // animate slices drawing in
     slices
       .transition()
-      .duration(650)
+      .duration(300)
       .ease(d3.easeCubicOut)
       .attrTween("d", function (d) {
         const interp = d3.interpolate(this._current, d);
@@ -152,7 +152,7 @@ export const PieChart = ({ wins, losses, abandons, showTotal }) => {
       .style("opacity", 0);
 
     // fade in labels after slice animation
-    labels.transition().delay(650).duration(300).style("opacity", 1);
+    labels.transition().delay(300).duration(150).style("opacity", 1);
 
     // hover: expand + glow
     slices
