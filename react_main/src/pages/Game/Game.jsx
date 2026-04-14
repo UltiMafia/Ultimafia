@@ -4932,14 +4932,6 @@ function FirstGameModal(props) {
         <div>
           - Want to help us keep the lights on? You can support us on{" "}
           <a
-            href="https://www.patreon.com/"
-            target="_blank"
-            rel="noopener noreferrer nofollow"
-          >
-            Patreon
-          </a>{" "}
-          and{" "}
-          <a
             href="https://ko-fi.com/ultimafia"
             target="_blank"
             rel="noopener noreferrer nofollow"

@@ -490,7 +490,7 @@ export default function Shop(props) {
           >
             <Paper sx={{ p: 2, height: "100%" }}>
               <Stack spacing={1}>
-                <Typography variant="h3">Buy coins</Typography>
+                <Typography variant="h3">Donate</Typography>
                 <Typography variant="body2">1 USD = 5 coins.</Typography>
                 <TextField
                   label="USD Amount"

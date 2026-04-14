@@ -499,13 +499,6 @@ function Footer() {
             <i className="fab fa-github" />
           </MuiLink>
           <MuiLink
-            href="https://www.patreon.com/"
-            rel="noopener noreferrer nofollow"
-            sx={{ display: "flex", }}
-          >
-            <i className="fab fa-patreon" />
-          </MuiLink>
-          <MuiLink
             href="https://ko-fi.com/ultimafia"
             rel="noopener noreferrer nofollow"
             sx={{ display: "flex", }}
