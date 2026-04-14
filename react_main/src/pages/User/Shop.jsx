@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
@@ -18,6 +18,8 @@ import {
   Grid2,
   CardActionArea,
   Divider,
+  Tabs,
+  Tab,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -41,6 +43,12 @@ function parseGameId(input) {
   return "";
 }
 
+function parseUsdAmount(input) {
+  const parsed = Number(input);
+  if (!Number.isInteger(parsed) || parsed <= 0) return null;
+  return parsed;
+}
+
 export default function Shop(props) {
   const [shopInfo, setShopInfo] = useState({ shopItems: [], balance: 0 });
   const [loaded, setLoaded] = useState(false);
@@ -52,6 +60,13 @@ export default function Shop(props) {
   const [stampSuggestions, setStampSuggestions] = useState([]);
   const [selectedSuggestion, setSelectedSuggestion] = useState(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeTab, setActiveTab] = useState("shop");
+  const [payPalClientId, setPayPalClientId] = useState("");
+  const [payPalScriptReady, setPayPalScriptReady] = useState(false);
+  const [payPalLoading, setPayPalLoading] = useState(false);
+  const [purchaseUsd, setPurchaseUsd] = useState("5");
+  const payPalButtonsRef = useRef(null);
+  const payPalButtonsInstanceRef = useRef(null);
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -90,6 +105,122 @@ export default function Shop(props) {
     onBuyItem(index);
   }, [loaded, location.search]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get("tab");
+    if (tab === "manage") {
+      setActiveTab("manage");
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    if (!user.loaded || !user.loggedIn) return;
+    axios
+      .get("/api/shop/paypal-client-id")
+      .then((res) => {
+        if (res.data?.clientId) {
+          setPayPalClientId(res.data.clientId);
+        }
+      })
+      .catch(errorAlert);
+  }, [user.loaded, user.loggedIn]);
+
+  useEffect(() => {
+    if (!payPalClientId) return;
+
+    const existingScript = document.querySelector(
+      `script[data-paypal-client-id="${payPalClientId}"]`
+    );
+    if (existingScript && window.paypal) {
+      setPayPalScriptReady(true);
+      return;
+    }
+
+    setPayPalScriptReady(false);
+    const script = document.createElement("script");
+    script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(
+      payPalClientId
+    )}&currency=USD&intent=capture`;
+    script.async = true;
+    script.dataset.paypalClientId = payPalClientId;
+    script.onload = () => setPayPalScriptReady(true);
+    script.onerror = () =>
+      siteInfo.showAlert("Failed to load PayPal.", "error");
+    document.body.appendChild(script);
+  }, [payPalClientId]);
+
+  useEffect(() => {
+    const usdAmount = parseUsdAmount(purchaseUsd);
+    if (
+      activeTab !== "manage" ||
+      !payPalScriptReady ||
+      !payPalButtonsRef.current ||
+      !usdAmount
+    ) {
+      return;
+    }
+    if (!window.paypal || typeof window.paypal.Buttons !== "function") {
+      return;
+    }
+
+    if (payPalButtonsInstanceRef.current) {
+      payPalButtonsInstanceRef.current.close();
+      payPalButtonsInstanceRef.current = null;
+    }
+    payPalButtonsRef.current.innerHTML = "";
+
+    const buttons = window.paypal.Buttons({
+      createOrder: () =>
+        axios
+          .post("/api/shop/paypal/create-order", { amountUsd: usdAmount })
+          .then((res) => res.data.orderID),
+      onApprove: (data) => {
+        setPayPalLoading(true);
+        return axios
+          .post("/api/shop/paypal/capture-order", { orderID: data.orderID })
+          .then((res) => {
+            const { coinsAdded, balance } = res.data || {};
+            if (Number.isFinite(balance)) {
+              setShopInfo((prev) => ({
+                ...prev,
+                balance,
+              }));
+            } else if (Number.isFinite(coinsAdded) && coinsAdded > 0) {
+              setShopInfo((prev) => ({
+                ...prev,
+                balance: prev.balance + coinsAdded,
+              }));
+            }
+            if (coinsAdded > 0) {
+              siteInfo.showAlert(
+                `${coinsAdded} coins added to your account.`,
+                "success"
+              );
+            } else {
+              siteInfo.showAlert("Payment already processed.", "success");
+            }
+          })
+          .catch(errorAlert)
+          .finally(() => setPayPalLoading(false));
+      },
+      onError: () => {
+        siteInfo.showAlert("PayPal checkout failed.", "error");
+      },
+    });
+
+    payPalButtonsInstanceRef.current = buttons;
+    buttons.render(payPalButtonsRef.current).catch(() => {
+      siteInfo.showAlert("Could not render PayPal buttons.", "error");
+    });
+
+    return () => {
+      if (payPalButtonsInstanceRef.current) {
+        payPalButtonsInstanceRef.current.close();
+        payPalButtonsInstanceRef.current = null;
+      }
+    };
+  }, [activeTab, payPalScriptReady, purchaseUsd]);
+
   const handleTransferCoins = () => {
     if (!recipient || !amount) {
       siteInfo.showAlert("Please fill out all fields.", "error");
@@ -113,6 +244,10 @@ export default function Shop(props) {
       })
       .then(() => {
         siteInfo.showAlert("Coins transferred.", "success");
+        setShopInfo((prev) => ({
+          ...prev,
+          balance: Math.max(0, prev.balance - parsedAmount),
+        }));
         setRecipient("");
         setAmount("");
       })
@@ -298,11 +433,111 @@ export default function Shop(props) {
         </Stack>
       </Paper>
 
-      <Divider flexItem orientation="horizontal" />
+      <Tabs
+        value={activeTab}
+        onChange={(_, newValue) => setActiveTab(newValue)}
+        centered
+        sx={{
+          borderBottom: 1,
+          borderColor: "divider",
+        }}
+      >
+        <Tab value="shop" label="Shop" />
+        <Tab value="manage" label="Manage Coins" />
+      </Tabs>
 
-      <Grid2 container spacing={1}>
-        {shopItems}
-      </Grid2>
+      {activeTab === "shop" && (
+        <>
+          <Divider flexItem orientation="horizontal" />
+          <Grid2 container spacing={1}>
+            {shopItems}
+          </Grid2>
+        </>
+      )}
+
+      {activeTab === "manage" && (
+        <Grid2 container spacing={1}>
+          <Grid2
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
+            <Paper sx={{ p: 2, height: "100%" }}>
+              <Stack spacing={1}>
+                <Typography variant="h3">Transfer coins</Typography>
+                <TextField
+                  label="Recipient Username"
+                  value={recipient}
+                  onChange={(e) => setRecipient(e.target.value)}
+                />
+                <TextField
+                  label="Amount to Transfer"
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+                <Button onClick={handleTransferCoins}>Transfer</Button>
+              </Stack>
+            </Paper>
+          </Grid2>
+
+          <Grid2
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
+            <Paper sx={{ p: 2, height: "100%" }}>
+              <Stack spacing={1}>
+                <Typography variant="h3">Buy coins</Typography>
+                <Typography variant="body2">1 USD = 5 coins.</Typography>
+                <TextField
+                  label="USD Amount"
+                  type="number"
+                  value={purchaseUsd}
+                  onChange={(e) => setPurchaseUsd(e.target.value)}
+                  helperText="Whole USD amounts only."
+                />
+                <Typography variant="body2" color="textSecondary">
+                  Coins to receive:{" "}
+                  {(parseUsdAmount(purchaseUsd) || 0) * 5}
+                </Typography>
+                {!payPalClientId && (
+                  <Typography variant="body2" color="textSecondary">
+                    Loading PayPal configuration...
+                  </Typography>
+                )}
+                {payPalClientId && !payPalScriptReady && (
+                  <Typography variant="body2" color="textSecondary">
+                    Loading PayPal checkout...
+                  </Typography>
+                )}
+                {parseUsdAmount(purchaseUsd) ? null : (
+                  <Typography variant="body2" color="error">
+                    Enter a valid positive whole USD amount.
+                  </Typography>
+                )}
+                <Box
+                  ref={payPalButtonsRef}
+                  sx={{
+                    minHeight: "45px",
+                    opacity: parseUsdAmount(purchaseUsd) ? 1 : 0.4,
+                    pointerEvents: parseUsdAmount(purchaseUsd)
+                      ? "auto"
+                      : "none",
+                  }}
+                />
+                {payPalLoading && (
+                  <Typography variant="caption" color="textSecondary">
+                    Finalizing payment...
+                  </Typography>
+                )}
+              </Stack>
+            </Paper>
+          </Grid2>
+        </Grid2>
+      )}
 
       <Dialog
         open={stampDialogOpen}
@@ -461,50 +696,6 @@ export default function Shop(props) {
           </Button>
         </DialogActions>
       </Dialog>
-
-      <Divider flexItem orientation="horizontal" />
-
-      <Paper sx={{ p: 2 }}>
-        <Stack
-          direction={isPhoneDevice ? "column" : "row"}
-          spacing={1}
-          sx={{
-            alignItems: isPhoneDevice ? "stretch" : "center",
-            width: "100%",
-          }}
-        >
-          <Typography variant="h3">Transfer coins</Typography>
-          <Divider
-            flexItem
-            orientation={isPhoneDevice ? "horizontal" : "vertical"}
-          />
-          <TextField
-            label="Recipient Username"
-            value={recipient}
-            onChange={(e) => setRecipient(e.target.value)}
-            sx={{
-              flex: "1",
-            }}
-          />
-          <TextField
-            label="Amount to Transfer"
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            sx={{
-              flex: "1",
-            }}
-          />
-          <Button
-            onClick={handleTransferCoins}
-            sx={{
-              alignSelf: "stretch",
-            }}
-          >
-            Transfer
-          </Button>
-        </Stack>
-      </Paper>
     </Stack>
   );
 }

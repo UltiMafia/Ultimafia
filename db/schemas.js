@@ -1205,6 +1205,46 @@ schemas.VanityUrl.virtual("user", {
   justOne: true,
 });
 
+schemas.PayPalShopOrder = new mongoose.Schema({
+  paypalOrderId: {
+    type: String,
+    required: true,
+    unique: true,
+    index: true,
+  },
+  paypalCaptureId: {
+    type: String,
+    default: "",
+  },
+  userId: {
+    type: String,
+    required: true,
+    index: true,
+  },
+  usd: {
+    type: Number,
+    required: true,
+  },
+  coins: {
+    type: Number,
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ["pending", "completed", "failed"],
+    default: "pending",
+    index: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  completedAt: {
+    type: Date,
+    default: null,
+  },
+});
+
 // Compound indexes for Poke schema
 schemas.Poke.index({ userA: 1, userB: 1 }, { unique: true });
 schemas.Poke.index({ to: 1, status: 1 });
@@ -1235,5 +1275,6 @@ schemas.ViolationTicket.index({ userId: 1, createdAt: -1 });
 schemas.ViolationTicket.index({ userId: 1, violationId: 1 });
 schemas.ViolationTicket.index({ userId: 1, activeUntil: 1 });
 schemas.ViolationTicket.index({ userId: 1, violationName: 1, activeUntil: 1 });
+schemas.PayPalShopOrder.index({ userId: 1, createdAt: -1 });
 
 module.exports = schemas;

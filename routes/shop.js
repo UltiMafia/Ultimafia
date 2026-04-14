@@ -5,7 +5,110 @@ const models = require("../db/models");
 const constants = require("../data/constants");
 const logger = require("../modules/logging")(".");
 const shortid = require("shortid");
+const axios = require("axios");
 const router = express.Router();
+
+const COINS_PER_USD = 5;
+const MIN_PURCHASE_USD = 1;
+const MAX_PURCHASE_USD = 200;
+const PAYPAL_API_BASE = "https://api-m.paypal.com";
+
+let payPalTokenCache = {
+  accessToken: "",
+  expiresAt: 0,
+};
+
+async function getPayPalAccessToken() {
+  const clientId = process.env.PAYPAL_CLIENT_ID;
+  const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
+    throw new Error("PayPal credentials are missing.");
+  }
+
+  const now = Date.now();
+  if (
+    payPalTokenCache.accessToken &&
+    payPalTokenCache.expiresAt &&
+    payPalTokenCache.expiresAt > now + 10_000
+  ) {
+    return payPalTokenCache.accessToken;
+  }
+
+  const tokenResponse = await axios.post(
+    `${PAYPAL_API_BASE}/v1/oauth2/token`,
+    "grant_type=client_credentials",
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      auth: {
+        username: clientId,
+        password: clientSecret,
+      },
+      timeout: 15_000,
+    }
+  );
+
+  const accessToken = tokenResponse.data?.access_token;
+  const expiresInSeconds = Number(tokenResponse.data?.expires_in || 0);
+  if (!accessToken || !expiresInSeconds) {
+    throw new Error("Could not authenticate with PayPal.");
+  }
+
+  payPalTokenCache = {
+    accessToken,
+    expiresAt: now + expiresInSeconds * 1000,
+  };
+
+  return accessToken;
+}
+
+function parseCompletedCapture(orderData) {
+  const purchaseUnits = orderData?.purchase_units || [];
+  for (const purchaseUnit of purchaseUnits) {
+    const captures = purchaseUnit?.payments?.captures || [];
+    for (const capture of captures) {
+      if (capture?.status === "COMPLETED") {
+        return capture;
+      }
+    }
+  }
+  return null;
+}
+
+async function ensureDonorStatus(userId) {
+  const [donorGroup, userDoc] = await Promise.all([
+    models.Group.findOne({ name: "Donor" }).select("_id").lean().exec(),
+    models.User.findOne({ id: userId, deleted: false }).select("_id").lean().exec(),
+  ]);
+
+  if (!donorGroup || !userDoc) {
+    return false;
+  }
+
+  const inGroup = await models.InGroup.findOne({
+    user: userDoc._id,
+    group: donorGroup._id,
+  })
+    .select("_id")
+    .lean()
+    .exec();
+
+  if (!inGroup) {
+    await models.InGroup.create({
+      user: userDoc._id,
+      group: donorGroup._id,
+    });
+  }
+
+  await Promise.all([
+    redis.cacheUserInfo(userId, true),
+    redis.cacheUserPermissions(userId),
+  ]);
+
+  return true;
+}
 
 async function checkStampEligibility(userId, gameId) {
   const game = await models.Game.findOne({ id: gameId }).select(
@@ -453,6 +556,197 @@ router.post(
     }
   })
 );
+
+router.get("/paypal-client-id", async function (req, res) {
+  try {
+    await routeUtils.verifyLoggedIn(req);
+    if (!process.env.PAYPAL_CLIENT_ID) {
+      return res.status(500).send("PayPal is not configured.");
+    }
+    return res.send({ clientId: process.env.PAYPAL_CLIENT_ID });
+  } catch (e) {
+    logger.error(e);
+    return res.status(500).send("Error loading PayPal configuration.");
+  }
+});
+
+router.post("/paypal/create-order", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const amountUsd = Number(req.body.amountUsd);
+
+    if (!Number.isInteger(amountUsd)) {
+      return res.status(400).send("USD amount must be an integer.");
+    }
+    if (amountUsd < MIN_PURCHASE_USD || amountUsd > MAX_PURCHASE_USD) {
+      return res
+        .status(400)
+        .send(
+          `USD amount must be between ${MIN_PURCHASE_USD} and ${MAX_PURCHASE_USD}.`
+        );
+    }
+
+    const coins = amountUsd * COINS_PER_USD;
+    const accessToken = await getPayPalAccessToken();
+
+    const createResponse = await axios.post(
+      `${PAYPAL_API_BASE}/v2/checkout/orders`,
+      {
+        intent: "CAPTURE",
+        purchase_units: [
+          {
+            amount: {
+              currency_code: "USD",
+              value: amountUsd.toFixed(2),
+            },
+            custom_id: userId,
+          },
+        ],
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        timeout: 15_000,
+      }
+    );
+
+    const paypalOrderId = createResponse.data?.id;
+    if (!paypalOrderId) {
+      return res.status(500).send("PayPal order creation failed.");
+    }
+
+    await models.PayPalShopOrder.create({
+      paypalOrderId,
+      userId,
+      usd: amountUsd,
+      coins,
+      status: "pending",
+    });
+
+    return res.send({ orderID: paypalOrderId });
+  } catch (e) {
+    logger.error(e?.response?.data || e);
+    return res.status(500).send("Error creating PayPal order.");
+  }
+});
+
+router.post("/paypal/capture-order", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const paypalOrderId = String(req.body.orderID || "").trim();
+
+    if (!paypalOrderId) {
+      return res.status(400).send("Missing PayPal order ID.");
+    }
+
+    const orderDoc = await models.PayPalShopOrder.findOne({
+      paypalOrderId,
+      userId,
+    }).exec();
+    if (!orderDoc) {
+      return res.status(404).send("PayPal order not found.");
+    }
+
+    if (orderDoc.status === "completed") {
+      await ensureDonorStatus(userId);
+      const user = await models.User.findOne({ id: userId })
+        .select("coins")
+        .lean()
+        .exec();
+      return res.send({
+        coinsAdded: 0,
+        balance: user?.coins ?? 0,
+        alreadyProcessed: true,
+      });
+    }
+
+    const accessToken = await getPayPalAccessToken();
+    const captureResponse = await axios.post(
+      `${PAYPAL_API_BASE}/v2/checkout/orders/${paypalOrderId}/capture`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        timeout: 15_000,
+      }
+    );
+
+    const capture = parseCompletedCapture(captureResponse.data);
+    if (!capture) {
+      await models.PayPalShopOrder.updateOne(
+        { paypalOrderId, userId },
+        { $set: { status: "failed" } }
+      ).exec();
+      return res.status(400).send("PayPal payment was not completed.");
+    }
+
+    const capturedCurrency = capture.amount?.currency_code;
+    const capturedValue = Number(capture.amount?.value);
+    if (capturedCurrency !== "USD" || !Number.isFinite(capturedValue)) {
+      return res.status(400).send("Invalid PayPal capture amount.");
+    }
+
+    if (Math.abs(capturedValue - orderDoc.usd) > 0.0001) {
+      return res.status(400).send("Captured amount does not match order.");
+    }
+
+    const updateOrderResult = await models.PayPalShopOrder.updateOne(
+      {
+        paypalOrderId,
+        userId,
+        status: "pending",
+      },
+      {
+        $set: {
+          status: "completed",
+          paypalCaptureId: capture.id || "",
+          completedAt: new Date(),
+        },
+      }
+    ).exec();
+
+    const updatedCount =
+      updateOrderResult.modifiedCount ??
+      updateOrderResult.nModified ??
+      updateOrderResult.matchedCount ??
+      0;
+
+    if (!updatedCount) {
+      const user = await models.User.findOne({ id: userId })
+        .select("coins")
+        .lean()
+        .exec();
+      return res.send({
+        coinsAdded: 0,
+        balance: user?.coins ?? 0,
+        alreadyProcessed: true,
+      });
+    }
+
+    const updatedUser = await models.User.findOneAndUpdate(
+      { id: userId },
+      { $inc: { coins: orderDoc.coins } },
+      { new: true }
+    )
+      .select("coins")
+      .lean()
+      .exec();
+
+    await ensureDonorStatus(userId);
+
+    return res.send({
+      coinsAdded: orderDoc.coins,
+      balance: updatedUser?.coins ?? 0,
+    });
+  } catch (e) {
+    logger.error(e?.response?.data || e);
+    return res.status(500).send("Error capturing PayPal payment.");
+  }
+});
 
 router.get("/stampSuggestions", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
