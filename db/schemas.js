@@ -365,7 +365,13 @@ var schemas = {
     createdAt: { type: Number, default: Date.now },
   })
     .index({ userId: 1, gameId: 1 }, { unique: true })
-    .index({ originalOwnerId: 1, gameId: 1 }, { unique: true }),
+    .index(
+      { originalOwnerId: 1, gameId: 1 },
+      {
+        unique: true,
+        partialFilterExpression: { originalOwnerId: { $type: "string" } },
+      }
+    ),
   StampTrade: new mongoose.Schema({
     id: { type: String, index: true, unique: true },
     initiatorId: { type: String, index: true },
