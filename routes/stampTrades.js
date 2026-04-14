@@ -677,13 +677,17 @@ router.post("/confirm", async (req, res) => {
     // the first leg via an equivalently-guarded update.
     const iSwap = await models.Stamp.findOneAndUpdate(
       { _id: iStamp._id, userId: trade.initiatorId },
-      {
-        $set: {
-          user: recipientUser._id,
-          userId: trade.recipientId,
-          hidden: false,
+      [
+        {
+          $set: {
+            originalOwnerId: { $ifNull: ["$originalOwnerId", trade.initiatorId] },
+            originalOwner: { $ifNull: ["$originalOwner", initiatorUser._id] },
+            user: recipientUser._id,
+            userId: trade.recipientId,
+            hidden: false,
+          },
         },
-      },
+      ],
       { new: true }
     );
     if (!iSwap) {
@@ -692,13 +696,17 @@ router.post("/confirm", async (req, res) => {
 
     const rSwap = await models.Stamp.findOneAndUpdate(
       { _id: rStamp._id, userId: trade.recipientId },
-      {
-        $set: {
-          user: initiatorUser._id,
-          userId: trade.initiatorId,
-          hidden: false,
+      [
+        {
+          $set: {
+            originalOwnerId: { $ifNull: ["$originalOwnerId", trade.recipientId] },
+            originalOwner: { $ifNull: ["$originalOwner", recipientUser._id] },
+            user: initiatorUser._id,
+            userId: trade.initiatorId,
+            hidden: false,
+          },
         },
-      },
+      ],
       { new: true }
     );
     if (!rSwap) {
