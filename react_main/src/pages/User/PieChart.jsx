@@ -34,23 +34,11 @@ export const PieChart = ({ wins, losses, abandons, showTotal }) => {
 
     const defs = svgRoot.append("defs");
 
-    // radial gradients per segment for depth
-    const gradientStops = {
-      W: ["#7FD84C", "#3D8F14"],
-      L: ["#FF6B67", "#C41E1A"],
-      A: ["#E5E5E5", "#8F8F8F"],
+    const sliceColors = {
+      W: "#5AB220",
+      L: "#FF3C38",
+      A: "#BFBFBF",
     };
-
-    Object.entries(gradientStops).forEach(([key, [light, dark]]) => {
-      const grad = defs
-        .append("radialGradient")
-        .attr("id", `pie-grad-${key}-${uid}`)
-        .attr("cx", "35%")
-        .attr("cy", "35%")
-        .attr("r", "75%");
-      grad.append("stop").attr("offset", "0%").attr("stop-color", light);
-      grad.append("stop").attr("offset", "100%").attr("stop-color", dark);
-    });
 
     // glow filter for hover
     const filter = defs
@@ -106,7 +94,7 @@ export const PieChart = ({ wins, losses, abandons, showTotal }) => {
       .data(data_ready)
       .join("path")
       .attr("class", "slice")
-      .attr("fill", (d) => `url(#pie-grad-${d.data[0]}-${uid})`)
+      .attr("fill", (d) => sliceColors[d.data[0]])
       .attr("stroke", "rgba(0, 0, 0, 0.35)")
       .attr("stroke-width", 1.5)
       .style("cursor", "pointer")
