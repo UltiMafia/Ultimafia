@@ -1022,7 +1022,7 @@ async function getOpenGames(gameType) {
   var games = [];
 
   for (let gameId of allGames) {
-    let game = await getGameInfo(gameId);
+    let game = await getGameInfo(gameId, true);
 
     if (game && (!gameType || game.type == gameType) && game.status == "Open") {
       games.push(game);
@@ -1037,7 +1037,7 @@ async function getOpenPublicGames(gameType) {
   var games = [];
 
   for (let gameId of allGames) {
-    let game = await getGameInfo(gameId);
+    let game = await getGameInfo(gameId, true);
 
     if (
       game &&
@@ -1057,7 +1057,7 @@ async function getInProgressGames(gameType) {
   var games = [];
 
   for (let gameId of allGames) {
-    let game = await getGameInfo(gameId);
+    let game = await getGameInfo(gameId, true);
 
     if (
       game &&
@@ -1076,7 +1076,7 @@ async function getInProgressPublicGames(gameType) {
   var games = [];
 
   for (let gameId of allGames) {
-    let game = await getGameInfo(gameId);
+    let game = await getGameInfo(gameId, true);
 
     if (
       game &&

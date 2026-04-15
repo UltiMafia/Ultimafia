@@ -159,18 +159,25 @@ router.get("/list", async function (req, res) {
 
     games = games.slice(start, end);
 
+    const setupIds = [
+      ...new Set(games.map((g) => g.settings.setup).filter(Boolean)),
+    ];
+    const setupDocs = setupIds.length
+      ? await models.Setup.find({ id: { $in: setupIds } }).select(
+          "id gameType name roles closed gameSettings useRoleGroups roleGroupSizes count total -_id"
+        )
+      : [];
+    const setupMap = new Map(
+      setupDocs.map((doc) => [doc.id, doc.toJSON()])
+    );
+
     for (let i in games) {
       let game = games[i];
       let newGame = {};
 
       newGame.id = game.id;
       newGame.type = game.type;
-      newGame.setup = await models.Setup.findOne({
-        id: game.settings.setup,
-      }).select(
-        "id gameType name roles closed gameSettings useRoleGroups roleGroupSizes count total -_id"
-      );
-      newGame.setup = newGame.setup.toJSON();
+      newGame.setup = setupMap.get(game.settings.setup) || null;
       newGame.hostId = game.hostId;
       newGame.players = game.players.length;
       newGame.spectatorCount = game.spectatorCount;
