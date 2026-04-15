@@ -112,6 +112,39 @@ router.get("/mostPlayedRecently", async (req, res) => {
   }
 });
 
+const OPEN_COUNTS_TTL_MS = 3000;
+const openCountsCache = { public: null, full: null };
+
+function getCachedOpenCounts(canSeePrivate) {
+  const key = canSeePrivate ? "full" : "public";
+  const entry = openCountsCache[key];
+  const now = Date.now();
+  if (entry && entry.expires > now) return entry.promise;
+
+  const promise = redis.getOpenGameCountsByLobby({ canSeePrivate });
+  openCountsCache[key] = { promise, expires: now + OPEN_COUNTS_TTL_MS };
+  promise.catch(() => {
+    if (openCountsCache[key] && openCountsCache[key].promise === promise) {
+      openCountsCache[key] = null;
+    }
+  });
+  return promise;
+}
+
+router.get("/openCounts", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const canSeePrivate =
+      userId && (await routeUtils.verifyPermission(userId, "breakGame"));
+    const result = await getCachedOpenCounts(Boolean(canSeePrivate));
+    res.send(result);
+  } catch (e) {
+    logger.error(e);
+    res.send({ counts: {}, hasOpen: false, hasOpenUnranked: false });
+  }
+});
+
 router.get("/list", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {

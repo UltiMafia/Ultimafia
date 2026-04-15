@@ -85,20 +85,10 @@ export default function LobbyBrowser() {
   }, [lobbyName]);
 
   const getOpenGameCounts = useCallback(async () => {
-    return axios.get(`/api/game/list?list=open`).then(({ data }) => {
-      const result = {};
-      data.forEach((game) => {
-        const { lobby } = game;
-        if (result[lobby] == undefined) {
-          result[lobby] = 0;
-        }
-        result[lobby]++;
-
-        if (!hasOneOpenGame) setHasOneOpenGame(true);
-        if (!hasOneOpenUrankedGame && !game.ranked)
-          setHasOneOpenUrankedGame(true);
-      });
-      setOpenGamesCounts(result);
+    return axios.get(`/api/game/openCounts`).then(({ data }) => {
+      setOpenGamesCounts(data?.counts || {});
+      setHasOneOpenGame(Boolean(data?.hasOpen));
+      setHasOneOpenUrankedGame(Boolean(data?.hasOpenUnranked));
     });
   }, []);
 
