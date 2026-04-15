@@ -1,91 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://ultimafia.com/</loc>
-    <lastmod>2023-08-17</lastmod>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://ultimafia.com/learn/games</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://ultimafia.com/learn/terminology</loc>
+    <lastmod>2026-04-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://ultimafia.com/community/forums</loc>
-    <lastmod>2023-08-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://ultimafia.com/community/users</loc>
-    <lastmod>2023-08-17</lastmod>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://ultimafia.com/community/calendar</loc>
-    <lastmod>2025-08-17</lastmod>
-    <changefreq>yearly</changefreq>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://ultimafia.com/fame/competitive</loc>
-    <lastmod>2025-05-25</lastmod>
+    <lastmod>2026-04-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://ultimafia.com/fame/leaderboard</loc>
-    <lastmod>2025-05-25</lastmod>
+    <lastmod>2026-04-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://ultimafia.com/fame/contributors</loc>
-    <lastmod>2024-07-03</lastmod>
+    <lastmod>2026-04-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://ultimafia.com/fame/donors</loc>
-    <lastmod>2024-07-09</lastmod>
+    <lastmod>2026-04-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://ultimafia.com/learn/games</loc>
-    <lastmod>2024-07-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://ultimafia.com/learn/terminology</loc>
-    <lastmod>2024-07-09</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.2</priority>
   </url>
   <url>
     <loc>https://ultimafia.com/policy/rules</loc>
-    <lastmod>2024-06-24</lastmod>
+    <lastmod>2026-04-15</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://ultimafia.com/policy/moderation</loc>
-    <lastmod>2026-02-27</lastmod>
+    <lastmod>2026-04-15</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.4</priority>
   </url>
   <url>
     <loc>https://ultimafia.com/policy/report</loc>
-    <lastmod>2024-07-01</lastmod>
+    <lastmod>2026-04-15</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.4</priority>
   </url>
   <url>
     <loc>https://ultimafia.com/policy/tos</loc>
-    <lastmod>2024-06-24</lastmod>
+    <lastmod>2026-04-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>
   <url>
     <loc>https://ultimafia.com/policy/privacy</loc>
-    <lastmod>2024-06-24</lastmod>
+    <lastmod>2026-04-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>

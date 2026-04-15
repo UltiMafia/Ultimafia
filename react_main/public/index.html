@@ -10,9 +10,7 @@
         height: 100vh;
       }
     </style>
-  </head>
 
-  <head>
     <!-- Google tag (gtag.js) - Loaded conditionally based on consent -->
     <script>
       // Initialize dataLayer and gtag function
@@ -70,6 +68,7 @@
     </script>
 
     <link rel="icon" href="<%= assetPrefix %>/images/favicon.webp" />
+    <link rel="canonical" href="https://ultimafia.com/" />
     <meta
       name="viewport"
       content="width=device-width, shrink-to-fit=no, initial-scale=1.0"
@@ -77,9 +76,10 @@
     <meta name="author" content="Ultimafia" />
     <meta
       name="description"
-      content="Play thrilling social deception games on Ultimafia - online in real time. The successor to EpicMafia, we have sensational party games like Mafia and Werewolf."
+      content="Ultimafia is a free online social deduction game and a browser-based alternative to Town of Salem, mafia.gg, EpicMafia, and Werewolf Online. Play Mafia, Werewolf, Secret Hitler, and Resistance in real time with 100+ roles, custom setups, and competitive ranked play — no download."
     />
-    <title>UltiMafia - successor to Epicmafia</title>
+    <meta name="keywords" content="online mafia game, werewolf game, social deduction game, free mafia online, epicmafia successor, town of salem alternative, mafia.gg alternative, werewolf online alternative, secret hitler online, resistance game, browser party game" />
+    <title>Ultimafia — Free Online Mafia &amp; Social Deduction Games</title>
 
     <!-- Mastodon -->
     <a
@@ -94,7 +94,7 @@
     <meta property="og:title" content="Ultimafia" />
     <meta
       property="og:description"
-      content="Play thrilling social deception games on Ultimafia - online in real time. The successor to EpicMafia, we have sensational party games like Mafia and Werewolf."
+      content="Free online social deduction game. Play Mafia, Werewolf, Secret Hitler, Resistance and more with real players in your browser. The successor to EpicMafia."
     />
     <meta
       property="og:image"
@@ -104,22 +104,150 @@
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://ultimafia.com" />
-    <meta property="twitter:title" content="Ultimafia" />
+    <meta property="twitter:title" content="Ultimafia — Free Online Mafia &amp; Social Deduction" />
     <meta
       property="twitter:description"
-      content="Play thrilling social deception games on Ultimafia - online in real time. The successor to EpicMafia, we have sensational party games like Mafia and Werewolf."
+      content="Free online social deduction game. Play Mafia, Werewolf, Secret Hitler, Resistance and more with real players in your browser. The successor to EpicMafia."
     />
     <meta
       property="twitter:image"
       content="<%= assetPrefix %>/images/umtwbannerv6.png"
     />
 
+    <!-- Structured data for search engines and LLM crawlers -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://ultimafia.com/#organization",
+          "name": "Ultimafia",
+          "url": "https://ultimafia.com",
+          "logo": "https://ultimafia.com/images/favicon.webp",
+          "sameAs": [
+            "https://mastodon.online/@ultimafia"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://ultimafia.com/#website",
+          "url": "https://ultimafia.com",
+          "name": "Ultimafia",
+          "publisher": { "@id": "https://ultimafia.com/#organization" },
+          "inLanguage": "en"
+        },
+        {
+          "@type": "VideoGame",
+          "name": "Ultimafia",
+          "url": "https://ultimafia.com",
+          "description": "Free online social deduction game platform. Play Mafia, Werewolf, Secret Hitler, Resistance, Texas Hold'em and more in your browser with real players. The successor to EpicMafia.",
+          "genre": ["Social Deduction", "Party Game", "Multiplayer", "Mafia", "Werewolf"],
+          "gamePlatform": ["Web Browser"],
+          "applicationCategory": "Game",
+          "operatingSystem": "Any (browser-based)",
+          "playMode": ["MultiPlayer", "CoOp"],
+          "numberOfPlayers": "4-20",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "publisher": { "@id": "https://ultimafia.com/#organization" }
+        }
+      ]
+    }
+    </script>
+
     <link rel="stylesheet" href="/css/fontawesome.min.css" />
     <script src="https://www.google.com/recaptcha/api.js?render=%REACT_APP_RECAPTCHA_KEY%"></script>
   </head>
 
   <body>
-    <noscript>You need to enable JavaScript to play UltiMafia.</noscript>
-    <div id="root"></div>
+    <noscript>
+      <h1>Ultimafia — Free Online Social Deduction Games</h1>
+      <p>You need to enable JavaScript to play Ultimafia. Ultimafia is a browser-based social deduction game platform where you can play Mafia, Werewolf, Secret Hitler, Resistance, Texas Hold'em and more with real players in real time.</p>
+    </noscript>
+    <div id="root">
+      <!-- Crawlable landing content. React replaces this on hydration. -->
+      <main>
+        <h1>Ultimafia — Free Online Mafia &amp; Social Deduction Games</h1>
+        <p>
+          <strong>Ultimafia</strong> is a free, browser-based social deduction game platform and the spiritual successor to <strong>EpicMafia</strong>.
+          Play real-time multiplayer games of <strong>Mafia</strong>, <strong>Werewolf</strong>, <strong>Secret Hitler</strong>,
+          <strong>The Resistance</strong>, <strong>Texas Hold'em</strong> and more against real people in your browser — no download, no paywall.
+        </p>
+
+        <h2>What is Ultimafia?</h2>
+        <p>
+          Ultimafia is an online social deduction game site where players are secretly assigned roles on opposing teams
+          (for example, Town vs. Mafia or Village vs. Werewolves) and must use discussion, voting, and deception to identify
+          their enemies before being eliminated.
+        </p>
+
+        <h2>A free alternative to Town of Salem, mafia.gg and other online mafia games</h2>
+        <p>
+          Ultimafia is a free, browser-based <strong>alternative to Town of Salem</strong>, <strong>mafia.gg</strong>,
+          <strong>Werewolf Online</strong>, <strong>Blood on the Clocktower Online</strong>, and the original <strong>EpicMafia</strong>.
+          If you are looking for a popular online mafia game that costs nothing, requires no download, and has deeper role
+          customization than most competitors, Ultimafia is built for exactly that audience. It combines the 100+ role depth
+          of Town of Salem, the custom-setup flexibility of EpicMafia, and the open community model of web-based social
+          deduction sites — all in one free site.
+        </p>
+
+        <h3>How Ultimafia compares</h3>
+        <ul>
+          <li><strong>vs. Town of Salem:</strong> Free and browser-native, with more roles and fully custom setups instead of fixed game modes.</li>
+          <li><strong>vs. mafia.gg:</strong> Deeper role library, stronger competitive ladder, and a more active forum community.</li>
+          <li><strong>vs. EpicMafia:</strong> Actively maintained successor with the same custom-setup philosophy and a modernized engine.</li>
+          <li><strong>vs. Werewolf Online / Werewolf Party:</strong> Supports classic Werewolf plus full Mafia, Secret Hitler, and Resistance — not just one game.</li>
+          <li><strong>vs. Blood on the Clocktower Online:</strong> No paid storyteller required; free drop-in play with automated game logic.</li>
+        </ul>
+
+        <h2>Games you can play</h2>
+        <ul>
+          <li><strong>Mafia</strong> — the classic social deduction game with 100+ unique roles across Village, Mafia, Cult, and Independent alignments. Build custom setups or play community favorites.</li>
+          <li><strong>Werewolf</strong> — the traditional Village vs. Werewolves variant.</li>
+          <li><strong>Secret Hitler</strong> — the hidden-role policy-enactment game of Liberals vs. Fascists.</li>
+          <li><strong>The Resistance</strong> — team-based mission game of Resistance vs. Spies.</li>
+          <li><strong>Texas Hold'em Poker</strong> — casual multiplayer poker.</li>
+          <li>Additional game types and custom setups built by the community.</li>
+        </ul>
+
+        <h2>Features</h2>
+        <ul>
+          <li><strong>Free to play</strong> — no download, no subscription. Runs in any modern browser.</li>
+          <li><strong>100+ Mafia roles</strong> across Village, Mafia, Cult, and Independent alignments, each with unique abilities.</li>
+          <li><strong>Custom setups</strong> — design your own role lists and share them with the community.</li>
+          <li><strong>Competitive ranked play</strong> with leaderboards.</li>
+          <li><strong>Community forums</strong>, role guides, and active Discord.</li>
+          <li><strong>Real-time chat</strong> and voting via WebSockets.</li>
+        </ul>
+
+        <h2>How to play</h2>
+        <p>
+          Create a free account, join the lobby, pick a game setup, and wait for other players to fill the seats.
+          When the game starts you will be secretly assigned a role and an alignment. Use the day phase to discuss
+          and vote; use the night phase to act on your role's abilities. The game ends when one alignment achieves
+          its win condition.
+        </p>
+
+        <h2>Why Ultimafia?</h2>
+        <p>
+          Ultimafia was built as a successor to EpicMafia for players who want a free, open, community-driven social
+          deduction site with deep customization. It is open source, actively maintained, and moderated by volunteers.
+          The game engine supports complex role interactions, modular abilities via "cards", items, effects, and
+          priority-ordered action resolution — making it one of the most mechanically rich social deduction platforms
+          available online.
+        </p>
+
+        <p>
+          <a href="https://ultimafia.com/auth/login">Sign up free</a> ·
+          <a href="https://ultimafia.com/learn/games">Learn the games</a> ·
+          <a href="https://ultimafia.com/learn/terminology">Mafia terminology</a> ·
+          <a href="https://ultimafia.com/community/forums">Community forums</a>
+        </p>
+      </main>
+    </div>
   </body>
 </html>
