@@ -24,12 +24,22 @@ module.exports = async function () {
         rank: groupInfo.rank,
         permissions: permissions,
         visible: groupInfo.visible,
+        badge: groupInfo.badge,
+        badgeColor: groupInfo.badgeColor,
       });
       await group.save();
-    } else
-      await models.Group.updateOne(
-        { _id: group._id },
-        { $addToSet: { permissions: { $each: permissions } } }
-      ).exec();
+    } else {
+      const update = {
+        $addToSet: { permissions: { $each: permissions } },
+      };
+      if (groupInfo.badge !== undefined || groupInfo.badgeColor !== undefined) {
+        update.$set = {};
+        if (groupInfo.badge !== undefined)
+          update.$set.badge = groupInfo.badge;
+        if (groupInfo.badgeColor !== undefined)
+          update.$set.badgeColor = groupInfo.badgeColor;
+      }
+      await models.Group.updateOne({ _id: group._id }, update).exec();
+    }
   }
 };

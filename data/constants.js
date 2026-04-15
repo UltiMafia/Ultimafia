@@ -629,6 +629,8 @@ module.exports = {
       rank: 5,
       visible: false,
       perms: [],
+      badge: "heart",
+      badgeColor: "#e91e63",
     },
     Mentor: {
       rank: 1,
