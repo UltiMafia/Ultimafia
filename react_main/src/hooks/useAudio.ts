@@ -6,6 +6,7 @@ export interface AudioSettings {
   sfxVolume: number;
   musicVolume: number;
   pregameMusicVolume: number;
+  importantVolume: number;
 }
 
 interface UseAudioReturn {
@@ -43,12 +44,14 @@ export function useAudio(settings: AudioSettings): UseAudioReturn {
     manager.syncVolume(
       settings.sfxVolume,
       settings.musicVolume,
-      settings.pregameMusicVolume
+      settings.pregameMusicVolume,
+      settings.importantVolume
     );
   }, [
     settings.sfxVolume,
     settings.musicVolume,
     settings.pregameMusicVolume,
+    settings.importantVolume,
     loadCountRef.current,
   ]);
 
@@ -67,7 +70,8 @@ export function useAudio(settings: AudioSettings): UseAudioReturn {
       manager.syncVolume(
         settings.sfxVolume,
         settings.musicVolume,
-        settings.pregameMusicVolume
+        settings.pregameMusicVolume,
+        settings.importantVolume
       );
     },
     [
@@ -75,6 +79,7 @@ export function useAudio(settings: AudioSettings): UseAudioReturn {
       settings.sfxVolume,
       settings.musicVolume,
       settings.pregameMusicVolume,
+      settings.importantVolume,
     ]
   );
 

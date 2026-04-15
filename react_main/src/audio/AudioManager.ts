@@ -149,27 +149,25 @@ export default class AudioManager {
   syncVolume(
     sfxVolume: number,
     musicVolume: number,
-    pregameMusicVolume: number
+    pregameMusicVolume: number,
+    importantVolume: number
   ): void {
     const _sfxVolume = AudioManager.clamp(sfxVolume);
     const _musicVolume = AudioManager.clamp(musicVolume);
     const _pregameMusicVolume = AudioManager.clamp(pregameMusicVolume);
+    const _importantVolume = AudioManager.clamp(importantVolume);
 
     for (const name in this.tracks) {
       const { el, volume, channel } = this.tracks[name];
-
-      // "important" channel bypasses sliders (used for vegPing and urgent).
-      if (channel === "important") {
-        el.volume = volume;
-        continue;
-      }
 
       const slider =
         channel === "music"
           ? _musicVolume
           : channel === "pregameMusic"
             ? _pregameMusicVolume
-            : _sfxVolume;
+            : channel === "important"
+              ? _importantVolume
+              : _sfxVolume;
       el.volume = volume * slider;
     }
   }

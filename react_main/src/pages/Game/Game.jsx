@@ -4773,7 +4773,31 @@ function SettingsForm({ handleClose = null }) {
       step: 0.1,
       value: settings.pregameMusicVolume,
     },
+    {
+      label: "Alert Volume",
+      ref: "importantVolume",
+      type: "range",
+      min: 0,
+      max: 1,
+      step: 0.1,
+      value: settings.importantVolume,
+    },
   ]);
+
+  function handleFieldChange(action) {
+    if (
+      action?.ref === "importantVolume" &&
+      action?.prop === "value" &&
+      Number(action.value) === 0
+    ) {
+      const confirmed = window.confirm(
+        "Disable alert sounds? You won't be pinged when a game starts or when you're about to be kicked for inactivity."
+      );
+      updateFormFields({ ...action, value: confirmed ? 0 : 0.1 });
+      return;
+    }
+    updateFormFields(action);
+  }
 
   function cancel() {
     formFields.forEach((field) => {
@@ -4806,7 +4830,7 @@ function SettingsForm({ handleClose = null }) {
   }
 
   const menuContent = (
-    <Form compact fields={formFields} onChange={updateFormFields} />
+    <Form compact fields={formFields} onChange={handleFieldChange} />
   );
 
   const menuFooter = (
@@ -5610,6 +5634,7 @@ export function useSettingsReducer() {
     sfxVolume: 1,
     musicVolume: 1,
     pregameMusicVolume: 1,
+    importantVolume: 1,
     terminologyEmoticons: true,
     roleMentions: true,
     messageLayout: "default",
@@ -5657,12 +5682,17 @@ export function useSettingsReducer() {
         copy.pregameMusicVolume,
         derivedMusic
       );
+      const derivedUrgent = clampVolume(
+        copy.importantVolume,
+        defaultSettings.importantVolume
+      );
 
       for (const key of Object.keys(normalized)) {
         if (
           key === "sfxVolume" ||
           key === "musicVolume" ||
-          key === "pregameMusicVolume"
+          key === "pregameMusicVolume" ||
+          key === "importantVolume"
         ) {
           continue;
         }
@@ -5674,6 +5704,7 @@ export function useSettingsReducer() {
       normalized.sfxVolume = derivedSfx;
       normalized.musicVolume = derivedMusic;
       normalized.pregameMusicVolume = derivedPregameMusic;
+      normalized.importantVolume = derivedUrgent;
     }
 
     return normalized;
