@@ -215,7 +215,7 @@ module.exports = class MafiaGame extends Game {
   async vegPlayer(player) {
     if (player.hasEffect("Unveggable")) return;
     this.recordLeaveStats(player, false);
-    super.vegPlayer(player);
+    await super.vegPlayer(player);
   }
 
   start() {
@@ -579,6 +579,8 @@ module.exports = class MafiaGame extends Game {
   }
 
   async endGame(winners) {
+    if (this.finished) return;
+
     for (let player of this.players) {
       if (player.won) player.recordStat("wins", true);
       else player.recordStat("wins", false);
