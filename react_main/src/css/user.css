@@ -892,6 +892,7 @@ iframe {
   align-items: center;
   gap: 8px;
   padding: 4px 0;
+  flex-wrap: nowrap;
 }
 
 .poke-back-btn {
@@ -899,6 +900,8 @@ iframe {
   align-items: center;
   gap: 4px;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .poke-dismiss {
@@ -917,6 +920,8 @@ iframe {
   display: flex;
   align-items: flex-end;
   position: relative;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .poke-streak-badge {
