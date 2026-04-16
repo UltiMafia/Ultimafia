@@ -4790,11 +4790,14 @@ function SettingsForm({ handleClose = null }) {
       action?.prop === "value" &&
       Number(action.value) === 0
     ) {
-      const confirmed = window.confirm(
-        "Disable alert sounds? You won't be pinged when a game starts or when you're about to be kicked for inactivity."
-      );
-      updateFormFields({ ...action, value: confirmed ? 0 : 0.1 });
-      return;
+      const prev = formFields.find((f) => f.ref === "importantVolume");
+      if (prev && Number(prev.value) !== 0) {
+        const confirmed = window.confirm(
+          "Disable alert sounds? You won't be pinged when a game starts or when you're about to be kicked for inactivity."
+        );
+        updateFormFields({ ...action, value: confirmed ? 0 : 0.1 });
+        return;
+      }
     }
     updateFormFields(action);
   }
