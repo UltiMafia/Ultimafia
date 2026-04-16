@@ -406,6 +406,7 @@ const roleData = {
       tags: ["Protective", "Visiting", "Basic"],
       description: [
         "Each night, you can choose to visit one player and protect them from death.",
+      "See also: Quack (Mafia), Witch Doctor (Cult).",
       ],
       nightOrder: [["Protect", PRIORITY_NIGHT_SAVER]],
       skins: [
@@ -469,6 +470,7 @@ const roleData = {
       description: [
         "Each night, you can choose to visit one dead player and revive them.",
         //"If player was revealed upon death, they will remain revealed when revived.",
+      "See also: Graverobber (Mafia).",
       ],
       nightOrder: [["Revive", PRIORITY_NIGHT_REVIVER]],
       graveyardParticipation: "all",
@@ -655,6 +657,7 @@ const roleData = {
       description: [
         `Each night, you can choose to visit one player and give them a Gun.`,
         gunDef,
+      "See also: Gunrunner (Mafia).",
       ],
       nightOrder: [["Give Gun", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -936,6 +939,7 @@ const roleData = {
       description: [
         "Each night, you can choose to visit one player and learn their role.",
         //"Investigates one player each night and learns their role.",
+      "See also: Stalker (Mafia).",
       ],
       nightOrder: [["Learn Role", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
@@ -1217,6 +1221,7 @@ const roleData = {
       tags: ["Information", "Visit Interaction", "Visiting", "Basic"],
       description: [
         "Each night, you can choose to visit one player and learn who they visited.",
+      "See also: Scout (Mafia).",
       ],
       nightOrder: [["Track", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
@@ -1246,6 +1251,7 @@ const roleData = {
       description: [
         "Each night, you can choose to visit one player and learn who visited them.",
         //"Watches a player each night and learns who visited them.",
+      "See also: Lookout (Mafia).",
       ],
       nightOrder: [["Watch", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5]],
     },
@@ -1269,6 +1275,7 @@ const roleData = {
         "If that player dies, you will gains that player's abilities.",
         //"Each night, chooses a player.",
         //"Gains that player's abilities if that player dies.",
+      "See also: Blackguard (Mafia), Yith (Cult).",
       ],
       nightOrder: [["Gain abilities if Target dies", PRIORITY_PREKILL_ACTION]],
     },
@@ -1338,6 +1345,7 @@ const roleData = {
         "Exorcised players can't be revived or use graveyard abilities.",
         //"Each Night, the Exorcist can Exorcise a dead Player.",
         //"Exorcised players can't be revived or use Graveyard abilities.",
+      "See also: Ghostbuster (Mafia).",
       ],
       nightOrder: [["Exorcise", PRIORITY_KILL_EXORCISE]],
     },
@@ -1361,6 +1369,7 @@ const roleData = {
       tags: ["Blocking", "Visiting", "Basic"],
       description: [
         "Each night, you can choose to visit one player and block their night actions.",
+      "See also: Hooker (Mafia).",
       ],
       nightOrder: [["Block", PRIORITY_NIGHT_ROLE_BLOCKER]],
     },
@@ -1378,6 +1387,7 @@ const roleData = {
         "You cannot die.",
         `Each night, you can choose to visit one player and make them "Delirious" until the next night.`,
         deliriumDef,
+      "See also: Pimp (Mafia), Succubus (Cult).",
       ],
       nightOrder: [["Give Delirium", PRIORITY_NIGHT_ROLE_BLOCKER + 1]],
     },
@@ -1409,6 +1419,7 @@ const roleData = {
       tags: ["Visit Interaction", "Blocking", "Visiting", "Basic"],
       description: [
         `Each night, you can choose to visit one player and block the night actions of each player who visit them.`,
+      "See also: Bouncer (Mafia).",
       ],
       nightOrder: [["Block Visitors", PRIORITY_UNTARGETABLE]],
     },
@@ -1731,7 +1742,10 @@ const roleData = {
       alignment: "Village",
       category: "Voting",
       tags: ["Voting", "Basic"],
-      description: ["Your vote weight is worth 2 votes."],
+      description: [
+        "Your vote weight is worth 2 votes.",
+        "See also: Prosecutor (Mafia).",
+      ],
     },
     Butler: {
       alignment: "Village",
@@ -1935,6 +1949,7 @@ const roleData = {
       tags: ["Redirection", "Visit Interaction", "Visiting", "Basic"],
       description: [
         "Each night, you can choose to visit one player and redirect anyone who visits you to that player.",
+      "See also: Rat (Mafia).",
       ],
       nightOrder: [["Redirect Visitors", PRIORITY_MODIFY_ACTION]],
     },
@@ -1948,6 +1963,7 @@ const roleData = {
         "Players who visit first player will be redirected to second player.",
         "Players who visit second player will be redirected to first player.",
         //"Redirection cannot be role blocked.",
+      "See also: Driver (Mafia).",
       ],
       nightOrder: [["Swap Visitors", PRIORITY_SWAP_VISITORS]],
     },
@@ -2128,6 +2144,7 @@ const roleData = {
         //"When visited, heals and cleanses all effects currently possessed by the visiting player.",
         "Players who Role Share with you will have any malicious effects they have removed.",
         MalEffects,
+      "See also: Dealer (Mafia).",
       ],
       nightOrder: [
         ["Remove Effects from Visitors", PRIORITY_EFFECT_REMOVER_DEFAULT],
@@ -2253,6 +2270,7 @@ const roleData = {
         "You will block the night actions of any players who visit the jailed player.",
         "You will meet anonymously with the jailed player.",
         "You can choose to kill the jailed player.",
+      "See also: Interrogator (Mafia).",
       ],
       nightOrder: [
         ["Execute Prisoner", PRIORITY_KILL_DEFAULT],
@@ -2630,7 +2648,10 @@ const roleData = {
       alignment: "Mafia",
       category: "Basic",
       tags: ["Voting", "Basic"],
-      description: ["Your vote weight is worth 2 votes."],
+      description: [
+        "Your vote weight is worth 2 votes.",
+        "See also: Attorney (Village).",
+      ],
     },
     Sniper: {
       alignment: "Mafia",
@@ -2819,6 +2840,7 @@ const roleData = {
       tags: ["Information", "Visit Interaction", "Basic"],
       description: [
         "Each night, you can choose to visit one player and learn who visited them.",
+      "See also: Watcher (Village).",
       ],
       nightOrder: [["Watch", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5]],
     },
@@ -2846,6 +2868,7 @@ const roleData = {
       tags: ["Information", "Visit Interaction", "Visiting", "Basic"],
       description: [
         "Each night, you can choose to visit one player and learn who they visited.",
+      "See also: Tracker (Village).",
       ],
       nightOrder: [["Track", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
@@ -2855,6 +2878,7 @@ const roleData = {
       tags: ["Information", "Roles", "Visiting", "Basic"],
       description: [
         "Each night, you can choose to visit one player and learn their role.",
+      "See also: Detective (Village).",
       ],
       nightOrder: [["Learn Role", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
@@ -2875,6 +2899,7 @@ const roleData = {
       tags: ["Blocking", "Visiting", "Basic"],
       description: [
         "Each night, you can choose to visit one player and block their night actions.",
+      "See also: Drunk (Village).",
       ],
       nightOrder: [["Block", PRIORITY_NIGHT_ROLE_BLOCKER]],
       skins: [
@@ -2912,6 +2937,7 @@ const roleData = {
       description: [
         `Each night, you can choose to visit one player and make them "Delirious" until the next night.`,
         deliriumDef,
+      "See also: Sailor (Village), Succubus (Cult).",
       ],
       nightOrder: [["Give Delirium", PRIORITY_NIGHT_ROLE_BLOCKER + 1]],
     },
@@ -2932,6 +2958,7 @@ const roleData = {
         "Each night, you can choose to visit two players and swap their visitors.",
         "Players who visit first player will be redirected to second player.",
         "Players who visit second player will be redirected to first player.",
+      "See also: Chauffeur (Village).",
       ],
       nightOrder: [["Swap Visitors", PRIORITY_SWAP_VISITORS]],
       SpecialInteractions: {
@@ -2944,6 +2971,7 @@ const roleData = {
       description: [
         "Each night, you can choose to visit one player.",
         "Each night, you can choose to redirect that player's visits on to another player. (Not a visit)",
+      "See also: Witch (Cult).",
       ],
       nightOrder: [["Control Player", PRIORITY_REDIRECT_ACTION]],
     },
@@ -3064,6 +3092,7 @@ const roleData = {
       description: [
         "Each night, you can choose to visit one dead player and exorcise them.",
         "Exorcised players can't be revived or use graveyard abilities.",
+      "See also: Exorcist (Village).",
       ],
       nightOrder: [["Exorcise", PRIORITY_KILL_EXORCISE]],
     },
@@ -3106,6 +3135,7 @@ const roleData = {
         `Each night, you can choose to visit one player and give them a Gun.`,
         gunDef,
         "Guns given by you will only kill if the player being shot is the same alignment as the shooter.",
+      "See also: Gunsmith (Village).",
       ],
       nightOrder: [["Give Tommy Gun", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -3184,6 +3214,7 @@ const roleData = {
       tags: ["Revive", "Graveyard", "Visiting", "Basic"],
       description: [
         "Each night, you can choose to visit one dead player and revive them.",
+      "See also: Resurrectionist (Village).",
       ],
       nightOrder: [["Revive", PRIORITY_NIGHT_REVIVER]],
       graveyardParticipation: "all",
@@ -3310,6 +3341,7 @@ const roleData = {
         "You will block the night actions of any players who visit the jailed player.",
         "You will meet anonymously with the jailed player.",
         "You can choose to kill the jailed player.",
+      "See also: Jailer (Village).",
       ],
       nightOrder: [
         ["Execute Prisoner", PRIORITY_KILL_DEFAULT],
@@ -3365,6 +3397,7 @@ const roleData = {
       description: [
         "Each night, you can choose to visit one player.",
         "If that player dies, you will gains that player's abilities.",
+      "See also: Paladin (Village), Yith (Cult).",
       ],
       nightOrder: [["Gain abilities if Target dies", PRIORITY_PREKILL_ACTION]],
     },
@@ -3513,6 +3546,7 @@ const roleData = {
       tags: ["Protective", "Visiting", "Basic"],
       description: [
         "Each night, you can choose to visit one player and protect them from death.",
+      "See also: Doctor (Village), Witch Doctor (Cult).",
       ],
       nightOrder: [["Protect", PRIORITY_NIGHT_SAVER]],
     },
@@ -3535,6 +3569,7 @@ const roleData = {
         "Each night, each player who visits you will have any malicious effects they have removed and will be protected from death.",
         "Players who Role Share with you will have any malicious effects they have removed.",
         MalEffects,
+      "See also: Apothecary (Village).",
       ],
       nightOrder: [
         ["Remove Effects", PRIORITY_EFFECT_REMOVER_DEFAULT],
@@ -3584,6 +3619,7 @@ const roleData = {
       ],
       description: [
         "Each night, you can choose to visit one player and block the night actions of any players who visit them.",
+      "See also: Guard (Village).",
       ],
       nightOrder: [["Block Visitors", PRIORITY_UNTARGETABLE]],
     },
@@ -3686,6 +3722,7 @@ const roleData = {
       tags: ["Redirection", "Visit Interaction", "Visiting", "Basic"],
       description: [
         "Each night, you can choose to visit one player and redirect anyone who visits you to that player.",
+      "See also: Coward (Village).",
       ],
       nightOrder: [["Redirect Visitors", PRIORITY_MODIFY_ACTION]],
     },
@@ -3707,6 +3744,7 @@ const roleData = {
         "Each night, you can choose a role and you will appear as that role on death and to information roles.",
         //"Chooses a role each night to appear as on death and to information role.",
         "Cannot choose Villager, Impersonator or Imposter",
+      "See also: Skinwalker (Cult).",
       ],
       nightOrder: [
         ["Disguise Self", PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT],
@@ -3931,6 +3969,7 @@ const roleData = {
         "Each night, you can choose to visit one player and protect them from death.",
         "If a player you protect is attacked, they will be converted to Cultist.",
         "If you die, all Cultists die.",
+        "See also: Doctor (Village), Quack (Mafia).",
       ],
       nightOrder: [["Convert and Save", PRIORITY_NIGHT_SAVER]],
       RolesMadeBy: ["Cultist"],
@@ -4268,6 +4307,7 @@ const roleData = {
       description: [
         "Each night, you can choose to visit one player.",
         "If that player dies, you will gains that player's abilities.",
+      "See also: Paladin (Village), Blackguard (Mafia).",
       ],
       nightOrder: [["Gain abilities if Target dies", PRIORITY_PREKILL_ACTION]],
     },
@@ -4305,6 +4345,7 @@ const roleData = {
       description: [
         `Each night, you can choose to visit one player and make them "Delirious" until the next night.`,
         deliriumDef,
+      "See also: Sailor (Village), Pimp (Mafia).",
       ],
       nightOrder: [["Give Delirium", PRIORITY_NIGHT_ROLE_BLOCKER + 1]],
       skins: [
@@ -4325,6 +4366,7 @@ const roleData = {
       description: [
         "Each night, you can choose to visit one player.",
         "Each night, you can choose to redirect that player's visits on to another player. (Not a visit)",
+      "See also: Gondolier (Mafia).",
       ],
       nightOrder: [["Control Player", PRIORITY_REDIRECT_ACTION]],
     },
@@ -4334,6 +4376,7 @@ const roleData = {
       description: [
         "Each night, you can choose a role and you will appear as that role on death and to information roles.",
         "Cannot choose Villager, Impersonator or Imposter",
+      "See also: Imposter (Mafia).",
       ],
       nightOrder: [
         ["Disguise Self", PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT],
