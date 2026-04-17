@@ -491,12 +491,20 @@ iframe {
   flex-flow: row;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.profile .friend .friend-avatar > *:first-child {
+  min-width: 0;
+  overflow: hidden;
 }
 
 .profile .friend .friend-avatar .btns-wrapper {
   flex-flow: row;
   align-items: stretch;
   justify-content: flex-end;
+  flex-shrink: 0;
 }
 
 .profile .friend .friend-avatar .btns-wrapper i {
