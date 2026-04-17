@@ -618,7 +618,7 @@ module.exports = class Player {
         }
         return;
       case "changeSetup":
-        const setupToQuery = cmd.args;
+        const setupToQuery = cmd.args[0];
         if (
           this.game.started ||
           this.user.id != this.game.hostId ||
