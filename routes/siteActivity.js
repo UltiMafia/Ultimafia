@@ -1,10 +1,44 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const crypto = require("crypto");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const { getBasicUserInfo } = require("../modules/redis");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
+
+// Lightweight ETag fingerprint. Each endpoint samples one indexed "latest"
+// lookup per source collection, hashes them together with the query params,
+// and short-circuits with 304 when the client already has fresh data. The
+// sample queries are cheap (single indexed findOne) so the fingerprint pays
+// for itself by skipping the heavy aggregations and hydration downstream.
+const latestId = (Model) =>
+  Model.findOne({})
+    .sort({ _id: -1 })
+    .select("_id")
+    .lean()
+    .then((d) => (d ? String(d._id) : null));
+const latestField = (Model, field) =>
+  Model.findOne({})
+    .sort({ [field]: -1 })
+    .select(field)
+    .lean()
+    .then((d) => (d && d[field] != null ? String(d[field]) : null));
+
+function makeEtag(obj) {
+  const h = crypto.createHash("sha1").update(JSON.stringify(obj)).digest("hex");
+  return `W/"${h.slice(0, 20)}"`;
+}
+
+function respondFresh(req, res, etag) {
+  res.set("ETag", etag);
+  res.set("Cache-Control", "private, no-cache");
+  if (req.fresh) {
+    res.status(304).end();
+    return true;
+  }
+  return false;
+}
 
 const WINDOWS = {
   "24h": 24 * 60 * 60 * 1000,
@@ -31,8 +65,42 @@ router.get("/summary", async function (req, res) {
   try {
     if (!(await guard(req, res))) return;
 
+    const { key: windowKey, ms } = parseWindow(req);
+
+    const [
+      fpGame,
+      fpUserJoined,
+      fpComment,
+      fpThread,
+      fpSetupVer,
+      fpReport,
+      fpModAction,
+      fpSiteAct,
+    ] = await Promise.all([
+      latestId(models.Game),
+      latestField(models.User, "joined"),
+      latestField(models.Comment, "date"),
+      latestField(models.ForumThread, "postDate"),
+      latestId(models.SetupVersion),
+      latestField(models.Report, "createdAt"),
+      latestField(models.ModAction, "date"),
+      latestField(models.SiteActivity, "date"),
+    ]);
+    const etag = makeEtag({
+      r: "summary",
+      w: windowKey,
+      fpGame,
+      fpUserJoined,
+      fpComment,
+      fpThread,
+      fpSetupVer,
+      fpReport,
+      fpModAction,
+      fpSiteAct,
+    });
+    if (respondFresh(req, res, etag)) return;
+
     const now = Date.now();
-    const { ms } = parseWindow(req);
     const cutoff = now - ms;
     const cutoffDate = new Date(cutoff);
 
@@ -86,7 +154,12 @@ router.get("/games", async function (req, res) {
   try {
     if (!(await guard(req, res))) return;
 
-    const { ms } = parseWindow(req);
+    const { key: windowKey, ms } = parseWindow(req);
+
+    const fpGame = await latestId(models.Game);
+    const etag = makeEtag({ r: "games", w: windowKey, fpGame });
+    if (respondFresh(req, res, etag)) return;
+
     const cutoff = Date.now() - ms;
 
     const [mafiaAgg, typeAgg, topSetupsAgg] = await Promise.all([
@@ -671,7 +744,7 @@ router.get("/feed", async function (req, res) {
   try {
     if (!(await guard(req, res))) return;
 
-    const { ms } = parseWindow(req);
+    const { key: windowKey, ms } = parseWindow(req);
     const cutoff = Date.now() - ms;
 
     const PAGE_SIZE = 30;
@@ -685,6 +758,40 @@ router.get("/feed", async function (req, res) {
       .split(",")
       .filter(Boolean);
     const allowed = (c) => categories.length === 0 || categories.includes(c);
+
+    // Sample only the sources that can contribute to this response so the
+    // fingerprint doesn't invalidate on unrelated activity.
+    const sigTasks = {};
+    if (allowed("comments")) sigTasks.comment = latestField(models.Comment, "date");
+    if (allowed("forum")) {
+      sigTasks.thread = latestField(models.ForumThread, "postDate");
+      sigTasks.reply = latestField(models.ForumReply, "postDate");
+    }
+    if (allowed("setups")) sigTasks.setupVer = latestId(models.SetupVersion);
+    if (allowed("polls")) sigTasks.pollVote = latestField(models.PollVote, "votedAt");
+    if (allowed("profile") || allowed("logins")) {
+      sigTasks.siteAct = latestField(models.SiteActivity, "date");
+    }
+    if (allowed("profile")) {
+      sigTasks.stampTrade = latestField(models.StampTrade, "updatedAt");
+    }
+    if (allowed("mod")) {
+      sigTasks.trophy = latestField(models.Trophy, "createdAt");
+      sigTasks.modAction = latestField(models.ModAction, "date");
+      sigTasks.report = latestField(models.Report, "createdAt");
+    }
+    if (allowed("upvotes")) sigTasks.forumVote = latestId(models.ForumVote);
+    const sigKeys = Object.keys(sigTasks);
+    const sigValues = await Promise.all(sigKeys.map((k) => sigTasks[k]));
+    const sig = Object.fromEntries(sigKeys.map((k, i) => [k, sigValues[i]]));
+    const etag = makeEtag({
+      r: "feed",
+      w: windowKey,
+      p: page,
+      c: [...categories].sort(),
+      sig,
+    });
+    if (respondFresh(req, res, etag)) return;
 
     const fetchers = [];
     if (allowed("comments")) fetchers.push(fetchComments(cutoff, PER_SOURCE_LIMIT));
