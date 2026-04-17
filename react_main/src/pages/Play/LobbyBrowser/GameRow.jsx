@@ -78,7 +78,7 @@ const GameStatus = (props) => {
   );
 
   const gameButtonWrapped = (
-    <Box sx={{ width: "100px", ml: 0.5 }}>
+    <Box sx={{ width: "100px" }}>
       {canShowGameButton && GameButton}
       <div
         style={{
