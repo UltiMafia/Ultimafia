@@ -77,7 +77,7 @@ export default function HostJotto() {
     {
       label: "Deck ID",
       ref: "anonymousDeckId",
-      type: "text",
+      type: "deckPicker",
       value: defaults.anonymousDeckId,
       showIf: "anonymousGame",
     },

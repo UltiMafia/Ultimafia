@@ -13,6 +13,7 @@ module.exports = class PolicyPeek extends Item {
     );
 
     let policies = this.game.drawDiscardPile.peekMultiple(3);
+    player.send("policyPeek", { policies });
     player.queueAlert(
       `You see that ${policies.join(", ")} are the three next policies.`
     );

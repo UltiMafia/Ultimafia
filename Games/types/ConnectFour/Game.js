@@ -216,9 +216,8 @@ module.exports = class ConnectFourGame extends Game {
 
   getStateInfo(state) {
     var info = super.getStateInfo(state);
-    let board = this.board;
     info.extraInfo = {
-      board,
+      board: JSON.parse(JSON.stringify(this.board)),
       winningLine: this.winningLine,
     };
     return info;

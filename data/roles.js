@@ -1223,7 +1223,11 @@ const roleData = {
     Tutor: {
       alignment: "Village",
       category: "Investigative",
+<<<<<<< HEAD
       tags: ["Conversion", "Visiting", "Basic"],
+=======
+      tags: ["Information", "Conversion", "Visiting", "Basic"],
+>>>>>>> 01ab78ec4a98b815ee4ce301502f3a59462cd540
       description: [
         "Each night, choose a Village-aligned player to tutor. They will temporarily become a random Information role for the rest of that night and the following day. They will be informed of their new role at the start of day. You receive no feedback on your action.",
       ],
@@ -2892,7 +2896,11 @@ const roleData = {
         },
       ],
     },
+<<<<<<< HEAD
     Liquidator: {
+=======
+    Repoman: {
+>>>>>>> 01ab78ec4a98b815ee4ce301502f3a59462cd540
       alignment: "Mafia",
       category: "Support",
       tags: ["Items", "Information", "Advanced"],
@@ -5501,15 +5509,6 @@ const roleData = {
           value: "old",
         },
       ],
-    },
-    Ripper: {
-      alignment: "Independent",
-      tags: ["Killing", "Independent", "Visiting", "Hostile", "Advanced"],
-      description: [
-        "Each night, you can choose to visit one player and kill them.",
-        "You win if all other Hostile Independents are dead.",
-      ],
-      nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
     },
     Blob: {
       alignment: "Independent",

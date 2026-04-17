@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import axios from "axios";
 import {
   Box,
@@ -29,17 +29,29 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
   const [ruleBroken, setRuleBroken] = useState("");
   const [description, setDescription] = useState("");
 
-  // Update state when prefilledArgs changes or dialog opens
+  // Reset form only when the dialog opens, not on every parent re-render (e.g. game
+  // state updates) which pass a new prefilledArgs object identity each time.
+  const dialogSessionStartedRef = useRef(false);
   useEffect(() => {
-    if (open) {
-      // Support both 'userId' and 'user' for backward compatibility
-      const userId = prefilledArgs.userId || prefilledArgs.user || "";
-      setGame(prefilledArgs.game || "");
-      setUserReported(userId);
-      setRuleBroken("");
-      setDescription("");
+    if (!open) {
+      dialogSessionStartedRef.current = false;
+      return;
     }
-  }, [open, prefilledArgs]);
+    if (dialogSessionStartedRef.current) {
+      return;
+    }
+    dialogSessionStartedRef.current = true;
+    const userId = prefilledArgs.userId || prefilledArgs.user || "";
+    setGame(prefilledArgs.game || "");
+    setUserReported(userId);
+    setRuleBroken("");
+    setDescription("");
+  }, [
+    open,
+    prefilledArgs.game,
+    prefilledArgs.userId,
+    prefilledArgs.user,
+  ]);
 
   // Get display value for user (prefer userName, fall back to userId)
   const userDisplayValue =

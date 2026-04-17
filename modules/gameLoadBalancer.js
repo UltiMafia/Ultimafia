@@ -73,13 +73,9 @@ function createGame(hostId, gameType, settings) {
   return new Promise(async (res, rej) => {
     try {
       const gameId = shortid.generate();
-      const portForNextGame = await redis.getNextGameServerPort();
+      let portForNextGame = await redis.getNextGameServerPort();
 
-      if (
-        portForNextGame === NaN ||
-        portForNextGame === null ||
-        portForNextGame === undefined
-      ) {
+      if (isNaN(portForNextGame) || portForNextGame === null || portForNextGame === undefined) {
         portForNextGame = Number(3010);
       }
 

@@ -44,6 +44,7 @@ module.exports = class Meeting {
     this.exclusive = false;
     this.hideAfterVote = false;
     this.Important = false;
+    this.optional = false;
     this.displayVoteCounter = false;
     this.noOneDisplayName = null;
     /***/
@@ -1246,7 +1247,7 @@ module.exports = class Meeting {
   }
 
   get ready() {
-    if (this.finished || !this.voting) return true;
+    if (this.finished || !this.voting || this.optional) return true;
     else if (!this.multi && !this.multiSplit)
       return (
         Object.keys(this.votes).length == this.totalVoters && this.hasPlurality

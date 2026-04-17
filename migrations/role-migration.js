@@ -4,15 +4,43 @@ const models = require("../db/models");
 const logger = require("../modules/logging")(".");
 
 /**
- * Migration: Replace OLD_ROLE with the role you added to data/renamedRoles.js, as well as NEW_ROLE with the role you're changing it to
+ * Migration: rename a role in Mafia setups (edit OLD_ROLE / NEW_ROLE below).
  *
- * Use DRY_RUN=true to only log what would be changed:
- *   DRY_RUN=true node migrations/migrate-ripper-to-supervillain.js
+ * How to run
+ * ----------
+ * Uses the same MongoDB env vars as the app (see db/db.js):
+ *   MONGO_URL  – host and port only, e.g. localhost:27017 or your Atlas/cluster host
+ *   MONGO_DB   – database name, e.g. ultimafia
+ *   MONGO_USER – MongoDB username (omit or leave empty only for local DBs with auth disabled)
+ *   MONGO_PW   – MongoDB password
  *
- * For production, use the same env as the app (e.g. MONGO_URL, MONGO_DB, MONGO_USER, MONGO_PW).
+ * Load env from your usual source (same as when you start the server), then:
+ *
+ *   # Preview changes only (no writes):
+ *   DRY_RUN=true node migrations/role-migration.js
+ *
+ *   # Apply updates:
+ *   node migrations/role-migration.js
+ *
+ * Example with inline env (production-style):
+ *   MONGO_URL=your-host:27017 MONGO_DB=ultimafia MONGO_USER=... MONGO_PW=... node migrations/role-migration.js
  */
 
 const DRY_RUN = process.env.DRY_RUN === "true" || process.env.DRY_RUN === "1";
+
+function mongoConnectOptions() {
+  const host = process.env.MONGO_URL || "localhost:27017";
+  const dbName = process.env.MONGO_DB || "ultimafia";
+  return {
+    uri: `mongodb://${host}/${dbName}?authSource=admin`,
+    options: {
+      user: process.env.MONGO_USER,
+      pass: process.env.MONGO_PW,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    },
+  };
+}
 
 const OLD_ROLE = "Ripper";
 const NEW_ROLE = "Supervillain";
@@ -60,13 +88,8 @@ function computeHash(doc, newRolesString) {
 
 async function migrate() {
   try {
-    await mongoose.connect(
-      process.env.MONGO_URL || "mongodb://localhost:27017/ultimafia",
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }
-    );
+    const { uri, options } = mongoConnectOptions();
+    await mongoose.connect(uri, options);
 
     logger.info("Connected to database");
     if (DRY_RUN) logger.info("DRY RUN – no changes will be written");

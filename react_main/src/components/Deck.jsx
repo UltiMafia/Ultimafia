@@ -13,20 +13,62 @@ export default function AnonymousDeck(props) {
   });
   const { handleClick } = popoverProps;
 
-  let displayName = `${props.deck.name} (${props.deck.id})`;
+  const deck = props.deck;
+  const previews = deck.profilePreviews || [];
+  const profileCount =
+    deck.profileCount != null
+      ? deck.profileCount
+      : (deck.profiles && deck.profiles.length) || 0;
+
+  let displayName = deck.name;
   return (
-    <div className="deck">
+    <div className="deck deck-listing">
       <InfoPopover
         {...popoverProps}
-        title={filterProfanity(props.deck.name, user.settings)}
+        title={filterProfanity(deck.name, user.settings)}
       />
-      <Typography
-        className="deck-name"
+      <div
+        className={`deck-cover ${deck.coverPhoto ? "" : "no-cover"}`}
         onClick={handleClick}
-        style={{ cursor: "pointer" }}
-      >
-        {displayName}
-      </Typography>
+        style={
+          deck.coverPhoto
+            ? { backgroundImage: `url(/uploads${deck.coverPhoto})` }
+            : undefined
+        }
+      />
+      <div className="deck-listing-info">
+        <Typography
+          className="deck-name"
+          onClick={handleClick}
+          style={{ cursor: "pointer" }}
+        >
+          {displayName}
+        </Typography>
+        <div
+          className="deck-preview-row"
+          onClick={handleClick}
+          style={{ cursor: "pointer" }}
+        >
+          {previews.map((profile) => (
+            <div
+              key={profile.id}
+              className="deck-preview-avatar"
+              title={filterProfanity(profile.name || "", user.settings)}
+              style={
+                profile.avatar
+                  ? {
+                      backgroundImage: `url(/uploads${profile.avatar})`,
+                      borderColor: profile.color || "transparent",
+                    }
+                  : { borderColor: profile.color || "transparent" }
+              }
+            />
+          ))}
+          <span className="deck-profile-count">
+            {profileCount} {profileCount === 1 ? "profile" : "profiles"}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

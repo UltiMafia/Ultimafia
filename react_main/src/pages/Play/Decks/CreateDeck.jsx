@@ -45,6 +45,11 @@ export default function CreateDecks() {
   const [deckName, setDeckName] = useState("");
   const [editing, setEditing] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [slots, setSlots] = useState({ owned: 0, purchased: 0 });
+  const [coverPhoto, setCoverPhoto] = useState("");
+  const [coverFile, setCoverFile] = useState(null);
+  const [coverPreview, setCoverPreview] = useState("");
+  const coverInputRef = useRef(null);
 
   const setFile = (index) => (e) => {
     let newArr = [...selectedFiles]; // copying the old datas array
@@ -59,9 +64,58 @@ export default function CreateDecks() {
       .then((res) => {
         let deck = res.data;
         setDeckName(deck.name);
+        setCoverPhoto(deck.coverPhoto || "");
         getDeckProfiles(deck.profiles, deck.id);
       })
       .catch(errorAlert);
+  }
+
+  function onCoverSelect(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    setCoverFile(file);
+    setCoverPreview(URL.createObjectURL(file));
+  }
+
+  function onCoverRemove() {
+    setCoverFile(null);
+    setCoverPreview("");
+    if (!editing || !params.get("edit")) {
+      setCoverPhoto("");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("deckId", params.get("edit"));
+    axios
+      .post("/api/deck/coverPhoto", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then(() => {
+        setCoverPhoto("");
+        siteInfo.clearCache();
+      })
+      .catch(errorAlert);
+  }
+
+  function uploadCoverPhoto(deckId) {
+    if (!coverFile || !deckId) return Promise.resolve();
+    const formData = new FormData();
+    formData.append("deckId", deckId);
+    formData.append("coverPhoto", coverFile);
+    return axios
+      .post("/api/deck/coverPhoto", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((res) => {
+        setCoverPhoto(res.data.coverPhoto || "");
+        setCoverFile(null);
+        siteInfo.clearCache();
+      })
+      .catch((e) => {
+        if (e.response == null || e.response.status == 413)
+          errorAlert("Cover photo too large, must be less than 2 MB.");
+        else errorAlert(e);
+      });
   }
 
   function removeProfile(index) {
@@ -104,9 +158,15 @@ export default function CreateDecks() {
             }
           }
           onFileUpload(profiles);
+          uploadCoverPhoto(params.get("edit"));
         } else {
           navigate({ search: `?edit=${res.data.id}` });
           setEditing(true);
+          uploadCoverPhoto(res.data.id);
+          axios
+            .get("/api/deck/slots/info")
+            .then((res) => setSlots(res.data))
+            .catch(() => {});
         }
       })
       .catch(errorAlert);
@@ -147,89 +207,169 @@ export default function CreateDecks() {
     document.title = "Create Anonymous Deck | UltiMafia";
   }, []);
 
+  useEffect(() => {
+    axios
+      .get("/api/deck/slots/info")
+      .then((res) => setSlots(res.data))
+      .catch(() => {});
+  }, []);
+
+  const atLimit = slots.owned >= slots.purchased;
+
   return (
     <div className="deck">
       <div className="main-section">
-        <div className="span-panel">
+        <div className="span-panel deck-editor">
           <form
             onSubmit={handleSubmit((data) => {
               onCreateDeck(editing, data);
             })}
           >
-            <h3>Deck Name</h3>
-            <input
-              className="deck-input"
-              type="text"
-              value={deckName}
-              onChange={(e) => setDeckName(e.target.value)}
-            />
-            {editing && (
-              <>
+            <div className="deck-cover-section">
+              <span className="deck-field-label">Cover Photo</span>
+              <div
+                className={`deck-cover-upload ${
+                  coverPreview || coverPhoto ? "" : "empty"
+                }`}
+                onClick={() =>
+                  coverInputRef.current && coverInputRef.current.click()
+                }
+                style={
+                  coverPreview
+                    ? { backgroundImage: `url(${coverPreview})` }
+                    : coverPhoto
+                    ? {
+                        backgroundImage: `url(/uploads${coverPhoto}?t=${siteInfo.cacheVal})`,
+                      }
+                    : undefined
+                }
+              >
+                {!coverPreview && !coverPhoto && (
+                  <div className="deck-cover-placeholder">
+                    <i className="far fa-image" />
+                    <span>Click to upload</span>
+                  </div>
+                )}
+                <input
+                  ref={coverInputRef}
+                  className="hidden-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={onCoverSelect}
+                />
+              </div>
+              {(coverPreview || coverPhoto) && (
+                <a
+                  className="btn deck-cover-remove"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onCoverRemove();
+                  }}
+                >
+                  Remove cover
+                </a>
+              )}
+            </div>
+            <div className="deck-top-bar">
+              <div className="deck-name-section">
+                <label className="deck-field-label" htmlFor="deck-name-input">
+                  Deck Name
+                </label>
+                <input
+                  id="deck-name-input"
+                  className="deck-input deck-name-input"
+                  type="text"
+                  value={deckName}
+                  onChange={(e) => setDeckName(e.target.value)}
+                  placeholder="Enter deck name"
+                  maxLength={25}
+                />
+              </div>
+              {!params.get("edit") && (
+                <div className="deck-slots-info">
+                  <div className="deck-slots-label">
+                    Decks created:{" "}
+                    <span className="deck-slots-count">
+                      {slots.owned}/{slots.purchased}
+                    </span>
+                  </div>
+                  {atLimit && (
+                    <a
+                      className="btn deck-buy-btn"
+                      href="/user/shop?buy=anonymousDeck"
+                    >
+                      Buy More Decks
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+            {editing && fields.length > 0 && (
+              <div className="deck-grid">
+                <div className="deck-grid-header">
+                  <span>Card</span>
+                  <span>Image</span>
+                  <span>Name</span>
+                  <span>Color</span>
+                  <span className="deck-grid-header-delete">Delete</span>
+                </div>
                 {fields.map((profile, index) => {
                   return (
-                    <div className="inputs">
-                      <>
-                        <h4>Card #{index + 1}</h4>
-                        <section key={profile.id}>
-                          <ImageUpload
-                            indx={index}
-                            reg={register}
-                            setFile={setFile}
-                            watch={watch}
-                            getValues={getValues}
-                            selectedFile={selectedFiles[index]}
-                          ></ImageUpload>
-                          <label>
-                            <span>Name</span>
-                            <input
-                              {...register(`cards.${index}.name`)}
-                              defaultValue={profile.name}
-                            />
-                          </label>
-                          <label>
-                            <span>Color</span>
-                            <input
-                              className="color-input"
-                              type="color"
-                              {...register(`cards.${index}.color`)}
-                              defaultValue={profile.color}
-                            />
-                          </label>
-                          {/* <label>
-                    <span>Death Message</span>
-                    <input
-                      type="text"
-                      {...register(`cards.${index}.deathMessage`)}
-                      defaultValue={profile.deathMessage}
-                    />
-                  </label> */}
-                          <label>
-                            <span>Delete?</span>
-                            <a
-                              className="btn"
-                              onClick={() => removeProfile(index)}
-                            >
-                              <i className="fas fa-trash-alt"></i>
-                            </a>
-                          </label>
-                        </section>
-                      </>
-                    </div>
+                    <section key={profile.id} className="deck-grid-row">
+                      <div className="deck-row-index">#{index + 1}</div>
+                      <ImageUpload
+                        indx={index}
+                        reg={register}
+                        setFile={setFile}
+                        watch={watch}
+                        getValues={getValues}
+                        selectedFile={selectedFiles[index]}
+                      />
+                      <input
+                        className="deck-input"
+                        placeholder="Name"
+                        maxLength={20}
+                        {...register(`cards.${index}.name`)}
+                        defaultValue={profile.name}
+                      />
+                      <input
+                        className="color-input"
+                        type="color"
+                        {...register(`cards.${index}.color`)}
+                        defaultValue={profile.color}
+                      />
+                      <a
+                        className="btn deck-delete-btn"
+                        onClick={() => removeProfile(index)}
+                        title="Delete card"
+                      >
+                        <i className="fas fa-trash-alt"></i>
+                      </a>
+                    </section>
                   );
                 })}
-              </>
+              </div>
             )}
-            {editing && fields.length < 50 && (
-              <a
-                className="btn"
-                onClick={() => append({ name: `Profile ${fields.length + 1}` })}
+            <div className="deck-actions">
+              <button
+                type="submit"
+                className="btn btn-success deck-submit-btn"
+                title="Save deck"
               >
-                <i className="fas fa-plus"></i>
-              </a>
-            )}
-            <button type="submit" className="btn btn-success">
-              <i className="fas fa-check-circle fa-lg"></i>
-            </button>
+                <i className="fas fa-check-circle fa-lg"></i>
+              </button>
+              {editing && fields.length < 50 && (
+                <a
+                  className="btn deck-add-btn"
+                  onClick={() =>
+                    append({ name: `Profile ${fields.length + 1}` })
+                  }
+                  title="Add card"
+                >
+                  <i className="fas fa-plus"></i>
+                </a>
+              )}
+            </div>
           </form>
         </div>
       </div>

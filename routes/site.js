@@ -2,7 +2,6 @@ const express = require("express");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 const models = require("../db/models");
-const contributorData = require("../data/contributors");
 const donorData = require("../data/donors");
 const { violationDefinitions } = require("../data/violations");
 
@@ -15,12 +14,20 @@ router.get("/contributors", async function (req, res) {
     const allContributorsRaw = await models.User.find({
       contributorTypes: { $exists: true },
       deleted: false,
-    }).select("id name avatar vanityUrl contributorTypes contributorBio -_id");
+    }).select(
+      "id name avatar vanityUrl contributorTypes contributorBio lastActive -_id"
+    );
 
     // Filter to only include users with non-empty contributorTypes array
-    const allContributors = allContributorsRaw.filter(
-      (user) => user.contributorTypes && user.contributorTypes.length > 0
-    );
+    const allContributors = allContributorsRaw
+      .filter(
+        (user) => user.contributorTypes && user.contributorTypes.length > 0
+      )
+      .sort((a, b) => {
+        const la = a.lastActive != null ? a.lastActive : 0;
+        const lb = b.lastActive != null ? b.lastActive : 0;
+        return lb - la;
+      });
 
     // Format response with contributor types included
     var result = allContributors.map((user) => {
@@ -45,24 +52,21 @@ router.get("/contributors", async function (req, res) {
 router.get("/contributors/art", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
-    // Return art contributors with their roles from the data file
-    // This is used by RolePage to show which artists made which role icons
-    var artContributors = [];
-    const artists = contributorData["art"];
-    for (let contributor in artists) {
-      let user = await models.User.findOne({ name: contributor }).select(
-        "id name avatar -_id"
-      );
-      if (!user) {
-        continue;
-      }
+    const users = await models.User.find({
+      deleted: false,
+      "roleIconCredits.0": { $exists: true },
+    }).select("id name avatar roleIconCredits -_id");
 
-      const roles = artists[contributor];
-      artContributors.push({
-        user: user.toJSON(),
-        roles: roles,
-      });
-    }
+    const artContributors = users.map((u) => {
+      const json = u.toJSON();
+      const credits = json.roleIconCredits || [];
+      delete json.roleIconCredits;
+      return {
+        user: json,
+        roles: { Mafia: credits },
+      };
+    });
+
     res.send(artContributors);
   } catch (e) {
     logger.error(e);

@@ -19,6 +19,13 @@ const { colorHasGoodContrastForBothThemes } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 
+/** Keep in sync with `isRetroThemeForcedByCalendar` in react_main/src/utils/holidayThemes.js */
+function isRetroThemeForcedByCalendar(date = new Date()) {
+  const month = date.getMonth();
+  const day = date.getDate();
+  return (month === 2 && day === 30) || (month === 3 && day === 1);
+}
+
 // Helper function to resolve user ID from identifier (ID or vanity URL)
 async function resolveUserId(identifier) {
   // First try to find user by ID
@@ -341,7 +348,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive joined favoriteRoles _id"
+        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive joined favoriteRoles roleIconCredits _id"
       )
       .populate({
         path: "setups",
@@ -354,7 +361,7 @@ router.get("/:id/profile", async function (req, res) {
       .populate({
         path: "games",
         select:
-          "id setup lobby endTime private broken ranked competitive spectating anonymousGame -_id",
+          "id setup lobby endTime private broken ranked competitive spectating anonymousGame users players winners -_id",
         populate: {
           path: "setup",
           select:
@@ -379,6 +386,21 @@ router.get("/:id/profile", async function (req, res) {
 
     var userMongoId = user._id;
     delete user._id;
+
+    // Compute win/loss for each game
+    user.games = (user.games || []).map((game) => {
+      let won = null;
+      if (!game.broken && game.winners && game.winners.length > 0) {
+        const userIdx = (game.users || []).findIndex(
+          (u) => u && u.toString() === userMongoId.toString()
+        );
+        if (userIdx !== -1 && game.players && game.players[userIdx]) {
+          won = game.winners.includes(game.players[userIdx]);
+        }
+      }
+      const { users, players, winners, ...rest } = game;
+      return { ...rest, won };
+    });
 
     const totalSetups = await models.Setup.countDocuments({
       creator: userMongoId,
@@ -418,7 +440,7 @@ router.get("/:id/profile", async function (req, res) {
       .populate({
         path: "game",
         select:
-          "id setup lobby endTime private broken ranked competitive spectating anonymousGame -_id",
+          "id setup lobby endTime private broken ranked competitive spectating anonymousGame users players winners -_id",
         populate: {
           path: "setup",
           select:
@@ -430,8 +452,20 @@ router.get("/:id/profile", async function (req, res) {
         },
       });
     user.archivedGames = archivedGames.map((item) => {
+      const game = item.game._doc;
+      let won = null;
+      if (!game.broken && game.winners && game.winners.length > 0) {
+        const userIdx = (game.users || []).findIndex(
+          (u) => u && u.toString() === userMongoId.toString()
+        );
+        if (userIdx !== -1 && game.players && game.players[userIdx]) {
+          won = game.winners.includes(game.players[userIdx]);
+        }
+      }
+      const { users, players, winners, ...rest } = game;
       return {
-        ...item.game._doc,
+        ...rest,
+        won,
         description: item.description,
         status: "Finished",
       };
@@ -488,6 +522,73 @@ router.get("/:id/profile", async function (req, res) {
     if (isSelf) {
       user.hiddenStamps = hiddenOrder.map((k) => hiddenGroups[k]);
       user.stampDetails = stampDetails;
+
+      // Locked stamp ids + per-roleKey locked counts from active trades.
+      const activeTrades = await models.StampTrade.find({
+        $or: [{ initiatorId: userId }, { recipientId: userId }],
+        status: { $in: ["PENDING_RESPONSE", "PENDING_CONFIRMATION"] },
+      }).select(
+        "initiatorId initiatorStamp initiatorGameType initiatorRole recipientId recipientStamp recipientGameType recipientRole"
+      );
+
+      const lockedStampIds = [];
+      const lockedCountsByRoleKey = {};
+      const incrementLocked = (gameType, role) => {
+        if (!gameType || !role) return;
+        const k = `${gameType}:${role}`;
+        lockedCountsByRoleKey[k] = (lockedCountsByRoleKey[k] || 0) + 1;
+      };
+      for (const t of activeTrades) {
+        if (t.initiatorId === userId && t.initiatorStamp) {
+          lockedStampIds.push(String(t.initiatorStamp));
+          incrementLocked(t.initiatorGameType, t.initiatorRole);
+        }
+        if (t.recipientId === userId && t.recipientStamp) {
+          lockedStampIds.push(String(t.recipientStamp));
+          incrementLocked(t.recipientGameType, t.recipientRole);
+        }
+      }
+      user.lockedStampIds = lockedStampIds;
+      user.lockedCountsByRoleKey = lockedCountsByRoleKey;
+
+      // All active trades involving this user.
+      const pendingTrades = await models.StampTrade.find({
+        $or: [{ initiatorId: userId }, { recipientId: userId }],
+        status: { $in: ["PENDING_RESPONSE", "PENDING_CONFIRMATION"] },
+      }).sort({ updatedAt: -1 });
+      const pendingConfirmationTrades = [];
+      for (const t of pendingTrades) {
+        const isInitiator = t.initiatorId === userId;
+        const otherUserId = isInitiator ? t.recipientId : t.initiatorId;
+        const otherUser = await models.User.findOne({
+          id: otherUserId,
+        }).select("id name avatar");
+        // Whose turn is it?
+        // PENDING_RESPONSE: recipient needs to respond.
+        // PENDING_CONFIRMATION: initiator needs to confirm.
+        const waitingOnYou =
+          (t.status === "PENDING_RESPONSE" && !isInitiator) ||
+          (t.status === "PENDING_CONFIRMATION" && isInitiator);
+        pendingConfirmationTrades.push({
+          id: t.id,
+          initiatorGameType: t.initiatorGameType,
+          initiatorRole: t.initiatorRole,
+          recipientGameType: t.recipientGameType,
+          recipientRole: t.recipientRole,
+          other: otherUser
+            ? {
+                id: otherUser.id,
+                name: otherUser.name,
+                avatar: otherUser.avatar,
+              }
+            : null,
+          isInitiator,
+          status: t.status,
+          waitingOnYou,
+          updatedAt: t.updatedAt,
+        });
+      }
+      user.pendingConfirmationTrades = pendingConfirmationTrades;
     }
 
     var karmaInfo = { voteCount: user.karma, vote: 0 };
@@ -1035,7 +1136,7 @@ router.get("/:id/games", async function (req, res) {
         .skip(skip)
         .limit(pageSize)
         .select(
-          "id setup lobby endTime private broken ranked competitive spectating anonymousGame status"
+          "id setup lobby endTime private broken ranked competitive spectating anonymousGame status users players winners"
         )
         .populate({
           path: "setup",
@@ -1044,10 +1145,19 @@ router.get("/:id/games", async function (req, res) {
         })
         .lean();
 
-      games = games.map((game) => ({
-        ...game,
-        status: game.status || "Finished",
-      }));
+      games = games.map((game) => {
+        let won = null;
+        if (!game.broken && game.winners && game.winners.length > 0) {
+          const userIdx = (game.users || []).findIndex(
+            (u) => u && u.toString() === userMongoId.toString()
+          );
+          if (userIdx !== -1 && game.players && game.players[userIdx]) {
+            won = game.winners.includes(game.players[userIdx]);
+          }
+        }
+        const { users, players, winners, ...rest } = game;
+        return { ...rest, won, status: game.status || "Finished" };
+      });
     }
 
     res.send({
@@ -1069,6 +1179,7 @@ router.get("/:id/reports", async function (req, res) {
     const reqUserId = await routeUtils.verifyLoggedIn(req, true);
     const identifier = String(req.params.id);
     const profileUserId = await resolveUserId(identifier);
+    let isModViewer = false;
 
     if (!profileUserId) {
       res.status(404).send("User not found.");
@@ -1084,22 +1195,32 @@ router.get("/:id/reports", async function (req, res) {
       if (!(await routeUtils.verifyPermission(res, reqUserId, "seeModPanel"))) {
         return;
       }
+      isModViewer = true;
+    } else if (reqUserId) {
+      // Mods viewing their own profile should still see linked-account history.
+      isModViewer = await redis.hasPermission(reqUserId, "seeModPanel");
     }
 
-    // Fetch all completed reports for this user (including dismissed)
+    const reportUserIds = isModViewer
+      ? Array.from(new Set(await routeUtils.getAltAccountIds(profileUserId)))
+      : [profileUserId];
+
+    // Fetch all completed reports for this user (including dismissed).
+    // For mods, include reports across linked accounts.
     const reports = await models.Report.find({
-      reportedUserId: profileUserId,
+      reportedUserId: { $in: reportUserIds },
       status: "complete",
     })
       .sort({ completedAt: -1 })
       .lean()
       .select(
-        "id status completedAt finalRuling rule description createdAt reporterId gameId linkedViolationTicketId"
+        "id status completedAt finalRuling rule description createdAt reporterId gameId linkedViolationTicketId reportedUserId"
       );
 
-    // Fetch all violation tickets for this user (excluding appealed ones)
+    // Fetch all violation tickets for this user (excluding appealed ones).
+    // For mods, include tickets across linked accounts.
     const violationTickets = await models.ViolationTicket.find({
-      userId: profileUserId,
+      userId: { $in: reportUserIds },
       $or: [{ appealed: { $exists: false } }, { appealed: false }],
     })
       .sort({ createdAt: -1 })
@@ -1124,6 +1245,12 @@ router.get("/:id/reports", async function (req, res) {
     const { getBasicUserInfo } = require("../modules/redis");
     for (const report of reports) {
       try {
+        const reportedUserInfo = await getBasicUserInfo(report.reportedUserId);
+        if (reportedUserInfo) {
+          report.reportedUserName = reportedUserInfo.name;
+          report.reportedUserAvatar = reportedUserInfo.avatar;
+        }
+
         const reporterInfo = await getBasicUserInfo(report.reporterId);
         if (reporterInfo) {
           report.reporterName = reporterInfo.name;
@@ -1136,12 +1263,16 @@ router.get("/:id/reports", async function (req, res) {
         ) {
           report.violationTicket = violationMap[report.linkedViolationTicketId];
         }
+        report.isLinkedAccountReport = report.reportedUserId !== profileUserId;
       } catch (e) {
         // Ignore errors fetching reporter info
       }
     }
 
-    res.send({ reports });
+    res.send({
+      reports,
+      linkedAccountIds: isModViewer ? reportUserIds : [profileUserId],
+    });
   } catch (e) {
     logger.error(e);
     res.status(500).send("Error loading reports.");
@@ -1666,6 +1797,12 @@ router.post("/settings/update", async function (req, res) {
       logger.warn(`Invalid settings prop by ${userId}: ${prop}`);
       res.status(500);
       res.send("Error updating settings.");
+      return;
+    }
+
+    if (prop === "siteColorScheme" && isRetroThemeForcedByCalendar()) {
+      res.status(403);
+      res.send("Site color scheme is locked on this date.");
       return;
     }
 
@@ -2667,45 +2804,6 @@ router.post("/referred", async function (req, res) {
   } catch (e) {
     logger.error(e);
     res.sendStatus(200);
-  }
-});
-
-router.post("/unlink", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var user = await models.User.findOne({ id: userId, deleted: false }).select(
-      "accounts"
-    );
-    var account = String(req.body.account);
-    var accountCount = 0;
-
-    if (user) {
-      user = user.toJSON();
-
-      for (let accountName in user.accounts)
-        if (user.accounts[accountName] && user.accounts[accountName].id)
-          accountCount++;
-
-      if (accountCount > 1) {
-        delete user.accounts[account];
-        models.User.updateOne(
-          { id: userId },
-          { $unset: { [`accounts.${account}`]: "" } }
-        ).exec();
-        res.send(user.accounts);
-      } else {
-        res.status(500);
-        res.send("You must have at least one linked account.");
-      }
-    } else {
-      res.status(500);
-      res.send("Error unlinking account.");
-    }
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error unlinking account.");
   }
 });
 

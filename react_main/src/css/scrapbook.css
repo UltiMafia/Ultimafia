@@ -6,7 +6,196 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  justify-content: center;
 }
+
+/* ── Book frame ───────────────────────────────────────────────────────────── */
+
+.scrapbook-book-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.scrapbook-book {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  perspective: 1600px;
+  flex-shrink: 0;
+}
+
+.scrapbook-page {
+  position: relative;
+  width: 296px;
+  min-height: 210px;
+  background-color: #fdf6e3;
+  padding: 10px 12px;
+  box-sizing: border-box;
+}
+
+.scrapbook-page--left {
+  border-radius: 4px 0 0 4px;
+  box-shadow:
+    inset -6px 0 10px -6px rgba(0, 0, 0, 0.35),
+    -2px 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.scrapbook-page--right {
+  border-radius: 0 4px 4px 0;
+  box-shadow:
+    inset 6px 0 10px -6px rgba(0, 0, 0, 0.35),
+    2px 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.scrapbook-spine {
+  width: 4px;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.55),
+    #0f0f0f 50%,
+    rgba(0, 0, 0, 0.55)
+  );
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  flex-shrink: 0;
+}
+
+.scrapbook-page-stamps {
+  display: grid;
+  grid-template-columns: repeat(5, 48px);
+  grid-auto-rows: 48px;
+  gap: 8px;
+  justify-content: center;
+}
+
+.stamp--empty {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ── Flip arrows ─────────────────────────────────────────────────────────── */
+
+.scrapbook-flip-arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--scheme-color-sec);
+  color: var(--scheme-color-text);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
+.scrapbook-flip-arrow:hover:not(:disabled) {
+  transform: scale(1.08);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
+}
+
+.scrapbook-flip-arrow:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.scrapbook-flip-arrow:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+/* ── Turning page ────────────────────────────────────────────────────────── */
+
+.scrapbook-turning-page {
+  position: absolute;
+  top: 0;
+  width: 296px;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.55s ease-in-out;
+  z-index: 5;
+}
+
+.scrapbook-turning-page--right {
+  left: calc(50% + 2px);
+  transform-origin: left center;
+  transform: rotateY(0deg);
+}
+
+.scrapbook-turning-page--right.scrapbook-turning-page--rotate {
+  transform: rotateY(-180deg);
+}
+
+.scrapbook-turning-page--left {
+  right: calc(50% + 2px);
+  transform-origin: right center;
+  transform: rotateY(0deg);
+}
+
+.scrapbook-turning-page--left.scrapbook-turning-page--rotate {
+  transform: rotateY(180deg);
+}
+
+.scrapbook-turning-face {
+  position: absolute;
+  inset: 0;
+  background-color: #fdf6e3;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  backface-visibility: hidden;
+}
+
+.scrapbook-turning-face--front {
+  transform: rotateY(0deg);
+}
+
+.scrapbook-turning-face--back {
+  transform: rotateY(180deg);
+}
+
+.scrapbook-turning-page--right .scrapbook-turning-face--front {
+  border-radius: 0 4px 4px 0;
+  box-shadow:
+    inset 6px 0 10px -6px rgba(0, 0, 0, 0.35),
+    2px 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.scrapbook-turning-page--right .scrapbook-turning-face--back {
+  border-radius: 4px 0 0 4px;
+  box-shadow:
+    inset -6px 0 10px -6px rgba(0, 0, 0, 0.35),
+    -2px 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.scrapbook-turning-page--left .scrapbook-turning-face--front {
+  border-radius: 4px 0 0 4px;
+  box-shadow:
+    inset -6px 0 10px -6px rgba(0, 0, 0, 0.35),
+    -2px 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.scrapbook-turning-page--left .scrapbook-turning-face--back {
+  border-radius: 0 4px 4px 0;
+  box-shadow:
+    inset 6px 0 10px -6px rgba(0, 0, 0, 0.35),
+    2px 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* ── Spread counter ──────────────────────────────────────────────────────── */
+
+.scrapbook-spread-counter {
+  text-align: center;
+  font-size: 11px;
+  color: var(--scheme-color-text);
+  opacity: 0.6;
+  margin-top: 4px;
+}
+
+/* ── Stamps (unchanged) ──────────────────────────────────────────────────── */
 
 .stamp {
   position: relative;
@@ -19,6 +208,20 @@
   justify-content: center;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
   cursor: default;
+}
+
+.stamp--small {
+  width: 28px;
+  height: 28px;
+}
+
+.stamp--small .stamp-icon .role {
+  transform: scale(0.58);
+  transform-origin: center;
+}
+
+.stamp--small .stamp-fold {
+  border-width: 0 0 5px 5px;
 }
 
 .stamp-icon {
@@ -66,4 +269,55 @@
   background: #d4a017;
   color: #fff;
   font-size: 11px;
+}
+
+.stamp--clickable {
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.stamp--clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.stamp--locked {
+  opacity: 0.7;
+}
+
+.stamp-trade-row {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  background: transparent;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.stamp-trade-row:hover {
+  background: rgba(127, 127, 127, 0.1);
+}
+
+.stamp-trade-row--selected {
+  background: rgba(251, 191, 36, 0.25);
+  border-color: #f59e0b;
+}
+
+.stamp-lock {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: 16px;
+  height: 16px;
+  background: #d4a017;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }

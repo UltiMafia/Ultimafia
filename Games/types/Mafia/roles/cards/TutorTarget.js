@@ -1,11 +1,15 @@
 const Card = require("../../Card");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
+<<<<<<< HEAD
 const roleData = require("../../../../../data/roles");
+=======
+>>>>>>> 01ab78ec4a98b815ee4ce301502f3a59462cd540
 
 module.exports = class TutorTarget extends Card {
   constructor(role) {
     super(role);
 
+<<<<<<< HEAD
     this.listeners = {
       state: function (stateInfo) {
         if (stateInfo.name.match(/Night/)) {
@@ -93,16 +97,22 @@ module.exports = class TutorTarget extends Card {
       },
     };
 
+=======
+>>>>>>> 01ab78ec4a98b815ee4ce301502f3a59462cd540
     this.meetings = {
       Tutor: {
         states: ["Night"],
         flags: ["voting"],
+<<<<<<< HEAD
         targets: { include: ["alive"], exclude: ["self", isPrevTarget] },
+=======
+>>>>>>> 01ab78ec4a98b815ee4ce301502f3a59462cd540
         action: {
           labels: ["visit", "tutor"],
           ability: ["Information", "Conversion"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
+<<<<<<< HEAD
             const game = this.game;
             const target = this.target;
 
@@ -133,12 +143,25 @@ module.exports = class TutorTarget extends Card {
                 !banishedRoleNames.includes(roleName)
               )
               .map(([roleName]) => roleName);
+=======
+            if (this.target.role.alignment !== "Village") return;
+
+            const game = this.game;
+            const target = this.target;
+
+            const infoRoles = game.getRolesByTag("Information").filter(
+              (roleName) =>
+                roleName !== "Tutor" &&
+                roleName !== target.role.name
+            );
+>>>>>>> 01ab78ec4a98b815ee4ce301502f3a59462cd540
 
             if (!infoRoles.length) return;
 
             const chosenRoleName =
               infoRoles[Math.floor(Math.random() * infoRoles.length)];
 
+<<<<<<< HEAD
             const savedRoleData = Object.assign({}, target.role.data);
 
             if (!this.role.data.tutorTargets) {
@@ -162,11 +185,48 @@ module.exports = class TutorTarget extends Card {
                 nightPassed: false,
               });
             }
+=======
+            if (!target.role.data.tutorOriginalRole) {
+              target.role.data.tutorOriginalRole = target.role.name;
+            }
+
+            const RoleClass = game.getRoleClass(chosenRoleName);
+            if (!RoleClass) return;
+
+            game.changeRole(target, RoleClass, { alignment: "Village" });
+
+            if (!target.role.data.tutorRevertQueued) {
+              target.role.data.tutorRevertQueued = true;
+
+              game.once("phaseBegin:Night", function () {
+                game.once("phaseBegin:Day", function () {
+                  if (!target.alive) return;
+
+                  const originalRoleName = target.role.data.tutorOriginalRole;
+                  if (!originalRoleName) return;
+
+                  const OriginalClass = game.getRoleClass(originalRoleName);
+                  if (OriginalClass) {
+                    game.changeRole(target, OriginalClass, { alignment: "Village" });
+                  }
+
+                  target.role.data.tutorOriginalRole = null;
+                  target.role.data.tutorRevertQueued = false;
+                });
+              });
+            }
+
+            game.once("phaseBegin:Day", function () {
+              var alert = `:star: You have been tutored into ${chosenRoleName}!`;
+              game.queueAlert(alert, 0, [target]);
+            });
+>>>>>>> 01ab78ec4a98b815ee4ce301502f3a59462cd540
           },
         },
       },
     };
   }
+<<<<<<< HEAD
 };
 
 function isPrevTarget(player) {
@@ -174,3 +234,6 @@ function isPrevTarget(player) {
     this.role.data.prevTargets &&
     this.role.data.prevTargets.includes(player);
 }
+=======
+};
+>>>>>>> 01ab78ec4a98b815ee4ce301502f3a59462cd540

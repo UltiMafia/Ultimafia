@@ -11,10 +11,11 @@ const fs = require("fs");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
+const roleIconCreditUtils = require("../modules/roleIconCreditUtils");
 const { getBasicUserInfo } = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
-const { rating, rate, ordinal, predictWin } = require("openskill");
+const fortunePoints = require("../modules/fortunePoints");
 const router = express.Router();
 
 router.get("/groups", async function (req, res) {
@@ -456,6 +457,91 @@ router.post("/assignCredit", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Error updating contributor credit.");
+  }
+});
+
+router.post("/roleIconCredit", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdTarget = String(req.body.userId || "").trim();
+    var roleInput = req.body.roleName ?? req.body.role;
+    var styleInput = req.body.style ?? req.body.skin;
+    var perm = "changeUsersName";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    if (!userIdTarget) {
+      res.status(400);
+      res.send("User is required.");
+      return;
+    }
+
+    const roleName = roleIconCreditUtils.canonicalRoleName(roleInput);
+    if (!roleName) {
+      res.status(400);
+      res.send("Invalid or unknown Mafia role name.");
+      return;
+    }
+
+    const skin = roleIconCreditUtils.normalizeSkinForRole(roleName, styleInput);
+    if (!skin) {
+      res.status(400);
+      res.send(
+        "Invalid style for this role. Use a skin that exists for the role (e.g. vivid), or check spelling."
+      );
+      return;
+    }
+
+    const key = roleIconCreditUtils.makeCreditKey(roleName, skin);
+
+    var userToUpdate = await models.User.findOne({
+      id: userIdTarget,
+      deleted: false,
+    });
+
+    if (!userToUpdate) {
+      res.status(500);
+      res.send("User does not exist.");
+      return;
+    }
+
+    const list = [...(userToUpdate.roleIconCredits || [])];
+    const idx = list.findIndex((e) => {
+      const i = String(e).lastIndexOf(":");
+      if (i <= 0) return false;
+      return (
+        e.slice(0, i) === roleName &&
+        e.slice(i + 1).toLowerCase() === skin
+      );
+    });
+
+    let assigned;
+    if (idx >= 0) {
+      list.splice(idx, 1);
+      assigned = false;
+    } else {
+      list.push(key);
+      assigned = true;
+    }
+
+    list.sort((a, b) => String(a).localeCompare(String(b)));
+    userToUpdate.roleIconCredits = list;
+    await userToUpdate.save();
+
+    await redis.cacheUserInfo(userIdTarget, true);
+
+    routeUtils.createModAction(userId, "Manage Role Icon Credit", [
+      userIdTarget,
+      roleName,
+      skin,
+      assigned ? "assigned" : "revoked",
+    ]);
+
+    res.json({ assigned, roleIconCredits: list });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error updating role icon credit.");
   }
 });
 
@@ -1699,6 +1785,104 @@ router.post("/awardTrophy", async (req, res) => {
   }
 });
 
+router.post("/awardStamp", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var perm = "awardStamp";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    var userIdToAward = String(req.body.userId || "").trim();
+    var gameType = String(req.body.gameType || "").trim();
+    var role = String(req.body.role || "").trim();
+    var quantity = parseInt(req.body.quantity, 10);
+    if (!Number.isFinite(quantity) || quantity < 1) quantity = 1;
+    if (quantity > 100) quantity = 100;
+
+    if (!userIdToAward) {
+      res.status(400);
+      res.send("User is required.");
+      return;
+    }
+
+    if (!gameType) {
+      res.status(400);
+      res.send("Game type is required.");
+      return;
+    }
+
+    if (!role) {
+      res.status(400);
+      res.send("Role is required.");
+      return;
+    }
+
+    const roleInfo = roleData?.[gameType]?.[role];
+    if (!roleInfo) {
+      res.status(400);
+      res.send(`Unknown role "${role}" for game type "${gameType}".`);
+      return;
+    }
+    if (roleInfo.alignment === "Event") {
+      res.status(400);
+      res.send("Stamps cannot be awarded for events.");
+      return;
+    }
+
+    const userToAward = await models.User.findOne({
+      id: userIdToAward,
+      deleted: false,
+    }).select("_id id name");
+
+    if (!userToAward) {
+      res.status(404);
+      res.send("User does not exist.");
+      return;
+    }
+
+    const now = Date.now();
+    const stamps = [];
+    for (let i = 0; i < quantity; i++) {
+      stamps.push({
+        user: userToAward._id,
+        userId: userIdToAward,
+        gameId: `admin-${shortid.generate()}`,
+        gameType,
+        role,
+        hidden: false,
+        createdAt: now + i,
+      });
+    }
+    await models.Stamp.insertMany(stamps);
+
+    await routeUtils.createNotification(
+      {
+        content: `You have been awarded ${quantity} ${gameType} ${role} stamp${quantity === 1 ? "" : "s"}!`,
+        icon: "fas fa-stamp",
+        link: `/user/${userIdToAward}`,
+      },
+      [userIdToAward]
+    );
+
+    routeUtils.createModAction(userId, "Award Stamp", [
+      userIdToAward,
+      `${gameType}:${role} x${quantity}`,
+    ]);
+
+    res.send({
+      userId: userIdToAward,
+      gameType,
+      role,
+      quantity,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error awarding stamp.");
+  }
+});
+
 router.post("/revokeTrophy", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -1863,6 +2047,78 @@ router.post("/clearAllIPs", async (req, res) => {
   }
 });
 
+// Removes shared stored login IPs from both users so getAltAccountIds no longer
+// associates them (until they share a new IP on a future login).
+router.post("/unlinkAccounts", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var modId = await routeUtils.verifyLoggedIn(req);
+    var perm = "viewAlts";
+
+    if (!(await routeUtils.verifyPermission(res, modId, perm))) return;
+
+    var userId1 = String(req.body.userId1 || "").trim();
+    var userId2 = String(req.body.userId2 || "").trim();
+
+    if (!userId1 || !userId2) {
+      res.status(400);
+      res.send("Both users are required.");
+      return;
+    }
+
+    if (userId1 === userId2) {
+      res.status(400);
+      res.send("Users must be different.");
+      return;
+    }
+
+    const user1 = await models.User.findOne({
+      id: userId1,
+      deleted: false,
+    }).select("ip");
+    const user2 = await models.User.findOne({
+      id: userId2,
+      deleted: false,
+    }).select("ip");
+
+    if (!user1 || !user2) {
+      res.status(404);
+      res.send("One or both users do not exist.");
+      return;
+    }
+
+    const ips1 = user1.ip || [];
+    const ips2 = user2.ip || [];
+    const set2 = new Set(ips2);
+    const intersection = [...new Set(ips1.filter((ip) => set2.has(ip)))];
+
+    if (intersection.length === 0) {
+      res.send({
+        removed: [],
+        message:
+          "No shared IPs to remove; accounts were not linked by stored IPs.",
+      });
+      return;
+    }
+
+    await models.User.updateOne(
+      { id: userId1 },
+      { $pullAll: { ip: intersection } }
+    ).exec();
+    await models.User.updateOne(
+      { id: userId2 },
+      { $pullAll: { ip: intersection } }
+    ).exec();
+
+    routeUtils.createModAction(modId, "Unlink Accounts", [userId1, userId2]);
+    res.send({ removed: intersection });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error unlinking accounts.");
+  }
+});
+
 router.post("/refundGame", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
@@ -1905,6 +2161,60 @@ router.post("/refundGame", async (req, res) => {
       res.status(400);
       res.send("No players found in this game.");
       return;
+    }
+
+    let precomputedFortune = null;
+    if (game.history && game.setup) {
+      try {
+        const history = JSON.parse(game.history);
+        const originalRoles = history.originalRoles || {};
+        const memberFactionsByPlayerId = {};
+        for (let uid in playerIdMap) {
+          const pid = playerIdMap[uid];
+          if (!originalRoles[pid]) continue;
+          const roleName = originalRoles[pid].split(":")[0];
+          const alignment = playerAlignmentMap[uid] || "";
+          const alignmentIsFaction =
+            alignment === "Village" ||
+            alignment === "Mafia" ||
+            alignment === "Cult";
+          let factionName = alignmentIsFaction ? alignment : roleName;
+          if (factionName === "Traitor") {
+            factionName = "Mafia";
+          }
+          memberFactionsByPlayerId[pid] = factionName;
+        }
+        const factionNames = [
+          ...new Set(Object.values(memberFactionsByPlayerId)),
+        ].sort();
+        const setupDoc = await models.Setup.findOne({ _id: game.setup })
+          .select("version")
+          .lean();
+        const sv =
+          setupDoc &&
+          (await models.SetupVersion.findOne({
+            setup: game.setup,
+            version: setupDoc.version || 0,
+          })
+            .select("setupStats")
+            .lean());
+        const alignmentWinRates = fortunePoints.alignmentRowsToWinRateMap(
+          sv && sv.setupStats
+        );
+        const { pointsWonByFactions, pointsLostByFactions } =
+          fortunePoints.computeFactionFortunePoints({
+            factionNames,
+            alignmentWinRates,
+            K: constants.fortunePointsNominalK,
+          });
+        precomputedFortune = {
+          memberFactionsByPlayerId,
+          pointsWonByFactions,
+          pointsLostByFactions,
+        };
+      } catch (e) {
+        logger.error(`Error precomputing fortune for refund game ${gameId}:`, e);
+      }
     }
 
     // Load game-specific data for calculations
@@ -2027,141 +2337,24 @@ router.post("/refundGame", async (req, res) => {
         let pointsToRevert = 0;
         let pointsNegativeToRevert = 0;
 
-        if (game.history) {
-          try {
-            const history = JSON.parse(game.history);
+        if (precomputedFortune) {
+          const playerFaction =
+            precomputedFortune.memberFactionsByPlayerId[playerId];
+          if (playerFaction) {
+            const maxEarnedPoints = constants.fortunePointsNominalK * 20;
+            let pointsEarned = won
+              ? precomputedFortune.pointsWonByFactions[playerFaction]
+              : precomputedFortune.pointsLostByFactions[playerFaction];
 
-            // Extract role information from history
-            // History structure varies, but we can get it from the playerAlignmentMap and originalRoles
-            const roleFromHistory = null; // We'll extract this if needed
-
-            // Recalculate fortune/misfortune using the same algorithm as adjustSkillRatings
-            // This requires the setup's faction ratings AT THE TIME of the game
-            const setup = await models.Setup.findOne({
-              _id: game.setup,
-            }).select("id factionRatings");
-
-            if (setup && setup.factionRatings) {
-              const factionRatingsRaw = setup.factionRatings || [];
-              const factionRatings = new Map(
-                factionRatingsRaw.map((factionRating) => [
-                  factionRating.factionName,
-                  factionRating.skillRating,
-                ])
-              );
-
-              // Rebuild the faction structure from the game data
-              const factionWinnerFractions = {};
-              const memberFactions = {};
-
-              // Parse history to get originalRoles
-              let originalRoles = {};
-              if (history.originalRoles) {
-                originalRoles = history.originalRoles;
-              }
-
-              // Build faction membership
-              for (let userId in playerIdMap) {
-                const playerId = playerIdMap[userId];
-                if (originalRoles[playerId]) {
-                  const roleName = originalRoles[playerId].split(":")[0];
-                  const alignment = playerAlignmentMap[userId] || "";
-
-                  // Determine faction name (same logic as in adjustSkillRatings)
-                  const alignmentIsFaction =
-                    alignment === "Village" ||
-                    alignment === "Mafia" ||
-                    alignment === "Cult";
-                  const factionName = alignmentIsFaction ? alignment : roleName;
-                  memberFactions[playerId] = factionName;
-
-                  if (factionWinnerFractions[factionName] === undefined) {
-                    factionWinnerFractions[factionName] = {
-                      originalCount: 0,
-                      winnerCount: 0,
-                    };
-                  }
-
-                  factionWinnerFractions[factionName].originalCount++;
-                  if (won) {
-                    factionWinnerFractions[factionName].winnerCount++;
-                  }
-                }
-              }
-
-              const factionNames = Object.keys(factionWinnerFractions);
-
-              // Calculate faction ratings
-              const factionsToBeRated = factionNames.map((factionName) => {
-                if (factionRatings.has(factionName)) {
-                  const factionRating = factionRatings.get(factionName);
-                  return [
-                    rating({
-                      mu: factionRating.mu,
-                      sigma: factionRating.sigma,
-                    }),
-                  ];
-                } else {
-                  return [
-                    rating({
-                      mu: constants.defaultSkillRatingMu,
-                      sigma: constants.defaultSkillRatingSigma,
-                    }),
-                  ];
-                }
-              });
-
-              const factionScores = factionNames.map((factionName) => {
-                const factionWinnerFraction =
-                  factionWinnerFractions[factionName];
-                return (
-                  factionWinnerFraction.winnerCount /
-                  factionWinnerFraction.originalCount
-                );
-              });
-
-              const predictions = predictWin(factionsToBeRated);
-
-              const pointsWonByFactions = {};
-              const pointsLostByFactions = {};
-
-              for (let i = 0; i < factionNames.length; i++) {
-                const factionName = factionNames[i];
-                const winPredictionPercent = predictions[i];
-
-                pointsWonByFactions[factionName] = Math.round(
-                  constants.pointsNominalAmount / 2 / winPredictionPercent
-                );
-                pointsLostByFactions[factionName] = Math.round(
-                  constants.pointsNominalAmount / 2 / (1 - winPredictionPercent)
-                );
-              }
-
-              // Calculate points for this specific player
-              const playerFaction = memberFactions[playerId];
-              if (playerFaction) {
-                const maxEarnedPoints = constants.pointsNominalAmount * 20;
-                let pointsEarned = won
-                  ? pointsWonByFactions[playerFaction]
-                  : pointsLostByFactions[playerFaction];
-
-                if (pointsEarned > maxEarnedPoints) {
-                  pointsEarned = maxEarnedPoints;
-                }
-
-                if (won) {
-                  pointsToRevert = pointsEarned;
-                } else {
-                  pointsNegativeToRevert = pointsEarned;
-                }
-              }
+            if (pointsEarned > maxEarnedPoints) {
+              pointsEarned = maxEarnedPoints;
             }
-          } catch (e) {
-            logger.error(
-              `Error calculating fortune/misfortune for game ${gameId}:`,
-              e
-            );
-            // Continue without reverting points if calculation fails
+
+            if (won) {
+              pointsToRevert = pointsEarned;
+            } else {
+              pointsNegativeToRevert = pointsEarned;
+            }
           }
         }
 

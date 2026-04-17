@@ -466,22 +466,7 @@ module.exports = class DiceWarsGame extends Game {
       () => Math.random() - 0.5
     );
 
-    // Determine which players get first-round bonus based on player count
     const numPlayers = activePlayers.length;
-    const bonusPlayerIds = new Set();
-
-    if (numPlayers >= 8) {
-      // Last 3 players get bonus for 8+ player games
-      for (let i = numPlayers - 3; i < numPlayers; i++) {
-        bonusPlayerIds.add(activePlayers[i].id);
-      }
-    } else if (numPlayers >= 5) {
-      // Last 2 players get bonus for 5-7 player games
-      for (let i = numPlayers - 2; i < numPlayers; i++) {
-        bonusPlayerIds.add(activePlayers[i].id);
-      }
-    }
-    // 2-4 players: no bonus
 
     // Distribute territories as evenly as possible
     const numTerritories = shuffledTerritories.length;
@@ -495,23 +480,30 @@ module.exports = class DiceWarsGame extends Game {
       for (let j = 0; j < count; j++) {
         const territory = shuffledTerritories[territoryIndex];
         territory.playerId = activePlayers[i].id;
-
-        // Base random dice: 1-3
-        const baseDice = Math.floor(Math.random() * 3) + 1;
-        // Add 1 bonus die for eligible players based on player count
-        const bonusDice = bonusPlayerIds.has(activePlayers[i].id) ? 1 : 0;
-        territory.dice = Math.min(
-          baseDice + bonusDice,
-          this.maxDicePerTerritory
-        );
-
+        territory.dice = Math.floor(Math.random() * 3) + 1;
         territoryIndex++;
       }
     }
 
-    // Initialize surplus dice storage for all players
-    for (let player of activePlayers) {
-      this.surplusDice[player.id] = 0;
+    // Turn-order compensation: later players get bonus dice placed on their territories
+    // bonusDice = ceil(territories_per_player / 4)
+    const territoriesPerPlayer = Math.ceil(numTerritories / numPlayers);
+    const bonusDiceUnit = Math.ceil(territoriesPerPlayer / 4);
+
+    for (let i = 0; i < numPlayers; i++) {
+      this.surplusDice[activePlayers[i].id] = 0;
+      const totalBonus = i * bonusDiceUnit;
+      const playerTerrs = shuffledTerritories.filter(
+        (t) => t.playerId === activePlayers[i].id
+      );
+      for (let d = 0; d < totalBonus; d++) {
+        const eligible = playerTerrs.filter(
+          (t) => t.dice < this.maxDicePerTerritory
+        );
+        if (eligible.length > 0) {
+          eligible[Math.floor(Math.random() * eligible.length)].dice++;
+        }
+      }
     }
   }
 
@@ -552,6 +544,22 @@ module.exports = class DiceWarsGame extends Game {
     }
 
     this.sendGameState();
+    this.startTurnTimer();
+  }
+
+  startTurnTimer() {
+    this.clearTimer("turnInactivity");
+    this.createTimer("turnInactivity", 60 * 1000, () => {
+      if (this.currentTurnPlayerId && this.getStateName() === "Play") {
+        this.endTurn(this.currentTurnPlayerId);
+      }
+    });
+  }
+
+  resetTurnTimer() {
+    if (this.timers["turnInactivity"]) {
+      this.startTurnTimer();
+    }
   }
 
   /**
@@ -660,6 +668,9 @@ module.exports = class DiceWarsGame extends Game {
     if (fromTerritory.dice < 2) {
       return { success: false, message: "Need at least 2 dice to attack" };
     }
+
+    // Reset inactivity timer on valid attack
+    this.resetTurnTimer();
 
     // Roll dice
     const attackRoll = this.rollDice(fromTerritory.dice);
@@ -863,6 +874,7 @@ module.exports = class DiceWarsGame extends Game {
     this.addStateExtraInfoToHistories(stateInfo.extraInfo);
 
     this.sendGameState();
+    this.startTurnTimer();
     const nextPlayer = this.players
       .array()
       .find((p) => p.id === this.currentTurnPlayerId);
@@ -878,7 +890,12 @@ module.exports = class DiceWarsGame extends Game {
       (t) => t.playerId === playerId
     );
     const largestRegion = this.findLargestConnectedRegion(playerId);
-    let bonusDice = largestRegion.length;
+    let bonusDice = 3 + largestRegion.length;
+
+    // Halve reinforcements in the first round
+    if (this.roundNumber === 1) {
+      bonusDice = Math.floor(bonusDice / 2);
+    }
 
     // Add any stored surplus dice
     if (this.surplusDice[playerId]) {

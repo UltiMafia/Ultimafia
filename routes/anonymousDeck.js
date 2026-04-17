@@ -143,7 +143,7 @@ router.post("/delete", async function (req, res) {
     let deck = await models.AnonymousDeck.findOne({
       id: deckId,
     })
-      .select("_id id name creator profiles")
+      .select("_id id name creator profiles coverPhoto")
       .populate([
         {
           path: "profiles",
@@ -174,6 +174,11 @@ router.post("/delete", async function (req, res) {
       }).exec();
     }
 
+    if (deck.coverPhoto) {
+      let coverPath = `${process.env.UPLOAD_PATH}/decks/cover-${deck.id}.webp`;
+      if (fs.existsSync(coverPath)) fs.unlinkSync(coverPath);
+    }
+
     await models.AnonymousDeck.deleteOne({
       id: deckId,
     }).exec();
@@ -190,6 +195,61 @@ router.post("/delete", async function (req, res) {
     res.send("Unable to delete anonymous deck.");
   }
 });
+
+async function attachUserVotes(decks, userId) {
+  if (!decks || !decks.length) return decks;
+  for (let deck of decks) {
+    deck.voteCount = deck.voteCount ?? 0;
+    deck.vote = 0;
+  }
+  if (!userId) return decks;
+  const deckIds = decks.map((d) => d.id);
+  const votes = await models.ForumVote.find({
+    voter: userId,
+    item: { $in: deckIds },
+  })
+    .select("item direction -_id")
+    .lean();
+  const voteMap = new Map();
+  for (let v of votes) voteMap.set(v.item, v.direction);
+  for (let deck of decks) {
+    deck.vote = voteMap.get(deck.id) || 0;
+  }
+  return decks;
+}
+
+async function attachDeckPreviews(decks) {
+  if (!decks || !decks.length) return decks;
+  let allPreviewIds = [];
+  for (let deck of decks) {
+    deck.profileCount = (deck.profiles || []).length;
+    const previewIds = (deck.profiles || []).slice(0, 5);
+    deck._previewIds = previewIds;
+    allPreviewIds.push(...previewIds);
+  }
+  let profiles = [];
+  if (allPreviewIds.length) {
+    profiles = await models.DeckProfile.find({ _id: { $in: allPreviewIds } })
+      .select("id name avatar color _id")
+      .lean();
+  }
+  let profileMap = new Map();
+  for (let p of profiles) profileMap.set(String(p._id), p);
+  for (let deck of decks) {
+    deck.profilePreviews = (deck._previewIds || [])
+      .map((id) => profileMap.get(String(id)))
+      .filter(Boolean)
+      .map((p) => ({
+        id: p.id,
+        name: p.name,
+        avatar: p.avatar,
+        color: p.color,
+      }));
+    delete deck._previewIds;
+    delete deck.profiles;
+  }
+  return decks;
+}
 
 function parseProfileFormData(fields, files) {
   let profileTotal;
@@ -425,8 +485,11 @@ router.get("/featured", async function (req, res) {
       })
         .skip(start)
         .limit(pageSize)
-        .select("id name profiles creator")
-        .populate("creator", "id name avatar -_id");
+        .select("id name profiles creator coverPhoto voteCount")
+        .populate("creator", "id name avatar -_id")
+        .lean();
+      decks = await attachDeckPreviews(decks);
+      decks = await attachUserVotes(decks, userId);
       let count = await models.AnonymousDeck.countDocuments({
         featured: true,
       });
@@ -455,8 +518,12 @@ router.get("/search", async function (req, res) {
       userId,
       "disableDeck"
     );
+    let query = String(req.query.query);
     let searchClause = {
-      name: { $regex: String(req.query.query), $options: "i" },
+      $or: [
+        { name: { $regex: query, $options: "i" } },
+        { id: query },
+      ],
     };
     if (!canSeeDisabled) {
       searchClause.disabled = false;
@@ -465,9 +532,12 @@ router.get("/search", async function (req, res) {
     if (start < deckLimit) {
       var decks = await models.AnonymousDeck.find(searchClause)
         .limit(deckLimit)
-        .select("id name profiles");
+        .select("id name profiles coverPhoto voteCount")
+        .lean();
       var count = decks.length;
       decks = decks.slice(start, start + pageSize);
+      decks = await attachDeckPreviews(decks);
+      decks = await attachUserVotes(decks, userId);
 
       res.send({
         decks: decks,
@@ -507,9 +577,12 @@ router.get("/popular", async function (req, res) {
         disabled: false,
       })
         .limit(deckLimit)
-        .select("id name profiles");
+        .select("id name profiles coverPhoto voteCount")
+        .lean();
       var count = decks.length;
       decks = decks.slice(start, start + pageSize);
+      decks = await attachDeckPreviews(decks);
+      decks = await attachUserVotes(decks, userId);
 
       res.send({
         decks: decks,
@@ -541,35 +614,33 @@ router.get("/yours", async function (req, res) {
       return;
     }
 
-    //Multiple nested populates! https://stackoverflow.com/a/60593673/5965052
     let user = await models.User.findOne({ id: userId, deleted: false })
       .select("anonymousDecks name avatar id")
       .populate({
         path: "anonymousDecks",
-        select: "id name profiles disabled featured -_id creator",
+        select:
+          "id name profiles disabled featured coverPhoto voteCount creator",
         options: { limit: deckLimit },
         populate: [
-          {
-            path: "profiles",
-            model: "DeckProfile",
-            select: "name id avatar -_id",
-          },
           {
             path: "creator",
             model: "User",
             select: "id name avatar -_id",
           },
         ],
-      });
+      })
+      .lean();
 
     if (!user) {
       res.send({ decks: [], pages: 0 });
       return;
     }
 
-    let decks = user.anonymousDecks;
+    let decks = user.anonymousDecks || [];
     let count = decks.length;
     decks = decks.reverse().slice(start, start + pageSize);
+    decks = await attachDeckPreviews(decks);
+    decks = await attachUserVotes(decks, userId);
 
     res.send({
       decks: decks,
@@ -581,12 +652,106 @@ router.get("/yours", async function (req, res) {
   }
 });
 
+router.post("/coverPhoto", async function (req, res) {
+  let uploadedPath = null;
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    let form = new formidable();
+    form.maxFileSize = 2 * 1024 * 1024;
+
+    let [fields, files] = await form.parseAsync(req);
+    let deckId = String(fields.deckId || "");
+    let coverFile = files.coverPhoto;
+
+    if (!deckId) {
+      res.status(400);
+      res.send("Missing deckId.");
+      return;
+    }
+
+    let deck = await models.AnonymousDeck.findOne({ id: deckId })
+      .select("id creator coverPhoto")
+      .populate("creator", "id");
+
+    if (!deck || deck.creator.id != userId) {
+      res.status(403);
+      res.send("You can only edit decks you have created.");
+      return;
+    }
+
+    if (!fs.existsSync(`${process.env.UPLOAD_PATH}/decks/`)) {
+      fs.mkdirSync(`${process.env.UPLOAD_PATH}/decks/`);
+    }
+
+    if (!coverFile) {
+      // remove cover photo
+      if (deck.coverPhoto) {
+        let coverPath = `${process.env.UPLOAD_PATH}/decks/cover-${deck.id}.webp`;
+        if (fs.existsSync(coverPath)) fs.unlinkSync(coverPath);
+      }
+      await models.AnonymousDeck.updateOne(
+        { id: deckId },
+        { $set: { coverPhoto: "" } }
+      );
+      res.send({ coverPhoto: "" });
+      return;
+    }
+
+    uploadedPath = coverFile.path;
+    let relPath = `/decks/cover-${deck.id}.webp`;
+    await sharp(coverFile.path)
+      .webp()
+      .resize(480, 270, { fit: "cover" })
+      .toFile(`${process.env.UPLOAD_PATH}${relPath}`);
+
+    await models.AnonymousDeck.updateOne(
+      { id: deckId },
+      { $set: { coverPhoto: relPath } }
+    );
+    res.send({ coverPhoto: relPath });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Unable to upload cover photo.");
+    if (uploadedPath && fs.existsSync(uploadedPath)) {
+      try {
+        fs.unlinkSync(uploadedPath);
+      } catch (err) {}
+    }
+  }
+});
+
+router.get("/slots/info", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    if (!userId) {
+      res.send({ owned: 0, purchased: 0 });
+      return;
+    }
+    let user = await models.User.findOne({ id: userId, deleted: false }).select(
+      "itemsOwned anonymousDecks"
+    );
+    if (!user) {
+      res.send({ owned: 0, purchased: 0 });
+      return;
+    }
+    res.send({
+      owned: user.anonymousDecks.length,
+      purchased: user.itemsOwned.anonymousDeck || 0,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.send({ owned: 0, purchased: 0 });
+  }
+});
+
 router.get("/:id", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     let deckId = String(req.params.id);
     let deck = await models.AnonymousDeck.findOne({ id: deckId })
-      .select("id name creator profiles disabled featured")
+      .select("id name creator profiles disabled featured coverPhoto voteCount")
       .populate([
         {
           path: "profiles",
@@ -602,6 +767,16 @@ router.get("/:id", async function (req, res) {
 
     if (deck) {
       deck = deck.toJSON();
+      deck.voteCount = deck.voteCount ?? 0;
+      var viewerId = await routeUtils.verifyLoggedIn(req, true);
+      deck.vote = 0;
+      if (viewerId) {
+        var voteDoc = await models.ForumVote.findOne({
+          voter: viewerId,
+          item: deck.id,
+        }).select("direction");
+        deck.vote = voteDoc ? voteDoc.direction : 0;
+      }
       res.send(deck);
     } else {
       res.status(500);

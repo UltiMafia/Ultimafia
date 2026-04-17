@@ -10,16 +10,14 @@ import {
   Timer,
   GameTypeContext,
   SideMenu,
+  MobileLayout,
 } from "./Game";
 import { GameContext } from "../../Contexts";
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/gameBattlesnakes.css"; // Reuse Battlesnakes CSS as placeholder
 
 export default function DiceWarsGame(props) {
   const game = useContext(GameContext);
-  const isPhoneDevice = useIsPhoneDevice();
-
   const history = game.history;
   const updateHistory = game.updateHistory;
   const stateViewing = game.stateViewing;
@@ -41,13 +39,6 @@ export default function DiceWarsGame(props) {
     // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });
   }, []);
-
-  if (isPhoneDevice) {
-    // Unsupported
-    game.leaveGame();
-    alert("Dice Wars is not presently supported on mobile devices.");
-    return <></>;
-  }
 
   return (
     <GameTypeContext.Provider
@@ -82,6 +73,27 @@ export default function DiceWarsGame(props) {
           </>
         }
       />
+      <MobileLayout
+        centerContent={
+          <>
+            {players && game.socket && (
+              <DiceWarsBoardWrapper
+                player={self}
+                players={players}
+                gameSocket={game.socket}
+                history={history}
+                stateViewing={stateViewing}
+                isReview={game.review}
+              />
+            )}
+          </>
+        }
+        innerRightContent={
+          <>
+            <TextMeetingLayout combineMessagesFromAllMeetings />
+          </>
+        }
+      />
     </GameTypeContext.Provider>
   );
 }
@@ -97,6 +109,7 @@ function DiceWarsBoardWrapper({
   const [gameState, setGameState] = useState(null);
   const [selectedTerritoryId, setSelectedTerritoryId] = useState(null);
   const [playerId, setPlayerId] = useState(player || null);
+  const [showIntro, setShowIntro] = useState(true);
   const svgRef = useRef();
   const hexSize = 25; // radius of each hex
 
@@ -359,9 +372,8 @@ function DiceWarsBoardWrapper({
 
     const svg = d3
       .select(svgRef.current)
-      .attr("width", width)
-      .attr("height", height)
-      .attr("viewBox", `0 0 ${width} ${height}`);
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("preserveAspectRatio", "xMidYMid meet");
 
     // Clear previous content
     svg.selectAll("*").remove();
@@ -567,7 +579,8 @@ function DiceWarsBoardWrapper({
             background: "#181818",
             border: "2px solid #222",
             borderRadius: 8,
-            width: "fit-content",
+            width: "100%",
+            maxWidth: 900,
             margin: "24px auto",
             padding: "16px",
             boxShadow: "0 2px 8px #000a",
@@ -579,7 +592,7 @@ function DiceWarsBoardWrapper({
               style={{
                 display: "flex",
                 justifyContent: "center",
-                gap: "16px",
+                gap: "8px",
                 flexWrap: "wrap",
                 marginBottom: "12px",
                 padding: "8px",
@@ -628,8 +641,63 @@ function DiceWarsBoardWrapper({
               ))}
             </div>
           )}
+          {/* Intro popup */}
+          {showIntro && gameState && gameState.territories && (
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: "rgba(0,0,0,0.7)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 1000,
+              }}
+              onClick={() => setShowIntro(false)}
+            >
+              <div
+                style={{
+                  background: "#222",
+                  border: "2px solid #444",
+                  borderRadius: 12,
+                  padding: "32px",
+                  maxWidth: 400,
+                  textAlign: "center",
+                  color: "#FFF",
+                  boxShadow: "0 4px 24px #000a",
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h2 style={{ margin: "0 0 16px", fontSize: "22px" }}>
+                  Dice Wars
+                </h2>
+                <p style={{ margin: "0 0 24px", fontSize: "15px", lineHeight: 1.5, color: "#CCC" }}>
+                  Attack neighboring territories by rolling dice. Keep your
+                  territories connected to earn more reinforcements!
+                </p>
+                <button
+                  onClick={() => setShowIntro(false)}
+                  style={{
+                    padding: "10px 32px",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    background: "#4a90d9",
+                    color: "#FFF",
+                    border: "none",
+                    borderRadius: 6,
+                    cursor: "pointer",
+                  }}
+                >
+                  Got it
+                </button>
+              </div>
+            </div>
+          )}
           {/* Game board */}
-          <svg ref={svgRef} style={{ display: "block", margin: "0 auto" }} />
+          <svg ref={svgRef} style={{ display: "block", margin: "0 auto", width: "100%", maxHeight: "60vh", height: "auto" }} />
           {/* End Turn button */}
           {!isReview &&
             stateViewing !== -2 &&

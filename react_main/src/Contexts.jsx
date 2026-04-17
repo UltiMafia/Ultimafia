@@ -8,6 +8,7 @@ import axios from "axios";
 import { GlobalStyles, useColorScheme, useTheme } from "@mui/material";
 import { getIconFilter } from "utilsFolder/iconFilter";
 import { generateContrastLookup, autoContrastColor } from "utilsFolder/autoContrast";
+import { getSiteTheme } from "./constants/themes";
 
 export const UserContext = React.createContext();
 export const SiteInfoContext = React.createContext();
@@ -16,7 +17,7 @@ export const GameContext = React.createContext();
 export function UserProvider({
   children,
   setUserLoading,
-  setCustomPrimaryColor,
+  setSiteTheme,
 }) {
   const siteInfo = useContext(SiteInfoContext);
   const theme = useTheme();
@@ -192,24 +193,56 @@ export function UserProvider({
     if (user.settings && user.settings.iconFilter) {
       setIconFilter(getIconFilter(user.settings.iconFilter));
     }
-    if (
-      user.settings &&
-      user.settings.customPrimaryColor &&
-      user.settings.customPrimaryColor !== "none"
-    ) {
-      setCustomPrimaryColor(user.settings.customPrimaryColor);
-    }
   }, [user.settings]);
 
-  const { mode, systemMode } = useColorScheme();
   useEffect(() => {
-    const colorScheme = mode === "system" ? systemMode : mode;
+    if (!setSiteTheme) {
+      return;
+    }
+    const custom =
+      user.settings?.customPrimaryColor &&
+      user.settings.customPrimaryColor !== "none"
+        ? user.settings.customPrimaryColor
+        : null;
+    let palette =
+      user.loggedIn && user.settings ? user.settings.siteColorScheme : "dark";
+    if (palette === "retro") palette = "dark"; // Backwards compatibility for stored settings.
+    setSiteTheme(getSiteTheme(custom, palette));
+  }, [
+    user.loaded,
+    user.loggedIn,
+    user.settings?.siteColorScheme,
+    user.settings?.customPrimaryColor,
+    setSiteTheme,
+  ]);
+
+  const { mode, systemMode, setMode } = useColorScheme();
+  useEffect(() => {
+    const resolved = mode === "system" ? systemMode : mode;
     document.documentElement.classList.remove(
       "dark-mode",
       "light-mode"
     );
-    document.documentElement.classList.add(`${colorScheme}-mode`);
+    if (resolved === "light" || resolved === "dark") {
+      document.documentElement.classList.add(`${resolved}-mode`);
+    }
   }, [mode, systemMode]);
+
+  useEffect(() => {
+    if (
+      user.loaded &&
+      user.loggedIn &&
+      user.settings?.siteColorScheme
+    ) {
+      const normalized =
+        user.settings.siteColorScheme === "retro"
+          ? "dark"
+          : user.settings.siteColorScheme;
+      if (["system", "light", "dark"].includes(normalized)) {
+        setMode(normalized);
+      }
+    }
+  }, [user.loaded, user.loggedIn, user.settings?.siteColorScheme, setMode]);
 
   return (
     <>

@@ -740,6 +740,44 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Award Stamp": {
+      perm: "awardStamp",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Game Type",
+          name: "gameType",
+          type: "text",
+          default: "Mafia",
+        },
+        {
+          label: "Role",
+          name: "role",
+          type: "role_autocomplete",
+          gameTypeArg: "gameType",
+        },
+        {
+          label: "Quantity",
+          name: "quantity",
+          type: "text",
+          default: "1",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/awardStamp", argValues)
+          .then(() => {
+            siteInfo.showAlert("Stamp(s) awarded.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Revoke Trophy": {
       perm: "awardTrophy",
       category: "User Management",
@@ -869,6 +907,44 @@ export function useModCommands(argValues, commandRan, setResults) {
           .post("/api/mod/whitelist", argValues)
           .then(() => {
             siteInfo.showAlert("User whitelisted.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Unlink Accounts": {
+      perm: "viewAlts",
+      category: "User Management",
+      args: [
+        {
+          label: "User A",
+          name: "userId1",
+          type: "user_search",
+        },
+        {
+          label: "User B",
+          name: "userId2",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/unlinkAccounts", argValues)
+          .then((res) => {
+            const removed = res.data && res.data.removed;
+            const n = Array.isArray(removed) ? removed.length : 0;
+            if (n === 0) {
+              siteInfo.showAlert(
+                (res.data && res.data.message) ||
+                  "No shared IPs removed.",
+                "success"
+              );
+            } else {
+              siteInfo.showAlert(
+                `Removed ${n} shared IP address(es) from both users.`,
+                "success"
+              );
+            }
             commandRan();
           })
           .catch(errorAlert);
@@ -1330,6 +1406,46 @@ export function useModCommands(argValues, commandRan, setResults) {
           })
           .then(() => {
             siteInfo.showAlert("Contributor credit updated.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Manage Role Icon Credit": {
+      perm: "changeUsersName",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Role name",
+          name: "roleName",
+          type: "role_autocomplete",
+          defaultGameType: "Mafia",
+        },
+        {
+          label: "Style (skin)",
+          name: "style",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/roleIconCredit", {
+            userId: argValues.userId,
+            roleName: argValues.roleName,
+            style: argValues.style,
+          })
+          .then((res) => {
+            siteInfo.showAlert(
+              res.data?.assigned
+                ? "Role icon credit assigned."
+                : "Role icon credit revoked.",
+              "success"
+            );
             commandRan();
           })
           .catch(errorAlert);

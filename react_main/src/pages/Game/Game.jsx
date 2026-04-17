@@ -74,6 +74,8 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  MenuItem,
+  Select,
   Stack,
   Tab,
   Tabs,
@@ -447,6 +449,7 @@ export default function Game() {
             private: false,
             anonymousGame: data.anonymousGame,
             anonymousDeck: data.anonymousDeck,
+            graveyardParticipation: data.graveyardParticipation,
           });
 
           updateHistory({
@@ -585,6 +588,7 @@ export default function Game() {
         type: "add",
         player,
       });
+      playAudio("join");
     });
 
     socket.on("playerLeave", (playerId) => {
@@ -592,6 +596,7 @@ export default function Game() {
         type: "remove",
         playerId,
       });
+      playAudio("leave");
     });
 
     socket.on("spectatorCount", (count) => {
@@ -631,6 +636,13 @@ export default function Game() {
     });
 
     socket.on("roleReveal", (info) => {
+      // const appearance = info.role || "";
+      // const roleName = appearance.split(":")[0];
+      // const modPart = appearance.split(":")[1];
+      // const roleData = {
+      //   roleName,
+      //   modifiers: modPart ? modPart.split("/") : [],
+      // };
       // Only show modal if this is for the current player and game type supports it
       if (
         info.playerId === selfRef.current &&
@@ -812,6 +824,13 @@ export default function Game() {
         ...prev,
         readyPlayers: { ...prev.readyPlayers, [data.playerId]: true },
       }));
+      playAudio("readyCheck");
+    });
+
+    socket.on("audio", (audioName) => {
+      if (typeof audioName === "string" && audioName.length > 0) {
+        playAudio(audioName);
+      }
     });
   }, [connected]);
 
@@ -979,6 +998,16 @@ export default function Game() {
           open={leaveDialogOpen}
           onClose={() => setLeaveDialogOpen(false)}
           onConfirm={leaveGame}
+          isParticipationRequired={(() => {
+            const currentStateInfo = history.states[history.currentState];
+            const isAlive =
+              !!self && currentStateInfo && !currentStateInfo.dead?.[self];
+            return isAlive || !!options.graveyardParticipation;
+          })()}
+          lockSeconds={
+            (!options.ranked && !options.competitive) || dev ? 2 : 10
+          }
+          isPenaltyEnforced={!!(options.ranked || options.competitive)}
         />
         {(gameType === "Mafia" ||
           gameType === "Resistance" ||
@@ -1294,6 +1323,8 @@ export function MobileLayout({
   },
   innerRightContent = <ActionList />,
   additionalInfoContent = <></>,
+  hideInfoTab = false,
+  chatTab = false,
 }) {
   const game = useContext(GameContext);
   const { singleState } = useContext(GameTypeContext);
@@ -1327,10 +1358,12 @@ export function MobileLayout({
       >
         {outerLeftContent}
       </Stack>
-      <Box sx={{ display: selectedPanel === "info" ? undefined : "none" }}>
-        {/* The additionalInfoContent displays after the mobile version of TopBar */}
-        {additionalInfoContent}
-      </Box>
+      {!hideInfoTab && (
+        <Box sx={{ display: selectedPanel === "info" ? undefined : "none" }}>
+          {/* The additionalInfoContent displays after the mobile version of TopBar */}
+          {additionalInfoContent}
+        </Box>
+      )}
       <Stack
         sx={{
           flex: "1",
@@ -1372,22 +1405,32 @@ export function MobileLayout({
           }}
         >
           <BottomNavigationAction {...outerLeftNavigationProps} />
-          <BottomNavigationAction
-            label="Info"
-            value="info"
-            icon={<i className="fas fa-info" />}
-          />
-          <Stack
-            direction="row"
-            onClick={() => setSelectedPanel("chat")}
-            sx={{
-              filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
-            }}
-          >
-            {!singleState && <Divider orientation="vertical" flexItem />}
-            <StateSwitcher stateRange={singleState ? 0 : undefined} />
-            {!singleState && <Divider orientation="vertical" flexItem />}
-          </Stack>
+          {!hideInfoTab && (
+            <BottomNavigationAction
+              label="Info"
+              value="info"
+              icon={<i className="fas fa-info" />}
+            />
+          )}
+          {chatTab ? (
+            <BottomNavigationAction
+              label="Chat"
+              value="chat"
+              icon={<i className="fas fa-comments" />}
+            />
+          ) : (
+            <Stack
+              direction="row"
+              onClick={() => setSelectedPanel("chat")}
+              sx={{
+                filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
+              }}
+            >
+              {!singleState && <Divider orientation="vertical" flexItem />}
+              <StateSwitcher stateRange={singleState ? 0 : undefined} />
+              {!singleState && <Divider orientation="vertical" flexItem />}
+            </Stack>
+          )}
           <BottomNavigationAction {...innerRightNavigationProps} />
           <BottomNavigationAction
             label="Menu"
@@ -1870,6 +1913,12 @@ function getMessagesToDisplay(
     if (!isUnvote) {
       if (target !== "*" && players[target]) target = players[target].name;
       else if (target === "*") target = NO_ONE_NAME;
+      else if (typeof target === "string" && target.indexOf(":") > 0) {
+        const sepIdx = target.indexOf(":");
+        const left = target.slice(0, sepIdx);
+        const right = target.slice(sepIdx + 1);
+        if (players[left]) target = `${players[left].name} → ${right}`;
+      }
     }
 
     let voteMsg = {
@@ -3174,6 +3223,12 @@ function createActionDescriptor(meeting, baseProps, style) {
         Component: ActionButton,
         props,
       };
+    case "profileAssignment":
+      return {
+        key: meeting.id,
+        Component: ActionProfileAssignment,
+        props,
+      };
     case "text":
       return {
         key: meeting.id,
@@ -3253,6 +3308,9 @@ export function ActionList({
   title = "Actions",
   actionStyle = {},
   descriptors,
+  meetingFilter,
+  hideIfEmpty = false,
+  scrollable = true,
 }) {
   const game = useContext(GameContext);
 
@@ -3273,8 +3331,14 @@ export function ActionList({
   let regularActionDescriptors = descriptors;
 
   if (!regularActionDescriptors) {
+    const filteredMeetings = meetingFilter
+      ? Object.fromEntries(
+          Object.entries(meetings || {}).filter(([, m]) => meetingFilter(m))
+        )
+      : meetings;
+
     const descriptorResult = buildActionDescriptors({
-      meetings,
+      meetings: filteredMeetings,
       baseActionProps,
       actionStyle,
       inventoryActionStyle: actionStyle,
@@ -3291,13 +3355,17 @@ export function ActionList({
     }
   }
 
+  if (hideIfEmpty && (!regularActionDescriptors || regularActionDescriptors.length === 0)) {
+    return null;
+  }
+
   const actionElements = (regularActionDescriptors || []).map(
     ({ Component, props, key }) => <Component key={key} {...props} />
   );
 
   return (
     <SideMenu
-      scrollable
+      scrollable={scrollable}
       title={
         <UnresolvedActionCount>{title || "Actions"}</UnresolvedActionCount>
       }
@@ -3945,6 +4013,121 @@ function ActionSelect(props) {
           );
         })}
       </Box>
+    </Box>
+  );
+}
+
+function ActionProfileAssignment(props) {
+  const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] =
+    useAction(props);
+
+  const contestants = meeting?.displayOptions?.contestants || [];
+  const profileNames = meeting?.displayOptions?.profileNames || [];
+
+  // Reconstruct the current selections from meeting.votes (single host voter).
+  const voteValue = meeting.votes?.[props.self];
+  const latestPick =
+    typeof voteValue === "string"
+      ? voteValue
+      : Array.isArray(voteValue)
+      ? voteValue[voteValue.length - 1]
+      : null;
+
+  // Track all selections locally since the server only keeps the last vote target.
+  const [selections, setSelections] = useState({});
+
+  useEffect(() => {
+    if (!latestPick || typeof latestPick !== "string") return;
+    const sepIdx = latestPick.indexOf(":");
+    if (sepIdx < 0) return;
+    const contestantId = latestPick.slice(0, sepIdx);
+    const profileName = latestPick.slice(sepIdx + 1);
+    setSelections((prev) =>
+      prev[contestantId] === profileName
+        ? prev
+        : { ...prev, [contestantId]: profileName }
+    );
+  }, [latestPick]);
+
+  function handlePick(contestantId, profileName) {
+    if (notClickable) return;
+    // Clear duplicates locally: if another contestant had this profile, remove it.
+    setSelections((prev) => {
+      const next = { ...prev };
+      for (const cid in next) {
+        if (cid !== contestantId && next[cid] === profileName) delete next[cid];
+      }
+      next[contestantId] = profileName;
+      return next;
+    });
+    onVote(contestantId + ":" + profileName);
+  }
+
+  return (
+    <Box
+      className="action"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 1,
+        p: 1.5,
+        borderRadius: 2,
+        bgcolor: "background.paper",
+        boxShadow: 3,
+        ...props.style,
+      }}
+    >
+      <Typography sx={{ fontWeight: 600, fontSize: "0.9rem" }}>
+        {meeting.actionName || "Profile Selection"}
+      </Typography>
+      <Stack spacing={0.5}>
+        {contestants.map((c) => {
+          const picked = selections[c.id] || "";
+          return (
+            <Stack
+              key={c.id}
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              sx={{ fontSize: "0.85rem" }}
+            >
+              <Box
+                sx={{
+                  flex: "0 0 40%",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+                title={c.name}
+              >
+                {c.name}
+              </Box>
+              <Box sx={{ opacity: 0.6 }}>→</Box>
+              <Box sx={{ flex: "1 1 auto" }}>
+                <Select
+                  value={picked}
+                  displayEmpty
+                  disabled={notClickable}
+                  onChange={(e) => handlePick(c.id, e.target.value)}
+                  size="small"
+                  fullWidth
+                  sx={{
+                    fontSize: "0.8rem",
+                    ".MuiSelect-select": { py: 0.5 },
+                  }}
+                  renderValue={(val) => (val ? val : "?")}
+                >
+                  {profileNames.map((name) => (
+                    <MenuItem key={name} value={name} sx={{ fontSize: "0.85rem" }}>
+                      {name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Box>
+            </Stack>
+          );
+        })}
+      </Stack>
     </Box>
   );
 }

@@ -31,6 +31,7 @@ import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
 import { RecentlyPlayedSetups } from "./RecentlyPlayedSetups";
 import { RecentForumReplies } from "components/RecentForumReplies";
 import { Poll } from "components/Poll";
+import RecentTradesFeed from "components/RecentTradesFeed";
 import Chat from "../../Chat/Chat";
 import { FeaturedSetup } from "./FeaturedSetup";
 import { DailyChallenges } from "./DailyChallengeDisplay";
@@ -283,6 +284,7 @@ export default function LobbyBrowser() {
             <RecentForumReplies />
             <Chat />
             <Poll lobby={lobbyName} />
+            <RecentTradesFeed />
           </Stack>
         </Grid2>
       </Grid2>

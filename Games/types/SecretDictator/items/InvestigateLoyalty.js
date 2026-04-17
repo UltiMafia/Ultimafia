@@ -17,6 +17,10 @@ module.exports = class InvestigateLoyalty extends Item {
             this.game.queueAlert(
               `The President has learnt the loyalty of ${this.target.name}.`
             );
+            this.actor.send("loyaltyReveal", {
+              name: this.target.name,
+              alignment,
+            });
             this.actor.queueAlert(
               `You learn that ${this.target.name} is loyal towards the ${alignment}.`
             );

@@ -15,6 +15,7 @@ import AnonymousDeck from "../../../components/Deck";
 import { SiteInfoContext } from "../../../Contexts";
 import { Navigate } from "react-router-dom";
 import { Button } from "@mui/material";
+import { VoteWidget } from "../../../components/VoteWidget";
 
 export default function DeckSelector() {
   const [listType, setListType] = useState("featured");
@@ -132,6 +133,8 @@ export default function DeckSelector() {
               onEdit={onEditDeck}
               onDel={onDelDeck}
               odd={decks.indexOf(deck) % 2 === 1}
+              decks={decks}
+              setDecks={setDecks}
               key={deck.id}
             />
           );
@@ -162,6 +165,16 @@ function DeckRow(props) {
           onClick={() => props.onSelect(props.deck)}
         />
       )} */}
+      {user.loggedIn && (
+        <div className="deck-vote-wrapper">
+          <VoteWidget
+            item={props.deck}
+            itemType="deck"
+            itemHolder={props.decks}
+            setItemHolder={props.setDecks}
+          />
+        </div>
+      )}
       <div className="deck-wrapper">
         <AnonymousDeck deck={props.deck} />
       </div>

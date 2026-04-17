@@ -38,9 +38,6 @@ import { useIsPhoneDevice } from "./hooks/useIsPhoneDevice";
 import { useSnowstorm } from "./hooks/useSnowstorm";
 import { GuestAuthButtons } from "./components/GuestAuthButtons";
 
-import spiderweb from "images/holiday/spiderweb.gif";
-import { isHalloweenThemeActive } from "./utils/holidayThemes";
-
 // Component to handle snowstorm with user settings
 function SnowstormController() {
   const user = useContext(UserContext);
@@ -98,15 +95,10 @@ function Main(props) {
   const errorContent = props.errorContent;
 
   const [isUserLoading, setUserLoading] = useState(true);
-  const [siteTheme, setSiteTheme] = useState(getSiteTheme());
-  const [customPrimaryColor, setCustomPrimaryColor] = useState(null);
+  const [siteTheme, setSiteTheme] = useState(() => getSiteTheme());
   const [isSiteInfoLoading, setSiteInfoLoading] = useState(true);
   const [showAnnouncementTemporarily, setShowAnnouncementTemporarily] =
     useState(false);
-
-  useEffect(() => {
-    setSiteTheme(getSiteTheme(customPrimaryColor));
-  }, [customPrimaryColor]);
 
   const isPhoneDevice = useIsPhoneDevice();
 
@@ -208,7 +200,7 @@ function Main(props) {
         >
           <UserProvider
             setUserLoading={setUserLoading}
-            setCustomPrimaryColor={setCustomPrimaryColor}
+            setSiteTheme={setSiteTheme}
           >
             <SnowstormController />
             <Routes>
@@ -237,21 +229,6 @@ function Header({ setShowAnnouncementTemporarily }) {
       backgroundColor: "background.paper",
       color: "text.primary",
     }}>
-      {isHalloweenThemeActive() && (
-        <img
-          src={spiderweb}
-          alt="Holiday Spider"
-          style={{
-            position: "absolute",
-            top: "0",
-            left: "0",
-            zIndex: 1000,
-            width: "10%",
-            aspectRatio: "1",
-            display: isPhoneDevice ? "none" : "block",
-          }}
-        />
-      )}
 
       {/* Mobile AppBar */}
       {isPhoneDevice && (

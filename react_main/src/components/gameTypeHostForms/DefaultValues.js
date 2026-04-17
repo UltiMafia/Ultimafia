@@ -6,18 +6,18 @@ function getStorageKey(gameType) {
 
 // increment a number here to force people's hosting preferences to be reset one time only for that game type
 const HOST_OPTIONS_VERSIONS = {
-  Mafia: 3,
-  Acrotopia: 1,
-  Jotto: 1,
-  "Liars Dice": 1,
-  Battlesnakes: 1,
-  "Texas Hold Em": 1,
-  Resistance: 1,
-  "Secret Dictator": 1,
-  "Wacky Words": 1,
-  Cheat: 1,
-  Ratscrew: 1,
-  "Connect Four": 1,
+  Mafia: 4,
+  Acrotopia: 2,
+  Jotto: 2,
+  "Liars Dice": 2,
+  Battlesnakes: 2,
+  "Texas Hold Em": 2,
+  Resistance: 2,
+  "Secret Dictator": 2,
+  "Wacky Words": 2,
+  Cheat: 2,
+  Ratscrew: 2,
+  "Connect Four": 2,
 };
 
 // Associate all of the existing saved options per game type into a map
@@ -45,11 +45,13 @@ const defaultLobby =
   !existingLobby || existingLobby === "All" ? "Main" : existingLobby;
 
 // These options are common to all
+const isDev = import.meta.env.REACT_APP_ENVIRONMENT === "development";
+
 const commonHostOptions = {
   private: false,
   guests: false,
   spectating: true,
-  readyCheck: false,
+  readyCheck: !isDev,
   configureDuration: false,
   anonymousGame: false,
   anonymousDeckId: PreferredDeckId,
@@ -60,7 +62,6 @@ const commonHostOptions = {
 var defaultOptions = {
   Mafia: existingHostOptions["Mafia"] || {
     ...commonHostOptions,
-    readyCheck: true,
     ranked: false,
     competitive: false,
     advancedHosting: false,
@@ -119,12 +120,6 @@ var defaultOptions = {
     MaxRounds: 0,
     playCardsLength: 2,
   },
-  "Connect Four": existingHostOptions["Connect Four"] || {
-    ...commonHostOptions,
-    boardX: 5,
-    boardY: 5,
-    turnLength: 1,
-  },
   Resistance: existingHostOptions["Resistance"] || {
     ...commonHostOptions,
     teamSelLength: 2,
@@ -167,8 +162,8 @@ var defaultOptions = {
     },
   "Connect Four": existingHostOptions["Connect Four"] || {
     ...commonHostOptions,
-    boardX: 4,
-    boardY: 4,
+    boardX: 6,
+    boardY: 7,
     turnLength: 1,
   },
 };

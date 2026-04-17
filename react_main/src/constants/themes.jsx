@@ -32,7 +32,7 @@ const CUSTOM_EXPAND_ICON = (
   </Box>
 );
 
-export function getSiteTheme(customPrimaryColor) {
+export function getSiteTheme(customPrimaryColor, sitePalette = "dark") {
   const isValentines = isValentinesThemeActive();
   const isHalloween = isHalloweenThemeActive();
 

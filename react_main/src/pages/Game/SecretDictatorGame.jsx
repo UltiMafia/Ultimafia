@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useContext } from "react";
+import React, { useRef, useEffect, useContext, useState } from "react"; // useState kept for peekedPolicies/loyaltyReveal
 
 import {
   useSocketListeners,
@@ -15,9 +15,16 @@ import {
   MobileLayout,
   GameTypeContext,
 } from "./Game";
+
+const isKickMeeting = (m) => m && m.name === "Vote Kick";
+const KickActionList = () => (
+  <ActionList meetingFilter={isKickMeeting} hideIfEmpty scrollable={false} />
+);
 import { GameContext } from "../../Contexts";
-import { SideMenu } from "./Game";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { PolicyTracks } from "./SDPolicyTracks";
+import { PlayerCircle } from "./SDPlayerCircle";
+import { SDPolicyAction } from "./SDPolicyAction";
 
 import "css/game.css";
 import "css/gameSecretDictator.css";
@@ -28,7 +35,6 @@ export default function SecretDictatorGame(props) {
 
   const history = game.history;
   const updateHistory = game.updateHistory;
-  // const updatePlayers = game.updatePlayers;
   const stateViewing = game.stateViewing;
   const updateStateViewing = game.updateStateViewing;
   const self = game.self;
@@ -36,6 +42,8 @@ export default function SecretDictatorGame(props) {
   const isSpectator = game.isSpectator;
 
   const playBellRef = useRef(false);
+  const [peekedPolicies, setPeekedPolicies] = useState(null);
+  const [loyaltyReveal, setLoyaltyReveal] = useState(null);
 
   const gameType = "Secret Dictator";
   const meetings = history.states[stateViewing]
@@ -59,6 +67,14 @@ export default function SecretDictatorGame(props) {
       playBellRef.current = true;
     });
 
+    socket.on("policyPeek", ({ policies }) => {
+      setPeekedPolicies(policies);
+    });
+
+    socket.on("loyaltyReveal", ({ name, alignment }) => {
+      setLoyaltyReveal({ name, alignment });
+    });
+
     socket.on("winners", (winners) => {});
   }, game.socket);
 
@@ -73,15 +89,17 @@ export default function SecretDictatorGame(props) {
         leftPanelContent={
           <>
             <PlayerList />
+            <KickActionList />
             <SpeechFilter />
             <SettingsMenu />
           </>
         }
-        centerPanelContent={<TextMeetingLayout />}
+        centerPanelContent={
+          <GameBoard history={history} stateViewing={stateViewing} />
+        }
         rightPanelContent={
           <>
-            <HistoryKeeper history={history} stateViewing={stateViewing} />
-            <ActionList />
+            <TextMeetingLayout />
             <PinnedMessages />
             <Notes />
           </>
@@ -91,14 +109,17 @@ export default function SecretDictatorGame(props) {
         outerLeftContent={
           <>
             <PlayerList />
+            <KickActionList />
             <SpeechFilter />
           </>
         }
+        innerRightNavigationProps={{
+          label: "Game",
+          value: "actions",
+          icon: <i className="fas fa-gamepad" />,
+        }}
         innerRightContent={
-          <>
-            <HistoryKeeper history={history} stateViewing={stateViewing} />
-            <ActionList />
-          </>
+          <GameBoard history={history} stateViewing={stateViewing} />
         }
         additionalInfoContent={
           <>
@@ -107,230 +128,224 @@ export default function SecretDictatorGame(props) {
           </>
         }
       />
+      {peekedPolicies && (
+        <PolicyPeekModal
+          policies={peekedPolicies}
+          onClose={() => setPeekedPolicies(null)}
+        />
+      )}
+      {loyaltyReveal && (
+        <LoyaltyRevealModal
+          name={loyaltyReveal.name}
+          alignment={loyaltyReveal.alignment}
+          onClose={() => setLoyaltyReveal(null)}
+        />
+      )}
     </GameTypeContext.Provider>
   );
 }
 
-function HistoryKeeper(props) {
-  const history = props.history;
-  const stateViewing = props.stateViewing;
-
-  if (stateViewing < 0) return <></>;
-
-  const extraInfo = history.states[stateViewing].extraInfo;
-
+function PolicyPeekModal({ policies, onClose }) {
   return (
-    <SideMenu
-      title="Game Info"
-      scrollable
-      content={
-        <>
-          <SecretDictatorHistory
-            deckInfo={extraInfo.deckInfo}
-            policyInfo={extraInfo.policyInfo}
-            electionInfo={extraInfo.electionInfo}
-            candidateInfo={extraInfo.candidateInfo}
-            presidentialPowersBoard={extraInfo.presidentialPowersBoard}
-          />
-        </>
-      }
-    />
-  );
-}
-
-function SecretDictatorHistory(props) {
-  const {
-    deckInfo,
-    policyInfo,
-    electionInfo,
-    candidateInfo,
-    presidentialPowersBoard,
-  } = props;
-
-  return (
-    <>
-      <div class="secret-dictator">
-        <PolicyTracker policyInfo={policyInfo} />
-        <ElectionTracker electionInfo={electionInfo} />
-        <CandidateTracker candidateInfo={candidateInfo} />
-        <PresidentialPowersBoard board={presidentialPowersBoard} />
-        <DeckTracker deckInfo={deckInfo} />
-      </div>
-    </>
-  );
-}
-
-function DeckTracker(props) {
-  const {
-    startDeckLiberal,
-    startDeckFascist,
-    deckSize,
-    discardSize,
-    refreshSize,
-  } = props.deckInfo;
-
-  return (
-    <div className="deck-info">
-      <div className="initial-info">
-        <div className="game-info-section-title">Initial Deck Info</div>
-        <div className="game-info-section-values-wrapper">
-          <div className="game-info-value">
-            <span className="initial-info-liberal"> {startDeckLiberal} </span>{" "}
-            Liberal
-          </div>
-          <div className="game-info-value">
-            <span className="initial-info-fascist"> {startDeckFascist} </span>{" "}
-            Fascist
-          </div>
-          <div className="game-info-value">
-            Refresh Size:{" "}
-            <span className="initial-info-refresh"> {refreshSize} </span>
-          </div>
+    <div className="sd-peek-overlay" onClick={onClose}>
+      <div className="sd-peek-dialog" onClick={(e) => e.stopPropagation()}>
+        <div className="sd-peek-title">POLICY PEEK</div>
+        <div className="sd-peek-subtitle">Next 3 policies in the draw pile</div>
+        <div className="sd-peek-cards">
+          {policies.map((policy, i) => {
+            const isLiberal = policy === "Liberal";
+            return (
+              <div
+                key={i}
+                className={`sd-peek-card sd-peek-card--${isLiberal ? "liberal" : "fascist"}`}
+              >
+                {policy}
+              </div>
+            );
+          })}
         </div>
-      </div>
-      <div className="current-info">
-        <div className="game-info-section-title">Current Deck Size</div>
-        <div className="game-info-section-values-wrapper">
-          <div className="game-info-value">
-            <span className="count"> {deckSize} </span> Draw Pile
-          </div>
-          <div className="game-info-value">
-            <span className="count"> {discardSize} </span> Discard Pile
-          </div>
-        </div>
+        <button className="sd-peek-close" onClick={onClose}>
+          Close
+        </button>
       </div>
     </div>
   );
 }
 
-function PolicyTracker(props) {
-  const liberal = props.policyInfo.liberalPolicyCount;
-  const fascist = props.policyInfo.fascistPolicyCount;
-
+function LoyaltyRevealModal({ name, alignment, onClose }) {
+  const isFascist = alignment === "Fascists";
   return (
-    <>
-      <div class="policies-tracker">
-        <div className="game-info-section-title">Enacted Policies</div>
-        <div className="game-info-section-values-wrapper">
-          <div className="game-info-value">
-            <span className="count"> {liberal} </span> Liberal
-          </div>
-          <div className="game-info-value">
-            <span className="count"> {fascist} </span> Fascist
-          </div>
+    <div className="sd-peek-overlay" onClick={onClose}>
+      <div className="sd-peek-dialog" onClick={(e) => e.stopPropagation()}>
+        <div className="sd-peek-title">LOYALTY INVESTIGATION</div>
+        <div className="sd-peek-subtitle">Classified — eyes only</div>
+        <div className={`sd-loyalty-badge sd-loyalty-badge--${isFascist ? "fascist" : "liberal"}`}>
+          <div className="sd-loyalty-name">{name}</div>
+          <div className="sd-loyalty-alignment">{alignment}</div>
         </div>
+        <button className="sd-peek-close" onClick={onClose}>
+          Close
+        </button>
       </div>
-    </>
+    </div>
   );
 }
 
-function ElectionTracker(props) {
-  const electionTracker = props.electionInfo.electionTracker;
-  const vetoUnlocked = props.electionInfo.vetoUnlocked;
+function GameBoard({ history, stateViewing }) {
+  const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
-  return (
-    <>
-      <div className="election-tracker">
-        <div className="election-tracker-section failed-election-tracker">
-          <div className="game-info-section-title">Election Tracker</div>
-          <div className="game-info-value">
-            <span> {electionTracker} </span> failed
-          </div>
-        </div>
-        <div className="election-tracker-section veto-unlocked">
-          <div className="game-info-section-title">Veto Unlocked?</div>
-          <div className="game-info-value">{vetoUnlocked ? "Yes" : "No"}</div>
-        </div>
-      </div>
-    </>
+  if (stateViewing === -1) return <div className="sd-game-board sd-game-board--pregame" />;
+
+  const state = history.states[stateViewing];
+  const extraInfo = state.extraInfo;
+  const deadMap = state.dead || {};
+
+  const players = Object.values(game.players)
+    .filter((p) => !p.left)
+    .map((p) => ({ ...p, dead: !!deadMap[p.id] }));
+
+  const meetings = Object.values(state.meetings || {});
+
+  const nominationMeeting = meetings.find(
+    (m) => m.actionName === "Nominate Chancellor" && m.canVote && m.voting
   );
-}
 
-function CandidateTracker(props) {
-  const {
-    lastElectedPresident,
-    lastElectedChancellor,
-    presidentialNominee,
-    chancellorNominee,
-  } = props.candidateInfo;
-
-  return (
-    <>
-      <div className="candidate-tracker">
-        {lastElectedPresident && (
-          <CandidateTrackerSection
-            title="Last Elected"
-            president={lastElectedPresident}
-            chancellor={lastElectedChancellor}
-          />
-        )}
-        {presidentialNominee && (
-          <CandidateTrackerSection
-            title="Current Nominees"
-            president={presidentialNominee}
-            chancellor={chancellorNominee}
-          />
-        )}
-      </div>
-    </>
+  const electionMeeting = meetings.find(
+    (m) => m.actionName === "Election Vote" && m.voting
   );
-}
 
-function CandidateTrackerSection(props) {
-  const title = props.title;
-  const president = props.president;
-  const chancellor = props.chancellor;
-
-  return (
-    <>
-      <div className="candidate-tracker-section">
-        <div className="game-info-section-title">{title}</div>
-        <div className="game-info-section-values-wrapper">
-          <div className="game-info-value president">
-            President: <span>{president}</span>
-          </div>
-          <div className="game-info-value chancellor">
-            Chancellor: <span>{chancellor}</span>
-          </div>
-        </div>
-      </div>
-    </>
+  const executiveMeeting = meetings.find(
+    (m) =>
+      ["Execute", "Nominate as Presidential Candidate", "Investigate Loyalty"].includes(m.actionName) &&
+      m.canVote && m.voting
   );
-}
 
-function PresidentialPowersBoard(props) {
-  const board = props.board;
-  const boardSize = 6;
+  const discardMeeting = meetings.find(
+    (m) => m.actionName === "Discard Policy" && m.canVote && m.voting
+  );
 
-  const boardParsed = [];
-  for (let i = 1; i < boardSize + 1; i++) {
-    if (board[i]) {
-      boardParsed.push(<BoardBox idx={i} power={board[i] || ""} />);
-    }
+  const enactMeeting = meetings.find(
+    (m) =>
+      (m.actionName === "Enact Policy" || m.actionName === "Enact Policy (No Veto)") &&
+      m.canVote && m.voting
+  );
+
+  const vetoMeeting = meetings.find(
+    (m) => m.actionName === "Assent Veto" && m.canVote && m.voting
+  );
+
+  if (isPhoneDevice) {
+    return (
+      <div className="sd-game-board sd-game-board--mobile">
+        <PolicyTracks
+          policyInfo={extraInfo.policyInfo}
+          presidentialPowersBoard={extraInfo.presidentialPowersBoard}
+          electionTracker={extraInfo.electionInfo?.electionTracker}
+          deckInfo={extraInfo.deckInfo}
+        />
+        <SDPolicyAction
+          discardMeeting={discardMeeting}
+          enactMeeting={enactMeeting}
+          vetoMeeting={vetoMeeting}
+          socket={game.socket}
+        />
+        <SDElectionVote
+          electionMeeting={electionMeeting}
+          selfId={game.self}
+          socket={game.socket}
+          mobile
+        />
+        <PlayerCircle
+          players={players}
+          candidateInfo={extraInfo.candidateInfo}
+          nominationMeeting={nominationMeeting}
+          executiveMeeting={executiveMeeting}
+          electionMeeting={electionMeeting}
+          voteResults={extraInfo.lastVoteResults}
+          selfId={game.self}
+          socket={game.socket}
+          roles={state.roles || {}}
+          mobile
+          externalVoteButtons
+        />
+      </div>
+    );
   }
 
   return (
-    <>
-      <div className="power-board">
-        <div className="game-info-section-title">
-          Presidential Powers (at X Fascist policies)
+    <div className="sd-game-board">
+      <div className="sd-game-board-inner">
+        <PlayerCircle
+          players={players}
+          candidateInfo={extraInfo.candidateInfo}
+          nominationMeeting={nominationMeeting}
+          executiveMeeting={executiveMeeting}
+          electionMeeting={electionMeeting}
+          voteResults={extraInfo.lastVoteResults}
+          selfId={game.self}
+          socket={game.socket}
+          roles={state.roles || {}}
+          externalVoteButtons
+        />
+        <div className="sd-tracks-center-overlay">
+          <PolicyTracks
+            policyInfo={extraInfo.policyInfo}
+            presidentialPowersBoard={extraInfo.presidentialPowersBoard}
+            electionTracker={extraInfo.electionInfo?.electionTracker}
+            deckInfo={extraInfo.deckInfo}
+          />
         </div>
-        {boardParsed}
+        <SDElectionVote
+          electionMeeting={electionMeeting}
+          selfId={game.self}
+          socket={game.socket}
+        />
+        <SDPolicyAction
+          discardMeeting={discardMeeting}
+          enactMeeting={enactMeeting}
+          vetoMeeting={vetoMeeting}
+          socket={game.socket}
+        />
       </div>
-    </>
+    </div>
   );
 }
 
-function BoardBox(props) {
-  const idx = props.idx;
-  const power = props.power;
+function SDElectionVote({ electionMeeting, selfId, socket, mobile }) {
+  if (!electionMeeting || !selfId) return null;
+  const electionMemberIds = new Set(
+    (electionMeeting.members || []).map((m) => m.id)
+  );
+  if (!electionMemberIds.has(selfId)) return null;
+
+  const myVote = electionMeeting.votes?.[selfId];
+
+  const handleVote = (choice) => {
+    socket.send("vote", {
+      meetingId: electionMeeting.id,
+      selection: choice,
+    });
+  };
 
   return (
-    <>
-      <div className="game-info-section-values-wrapper board-box">
-        <div className="game-info-value board-idx">{idx}</div>
-        <div className="game-info-value board-power">{power}</div>
+    <div className={`sd-election-vote${mobile ? " sd-election-vote--mobile" : ""}`}>
+      <div className="sd-election-vote-label">YOUR VOTE</div>
+      <div className="sd-vote-buttons sd-vote-buttons--large">
+        <button
+          className={`sd-vote-btn sd-vote-btn--large sd-vote-btn--ja${myVote === "Ja!" ? " sd-vote-btn--selected" : ""}${!myVote ? " sd-vote-btn--pending" : ""}`}
+          onClick={() => handleVote("Ja!")}
+        >
+          Ja!
+        </button>
+        <button
+          className={`sd-vote-btn sd-vote-btn--large sd-vote-btn--nein${myVote === "Nein!" ? " sd-vote-btn--selected" : ""}${!myVote ? " sd-vote-btn--pending" : ""}`}
+          onClick={() => handleVote("Nein!")}
+        >
+          Nein!
+        </button>
       </div>
-    </>
+    </div>
   );
 }
+

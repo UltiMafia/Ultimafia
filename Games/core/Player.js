@@ -1205,7 +1205,10 @@ module.exports = class Player {
       if (info.cancel) return;
     }
 
-    this.send("typing", info);
+    this.send("typing", {
+      playerId: info.playerId,
+      meetingId: info.meetingId,
+    });
   }
 
   sendAlert(message, extraStyle) {
@@ -1654,6 +1657,10 @@ module.exports = class Player {
 
   kill(killType, killer, instant) {
     if (!this.alive) return;
+
+    if (killType === "veg") {
+      this.game.hadVegKill = true;
+    }
 
     this.game.resetLastDeath = true;
     this.game.queueDeath(this);

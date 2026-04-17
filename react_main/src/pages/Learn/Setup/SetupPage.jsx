@@ -58,6 +58,7 @@ import {
 
 import { RoleCount } from "components/Roles";
 import { PieChart } from "./PieChart";
+import { SetupWinRateBars } from "./SetupWinRateBars";
 
 import "css/buttons.css";
 import "css/setupPage.css";
@@ -114,28 +115,9 @@ function getBasicPieStats(alignmentWinrate, roleWinrate, rolesRaw) {
   return { data: data, colors: colors };
 }
 
-function getEloPieStats(factionRatings) {
-  const data = {};
-  const colors = {};
-
-  if (!factionRatings) {
-    return null;
-  }
-
-  factionRatings.forEach(function (factionRating) {
-    const name = factionRating.factionName;
-    const elo = factionRating.elo;
-
-    if (name === "Village" || name === "Mafia" || name === "Cult") {
-      colors[name] = getAlignmentColor(name);
-      data[name] = elo;
-    } else {
-      colors[name] = getAlignmentColor("Independent");
-      data[name] = elo;
-    }
-  });
-
-  return { data: data, colors: colors };
+function formatAvgLengthMs(ms) {
+  if (ms == null || Number.isNaN(ms)) return "—";
+  return `${(ms / 60000).toFixed(1)} Minutes`;
 }
 
 export function SetupPage() {
@@ -148,7 +130,6 @@ export function SetupPage() {
 
   const [setup, setSetup] = useState();
   const [gameType, setGameType] = useState("");
-  const [eloPieData, setEloPieData] = useState(null);
   const [currentVersionNum, setCurrentVersionNum] = useState(0);
   const [selectedVersionNum, setSelectedVersionNum] = useState(0);
   const [moderationDrawerOpen, setModerationDrawerOpen] = useState(false);
@@ -158,6 +139,9 @@ export function SetupPage() {
   const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
   const [tabValue, setTabValue] = useState(0);
   const [pieData, setPieData] = useState(null);
+  const [statsBundle, setStatsBundle] = useState(null);
+  const [statsViewMode, setStatsViewMode] = useState("alignment");
+  const [statsGameFilter, setStatsGameFilter] = useState("all");
   const [lineage, setLineage] = useState(null); // { copiedFrom: { setup, copiedAt } | null, copiedTo: [] }
   const [description, setDescription] = useState("");
   const [editingDescription, setEditingDescription] = useState(false);
@@ -195,7 +179,7 @@ export function SetupPage() {
           document.title = `${res.data.name} | UltiMafia`;
 
           if (setup.gameType === "Mafia") {
-            setEloPieData(getEloPieStats(setup.factionRatings));
+            setStatsBundle(setup.stats || null);
             setPieData(
               getBasicPieStats(
                 setup.stats?.alignmentWinrate,
@@ -307,6 +291,7 @@ export function SetupPage() {
           setVersionGamesPlayed(setupVersion.played);
 
           if (gameType === "Mafia") {
+            setStatsBundle(setupVersion.stats || null);
             setPieData(
               getBasicPieStats(
                 setupVersion.stats?.alignmentWinrate,
@@ -612,51 +597,107 @@ export function SetupPage() {
           </Box>
           {shouldDisplayStats && (
             <Grid container spacing={2}>
-              <Grid item xs={12} md={8}>
-                <Stack spacing={1}>
-                  {pieData && Object.keys(pieData.data).length > 0 && (
-                    <div className="box-panel">
-                      <div className="heading">
-                        v{selectedVersionNum} Winrate (n = {versionGamesPlayed})
-                      </div>
-                      <div
-                        className="content"
-                        style={{ padding: "0", justifyContent: "center" }}
-                      >
-                        <PieChart
-                          data={pieData.data}
-                          colors={pieData.colors}
-                          displayPieChart={true}
-                          suffixFn={(value) =>
-                            ` ${(100 * Number.parseFloat(value)).toFixed(0)}%`
-                          }
-                        />
-                      </div>
-                    </div>
-                  )}
+              <Grid item xs={12}>
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={1}
+                  alignItems={{ sm: "center" }}
+                  flexWrap="wrap"
+                >
+                  <Typography component="label" variant="body2" sx={{ whiteSpace: "nowrap" }}>
+                    View
+                  </Typography>
+                  <Box sx={{ minWidth: 120 }}>
+                    <select
+                      value={statsViewMode}
+                      onChange={(e) => setStatsViewMode(e.target.value)}
+                      style={{ width: "100%", boxSizing: "border-box" }}
+                    >
+                      <option value="alignment">Alignment</option>
+                      <option value="role">Role</option>
+                    </select>
+                  </Box>
+                  <Typography
+                    component="label"
+                    variant="body2"
+                    sx={{ whiteSpace: "nowrap", ml: { sm: 1 } }}
+                  >
+                    Game type
+                  </Typography>
+                  <Box sx={{ minWidth: 120 }}>
+                    <select
+                      value={statsGameFilter}
+                      onChange={(e) => setStatsGameFilter(e.target.value)}
+                      style={{ width: "100%", boxSizing: "border-box" }}
+                    >
+                      <option value="all">All</option>
+                      <option value="unranked">Unranked</option>
+                      <option value="ranked">Ranked</option>
+                      <option value="competitive">Competitive</option>
+                    </select>
+                  </Box>
                 </Stack>
               </Grid>
+              <Grid item xs={12} md={8}>
+                <div className="box-panel">
+                  <div className="heading">
+                    v{selectedVersionNum} win rates (n = {versionGamesPlayed})
+                  </div>
+                  <div className="content">
+                    {statsBundle?.hasGranular ? (
+                      <SetupWinRateBars
+                        rows={
+                          statsViewMode === "alignment"
+                            ? statsBundle.granular[statsGameFilter]?.alignment
+                            : statsBundle.granular[statsGameFilter]?.role
+                        }
+                        rolesRaw={siteInfo?.rolesRaw?.Mafia}
+                        emptyLabel={
+                          statsGameFilter !== "all"
+                            ? "No games for this filter yet. Try “All” or wait for more data."
+                            : "No per-game statistics recorded yet."
+                        }
+                      />
+                    ) : (
+                      <>
+                        {pieData &&
+                          Object.keys(pieData.data).length > 0 &&
+                          statsGameFilter === "all" && (
+                            <PieChart
+                              data={pieData.data}
+                              colors={pieData.colors}
+                              displayPieChart={true}
+                              suffixFn={(value) =>
+                                ` ${(100 * Number.parseFloat(value)).toFixed(0)}%`
+                              }
+                            />
+                          )}
+                        {statsGameFilter !== "all" && (
+                          <Typography variant="body2" color="text.secondary">
+                            Filtered breakdowns need per-game statistics. Legacy data only supports
+                            the overview pie chart for “All” games.
+                          </Typography>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              </Grid>
               <Grid item xs={12} md={4}>
-                <Stack spacing={1}>
-                  {eloPieData && Object.keys(eloPieData.data).length > 0 && (
-                    <div className="box-panel">
-                      <div className="heading">Faction Elo</div>
-                      <div
-                        className="content"
-                        style={{ padding: "0", justifyContent: "center" }}
-                      >
-                        <PieChart
-                          data={eloPieData.data}
-                          colors={eloPieData.colors}
-                          displayPieChart={true}
-                          suffixFn={(value) =>
-                            ` ${Number.parseFloat(value).toFixed(0)}`
-                          }
-                        />
-                      </div>
-                    </div>
-                  )}
-                </Stack>
+                <div className="box-panel">
+                  <div className="heading">Summary</div>
+                  <div className="content">
+                    <Typography variant="body2" color="text.secondary">
+                      Average length:{" "}
+                      {formatAvgLengthMs(
+                        statsBundle?.granular?.[statsGameFilter]?.averageLengthMs
+                      )}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                      Total vegs (games excluded from stats): {statsBundle?.totalVegs ?? 0}
+                    </Typography>
+                  </div>
+                </div>
               </Grid>
             </Grid>
           )}

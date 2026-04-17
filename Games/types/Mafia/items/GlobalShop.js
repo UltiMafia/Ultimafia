@@ -67,7 +67,11 @@ module.exports = class BankerShop extends Card {
         this.data.shopAnnounced = false;
 
         for (let p of this.game.players) {
+<<<<<<< HEAD
           if (p.role.name === "Liquidator") continue;
+=======
+          if (p.role.name === "Repoman") continue;
+>>>>>>> 01ab78ec4a98b815ee4ce301502f3a59462cd540
           p.Gold = p.Gold || 0;
           p.role.data.globalShopOptions = rollGlobalOptions();
           p.role.data.globalShopGold = 0;
@@ -96,7 +100,11 @@ module.exports = class BankerShop extends Card {
           this.data.bankerShopOptions = rollBankerOptions();
 
           for (let p of this.game.alivePlayers()) {
+<<<<<<< HEAD
             if (p.role.name === "Liquidator") continue;
+=======
+            if (p.role.name === "Repoman") continue;
+>>>>>>> 01ab78ec4a98b815ee4ce301502f3a59462cd540
             p.role.data.globalShopOptions = rollGlobalOptions();
 
             const gold = p.role.data.globalShopGold || 0;
@@ -123,7 +131,11 @@ module.exports = class BankerShop extends Card {
         if (player === this.player) return;
 
         for (let p of this.game.alivePlayers()) {
+<<<<<<< HEAD
           if (p.role.name === "Liquidator") continue;
+=======
+          if (p.role.name === "Repoman") continue;
+>>>>>>> 01ab78ec4a98b815ee4ce301502f3a59462cd540
           if (p === player) continue;
           if (p.role.alignment !== player.role.alignment) {
             p.role.data.globalShopGold =

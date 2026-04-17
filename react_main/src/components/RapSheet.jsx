@@ -129,6 +129,21 @@ function VerdictDialog({
             </Box>
           )}
 
+          {showRestrictedInfo && report.reportedUserId && (
+            <Box>
+              <Typography variant="caption" color="textSecondary">
+                Reported User
+              </Typography>
+              <Box>
+                <NameWithAvatar
+                  id={report.reportedUserId}
+                  name={report.reportedUserName}
+                  avatar={report.reportedUserAvatar}
+                />
+              </Box>
+            </Box>
+          )}
+
           <Box>
             <Typography variant="caption" color="textSecondary">
               Rule Broken

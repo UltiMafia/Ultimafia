@@ -13,12 +13,13 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Autocomplete,
 } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
 import { UserSearchSelect } from "components/Form";
 import { SearchBar } from "components/Nav";
-import { UserContext } from "Contexts";
+import { UserContext, SiteInfoContext } from "Contexts";
 
 import {
   COMMAND_COLOR,
@@ -48,6 +49,7 @@ export function ModCommands(props) {
 
   const errorAlert = useErrorAlert();
   const user = useContext(UserContext);
+  const siteInfo = useContext(SiteInfoContext);
   const modCommands = useModCommands(argValues, commandRan, props.setResults);
 
   function closeDialogue() {
@@ -192,6 +194,39 @@ export function ModCommands(props) {
             />
           );
         }
+      }
+
+      if (arg.type === "role_autocomplete") {
+        const gameTypeValue =
+          argValues[arg.gameTypeArg || "gameType"] || arg.defaultGameType || "Mafia";
+        const roleMap = siteInfo?.rolesRaw?.[gameTypeValue] || {};
+        const roleOptions = Object.entries(roleMap)
+          .filter(([, data]) => data?.alignment !== "Event")
+          .map(([name]) => name);
+        return (
+          <Autocomplete
+            key={arg.name}
+            freeSolo
+            options={roleOptions}
+            value={argValue || ""}
+            onInputChange={(_, value) =>
+              updateArgValue(arg.name, value, arg.isArray)
+            }
+            disabled={isPrefilled}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder={placeholder}
+                sx={{
+                  borderRadius: "4px",
+                  backgroundColor: "var(--scheme-color)",
+                  color: "var(--scheme-color-text)",
+                  width: "100%",
+                }}
+              />
+            )}
+          />
+        );
       }
 
       if (arg.type === "select") {

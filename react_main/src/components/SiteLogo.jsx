@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Box } from "@mui/material";
 
 import logovalentines from "images/logos/logo-valentines.png";
@@ -13,12 +13,15 @@ import {
   isValentinesThemeActive,
   isWinterThemeActive,
 } from "../utils/holidayThemes";
+import { UserContext } from "../Contexts";
 
 export default function SiteLogo({
   small = false,
   large = false,
   newTab = false,
 }) {
+  const user = useContext(UserContext);
+
   const getLogoSrc = () => {
     if (isValentinesThemeActive()) return logovalentines; // February: Valentine's
     if (isPrideThemeActive()) return logopride; // June: Pride

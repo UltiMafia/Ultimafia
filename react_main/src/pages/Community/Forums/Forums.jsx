@@ -83,7 +83,11 @@ function ForumNav(props) {
             startIcon="🔎"
             variant="text"
             size="small"
-            sx={{ color: "text.secondary" }}
+            sx={{
+              color: "var(--scheme-color-text)",
+              fontFamily: "var(--primaryFont)",
+              fontWeight: 700,
+            }}
           >
             Search
           </Button>

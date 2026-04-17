@@ -33,6 +33,7 @@ import RapSheet from "../../components/RapSheet";
 import TrophyCase from "components/TrophyCase";
 import { AchievementPanel } from "components/Achievements";
 import Scrapbook from "components/Scrapbook";
+import PendingTradeConfirmations from "components/PendingTradeConfirmations";
 import CasePanel from "components/CasePanel";
 import { RoleCount } from "components/Roles";
 import { PieChart } from "./PieChart";
@@ -92,6 +93,40 @@ function FavoritedRolesPanel({
   );
 }
 
+function RoleIconCreditsPanel({
+  roleIconCredits = [],
+  panelStyle = {},
+  headingStyle = {},
+  siteInfo,
+}) {
+  const rolesRaw = siteInfo?.rolesRaw || {};
+  const items = (roleIconCredits || [])
+    .map((entry) => {
+      if (typeof entry !== "string") return null;
+      const i = entry.lastIndexOf(":");
+      if (i <= 0) return null;
+      const roleName = entry.slice(0, i);
+      const skin = entry.slice(i + 1);
+      if (!roleName || !skin || !rolesRaw.Mafia?.[roleName]) return null;
+      return { roleName, skin, key: entry };
+    })
+    .filter(Boolean);
+
+  return (
+    <CasePanel
+      title={`Role Icon Credits (${items.length})`}
+      panelStyle={panelStyle}
+      headingStyle={headingStyle}
+      className="box-panel role-icon-credits"
+      emptyMessage="No role icon credits"
+    >
+      {items.map(({ roleName, skin, key }) => (
+        <RoleCount key={key} role={roleName} gameType="Mafia" skin={skin} />
+      ))}
+    </CasePanel>
+  );
+}
+
 export default function Profile() {
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [name, setName] = useState();
@@ -114,8 +149,12 @@ export default function Profile() {
   const [championshipPoints, setChampionshipPoints] = useState(0);
   const [achievements, setAchievements] = useState([]);
   const [favoriteRoles, setFavoriteRoles] = useState([]);
+  const [roleIconCredits, setRoleIconCredits] = useState([]);
   const [stamps, setStamps] = useState([]);
   const [hiddenStamps, setHiddenStamps] = useState([]);
+  const [lockedCountsByRoleKey, setLockedCountsByRoleKey] = useState({});
+  const [pendingConfirmationTrades, setPendingConfirmationTrades] = useState([]);
+  const [profileRefetchKey, setProfileRefetchKey] = useState(0);
   const [trophies, setTrophies] = useState([]);
   const [karmaInfo, setKarmaInfo] = useState({});
   const [settings, setSettings] = useState({});
@@ -139,6 +178,7 @@ export default function Profile() {
   const [stats, setStats] = useState();
   const [groups, setGroups] = useState([]);
   const [showStatsModal, setShowStatsModal] = useState(false);
+  const [ratingsTab, setRatingsTab] = useState("wins");
   const [mediaUrl, setMediaUrl] = useState("");
   const [autoplay, setAutoplay] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -296,9 +336,18 @@ export default function Profile() {
           setFavoriteRoles(
             Array.isArray(res.data.favoriteRoles) ? res.data.favoriteRoles : []
           );
+          setRoleIconCredits(
+            Array.isArray(res.data.roleIconCredits)
+              ? res.data.roleIconCredits
+              : []
+          );
           setTrophies(res.data.trophies || []);
           setStamps(res.data.stamps || []);
           setHiddenStamps(res.data.hiddenStamps || []);
+          setLockedCountsByRoleKey(res.data.lockedCountsByRoleKey || {});
+          setPendingConfirmationTrades(
+            res.data.pendingConfirmationTrades || []
+          );
           setProfileFamily(res.data.family || null);
           setJoined(res.data.joined || null);
           setPokeStatus(res.data.pokeStatus || { status: "none" });
@@ -324,7 +373,9 @@ export default function Profile() {
           navigate("/play");
         });
     }
-  }, [userId]);
+  }, [userId, profileRefetchKey]);
+
+  const refetchProfile = () => setProfileRefetchKey((k) => k + 1);
 
   function onEditBanner(files, type) {
     if (!user.itemsOwned.customProfile) {
@@ -899,15 +950,34 @@ export default function Profile() {
     });
   }
 
-  const recentGamesRows = recentGames.map((game) => {
+  const recentGamesRows = recentGames.map((game, index) => {
     return (
-      <GameRow
-        game={game}
-        type={game.status || "Finished"}
-        key={game.id}
-        odd={recentGames.indexOf(game) % 2 === 1}
-        small
-      />
+      <div key={game.id} style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ width: "20px", textAlign: "center", flexShrink: 0 }}>
+          {game.won === true && (
+            <i
+              className="fas fa-check"
+              style={{ color: "#4caf50", fontSize: "14px" }}
+              title="Win"
+            />
+          )}
+          {game.won === false && (
+            <i
+              className="fas fa-times"
+              style={{ color: "#f44336", fontSize: "14px" }}
+              title="Loss"
+            />
+          )}
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <GameRow
+            game={game}
+            type={game.status || "Finished"}
+            odd={index % 2 === 1}
+            small
+          />
+        </div>
+      </div>
     );
   });
 
@@ -1401,13 +1471,6 @@ export default function Profile() {
         </Grid>
         <Grid item xs={12} md={8}>
           <Stack direction="column" spacing={1}>
-            <Scrapbook
-              stamps={stamps}
-              hiddenStamps={hiddenStamps}
-              isSelf={isSelf}
-              panelStyle={panelStyle}
-              headingStyle={headingStyle}
-            />
             <div className="box-panel" style={panelStyle}>
               <div
                 className={`bio${isSelf && !editingBio ? " edit" : ""}`}
@@ -1436,6 +1499,15 @@ export default function Profile() {
                 )}
               </div>
             </div>
+            <Scrapbook
+              stamps={stamps}
+              hiddenStamps={hiddenStamps}
+              isSelf={isSelf}
+              lockedCountsByRoleKey={lockedCountsByRoleKey}
+              onTradeAction={refetchProfile}
+              panelStyle={panelStyle}
+              headingStyle={headingStyle}
+            />
             {!isPhoneDevice && (
               <Box
                 sx={{
@@ -1459,92 +1531,106 @@ export default function Profile() {
               </div>
             )}
             <div className="box-panel" style={panelStyle}>
-              <div className="content">
-                <Stack
-                  direction="row"
-                  spacing={2}
-                  sx={{ alignItems: "stretch" }}
-                >
-                  {karmaInfo && (
-                    <Stack direction="column" spacing={1}>
-                      <KarmaVoteWidget
-                        item={karmaInfo}
-                        setItem={setKarmaInfo}
-                        userId={profileUserId}
-                      />
-                    </Stack>
-                  )}
-                  <Stack direction="column" spacing={1}>
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{ alignItems: "center" }}
-                    >
+              <div className="content trophies-content">
+                {karmaInfo && (
+                  <div className="karma-vote-wrap">
+                    <KarmaVoteWidget
+                      item={karmaInfo}
+                      setItem={setKarmaInfo}
+                      userId={profileUserId}
+                    />
+                  </div>
+                )}
+                <div className="trophies-grid">
+                  <Tooltip
+                    title="Earned from outstanding performance in ranked and competitive games."
+                    arrow
+                  >
+                    <div className="trophy-tile">
                       <img
                         src={KUDOS_ICON}
-                        style={{ marginRight: "12px" }}
                         alt="Kudos"
+                        className="trophy-icon"
                       />
-                      {kudos}
-                    </Stack>
-                    {karmaInfo && (
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        sx={{ alignItems: "center" }}
-                      >
+                      <div className="trophy-meta">
+                        <div className="trophy-value">{kudos}</div>
+                        <div className="trophy-label">Kudos</div>
+                      </div>
+                    </div>
+                  </Tooltip>
+                  {karmaInfo && (
+                    <Tooltip
+                      title="Upvotes from other players on your profile."
+                      arrow
+                    >
+                      <div className="trophy-tile">
                         <img
                           src={KARMA_ICON}
-                          style={{ marginRight: "12px" }}
                           alt="Karma"
+                          className="trophy-icon"
                         />
-                        {karmaInfo.voteCount}
-                      </Stack>
-                    )}
-                  </Stack>
-                  <Stack direction="column" spacing={1}>
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{ alignItems: "center" }}
-                    >
+                        <div className="trophy-meta">
+                          <div className="trophy-value">
+                            {karmaInfo.voteCount}
+                          </div>
+                          <div className="trophy-label">Karma</div>
+                        </div>
+                      </div>
+                    </Tooltip>
+                  )}
+                  <Tooltip
+                    title="Earned by winning ranked and competitive games. Accumulates toward prestige at the end of a competitive round."
+                    arrow
+                  >
+                    <div className="trophy-tile">
                       <img
                         src={POINTS_ICON}
-                        style={{ marginRight: "12px" }}
                         alt="Fortune"
+                        className="trophy-icon"
                       />
-                      {points}
-                    </Stack>
-                    {pointsNegative !== undefined && (
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        sx={{ alignItems: "center" }}
-                      >
+                      <div className="trophy-meta">
+                        <div className="trophy-value">{points}</div>
+                        <div className="trophy-label">Fortune</div>
+                      </div>
+                    </div>
+                  </Tooltip>
+                  {pointsNegative !== undefined && (
+                    <Tooltip
+                      title="Accumulated from losing ranked and competitive games."
+                      arrow
+                    >
+                      <div className="trophy-tile">
                         <img
                           src={POINTS_NEGATIVE_ICON}
-                          style={{ marginRight: "12px" }}
                           alt="Misfortune"
+                          className="trophy-icon"
                         />
-                        {pointsNegative}
-                      </Stack>
-                    )}
-                  </Stack>
-                  <Stack direction="column" spacing={1}>
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{ alignItems: "center" }}
-                    >
+                        <div className="trophy-meta">
+                          <div className="trophy-value">{pointsNegative}</div>
+                          <div className="trophy-label">Misfortune</div>
+                        </div>
+                      </div>
+                    </Tooltip>
+                  )}
+                  <Tooltip
+                    title="Awarded to the top 10 fortune earners at the end of each competitive round."
+                    arrow
+                  >
+                    <div className="trophy-tile trophy-tile-prestige">
                       <img
                         src={PRESTIGE_ICON}
-                        style={{ marginRight: "12px" }}
                         alt="Prestige"
+                        className="trophy-icon"
                       />
-                      {championshipPoints || 0}
-                    </Stack>
-                  </Stack>
-                </Stack>
+                      <div className="trophy-meta">
+                        <div className="trophy-value">
+                          {championshipPoints || 0}
+                        </div>
+                        <div className="trophy-label">Prestige</div>
+                      </div>
+                    </div>
+                  </Tooltip>
+                </div>
               </div>
             </div>
             {(isSelf || user.perms.seeModPanel) && (
@@ -1557,27 +1643,59 @@ export default function Profile() {
                   <Typography variant="h3" sx={headingStyle}>
                     Mafia Ratings
                   </Typography>
-                  <div className="content">
-                    {ratings}
+                  <div className="ratings-tabs">
                     <div
-                      className="expand-icon-wrapper"
-                      onClick={() => setShowStatsModal(true)}
+                      className={
+                        "ratings-tab" +
+                        (ratingsTab === "wins" ? " active" : "")
+                      }
+                      onClick={() => setRatingsTab("wins")}
+                    >
+                      Wins:{" "}
+                      {Math.round(
+                        (mafiaStats.wins.count / totalGames) * 100
+                      )}
+                      %
+                    </div>
+                    <div
+                      className={
+                        "ratings-tab" +
+                        (ratingsTab === "query" ? " active" : "")
+                      }
+                      onClick={() => setRatingsTab("query")}
                     >
                       <i className="fas fa-expand-arrows-alt" />
                     </div>
                   </div>
-                  <div
-                    className="content"
-                    style={{ padding: "0", justifyContent: "center" }}
-                  >
-                    <PieChart
-                      wins={mafiaStats.wins.count}
-                      losses={mafiaStats.wins.total - mafiaStats.wins.count}
-                      abandons={mafiaStats.abandons.total}
-                    />
-                  </div>
+                  {ratingsTab === "wins" && (
+                    <div
+                      className="content"
+                      style={{ padding: "0", justifyContent: "center" }}
+                    >
+                      <PieChart
+                        wins={mafiaStats.wins.count}
+                        losses={
+                          mafiaStats.wins.total - mafiaStats.wins.count
+                        }
+                        abandons={mafiaStats.abandons.total}
+                      />
+                    </div>
+                  )}
+                  {ratingsTab === "query" && (
+                    <StatsQueryView stats={stats} />
+                  )}
                 </div>
               )}
+            {isSelf && pendingConfirmationTrades.length > 0 && (
+              <PendingTradeConfirmations
+                trades={pendingConfirmationTrades}
+                stamps={stamps}
+                lockedCountsByRoleKey={lockedCountsByRoleKey}
+                onAction={refetchProfile}
+                panelStyle={panelStyle}
+                headingStyle={headingStyle}
+              />
+            )}
             <div className="box-panel recent-games" style={panelStyle}>
               <Typography variant="h3" style={headingStyle}>
                 Recent Games
@@ -1726,6 +1844,12 @@ export default function Profile() {
             />
             <FavoritedRolesPanel
               favoriteRoles={favoriteRoles}
+              panelStyle={panelStyle}
+              headingStyle={headingStyle}
+              siteInfo={siteInfo}
+            />
+            <RoleIconCreditsPanel
+              roleIconCredits={roleIconCredits}
               panelStyle={panelStyle}
               headingStyle={headingStyle}
               siteInfo={siteInfo}
@@ -2009,5 +2133,127 @@ function StatsModal(props) {
       content={content}
       footer={footer}
     />
+  );
+}
+
+function StatsQueryView({ stats }) {
+  const [queryType, setQueryType] = useState("bySetup");
+  const [selectedKey, setSelectedKey] = useState("");
+  const [setupNames, setSetupNames] = useState({});
+
+  const typeNames = {
+    bySetup: "Setup",
+    byRole: "Role",
+    byAlignment: "Alignment",
+  };
+
+  const data = stats?.["Mafia"]?.[queryType] || {};
+  const keys = Object.keys(data);
+
+  // fetch setup names when viewing Setup tab
+  useEffect(() => {
+    if (queryType !== "bySetup") return;
+    const setupKeys = Object.keys(stats?.["Mafia"]?.bySetup || {});
+    const missing = setupKeys.filter((id) => !(id in setupNames));
+    if (missing.length === 0) return;
+
+    Promise.all(
+      missing.map((id) =>
+        axios
+          .get(`/api/setup/${id}`)
+          .then((res) => [id, res.data?.name || id])
+          .catch(() => [id, id])
+      )
+    ).then((pairs) => {
+      setSetupNames((prev) => {
+        const next = { ...prev };
+        pairs.forEach(([id, name]) => (next[id] = name));
+        return next;
+      });
+    });
+  }, [queryType, stats]);
+
+  const displayKey = (k) =>
+    queryType === "bySetup" ? setupNames[k] || k : k;
+
+  // default to first available key when type changes
+  useEffect(() => {
+    if (keys.length > 0 && !keys.includes(selectedKey)) {
+      setSelectedKey(keys[0]);
+    } else if (keys.length === 0) {
+      setSelectedKey("");
+    }
+  }, [queryType, keys.join("|")]);
+
+  const selectedStats = selectedKey ? data[selectedKey] : null;
+  const totalUnabandoned = selectedStats
+    ? (selectedStats.wins?.total || 0) + (selectedStats.abandons?.total || 0)
+    : 0;
+  const winPct =
+    selectedStats && totalUnabandoned
+      ? Math.round((selectedStats.wins.count / totalUnabandoned) * 100)
+      : 0;
+  const abandonPct =
+    selectedStats && totalUnabandoned
+      ? Math.round((selectedStats.abandons.total / totalUnabandoned) * 100)
+      : 0;
+  const lossPct =
+    selectedStats && totalUnabandoned
+      ? 100 - winPct - abandonPct
+      : 0;
+
+  return (
+    <div className="stats-query">
+      <div className="query-type-tabs">
+        {Object.keys(typeNames).map((t) => (
+          <div
+            key={t}
+            className={"query-type-tab" + (queryType === t ? " active" : "")}
+            onClick={() => setQueryType(t)}
+          >
+            {typeNames[t]}
+          </div>
+        ))}
+      </div>
+      {keys.length === 0 ? (
+        <div className="query-empty">No {typeNames[queryType]} data yet.</div>
+      ) : (
+        <>
+          <select
+            className="query-select"
+            value={selectedKey}
+            onChange={(e) => setSelectedKey(e.target.value)}
+          >
+            {keys.map((k) => (
+              <option key={k} value={k}>
+                {displayKey(k)}
+              </option>
+            ))}
+          </select>
+          {selectedStats && (
+            <div className="query-stats">
+              <div className="query-stat">
+                <span className="query-stat-label">Games</span>
+                <span className="query-stat-value">
+                  {selectedStats.totalGames || totalUnabandoned}
+                </span>
+              </div>
+              <div className="query-stat">
+                <span className="query-stat-label">Wins</span>
+                <span className="query-stat-value">{winPct}%</span>
+              </div>
+              <div className="query-stat">
+                <span className="query-stat-label">Losses</span>
+                <span className="query-stat-value">{lossPct}%</span>
+              </div>
+              <div className="query-stat">
+                <span className="query-stat-label">Abandons</span>
+                <span className="query-stat-value">{abandonPct}%</span>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
   );
 }

@@ -373,6 +373,83 @@ function calculateStats(setupVersion, gameType) {
   return stats;
 }
 
+/** @param {Array} rows [key, gameType, won][] */
+function filterStatRows(rows, filter) {
+  if (!rows || !rows.length) return [];
+  if (filter === "all") return rows;
+  return rows.filter((r) => r && r[1] === filter);
+}
+
+function aggregateWinRows(rows, filter) {
+  const filtered = filterStatRows(rows, filter);
+  const byKey = {};
+  for (const row of filtered) {
+    if (!Array.isArray(row) || row.length < 3) continue;
+    const key = row[0];
+    const won = row[2] === true;
+    if (!byKey[key]) byKey[key] = { wins: 0, total: 0 };
+    byKey[key].total++;
+    if (won) byKey[key].wins++;
+  }
+  return Object.keys(byKey)
+    .map((key) => ({
+      key,
+      winRate: byKey[key].total ? byKey[key].wins / byKey[key].total : 0,
+      totalGames: byKey[key].total,
+    }))
+    .sort((a, b) => b.winRate - a.winRate || a.key.localeCompare(b.key));
+}
+
+function averageLengthRows(lengthRows, filter) {
+  const filtered = filterStatRows(lengthRows, filter);
+  if (!filtered.length) return null;
+  let sum = 0;
+  let n = 0;
+  for (const row of filtered) {
+    if (!Array.isArray(row) || row.length < 2) continue;
+    sum += row[1];
+    n++;
+  }
+  if (!n) return null;
+  return sum / n;
+}
+
+function calculateStatsWithGranular(setupVersion, gameType) {
+  const legacy = calculateStats(setupVersion, gameType);
+  if (gameType !== "Mafia" || !setupVersion) {
+    return { ...legacy, granular: null, hasGranular: false, totalVegs: 0 };
+  }
+
+  const ss = setupVersion.setupStats || {};
+  const alignmentRows = ss.alignmentRows || [];
+  const roleRows = ss.roleRows || [];
+  const lengthRows = ss.gameLengthRows || [];
+  const totalVegs = ss.totalVegs != null ? ss.totalVegs : 0;
+  const hasGranular =
+    alignmentRows.length > 0 ||
+    roleRows.length > 0 ||
+    lengthRows.length > 0;
+
+  const filters = ["all", "unranked", "ranked", "competitive"];
+  const granular = {};
+  for (const f of filters) {
+    granular[f] = {
+      alignment: aggregateWinRows(alignmentRows, f),
+      role: aggregateWinRows(roleRows, f),
+      averageLengthMs: averageLengthRows(lengthRows, f),
+      totalVegs,
+    };
+  }
+
+  return {
+    roleWinrate: legacy.roleWinrate,
+    alignmentWinrate: legacy.alignmentWinrate,
+    granular,
+    hasGranular,
+    totalVegs,
+  };
+}
+
 router.get("/:id/lineage", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -443,20 +520,21 @@ router.get("/:id", async function (req, res) {
         setup: new ObjectID(setup._id),
         version: setupVersionNum,
       }).select(
-        "-_id timestamp changelog manifest played rolePlays roleWins alignmentPlays alignmentWins dayCountWins"
+        "-_id timestamp changelog manifest played rolePlays roleWins alignmentPlays alignmentWins dayCountWins setupStats"
       );
       setup.setupVersion = setupVersion || {};
 
       if (req.get("includeStats") == "true") {
-        setup.stats = calculateStats(setupVersion, setup.gameType);
+        setup.stats = calculateStatsWithGranular(setupVersion, setup.gameType);
       }
 
-      // Count completed games with no leavers/veg for "Played X times!"
+      // Count completed games with no leavers and no veg (hadVeg not true)
       setup.playedCount =
         (await models.Game.countDocuments({
           setup: new ObjectID(setup._id),
           endTime: { $gt: 0 },
           $or: [{ left: [] }, { left: { $exists: false } }],
+          hadVeg: { $ne: true },
         })) || 0;
 
       res.send(setup);
@@ -485,12 +563,12 @@ router.get("/:id/version/:setupVersionNum", async function (req, res) {
         setup: new ObjectID(setup._id),
         version: req.params.setupVersionNum,
       }).select(
-        "-_id timestamp changelog manifest played rolePlays roleWins alignmentPlays alignmentWins dayCountWins"
+        "-_id timestamp changelog manifest played rolePlays roleWins alignmentPlays alignmentWins dayCountWins setupStats"
       );
 
       if (setupVersion) {
         setupVersion = setupVersion.toJSON();
-        setupVersion.stats = calculateStats(setupVersion, setup.gameType);
+        setupVersion.stats = calculateStatsWithGranular(setupVersion, setup.gameType);
         res.send(setupVersion);
       } else {
         res.status(500);

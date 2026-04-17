@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 
@@ -22,6 +22,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 
 import { Loading } from "../../components/Loading";
@@ -47,11 +49,16 @@ export default function Shop(props) {
   const [amount, setAmount] = useState("");
   const [stampGameUrl, setStampGameUrl] = useState("");
   const [stampDialogOpen, setStampDialogOpen] = useState(false);
+  const [stampSuggestions, setStampSuggestions] = useState([]);
+  const [selectedSuggestion, setSelectedSuggestion] = useState(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
+  const location = useLocation();
+  const [autoBuyTriggered, setAutoBuyTriggered] = useState(false);
 
   useEffect(() => {
     document.title = "Shop | UltiMafia";
@@ -68,6 +75,20 @@ export default function Shop(props) {
         .catch(errorAlert);
     }
   }, [user.loaded]);
+
+  useEffect(() => {
+    if (!loaded || autoBuyTriggered) return;
+    const params = new URLSearchParams(location.search);
+    const buyKey = params.get("buy");
+    if (!buyKey) return;
+    const index = shopInfo.shopItems.findIndex((item) => item.key === buyKey);
+    if (index < 0) return;
+    const item = shopInfo.shopItems[index];
+    const numOwned = user.itemsOwned[item.key] || 0;
+    if (item.disabled || numOwned === item.limit) return;
+    setAutoBuyTriggered(true);
+    onBuyItem(index);
+  }, [loaded, location.search]);
 
   const handleTransferCoins = () => {
     if (!recipient || !amount) {
@@ -181,7 +202,17 @@ export default function Shop(props) {
         >
           <CardActionArea
             disabled={disabled}
-            onClick={() => item.key === "stamp" ? setStampDialogOpen(true) : onBuyItem(i)}
+            onClick={() => {
+              if (item.key === "stamp") {
+                setStampDialogOpen(true);
+                setShowSuggestions(true);
+                axios.get("/api/shop/stampSuggestions")
+                  .then((res) => setStampSuggestions(res.data))
+                  .catch(() => setStampSuggestions([]));
+              } else {
+                onBuyItem(i);
+              }
+            }}
             sx={{
               height: "100%",
               width: "100%",
@@ -278,25 +309,91 @@ export default function Shop(props) {
         onClose={() => {
           setStampDialogOpen(false);
           setStampGameUrl("");
+          setSelectedSuggestion(null);
+          setStampSuggestions([]);
         }}
         maxWidth="sm"
         fullWidth
       >
         <DialogTitle>Buy Scrapbook Stamp</DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ overflow: "visible" }}>
           <Typography variant="body2" sx={{ mb: 2 }}>
             Enter the URL or ID of a Mafia game you won. You will receive a
             stamp of the role you played.
           </Typography>
-          <TextField
-            autoFocus
-            fullWidth
-            label="Game URL or ID"
-            value={stampGameUrl}
-            onChange={(e) => setStampGameUrl(e.target.value)}
-            placeholder="e.g. https://ultimafia.com/game/abc123 or abc123"
-          />
-          {stampGameUrl.trim() && (
+          <Box sx={{ position: "relative" }}>
+            <TextField
+              autoFocus
+              fullWidth
+              label="Game URL or ID"
+              value={stampGameUrl}
+              onChange={(e) => {
+                setStampGameUrl(e.target.value);
+                setSelectedSuggestion(null);
+                setShowSuggestions(false);
+              }}
+              placeholder="e.g. https://ultimafia.com/game/abc123 or abc123"
+              InputProps={stampSuggestions.length > 0 ? {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      size="small"
+                      onClick={() => setShowSuggestions((v) => !v)}
+                    >
+                      <i
+                        className={`fas fa-chevron-${showSuggestions ? "up" : "down"}`}
+                        style={{ fontSize: "12px" }}
+                      />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              } : undefined}
+            />
+            {showSuggestions && stampSuggestions.length > 0 && (
+              <Paper
+                sx={{
+                  position: "absolute",
+                  zIndex: 1301,
+                  left: 0,
+                  right: 0,
+                  maxHeight: 200,
+                  overflowY: "auto",
+                }}
+              >
+                {stampSuggestions.map((s) => (
+                  <Box
+                    key={s.gameId}
+                    sx={{
+                      px: 2,
+                      py: 1,
+                      cursor: "pointer",
+                      "&:hover": { bgcolor: "action.hover" },
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      setStampGameUrl(s.gameId);
+                      setSelectedSuggestion(s);
+                      setShowSuggestions(false);
+                    }}
+                  >
+                    <Typography variant="body2">
+                      {s.gameId} — {s.role}
+                    </Typography>
+                  </Box>
+                ))}
+              </Paper>
+            )}
+          </Box>
+          {selectedSuggestion && (
+            <Typography
+              variant="caption"
+              sx={{ mt: 1, display: "block" }}
+              color="success.main"
+            >
+              Stamp role: {selectedSuggestion.role}
+            </Typography>
+          )}
+          {!selectedSuggestion && stampGameUrl.trim() && (
             <Typography
               variant="caption"
               sx={{ mt: 1, display: "block" }}
@@ -313,6 +410,8 @@ export default function Shop(props) {
             onClick={() => {
               setStampDialogOpen(false);
               setStampGameUrl("");
+              setSelectedSuggestion(null);
+              setStampSuggestions([]);
             }}
           >
             Cancel
@@ -347,6 +446,8 @@ export default function Shop(props) {
                     "success"
                   );
                   setStampGameUrl("");
+                  setSelectedSuggestion(null);
+                  setStampSuggestions([]);
                   setStampDialogOpen(false);
                   setShopInfo((prev) => ({
                     ...prev,

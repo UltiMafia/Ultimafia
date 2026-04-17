@@ -269,7 +269,8 @@ export default function Settings() {
       type: "select",
       groupName: "Appearance",
       onChange: (event) => {
-        setMode(event.target.value);
+        const v = event.target.value;
+        setMode(v);
       },
       options: [
         {

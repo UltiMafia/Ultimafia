@@ -2,6 +2,7 @@ const express = require("express");
 const shortid = require("shortid");
 const routeUtils = require("./utils");
 const models = require("../db/models");
+const redis = require("../modules/redis");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 const axios = require("axios");
@@ -32,10 +33,12 @@ router.post("/send", async function (req, res) {
       return res.status(400).send("Reported user does not exist.");
     }
 
-    // Validate game exists if provided
+    // Validate game exists if provided (Mongo for finished/archived games, Redis while live)
     if (game) {
-      const gameDoc = await models.Game.findOne({ id: game }).select("id");
-      if (!gameDoc) {
+      const gameId = String(game).trim();
+      const gameDoc = await models.Game.findOne({ id: gameId }).select("id");
+      const live = !gameDoc && (await redis.gameExists(gameId));
+      if (!gameDoc && !live) {
         return res.status(400).send("Game does not exist.");
       }
     }

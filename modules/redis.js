@@ -715,6 +715,13 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
       },
     },
     { $unwind: { path: "$game.setup" } },
+    {
+      $sort: {
+        day: 1,
+        "game.endTime": 1,
+        "game.id": 1,
+      },
+    },
   ]);
 
   for (let gameCompletion of roundInfo.gameCompletions) {
@@ -1295,7 +1302,7 @@ async function getNextGameServerPort() {
 
   index = Math.abs(index % ports.length);
 
-  if (index === NaN || index === undefined || index === null) {
+  if (isNaN(index) || index === undefined || index === null) {
     index = 0;
   }
 

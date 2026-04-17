@@ -18,6 +18,10 @@ export const coreAudioConfig: AudioEntry[] = [
   { fileName: "bell" },
   { fileName: "ping" },
   { fileName: "tick" },
+  { fileName: "join" },
+  { fileName: "leave" },
+  { fileName: "readyCheck" },
+  { fileName: "veg" },
   { fileName: "vegPing", channel: "important" },
   { fileName: "urgent", channel: "important" },
 ];
@@ -62,6 +66,7 @@ export const mafiaMusicConfig: AudioEntry[] = [
   // Pregame tracks are routed to the dedicated pregameMusic channel by
   // AudioManager.inferChannel via the "music/Pregame" filename prefix.
   { fileName: "music/PregameCompetitive", loop: true },
+  { fileName: "music/PregameSandbox", loop: true },
 
   // Win / end-game tracks
   { fileName: "music/Draw" },

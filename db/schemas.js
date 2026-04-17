@@ -9,6 +9,8 @@ const anonymousDeck = new mongoose.Schema({
   name: { type: String, index: true },
   creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
   profiles: [{ type: mongoose.Schema.Types.ObjectId, ref: "DeckProfile" }],
+  coverPhoto: { type: String, default: "" },
+  voteCount: { type: Number, default: 0, index: true },
   disabled: { type: Boolean, default: 0 },
   featured: { type: Boolean, index: true },
 });
@@ -163,6 +165,7 @@ var schemas = {
     achievements: [],
     achievementCount: { type: Number, default: 0 },
     favoriteRoles: { type: [String], default: [] },
+    roleIconCredits: { type: [String], default: [] },
     redHearts: { type: Number, default: 0 },
     goldHearts: { type: Number, default: 0 },
     kudos: { type: Number, default: 0 },
@@ -261,11 +264,15 @@ var schemas = {
     alignmentPlays: {},
     alignmentWins: {},
     dayCountWins: {},
-    // Per-game stats (only for games with no abandonments). Arrays are [gameType, value].
+    // Per-game stats (clean games only: no leavers, no veg). Rows are [factionOrRoleKey, gameType, wonBool] or [gameType, lengthMs].
     setupStats: {
       alignmentWinRates: { type: mongoose.Schema.Types.Mixed, default: {} },
       roleWinRates: { type: mongoose.Schema.Types.Mixed, default: {} },
       gameLengths: { type: Array, default: [] },
+      alignmentRows: { type: [mongoose.Schema.Types.Mixed], default: [] },
+      roleRows: { type: [mongoose.Schema.Types.Mixed], default: [] },
+      gameLengthRows: { type: [mongoose.Schema.Types.Mixed], default: [] },
+      totalVegs: { type: Number, default: 0 },
     },
   }),
   AnonymousDeck: anonymousDeck,
@@ -328,6 +335,11 @@ var schemas = {
     anonymousGame: Boolean,
     // This is a mongoose subdocument. It won't change if the anonyonous deck that the game was started with changes.
     anonymousDeck: [anonymousDeck],
+    /** True if any in-game veg kill occurred (stats excluded when true). */
+    hadVeg: { type: Boolean, default: false },
+    /** Setup version manifest at game end (for backfill / audits). */
+    setupVersion: { type: Number, default: null },
+    setupStatsBackfilled: { type: Boolean, default: false },
   }),
   ArchivedGame: new mongoose.Schema({
     user: {
@@ -351,6 +363,55 @@ var schemas = {
     hidden: { type: Boolean, default: false },
     createdAt: { type: Number, default: Date.now },
   }).index({ userId: 1, gameId: 1 }, { unique: true }),
+  StampTrade: new mongoose.Schema({
+    id: { type: String, index: true, unique: true },
+    initiatorId: { type: String, index: true },
+    initiator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    initiatorStamp: { type: mongoose.Schema.Types.ObjectId, ref: "Stamp" },
+    initiatorGameType: String,
+    initiatorRole: String,
+    recipientId: { type: String, index: true },
+    recipient: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    recipientStamp: { type: mongoose.Schema.Types.ObjectId, ref: "Stamp" },
+    recipientGameType: String,
+    recipientRole: String,
+    status: {
+      type: String,
+      enum: [
+        "PENDING_RESPONSE",
+        "PENDING_CONFIRMATION",
+        "COMPLETED",
+        "REJECTED",
+        "FAILED",
+      ],
+      index: true,
+    },
+    createdAt: { type: Number, default: Date.now },
+    updatedAt: { type: Number, default: Date.now },
+    completedAt: { type: Number, default: null },
+  })
+    .index({ status: 1, recipientId: 1 })
+    .index({ status: 1, initiatorId: 1 })
+    .index({ status: 1, completedAt: -1 })
+    // Prevent the same physical stamp from being attached to two active trades.
+    .index(
+      { initiatorStamp: 1 },
+      {
+        unique: true,
+        partialFilterExpression: {
+          status: { $in: ["PENDING_RESPONSE", "PENDING_CONFIRMATION"] },
+        },
+      }
+    )
+    .index(
+      { recipientStamp: 1 },
+      {
+        unique: true,
+        partialFilterExpression: {
+          status: { $in: ["PENDING_RESPONSE", "PENDING_CONFIRMATION"] },
+        },
+      }
+    ),
   ForumCategory: new mongoose.Schema({
     id: { type: String, index: true },
     name: String,
