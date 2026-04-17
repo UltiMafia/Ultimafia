@@ -31,6 +31,7 @@ const competitiveRouter = require("./routes/competitive");
 const vanityUrlRouter = require("./routes/vanityUrl");
 const familyRouter = require("./routes/family");
 const fanartRouter = require("./routes/fanart");
+const siteActivityRouter = require("./routes/siteActivity");
 const compression = require("compression");
 const cors = require("cors");
 const itemsRouter = require("./routes/items");
@@ -92,6 +93,7 @@ apiRouter.use("/competitive", competitiveRouter);
 apiRouter.use("/vanityUrl", vanityUrlRouter);
 apiRouter.use("/family", familyRouter);
 apiRouter.use("/items", itemsRouter);
+apiRouter.use("/site-activity", siteActivityRouter);
 apiRouter.use("/fanart", fanartRouter);
 
 app.use("/api", apiRouter);

@@ -993,6 +993,19 @@ var schemas = {
       toJSON: { virtuals: true },
     }
   ),
+  SiteActivity: new mongoose.Schema(
+    {
+      id: { type: String, index: true },
+      type: { type: String, index: true },
+      actorId: { type: String, index: true },
+      meta: mongoose.Schema.Types.Mixed,
+      date: { type: Number, index: true },
+    },
+    {
+      toObject: { virtuals: true },
+      toJSON: { virtuals: true },
+    }
+  ),
 };
 
 schemas.ForumVote.virtual("user", {

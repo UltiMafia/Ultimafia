@@ -131,6 +131,14 @@ router.post("/create", async function (req, res) {
         select: "id name avatar color deathMessage -_id",
       });
 
+    models.SiteActivity.create({
+      id: shortid.generate(),
+      type: "deckCreate",
+      actorId: userId,
+      meta: { deckId: deck.id, deckName: deck.name },
+      date: Date.now(),
+    }).catch(() => {});
+
     res.send(deck);
   } catch (e) {
     logger.error(e);
