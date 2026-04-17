@@ -412,6 +412,13 @@ const AchievementData = {
       reward: 10,
       roles: ["Disguiser"],
     },
+    Kevlar: {
+      ID: "Mafia56",
+      internal: ["SurviveBulletproof"],
+      description:
+        "As a Bulletproof player, have your armor save you from a night kill.",
+      reward: 15,
+    },
   },
   Resistance: {},
   Jotto: {},
