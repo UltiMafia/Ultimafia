@@ -329,6 +329,24 @@ export function SetupPage() {
 
   const canToggleRanked = !!user.perms?.approveRanked;
   const canToggleComp = !!user.perms?.approveCompetitive;
+  const canArchive = !!user.perms?.archiveSetup;
+
+  function onArchiveSetup() {
+    if (!canArchive) return;
+    if (
+      !window.confirm(
+        "Archive this setup? Ownership will transfer to the archive user."
+      )
+    )
+      return;
+    axios
+      .post("/api/setup/archive", { id: setupId })
+      .then(() => {
+        siteInfo.showAlert("Setup archived.", "success");
+        navigate(0);
+      })
+      .catch(errorAlert);
+  }
 
   function onToggleRanked() {
     if (!canToggleRanked) return;
@@ -657,6 +675,37 @@ export function SetupPage() {
                   name={setup.creator.name}
                   avatar={setup.creator.avatar}
                 />
+                {canArchive && !setup.creator.name && (
+                  <Button
+                    size="small"
+                    onClick={onArchiveSetup}
+                    sx={{
+                      textTransform: "none",
+                      textShadow: "none",
+                      fontWeight: 600,
+                      borderRadius: 999,
+                      py: 0.15,
+                      px: 1.25,
+                      minHeight: 0,
+                      lineHeight: 1.4,
+                      color: isLightMode ? "#2e7d32" : "#a5d6a7",
+                      backgroundColor: isLightMode
+                        ? "rgba(46, 125, 50, 0.12)"
+                        : "rgba(129, 199, 132, 0.16)",
+                      border: "1px solid",
+                      borderColor: isLightMode
+                        ? "rgba(46, 125, 50, 0.35)"
+                        : "rgba(129, 199, 132, 0.35)",
+                      "&:hover": {
+                        backgroundColor: isLightMode
+                          ? "rgba(46, 125, 50, 0.2)"
+                          : "rgba(129, 199, 132, 0.26)",
+                      },
+                    }}
+                  >
+                    Archive
+                  </Button>
+                )}
               </Stack>
             )}
           </Stack>
