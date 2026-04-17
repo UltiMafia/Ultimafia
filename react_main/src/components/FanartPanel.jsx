@@ -155,9 +155,18 @@ export default function FanartPanel({ roleId }) {
         <Stack
           direction="row"
           spacing={1}
-          sx={{ alignItems: "center", width: "100%" }}
+          sx={{ alignItems: "center", width: "100%", px: 1 }}
         >
-          <Typography sx={{ flexGrow: 1 }}>Fanart</Typography>
+          <Typography
+            sx={{
+              flexGrow: 1,
+              fontWeight: 700,
+              fontSize: "1.15rem",
+              letterSpacing: "0.01em",
+            }}
+          >
+            Fanart
+          </Typography>
           {canCreate && (
             <IconButton
               size="small"
