@@ -1,5 +1,5 @@
 import React, { lazy, useState, useContext, useEffect, Suspense } from "react";
-import { Route, Link, Navigate, Routes, useLocation } from "react-router-dom";
+import { Route, Link, NavLink, Navigate, Routes, useLocation } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import axios from "axios";
 import { Icon } from "@iconify/react";
@@ -110,6 +110,7 @@ function Main(props) {
   const Fame = lazy(() => import("pages/Fame/Fame"));
   const Learn = lazy(() => import("pages/Learn/Learn"));
   const Policy = lazy(() => import("pages/Policy/Policy"));
+  const SiteActivity = lazy(() => import("pages/SiteActivity/SiteActivityPage"));
   const User = lazy(() => import("pages/User/User"));
   const Welcome = lazy(() => import("pages/Welcome/Welcome"));
 
@@ -149,6 +150,7 @@ function Main(props) {
                   <Route path="fame/*" element={<Fame />} />
                   <Route path="learn/*" element={<Learn />} />
                   <Route path="policy/*" element={<Policy />} />
+                  <Route path="siteactivity/*" element={<SiteActivity />} />
                   <Route path="user/*" element={<User />} />
                   <Route path="*" element={<Navigate to="play" />} />
                 </Routes>
@@ -294,6 +296,16 @@ function Header({ setShowAnnouncementTemporarily }) {
                   { text: "Moderation", path: "/policy/moderation" },
                 ],
               },
+              ...(user.perms?.viewSiteActivity
+                ? [
+                    {
+                      label: "Site Activity",
+                      items: [
+                        { text: "Site Activity", path: "/siteactivity" },
+                      ],
+                    },
+                  ]
+                : []),
             ]}
           />
           <SiteLogo small />
@@ -368,6 +380,28 @@ function Header({ setShowAnnouncementTemporarily }) {
                 { text: "Moderation", path: "/policy/moderation" },
               ]}
             />
+            {user.perms?.viewSiteActivity && (
+              <NavLink
+                to="/siteactivity"
+                style={{ color: "inherit", textDecoration: "none" }}
+              >
+                {({ isActive }) => (
+                  <Button
+                    variant="text"
+                    sx={{
+                      px: 1,
+                      textTransform: "uppercase",
+                      color: "inherit",
+                      backgroundColor: isActive
+                        ? "rgba(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-selectedOpacity))"
+                        : undefined,
+                    }}
+                  >
+                    <Typography variant="h3">Site Activity</Typography>
+                  </Button>
+                )}
+              </NavLink>
+            )}
             <Box sx={{
               marginLeft: "auto !important",
             }}>
