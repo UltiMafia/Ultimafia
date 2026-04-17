@@ -2082,13 +2082,13 @@ function StatsModal(props) {
   };
 
   var statsRowNames;
-  const mafia = props.stats["Mafia"];
+  const mafia = props.stats["Mafia"] || {};
   const bucket =
     props.statsBucket === "ranked"
-      ? mafia.all
+      ? mafia.all || {}
       : props.statsBucket === "unranked"
         ? mafia.unranked || {}
-        : mergeStatsBuckets(mafia.all, mafia.unranked);
+        : mergeStatsBuckets(mafia.all || {}, mafia.unranked || {});
   var stats =
     statsFilter === "all"
       ? bucket
