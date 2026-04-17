@@ -218,22 +218,26 @@ router.post("/:fanartId/delete", async function (req, res) {
       return;
     }
 
-    const hasDeletePerm = await routeUtils.verifyPermission(
-      userId,
-      "deleteFanart"
+    const fanart = await models.Fanart.findOne({ id: fanartId }).populate(
+      "author",
+      "id"
     );
-
-    if (!hasDeletePerm) {
-      res.status(403);
-      res.send("You do not have permission to delete fanart.");
-      return;
-    }
-
-    const fanart = await models.Fanart.findOne({ id: fanartId });
 
     if (!fanart) {
       res.status(404);
       res.send("Fanart not found.");
+      return;
+    }
+
+    const authorId = fanart.author ? fanart.author.id : null;
+    const hasDeletePerm =
+      Boolean(userId) &&
+      (await routeUtils.verifyPermission(userId, "deleteFanart"));
+    const isAuthor = Boolean(authorId && authorId === userId);
+
+    if (!isAuthor && !hasDeletePerm) {
+      res.status(403);
+      res.send("You do not have permission to delete fanart.");
       return;
     }
 
