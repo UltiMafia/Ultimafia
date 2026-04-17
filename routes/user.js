@@ -206,7 +206,7 @@ router.get("/searchName", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     var query = routeUtils.strParseAlphaNum(req.query.query);
-    var users = await models.User.aggregate([
+    var candidates = await models.User.aggregate([
       {
         $match: {
           name: new RegExp(query, "i"),
@@ -226,11 +226,40 @@ router.get("/searchName", async function (req, res) {
         },
       },
       { $sort: { _prefixMatch: -1, _nameLength: 1, name: 1 } },
-      { $limit: constants.mainUserSearchAmt },
-      { $project: { id: 1, name: 1, avatar: 1, _id: 0 } },
+      { $limit: constants.mainUserSearchAmt * 3 },
+      {
+        $project: {
+          id: 1,
+          name: 1,
+          avatar: 1,
+          _prefixMatch: 1,
+          _nameLength: 1,
+          _id: 0,
+        },
+      },
     ]);
 
-    for (let user of users) user.status = await redis.getUserStatus(user.id);
+    await Promise.all(
+      candidates.map(async (user) => {
+        user.status = await redis.getUserStatus(user.id);
+      })
+    );
+
+    candidates.sort((a, b) => {
+      const aOnline = a.status && a.status !== "offline" ? 1 : 0;
+      const bOnline = b.status && b.status !== "offline" ? 1 : 0;
+      if (aOnline !== bOnline) return bOnline - aOnline;
+      if (a._prefixMatch !== b._prefixMatch) return a._prefixMatch ? -1 : 1;
+      if (a._nameLength !== b._nameLength) return a._nameLength - b._nameLength;
+      return a.name.localeCompare(b.name);
+    });
+
+    var users = candidates.slice(0, constants.mainUserSearchAmt).map((u) => ({
+      id: u.id,
+      name: u.name,
+      avatar: u.avatar,
+      status: u.status,
+    }));
 
     res.send(users);
   } catch (e) {
