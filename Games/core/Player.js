@@ -1896,11 +1896,19 @@ module.exports = class Player {
     for (let extraRole of player.ExtraRoles) {
       extraRole.player = player;
     }
-    /*
-    let temp = this.user.customEmotes;
+
+    // Swap both customEmotes locations: user.customEmotes feeds
+    // getPlayerInfo, and user.settings.customEmotes is read when quoted
+    // messages are rendered.
+    let tempEmotes = this.user.customEmotes;
     this.user.customEmotes = player.user.customEmotes;
-    player.user.customEmotes = temp;
-    */
+    player.user.customEmotes = tempEmotes;
+
+    if (this.user.settings && player.user.settings) {
+      let tempSettingsEmotes = this.user.settings.customEmotes;
+      this.user.settings.customEmotes = player.user.settings.customEmotes;
+      player.user.settings.customEmotes = tempSettingsEmotes;
+    }
 
     // Swap items and effects
     var tempItems = this.items;
@@ -1955,6 +1963,12 @@ module.exports = class Player {
 
     // Reveal disguiser to disguised player
     player.role.revealToPlayer(this, true);
+
+    // Re-broadcast player info so each client's cached customEmotes map
+    // for the two swapped players reflects the new appearance.
+    for (let p of this.game.players) {
+      p.send("players", this.game.getAllPlayerInfo(p));
+    }
   }
 
   getVotePower(meeting) {
