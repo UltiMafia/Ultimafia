@@ -217,6 +217,32 @@ router.post("/", async function (req, res) {
   }
 });
 
+router.get("/role/:roleId", async function (req, res) {
+  try {
+    const itemId = String(req.params.roleId);
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+
+    const [roleVote, userVote] = await Promise.all([
+      models.RoleVote.findOne({ id: itemId }).select("voteCount").lean(),
+      userId
+        ? models.ForumVote.findOne({ voter: userId, item: itemId })
+            .select("direction")
+            .lean()
+        : null,
+    ]);
+
+    res.status(200);
+    res.send({
+      voteCount: roleVote?.voteCount ?? 0,
+      vote: userVote?.direction ?? 0,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error getting role vote.");
+  }
+});
+
 router.get("/:id/:direction?", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);

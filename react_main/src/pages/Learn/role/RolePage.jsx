@@ -57,6 +57,7 @@ export function RoleThings() {
 
   const [achievements, setAchievements] = useState(null);
   const [favoriteRoles, setFavoriteRoles] = useState([]);
+  const [roleVoteState, setRoleVoteState] = useState({ vote: 0, voteCount: 0 });
   const [tempSkins, setTempSkins] = useState([
     { label: "Vivid", value: "vivid" },
   ]);
@@ -152,6 +153,21 @@ export function RoleThings() {
 
   useEffect(() => {
     document.title = `${RoleName || "Role"} | UltiMafia`;
+  }, [RoleName]);
+
+  useEffect(() => {
+    if (!RoleName) return;
+    const roleId = `Mafia:${RoleName}`;
+    setRoleVoteState({ vote: 0, voteCount: 0 });
+    axios
+      .get(`/api/votes/role/${encodeURIComponent(roleId)}`)
+      .then((res) =>
+        setRoleVoteState({
+          vote: Number(res.data?.vote) || 0,
+          voteCount: Number(res.data?.voteCount) || 0,
+        })
+      )
+      .catch(() => {});
   }, [RoleName]);
 
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
@@ -298,13 +314,13 @@ export function RoleThings() {
   const headerTextColor = isLightMode ? "#141414" : "#fff";
   const headerTextShadow = isLightMode ? "none" : "0 1px 3px rgba(0,0,0,0.75)";
 
+  const roleId = `Mafia:${RoleName}`;
   const roleVoteItem = {
-    id: `Mafia:${RoleName}`,
-    vote: role[1].vote ?? 0,
-    voteCount: role[1].voteCount ?? 0,
+    id: roleId,
+    vote: roleVoteState.vote,
+    voteCount: roleVoteState.voteCount,
   };
 
-  const roleId = `Mafia:${RoleName}`;
   const isFavorited = favoriteRoles.indexOf(roleId) !== -1;
 
   const roleSkinField = siteFields.find((f) => f.ref === "roleSkins");
@@ -410,7 +426,12 @@ export function RoleThings() {
             <VoteWidget
               item={roleVoteItem}
               itemType="role"
-              setItemHolder={() => {}}
+              setItemHolder={(newItem) =>
+                setRoleVoteState({
+                  vote: newItem.vote ?? 0,
+                  voteCount: newItem.voteCount ?? 0,
+                })
+              }
             />
             <Box
               sx={{
