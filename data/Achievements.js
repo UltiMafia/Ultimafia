@@ -419,6 +419,21 @@ const AchievementData = {
         "As a Bulletproof player, have your armor save you from a night kill.",
       reward: 15,
     },
+    "Explosion!": {
+      ID: "Mafia57",
+      internal: ["ExplosiveRetaliation"],
+      description:
+        "As an Explosive player, kill a Mafia-aligned player with your bomb's retaliation.",
+      reward: 20,
+    },
+    "True Path": {
+      ID: "Mafia58",
+      internal: ["SamuraiKillConverter"],
+      description:
+        "As Samurai, kill a Cult-aligned converter in your duel.",
+      reward: 25,
+      roles: ["Samurai"],
+    },
   },
   Resistance: {},
   Jotto: {},
