@@ -55,8 +55,9 @@ cp docs/client_env react_main/.env
 # Start dev environment
 docker compose -f docker-compose-core.yml -f docker-compose-dev.yml up -d
 
-# Site available at http://127.0.0.1:80
-# First time: visit http://127.0.0.1:80/auth/login to create an account
+# Site available at http://localhost:3001
+# First time: visit http://localhost:3001/auth/login to create an account
+# (Use `localhost`, not `127.0.0.1` — Firebase Auth only authorizes `localhost`. Use port 3001, not 80.)
 ```
 
 ### Dev Environment Notes
