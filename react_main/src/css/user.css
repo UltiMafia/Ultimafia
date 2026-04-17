@@ -896,20 +896,23 @@ iframe {
 }
 
 .poke-back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  margin-left: auto;
   cursor: pointer;
-  white-space: nowrap;
+  opacity: 0.4;
+  transition: opacity 0.15s ease;
   flex-shrink: 0;
 }
 
+.poke-back-btn:hover {
+  opacity: 1;
+}
+
 .poke-dismiss {
-  margin-left: auto;
   padding-right: 8px;
   cursor: pointer;
   opacity: 0.4;
   transition: opacity 0.15s ease;
+  flex-shrink: 0;
 }
 
 .poke-dismiss:hover {
