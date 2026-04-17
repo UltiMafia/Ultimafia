@@ -402,7 +402,10 @@ function InGameWarning() {
   }
 
   return (
-    <Snackbar open={user.inGame !== null}>
+    <Snackbar
+      open={user.inGame !== null}
+      sx={{ maxWidth: "calc(100vw - 16px)" }}
+    >
       <Alert
         severity="warning"
         variant="outlined"
