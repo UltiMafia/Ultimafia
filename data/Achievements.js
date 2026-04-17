@@ -298,6 +298,120 @@ const AchievementData = {
       reward: 20,
       roles: ["Hunter"],
     },
+    "Sink or Swim": {
+      ID: "Mafia41",
+      internal: ["LifeguardPRSave"],
+      description:
+        "As Lifeguard, have your master be a surviving Village power role at the end of the game.",
+      reward: 20,
+      roles: ["Lifeguard"],
+    },
+    "Off With Your Head": {
+      ID: "Mafia42",
+      internal: ["QueenCondemned"],
+      description: "Survive and win in a game where the Queen was condemned.",
+      reward: 10,
+    },
+    "Burn Book": {
+      ID: "Mafia43",
+      internal: ["DramaQueenRevealEvil"],
+      description:
+        "As Drama Queen, have an Evil-aligned player be revealed via your drama.",
+      reward: 20,
+      roles: ["Drama Queen"],
+    },
+    "Put On The Red Light": {
+      ID: "Mafia44",
+      internal: ["HookerBlock2PR"],
+      description:
+        "As Hooker, successfully roleblock 2 different Village power roles during a game.",
+      reward: 15,
+      roles: ["Hooker"],
+    },
+    "As Above": {
+      ID: "Mafia45",
+      internal: ["MagusWinDayOne"],
+      description: "As Magus, win after a Magus game is declared on Day 1.",
+      reward: 40,
+      roles: ["Magus"],
+    },
+    "Just The Two Of Us": {
+      ID: "Mafia46",
+      internal: ["LoverFinalTwo"],
+      description: "As Lover, be alive in the final 2.",
+      reward: 20,
+      roles: ["Lover"],
+    },
+    "First Flame": {
+      ID: "Mafia47",
+      internal: ["ArsonistIgniteDayOne"],
+      description: "As Arsonist, ignite a Village power role on Day 1.",
+      reward: 20,
+      roles: ["Arsonist"],
+    },
+    "Falling Into Place": {
+      ID: "Mafia48",
+      internal: ["SirenBeckonTwo"],
+      description:
+        "As Siren, successfully beckon 2 different roles to visit you and survive to the end of the game.",
+      reward: 20,
+      roles: ["Siren"],
+    },
+    "Eye Of The Beholder": {
+      ID: "Mafia49",
+      internal: ["OracleRevealEvil"],
+      description: "As Oracle, have your death reveal an Evil-aligned player.",
+      reward: 25,
+      roles: ["Oracle"],
+    },
+    "Happy Hour": {
+      ID: "Mafia50",
+      internal: ["DrunkBlockEvil"],
+      description:
+        "As Drunk, roleblock an Evil power role that was targeting you.",
+      reward: 20,
+      roles: ["Drunk"],
+    },
+    "Judge, Jury And Executioner": {
+      ID: "Mafia51",
+      internal: ["JailerCleanExecutions"],
+      description:
+        "As Jailer, execute at least one Evil player and never execute a non-Evil player.",
+      reward: 20,
+      roles: ["Jailer"],
+    },
+    "Feeling Blue": {
+      ID: "Mafia52",
+      internal: ["LobotomistAllVPR"],
+      description:
+        "As Lobotomist, convert every Village power role in the game.",
+      reward: 30,
+      roles: ["Lobotomist"],
+    },
+    "Bleeding Heart": {
+      ID: "Mafia53",
+      internal: ["HeartbreakerCondemnedLove"],
+      description:
+        "As Heartbreaker, have your Village-aligned Love be condemned.",
+      reward: 20,
+      roles: ["Heartbreaker"],
+    },
+    Governator: {
+      ID: "Mafia54",
+      internal: ["GovernatorFlip"],
+      description:
+        "As Governor, overturn a non-Evil condemnation and land your kill on a Mafia player.",
+      reward: 20,
+      roles: ["Governor"],
+    },
+    "Guys, I'm So Obvious": {
+      ID: "Mafia55",
+      internal: ["DisguiserTwoSurvive"],
+      description:
+        "As Disguiser, steal another player's identity twice and survive to the end of the game.",
+      reward: 10,
+      roles: ["Disguiser"],
+    },
   },
   Resistance: {},
   Jotto: {},
