@@ -256,7 +256,13 @@ export default function LobbyBrowser() {
             <Comments
               fullWidth
               location={
-                lobbyName === "Main" || lobbyName === "All"
+                lobbyName === "All"
+                  ? lobbies
+                      .filter((l) => l.name !== "All")
+                      .map((l) =>
+                        l.name === "Main" ? "lobby" : `lobby-${l.name}`
+                      )
+                  : lobbyName === "Main"
                   ? "lobby"
                   : `lobby-${lobbyName}`
               }
