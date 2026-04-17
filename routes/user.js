@@ -206,14 +206,29 @@ router.get("/searchName", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     var query = routeUtils.strParseAlphaNum(req.query.query);
-    var users = await models.User.find({
-      name: new RegExp(query, "i"),
-      deleted: false,
-    })
-      .select("id name avatar -_id")
-      .limit(constants.mainUserSearchAmt)
-      .sort("name");
-    users = users.map((user) => user.toJSON());
+    var users = await models.User.aggregate([
+      {
+        $match: {
+          name: new RegExp(query, "i"),
+          deleted: false,
+        },
+      },
+      {
+        $addFields: {
+          _prefixMatch: {
+            $regexMatch: {
+              input: "$name",
+              regex: `^${query}`,
+              options: "i",
+            },
+          },
+          _nameLength: { $strLenCP: "$name" },
+        },
+      },
+      { $sort: { _prefixMatch: -1, _nameLength: 1, name: 1 } },
+      { $limit: constants.mainUserSearchAmt },
+      { $project: { id: 1, name: 1, avatar: 1, _id: 0 } },
+    ]);
 
     for (let user of users) user.status = await redis.getUserStatus(user.id);
 
