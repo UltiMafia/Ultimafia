@@ -6,22 +6,28 @@
 
 .game .connectFour-board {
   margin: 30px auto;
+  width: 100%;
+  max-width: 490px;
+  box-sizing: border-box;
 }
 
 .game .connectFour-board-row {
   display: flex;
-}
-
-.game .connectFour-board-row {
-  display: flex;
+  width: 100%;
 }
 
 .game .connectFour-board-box {
-  width: 70px;
-  height: 70px;
+  flex: 1 1 0;
+  max-width: 70px;
+  aspect-ratio: 1;
   margin: 0px;
   background-image: url("/src/images/ConnectFourBackground.png");
-  background-size: 70px 70px;
+  background-size: 100% 100%;
+}
+
+.game .connectFour-board-box .avatar {
+  width: calc(100% - 10px) !important;
+  height: calc(100% - 10px) !important;
 }
 
 .game .connectFour-board-box.clickable {
