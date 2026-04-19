@@ -269,7 +269,6 @@ function Header({ setShowAnnouncementTemporarily }) {
                 items: [
                   { text: "Forums", path: "/community/forums" },
                   { text: "Users", path: "/community/users" },
-                  { text: "Calendar", path: "/community/calendar" },
                 ],
               },
               {
@@ -343,7 +342,6 @@ function Header({ setShowAnnouncementTemporarily }) {
               items={[
                 { text: "Forums", path: "/community/forums" },
                 { text: "Users", path: "/community/users" },
-                { text: "Calendar", path: "/community/calendar" },
               ]}
             />
             <NavDropdown

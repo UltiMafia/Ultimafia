@@ -31,12 +31,6 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ultimafia.com/community/calendar</loc>
-    <lastmod>2026-04-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
     <loc>https://ultimafia.com/fame/competitive</loc>
     <lastmod>2026-04-15</lastmod>
     <changefreq>daily</changefreq>

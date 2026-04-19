@@ -35,6 +35,7 @@ import RecentTradesFeed from "components/RecentTradesFeed";
 import Chat from "../../Chat/Chat";
 import { FeaturedSetup } from "./FeaturedSetup";
 import { DailyChallenges } from "./DailyChallengeDisplay";
+import { CompetitiveRounds } from "./CompetitiveRounds";
 import { getRowStubColor } from "./gameRowColors.js";
 
 import { lobbies } from "../../../constants/lobbies";
@@ -269,6 +270,7 @@ export default function LobbyBrowser() {
               lobby={lobbyName}
               glowingHostButton={glowingHostButton}
             />
+            <CompetitiveRounds />
             <DailyChallenges />
             <RecentlyPlayedSetups lobby={lobbyName} />
             <RecentForumReplies />
