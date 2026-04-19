@@ -18,41 +18,256 @@ function parseUTCDate(dateStr) {
   return new Date(Date.UTC(y, m - 1, d));
 }
 
-function formatStartsIn(dateStr) {
+function startsInParts(dateStr) {
   const start = parseUTCDate(dateStr).getTime();
   const diffMs = start - Date.now();
-  if (diffMs <= 0) return "Starts soon";
+  if (diffMs <= 0) return { value: "now", unit: "" };
   const hours = diffMs / 3_600_000;
   if (hours < 1) {
     const mins = Math.max(1, Math.ceil(diffMs / 60_000));
-    return `Starts in ${mins} minute${mins === 1 ? "" : "s"}`;
+    return { value: String(mins), unit: mins === 1 ? "min" : "mins" };
   }
   if (hours < 24) {
     const h = Math.ceil(hours);
-    return `Starts in ${h} hour${h === 1 ? "" : "s"}`;
+    return { value: String(h), unit: h === 1 ? "hr" : "hrs" };
   }
   const days = Math.ceil(hours / 24);
-  return `Starts in ${days} day${days === 1 ? "" : "s"}`;
+  return { value: String(days), unit: days === 1 ? "day" : "days" };
 }
 
-function describeRoundBody(round, status) {
-  const prefix = `S${round.season}R${round.number}`;
-  if (status === "upcoming") {
-    return `${prefix} · ${formatStartsIn(round.startDate)}`;
-  }
-  if (round.remainingOpenDays > 0) {
-    return `${prefix} · Day ${round.currentDay} · ${round.remainingOpenDays}d left to play`;
-  }
-  if (round.remainingReviewDays > 0) {
-    return `${prefix} · Review phase · ${round.remainingReviewDays}d left`;
-  }
-  return `${prefix} · Day ${round.currentDay}`;
-}
-
-const STATUS_STYLES = {
-  ongoing: { label: "ONGOING", color: "error.main" },
-  upcoming: { label: "UPCOMING", color: "warning.main" },
+const RAIL_COLOR = {
+  ongoing: "error.main",
+  upcoming: "primary.main",
+  review: "info.main",
 };
+
+function StatusBadge({ kind }) {
+  if (kind === "ongoing") {
+    return (
+      <Stack
+        direction="row"
+        alignItems="center"
+        spacing={0.5}
+        sx={{ color: "error.main" }}
+      >
+        <Box
+          sx={{
+            width: 6,
+            height: 6,
+            borderRadius: "50%",
+            bgcolor: "error.main",
+            animation: "competitive-live-pulse 1.4s ease-in-out infinite",
+            "@keyframes competitive-live-pulse": {
+              "0%, 100%": { opacity: 1, transform: "scale(1)" },
+              "50%": { opacity: 0.45, transform: "scale(0.75)" },
+            },
+          }}
+        />
+        <Typography
+          variant="caption"
+          sx={{
+            fontWeight: 700,
+            letterSpacing: "0.12em",
+            lineHeight: 1,
+          }}
+        >
+          LIVE
+        </Typography>
+      </Stack>
+    );
+  }
+  if (kind === "review") {
+    return (
+      <Typography
+        variant="caption"
+        sx={{
+          fontWeight: 700,
+          letterSpacing: "0.12em",
+          lineHeight: 1,
+          color: "info.main",
+        }}
+      >
+        REVIEW
+      </Typography>
+    );
+  }
+  return (
+    <Typography
+      variant="caption"
+      sx={{
+        fontWeight: 700,
+        letterSpacing: "0.12em",
+        lineHeight: 1,
+        color: "primary.main",
+      }}
+    >
+      UPCOMING
+    </Typography>
+  );
+}
+
+function DayProgress({ current, total }) {
+  const dots = [];
+  for (let i = 1; i <= total; i++) {
+    const isPast = i < current;
+    const isCurrent = i === current;
+    dots.push(
+      <Box
+        key={i}
+        sx={{
+          width: 7,
+          height: 7,
+          borderRadius: "50%",
+          flexShrink: 0,
+          bgcolor: isPast
+            ? "text.primary"
+            : isCurrent
+              ? "error.main"
+              : "transparent",
+          border: isPast ? "none" : "1px solid",
+          borderColor: isCurrent ? "error.main" : "divider",
+          boxShadow: isCurrent
+            ? "0 0 0 2px rgba(213, 0, 50, 0.18)"
+            : "none",
+        }}
+      />,
+    );
+  }
+  return (
+    <Stack direction="row" spacing={0.5} alignItems="center">
+      {dots}
+    </Stack>
+  );
+}
+
+function RoundRow({ round }) {
+  const { _status: status, _kind: kind } = round;
+  const total = (round.currentDay || 0) + (round.remainingOpenDays || 0);
+  const showPips =
+    kind === "ongoing" && total > 0 && total <= 10 && round.currentDay > 0;
+
+  return (
+    <Box
+      component={RouterLink}
+      to={`/fame/competitive?season=${round.season}&round=${round.number}`}
+      sx={{
+        position: "relative",
+        display: "block",
+        textDecoration: "none",
+        color: "inherit",
+        pl: 1.5,
+        py: 1,
+        borderLeft: 3,
+        borderColor: RAIL_COLOR[kind],
+        transition: "background-color 0.18s ease, border-left-width 0.18s ease",
+        "&:hover": {
+          backgroundColor: "action.hover",
+          "& .round-chevron": { opacity: 1, transform: "translateX(0)" },
+        },
+      }}
+    >
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="baseline"
+        sx={{ mb: 0.5 }}
+      >
+        <Typography
+          variant="h4"
+          sx={{
+            fontVariantNumeric: "tabular-nums",
+            letterSpacing: "0.02em",
+            lineHeight: 1.1,
+          }}
+        >
+          S{round.season}
+          <Box
+            component="span"
+            sx={{ color: "text.secondary", mx: 0.5, fontWeight: 400 }}
+          >
+            ·
+          </Box>
+          R{round.number}
+        </Typography>
+        <StatusBadge kind={kind} />
+      </Stack>
+
+      {kind === "ongoing" && showPips && (
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          spacing={1}
+        >
+          <DayProgress current={round.currentDay} total={total} />
+          <Typography
+            variant="caption"
+            sx={{ color: "text.secondary", lineHeight: 1 }}
+          >
+            Day {round.currentDay}
+            <Box component="span" sx={{ mx: 0.5, opacity: 0.5 }}>
+              /
+            </Box>
+            {total}
+          </Typography>
+        </Stack>
+      )}
+
+      {kind === "ongoing" && !showPips && (
+        <Typography variant="caption" sx={{ color: "text.secondary" }}>
+          Day {round.currentDay || "—"}
+        </Typography>
+      )}
+
+      {kind === "review" && (
+        <Typography variant="caption" sx={{ color: "text.secondary" }}>
+          Reviewing ·{" "}
+          <Box component="span" sx={{ color: "text.primary", fontWeight: 600 }}>
+            {round.remainingReviewDays}d
+          </Box>{" "}
+          left
+        </Typography>
+      )}
+
+      {kind === "upcoming" &&
+        (() => {
+          const { value, unit } = startsInParts(round.startDate);
+          return (
+            <Stack direction="row" alignItems="baseline" spacing={0.75}>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: "text.secondary",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                }}
+              >
+                Starts in
+              </Typography>
+              <Typography
+                sx={{
+                  fontFamily: "RobotoSlab",
+                  fontWeight: 700,
+                  fontSize: "0.95rem",
+                  lineHeight: 1,
+                  fontVariantNumeric: "tabular-nums",
+                  color: "primary.main",
+                }}
+              >
+                {value}
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{ color: "text.secondary" }}
+              >
+                {unit}
+              </Typography>
+            </Stack>
+          );
+        })()}
+    </Box>
+  );
+}
 
 export function CompetitiveRounds() {
   const [rounds, setRounds] = useState([]);
@@ -72,22 +287,30 @@ export function CompetitiveRounds() {
             if (!round.startDate) continue;
             const status =
               round.startDate > todayStr ? "upcoming" : "ongoing";
+            let kind = status;
+            if (
+              status === "ongoing" &&
+              round.remainingOpenDays <= 0 &&
+              round.remainingReviewDays > 0
+            ) {
+              kind = "review";
+            }
             collected.push({
               ...round,
               season: season.number,
               _status: status,
+              _kind: kind,
             });
           }
         }
+        const order = { ongoing: 0, review: 1, upcoming: 2 };
         collected.sort((a, b) => {
-          if (a._status !== b._status) {
-            return a._status === "ongoing" ? -1 : 1;
+          if (a._kind !== b._kind) return order[a._kind] - order[b._kind];
+          if (a._kind === "upcoming") {
+            return a.startDate.localeCompare(b.startDate);
           }
-          if (a._status === "ongoing") {
-            if (a.season !== b.season) return a.season - b.season;
-            return a.number - b.number;
-          }
-          return a.startDate.localeCompare(b.startDate);
+          if (a.season !== b.season) return a.season - b.season;
+          return a.number - b.number;
         });
         setRounds(collected);
       })
@@ -105,34 +328,13 @@ export function CompetitiveRounds() {
 
   return (
     <LobbySidebarPanel title="Competitive Rounds">
-      <Stack spacing={0.5} divider={<Divider orientation="horizontal" flexItem />}>
-        {rounds.map((round) => {
-          const { label, color } = STATUS_STYLES[round._status];
-          return (
-            <Box
-              key={`${round.season}-${round.number}`}
-              component={RouterLink}
-              to={`/fame/competitive?season=${round.season}&round=${round.number}`}
-              sx={{
-                pt: 0.5,
-                display: "block",
-                textDecoration: "none",
-                color: "inherit",
-                "&:hover": { textDecoration: "underline" },
-              }}
-            >
-              <Typography>
-                <Box
-                  component="span"
-                  sx={{ color, fontWeight: "bold", mr: 0.75 }}
-                >
-                  {label}
-                </Box>
-                {describeRoundBody(round, round._status)}
-              </Typography>
-            </Box>
-          );
-        })}
+      <Stack
+        divider={<Divider orientation="horizontal" flexItem />}
+        sx={{ mt: 0.5 }}
+      >
+        {rounds.map((round) => (
+          <RoundRow key={`${round.season}-${round.number}`} round={round} />
+        ))}
       </Stack>
     </LobbySidebarPanel>
   );
