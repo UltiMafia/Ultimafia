@@ -2,8 +2,7 @@ import React, { useEffect, useMemo, useRef, useState, useCallback } from "react"
 import axios from "axios";
 import {
   Box,
-  Button,
-  Chip,
+  ButtonBase,
   Stack,
   Tab,
   Tabs,
@@ -57,6 +56,39 @@ const CATEGORIES = [
 
 function defaultTypeSet(category) {
   return new Set(category.types.filter((t) => t.defaultOn).map((t) => t.key));
+}
+
+function FilterChip({ label, active, onClick }) {
+  return (
+    <ButtonBase
+      onClick={onClick}
+      sx={{
+        px: 1.5,
+        py: 0.5,
+        borderRadius: 999,
+        border: 1,
+        borderColor: active ? "primary.main" : "divider",
+        backgroundColor: active
+          ? (t) => `${t.palette.primary.main}22`
+          : "transparent",
+        color: active ? "primary.main" : "text.secondary",
+        fontSize: "0.72rem",
+        fontFamily: "Roboto",
+        fontWeight: 700,
+        letterSpacing: "0.12em",
+        textTransform: "uppercase",
+        lineHeight: 1.4,
+        transition:
+          "background-color .18s ease, border-color .18s ease, color .18s ease",
+        "&:hover": {
+          borderColor: active ? "primary.main" : "text.secondary",
+          color: active ? "primary.main" : "text.primary",
+        },
+      }}
+    >
+      {label}
+    </ButtonBase>
+  );
 }
 
 export default function LiveFeedTab({ windowKey }) {
@@ -138,13 +170,28 @@ export default function LiveFeedTab({ windowKey }) {
   }, [items, typeMatch, activeTypes]);
 
   return (
-    <Stack direction="column" spacing={2}>
+    <Stack direction="column" spacing={2.5}>
       <Tabs
         value={categoryIdx}
         onChange={(_, v) => setCategoryIdx(v)}
         variant="scrollable"
         scrollButtons="auto"
-        sx={{ borderBottom: 1, borderColor: "divider" }}
+        sx={{
+          "& .MuiTab-root": {
+            fontFamily: "RobotoSlab",
+            fontWeight: 700,
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            fontSize: "0.72rem",
+            minHeight: 36,
+            minWidth: 84,
+          },
+          "& .MuiTab-root.Mui-selected": { color: "primary.main" },
+          "& .MuiTabs-indicator": {
+            height: 2,
+            backgroundColor: "primary.main",
+          },
+        }}
       >
         {CATEGORIES.map((c) => (
           <Tab key={c.key} label={c.label} />
@@ -153,60 +200,120 @@ export default function LiveFeedTab({ windowKey }) {
 
       <Stack
         direction="row"
-        spacing={1}
+        spacing={0.75}
         alignItems="center"
         flexWrap="wrap"
         useFlexGap
       >
-        {category.types.map((t) => {
-          const on = activeTypes.has(t.key);
-          return (
-            <Chip
-              key={t.key}
-              label={t.label}
-              onClick={() => toggleType(t.key)}
-              variant={on ? "filled" : "outlined"}
-              color={on ? "primary" : "default"}
-              size="small"
-              sx={{ fontWeight: 600 }}
-            />
-          );
-        })}
+        {category.types.map((t) => (
+          <FilterChip
+            key={t.key}
+            label={t.label}
+            active={activeTypes.has(t.key)}
+            onClick={() => toggleType(t.key)}
+          />
+        ))}
         <Box sx={{ flexGrow: 1 }} />
-        <Button
+        <ButtonBase
           onClick={load}
           disabled={loading}
-          variant="outlined"
-          size="small"
-          startIcon={<i className="fas fa-sync-alt" />}
+          sx={{
+            px: 1.5,
+            py: 0.5,
+            borderRadius: 999,
+            border: 1,
+            borderColor: "divider",
+            color: loading ? "text.disabled" : "primary.main",
+            fontSize: "0.72rem",
+            fontFamily: "Roboto",
+            fontWeight: 700,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 0.75,
+            transition: "border-color .18s ease, color .18s ease",
+            "&:hover": {
+              borderColor: loading ? "divider" : "primary.main",
+            },
+          }}
         >
+          <i
+            className="fas fa-sync-alt"
+            style={{
+              animation: loading
+                ? "site-activity-spin .9s linear infinite"
+                : "none",
+            }}
+          />
+          <Box
+            component="style"
+            dangerouslySetInnerHTML={{
+              __html:
+                "@keyframes site-activity-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}",
+            }}
+          />
           Refresh
-        </Button>
+        </ButtonBase>
       </Stack>
 
       <Box
         sx={{
-          borderRadius: 2,
+          position: "relative",
+          borderRadius: 1,
           border: "1px solid",
           borderColor: "divider",
+          backgroundColor: "action.hover",
           overflow: "hidden",
         }}
       >
+        <Box
+          aria-hidden
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 2,
+            background:
+              "linear-gradient(90deg, transparent, var(--mui-palette-primary-main) 50%, transparent)",
+            opacity: 0.35,
+          }}
+        />
         {loading && visibleItems.length === 0 && (
           <Typography
             variant="body2"
-            sx={{ opacity: 0.7, p: 2, textAlign: "center" }}
+            sx={{
+              opacity: 0.7,
+              p: 3,
+              textAlign: "center",
+              letterSpacing: "0.16em",
+              textTransform: "uppercase",
+              fontSize: "0.75rem",
+              fontWeight: 600,
+            }}
           >
-            Loading…
+            · Loading ·
           </Typography>
         )}
         {!loading && visibleItems.length === 0 && (
-          <Typography
-            variant="body2"
-            sx={{ opacity: 0.7, p: 2, textAlign: "center" }}
-          >
-            No activity in this window with the current filters.
-          </Typography>
+          <Stack alignItems="center" spacing={0.5} sx={{ p: 3 }}>
+            <Typography
+              variant="overline"
+              sx={{
+                opacity: 0.5,
+                letterSpacing: "0.2em",
+              }}
+            >
+              No signal
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ opacity: 0.45, textAlign: "center" }}
+            >
+              No activity in this window with the current filters.
+            </Typography>
+          </Stack>
         )}
         {visibleItems.map((item, idx) => (
           <ActivityRow
@@ -223,27 +330,77 @@ export default function LiveFeedTab({ windowKey }) {
         alignItems="center"
         justifyContent="center"
       >
-        <Button
+        <ButtonBase
           onClick={() => setPage((p) => Math.max(0, p - 1))}
           disabled={page === 0 || loading}
-          size="small"
-          variant="outlined"
-          startIcon={<i className="fas fa-chevron-left" />}
+          sx={{
+            px: 1.25,
+            py: 0.5,
+            borderRadius: 1,
+            border: 1,
+            borderColor: "divider",
+            color: page === 0 || loading ? "text.disabled" : "text.primary",
+            fontSize: "0.75rem",
+            fontFamily: "Roboto",
+            fontWeight: 600,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 0.5,
+            "&:hover": {
+              borderColor:
+                page === 0 || loading ? "divider" : "text.primary",
+            },
+          }}
         >
+          <i className="fas fa-chevron-left" />
           Prev
-        </Button>
-        <Typography variant="body2" sx={{ opacity: 0.7, minWidth: 70, textAlign: "center" }}>
+        </ButtonBase>
+        <Box
+          sx={{
+            px: 1.25,
+            py: 0.5,
+            borderRadius: 1,
+            minWidth: 86,
+            textAlign: "center",
+            fontFamily: "RobotoSlab",
+            fontWeight: 700,
+            fontVariantNumeric: "tabular-nums",
+            letterSpacing: "0.06em",
+            fontSize: "0.82rem",
+            color: "primary.main",
+          }}
+        >
           Page {page + 1}
-        </Typography>
-        <Button
+        </Box>
+        <ButtonBase
           onClick={() => setPage((p) => p + 1)}
           disabled={!hasMore || loading}
-          size="small"
-          variant="outlined"
-          endIcon={<i className="fas fa-chevron-right" />}
+          sx={{
+            px: 1.25,
+            py: 0.5,
+            borderRadius: 1,
+            border: 1,
+            borderColor: "divider",
+            color: !hasMore || loading ? "text.disabled" : "text.primary",
+            fontSize: "0.75rem",
+            fontFamily: "Roboto",
+            fontWeight: 600,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 0.5,
+            "&:hover": {
+              borderColor:
+                !hasMore || loading ? "divider" : "text.primary",
+            },
+          }}
         >
           Next
-        </Button>
+          <i className="fas fa-chevron-right" />
+        </ButtonBase>
       </Stack>
     </Stack>
   );

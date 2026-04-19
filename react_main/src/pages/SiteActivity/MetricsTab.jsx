@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Box, Stack, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 
 import { useErrorAlert } from "components/Alerts";
 import { PieChart } from "pages/Learn/Setup/PieChart";
@@ -42,59 +41,133 @@ function buildColorMap(entries, fixed = {}) {
   return map;
 }
 
-function Counter({ def, value }) {
-  const theme = useTheme();
-  const isLight = theme.palette.mode === "light";
-  const bgAlpha = isLight ? "22" : "14";
-  const borderAlpha = isLight ? "77" : "40";
-  const iconBgAlpha = isLight ? "33" : "26";
+function SectionEyebrow({ label, count }) {
   return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 1.5,
-        px: 2,
-        py: 1.5,
-        borderRadius: 2,
-        backgroundColor: `${def.color}${bgAlpha}`,
-        border: `1px solid ${def.color}${borderAlpha}`,
-        height: "100%",
-      }}
+    <Stack
+      direction="row"
+      alignItems="center"
+      spacing={1.5}
+      sx={{ mb: 1.5 }}
     >
       <Box
         sx={{
-          width: 44,
-          height: 44,
-          borderRadius: "50%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: `${def.color}${iconBgAlpha}`,
-          flexShrink: 0,
+          width: 16,
+          height: 2,
+          backgroundColor: "primary.main",
+          opacity: 0.7,
+        }}
+      />
+      <Typography
+        variant="overline"
+        sx={{
+          letterSpacing: "0.2em",
+          color: "primary.main",
+          fontWeight: 700,
+          lineHeight: 1,
         }}
       >
-        <i
-          className={`fas ${def.icon}`}
-          style={{ color: def.color, fontSize: "1.2rem" }}
-        />
-      </Box>
-      <Stack spacing={0} sx={{ minWidth: 0 }}>
+        {label}
+      </Typography>
+      {typeof count === "number" && (
         <Typography
           variant="caption"
           sx={{
-            textTransform: "uppercase",
-            letterSpacing: "0.08em",
-            opacity: 0.65,
-            lineHeight: 1.2,
+            opacity: 0.55,
+            fontVariantNumeric: "tabular-nums",
+            letterSpacing: "0.06em",
           }}
         >
-          {def.label}
+          · {count}
         </Typography>
-        <Typography variant="h4" sx={{ fontWeight: 700, lineHeight: 1.1 }}>
-          {value ?? "—"}
-        </Typography>
-      </Stack>
+      )}
+      <Box
+        sx={{
+          flex: 1,
+          height: 1,
+          backgroundColor: "divider",
+          opacity: 0.5,
+        }}
+      />
+    </Stack>
+  );
+}
+
+function Counter({ def, value }) {
+  return (
+    <Box
+      sx={{
+        position: "relative",
+        px: 2,
+        pt: 2.25,
+        pb: 1.75,
+        borderRadius: 1,
+        border: "1px solid",
+        borderColor: "divider",
+        backgroundColor: "action.hover",
+        overflow: "hidden",
+        transition:
+          "border-color .18s ease, transform .18s ease, box-shadow .18s ease",
+        "&:hover": {
+          borderColor: def.color,
+          transform: "translateY(-2px)",
+          boxShadow: `0 4px 16px -6px ${def.color}66`,
+          "& .counter-icon": { opacity: 0.35, transform: "scale(1.04)" },
+        },
+      }}
+    >
+      <Box
+        aria-hidden
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 3,
+          background: `linear-gradient(90deg, ${def.color}, ${def.color}22)`,
+        }}
+      />
+      <Box
+        aria-hidden
+        className="counter-icon"
+        sx={{
+          position: "absolute",
+          top: 12,
+          right: 14,
+          opacity: 0.18,
+          color: def.color,
+          fontSize: "2.1rem",
+          lineHeight: 1,
+          transition: "opacity .18s ease, transform .18s ease",
+        }}
+      >
+        <i className={`fas ${def.icon}`} />
+      </Box>
+      <Typography
+        variant="overline"
+        sx={{
+          letterSpacing: "0.16em",
+          opacity: 0.85,
+          color: def.color,
+          fontWeight: 700,
+          lineHeight: 1,
+          display: "block",
+          mb: 0.75,
+        }}
+      >
+        {def.label}
+      </Typography>
+      <Typography
+        variant="h3"
+        sx={{
+          fontWeight: 700,
+          fontVariantNumeric: "tabular-nums",
+          letterSpacing: "-0.01em",
+          lineHeight: 1.02,
+          fontSize: { xs: "2rem", md: "2.3rem" },
+        }}
+      >
+        {value ?? "—"}
+      </Typography>
     </Box>
   );
 }
@@ -109,21 +182,62 @@ function ChartPanel({ title, data, colors, unit = "games" }) {
   return (
     <Box
       sx={{
-        p: 2,
-        borderRadius: 2,
+        position: "relative",
+        pt: 2.25,
+        pb: 2,
+        px: 2,
+        borderRadius: 1,
         border: "1px solid",
         borderColor: "divider",
+        backgroundColor: "action.hover",
         height: "100%",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      <Typography
-        variant="overline"
-        sx={{ letterSpacing: "0.12em", opacity: 0.7 }}
+      <Box
+        aria-hidden
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 2,
+          background:
+            "linear-gradient(90deg, transparent, var(--mui-palette-primary-main) 50%, transparent)",
+          opacity: 0.45,
+        }}
+      />
+      <Stack
+        direction="row"
+        alignItems="baseline"
+        spacing={1}
+        sx={{ mb: 1.5 }}
       >
-        {title}
-      </Typography>
+        <Typography
+          variant="overline"
+          sx={{
+            letterSpacing: "0.2em",
+            color: "primary.main",
+            fontWeight: 700,
+            lineHeight: 1,
+          }}
+        >
+          {title}
+        </Typography>
+        {hasData && (
+          <Typography
+            variant="caption"
+            sx={{
+              opacity: 0.55,
+              fontVariantNumeric: "tabular-nums",
+              letterSpacing: "0.04em",
+            }}
+          >
+            · {total} total
+          </Typography>
+        )}
+      </Stack>
       <Box
         sx={{
           display: "flex",
@@ -143,8 +257,15 @@ function ChartPanel({ title, data, colors, unit = "games" }) {
             }
           />
         ) : (
-          <Typography variant="body2" sx={{ opacity: 0.6 }}>
-            No data in this window.
+          <Typography
+            variant="body2"
+            sx={{
+              opacity: 0.5,
+              fontStyle: "italic",
+              letterSpacing: "0.04em",
+            }}
+          >
+            No data in this window
           </Typography>
         )}
       </Box>
@@ -162,11 +283,10 @@ function ChartPanel({ title, data, colors, unit = "games" }) {
               >
                 <Box
                   sx={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: "3px",
+                    width: 10,
+                    height: 10,
+                    borderRadius: "2px",
                     backgroundColor: colors[label] || "#7d7d7d",
-                    border: "1px solid rgba(0,0,0,0.6)",
                     flexShrink: 0,
                   }}
                 />
@@ -178,6 +298,7 @@ function ChartPanel({ title, data, colors, unit = "games" }) {
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
+                    fontSize: "0.82rem",
                   }}
                   title={label}
                 >
@@ -185,9 +306,21 @@ function ChartPanel({ title, data, colors, unit = "games" }) {
                 </Typography>
                 <Typography
                   variant="body2"
-                  sx={{ opacity: 0.7, whiteSpace: "nowrap" }}
+                  sx={{
+                    opacity: 0.6,
+                    whiteSpace: "nowrap",
+                    fontVariantNumeric: "tabular-nums",
+                    fontSize: "0.82rem",
+                  }}
                 >
-                  {value} · {pct}%
+                  {value}
+                  <Box
+                    component="span"
+                    sx={{ mx: 0.75, opacity: 0.5 }}
+                  >
+                    ·
+                  </Box>
+                  {pct}%
                 </Typography>
               </Stack>
             );
@@ -243,48 +376,54 @@ export default function MetricsTab({ windowKey }) {
   const setupColors = buildColorMap(Object.entries(topSetupsData));
 
   return (
-    <Stack direction="column" spacing={3} sx={{ width: "100%", minWidth: 0 }}>
-      <Box
-        sx={{
-          display: "grid",
-          gap: 2,
-          gridTemplateColumns: {
-            xs: "1fr",
-            sm: "repeat(2, minmax(0, 1fr))",
-            md: "repeat(4, minmax(0, 1fr))",
-          },
-        }}
-      >
-        {COUNTER_DEFS.map((def) => (
-          <Counter
-            key={def.key}
-            def={def}
-            value={summary ? summary[def.key] : null}
-          />
-        ))}
+    <Stack direction="column" spacing={3.5} sx={{ width: "100%", minWidth: 0 }}>
+      <Box>
+        <SectionEyebrow label="Pulse" />
+        <Box
+          sx={{
+            display: "grid",
+            gap: 1.5,
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(2, minmax(0, 1fr))",
+              md: "repeat(4, minmax(0, 1fr))",
+            },
+          }}
+        >
+          {COUNTER_DEFS.map((def) => (
+            <Counter
+              key={def.key}
+              def={def}
+              value={summary ? summary[def.key] : null}
+            />
+          ))}
+        </Box>
       </Box>
 
-      <Box
-        sx={{
-          display: "grid",
-          gap: 2,
-          gridTemplateColumns: {
-            xs: "1fr",
-            md: "repeat(3, minmax(0, 1fr))",
-          },
-        }}
-      >
-        <ChartPanel title="Game types" data={typeData} colors={typeColors} />
-        <ChartPanel
-          title="Mafia games"
-          data={mafiaData}
-          colors={mafiaColors}
-        />
-        <ChartPanel
-          title="Top setups"
-          data={topSetupsData}
-          colors={setupColors}
-        />
+      <Box>
+        <SectionEyebrow label="Distribution" />
+        <Box
+          sx={{
+            display: "grid",
+            gap: 1.5,
+            gridTemplateColumns: {
+              xs: "1fr",
+              md: "repeat(3, minmax(0, 1fr))",
+            },
+          }}
+        >
+          <ChartPanel title="Game types" data={typeData} colors={typeColors} />
+          <ChartPanel
+            title="Mafia games"
+            data={mafiaData}
+            colors={mafiaColors}
+          />
+          <ChartPanel
+            title="Top setups"
+            data={topSetupsData}
+            colors={setupColors}
+          />
+        </Box>
       </Box>
     </Stack>
   );

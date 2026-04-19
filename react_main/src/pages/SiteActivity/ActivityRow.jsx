@@ -35,12 +35,14 @@ const CATEGORY_COLORS = {
 };
 
 function relativeTime(ts) {
-  if (!ts) return "";
+  if (!ts) return { value: "—", unit: "" };
   const diff = Date.now() - ts;
-  if (diff < 60_000) return "just now";
-  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
-  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
-  return `${Math.floor(diff / 86_400_000)}d ago`;
+  if (diff < 60_000) return { value: "now", unit: "" };
+  if (diff < 3_600_000)
+    return { value: String(Math.floor(diff / 60_000)), unit: "m" };
+  if (diff < 86_400_000)
+    return { value: String(Math.floor(diff / 3_600_000)), unit: "h" };
+  return { value: String(Math.floor(diff / 86_400_000)), unit: "d" };
 }
 
 // Backend already emits human-readable labels like "Setup: Coco's Epic"
@@ -53,12 +55,18 @@ export default function ActivityRow({ item, last }) {
   const verb = TYPE_VERBS[item.type] || item.type;
   const color = CATEGORY_COLORS[item.category] || "#7d7d7d";
   const label = prettyLabel(item);
+  const time = relativeTime(item.timestamp);
 
   const targetEl = label ? (
     item.link ? (
       <Link
         to={item.link}
-        style={{ color: "inherit", fontWeight: 600, textDecoration: "underline" }}
+        style={{
+          color: "inherit",
+          fontWeight: 600,
+          textDecoration: "none",
+          borderBottom: `1px dotted ${color}aa`,
+        }}
       >
         {label}
       </Link>
@@ -77,11 +85,12 @@ export default function ActivityRow({ item, last }) {
         <Box
           component="span"
           sx={{
-            opacity: 0.6,
+            opacity: 0.55,
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
             minWidth: 0,
+            fontStyle: "italic",
           }}
         >
           — {item.contentPreview}
@@ -92,26 +101,36 @@ export default function ActivityRow({ item, last }) {
   return (
     <Stack
       direction="row"
-      spacing={1}
+      spacing={1.25}
       alignItems="center"
       sx={{
-        px: 1.25,
-        py: 0.75,
+        position: "relative",
+        pl: 1.5,
+        pr: 1.5,
+        py: 0.85,
         borderBottom: last ? "none" : "1px solid",
         borderColor: "divider",
-        "&:hover": { backgroundColor: "rgba(127,127,127,0.06)" },
+        transition: "background-color .15s ease",
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: 3,
+          backgroundColor: color,
+          transition: "width .18s ease, box-shadow .18s ease",
+        },
+        "&:hover": {
+          backgroundColor: "action.hover",
+          "&::before": {
+            width: 5,
+            boxShadow: `0 0 12px ${color}88`,
+          },
+        },
       }}
     >
-      <Box
-        sx={{
-          width: 3,
-          alignSelf: "stretch",
-          borderRadius: 2,
-          backgroundColor: color,
-          flexShrink: 0,
-        }}
-      />
-      <Box sx={{ width: 150, flexShrink: 0, overflow: "hidden" }}>
+      <Box sx={{ width: 148, flexShrink: 0, overflow: "hidden" }}>
         {item.actorId ? (
           <NameWithAvatar
             small
@@ -120,27 +139,40 @@ export default function ActivityRow({ item, last }) {
             avatar={item.actorAvatar}
           />
         ) : (
-          <Typography variant="body2" sx={{ opacity: 0.6 }}>
+          <Typography
+            variant="caption"
+            sx={{
+              opacity: 0.5,
+              fontStyle: "italic",
+              letterSpacing: "0.08em",
+            }}
+          >
             (system)
           </Typography>
         )}
       </Box>
-      <Typography
-        variant="caption"
+      <Box
         sx={{
-          textTransform: "uppercase",
-          letterSpacing: "0.08em",
+          px: 0.85,
+          py: 0.25,
+          borderRadius: 0.5,
+          backgroundColor: `${color}22`,
           color,
+          fontSize: "0.65rem",
           fontWeight: 700,
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+          lineHeight: 1.4,
           whiteSpace: "nowrap",
           flexShrink: 0,
+          border: `1px solid ${color}33`,
         }}
       >
         {verb}
-      </Typography>
+      </Box>
       <Stack
         direction="row"
-        spacing={0.5}
+        spacing={0.75}
         alignItems="baseline"
         sx={{
           flex: 1,
@@ -148,21 +180,40 @@ export default function ActivityRow({ item, last }) {
           overflow: "hidden",
           whiteSpace: "nowrap",
           textOverflow: "ellipsis",
+          fontSize: "0.88rem",
         }}
       >
         {targetEl}
         {inlinePreview}
       </Stack>
-      <Typography
-        variant="caption"
-        sx={{
-          opacity: 0.6,
-          whiteSpace: "nowrap",
-          flexShrink: 0,
-        }}
+      <Stack
+        direction="row"
+        spacing={0.25}
+        alignItems="baseline"
+        sx={{ flexShrink: 0, opacity: 0.75 }}
       >
-        {relativeTime(item.timestamp)}
-      </Typography>
+        <Typography
+          sx={{
+            fontFamily: "RobotoSlab",
+            fontWeight: 700,
+            fontSize: "0.82rem",
+            fontVariantNumeric: "tabular-nums",
+            lineHeight: 1,
+          }}
+        >
+          {time.value}
+        </Typography>
+        <Typography
+          variant="caption"
+          sx={{
+            opacity: 0.6,
+            fontSize: "0.7rem",
+            letterSpacing: "0.04em",
+          }}
+        >
+          {time.unit}
+        </Typography>
+      </Stack>
     </Stack>
   );
 }
