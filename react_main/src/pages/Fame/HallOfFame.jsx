@@ -13,6 +13,7 @@ import {
   Select,
   Stack,
   Tab,
+  TableSortLabel,
   Tabs,
   TextField,
   Tooltip,
@@ -30,6 +31,7 @@ import { NameWithAvatar } from "pages/User/User";
 
 const CATEGORY_OPTIONS = [
   { value: "overall", label: "Overall" },
+  { value: "prestige", label: "Prestige" },
   { value: "trophies", label: "Trophies" },
   { value: "winRate", label: "Win Rate" },
   { value: "kudos", label: "Kudos" },
@@ -45,34 +47,98 @@ function formatPercent(value) {
   return `${Math.round(Number(value || 0) * 100)}%`;
 }
 
-function getUserPath(user) {
-  return user.vanityUrl ? `/user/${user.vanityUrl}` : `/user/${user.userId}`;
-}
-
 function getColumns(category, isPhoneDevice) {
-  const compactColumns = ["Rank", "User", "Metric"];
+  const compactColumns = [
+    { label: "Rank", sortKey: null },
+    { label: "User", sortKey: "username" },
+    { label: "Metric", sortKey: null },
+  ];
   if (isPhoneDevice) return compactColumns;
 
   switch (category) {
+    case "prestige":
+      return [
+        { label: "Rank", sortKey: null },
+        { label: "User", sortKey: "username" },
+        { label: "Prestige", sortKey: "prestige" },
+        { label: "Fortune", sortKey: "fortune" },
+        { label: "Trophies", sortKey: "trophyScore" },
+        { label: "Win Rate", sortKey: "winRate" },
+      ];
     case "trophies":
-      return ["Rank", "User", "Trophies", "Score", "Achievements", "Win Rate"];
+      return [
+        { label: "Rank", sortKey: null },
+        { label: "User", sortKey: "username" },
+        { label: "Trophies", sortKey: null },
+        { label: "Achievements", sortKey: "achievementsCount" },
+        { label: "Win Rate", sortKey: "winRate" },
+      ];
     case "winRate":
-      return ["Rank", "User", "Win Rate", "W/L", "Trophies", "Kudos"];
+      return [
+        { label: "Rank", sortKey: null },
+        { label: "User", sortKey: "username" },
+        { label: "Win Rate", sortKey: "winRate" },
+        { label: "W/L", sortKey: null },
+        { label: "Trophies", sortKey: "trophyScore" },
+        { label: "Kudos", sortKey: "kudos" },
+      ];
     case "kudos":
-      return ["Rank", "User", "Kudos", "Karma", "Trophies", "Win Rate"];
+      return [
+        { label: "Rank", sortKey: null },
+        { label: "User", sortKey: "username" },
+        { label: "Kudos", sortKey: "kudos" },
+        { label: "Karma", sortKey: "karma" },
+        { label: "Trophies", sortKey: "trophyScore" },
+        { label: "Win Rate", sortKey: "winRate" },
+      ];
     case "karma":
-      return ["Rank", "User", "Karma", "Kudos", "Trophies", "Win Rate"];
+      return [
+        { label: "Rank", sortKey: null },
+        { label: "User", sortKey: "username" },
+        { label: "Karma", sortKey: "karma" },
+        { label: "Kudos", sortKey: "kudos" },
+        { label: "Trophies", sortKey: "trophyScore" },
+        { label: "Win Rate", sortKey: "winRate" },
+      ];
     case "achievements":
-      return ["Rank", "User", "Achievements", "Trophies", "Win Rate", "Kudos"];
+      return [
+        { label: "Rank", sortKey: null },
+        { label: "User", sortKey: "username" },
+        { label: "Achievements", sortKey: "achievementsCount" },
+        { label: "Trophies", sortKey: "trophyScore" },
+        { label: "Win Rate", sortKey: "winRate" },
+        { label: "Kudos", sortKey: "kudos" },
+      ];
     case "scrapbook":
-      return ["Rank", "User", "Scrapbook", "Unique", "Trophies", "Win Rate"];
+      return [
+        { label: "Rank", sortKey: null },
+        { label: "User", sortKey: "username" },
+        { label: "Scrapbook", sortKey: "scrapbookCompletion" },
+        { label: "Unique", sortKey: "scrapbookCount" },
+        { label: "Trophies", sortKey: "trophyScore" },
+        { label: "Win Rate", sortKey: "winRate" },
+      ];
     default:
-      return ["Rank", "User", "Score", "Trophies", "Win Rate", "Kudos"];
+      return [
+        { label: "Rank", sortKey: null },
+        { label: "User", sortKey: "username" },
+        { label: "Fortune", sortKey: "fortune" },
+        { label: "Prestige", sortKey: "prestige" },
+        { label: "Win Rate", sortKey: "winRate" },
+        { label: "Kudos", sortKey: "kudos" },
+      ];
   }
 }
 
 function renderDesktopCells(user, category) {
   switch (category) {
+    case "prestige":
+      return [
+        <Typography variant="body2">{user.prestige}</Typography>,
+        <Typography variant="body2">{user.fortune}</Typography>,
+        <Typography variant="body2">{user.trophyScore}</Typography>,
+        <Typography variant="body2">{formatPercent(user.winRate)}</Typography>,
+      ];
     case "trophies":
       return [
         <Box sx={{ overflowX: "clip" }}>
@@ -82,7 +148,6 @@ function renderDesktopCells(user, category) {
             wrapInPanel={false}
           />
         </Box>,
-        <Typography variant="body2">{user.trophyScore}</Typography>,
         <Typography variant="body2">{user.achievementsCount}</Typography>,
         <Typography variant="body2">{formatPercent(user.winRate)}</Typography>,
       ];
@@ -125,8 +190,8 @@ function renderDesktopCells(user, category) {
       ];
     default:
       return [
-        <Typography variant="body2">{user.compositeScore}</Typography>,
-        <Typography variant="body2">{user.trophyScore}</Typography>,
+        <Typography variant="body2">{user.fortune}</Typography>,
+        <Typography variant="body2">{user.prestige}</Typography>,
         <Typography variant="body2">{formatPercent(user.winRate)}</Typography>,
         <Typography variant="body2">{user.kudos}</Typography>,
       ];
@@ -135,6 +200,8 @@ function renderDesktopCells(user, category) {
 
 function renderMobileMetric(user, category) {
   switch (category) {
+    case "prestige":
+      return `${user.prestige} prestige`;
     case "trophies":
       return `${user.trophyScore} trophy score`;
     case "winRate":
@@ -148,12 +215,39 @@ function renderMobileMetric(user, category) {
     case "scrapbook":
       return `${user.scrapbookCompletion}% scrapbook`;
     default:
-      return `${user.compositeScore} composite`;
+      return `${user.fortune} fortune`;
   }
 }
 
-function StandingsTable({ category, users, currentUserId, isPhoneDevice }) {
+function StandingsTable({
+  category,
+  users,
+  currentUserId,
+  isPhoneDevice,
+  sortBy,
+  sortDirection,
+  onSort,
+}) {
   const columns = getColumns(category, isPhoneDevice);
+  const desktopMetricColumnCount = Math.max(columns.length - 3, 0);
+  const desktopGridTemplate = `3em minmax(0, 1.6fr) minmax(0, 1.4fr)${
+    desktopMetricColumnCount
+      ? ` repeat(${desktopMetricColumnCount}, minmax(4.5em, 0.8fr))`
+      : ""
+  }`;
+  function renderColumnLabel(column) {
+    const label = (
+      <Typography variant="caption" sx={{ fontWeight: 700 }}>
+        {column.label}
+      </Typography>
+    );
+    if (!column.tooltip) return label;
+    return (
+      <Tooltip title={column.tooltip}>
+        <span>{label}</span>
+      </Tooltip>
+    );
+  }
 
   return (
     <Stack direction="column" spacing={1} divider={<Divider flexItem />}>
@@ -162,17 +256,29 @@ function StandingsTable({ category, users, currentUserId, isPhoneDevice }) {
           display: "grid",
           gridTemplateColumns: isPhoneDevice
             ? "3em minmax(0, 1fr) minmax(0, 7em)"
-            : "3em minmax(0, 1.6fr) minmax(0, 1.4fr) repeat(3, minmax(4.5em, 0.8fr))",
+            : desktopGridTemplate,
           gap: 1,
           alignItems: "center",
           fontWeight: 700,
         }}
       >
-        {columns.map((column) => (
-          <Typography key={column} variant="caption" sx={{ fontWeight: 700 }}>
-            {column}
-          </Typography>
-        ))}
+        {columns.map((column) =>
+          column.sortKey && !isPhoneDevice ? (
+            <TableSortLabel
+              key={column.label}
+              active={sortBy === column.sortKey}
+              direction={sortBy === column.sortKey ? sortDirection : "desc"}
+              onClick={() => onSort(column.sortKey)}
+              sx={{ justifySelf: "start" }}
+            >
+              {renderColumnLabel(column)}
+            </TableSortLabel>
+          ) : (
+            <Box key={column.label} sx={{ justifySelf: "start" }}>
+              {renderColumnLabel(column)}
+            </Box>
+          )
+        )}
       </Box>
       {users.map((user) => {
         const isCurrentUser = currentUserId && user.userId === currentUserId;
@@ -184,7 +290,7 @@ function StandingsTable({ category, users, currentUserId, isPhoneDevice }) {
               display: "grid",
               gridTemplateColumns: isPhoneDevice
                 ? "3em minmax(0, 1fr) minmax(0, 7em)"
-                : "3em minmax(0, 1.6fr) minmax(0, 1.4fr) repeat(3, minmax(4.5em, 0.8fr))",
+                : desktopGridTemplate,
               gap: 1,
               alignItems: "center",
               borderRadius: 1,
@@ -229,6 +335,8 @@ export default function HallOfFame() {
 
   const category = searchParams.get("category") || "overall";
   const timeRange = searchParams.get("timeRange") || "all";
+  const sortBy = searchParams.get("sortBy") || "";
+  const sortDirection = searchParams.get("sortDirection") === "asc" ? "asc" : "desc";
   const page = Math.max(Number.parseInt(searchParams.get("page") || "1", 10), 1);
   const pageSize = Math.max(
     Number.parseInt(searchParams.get("pageSize") || "25", 10),
@@ -253,6 +361,8 @@ export default function HallOfFame() {
           pageSize,
           minGames,
           timeRange,
+          sortBy: sortBy || undefined,
+          sortDirection,
         },
       })
       .then((response) => {
@@ -262,7 +372,7 @@ export default function HallOfFame() {
       .finally(() => {
         setLoading(false);
       });
-  }, [category, page, pageSize, minGames, timeRange]);
+  }, [category, page, pageSize, minGames, timeRange, sortBy, sortDirection]);
 
   const filterSummary = useMemo(() => {
     if (!data) return null;
@@ -283,6 +393,23 @@ export default function HallOfFame() {
   function handleCategoryChange(_, nextValue) {
     updateParams({
       category: nextValue,
+      sortBy: null,
+      sortDirection: null,
+      page: 1,
+    });
+  }
+
+  function handleSort(nextSortBy) {
+    if (!nextSortBy) return;
+
+    const activeSortBy = data?.sort?.sortBy || sortBy || data?.metric;
+    const activeSortDirection = data?.sort?.sortDirection || sortDirection;
+    const nextDirection =
+      activeSortBy === nextSortBy && activeSortDirection === "desc" ? "asc" : "desc";
+
+    updateParams({
+      sortBy: nextSortBy,
+      sortDirection: nextDirection,
       page: 1,
     });
   }
@@ -297,6 +424,9 @@ export default function HallOfFame() {
   if (loading && !data) {
     return <Loading />;
   }
+
+  const activeSortBy = data?.sort?.sortBy || sortBy || data?.metric || "fortune";
+  const activeSortDirection = data?.sort?.sortDirection || sortDirection;
 
   return (
     <Stack direction="column" spacing={1}>
@@ -441,7 +571,7 @@ export default function HallOfFame() {
             </Alert>
           )}
 
-          {data && data.supportedFilters.timeRanges.length === 1 && (
+          {data?.supportedFilters?.timeRanges?.length === 1 && (
             <Alert severity="info">
               The Hall of Fame currently uses all-time cached rankings. Recent and seasonal
               splits need additional precomputation before they can be enabled.
@@ -462,7 +592,8 @@ export default function HallOfFame() {
                 {CATEGORY_OPTIONS.find((option) => option.value === category)?.label} Leaders
               </Typography>
               <Typography variant="caption">
-                Sorted by {data?.metricLabel || "leaderboard metric"}
+                Sorted by {data?.metricLabel || "leaderboard metric"} (
+                {activeSortDirection === "asc" ? "ascending" : "descending"})
               </Typography>
             </Stack>
             <Box sx={{ marginLeft: isPhoneDevice ? undefined : "auto !important" }}>
@@ -497,6 +628,9 @@ export default function HallOfFame() {
               users={data.users}
               currentUserId={user.id}
               isPhoneDevice={isPhoneDevice}
+              sortBy={activeSortBy}
+              sortDirection={activeSortDirection}
+              onSort={handleSort}
             />
           ) : (
             <Typography variant="body2">No ranked users matched the current filters.</Typography>

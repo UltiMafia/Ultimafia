@@ -16,6 +16,8 @@ router.get("/", async function (req, res) {
       pageSize: req.query.pageSize,
       minGames: req.query.minGames,
       timeRange: String(req.query.timeRange || "all").trim(),
+      sortBy: req.query.sortBy ? String(req.query.sortBy).trim() : null,
+      sortDirection: String(req.query.sortDirection || "desc").trim().toLowerCase(),
       userId,
     });
 

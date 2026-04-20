@@ -7,6 +7,7 @@ const DEFAULT_MIN_GAMES = 50;
 const SUPPORTED_TIME_RANGES = ["all"];
 const SUPPORTED_CATEGORIES = [
   "overall",
+  "prestige",
   "trophies",
   "winRate",
   "kudos",
@@ -14,26 +15,49 @@ const SUPPORTED_CATEGORIES = [
   "achievements",
   "scrapbook",
 ];
+const SUPPORTED_SORT_DIRECTIONS = ["asc", "desc"];
+const SUPPORTED_SORT_KEYS = [
+  "username",
+  "fortune",
+  "prestige",
+  "trophyScore",
+  "winRate",
+  "wins",
+  "losses",
+  "totalGames",
+  "kudos",
+  "karma",
+  "achievementScore",
+  "achievementsCount",
+  "scrapbookCompletion",
+  "scrapbookCount",
+  "compositeScore",
+];
 
 const TROPHY_TYPE_WEIGHTS = {
-  crown: 12,
-  gold: 8,
-  silver: 5,
-  bronze: 3,
+  crown: 3,
+  bronze: 5,
+  silver: 8,
+  gold: 12,
 };
 
 const CATEGORY_DEFINITIONS = {
   overall: {
-    metricKey: "compositeScore",
-    metricLabel: "Composite Score",
+    metricKey: "fortune",
+    metricLabel: "Fortune",
+    minGamesRequired: false,
+    tieBreakers: ["prestige", "trophyScore", "winRate", "kudos", "karma", "wins"],
+  },
+  prestige: {
+    metricKey: "prestige",
+    metricLabel: "Prestige",
     minGamesRequired: false,
     tieBreakers: [
+      "fortune",
       "trophyScore",
-      "achievementScore",
       "winRate",
       "kudos",
       "karma",
-      "scrapbookCompletion",
       "wins",
     ],
   },
@@ -135,27 +159,38 @@ function makeStampKey(stamp) {
   return `${stamp.gameType}:${stamp.role}`;
 }
 
-function compareValues(a, b, key) {
+function compareValues(a, b, key, sortDirection = "desc") {
   const aValue = a[key] ?? 0;
   const bValue = b[key] ?? 0;
-  if (bValue !== aValue) return bValue - aValue;
+  if (bValue !== aValue) {
+    const directionMultiplier = sortDirection === "asc" ? 1 : -1;
+    return (aValue - bValue) * directionMultiplier;
+  }
   return 0;
 }
 
-function compareRows(a, b, category) {
+function compareRows(a, b, category, sortBy, sortDirection) {
   const definition = CATEGORY_DEFINITIONS[category] || CATEGORY_DEFINITIONS.overall;
-  const keys = [definition.metricKey, ...(definition.tieBreakers || []), "username"];
+  const keys = [sortBy, ...(definition.tieBreakers || []), "username"];
 
   for (const key of keys) {
+    if (!key) continue;
     if (key === "username") {
       const nameCompare = String(a.username || "").localeCompare(
         String(b.username || "")
       );
-      if (nameCompare !== 0) return nameCompare;
+      if (nameCompare !== 0) {
+        return key === sortBy && sortDirection === "desc" ? -nameCompare : nameCompare;
+      }
       continue;
     }
 
-    const compare = compareValues(a, b, key);
+    const compare = compareValues(
+      a,
+      b,
+      key,
+      key === sortBy ? sortDirection : "desc"
+    );
     if (compare !== 0) return compare;
   }
 
@@ -254,7 +289,7 @@ async function buildRows() {
     playedGame: true,
   })
     .select(
-      "id name avatar stats winRate kudos karma achievementCount achievements settings"
+      "id name avatar stats winRate kudos karma points championshipPoints achievementCount achievements settings"
     )
     .lean();
 
@@ -290,6 +325,8 @@ async function buildRows() {
       winRate: roundMetric(user.winRate || safeRatio(winsLosses.wins, winsLosses.totalGames), 4),
       kudos: Number(user.kudos || 0),
       karma: Number(user.karma || 0),
+      fortune: Number(user.points || 0),
+      prestige: Number(user.championshipPoints || 0),
       achievementsCount: Number(user.achievementCount || 0),
       achievementScore: Number(user.achievementCount || 0),
       scrapbookCount: scrapbookInfo.scrapbookCount,
@@ -356,8 +393,10 @@ function applyCategoryRules(rows, category, minGames) {
   return rows;
 }
 
-function assignRanks(rows, category) {
-  const sortedRows = [...rows].sort((a, b) => compareRows(a, b, category));
+function assignRanks(rows, category, sortBy, sortDirection) {
+  const sortedRows = [...rows].sort((a, b) =>
+    compareRows(a, b, category, sortBy, sortDirection)
+  );
   return sortedRows.map((row, index) => ({
     ...row,
     rank: index + 1,
@@ -379,6 +418,8 @@ function buildResponseRows(rows) {
     winRate: row.winRate,
     kudos: row.kudos,
     karma: row.karma,
+    fortune: row.fortune,
+    prestige: row.prestige,
     achievementsCount: row.achievementsCount,
     achievementScore: row.achievementScore,
     scrapbookCount: row.scrapbookCount,
@@ -393,6 +434,8 @@ async function getLeaderboard({
   pageSize = DEFAULT_PAGE_SIZE,
   minGames = DEFAULT_MIN_GAMES,
   timeRange = "all",
+  sortBy = null,
+  sortDirection = "desc",
   userId = null,
 }) {
   if (!SUPPORTED_CATEGORIES.includes(category)) {
@@ -406,12 +449,19 @@ async function getLeaderboard({
   const safePage = clampInt(page, 1, 1, 1000);
   const safePageSize = clampInt(pageSize, DEFAULT_PAGE_SIZE, 1, MAX_PAGE_SIZE);
   const safeMinGames = clampNumber(minGames, DEFAULT_MIN_GAMES, 0, 10000);
+  const defaultSortBy = CATEGORY_DEFINITIONS[category].metricKey;
+  const safeSortBy = SUPPORTED_SORT_KEYS.includes(sortBy) ? sortBy : defaultSortBy;
+  const safeSortDirection = SUPPORTED_SORT_DIRECTIONS.includes(sortDirection)
+    ? sortDirection
+    : "desc";
 
   const cacheKey = [
     "hof",
     category,
     timeRange,
     safeMinGames,
+    safeSortBy,
+    safeSortDirection,
     safePage,
     safePageSize,
   ].join(":");
@@ -428,7 +478,7 @@ async function getLeaderboard({
 
   const { rows, scrapbookTotal } = await buildRows();
   const filteredRows = applyCategoryRules(rows, category, safeMinGames);
-  const rankedRows = assignRanks(filteredRows, category);
+  const rankedRows = assignRanks(filteredRows, category, safeSortBy, safeSortDirection);
   const total = rankedRows.length;
   const pages = Math.max(Math.ceil(total / safePageSize), 1);
   const pageStart = (safePage - 1) * safePageSize;
@@ -452,6 +502,11 @@ async function getLeaderboard({
       timeRange,
       minGames: safeMinGames,
     },
+    sort: {
+      sortBy: safeSortBy,
+      sortDirection: safeSortDirection,
+      defaultSortBy,
+    },
     supportedFilters: {
       timeRanges: SUPPORTED_TIME_RANGES,
       categories: SUPPORTED_CATEGORIES,
@@ -465,6 +520,10 @@ async function getLeaderboard({
       setup: {
         enabled: false,
       },
+    },
+    supportedSorts: {
+      sortKeys: SUPPORTED_SORT_KEYS,
+      directions: SUPPORTED_SORT_DIRECTIONS,
     },
     categoryMeta: {
       requiresMinGames: CATEGORY_DEFINITIONS[category].minGamesRequired,
