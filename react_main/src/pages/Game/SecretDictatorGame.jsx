@@ -276,6 +276,7 @@ function GameBoard({ history, stateViewing }) {
   return (
     <div className="sd-game-board">
       <div className="sd-game-board-inner">
+        <SDGameInfo setup={game.setup} />
         <PlayerCircle
           players={players}
           candidateInfo={extraInfo.candidateInfo}
@@ -307,6 +308,47 @@ function GameBoard({ history, stateViewing }) {
           vetoMeeting={vetoMeeting}
           socket={game.socket}
         />
+      </div>
+    </div>
+  );
+}
+
+function SDGameInfo({ setup }) {
+  const roleSet = setup?.roles?.[0];
+  if (!roleSet) return null;
+
+  // Role keys from the setup look like "Liberal:1:0" — strip the modifier suffix.
+  const counts = { Liberal: 0, Fascist: 0, Dictator: 0 };
+  for (const [roleKey, count] of Object.entries(roleSet)) {
+    const name = roleKey.split(":")[0];
+    if (name in counts) counts[name] += count;
+  }
+
+  // Per Secret Hitler rules (see WinWithFascists.js): the Dictator is revealed
+  // their teammates only in 5–6 player games.
+  const dictatorKnows = setup.total <= 6;
+
+  return (
+    <div className="sd-game-info" role="complementary" aria-label="Game info">
+      <div className="sd-game-info-title">Game Info</div>
+      <div className="sd-game-info-roles">
+        <span className="sd-game-info-chip sd-game-info-chip--liberal">
+          {counts.Liberal} Liberal
+        </span>
+        <span className="sd-game-info-chip sd-game-info-chip--fascist">
+          {counts.Fascist} Fascist
+        </span>
+        <span className="sd-game-info-chip sd-game-info-chip--dictator">
+          {counts.Dictator} Dictator
+        </span>
+      </div>
+      <div className={`sd-game-info-reveal sd-game-info-reveal--${dictatorKnows ? "yes" : "no"}`}>
+        <i className={`fas ${dictatorKnows ? "fa-eye" : "fa-eye-slash"}`} />
+        <span>
+          {dictatorKnows
+            ? "Dictator knows the Fascists"
+            : "Dictator does not know the Fascists"}
+        </span>
       </div>
     </div>
   );
