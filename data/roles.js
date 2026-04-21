@@ -5687,8 +5687,7 @@ const roleData = {
       tags: ["Items", "Item Interaction", "Killing", "Visiting", "Hostile", "Advanced"],
       description: [
         "At the beginning of the game, some players randomly receive clovers.",
-        "Each night, you can choose to visit one player and steals a random item from them, preferentially stealing Clovers.",
-        "If that player is a Leprechaun, you kill them.",
+        "Each night, you can choose to visit one player and steal a random item from them, preferentially stealing Clovers.",
         "You win if you are holding three Clovers.",
       ],
       nightOrder: [["Steal Items", PRIORITY_ITEM_TAKER_DEFAULT]],
