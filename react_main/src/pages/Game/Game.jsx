@@ -2631,7 +2631,7 @@ function SpeechInput(props) {
       )
     : 0;
   const speechPlaceholder = isSpeakCooldownActive
-    ? `Cooldown: ${speakCooldownSeconds}s`
+    ? `You're typing too fast. Try again in: ${speakCooldownSeconds}s`
     : placeholder;
 
   const timeoutRef = useRef(null);
@@ -2786,11 +2786,6 @@ function SpeechInput(props) {
             onKeyDown={onSpeechSubmit}
             enterKeyHint="done"
             disabled={isSpeakCooldownActive}
-            helperText={
-              isSpeakCooldownActive
-                ? `You're sending too fast. Try again in ${speakCooldownSeconds}s.`
-                : ""
-            }
             sx={{
               "& .MuiOutlinedInput-root": isSpeakCooldownActive
                 ? {
