@@ -7,6 +7,7 @@ const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const { getBasicUserInfo } = require("../modules/redis");
 const logger = require("../modules/logging")(".");
+const errors = require("../lib/errors");
 const router = express.Router();
 
 router.get("/categories", async function (req, res) {
@@ -60,8 +61,7 @@ router.get("/categories", async function (req, res) {
     res.send(categories);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading categories.");
+    errors.serverError(res, "Failed to load forum categories. Please refresh and try again.");
   }
 });
 
@@ -82,8 +82,7 @@ router.get("/board/:id", async function (req, res) {
       .populate("category", "id name rank -_id");
 
     if (!board || board.category.rank > rank) {
-      res.status(500);
-      res.end("Board not found");
+      errors.notFound(res, "That board does not exist. It may have been removed.");
       return;
     }
 
@@ -168,8 +167,7 @@ router.get("/board/:id", async function (req, res) {
     res.send(board);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading board.");
+    errors.serverError(res, "Failed to load board. Please refresh and try again.");
   }
 });
 
@@ -187,8 +185,7 @@ router.get("/thread/:id", async function (req, res) {
       .populate("author", "id -_id");
 
     if (!thread) {
-      res.status(500);
-      res.send("Thread not found.");
+      errors.notFound(res, "That thread does not exist. It may have been removed.");
       return;
     }
 
@@ -209,8 +206,7 @@ router.get("/thread/:id", async function (req, res) {
     );
 
     if (thread.deleted && !canViewDeleted) {
-      res.status(500);
-      res.send("Thread not found.");
+      errors.notFound(res, "That thread does not exist. It may have been removed.");
       return;
     }
 
@@ -280,8 +276,7 @@ router.get("/thread/:id", async function (req, res) {
     ).exec();
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading thread.");
+    errors.serverError(res, "Failed to load thread. Please refresh and try again.");
   }
 });
 
@@ -303,8 +298,7 @@ router.post("/category", async function (req, res) {
     }).select("_id");
 
     if (category) {
-      res.status(500);
-      res.send("A category with this name already exists.");
+      errors.conflict(res, "A category with this name already exists.");
       return;
     }
 
@@ -323,8 +317,7 @@ router.post("/category", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error creating category.");
+    errors.serverError(res, "Could not create category. Please try again.");
   }
 });
 
@@ -350,8 +343,7 @@ router.post("/board", async function (req, res) {
     }).select("_id");
 
     if (!category) {
-      res.status(500);
-      res.send("Category does not exist.");
+      errors.notFound(res, "That category does not exist.");
       return;
     }
 
@@ -375,8 +367,7 @@ router.post("/board", async function (req, res) {
     res.send(board.id);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error creating board.");
+    errors.serverError(res, "Could not create board. Please try again.");
   }
 });
 
@@ -395,8 +386,7 @@ router.post("/board/delete", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating board.");
+    errors.serverError(res, "Could not delete board. Please try again.");
   }
 });
 
@@ -419,8 +409,7 @@ router.post("/board/updateDescription", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating board.");
+    errors.serverError(res, "Could not update board description. Please try again.");
   }
 });
 
@@ -435,8 +424,7 @@ router.post("/thread", async function (req, res) {
     );
 
     if (!board) {
-      res.status(500);
-      res.send("Board not found.");
+      errors.notFound(res, "That board does not exist. It may have been removed.");
       return;
     }
 
@@ -449,8 +437,8 @@ router.post("/thread", async function (req, res) {
     var content = String(req.body.content);
 
     if (title.length == 0 || title.length > constants.maxThreadTitleLength) {
-      res.status(500);
-      res.send(
+      errors.unprocessable(
+        res,
         `Title must be between 1 and ${constants.maxThreadTitleLength} characters.`
       );
       return;
@@ -460,8 +448,8 @@ router.post("/thread", async function (req, res) {
       content.length == 0 ||
       content.length > constants.maxThreadContentLength
     ) {
-      res.status(500);
-      res.send(
+      errors.unprocessable(
+        res,
         `Content must be between 1 and ${constants.maxThreadContentLength} characters.`
       );
       return;
@@ -566,8 +554,7 @@ router.post("/thread", async function (req, res) {
     res.send(thread.id);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error creating thread.");
+    errors.serverError(res, "Could not create thread. Please try again.");
   }
 });
 
@@ -587,8 +574,7 @@ router.post("/thread/delete", async function (req, res) {
       .populate("board", "rank");
 
     if (!thread) {
-      res.status(500);
-      res.send("Thread not found.");
+      errors.notFound(res, "That thread does not exist. It may have been removed.");
       return;
     }
 
@@ -617,8 +603,7 @@ router.post("/thread/delete", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error deleting thread.");
+    errors.serverError(res, "Could not delete thread. Please try again.");
   }
 });
 
@@ -636,8 +621,7 @@ router.post("/thread/restore", async function (req, res) {
       .populate("board", "rank");
 
     if (!thread) {
-      res.status(500);
-      res.send("Thread not found.");
+      errors.notFound(res, "That thread does not exist. It may have been removed.");
       return;
     }
 
@@ -655,8 +639,7 @@ router.post("/thread/restore", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error restoring thread.");
+    errors.serverError(res, "Could not restore thread. Please try again.");
   }
 });
 
@@ -674,8 +657,7 @@ router.post("/thread/togglePinned", async function (req, res) {
       .populate("board", "rank");
 
     if (!thread) {
-      res.status(500);
-      res.send("Thread not found.");
+      errors.notFound(res, "That thread does not exist. It may have been removed.");
       return;
     }
 
@@ -693,8 +675,7 @@ router.post("/thread/togglePinned", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error pinning thread.");
+    errors.serverError(res, "Could not toggle pin on this thread. Please try again.");
   }
 });
 
@@ -712,8 +693,7 @@ router.post("/thread/toggleLocked", async function (req, res) {
       .populate("board", "rank");
 
     if (!thread) {
-      res.status(500);
-      res.send("Thread not found.");
+      errors.notFound(res, "That thread does not exist. It may have been removed.");
       return;
     }
 
@@ -731,8 +711,7 @@ router.post("/thread/toggleLocked", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error locking thread.");
+    errors.serverError(res, "Could not toggle lock on this thread. Please try again.");
   }
 });
 
@@ -752,8 +731,7 @@ router.post("/thread/edit", async function (req, res) {
       .populate("board", "rank");
 
     if (!thread) {
-      res.status(500);
-      res.send("Thread not found.");
+      errors.notFound(res, "That thread does not exist. It may have been removed.");
       return;
     }
 
@@ -761,8 +739,7 @@ router.post("/thread/edit", async function (req, res) {
       thread.author.id != userId ||
       !(await routeUtils.verifyPermission(res, userId, perm, thread.board.rank))
     ) {
-      res.status(500);
-      res.send("You are unable to edit this thread.");
+      errors.forbidden(res, "You are unable to edit this thread.");
       return;
     }
 
@@ -770,8 +747,8 @@ router.post("/thread/edit", async function (req, res) {
       content.length == 0 ||
       content.length > constants.maxThreadContentLength
     ) {
-      res.status(500);
-      res.send(
+      errors.unprocessable(
+        res,
         `Content must be between 1 and ${constants.maxThreadContentLength} characters.`
       );
       return;
@@ -785,8 +762,7 @@ router.post("/thread/edit", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error editing reply.");
+    errors.serverError(res, "Could not edit thread. Please try again.");
   }
 });
 
@@ -801,8 +777,7 @@ router.post("/thread/notify", async function (req, res) {
     }).select("author subscribers replyNotify");
 
     if (!thread) {
-      res.status(500);
-      res.send("Thread not found.");
+      errors.notFound(res, "That thread does not exist. It may have been removed.");
       return;
     }
 
@@ -835,8 +810,7 @@ router.post("/thread/notify", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error modifying notification settings.");
+    errors.serverError(res, "Could not update notification settings. Please try again.");
   }
 });
 
@@ -852,8 +826,7 @@ router.post("/thread/move", async function (req, res) {
       .populate("board", "rank");
 
     if (!thread) {
-      res.status(500);
-      res.send("Thread not found.");
+      errors.notFound(res, "That thread does not exist. It may have been removed.");
       return;
     }
 
@@ -867,8 +840,7 @@ router.post("/thread/move", async function (req, res) {
     }).select("_id");
 
     if (!board) {
-      res.status(500);
-      res.send("Board not found.");
+      errors.notFound(res, "That board does not exist. It may have been removed.");
       return;
     }
 
@@ -884,8 +856,7 @@ router.post("/thread/move", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error modifying notification settings.");
+    errors.serverError(res, "Could not move thread. Please try again.");
   }
 });
 
@@ -905,8 +876,7 @@ router.post("/reply", async function (req, res) {
       .populate("author", "id");
 
     if (!thread) {
-      res.status(500);
-      res.send("Thread does not exist.");
+      errors.notFound(res, "That thread does not exist. It may have been removed.");
       return;
     }
 
@@ -925,8 +895,7 @@ router.post("/reply", async function (req, res) {
         thread.board.rank
       ))
     ) {
-      res.status(500);
-      res.send("Thread is locked.");
+      errors.forbidden(res, "Thread is locked.");
       return;
     }
 
@@ -935,8 +904,8 @@ router.post("/reply", async function (req, res) {
     var content = String(req.body.content);
 
     if (content.length == 0 || content.length > constants.maxReplyLength) {
-      res.status(500);
-      res.send(
+      errors.unprocessable(
+        res,
         `Content must be between 1 and ${constants.maxReplyLength} characters.`
       );
       return;
@@ -1031,8 +1000,7 @@ router.post("/reply", async function (req, res) {
     res.send(String(page));
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error posting reply.");
+    errors.serverError(res, "Could not post reply. Please try again.");
   }
 });
 
@@ -1056,8 +1024,7 @@ router.post("/reply/delete", async function (req, res) {
       });
 
     if (!reply) {
-      res.status(500);
-      res.send("Reply not found.");
+      errors.notFound(res, "That reply does not exist. It may have been removed.");
       return;
     }
 
@@ -1090,8 +1057,7 @@ router.post("/reply/delete", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error deleting reply.");
+    errors.serverError(res, "Could not delete reply. Please try again.");
   }
 });
 
@@ -1113,8 +1079,7 @@ router.post("/reply/restore", async function (req, res) {
       });
 
     if (!reply) {
-      res.status(500);
-      res.send("Reply not found.");
+      errors.notFound(res, "That reply does not exist. It may have been removed.");
       return;
     }
 
@@ -1137,8 +1102,7 @@ router.post("/reply/restore", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error restoring reply.");
+    errors.serverError(res, "Could not restore reply. Please try again.");
   }
 });
 
@@ -1162,8 +1126,7 @@ router.post("/reply/edit", async function (req, res) {
       });
 
     if (!reply) {
-      res.status(500);
-      res.send("Reply not found.");
+      errors.notFound(res, "That reply does not exist. It may have been removed.");
       return;
     }
 
@@ -1176,14 +1139,13 @@ router.post("/reply/edit", async function (req, res) {
         reply.thread.board.rank
       ))
     ) {
-      res.status(500);
-      res.send("You are unable to edit this reply.");
+      errors.forbidden(res, "You are unable to edit this reply.");
       return;
     }
 
     if (content.length == 0 || content.length > constants.maxReplyLength) {
-      res.status(500);
-      res.send(
+      errors.unprocessable(
+        res,
         `Content must be between 1 and ${constants.maxReplyLength} characters.`
       );
       return;
@@ -1197,8 +1159,7 @@ router.post("/reply/edit", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error editing reply.");
+    errors.serverError(res, "Could not edit reply. Please try again.");
   }
 });
 
@@ -1230,8 +1191,7 @@ router.get("/search", async function (req, res) {
         .populate("category", "rank");
 
       if (!board || board.category.rank > rank) {
-        res.status(500);
-        res.send("Board not found or access denied.");
+        errors.notFound(res, "That board does not exist or you don't have access.");
         return;
       }
 
@@ -1333,8 +1293,7 @@ router.get("/search", async function (req, res) {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error searching forums.");
+    errors.serverError(res, "Failed to search forums. Please refresh and try again.");
   }
 });
 
@@ -1355,8 +1314,7 @@ router.get("/search/boards", async function (req, res) {
     res.send(boards);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send([]);
+    errors.serverError(res, "Failed to load boards. Please refresh and try again.");
   }
 });
 

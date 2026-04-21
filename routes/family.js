@@ -11,6 +11,7 @@ const formidable = bluebird.promisifyAll(require("formidable"), {
 });
 const sharp = require("sharp");
 const fs = require("fs");
+const errors = require("../lib/errors");
 
 router.get("/user/family", async function (req, res) {
   try {
@@ -78,8 +79,7 @@ router.post("/create", async function (req, res) {
     var user = await models.User.findOne({ id: userId }).select("itemsOwned");
 
     if (!user.itemsOwned.createFamily) {
-      res.status(500);
-      res.send("You must purchase 'Create Family' from the Shop.");
+      errors.forbidden(res, "You must purchase 'Create Family' from the Shop.");
       return;
     }
 
@@ -89,23 +89,20 @@ router.post("/create", async function (req, res) {
     });
 
     if (existingFamily) {
-      res.status(500);
-      res.send("You already belong to a family.");
+      errors.conflict(res, "You already belong to a family.");
       return;
     }
 
     const { name } = req.body;
 
     if (!name || !name.trim()) {
-      res.status(500);
-      res.send("Family name is required.");
+      errors.unprocessable(res, "Family name is required.");
       return;
     }
 
     const trimmedName = name.trim();
     if (trimmedName.length > 20) {
-      res.status(500);
-      res.send("Family name must be 20 characters or less.");
+      errors.unprocessable(res, "Family name must be 20 characters or less.");
       return;
     }
 
@@ -144,8 +141,7 @@ router.post("/create", async function (req, res) {
     res.send({ familyId: familyId });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error creating family.");
+    errors.serverError(res, "Could not create family. Please try again or contact support if this persists.");
   }
 });
 
@@ -156,8 +152,7 @@ router.post("/avatar", async function (req, res) {
 
     // Check if user has purchased createFamily
     if (!user.itemsOwned.createFamily) {
-      res.status(500);
-      res.send("You must purchase 'Create Family' from the Shop.");
+      errors.forbidden(res, "You must purchase 'Create Family' from the Shop.");
       return;
     }
 
@@ -173,8 +168,7 @@ router.post("/avatar", async function (req, res) {
       // User has an existing family, check if they're the leader
       const family = inFamily.family;
       if (family.leader.toString() !== user._id.toString()) {
-        res.status(500);
-        res.send("Only the family leader can upload an avatar.");
+        errors.forbidden(res, "Only the family leader can upload an avatar.");
         return;
       }
       familyId = family.id;
@@ -212,13 +206,11 @@ router.post("/avatar", async function (req, res) {
 
     res.sendStatus(200);
   } catch (e) {
-    res.status(500);
-
-    if (e.message && e.message.indexOf("maxFileSize exceeded") === 0)
-      res.send("Image is too large, avatar must be less than 1 MB.");
-    else {
+    if (e.message && e.message.indexOf("maxFileSize exceeded") === 0) {
+      errors.payloadTooLarge(res, "Image is too large, avatar must be less than 1 MB.");
+    } else {
       logger.error(e);
-      res.send("Error uploading family avatar image.");
+      errors.serverError(res, "Could not upload family avatar image. Please try again.");
     }
   }
 });
@@ -242,8 +234,7 @@ router.get("/:familyId/profile", async function (req, res) {
     // Check if leader is populated (required)
     if (!family.leader) {
       logger.error("Family leader not populated", { familyId });
-      res.status(500);
-      res.send("Error loading family profile: missing leader data.");
+      errors.serverError(res, "Could not load family profile: missing leader data.");
       return;
     }
 
@@ -339,8 +330,7 @@ router.get("/:familyId/profile", async function (req, res) {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading family profile.");
+    errors.serverError(res, "Failed to load family profile. Please refresh and try again.");
   }
 });
 
@@ -359,16 +349,14 @@ router.post("/:familyId/bio", async function (req, res) {
 
     var user = await models.User.findOne({ id: userId });
     if (family.leader.toString() !== user._id.toString()) {
-      res.status(500);
-      res.send("Only the family leader can edit the bio.");
+      errors.forbidden(res, "Only the family leader can edit the bio.");
       return;
     }
 
     const { bio } = req.body;
 
     if (bio && bio.length > 20000) {
-      res.status(500);
-      res.send("Family bio must be 20,000 characters or less.");
+      errors.unprocessable(res, "Family bio must be 20,000 characters or less.");
       return;
     }
 
@@ -380,8 +368,7 @@ router.post("/:familyId/bio", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating family bio.");
+    errors.serverError(res, "Could not update family bio. Please try again.");
   }
 });
 
@@ -392,8 +379,7 @@ router.post("/:familyId/transferLeadership", async function (req, res) {
     var { newLeaderId } = req.body;
 
     if (!newLeaderId) {
-      res.status(500);
-      res.send("New leader ID is required.");
+      errors.unprocessable(res, "New leader ID is required.");
       return;
     }
 
@@ -410,8 +396,7 @@ router.post("/:familyId/transferLeadership", async function (req, res) {
 
     var user = await models.User.findOne({ id: userId });
     if (family.leader.toString() !== user._id.toString()) {
-      res.status(500);
-      res.send("Only the current leader can transfer leadership.");
+      errors.forbidden(res, "Only the current leader can transfer leadership.");
       return;
     }
 
@@ -425,8 +410,7 @@ router.post("/:familyId/transferLeadership", async function (req, res) {
     // Check if new leader is a member of the family
     var isMember = family.members.some((member) => member.id === newLeaderId);
     if (!isMember) {
-      res.status(500);
-      res.send("The new leader must be a member of the family.");
+      errors.forbidden(res, "The new leader must be a member of the family.");
       return;
     }
 
@@ -439,8 +423,7 @@ router.post("/:familyId/transferLeadership", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error transferring leadership.");
+    errors.serverError(res, "Could not transfer leadership. Please try again.");
   }
 });
 
@@ -461,8 +444,7 @@ router.delete("/:familyId/member/:memberId", async function (req, res) {
 
     // Check if user is the leader
     if (family.leader.toString() !== user._id.toString()) {
-      res.status(500);
-      res.send("Only the family leader can remove members.");
+      errors.forbidden(res, "Only the family leader can remove members.");
       return;
     }
 
@@ -481,15 +463,13 @@ router.delete("/:familyId/member/:memberId", async function (req, res) {
     });
 
     if (!inFamily) {
-      res.status(500);
-      res.send("User is not a member of this family.");
+      errors.conflict(res, "User is not a member of this family.");
       return;
     }
 
     // Cannot remove the leader
     if (family.leader.toString() === memberToRemove._id.toString()) {
-      res.status(500);
-      res.send("Cannot remove the family leader. Transfer leadership first.");
+      errors.forbidden(res, "Cannot remove the family leader. Transfer leadership first.");
       return;
     }
 
@@ -508,8 +488,7 @@ router.delete("/:familyId/member/:memberId", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error removing member from family.");
+    errors.serverError(res, "Could not remove member from family. Please try again.");
   }
 });
 
@@ -528,8 +507,7 @@ router.delete("/:familyId", async function (req, res) {
     }
 
     if (family.leader.toString() !== user._id.toString()) {
-      res.status(500);
-      res.send("Only the family leader can delete the family.");
+      errors.forbidden(res, "Only the family leader can delete the family.");
       return;
     }
 
@@ -551,8 +529,7 @@ router.delete("/:familyId", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error deleting family.");
+    errors.serverError(res, "Could not delete family. Please try again.");
   }
 });
 
@@ -575,16 +552,14 @@ router.post("/:familyId/requestJoin", async function (req, res) {
     // Check if requester is the leader
     var requester = await models.User.findOne({ id: userId });
     if (family.leader._id.toString() !== requester._id.toString()) {
-      res.status(500);
-      res.send("Only the family leader can send join requests.");
+      errors.forbidden(res, "Only the family leader can send join requests.");
       return;
     }
 
     // Check if family is at member limit (20 members)
     const currentMemberCount = family.members.length;
     if (currentMemberCount >= 20) {
-      res.status(500);
-      res.send("This family has reached the maximum of 20 members.");
+      errors.conflict(res, "This family has reached the maximum of 20 members.");
       return;
     }
 
@@ -602,8 +577,7 @@ router.post("/:familyId/requestJoin", async function (req, res) {
     });
 
     if (isMember) {
-      res.status(500);
-      res.send("User is already a member of this family.");
+      errors.conflict(res, "User is already a member of this family.");
       return;
     }
 
@@ -613,8 +587,7 @@ router.post("/:familyId/requestJoin", async function (req, res) {
     });
 
     if (existingFamily) {
-      res.status(500);
-      res.send("User already belongs to a family.");
+      errors.conflict(res, "User already belongs to a family.");
       return;
     }
 
@@ -625,8 +598,7 @@ router.post("/:familyId/requestJoin", async function (req, res) {
     });
 
     if (existingRequest) {
-      res.status(500);
-      res.send("A join request has already been sent to this user.");
+      errors.conflict(res, "A join request has already been sent to this user.");
       return;
     }
 
@@ -654,8 +626,7 @@ router.post("/:familyId/requestJoin", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error sending join request.");
+    errors.serverError(res, "Could not send join request. Please try again.");
   }
 });
 
@@ -689,8 +660,7 @@ router.post("/:familyId/acceptJoin", async function (req, res) {
     // Check if family is at member limit (20 members)
     const currentMemberCount = family.members.length;
     if (currentMemberCount >= 20) {
-      res.status(500);
-      res.send("This family has reached the maximum of 20 members.");
+      errors.conflict(res, "This family has reached the maximum of 20 members.");
       return;
     }
 
@@ -700,8 +670,7 @@ router.post("/:familyId/acceptJoin", async function (req, res) {
     });
 
     if (existingFamily) {
-      res.status(500);
-      res.send("You already belong to a family.");
+      errors.conflict(res, "You already belong to a family.");
       return;
     }
 
@@ -724,8 +693,7 @@ router.post("/:familyId/acceptJoin", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error accepting join request.");
+    errors.serverError(res, "Could not accept join request. Please try again.");
   }
 });
 
@@ -750,15 +718,14 @@ router.post("/:familyId/leave", async function (req, res) {
     });
 
     if (!inFamily) {
-      res.status(500);
-      res.send("You are not a member of this family.");
+      errors.conflict(res, "You are not a member of this family.");
       return;
     }
 
     // Cannot leave if you are the leader
     if (family.leader.toString() === user._id.toString()) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         "The family leader cannot leave. Transfer leadership or delete the family instead."
       );
       return;
@@ -779,8 +746,7 @@ router.post("/:familyId/leave", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error leaving family.");
+    errors.serverError(res, "Could not leave family. Please try again.");
   }
 });
 
@@ -806,8 +772,7 @@ router.post("/:familyId/rejectJoin", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error rejecting join request.");
+    errors.serverError(res, "Could not reject join request. Please try again.");
   }
 });
 
@@ -843,8 +808,7 @@ router.get("/:familyId/pendingInvite", async function (req, res) {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error checking pending invite.");
+    errors.serverError(res, "Failed to check pending invite. Please refresh and try again.");
   }
 });
 
@@ -864,8 +828,7 @@ router.post("/:familyId/background", async function (req, res) {
 
     // Check if user is the leader
     if (family.leader.toString() !== user._id.toString()) {
-      res.status(500);
-      res.send("Only the family leader can upload a background.");
+      errors.forbidden(res, "Only the family leader can upload a background.");
       return;
     }
 
@@ -890,11 +853,12 @@ router.post("/:familyId/background", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
 
-    if (e.message.indexOf("maxFileSize exceeded") == 0)
-      res.send("Image is too large, background must be less than 5 MB.");
-    else res.send("Error uploading family background.");
+    if (e.message && e.message.indexOf("maxFileSize exceeded") == 0) {
+      errors.payloadTooLarge(res, "Image is too large, background must be less than 5 MB.");
+    } else {
+      errors.serverError(res, "Could not upload family background. Please try again.");
+    }
   }
 });
 
@@ -914,8 +878,7 @@ router.delete("/:familyId/background", async function (req, res) {
 
     // Check if user is the leader
     if (family.leader.toString() !== user._id.toString()) {
-      res.status(500);
-      res.send("Only the family leader can remove the background.");
+      errors.forbidden(res, "Only the family leader can remove the background.");
       return;
     }
 
@@ -933,8 +896,7 @@ router.delete("/:familyId/background", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error removing family background.");
+    errors.serverError(res, "Could not remove family background. Please try again.");
   }
 });
 
@@ -955,8 +917,8 @@ router.post("/:familyId/backgroundRepeatMode", async function (req, res) {
 
     // Check if user is the leader
     if (family.leader.toString() !== user._id.toString()) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         "Only the family leader can change the background display mode."
       );
       return;
@@ -966,8 +928,8 @@ router.post("/:familyId/backgroundRepeatMode", async function (req, res) {
       backgroundRepeatMode !== "checker" &&
       backgroundRepeatMode !== "stretch"
     ) {
-      res.status(500);
-      res.send(
+      errors.badRequest(
+        res,
         "Invalid background repeat mode. Must be 'checker' or 'stretch'."
       );
       return;
@@ -981,8 +943,7 @@ router.post("/:familyId/backgroundRepeatMode", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating background repeat mode.");
+    errors.serverError(res, "Could not update background repeat mode. Please try again.");
   }
 });
 

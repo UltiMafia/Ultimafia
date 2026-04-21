@@ -8,6 +8,7 @@ const router = express.Router();
 const formidable = require("formidable");
 const fs = require("fs");
 const sharp = require("sharp");
+const errors = require("../lib/errors");
 
 // param: editing - flag for edit instead of create
 // param: id - id of deck, only required when editing
@@ -25,8 +26,7 @@ router.post("/create", async function (req, res) {
       !req.body.editing &&
       user.anonymousDecks.length >= user.itemsOwned.anonymousDeck
     ) {
-      res.status(500);
-      res.send("You need to purchase more anonymous decks from the shop.");
+      errors.forbidden(res, "You need to purchase more anonymous decks from the shop.");
       return;
     }
 
@@ -34,8 +34,8 @@ router.post("/create", async function (req, res) {
       !req.body.editing &&
       user.anonymousDecks.length >= constants.maxOwnedAnonymousDecks
     ) {
-      res.status(500);
-      res.send(
+      errors.conflict(
+        res,
         `You can only have up to ${constants.maxOwnedAnonymousDecks} created anonymous decks linked to your account.`
       );
       return;
@@ -53,8 +53,7 @@ router.post("/create", async function (req, res) {
           (foundDeck.creator && foundDeck.creator.id != userId)) &&
         !(await routeUtils.verifyPermission(res, userId, "editAnyDeck"))
       ) {
-        res.status(500);
-        res.send("You can only edit decks you have created.");
+        errors.forbidden(res, "You can only edit decks you have created.");
         return;
       }
     }
@@ -66,13 +65,11 @@ router.post("/create", async function (req, res) {
 
     // deck name
     if (!deck.name || !deck.name.length) {
-      res.status(500);
-      res.send("You must give your deck a name.");
+      errors.unprocessable(res, "You must give your deck a name.");
       return;
     }
     if (deck.name.length > constants.maxDeckNameLength) {
-      res.status(500);
-      res.send("Deck name is too long.");
+      errors.unprocessable(res, "Deck name is too long.");
       return;
     }
 
@@ -85,8 +82,7 @@ router.post("/create", async function (req, res) {
             `Bad deck data: \n${userId}\n${JSON.stringify(deck.profiles)}`
           );
         }
-        res.status(500);
-        res.send(result);
+        errors.unprocessable(res, result);
         return;
       }
       await models.AnonymousDeck.updateOne(
@@ -142,8 +138,7 @@ router.post("/create", async function (req, res) {
     res.send(deck);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Unable to make deck.");
+    errors.serverError(res, "Could not create deck. Please try again.");
   }
 });
 
@@ -170,8 +165,7 @@ router.post("/delete", async function (req, res) {
       ]);
 
     if (!deck || deck.creator.id != userId) {
-      res.status(500);
-      res.send("You can only delete decks you have created.");
+      errors.forbidden(res, "You can only delete decks you have created.");
       return;
     }
 
@@ -203,8 +197,7 @@ router.post("/delete", async function (req, res) {
     return;
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Unable to delete anonymous deck.");
+    errors.serverError(res, "Could not delete anonymous deck. Please try again.");
   }
 });
 
@@ -411,8 +404,7 @@ router.post("/profiles/create", async function (req, res) {
     res.send(true);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Unable to edit profiles.");
+    errors.serverError(res, "Could not save deck profiles. Please try again.");
 
     if (image) {
       fs.unlinkSync(image.path);
@@ -432,8 +424,7 @@ router.post("/disable", async function (req, res) {
 
     let deck = await models.AnonymousDeck.findOne({ id: deckId });
     if (!deck) {
-      res.status(500);
-      res.send("Deck not found.");
+      errors.notFound(res, "That deck does not exist. It may have been removed.");
       return;
     }
 
@@ -446,8 +437,7 @@ router.post("/disable", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Unable to toggle disable on anonymous deck.");
+    errors.serverError(res, "Could not toggle disable on this deck. Please try again.");
   }
 });
 
@@ -462,8 +452,7 @@ router.post("/feature", async function (req, res) {
 
     let deck = await models.AnonymousDeck.findOne({ id: deckId });
     if (!deck) {
-      res.status(500);
-      res.send("Deck not found.");
+      errors.notFound(res, "That deck does not exist. It may have been removed.");
       return;
     }
 
@@ -476,8 +465,7 @@ router.post("/feature", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Unable to toggle feature on anonymous deck.");
+    errors.serverError(res, "Could not toggle feature on this deck. Please try again.");
   }
 });
 
@@ -726,8 +714,7 @@ router.post("/coverPhoto", async function (req, res) {
     res.send({ coverPhoto: relPath });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Unable to upload cover photo.");
+    errors.serverError(res, "Could not upload cover photo. Please try again.");
     if (uploadedPath && fs.existsSync(uploadedPath)) {
       try {
         fs.unlinkSync(uploadedPath);
@@ -794,13 +781,11 @@ router.get("/:id", async function (req, res) {
       }
       res.send(deck);
     } else {
-      res.status(500);
-      res.send("Unable to find anonymous deck.");
+      errors.notFound(res, "That deck does not exist. It may have been removed.");
     }
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Unable to find anonymous deck.");
+    errors.serverError(res, "Failed to load anonymous deck. Please refresh and try again.");
   }
 });
 

@@ -17,6 +17,7 @@ const router = express.Router();
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const Diff = require("diff");
+const errors = require("../lib/errors");
 
 function canModifySetup(setup) {
   return !setup.ranked && !setup.competitive;
@@ -131,8 +132,7 @@ router.get("/featuredSetup", async function (req, res) {
     res.send(setup);
   } catch (e) {
     logger.error(e);
-    res.status("Couldn't find featured setup.");
-    res.send(500);
+    errors.serverError(res, "Could not load featured setup. Please try again.");
   }
 });
 
@@ -496,7 +496,7 @@ router.get("/:id/lineage", async function (req, res) {
     res.send(result);
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error getting lineage.");
+    errors.serverError(res, "Failed to load setup lineage. Please refresh and try again.");
   }
 });
 
@@ -545,13 +545,11 @@ router.get("/:id", async function (req, res) {
 
       res.send(setup);
     } else {
-      res.status(500);
-      res.send("Unable to find setup.");
+      errors.notFound(res, "That setup does not exist. It may have been removed.");
     }
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error getting setup.");
+    errors.serverError(res, "Failed to load setup. Please refresh and try again.");
   }
 });
 
@@ -577,17 +575,14 @@ router.get("/:id/version/:setupVersionNum", async function (req, res) {
         setupVersion.stats = calculateStatsWithGranular(setupVersion, setup.gameType);
         res.send(setupVersion);
       } else {
-        res.status(500);
-        res.send("Unable to find setup version.");
+        errors.notFound(res, "That setup version does not exist.");
       }
     } else {
-      res.status(500);
-      res.send("Unable to find setup.");
+      errors.notFound(res, "That setup does not exist. It may have been removed.");
     }
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error getting setup.");
+    errors.serverError(res, "Failed to load setup version. Please refresh and try again.");
   }
 });
 
@@ -602,8 +597,7 @@ router.post("/feature", async function (req, res) {
     var setup = await models.Setup.findOne({ id: setupId });
 
     if (!setup) {
-      res.status(500);
-      res.send("Setup not found.");
+      errors.notFound(res, "That setup does not exist. It may have been removed.");
       return;
     }
 
@@ -614,8 +608,7 @@ router.post("/feature", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error featuring setup.");
+    errors.serverError(res, "Could not toggle featured on this setup. Please try again.");
   }
 });
 
@@ -630,8 +623,7 @@ router.post("/ranked", async function (req, res) {
     var setup = await models.Setup.findOne({ id: setupId });
 
     if (!setup) {
-      res.status(500);
-      res.send("Setup not found.");
+      errors.notFound(res, "That setup does not exist. It may have been removed.");
       return;
     }
 
@@ -644,8 +636,7 @@ router.post("/ranked", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error making setup ranked.");
+    errors.serverError(res, "Could not toggle ranked on this setup. Please try again.");
   }
 });
 
@@ -660,8 +651,7 @@ router.post("/competitive", async function (req, res) {
     var setup = await models.Setup.findOne({ id: setupId });
 
     if (!setup) {
-      res.status(500);
-      res.send("Setup not found.");
+      errors.notFound(res, "That setup does not exist. It may have been removed.");
       return;
     }
 
@@ -674,8 +664,7 @@ router.post("/competitive", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error making setup competitive.");
+    errors.serverError(res, "Could not toggle competitive on this setup. Please try again.");
   }
 });
 
@@ -690,13 +679,11 @@ router.post("/favorite", async function (req, res) {
 
     if (result != "-2") res.send(result);
     else {
-      res.status(500);
-      res.send("You may only favorite a maximum of 100 setups.");
+      errors.conflict(res, "You may only favorite a maximum of 100 setups.");
     }
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error favoriting setup.");
+    errors.serverError(res, "Could not favorite setup. Please try again.");
   }
 });
 
@@ -711,8 +698,7 @@ router.post("/delete", async function (req, res) {
       .select("_id creator ranked competitive")
       .populate("creator", "_id id");
     if (!user || !setup || !setup.creator) {
-      res.status(500);
-      res.send("Setup not found.");
+      errors.notFound(res, "That setup does not exist. It may have been removed.");
       return;
     }
 
@@ -721,8 +707,7 @@ router.post("/delete", async function (req, res) {
       !isSetupOwner &&
       !(await routeUtils.verifyPermission(res, userId, "deleteSetup"))
     ) {
-      res.status(500);
-      res.send("You are not the owner of this setup.");
+      errors.forbidden(res, "You are not the owner of this setup.");
       return;
     }
 
@@ -742,8 +727,7 @@ router.post("/delete", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error deleting setup");
+    errors.serverError(res, "Could not delete setup. Please try again.");
   }
 });
 
@@ -761,14 +745,12 @@ router.post("/archive", async function (req, res) {
       .populate("creator", "_id id deleted");
 
     if (!setup) {
-      res.status(500);
-      res.send("Setup not found.");
+      errors.notFound(res, "That setup does not exist. It may have been removed.");
       return;
     }
 
     if (!setup.creator || !setup.creator.deleted) {
-      res.status(500);
-      res.send("Setup owner is not deleted.");
+      errors.conflict(res, "Setup owner is not deleted.");
       return;
     }
 
@@ -776,8 +758,7 @@ router.post("/archive", async function (req, res) {
       id: ARCHIVE_SETUP_OWNER_ID,
     }).select("_id");
     if (!archiveUser) {
-      res.status(500);
-      res.send("Archive user not found.");
+      errors.notFound(res, "Archive user not found.");
       return;
     }
 
@@ -799,8 +780,7 @@ router.post("/archive", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error archiving setup.");
+    errors.serverError(res, "Could not archive setup. Please try again.");
   }
 });
 
@@ -829,7 +809,7 @@ router.post("/description", async function (req, res) {
     res.send({ description: description });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error updating description.");
+    errors.serverError(res, "Could not update description. Please try again.");
   }
 });
 
@@ -844,8 +824,8 @@ router.post("/create", async function (req, res) {
     user = user.toJSON();
 
     if (user.setups.length >= constants.maxOwnedSetups) {
-      res.status(500);
-      res.send(
+      errors.conflict(
+        res,
         "You can only have up to 100 created setups linked to your account."
       );
       return;
@@ -866,8 +846,7 @@ router.post("/create", async function (req, res) {
         (!setup || (setup.creator && setup.creator.id != userId)) &&
         !(await routeUtils.verifyPermission(res, userId, "editAnySetup"))
       ) {
-        res.status(500);
-        res.send("You can only edit setups you have created.");
+        errors.forbidden(res, "You can only edit setups you have created.");
         return;
       }
     }
@@ -917,20 +896,17 @@ router.post("/create", async function (req, res) {
       !routeUtils.validProp(setup.gameType) ||
       constants.gameTypes.indexOf(setup.gameType) == -1
     ) {
-      res.status(500);
-      res.send("Invalid game type.");
+      errors.badRequest(res, "Invalid game type.");
       return;
     }
 
     if (!setup.name || !setup.name.length) {
-      res.status(500);
-      res.send("You must give your setup a name.");
+      errors.unprocessable(res, "You must give your setup a name.");
       return;
     }
 
     if (setup.gameStartPrompt.length > 1000) {
-      res.status(500);
-      res.send("Game Start Prompt can't be longer than 1000 characters");
+      errors.unprocessable(res, "Game Start Prompt can't be longer than 1000 characters");
       return;
     }
 
@@ -954,14 +930,13 @@ router.post("/create", async function (req, res) {
           `Bad role data: \n${userId}\n${JSON.stringify(setup.roles)}`
         );
 
-      res.status(500);
-      res.send(result);
+      errors.unprocessable(res, result);
       return;
     }
 
     if (setup.gameType == "Mafia" && newTotal < constants.minMafiaSetupTotal) {
-      res.status(500);
-      res.send(
+      errors.unprocessable(
+        res,
         `Mafia setups must have at least ${constants.minMafiaSetupTotal} players.`
       );
       return;
@@ -974,8 +949,7 @@ router.post("/create", async function (req, res) {
     var gameTypeOptions = optionsChecks[setup.gameType](setup);
 
     if (typeof gameTypeOptions == "string") {
-      res.status(500);
-      res.send(gameTypeOptions);
+      errors.unprocessable(res, gameTypeOptions);
       return;
     }
 
@@ -987,16 +961,14 @@ router.post("/create", async function (req, res) {
     //Check whisper leak rate
     if (setup.whispers) {
       if (setup.leakPercentage < 0 || setup.leakPercentage > 100) {
-        res.status(500);
-        res.send("Leak percentage must be between 0% and 100%.");
+        errors.unprocessable(res, "Leak percentage must be between 0% and 100%.");
         return;
       }
     }
 
     //Check starting state
     if (constants.startStates[setup.gameType].indexOf(setup.startState) == -1) {
-      res.status(500);
-      res.send("Invalid starting state.");
+      errors.badRequest(res, "Invalid starting state.");
       return;
     }
 
@@ -1014,8 +986,7 @@ router.post("/create", async function (req, res) {
       existingSetup &&
       (!req.body.editing || existingSetup.id != req.body.id)
     ) {
-      res.status(500);
-      res.send(`Setup already exists: "${existingSetup.name}".`);
+      errors.conflict(res, `Setup already exists: "${existingSetup.name}".`);
       return;
     }
 
@@ -1056,8 +1027,7 @@ router.post("/create", async function (req, res) {
     }
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Unable to make setup.");
+    errors.serverError(res, "Could not save setup. Please try again.");
     return;
   }
 
@@ -1099,8 +1069,7 @@ router.post("/create", async function (req, res) {
     }
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Unable to make setup version.");
+    errors.serverError(res, "Could not save setup version. Please try again.");
     return;
   }
 
