@@ -4,6 +4,7 @@ const models = require("../db/models");
 const logger = require("../modules/logging")(".");
 const shortid = require("shortid");
 const roleData = require("../data/roles");
+const errors = require("../lib/errors");
 const router = express.Router();
 
 const ACTIVE_STATUSES = ["PENDING_RESPONSE", "PENDING_CONFIRMATION"];
@@ -126,8 +127,7 @@ router.get("/incoming", async (req, res) => {
     res.send(result);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading incoming trades.");
+    errors.serverError(res, "Could not load incoming trades. Please refresh and try again.");
   }
 });
 
@@ -145,8 +145,7 @@ router.get("/pending-confirmation", async (req, res) => {
     res.send(result);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading pending trades.");
+    errors.serverError(res, "Could not load pending trades. Please refresh and try again.");
   }
 });
 
@@ -162,8 +161,7 @@ router.get("/recent", async (req, res) => {
     res.send(result);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send([]);
+    errors.serverError(res, "Could not load recent trades. Please refresh and try again.");
   }
 });
 
@@ -181,8 +179,7 @@ router.get("/open", async (req, res) => {
     res.send(result);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading open trades.");
+    errors.serverError(res, "Could not load open trades. Please refresh and try again.");
   }
 });
 
@@ -426,8 +423,7 @@ router.post("/initiate", async (req, res) => {
     res.send({ id: trade.id });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error starting trade.");
+    errors.serverError(res, "Error starting trade. Please try again.");
   }
 });
 
@@ -580,8 +576,7 @@ router.post("/respond", async (req, res) => {
     res.send({ id: trade.id });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error responding to trade.");
+    errors.serverError(res, "Error responding to trade. Please try again.");
   }
 });
 
@@ -750,8 +745,7 @@ router.post("/confirm", async (req, res) => {
     res.send({ id: claimed.id, status: claimed.status });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error confirming trade.");
+    errors.serverError(res, "Error confirming trade. Please try again.");
   }
 });
 
@@ -819,8 +813,7 @@ router.post("/reject", async (req, res) => {
     res.send({ id: trade.id, status: trade.status });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error rejecting trade.");
+    errors.serverError(res, "Error rejecting trade. Please try again.");
   }
 });
 

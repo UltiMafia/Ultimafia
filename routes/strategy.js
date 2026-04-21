@@ -5,6 +5,7 @@ const constants = require("../data/constants");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const logger = require("../modules/logging")(".");
+const errors = require("../lib/errors");
 
 const router = express.Router();
 
@@ -143,8 +144,7 @@ router.get("/", async function (req, res) {
     res.send(serialized);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading strategies.");
+    errors.serverError(res, "Could not load strategies. Please refresh and try again.");
   }
 });
 
@@ -235,8 +235,7 @@ router.post("/", async function (req, res) {
     );
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error creating strategy.");
+    errors.serverError(res, "Error creating strategy. Please try again.");
   }
 });
 
@@ -315,8 +314,7 @@ router.put("/:strategyId", async function (req, res) {
     );
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating strategy.");
+    errors.serverError(res, "Error updating strategy. Please try again.");
   }
 });
 
@@ -376,8 +374,7 @@ router.post("/:strategyId/delete", async function (req, res) {
     );
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error deleting strategy.");
+    errors.serverError(res, "Error deleting strategy. Please try again.");
   }
 });
 
@@ -437,8 +434,7 @@ router.post("/:strategyId/restore", async function (req, res) {
     );
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error restoring strategy.");
+    errors.serverError(res, "Error restoring strategy. Please try again.");
   }
 });
 

@@ -16,6 +16,7 @@ const constants = require("../data/constants");
 const dbStats = require("../db/stats");
 const { colorHasGoodBackgroundContrast } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
+const errors = require("../lib/errors");
 const router = express.Router();
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
@@ -46,7 +47,7 @@ router.get("/leaderboard", async function (req, res) {
     res.send(users);
   } catch (e) {
     logger.error(e);
-    res.status(500).send([]);
+    errors.serverError(res, "Could not load leaderboard. Please refresh and try again.");
   }
 });
 

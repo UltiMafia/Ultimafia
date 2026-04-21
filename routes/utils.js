@@ -4,6 +4,7 @@ const redis = require("../modules/redis");
 const Random = require("../lib/Random");
 const constants = require("../data/constants");
 const names = require("../json/names");
+const errors = require("../lib/errors");
 
 const alphaNumRegex = /[\w\s]/g;
 const nonAlphaNumRegex = /[^\w\s]/g;
@@ -36,8 +37,7 @@ async function verifyPermissions(...args) {
 
   if (!hasPermissions) {
     if (res) {
-      res.status(500);
-      res.send("You do not have the required permissions.");
+      errors.forbidden(res, "You do not have the required permissions.");
     }
     return false;
   }
@@ -56,8 +56,7 @@ async function verifyPermission(...args) {
 
   if (!hasPermission) {
     if (res) {
-      res.status(500);
-      res.send("You do not have the required permissions.");
+      errors.forbidden(res, "You do not have the required permissions.");
     }
     return false;
   }
@@ -268,8 +267,8 @@ async function rateLimit(userId, type, res) {
     (await redis.rateLimit(userId, type));
 
   if (!allowed && res) {
-    res.status(500);
-    res.send(
+    errors.tooManyRequests(
+      res,
       `You can only do this once every ${timeDisplay(
         constants.rateLimits[type]
       )}.`

@@ -5,6 +5,7 @@ const models = require("../db/models");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const logger = require("../modules/logging")(".");
+const errors = require("../lib/errors");
 const router = express.Router();
 
 router.get("/", async function (req, res) {
@@ -65,8 +66,7 @@ router.get("/", async function (req, res) {
     res.send({ comments, maxPage, page });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading comments.");
+    errors.serverError(res, "Could not load comments. Please refresh and try again.");
   }
 });
 
@@ -89,8 +89,7 @@ router.post("/", async function (req, res) {
       ? constants.maxLargeCommentLength
       : constants.maxCommentLength;
     if (content.length == 0 || content.length > maxLength) {
-      res.status(500);
-      res.send(`Content must be between 1 and ${maxLength} characters.`);
+      errors.unprocessable(res, `Content must be between 1 and ${maxLength} characters.`);
       return;
     }
 
@@ -106,8 +105,7 @@ router.post("/", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error posting comment.");
+    errors.serverError(res, "Error posting comment. Please try again.");
   }
 });
 
@@ -126,8 +124,7 @@ router.post("/delete", async function (req, res) {
       .populate("author", "id");
 
     if (!comment) {
-      res.status(500);
-      res.send("Comment not found.");
+      errors.notFound(res, "Comment not found.");
       return;
     }
 
@@ -147,8 +144,7 @@ router.post("/delete", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error deleting comment.");
+    errors.serverError(res, "Error deleting comment. Please try again.");
   }
 });
 
@@ -161,8 +157,7 @@ router.post("/restore", async function (req, res) {
     var comment = await models.Comment.findOne({ id: commentId }).select("_id");
 
     if (!comment) {
-      res.status(500);
-      res.send("Comment not found.");
+      errors.notFound(res, "Comment not found.");
       return;
     }
 
@@ -177,8 +172,7 @@ router.post("/restore", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error restoring comment.");
+    errors.serverError(res, "Error restoring comment. Please try again.");
   }
 });
 

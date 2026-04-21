@@ -5,6 +5,7 @@ const models = require("../db/models");
 const routeUtils = require("./utils");
 const { getBasicUserInfo } = require("../modules/redis");
 const logger = require("../modules/logging")(".");
+const errors = require("../lib/errors");
 const router = express.Router();
 
 // Lightweight ETag fingerprint. Each endpoint samples one indexed "latest"
@@ -143,7 +144,7 @@ router.get("/summary", async function (req, res) {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error getting site activity summary.");
+    errors.serverError(res, "Could not load site activity summary. Please refresh and try again.");
   }
 });
 
@@ -222,7 +223,7 @@ router.get("/games", async function (req, res) {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error getting game activity.");
+    errors.serverError(res, "Could not load game activity. Please refresh and try again.");
   }
 });
 
@@ -861,7 +862,7 @@ router.get("/feed", async function (req, res) {
     res.status(200).send({ items: hydrated, page, hasMore });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error getting activity feed.");
+    errors.serverError(res, "Could not load activity feed. Please refresh and try again.");
   }
 });
 

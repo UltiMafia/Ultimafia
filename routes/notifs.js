@@ -3,6 +3,7 @@ const constants = require("../data/constants");
 const logger = require("../modules/logging")(".");
 const routeUtils = require("./utils");
 const { models } = require("mongoose");
+const errors = require("../lib/errors");
 const router = express.Router();
 
 // Legacy endpoint for bell icon - returns only unread notifications
@@ -86,7 +87,7 @@ router.get("/inbox", async function (req, res) {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error fetching notifications");
+    errors.serverError(res, "Could not load notifications. Please refresh and try again.");
   }
 });
 
@@ -158,7 +159,7 @@ router.post("/read/:notifId", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error marking notification as read");
+    errors.serverError(res, "Error marking notification as read. Please try again.");
   }
 });
 
@@ -197,7 +198,7 @@ router.delete("/:notifId", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error deleting notification");
+    errors.serverError(res, "Error deleting notification. Please try again.");
   }
 });
 

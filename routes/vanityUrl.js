@@ -3,6 +3,7 @@ const routeUtils = require("./utils");
 const models = require("../db/models");
 const redis = require("../modules/redis");
 const logger = require("../modules/logging")(".");
+const errors = require("../lib/errors");
 const router = express.Router();
 
 // Get user by vanity URL or ID
@@ -58,8 +59,7 @@ router.get("/:identifier", async function (req, res) {
     res.send({ userId: user.id });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error finding user.");
+    errors.serverError(res, "Error finding user. Please try again.");
   }
 });
 
@@ -72,22 +72,19 @@ router.post("/", async function (req, res) {
     const vanityUrl = String(req.body.vanityUrl).trim();
 
     if (!itemsOwned.vanityUrl) {
-      res.status(500);
-      res.send("You must purchase Vanity URL from the Shop.");
+      errors.forbidden(res, "You must purchase Vanity URL from the Shop.");
       return;
     }
 
     // Validate vanity URL
     if (vanityUrl.length < 1 || vanityUrl.length > 20) {
-      res.status(500);
-      res.send("Vanity URL must be between 1 and 20 characters.");
+      errors.unprocessable(res, "Vanity URL must be between 1 and 20 characters.");
       return;
     }
 
     // Only allow letters, numbers, and hyphens
     if (!/^[a-zA-Z0-9-]+$/.test(vanityUrl)) {
-      res.status(500);
-      res.send("Vanity URL can only contain letters, numbers, and hyphens.");
+      errors.badRequest(res, "Vanity URL can only contain letters, numbers, and hyphens.");
       return;
     }
 
@@ -115,12 +112,10 @@ router.post("/", async function (req, res) {
   } catch (e) {
     if (e.code === 11000) {
       // Duplicate key error
-      res.status(500);
-      res.send("This vanity URL is already taken.");
+      errors.conflict(res, "This vanity URL is already taken.");
     } else {
       logger.error(e);
-      res.status(500);
-      res.send("Error updating vanity URL.");
+      errors.serverError(res, "Error updating vanity URL. Please try again.");
     }
   }
 });
@@ -141,8 +136,7 @@ router.delete("/", async function (req, res) {
     res.send("Vanity URL deleted successfully");
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error deleting vanity URL.");
+    errors.serverError(res, "Error deleting vanity URL. Please try again.");
   }
 });
 
@@ -163,8 +157,7 @@ router.get("/user/:userId", async function (req, res) {
     }
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error getting vanity URL.");
+    errors.serverError(res, "Could not get vanity URL. Please refresh and try again.");
   }
 });
 

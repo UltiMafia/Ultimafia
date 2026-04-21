@@ -6,6 +6,7 @@ const constants = require("../data/constants");
 const logger = require("../modules/logging")(".");
 const shortid = require("shortid");
 const axios = require("axios");
+const errors = require("../lib/errors");
 const router = express.Router();
 
 const COINS_PER_USD = 5;
@@ -399,8 +400,7 @@ router.get("/info", async function (req, res) {
     res.send({ shopItems: shopItems, balance: user.coins });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading shop data.");
+    errors.serverError(res, "Could not load shop data. Please refresh and try again.");
   }
 });
 
@@ -411,8 +411,7 @@ router.post(
       var userId = await routeUtils.verifyLoggedIn(req);
       var itemIndex = Number(req.body.item);
       if (itemIndex < 0 || itemIndex >= shopItems.length) {
-        res.status(500);
-        res.send("Invalid item purchased.");
+        errors.badRequest(res, "Invalid item purchased.");
         return;
       }
       var item = shopItems[itemIndex];
@@ -422,14 +421,12 @@ router.post(
       );
 
       if (user.coins < item.price) {
-        res.status(500);
-        res.send("You do not have enough coins to purchase this.");
+        errors.forbidden(res, "You do not have enough coins to purchase this.");
         return;
       }
 
       if (item.limit != null && user.itemsOwned[item.key] >= item.limit) {
-        res.status(500);
-        res.send("You already own this.");
+        errors.conflict(res, "You already own this.");
         return;
       }
 
@@ -468,8 +465,7 @@ router.post(
       res.send(context || {});
     } catch (e) {
       logger.error(e);
-      res.status(500);
-      res.send("Error spending coins.");
+      errors.serverError(res, "Error spending coins. Please try again.");
     }
   },
 
@@ -557,7 +553,8 @@ router.post(
       }
     } catch (e) {
       logger.error(e);
-      return res.status(500).send("Error transferring coins.");
+      errors.serverError(res, "Error transferring coins. Please try again.");
+      return;
     }
   })
 );
@@ -566,12 +563,14 @@ router.get("/paypal-client-id", async function (req, res) {
   try {
     await routeUtils.verifyLoggedIn(req);
     if (!process.env.PAYPAL_CLIENT_ID) {
-      return res.status(500).send("PayPal is not configured.");
+      errors.serverError(res, "PayPal is not configured.");
+      return;
     }
     return res.send({ clientId: process.env.PAYPAL_CLIENT_ID });
   } catch (e) {
     logger.error(e);
-    return res.status(500).send("Error loading PayPal configuration.");
+    errors.serverError(res, "Could not load PayPal configuration. Please refresh and try again.");
+    return;
   }
 });
 
@@ -619,7 +618,8 @@ router.post("/paypal/create-order", async function (req, res) {
 
     const paypalOrderId = createResponse.data?.id;
     if (!paypalOrderId) {
-      return res.status(500).send("PayPal order creation failed.");
+      errors.serverError(res, "PayPal order creation failed. Please try again.");
+      return;
     }
 
     await models.PayPalShopOrder.create({
@@ -633,7 +633,8 @@ router.post("/paypal/create-order", async function (req, res) {
     return res.send({ orderID: paypalOrderId });
   } catch (e) {
     logger.error(e?.response?.data || e);
-    return res.status(500).send("Error creating PayPal order.");
+    errors.serverError(res, "Error creating PayPal order. Please try again.");
+    return;
   }
 });
 
@@ -749,7 +750,8 @@ router.post("/paypal/capture-order", async function (req, res) {
     });
   } catch (e) {
     logger.error(e?.response?.data || e);
-    return res.status(500).send("Error capturing PayPal payment.");
+    errors.serverError(res, "Error capturing PayPal payment. Please try again.");
+    return;
   }
 });
 
@@ -809,7 +811,7 @@ router.get("/stampSuggestions", async function (req, res) {
     res.send(suggestions);
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error loading stamp suggestions.");
+    errors.serverError(res, "Could not load stamp suggestions. Please refresh and try again.");
   }
 });
 
@@ -834,7 +836,7 @@ router.post("/checkStampEligibility", async function (req, res) {
     res.send({ gameId, gameType: result.gameType, role: result.role });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error checking stamp eligibility.");
+    errors.serverError(res, "Error checking stamp eligibility. Please try again.");
   }
 });
 
@@ -863,7 +865,7 @@ router.post("/stamp/toggle-hide", async function (req, res) {
     res.send({ hidden: stamp.hidden });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error toggling stamp visibility.");
+    errors.serverError(res, "Error toggling stamp visibility. Please try again.");
   }
 });
 

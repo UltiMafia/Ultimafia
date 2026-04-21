@@ -3,6 +3,7 @@ const models = require("../db/models");
 const routeUtils = require("./utils");
 const { getBasicUserInfo } = require("../modules/redis");
 const logger = require("../modules/logging")(".");
+const errors = require("../lib/errors");
 const router = express.Router();
 
 router.post("/", async function (req, res) {
@@ -36,8 +37,7 @@ router.post("/", async function (req, res) {
         itemModel = models.AnonymousDeck;
         break;
       default:
-        res.status(500);
-        res.send("Invalid item type.");
+        errors.badRequest(res, "Invalid item type.");
         return;
     }
 
@@ -87,14 +87,12 @@ router.post("/", async function (req, res) {
     const item = await itemQuery;
 
     if (!item) {
-      res.status(500);
-      res.send("Item does not exist.");
+      errors.notFound(res, "Item does not exist.");
       return;
     }
 
     if (itemType === "strategy" && item.deleted) {
-      res.status(500);
-      res.send("Cannot vote on a deleted strategy.");
+      errors.forbidden(res, "Cannot vote on a deleted strategy.");
       return;
     }
 
@@ -120,8 +118,7 @@ router.post("/", async function (req, res) {
     var direction = Number(req.body.direction);
 
     if (direction != 1 && direction != -1) {
-      res.status(500);
-      res.send("Bad vote direction");
+      errors.badRequest(res, "Bad vote direction.");
       return;
     }
 
@@ -212,8 +209,7 @@ router.post("/", async function (req, res) {
     }
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error voting.");
+    errors.serverError(res, "Error voting. Please try again.");
   }
 });
 
@@ -238,8 +234,7 @@ router.get("/role/:roleId", async function (req, res) {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error getting role vote.");
+    errors.serverError(res, "Could not load role vote. Please refresh and try again.");
   }
 });
 
@@ -269,8 +264,7 @@ router.get("/:id/:direction?", async function (req, res) {
     res.send(mappedVotes);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error getting votes.");
+    errors.serverError(res, "Could not load votes. Please refresh and try again.");
   }
 });
 

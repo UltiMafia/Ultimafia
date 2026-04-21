@@ -5,6 +5,7 @@ const models = require("../db/models");
 const routeUtils = require("./utils");
 const constants = require("../data/constants");
 const logger = require("../modules/logging")("(poll)");
+const errors = require("../lib/errors");
 
 const LOBBY_POLL_MAX_AGE_MS =
   constants.lobbyPollMaxAge || 28 * 24 * 60 * 60 * 1000;
@@ -98,8 +99,7 @@ router.post("/create", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error creating poll.");
+    errors.serverError(res, "Error creating poll. Please try again.");
   }
 });
 
@@ -220,8 +220,7 @@ router.get("/list/:lobby", async function (req, res) {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error fetching polls.");
+    errors.serverError(res, "Could not load polls. Please refresh and try again.");
   }
 });
 
@@ -270,8 +269,7 @@ router.post("/vote", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error voting on poll.");
+    errors.serverError(res, "Error voting on poll. Please try again.");
   }
 });
 
@@ -301,8 +299,7 @@ router.post("/complete", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error completing poll.");
+    errors.serverError(res, "Error completing poll. Please try again.");
   }
 });
 
@@ -367,8 +364,7 @@ router.get("/thread/:threadId", async function (req, res) {
     res.json({ poll });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error fetching thread poll.");
+    errors.serverError(res, "Could not load thread poll. Please refresh and try again.");
   }
 });
 

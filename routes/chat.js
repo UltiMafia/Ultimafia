@@ -5,6 +5,7 @@ const constants = require("../data/constants");
 const models = require("../db/models");
 const shortid = require("shortid");
 const logger = require("../modules/logging")(".");
+const errors = require("../lib/errors");
 const router = express.Router();
 
 router.get("/connect", async function (req, res) {
@@ -20,8 +21,7 @@ router.get("/connect", async function (req, res) {
     res.send(token);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading chat.");
+    errors.serverError(res, "Failed to load chat. Please refresh and try again.");
   }
 });
 
@@ -44,8 +44,7 @@ router.post("/room", async function (req, res) {
     }).select("_id");
 
     if (existingChannel) {
-      res.status(500);
-      res.send("A room with this name already exists.");
+      errors.conflict(res, "A room with this name already exists.");
       return;
     }
 
@@ -62,8 +61,7 @@ router.post("/room", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error creating room.");
+    errors.serverError(res, "Error creating room. Please try again.");
   }
 });
 
@@ -79,8 +77,7 @@ router.post("/room/delete", async function (req, res) {
     }).select("id rank");
 
     if (!channel) {
-      res.status(500);
-      res.send("Room not found.");
+      errors.notFound(res, "Room not found.");
       return;
     }
 
@@ -93,8 +90,7 @@ router.post("/room/delete", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error creating room.");
+    errors.serverError(res, "Error deleting room. Please try again.");
   }
 });
 

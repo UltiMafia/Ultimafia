@@ -4,6 +4,7 @@ const routeUtils = require("./utils");
 const models = require("../db/models");
 const redis = require("../modules/redis");
 const logger = require("../modules/logging")(".");
+const errors = require("../lib/errors");
 const router = express.Router();
 const axios = require("axios");
 
@@ -204,7 +205,7 @@ router.post("/send", async function (req, res) {
       );
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error filing report.");
+    errors.serverError(res, "Error filing report. Please try again.");
   }
 });
 
@@ -268,7 +269,7 @@ router.post("/volunteer", async function (req, res) {
       return res.status(401).send("You must be logged in to apply.");
     }
     logger.error(e);
-    res.status(500).send("Error submitting application.");
+    errors.serverError(res, "Error submitting application. Please try again.");
   }
 });
 

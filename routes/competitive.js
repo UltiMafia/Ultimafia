@@ -9,6 +9,7 @@ const ObjectID = mongo.ObjectID;
 const routeUtils = require("./utils");
 const constants = require("../data/constants");
 const logger = require("../modules/logging")("(competitive)");
+const errors = require("../lib/errors");
 
 const iso8601DateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -107,8 +108,7 @@ router.post("/create", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error creating season.");
+    errors.serverError(res, "Error creating season. Please try again.");
   }
 });
 
@@ -146,8 +146,7 @@ router.post("/pause", async function (req, res) {
     res.send(newPauseState);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error toggling pause for season.");
+    errors.serverError(res, "Error toggling pause for season. Please try again.");
   }
 });
 
@@ -190,8 +189,7 @@ router.post("/refund", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error refunding game.");
+    errors.serverError(res, "Error refunding game. Please try again.");
   }
 });
 
@@ -271,8 +269,7 @@ router.post("/adjustPoints", async function (req, res) {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error adjusting competitive points.");
+    errors.serverError(res, "Error adjusting competitive points. Please try again.");
   }
 });
 
@@ -331,8 +328,7 @@ router.post("/disqualify", async function (req, res) {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error disqualifying user.");
+    errors.serverError(res, "Error disqualifying user. Please try again.");
   }
 });
 
@@ -418,8 +414,7 @@ router.post("/endRoundEarly", async function (req, res) {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error ending round early.");
+    errors.serverError(res, "Error ending round early. Please try again.");
   }
 });
 
@@ -440,8 +435,7 @@ router.get("/seasons", async function (req, res) {
     res.json(seasons);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error fetching seasons.");
+    errors.serverError(res, "Could not load seasons. Please refresh and try again.");
   }
 });
 
@@ -509,8 +503,7 @@ router.get("/season/:seasonNumber", async function (req, res) {
     res.json(seasonInfo);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error fetching season.");
+    errors.serverError(res, "Could not load season. Please refresh and try again.");
   }
 });
 
@@ -525,8 +518,7 @@ router.get("/roundInfo", async function (req, res) {
     res.json(await redis.getCompRoundInfo(seasonNumber, roundNumber));
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error getting current round info.");
+    errors.serverError(res, "Could not load current round info. Please refresh and try again.");
   }
 });
 
@@ -558,14 +550,12 @@ router.get("/current", async function (req, res) {
 
     // Ensure setups and setupOrder exist
     if (!currentSeason.setups || !Array.isArray(currentSeason.setups)) {
-      res.status(500);
-      res.send("Season has invalid setups data.");
+      errors.serverError(res, "Season has invalid setups data.");
       return;
     }
 
     if (!currentSeason.setupOrder || !Array.isArray(currentSeason.setupOrder)) {
-      res.status(500);
-      res.send("Season has invalid setupOrder data.");
+      errors.serverError(res, "Season has invalid setupOrder data.");
       return;
     }
 
@@ -595,8 +585,7 @@ router.get("/current", async function (req, res) {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error fetching current season.");
+    errors.serverError(res, "Could not load current season. Please refresh and try again.");
   }
 });
 
@@ -720,8 +709,7 @@ router.post("/addSetup", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error adding setup to season.");
+    errors.serverError(res, "Error adding setup to season. Please try again.");
   }
 });
 
@@ -805,11 +793,10 @@ router.post("/updateSetupOrder", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating setup order.");
+    errors.serverError(res, "Error updating setup order. Please try again.");
   }
 });
-  
+
 // Update round settings (minimumPoints) for the current season
 router.post("/updateRoundSettings", async function (req, res) {
   try {
@@ -883,8 +870,7 @@ router.post("/updateRoundSettings", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating round settings.");
+    errors.serverError(res, "Error updating round settings. Please try again.");
   }
 });
 

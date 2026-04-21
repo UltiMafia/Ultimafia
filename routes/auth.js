@@ -13,6 +13,7 @@ const { sendFlaggedUserDiscordAlert } = require("./report");
 const router = express.Router();
 const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
+const errors = require("../lib/errors");
 
 let callbackUrl;
 
@@ -174,8 +175,7 @@ router.post("/verifyCaptcha", async function (req, res) {
     }
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error verifying captcha.");
+    errors.serverError(res, "Error verifying captcha. Please try again.");
   }
 });
 
@@ -269,7 +269,7 @@ router.post("/resendVerification", async function (req, res) {
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send(JSON.stringify({ error: "Error processing request." }));
+    res.send(JSON.stringify({ error: "Could not process verification request. Please try again." }));
   }
 });
 

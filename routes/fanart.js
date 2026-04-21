@@ -10,6 +10,7 @@ const logger = require("../modules/logging")(".");
 const constants = require("../data/constants");
 const routeUtils = require("./utils");
 const models = require("../db/models");
+const errors = require("../lib/errors");
 
 const router = express.Router();
 
@@ -59,8 +60,7 @@ router.get("/", async function (req, res) {
     res.send(items);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading fanart.");
+    errors.serverError(res, "Could not load fanart. Please refresh and try again.");
   }
 });
 
@@ -197,12 +197,10 @@ router.post("/", async function (req, res) {
     res.send(item);
   } catch (e) {
     if (e.message && e.message.indexOf("maxFileSize exceeded") === 0) {
-      res.status(400);
-      res.send("Image is too large, fanart must be less than 5 MB.");
+      errors.payloadTooLarge(res, "Image is too large, fanart must be less than 5 MB.");
     } else {
       logger.error(e);
-      res.status(500);
-      res.send("Error uploading fanart.");
+      errors.serverError(res, "Error uploading fanart. Please try again.");
     }
   }
 });
@@ -251,8 +249,7 @@ router.post("/:fanartId/delete", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error deleting fanart.");
+    errors.serverError(res, "Error deleting fanart. Please try again.");
   }
 });
 
