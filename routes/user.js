@@ -206,16 +206,60 @@ router.get("/searchName", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     var query = routeUtils.strParseAlphaNum(req.query.query);
-    var users = await models.User.find({
-      name: new RegExp(query, "i"),
-      deleted: false,
-    })
-      .select("id name avatar -_id")
-      .limit(constants.mainUserSearchAmt)
-      .sort("name");
-    users = users.map((user) => user.toJSON());
+    var candidates = await models.User.aggregate([
+      {
+        $match: {
+          name: new RegExp(query, "i"),
+          deleted: false,
+        },
+      },
+      {
+        $addFields: {
+          _prefixMatch: {
+            $regexMatch: {
+              input: "$name",
+              regex: `^${query}`,
+              options: "i",
+            },
+          },
+          _nameLength: { $strLenCP: "$name" },
+        },
+      },
+      { $sort: { _prefixMatch: -1, _nameLength: 1, name: 1 } },
+      { $limit: constants.mainUserSearchAmt * 3 },
+      {
+        $project: {
+          id: 1,
+          name: 1,
+          avatar: 1,
+          _prefixMatch: 1,
+          _nameLength: 1,
+          _id: 0,
+        },
+      },
+    ]);
 
-    for (let user of users) user.status = await redis.getUserStatus(user.id);
+    await Promise.all(
+      candidates.map(async (user) => {
+        user.status = await redis.getUserStatus(user.id);
+      })
+    );
+
+    candidates.sort((a, b) => {
+      const aOnline = a.status && a.status !== "offline" ? 1 : 0;
+      const bOnline = b.status && b.status !== "offline" ? 1 : 0;
+      if (aOnline !== bOnline) return bOnline - aOnline;
+      if (a._prefixMatch !== b._prefixMatch) return a._prefixMatch ? -1 : 1;
+      if (a._nameLength !== b._nameLength) return a._nameLength - b._nameLength;
+      return a.name.localeCompare(b.name);
+    });
+
+    var users = candidates.slice(0, constants.mainUserSearchAmt).map((u) => ({
+      id: u.id,
+      name: u.name,
+      avatar: u.avatar,
+      status: u.status,
+    }));
 
     res.send(users);
   } catch (e) {
@@ -1957,6 +2001,26 @@ router.post("/settings/update", async function (req, res) {
     );
     await redis.cacheUserInfo(userId, true);
 
+    // Record only consequential/user-visible settings. Cosmetic toggles
+    // (colors, filters) aren't interesting for moderation intelligence.
+    const AUDITED_SETTINGS = new Set([
+      "deathMessage",
+      "youtube",
+      "bio",
+      "showDeleted",
+      "showOnlineStatus",
+      "disableProfanityFilter",
+    ]);
+    if (AUDITED_SETTINGS.has(prop)) {
+      models.SiteActivity.create({
+        id: shortid.generate(),
+        type: "settingsChange",
+        actorId: userId,
+        meta: { prop, newValue: String(value).slice(0, 200) },
+        date: Date.now(),
+      }).catch(() => {});
+    }
+
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
@@ -2190,6 +2254,13 @@ router.post("/avatar", async function (req, res) {
       .toFile(`${process.env.UPLOAD_PATH}/${userId}_avatar.webp`);
     await models.User.updateOne({ id: userId }, { $set: { avatar: true } });
     await redis.cacheUserInfo(userId, true);
+
+    models.SiteActivity.create({
+      id: shortid.generate(),
+      type: "avatarChange",
+      actorId: userId,
+      date: Date.now(),
+    }).catch(() => {});
 
     res.sendStatus(200);
   } catch (e) {
@@ -2437,6 +2508,14 @@ router.post("/name", async function (req, res) {
     await models.User.updateOne({ id: userId }, updateQuery).exec();
 
     await redis.cacheUserInfo(userId, true);
+
+    models.SiteActivity.create({
+      id: shortid.generate(),
+      type: "nameChange",
+      actorId: userId,
+      meta: { oldName, newName: name },
+      date: Date.now(),
+    }).catch(() => {});
 
     res.sendStatus(200);
   } catch (e) {

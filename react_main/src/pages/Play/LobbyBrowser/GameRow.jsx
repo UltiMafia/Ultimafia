@@ -23,6 +23,7 @@ import StateIcon from "components/StateIcon";
 
 const GameStatus = (props) => {
   const user = useContext(UserContext);
+  const isPhoneDevice = useIsPhoneDevice();
   const showGameState = props.showGameState;
 
   const canShowGameButton =
@@ -77,7 +78,7 @@ const GameStatus = (props) => {
   );
 
   const gameButtonWrapped = (
-    <Box sx={{ width: "100px", ml: 0.5 }}>
+    <Box sx={{ width: "100px" }}>
       {canShowGameButton && GameButton}
       <div
         style={{
@@ -118,7 +119,7 @@ const GameStatus = (props) => {
         width: "60px",
       }}>
       </Box> */}
-      {showGameState && (
+      {showGameState && !isPhoneDevice && (
         <StateIcon
           stateName={props.game.gameState || "Postgame"}
           winnerGroups={props.game.winnersInfo?.groups || []}
@@ -126,8 +127,8 @@ const GameStatus = (props) => {
       )}
       <Stack
         direction="column"
-        spacing={1}
         sx={{
+          gap: { xs: 0.5, sm: 1 },
           alignItems: "stretch",
           justifyContent: "center",
           alignSelf: "stretch",
@@ -191,7 +192,7 @@ export const GameRow = (props) => {
         direction="row"
         spacing={1}
         sx={{
-          p: 1,
+          p: { xs: 0.5, sm: 1 },
           width: "100%",
           alignItems: "center",
           background: getRowColor(props.game, false),

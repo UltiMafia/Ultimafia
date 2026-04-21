@@ -18,6 +18,7 @@ export default function UserSearch(props) {
   const theme = useTheme();
   const [userList, setUserList] = useState([]);
   const [searchVal, setSearchVal] = useState("");
+  const [onlineCount, setOnlineCount] = useState(null);
 
   useEffect(() => {
     document.title = "Users | UltiMafia";
@@ -36,18 +37,14 @@ export default function UserSearch(props) {
         .get("/api/user/online")
         .then((res) => {
           setUserList(res.data);
+          setOnlineCount(res.data.length);
         })
         .catch(useErrorAlert);
     }
   }, [searchVal]);
 
   const users = userList.map((user) => (
-    <Card
-      key={user.id}
-      className="user-cell"
-      variant="outlined"
-      sx={{ margin: 1 }}
-    >
+    <Card key={user.id} className="user-cell" variant="outlined">
       <CardContent
         sx={{
           display: "flex",
@@ -78,6 +75,11 @@ export default function UserSearch(props) {
     <Box display="flex" flexDirection="row" padding={2}>
       <Grid container spacing={2}>
         <Grid item xs={12} md={9}>
+          <Typography variant="subtitle1" sx={{ marginBottom: 1 }}>
+            {onlineCount == null
+              ? "Loading online users…"
+              : `${onlineCount} user${onlineCount === 1 ? "" : "s"} online`}
+          </Typography>
           <TextField
             fullWidth
             label="🔎 Username"
@@ -90,8 +92,13 @@ export default function UserSearch(props) {
             sx={{
               overflowY: "auto",
               flexGrow: 1,
-              display: "flex",
-              flexWrap: "wrap",
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "repeat(2, 1fr)",
+                sm: "repeat(3, 1fr)",
+                md: "repeat(4, 1fr)",
+              },
+              gap: 2,
             }}
           >
             {users}

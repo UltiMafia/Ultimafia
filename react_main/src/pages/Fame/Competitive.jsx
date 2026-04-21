@@ -28,6 +28,7 @@ import { UserContext, SiteInfoContext } from "Contexts";
 import { PageNav, SearchBar } from "components/Nav";
 import { useErrorAlert } from "components/Alerts";
 import { CompetitiveFaqContent } from "./CompetitiveFaq";
+import Comments from "../Community/Comments";
 
 export const QUERY_PARAM_SEASON = "season";
 export const QUERY_PARAM_ROUND = "round";
@@ -809,6 +810,9 @@ export default function Competitive() {
           <CompetitiveFaqContent />
         </Box>
       )}
+      <Box sx={{ mt: 2 }}>
+        <Comments fullWidth location="lobby-Competitive" />
+      </Box>
     </Stack>
   );
 }

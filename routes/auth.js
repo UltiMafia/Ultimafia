@@ -550,6 +550,16 @@ async function authSuccess(req, uid, email, discordProfile) {
       _id: user._id,
       csrf: crypto.randomInt(2 ** 48 - 1),
     };
+
+    // Fire-and-forget: record the login in SiteActivity. A failure here must
+    // not break the auth flow.
+    models.SiteActivity.create({
+      id: shortid.generate(),
+      type: "login",
+      actorId: id,
+      date: Date.now(),
+    }).catch(() => {});
+
     return id;
   } catch (e) {
     logger.error(e);

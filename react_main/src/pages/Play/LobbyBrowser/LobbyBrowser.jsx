@@ -35,6 +35,7 @@ import RecentTradesFeed from "components/RecentTradesFeed";
 import Chat from "../../Chat/Chat";
 import { FeaturedSetup } from "./FeaturedSetup";
 import { DailyChallenges } from "./DailyChallengeDisplay";
+import { CompetitiveRounds } from "./CompetitiveRounds";
 import { getRowStubColor } from "./gameRowColors.js";
 
 import { lobbies } from "../../../constants/lobbies";
@@ -256,7 +257,13 @@ export default function LobbyBrowser() {
             <Comments
               fullWidth
               location={
-                lobbyName === "Main" || lobbyName === "All"
+                lobbyName === "All"
+                  ? lobbies
+                      .filter((l) => l.name !== "All")
+                      .map((l) =>
+                        l.name === "Main" ? "lobby" : `lobby-${l.name}`
+                      )
+                  : lobbyName === "Main"
                   ? "lobby"
                   : `lobby-${lobbyName}`
               }
@@ -269,6 +276,7 @@ export default function LobbyBrowser() {
               lobby={lobbyName}
               glowingHostButton={glowingHostButton}
             />
+            <CompetitiveRounds />
             <DailyChallenges />
             <RecentlyPlayedSetups lobby={lobbyName} />
             <RecentForumReplies />

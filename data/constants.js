@@ -465,6 +465,7 @@ module.exports = {
     clearAllIPs: true,
     featureSetup: true,
     deleteSetup: true,
+    archiveSetup: true,
     disableDeck: true,
     giveCoins: true,
     refundGame: true,
@@ -492,6 +493,7 @@ module.exports = {
     deleteFanart: true,
     seeModPanel: true,
     deleteViolation: true,
+    viewSiteActivity: true,
   },
   defaultGroups: {
     Owner: {
@@ -533,6 +535,7 @@ module.exports = {
         "purgeGame",
         "featureSetup",
         "deleteSetup",
+        "archiveSetup",
         "disableDeck",
         "refundGame",
         "whitelist",
@@ -556,6 +559,7 @@ module.exports = {
         "deleteStrategy",
         "deleteFanart",
         "seeModPanel",
+        "viewSiteActivity",
       ],
     },
     Liaison: {
@@ -618,6 +622,7 @@ module.exports = {
         "playCompetitive",
         "deleteStrategy",
         "deleteFanart",
+        "viewSiteActivity",
       ],
     },
     Dev: {

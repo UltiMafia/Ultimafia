@@ -1561,6 +1561,7 @@ module.exports = {
   userCached,
   invalidateCachedUser,
   invalidateAllCachedUsers,
+  deleteKeysByPattern,
   cacheUserInfo,
   deleteUserInfo,
   getUserInfo,

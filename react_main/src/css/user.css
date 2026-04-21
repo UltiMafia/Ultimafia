@@ -491,12 +491,20 @@ iframe {
   flex-flow: row;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.profile .friend .friend-avatar > *:first-child {
+  min-width: 0;
+  overflow: hidden;
 }
 
 .profile .friend .friend-avatar .btns-wrapper {
   flex-flow: row;
   align-items: stretch;
   justify-content: flex-end;
+  flex-shrink: 0;
 }
 
 .profile .friend .friend-avatar .btns-wrapper i {
@@ -892,21 +900,27 @@ iframe {
   align-items: center;
   gap: 8px;
   padding: 4px 0;
+  flex-wrap: nowrap;
 }
 
 .poke-back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  margin-left: auto;
   cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
+.poke-back-btn:hover {
+  opacity: 1;
 }
 
 .poke-dismiss {
-  margin-left: auto;
   padding-right: 8px;
   cursor: pointer;
   opacity: 0.4;
   transition: opacity 0.15s ease;
+  flex-shrink: 0;
 }
 
 .poke-dismiss:hover {
@@ -917,6 +931,8 @@ iframe {
   display: flex;
   align-items: flex-end;
   position: relative;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .poke-streak-badge {

@@ -563,10 +563,10 @@ function SetupRow(props) {
         }}
       >
         {isPhoneDevice && user.loggedIn && (
-          <Button onClick={() => props.onSelect(props.setup)}>Host</Button>
+          <Button size="small" onClick={() => props.onSelect(props.setup)}>Host</Button>
         )}
         {user.loggedIn && (
-          <Box sx={{ ml: "auto" }}>
+          <Box sx={{ ml: isPhoneDevice ? undefined : "auto" }}>
             <SetupManipulationButtons
               setup={props.setup}
               onFav={props.onFav}

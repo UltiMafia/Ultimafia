@@ -30,6 +30,7 @@ import { PopoverContent } from "./Popover";
 export default function Setup(props) {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
+  const isPhoneDevice = useIsPhoneDevice();
   const setupRef = useRef();
   const popoverProps = usePopover({
     path: `/api/setup/${props.setup.id}`,
@@ -43,11 +44,15 @@ export default function Setup(props) {
   const [maxIconsPerRow, setMaxIconsPerRow] = useState(null);
   const [setupIndex, setSetupIndex] = useState(0);
 
-  // Allow overflow to vertically stack if the row width is only 2 or less
-  const wrapIcons = maxIconsPerRow && maxIconsPerRow <= 2;
-  // If wrapIcons is true, limit the icons to three rows
+  // On mobile, always wrap icons onto multiple rows instead of pruning — narrow
+  // containers often compute 0 fitting icons, which otherwise hides all roles.
+  const wrapIcons = isPhoneDevice || (maxIconsPerRow && maxIconsPerRow <= 2);
+  // Mobile shows every icon (no cap); desktop caps at a single row or 3 rows if
+  // the container is narrow enough to trigger wrapping.
   const maxIconsTotal =
     maxIconsPerRow === null
+      ? null
+      : isPhoneDevice
       ? null
       : wrapIcons
       ? maxIconsPerRow * 3
@@ -863,6 +868,8 @@ export function GameStateIcon(props) {
 
 export function SetupManipulationButtons(props) {
   const user = useContext(UserContext);
+  const isPhoneDevice = useIsPhoneDevice();
+  const iconSize = isPhoneDevice ? "small" : "medium";
 
   const isOwner = props.setup.creator?.id === user.id;
   const hasEditAnySetupPerm = user.perms?.editAnySetup;
@@ -884,6 +891,7 @@ export function SetupManipulationButtons(props) {
     <IconButton
       aria-label="edit"
       disabled={!canEditThisSetup}
+      size={iconSize}
       sx={editStyle}
       onClick={() =>
         window.open(
@@ -900,6 +908,7 @@ export function SetupManipulationButtons(props) {
     <IconButton
       aria-label="delete"
       disabled={!isOwner}
+      size={iconSize}
       sx={deleteStyle}
       onClick={() => props.onDel(props.setup)}
     >
@@ -908,8 +917,12 @@ export function SetupManipulationButtons(props) {
   );
 
   return (
-    <Stack direction="row" spacing={1.5} alignItems="center">
-      <IconButton aria-label="favorite" onClick={() => props.onFav(props.setup)}>
+    <Stack direction="row" sx={{ gap: { xs: 0.25, sm: 1.5 } }} alignItems="center">
+      <IconButton
+        aria-label="favorite"
+        size={iconSize}
+        onClick={() => props.onFav(props.setup)}
+      >
         <i className={`setup-btn fav-setup fa-star ${favIconFormat}`} />
       </IconButton>
       {isRanked ? (
@@ -917,6 +930,7 @@ export function SetupManipulationButtons(props) {
       ) : editButton}
       <IconButton
         aria-label="copy"
+        size={iconSize}
         onClick={() =>
           window.open(
             `/play/create?copy=${props.setup.id}&game=${props.setup.gameType}`,

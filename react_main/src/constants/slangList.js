@@ -355,6 +355,11 @@ export const slangList = {
       "Appeal to emotion. When a player tries to persuade using emotional means.",
     emoji: "🥺",
   },
+  POE: {
+    definition:
+      "Process of Elimination. A method for finding the correct answer by systematically ruling out all incorrect options, leaving only the correct one.",
+    emoji: "🐦‍⬛",
+  },
   rr: {
     definition:
       "Reread. When someone wants to go through the game history to get a better clue of who's good and who's bad.",

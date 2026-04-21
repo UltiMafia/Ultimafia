@@ -1826,10 +1826,11 @@ export default function Profile() {
                           </span>
                         ) : null}
                       </div>
-                      <div className="btns poke-back-btn" onClick={() => onPokeBackClick(poke.from.id)} title="Poke Back">
-                        <i className="fas fa-hand-pointer" />
-                        <span>Poke Back</span>
-                      </div>
+                      <i
+                        className="fas fa-hand-pointer poke-back-btn"
+                        title="Poke Back"
+                        onClick={() => onPokeBackClick(poke.from.id)}
+                      />
                       <i
                         className="fas fa-times poke-dismiss"
                         title="Dismiss"
@@ -2081,13 +2082,13 @@ function StatsModal(props) {
   };
 
   var statsRowNames;
-  const mafia = props.stats["Mafia"];
+  const mafia = props.stats["Mafia"] || {};
   const bucket =
     props.statsBucket === "ranked"
-      ? mafia.all
+      ? mafia.all || {}
       : props.statsBucket === "unranked"
         ? mafia.unranked || {}
-        : mergeStatsBuckets(mafia.all, mafia.unranked);
+        : mergeStatsBuckets(mafia.all || {}, mafia.unranked || {});
   var stats =
     statsFilter === "all"
       ? bucket

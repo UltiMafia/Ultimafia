@@ -298,6 +298,317 @@ const AchievementData = {
       reward: 20,
       roles: ["Hunter"],
     },
+    "Sink or Swim": {
+      ID: "Mafia41",
+      internal: ["LifeguardPRSave"],
+      description:
+        "As Lifeguard, have your master be a surviving Village power role at the end of the game.",
+      reward: 20,
+      roles: ["Lifeguard"],
+    },
+    "Off With Your Head": {
+      ID: "Mafia42",
+      internal: ["QueenCondemned"],
+      description: "Survive and win in a game where the Queen was condemned.",
+      reward: 10,
+    },
+    "Burn Book": {
+      ID: "Mafia43",
+      internal: ["DramaQueenRevealEvil"],
+      description:
+        "As Drama Queen, have an Evil-aligned player be revealed via your drama.",
+      reward: 20,
+      roles: ["Drama Queen"],
+    },
+    "Put On The Red Light": {
+      ID: "Mafia44",
+      internal: ["HookerBlock2PR"],
+      description:
+        "As Hooker, successfully roleblock 2 different Village power roles during a game.",
+      reward: 15,
+      roles: ["Hooker"],
+    },
+    "As Above": {
+      ID: "Mafia45",
+      internal: ["MagusWinDayOne"],
+      description: "As Magus, win after a Magus game is declared on Day 1.",
+      reward: 40,
+      roles: ["Magus"],
+    },
+    "Just The Two Of Us": {
+      ID: "Mafia46",
+      internal: ["LoverFinalTwo"],
+      description: "As Lover, be alive in the final 2.",
+      reward: 20,
+      roles: ["Lover"],
+    },
+    "First Flame": {
+      ID: "Mafia47",
+      internal: ["ArsonistIgniteDayOne"],
+      description: "As Arsonist, ignite a Village power role on Day 1.",
+      reward: 20,
+      roles: ["Arsonist"],
+    },
+    "Falling Into Place": {
+      ID: "Mafia48",
+      internal: ["SirenBeckonTwo"],
+      description:
+        "As Siren, successfully beckon 2 different roles to visit you and survive to the end of the game.",
+      reward: 20,
+      roles: ["Siren"],
+    },
+    "Eye Of The Beholder": {
+      ID: "Mafia49",
+      internal: ["OracleRevealEvil"],
+      description: "As Oracle, have your death reveal an Evil-aligned player.",
+      reward: 25,
+      roles: ["Oracle"],
+    },
+    "Happy Hour": {
+      ID: "Mafia50",
+      internal: ["DrunkBlockEvil"],
+      description:
+        "As Drunk, roleblock an Evil power role that was targeting you.",
+      reward: 20,
+      roles: ["Drunk"],
+    },
+    "Judge, Jury And Executioner": {
+      ID: "Mafia51",
+      internal: ["JailerCleanExecutions"],
+      description:
+        "As Jailer, execute at least one Evil player and never execute a non-Evil player.",
+      reward: 20,
+      roles: ["Jailer"],
+    },
+    "Feeling Blue": {
+      ID: "Mafia52",
+      internal: ["LobotomistAllVPR"],
+      description:
+        "As Lobotomist, convert every Village power role in the game.",
+      reward: 30,
+      roles: ["Lobotomist"],
+    },
+    "Bleeding Heart": {
+      ID: "Mafia53",
+      internal: ["HeartbreakerCondemnedLove"],
+      description:
+        "As Heartbreaker, have your Village-aligned Love be condemned.",
+      reward: 20,
+      roles: ["Heartbreaker"],
+    },
+    Governator: {
+      ID: "Mafia54",
+      internal: ["GovernatorFlip"],
+      description:
+        "As Governor, overturn a non-Evil condemnation and land your kill on a Mafia player.",
+      reward: 20,
+      roles: ["Governor"],
+    },
+    "Guys, I'm So Obvious": {
+      ID: "Mafia55",
+      internal: ["DisguiserTwoSurvive"],
+      description:
+        "As Disguiser, steal another player's identity twice and survive to the end of the game.",
+      reward: 10,
+      roles: ["Disguiser"],
+    },
+    Kevlar: {
+      ID: "Mafia56",
+      internal: ["SurviveBulletproof"],
+      description:
+        "As a Bulletproof player, have your armor save you from a night kill.",
+      reward: 15,
+    },
+    "Explosion!": {
+      ID: "Mafia57",
+      internal: ["ExplosiveRetaliation"],
+      description:
+        "As an Explosive player, kill a Mafia-aligned player with your bomb's retaliation.",
+      reward: 20,
+    },
+    "True Path": {
+      ID: "Mafia58",
+      internal: ["SamuraiKillConverter"],
+      description:
+        "As Samurai, kill a Cult-aligned converter in your duel.",
+      reward: 25,
+      roles: ["Samurai"],
+    },
+    "Mayor And Orders": {
+      ID: "Mafia59",
+      internal: ["MayorRevealWin"],
+      description: "As Mayor, reveal yourself and win.",
+      reward: 25,
+      roles: ["Mayor"],
+    },
+    "Pulling The Strings": {
+      ID: "Mafia60",
+      internal: ["WitchRedirectEvilKill"],
+      description:
+        "As Witch, redirect a kill so that an Evil player kills another Evil player.",
+      reward: 25,
+      roles: ["Witch"],
+    },
+    "Fresh Blood": {
+      ID: "Mafia61",
+      internal: ["VampireTwoKills"],
+      description: "As Vampire, kill 2 players with your Vampire meeting.",
+      reward: 20,
+      roles: ["Vampire"],
+    },
+    "Full Moon": {
+      ID: "Mafia62",
+      internal: ["WerewolfFullMoonKills"],
+      description: "As Werewolf, cause 3 deaths during a single Full Moon.",
+      reward: 25,
+      roles: ["Werewolf"],
+    },
+    "Last One Standing": {
+      ID: "Mafia63",
+      internal: ["SerialKillerSoleSurvivor"],
+      description: "As Serial Killer, win as the last player alive.",
+      reward: 25,
+      roles: ["Serial Killer"],
+    },
+    "Harvest Moon": {
+      ID: "Mafia64",
+      internal: ["ReaperWinByChoice"],
+      description: "As Reaper, win by selecting a surviving target.",
+      reward: 20,
+      roles: ["Reaper"],
+    },
+    "Second Wind": {
+      ID: "Mafia65",
+      internal: ["NecromancerRaiseCult"],
+      description:
+        "As Necromancer, kill a Cult player and raise them as an undead.",
+      reward: 20,
+      roles: ["Necromancer"],
+    },
+    "Can't Touch This": {
+      ID: "Mafia66",
+      internal: ["SurvivorUnvisited"],
+      description:
+        "As Survivor, survive to the end of the game without being visited at night.",
+      reward: 25,
+      roles: ["Survivor"],
+    },
+    "First Contact": {
+      ID: "Mafia67",
+      internal: ["AlienThreeProbes"],
+      description: "As Alien, successfully probe 3 different players.",
+      reward: 20,
+      roles: ["Alien"],
+    },
+    "Soul Insurance": {
+      ID: "Mafia68",
+      internal: ["LichHauntAndWin"],
+      description: "As Lich, select a vessel and win.",
+      reward: 20,
+      roles: ["Lich"],
+    },
+    "Ph'nglui mglw'nafh": {
+      ID: "Mafia69",
+      internal: ["CthulhuThreeInsane"],
+      description: "As Cthulhu, drive 3 different players insane.",
+      reward: 25,
+      roles: ["Cthulhu"],
+    },
+    Consumed: {
+      ID: "Mafia70",
+      internal: ["BlobThreeAbsorbs"],
+      description: "As Blob, absorb 3 players.",
+      reward: 25,
+      roles: ["Blob"],
+    },
+    Assimilation: {
+      ID: "Mafia71",
+      internal: ["GreyGooThreeConverts"],
+      description: "As Grey Goo, create 3 other Grey Goos.",
+      reward: 25,
+      roles: ["Grey Goo"],
+    },
+    "Divine Right": {
+      ID: "Mafia72",
+      internal: ["EmperorDecreeWin"],
+      description: "As Emperor, win by successfully calling two duels.",
+      reward: 25,
+      roles: ["Emperor"],
+    },
+    "Caped Crusader": {
+      ID: "Mafia73",
+      internal: ["SuperheroWin"],
+      description: "As Superhero, win the game.",
+      reward: 15,
+      roles: ["Superhero"],
+    },
+    "World Domination": {
+      ID: "Mafia74",
+      internal: ["SupervillainWin"],
+      description: "As Supervillain, win the game.",
+      reward: 15,
+      roles: ["Supervillain"],
+    },
+    "Cold Snap": {
+      ID: "Mafia75",
+      internal: ["SnowmanThreeFreezes"],
+      description: "As Snowman, have 3 players die from Snowballs.",
+      reward: 20,
+      roles: ["Snowman"],
+    },
+    "Walk It Off": {
+      ID: "Mafia76",
+      internal: ["MachoDieAndWin"],
+      description: "As a Macho player, die during the game and still win.",
+      reward: 15,
+    },
+    "'Til Death": {
+      ID: "Mafia77",
+      internal: ["MarriedPartnerDies"],
+      description:
+        "As a Married player, survive and win after your partner dies.",
+      reward: 20,
+    },
+    "Wild Card": {
+      ID: "Mafia78",
+      internal: ["ChaoticRerollWin"],
+      description:
+        "As a Chaotic player, be converted to a new role and win.",
+      reward: 20,
+    },
+    "Spotlight Thief": {
+      ID: "Mafia79",
+      internal: ["BraggadociousSoloWin"],
+      description:
+        "As a Braggadocious player, win solo as an Independent role.",
+      reward: 25,
+    },
+    "Jack Of All Trades": {
+      ID: "Mafia80",
+      internal: ["AllAlignmentWins"],
+      description:
+        "Win at least once as a Village, Mafia, Cult, and Independent role.",
+      reward: 50,
+    },
+    "Role Tourist": {
+      ID: "Mafia81",
+      internal: ["TenRoleAchievements"],
+      description:
+        "Earn role-specific achievements for 10 different roles.",
+      reward: 40,
+    },
+    "Century Club": {
+      ID: "Mafia82",
+      internal: ["PlayedOneHundred"],
+      description: "Play 100 Mafia games.",
+      reward: 30,
+    },
+    Completionist: {
+      ID: "Mafia83",
+      internal: ["TwentyFiveAchievements"],
+      description: "Earn 25 distinct Mafia achievements.",
+      reward: 50,
+    },
   },
   Resistance: {},
   Jotto: {},

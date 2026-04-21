@@ -7,6 +7,7 @@ import Donors from "./Donors";
 import Contributors from "./Contributors";
 import Competitive from "./Competitive";
 import CompetitiveFaq from "./CompetitiveFaq";
+import HallOfFame from "./HallOfFame";
 
 export default function Fame(props) {
   const theme = useTheme();
@@ -18,6 +19,7 @@ export default function Fame(props) {
           <Routes>
             <Route path="competitive" element={<Competitive />} />
             <Route path="competitive/faq" element={<CompetitiveFaq />} />
+            <Route path="hall-of-fame" element={<HallOfFame />} />
             <Route path="contributors" element={<Contributors />} />
             <Route path="donors" element={<Donors />} />
             <Route path="*" element={<Navigate to="competitive" />} />

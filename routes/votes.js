@@ -41,17 +41,27 @@ router.post("/", async function (req, res) {
         return;
     }
 
-    let itemQuery = itemModel.findOne({ id: itemId });
+    let itemQuery;
+
+    if (itemType === "role") {
+      // Roles are static (defined in code), so RoleVote rows are created
+      // lazily on the first vote. Upsert here so the document always exists
+      // before the vote-count update below.
+      itemQuery = itemModel
+        .findOneAndUpdate(
+          { id: itemId },
+          { $setOnInsert: { id: itemId } },
+          { upsert: true, new: true, projection: "id" }
+        );
+    } else {
+      itemQuery = itemModel.findOne({ id: itemId });
+    }
 
     if (itemType === "strategy") {
       itemQuery = itemQuery.select("deleted");
-    } else if (
-      itemType === "setup" ||
-      itemType === "role" ||
-      itemType === "deck"
-    ) {
+    } else if (itemType === "setup" || itemType === "deck") {
       itemQuery = itemQuery.select("id");
-    } else {
+    } else if (itemType !== "role") {
       let populates = [];
       if (itemModel.schema.paths.board) {
         populates.push({
@@ -134,6 +144,21 @@ router.post("/", async function (req, res) {
       }
     }
 
+    const aggregateUpdate = [
+      {
+        $set: {
+          voteCount: { $add: ["$voteCount", incVoteCount] },
+          upVotes: { $add: ["$upVotes", incUp] },
+          downVotes: { $add: ["$downVotes", incDown] },
+        },
+      },
+      {
+        $set: {
+          controversialScore: { $min: ["$upVotes", "$downVotes"] },
+        },
+      },
+    ];
+
     if (!vote) {
       vote = new models.ForumVote({
         voter: userId,
@@ -143,23 +168,7 @@ router.post("/", async function (req, res) {
       await vote.save();
 
       if (itemType === "setup" || itemType === "role") {
-        await models.Setup.updateOne(
-          { id: itemId },
-          [
-            {
-              $set: {
-                voteCount: { $add: ["$voteCount", incVoteCount] },
-                upVotes: { $add: ["$upVotes", incUp] },
-                downVotes: { $add: ["$downVotes", incDown] },
-              },
-            },
-            {
-              $set: {
-                controversialScore: { $min: ["$upVotes", "$downVotes"] },
-              },
-            },
-          ]
-        );
+        await itemModel.updateOne({ id: itemId }, aggregateUpdate);
       } else {
         await itemModel
           .updateOne({ id: itemId }, { $inc: { voteCount: direction } })
@@ -174,23 +183,7 @@ router.post("/", async function (req, res) {
       ).exec();
 
       if (itemType === "setup" || itemType === "role") {
-        await models.Setup.updateOne(
-          { id: itemId },
-          [
-            {
-              $set: {
-                voteCount: { $add: ["$voteCount", incVoteCount] },
-                upVotes: { $add: ["$upVotes", incUp] },
-                downVotes: { $add: ["$downVotes", incDown] },
-              },
-            },
-            {
-              $set: {
-                controversialScore: { $min: ["$upVotes", "$downVotes"] },
-              },
-            },
-          ]
-        );
+        await itemModel.updateOne({ id: itemId }, aggregateUpdate);
       } else {
         await itemModel
           .updateOne(
@@ -204,24 +197,8 @@ router.post("/", async function (req, res) {
     } else {
       await models.ForumVote.deleteOne({ voter: userId, item: itemId }).exec();
 
-      if (itemType === "setup") {
-        await models.Setup.updateOne(
-          { id: itemId },
-          [
-            {
-              $set: {
-                voteCount: { $add: ["$voteCount", incVoteCount] },
-                upVotes: { $add: ["$upVotes", incUp] },
-                downVotes: { $add: ["$downVotes", incDown] },
-              },
-            },
-            {
-              $set: {
-                controversialScore: { $min: ["$upVotes", "$downVotes"] },
-              },
-            },
-          ]
-        );
+      if (itemType === "setup" || itemType === "role") {
+        await itemModel.updateOne({ id: itemId }, aggregateUpdate);
       } else {
         await itemModel
           .updateOne(
@@ -237,6 +214,32 @@ router.post("/", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Error voting.");
+  }
+});
+
+router.get("/role/:roleId", async function (req, res) {
+  try {
+    const itemId = String(req.params.roleId);
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+
+    const [roleVote, userVote] = await Promise.all([
+      models.RoleVote.findOne({ id: itemId }).select("voteCount").lean(),
+      userId
+        ? models.ForumVote.findOne({ voter: userId, item: itemId })
+            .select("direction")
+            .lean()
+        : null,
+    ]);
+
+    res.status(200);
+    res.send({
+      voteCount: roleVote?.voteCount ?? 0,
+      vote: userVote?.direction ?? 0,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error getting role vote.");
   }
 });
 

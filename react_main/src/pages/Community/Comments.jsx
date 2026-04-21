@@ -3,7 +3,7 @@ import axios from "axios";
 
 import { useErrorAlert } from "../../components/Alerts";
 import { filterProfanity } from "../../components/Basic";
-import { getPageNavFilterArg, PageNav } from "../../components/Nav";
+import { PageNav } from "../../components/Nav";
 import { TextEditor } from "../../components/Form";
 import { UserContext } from "../../Contexts";
 
@@ -15,8 +15,11 @@ import { Comment } from "./Comment";
 
 export default function Comments(props) {
   const location = props.location;
+  const isMulti = Array.isArray(location);
+  const locationKey = isMulti ? location.join(",") : location;
 
   const [page, setPage] = useState(1);
+  const [maxPage, setMaxPage] = useState(1);
   const [comments, setComments] = useState([]);
   const [showInput, setShowInput] = useState(false);
   const [postContent, setPostContent] = useState("");
@@ -27,35 +30,48 @@ export default function Comments(props) {
 
   useEffect(() => {
     setComments([]);
+    setLoaded(false);
+    setShowInput(false);
     onCommentsPageNav(1);
-  }, [location]);
+  }, [locationKey]);
+
+  function buildQuery(_page) {
+    const parts = [`page=${_page}`];
+    if (isMulti) {
+      parts.push(`locations=${location.map(encodeURIComponent).join(",")}`);
+    } else {
+      parts.push(`location=${encodeURIComponent(location)}`);
+    }
+    return parts.join("&");
+  }
 
   function onCommentsPageNav(_page) {
-    var filterArg = getPageNavFilterArg(_page, page, comments, "date");
-
-    if (filterArg == null) return;
-
     axios
-      .get(`/api/comment?location=${location}&${filterArg}`)
+      .get(`/api/comment?${buildQuery(_page)}`)
       .then((res) => {
         setLoaded(true);
+        const data = res.data || {};
+        const fetched = Array.isArray(data) ? data : data.comments || [];
+        const fetchedMaxPage = Array.isArray(data)
+          ? 1
+          : data.maxPage || 1;
 
-        if (res.data.length > 0) {
-          for (let comment of res.data)
-            comment.content = filterProfanity(
-              comment.content,
-              user.settings,
-              "\\*"
-            );
+        for (let comment of fetched)
+          comment.content = filterProfanity(
+            comment.content,
+            user.settings,
+            "\\*"
+          );
 
-          setComments(res.data);
-          setPage(_page);
-        }
+        setComments(fetched);
+        setMaxPage(fetchedMaxPage);
+        setPage(Math.min(_page, fetchedMaxPage));
       })
       .catch(errorAlert);
   }
 
   function onPostSubmit() {
+    if (isMulti) return;
     axios
       .post("/api/comment", { content: postContent, location })
       .then(() => {
@@ -73,7 +89,7 @@ export default function Comments(props) {
   const commentRows = comments.map((comment) => (
     <Comment
       fullWidth={props?.fullWidth}
-      location={location}
+      location={comment.location || (isMulti ? undefined : location)}
       comment={comment}
       comments={comments}
       setComments={setComments}
@@ -85,32 +101,63 @@ export default function Comments(props) {
 
   if (!loaded) return <Loading small />;
 
+  const canPost =
+    !isMulti && user.loggedIn && user.perms.postReply;
+
+  const topBar = (
+    <Paper sx={{ p: 1 }}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        {canPost ? (
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => setShowInput(true)}
+          >
+            Post Comment
+          </Button>
+        ) : (
+          <Box />
+        )}
+        <PageNav
+          inverted
+          page={page}
+          maxPage={maxPage}
+          onNav={onCommentsPageNav}
+        />
+      </Stack>
+    </Paper>
+  );
+
+  const bottomBar = (
+    <Paper sx={{ p: 1 }}>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <PageNav
+          inverted
+          page={page}
+          maxPage={maxPage}
+          onNav={onCommentsPageNav}
+        />
+      </Stack>
+    </Paper>
+  );
+
   return (
     <Stack direction="column" spacing={1}>
       <div className="comments-input-wrapper">
-        {!showInput && user.loggedIn && user.perms.postReply && (
-          <Paper sx={{
-            p: 1,
-          }}>
-            <Stack
-              direction="row"
-              spacing={1}
-              sx={{
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={() => setShowInput(true)}
-              >
-                Post Comment
-              </Button>
-              <PageNav inverted page={page} onNav={onCommentsPageNav} />
-            </Stack>
-          </Paper>
-        )}
+        {!showInput && topBar}
         {showInput && (
           <Paper
             sx={{
@@ -149,7 +196,7 @@ export default function Comments(props) {
       <Stack direction="column" spacing={1} className="comments-page">
         {comments.length === 0 && <Typography>No comments yet</Typography>}
         {commentRows}
-        <PageNav inverted page={page} onNav={onCommentsPageNav} />
+        {bottomBar}
       </Stack>
     </Stack>
   );

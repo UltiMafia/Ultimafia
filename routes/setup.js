@@ -747,6 +747,63 @@ router.post("/delete", async function (req, res) {
   }
 });
 
+const ARCHIVE_SETUP_OWNER_ID = "uBqs8KaDx";
+
+router.post("/archive", async function (req, res) {
+  try {
+    const setupId = String(req.body.id);
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "archiveSetup")))
+      return;
+
+    const setup = await models.Setup.findOne({ id: setupId })
+      .select("_id creator")
+      .populate("creator", "_id id deleted");
+
+    if (!setup) {
+      res.status(500);
+      res.send("Setup not found.");
+      return;
+    }
+
+    if (!setup.creator || !setup.creator.deleted) {
+      res.status(500);
+      res.send("Setup owner is not deleted.");
+      return;
+    }
+
+    const archiveUser = await models.User.findOne({
+      id: ARCHIVE_SETUP_OWNER_ID,
+    }).select("_id");
+    if (!archiveUser) {
+      res.status(500);
+      res.send("Archive user not found.");
+      return;
+    }
+
+    await models.User.updateOne(
+      { _id: setup.creator._id },
+      { $pull: { setups: setup._id } }
+    ).exec();
+    await models.User.updateOne(
+      { _id: archiveUser._id },
+      { $addToSet: { setups: setup._id } }
+    ).exec();
+    await models.Setup.updateOne(
+      { id: setupId },
+      { $set: { creator: archiveUser._id } }
+    ).exec();
+
+    routeUtils.createModAction(userId, "Archive Setup", [setupId]);
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error archiving setup.");
+  }
+});
+
 router.post("/description", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);

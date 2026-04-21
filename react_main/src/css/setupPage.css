@@ -1,10 +1,39 @@
 .setup-page .box-panel {
-  border-radius: 4px;
+  border-radius: 12px;
+  padding: 16px 18px;
 }
 
 .setup-page .heading {
-  font-weight: bold;
-  font-size: 20px;
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.01em;
+  margin-bottom: 12px;
+}
+
+.setup-page .setup-row-info {
+  margin-bottom: 14px;
+}
+
+.setup-page .setup-row-info:last-child {
+  margin-bottom: 0;
+}
+
+.setup-page .setup-row-info > .title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.65;
+  margin-bottom: 6px;
+}
+
+.setup-page .setup-row-info > .content .MuiList-root {
+  padding: 0;
+}
+
+.setup-page .setup-row-info > .content .MuiListItem-root {
+  padding-left: 14px;
+  padding-right: 14px;
 }
 
 .setup-page .super {

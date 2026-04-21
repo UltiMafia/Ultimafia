@@ -3,9 +3,10 @@ import { Navigate, useParams, useNavigate } from "react-router-dom";
 import { NameWithAvatar } from "../../User/User";
 import {
   Box,
+  Button,
   Card,
-  Grid,
-  IconButton,
+  MenuItem,
+  Select,
   Typography,
   Stack,
   Chip,
@@ -13,6 +14,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  useTheme,
 } from "@mui/material";
 
 import Form, { useForm } from "../../../components/Form";
@@ -55,6 +57,7 @@ export function RoleThings() {
 
   const [achievements, setAchievements] = useState(null);
   const [favoriteRoles, setFavoriteRoles] = useState([]);
+  const [roleVoteState, setRoleVoteState] = useState({ vote: 0, voteCount: 0 });
   const [tempSkins, setTempSkins] = useState([
     { label: "Vivid", value: "vivid" },
   ]);
@@ -152,6 +155,21 @@ export function RoleThings() {
     document.title = `${RoleName || "Role"} | UltiMafia`;
   }, [RoleName]);
 
+  useEffect(() => {
+    if (!RoleName) return;
+    const roleId = `Mafia:${RoleName}`;
+    setRoleVoteState({ vote: 0, voteCount: 0 });
+    axios
+      .get(`/api/votes/role/${encodeURIComponent(roleId)}`)
+      .then((res) =>
+        setRoleVoteState({
+          vote: Number(res.data?.vote) || 0,
+          voteCount: Number(res.data?.voteCount) || 0,
+        })
+      )
+      .catch(() => {});
+  }, [RoleName]);
+
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
 
   if (!role || !user.loaded) return <Loading small />;
@@ -176,13 +194,6 @@ export function RoleThings() {
   );
 
   const sortedTags = Array.isArray(role[1].tags) ? [...role[1].tags].sort() : [];
-  const tagsChips = (
-    <Box display="flex" flexWrap="wrap" gap={0.75}>
-      {sortedTags.map((tag) => (
-        <Chip key={tag} label={tag} size="small" />
-      ))}
-    </Box>
-  );
 
   let specialBox;
   if (role[1].SpecialInteractions) {
@@ -295,26 +306,21 @@ export function RoleThings() {
   }
 
   const alignmentColor = getAlignmentColor(role[1].alignment);
+  const theme = useTheme();
+  const isLightMode = theme.palette.mode === "light";
 
-  function getHeaderTextColor(bg) {
-    // Simple luminance check assuming hex color like #rrggbb
-    if (!bg || bg[0] !== "#" || bg.length !== 7) return "#ffffff";
-    const r = parseInt(bg.slice(1, 3), 16) / 255;
-    const g = parseInt(bg.slice(3, 5), 16) / 255;
-    const b = parseInt(bg.slice(5, 7), 16) / 255;
-    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-    return luminance > 0.6 ? "#000000" : "#ffffff";
-  }
-
-  const headerTextColor = getHeaderTextColor(alignmentColor);
-
-  const roleVoteItem = {
-    id: `Mafia:${RoleName}`,
-    vote: role[1].vote ?? 0,
-    voteCount: role[1].voteCount ?? 0,
-  };
+  // Match SetupPage banner legibility: light mode uses near-black text,
+  // dark mode uses white with a soft drop shadow so any pastel banner reads.
+  const headerTextColor = isLightMode ? "#141414" : "#fff";
+  const headerTextShadow = isLightMode ? "none" : "0 1px 3px rgba(0,0,0,0.75)";
 
   const roleId = `Mafia:${RoleName}`;
+  const roleVoteItem = {
+    id: roleId,
+    vote: roleVoteState.vote,
+    voteCount: roleVoteState.voteCount,
+  };
+
   const isFavorited = favoriteRoles.indexOf(roleId) !== -1;
 
   const roleSkinField = siteFields.find((f) => f.ref === "roleSkins");
@@ -395,156 +401,205 @@ export function RoleThings() {
   }
 
   return (
-    <Stack direction="column" spacing={1}>
+    <Stack direction="column" spacing={1} className="setup-page">
       <Card
         variant="outlined"
         sx={{
           backgroundColor: alignmentColor,
+          borderRadius: "16px",
           mb: 1,
-          p: 1,
+          p: { xs: 1.5, md: 2 },
           color: headerTextColor,
+          textShadow: headerTextShadow,
+          "& .MuiTypography-root": {
+            color: headerTextColor,
+            textShadow: headerTextShadow,
+          },
         }}
       >
-        <Grid container spacing={1} alignItems="center">
-          <Grid item xs={12} md={8}>
-            <Stack direction="column" spacing={1}>
-              <Stack
-                direction="row"
-                spacing={1}
-                sx={{
-                  alignItems: "center",
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 1,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <VoteWidget
-                      item={roleVoteItem}
-                      itemType="role"
-                      setItemHolder={() => {}}
-                    />
-                  </Box>
-                  <RoleCount
-                    key={0}
-                    scheme={activeRoleSkin}
-                    role={role[0]}
-                    gameType={"Mafia"}
-                    skin={activeRoleSkin}
-                    large
-                  />
-                </Box>
-                <Typography
-                  variant="h2"
-                  sx={{
-                    ml: 2,
-                    color: headerTextColor,
-                  }}
-                >
-                  {RoleName}
-                </Typography>
-              </Stack>
-              <Stack
-                direction={{ xs: "column", md: "row" }}
-                alignItems={{ xs: "flex-start", md: "center" }}
-                spacing={1}
-                sx={{ mt: 0.5, maxWidth: 320 }}
-              >
-                <Typography
-                  component="label"
-                  variant="body2"
-                  sx={{ whiteSpace: "nowrap" }}
-                >
-                  Role Skin
-                </Typography>
-                <Box
-                  sx={{
-                    width: { xs: "100%", md: "auto" },
-                    minWidth: 72,
-                  }}
-                >
-                  <select
-                    value={activeRoleSkin}
-                    onChange={(e) => {
-                      const newSkin = e.target.value;
-                      setSelectedRoleSkin(newSkin);
-                      onRoleSkinChange(
-                        {
-                          prop: "value",
-                          value: newSkin,
-                          ref: "roleSkins",
-                          localOnly: false,
-                        },
-                        RoleName,
-                        null,
-                        user,
-                        roleSkins
-                      );
-                    }}
-                    style={{
-                      width: "100%",
-                      minWidth: 72,
-                      boxSizing: "border-box",
-                    }}
-                  >
-                    {roleSkinOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </Box>
-              </Stack>
-            </Stack>
-          </Grid>
-          <Grid item md={2} sx={{ display: { xs: "none", md: "block" } }} />
-          <Grid item xs={12} md={2}>
-            <Stack
-              direction={isPhoneDevice ? "row" : "column"}
-              spacing={0.5}
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          spacing={2}
+          alignItems={{ xs: "stretch", md: "center" }}
+        >
+          <Stack direction="row" spacing={1} alignItems="center">
+            <VoteWidget
+              item={roleVoteItem}
+              itemType="role"
+              setItemHolder={(newItem) =>
+                setRoleVoteState({
+                  vote: newItem.vote ?? 0,
+                  voteCount: newItem.voteCount ?? 0,
+                })
+              }
+            />
+            <Box
               sx={{
+                display: "flex",
                 alignItems: "center",
-                color: headerTextColor,
+                justifyContent: "center",
+                p: isPhoneDevice ? 1 : 1.5,
+                borderRadius: "50%",
+                backgroundColor: "rgba(255,255,255,0.18)",
+                border: "1px solid rgba(255,255,255,0.25)",
               }}
             >
+              <RoleCount
+                key={0}
+                scheme={activeRoleSkin}
+                role={role[0]}
+                gameType={"Mafia"}
+                skin={activeRoleSkin}
+                large
+              />
+            </Box>
+          </Stack>
+
+          <Stack
+            direction="column"
+            spacing={0.75}
+            sx={{ flex: 1, minWidth: 0 }}
+          >
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              flexWrap="wrap"
+              useFlexGap
+            >
+              <Typography variant="h2" sx={{ mr: 0.5 }}>
+                {RoleName}
+              </Typography>
+              {sortedTags.map((tag) => (
+                <Chip
+                  key={tag}
+                  label={tag}
+                  size="small"
+                  sx={{
+                    backgroundColor: "rgba(0,0,0,0.55)",
+                    color: "#fff",
+                    fontWeight: 600,
+                    border: "1px solid rgba(255,255,255,0.25)",
+                    textShadow: "none",
+                    "& .MuiChip-label": { textShadow: "none" },
+                  }}
+                />
+              ))}
+            </Stack>
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              flexWrap="wrap"
+              useFlexGap
+            >
               <Typography
-                variant="italicRelation"
+                variant="overline"
                 sx={{
-                  ml: isPhoneDevice ? "auto" : 1,
+                  fontSize: "0.65rem",
+                  letterSpacing: "0.12em",
+                  opacity: 0.7,
+                  lineHeight: 1,
+                }}
+              >
+                Skin
+              </Typography>
+              <Select
+                value={activeRoleSkin}
+                onChange={(e) => {
+                  const newSkin = e.target.value;
+                  setSelectedRoleSkin(newSkin);
+                  onRoleSkinChange(
+                    {
+                      prop: "value",
+                      value: newSkin,
+                      ref: "roleSkins",
+                      localOnly: false,
+                    },
+                    RoleName,
+                    null,
+                    user,
+                    roleSkins
+                  );
+                }}
+                variant="standard"
+                disableUnderline
+                IconComponent={(props) => (
+                  <i
+                    {...props}
+                    className={`fas fa-chevron-down ${props.className || ""}`}
+                    style={{ fontSize: "0.7rem", right: 10 }}
+                  />
+                )}
+                sx={{
+                  minWidth: 96,
+                  backgroundColor: "rgba(0,0,0,0.55)",
+                  borderRadius: 999,
+                  px: 1.5,
+                  py: 0.25,
+                  fontSize: "0.95rem",
+                  fontWeight: 600,
+                  color: "#fff",
+                  textShadow: "none",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  transition: "border-color 120ms, background-color 120ms",
+                  "&:hover": {
+                    borderColor: "rgba(255,255,255,0.45)",
+                    backgroundColor: "rgba(0,0,0,0.35)",
+                  },
+                  "& .MuiSelect-select": {
+                    paddingTop: "2px",
+                    paddingBottom: "2px",
+                    paddingRight: "28px !important",
+                  },
+                  "& .MuiSelect-icon": {
+                    color: "rgba(255,255,255,0.7)",
+                    top: "calc(50% - 0.35em)",
+                  },
+                }}
+              >
+                {roleSkinOptions.map((opt) => (
+                  <MenuItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Stack>
+          </Stack>
+
+          {artists.length > 0 && (
+            <Stack
+              direction="column"
+              spacing={0.5}
+              alignItems={{ xs: "flex-start", md: "flex-end" }}
+              sx={{ minWidth: 120 }}
+            >
+              <Typography
+                variant="overline"
+                sx={{
+                  fontSize: "0.65rem",
+                  letterSpacing: "0.12em",
+                  opacity: 0.7,
+                  lineHeight: 1,
                 }}
               >
                 Icon Artists
               </Typography>
-              <Box sx={{ ml: 1 }}>{artists}</Box>
+              <Box>{artists}</Box>
             </Stack>
-          </Grid>
-        </Grid>
+          )}
+        </Stack>
       </Card>
       <TwoPanelLayout
         left={
           <>
-            <div className="setup-page">
-              <div className="box-panel">
-                <div className="heading">Role Info</div>
-                <div className="meta">
-                  <SetupRowInfo title="Tags" content={tagsChips} />
-                  <SetupRowInfo title="Description" content={description} />
-                  {examples}
-                  {specialBox}
-                  {overrideBox}
-                </div>
+            <div className="box-panel">
+              <div className="heading">Role Info</div>
+              <div className="meta">
+                <SetupRowInfo title="Description" content={description} />
+                {examples}
+                {specialBox}
+                {overrideBox}
               </div>
             </div>
             <Box sx={{ mt: 1 }}>
@@ -556,20 +611,37 @@ export function RoleThings() {
           user.loggedIn && (
             <Stack direction="column" spacing={1}>
               <div className="box-panel">
-                <div className="heading">Favorite this Role</div>
-                <div className="content">
-                  <Grid container sx={{ width: "8rem" }}>
-                    <Grid item xs={3}>
-                      <IconButton aria-label="favorite" onClick={onFavRole}>
-                        <i
-                          className={`setup-btn fav-setup fa-star ${
-                            isFavorited ? "fas" : "far"
-                          }`}
-                        />
-                      </IconButton>
-                    </Grid>
-                  </Grid>
-                </div>
+                <Button
+                  fullWidth
+                  onClick={onFavRole}
+                  startIcon={
+                    <i
+                      className={`fa-star ${isFavorited ? "fas" : "far"}`}
+                      style={{ color: "#f5c518" }}
+                    />
+                  }
+                  sx={{
+                    borderRadius: 999,
+                    textTransform: "none",
+                    fontWeight: 600,
+                    py: 1,
+                    color: isFavorited ? "#f5c518" : "text.primary",
+                    border: "1px solid",
+                    borderColor: isFavorited
+                      ? "rgba(245,197,24,0.55)"
+                      : "rgba(127,127,127,0.35)",
+                    backgroundColor: isFavorited
+                      ? "rgba(245,197,24,0.12)"
+                      : "transparent",
+                    "&:hover": {
+                      backgroundColor: isFavorited
+                        ? "rgba(245,197,24,0.2)"
+                        : "rgba(127,127,127,0.1)",
+                    },
+                  }}
+                >
+                  {isFavorited ? "Favorited" : "Favorite this role"}
+                </Button>
               </div>
               <div className="box-panel">
                 <div className="content">

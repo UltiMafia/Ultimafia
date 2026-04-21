@@ -141,9 +141,9 @@ export function ModActions(props) {
           }}
         >
           <NameWithAvatar
-            id={action.mod.id}
-            name={action.mod.name}
-            avatar={action.mod.avatar}
+            id={action.mod?.id || action.modId}
+            name={action.mod?.name || `[not found: ${action.modId}]`}
+            avatar={action.mod?.avatar || false}
           />
           <Typography
             variant="caption"

@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 const roleData = require("../../../../../data/roles");
 
 module.exports = class TutorTarget extends Card {
@@ -101,7 +101,7 @@ module.exports = class TutorTarget extends Card {
         action: {
           labels: ["visit", "tutor"],
           ability: ["Information", "Conversion"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
             const game = this.game;
             const target = this.target;

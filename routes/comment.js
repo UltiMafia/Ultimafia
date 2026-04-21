@@ -10,29 +10,39 @@ const router = express.Router();
 router.get("/", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req, true);
-    var location = String(req.query.location);
-    var last = Number(req.query.last);
-    var first = Number(req.query.first);
-    var commentFilter = { location };
+    var pageSize = constants.commentsPerPage;
+    var page = Math.max(1, Number(req.query.page) || 1);
+    var commentFilter = {};
+
+    if (req.query.locations) {
+      var locations = String(req.query.locations)
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      commentFilter.location = { $in: locations };
+    } else {
+      commentFilter.location = String(req.query.location);
+    }
 
     if (!(await routeUtils.verifyPermission(userId, "viewDeleted")))
       commentFilter.deleted = false;
 
-    var comments = await routeUtils.modelPageQuery(
-      models.Comment,
-      commentFilter,
-      "date",
-      last,
-      first,
-      "id author content date voteCount deleted -_id",
-      constants.commentsPerPage,
-      ["author", "id -_id"]
-    );
+    var total = await models.Comment.countDocuments(commentFilter);
+    var maxPage = Math.max(1, Math.ceil(total / pageSize));
+    if (page > maxPage) page = maxPage;
 
-    for (let i in comments) {
-      let comment = comments[i].toJSON();
+    var commentDocs = await models.Comment.find(commentFilter)
+      .select("id author content date voteCount deleted location -_id")
+      .sort("-date")
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .populate("author", "id -_id");
+
+    var comments = [];
+    for (var i = 0; i < commentDocs.length; i++) {
+      let comment = commentDocs[i].toJSON();
       comment.author = await redis.getBasicUserInfo(comment.author.id, true);
-      comments[i] = comment;
+      comments.push(comment);
     }
 
     var votes = {};
@@ -52,7 +62,7 @@ router.get("/", async function (req, res) {
       });
     }
 
-    res.send(comments);
+    res.send({ comments, maxPage, page });
   } catch (e) {
     logger.error(e);
     res.status(500);

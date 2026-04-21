@@ -325,9 +325,12 @@ export function RoleCount({
   };
 
   useEffect(() => {
+    const raw = siteInfo.rolesRaw?.[gameType]?.[roleName];
+    const modList = siteInfo.modifiers?.[gameType] ?? [];
+    if (!raw) return;
     setRoleData({
-      ...siteInfo.rolesRaw[gameType][roleName],
-      modifiers: siteInfo.modifiers[gameType].filter((m) =>
+      ...raw,
+      modifiers: modList.filter((m) =>
         modifiers?.split("/").includes(m.name)
       ),
       modifierNameList: modifiers?.split("/"),
@@ -512,7 +515,8 @@ export function RoleCount({
     const roles = Object.keys(roleGroup);
     let roleGroupAlignment = null;
     if (roles.length > 0) {
-      const firstRole = siteInfo.rolesRaw[gameType][roles[0].split(":")[0]];
+      const firstRole =
+        siteInfo.rolesRaw?.[gameType]?.[roles[0].split(":")[0]];
       roleGroupAlignment = firstRole ? firstRole.alignment : null;
     }
     popoverTitle = `Role group ${roleName}`;
