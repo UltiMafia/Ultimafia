@@ -16,6 +16,7 @@ const { getBasicUserInfo } = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
 const fortunePoints = require("../modules/fortunePoints");
+const errors = require("../lib/errors");
 const router = express.Router();
 
 router.get("/groups", async function (req, res) {
@@ -45,8 +46,7 @@ router.get("/groups", async function (req, res) {
     res.send(visibleGroups);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading groups.");
+    errors.serverError(res, "Could not load groups. Please refresh and try again.");
   }
 });
 
@@ -64,16 +64,14 @@ router.get("/groupPerms", async function (req, res) {
     );
 
     if (!group) {
-      res.status(500);
-      res.send("Group does not exist.");
+      errors.notFound(res, "Group does not exist.");
       return;
     }
 
     res.send(group.permissions);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error getting permissions.");
+    errors.serverError(res, "Could not load permissions. Please refresh and try again.");
   }
 });
 
@@ -89,16 +87,14 @@ router.get("/userPerms", async function (req, res) {
     var permInfo = await redis.getUserPermissions(userIdToGet);
 
     if (permInfo.noUser) {
-      res.status(500);
-      res.send("User does not exist.");
+      errors.notFound(res, "User does not exist.");
       return;
     }
 
     res.send(Object.keys(permInfo.perms));
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error getting permissions.");
+    errors.serverError(res, "Could not load permissions. Please refresh and try again.");
   }
 });
 
@@ -117,14 +113,12 @@ router.post("/group", async function (req, res) {
     var permissions = req.body.permissions || [];
 
     if (!name.match(/^([a-zA-Z]+)( [a-zA-Z]+)*$/)) {
-      res.status(500);
-      res.send("Group names can only contain letters and spaces.");
+      errors.badRequest(res, "Group names can only contain letters and spaces.");
       return;
     }
 
     if (!Array.isArray(permissions)) {
-      res.status(500);
-      res.send("Bad permission format");
+      errors.badRequest(res, "Bad permission format");
       return;
     }
 
@@ -132,8 +126,7 @@ router.post("/group", async function (req, res) {
 
     for (let perm of permissions) {
       if (!constants.allPerms[perm]) {
-        res.status(500);
-        res.send(`"${perm}" is not a valid permission.`);
+        errors.badRequest(res, `"${perm}" is not a valid permission.`);
         return;
       }
     }
@@ -143,8 +136,7 @@ router.post("/group", async function (req, res) {
     );
 
     if (existingGroup) {
-      res.status(500);
-      res.send("A group with this name already exists.");
+      errors.conflict(res, "A group with this name already exists.");
       return;
     }
 
@@ -166,8 +158,7 @@ router.post("/group", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error creating group.");
+    errors.serverError(res, "Could not create group. Please try again.");
   }
 });
 
@@ -180,8 +171,7 @@ router.post("/group/delete", async function (req, res) {
     var group = await models.Group.findOne({ name: name }).select("id rank");
 
     if (!group) {
-      res.status(500);
-      res.send("Group not found.");
+      errors.notFound(res, "Group not found.");
       return;
     }
 
@@ -202,8 +192,7 @@ router.post("/group/delete", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error deleting group.");
+    errors.serverError(res, "Could not delete group. Please try again.");
   }
 });
 
@@ -216,8 +205,7 @@ router.post("/groupPerms", async function (req, res) {
     var group = await models.Group.findOne({ name: groupName }).select("rank");
 
     if (!group) {
-      res.status(500);
-      res.send("Group does not exist.");
+      errors.notFound(res, "Group does not exist.");
       return;
     }
 
@@ -228,8 +216,7 @@ router.post("/groupPerms", async function (req, res) {
     var removePermissions = req.body.removePermissions || [];
 
     if (!Array.isArray(addPermissions) || !Array.isArray(removePermissions)) {
-      res.status(500);
-      res.send("Bad permission format");
+      errors.badRequest(res, "Bad permission format");
       return;
     }
 
@@ -249,14 +236,12 @@ router.post("/groupPerms", async function (req, res) {
         userRank < Infinity &&
         (!userPermissions[perm] || constants.protectedPerms.indexOf(perm) != -1)
       ) {
-        res.status(500);
-        res.send(`You cannot grant the ${perm} permission.`);
+        errors.forbidden(res, `You cannot grant the ${perm} permission.`);
         return;
       }
 
       if (!constants.allPerms[perm]) {
-        res.status(500);
-        res.send(`"${perm}" is not a valid permission.`);
+        errors.badRequest(res, `"${perm}" is not a valid permission.`);
         return;
       }
     }
@@ -292,8 +277,7 @@ router.post("/groupPerms", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating group permissions.");
+    errors.serverError(res, "Could not update group permissions. Please try again.");
   }
 });
 
@@ -307,8 +291,7 @@ router.post("/addToGroup", async function (req, res) {
     var group = await models.Group.findOne({ name: groupName }).select("rank");
 
     if (!group) {
-      res.status(500);
-      res.send("Group does not exist.");
+      errors.notFound(res, "Group does not exist.");
       return;
     }
 
@@ -321,8 +304,7 @@ router.post("/addToGroup", async function (req, res) {
     }).select("_id");
 
     if (!userToAdd) {
-      res.status(500);
-      res.send("User does not exist.");
+      errors.notFound(res, "User does not exist.");
       return;
     }
 
@@ -332,8 +314,7 @@ router.post("/addToGroup", async function (req, res) {
     });
 
     if (inGroup) {
-      res.status(500);
-      res.send("User is already in this group.");
+      errors.conflict(res, "User is already in this group.");
       return;
     }
 
@@ -352,8 +333,7 @@ router.post("/addToGroup", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error adding user to group.");
+    errors.serverError(res, "Could not add user to group. Please try again.");
   }
 });
 
@@ -367,8 +347,7 @@ router.post("/removeFromGroup", async function (req, res) {
     var group = await models.Group.findOne({ name: groupName }).select("rank");
 
     if (!group) {
-      res.status(500);
-      res.send("Group does not exist.");
+      errors.notFound(res, "Group does not exist.");
       return;
     }
 
@@ -381,8 +360,7 @@ router.post("/removeFromGroup", async function (req, res) {
     }).select("_id");
 
     if (!userToRemove) {
-      res.status(500);
-      res.send("User does not exist.");
+      errors.notFound(res, "User does not exist.");
       return;
     }
 
@@ -400,8 +378,7 @@ router.post("/removeFromGroup", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error adding user to group.");
+    errors.serverError(res, "Could not remove user from group. Please try again.");
   }
 });
 
@@ -416,8 +393,8 @@ router.post("/assignCredit", async function (req, res) {
 
     const validTypes = ["code", "art", "music", "design"];
     if (!contributorType || !validTypes.includes(contributorType)) {
-      res.status(500);
-      res.send(
+      errors.badRequest(
+        res,
         `Invalid contributor type. Valid types: ${validTypes.join(", ")}`
       );
       return;
@@ -429,8 +406,7 @@ router.post("/assignCredit", async function (req, res) {
     });
 
     if (!userToUpdate) {
-      res.status(500);
-      res.send("User does not exist.");
+      errors.notFound(res, "User does not exist.");
       return;
     }
 
@@ -455,8 +431,7 @@ router.post("/assignCredit", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating contributor credit.");
+    errors.serverError(res, "Could not update contributor credit. Please try again.");
   }
 });
 
@@ -478,8 +453,7 @@ router.post("/toggleDonor", async function (req, res) {
       "_id"
     );
     if (!donorGroup) {
-      res.status(500);
-      res.send("Donor group does not exist.");
+      errors.notFound(res, "Donor group does not exist.");
       return;
     }
 
@@ -489,8 +463,7 @@ router.post("/toggleDonor", async function (req, res) {
     }).select("_id");
 
     if (!userToUpdate) {
-      res.status(500);
-      res.send("User does not exist.");
+      errors.notFound(res, "User does not exist.");
       return;
     }
 
@@ -521,8 +494,7 @@ router.post("/toggleDonor", async function (req, res) {
     res.json({ isDonor: nowDonor });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating donor status.");
+    errors.serverError(res, "Could not update donor status. Please try again.");
   }
 });
 
@@ -566,8 +538,7 @@ router.post("/roleIconCredit", async function (req, res) {
     });
 
     if (!userToUpdate) {
-      res.status(500);
-      res.send("User does not exist.");
+      errors.notFound(res, "User does not exist.");
       return;
     }
 
@@ -606,8 +577,7 @@ router.post("/roleIconCredit", async function (req, res) {
     res.json({ assigned, roleIconCredits: list });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating role icon credit.");
+    errors.serverError(res, "Could not update role icon credit. Please try again.");
   }
 });
 
@@ -622,8 +592,7 @@ router.post("/ban", async (req, res) => {
     var banRank = await redis.getUserRank(userIdToBan);
 
     if (banRank == null && banType !== "site") {
-      res.status(500);
-      res.send("User does not exist.");
+      errors.notFound(res, "User does not exist.");
       return;
     }
 
@@ -637,16 +606,15 @@ router.post("/ban", async (req, res) => {
     var length = routeUtils.parseTime(lengthStr);
 
     if (length == null) {
-      res.status(500);
-      res.send(
+      errors.badRequest(
+        res,
         "Invalid time string. Must have the format 'length unit', e.g. '1 hour'."
       );
       return;
     }
 
     if (length < 1000 * 60 * 60) {
-      res.status(500);
-      res.send("Minimum ban time is 1 hour.");
+      errors.badRequest(res, "Minimum ban time is 1 hour.");
       return;
     }
 
@@ -701,8 +669,7 @@ router.post("/ban", async (req, res) => {
     // Get mod's rank to validate which alt accounts can be banned
     const modRank = await redis.getUserRank(userId);
     if (modRank == null) {
-      res.status(500);
-      res.send("Error getting moderator rank.");
+      errors.serverError(res, "Could not get moderator rank. Please try again.");
       return;
     }
 
@@ -768,8 +735,7 @@ router.post("/ban", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error banning user.");
+    errors.serverError(res, "Could not ban user. Please try again.");
   }
 });
 
@@ -781,8 +747,7 @@ router.post("/logout", async (req, res) => {
     var rank = await redis.getUserRank(userIdToActOn);
 
     if (rank == null) {
-      res.status(500);
-      res.send("User does not exist.");
+      errors.notFound(res, "User does not exist.");
       return;
     }
 
@@ -797,8 +762,7 @@ router.post("/logout", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error signing user out.");
+    errors.serverError(res, "Could not sign user out. Please try again.");
   }
 });
 
@@ -811,8 +775,7 @@ router.post("/clearleavepenalty", async (req, res) => {
     var rank = await redis.getUserRank(userIdToActOn);
 
     if (rank == null) {
-      res.status(500);
-      res.send("User does not exist.");
+      errors.notFound(res, "User does not exist.");
       return;
     }
 
@@ -829,8 +792,7 @@ router.post("/clearleavepenalty", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error removing leave penalty user.");
+    errors.serverError(res, "Could not remove leave penalty. Please try again.");
   }
 });
 
@@ -844,8 +806,7 @@ router.post("/unban", async (req, res) => {
     var rank = await redis.getUserRank(userIdToActOn);
 
     if (rank == null) {
-      res.status(500);
-      res.send("User does not exist.");
+      errors.notFound(res, "User does not exist.");
       return;
     }
 
@@ -911,8 +872,7 @@ router.post("/unban", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error unbanning user.");
+    errors.serverError(res, "Could not unban user. Please try again.");
   }
 });
 
@@ -938,8 +898,7 @@ router.post("/whitelist", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error whitelisting user.");
+    errors.serverError(res, "Could not whitelist user. Please try again.");
   }
 });
 
@@ -1027,8 +986,7 @@ router.post("/givePerms", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error giving permissions.");
+    errors.serverError(res, "Could not give permissions. Please try again.");
   }
 });
 
@@ -1075,8 +1033,7 @@ router.post("/blacklist", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error blacklisting user.");
+    errors.serverError(res, "Could not blacklist user. Please try again.");
   }
 });
 
@@ -1094,15 +1051,13 @@ router.get("/ips", async (req, res) => {
     }).select("ip");
 
     if (!user) {
-      res.status(500);
-      res.send("User does not exist.");
+      errors.notFound(res, "User does not exist.");
       return;
     }
     res.send(user.ip || []);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading IPs.");
+    errors.serverError(res, "Could not load IPs. Please refresh and try again.");
   }
 });
 
@@ -1120,8 +1075,7 @@ router.get("/alts", async (req, res) => {
     }).select("ip");
 
     if (!user) {
-      res.status(500);
-      res.send("User does not exist.");
+      errors.notFound(res, "User does not exist.");
       return;
     }
 
@@ -1133,8 +1087,7 @@ router.get("/alts", async (req, res) => {
     res.send(users);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading alt accounts.");
+    errors.serverError(res, "Could not load alt accounts. Please refresh and try again.");
   }
 });
 
@@ -1152,8 +1105,7 @@ router.get("/flagged", async (req, res) => {
     }).select("flagged");
 
     if (!user) {
-      res.status(500);
-      res.send("User does not exist.");
+      errors.notFound(res, "User does not exist.");
       return;
     }
 
@@ -1166,8 +1118,7 @@ router.get("/flagged", async (req, res) => {
     res.send({ flagged: Boolean(user.flagged || activeIpFlagBan) });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading flagged status.");
+    errors.serverError(res, "Could not load flagged status. Please refresh and try again.");
   }
 });
 
@@ -1211,8 +1162,7 @@ router.get("/bans", async (req, res) => {
     res.send(formattedBans);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading active bans.");
+    errors.serverError(res, "Could not load active bans. Please refresh and try again.");
   }
 });
 
@@ -1234,8 +1184,7 @@ router.post("/clearSetupName", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error clearing setup name.");
+    errors.serverError(res, "Could not clear setup name. Please try again.");
   }
 });
 
@@ -1257,8 +1206,7 @@ router.post("/clearSetupDescription", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error clearing setup description.");
+    errors.serverError(res, "Could not clear setup description. Please try again.");
   }
 });
 
@@ -1302,8 +1250,7 @@ router.post("/deleteStrategy", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error deleting strategy.");
+    errors.serverError(res, "Could not delete strategy. Please try again.");
   }
 });
 
@@ -1321,8 +1268,7 @@ router.post("/clearUserContent", async (req, res) => {
     var user = await models.User.findOne({ id: userIdToClear }).select("_id");
 
     if (!user) {
-      res.status(500);
-      res.send("User not found.");
+      errors.notFound(res, "User not found.");
       return;
     }
 
@@ -1509,8 +1455,7 @@ router.post("/clearUserContent", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error clearing user content.");
+    errors.serverError(res, "Could not clear user content. Please try again.");
   }
 });
 
@@ -1529,8 +1474,7 @@ router.post("/clearFamilyContent", async (req, res) => {
     );
 
     if (!family) {
-      res.status(500);
-      res.send("Family not found.");
+      errors.notFound(res, "Family not found.");
       return;
     }
 
@@ -1567,8 +1511,7 @@ router.post("/clearFamilyContent", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error clearing family content.");
+    errors.serverError(res, "Could not clear family content. Please try again.");
   }
 });
 
@@ -1664,8 +1607,7 @@ router.post("/restoreDeletedUser", async (req, res) => {
     }
 
     if (!firebaseUser) {
-      res.status(500);
-      res.send("Unable to provision Firebase account.");
+      errors.serverError(res, "Unable to provision Firebase account. Please try again.");
       return;
     }
 
@@ -1759,8 +1701,7 @@ router.post("/restoreDeletedUser", async (req, res) => {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error restoring deleted user.");
+    errors.serverError(res, "Could not restore deleted user. Please try again.");
   }
 });
 
@@ -1852,8 +1793,7 @@ router.post("/awardTrophy", async (req, res) => {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error awarding trophy.");
+    errors.serverError(res, "Could not award trophy. Please try again.");
   }
 });
 
@@ -1950,8 +1890,7 @@ router.post("/awardStamp", async (req, res) => {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error awarding stamp.");
+    errors.serverError(res, "Could not award stamp. Please try again.");
   }
 });
 
@@ -2017,8 +1956,7 @@ router.post("/revokeTrophy", async (req, res) => {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error revoking trophy.");
+    errors.serverError(res, "Could not revoke trophy. Please try again.");
   }
 });
 
@@ -2036,8 +1974,7 @@ router.post("/breakGame", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error clearing username.");
+    errors.serverError(res, "Could not break game. Please try again.");
   }
 });
 
@@ -2074,8 +2011,7 @@ router.post("/purgeGame", async (req, res) => {
     res.send("Game purged from database.");
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error purging game: " + e.message);
+    errors.serverError(res, "Could not purge game: " + e.message);
   }
 });
 
@@ -2097,8 +2033,7 @@ router.post("/kick", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error kicking user.");
+    errors.serverError(res, "Could not kick user. Please try again.");
   }
 });
 
@@ -2114,8 +2049,7 @@ router.post("/clearAllIPs", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error clearing IPs.");
+    errors.serverError(res, "Could not clear IPs. Please try again.");
   }
 });
 
@@ -2186,8 +2120,7 @@ router.post("/unlinkAccounts", async (req, res) => {
     res.send({ removed: intersection });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error unlinking accounts.");
+    errors.serverError(res, "Could not unlink accounts. Please try again.");
   }
 });
 
@@ -2519,8 +2452,7 @@ router.post("/refundGame", async (req, res) => {
     );
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error refunding game: " + e.message);
+    errors.serverError(res, "Could not refund game: " + e.message);
   }
 });
 
@@ -2558,8 +2490,7 @@ router.post("/changeName", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error changing name.");
+    errors.serverError(res, "Could not change name. Please try again.");
   }
 });
 
@@ -2604,8 +2535,7 @@ router.get("/actions", async function (req, res) {
     res.send(actions);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading mod actions.");
+    errors.serverError(res, "Could not load mod actions. Please refresh and try again.");
   }
 });
 
@@ -2629,8 +2559,7 @@ router.get("/announcements", async function (req, res) {
     res.send(announcements);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading announcements.");
+    errors.serverError(res, "Could not load announcements. Please refresh and try again.");
   }
 });
 
@@ -2644,8 +2573,7 @@ router.post("/announcement", async function (req, res) {
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
     if (content.length > constants.maxAnnouncementLength) {
-      res.status(500);
-      res.send("Announcement is too long.");
+      errors.unprocessable(res, "Announcement is too long.");
       return;
     }
 
@@ -2660,8 +2588,7 @@ router.post("/announcement", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error creating announcements.");
+    errors.serverError(res, "Could not create announcement. Please try again.");
   }
 });
 
@@ -2680,8 +2607,7 @@ router.post("/rankedApprove", async function (req, res) {
     }).select("_id");
 
     if (!userToApprove) {
-      res.status(500);
-      res.send("User does not exist.");
+      errors.notFound(res, "User does not exist.");
       return;
     }
 
@@ -2694,8 +2620,7 @@ router.post("/rankedApprove", async function (req, res) {
     });
 
     if (inGroup) {
-      res.status(500);
-      res.send("User is already approved for ranked.");
+      errors.conflict(res, "User is already approved for ranked.");
       return;
     }
 
@@ -2711,8 +2636,7 @@ router.post("/rankedApprove", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error approving user.");
+    errors.serverError(res, "Could not approve user. Please try again.");
   }
 });
 
@@ -2732,8 +2656,7 @@ router.post("/fixRankedAccess", async function (req, res) {
     }).select("_id");
 
     if (!userToFix) {
-      res.status(500);
-      res.send("User does not exist.");
+      errors.notFound(res, "User does not exist.");
       return;
     }
 
@@ -2762,8 +2685,7 @@ router.post("/fixRankedAccess", async function (req, res) {
     );
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error fixing ranked access: " + e.message);
+    errors.serverError(res, "Could not fix ranked access: " + e.message);
   }
 });
 
@@ -2782,8 +2704,7 @@ router.post("/competitiveApprove", async function (req, res) {
     }).select("_id");
 
     if (!userToApprove) {
-      res.status(500);
-      res.send("User does not exist.");
+      errors.notFound(res, "User does not exist.");
       return;
     }
 
@@ -2796,8 +2717,7 @@ router.post("/competitiveApprove", async function (req, res) {
     });
 
     if (inGroup) {
-      res.status(500);
-      res.send("User is already approved for Competitive.");
+      errors.conflict(res, "User is already approved for Competitive.");
       return;
     }
 
@@ -2815,8 +2735,7 @@ router.post("/competitiveApprove", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error approving user.");
+    errors.serverError(res, "Could not approve user. Please try again.");
   }
 });
 
@@ -2942,7 +2861,7 @@ router.get("/reports", async (req, res) => {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error loading reports.");
+    errors.serverError(res, "Could not load reports. Please refresh and try again.");
   }
 });
 
@@ -3051,7 +2970,7 @@ router.get("/reports/:id", async (req, res) => {
     res.send(report);
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error loading report.");
+    errors.serverError(res, "Could not load report. Please refresh and try again.");
   }
 });
 
@@ -3161,7 +3080,7 @@ router.post("/reports/:id/assign", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error assigning report.");
+    errors.serverError(res, "Could not assign report. Please try again.");
   }
 });
 
@@ -3255,7 +3174,7 @@ router.post("/reports/:id/status", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error updating status.");
+    errors.serverError(res, "Could not update status. Please try again.");
   }
 });
 
@@ -3642,7 +3561,7 @@ router.post("/reports/:id/complete", async (req, res) => {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error completing report.");
+    errors.serverError(res, "Could not complete report. Please try again.");
   }
 });
 
@@ -3816,7 +3735,7 @@ router.post("/reports/:id/reopen", async (req, res) => {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error reopening report.");
+    errors.serverError(res, "Could not reopen report. Please try again.");
   }
 });
 
@@ -3947,7 +3866,7 @@ router.post("/appeals/:id/approve", async (req, res) => {
     res.send({ appeal, violationTicket, originalReport });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error approving appeal.");
+    errors.serverError(res, "Could not approve appeal. Please try again.");
   }
 });
 
@@ -4022,7 +3941,7 @@ router.post("/appeals/:id/reject", async (req, res) => {
     res.send({ appeal });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error rejecting appeal.");
+    errors.serverError(res, "Could not reject appeal. Please try again.");
   }
 });
 
@@ -4089,7 +4008,7 @@ router.post("/reports/:id/rule", async (req, res) => {
     res.send({ report });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error updating rule.");
+    errors.serverError(res, "Could not update rule. Please try again.");
   }
 });
 
@@ -4104,7 +4023,7 @@ router.get("/autoApproval", async function (req, res) {
     res.json({ autoApprovalEnabled: enabled });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error getting auto-approval status.");
+    errors.serverError(res, "Could not get auto-approval status. Please refresh and try again.");
   }
 });
 
@@ -4123,7 +4042,7 @@ router.post("/autoApproval", async function (req, res) {
     res.json({ autoApprovalEnabled: enabled });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error toggling auto-approval.");
+    errors.serverError(res, "Could not toggle auto-approval. Please try again.");
   }
 });
 
@@ -4144,7 +4063,7 @@ router.post("/syncCompetitiveApprovals", async function (req, res) {
     const rankedGroup = await models.Group.findOne({ name: "Ranked Player" }).select("_id");
     const competitiveGroup = await models.Group.findOne({ name: "Competitive Player" }).select("_id");
     if (!rankedGroup || !competitiveGroup) {
-      res.status(500).send("Required groups not found.");
+      errors.notFound(res, "Required groups not found.");
       return;
     }
 
@@ -4184,7 +4103,7 @@ router.post("/syncCompetitiveApprovals", async function (req, res) {
     res.json({ restored });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error syncing competitive approvals.");
+    errors.serverError(res, "Could not sync competitive approvals. Please try again.");
   }
 });
 

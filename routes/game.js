@@ -8,6 +8,7 @@ const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 const axios = require("axios");
+const errors = require("../lib/errors");
 
 async function userCanPlayCompetitive(userId, minimumPoints = constants.minimumPointsForCompetitive) {
   const user = await redis.getUserInfo(userId);
@@ -39,8 +40,7 @@ router.post("/leave", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error leaving game");
+    errors.serverError(res, "Could not leave game. Please try again.");
   }
 });
 
@@ -108,7 +108,7 @@ router.get("/mostPlayedRecently", async (req, res) => {
     res.json(games);
   } catch (err) {
     logger.error(err);
-    res.status(500).end();
+    errors.serverError(res, "Failed to load recent games. Please refresh and try again.");
   }
 });
 
@@ -282,14 +282,12 @@ router.get("/:id/connect", async function (req, res) {
     const isSpectating = req.query.spectate === "true";
 
     if (!game) {
-      res.status(500);
-      res.send("Game not found.");
+      errors.notFound(res, "Game not found.");
       return;
     }
 
     if (!userId && !game.settings.guests) {
-      res.status(500);
-      res.send("You must be logged in to join or spectate games.");
+      errors.unauthorized(res, "You must be logged in to join or spectate games.");
       return;
     }
 
@@ -360,8 +358,7 @@ router.get("/:id/connect", async function (req, res) {
       }
 
       if (userId && !(await routeUtils.verifyPermission(userId, "playGame"))) {
-        res.status(500);
-        res.send("You are unable to play games.");
+        errors.forbidden(res, "You are unable to play games.");
         return;
       }
 
@@ -370,8 +367,8 @@ router.get("/:id/connect", async function (req, res) {
         game.settings.ranked &&
         !(await routeUtils.verifyPermission(userId, "playRanked"))
       ) {
-        res.status(500);
-        res.send(
+        errors.forbidden(
+          res,
           "You are unable to play ranked games. Please contact an admin if this is in error."
         );
         return;
@@ -382,8 +379,8 @@ router.get("/:id/connect", async function (req, res) {
         game.settings.competitive &&
         !(await routeUtils.verifyPermission(userId, "playCompetitive"))
       ) {
-        res.status(500);
-        res.send(
+        errors.forbidden(
+          res,
           "You are unable to play competitive games. Please contact an admin if this is in error."
         );
         return;
@@ -397,13 +394,11 @@ router.get("/:id/connect", async function (req, res) {
     if (type && !isNaN(port))
       res.send({ port, type, token, hostId: game.hostId });
     else {
-      res.status(500);
-      res.send("Error loading game.");
+      errors.serverError(res, "Could not load game. Please refresh and try again.");
     }
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading game.");
+    errors.serverError(res, "Could not load game. Please refresh and try again.");
   }
 });
 
@@ -444,8 +439,7 @@ router.get("/:id/review/data", async function (req, res) {
     
 
     if (!game) {
-      res.status(500);
-      res.send("Game not found");
+      errors.notFound(res, "Game not found");
       return;
     }
 
@@ -510,15 +504,13 @@ router.get("/:id/review/data", async function (req, res) {
         res.send(game);
         return;
       } else {
-        res.status(500);
-        res.send("Game not found");
+        errors.notFound(res, "Game not found");
         return;
       }
     }
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading game info");
+    errors.serverError(res, "Could not load game info. Please refresh and try again.");
   }
 });
 
@@ -536,8 +528,7 @@ router.get("/:id/info", async function (req, res) {
         .populate("users", "id name avatar -_id");
 
       if (!game) {
-        res.status(500);
-        res.send("Game not found");
+        errors.notFound(res, "Game not found");
         return;
       }
 
@@ -577,8 +568,7 @@ router.get("/:id/info", async function (req, res) {
     res.send(game);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading game info");
+    errors.serverError(res, "Could not load game info. Please refresh and try again.");
   }
 });
 
@@ -590,8 +580,7 @@ router.post("/host", async function (req, res) {
     else userId = await routeUtils.verifyLoggedIn(req);
 
     if (!(await routeUtils.verifyPermission(userId, "playGame"))) {
-      res.status(500);
-      res.send("You are unable to play games.");
+      errors.forbidden(res, "You are unable to play games.");
       return;
     }
 
@@ -607,8 +596,7 @@ router.post("/host", async function (req, res) {
       !routeUtils.validProp(gameType) ||
       constants.gameTypes.indexOf(gameType) == -1
     ) {
-      res.status(500);
-      res.send("Invalid game type.");
+      errors.badRequest(res, "Invalid game type.");
       return;
     }
 
@@ -616,8 +604,7 @@ router.post("/host", async function (req, res) {
       !routeUtils.validProp(lobby) ||
       constants.lobbies.indexOf(lobby) == -1
     ) {
-      res.status(500);
-      res.send("Invalid lobby.");
+      errors.badRequest(res, "Invalid lobby.");
       return;
     }
 
@@ -647,8 +634,7 @@ router.post("/host", async function (req, res) {
     }
 
     if (!req.body.setup) {
-      res.status(500);
-      res.send("Please select a setup");
+      errors.unprocessable(res, "Please select a setup");
       return;
     }
 
@@ -657,20 +643,18 @@ router.post("/host", async function (req, res) {
     }).select("-_id -__v -creator -hash");
 
     if (!setup) {
-      res.status(500);
-      res.send("Setup not found");
+      errors.notFound(res, "Setup not found");
       return;
     }
 
     if (setup.gameType != gameType) {
-      res.status(500);
-      res.send("Invalid setup for this game");
+      errors.badRequest(res, "Invalid setup for this game");
       return;
     }
 
     if (req.body.ranked && !setup.ranked) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         "This setup has not been approved for ranked play. Please contact an admin if this is in error."
       );
       return;
@@ -682,15 +666,15 @@ router.post("/host", async function (req, res) {
 
       // Check if the competitive round is completed or paused
       if (!roundInfo.round || roundInfo.round.completed) {
-        res.status(500);
-        res.send(
+        errors.forbidden(
+          res,
           "Competitive is not currently open. You cannot host competitive games at this time."
         );
         return;
       }
       if (roundInfo.seasonPaused) {
-        res.status(500);
-        res.send(
+        errors.forbidden(
+          res,
           "The competitive round is currently paused. You cannot host competitive games at this time."
         );
         return;
@@ -704,8 +688,8 @@ router.post("/host", async function (req, res) {
       }
 
       if (!setupAllowed) {
-        res.status(500);
-        res.send(
+        errors.forbidden(
+          res,
           "This setup is not allowed for the current round. Please contact an admin if this is in error."
         );
         return;
@@ -713,32 +697,27 @@ router.post("/host", async function (req, res) {
     }
 
     if (req.body.ranked && req.body.competitive) {
-      res.status(500);
-      res.send("You cannot host a game that is both ranked and competitive.");
+      errors.badRequest(res, "You cannot host a game that is both ranked and competitive.");
       return;
     }
 
     if (req.body.ranked && req.body.private) {
-      res.status(500);
-      res.send("Ranked games cannot be private.");
+      errors.badRequest(res, "Ranked games cannot be private.");
       return;
     }
 
     if (req.body.ranked && req.body.guests) {
-      res.status(500);
-      res.send("Ranked games cannot contain guests.");
+      errors.badRequest(res, "Ranked games cannot contain guests.");
       return;
     }
 
     if (req.body.competitive && req.body.private) {
-      res.status(500);
-      res.send("Competitive games cannot be private.");
+      errors.badRequest(res, "Competitive games cannot be private.");
       return;
     }
 
     if (req.body.competitive && req.body.guests) {
-      res.status(500);
-      res.send("Competitive games cannot contain guests.");
+      errors.badRequest(res, "Competitive games cannot contain guests.");
       return;
     }
 
@@ -746,8 +725,8 @@ router.post("/host", async function (req, res) {
       req.body.ranked &&
       !(await routeUtils.verifyPermission(userId, "playRanked"))
     ) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         "You are unable to play ranked games. Please contact an admin if this is in error."
       );
       return;
@@ -757,8 +736,8 @@ router.post("/host", async function (req, res) {
       req.body.competitive &&
       !(await routeUtils.verifyPermission(userId, "playCompetitive"))
     ) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         "You are unable to play competitive games. Please contact an admin if this is in error."
       );
       return;
@@ -826,8 +805,7 @@ router.post("/host", async function (req, res) {
     settings.anonymousDeckId = String(req.body.anonymousDeckId);
 
     if (typeof settings == "string") {
-      res.status(500);
-      res.send(settings);
+      errors.badRequest(res, settings);
       return;
     }
 
@@ -838,16 +816,14 @@ router.post("/host", async function (req, res) {
           id: item.trim(),
         }).select("id name disabled profiles");
         if (!deck) {
-          res.status(500);
-          res.send("Unable to find anonymous deck.");
+          errors.notFound(res, "Unable to find anonymous deck.");
           return;
         }
 
         deck = deck.toJSON();
 
         if (deck.disabled) {
-          res.status(500);
-          res.send("This deck has been disabled by a moderator.");
+          errors.forbidden(res, "This deck has been disabled by a moderator.");
           return;
         }
         let deckProfiles = await models.DeckProfile.find({
@@ -855,14 +831,12 @@ router.post("/host", async function (req, res) {
         }).select("name avatar id deathMessage color");
 
         if (!deckProfiles) {
-          res.status(500);
-          res.send("Unable to find profiles.");
+          errors.notFound(res, "Unable to find profiles.");
           return;
         }
 
         if (deckProfiles.length < setup.total) {
-          res.status(500);
-          res.send("This deck is too small for the chosen setup.");
+          errors.badRequest(res, "This deck is too small for the chosen setup.");
           return;
         }
         let jsonProfiles = [];
@@ -880,8 +854,7 @@ router.post("/host", async function (req, res) {
     var lobbyCheck = lobbyChecks[lobby](gameType, req.body, setup);
 
     if (typeof lobbyCheck == "string") {
-      res.status(500);
-      res.send(lobbyCheck);
+      errors.badRequest(res, lobbyCheck);
       return;
     }
 
@@ -889,36 +862,31 @@ router.post("/host", async function (req, res) {
     setup.roles = JSON.parse(setup.roles);
 
     if (await redis.getSetCreatingGame(userId)) {
-      res.status(500);
-      res.send("Already creating a game.");
+      errors.conflict(res, "Already creating a game.");
       redis.unsetCreatingGame(userId);
       return;
     }
 
     if (!scheduled && (await redis.inGame(userId))) {
-      res.status(500);
-      res.send("You must leave your current game before creating a new one.");
+      errors.conflict(res, "You must leave your current game before creating a new one.");
       redis.unsetCreatingGame(userId);
       return;
     }
 
     if (scheduled && (await redis.hostingScheduled(userId))) {
-      res.status(500);
-      res.send("You already have a game scheduled.");
+      errors.conflict(res, "You already have a game scheduled.");
       redis.unsetCreatingGame(userId);
       return;
     }
 
     if (scheduled && scheduled < Date.now() + 5 * 60 * 1000) {
-      res.status(500);
-      res.send("Games must be scheduled at least 5 minutes in advance.");
+      errors.badRequest(res, "Games must be scheduled at least 5 minutes in advance.");
       redis.unsetCreatingGame(userId);
       return;
     }
 
     if (scheduled && scheduled > Date.now() + 4 * 7 * 24 * 60 * 60 * 1000) {
-      res.status(500);
-      res.send("Games must be scheduled to start within 4 weeks.");
+      errors.badRequest(res, "Games must be scheduled to start within 4 weeks.");
       redis.unsetCreatingGame(userId);
       return;
     }
@@ -985,8 +953,7 @@ router.post("/host", async function (req, res) {
     }
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error hosting game.");
+    errors.serverError(res, "Could not host game. Please try again or contact support if this persists.");
   }
 });
 
@@ -996,28 +963,25 @@ router.post("/reserve", async function (req, res) {
     var gameId = String(req.body.gameId);
 
     if (!(await routeUtils.verifyPermission(userId, "playGame"))) {
-      res.status(500);
-      res.send("You are unable to play games.");
+      errors.forbidden(res, "You are unable to play games.");
       return;
     }
 
     var game = await redis.getGameInfo(gameId);
 
     if (!game) {
-      res.status(500);
-      res.send("Game not found.");
+      errors.notFound(res, "Game not found.");
       return;
     }
 
     if (!game.settings.scheduled) {
-      res.status(500);
-      res.send("Game is not scheduled to start in the future.");
+      errors.conflict(res, "Game is not scheduled to start in the future.");
       return;
     }
 
     if (game.settings.scheduled <= Date.now()) {
-      res.status(500);
-      res.send(
+      errors.conflict(
+        res,
         "Reservations are closed, try joining if the game has not started yet."
       );
       return;
@@ -1032,8 +996,7 @@ router.post("/reserve", async function (req, res) {
       );
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error reserving seat in game.");
+    errors.serverError(res, "Could not reserve seat in game. Please try again.");
   }
 });
 
@@ -1045,14 +1008,12 @@ router.post("/unreserve", async function (req, res) {
     var game = await redis.getGameInfo(gameId);
 
     if (!game) {
-      res.status(500);
-      res.send("Game not found.");
+      errors.notFound(res, "Game not found.");
       return;
     }
 
     if (!game.settings.scheduled) {
-      res.status(500);
-      res.send("Game is not scheduled to start in the future.");
+      errors.conflict(res, "Game is not scheduled to start in the future.");
       return;
     }
 
@@ -1060,8 +1021,7 @@ router.post("/unreserve", async function (req, res) {
     res.send("Game reservation cancelled.");
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error unreserving seat in game.");
+    errors.serverError(res, "Could not unreserve seat in game. Please try again.");
   }
 });
 
@@ -1078,8 +1038,7 @@ router.post("/:id/archive", async function (req, res) {
     var itemsOwned = await redis.getUserItemsOwned(userId);
 
     if (!itemsOwned.archivedGames) {
-      res.status(500);
-      res.send("You must purchase archived games from the Shop.");
+      errors.forbidden(res, "You must purchase archived games from the Shop.");
       return;
     }
 
@@ -1087,8 +1046,7 @@ router.post("/:id/archive", async function (req, res) {
       user: user._id,
     }).select("user game");
     if (archivedGames.length >= itemsOwned.archivedGamesMax) {
-      res.status(500);
-      res.send("You must purchase additional archived games from the Shop.");
+      errors.forbidden(res, "You must purchase additional archived games from the Shop.");
       return;
     }
 
@@ -1097,8 +1055,7 @@ router.post("/:id/archive", async function (req, res) {
       .populate("setup", "name -_id");
 
     if (!game) {
-      res.status(500);
-      res.send("Game not found");
+      errors.notFound(res, "Game not found");
       return;
     }
 
@@ -1107,8 +1064,7 @@ router.post("/:id/archive", async function (req, res) {
         .map((item) => item.game.toString())
         .includes(game._id.toString())
     ) {
-      res.status(500);
-      res.send("You've already archived this game.");
+      errors.conflict(res, "You've already archived this game.");
       return;
     }
 
@@ -1124,8 +1080,7 @@ router.post("/:id/archive", async function (req, res) {
     res.send("Successfully archived game.");
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error archiving game.");
+    errors.serverError(res, "Could not archive game. Please try again.");
   }
 });
 
@@ -1150,8 +1105,7 @@ router.delete("/:id/archive", async function (req, res) {
     }
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error deleting archived game.");
+    errors.serverError(res, "Could not delete archived game. Please try again.");
   }
 });
 
@@ -1163,20 +1117,17 @@ router.post("/cancel", async function (req, res) {
     var game = await redis.getGameInfo(gameId);
 
     if (!game) {
-      res.status(500);
-      res.send("Game not found.");
+      errors.notFound(res, "Game not found.");
       return;
     }
 
     if (userId != game.hostId) {
-      res.status(500);
-      res.send("You are not the host of this game.");
+      errors.forbidden(res, "You are not the host of this game.");
       return;
     }
 
     if (!game.settings.scheduled) {
-      res.status(500);
-      res.send("Game is not scheduled to start in the future.");
+      errors.conflict(res, "Game is not scheduled to start in the future.");
       return;
     }
 
@@ -1184,8 +1135,7 @@ router.post("/cancel", async function (req, res) {
     res.send("Scheduled game cancelled.");
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error cancelling scheduled game.");
+    errors.serverError(res, "Could not cancel scheduled game. Please try again.");
   }
 });
 

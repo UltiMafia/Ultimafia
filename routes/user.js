@@ -17,6 +17,7 @@ const constants = require("../data/constants");
 const dbStats = require("../db/stats");
 const { colorHasGoodContrastForBothThemes } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
+const errors = require("../lib/errors");
 const router = express.Router();
 
 /** Keep in sync with `isRetroThemeForcedByCalendar` in react_main/src/utils/holidayThemes.js */
@@ -110,8 +111,7 @@ router.get("/info", async function (req, res) {
     res.send(user);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading user info");
+    errors.serverError(res, "Could not load user info. Please refresh and try again.");
   }
 });
 
@@ -125,8 +125,7 @@ router.get("/me/favorite-roles", async function (req, res) {
     res.send(user?.favoriteRoles ?? []);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading favorite roles.");
+    errors.serverError(res, "Could not load favorite roles. Please refresh and try again.");
   }
 });
 
@@ -144,8 +143,7 @@ router.post("/role-favorite", async function (req, res) {
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select("favoriteRoles -_id");
     if (!user) {
-      res.status(500);
-      res.send("User not found.");
+      errors.notFound(res, "User not found.");
       return;
     }
     var list = user.favoriteRoles || [];
@@ -171,8 +169,7 @@ router.post("/role-favorite", async function (req, res) {
     res.send(list);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error favoriting role.");
+    errors.serverError(res, "Could not favorite role. Please try again.");
   }
 });
 
@@ -418,8 +415,7 @@ router.get("/:id/profile", async function (req, res) {
       });
 
     if (!user) {
-      res.status(500);
-      res.send("Unable to load profile info.");
+      errors.notFound(res, "Unable to load profile info.");
       return;
     }
 
@@ -914,8 +910,7 @@ router.get("/:id/profile", async function (req, res) {
     res.send(user);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Unable to load profile info.");
+    errors.serverError(res, "Could not load profile info. Please refresh and try again.");
   }
 });
 
@@ -935,8 +930,7 @@ router.post("/karma", async function (req, res) {
     }).select("-_id");
 
     if (!user) {
-      res.status(500);
-      res.send("Unable to find user.");
+      errors.notFound(res, "Unable to find user.");
       return;
     }
 
@@ -945,8 +939,7 @@ router.post("/karma", async function (req, res) {
     var direction = Number(req.body.direction);
 
     if (direction != 1 && direction != -1) {
-      res.status(500);
-      res.send("Bad vote direction");
+      errors.badRequest(res, "Bad vote direction");
       return;
     }
 
@@ -996,8 +989,7 @@ router.post("/karma", async function (req, res) {
     }
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error voting.");
+    errors.serverError(res, "Could not record vote. Please try again.");
   }
 });
 
@@ -1085,8 +1077,7 @@ router.get("/:id/friends", async function (req, res) {
     res.send(friends);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Unable to load friends.");
+    errors.serverError(res, "Could not load friends. Please refresh and try again.");
   }
 });
 
@@ -1155,8 +1146,7 @@ router.get("/:id/setups", async function (req, res) {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Unable to load setups.");
+    errors.serverError(res, "Could not load setups. Please refresh and try again.");
   }
 });
 
@@ -1238,8 +1228,7 @@ router.get("/:id/games", async function (req, res) {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Unable to load games.");
+    errors.serverError(res, "Could not load games. Please refresh and try again.");
   }
 });
 
@@ -1345,7 +1334,7 @@ router.get("/:id/reports", async function (req, res) {
     });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error loading reports.");
+    errors.serverError(res, "Could not load reports. Please refresh and try again.");
   }
 });
 
@@ -1390,8 +1379,7 @@ router.get("/:id/info", async function (req, res) {
     res.send(user);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error getting user");
+    errors.serverError(res, "Could not get user. Please refresh and try again.");
   }
 });
 
@@ -1487,8 +1475,7 @@ router.get("/:id/nameHistory", async function (req, res) {
     res.send(nameHistory);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error loading name history.");
+    errors.serverError(res, "Could not load name history. Please refresh and try again.");
   }
 });
 
@@ -1610,8 +1597,7 @@ router.post("/youtube", async function (req, res) {
     res.send("Media updated successfully.");
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating media.");
+    errors.serverError(res, "Could not update media. Please try again.");
   }
 });
 
@@ -1627,14 +1613,13 @@ router.post("/deathMessage", async function (req, res) {
     let deathMessage = String(req.body.deathMessage);
 
     if (!itemsOwned.deathMessageEnabled) {
-      res.status(500);
-      res.send("You must purchase custom death messages from the Shop.");
+      errors.forbidden(res, "You must purchase custom death messages from the Shop.");
       return;
     }
 
     if (itemsOwned.deathMessageChange < 1) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         "You must purchase additional death messages changes from the Shop."
       );
       return;
@@ -1646,8 +1631,8 @@ router.post("/deathMessage", async function (req, res) {
     }
 
     if (!deathMessage.includes("${name}")) {
-      res.status(500);
-      res.send(
+      errors.unprocessable(
+        res,
         "You must use ${name} in the death message as a placeholder for your username."
       );
       return;
@@ -1664,8 +1649,7 @@ router.post("/deathMessage", async function (req, res) {
     res.send("Death message updated successfully");
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating death message.");
+    errors.serverError(res, "Could not update death message. Please try again.");
   }
 });
 
@@ -1683,16 +1667,15 @@ router.post("/customEmote/create", async function (req, res) {
     const ownedCustomEmotes =
       user.itemsOwned.customEmotes + user.itemsOwned.customEmotesExtra;
     if (user.customEmotes.length >= ownedCustomEmotes) {
-      res.status(500);
-      res.send("You need to purchase more custom emotes from the shop.");
+      errors.forbidden(res, "You need to purchase more custom emotes from the shop.");
       return;
     }
 
     const maxOwnedCustomEmotes =
       constants.maxOwnedCustomEmotes + constants.maxOwnedCustomEmotesExtra;
     if (user.customEmotes.length >= maxOwnedCustomEmotes) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         `You can only have up to ${maxOwnedCustomEmotes} custom emotes linked to your account.`
       );
       return;
@@ -1803,8 +1786,7 @@ router.post("/customEmote/create", async function (req, res) {
     res.send(customEmote);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Unable to make custom emote.");
+    errors.serverError(res, "Could not create custom emote. Please try again.");
   }
 });
 
@@ -1827,8 +1809,7 @@ router.post("/customEmote/delete", async function (req, res) {
       ]);
 
     if (!customEmote || customEmote.creator.id != userId) {
-      res.status(500);
-      res.send("You can only delete custom emotes you have created.");
+      errors.forbidden(res, "You can only delete custom emotes you have created.");
       return;
     }
 
@@ -1851,8 +1832,7 @@ router.post("/customEmote/delete", async function (req, res) {
     return;
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Unable to delete custom emote.");
+    errors.serverError(res, "Could not delete custom emote. Please try again.");
   }
 });
 
@@ -1865,8 +1845,7 @@ router.post("/settings/update", async function (req, res) {
 
     if (!routeUtils.validProp(prop)) {
       logger.warn(`Invalid settings prop by ${userId}: ${prop}`);
-      res.status(500);
-      res.send("Error updating settings.");
+      errors.badRequest(res, "Invalid settings property.");
       return;
     }
 
@@ -1882,36 +1861,34 @@ router.post("/settings/update", async function (req, res) {
       (prop == "backgroundColor" || prop == "bannerFormat") &&
       !itemsOwned.customProfile
     ) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         "You must purchase profile customization with coins from the Shop."
       );
       return;
     }
 
     if (prop == "avatarShape" && !itemsOwned.avatarShape) {
-      res.status(500);
-      res.send("You must purchase Square with coins from the Shop.");
+      errors.forbidden(res, "You must purchase Square with coins from the Shop.");
       return;
     }
 
     if (prop == "customPrimaryColor" && !itemsOwned.customPrimaryColor) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         "You must purchase Custom Site Primary Color with coins from the Shop."
       );
       return;
     }
 
     if (prop == "iconFilter" && !itemsOwned.iconFilter) {
-      res.status(500);
-      res.send("You must purchase Icon Filter with coins from the Shop.");
+      errors.forbidden(res, "You must purchase Icon Filter with coins from the Shop.");
       return;
     }
 
     if (prop == "backgroundRepeatMode" && !itemsOwned.profileBackground) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         "You must purchase Profile Background with coins from the Shop."
       );
       return;
@@ -1921,8 +1898,7 @@ router.post("/settings/update", async function (req, res) {
       (prop == "textColor" || prop == "nameColor") &&
       !itemsOwned.textColors
     ) {
-      res.status(500);
-      res.send("You must purchase text colors with coins from the Shop.");
+      errors.forbidden(res, "You must purchase text colors with coins from the Shop.");
       return;
     }
 
@@ -1934,8 +1910,8 @@ router.post("/settings/update", async function (req, res) {
 
       // Validate deathMessage includes ${name} placeholder (after truncation)
       if (!value.includes("${name}")) {
-        res.status(500);
-        res.send(
+        errors.unprocessable(
+          res,
           "You must use ${name} in the death message as a placeholder for your username."
         );
         return;
@@ -1945,8 +1921,7 @@ router.post("/settings/update", async function (req, res) {
     if (prop === "youtube") {
       // Validate URL length
       if (value.length > 200) {
-        res.status(500);
-        res.send("URL is too long");
+        errors.unprocessable(res, "URL is too long");
         return;
       }
 
@@ -1982,8 +1957,7 @@ router.post("/settings/update", async function (req, res) {
         // Valid URL for other allowed services or empty
         // value is already set, no need to modify
       } else {
-        res.status(500);
-        res.send("Error updating settings.");
+        errors.badRequest(res, "Invalid URL for media setting.");
         return;
       }
     }
@@ -2024,8 +1998,7 @@ router.post("/settings/update", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating settings.");
+    errors.serverError(res, "Could not update settings. Please try again.");
   }
 });
 
@@ -2042,18 +2015,16 @@ router.post("/bio", async function (req, res) {
       await models.User.updateOne({ id: userId }, { $set: { bio: bio } });
       res.sendStatus(200);
     } else if (bio.length >= constants.maxBioContentLength) {
-      res.status(500);
-      res.send(
+      errors.unprocessable(
+        res,
         `Bio must be less than ${constants.maxBioContentLength} characters`
       );
     } else {
-      res.status(500);
-      res.send("Error editing bio");
+      errors.serverError(res, "Could not edit bio. Please try again.");
     }
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error editing bio");
+    errors.serverError(res, "Could not edit bio. Please try again.");
   }
 });
 
@@ -2065,8 +2036,7 @@ router.post("/contributorBio", async function (req, res) {
 
     // Limit to 240 characters
     if (bio.length > 240) {
-      res.status(500);
-      res.send("Contributor bio must be 240 characters or less.");
+      errors.unprocessable(res, "Contributor bio must be 240 characters or less.");
       return;
     }
 
@@ -2079,8 +2049,7 @@ router.post("/contributorBio", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating contributor bio.");
+    errors.serverError(res, "Could not update contributor bio. Please try again.");
   }
 });
 
@@ -2091,8 +2060,7 @@ router.post("/donorBio", async function (req, res) {
     var bio = String(req.body.bio || "");
 
     if (bio.length > 240) {
-      res.status(500);
-      res.send("Donor bio must be 240 characters or less.");
+      errors.unprocessable(res, "Donor bio must be 240 characters or less.");
       return;
     }
 
@@ -2100,8 +2068,7 @@ router.post("/donorBio", async function (req, res) {
       "_id"
     );
     if (!donorGroup) {
-      res.status(500);
-      res.send("Donor group not configured.");
+      errors.notFound(res, "Donor group not configured.");
       return;
     }
 
@@ -2111,8 +2078,7 @@ router.post("/donorBio", async function (req, res) {
     }).select("_id");
 
     if (!userDoc) {
-      res.status(500);
-      res.send("User not found.");
+      errors.notFound(res, "User not found.");
       return;
     }
 
@@ -2133,8 +2099,7 @@ router.post("/donorBio", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating donor blurb.");
+    errors.serverError(res, "Could not update donor blurb. Please try again.");
   }
 });
 
@@ -2154,18 +2119,16 @@ router.post("/pronouns", async function (req, res) {
       );
       res.sendStatus(200);
     } else if (pronouns.length >= constants.maxPronounsContentLength) {
-      res.status(500);
-      res.send(
+      errors.unprocessable(
+        res,
         `Pronouns must be less than ${constants.maxPronounsContentLength} characters`
       );
     } else {
-      res.status(500);
-      res.send("Error editing pronouns");
+      errors.serverError(res, "Could not edit pronouns. Please try again.");
     }
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error editing pronouns");
+    errors.serverError(res, "Could not edit pronouns. Please try again.");
   }
 });
 
@@ -2175,8 +2138,8 @@ router.post("/banner", async function (req, res) {
     var itemsOwned = await redis.getUserItemsOwned(userId);
 
     if (!itemsOwned.customProfile) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         "You must purcahse profile customization with coins from the Shop."
       );
       return;
@@ -2204,13 +2167,11 @@ router.post("/banner", async function (req, res) {
 
     res.sendStatus(200);
   } catch (e) {
-    res.status(500);
-
     if (e.message.indexOf("maxFileSize exceeded") == 0)
-      res.send("Image is too large, banner must be less than 1 MB");
+      errors.payloadTooLarge(res, "Image is too large, banner must be less than 1 MB");
     else {
       logger.error(e);
-      res.send("Error uploading avatar image");
+      errors.serverError(res, "Could not upload banner image. Please try again.");
     }
   }
 });
@@ -2227,8 +2188,7 @@ router.post("/banner/clear", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error clearing banner");
+    errors.serverError(res, "Could not clear banner. Please try again.");
   }
 });
 
@@ -2264,13 +2224,11 @@ router.post("/avatar", async function (req, res) {
 
     res.sendStatus(200);
   } catch (e) {
-    res.status(500);
-
     if (e.message.indexOf("maxFileSize exceeded") == 0)
-      res.send("Image is too large, avatar must be less than 1 MB.");
+      errors.payloadTooLarge(res, "Image is too large, avatar must be less than 1 MB.");
     else {
       logger.error(e);
-      res.send("Error uploading avatar image.");
+      errors.serverError(res, "Could not upload avatar image. Please try again.");
     }
   }
 });
@@ -2281,8 +2239,8 @@ router.post("/profileBackground", async function (req, res) {
     var itemsOwned = await redis.getUserItemsOwned(userId);
 
     if (!itemsOwned.profileBackground) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         "You must purchase Profile Background with coins from the Shop."
       );
       return;
@@ -2311,13 +2269,11 @@ router.post("/profileBackground", async function (req, res) {
 
     res.sendStatus(200);
   } catch (e) {
-    res.status(500);
-
     if (e.message.indexOf("maxFileSize exceeded") == 0)
-      res.send("Image is too large, background must be less than 5 MB.");
+      errors.payloadTooLarge(res, "Image is too large, background must be less than 5 MB.");
     else {
       logger.error(e);
-      res.send("Error uploading profile background image.");
+      errors.serverError(res, "Could not upload profile background image. Please try again.");
     }
   }
 });
@@ -2328,8 +2284,8 @@ router.delete("/profileBackground", async function (req, res) {
     var itemsOwned = await redis.getUserItemsOwned(userId);
 
     if (!itemsOwned.profileBackground) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         "You must purchase Profile Background with coins from the Shop."
       );
       return;
@@ -2351,8 +2307,7 @@ router.delete("/profileBackground", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error removing profile background image.");
+    errors.serverError(res, "Could not remove profile background image. Please try again.");
   }
 });
 
@@ -2368,8 +2323,8 @@ router.post("/birthday", async function (req, res) {
     }
 
     if (bdayChanged) {
-      res.status(500);
-      res.send(
+      errors.conflict(
+        res,
         "You have already changed your birthday. Please contact a moderator if you need to reset it."
       );
       return;
@@ -2387,8 +2342,7 @@ router.post("/birthday", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error updating birthday.");
+    errors.serverError(res, "Could not update birthday. Please try again.");
   }
 });
 
@@ -2409,8 +2363,7 @@ router.delete("/birthday", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error clearing birthday.");
+    errors.serverError(res, "Could not clear birthday. Please try again.");
   }
 });
 
@@ -2424,40 +2377,40 @@ router.post("/name", async function (req, res) {
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
     if (name.length == 3 && !itemsOwned.threeCharName) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         "You must purchase 3 character usernames with coins from the Shop."
       );
       return;
     }
 
     if (name.length == 2 && !itemsOwned.twoCharName) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         "You must purchase 2 character usernames with coins from the Shop."
       );
       return;
     }
 
     if (name.length == 1 && !itemsOwned.oneCharName) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         "You must purchase 1 character usernames with coins from the Shop."
       );
       return;
     }
 
     if (name.length < 1 || name.length > constants.maxUserNameLength) {
-      res.status(500);
-      res.send(
+      errors.unprocessable(
+        res,
         `Names must be between 4 and ${constants.maxUserNameLength} characters.`
       );
       return;
     }
 
     if (!name.match(routeUtils.usernameRegex)) {
-      res.status(500);
-      res.send(
+      errors.badRequest(
+        res,
         "Names can only contain letters, numbers, and nonconsecutive undescores/hyphens."
       );
       return;
@@ -2466,8 +2419,8 @@ router.post("/name", async function (req, res) {
     var ownedItems = await redis.getUserItemsOwned(userId);
 
     if (ownedItems.nameChange < 1) {
-      res.status(500);
-      res.send(
+      errors.forbidden(
+        res,
         "You must purchase additional name changes with coins from the Shop."
       );
       return;
@@ -2478,8 +2431,7 @@ router.post("/name", async function (req, res) {
     }).select("_id");
 
     if (existingUser) {
-      res.status(500);
-      res.send("There is already a user with this name.");
+      errors.conflict(res, "There is already a user with this name.");
       return;
     }
 
@@ -2520,8 +2472,7 @@ router.post("/name", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error changing username");
+    errors.serverError(res, "Could not change username. Please try again.");
   }
 });
 
@@ -2532,8 +2483,7 @@ router.post("/block", async function (req, res) {
     var userIdToBlock = String(req.body.user);
 
     if (userId == userIdToBlock) {
-      res.status(500);
-      res.send("You cannot block yourself.");
+      errors.badRequest(res, "You cannot block yourself.");
       return;
     }
 
@@ -2542,8 +2492,7 @@ router.post("/block", async function (req, res) {
     );
 
     if (!userToBlock) {
-      res.status(500);
-      res.send("User not found.");
+      errors.notFound(res, "User not found.");
       return;
     }
 
@@ -2565,8 +2514,7 @@ router.post("/block", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error blocking user.");
+    errors.serverError(res, "Could not block user. Please try again.");
   }
 });
 
@@ -2650,7 +2598,7 @@ router.post("/love", async function (req, res) {
     var requestType = String(req.body.reqType);
 
     if (userId === userIdToLove) {
-      res.status(500);
+      res.status(400);
       res.send({
         message: "Self love is good, but the site doesn't work that way.",
         love: null,
@@ -2791,8 +2739,7 @@ router.post("/love", async function (req, res) {
     res.send({ message: response, requestType: createRequestType });
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send(err);
+    errors.serverError(res, err || "Could not send love/marriage request. Please try again.");
   }
 });
 
@@ -2803,8 +2750,7 @@ router.post("/friend", async function (req, res) {
     var userIdToFriend = String(req.body.user);
 
     if (userId == userIdToFriend) {
-      res.status(500);
-      res.send("You cannot be friends with yourself.");
+      errors.badRequest(res, "You cannot be friends with yourself.");
       return;
     }
 
@@ -2915,8 +2861,7 @@ router.post("/friend", async function (req, res) {
     res.send("Friend request sent.");
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error sending friend request.");
+    errors.serverError(res, "Could not send friend request. Please try again.");
   }
 });
 
@@ -2933,8 +2878,7 @@ router.post("/friend/reject", async function (req, res) {
     res.send("Friend request rejected.");
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error rejecting friend request.");
+    errors.serverError(res, "Could not reject friend request. Please try again.");
   }
 });
 
@@ -2973,8 +2917,7 @@ router.post("/logout", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error logging out.");
+    errors.serverError(res, "Could not log out. Please try again.");
   }
 });
 
@@ -3032,8 +2975,7 @@ router.post("/delete", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error deleting account.");
+    errors.serverError(res, "Could not delete account. Please try again.");
   }
 });
 
@@ -3191,7 +3133,7 @@ router.post("/appeals", async function (req, res) {
     res.status(200).send({ appeal, appealReport });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error submitting appeal.");
+    errors.serverError(res, "Could not submit appeal. Please try again.");
   }
 });
 
@@ -3292,8 +3234,7 @@ router.post("/poke", async function (req, res) {
     res.send("Poke sent!");
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error sending poke.");
+    errors.serverError(res, "Could not send poke. Please try again.");
   }
 });
 
@@ -3350,8 +3291,7 @@ router.post("/poke/back", async function (req, res) {
     res.send("Poked back!");
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error poking back.");
+    errors.serverError(res, "Could not poke back. Please try again.");
   }
 });
 
@@ -3382,8 +3322,7 @@ router.post("/poke/dismiss", async function (req, res) {
     res.send("Poke dismissed.");
   } catch (e) {
     logger.error(e);
-    res.status(500);
-    res.send("Error dismissing poke.");
+    errors.serverError(res, "Could not dismiss poke. Please try again.");
   }
 });
 
