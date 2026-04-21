@@ -129,6 +129,34 @@ router.post("/viewed", async function (req, res) {
   }
 });
 
+// Mark a batch of notifications as read
+router.post("/read", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const ids = Array.isArray(req.body.ids) ? req.body.ids : [];
+
+    if (ids.length === 0) {
+      res.sendStatus(200);
+      return;
+    }
+
+    await models.Notification.updateMany(
+      {
+        id: { $in: ids },
+        $or: [{ user: userId }, { global: true }],
+        read: false,
+      },
+      { $set: { read: true } }
+    );
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error marking notifications as read");
+  }
+});
+
 // Mark a single notification as read
 router.post("/read/:notifId", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
