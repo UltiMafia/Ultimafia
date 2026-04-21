@@ -7,6 +7,8 @@ module.exports = class PaintPortraits extends Card {
   constructor(role) {
     super(role);
 
+    role.player.data.portraits = role.player.data.portraits || [];
+
     this.passiveActions = [
       {
         actor: role.player,
