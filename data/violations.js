@@ -274,8 +274,8 @@ const violationDefinitions = [
           "If the Town puts Mafia in a position where they are forced to either kill into autoloss or no-kill and bring forth the endgame event, it is the fault of the Town for creating the no-win scenario. It is autoloss for Mafia either way, so Town must do something during the day before the endgame event to progress the game.",
 
       },
-    ]
-      offenses: ["24 hours", "24 hours", "3 months"],
+    ],
+    offenses: ["24 hours", "24 hours", "3 months"],
     category: "Game",
     appliesTo: ["game", "playRanked", "playCompetitive"],
   },
