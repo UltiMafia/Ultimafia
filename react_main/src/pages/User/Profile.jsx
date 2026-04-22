@@ -185,6 +185,8 @@ export default function Profile() {
   const [married, setMarried] = useState({});
   const [friendRequests, setFriendRequests] = useState([]);
   const [stats, setStats] = useState();
+  /** All finished games in DB (any mode); from GET /api/user/:id/profile `totalGames`. */
+  const [profileTotalGames, setProfileTotalGames] = useState(0);
   const [groups, setGroups] = useState([]);
   const [showStatsModal, setShowStatsModal] = useState(false);
   const [ratingsTab, setRatingsTab] = useState("wins");
@@ -297,6 +299,7 @@ export default function Profile() {
     if (userId) {
       setProfileLoaded(false);
       setCanonicalUserId(null);
+      setProfileTotalGames(0);
 
       axios
         .get(`/api/user/${userId}/profile`)
@@ -304,6 +307,7 @@ export default function Profile() {
           const resolvedId = res.data.id;
           setCanonicalUserId(resolvedId);
           setProfileLoaded(true);
+          setProfileTotalGames(res.data.totalGames ?? 0);
           setName(res.data.name);
           setAvatar(res.data.avatar);
           setBanner(res.data.banner);
@@ -1659,7 +1663,13 @@ export default function Profile() {
                   <Typography variant="h3" sx={headingStyle}>
                     Mafia Ratings
                     <Typography component="span" variant="body2" sx={{ opacity: 0.5, ml: 1 }}>
-                      {totalGames} games
+                      {profileTotalGames.toLocaleString()} total games
+                      {totalGames !== profileTotalGames ? (
+                        <>
+                          {" "}
+                          · {totalGames} in this view
+                        </>
+                      ) : null}
                     </Typography>
                   </Typography>
                   <ToggleButtonGroup

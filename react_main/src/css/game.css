@@ -454,6 +454,12 @@
   flex-flow: row;
 }
 
+.game .speech-input-field-group {
+  flex-grow: 1;
+  display: flex;
+  flex-flow: column;
+}
+
 .game .speech-dropdown {
   background-color: var(--scheme-color-sec);
   color: white;
@@ -466,6 +472,38 @@
 
   background-color: var(--scheme-color);
   font-size: 16px;
+}
+
+.game .speech-cooldown-progress {
+  height: 3px;
+  margin-top: 2px;
+  border-radius: 999px;
+  background-color: rgba(244, 67, 54, 0.18);
+  overflow: hidden;
+}
+
+.game .speech-cooldown-progress-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(244, 67, 54, 0.45),
+    rgba(244, 67, 54, 0.85)
+  );
+  transition: width 0.1s linear;
+}
+
+@keyframes speak-cooldown-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.08);
+  }
+  50% {
+    box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.08);
+  }
 }
 
 .game .speech-input-area i {

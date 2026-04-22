@@ -1,23 +1,52 @@
 // Helpers for reading Mafia per-player stats.
-// Stats layout: { wins: { count, total }, abandons: { count, total }, ... }
-// - wins.total = games the player finished (win or loss)
+// Stats layout: { totalGames, wins: { count, total }, abandons: { count, total }, ... }
+// - wins.total = games the player finished (win or loss), excluding abandons
 // - wins.count = games the player won
 // - abandons.count = games the player abandoned mid-game
+//
+// Some historical rows were written while abandons were also incrementing wins.total.
+// Normalize those rows for display so percentages/pies remain accurate.
+
+function normalizeStats(stats) {
+  const winsCount = Math.max(0, Number(stats?.wins?.count) || 0);
+  const winsTotalRaw = Math.max(winsCount, Number(stats?.wins?.total) || 0);
+  const abandonCount = Math.max(0, Number(stats?.abandons?.count) || 0);
+  const totalGamesField = Math.max(0, Number(stats?.totalGames) || 0);
+
+  let completedGames = winsTotalRaw;
+
+  // Heuristic for legacy/bad rows:
+  // if totalGames is not greater than wins.total while abandons exist,
+  // abandons were likely included in wins.total. Remove them once.
+  if (abandonCount > 0 && totalGamesField > 0 && totalGamesField <= winsTotalRaw) {
+    completedGames = Math.max(winsCount, winsTotalRaw - abandonCount);
+  }
+
+  const losses = Math.max(0, completedGames - winsCount);
+  const totalGames = completedGames + abandonCount;
+
+  return {
+    wins: winsCount,
+    losses,
+    abandons: abandonCount,
+    totalGames,
+  };
+}
 
 export function getTotalGames(stats) {
-  return (stats?.wins?.total || 0) + (stats?.abandons?.count || 0);
+  return normalizeStats(stats).totalGames;
 }
 
 export function getWins(stats) {
-  return stats?.wins?.count || 0;
+  return normalizeStats(stats).wins;
 }
 
 export function getLosses(stats) {
-  return (stats?.wins?.total || 0) - (stats?.wins?.count || 0);
+  return normalizeStats(stats).losses;
 }
 
 export function getAbandons(stats) {
-  return stats?.abandons?.count || 0;
+  return normalizeStats(stats).abandons;
 }
 
 export function getWinRate(stats) {

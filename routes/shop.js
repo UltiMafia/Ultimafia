@@ -11,7 +11,7 @@ const router = express.Router();
 const COINS_PER_USD = 5;
 const MIN_PURCHASE_USD = 1;
 const MAX_PURCHASE_USD = 200;
-const PAYPAL_API_BASE = "https://api-m.paypal.com";
+const PAYPAL_API_BASE = process.env.PAYPAL_API_BASE || "https://api-m.paypal.com";
 
 let payPalTokenCache = {
   accessToken: "",
@@ -23,7 +23,14 @@ async function getPayPalAccessToken() {
   const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
-    throw new Error("PayPal credentials are missing.");
+    const missing = [];
+    if (!clientId) {
+      missing.push("PAYPAL_CLIENT_ID");
+    }
+    if (!clientSecret) {
+      missing.push("PAYPAL_CLIENT_SECRET");
+    }
+    throw new Error(`PayPal credentials are missing: ${missing.join(", ")}.`);
   }
 
   const now = Date.now();
@@ -62,6 +69,20 @@ async function getPayPalAccessToken() {
   };
 
   return accessToken;
+}
+
+function getPayPalRequestPhase(error) {
+  const url = String(error?.config?.url || "");
+  if (url.includes("/v1/oauth2/token")) {
+    return "token";
+  }
+  if (url.includes("/v2/checkout/orders")) {
+    return "create-order";
+  }
+  if (url.includes("/capture")) {
+    return "capture-order";
+  }
+  return "unknown";
 }
 
 function parseCompletedCapture(orderData) {
@@ -565,7 +586,7 @@ router.post(
 router.get("/paypal-client-id", async function (req, res) {
   try {
     await routeUtils.verifyLoggedIn(req);
-    if (!process.env.PAYPAL_CLIENT_ID) {
+    if (!process.env.PAYPAL_CLIENT_ID || !process.env.PAYPAL_CLIENT_SECRET) {
       return res.status(500).send("PayPal is not configured.");
     }
     return res.send({ clientId: process.env.PAYPAL_CLIENT_ID });
@@ -632,7 +653,25 @@ router.post("/paypal/create-order", async function (req, res) {
 
     return res.send({ orderID: paypalOrderId });
   } catch (e) {
-    logger.error(e?.response?.data || e);
+    const phase = getPayPalRequestPhase(e);
+    const paypalStatus = e?.response?.status;
+    const paypalData = e?.response?.data;
+    logger.error({
+      message: "PayPal create-order failed",
+      phase,
+      status: paypalStatus,
+      data: paypalData || e?.message || e,
+    });
+
+    if (e.message?.startsWith("PayPal credentials are missing")) {
+      return res.status(500).send("PayPal server configuration is incomplete.");
+    }
+    if (phase === "token") {
+      return res.status(502).send("Could not authenticate with PayPal.");
+    }
+    if (phase === "create-order") {
+      return res.status(502).send("PayPal could not create checkout order.");
+    }
     return res.status(500).send("Error creating PayPal order.");
   }
 });

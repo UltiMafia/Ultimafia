@@ -582,6 +582,11 @@ module.exports = class MafiaGame extends Game {
     if (this.finished) return;
 
     for (let player of this.players) {
+      // Abandoners are tracked via `abandons`; do not also count them
+      // as completed wins/losses.
+      if (player.leaveStatsRecorded) {
+        continue;
+      }
       if (player.won) player.recordStat("wins", true);
       else player.recordStat("wins", false);
     }

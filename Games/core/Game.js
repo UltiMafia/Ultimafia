@@ -721,26 +721,11 @@ module.exports = class Game {
     this.makeUnranked();
     this.makeUncompetitive();
 
-    // Queue the veg kill action before any async work so it is in the
-    // action queue when processActionQueue() runs synchronously in
-    // gotoNextState(). Previously the queueAction was after the await,
-    // causing it to be deferred past processActionQueue().
-    this.queueAction(
-      new Action({
-        actor: player,
-        target: player,
-        priority: -999,
-        game: this,
-        labels: ["hidden", "absolute", "uncontrollable"],
-        run: function () {
-          if (this.target.hasEffect("Unveggable")) {
-            return;
-          }
-          this.target.kill("veg", this.actor);
-          this.game.exorcisePlayer(this.actor);
-        },
-      })
-    );
+    // Apply veg immediately so the player is marked dead/exorcised before
+    // any win checks. Queued veg actions can be skipped in delay-action
+    // states (e.g. Night) if the game ends before the queue is processed.
+    player.kill("veg", player);
+    this.exorcisePlayer(player);
 
     if (this.breakIntegrity()) {
       await this.refundHeartsForIntegrityBreak(player, wasRanked, wasCompetitive);
@@ -3196,30 +3181,49 @@ module.exports = class Game {
     }
   }
 
+  /** Ranked/competitive fortune stored by player slot id (string-normalized). */
+  getPointsEarnedForPlayer(playerId) {
+    if (playerId == null) return undefined;
+    const m = this.pointsEarnedByPlayers;
+    return m[playerId] ?? m[String(playerId)];
+  }
+
+  /**
+   * Fortune / misfortune payouts use one "faction" bucket per player, aligned
+   * with captureStartingFactions — role name for most independents (e.g. Warlock).
+   */
+  computeFortuneMemberFaction(playerId) {
+    const roleKey = this.originalRoles[playerId];
+    if (!roleKey) return null;
+    const roleName = roleKey.split(":")[0];
+    const alignment = this.getRoleAlignment(roleName);
+    const alignmentIsFaction =
+      alignment === "Village" ||
+      alignment === "Mafia" ||
+      alignment === "Cult";
+    const player = this.getPlayer(playerId);
+    let factionName;
+    if (alignmentIsFaction) {
+      factionName = player ? player.faction || alignment : alignment;
+      if (factionName === "Independent") {
+        factionName = alignment;
+      }
+    } else {
+      factionName = roleName;
+    }
+    if (factionName === "Traitor") {
+      factionName = "Mafia";
+    }
+    return factionName;
+  }
+
   captureStartingFactions() {
     this.startingFactions = {};
     for (let playerId in this.originalRoles) {
       const player = this.getPlayer(playerId);
       if (!player) continue;
-      const roleName = this.originalRoles[playerId].split(":")[0];
-      const alignment = this.getRoleAlignment(roleName);
-      const alignmentIsFaction =
-        alignment === "Village" ||
-        alignment === "Mafia" ||
-        alignment === "Cult";
-      let factionName;
-      if (alignmentIsFaction) {
-        factionName = player.faction || alignment;
-        if (factionName === "Independent") {
-          factionName = alignment;
-        }
-      } else {
-        factionName = roleName;
-      }
-      if (factionName === "Traitor") {
-        factionName = "Mafia";
-      }
-      this.startingFactions[playerId] = factionName;
+      const factionName = this.computeFortuneMemberFaction(playerId);
+      if (factionName) this.startingFactions[playerId] = factionName;
     }
   }
 
@@ -3228,7 +3232,9 @@ module.exports = class Game {
       const setup = await models.Setup.findOne({ id: this.setup.id }).select(
         "id _id version"
       );
-      const winners = this.winners.getPlayers();
+      const winnerIds = new Set(
+        (this.winners.getPlayers() || []).map((id) => String(id))
+      );
 
       if (!setup) {
         logger.error("Failed to record stats because setup was null.");
@@ -3248,21 +3254,8 @@ module.exports = class Game {
 
       const memberFactions = {};
       for (let playerId in this.originalRoles) {
-        memberFactions[playerId] =
-          this.startingFactions[playerId] ||
-          (() => {
-            const roleName = this.originalRoles[playerId].split(":")[0];
-            const alignment = this.getRoleAlignment(roleName);
-            const alignmentIsFaction =
-              alignment === "Village" ||
-              alignment === "Mafia" ||
-              alignment === "Cult";
-            let factionName = alignmentIsFaction ? alignment : roleName;
-            if (factionName === "Traitor") {
-              factionName = "Mafia";
-            }
-            return factionName;
-          })();
+        const factionName = this.computeFortuneMemberFaction(playerId);
+        if (factionName) memberFactions[playerId] = factionName;
       }
 
       const factionNames = [
@@ -3278,18 +3271,38 @@ module.exports = class Game {
 
       const maxEarnedPoints = constants.fortunePointsNominalK * 20;
       for (let playerId in this.originalRoles) {
-        const player = this.getPlayer(playerId);
-        const playerWon = winners.includes(playerId);
+        const faction = memberFactions[playerId];
+        if (!faction) {
+          logger.warn(
+            `adjustSkillRatings: missing fortune faction for player ${playerId}`
+          );
+          continue;
+        }
 
-        var pointsEarnedByPlayer = playerWon
-          ? pointsWonByFactions[memberFactions[playerId]]
-          : pointsLostByFactions[memberFactions[playerId]];
-        const hadRareCap = pointsEarnedByPlayer > maxEarnedPoints;
+        const player = this.getPlayer(playerId);
+        const playerWon = winnerIds.has(String(playerId));
+
+        let pointsEarnedByPlayer = playerWon
+          ? pointsWonByFactions[faction]
+          : pointsLostByFactions[faction];
+        if (pointsEarnedByPlayer == null || Number.isNaN(pointsEarnedByPlayer)) {
+          logger.warn(
+            `adjustSkillRatings: missing points table entry for faction ${faction} (player ${playerId})`
+          );
+          pointsEarnedByPlayer = 0;
+        }
+
+        let hadRareCap = pointsEarnedByPlayer > maxEarnedPoints;
         if (hadRareCap) {
           pointsEarnedByPlayer = maxEarnedPoints;
         }
 
-        if (playerWon) {
+        const signedPoints = playerWon
+          ? pointsEarnedByPlayer
+          : -pointsEarnedByPlayer;
+        this.pointsEarnedByPlayers[String(playerId)] = signedPoints;
+
+        if (playerWon && player) {
           if (hadRareCap) {
             this.sendAlert(
               `${player.name} just earned ${pointsEarnedByPlayer} fortune!!`,
@@ -3305,12 +3318,6 @@ module.exports = class Game {
               ["info"]
             );
           }
-        }
-
-        if (playerWon) {
-          this.pointsEarnedByPlayers[playerId] = pointsEarnedByPlayer;
-        } else {
-          this.pointsEarnedByPlayers[playerId] = -pointsEarnedByPlayer;
         }
       }
     } catch (e) {
@@ -3512,14 +3519,9 @@ module.exports = class Game {
         `[recordCompetitiveCompletions]: Game ${this.id} completed for season ${seasonNumber} round ${currentRound.number} day ${currentRound.currentDay}`
       );
       for (let player of this.players) {
-        if (
-          !player.isBot &&
-          this.pointsEarnedByPlayers[player.id] !== undefined
-        ) {
-          const pointsEarned = Math.max(
-            0,
-            this.pointsEarnedByPlayers[player.id]
-          );
+        const earned = this.getPointsEarnedForPlayer(player.id);
+        if (!player.isBot && earned !== undefined) {
+          const pointsEarned = Math.max(0, earned);
           console.log(
             `[recordCompetitiveCompletions]: User ${player.user.id} earned ${pointsEarned} points during game ${this.id} on season ${seasonNumber} round ${currentRound.number} day ${currentRound.currentDay}`
           );
@@ -3661,8 +3663,9 @@ module.exports = class Game {
         }
 
         let pointsWon = 0;
-        if (this.pointsEarnedByPlayers[player.id] !== undefined) {
-          pointsWon = this.pointsEarnedByPlayers[player.id];
+        const earnedFortune = this.getPointsEarnedForPlayer(player.id);
+        if (earnedFortune != null && !Number.isNaN(earnedFortune)) {
+          pointsWon = earnedFortune;
         }
 
         if (this.achievementsAllowed()) {

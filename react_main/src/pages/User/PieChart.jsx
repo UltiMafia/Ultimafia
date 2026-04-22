@@ -11,6 +11,9 @@ export const PieChart = ({ wins, losses, abandons, showTotal }) => {
   );
 
   useEffect(() => {
+    // clear any previous render (including when switching to empty datasets)
+    d3.select(svgRef.current).selectAll("*").remove();
+
     if (totalGames <= 0) {
       return;
     }
@@ -19,9 +22,6 @@ export const PieChart = ({ wins, losses, abandons, showTotal }) => {
     const height = width;
     const margin = 10;
     const radius = Math.min(width, height) / 2 - margin;
-
-    // clear any previous render
-    d3.select(svgRef.current).selectAll("*").remove();
 
     const svgRoot = d3
       .select(svgRef.current)
