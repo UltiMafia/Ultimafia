@@ -148,10 +148,13 @@ describe("modules/fortunePoints", function () {
           factionNames: ["Village", "Mafia"],
           alignmentWinRates,
         });
-      pointsWonByFactions.Village.should.equal(84);
-      pointsWonByFactions.Mafia.should.equal(36);
-      pointsLostByFactions.Village.should.equal(36);
-      pointsLostByFactions.Mafia.should.equal(84);
+      // Winning as the underdog (Mafia, 30%) pays more than winning as the
+      // favorite (Village, 70%). Losing as the favorite stings harder than
+      // losing as the underdog.
+      pointsWonByFactions.Village.should.equal(36);
+      pointsWonByFactions.Mafia.should.equal(84);
+      pointsLostByFactions.Village.should.equal(84);
+      pointsLostByFactions.Mafia.should.equal(36);
     });
 
     it("should count ranked and competitive rows toward the same faction rate", function () {
@@ -314,12 +317,13 @@ describe("modules/fortunePoints", function () {
           factionNames: ["Village", "Mafia", "Cult"],
           alignmentWinRates: {},
         });
+      // weights 1/3 each, divisor=2 → winPts = K*(2/3)/2 = 40, lossPts = K*(1/3)/2 = 20.
       pointsWonByFactions.Village.should.equal(40);
       pointsWonByFactions.Mafia.should.equal(40);
       pointsWonByFactions.Cult.should.equal(40);
-      pointsLostByFactions.Village.should.equal(80);
-      pointsLostByFactions.Mafia.should.equal(80);
-      pointsLostByFactions.Cult.should.equal(80);
+      pointsLostByFactions.Village.should.equal(20);
+      pointsLostByFactions.Mafia.should.equal(20);
+      pointsLostByFactions.Cult.should.equal(20);
     });
 
     it("should return empty objects for an empty factionNames list", function () {
@@ -376,8 +380,10 @@ describe("modules/fortunePoints", function () {
       pointsWonByFactions.Mafia.should.be.lessThan(120);
     });
 
-    it("should reward a 1/21 village win after a 20-game mafia streak with a small but non-zero payout", function () {
+    it("should reward a 1/21 village win after a 20-game mafia streak with a large upset payout", function () {
       // Snapshot of stats immediately after the villager's first-ever win is recorded.
+      // Defying a ~95% historical mafia rate is a huge upset and should pay
+      // the winning villagers near the full K.
       const alignmentWinRates = {
         Village: Array(20).fill(["ranked", false]).concat([["ranked", true]]),
         Mafia: Array(20).fill(["ranked", true]).concat([["ranked", false]]),
@@ -387,13 +393,15 @@ describe("modules/fortunePoints", function () {
           factionNames: ["Village", "Mafia"],
           alignmentWinRates,
         });
-      // Village ~4.8% winrate → still small but > 0. Mafia ~95.2% → near full.
-      pointsWonByFactions.Village.should.be.greaterThan(0);
-      pointsWonByFactions.Village.should.be.lessThan(20);
-      pointsWonByFactions.Mafia.should.be.greaterThan(100);
-      // Losing is the expected outcome for village in this setup, so the penalty should not be zero for them.
-      pointsLostByFactions.Village.should.be.greaterThan(100);
-      pointsLostByFactions.Mafia.should.be.greaterThan(0);
+      // Village wins get the opponent's (~95%) share → ~114 points.
+      pointsWonByFactions.Village.should.be.greaterThan(100);
+      // Mafia winning is the expected outcome → small reward (~6 points).
+      pointsWonByFactions.Mafia.should.be.lessThan(20);
+      pointsWonByFactions.Mafia.should.be.greaterThan(0);
+      // Losing as a ~95% favourite should be a heavy penalty.
+      pointsLostByFactions.Mafia.should.be.greaterThan(100);
+      // Losing as the historical underdog is gentle.
+      pointsLostByFactions.Village.should.be.lessThan(20);
     });
 
     it("should handle Village 60% vs Mafia 40% win rate", function () {
@@ -407,11 +415,12 @@ describe("modules/fortunePoints", function () {
           factionNames: ["Village", "Mafia"],
           alignmentWinRates,
         });
-      // weights: V=0.6, M=0.4 → winPts: V=72, M=48 → lossPts: V=48, M=72
-      pointsWonByFactions.Village.should.equal(72);
-      pointsWonByFactions.Mafia.should.equal(48);
-      pointsLostByFactions.Village.should.equal(48);
-      pointsLostByFactions.Mafia.should.equal(72);
+      // Inversion: winPts use opponent weight. V=0.6, M=0.4 → V wins pay
+      // K*0.4=48, M wins pay K*0.6=72. Losses use own weight.
+      pointsWonByFactions.Village.should.equal(48);
+      pointsWonByFactions.Mafia.should.equal(72);
+      pointsLostByFactions.Village.should.equal(72);
+      pointsLostByFactions.Mafia.should.equal(48);
     });
 
     it("should handle Village 80% vs Mafia 20% win rate", function () {
@@ -424,14 +433,14 @@ describe("modules/fortunePoints", function () {
           factionNames: ["Village", "Mafia"],
           alignmentWinRates,
         });
-      // weights: V=0.8, M=0.2 → winPts: V=96, M=24 → lossPts: V=24, M=96
-      pointsWonByFactions.Village.should.equal(96);
-      pointsWonByFactions.Mafia.should.equal(24);
-      pointsLostByFactions.Village.should.equal(24);
-      pointsLostByFactions.Mafia.should.equal(96);
+      // Inversion: V=0.8, M=0.2 → V wins pay K*0.2=24, M wins pay K*0.8=96.
+      pointsWonByFactions.Village.should.equal(24);
+      pointsWonByFactions.Mafia.should.equal(96);
+      pointsLostByFactions.Village.should.equal(96);
+      pointsLostByFactions.Mafia.should.equal(24);
     });
 
-    it("should handle Village 100% vs Mafia 0% win rate with floor applied to the losing side", function () {
+    it("should handle Village 100% vs Mafia 0% win rate with floor applied to the underdog", function () {
       const alignmentWinRates = {
         Village: Array(3).fill(["ranked", true]).concat(Array(2).fill(["competitive", true])),
         Mafia: Array(2).fill(["competitive", false]).concat(Array(3).fill(["ranked", false])),
@@ -442,11 +451,12 @@ describe("modules/fortunePoints", function () {
           alignmentWinRates,
         });
       // Mafia's raw 0% is floored to 0.05; post-normalization V≈0.952, M≈0.048.
-      // winPts: V=round(120*0.952)=114, M=round(120*0.048)=6 → lossPts mirror.
-      pointsWonByFactions.Village.should.equal(114);
-      pointsWonByFactions.Mafia.should.equal(6);
-      pointsLostByFactions.Village.should.equal(6);
-      pointsLostByFactions.Mafia.should.equal(114);
+      // Under inversion: V winning is expected → tiny reward (6), M winning
+      // is a massive upset → near-full reward (114).
+      pointsWonByFactions.Village.should.equal(6);
+      pointsWonByFactions.Mafia.should.equal(114);
+      pointsLostByFactions.Village.should.equal(114);
+      pointsLostByFactions.Mafia.should.equal(6);
     });
 
     it("should handle 3-faction Village 50% / Mafia 30% / Cult 20%", function () {
@@ -460,13 +470,14 @@ describe("modules/fortunePoints", function () {
           factionNames: ["Village", "Mafia", "Cult"],
           alignmentWinRates,
         });
-      // weights: V=0.5, M=0.3, C=0.2 → winPts: V=60, M=36, C=24
-      pointsWonByFactions.Village.should.equal(60);
-      pointsWonByFactions.Mafia.should.equal(36);
-      pointsWonByFactions.Cult.should.equal(24);
-      pointsLostByFactions.Village.should.equal(60);
-      pointsLostByFactions.Mafia.should.equal(84);
-      pointsLostByFactions.Cult.should.equal(96);
+      // weights V=0.5, M=0.3, C=0.2; divisor=2.
+      // winPts = K*(1-w)/2 → V=30, M=42, C=48. lossPts = K*w/2 → V=30, M=18, C=12.
+      pointsWonByFactions.Village.should.equal(30);
+      pointsWonByFactions.Mafia.should.equal(42);
+      pointsWonByFactions.Cult.should.equal(48);
+      pointsLostByFactions.Village.should.equal(30);
+      pointsLostByFactions.Mafia.should.equal(18);
+      pointsLostByFactions.Cult.should.equal(12);
     });
 
     it("should handle 3-faction equal win rates", function () {
@@ -480,12 +491,13 @@ describe("modules/fortunePoints", function () {
           factionNames: ["Village", "Mafia", "Cult"],
           alignmentWinRates,
         });
+      // Equal 1/3 weights, divisor=2 → winPts = K*(2/3)/2 = 40, lossPts = K*(1/3)/2 = 20.
       pointsWonByFactions.Village.should.equal(40);
       pointsWonByFactions.Mafia.should.equal(40);
       pointsWonByFactions.Cult.should.equal(40);
-      pointsLostByFactions.Village.should.equal(80);
-      pointsLostByFactions.Mafia.should.equal(80);
-      pointsLostByFactions.Cult.should.equal(80);
+      pointsLostByFactions.Village.should.equal(20);
+      pointsLostByFactions.Mafia.should.equal(20);
+      pointsLostByFactions.Cult.should.equal(20);
     });
 
     it("should handle 3-faction Village 70% / Mafia 20% / Cult 10%", function () {
@@ -499,13 +511,15 @@ describe("modules/fortunePoints", function () {
           factionNames: ["Village", "Mafia", "Cult"],
           alignmentWinRates,
         });
-      // weights: V=0.7, M=0.2, C=0.1 → winPts: V=84, M=24, C=12
-      pointsWonByFactions.Village.should.equal(84);
-      pointsWonByFactions.Mafia.should.equal(24);
-      pointsWonByFactions.Cult.should.equal(12);
-      pointsLostByFactions.Village.should.equal(36);
-      pointsLostByFactions.Mafia.should.equal(96);
-      pointsLostByFactions.Cult.should.equal(108);
+      // weights V=0.7, M=0.2, C=0.1; divisor=2.
+      // winPts: V=K*0.3/2=18, M=K*0.8/2=48, C=K*0.9/2=54.
+      // lossPts: V=K*0.7/2=42, M=K*0.2/2=12, C=K*0.1/2=6.
+      pointsWonByFactions.Village.should.equal(18);
+      pointsWonByFactions.Mafia.should.equal(48);
+      pointsWonByFactions.Cult.should.equal(54);
+      pointsLostByFactions.Village.should.equal(42);
+      pointsLostByFactions.Mafia.should.equal(12);
+      pointsLostByFactions.Cult.should.equal(6);
     });
 
     it("should handle Village + Mafia + Serial Killer with independent cap", function () {
@@ -519,10 +533,11 @@ describe("modules/fortunePoints", function () {
           factionNames: ["Village", "Mafia", "Serial Killer"],
           alignmentWinRates,
         });
-      // weights: V=0.6, M=0.3, SK=0.1 → winPts: V=72, M=36, SK=12 (under cap)
-      pointsWonByFactions.Village.should.equal(72);
-      pointsWonByFactions.Mafia.should.equal(36);
-      pointsWonByFactions["Serial Killer"].should.equal(12);
+      // weights V=0.6, M=0.3, SK=0.1; divisor=2.
+      // winPts: V=K*0.4/2=24, M=K*0.7/2=42, SK=K*0.9/2=54 (all under cap).
+      pointsWonByFactions.Village.should.equal(24);
+      pointsWonByFactions.Mafia.should.equal(42);
+      pointsWonByFactions["Serial Killer"].should.equal(54);
     });
 
     it("should handle one faction with no ranked data falling back to avg of others", function () {
@@ -536,12 +551,32 @@ describe("modules/fortunePoints", function () {
           factionNames: ["Village", "Mafia", "Cult"],
           alignmentWinRates,
         });
-      // V=0.8, M=0.2, Cult=null → fill = (0.8+0.2)/2 = 0.5
-      // sum = 0.8+0.2+0.5 = 1.5 → weights: V=0.533, M=0.133, C=0.333
-      // winPts: V=round(64), M=round(16), C=round(40)
-      pointsWonByFactions.Village.should.equal(64);
-      pointsWonByFactions.Mafia.should.equal(16);
+      // V=0.8, M=0.2, Cult=null → fill = (0.8+0.2)/2 = 0.5.
+      // sum = 0.8+0.2+0.5 = 1.5 → weights: V≈0.533, M≈0.133, C≈0.333.
+      // divisor=2; winPts = K*(1-w)/2 → V=round(28.02)=28, M=round(52.02)=52, C=round(40.02)=40.
+      pointsWonByFactions.Village.should.equal(28);
+      pointsWonByFactions.Mafia.should.equal(52);
       pointsWonByFactions.Cult.should.equal(40);
+    });
+
+    it("should apply inversion ordering for 3-faction upsets (underdogs earn more, favourites risk more)", function () {
+      // Village 70% / Mafia 20% / Cult 10% — Cult is the heaviest underdog.
+      const alignmentWinRates = {
+        Village: Array(7).fill(["ranked", true]).concat(Array(3).fill(["ranked", false])),
+        Mafia: Array(2).fill(["ranked", true]).concat(Array(8).fill(["ranked", false])),
+        Cult: Array(1).fill(["ranked", true]).concat(Array(9).fill(["ranked", false])),
+      };
+      const { pointsWonByFactions, pointsLostByFactions } =
+        computeFactionFortunePoints({
+          factionNames: ["Village", "Mafia", "Cult"],
+          alignmentWinRates,
+        });
+      // The less likely you were to win, the bigger the payout if you do.
+      pointsWonByFactions.Cult.should.be.greaterThan(pointsWonByFactions.Mafia);
+      pointsWonByFactions.Mafia.should.be.greaterThan(pointsWonByFactions.Village);
+      // The more likely you were to win, the bigger the misfortune if you lose.
+      pointsLostByFactions.Village.should.be.greaterThan(pointsLostByFactions.Mafia);
+      pointsLostByFactions.Mafia.should.be.greaterThan(pointsLostByFactions.Cult);
     });
 
     it("should end-to-end filter unranked rows when fed through alignmentRowsToWinRateMap", function () {
@@ -560,9 +595,10 @@ describe("modules/fortunePoints", function () {
         factionNames: ["Village", "Mafia"],
         alignmentWinRates,
       });
-      // Only the ranked rows count: Village 1/1, Mafia 0/1. Mafia's 0 is floored to 0.05.
-      pointsWonByFactions.Village.should.equal(114);
-      pointsWonByFactions.Mafia.should.equal(6);
+      // Only ranked rows count: Village 1/1, Mafia 0/1. Mafia's 0 is floored to 0.05.
+      // Under inversion: V wins (expected) pay 6; M wins (upset) pay 114.
+      pointsWonByFactions.Village.should.equal(6);
+      pointsWonByFactions.Mafia.should.equal(114);
     });
   });
 });

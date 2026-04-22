@@ -122,14 +122,26 @@ function computeFactionFortunePoints(opts) {
     return { pointsWonByFactions, pointsLostByFactions };
   }
 
-  // Same formula for all faction counts: win payout uses this faction's weight
-  // (previously n===2 inverted opponent weights, which could zero one side).
+  // Lone-faction game: no opponents to balance against, award the full pot.
+  if (factionNames.length === 1) {
+    const f = factionNames[0];
+    let winPts = K;
+    if (shouldCapFortuneAt120(f)) winPts = Math.min(120, winPts);
+    pointsWonByFactions[f] = winPts;
+    pointsLostByFactions[f] = 0;
+    return { pointsWonByFactions, pointsLostByFactions };
+  }
+
+  // Winners receive the opponent share; losers forfeit their own share.
+  // Dividing by (n-1) keeps the total pot at K across any faction count and
+  // reduces to the direct opponent-weight lookup when n=2.
+  const divisor = factionNames.length - 1;
   for (const f of factionNames) {
-    let winPts = Math.round(K * weights[f]);
+    let winPts = Math.round((K * (1 - weights[f])) / divisor);
     if (shouldCapFortuneAt120(f)) winPts = Math.min(120, winPts);
     pointsWonByFactions[f] = winPts;
 
-    pointsLostByFactions[f] = Math.round(K * (1 - weights[f]));
+    pointsLostByFactions[f] = Math.round((K * weights[f]) / divisor);
   }
 
   return { pointsWonByFactions, pointsLostByFactions };
