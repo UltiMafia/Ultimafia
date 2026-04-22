@@ -31,12 +31,6 @@ function shouldCapFortuneAt120(factionKey) {
   return true;
 }
 
-// Floor on a faction's raw winrate before normalization. Prevents a 0%
-// historical winrate from collapsing the payout weight to zero — otherwise a
-// faction that finally defies a lopsided setup would receive 0 fortune for
-// winning, which is the opposite of the intended reward.
-const MIN_RAW_WIN_RATE = 0.05;
-
 /**
  * Build non-negative weights per faction that sum to 1, for factions present in this game.
  */
@@ -60,12 +54,6 @@ function buildPayoutWeights(factionNames, alignmentWinRates) {
       out[f] = eq;
     });
     return out;
-  }
-
-  for (const f of factionNames) {
-    if (raw[f] != null && !Number.isNaN(raw[f]) && raw[f] < MIN_RAW_WIN_RATE) {
-      raw[f] = MIN_RAW_WIN_RATE;
-    }
   }
 
   let sum = 0;

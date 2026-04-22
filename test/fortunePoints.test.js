@@ -363,9 +363,9 @@ describe("modules/fortunePoints", function () {
       pointsLostByFactions.Mafia.should.equal(60);
     });
 
-    it("should give a non-zero win payout to a faction with 0% historical winrate", function () {
+    it("should reward a faction that defies a 0% historical winrate with the full upset payout", function () {
       // Setup has been played 20 times ranked and Mafia won every single time.
-      // A villager who finally defies the streak should not receive zero fortune.
+      // A villager who finally defies the streak reaps the full inversion payout.
       const alignmentWinRates = {
         Village: Array(20).fill(["ranked", false]),
         Mafia: Array(20).fill(["ranked", true]),
@@ -374,10 +374,9 @@ describe("modules/fortunePoints", function () {
         factionNames: ["Village", "Mafia"],
         alignmentWinRates,
       });
-      pointsWonByFactions.Village.should.be.greaterThan(0);
-      // Mafia still carries most of the payout since they are heavily favoured,
-      // but should not be exactly 120 — the floor shaves a few points off the dominant side.
-      pointsWonByFactions.Mafia.should.be.lessThan(120);
+      // Village winning: K*(1-0)/1 = 120. Mafia winning (the certain outcome): 0.
+      pointsWonByFactions.Village.should.equal(120);
+      pointsWonByFactions.Mafia.should.equal(0);
     });
 
     it("should reward a 1/21 village win after a 20-game mafia streak with a large upset payout", function () {
@@ -440,7 +439,7 @@ describe("modules/fortunePoints", function () {
       pointsLostByFactions.Mafia.should.equal(24);
     });
 
-    it("should handle Village 100% vs Mafia 0% win rate with floor applied to the underdog", function () {
+    it("should handle Village 100% vs Mafia 0% win rate as the full extremes of the inversion", function () {
       const alignmentWinRates = {
         Village: Array(3).fill(["ranked", true]).concat(Array(2).fill(["competitive", true])),
         Mafia: Array(2).fill(["competitive", false]).concat(Array(3).fill(["ranked", false])),
@@ -450,13 +449,12 @@ describe("modules/fortunePoints", function () {
           factionNames: ["Village", "Mafia"],
           alignmentWinRates,
         });
-      // Mafia's raw 0% is floored to 0.05; post-normalization V≈0.952, M≈0.048.
-      // Under inversion: V winning is expected → tiny reward (6), M winning
-      // is a massive upset → near-full reward (114).
-      pointsWonByFactions.Village.should.equal(6);
-      pointsWonByFactions.Mafia.should.equal(114);
-      pointsLostByFactions.Village.should.equal(114);
-      pointsLostByFactions.Mafia.should.equal(6);
+      // weights V=1, M=0. V winning is the certain outcome → zero reward.
+      // M winning is the impossible upset → full K. Losses mirror.
+      pointsWonByFactions.Village.should.equal(0);
+      pointsWonByFactions.Mafia.should.equal(120);
+      pointsLostByFactions.Village.should.equal(120);
+      pointsLostByFactions.Mafia.should.equal(0);
     });
 
     it("should handle 3-faction Village 50% / Mafia 30% / Cult 20%", function () {
@@ -595,10 +593,10 @@ describe("modules/fortunePoints", function () {
         factionNames: ["Village", "Mafia"],
         alignmentWinRates,
       });
-      // Only ranked rows count: Village 1/1, Mafia 0/1. Mafia's 0 is floored to 0.05.
-      // Under inversion: V wins (expected) pay 6; M wins (upset) pay 114.
-      pointsWonByFactions.Village.should.equal(6);
-      pointsWonByFactions.Mafia.should.equal(114);
+      // Only ranked rows count: Village 1/1 (100%), Mafia 0/1 (0%).
+      // V wins (certain outcome) pay 0; M wins (impossible upset) pay K=120.
+      pointsWonByFactions.Village.should.equal(0);
+      pointsWonByFactions.Mafia.should.equal(120);
     });
   });
 });
