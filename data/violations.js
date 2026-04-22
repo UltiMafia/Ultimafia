@@ -255,8 +255,26 @@ const violationDefinitions = [
   {
     id: "game-throwing",
     name: "Game Throwing",
-    description:
-      "Intentionally playing against your win condition or not playing to win. Game Throwing requires intent. Includes fake claims made for any other purpose than strategy as well as voting someone based on a grudge. Forcing a draw (endgame event) when you are not faced with an autolose situation falls under this category as well, since condemning/killing would give you a chance to win.",
+    description: [
+      {
+        type: "paragraph",
+        content:
+          "Intentionally playing against your win condition or not playing to win. Game Throwing requires intent. Includes fake claims made for any other purpose than strategy as well as voting someone based on a grudge.",
+
+      },
+      {
+        type: "paragraph",
+        content:
+          "Forcing a draw (endgame event) when you are not faced with an autoloss situation falls under this category as well, since condemning/killing would give you a chance to win.",
+
+      },
+      {
+        type: "paragraph",
+        content:
+          "If the Town puts Mafia in a position where they are forced to either kill into autoloss or no-kill and bring forth the endgame event, it is the fault of the Town for creating the no-win scenario. It is autoloss for Mafia either way, so Town must do something during the day before the endgame event to progress the game.",
+
+      },
+    ],
     offenses: ["24 hours", "24 hours", "3 months"],
     category: "Game",
     appliesTo: ["game", "playRanked", "playCompetitive"],

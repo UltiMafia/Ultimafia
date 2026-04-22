@@ -39,6 +39,15 @@ export function PlayerCircle({
   const electionMemberIds = new Set(
     (electionMeeting?.members || []).map((m) => m.id)
   );
+  // Server sends "*unknown" as the target for other players' votes during the
+  // election, so the presence of any key in electionMeeting.votes means
+  // "this player has submitted a vote" — the value itself is hidden for non-self.
+  const electionVoterIds = new Set(
+    (electionMeeting?.members || [])
+      .filter((m) => m.canVote)
+      .map((m) => m.id)
+  );
+  const hasVotedIds = new Set(Object.keys(electionMeeting?.votes || {}));
 
   const handleTokenClick = (player) => {
     if (!activeMeeting || !eligibleTargets.has(player.id)) return;
@@ -175,6 +184,11 @@ export function PlayerCircle({
               }}
               onClick={() => handleTokenClick(player)}
             >
+              {electionMeeting && electionVoterIds.has(player.id) && !hasVotedIds.has(player.id) && !isDead && (
+                <div className="sd-vote-pending-badge" aria-label={`${player.name} has not voted`}>
+                  not yet voted
+                </div>
+              )}
               <div className="sd-token-avatar-wrap">
                 <div className={`sd-token-avatar${isEligible ? " sd-token-avatar--eligible" : ""}`}>
                   {avatarContent}

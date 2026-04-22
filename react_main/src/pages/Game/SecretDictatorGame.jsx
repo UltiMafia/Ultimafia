@@ -20,6 +20,7 @@ const isKickMeeting = (m) => m && m.name === "Vote Kick";
 const KickActionList = () => (
   <ActionList meetingFilter={isKickMeeting} hideIfEmpty scrollable={false} />
 );
+import { Tooltip } from "@mui/material";
 import { GameContext } from "../../Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { PolicyTracks } from "./SDPolicyTracks";
@@ -276,6 +277,7 @@ function GameBoard({ history, stateViewing }) {
   return (
     <div className="sd-game-board">
       <div className="sd-game-board-inner">
+        <SDGameInfo setup={game.setup} />
         <PlayerCircle
           players={players}
           candidateInfo={extraInfo.candidateInfo}
@@ -308,6 +310,65 @@ function GameBoard({ history, stateViewing }) {
           socket={game.socket}
         />
       </div>
+    </div>
+  );
+}
+
+function SDGameInfo({ setup }) {
+  const [expanded, setExpanded] = useState(true);
+
+  const roleSet = setup?.roles?.[0];
+  if (!roleSet) return null;
+
+  // Role keys from the setup look like "Liberal:1:0" — strip the modifier suffix.
+  const counts = { Liberal: 0, Fascist: 0, Dictator: 0 };
+  for (const [roleKey, count] of Object.entries(roleSet)) {
+    const name = roleKey.split(":")[0];
+    if (name in counts) counts[name] += count;
+  }
+
+  // Per Secret Hitler rules (see WinWithFascists.js): the Dictator is revealed
+  // their teammates only in 5–6 player games.
+  const dictatorKnows = setup.total <= 6;
+
+  return (
+    <div
+      className={`sd-game-info ${expanded ? "" : "sd-game-info--collapsed"}`}
+      role="complementary"
+      aria-label="Game info"
+    >
+      <button
+        type="button"
+        className="sd-game-info-title"
+        onClick={() => setExpanded((v) => !v)}
+        aria-expanded={expanded}
+      >
+        <span>Game Info</span>
+        <i className="sd-game-info-chevron fas fa-chevron-down" />
+      </button>
+      {expanded && (
+        <div className="sd-game-info-roles">
+          <span className="sd-game-info-chip sd-game-info-chip--liberal">
+            {counts.Liberal} Liberal
+          </span>
+          <span className="sd-game-info-chip sd-game-info-chip--fascist">
+            {counts.Fascist} Fascist
+          </span>
+          <span className="sd-game-info-chip sd-game-info-chip--dictator">
+            <span>{counts.Dictator} Dictator</span>
+            <Tooltip
+              title={dictatorKnows ? "Dictator knows Fascists" : "Dictator does not know Fascists"}
+              placement="left"
+              arrow
+            >
+              <i
+                className={`sd-game-info-eye sd-game-info-eye--${dictatorKnows ? "yes" : "no"} fas ${dictatorKnows ? "fa-eye" : "fa-eye-slash"}`}
+                aria-label={dictatorKnows ? "Dictator knows Fascists" : "Dictator does not know Fascists"}
+              />
+            </Tooltip>
+          </span>
+        </div>
+      )}
     </div>
   );
 }

@@ -85,7 +85,7 @@ export default function Rules() {
         UltiMafia Rules of Conduct
       </Typography>
       <Typography variant="body2" color="text.secondary" paragraph>
-        Last Updated: February 25, 2026
+        Last Updated: April 21, 2026
       </Typography>
 
       <Tabs value={selectedTab} onChange={handleTabChange}>

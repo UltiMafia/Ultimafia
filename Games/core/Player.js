@@ -180,7 +180,14 @@ module.exports = class Player {
             constants.msgSpamRateLimit
           )
         ) {
-          this.sendAlert("You are speaking too quickly!");
+          this.send("speakCooldown", {
+            meetingId: message.meetingId,
+            cooldownMs: Spam.getCooldownMs(
+              speechPast,
+              constants.msgSpamSumLimit,
+              constants.msgSpamRateLimit
+            ),
+          });
           return;
         }
 
@@ -235,7 +242,14 @@ module.exports = class Player {
             constants.msgSpamRateLimit
           )
         ) {
-          this.sendAlert("You are speaking too quickly!");
+          this.send("speakCooldown", {
+            meetingId: quote.toMeetingId,
+            cooldownMs: Spam.getCooldownMs(
+              speechPast,
+              constants.msgSpamSumLimit,
+              constants.msgSpamRateLimit
+            ),
+          });
           return;
         }
 

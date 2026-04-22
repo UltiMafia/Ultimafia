@@ -61,7 +61,11 @@ module.exports = class GovernmentCore extends Card {
       vote.meeting.name == "Election Vote" &&
       vote.voter != this.role.player
     ) {
-      vote.cancel = true;
+      // Other players learn that this player has voted, but not for what.
+      // Frontend uses presence of the voter's id in electionMeeting.votes
+      // (regardless of value) to render a "voted" indicator.
+      vote.target = "*unknown";
+      vote.modified = true;
     }
   }
 };

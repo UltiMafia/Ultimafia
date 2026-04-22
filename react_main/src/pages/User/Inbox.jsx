@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Navigate, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -33,11 +33,41 @@ export default function Inbox() {
   const errorAlert = useErrorAlert();
   const navigate = useNavigate();
 
+  const notificationsRef = useRef(notifications);
+  useEffect(() => {
+    notificationsRef.current = notifications;
+  }, [notifications]);
+
   useEffect(() => {
     if (user.loaded && user.loggedIn) {
       loadNotifications(1);
     }
   }, [user.loaded, user.loggedIn]);
+
+  useEffect(() => {
+    if (loading) return;
+
+    const timer = setTimeout(async () => {
+      const unreadIds = (notificationsRef.current || [])
+        .filter((n) => !n.read)
+        .map((n) => n.id);
+      if (unreadIds.length === 0) return;
+
+      try {
+        await axios.post("/api/notifs/read", { ids: unreadIds });
+        setNotifications((prev) =>
+          (prev || []).map((notif) =>
+            unreadIds.includes(notif.id) ? { ...notif, read: true } : notif
+          )
+        );
+        setUnreadCount((prev) => Math.max(0, prev - unreadIds.length));
+      } catch (err) {
+        errorAlert(err);
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [currentPage, loading]);
 
   const loadNotifications = async (page) => {
     setLoading(true);
