@@ -64,7 +64,7 @@ app.use(
 app.use(
   "/uploads",
   express.static(path.join(__dirname, process.env.UPLOAD_PATH), {
-    maxAge: 3600,
+    maxAge: 60 * 60 * 1000,
   })
 );
 
