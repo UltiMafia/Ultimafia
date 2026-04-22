@@ -155,22 +155,25 @@ describe("modules/fortunePoints", function () {
     });
 
     it("should count ranked and competitive rows toward the same faction rate", function () {
+      // Aggregation spans ranked + competitive; mixed 2W/1L per faction → 2/3 winrate each.
       const alignmentWinRates = {
         Village: [
           ["ranked", true],
           ["competitive", true],
+          ["ranked", false],
         ],
         Mafia: [
+          ["ranked", true],
+          ["competitive", true],
           ["ranked", false],
-          ["competitive", false],
         ],
       };
       const { pointsWonByFactions } = computeFactionFortunePoints({
         factionNames: ["Village", "Mafia"],
         alignmentWinRates,
       });
-      pointsWonByFactions.Village.should.equal(120);
-      pointsWonByFactions.Mafia.should.equal(0);
+      pointsWonByFactions.Village.should.equal(60);
+      pointsWonByFactions.Mafia.should.equal(60);
     });
 
     it("should ignore unranked rows when computing payouts", function () {
@@ -329,6 +332,70 @@ describe("modules/fortunePoints", function () {
       Object.keys(pointsLostByFactions).length.should.equal(0);
     });
 
+    it("should give equal payouts in a 2-faction setup with no ranked/competitive history", function () {
+      // Fresh setup — no rows recorded yet. Both factions fall back to equal weights.
+      const { pointsWonByFactions, pointsLostByFactions } =
+        computeFactionFortunePoints({
+          factionNames: ["Village", "Mafia"],
+          alignmentWinRates: {},
+        });
+      pointsWonByFactions.Village.should.equal(60);
+      pointsWonByFactions.Mafia.should.equal(60);
+      pointsLostByFactions.Village.should.equal(60);
+      pointsLostByFactions.Mafia.should.equal(60);
+    });
+
+    it("should give equal payouts end-to-end when setupStats has no alignmentRows", function () {
+      // Simulates a SetupVersion doc that exists but whose setupStats has never been populated.
+      const alignmentWinRates = alignmentRowsToWinRateMap({ alignmentRows: [] });
+      const { pointsWonByFactions, pointsLostByFactions } =
+        computeFactionFortunePoints({
+          factionNames: ["Village", "Mafia"],
+          alignmentWinRates,
+        });
+      pointsWonByFactions.Village.should.equal(60);
+      pointsWonByFactions.Mafia.should.equal(60);
+      pointsLostByFactions.Village.should.equal(60);
+      pointsLostByFactions.Mafia.should.equal(60);
+    });
+
+    it("should give a non-zero win payout to a faction with 0% historical winrate", function () {
+      // Setup has been played 20 times ranked and Mafia won every single time.
+      // A villager who finally defies the streak should not receive zero fortune.
+      const alignmentWinRates = {
+        Village: Array(20).fill(["ranked", false]),
+        Mafia: Array(20).fill(["ranked", true]),
+      };
+      const { pointsWonByFactions } = computeFactionFortunePoints({
+        factionNames: ["Village", "Mafia"],
+        alignmentWinRates,
+      });
+      pointsWonByFactions.Village.should.be.greaterThan(0);
+      // Mafia still carries most of the payout since they are heavily favoured,
+      // but should not be exactly 120 — the floor shaves a few points off the dominant side.
+      pointsWonByFactions.Mafia.should.be.lessThan(120);
+    });
+
+    it("should reward a 1/21 village win after a 20-game mafia streak with a small but non-zero payout", function () {
+      // Snapshot of stats immediately after the villager's first-ever win is recorded.
+      const alignmentWinRates = {
+        Village: Array(20).fill(["ranked", false]).concat([["ranked", true]]),
+        Mafia: Array(20).fill(["ranked", true]).concat([["ranked", false]]),
+      };
+      const { pointsWonByFactions, pointsLostByFactions } =
+        computeFactionFortunePoints({
+          factionNames: ["Village", "Mafia"],
+          alignmentWinRates,
+        });
+      // Village ~4.8% winrate → still small but > 0. Mafia ~95.2% → near full.
+      pointsWonByFactions.Village.should.be.greaterThan(0);
+      pointsWonByFactions.Village.should.be.lessThan(20);
+      pointsWonByFactions.Mafia.should.be.greaterThan(100);
+      // Losing is the expected outcome for village in this setup, so the penalty should not be zero for them.
+      pointsLostByFactions.Village.should.be.greaterThan(100);
+      pointsLostByFactions.Mafia.should.be.greaterThan(0);
+    });
+
     it("should handle Village 60% vs Mafia 40% win rate", function () {
       // Village 6/10 = 0.6, Mafia 4/10 = 0.4 → weights 0.6, 0.4
       const alignmentWinRates = {
@@ -364,7 +431,7 @@ describe("modules/fortunePoints", function () {
       pointsLostByFactions.Mafia.should.equal(96);
     });
 
-    it("should handle Village 100% vs Mafia 0% win rate", function () {
+    it("should handle Village 100% vs Mafia 0% win rate with floor applied to the losing side", function () {
       const alignmentWinRates = {
         Village: Array(3).fill(["ranked", true]).concat(Array(2).fill(["competitive", true])),
         Mafia: Array(2).fill(["competitive", false]).concat(Array(3).fill(["ranked", false])),
@@ -374,11 +441,12 @@ describe("modules/fortunePoints", function () {
           factionNames: ["Village", "Mafia"],
           alignmentWinRates,
         });
-      // weights: V=1.0, M=0.0 → winPts: V=120, M=0 → lossPts: V=0, M=120
-      pointsWonByFactions.Village.should.equal(120);
-      pointsWonByFactions.Mafia.should.equal(0);
-      pointsLostByFactions.Village.should.equal(0);
-      pointsLostByFactions.Mafia.should.equal(120);
+      // Mafia's raw 0% is floored to 0.05; post-normalization V≈0.952, M≈0.048.
+      // winPts: V=round(120*0.952)=114, M=round(120*0.048)=6 → lossPts mirror.
+      pointsWonByFactions.Village.should.equal(114);
+      pointsWonByFactions.Mafia.should.equal(6);
+      pointsLostByFactions.Village.should.equal(6);
+      pointsLostByFactions.Mafia.should.equal(114);
     });
 
     it("should handle 3-faction Village 50% / Mafia 30% / Cult 20%", function () {
@@ -492,8 +560,9 @@ describe("modules/fortunePoints", function () {
         factionNames: ["Village", "Mafia"],
         alignmentWinRates,
       });
-      pointsWonByFactions.Village.should.equal(120);
-      pointsWonByFactions.Mafia.should.equal(0);
+      // Only the ranked rows count: Village 1/1, Mafia 0/1. Mafia's 0 is floored to 0.05.
+      pointsWonByFactions.Village.should.equal(114);
+      pointsWonByFactions.Mafia.should.equal(6);
     });
   });
 });
