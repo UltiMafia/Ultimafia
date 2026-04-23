@@ -28,6 +28,7 @@ import { UserContext, SiteInfoContext } from "Contexts";
 import { PageNav, SearchBar } from "components/Nav";
 import { useErrorAlert } from "components/Alerts";
 import { CompetitiveFaqContent } from "./CompetitiveFaq";
+import { FortuneCalculatorContent } from "./FortuneCalculator";
 import Comments from "../Community/Comments";
 
 export const QUERY_PARAM_SEASON = "season";
@@ -787,6 +788,7 @@ export default function Competitive() {
           <Tab label="Round History" value="gameHistory" />
         )}
         <Tab label="FAQ" value="faq" />
+        <Tab label="Fortune Calculator" value="fortuneCalculator" />
       </Tabs>
       {!isOffseason && activeTab === "overview" && (
         <Stack spacing={1}>
@@ -808,6 +810,11 @@ export default function Competitive() {
       {activeTab === "faq" && (
         <Box sx={{ mt: 1 }}>
           <CompetitiveFaqContent />
+        </Box>
+      )}
+      {activeTab === "fortuneCalculator" && (
+        <Box sx={{ mt: 1 }}>
+          <FortuneCalculatorContent />
         </Box>
       )}
       <Box sx={{ mt: 2 }}>
