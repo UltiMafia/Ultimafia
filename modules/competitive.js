@@ -7,7 +7,9 @@ const routeUtils = require("../routes/utils");
 const constants = require("../data/constants");
 
 // SEE: https://docs.google.com/document/d/1amLZWVBKyalKh7KalYpCDgZSmmNmBy1-BIASOj9GnFA
-const POINTS_TABLE = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+// v1: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1], used in seasons 1 and 2
+// v2: proposed to make it more possible to climb up after a round is determined
+const POINTS_TABLE = [20, 18, 16, 14, 12, 10, 9, 8, 7, 6, 3, 3, 3, 3, 3]
 
 async function progressCompetitive() {
   // Get the current season, if any
