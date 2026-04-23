@@ -3189,8 +3189,9 @@ module.exports = class Game {
   }
 
   /**
-   * Fortune / misfortune payouts use one "faction" bucket per player, aligned
-   * with captureStartingFactions — role name for most independents (e.g. Warlock).
+   * Fortune payouts use one "faction" bucket per player, aligned with
+   * captureStartingFactions — role name for most independents (e.g. Warlock).
+   * (Misfortune has been scrapped; losers earn 0 fortune.)
    */
   computeFortuneMemberFaction(playerId) {
     const roleKey = this.originalRoles[playerId];
@@ -3262,9 +3263,18 @@ module.exports = class Game {
         ...new Set(Object.values(memberFactions)),
       ].sort();
 
+      const winningFactions = [
+        ...new Set(
+          Object.entries(memberFactions)
+            .filter(([pid]) => winnerIds.has(String(pid)))
+            .map(([, faction]) => faction)
+        ),
+      ];
+
       const { pointsWonByFactions, pointsLostByFactions } =
         fortunePoints.computeFactionFortunePoints({
           factionNames,
+          winningFactions,
           alignmentWinRates,
           K: constants.fortunePointsNominalK,
         });

@@ -2192,6 +2192,16 @@ router.post("/refundGame", async (req, res) => {
         const factionNames = [
           ...new Set(Object.values(memberFactionsByPlayerId)),
         ].sort();
+        const winnerPids = new Set(
+          (game.winners || []).map((p) => String(p))
+        );
+        const winningFactions = [
+          ...new Set(
+            Object.entries(memberFactionsByPlayerId)
+              .filter(([pid]) => winnerPids.has(String(pid)))
+              .map(([, faction]) => faction)
+          ),
+        ];
         const setupDoc = await models.Setup.findOne({ _id: game.setup })
           .select("version")
           .lean();
@@ -2209,6 +2219,7 @@ router.post("/refundGame", async (req, res) => {
         const { pointsWonByFactions, pointsLostByFactions } =
           fortunePoints.computeFactionFortunePoints({
             factionNames,
+            winningFactions,
             alignmentWinRates,
             K: constants.fortunePointsNominalK,
           });

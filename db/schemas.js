@@ -876,7 +876,10 @@ var schemas = {
     season: { type: Number },
     round: { type: Number },
     day: { type: Number },
-    points: { type: Number }, // This is the same as fortune
+    // Same value as the player's fortune gain for this game. Always >= 0.
+    // Misfortune (negative fortune from a loss) has been scrapped — historical
+    // docs may still contain negative values from before the change.
+    points: { type: Number },
     valid: { type: Boolean, default: true }, // A moderator can invalidate a game in the case of cheating
   }),
   CompetitiveSeasonStanding: new mongoose.Schema({
