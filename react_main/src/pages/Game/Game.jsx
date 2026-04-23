@@ -2904,7 +2904,7 @@ export function SideMenu({
   );
 }
 
-export function PlayerRows({ players, className = "" }) {
+export function PlayerRows({ players, className = "", renderMarker, renderRowEnd }) {
   const game = useContext(GameContext);
   const [activity, updateActivity] = useActivity();
   const [visibleTyping, setVisibleTyping] = useState({});
@@ -3114,21 +3114,25 @@ export function PlayerRows({ players, className = "" }) {
         } : {}}
       >
         {isolationCheckbox}
-        {stateViewing !== -1 && (
-          <RoleMarkerToggle
-            playerId={player.id}
-            setup={setup}
-            toggleRolePrediction={toggleRolePrediction}
-          />
-        )}
-        {stateViewing !== -1 && (
-          <RoleCount
-            role={roleToShow}
-            key={roleToShow}
-            gameType={gameType}
-            showPopover
-            otherRoles={setup?.roles}
-          />
+        {stateViewing !== -1 && renderMarker ? (
+          renderMarker(player)
+        ) : (
+          stateViewing !== -1 && (
+            <>
+              <RoleMarkerToggle
+                playerId={player.id}
+                setup={setup}
+                toggleRolePrediction={toggleRolePrediction}
+              />
+              <RoleCount
+                role={roleToShow}
+                key={roleToShow}
+                gameType={gameType}
+                showPopover
+                otherRoles={setup?.roles}
+              />
+            </>
+          )
         )}
         <NameWithAvatar
           id={player.userId}
@@ -3162,6 +3166,11 @@ export function PlayerRows({ players, className = "" }) {
             }
           </Box>
         )}
+        {!readyCheck && renderRowEnd && (
+          <Box sx={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
+            {renderRowEnd(player)}
+          </Box>
+        )}
       </div>
     );
   });
@@ -3170,6 +3179,7 @@ export function PlayerRows({ players, className = "" }) {
 }
 
 export function PlayerList(props) {
+  const { renderMarker, renderRowEnd } = props;
   const game = useContext(GameContext);
 
   const history = game.history;
@@ -3219,21 +3229,35 @@ export function PlayerList(props) {
       scrollable
       content={
         <div className="player-list">
-          <PlayerRows players={alivePlayers} />
+          <PlayerRows
+            players={alivePlayers}
+            renderMarker={renderMarker}
+            renderRowEnd={renderRowEnd}
+          />
           {deadPlayers.length > 0 && (
             <div className="section-title">
               <i className="fas fa-skull" />
               Graveyard
             </div>
           )}
-          <PlayerRows players={deadPlayers} className="dead" />
+          <PlayerRows
+            players={deadPlayers}
+            className="dead"
+            renderMarker={renderMarker}
+            renderRowEnd={renderRowEnd}
+          />
           {exorcisedPlayers.length > 0 && (
             <div className="section-title">
               <i className="fas fa-skull" />
               Underworld
             </div>
           )}
-          <PlayerRows players={exorcisedPlayers} className="dead" />
+          <PlayerRows
+            players={exorcisedPlayers}
+            className="dead"
+            renderMarker={renderMarker}
+            renderRowEnd={renderRowEnd}
+          />
         </div>
       }
     />
@@ -3404,6 +3428,8 @@ export function ActionList({
   meetingFilter,
   hideIfEmpty = false,
   scrollable = true,
+  bare = false,
+  className,
 }) {
   const game = useContext(GameContext);
 
@@ -3455,6 +3481,14 @@ export function ActionList({
   const actionElements = (regularActionDescriptors || []).map(
     ({ Component, props, key }) => <Component key={key} {...props} />
   );
+
+  if (bare) {
+    return (
+      <div className={`action-list ${className || ""}`.trim()}>
+        {actionElements}
+      </div>
+    );
+  }
 
   return (
     <SideMenu
@@ -4623,25 +4657,50 @@ function ActionText(props) {
         {meeting.actionName}
       </Typography>
 
-      {!disabled && (
-        <Stack direction="row" spacing={1} alignItems="center">
-          <TextField
-            value={textData}
-            onChange={handleOnChange}
-            onKeyDown={handleKeyDown}
-            size="small"
-            fullWidth
-            placeholder={textOptions.placeholder || "Type here"}
-          />
-          <Button
-            variant="contained"
-            onClick={handleOnSubmit}
-            disabled={textData.length < minLength}
+      {!disabled && (() => {
+        const isLongText = !textOptions.numericOnly && maxLength >= 100;
+        const textFieldProps = isLongText
+          ? { multiline: true, minRows: 2, maxRows: 6 }
+          : { size: "small" };
+        const count = textData.length;
+        return (
+          <Stack
+            direction={isLongText ? "column" : "row"}
+            spacing={1}
+            alignItems={isLongText ? "stretch" : "center"}
           >
-            {textOptions.submit || "Submit"}
-          </Button>
-        </Stack>
-      )}
+            <TextField
+              value={textData}
+              onChange={handleOnChange}
+              onKeyDown={handleKeyDown}
+              fullWidth
+              placeholder={textOptions.placeholder || "Type here"}
+              {...textFieldProps}
+            />
+            {isLongText && (
+              <Typography
+                variant="caption"
+                sx={{
+                  alignSelf: "flex-end",
+                  fontVariantNumeric: "tabular-nums",
+                  color: count > maxLength - 20 ? "#bd4c4c" : "text.secondary",
+                  mt: 0.25,
+                }}
+              >
+                {count} / {maxLength}
+              </Typography>
+            )}
+            <Button
+              variant="contained"
+              onClick={handleOnSubmit}
+              disabled={textData.length < minLength}
+              fullWidth={isLongText}
+            >
+              {textOptions.submit || "Submit"}
+            </Button>
+          </Stack>
+        );
+      })()}
 
       {meeting.votes[self] && (
         <Typography variant="body2" sx={{ mt: 1 }}>

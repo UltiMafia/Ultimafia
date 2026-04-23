@@ -7,91 +7,133 @@ import {
   TextMeetingLayout,
   ActionList,
   PlayerList,
-  Timer,
   SpeechFilter,
   SettingsMenu,
   Notes,
   MobileLayout,
   GameTypeContext,
+  SideMenu,
 } from "./Game";
 import { GameContext } from "../../Contexts";
-import { SideMenu } from "./Game";
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/gameAcrotopia.css";
 
-export default function WackyWordsGame(props) {
+export default function WackyWordsGame() {
   const game = useContext(GameContext);
-  const isPhoneDevice = useIsPhoneDevice();
 
   const history = game.history;
-  const updateHistory = game.updateHistory;
-  // const updatePlayers = game.updatePlayers;
   const stateViewing = game.stateViewing;
   const updateStateViewing = game.updateStateViewing;
-  const self = game.self;
-  const players = game.players;
-  const isSpectator = game.isSpectator;
 
   const playBellRef = useRef(false);
 
-  const gameType = "Wacky Words";
-  const meetings = history.states[stateViewing]
-    ? history.states[stateViewing].meetings
-    : {};
-
-  // Make player view current state when it changes
   useEffect(() => {
     updateStateViewing({ type: "current" });
   }, [history.currentState]);
 
   useEffect(() => {
-    // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });
   }, []);
 
   useSocketListeners((socket) => {
-    socket.on("state", (state) => {
+    socket.on("state", () => {
       if (playBellRef.current) game.playAudio("ping");
-
       playBellRef.current = true;
     });
-
-    socket.on("winners", (winners) => {});
+    socket.on("winners", () => {});
   }, game.socket);
 
+  const currentState = history.states[stateViewing];
+  const extraInfo = currentState && currentState.extraInfo;
+  const meetings = currentState ? currentState.meetings : {};
+  const self = game.self;
+
+  const meetingList = Object.values(meetings || {});
+  const hasPendingAction = meetingList.some(
+    (m) =>
+      m &&
+      m.name !== "Vote Kick" &&
+      !m.finished &&
+      m.amMember &&
+      !(m.votes && m.votes[self])
+  );
+  const isVotingPhase = meetingList.some(
+    (m) => m && !m.finished && m.inputType === "showAllOptions"
+  );
+  const showResponses =
+    !isVotingPhase &&
+    extraInfo &&
+    extraInfo.responseHistory &&
+    extraInfo.responseHistory.length > 0;
+
+  const scores = extraInfo?.scores;
+  const playerHasVoted = extraInfo?.playerHasVoted;
+
+  const renderPlayerMarker = (player) => (
+    <span className="acrotopia-score-chip acrotopia-player-chip">
+      {scores?.[player.name] ?? 0}
+    </span>
+  );
+  const renderPlayerRowEnd = (player) =>
+    playerHasVoted?.[player.name] ? (
+      <i
+        className="fas fa-check-circle acrotopia-row-voted"
+        title="Voted"
+      />
+    ) : null;
+
   return (
-    <GameTypeContext.Provider
-      value={{
-        singleState: true,
-      }}
-    >
+    <GameTypeContext.Provider value={{ singleState: true }}>
       <TopBar />
       <ThreePanelLayout
         leftPanelContent={
           <>
-            <PlayerList />
+            <PlayerList
+              renderMarker={extraInfo ? renderPlayerMarker : undefined}
+              renderRowEnd={extraInfo ? renderPlayerRowEnd : undefined}
+            />
+            <ActionList
+              meetingFilter={(m) => m.name === "Vote Kick"}
+              hideIfEmpty
+            />
+            <Notes />
             <SpeechFilter />
             <SettingsMenu />
           </>
         }
         centerPanelContent={
-          <>
-            <TextMeetingLayout />
-          </>
+          <div
+            className={`acrotopia-stage${
+              hasPendingAction ? " acrotopia-stage-active" : ""
+            }`}
+          >
+            {extraInfo && (
+              <>
+                <AcrotopiaBanner
+                  round={extraInfo.round}
+                  totalRound={extraInfo.totalRound}
+                />
+                <AcrotopiaPrompt currentQuestion={extraInfo.currentQuestion} />
+                <AcrotopiaActionArea hasPending={hasPendingAction} />
+                {showResponses && (
+                  <AcrotopiaResponses
+                    responseHistory={extraInfo.responseHistory}
+                  />
+                )}
+              </>
+            )}
+          </div>
         }
-        rightPanelContent={
-          <>
-            <HistoryKeeper history={history} stateViewing={stateViewing} />
-            <ActionList />
-            <Notes />
-          </>
-        }
+        rightPanelContent={<TextMeetingLayout />}
       />
       <MobileLayout
         innerRightContent={
           <>
-            <HistoryKeeper history={history} stateViewing={stateViewing} />
+            <HistoryKeeperMobile
+              history={history}
+              stateViewing={stateViewing}
+              showResponses={showResponses}
+            />
             <ActionList />
           </>
         }
@@ -100,122 +142,105 @@ export default function WackyWordsGame(props) {
   );
 }
 
-function HistoryKeeper(props) {
-  const history = props.history;
-  const stateViewing = props.stateViewing;
+function AcrotopiaBanner({ round, totalRound }) {
+  const padded = String(round || 0).padStart(2, "0");
+  const total = String(totalRound || 0).padStart(2, "0");
+  return (
+    <header className="acrotopia-banner">
+      <div className="acrotopia-banner-left">
+        <span className="acrotopia-banner-label">Round</span>
+        <span className="acrotopia-banner-now">{padded}</span>
+        <span className="acrotopia-banner-sep">/</span>
+        <span className="acrotopia-banner-of">{total}</span>
+      </div>
+      <div className="acrotopia-banner-tag">Wacky Words</div>
+    </header>
+  );
+}
 
-  if (stateViewing < 0) return <></>;
+function AcrotopiaPrompt({ currentQuestion }) {
+  return (
+    <section className="acrotopia-prompt">
+      <span className="acrotopia-prompt-mark" aria-hidden="true">
+        &ldquo;
+      </span>
+      <p className="acrotopia-prompt-text">
+        {renderPromptWithBlanks(currentQuestion)}
+      </p>
+    </section>
+  );
+}
 
-  const extraInfo = history.states[stateViewing].extraInfo;
+function renderPromptWithBlanks(text) {
+  if (!text) return null;
+  const parts = text.split(/(_{2,})/g);
+  return parts.map((part, i) =>
+    /^_{2,}$/.test(part) ? (
+      <span key={i} className="acrotopia-blank">
+        {part}
+      </span>
+    ) : (
+      <React.Fragment key={i}>{part}</React.Fragment>
+    )
+  );
+}
+
+function AcrotopiaActionArea({ hasPending }) {
+  return (
+    <section
+      className={`acrotopia-action-area${
+        hasPending ? " acrotopia-action-pending" : ""
+      }`}
+    >
+      <ActionList
+        bare
+        meetingFilter={(m) => m.name !== "Vote Kick"}
+        hideIfEmpty
+        className="acrotopia-action-list"
+      />
+    </section>
+  );
+}
+
+function AcrotopiaResponses({ responseHistory }) {
+  return (
+    <section className="acrotopia-section">
+      <h3 className="acrotopia-section-label">Responses</h3>
+      <ul className="acrotopia-responses">
+        {responseHistory.map((r, i) => (
+          <li key={`${r.name}-${i}`} className="acrotopia-response">
+            <span className="acrotopia-response-quote" aria-hidden="true">
+              &ldquo;
+            </span>
+            <span className="acrotopia-response-text">{r.display}</span>
+            <span className="acrotopia-response-author">{r.name}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function HistoryKeeperMobile({ history, stateViewing, showResponses }) {
+  if (stateViewing < 0) return null;
+  const state = history.states[stateViewing];
+  if (!state) return null;
+  const { round, totalRound, currentQuestion, responseHistory } =
+    state.extraInfo || {};
 
   return (
     <SideMenu
       title="Game Info"
       scrollable
       content={
-        <>
-          <WackyWordsHistory
-            responseHistory={extraInfo.responseHistory}
-            currentQuestion={extraInfo.currentQuestion}
-            scores={extraInfo.scores}
-            round={extraInfo.round}
-            totalRound={extraInfo.totalRound}
-            playerHasVoted={extraInfo.playerHasVoted}
-          />
-        </>
+        <div className="acrotopia-stage acrotopia-stage-mobile">
+          <AcrotopiaBanner round={round} totalRound={totalRound} />
+          <AcrotopiaPrompt currentQuestion={currentQuestion} />
+          {showResponses && responseHistory && responseHistory.length > 0 && (
+            <AcrotopiaResponses responseHistory={responseHistory} />
+          )}
+        </div>
       }
     />
-  );
-}
-
-function WackyWordsHistory(props) {
-  let responseHistory = props.responseHistory;
-  let currentQuestion = props.currentQuestion;
-  let scores = props.scores;
-  let round = props.round;
-  let totalRound = props.totalRound;
-  let playerHasVoted = props.playerHasVoted;
-
-  return (
-    <>
-      <div className="acrotopia">
-        <div className="acrotopia-word-info">
-          <>
-            <div className="acrotopia-name">
-              Round {round} of {totalRound}{" "}
-            </div>
-          </>
-        </div>
-        <div className="acrotopia-word-info">
-          <>
-            <div className="acrotopia-name">Current Question</div>
-            <div className="acrotopia-input">{currentQuestion}</div>
-          </>
-        </div>
-        <div className="acrotopia-current-history">
-          <div className="acrotopia-name">Current Responses</div>
-          <ResponseHistory responseHistory={responseHistory} />
-        </div>
-        <div className="acrotopia-scores">
-          <div className="acrotopia-name">Current Score</div>
-          <div className="acrotopia-scores-wrapper">
-            {Object.keys(scores).map((name) => {
-              return (
-                <WackyWordsScore
-                  name={name}
-                  score={scores[name]}
-                  hasVoted={playerHasVoted[name]}
-                />
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
-
-function ResponseHistory(props) {
-  let responseHistory = props.responseHistory;
-
-  return (
-    <>
-      <div className="acrotopia-history-group">
-        {responseHistory.map((a) => {
-          return <Response response={a} />;
-        })}
-      </div>
-    </>
-  );
-}
-
-function Response(props) {
-  let a = props.response;
-  return (
-    <>
-      <div className="acrotopia-input acrotopia-tick">
-        <span> {a.display} </span> {a.name}
-      </div>
-    </>
-  );
-}
-
-function WackyWordsScore(props) {
-  let name = props.name;
-  let score = props.score;
-  let hasVoted = props.hasVoted;
-
-  return (
-    <>
-      <div className="acrotopia-score">
-        <div className="acrotopia-voted-check">
-          {hasVoted && <i className="fas fa-check" />}
-        </div>
-        <div className="acrotopia-score-data acrotopia-score-score">
-          {score}
-        </div>
-        <div className="acrotopia-score-data acrotopia-score-name">{name}</div>
-      </div>
-    </>
   );
 }

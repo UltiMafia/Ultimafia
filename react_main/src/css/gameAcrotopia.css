@@ -1,65 +1,454 @@
-/* acrotopia */
+/* Wacky Words — editorial notebook redesign */
 
-.game .acrotopia {
+:root {
+  --acro-accent: #bd4c4c;
+  --acro-accent-soft: rgba(189, 76, 76, 0.12);
+  --acro-accent-deep: #9d3838;
+  --acro-chip: #66afef;
+  --acro-chip-ink: #0f2b47;
+  --acro-check: #048c28;
+}
+
+/* ---------- Stage (center panel container) ---------- */
+
+.game .acrotopia-stage {
   display: flex;
   flex-flow: column;
-  align-items: center;
+  gap: 16px;
 
-  margin-bottom: 10px;
-  padding: 0px 5px;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px 12px 24px;
 
-  color: #bd4c4c;
-}
-
-.game .acrotopia-name {
-  margin-top: 10px;
-  padding-top: 0px;
-
-  text-align: center;
-  font-weight: bold;
-}
-
-.game .acrotopia-history-group {
-  margin-bottom: 15px;
-  max-width: 200px;
-  overflow-wrap: break-word;
-}
-
-.game .acrotopia-input {
   color: var(--scheme-color-text);
-  size: 8px;
+  font-family: "Roboto", sans-serif;
 }
 
-.game .acrotopia-tick span {
-  margin-right: 4px;
-  color: #bd4c4c;
+.game .acrotopia-stage > * {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: acrotopia-rise 420ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.game .acrotopia-stage > *:nth-child(1) { animation-delay: 20ms; }
+.game .acrotopia-stage > *:nth-child(2) { animation-delay: 90ms; }
+.game .acrotopia-stage > *:nth-child(3) { animation-delay: 160ms; }
+.game .acrotopia-stage > *:nth-child(4) { animation-delay: 230ms; }
+
+@keyframes acrotopia-rise {
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-.game .acrotopia-score {
+/* ---------- Round banner (single row, compact) ---------- */
+
+.game .acrotopia-banner {
   display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+
+  padding: 0 2px 8px;
+  border-bottom: 1px solid var(--acro-accent);
 }
 
-.game .acrotopia-score-data {
+.game .acrotopia-banner-left {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.game .acrotopia-banner-label {
+  font-family: "RobotoSlab", serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--acro-accent);
+}
+
+.game .acrotopia-banner-now {
+  font-family: "RobotoSlab", serif;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--scheme-color-text);
+  letter-spacing: -0.01em;
+}
+
+.game .acrotopia-banner-sep {
+  font-family: "RobotoSlab", serif;
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--acro-accent);
+  opacity: 0.7;
+}
+
+.game .acrotopia-banner-of {
+  font-family: "RobotoSlab", serif;
+  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--scheme-color-text);
+  opacity: 0.55;
+}
+
+.game .acrotopia-banner-tag {
+  font-family: "RobotoSlab", serif;
+  font-weight: 700;
+  font-size: 0.65rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+
+  padding: 4px 8px;
+  border: 1px solid var(--scheme-color-border);
+  border-radius: 3px;
+  color: var(--scheme-color-text);
+  opacity: 0.7;
+}
+
+/* ---------- Prompt ---------- */
+
+.game .acrotopia-prompt {
+  position: relative;
+  padding: 14px 18px 14px 48px;
+
+  background: var(--scheme-color-sec);
+  border: 1px solid var(--scheme-color-border);
+  border-left: 3px solid var(--acro-accent);
+  border-radius: 4px;
+}
+
+.game .acrotopia-prompt-mark {
+  position: absolute;
+  top: -4px;
+  left: 8px;
+
+  font-family: "RobotoSlab", serif;
+  font-size: 3.4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--acro-accent);
+  pointer-events: none;
+  user-select: none;
+}
+
+.game .acrotopia-prompt-text {
+  margin: 0;
+  font-family: "RobotoSlab", serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.08rem;
+  line-height: 1.55;
+  color: var(--scheme-color-text);
+  overflow-wrap: anywhere;
+}
+
+.game .acrotopia-blank {
   display: inline-block;
+  min-width: 42px;
+  padding: 0 4px;
+  margin: 0 1px;
+
+  font-style: normal;
+  font-weight: 700;
+  color: var(--acro-accent);
+  letter-spacing: 0.08em;
+
+  background: var(--acro-accent-soft);
+  border-bottom: 2px solid var(--acro-accent);
+  border-radius: 2px 2px 0 0;
 }
 
-.game .acrotopia-score-score {
-  width: 22px;
+/* ---------- Action area ---------- */
+
+.game .acrotopia-action-area {
+  position: relative;
+}
+
+.game .acrotopia-action-list {
+  display: flex;
+  flex-flow: column;
+  gap: 10px;
+}
+
+.game .acrotopia-action-list .action {
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  gap: 6px;
+
+  margin: 0;
+  padding: 10px 14px 12px;
+  max-width: none;
+
+  background: var(--scheme-color-sec);
+  border: 1px solid var(--scheme-color-border);
+  border-top: 3px solid var(--acro-accent);
+  border-radius: 6px;
+
+  color: var(--scheme-color-text);
+
+  transition: box-shadow 220ms ease, transform 220ms ease;
+}
+
+.game .acrotopia-action-pending .acrotopia-action-list .action {
+  box-shadow: 0 0 0 1px var(--acro-accent-soft),
+    0 4px 22px -12px rgba(189, 76, 76, 0.55);
+  animation: acrotopia-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes acrotopia-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 1px var(--acro-accent-soft),
+      0 4px 22px -14px rgba(189, 76, 76, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 2px var(--acro-accent-soft),
+      0 8px 30px -10px rgba(189, 76, 76, 0.75);
+  }
+}
+
+.game .acrotopia-action-list .action .MuiTypography-subtitle1 {
+  margin: 0 0 2px;
+
+  font-family: "RobotoSlab", serif;
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--acro-accent);
+  text-align: left;
+}
+
+.game .acrotopia-action-list .action .MuiTypography-subtitle1.MuiTypography-gutterBottom {
+  margin-bottom: 2px;
+}
+
+/* Input styling */
+.game .acrotopia-action-list .action .MuiOutlinedInput-root {
+  border-radius: 4px;
+  background: transparent;
+}
+
+.game .acrotopia-action-list .action .MuiOutlinedInput-root textarea,
+.game .acrotopia-action-list .action .MuiOutlinedInput-root input {
+  font-family: "Roboto", sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--scheme-color-text);
+}
+
+.game .acrotopia-action-list .action .MuiOutlinedInput-notchedOutline {
+  border-color: var(--scheme-color-border);
+}
+
+.game .acrotopia-action-list .action .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--acro-accent);
+}
+
+.game .acrotopia-action-list .action .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--acro-accent);
+  border-width: 2px;
+}
+
+.game .acrotopia-action-list .action .MuiButton-contained {
+  background: var(--acro-accent);
+  color: #fff;
+
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  padding: 6px 14px;
+  border-radius: 4px;
+  box-shadow: none;
+
+  transition: background 160ms ease, transform 120ms ease;
+}
+
+.game .acrotopia-action-list .action .MuiButton-contained:hover {
+  background: var(--acro-accent-deep);
+  box-shadow: 0 4px 12px -6px rgba(189, 76, 76, 0.6);
+}
+
+.game .acrotopia-action-list .action .MuiButton-contained:active {
+  transform: translateY(1px);
+}
+
+.game .acrotopia-action-list .action .MuiButton-contained.Mui-disabled {
+  background: var(--scheme-color-border);
+  color: var(--scheme-color-text);
+  opacity: 0.45;
+}
+
+.game .acrotopia-action-list .action .MuiTypography-body2 {
+  font-family: "Roboto", sans-serif;
+  font-size: 0.88rem;
+  padding: 8px 12px;
+  border-left: 2px solid var(--acro-accent);
+  background: var(--acro-accent-soft);
+  border-radius: 0 4px 4px 0;
+  color: var(--scheme-color-text);
+}
+
+/* ---------- Section (Responses) ---------- */
+
+.game .acrotopia-section {
+  display: flex;
+  flex-flow: column;
+  gap: 8px;
+}
+
+.game .acrotopia-section-label {
+  margin: 0;
+  padding-bottom: 4px;
+
+  font-family: "RobotoSlab", serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--acro-accent);
+
+  border-bottom: 1px dashed var(--scheme-color-border);
+}
+
+/* ---------- Responses ---------- */
+
+.game .acrotopia-responses {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  flex-flow: column;
+  gap: 6px;
+}
+
+.game .acrotopia-response {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  row-gap: 2px;
+  align-items: start;
+
+  padding: 8px 12px 10px;
+  background: var(--scheme-color-sec);
+  border: 1px solid var(--scheme-color-border);
+  border-radius: 4px;
+}
+
+.game .acrotopia-response-quote {
+  grid-row: 1 / span 2;
+  align-self: start;
+
+  font-family: "RobotoSlab", serif;
+  font-size: 1.6rem;
+  line-height: 0.9;
+  color: var(--acro-accent);
+  opacity: 0.8;
+  user-select: none;
+}
+
+.game .acrotopia-response-text {
+  grid-column: 2;
+  grid-row: 1;
+
+  font-family: "RobotoSlab", serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  color: var(--scheme-color-text);
+  overflow-wrap: anywhere;
+}
+
+.game .acrotopia-response-author {
+  grid-column: 2;
+  grid-row: 2;
+
+  font-family: "Roboto", sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acro-accent);
+  opacity: 0.8;
+}
+
+.game .acrotopia-response-author::before {
+  content: "— ";
+  opacity: 0.6;
+}
+
+/* ---------- Player-row score marker (left panel) ---------- */
+
+.game .acrotopia-score-chip {
+  min-width: 28px;
   height: 22px;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  border-radius: 10px;
-  text-align: center;
-  color: black;
-  background-color: #66afef;
-  margin-right: 5px;
+  padding: 0 7px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 5px;
+
+  background: var(--acro-chip);
+  color: var(--acro-chip-ink);
+
+  font-family: "RobotoSlab", serif;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 0.82rem;
+  line-height: 1;
 }
 
-.game .acrotopia-voted-check {
-  width: 10px;
-  margin-right: 10px;
+.game .acrotopia-player-chip {
+  flex-shrink: 0;
+  margin-right: 8px;
+
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
-.game .acrotopia-score i {
-  color: #048c28;
+.game .acrotopia-row-voted {
+  font-size: 1.2rem;
+  color: #4caf50;
+  line-height: 1;
+}
+
+/* ---------- Mobile fallback ---------- */
+
+.game .acrotopia-stage-mobile {
+  max-width: 100%;
+  padding: 10px 4px 14px;
+  gap: 14px;
+}
+
+.game .acrotopia-stage-mobile .acrotopia-banner-now {
+  font-size: 1.4rem;
+}
+
+.game .acrotopia-stage-mobile .acrotopia-banner-tag {
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+}
+
+.game .acrotopia-stage-mobile .acrotopia-prompt {
+  padding: 12px 12px 12px 42px;
+}
+
+.game .acrotopia-stage-mobile .acrotopia-prompt-mark {
+  font-size: 3rem;
+  top: -2px;
+}
+
+.game .acrotopia-stage-mobile .acrotopia-prompt-text {
+  font-size: 1rem;
 }
