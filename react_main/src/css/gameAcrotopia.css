@@ -163,6 +163,51 @@
   border-radius: 2px 2px 0 0;
 }
 
+/* --- Wacky Decisions: array-shaped currentQuestion --- */
+
+.game .acrotopia-prompt-choices {
+  display: flex;
+  flex-flow: column;
+  gap: 8px;
+
+  font-style: normal;
+  font-weight: 500;
+}
+
+.game .acrotopia-prompt-choice {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.game .acrotopia-prompt-choice-label {
+  flex-shrink: 0;
+
+  min-width: 26px;
+  height: 24px;
+  padding: 0 6px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 4px;
+  background: var(--acro-accent-soft);
+  border: 1px solid var(--acro-accent);
+
+  font-family: "RobotoSlab", serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.78rem;
+  line-height: 1;
+  color: var(--acro-accent);
+}
+
+.game .acrotopia-prompt-choice-text {
+  font-family: "RobotoSlab", serif;
+  font-style: italic;
+}
+
 /* ---------- Action area ---------- */
 
 .game .acrotopia-action-area {
@@ -170,8 +215,9 @@
 }
 
 .game .acrotopia-action-list {
-  display: flex;
-  flex-flow: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  align-items: start;
   gap: 10px;
 }
 
@@ -328,55 +374,52 @@
 
   display: flex;
   flex-flow: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .game .acrotopia-response {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto;
-  column-gap: 10px;
-  row-gap: 2px;
-  align-items: start;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
 
-  padding: 8px 12px 10px;
+  padding: 4px 10px;
   background: var(--scheme-color-sec);
   border: 1px solid var(--scheme-color-border);
   border-radius: 4px;
+
+  min-width: 0;
 }
 
 .game .acrotopia-response-quote {
-  grid-row: 1 / span 2;
-  align-self: start;
+  flex: 0 0 auto;
 
   font-family: "RobotoSlab", serif;
-  font-size: 1.6rem;
-  line-height: 0.9;
+  font-size: 1.1rem;
+  line-height: 1;
   color: var(--acro-accent);
   opacity: 0.8;
   user-select: none;
 }
 
 .game .acrotopia-response-text {
-  grid-column: 2;
-  grid-row: 1;
+  flex: 1 1 auto;
+  min-width: 0;
 
   font-family: "RobotoSlab", serif;
   font-style: italic;
   font-weight: 500;
-  font-size: 0.98rem;
-  line-height: 1.45;
+  font-size: 0.95rem;
+  line-height: 1.3;
   color: var(--scheme-color-text);
   overflow-wrap: anywhere;
 }
 
 .game .acrotopia-response-author {
-  grid-column: 2;
-  grid-row: 2;
+  flex: 0 0 auto;
 
   font-family: "Roboto", sans-serif;
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--acro-accent);
   opacity: 0.8;

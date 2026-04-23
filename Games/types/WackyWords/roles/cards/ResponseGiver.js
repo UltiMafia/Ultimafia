@@ -45,7 +45,7 @@ module.exports = class ResponseGiver extends Card {
         },
       },
       "Make Your Decision": {
-        actionName: "Make Your First Decision (1-200)",
+        actionName: "Decision 1 (1-200)",
         states: ["Night"],
         flags: ["voting"],
         inputType: "text",
@@ -78,7 +78,7 @@ module.exports = class ResponseGiver extends Card {
         },
       },
       "Make Your Decision 2": {
-        actionName: "Make Your First Decision (1-200)",
+        actionName: "Decision 2 (1-200)",
         states: ["Night"],
         flags: ["voting"],
         inputType: "text",
@@ -127,6 +127,12 @@ module.exports = class ResponseGiver extends Card {
           this.meetings["Make Your Decision"].targets =
             this.game.currentQuestion;
           return;
+        }
+
+        // Neighbor/Host modes: each player has their own prompt
+        const myPrompt = this.data && this.data.currentPrompt;
+        if (myPrompt) {
+          this.meetings["Give Response"].textOptions.promptText = myPrompt;
         }
 
         if (!this.game.hasGovernor) return;

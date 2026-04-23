@@ -6,6 +6,25 @@ const Random = require("../../../lib/Random");
 const Winners = require("../../core/Winners");
 const ArrayHash = require("../../core/ArrayHash");
 
+// Acronym letter weights use dictionary-weighted first-letter-of-word
+// frequency (how often each letter begins a unique English word), not
+// text-weighted letter frequency — the game asks players to start each
+// word in a phrase with the given letter, so the relevant stat is the
+// size of their candidate vocabulary, not letter prevalence in prose.
+// S/C/P lead because of plurals and common prefixes. Generation also
+// rejects consecutive duplicate letters to avoid flat draws like "SSS".
+const LETTER_FREQUENCIES = {
+  S: 12, C: 10, P: 8, A: 7,
+  M: 5, B: 5, T: 5, D: 5, R: 5,
+  F: 4, E: 4, I: 4,
+  H: 3, O: 3, L: 3, U: 3, G: 3,
+  N: 2, W: 2,
+  K: 1, V: 1, J: 1, Q: 1, Y: 1, Z: 1, X: 1,
+};
+const WEIGHTED_LETTER_POOL = Object.entries(LETTER_FREQUENCIES)
+  .map(([letter, weight]) => letter.repeat(weight))
+  .join("");
+
 module.exports = class AcrotopiaGame extends Game {
   constructor(options) {
     super(options);
@@ -78,13 +97,17 @@ module.exports = class AcrotopiaGame extends Game {
   }
 
   generateNewAcronym() {
-    // JQVXZ are less likely to appear
-    const characters = "ABCDEFGHIKLMNOPRSTUWYABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let acronym = "";
+    let lastLetter = "";
     for (var i = 0; i < this.acronymSize; i++) {
-      acronym += characters.charAt(
-        Math.floor(Math.random() * characters.length)
-      );
+      let next;
+      do {
+        next = WEIGHTED_LETTER_POOL.charAt(
+          Math.floor(Math.random() * WEIGHTED_LETTER_POOL.length)
+        );
+      } while (next === lastLetter);
+      acronym += next;
+      lastLetter = next;
     }
     this.currentAcronym = acronym;
     this.queueAlert(`The acronym is ${acronym}.`);

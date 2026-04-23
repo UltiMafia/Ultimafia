@@ -48,6 +48,11 @@ export default function WackyWordsGame() {
   const meetings = currentState ? currentState.meetings : {};
   const self = game.self;
 
+  const displayQuestion = pickDisplayQuestion(
+    extraInfo?.currentQuestion,
+    meetings
+  );
+
   const meetingList = Object.values(meetings || {});
   const hasPendingAction = meetingList.some(
     (m) =>
@@ -95,6 +100,7 @@ export default function WackyWordsGame() {
             <ActionList
               meetingFilter={(m) => m.name === "Vote Kick"}
               hideIfEmpty
+              scrollable={false}
             />
             <Notes />
             <SpeechFilter />
@@ -113,7 +119,7 @@ export default function WackyWordsGame() {
                   round={extraInfo.round}
                   totalRound={extraInfo.totalRound}
                 />
-                <AcrotopiaPrompt currentQuestion={extraInfo.currentQuestion} />
+                <AcrotopiaPrompt currentQuestion={displayQuestion} />
                 <AcrotopiaActionArea hasPending={hasPendingAction} />
                 {showResponses && (
                   <AcrotopiaResponses
@@ -159,6 +165,7 @@ function AcrotopiaBanner({ round, totalRound }) {
 }
 
 function AcrotopiaPrompt({ currentQuestion }) {
+  if (!isQuestionShowable(currentQuestion)) return null;
   return (
     <section className="acrotopia-prompt">
       <span className="acrotopia-prompt-mark" aria-hidden="true">
@@ -171,8 +178,57 @@ function AcrotopiaPrompt({ currentQuestion }) {
   );
 }
 
+const PROMPT_IN_CHAT_SENTINEL = "Your prompt is displayed in the chat!";
+
+function isQuestionShowable(q) {
+  if (q == null) return false;
+  if (Array.isArray(q)) {
+    return q.some(
+      (v) => typeof v === "string" && v.trim() !== "" && v !== "Placeholder"
+    );
+  }
+  if (typeof q === "string") {
+    return (
+      q.trim() !== "" &&
+      q !== "Placeholder" &&
+      q !== PROMPT_IN_CHAT_SENTINEL
+    );
+  }
+  return true;
+}
+
+function pickDisplayQuestion(currentQuestion, meetings) {
+  if (currentQuestion !== PROMPT_IN_CHAT_SENTINEL) return currentQuestion;
+  if (!meetings) return currentQuestion;
+  for (const m of Object.values(meetings)) {
+    const prompt = m && m.textOptions && m.textOptions.promptText;
+    if (prompt) return prompt;
+  }
+  return currentQuestion;
+}
+
 function renderPromptWithBlanks(text) {
-  if (!text) return null;
+  if (text == null || text === "") return null;
+
+  if (Array.isArray(text)) {
+    return (
+      <span className="acrotopia-prompt-choices">
+        {text.map((t, i) => (
+          <span key={i} className="acrotopia-prompt-choice">
+            <span className="acrotopia-prompt-choice-label">
+              {String.fromCharCode(65 + i)}
+            </span>
+            <span className="acrotopia-prompt-choice-text">
+              {renderPromptWithBlanks(t)}
+            </span>
+          </span>
+        ))}
+      </span>
+    );
+  }
+
+  if (typeof text !== "string") return String(text);
+
   const parts = text.split(/(_{2,})/g);
   return parts.map((part, i) =>
     /^_{2,}$/.test(part) ? (
@@ -212,8 +268,8 @@ function AcrotopiaResponses({ responseHistory }) {
             <span className="acrotopia-response-quote" aria-hidden="true">
               &ldquo;
             </span>
-            <span className="acrotopia-response-text">{r.display}</span>
-            <span className="acrotopia-response-author">{r.name}</span>
+            <span className="acrotopia-response-text">{r.name}</span>
+            <span className="acrotopia-response-author">{r.display}</span>
           </li>
         ))}
       </ul>

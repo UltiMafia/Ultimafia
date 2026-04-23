@@ -294,6 +294,10 @@ module.exports = class Game {
   }
 
   processObituaryQueue(source) {
+    if (this.disableObituaries) {
+      this.obituaryQueue = {};
+      return;
+    }
     const obituaries = [];
 
     for (let playerId in this.obituaryQueue) {

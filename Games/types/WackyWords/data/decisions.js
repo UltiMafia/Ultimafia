@@ -117,4 +117,51 @@ module.exports = [
   ["Be a Zookeeper", "Be a School Teacher"],
   ["Be a Doctor", "Be a Lawyer"],
   ["Be in the Mafia", "Be in a Cult"],
+  //More Superpowers
+  ["Be able to talk to animals", "Be able to talk to plants"],
+  ["Have perfect memory", "Have perfect intuition"],
+  ["Read minds but only of strangers", "Predict the weather but only 10 minutes out"],
+  ["Stop time for 10 seconds a day", "Rewind time by 10 seconds once a day"],
+  //More Body Changes
+  ["Have permanently sticky hands", "Have permanently magnetic feet"],
+  ["Have the voice of a cartoon villain", "Have the voice of a GPS navigator"],
+  ["Glow in the dark", "Be partially transparent"],
+  //More Pain
+  ["Always have one shoelace untied", "Always have static in your hair"],
+  ["Hiccup once every 10 minutes", "Sneeze glitter"],
+  ["Stub your toe once a day", "Bite your tongue once a day"],
+  //More Prizes
+  ["Own a private island", "Own a private jet"],
+  ["Have a star named after you", "Have a dinosaur species named after you"],
+  ["Win a lifetime supply of pizza", "Win a lifetime supply of tacos"],
+  //More Trust in Users
+  ["Borrow $player 's phone for a day", "Let $player borrow yours for a day"],
+  ["Trade toothbrushes with $player", "Trade pillows with $OtherPlayer"],
+  ["Let $player plan your wedding", "Let $OtherPlayer plan your funeral"],
+  //More Travel
+  ["Live in Antarctica for 6 months", "Live on the ISS for 6 months"],
+  ["Road trip across the country with $player", "Fly first-class alone"],
+  ["Visit every country but only for 1 hour each", "Visit 3 countries for a full month each"],
+  //More Moral Dilemmas
+  ["Always tell the truth", "Always be believed"],
+  ["Know exactly when you'll die", "Know exactly how you'll die"],
+  ["Be able to read everyone's thoughts", "Have everyone able to read yours"],
+  //More Animals
+  ["Have a pet raccoon", "Have a pet octopus"],
+  ["Ride a horse to work", "Swim to work"],
+  //More Food
+  ["Only eat foods that start with the letter B", "Only drink beverages that rhyme with your name"],
+  ["Eat a whole raw onion", "Eat 20 raw jalapenos"],
+  //More Jobs
+  ["Be a lighthouse keeper", "Be a night security guard at a museum"],
+  ["Be a mime", "Be a clown"],
+  //Tech
+  ["Never use the internet again", "Never leave your house again"],
+  ["Only communicate in memes", "Only communicate in haiku"],
+  //Fashion
+  ["Only wear crocs", "Only wear full formal suits"],
+  ["Always wear sunglasses, even indoors", "Always wear a hat, even to bed"],
+  //Strange
+  ["Always smell faintly of buttered popcorn", "Always be followed by a single seagull"],
+  ["Have a laugh track follow you everywhere", "Have dramatic music play when you enter any room"],
 ];
