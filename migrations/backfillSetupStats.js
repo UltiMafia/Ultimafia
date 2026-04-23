@@ -1,14 +1,20 @@
 /**
  * Rebuild SetupVersion.setupStats (alignmentRows, roleRows, gameLengthRows) from Game documents.
  *
- * Run: node migrations/backfillSetupStats.js [--limit N]
- * Requires MONGO_URL (or default localhost) and optional dotenv.
+ * Run:
+ *   node migrations/backfillSetupStats.js --setup <publicId>   # one setup
+ *   node migrations/backfillSetupStats.js --explicit-all       # every setup
+ *   [--limit N]                                                # cap SVs processed
  *
- * Iterates every SetupVersion and rebuilds its row arrays from the games
- * that belong to that version's time window, using $set (not $push). Safe
- * to re-run: the same inputs produce the same arrays. Covers setups left
- * in a partial state by earlier runs, since no game is permanently
- * excluded by a stale setupStatsBackfilled flag.
+ * Requires either --setup or --explicit-all so a full-DB rebuild can never
+ * be triggered by accident. Requires MONGO_URL (or default localhost) and
+ * optional dotenv.
+ *
+ * Iterates every SetupVersion in scope and rebuilds its row arrays from
+ * the games that belong to that version's time window, using $set (not
+ * $push). Safe to re-run: the same inputs produce the same arrays. Covers
+ * setups left in a partial state by earlier runs, since no game is
+ * permanently excluded by a stale setupStatsBackfilled flag.
  *
  * Skips games with leavers, hadVeg, or missing history (playerIdMap /
  * originalRoles). Games missing history are NOT marked as backfilled —
@@ -270,12 +276,42 @@ async function main() {
       ? parseInt(process.argv[limitArg + 1], 10)
       : 0;
 
+  const setupArg = process.argv.indexOf("--setup");
+  const setupPublicId =
+    setupArg >= 0 && process.argv[setupArg + 1]
+      ? process.argv[setupArg + 1]
+      : null;
+
+  const explicitAll = process.argv.includes("--explicit-all");
+
+  if (!setupPublicId && !explicitAll) {
+    console.error(
+      "Refusing to run: pass --setup <publicId> for one setup, or --explicit-all to process every setup."
+    );
+    process.exit(1);
+  }
+
   const { uri, options } = mongoConnectOptions();
   await mongoose.connect(uri, options);
 
-  logger.info("Connected. Rebuilding setupStats for every SetupVersion…");
+  let svQuery = {};
+  if (setupPublicId) {
+    const setupDoc = await models.Setup.findOne({ id: setupPublicId })
+      .select("_id")
+      .lean();
+    if (!setupDoc) {
+      logger.error(`Setup not found: ${setupPublicId}`);
+      process.exit(1);
+    }
+    svQuery = { setup: setupDoc._id };
+    logger.info(
+      `Connected. Rebuilding setupStats for setup ${setupPublicId} (${setupDoc._id})…`
+    );
+  } else {
+    logger.info("Connected. Rebuilding setupStats for every SetupVersion…");
+  }
 
-  const svCursor = models.SetupVersion.find({})
+  const svCursor = models.SetupVersion.find(svQuery)
     .select("_id setup version timestamp")
     .cursor();
 
