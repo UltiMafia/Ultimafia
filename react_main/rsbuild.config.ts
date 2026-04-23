@@ -1,3 +1,4 @@
+import path from "path";
 import { defineConfig, loadEnv } from "@rsbuild/core";
 import { pluginReact } from "@rsbuild/plugin-react";
 
@@ -26,6 +27,7 @@ export default defineConfig({
   source: {
     define: publicVars,
     tsconfigPath: "./jsconfig.json",
+    include: [path.resolve(__dirname, "../shared")],
   },
   server: {
     port: 3001,
