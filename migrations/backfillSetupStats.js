@@ -1,10 +1,15 @@
 /**
  * Rebuild SetupVersion.setupStats (alignmentRows, roleRows, gameLengthRows) from Game documents.
  *
- * Run:
- *   node migrations/backfillSetupStats.js --setup <publicId>   # one setup
- *   node migrations/backfillSetupStats.js --explicit-all       # every setup
- *   [--limit N]                                                # cap SVs processed
+ * Usage:
+ *   # Smoke-test on one setup first
+ *   node migrations/backfillSetupStats.js --setup 9YVD1N1qC
+ *
+ *   # Cap the SV count for a partial run
+ *   node migrations/backfillSetupStats.js --explicit-all --limit 100
+ *
+ *   # Full rebuild
+ *   node migrations/backfillSetupStats.js --explicit-all
  *
  * Requires either --setup or --explicit-all so a full-DB rebuild can never
  * be triggered by accident. Requires MONGO_URL (or default localhost) and
