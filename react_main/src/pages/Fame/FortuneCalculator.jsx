@@ -19,6 +19,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { getAlignmentColor } from "components/Setup";
 
 // Constants mirror modules/fortunePoints.js. Displayed to users as read-only
 // reference values — not editable in the calculator.
@@ -30,6 +31,25 @@ const ANCHOR_PAYOUT = 80;
 const INDEPENDENT_CAP = 120;
 
 const MAJOR_NAMES = ["Village", "Mafia", "RedMafia", "Cult"];
+
+// Canonical site palette via getAlignmentColor; RedMafia gets a red accent
+// since it has no dedicated alignment color and its name signals the hue.
+const FACTION_COLORS = {
+  Village: getAlignmentColor("Village"),
+  Mafia: getAlignmentColor("Mafia"),
+  RedMafia: "#e53935",
+  Cult: getAlignmentColor("Cult"),
+};
+const INDEPENDENT_COLOR = getAlignmentColor("Independent");
+const MAJOR_GROUP_COLOR = getAlignmentColor("Village");
+
+function factionColor(faction) {
+  return FACTION_COLORS[faction.name] || INDEPENDENT_COLOR;
+}
+
+function colorForButton(name) {
+  return FACTION_COLORS[name] || INDEPENDENT_COLOR;
+}
 
 function soloPayout(category, wrPercent) {
   const wr = wrPercent / 100;
@@ -176,6 +196,14 @@ export function FortuneCalculatorContent() {
               variant="outlined"
               size="small"
               onClick={() => addMajor(name)}
+              sx={{
+                color: colorForButton(name),
+                borderColor: colorForButton(name),
+                "&:hover": {
+                  borderColor: colorForButton(name),
+                  backgroundColor: `${colorForButton(name)}22`,
+                },
+              }}
             >
               {name}
             </Button>
@@ -185,6 +213,14 @@ export function FortuneCalculatorContent() {
             variant="outlined"
             size="small"
             onClick={addIndependent}
+            sx={{
+              color: INDEPENDENT_COLOR,
+              borderColor: INDEPENDENT_COLOR,
+              "&:hover": {
+                borderColor: INDEPENDENT_COLOR,
+                backgroundColor: `${INDEPENDENT_COLOR}22`,
+              },
+            }}
           >
             Independent
           </Button>
@@ -210,9 +246,16 @@ export function FortuneCalculatorContent() {
               </TableHead>
               <TableBody>
                 {factions.map((f) => (
-                  <TableRow key={f.id}>
+                  <TableRow
+                    key={f.id}
+                    sx={{
+                      borderLeft: `4px solid ${factionColor(f)}`,
+                    }}
+                  >
                     <TableCell>
-                      <Typography>{f.name}</Typography>
+                      <Typography sx={{ color: factionColor(f), fontWeight: 600 }}>
+                        {f.name}
+                      </Typography>
                       <Typography
                         variant="caption"
                         color="text.secondary"
@@ -235,7 +278,7 @@ export function FortuneCalculatorContent() {
                           value={f.wr}
                           onChange={(_, v) => updateWR(f.id, v)}
                           size="small"
-                          sx={{ flex: 1 }}
+                          sx={{ flex: 1, color: factionColor(f) }}
                         />
                         <Typography
                           sx={{
@@ -281,35 +324,56 @@ export function FortuneCalculatorContent() {
         <Typography variant="h5" sx={{ mb: 1 }}>
           Constants
         </Typography>
-        <Typography variant="subtitle2" sx={{ mt: 1, mb: 0.5 }}>
+        <Typography
+          variant="subtitle2"
+          sx={{ mt: 1, mb: 0.5, color: MAJOR_GROUP_COLOR, fontWeight: 700 }}
+        >
           Major factions
         </Typography>
         <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
-          <Chip label={`Major base K = ${K}`} size="small" />
+          <Chip
+            label={`Major base K = ${K}`}
+            size="small"
+            variant="outlined"
+            sx={{ borderColor: MAJOR_GROUP_COLOR, color: MAJOR_GROUP_COLOR }}
+          />
           <Chip
             label={`Major joint damp = ${JOINT_DAMP_MAJOR}`}
             size="small"
+            variant="outlined"
+            sx={{ borderColor: MAJOR_GROUP_COLOR, color: MAJOR_GROUP_COLOR }}
           />
         </Stack>
-        <Typography variant="subtitle2" sx={{ mt: 2, mb: 0.5 }}>
+        <Typography
+          variant="subtitle2"
+          sx={{ mt: 2, mb: 0.5, color: INDEPENDENT_COLOR, fontWeight: 700 }}
+        >
           Independent factions
         </Typography>
         <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
           <Chip
             label={`Independent anchor WR = ${ANCHOR_WR * 100}%`}
             size="small"
+            variant="outlined"
+            sx={{ borderColor: INDEPENDENT_COLOR, color: INDEPENDENT_COLOR }}
           />
           <Chip
             label={`Independent anchor payout = ${ANCHOR_PAYOUT}`}
             size="small"
+            variant="outlined"
+            sx={{ borderColor: INDEPENDENT_COLOR, color: INDEPENDENT_COLOR }}
           />
           <Chip
             label={`Independent cap = ${INDEPENDENT_CAP}`}
             size="small"
+            variant="outlined"
+            sx={{ borderColor: INDEPENDENT_COLOR, color: INDEPENDENT_COLOR }}
           />
           <Chip
             label={`Independent joint damp = ${JOINT_DAMP_INDEPENDENT}`}
             size="small"
+            variant="outlined"
+            sx={{ borderColor: INDEPENDENT_COLOR, color: INDEPENDENT_COLOR }}
           />
         </Stack>
         <Typography
@@ -330,7 +394,10 @@ export function FortuneCalculatorContent() {
           misfortune has been scrapped.
         </Typography>
 
-        <Typography variant="h6" sx={{ mt: 2 }}>
+        <Typography
+          variant="h6"
+          sx={{ mt: 2, color: MAJOR_GROUP_COLOR }}
+        >
           Major factions — Village, Mafia, RedMafia, Cult
         </Typography>
         <Stack spacing={0.5} sx={{ pl: 2 }}>
@@ -350,7 +417,10 @@ export function FortuneCalculatorContent() {
           </Typography>
         </Stack>
 
-        <Typography variant="h6" sx={{ mt: 2 }}>
+        <Typography
+          variant="h6"
+          sx={{ mt: 2, color: INDEPENDENT_COLOR }}
+        >
           Independent factions — Jester, Serial Killer, etc.
         </Typography>
         <Stack spacing={0.5} sx={{ pl: 2 }}>
