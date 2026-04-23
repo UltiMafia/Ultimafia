@@ -1312,6 +1312,13 @@ module.exports = class Game {
       for (let role in roleset) {
         for (let i = 0; i < roleset[role]; i++) {
           let roleName = role.split(":")[0];
+          const roleFromRoleData = roleData[this.type][roleName];
+          if (!roleFromRoleData) {
+            this.sendAlert(
+              `Failed to start game with invalid role: ${roleName}. We would appreciate if you can make a bug report.`
+            );
+            return;
+          }
           let isBanished =
             role.split(":")[1] &&
             role.split(":")[1].toLowerCase().includes("banished");
