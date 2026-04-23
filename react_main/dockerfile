@@ -20,7 +20,10 @@ RUN ls -al
 RUN npm run build
 
 # Stage 2: Production environment
-FROM nginx:1.29-alpine AS production
+# alpine-slim drops optional modules (mail, stream, etc.) for a smaller image.
+# If you rely on nginx serving sharp-generated variants (AVIF/WebP/etc.) or
+# any module not in the core HTTP build, verify support before rolling out.
+FROM nginx:1.29-alpine-slim AS production
 
 # Copy the production build artifacts from the build stage
 COPY --from=build /home/um/react_main/build /usr/share/nginx/html
