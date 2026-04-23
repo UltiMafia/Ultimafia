@@ -482,6 +482,10 @@ function useUnreadNotifications() {
   }, []);
 
   useEffect(() => {
+    if (siteInfo.notifsBumpToken) getNotifs();
+  }, [siteInfo.notifsBumpToken]);
+
+  useEffect(() => {
     if (nextRestart && nextRestart > Date.now()) {
       var restartMinutes = Math.ceil((nextRestart - Date.now()) / 1000 / 60);
       siteInfo.showAlert(

@@ -369,6 +369,11 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
     window.localStorage.setItem("cacheVal", cacheVal);
   }
 
+  const [notifsBumpToken, setNotifsBumpToken] = useState(0);
+  function refreshNotifs() {
+    setNotifsBumpToken((x) => x + 1);
+  }
+
   function fadeAlert(id) {
     var alert = document.getElementById(`alert-id-${id}`);
 
@@ -390,6 +395,8 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
     hideAlert,
     hideAllAlerts,
     clearCache,
+    notifsBumpToken,
+    refreshNotifs,
   };
 
   useEffect(() => {

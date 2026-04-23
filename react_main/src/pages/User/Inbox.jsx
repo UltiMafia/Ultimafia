@@ -61,6 +61,7 @@ export default function Inbox() {
           )
         );
         setUnreadCount((prev) => Math.max(0, prev - unreadIds.length));
+        siteInfo.refreshNotifs();
       } catch (err) {
         errorAlert(err);
       }
@@ -107,6 +108,7 @@ export default function Inbox() {
         )
       );
       setUnreadCount((prev) => Math.max(0, prev - 1));
+      siteInfo.refreshNotifs();
       siteInfo.showAlert("Marked as read", "success");
     } catch (err) {
       errorAlert(err);
@@ -121,6 +123,7 @@ export default function Inbox() {
         (prev || []).filter((notif) => notif.id !== notifId)
       );
       setTotalNotifications((prev) => Math.max(0, prev - 1));
+      siteInfo.refreshNotifs();
       siteInfo.showAlert("Notification deleted", "success");
 
       // Reload if we're now on an empty page and it's not page 1
