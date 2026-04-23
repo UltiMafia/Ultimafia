@@ -1,10 +1,12 @@
 const models = require("../db/models");
 const redis = require("./redis");
 const roleData = require("../data/roles");
+const {
+  isCountableScrapbookRole,
+  getTotalObtainableStamps,
+} = require("../shared/scrapbook");
 
-const TOTAL_OBTAINABLE_STAMPS = Object.values(roleData?.Mafia || {}).filter(
-  (role) => role?.alignment !== "Event"
-).length;
+const TOTAL_OBTAINABLE_STAMPS = getTotalObtainableStamps(roleData);
 
 const DEFAULT_PAGE_SIZE = 25;
 const MAX_PAGE_SIZE = 100;
@@ -271,8 +273,7 @@ async function getScrapbookDataByUser(userIds) {
 
   for (const group of stampGroups) {
     const { userId, gameType, role } = group._id;
-    const roleInfo = roleData?.[gameType]?.[role];
-    if (!roleInfo || roleInfo.alignment === "Event") continue;
+    if (!isCountableScrapbookRole(roleData, gameType, role)) continue;
 
     if (!scrapbookDataByUser[userId]) {
       scrapbookDataByUser[userId] = { scrapbookCount: 0 };

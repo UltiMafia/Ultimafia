@@ -18,6 +18,10 @@ import { PageNav } from "components/Nav";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { useErrorAlert } from "components/Alerts";
 import StampTradeModal from "components/StampTradeModal";
+import {
+  isCountableScrapbookRole,
+  getTotalObtainableStamps,
+} from "shared/scrapbook";
 
 import "css/scrapbook.css";
 
@@ -384,24 +388,16 @@ export default function Scrapbook({
   if (!hasVisible && !hasHidden) return null;
 
   const rolesRaw = siteInfo?.rolesRaw || {};
-  const isCountableRole = (gameType, role) => {
-    const data = rolesRaw[gameType]?.[role];
-    if (!data) return true;
-    return data.alignment !== "Event";
-  };
 
   const uniqueRoles = new Set();
   for (const s of stamps)
-    if (isCountableRole(s.gameType, s.role))
+    if (isCountableScrapbookRole(rolesRaw, s.gameType, s.role))
       uniqueRoles.add(`${s.gameType}:${s.role}`);
   for (const s of hiddenStamps)
-    if (isCountableRole(s.gameType, s.role))
+    if (isCountableScrapbookRole(rolesRaw, s.gameType, s.role))
       uniqueRoles.add(`${s.gameType}:${s.role}`);
   const uniqueCount = uniqueRoles.size;
-  const mafiaRoles = rolesRaw["Mafia"] || {};
-  const totalRoles = Object.values(mafiaRoles).filter(
-    (r) => r?.alignment !== "Event"
-  ).length;
+  const totalRoles = getTotalObtainableStamps(rolesRaw);
 
   const maxSpreads = Math.max(Math.ceil(stamps.length / ITEMS_PER_SPREAD), 1);
   const safeSpreadIndex = Math.min(spreadIndex, maxSpreads - 1);
