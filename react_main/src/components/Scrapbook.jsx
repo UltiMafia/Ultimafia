@@ -21,7 +21,7 @@ import StampTradeModal from "components/StampTradeModal";
 import {
   isCountableScrapbookRole,
   getTotalObtainableStamps,
-} from "../../../shared/scrapbook";
+} from "shared/scrapbook";
 
 import "css/scrapbook.css";
 
