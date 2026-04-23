@@ -72,4 +72,7 @@ module.exports = {
     Slayer: "Sheriff",
     Ripper: "Supervillain",
   },
+  "Secret Dictator": {
+    Hitler: "Dictator",
+  },
 };
