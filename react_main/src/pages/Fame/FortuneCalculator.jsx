@@ -156,86 +156,6 @@ export function FortuneCalculatorContent() {
   return (
     <Stack spacing={3} sx={{ maxWidth: isPhone ? "100%" : 900, mx: "auto" }}>
       <Paper elevation={2} sx={{ p: 2 }}>
-        <Typography variant="h4" sx={{ mb: 1 }}>
-          How fortune is calculated
-        </Typography>
-        <Typography paragraph>
-          Every winning faction earns fortune points. Losing factions earn 0 —
-          misfortune has been scrapped.
-        </Typography>
-
-        <Typography variant="h6" sx={{ mt: 2 }}>
-          Major factions — Village, Mafia, RedMafia, Cult
-        </Typography>
-        <Stack spacing={0.5} sx={{ pl: 2 }}>
-          <Typography>
-            Solo win: <FormulaBlock>K × (1 − WR)</FormulaBlock>
-          </Typography>
-          <Typography>
-            Joint win: <FormulaBlock>solo × 0.9</FormulaBlock>
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Example · Mafia at 40% WR winning solo →{" "}
-            <FormulaBlock>(1 − 0.40) × 120 = 72</FormulaBlock>
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Example · Mafia at 40% WR joint-winning with Cult →{" "}
-            <FormulaBlock>72 × 0.9 ≈ 65</FormulaBlock>
-          </Typography>
-        </Stack>
-
-        <Typography variant="h6" sx={{ mt: 2 }}>
-          Independent factions — Jester, Serial Killer, etc.
-        </Typography>
-        <Stack spacing={0.5} sx={{ pl: 2 }}>
-          <Typography>
-            Solo win:{" "}
-            <FormulaBlock>min(120, √(0.10 / WR) × 80)</FormulaBlock>
-          </Typography>
-          <Typography>
-            Joint win: <FormulaBlock>solo × 0.7</FormulaBlock>
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Example · Jester at 10% WR (the anchor) →{" "}
-            <FormulaBlock>√(0.10 / 0.10) × 80 = 80</FormulaBlock>
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Example · Jester at 5% WR → <FormulaBlock>√2 × 80 ≈ 113</FormulaBlock>
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Example · Jester at 1% WR → capped at{" "}
-            <FormulaBlock>120</FormulaBlock>
-          </Typography>
-        </Stack>
-
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-          Joint wins are dampened because sharing the game is easier than
-          winning alone. Lower historical winrate pays more — defying odds
-          earns the bigger reward.
-        </Typography>
-      </Paper>
-
-      <Paper elevation={2} sx={{ p: 2 }}>
-        <Typography variant="h5" sx={{ mb: 1 }}>
-          Constants
-        </Typography>
-        <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
-          <Chip label={`Base K = ${K}`} size="small" />
-          <Chip label={`Major joint damp = ${JOINT_DAMP_MAJOR}`} size="small" />
-          <Chip
-            label={`Independent joint damp = ${JOINT_DAMP_INDEPENDENT}`}
-            size="small"
-          />
-          <Chip label={`Anchor WR = ${ANCHOR_WR * 100}%`} size="small" />
-          <Chip label={`Anchor payout = ${ANCHOR_PAYOUT}`} size="small" />
-          <Chip label={`Independent cap = ${INDEPENDENT_CAP}`} size="small" />
-        </Stack>
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
-          These are fixed values from the fortune module and cannot be changed here.
-        </Typography>
-      </Paper>
-
-      <Paper elevation={2} sx={{ p: 2 }}>
         <Typography variant="h5" sx={{ mb: 1 }}>
           Calculator
         </Typography>
@@ -355,6 +275,110 @@ export function FortuneCalculatorContent() {
             </Table>
           </TableContainer>
         )}
+      </Paper>
+
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <Typography variant="h5" sx={{ mb: 1 }}>
+          Constants
+        </Typography>
+        <Typography variant="subtitle2" sx={{ mt: 1, mb: 0.5 }}>
+          Major factions
+        </Typography>
+        <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
+          <Chip label={`Major base K = ${K}`} size="small" />
+          <Chip
+            label={`Major joint damp = ${JOINT_DAMP_MAJOR}`}
+            size="small"
+          />
+        </Stack>
+        <Typography variant="subtitle2" sx={{ mt: 2, mb: 0.5 }}>
+          Independent factions
+        </Typography>
+        <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
+          <Chip
+            label={`Independent anchor WR = ${ANCHOR_WR * 100}%`}
+            size="small"
+          />
+          <Chip
+            label={`Independent anchor payout = ${ANCHOR_PAYOUT}`}
+            size="small"
+          />
+          <Chip
+            label={`Independent cap = ${INDEPENDENT_CAP}`}
+            size="small"
+          />
+          <Chip
+            label={`Independent joint damp = ${JOINT_DAMP_INDEPENDENT}`}
+            size="small"
+          />
+        </Stack>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ mt: 1, display: "block" }}
+        >
+          These are fixed values from the fortune module and cannot be changed here.
+        </Typography>
+      </Paper>
+
+      <Paper elevation={2} sx={{ p: 2 }}>
+        <Typography variant="h4" sx={{ mb: 1 }}>
+          How fortune is calculated
+        </Typography>
+        <Typography paragraph>
+          Every winning faction earns fortune points. Losing factions earn 0 —
+          misfortune has been scrapped.
+        </Typography>
+
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          Major factions — Village, Mafia, RedMafia, Cult
+        </Typography>
+        <Stack spacing={0.5} sx={{ pl: 2 }}>
+          <Typography>
+            Solo win: <FormulaBlock>K × (1 − WR)</FormulaBlock>
+          </Typography>
+          <Typography>
+            Joint win: <FormulaBlock>solo × 0.9</FormulaBlock>
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Example · Mafia at 40% WR winning solo →{" "}
+            <FormulaBlock>(1 − 0.40) × 120 = 72</FormulaBlock>
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Example · Mafia at 40% WR joint-winning with Cult →{" "}
+            <FormulaBlock>72 × 0.9 ≈ 65</FormulaBlock>
+          </Typography>
+        </Stack>
+
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          Independent factions — Jester, Serial Killer, etc.
+        </Typography>
+        <Stack spacing={0.5} sx={{ pl: 2 }}>
+          <Typography>
+            Solo win:{" "}
+            <FormulaBlock>min(120, √(0.10 / WR) × 80)</FormulaBlock>
+          </Typography>
+          <Typography>
+            Joint win: <FormulaBlock>solo × 0.7</FormulaBlock>
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Example · Jester at 10% WR (the anchor) →{" "}
+            <FormulaBlock>√(0.10 / 0.10) × 80 = 80</FormulaBlock>
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Example · Jester at 5% WR → <FormulaBlock>√2 × 80 ≈ 113</FormulaBlock>
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Example · Jester at 1% WR → capped at{" "}
+            <FormulaBlock>120</FormulaBlock>
+          </Typography>
+        </Stack>
+
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+          Joint wins are dampened because sharing the game is easier than
+          winning alone. Lower historical winrate pays more — defying odds
+          earns the bigger reward.
+        </Typography>
       </Paper>
     </Stack>
   );
