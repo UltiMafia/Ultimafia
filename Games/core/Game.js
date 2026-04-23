@@ -1317,7 +1317,9 @@ module.exports = class Game {
             this.sendAlert(
               `Bug report automatically filed. Thank you for your patience.`
             );
-            return;
+            throw new Error(
+              `Unknown role "${roleName}" in ${this.type} setup.`
+            );
           }
           let isBanished =
             role.split(":")[1] &&
