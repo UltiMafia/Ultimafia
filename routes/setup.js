@@ -431,10 +431,11 @@ function calculateStatsWithGranular(setupVersion, gameType) {
   const roleRows = ss.roleRows || [];
   const lengthRows = ss.gameLengthRows || [];
   const totalVegs = ss.totalVegs != null ? ss.totalVegs : 0;
+  // lengthRows is metadata, not win/loss data — excluding it lets legacy
+  // setups (alignmentRows empty, lengthRows populated) fall back to the pie.
   const hasGranular =
     alignmentRows.length > 0 ||
-    roleRows.length > 0 ||
-    lengthRows.length > 0;
+    roleRows.length > 0;
 
   const filters = ["all", "unranked", "ranked", "competitive"];
   const granular = {};
