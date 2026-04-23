@@ -65,8 +65,8 @@ export function StampItem({ gameType, role, count, hasLock, clickable, onClick, 
 function renderStamp(s, { lockedCountsByRoleKey, isSelf, onStampClick, onRequestTrade, keyPrefix = "" }) {
   const key = `${s.gameType}:${s.role}`;
   const lockedCount = lockedCountsByRoleKey?.[key] || 0;
-  const selfClickable = isSelf;
-  const requestable = !isSelf && !!onRequestTrade;
+  const selfClickable = isSelf && s.count >= 2;
+  const requestable = !isSelf && !!onRequestTrade && s.count >= 2;
   const clickable = selfClickable || requestable;
   return (
     <StampItem

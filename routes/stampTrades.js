@@ -65,15 +65,17 @@ async function getGiftableStampId(userId, gameType, role) {
   const stamps = await models.Stamp.find({ userId, gameType, role }).select(
     "_id"
   );
-  if (stamps.length < 1) {
-    throw new Error("You do not own this stamp.");
+  if (stamps.length < 2) {
+    throw new Error("You need at least 2 of this stamp to gift.");
   }
   const lockedIds = await getLockedStampIds(userId);
   const available = stamps
     .map((s) => String(s._id))
     .filter((id) => !lockedIds.has(id));
-  if (available.length < 1) {
-    throw new Error("This stamp is currently locked in another trade.");
+  if (available.length < 2) {
+    throw new Error(
+      "Not enough unlocked copies of this stamp (need 2+ available)."
+    );
   }
   return available[0];
 }
@@ -283,24 +285,26 @@ router.post("/initiate", async (req, res) => {
         res.send(roleErr2);
         return;
       }
-      // Find an available stamp from the recipient (only need 1 copy, unlike trading your own)
+      // Recipient must have at least 2 copies so they keep one after the trade.
       const recipientStamps = await models.Stamp.find({
         userId: recipientUserId,
         gameType: requestedGameType,
         role: requestedRole,
       }).select("_id");
-      if (recipientStamps.length === 0) {
+      if (recipientStamps.length < 2) {
         res.status(400);
-        res.send("Recipient does not have this stamp.");
+        res.send("Recipient does not have a duplicate of this stamp.");
         return;
       }
       const recipientLockedIds = await getLockedStampIds(recipientUserId);
       const availableRecipient = recipientStamps
         .map((s) => String(s._id))
         .filter((id) => !recipientLockedIds.has(id));
-      if (availableRecipient.length === 0) {
+      if (availableRecipient.length < 2) {
         res.status(400);
-        res.send("That stamp is currently locked in another trade.");
+        res.send(
+          "Recipient does not have enough unlocked copies of this stamp."
+        );
         return;
       }
       requestedStampId = availableRecipient[0];
