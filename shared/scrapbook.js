@@ -1,6 +1,6 @@
-// 100% mirror of ./react_main/src/shared/scrapbook.js (frontend copy) — see shared/colors.js for the pattern.
-// Both sides take the roles map as input (backend: data/roles.js, frontend: siteInfo.rolesRaw) so the
-// single source of truth for role data stays in data/roles.js.
+// Single source of truth for scrapbook completion rules, imported by both
+// the backend (modules/hallOfFame.js) and the frontend (components/Scrapbook.jsx).
+// Both sides pass their own roles map — backend: data/roles.js, frontend: siteInfo.rolesRaw.
 
 function isCountableScrapbookRole(rolesMap, gameType, role) {
   const data = rolesMap?.[gameType]?.[role];
