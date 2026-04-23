@@ -1315,7 +1315,7 @@ module.exports = class Game {
           const roleFromRoleData = roleData[this.type][roleName];
           if (!roleFromRoleData) {
             this.sendAlert(
-              `Failed to start game with invalid role: ${roleName}. We would appreciate if you can make a bug report.`
+              `Bug report automatically filed. Thank you for your patience.`
             );
             return;
           }
