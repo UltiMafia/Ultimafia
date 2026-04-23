@@ -1,20 +1,22 @@
 /**
- * Seed SetupVersion.setupStats.alignmentRows and .roleRows for a single setup
- * with synthetic rows that reproduce a target set of winrates.
+ * Seed SetupVersion.setupStats.alignmentRows and .roleRows for setup
+ * "XTI58MfKl" with approved winrate targets.
  *
- * Used when the games collection cannot be replayed (e.g. cold data lost the
- * playerIdMap / history.originalRoles) but we still want fortunePoints and the
- * granular bar chart to read a sensible winrate. Rows are written as
- * --game-type (default "ranked") so they count for fortune payouts, which
- * ignore "unranked".
+ * Shape parity with the other seed scripts: rows are written as
+ * --game-type (default "ranked") so fortunePoints counts them.
+ *
+ * Used when the games collection cannot be replayed (e.g. cold data
+ * lost the playerIdMap / history.originalRoles) but we still want
+ * fortunePoints and the granular bar chart to read a sensible winrate.
+ * Unranked rows are filtered out of fortune calculations.
  *
  * Usage:
- *   node migrations/seedSetupStatsForFortune.js --setup XTI58MfKl
- *   node migrations/seedSetupStatsForFortune.js --setup XTI58MfKl --game-type competitive
- *   node migrations/seedSetupStatsForFortune.js --setup XTI58MfKl --dry-run
+ *   node migrations/seedSetupStatsForFortune_XTI58MfKl.js
+ *   node migrations/seedSetupStatsForFortune_XTI58MfKl.js --game-type competitive
+ *   node migrations/seedSetupStatsForFortune_XTI58MfKl.js --dry-run
  *
- * Overwrites alignmentRows and roleRows on the current SetupVersion. Leaves
- * gameLengthRows, totalVegs, and every legacy field alone.
+ * Overwrites alignmentRows and roleRows on the current SetupVersion.
+ * Leaves gameLengthRows, totalVegs, and every legacy field alone.
  */
 
 require("dotenv").config();
@@ -24,6 +26,8 @@ const models = require("../db/models");
 const logger = require("../modules/logging")("seedSetupStatsForFortune");
 
 const ObjectID = mongo.ObjectID;
+
+const SETUP_PUBLIC_ID = "XTI58MfKl";
 
 // Target numbers approved for setup XTI58MfKl. Each entry is { key, plays,
 // wins } — winrate = wins / plays. Factions not listed here are left out of
@@ -79,7 +83,7 @@ function mongoConnectOptions() {
   };
 }
 
-function buildRows(seed, gameType) {
+function buildRowsFromSeed(seed, gameType) {
   const rows = [];
   for (const entry of seed) {
     const losses = entry.plays - entry.wins;
@@ -98,30 +102,19 @@ function summarize(seed) {
   return seed
     .map((e) => {
       const wr = e.plays ? ((e.wins / e.plays) * 100).toFixed(1) : "0.0";
-      return `  ${e.key.padEnd(10)} ${String(e.wins).padStart(3)}/${String(e.plays).padEnd(3)} = ${wr}%`;
+      return `  ${e.key.padEnd(12)} ${String(e.wins).padStart(4)}/${String(e.plays).padEnd(4)} = ${wr}%`;
     })
     .join("\n");
 }
 
 async function main() {
-  const setupArg = process.argv.indexOf("--setup");
-  const setupPublicId =
-    setupArg >= 0 && process.argv[setupArg + 1]
-      ? process.argv[setupArg + 1]
-      : null;
-
   const gameTypeArg = process.argv.indexOf("--game-type");
   const gameType =
     gameTypeArg >= 0 && process.argv[gameTypeArg + 1]
       ? process.argv[gameTypeArg + 1]
       : "ranked";
-
   const dryRun = process.argv.includes("--dry-run");
 
-  if (!setupPublicId) {
-    console.error("Usage: --setup <publicId> [--game-type ranked|competitive] [--dry-run]");
-    process.exit(1);
-  }
   if (!["ranked", "competitive"].includes(gameType)) {
     console.error(
       `Refusing gameType="${gameType}" — fortunePoints only counts "ranked" or "competitive".`
@@ -129,11 +122,15 @@ async function main() {
     process.exit(1);
   }
 
-  const alignmentRows = buildRows(ALIGNMENT_SEED, gameType);
-  const roleRows = buildRows(ROLE_SEED, gameType);
+  const alignmentRows = buildRowsFromSeed(ALIGNMENT_SEED, gameType);
+  const roleRows = buildRowsFromSeed(ROLE_SEED, gameType);
 
-  logger.info(`Alignment winrates to seed (as ${gameType}):\n${summarize(ALIGNMENT_SEED)}`);
-  logger.info(`Role winrates to seed (as ${gameType}):\n${summarize(ROLE_SEED)}`);
+  logger.info(
+    `Alignment winrates to seed (as ${gameType}):\n${summarize(ALIGNMENT_SEED)}`
+  );
+  logger.info(
+    `Role winrates to seed (as ${gameType}):\n${summarize(ROLE_SEED)}`
+  );
   logger.info(
     `Will write ${alignmentRows.length} alignmentRows and ${roleRows.length} roleRows.`
   );
@@ -141,11 +138,11 @@ async function main() {
   const { uri, options } = mongoConnectOptions();
   await mongoose.connect(uri, options);
 
-  const setupDoc = await models.Setup.findOne({ id: setupPublicId })
+  const setupDoc = await models.Setup.findOne({ id: SETUP_PUBLIC_ID })
     .select("_id version")
     .lean();
   if (!setupDoc) {
-    logger.error(`Setup not found: ${setupPublicId}`);
+    logger.error(`Setup not found: ${SETUP_PUBLIC_ID}`);
     process.exit(1);
   }
 
@@ -158,13 +155,13 @@ async function main() {
     .lean();
   if (!sv) {
     logger.error(
-      `SetupVersion not found for setup ${setupPublicId} version ${versionNum}.`
+      `SetupVersion not found for setup ${SETUP_PUBLIC_ID} version ${versionNum}.`
     );
     process.exit(1);
   }
 
   logger.info(
-    `Target: setup ${setupPublicId} (${setupDoc._id}) SetupVersion ${sv._id} v${sv.version}`
+    `Target: setup ${SETUP_PUBLIC_ID} (${setupDoc._id}) SetupVersion ${sv._id} v${sv.version}`
   );
 
   if (dryRun) {
