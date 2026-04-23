@@ -146,7 +146,7 @@ export function CompetitiveFaqContent() {
             <TableBody>
               <TableRow>
                 <TableCell>1st</TableCell>
-                <TableCell>25</TableCell>
+                <TableCell>20</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>2nd</TableCell>
@@ -154,35 +154,55 @@ export function CompetitiveFaqContent() {
               </TableRow>
               <TableRow>
                 <TableCell>3rd</TableCell>
-                <TableCell>15</TableCell>
+                <TableCell>16</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>4th</TableCell>
-                <TableCell>12</TableCell>
+                <TableCell>14</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>5th</TableCell>
-                <TableCell>10</TableCell>
+                <TableCell>12</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>6th</TableCell>
-                <TableCell>8</TableCell>
+                <TableCell>10</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>7th</TableCell>
-                <TableCell>6</TableCell>
+                <TableCell>9</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>8th</TableCell>
-                <TableCell>4</TableCell>
+                <TableCell>8</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>9th</TableCell>
-                <TableCell>2</TableCell>
+                <TableCell>7</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>10th</TableCell>
-                <TableCell>1</TableCell>
+                <TableCell>6</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>11th</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>12th</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>13th</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>14th</TableCell>
+                <TableCell>3</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>15th</TableCell>
+                <TableCell>3</TableCell>
               </TableRow>
             </TableBody>
           </Table>
