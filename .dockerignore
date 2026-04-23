@@ -1,7 +1,32 @@
-node_modules
+# Dependencies (nested pattern catches react_main/node_modules too)
+**/node_modules
 npm-debug.log
-Dockerfile
-.dockerignore
+
+# Frontend source and build artifacts not used by backend.
+# Keep react_main/build_public/ — app.js serves its index.html as SPA fallback.
+react_main/build
+react_main/public
+react_main/src
+
+# Runtime data — should come from bind mounts/volumes, not baked in
+logs
+uploads
+
+# VCS / env / meta
 .git
 .gitignore
 .env
+.env.*
+Dockerfile
+dockerfile
+.dockerignore
+
+# Dev tooling
+.github
+.vscode
+.idea
+.devcontainer
+docs
+test
+README.md
+CLAUDE.md
