@@ -24,7 +24,7 @@ import LearnBattlesnakes from "./gameTypes/LearnBattlesnakes";
 import LearnDiceWars from "./gameTypes/LearnDiceWars";
 import LearnConnectFour from "./gameTypes/LearnConnectFour";
 
-import { GameTypes } from "Constants";
+import { ActiveGameTypes, DisabledGameTypes } from "Constants";
 import GameIcon from "components/GameIcon";
 
 const TAB_IDS = ["roles", "modifiers", "items", "mechanics", "achievements"];
@@ -104,8 +104,12 @@ export default function Games(props) {
   const defaultGameType = "Mafia";
   const location = useLocation();
   const params = new URLSearchParams(location.search);
+  const requestedGameType =
+    params.get("game") || localStorage.getItem("gameType") || defaultGameType;
   const [gameType, setGameType] = useState(
-    params.get("game") || localStorage.getItem("gameType") || defaultGameType
+    DisabledGameTypes.includes(requestedGameType)
+      ? defaultGameType
+      : requestedGameType
   );
 
   const handleGameChange = (event) => {
@@ -170,7 +174,7 @@ export default function Games(props) {
               </Box>
             )}
           >
-            {GameTypes.map((game) => (
+            {ActiveGameTypes.map((game) => (
               <MenuItem key={game} value={game}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <GameIcon gameType={game} size={24} />

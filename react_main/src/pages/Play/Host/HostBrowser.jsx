@@ -36,7 +36,7 @@ import {
 } from "@mui/material";
 
 import GameIcon from "components/GameIcon";
-import { GameTypes } from "Constants";
+import { ActiveGameTypes, DisabledGameTypes } from "Constants";
 
 export default function HostBrowser(props) {
   const defaultGameType = "Mafia";
@@ -122,8 +122,12 @@ export default function HostBrowser(props) {
     }
   );
 
+  const requestedGameType =
+    params.get("game") || localStorage.getItem("gameType") || defaultGameType;
   const [gameType, setGameType] = useState(
-    params.get("game") || localStorage.getItem("gameType") || defaultGameType
+    DisabledGameTypes.includes(requestedGameType)
+      ? defaultGameType
+      : requestedGameType
   );
 
   const handleListItemClick = (newValue) => {
@@ -344,7 +348,7 @@ export default function HostBrowser(props) {
             }}
           >
             <List>
-              {GameTypes.map((game) => (
+              {ActiveGameTypes.map((game) => (
                 <ListItem
                   button
                   key={game}
@@ -468,7 +472,7 @@ export default function HostBrowser(props) {
                 }}
               >
                 <Stack direction="column" spacing={0.5}>
-                  {GameTypes.map((game) => (
+                  {ActiveGameTypes.map((game) => (
                     <ListItem
                       button
                       key={game}

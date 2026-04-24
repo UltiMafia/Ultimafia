@@ -27,7 +27,7 @@ import CreateBattlesnakesSetup from "./CreateBattlesnakesSetup";
 import CreateDiceWarsSetup from "./CreateDiceWarsSetup";
 import CreateConnectFourSetup from "./CreateConnectFourSetup";
 
-import { GameTypes } from "Constants";
+import { ActiveGameTypes, DisabledGameTypes } from "Constants";
 import GameIcon from "components/GameIcon";
 
 export default function CreateSetup(props) {
@@ -35,8 +35,12 @@ export default function CreateSetup(props) {
   const defaultGameType = "Mafia";
   const location = useLocation();
   const params = new URLSearchParams(location.search);
+  const requestedGameType =
+    params.get("game") || localStorage.getItem("gameType") || defaultGameType;
   const [gameType, setGameType] = useState(
-    params.get("game") || localStorage.getItem("gameType") || defaultGameType
+    DisabledGameTypes.includes(requestedGameType)
+      ? defaultGameType
+      : requestedGameType
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -137,7 +141,7 @@ export default function CreateSetup(props) {
         }}
       >
         <List>
-          {GameTypes.map((game) => (
+          {ActiveGameTypes.map((game) => (
             <ListItemButton
               key={game}
               selected={gameType === game}

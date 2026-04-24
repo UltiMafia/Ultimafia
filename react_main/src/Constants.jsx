@@ -13,6 +13,12 @@ export const GameTypes = [
   "Connect Four",
   "Dice Wars",
 ];
+
+// Game types retained for existing setups/stats but no longer creatable or hostable.
+export const DisabledGameTypes = ["Acrotopia"];
+export const ActiveGameTypes = GameTypes.filter(
+  (g) => !DisabledGameTypes.includes(g)
+);
 export const Lobbies = [
   "Main",
   "Sandbox",
