@@ -600,6 +600,14 @@ router.post("/host", async function (req, res) {
       return;
     }
 
+    if (constants.disabledGameTypes.indexOf(gameType) !== -1) {
+      errors.badRequest(
+        res,
+        `${gameType} is no longer available for new games.`
+      );
+      return;
+    }
+
     if (
       !routeUtils.validProp(lobby) ||
       constants.lobbies.indexOf(lobby) == -1

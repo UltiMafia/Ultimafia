@@ -77,6 +77,9 @@ module.exports = {
     "Dice Wars",
     "Connect Four",
   ],
+  // Game types that remain valid for existing setups/stats but cannot be
+  // created or hosted anymore. Acrotopia is covered by Wacky Words' acronym mode.
+  disabledGameTypes: ["Acrotopia"],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
   alignments: {
     Mafia: ["Village", "Mafia", "Cult", "Independent", "Event"],

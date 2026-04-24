@@ -901,6 +901,14 @@ router.post("/create", async function (req, res) {
       return;
     }
 
+    if (constants.disabledGameTypes.indexOf(setup.gameType) !== -1) {
+      errors.badRequest(
+        res,
+        `${setup.gameType} is no longer available for new setups.`
+      );
+      return;
+    }
+
     if (!setup.name || !setup.name.length) {
       errors.unprocessable(res, "You must give your setup a name.");
       return;
