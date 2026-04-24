@@ -23,6 +23,7 @@ module.exports = class HookerBlock2PR extends Achievements {
               for (let action of this.game.actions[0]) {
                 if (
                   action.hasLabels(["block"]) &&
+                  !action.hasLabel("hidden") &&
                   action.actor == this.target &&
                   action.dominates(action.target, false) &&
                   action.target.alive
