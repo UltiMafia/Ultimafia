@@ -265,6 +265,31 @@ describe("Mafia Achievements (Mafia41-Mafia83)", function () {
       game.events.emit("aboutToFinish");
       player.EarnedAchievements.should.include("Mafia50");
     });
+
+    it("ignores passive self-block actions with no target (modifier-added)", function () {
+      const sk = makePlayer({ roleName: "Serial Killer", isEvil: () => true });
+      const { game, player } = makeEnv({
+        roleName: "Drunk",
+        alignmentMap: { "Serial Killer": "Independent" },
+      });
+      instantiate("DrunkBlockEvil", player);
+      const passive = mockAction({
+        actor: player,
+        target: undefined,
+        labels: ["block", "hidden", "absolute"],
+      });
+      passive.dominates = (p) => {
+        const target = p || passive.target;
+        if (!target) throw new TypeError("Cannot read properties of undefined (reading 'getImmunity')");
+        return true;
+      };
+      game.actions[0].push(passive);
+      game.actions[0].push(mockAction({ actor: player, target: sk, labels: ["block"] }));
+      game.actions[0].push(mockAction({ actor: sk, target: player, labels: ["kill"] }));
+      game.events.emit("state", { name: "Night 1" });
+      game.events.emit("aboutToFinish");
+      player.EarnedAchievements.should.include("Mafia50");
+    });
   });
 
   describe("Mafia51 Judge, Jury And Executioner (JailerCleanExecutions)", function () {
