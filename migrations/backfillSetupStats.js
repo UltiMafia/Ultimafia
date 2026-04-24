@@ -1,29 +1,10 @@
 /**
- * Rebuild SetupVersion.setupStats (alignmentRows, roleRows, gameLengthRows) from Game documents.
+ * Backfill SetupVersion.setupStats (alignmentRows, roleRows, gameLengthRows) from Game documents.
  *
- * Usage:
- *   # Smoke-test on one setup first
- *   node migrations/backfillSetupStats.js --setup 9YVD1N1qC
+ * Run: node migrations/backfillSetupStats.js [--limit N]
+ * Requires MONGO_URL (or default localhost) and optional dotenv.
  *
- *   # Cap the SV count for a partial run
- *   node migrations/backfillSetupStats.js --explicit-all --limit 100
- *
- *   # Full rebuild
- *   node migrations/backfillSetupStats.js --explicit-all
- *
- * Requires either --setup or --explicit-all so a full-DB rebuild can never
- * be triggered by accident. Requires MONGO_URL (or default localhost) and
- * optional dotenv.
- *
- * Iterates every SetupVersion in scope and rebuilds its row arrays from
- * the games that belong to that version's time window, using $set (not
- * $push). Safe to re-run: the same inputs produce the same arrays. Covers
- * setups left in a partial state by earlier runs, since no game is
- * permanently excluded by a stale setupStatsBackfilled flag.
- *
- * Skips games with leavers, hadVeg, or missing history (playerIdMap /
- * originalRoles). Games missing history are NOT marked as backfilled —
- * we want them to remain eligible if a future extraction path handles them.
+ * Skips games with leavers, hadVeg, or missing data. Marks processed games with setupStatsBackfilled.
  */
 
 require("dotenv").config();
@@ -126,27 +107,33 @@ function factionKeyFromMaps(userId, originalRoles, playerIdMap, playerAlignmentM
   return factionName;
 }
 
-// Pure: returns rows or null. Null means "don't contribute AND don't mark
-// backfilled" — a later run with better extraction can still try this game.
-function computeRowsForGame(game) {
-  if ((game.left || []).length > 0) return null;
-  if (game.hadVeg === true) return null;
-  if (game.type !== "Mafia") return null;
+async function resolveSetupVersionId(setupOid, endTimeMs) {
+  const versions = await models.SetupVersion.find({ setup: setupOid })
+    .select("version timestamp")
+    .sort({ version: 1 })
+    .lean();
+  if (!versions.length) return null;
+  let chosen = versions[0];
+  const t = endTimeMs || Date.now();
+  for (const v of versions) {
+    const ts = v.timestamp ? new Date(v.timestamp).getTime() : 0;
+    if (ts <= t) {
+      chosen = v;
+    }
+  }
+  return chosen._id;
+}
+
+async function processGame(game) {
+  const left = game.left || [];
+  if (left.length > 0) return { skipped: "leavers" };
+  if (game.hadVeg === true) return { skipped: "veg" };
+  if (game.type !== "Mafia") return { skipped: "notMafia" };
 
   const playerIdMap = parseJson(game.playerIdMap, {});
   const playerAlignmentMap = parseJson(game.playerAlignmentMap, {});
   const history = parseJson(game.history, {});
   const originalRoles = history.originalRoles || {};
-
-  // Without originalRoles/playerIdMap we cannot derive alignments or roles.
-  // Previously this case silently wrote empty rows and marked the game
-  // processed, permanently excluding it from future retries.
-  if (
-    Object.keys(originalRoles).length === 0 ||
-    Object.keys(playerIdMap).length === 0
-  ) {
-    return null;
-  }
 
   const winnerIds = new Set();
   if (Array.isArray(game.winners)) {
@@ -170,108 +157,45 @@ function computeRowsForGame(game) {
     factionToStarters[fk].push(pid);
   }
 
-  if (Object.keys(factionToStarters).length === 0) return null;
-
-  const gt = gameTypeTag(game);
-
   const alignmentRows = [];
   for (const f of Object.keys(factionToStarters)) {
     const anyWon = factionToStarters[f].some((pid) => winnerIds.has(pid));
-    alignmentRows.push([f, gt, anyWon]);
+    alignmentRows.push([f, gameTypeTag(game), anyWon]);
   }
 
   const roleRows = [];
   for (const pid of Object.keys(originalRoles)) {
-    roleRows.push([originalRoles[pid], gt, winnerIds.has(pid)]);
+    const roleKey = originalRoles[pid];
+    const won = winnerIds.has(pid);
+    roleRows.push([roleKey, gameTypeTag(game), won]);
   }
 
   const lengthMs = Math.max(
     0,
-    (game.endTime || Date.now()) -
-      (game.startTime || game.endTime || Date.now())
+    (game.endTime || Date.now()) - (game.startTime || game.endTime || Date.now())
   );
+  const gt = gameTypeTag(game);
 
-  return {
-    alignmentRows,
-    roleRows,
-    gameLengthRow: [gt, lengthMs],
-  };
-}
+  const svId = await resolveSetupVersionId(game.setup, game.endTime);
+  if (!svId) return { skipped: "noSetupVersion" };
 
-// A SetupVersion's window is [its timestamp, next version's timestamp).
-// Mirrors "latest version whose timestamp <= game.endTime".
-async function setupVersionWindow(sv) {
-  const nextSv = await models.SetupVersion.findOne({
-    setup: sv.setup,
-    version: { $gt: sv.version },
-  })
-    .sort({ version: 1 })
-    .select("timestamp")
-    .lean();
-
-  const start = sv.timestamp ? new Date(sv.timestamp).getTime() : 0;
-  const end =
-    nextSv && nextSv.timestamp
-      ? new Date(nextSv.timestamp).getTime()
-      : Number.MAX_SAFE_INTEGER;
-  return { start, end };
-}
-
-async function rebuildSetupVersion(sv) {
-  const { start, end } = await setupVersionWindow(sv);
-
-  const query = {
-    setup: sv.setup,
-    type: "Mafia",
-    endTime: { $gte: start, $lt: end },
-    $or: [{ left: [] }, { left: { $exists: false } }],
-    hadVeg: { $ne: true },
-  };
-
-  const cursor = models.Game.find(query).lean().cursor();
-
-  const alignmentRows = [];
-  const roleRows = [];
-  const gameLengthRows = [];
-  const contributingIds = [];
-  let seen = 0;
-
-  for await (const game of cursor) {
-    seen++;
-    const rows = computeRowsForGame(game);
-    if (!rows) continue;
-    alignmentRows.push(...rows.alignmentRows);
-    roleRows.push(...rows.roleRows);
-    gameLengthRows.push(rows.gameLengthRow);
-    contributingIds.push(game._id);
-  }
-
-  // Writes specific subfields only — leaves setupStats.totalVegs and any
-  // future fields alone. Always writes, so an SV that no longer has
-  // qualifying games gets cleared rather than carrying stale rows.
   await models.SetupVersion.updateOne(
-    { _id: sv._id },
+    { _id: svId },
     {
-      $set: {
-        "setupStats.alignmentRows": alignmentRows,
-        "setupStats.roleRows": roleRows,
-        "setupStats.gameLengthRows": gameLengthRows,
+      $push: {
+        "setupStats.alignmentRows": { $each: alignmentRows },
+        "setupStats.roleRows": { $each: roleRows },
+        "setupStats.gameLengthRows": { $each: [[gt, lengthMs]] },
       },
     }
-  );
+  ).exec();
 
-  if (contributingIds.length) {
-    await models.Game.updateMany(
-      { _id: { $in: contributingIds } },
-      { $set: { setupStatsBackfilled: true } }
-    );
-  }
+  await models.Game.updateOne(
+    { _id: game._id },
+    { $set: { setupStatsBackfilled: true } }
+  ).exec();
 
-  return {
-    seen,
-    contributed: contributingIds.length,
-    skipped: seen - contributingIds.length,
-  };
+  return { ok: true, skipped: null };
 }
 
 async function main() {
@@ -281,72 +205,51 @@ async function main() {
       ? parseInt(process.argv[limitArg + 1], 10)
       : 0;
 
-  const setupArg = process.argv.indexOf("--setup");
-  const setupPublicId =
-    setupArg >= 0 && process.argv[setupArg + 1]
-      ? process.argv[setupArg + 1]
-      : null;
-
-  const explicitAll = process.argv.includes("--explicit-all");
-
-  if (!setupPublicId && !explicitAll) {
-    console.error(
-      "Refusing to run: pass --setup <publicId> for one setup, or --explicit-all to process every setup."
-    );
-    process.exit(1);
-  }
-
   const { uri, options } = mongoConnectOptions();
   await mongoose.connect(uri, options);
 
-  let svQuery = {};
-  if (setupPublicId) {
-    const setupDoc = await models.Setup.findOne({ id: setupPublicId })
-      .select("_id")
-      .lean();
-    if (!setupDoc) {
-      logger.error(`Setup not found: ${setupPublicId}`);
-      process.exit(1);
-    }
-    svQuery = { setup: setupDoc._id };
-    logger.info(
-      `Connected. Rebuilding setupStats for setup ${setupPublicId} (${setupDoc._id})…`
-    );
-  } else {
-    logger.info("Connected. Rebuilding setupStats for every SetupVersion…");
-  }
+  logger.info("Connected. Scanning games…");
 
-  const svCursor = models.SetupVersion.find(svQuery)
-    .select("_id setup version timestamp")
+  const query = {
+    endTime: { $gt: 0 },
+    type: "Mafia",
+    setup: { $exists: true, $ne: null },
+    $and: [
+      {
+        $or: [
+          { setupStatsBackfilled: false },
+          { setupStatsBackfilled: { $exists: false } },
+        ],
+      },
+      {
+        $or: [{ left: [] }, { left: { $exists: false } }],
+      },
+    ],
+    hadVeg: { $ne: true },
+  };
+
+  let cursor = models.Game.find(query)
+    .sort({ endTime: 1 })
     .cursor();
 
-  let svCount = 0;
-  let totalSeen = 0;
-  let totalContributed = 0;
-  let totalSkipped = 0;
+  let n = 0;
+  let ok = 0;
+  let skipped = 0;
 
-  for await (const sv of svCursor) {
-    if (limit && svCount >= limit) break;
-    svCount++;
-
+  for await (const game of cursor) {
+    if (limit && n >= limit) break;
+    n++;
     try {
-      const r = await rebuildSetupVersion(sv);
-      totalSeen += r.seen;
-      totalContributed += r.contributed;
-      totalSkipped += r.skipped;
-
-      if (svCount % 50 === 0) {
-        logger.info(
-          `Processed ${svCount} SetupVersions (${totalContributed} games contributed, ${totalSkipped} skipped)`
-        );
-      }
+      const r = await processGame(game);
+      if (r.ok) ok++;
+      else skipped++;
     } catch (e) {
-      logger.error(`SetupVersion ${sv._id}:`, e);
+      logger.error(`Game ${game.id}:`, e);
     }
   }
 
   logger.info(
-    `Done. ${svCount} SetupVersions processed; ${totalSeen} games seen, ${totalContributed} contributed rows, ${totalSkipped} skipped.`
+    `Processed ${n} games (${ok} backfilled, ${skipped} skipped or failed rules).`
   );
   process.exit(0);
 }
