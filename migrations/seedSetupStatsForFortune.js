@@ -25,6 +25,7 @@ const http = require("http");
 const { URL } = require("url");
 const mongoose = require("mongoose");
 const mongo = require("mongodb");
+const models = require("../db/models");
 const roleData = require("../data/roles");
 const logger = require("../modules/logging")("seedSetupStatsForFortune");
 
@@ -181,14 +182,30 @@ function summarize(seed) {
 function mongoConnectOptions() {
   const rawUrl = (process.env.MONGO_URL || "").trim();
   const hasScheme = /^mongodb(\+srv)?:\/\//i.test(rawUrl);
+
   if (hasScheme) {
-    return { uri: rawUrl, options: { user: process.env.MONGO_USER, pass: process.env.MONGO_PW, useNewUrlParser: true, useUnifiedTopology: true } };
+    return {
+      uri: rawUrl,
+      options: {
+        user: process.env.MONGO_USER,
+        pass: process.env.MONGO_PW,
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      },
+    };
   }
+
   const host = rawUrl || "localhost:27017";
   const dbName = process.env.MONGO_DB || "ultimafia";
+
   return {
     uri: `mongodb://${host}/${dbName}?authSource=admin`,
-    options: { user: process.env.MONGO_USER, pass: process.env.MONGO_PW, useNewUrlParser: true, useUnifiedTopology: true },
+    options: {
+      user: process.env.MONGO_USER,
+      pass: process.env.MONGO_PW,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    },
   };
 }
 
@@ -233,7 +250,6 @@ async function main() {
     process.exit(0);
   }
 
-  const models = require("../db/models");
   const { uri, options } = mongoConnectOptions();
   await mongoose.connect(uri, options);
 
