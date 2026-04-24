@@ -174,6 +174,129 @@ describe("Mafia Achievements (Mafia41-Mafia83)", function () {
       game.events.emit("aboutToFinish");
       player.EarnedAchievements.should.include("Mafia44");
     });
+
+    it("does not count Villager blocks", function () {
+      const villager = makePlayer({ roleName: "Villager" });
+      const cop = makePlayer({ roleName: "Cop" });
+      const { game, player } = makeEnv({
+        roleName: "Hooker",
+        alignmentMap: { Villager: "Village", Cop: "Village" },
+      });
+      instantiate("HookerBlock2PR", player);
+
+      game.actions[0].push(mockAction({ actor: player, target: villager, labels: ["block"] }));
+      game.events.emit("state", { name: "Night 1" });
+
+      game.actions[0] = [
+        mockAction({ actor: player, target: cop, labels: ["block"] }),
+      ];
+      game.events.emit("state", { name: "Night 2" });
+
+      game.events.emit("aboutToFinish");
+      player.EarnedAchievements.should.not.include("Mafia44");
+    });
+
+    it("does not double-count blocking the same role twice", function () {
+      const cop1 = makePlayer({ roleName: "Cop" });
+      const cop2 = makePlayer({ roleName: "Cop" });
+      const { game, player } = makeEnv({
+        roleName: "Hooker",
+        alignmentMap: { Cop: "Village" },
+      });
+      instantiate("HookerBlock2PR", player);
+
+      game.actions[0].push(mockAction({ actor: player, target: cop1, labels: ["block"] }));
+      game.events.emit("state", { name: "Night 1" });
+
+      game.actions[0] = [
+        mockAction({ actor: player, target: cop2, labels: ["block"] }),
+      ];
+      game.events.emit("state", { name: "Night 2" });
+
+      game.events.emit("aboutToFinish");
+      player.EarnedAchievements.should.not.include("Mafia44");
+    });
+
+    it("does not count blocking dead targets", function () {
+      const cop = makePlayer({ roleName: "Cop", alive: false });
+      const doctor = makePlayer({ roleName: "Doctor" });
+      const { game, player } = makeEnv({
+        roleName: "Hooker",
+        alignmentMap: { Cop: "Village", Doctor: "Village" },
+      });
+      instantiate("HookerBlock2PR", player);
+
+      game.actions[0].push(mockAction({ actor: player, target: cop, labels: ["block"] }));
+      game.events.emit("state", { name: "Night 1" });
+
+      game.actions[0] = [
+        mockAction({ actor: player, target: doctor, labels: ["block"] }),
+      ];
+      game.events.emit("state", { name: "Night 2" });
+
+      game.events.emit("aboutToFinish");
+      player.EarnedAchievements.should.not.include("Mafia44");
+    });
+
+    it("does not count non-Village blocks", function () {
+      const mafioso = makePlayer({ roleName: "Mafioso" });
+      const cop = makePlayer({ roleName: "Cop" });
+      const { game, player } = makeEnv({
+        roleName: "Hooker",
+        alignmentMap: { Mafioso: "Mafia", Cop: "Village" },
+      });
+      instantiate("HookerBlock2PR", player);
+
+      game.actions[0].push(mockAction({ actor: player, target: mafioso, labels: ["block"] }));
+      game.events.emit("state", { name: "Night 1" });
+
+      game.actions[0] = [
+        mockAction({ actor: player, target: cop, labels: ["block"] }),
+      ];
+      game.events.emit("state", { name: "Night 2" });
+
+      game.events.emit("aboutToFinish");
+      player.EarnedAchievements.should.not.include("Mafia44");
+    });
+
+    it("ignores passive self-block actions with no target (modifier-added)", function () {
+      const cop = makePlayer({ roleName: "Cop" });
+      const doctor = makePlayer({ roleName: "Doctor" });
+      const { game, player } = makeEnv({
+        roleName: "Hooker",
+        alignmentMap: { Cop: "Village", Doctor: "Village" },
+      });
+      instantiate("HookerBlock2PR", player);
+
+      const passive1 = mockAction({
+        actor: player,
+        target: undefined,
+        labels: ["block", "hidden", "absolute"],
+      });
+      passive1.dominates = (p) => {
+        const target = p || passive1.target;
+        if (!target) throw new TypeError("Cannot read properties of undefined (reading 'getImmunity')");
+        return true;
+      };
+      game.actions[0].push(passive1);
+      game.actions[0].push(mockAction({ actor: player, target: cop, labels: ["block"] }));
+      game.events.emit("state", { name: "Night 1" });
+
+      const passive2 = mockAction({
+        actor: player,
+        target: undefined,
+        labels: ["block", "hidden", "absolute"],
+      });
+      passive2.dominates = passive1.dominates;
+      game.actions[0] = [
+        passive2,
+        mockAction({ actor: player, target: doctor, labels: ["block"] }),
+      ];
+      game.events.emit("state", { name: "Night 2" });
+
+      game.events.emit("aboutToFinish");
+      player.EarnedAchievements.should.include("Mafia44");
+    });
   });
 
   describe("Mafia45 As Above (MagusWinDayOne)", function () {
