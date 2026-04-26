@@ -96,7 +96,11 @@ function SnakeGame(props) {
         outerLeftContent={
           <>
             <PlayerList />
-            <ActionList />
+            <ActionList
+              meetingFilter={(m) => m.name === "Vote Kick"}
+              hideIfEmpty
+              scrollable={false}
+            />
           </>
         }
         innerRightContent={
