@@ -1106,8 +1106,8 @@ export function TopBar() {
       });
   }
 
-  if (isPhoneDevice && game.selectedPanel !== "info") {
-    // The top bar doubles as an info panel for mobile
+  if (isPhoneDevice && game.selectedPanel !== "menu") {
+    // The top bar doubles as an info panel for mobile, shown in the Menu tab
     return <></>;
   }
 

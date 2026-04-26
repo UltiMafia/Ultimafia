@@ -8,8 +8,6 @@ import {
   TextMeetingLayout,
   PlayerList,
   ActionList,
-  PinnedMessages,
-  Notes,
   Timer,
   GameTypeContext,
   SideMenu,
@@ -83,8 +81,6 @@ export default function DiceWarsGame(props) {
           <>
             <PlayerList />
             <ActionList />
-            <PinnedMessages />
-            <Notes />
           </>
         }
         innerRightContent={

@@ -9,8 +9,6 @@ import {
   PlayerList,
   SpeechFilter,
   SettingsMenu,
-  Notes,
-  PinnedMessages,
   MobileLayout,
   GameTypeContext,
   SideMenu,
@@ -103,7 +101,6 @@ export default function WackyWordsGame() {
               hideIfEmpty
               scrollable={false}
             />
-            <Notes />
             <SpeechFilter />
             <SettingsMenu />
           </>
@@ -139,8 +136,6 @@ export default function WackyWordsGame() {
         outerLeftContent={
           <>
             <PlayerList />
-            <PinnedMessages />
-            <Notes />
           </>
         }
         innerRightContent={

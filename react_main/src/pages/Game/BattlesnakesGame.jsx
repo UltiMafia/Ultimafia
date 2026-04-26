@@ -7,7 +7,6 @@ import {
   TextMeetingLayout,
   PlayerList,
   ActionList,
-  Notes,
   MobileLayout,
   Timer,
   GameTypeContext,
@@ -93,7 +92,6 @@ function SnakeGame(props) {
           <>
             <PlayerList />
             <ActionList />
-            <Notes />
           </>
         }
         innerRightContent={

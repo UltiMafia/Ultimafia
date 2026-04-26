@@ -10,7 +10,6 @@ import {
   Timer,
   SpeechFilter,
   SettingsMenu,
-  Notes,
   MobileLayout,
   GameTypeContext,
 } from "./Game";
@@ -80,7 +79,6 @@ export default function GhostGame(props) {
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             <ActionList />
-            <Notes />
           </>
         }
       />
@@ -89,7 +87,6 @@ export default function GhostGame(props) {
           <>
             <PlayerList />
             <SpeechFilter />
-            <Notes />
           </>
         }
         innerRightContent={
