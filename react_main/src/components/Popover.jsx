@@ -354,6 +354,11 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
 
   */
 
+  // Minigame settings come from the live game instance — skip if unavailable
+  // (e.g., when browsing a setup that hasn't been hosted yet)
+  const hasGameTypeOptions =
+    gameTypeOptions && Object.keys(gameTypeOptions).length > 0;
+
   switch (setup.gameType) {
     /*
     case "Mafia":
@@ -403,6 +408,7 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
       );
       break;
     case "Jotto":
+      if (!hasGameTypeOptions) break;
       result.push(
         <InfoSection title="Jotto settings">
           <InfoRow title="Word Length" content={gameTypeOptions.wordLength} key="wordLength" />
@@ -417,6 +423,7 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
       );
       break;
     case "Acrotopia":
+      if (!hasGameTypeOptions) break;
       result.push(
         <InfoSection title="Acrotopia settings">
           <InfoRow title="No. Rounds" content={gameTypeOptions.roundAmt} key="roundAmt" />
@@ -430,6 +437,7 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
       );
       break;
     case "Wacky Words":
+      if (!hasGameTypeOptions) break;
       result.push(
         <InfoSection title="Wacky Words settings">
           <InfoRow title="No. Rounds" content={gameTypeOptions.roundAmt} key="roundAmt" />
@@ -445,6 +453,7 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
       );
       break;
     case "Liars Dice":
+      if (!hasGameTypeOptions) break;
       result.push(
         <InfoSection title="Liars Dice settings">
           <InfoRow title="Wild Ones" content={gameTypeOptions.wildOnes} key="wildOnes" />
@@ -454,6 +463,7 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
       );
       break;
     case "Texas Hold Em":
+      if (!hasGameTypeOptions) break;
       result.push(
         <InfoSection title="Texas Hold Em settings">
           <InfoRow title="Minimum Bet" content={gameTypeOptions.minimumBet} key="minimumBet" />
@@ -463,6 +473,7 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
       );
       break;
     case "Cheat":
+      if (!hasGameTypeOptions) break;
       result.push(
         <InfoSection title="Cheat settings">
           <InfoRow title="Max Rounds" content={gameTypeOptions.MaxRounds} key="MaxRounds" />
@@ -470,6 +481,7 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
       );
       break;
     case "Ratscrew":
+      if (!hasGameTypeOptions) break;
       result.push(
         <InfoSection title="Ratscrew settings">
           <InfoRow title="Max Rounds" content={gameTypeOptions.MaxRounds} key="MaxRounds" />
@@ -477,6 +489,7 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
       );
       break;
     case "Connect Four":
+      if (!hasGameTypeOptions) break;
       result.push(
         <InfoSection title="Connect Four settings">
           <InfoRow title="Board Horizontal Size" content={gameTypeOptions.boardX} key="boardX" />
@@ -485,6 +498,7 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
       );
       break;
     case "Dice Wars":
+      if (!hasGameTypeOptions) break;
       result.push(
         <InfoSection title="Dice Wars settings">
           <InfoRow title="Number of Hexes" content={gameTypeOptions.mapSize} key="mapSize" />
@@ -493,6 +507,7 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
       );
       break;
     case "Battlesnakes":
+      if (!hasGameTypeOptions) break;
       result.push(
         <InfoSection title="Battlesnakes settings">
           <InfoRow title="Board Size" content={gameTypeOptions.boardSize} key="boardSize" />
