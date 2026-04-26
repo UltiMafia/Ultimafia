@@ -1288,16 +1288,7 @@ function MobileMenu() {
         paddingBottom: 0,
       }}
     >
-      <SettingsForm />
-      <Button
-        onClick={game.onLeaveGameClick}
-        startIcon={<img src={exit} alt="Leave" />}
-        sx={{
-          mt: "auto",
-        }}
-      >
-        Leave
-      </Button>
+      <SettingsForm onLeave={game.onLeaveGameClick} />
     </Stack>
   );
 
@@ -4845,7 +4836,7 @@ export function LastWillEntry() {
   );
 }
 
-function SettingsForm({ handleClose = null }) {
+function SettingsForm({ handleClose = null, onLeave = null }) {
   const game = useContext(GameContext);
   const { settings, updateSettings } = game;
 
@@ -5001,7 +4992,7 @@ function SettingsForm({ handleClose = null }) {
           Cancel
         </Button>
       )}
-      <div style={{ flex: 1 }} />
+      {!handleClose && !onLeave && <div style={{ flex: 1 }} />}
       <Button
         color="primary"
         onClick={saveSettings}
@@ -5011,6 +5002,17 @@ function SettingsForm({ handleClose = null }) {
       >
         Save
       </Button>
+      {onLeave && (
+        <Button
+          onClick={onLeave}
+          startIcon={<img src={exit} alt="Leave" />}
+          sx={{
+            flex: "1",
+          }}
+        >
+          Leave
+        </Button>
+      )}
     </Stack>
   );
 

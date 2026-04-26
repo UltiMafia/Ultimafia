@@ -405,7 +405,7 @@ export default function Form({
               key={field.ref}
               forceSeparateLabel
             >
-              <Paper sx={{ px: 2 }}>
+              <Paper sx={{ px: 3 }}>
                 <Stack
                   direction="column"
                   sx={{
