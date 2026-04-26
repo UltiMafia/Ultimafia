@@ -892,11 +892,6 @@ module.exports = class DiceWarsGame extends Game {
     const largestRegion = this.findLargestConnectedRegion(playerId);
     let bonusDice = 3 + largestRegion.length;
 
-    // Halve reinforcements in the first round
-    if (this.roundNumber === 1) {
-      bonusDice = Math.floor(bonusDice / 2);
-    }
-
     // Add any stored surplus dice
     if (this.surplusDice[playerId]) {
       bonusDice += this.surplusDice[playerId];
