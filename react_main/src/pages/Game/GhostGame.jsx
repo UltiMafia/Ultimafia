@@ -83,6 +83,11 @@ export default function GhostGame(props) {
         }
       />
       <MobileLayout
+        outerLeftNavigationProps={{
+          label: "Info",
+          value: "players",
+          icon: <i className="fas fa-info" />,
+        }}
         outerLeftContent={
           <>
             <PlayerList />

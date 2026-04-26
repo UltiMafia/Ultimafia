@@ -88,6 +88,11 @@ export default function ConnectFourGame(props) {
       <MobileLayout
         chatTab
         hideInfoTab
+        outerLeftNavigationProps={{
+          label: "Info",
+          value: "players",
+          icon: <i className="fas fa-info" />,
+        }}
         outerLeftContent={
           <>
             <PlayerList />
