@@ -379,7 +379,7 @@
 
 .game .acrotopia-response {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
 
   padding: 4px 10px;
@@ -417,6 +417,10 @@
 .game .acrotopia-response-author {
   flex: 0 0 auto;
 
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
   font-family: "Roboto", sans-serif;
   font-size: 0.7rem;
   letter-spacing: 0.1em;
@@ -426,7 +430,7 @@
 }
 
 .game .acrotopia-response-author::before {
-  content: "— ";
+  content: "—";
   opacity: 0.6;
 }
 
