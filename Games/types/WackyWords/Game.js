@@ -234,11 +234,6 @@ module.exports = class WackyWordsGame extends Game {
     this.shuffledQuestions.shift();
 
     this.currentQuestion = question;
-    if (this.hasGovernor) {
-      this.queueAlert(`The acronym is "${question}".`);
-    } else {
-      this.queueAlert(`The prompt is "${question}".`);
-    }
 
     if (this.hasNeighbor) {
       let neighbor = this.NeighborsList[0];
@@ -253,19 +248,6 @@ module.exports = class WackyWordsGame extends Game {
       }
     }
 
-    if (this.currentRound == 0) {
-      if (this.hasAlien) {
-        this.queueAlert(
-          `Create a question that the prompt given is responding to. Go wild!`
-        );
-      } else if (this.hasGovernor) {
-        this.queueAlert(
-          `Create a word phrase starting with these letters. Go wild!`
-        );
-      } else {
-        this.queueAlert(`Give a response to the prompt given. Go wild!`);
-      }
-    }
   }
 
   generateNewDecision() {
@@ -420,17 +402,15 @@ module.exports = class WackyWordsGame extends Game {
       }
     }
 
-    this.queueAlert(
-      `The winning response(s) for "${this.currentQuestion}" are…`
-    );
-
     if (this.votesToPoints) {
       for (let response in this.currentResponses) {
         let responseObj = this.currentResponses[response];
         responseObj.player.addScore(responseObj.score);
+        responseObj.pointsAwarded = responseObj.score;
       }
       for (let response of winningResponses) {
         let responseObj = this.currentResponses[response];
+        responseObj.isWinner = true;
         this.queueAlert(`${responseObj.player.name}: ${response}`);
       }
     } else {
@@ -442,6 +422,7 @@ module.exports = class WackyWordsGame extends Game {
         let responseObj = this.currentResponses[response];
         responseObj.player.addScore(scoreToGive);
         responseObj.isWinner = true;
+        responseObj.pointsAwarded = scoreToGive;
         this.queueAlert(`${responseObj.player.name}: ${response}`);
       }
     }
@@ -458,6 +439,7 @@ module.exports = class WackyWordsGame extends Game {
         voters: responseObj.voters.map((v) => v.name),
         score: responseObj.score,
         isWinner: responseObj.isWinner || false,
+        pointsAwarded: responseObj.pointsAwarded || 0,
       };
       switch (type) {
         case "anon":
@@ -604,6 +586,7 @@ module.exports = class WackyWordsGame extends Game {
       totalRound: this.roundAmt,
       scores: scores,
       playerHasVoted: this.playerHasVoted,
+      asker: this.guesser?.name,
     };
     return info;
   }

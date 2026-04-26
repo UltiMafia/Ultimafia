@@ -54,6 +54,7 @@ module.exports = class ResponseGiver extends Card {
           maxLength: 200,
           enforceAcronym: "",
           submit: "Confirm",
+          placeholder: "Type a decision here...",
         },
         action: {
           priority: -3,
@@ -87,6 +88,7 @@ module.exports = class ResponseGiver extends Card {
           maxLength: 200,
           enforceAcronym: "",
           submit: "Confirm",
+          placeholder: "Type an alternative — something that would split the room 50/50.",
         },
         action: {
           priority: -2,
@@ -113,6 +115,18 @@ module.exports = class ResponseGiver extends Card {
 
     this.listeners = {
       start: function () {
+        let placeholder;
+        if (this.game.hasAlien) {
+          placeholder =
+            "Create a question that the prompt given is responding to. Go wild!";
+        } else if (this.game.hasGovernor) {
+          placeholder =
+            "Create a word phrase starting with these letters. Go wild!";
+        } else {
+          placeholder = "Give a response to the prompt given. Go wild!";
+        }
+        this.meetings["Give Response"].textOptions.placeholder = placeholder;
+
         if (!this.game.hasGovernor) return;
         if (!this.game.enablePunctuation) {
           this.meetings["Give Response"].textOptions.alphaOnlyWithSpaces = true;
