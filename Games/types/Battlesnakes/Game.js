@@ -16,6 +16,7 @@ module.exports = class BattlesnakesGame extends Game {
     this.Player = Player;
     this.gridSize = parseInt(options.settings.boardSize) || 20;
     this.deadSnakeObstacles = options.settings.deadSnakeObstacles ?? true;
+    this.ifWallsAreTransparent = options.settings.ifWallsAreTransparent ?? true;
     this.gameStarted = false;
     this.states = [
       { name: "Postgame" },
@@ -139,11 +140,24 @@ module.exports = class BattlesnakesGame extends Game {
           break;
       }
 
-      // New: Wrap the head position at the walls
-      head.x = (head.x + this.gridSize) % this.gridSize;
-      head.y = (head.y + this.gridSize) % this.gridSize;
+      if (this.ifWallsAreTransparent) {
+        // Walls wrap around (toroidal board)
+        head.x = (head.x + this.gridSize) % this.gridSize;
+        head.y = (head.y + this.gridSize) % this.gridSize;
+      } else {
+        // Solid walls: snake dies on out-of-bounds
+        if (
+          head.x < 0 ||
+          head.x >= this.gridSize ||
+          head.y < 0 ||
+          head.y >= this.gridSize
+        ) {
+          this.killSnake(snake);
+          continue;
+        }
+      }
 
-      // Remove wall collision check, only check for self/other snake collisions
+      // Check self/other snake collisions
       // Check self collisions
       if (
         snake.segments.some(
@@ -210,6 +224,7 @@ module.exports = class BattlesnakesGame extends Game {
       snakes: this.positions,
       foods: this.foods,
       gridSize: this.gridSize,
+      ifWallsAreTransparent: this.ifWallsAreTransparent,
     });
 
     // Check for win condition: only one snake left alive, or all dead
@@ -237,9 +252,18 @@ module.exports = class BattlesnakesGame extends Game {
         snakes: JSON.parse(JSON.stringify(this.positions)),
         foods: JSON.parse(JSON.stringify(this.foods)),
         gridSize: this.gridSize,
+        ifWallsAreTransparent: this.ifWallsAreTransparent,
       };
     }
     return info;
+  }
+
+  getGameTypeOptions() {
+    return {
+      boardSize: this.gridSize,
+      deadSnakeObstacles: this.deadSnakeObstacles,
+      ifWallsAreTransparent: this.ifWallsAreTransparent,
+    };
   }
 
   /**

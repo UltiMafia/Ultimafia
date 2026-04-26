@@ -23,6 +23,12 @@ export default function HostBattlesnakes() {
       value: defaults.deadSnakeObstacles,
     },
     {
+      label: "Walls Wrap Around",
+      ref: "ifWallsAreTransparent",
+      type: "boolean",
+      value: defaults.ifWallsAreTransparent,
+    },
+    {
       label: "Lobby",
       ref: "lobby",
       type: "select",

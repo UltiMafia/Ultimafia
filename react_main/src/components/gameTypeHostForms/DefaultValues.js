@@ -150,6 +150,7 @@ var defaultOptions = {
     ...commonHostOptions,
     boardSize: 20,
     deadSnakeObstacles: true,
+    ifWallsAreTransparent: true,
     dayLength: 60,
     nightLength: 0.5,
   },

@@ -1306,10 +1306,12 @@ const settingsChecks = {
   Battlesnakes: (settings, setup) => {
     const boardSize = settings.boardSize;
     const deadSnakeObstacles = settings.deadSnakeObstacles ?? true;
+    const ifWallsAreTransparent = settings.ifWallsAreTransparent ?? true;
 
     return {
       boardSize,
       deadSnakeObstacles,
+      ifWallsAreTransparent,
     };
   },
   "Dice Wars": (settings, setup) => {

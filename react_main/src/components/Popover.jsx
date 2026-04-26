@@ -512,6 +512,7 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
         <InfoSection title="Battlesnakes settings">
           <InfoRow title="Board Size" content={gameTypeOptions.boardSize} key="boardSize" />
           <InfoRow title="Dead Snakes Block" content={gameTypeOptions.deadSnakeObstacles} key="deadSnakeObstacles" />
+          <InfoRow title="Walls Wrap Around" content={gameTypeOptions.ifWallsAreTransparent} key="ifWallsAreTransparent" />
         </InfoSection>
       );
       break;
