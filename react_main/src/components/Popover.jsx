@@ -238,18 +238,18 @@ export function InfoRow({ title, content, multiRow = false }) {
   }
 }
 
-export function SetupInfo({ setup }) {
+export function SetupInfo({ setup, gameTypeOptions }) {
   const siteInfo = useContext(SiteInfoContext);
   const [content, setContent] = useState([]);
 
   useEffect(() => {
-    setContent(parseSetupPopover(setup, siteInfo));
-  }, [setup.id]);
+    setContent(parseSetupPopover(setup, siteInfo, gameTypeOptions));
+  }, [setup.id, gameTypeOptions]);
 
   return <Stack direction="column">{content}</Stack>;
 }
 
-export function parseSetupPopover(setup, siteInfo) {
+export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
   const result = [];
 
   //Creator
@@ -315,19 +315,21 @@ export function parseSetupPopover(setup, siteInfo) {
     );
   });
 
-  // Common settings
-  result.push(
-    <InfoSection title="Common settings">
-      <InfoRow title="Players" content={setup.total} key="players" />
-      <InfoRow title="Ranked Allowed" content={setup.ranked} key="ranked" />
-      <InfoRow
-        title="Competitive Allowed"
-        content={setup.competitive}
-        key="competitive"
-      />
-    </InfoSection>
-  );
-  if (settings) {
+  // Common settings (Mafia only — minigames don't surface these)
+  if (setup.gameType === "Mafia") {
+    result.push(
+      <InfoSection title="Common settings">
+        <InfoRow title="Players" content={setup.total} key="players" />
+        <InfoRow title="Ranked Allowed" content={setup.ranked} key="ranked" />
+        <InfoRow
+          title="Competitive Allowed"
+          content={setup.competitive}
+          key="competitive"
+        />
+      </InfoSection>
+    );
+  }
+  if (settings && setup.gameType === "Mafia") {
     result.push(<InfoSection title="Game Settings">{settings}</InfoSection>);
   }
   /*
@@ -376,7 +378,7 @@ export function parseSetupPopover(setup, siteInfo) {
       */
     case "Resistance":
       result.push(
-        <InfoSection title="Resistance specific settings">
+        <InfoSection title="Resistance settings">
           <InfoRow
             title="First Team Size"
             content={setup.firstTeamSize}
@@ -400,47 +402,146 @@ export function parseSetupPopover(setup, siteInfo) {
         </InfoSection>
       );
       break;
+    case "Jotto":
+      result.push(
+        <InfoSection title="Jotto settings">
+          <InfoRow title="Word Length" content={gameTypeOptions.wordLength} key="wordLength" />
+          <InfoRow title="Duplicate Letters" content={gameTypeOptions.duplicateLetters} key="duplicateLetters" />
+          <InfoRow title="Competitive Mode" content={gameTypeOptions.competitiveMode} key="competitiveMode" />
+          <InfoRow title="Forbidden Mode" content={gameTypeOptions.forbiddenMode} key="forbiddenMode" />
+          <InfoRow title="Win With Anagrams" content={gameTypeOptions.winOnAnagrams} key="winOnAnagrams" />
+          {gameTypeOptions.winOnAnagrams && (
+            <InfoRow title="No. Anagrams Required" content={gameTypeOptions.numAnagramsRequired} key="numAnagramsRequired" />
+          )}
+        </InfoSection>
+      );
+      break;
+    case "Acrotopia":
+      result.push(
+        <InfoSection title="Acrotopia settings">
+          <InfoRow title="No. Rounds" content={gameTypeOptions.roundAmt} key="roundAmt" />
+          <InfoRow title="Acronym Size" content={gameTypeOptions.acronymSize} key="acronymSize" />
+          <InfoRow title="Enable Punctuation" content={gameTypeOptions.enablePunctuation} key="enablePunctuation" />
+          <InfoRow title="Standardise Capitalisation" content={gameTypeOptions.standardiseCapitalisation} key="standardiseCapitalisation" />
+          {gameTypeOptions.standardiseCapitalisation && (
+            <InfoRow title="Turn on Caps" content={gameTypeOptions.turnOnCaps} key="turnOnCaps" />
+          )}
+        </InfoSection>
+      );
+      break;
+    case "Wacky Words":
+      result.push(
+        <InfoSection title="Wacky Words settings">
+          <InfoRow title="No. Rounds" content={gameTypeOptions.roundAmt} key="roundAmt" />
+          <InfoRow title="Acronym Size" content={gameTypeOptions.acronymSize} key="acronymSize" />
+          <InfoRow title="Enable Punctuation" content={gameTypeOptions.enablePunctuation} key="enablePunctuation" />
+          <InfoRow title="Standardise Capitalisation" content={gameTypeOptions.standardiseCapitalisation} key="standardiseCapitalisation" />
+          {gameTypeOptions.standardiseCapitalisation && (
+            <InfoRow title="Turn on Caps" content={gameTypeOptions.turnOnCaps} key="turnOnCaps" />
+          )}
+          <InfoRow title="Ranked Choice Voting" content={gameTypeOptions.isRankedChoice} key="isRankedChoice" />
+          <InfoRow title="Votes into Points" content={gameTypeOptions.votesToPoints} key="votesToPoints" />
+        </InfoSection>
+      );
+      break;
+    case "Liars Dice":
+      result.push(
+        <InfoSection title="Liars Dice settings">
+          <InfoRow title="Wild Ones" content={gameTypeOptions.wildOnes} key="wildOnes" />
+          <InfoRow title="Spot On" content={gameTypeOptions.spotOn} key="spotOn" />
+          <InfoRow title="Starting Dice" content={gameTypeOptions.startingDice} key="startingDice" />
+        </InfoSection>
+      );
+      break;
+    case "Texas Hold Em":
+      result.push(
+        <InfoSection title="Texas Hold Em settings">
+          <InfoRow title="Minimum Bet" content={gameTypeOptions.minimumBet} key="minimumBet" />
+          <InfoRow title="Starting Chips" content={gameTypeOptions.startingChips} key="startingChips" />
+          <InfoRow title="Max Rounds" content={gameTypeOptions.MaxRounds} key="MaxRounds" />
+        </InfoSection>
+      );
+      break;
+    case "Cheat":
+      result.push(
+        <InfoSection title="Cheat settings">
+          <InfoRow title="Max Rounds" content={gameTypeOptions.MaxRounds} key="MaxRounds" />
+        </InfoSection>
+      );
+      break;
+    case "Ratscrew":
+      result.push(
+        <InfoSection title="Ratscrew settings">
+          <InfoRow title="Max Rounds" content={gameTypeOptions.MaxRounds} key="MaxRounds" />
+        </InfoSection>
+      );
+      break;
+    case "Connect Four":
+      result.push(
+        <InfoSection title="Connect Four settings">
+          <InfoRow title="Board Horizontal Size" content={gameTypeOptions.boardX} key="boardX" />
+          <InfoRow title="Board Vertical Size" content={gameTypeOptions.boardY} key="boardY" />
+        </InfoSection>
+      );
+      break;
+    case "Dice Wars":
+      result.push(
+        <InfoSection title="Dice Wars settings">
+          <InfoRow title="Number of Hexes" content={gameTypeOptions.mapSize} key="mapSize" />
+          <InfoRow title="Max Dice Per Territory" content={gameTypeOptions.maxDice} key="maxDice" />
+        </InfoSection>
+      );
+      break;
+    case "Battlesnakes":
+      result.push(
+        <InfoSection title="Battlesnakes settings">
+          <InfoRow title="Board Size" content={gameTypeOptions.boardSize} key="boardSize" />
+          <InfoRow title="Dead Snakes Block" content={gameTypeOptions.deadSnakeObstacles} key="deadSnakeObstacles" />
+        </InfoSection>
+      );
+      break;
   }
 
-  let rolesetSettings = [];
+  // Roles section + FullRoleList (Mafia only — minigames don't have role sets)
+  if (setup.gameType === "Mafia") {
+    let rolesetSettings = [];
 
-  //Roles
-  if (setup.closed) {
-    rolesetSettings.push(
-      <InfoRow title="Unique Roles" content={setup.unique} key="uniqueRoles" />
-    );
+    if (setup.closed) {
+      rolesetSettings.push(
+        <InfoRow title="Unique Roles" content={setup.unique} key="uniqueRoles" />
+      );
 
-    // Currently, only Mafia supports unique without modifier
-    if (setup.unique && setup.gameType === "Mafia") {
+      if (setup.unique) {
+        rolesetSettings.push(
+          <InfoRow
+            title="Unique Without Modifier"
+            content={setup.uniqueWithoutModifier}
+            key="uniqueRolesWithoutModifier"
+          />
+        );
+      }
+
       rolesetSettings.push(
         <InfoRow
-          title="Unique Without Modifier"
-          content={setup.uniqueWithoutModifier}
-          key="uniqueRolesWithoutModifier"
+          title="Role Groups"
+          content={setup.useRoleGroups}
+          key="useRoleGroups"
         />
       );
     }
 
-    rolesetSettings.push(
-      <InfoRow
-        title="Role Groups"
-        content={setup.useRoleGroups}
-        key="useRoleGroups"
-      />
+    let multiName = setup.useRoleGroups ? "Role Groups" : "Role Sets";
+    const sectionName =
+      !setup.closed && setup.roles.length > 1 ? multiName : "Roles";
+    result.push(
+      <InfoSection title={sectionName} key="roles">
+        <InfoRow title="Closed roles" content={setup.closed} />
+        {rolesetSettings}
+      </InfoSection>
     );
+
+    result.push(<FullRoleList setup={setup} key="fullRoleList" compact />);
   }
-
-  let multiName = setup.useRoleGroups ? "Role Groups" : "Role Sets";
-  const sectionName =
-    !setup.closed && setup.roles.length > 1 ? multiName : "Roles";
-  result.push(
-    <InfoSection title={sectionName} key="roles">
-      <InfoRow title="Closed roles" content={setup.closed} />
-      {rolesetSettings}
-    </InfoSection>
-  );
-
-  result.push(<FullRoleList setup={setup} key="fullRoleList" compact />);
 
   return result;
 }

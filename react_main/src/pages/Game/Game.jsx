@@ -1247,7 +1247,10 @@ export function TopBar() {
         <Typography variant="h3">
           {game.setup.name}
         </Typography>
-        <SetupInfo setup={game.setup} />
+        <SetupInfo
+          setup={game.setup}
+          gameTypeOptions={game.options?.gameTypeOptions}
+        />
       </Stack>
     );
   }
