@@ -7,9 +7,7 @@ import {
   TextMeetingLayout,
   ActionList,
   PlayerList,
-  PinnedMessages,
   Timer,
-  Notes,
   SettingsMenu,
   MobileLayout,
   GameTypeContext,
@@ -94,8 +92,6 @@ export default function ConnectFourGame(props) {
           <>
             <PlayerList />
             <ActionList />
-            <PinnedMessages />
-            <Notes />
           </>
         }
         innerRightContent={<ConnectFourBoardWrapper />}

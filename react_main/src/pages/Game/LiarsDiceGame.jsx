@@ -9,8 +9,6 @@ import {
   PlayerList,
   OptionsList,
   Timer,
-  Notes,
-  PinnedMessages,
   SettingsMenu,
   MobileLayout,
   SpeechFilter,
@@ -118,7 +116,6 @@ export default function LiarsDiceGame(props) {
             <LiarsDiceCurrentGuess />
             <OptionsList />
             {actionList}
-            <Notes />
           </>
         }
       />
@@ -128,8 +125,6 @@ export default function LiarsDiceGame(props) {
         outerLeftContent={
           <>
             {playerList}
-            <PinnedMessages />
-            <Notes />
           </>
         }
         innerRightContent={

@@ -10,8 +10,6 @@ import {
   Timer,
   SpeechFilter,
   SettingsMenu,
-  Notes,
-  PinnedMessages,
   MobileLayout,
   GameTypeContext,
 } from "./Game";
@@ -81,7 +79,6 @@ export default function AcrotopiaGame(props) {
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             <ActionList />
-            <Notes />
           </>
         }
       />
@@ -91,8 +88,6 @@ export default function AcrotopiaGame(props) {
         outerLeftContent={
           <>
             <PlayerList />
-            <PinnedMessages />
-            <Notes />
           </>
         }
         innerRightContent={

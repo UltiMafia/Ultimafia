@@ -16,7 +16,6 @@ import {
   buildActionDescriptors,
   PlayerList,
   Notes,
-  PinnedMessages,
   SettingsMenu,
   MobileLayout,
   GameTypeContext,
@@ -224,7 +223,6 @@ export default function JottoGame() {
           <>
             <PlayerList />
             {jottoCheatSheet}
-            <PinnedMessages />
             <Notes />
           </>
         }

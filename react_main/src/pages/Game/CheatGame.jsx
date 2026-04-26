@@ -9,8 +9,6 @@ import {
   PlayerList,
   SettingsMenu,
   TextMeetingLayout,
-  Notes,
-  PinnedMessages,
   MobileLayout,
   GameTypeContext,
 } from "./Game";
@@ -121,7 +119,6 @@ export default function CheatGame(props) {
             <OptionsList />
             <ThePot />
             {actionsList}
-            <Notes />
           </>
         }
       />
@@ -129,8 +126,6 @@ export default function CheatGame(props) {
         outerLeftContent={
           <>
             {playerList}
-            <PinnedMessages />
-            <Notes />
           </>
         }
         innerRightContent={

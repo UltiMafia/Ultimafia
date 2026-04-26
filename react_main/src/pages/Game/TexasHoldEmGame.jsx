@@ -10,7 +10,6 @@ import {
   OptionsList,
   Timer,
   Notes,
-  PinnedMessages,
   SettingsMenu,
   MobileLayout,
   GameTypeContext,
@@ -127,7 +126,6 @@ export default function TexasHoldEmGame(props) {
         outerLeftContent={
           <>
             {playerList}
-            <PinnedMessages />
             <Notes />
           </>
         }
