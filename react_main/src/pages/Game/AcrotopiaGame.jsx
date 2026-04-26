@@ -11,6 +11,7 @@ import {
   SpeechFilter,
   SettingsMenu,
   Notes,
+  PinnedMessages,
   MobileLayout,
   GameTypeContext,
 } from "./Game";
@@ -85,6 +86,15 @@ export default function AcrotopiaGame(props) {
         }
       />
       <MobileLayout
+        chatTab
+        hideInfoTab
+        outerLeftContent={
+          <>
+            <PlayerList />
+            <PinnedMessages />
+            <Notes />
+          </>
+        }
         innerRightContent={
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />

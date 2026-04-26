@@ -7,6 +7,7 @@ import {
   TextMeetingLayout,
   ActionList,
   PlayerList,
+  PinnedMessages,
   Timer,
   Notes,
   SettingsMenu,
@@ -87,13 +88,22 @@ export default function ConnectFourGame(props) {
         }
       />
       <MobileLayout
-        centerContent={<ConnectFourBoardWrapper />}
-        innerRightContent={
+        chatTab
+        hideInfoTab
+        outerLeftContent={
           <>
-            {stateViewing >= 0 && <TextMeetingLayout />}
+            <PlayerList />
             <ActionList />
+            <PinnedMessages />
+            <Notes />
           </>
         }
+        innerRightContent={<ConnectFourBoardWrapper />}
+        innerRightNavigationProps={{
+          label: "Board",
+          value: "actions",
+          icon: <i className="fas fa-th" />,
+        }}
       />
     </GameTypeContext.Provider>
   );

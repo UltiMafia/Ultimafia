@@ -112,6 +112,8 @@ export default function SecretDictatorGame(props) {
             <PlayerList />
             <KickActionList />
             <SpeechFilter />
+            <PinnedMessages />
+            <Notes />
           </>
         }
         innerRightNavigationProps={{
@@ -122,12 +124,8 @@ export default function SecretDictatorGame(props) {
         innerRightContent={
           <GameBoard history={history} stateViewing={stateViewing} />
         }
-        additionalInfoContent={
-          <>
-            <PinnedMessages />
-            <Notes />
-          </>
-        }
+        chatTab
+        hideInfoTab
       />
       {peekedPolicies && (
         <PolicyPeekModal

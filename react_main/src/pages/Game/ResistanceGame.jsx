@@ -91,6 +91,8 @@ export default function ResistanceGame(props) {
           <>
             <PlayerList />
             <SpeechFilter />
+            <PinnedMessages />
+            <Notes />
           </>
         }
         innerRightContent={
@@ -99,12 +101,8 @@ export default function ResistanceGame(props) {
             <ActionList />
           </>
         }
-        additionalInfoContent={
-          <>
-            <PinnedMessages />
-            <Notes />
-          </>
-        }
+        chatTab
+        hideInfoTab
       />
     </GameTypeContext.Provider>
   );

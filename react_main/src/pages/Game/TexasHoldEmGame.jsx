@@ -10,6 +10,7 @@ import {
   OptionsList,
   Timer,
   Notes,
+  PinnedMessages,
   SettingsMenu,
   MobileLayout,
   GameTypeContext,
@@ -123,7 +124,13 @@ export default function TexasHoldEmGame(props) {
         }
       />
       <MobileLayout
-        outerLeftContent={playerList}
+        outerLeftContent={
+          <>
+            {playerList}
+            <PinnedMessages />
+            <Notes />
+          </>
+        }
         innerRightContent={
           <>
             <OptionsList />
@@ -132,6 +139,8 @@ export default function TexasHoldEmGame(props) {
             {actionList}
           </>
         }
+        chatTab
+        hideInfoTab
       />
     </GameTypeContext.Provider>
   );

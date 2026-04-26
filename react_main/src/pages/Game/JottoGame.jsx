@@ -16,6 +16,7 @@ import {
   buildActionDescriptors,
   PlayerList,
   Notes,
+  PinnedMessages,
   SettingsMenu,
   MobileLayout,
   GameTypeContext,
@@ -219,6 +220,14 @@ export default function JottoGame() {
         </div>
       )}
       <MobileLayout
+        outerLeftContent={
+          <>
+            <PlayerList />
+            {jottoCheatSheet}
+            <PinnedMessages />
+            <Notes />
+          </>
+        }
         innerRightNavigationProps={{
           label: "Game",
           value: "actions",
@@ -226,38 +235,38 @@ export default function JottoGame() {
         }}
         innerRightContent={
           <>
-            {history.currentState === -1 ? (
-              <PlayerList />
-            ) : turnOrder.length > 0 ? (
-              <div className="jotto-mobile-panels">
-                {turnOrder.map((name) => (
-                  <JottoHistoryPanel
-                    key={name}
-                    name={name}
-                    guessHistory={extraInfo.guessHistoryByNames[name]}
-                    guessMeeting={guessMeeting}
+            {history.currentState !== -1 && (
+              turnOrder.length > 0 ? (
+                <div className="jotto-mobile-panels">
+                  {turnOrder.map((name) => (
+                    <JottoHistoryPanel
+                      key={name}
+                      name={name}
+                      guessHistory={extraInfo.guessHistoryByNames[name]}
+                      guessMeeting={guessMeeting}
+                      socket={game.socket}
+                      self={game.self}
+                      players={game.players}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="jotto-select-word">
+                  <JottoGuessInput
+                    meeting={selectWordMeeting}
                     socket={game.socket}
                     self={game.self}
-                    players={game.players}
+                    isMyTurn={
+                      selectWordMeeting &&
+                      selectWordMeeting.amMember &&
+                      selectWordMeeting.canVote
+                    }
+                    placeholder="Select word"
+                    label={selectWordMeeting?.actionName || "Select Word"}
+                    showChoiceFeedback
                   />
-                ))}
-              </div>
-            ) : (
-              <div className="jotto-select-word">
-                <JottoGuessInput
-                  meeting={selectWordMeeting}
-                  socket={game.socket}
-                  self={game.self}
-                  isMyTurn={
-                    selectWordMeeting &&
-                    selectWordMeeting.amMember &&
-                    selectWordMeeting.canVote
-                  }
-                  placeholder="Select word"
-                  label={selectWordMeeting?.actionName || "Select Word"}
-                  showChoiceFeedback
-                />
-              </div>
+                </div>
+              )
             )}
             <div className="action-list">
               {(filteredDescriptors || []).map(
@@ -268,13 +277,8 @@ export default function JottoGame() {
             </div>
           </>
         }
-        additionalInfoContent={
-          <>
-            {jottoCheatSheet}
-            <Notes />
-          </>
-        }
         chatTab
+        hideInfoTab
       />
     </GameTypeContext.Provider>
   );

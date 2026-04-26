@@ -11,7 +11,7 @@ import {
   SpeechFilter,
   SettingsMenu,
   Notes,
-  PinnedMessages,
+  MobileLayout,
   GameTypeContext,
 } from "./Game";
 import { GameContext } from "../../Contexts";
@@ -80,7 +80,6 @@ export default function GhostGame(props) {
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             <ActionList />
-            <PinnedMessages />
             <Notes />
           </>
         }
@@ -90,6 +89,7 @@ export default function GhostGame(props) {
           <>
             <PlayerList />
             <SpeechFilter />
+            <Notes />
           </>
         }
         innerRightContent={
@@ -98,12 +98,8 @@ export default function GhostGame(props) {
             <ActionList />
           </>
         }
-        additionalInfoContent={
-          <>
-            <PinnedMessages />
-            <Notes />
-          </>
-        }
+        chatTab
+        hideInfoTab
       />
     </GameTypeContext.Provider>
   );

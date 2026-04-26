@@ -10,6 +10,7 @@ import {
   SpeechFilter,
   SettingsMenu,
   Notes,
+  PinnedMessages,
   MobileLayout,
   GameTypeContext,
   SideMenu,
@@ -133,6 +134,15 @@ export default function WackyWordsGame() {
         rightPanelContent={<TextMeetingLayout />}
       />
       <MobileLayout
+        chatTab
+        hideInfoTab
+        outerLeftContent={
+          <>
+            <PlayerList />
+            <PinnedMessages />
+            <Notes />
+          </>
+        }
         innerRightContent={
           <>
             <HistoryKeeperMobile

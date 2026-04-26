@@ -10,6 +10,7 @@ import {
   SettingsMenu,
   TextMeetingLayout,
   Notes,
+  PinnedMessages,
   MobileLayout,
   GameTypeContext,
 } from "./Game";
@@ -125,7 +126,13 @@ export default function RatscrewGame(props) {
         }
       />
       <MobileLayout
-        outerLeftContent={playerList}
+        outerLeftContent={
+          <>
+            {playerList}
+            <PinnedMessages />
+            <Notes />
+          </>
+        }
         innerRightContent={
           <>
             <OptionsList />
@@ -133,6 +140,8 @@ export default function RatscrewGame(props) {
             {actionsList}
           </>
         }
+        chatTab
+        hideInfoTab
       />
     </GameTypeContext.Provider>
   );

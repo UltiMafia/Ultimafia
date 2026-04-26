@@ -7,6 +7,9 @@ import {
   TopBar,
   TextMeetingLayout,
   PlayerList,
+  ActionList,
+  PinnedMessages,
+  Notes,
   Timer,
   GameTypeContext,
   SideMenu,
@@ -74,7 +77,17 @@ export default function DiceWarsGame(props) {
         }
       />
       <MobileLayout
-        centerContent={
+        chatTab
+        hideInfoTab
+        outerLeftContent={
+          <>
+            <PlayerList />
+            <ActionList />
+            <PinnedMessages />
+            <Notes />
+          </>
+        }
+        innerRightContent={
           <>
             {players && game.socket && (
               <DiceWarsBoardWrapper
@@ -88,11 +101,11 @@ export default function DiceWarsGame(props) {
             )}
           </>
         }
-        innerRightContent={
-          <>
-            <TextMeetingLayout combineMessagesFromAllMeetings />
-          </>
-        }
+        innerRightNavigationProps={{
+          label: "Board",
+          value: "actions",
+          icon: <i className="fas fa-th" />,
+        }}
       />
     </GameTypeContext.Provider>
   );
