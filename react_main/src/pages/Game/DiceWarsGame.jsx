@@ -606,10 +606,10 @@ function DiceWarsBoardWrapper({
               style={{
                 display: "flex",
                 justifyContent: "center",
-                gap: "8px",
+                gap: "4px",
                 flexWrap: "wrap",
-                marginBottom: "12px",
-                padding: "8px",
+                marginBottom: "8px",
+                padding: "4px",
                 background: "#111",
                 borderRadius: 6,
               }}
@@ -620,33 +620,45 @@ function DiceWarsBoardWrapper({
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "6px",
-                    padding: "4px 10px",
+                    gap: "4px",
+                    padding: "2px 6px",
                     borderRadius: 4,
                     border:
                       pId === gameState.currentTurnPlayerId
                         ? "2px solid #FFD700"
                         : "2px solid transparent",
                     opacity: territoryCounts[pId] ? 1 : 0.4,
+                    minWidth: 0,
                   }}
                 >
                   <span
                     style={{
                       display: "inline-block",
-                      width: 12,
-                      height: 12,
+                      flexShrink: 0,
+                      width: 10,
+                      height: 10,
                       borderRadius: "50%",
                       background: gameState.playerColors[pId] || "#888",
                     }}
                   />
-                  <span style={{ color: "#CCC", fontSize: "13px" }}>
+                  <span
+                    style={{
+                      color: "#CCC",
+                      fontSize: "12px",
+                      maxWidth: "70px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
                     {getPlayerName(pId)}
                   </span>
                   <span
                     style={{
                       color: "#FFF",
-                      fontSize: "14px",
+                      fontSize: "13px",
                       fontWeight: "bold",
+                      flexShrink: 0,
                     }}
                   >
                     {territoryCounts[pId] || 0}
@@ -711,7 +723,7 @@ function DiceWarsBoardWrapper({
             </div>
           )}
           {/* Game board */}
-          <svg ref={svgRef} style={{ display: "block", margin: "0 auto", width: "100%", maxHeight: "60vh", height: "auto" }} />
+          <svg ref={svgRef} style={{ display: "block", margin: "0 auto", width: "100%", maxHeight: "75vh", height: "auto" }} />
           {/* End Turn button */}
           {!isReview &&
             stateViewing !== -2 &&
