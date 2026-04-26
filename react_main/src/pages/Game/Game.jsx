@@ -1406,6 +1406,7 @@ export function MobileLayout({
               icon={<i className="fas fa-info" />}
             />
           )}
+          <BottomNavigationAction {...innerRightNavigationProps} />
           {chatTab ? (
             <BottomNavigationAction
               label="Chat"
@@ -1425,7 +1426,6 @@ export function MobileLayout({
               {!singleState && <Divider orientation="vertical" flexItem />}
             </Stack>
           )}
-          <BottomNavigationAction {...innerRightNavigationProps} />
           <BottomNavigationAction
             label="Menu"
             value="menu"
