@@ -4,8 +4,7 @@
   border-radius: 12px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
   padding: 15px;
-  margin: 15px 30px 0 0;
-  max-width: 280px;
+  margin: 15px 0 0 0;
   width: 100%;
 }
 
@@ -23,18 +22,44 @@
 .liars-dice-players-container {
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 6px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 /* Styles for the Player Section */
 .liars-dice-player-section {
-  margin-top: 5%;
-  width: 95%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
 }
 
-.liars-dice-player-section:last-child {
-  margin-bottom: 0;
+.ld-player-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 6px 4px;
+}
+
+.ld-player-name-small {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #f0f0f0;
+  text-align: center;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ld-player-name-small.current-player {
+  color: #ffe18a;
 }
 
 /* Styles for the Player Name Box */
@@ -66,15 +91,32 @@
 /* Styles for the Dice Container */
 .liars-dice-dice-container {
   background-color: #1c1c1c;
-  border-radius: 0 0 6px 6px;
+  border-radius: 6px;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
-  padding: 12px;
+  padding: 6px 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   border: 1px solid #8b0000;
-  border-top: none;
+  flex: 1 1 auto;
+  min-width: 0;
 }
+
+/* Larger dice inside the player containers (current-roll only) */
+.liars-dice-dice-container .current-rolls .dice {
+  width: 64px;
+  height: 64px;
+  background-size: 512px 128px;
+  margin: 4px 6px;
+}
+.liars-dice-dice-container .current-rolls .dice-1 { background-position: 0 -64px; }
+.liars-dice-dice-container .current-rolls .dice-2 { background-position: -64px -64px; }
+.liars-dice-dice-container .current-rolls .dice-3 { background-position: -128px -64px; }
+.liars-dice-dice-container .current-rolls .dice-4 { background-position: -192px -64px; }
+.liars-dice-dice-container .current-rolls .dice-5 { background-position: -256px -64px; }
+.liars-dice-dice-container .current-rolls .dice-6 { background-position: -320px -64px; }
+.liars-dice-dice-container .current-rolls .dice-unknown { background-position: -384px -64px; }
 
 /* Dice images */
 .dice {
@@ -155,7 +197,7 @@
 
 .current-rolls {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
 }
 
@@ -171,4 +213,391 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+/* Bet form — sits inline at the bottom of the board */
+.ld-bet-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 12px 4px;
+  margin-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  color: #f0f0f0;
+}
+
+.ld-prev-bid-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ld-prev-bid-text {
+  font-size: 0.95rem;
+}
+
+.ld-bet-header {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #f5c542;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+
+.ld-bet-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ld-bet-error {
+  font-size: 0.9rem;
+  color: #ff8a80;
+  padding: 4px 0 0;
+}
+
+.ld-bet-announcement {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #f5c542;
+  padding: 4px 0 0;
+}
+
+/* Phone-sized board: keep the desktop layout, just shrink dice and tighten
+   spacing so player rows + bid form fit without horizontal scroll. */
+@media (max-width: 768px) {
+  .liars-dice-wrapper {
+    padding: 10px;
+    margin-top: 10px;
+  }
+
+  .liars-dice-players-container {
+    padding: 6px;
+    gap: 6px;
+  }
+
+  .liars-dice-player-section {
+    gap: 6px;
+  }
+
+  .ld-player-avatar {
+    padding: 4px 2px;
+    gap: 4px;
+  }
+
+  .ld-player-avatar .avatar {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .ld-player-name-small {
+    font-size: 0.7rem;
+    max-width: 64px;
+  }
+
+  .liars-dice-dice-container {
+    padding: 4px 6px;
+  }
+
+  .liars-dice-dice-container .current-rolls .dice {
+    width: 36px;
+    height: 36px;
+    background-size: 288px 72px;
+    margin: 2px 3px;
+  }
+  .liars-dice-dice-container .current-rolls .dice-1 { background-position: 0 -36px; }
+  .liars-dice-dice-container .current-rolls .dice-2 { background-position: -36px -36px; }
+  .liars-dice-dice-container .current-rolls .dice-3 { background-position: -72px -36px; }
+  .liars-dice-dice-container .current-rolls .dice-4 { background-position: -108px -36px; }
+  .liars-dice-dice-container .current-rolls .dice-5 { background-position: -144px -36px; }
+  .liars-dice-dice-container .current-rolls .dice-6 { background-position: -180px -36px; }
+  .liars-dice-dice-container .current-rolls .dice-unknown { background-position: -216px -36px; }
+
+  .previous-rolls {
+    margin-top: 8px;
+  }
+
+  .ld-bet-form {
+    padding: 10px 8px 4px;
+    margin-top: 8px;
+    gap: 6px;
+  }
+
+  /* Bid sentence sits above; CALL BLUFF / SPOT ON drop to a row beneath it,
+     right-aligned. min-width:0 lets the flex children shrink instead of
+     pushing the form off-screen. */
+  .ld-bet-form {
+    min-width: 0;
+  }
+
+  .ld-prev-bid-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .ld-prev-bid-text {
+    display: block;
+    font-size: 0.78rem;
+    line-height: 1.3;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .ld-bet-text {
+    font-size: 0.85rem;
+  }
+
+  .ld-bet-header {
+    font-size: 0.9rem;
+    margin-top: 0;
+  }
+
+  .ld-bet-row {
+    gap: 6px;
+  }
+
+  .ld-amount-input {
+    width: 28px;
+    padding: 2px 3px;
+    font-size: 0.8rem;
+  }
+
+  /* Hide the number-spinner buttons on mobile — they take width and the
+     text input alone is enough. */
+  .ld-amount-input::-webkit-outer-spin-button,
+  .ld-amount-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .ld-amount-input {
+    -moz-appearance: textfield;
+  }
+
+  .ld-face-trigger {
+    width: 32px;
+    height: 32px;
+  }
+
+  .ld-face-die {
+    width: 22px;
+    height: 22px;
+    background-size: 176px 44px;
+  }
+  .ld-face-die.dice-1 { background-position: 0 -22px; }
+  .ld-face-die.dice-2 { background-position: -22px -22px; }
+  .ld-face-die.dice-3 { background-position: -44px -22px; }
+  .ld-face-die.dice-4 { background-position: -66px -22px; }
+  .ld-face-die.dice-5 { background-position: -88px -22px; }
+  .ld-face-die.dice-6 { background-position: -110px -22px; }
+  .ld-face-die.dice-unknown { background-position: -132px -22px; }
+
+  .ld-call-group {
+    gap: 6px;
+    margin-left: auto;
+    align-self: flex-end;
+  }
+
+  .ld-action-btn {
+    font-size: 0.7rem !important;
+    padding: 3px 8px !important;
+    min-width: 0 !important;
+    line-height: 1.4 !important;
+  }
+}
+
+.ld-bet-text {
+  font-size: 0.95rem;
+}
+
+.ld-amount-input {
+  width: 64px;
+  padding: 6px 8px;
+  font-size: 1rem;
+  text-align: center;
+  background: #fff;
+  color: #1c1c1c;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.ld-amount-input:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ld-face-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--scheme-color);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ld-face-trigger:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ld-face-die {
+  margin: 0;
+}
+
+.ld-face-question {
+  position: absolute;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+}
+
+.ld-inline-die {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin: 0 2px;
+  vertical-align: middle;
+  background-size: 144px 36px;
+  transition: none;
+}
+
+.ld-inline-die:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.ld-inline-die.dice-1 { background-position: 0 -18px; }
+.ld-inline-die.dice-2 { background-position: -18px -18px; }
+.ld-inline-die.dice-3 { background-position: -36px -18px; }
+.ld-inline-die.dice-4 { background-position: -54px -18px; }
+.ld-inline-die.dice-5 { background-position: -72px -18px; }
+.ld-inline-die.dice-6 { background-position: -90px -18px; }
+
+.ld-face-menu {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 4px;
+  padding: 8px;
+}
+
+.ld-face-option {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ld-face-option:hover {
+  border-color: #f5c542;
+  background: rgba(245, 197, 66, 0.12);
+}
+
+.ld-call-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.ld-action-btn {
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+}
+
+.ld-turn-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  display: inline-block;
+}
+
+.ld-turn-dot-mine {
+  background: #f5c542;
+  box-shadow: 0 0 8px rgba(245, 197, 66, 0.85);
+  animation: ld-dot-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes ld-dot-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.35); }
+}
+
+.ld-name-dot {
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+/* Active-rules modal */
+.ld-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.ld-modal {
+  background: var(--scheme-color-sec, #fff);
+  color: var(--scheme-color-text, #111);
+  border-radius: 10px;
+  padding: 24px;
+  max-width: 420px;
+  width: calc(100% - 32px);
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--scheme-color-border, #ddd);
+}
+
+.ld-modal-title {
+  margin: 0 0 12px;
+  font-size: 1.2rem;
+}
+
+.ld-modal-list {
+  margin: 0 0 8px;
+  padding-left: 20px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.ld-modal-list li {
+  margin: 6px 0;
+}
+
+.ld-modal-btn {
+  display: block;
+  margin: 18px auto 0;
+  padding: 10px 32px;
+  font-size: 1rem;
+  font-weight: bold;
+  background: #2e7d32;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.ld-modal-btn:hover {
+  background: #43a047;
 }

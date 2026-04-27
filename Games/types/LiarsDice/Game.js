@@ -46,6 +46,9 @@ module.exports = class LiarsDiceGame extends Game {
     this.allDice = 0; //all dice counted together, used for variable under this and messages sent regarding high bids
     this.gameMasterAnnoyedByHighBidsThisRoundYet = false; //when bid is a lot higher than all dice together, this turns on, and players
     // will only be able to bid by one amount higher each turn for the rest of the round.
+    this.lastBidUhhVariant = null; //index into client UHH templates when bid is over allDice but under allDice+100; null otherwise
+    this.lastBidGeniusVariant = null; //index into client GENIUS templates when bid is way over (allDice+100+); null otherwise
+    this.lastBidAnnoyedJustTriggered = false; //true on the bid that flips gameMasterAnnoyedByHighBidsThisRoundYet
 
     this.chatName = "Casino";
 
@@ -84,19 +87,6 @@ module.exports = class LiarsDiceGame extends Game {
       );
     }
 
-    if (this.wildOnes) {
-      this.sendAlert(
-        `WILD ONES are enabled. Ones will count towards any face amount.`
-      );
-    }
-    if (this.spotOn) {
-      this.sendAlert(
-        `SPOT ON is enabled. On your turn, you can guess that the previous bidder called exact amount. If you're right, everyone else will lose a die.`
-      );
-    }
-    if (this.startingDice) {
-      this.sendAlert(`Everyone starts with ${this.startingDice} dice.`);
-    }
     this.sendAlert(`Good luck... You'll probably need it.`);
 
     //start of game - randomizes player order, and gives dice to everyone.
@@ -163,12 +153,7 @@ module.exports = class LiarsDiceGame extends Game {
 
   //Checks whether bid was a lie, removes dice, then passes onto next player.
   callALie(player) {
-    this.sendAlert(`(LIE CALL) ${player.name} calls a lie!`);
     if (this.lastBidder !== null) {
-      this.sendAlert(
-        `(LIE CALL) Last bid was ${this.lastAmountBid}x  :dice${this.lastFaceBid}: 's by ${this.lastBidder.name}.`
-      );
-
       let diceCount = 0;
 
       this.allRolledDice.forEach((die) => {
@@ -185,30 +170,35 @@ module.exports = class LiarsDiceGame extends Game {
         diceCount < this.lastAmountBid,
         this.lastBidder
       );
+      const bidderName = this.lastBidder.name;
+      const dieIcon = `:dice${this.lastFaceBid}:`;
       if (diceCount >= this.lastAmountBid) {
-        if (this.chatName == "Casino") {
+        // Bid was true — caller loses.
+        if (this.chatName == "The Flying Dutchman") {
           this.sendAlert(
-            `(LIE CALL) There are ${diceCount}x  :dice${this.lastFaceBid}: 's. Bid was correct, ${player.name} loses a die.`
+            `${player.name} called a lie. Bid was at least ${this.lastAmountBid}x  ${dieIcon} 's by ${bidderName} — and there were ${diceCount}x. ${bidderName}, feel free to go ashore… the very next time we make port!`
           );
-        } else if (this.chatName == "The Flying Dutchman") {
+        } else {
           this.sendAlert(
-            `(LIE CALL) There are ${diceCount}x  :dice${this.lastFaceBid}: 's. ${this.lastBidder.name}, feel free to go ashore. The very next time we make port!`
+            `${player.name} called a lie. Bid was at least ${this.lastAmountBid}x  ${dieIcon} 's by ${bidderName} — and there were ${diceCount}x. ${player.name} loses a die.`
           );
         }
         this.removeDice(player);
       } else {
-        if (this.chatName == "Casino") {
+        // Bid was a lie — bidder loses.
+        if (this.chatName == "The Flying Dutchman") {
           this.sendAlert(
-            `(LIE CALL) There are ${diceCount}x  :dice${this.lastFaceBid}: 's. Bid was incorrect, ${this.lastBidder.name} loses a die.`
+            `${player.name} called a lie. Bid was at least ${this.lastAmountBid}x  ${dieIcon} 's by ${bidderName} — but there were only ${diceCount}x. ${bidderName}, you're a liar and will spend an eternity on this ship.`
           );
-        } else if (this.chatName == "The Flying Dutchman") {
+        } else {
           this.sendAlert(
-            `(LIE CALL) There are ${diceCount}x  :dice${this.lastFaceBid}: 's. ${this.lastBidder.name}, you're a liar and you will spend an eternity on this ship.`
+            `${player.name} called a lie. Bid was at least ${this.lastAmountBid}x  ${dieIcon} 's by ${bidderName} — but there were only ${diceCount}x. ${bidderName} loses a die.`
           );
         }
         this.removeDice(this.lastBidder);
       }
     } else {
+      this.sendAlert(`${player.name} calls a lie!`);
       const response = Math.floor(Math.random() * 23);
 
       //funny responses to players calling a lie on default zero 1's bet
@@ -388,11 +378,6 @@ module.exports = class LiarsDiceGame extends Game {
   //Checks whether bid was a lie, removes die, then passes onto next player.
   callASpotOn(player) {
     if (this.lastBidder !== null) {
-      this.sendAlert(`(SPOT ON CALL) ${player.name} calls a spot on!`);
-      this.sendAlert(
-        `(SPOT ON CALL) Last bid was ${this.lastAmountBid}x  :dice${this.lastFaceBid}: 's by ${this.lastBidder.name}.`
-      );
-
       let diceCount = 0;
 
       this.allRolledDice.forEach((die) => {
@@ -409,9 +394,11 @@ module.exports = class LiarsDiceGame extends Game {
         diceCount == this.lastAmountBid,
         this.lastBidder
       );
+      const bidderName = this.lastBidder.name;
+      const dieIcon = `:dice${this.lastFaceBid}:`;
       if (diceCount == this.lastAmountBid) {
         this.sendAlert(
-          `(SPOT ON CALL) There are exactly ${diceCount}x  :dice${this.lastFaceBid}: 's. Spot On was correct! Everyone except ${player.name} loses a die.`
+          `${player.name} called spot on. Bid was ${this.lastAmountBid}x  ${dieIcon} 's by ${bidderName} — exactly ${diceCount}x. Everyone except ${player.name} loses a die.`
         );
 
         if (player.correctSpotOnsInARow >= 2) {
@@ -564,7 +551,7 @@ module.exports = class LiarsDiceGame extends Game {
         });
       } else {
         this.sendAlert(
-          `(SPOT ON CALL) There are ${diceCount}x  :dice${this.lastFaceBid}: 's. Spot on was incorrect, ${player.name} loses a die.`
+          `${player.name} called spot on. Bid was ${this.lastAmountBid}x  ${dieIcon} 's by ${bidderName} — but there were ${diceCount}x. ${player.name} loses a die.`
         );
         player.correctSpotOnsInARow = 0;
 
@@ -745,6 +732,9 @@ module.exports = class LiarsDiceGame extends Game {
 
     this.allDice = 0;
     this.gameMasterAnnoyedByHighBidsThisRoundYet = false;
+    this.lastBidUhhVariant = null;
+    this.lastBidGeniusVariant = null;
+    this.lastBidAnnoyedJustTriggered = false;
 
     const dicerollSound = Math.floor(Math.random() * 2);
     if (dicerollSound == 0) {
@@ -963,6 +953,9 @@ module.exports = class LiarsDiceGame extends Game {
         lastBidder: this.lastBidder ? this.lastBidder.name : null,
         currentBidder:
           this.randomizedPlayersCopy?.[this.currentIndex]?.name ?? "undefined",
+        uhhVariant: this.lastBidUhhVariant,
+        geniusVariant: this.lastBidGeniusVariant,
+        annoyedJustTriggered: this.lastBidAnnoyedJustTriggered,
       },
     };
     return info;
@@ -977,6 +970,7 @@ module.exports = class LiarsDiceGame extends Game {
           playerId: player.id,
           userId: player.user.id,
           playerName: player.name,
+          avatar: player.user.avatar,
           rolledDice: player.rolledDice,
           previousRolls: player.previousRolls,
         });
