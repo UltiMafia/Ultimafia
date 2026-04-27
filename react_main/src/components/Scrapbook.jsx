@@ -38,6 +38,7 @@ export function StampItem({ gameType, role, count, hasLock, clickable, onClick, 
   if (size === "small") classNames.push("stamp--small");
   if (borderType === "r") classNames.push("stamp--border-ranked");
   else if (borderType === "c") classNames.push("stamp--border-competitive");
+  if (count > 99) classNames.push("stamp--shiny");
 
   return (
     <Tooltip title={label} arrow>

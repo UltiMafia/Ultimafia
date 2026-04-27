@@ -297,6 +297,36 @@
   box-shadow: 0 0 0 2px #ff8c00, 0 3px 8px rgba(0, 0, 0, 0.3);
 }
 
+.stamp--shiny {
+  background-image: linear-gradient(
+    115deg,
+    #fdf6e3 30%,
+    rgba(255, 245, 200, 0.95) 45%,
+    #ffffff 50%,
+    rgba(255, 245, 200, 0.95) 55%,
+    #fdf6e3 70%
+  );
+  background-size: 250% 100%;
+  background-repeat: no-repeat;
+  animation: stamp-shimmer 2.6s ease-in-out infinite;
+}
+
+@keyframes stamp-shimmer {
+  0% {
+    background-position: 150% 0;
+  }
+  100% {
+    background-position: -50% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp--shiny {
+    animation: none;
+    background-position: 50% 0;
+  }
+}
+
 .stamp--locked {
   opacity: 0.7;
 }
