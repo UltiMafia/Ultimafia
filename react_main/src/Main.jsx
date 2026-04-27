@@ -150,7 +150,8 @@ function Main(props) {
                   <Route path="fame/*" element={<Fame />} />
                   <Route path="learn/*" element={<Learn />} />
                   <Route path="policy/*" element={<Policy />} />
-                  <Route path="siteactivity/*" element={<SiteActivity />} />
+                  <Route path="activity/*" element={<SiteActivity />} />
+
                   <Route path="user/*" element={<User />} />
                   <Route path="*" element={<Navigate to="play" />} />
                 </Routes>
@@ -299,9 +300,10 @@ function Header({ setShowAnnouncementTemporarily }) {
               ...(user.perms?.viewSiteActivity
                 ? [
                     {
-                      label: "Site Activity",
+                      label: "Activity",
                       items: [
-                        { text: "Site Activity", path: "/siteactivity" },
+                        { text: "Metrics", path: "/activity/metrics" },
+                        { text: "Live Feed", path: "/activity/livefeed" },
                       ],
                     },
                   ]
@@ -381,26 +383,13 @@ function Header({ setShowAnnouncementTemporarily }) {
               ]}
             />
             {user.perms?.viewSiteActivity && (
-              <NavLink
-                to="/siteactivity"
-                style={{ color: "inherit", textDecoration: "none" }}
-              >
-                {({ isActive }) => (
-                  <Button
-                    variant="text"
-                    sx={{
-                      px: 1,
-                      textTransform: "uppercase",
-                      color: "inherit",
-                      backgroundColor: isActive
-                        ? "rgba(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-selectedOpacity))"
-                        : undefined,
-                    }}
-                  >
-                    <Typography variant="h3">Site Activity</Typography>
-                  </Button>
-                )}
-              </NavLink>
+              <NavDropdown
+                label="Activity"
+                items={[
+                  { text: "Metrics", path: "/activity/metrics" },
+                  { text: "Live Feed", path: "/activity/livefeed" },
+                ]}
+              />
             )}
             <Box sx={{
               marginLeft: "auto !important",
