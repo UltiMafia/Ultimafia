@@ -91,7 +91,7 @@ function FilterChip({ label, active, onClick }) {
   );
 }
 
-export default function LiveFeedTab({ windowKey }) {
+export default function LiveFeed({ windowKey }) {
   const errorAlert = useErrorAlert();
   // `useErrorAlert` returns a fresh function each render, so binding it
   // through a ref keeps `load`'s identity stable — otherwise the useEffect

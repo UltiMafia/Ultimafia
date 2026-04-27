@@ -110,7 +110,7 @@ function Main(props) {
   const Fame = lazy(() => import("pages/Fame/Fame"));
   const Learn = lazy(() => import("pages/Learn/Learn"));
   const Policy = lazy(() => import("pages/Policy/Policy"));
-  const SiteActivity = lazy(() => import("pages/SiteActivity/SiteActivityPage"));
+  const SiteActivity = lazy(() => import("pages/Activity/Activity"));
   const User = lazy(() => import("pages/User/User"));
   const Welcome = lazy(() => import("pages/Welcome/Welcome"));
 

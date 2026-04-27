@@ -1,16 +1,15 @@
 import React, { useContext, useMemo, useState } from "react";
-import { Navigate, NavLink, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import {
   Box,
   Paper,
   Stack,
-  ButtonBase,
   Typography,
 } from "@mui/material";
 
 import { UserContext } from "Contexts";
-import MetricsTab from "./MetricsTab";
-import LiveFeedTab from "./LiveFeedTab";
+import Metrics from "./Metrics";
+import LiveFeed from "./LiveFeed";
 import { ActivityHeaderMeta, WindowSegment } from "./WindowFilterControls";
 
 export default function SiteActivityPage() {
@@ -74,26 +73,9 @@ export default function SiteActivityPage() {
                 },
               }}
             />
-            <Typography
-              variant="overline"
-              sx={{
-                letterSpacing: "0.24em",
-                color: "primary.main",
-                fontWeight: 700,
-                lineHeight: 1,
-              }}
-            >
-              Moderator Console
-            </Typography>
           </Stack>
           <Typography
-            variant="h2"
-            sx={{
-              fontWeight: 700,
-              letterSpacing: "0.01em",
-              lineHeight: 1.02,
-              fontSize: { xs: "2.1rem", md: "2.75rem" },
-            }}
+            variant="h3"
           >
             Site Activity
           </Typography>
@@ -102,58 +84,10 @@ export default function SiteActivityPage() {
 
         <WindowSegment value={windowKey} onChange={setWindowKey} />
       </Stack>
-
-      <Stack direction="row" spacing={1} sx={{ mb: 3 }}>
-        <NavLink to="/activity/metrics" style={{ textDecoration: "none" }}>
-          {({ isActive }) => (
-            <ButtonBase
-              sx={{
-                px: 1.5,
-                py: 0.7,
-                borderRadius: 1,
-                border: 1,
-                borderColor: isActive ? "primary.main" : "divider",
-                color: isActive ? "primary.main" : "text.secondary",
-                fontFamily: "RobotoSlab",
-                fontWeight: 700,
-                letterSpacing: "0.16em",
-                textTransform: "uppercase",
-                fontSize: "0.72rem",
-                backgroundColor: isActive ? "action.selected" : "transparent",
-              }}
-            >
-              Metrics
-            </ButtonBase>
-          )}
-        </NavLink>
-        <NavLink to="/activity/livefeed" style={{ textDecoration: "none" }}>
-          {({ isActive }) => (
-            <ButtonBase
-              sx={{
-                px: 1.5,
-                py: 0.7,
-                borderRadius: 1,
-                border: 1,
-                borderColor: isActive ? "primary.main" : "divider",
-                color: isActive ? "primary.main" : "text.secondary",
-                fontFamily: "RobotoSlab",
-                fontWeight: 700,
-                letterSpacing: "0.16em",
-                textTransform: "uppercase",
-                fontSize: "0.72rem",
-                backgroundColor: isActive ? "action.selected" : "transparent",
-              }}
-            >
-              Live Feed
-            </ButtonBase>
-          )}
-        </NavLink>
-      </Stack>
-
       <Routes>
         <Route path="/" element={<Navigate to="metrics" replace />} />
-        <Route path="metrics" element={<MetricsTab windowKey={windowKey} />} />
-        <Route path="livefeed" element={<LiveFeedTab windowKey={windowKey} />} />
+        <Route path="metrics" element={<Metrics windowKey={windowKey} />} />
+        <Route path="livefeed" element={<LiveFeed windowKey={windowKey} />} />
         <Route path="*" element={<Navigate to="metrics" replace />} />
       </Routes>
     </Paper>
