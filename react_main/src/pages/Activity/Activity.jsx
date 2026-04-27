@@ -18,7 +18,7 @@ export default function SiteActivityPage() {
   const snapshotAt = useMemo(() => new Date(), [windowKey]);
 
   if (!user.loaded) return null;
-  if (!user.loggedIn || !user.perms?.viewSiteActivity)
+  if (!user.loggedIn)
     return <Navigate to="/play" replace />;
 
   return (

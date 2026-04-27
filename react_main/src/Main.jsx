@@ -297,17 +297,13 @@ function Header({ setShowAnnouncementTemporarily }) {
                   { text: "Moderation", path: "/policy/moderation" },
                 ],
               },
-              ...(user.perms?.viewSiteActivity
-                ? [
-                    {
-                      label: "Activity",
-                      items: [
-                        { text: "Metrics", path: "/activity/metrics" },
-                        { text: "Live Feed", path: "/activity/livefeed" },
-                      ],
-                    },
-                  ]
-                : []),
+              {
+                label: "Activity",
+                items: [
+                  { text: "Metrics", path: "/activity/metrics" },
+                  { text: "Live Feed", path: "/activity/livefeed" },
+                ],
+              },
             ]}
           />
           <SiteLogo small />
@@ -382,7 +378,6 @@ function Header({ setShowAnnouncementTemporarily }) {
                 { text: "Moderation", path: "/policy/moderation" },
               ]}
             />
-            {user.perms?.viewSiteActivity && (
               <NavDropdown
                 label="Activity"
                 items={[
@@ -390,7 +385,6 @@ function Header({ setShowAnnouncementTemporarily }) {
                   { text: "Live Feed", path: "/activity/livefeed" },
                 ]}
               />
-            )}
             <Box sx={{
               marginLeft: "auto !important",
             }}>

@@ -496,7 +496,6 @@ module.exports = {
     deleteFanart: true,
     seeModPanel: true,
     deleteViolation: true,
-    viewSiteActivity: true,
   },
   defaultGroups: {
     Owner: {
@@ -562,7 +561,6 @@ module.exports = {
         "deleteStrategy",
         "deleteFanart",
         "seeModPanel",
-        "viewSiteActivity",
       ],
     },
     Liaison: {
@@ -625,7 +623,6 @@ module.exports = {
         "playCompetitive",
         "deleteStrategy",
         "deleteFanart",
-        "viewSiteActivity",
       ],
     },
     Dev: {
