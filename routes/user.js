@@ -536,11 +536,15 @@ router.get("/:id/profile", async function (req, res) {
     // Fetch stamps sorted by creation time to preserve acquisition order
     var stampQuery = isSelf ? { userId } : { userId, hidden: { $ne: true } };
     var stamps = await models.Stamp.find(stampQuery)
-      .select("gameType role hidden _id createdAt")
+      .select("gameType role borderType hidden _id createdAt")
       .sort("createdAt")
       .lean();
 
-    // Aggregate by gameType:role, preserving first-occurrence order
+    // Aggregate by gameType:role, preserving first-occurrence order.
+    // borderType per group is the highest tier present (c > r > u).
+    const TIER_RANK = { u: 0, r: 1, c: 2 };
+    const maxTier = (a, b) =>
+      (TIER_RANK[b] ?? 0) > (TIER_RANK[a] ?? 0) ? b : a;
     var visibleOrder = [];
     var visibleGroups = {};
     var hiddenOrder = [];
@@ -549,32 +553,44 @@ router.get("/:id/profile", async function (req, res) {
 
     for (var s of stamps) {
       var stampKey = `${s.gameType}:${s.role}`;
+      var bt = s.borderType || "u";
       if (s.hidden) {
         if (!hiddenGroups[stampKey]) {
           hiddenGroups[stampKey] = {
             gameType: s.gameType,
             role: s.role,
             count: 0,
+            borderType: "u",
           };
           hiddenOrder.push(stampKey);
         }
         hiddenGroups[stampKey].count++;
+        hiddenGroups[stampKey].borderType = maxTier(
+          hiddenGroups[stampKey].borderType,
+          bt
+        );
       } else {
         if (!visibleGroups[stampKey]) {
           visibleGroups[stampKey] = {
             gameType: s.gameType,
             role: s.role,
             count: 0,
+            borderType: "u",
           };
           visibleOrder.push(stampKey);
         }
         visibleGroups[stampKey].count++;
+        visibleGroups[stampKey].borderType = maxTier(
+          visibleGroups[stampKey].borderType,
+          bt
+        );
       }
       if (isSelf) {
         stampDetails.push({
           id: s._id,
           gameType: s.gameType,
           role: s.role,
+          borderType: bt,
           hidden: s.hidden,
         });
       }
