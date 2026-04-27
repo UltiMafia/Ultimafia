@@ -174,7 +174,6 @@ module.exports = class CheatGame extends Game {
       if (candidate.alive && candidate.hasFolded != true) {
         candidate.howManySelected = false;
         candidate.whichFaceSelected = false;
-        candidate.holdItem("Microphone");
         this.nextToPlay = candidate;
         return;
       }
@@ -260,26 +259,17 @@ module.exports = class CheatGame extends Game {
       claimedRank,
     };
 
-    this.sendAlert(
-      `${actor.name} plays ${cardsCopy.length} card${
-        cardsCopy.length === 1 ? "" : "s"
-      } as ${this.rankLabel(claimedRank)}${
-        cardsCopy.length === 1 ? "" : "s"
-      }.`
-    );
-
     this.RoundNumber++;
     this.RankNumber++;
     if (this.RankNumber > 13) this.RankNumber = 1;
-    this.sendAlert(`${this.rankLabel(this.RankNumber)}s must be played!`);
 
     this.rotateNextToPlay();
-    if (this.nextToPlay) {
-      this.sendAlert(`${this.nextToPlay.name}'s Turn!`);
-    }
 
     this.broadcastExtraInfoUpdate();
-    setImmediate(() => this.gotoNextState());
+    // No explicit gotoNextState here — Submit's instant action returns to
+    // instantAction() which calls checkAllMeetingsReady, and the state
+    // cycles naturally (Play Card has its multi votes, Submit just
+    // finished, no other blockers).
   }
 
   applyCallLie(caller) {
@@ -295,7 +285,6 @@ module.exports = class CheatGame extends Game {
     const liar = this.lastPlay.player;
     const cards = this.lastPlay.cards;
     const claimedRank = this.lastPlay.claimedRank;
-    const claimedRankLabel = this.rankLabel(claimedRank);
 
     let actuallyLied = false;
     for (let card of cards) {
@@ -306,29 +295,40 @@ module.exports = class CheatGame extends Game {
       }
     }
 
-    this.sendAlert(
-      `${caller.name} calls ${liar.name} a liar! Revealed: ${cards.join(
-        ", "
-      )} (claimed ${cards.length} × ${claimedRankLabel})`
-    );
-
     const stackCards = this.TheStack.map((entry) =>
       typeof entry === "object" ? entry.value : entry
     );
+    const taker = actuallyLied ? liar : caller;
+    taker.CardsInHand.push(...stackCards);
 
-    if (actuallyLied) {
-      liar.CardsInHand.push(...stackCards);
-      this.sendAlert(
-        `${liar.name} was lying! They take the stack (${stackCards.length} cards).`
-      );
-      this.toast(`${caller.name} caught ${liar.name} lying!`);
-    } else {
-      caller.CardsInHand.push(...stackCards);
-      this.sendAlert(
-        `${liar.name} was telling the truth — ${caller.name} takes the stack (${stackCards.length} cards).`
-      );
-      this.toast(`${caller.name} miscalled — they take the stack`);
-    }
+    // Tell clients which cards were just revealed so they can flip the
+    // played pile face-up briefly before it disappears. The `time` field
+    // lets the client dedup replays from the socket wrapper's message
+    // history.
+    this.broadcast("cheatReveal", {
+      cards,
+      claimedRank,
+      liarName: liar.name,
+      callerName: caller.name,
+      takerName: taker.name,
+      wasLying: actuallyLied,
+      stackSize: stackCards.length,
+      time: Date.now(),
+    });
+
+    this.sendAlert(
+      `${caller.name} calls ${liar.name} a liar! And they were ${
+        actuallyLied ? "right" : "wrong"
+      }! ${taker.name} takes the stack of ${stackCards.length} card${
+        stackCards.length === 1 ? "" : "s"
+      }.`
+    );
+
+    this.toast(
+      actuallyLied
+        ? `${caller.name} caught ${liar.name} lying!`
+        : `${caller.name} miscalled — they take the stack`
+    );
 
     this.TheStack = [];
     this.lastPlay = null;

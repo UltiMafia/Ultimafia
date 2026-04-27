@@ -10,7 +10,7 @@ module.exports = class PlayCheat extends Card {
       "Play Card": {
         actionName: "Choose Cards",
         states: ["Play Cards"],
-        flags: ["voting", "multi"],
+        flags: ["voting", "multi", "noVeg"],
         inputType: "playingCardButtons",
         multiMin: 1,
         multiMax: 4,
