@@ -119,6 +119,8 @@ var defaultOptions = {
     ...commonHostOptions,
     MaxRounds: 0,
     playCardsLength: 2,
+    sumToTen: false,
+    marriageRule: false,
   },
   Resistance: existingHostOptions["Resistance"] || {
     ...commonHostOptions,

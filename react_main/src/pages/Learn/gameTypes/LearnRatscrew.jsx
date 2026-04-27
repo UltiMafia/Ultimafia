@@ -51,6 +51,19 @@ export default function LearnRatscrew({ Layout }) {
       </Typography>
 
       <Typography variant="h6" gutterBottom>
+        Optional rules (host-configurable)
+      </Typography>
+      <ul>
+        <li>
+          <b>Sum to 10</b> — slap when the top card and the previous card add
+          up to 10
+        </li>
+        <li>
+          <b>Marriage</b> — slap when a King and Queen are adjacent
+        </li>
+      </ul>
+
+      <Typography variant="h6" gutterBottom>
         Face cards (J, Q, K, A)
       </Typography>
       <Typography variant="body1" paragraph>

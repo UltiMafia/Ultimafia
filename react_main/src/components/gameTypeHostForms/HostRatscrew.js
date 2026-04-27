@@ -19,6 +19,18 @@ export default function HostRatscrew() {
       max: 200,
     },
     {
+      label: "Sum to 10",
+      ref: "sumToTen",
+      type: "boolean",
+      value: defaults.sumToTen ?? false,
+    },
+    {
+      label: "Marriage",
+      ref: "marriageRule",
+      type: "boolean",
+      value: defaults.marriageRule ?? false,
+    },
+    {
       label: "Lobby",
       ref: "lobby",
       type: "select",
@@ -123,6 +135,8 @@ export default function HostRatscrew() {
         startingChips: getFormFieldValue("startingChips"),
         minimumBet: getFormFieldValue("minimumBet"),
         MaxRounds: getFormFieldValue("MaxRounds"),
+        sumToTen: getFormFieldValue("sumToTen"),
+        marriageRule: getFormFieldValue("marriageRule"),
         anonymousGame: getFormFieldValue("anonymousGame"),
         anonymousDeckId: getFormFieldValue("anonymousDeckId"),
       });
@@ -133,6 +147,8 @@ export default function HostRatscrew() {
       defaults.readyCheck = getFormFieldValue("readyCheck");
       defaults.anonymousGame = getFormFieldValue("anonymousGame");
       defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
+      defaults.sumToTen = getFormFieldValue("sumToTen");
+      defaults.marriageRule = getFormFieldValue("marriageRule");
       persistDefaults(gameType, defaults);
       return hostPromise;
     } else {

@@ -41,6 +41,10 @@ module.exports = class RatscrewGame extends Game {
     this.MaxRounds = parseInt(options.settings.MaxRounds) || 0;
     this.CardGameType = "Ratscrew";
 
+    // Optional slap-rule modifiers (default off — base ERS rules only).
+    this.sumToTen = !!options.settings.sumToTen;
+    this.marriageRule = !!options.settings.marriageRule;
+
     //VARIABLES
     this.randomizedPlayers = []; //All players after they get randomized. Used for showing players and their dice on left side of screen.
     this.randomizedPlayersCopy = []; //copy of above, but players don't get removed on dying / leaving. Used for deciding next player's
@@ -269,6 +273,26 @@ module.exports = class RatscrewGame extends Game {
         return { valid: true, reason: "top-bottom" };
       }
       break;
+    }
+
+    // Optional: top + previous face-up sum to 10 (sumToTen rule).
+    if (this.sumToTen && stack.length >= 2) {
+      const prevRank = this.getCardRank(stack[stack.length - 2]);
+      if (prevRank != null && topRank + prevRank === 10) {
+        return { valid: true, reason: "sum to 10" };
+      }
+    }
+
+    // Optional: K and Q adjacent (marriage rule).
+    if (this.marriageRule && stack.length >= 2) {
+      const prevRank = this.getCardRank(stack[stack.length - 2]);
+      if (
+        prevRank != null &&
+        ((topRank === 12 && prevRank === 13) ||
+          (topRank === 13 && prevRank === 12))
+      ) {
+        return { valid: true, reason: "marriage" };
+      }
     }
 
     return { valid: false, reason: "no match" };
@@ -565,8 +589,18 @@ module.exports = class RatscrewGame extends Game {
             attemptsLeft: this.faceChallenge.attemptsLeft,
           }
         : null,
+      sumToTen: this.sumToTen,
+      marriageRule: this.marriageRule,
     };
     return info;
+  }
+
+  getGameTypeOptions() {
+    return {
+      MaxRounds: this.MaxRounds,
+      sumToTen: this.sumToTen,
+      marriageRule: this.marriageRule,
+    };
   }
 
   simplifyPlayers(players) {
@@ -670,13 +704,5 @@ module.exports = class RatscrewGame extends Game {
 
   async endGame(winners) {
     await super.endGame(winners);
-  }
-
-  getGameTypeOptions() {
-    return {
-      startingChips: this.startingChips,
-      minimumBet: this.minimumBet,
-      MaxRounds: this.MaxRounds,
-    };
   }
 };

@@ -1298,9 +1298,13 @@ const settingsChecks = {
   },
   Ratscrew: (settings, setup) => {
     let MaxRounds = settings.MaxRounds;
+    const sumToTen = !!settings.sumToTen;
+    const marriageRule = !!settings.marriageRule;
 
     return {
       MaxRounds,
+      sumToTen,
+      marriageRule,
     };
   },
   Battlesnakes: (settings, setup) => {

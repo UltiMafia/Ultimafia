@@ -485,6 +485,8 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
       result.push(
         <InfoSection title="Ratscrew settings">
           <InfoRow title="Max Rounds" content={gameTypeOptions.MaxRounds} key="MaxRounds" />
+          <InfoRow title="Sum to 10" content={!!gameTypeOptions.sumToTen} key="sumToTen" />
+          <InfoRow title="Marriage (K+Q)" content={!!gameTypeOptions.marriageRule} key="marriageRule" />
         </InfoSection>
       );
       break;
@@ -1073,6 +1075,16 @@ export function parseGamePopover(game) {
             title="Max Rounds"
             content={game.settings.gameTypeOptions.MaxRounds}
             key="MaxRounds"
+          />
+          <InfoRow
+            title="Sum to 10"
+            content={!!game.settings.gameTypeOptions.sumToTen}
+            key="sumToTen"
+          />
+          <InfoRow
+            title="Marriage (K+Q)"
+            content={!!game.settings.gameTypeOptions.marriageRule}
+            key="marriageRule"
           />
         </InfoSection>
       );
