@@ -534,9 +534,13 @@ router.get("/:id", async function (req, res) {
 
       if (req.get("includeStats") == "true") {
         setup.stats = calculateStatsWithGranular(setupVersion, setup.gameType);
-        if (setup.ranked || setup.competitive) {
+        if (
+          (setup.ranked || setup.competitive) &&
+          setup.gameType === "Mafia"
+        ) {
           setup.stats.fortunePayouts = fortunePoints.computeSoloPayoutsForSetup({
             setupStats: setupVersion && setupVersion.setupStats,
+            factions: fortunePoints.getMafiaFactionsFromSetup(setup.roles),
           });
         }
       }
@@ -580,9 +584,13 @@ router.get("/:id/version/:setupVersionNum", async function (req, res) {
       if (setupVersion) {
         setupVersion = setupVersion.toJSON();
         setupVersion.stats = calculateStatsWithGranular(setupVersion, setup.gameType);
-        if (setup.ranked || setup.competitive) {
+        if (
+          (setup.ranked || setup.competitive) &&
+          setup.gameType === "Mafia"
+        ) {
           setupVersion.stats.fortunePayouts = fortunePoints.computeSoloPayoutsForSetup({
             setupStats: setupVersion.setupStats,
+            factions: fortunePoints.getMafiaFactionsFromSetup(setup.roles),
           });
         }
         res.send(setupVersion);

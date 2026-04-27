@@ -7,6 +7,7 @@ const {
   isMajorFaction,
   computeFactionFortunePoints,
   computeSoloPayoutsForSetup,
+  getMafiaFactionsFromSetup,
 } = require("../modules/fortunePoints");
 
 describe("modules/fortunePoints", function () {
@@ -570,6 +571,111 @@ describe("modules/fortunePoints", function () {
         });
         pointsWonByFactions[winner].should.equal(soloByFaction[winner]);
       }
+    });
+  });
+
+  describe("getMafiaFactionsFromSetup", function () {
+    it("collapses Village/Mafia/Cult roles to their alignment", function () {
+      // Use plain known roles. Villager / Mafioso / Cultist are stable basics.
+      const groups = [
+        { "Villager:": 4, "Mafioso:": 2, "Cultist:": 1 },
+      ];
+      getMafiaFactionsFromSetup(groups).should.deep.equal([
+        "Cult",
+        "Mafia",
+        "Village",
+      ]);
+    });
+
+    it("uses the role name as the faction key for independents", function () {
+      const groups = [{ "Villager:": 4, "Survivor:": 1, "Fool:": 1 }];
+      const factions = getMafiaFactionsFromSetup(groups);
+      factions.should.include("Village");
+      factions.should.include("Survivor");
+      factions.should.include("Fool");
+    });
+
+    it("collapses Traitor (alignment Independent) to the Mafia faction", function () {
+      // Mirrors Game.js: Traitor plays as Mafia even though its alignment is Independent.
+      const groups = [{ "Villager:": 5, "Traitor:": 1 }];
+      getMafiaFactionsFromSetup(groups).should.deep.equal(["Mafia", "Village"]);
+    });
+
+    it("ignores modifiers on the role key", function () {
+      const groups = [{ "Villager:Frosty": 1, "Mafioso:": 1 }];
+      getMafiaFactionsFromSetup(groups).should.deep.equal([
+        "Mafia",
+        "Village",
+      ]);
+    });
+
+    it("dedupes factions across multiple role groups", function () {
+      const groups = [
+        { "Villager:": 1, "Mafioso:": 1 },
+        { "Doctor:": 1, "Goon:": 1 },
+      ];
+      getMafiaFactionsFromSetup(groups).should.deep.equal(["Mafia", "Village"]);
+    });
+
+    it("accepts the JSON-string form straight off the DB", function () {
+      const json = JSON.stringify([{ "Villager:": 4, "Mafioso:": 2 }]);
+      getMafiaFactionsFromSetup(json).should.deep.equal(["Mafia", "Village"]);
+    });
+
+    it("returns an empty array for missing / malformed input", function () {
+      getMafiaFactionsFromSetup(null).should.deep.equal([]);
+      getMafiaFactionsFromSetup(undefined).should.deep.equal([]);
+      getMafiaFactionsFromSetup("not json").should.deep.equal([]);
+      getMafiaFactionsFromSetup({}).should.deep.equal([]);
+    });
+  });
+
+  describe("computeSoloPayoutsForSetup - default-payout flow with explicit factions", function () {
+    // The route handler now passes the setup-derived faction list, so a setup
+    // with no recorded ranked/comp games should still get one row per faction
+    // at the default prior — not an empty array.
+
+    it("returns 60-each defaults for a Village/Mafia setup with no history", function () {
+      const result = computeSoloPayoutsForSetup({
+        factions: ["Village", "Mafia"],
+        setupStats: { alignmentRows: [] },
+      });
+      const byFaction = Object.fromEntries(result.map((r) => [r.faction, r]));
+      byFaction.Village.soloPayout.should.equal(60);
+      byFaction.Village.hasHistoricalWinrate.should.be.false;
+      byFaction.Mafia.soloPayout.should.equal(60);
+      byFaction.Mafia.hasHistoricalWinrate.should.be.false;
+    });
+
+    it("returns the anchor 80 for a no-history independent alongside major defaults", function () {
+      const result = computeSoloPayoutsForSetup({
+        factions: ["Village", "Mafia", "Jester"],
+        setupStats: { alignmentRows: [] },
+      });
+      const byFaction = Object.fromEntries(result.map((r) => [r.faction, r]));
+      byFaction.Village.soloPayout.should.equal(60);
+      byFaction.Mafia.soloPayout.should.equal(60);
+      byFaction.Jester.soloPayout.should.equal(80);
+      byFaction.Jester.hasHistoricalWinrate.should.be.false;
+    });
+
+    it("uses real winrates where present and defaults for the rest", function () {
+      const result = computeSoloPayoutsForSetup({
+        factions: ["Village", "Mafia"],
+        setupStats: {
+          alignmentRows: [
+            ["Mafia", "ranked", true],
+            ["Mafia", "ranked", true],
+          ],
+        },
+      });
+      const byFaction = Object.fromEntries(result.map((r) => [r.faction, r]));
+      // Village has no rows → default 50% → 60.
+      byFaction.Village.soloPayout.should.equal(60);
+      byFaction.Village.hasHistoricalWinrate.should.be.false;
+      // Mafia 2/2 → 100% → (1 - 1) * 120 = 0.
+      byFaction.Mafia.soloPayout.should.equal(0);
+      byFaction.Mafia.hasHistoricalWinrate.should.be.true;
     });
   });
 });

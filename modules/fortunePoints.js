@@ -20,8 +20,10 @@
  * value is preserved as a compat shim for existing callers.
  */
 const constants = require("../data/constants");
+const roleData = require("../data/roles");
 
 const FORTUNE_GAME_TYPES = new Set(["ranked", "competitive"]);
+const MAJOR_ALIGNMENTS = new Set(["Village", "Mafia", "Cult"]);
 
 const ANCHOR_WR = 0.1;
 const ANCHOR_PAYOUT = 80;
@@ -111,6 +113,55 @@ function computeFactionFortunePoints(opts) {
 }
 
 /**
+ * Derive the faction list a Mafia setup can produce, mirroring the convention
+ * used in Game.js when stamping alignmentRows: Village/Mafia/Cult collapse to
+ * the alignment, Traitor collapses to "Mafia", everything else (Independents)
+ * uses the role name as its own faction key. Dedup + stable order.
+ *
+ * Used by route handlers so empty-history setups still yield a row per
+ * faction (showing the prior-based default payout).
+ *
+ * @param {Array<object>|string} setupRoles  setup.roles — either the parsed
+ *   array of role-group maps or the JSON string straight off the DB.
+ * @returns {string[]}  Faction keys, alphabetically sorted.
+ */
+function getMafiaFactionsFromSetup(setupRoles) {
+  if (!setupRoles) return [];
+  let groups = setupRoles;
+  if (typeof groups === "string") {
+    try {
+      groups = JSON.parse(groups);
+    } catch (e) {
+      return [];
+    }
+  }
+  if (!Array.isArray(groups)) return [];
+
+  const factions = new Set();
+  const mafiaRoles = roleData.Mafia || {};
+  for (const group of groups) {
+    if (!group) continue;
+    for (const rawKey of Object.keys(group)) {
+      const roleName = rawKey.split(":")[0];
+      const entry = mafiaRoles[roleName];
+      if (!entry || !entry.alignment) continue;
+      if (entry.alignment === "Event") continue;
+      // Match Game.js: Traitor (alignment Independent) plays as Mafia faction.
+      if (roleName === "Traitor") {
+        factions.add("Mafia");
+        continue;
+      }
+      if (MAJOR_ALIGNMENTS.has(entry.alignment)) {
+        factions.add(entry.alignment);
+      } else {
+        factions.add(roleName);
+      }
+    }
+  }
+  return Array.from(factions).sort();
+}
+
+/**
  * Build alignmentWinRates-shaped map from SetupVersion.setupStats.alignmentRows.
  * @param {object} setupStats
  * @returns {object} map factionKey -> Array<[gameType, boolean]>
@@ -192,4 +243,5 @@ module.exports = {
   computeFactionFortunePoints,
   computeSoloPayoutsForSetup,
   alignmentRowsToWinRateMap,
+  getMafiaFactionsFromSetup,
 };
