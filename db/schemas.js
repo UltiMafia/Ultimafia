@@ -367,6 +367,7 @@ var schemas = {
     gameId: { type: String, index: true },
     gameType: { type: String },
     role: { type: String },
+    borderType: { type: String, enum: ["u", "r", "c"], default: "u", index: true },
     hidden: { type: Boolean, default: false },
     createdAt: { type: Number, default: Date.now },
   })

@@ -134,7 +134,7 @@ async function ensureDonorStatus(userId) {
 
 async function checkStampEligibility(userId, gameId) {
   const game = await models.Game.findOne({ id: gameId }).select(
-    "type endTime broken winners playerIdMap playerRoleMap history"
+    "type endTime broken winners playerIdMap playerRoleMap history ranked competitive"
   );
 
   if (!game) throw new Error("Game not found.");
@@ -176,7 +176,8 @@ async function checkStampEligibility(userId, gameId) {
   if (!role)
     throw new Error("Could not determine your role in this game.");
 
-  return { gameType: game.type, role };
+  const borderType = game.competitive ? "c" : game.ranked ? "r" : "u";
+  return { gameType: game.type, role, borderType };
 }
 
 const shopItems = [
@@ -378,7 +379,12 @@ const shopItems = [
       if (existing) throw new Error("You already have a stamp from this game.");
 
       const result = await checkStampEligibility(userId, gameId);
-      return { gameId, gameType: result.gameType, role: result.role };
+      return {
+        gameId,
+        gameType: result.gameType,
+        role: result.role,
+        borderType: result.borderType,
+      };
     },
     onBuy: async function (userId, context) {
       const userDoc = await models.User.findOne({ id: userId }).select("_id");
@@ -391,6 +397,7 @@ const shopItems = [
           gameId: context.gameId,
           gameType: context.gameType,
           role: context.role,
+          borderType: context.borderType,
         });
       } catch (e) {
         if (e.code === 11000) {
