@@ -60,7 +60,7 @@ export const GameStates = {
   "Liars Dice": ["Guess Dice"],
   "Texas Hold Em": ["Place Bets", "Showdown"],
   Cheat: ["Play Cards", "Call Lie"],
-  Ratscrew: ["Play Cards", "Slap", "Call Lie"],
+  Ratscrew: ["Play Cards"],
   Battlesnakes: ["Day"],
   "Connect Four": ["Turn"],
   "Dice Wars": ["Play"],
