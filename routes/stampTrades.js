@@ -5,13 +5,11 @@ const logger = require("../modules/logging")(".");
 const shortid = require("shortid");
 const roleData = require("../data/roles");
 const errors = require("../lib/errors");
+const { pickAvailableStampIds } = require("../shared/stampBorder");
 const router = express.Router();
 
 const ACTIVE_STATUSES = ["PENDING_RESPONSE", "PENDING_CONFIRMATION"];
 const MAX_ACTIVE_TRADES_PER_PAIR = 3;
-
-const TIER_RANK = { u: 0, r: 1, c: 2 };
-const tierRank = (b) => TIER_RANK[b] ?? 0;
 
 function validateStampRole(gameType, role) {
   if (
@@ -53,10 +51,7 @@ async function getAvailableStampIds(userId, gameType, role) {
     throw new Error("You need at least 2 of this stamp to trade.");
   }
   const lockedIds = await getLockedStampIds(userId);
-  const available = stamps
-    .filter((s) => !lockedIds.has(String(s._id)))
-    .sort((a, b) => tierRank(a.borderType) - tierRank(b.borderType))
-    .map((s) => String(s._id));
+  const available = pickAvailableStampIds(stamps, lockedIds);
   if (available.length < 2) {
     throw new Error(
       "Not enough unlocked copies of this stamp (need 2+ available)."
@@ -73,10 +68,7 @@ async function getGiftableStampId(userId, gameType, role) {
     throw new Error("You need at least 2 of this stamp to gift.");
   }
   const lockedIds = await getLockedStampIds(userId);
-  const available = stamps
-    .filter((s) => !lockedIds.has(String(s._id)))
-    .sort((a, b) => tierRank(a.borderType) - tierRank(b.borderType))
-    .map((s) => String(s._id));
+  const available = pickAvailableStampIds(stamps, lockedIds);
   if (available.length < 2) {
     throw new Error(
       "Not enough unlocked copies of this stamp (need 2+ available)."
@@ -302,10 +294,10 @@ router.post("/initiate", async (req, res) => {
         return;
       }
       const recipientLockedIds = await getLockedStampIds(recipientUserId);
-      const availableRecipient = recipientStamps
-        .filter((s) => !recipientLockedIds.has(String(s._id)))
-        .sort((a, b) => tierRank(a.borderType) - tierRank(b.borderType))
-        .map((s) => String(s._id));
+      const availableRecipient = pickAvailableStampIds(
+        recipientStamps,
+        recipientLockedIds
+      );
       if (availableRecipient.length < 2) {
         res.status(400);
         res.send(
