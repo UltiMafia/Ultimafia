@@ -96,7 +96,7 @@ var defaultOptions = {
     lobby: "Games",
     startingDice: 5,
     wildOnes: true,
-    spotOn: false,
+    spotOn: true,
     guessDiceLength: 2,
   },
   "Texas Hold Em": existingHostOptions["Texas Hold Em"] || {
