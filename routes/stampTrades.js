@@ -10,6 +10,9 @@ const router = express.Router();
 const ACTIVE_STATUSES = ["PENDING_RESPONSE", "PENDING_CONFIRMATION"];
 const MAX_ACTIVE_TRADES_PER_PAIR = 3;
 
+const TIER_RANK = { u: 0, r: 1, c: 2 };
+const tierRank = (b) => TIER_RANK[b] ?? 0;
+
 function validateStampRole(gameType, role) {
   if (
     !gameType ||
@@ -44,15 +47,16 @@ async function getLockedStampIds(userId) {
 // caller should be prepared for the DB-level unique index to reject a pick.
 async function getAvailableStampIds(userId, gameType, role) {
   const stamps = await models.Stamp.find({ userId, gameType, role }).select(
-    "_id"
+    "_id borderType"
   );
   if (stamps.length < 2) {
     throw new Error("You need at least 2 of this stamp to trade.");
   }
   const lockedIds = await getLockedStampIds(userId);
   const available = stamps
-    .map((s) => String(s._id))
-    .filter((id) => !lockedIds.has(id));
+    .filter((s) => !lockedIds.has(String(s._id)))
+    .sort((a, b) => tierRank(a.borderType) - tierRank(b.borderType))
+    .map((s) => String(s._id));
   if (available.length < 2) {
     throw new Error(
       "Not enough unlocked copies of this stamp (need 2+ available)."
@@ -63,15 +67,16 @@ async function getAvailableStampIds(userId, gameType, role) {
 
 async function getGiftableStampId(userId, gameType, role) {
   const stamps = await models.Stamp.find({ userId, gameType, role }).select(
-    "_id"
+    "_id borderType"
   );
   if (stamps.length < 2) {
     throw new Error("You need at least 2 of this stamp to gift.");
   }
   const lockedIds = await getLockedStampIds(userId);
   const available = stamps
-    .map((s) => String(s._id))
-    .filter((id) => !lockedIds.has(id));
+    .filter((s) => !lockedIds.has(String(s._id)))
+    .sort((a, b) => tierRank(a.borderType) - tierRank(b.borderType))
+    .map((s) => String(s._id));
   if (available.length < 2) {
     throw new Error(
       "Not enough unlocked copies of this stamp (need 2+ available)."
@@ -290,7 +295,7 @@ router.post("/initiate", async (req, res) => {
         userId: recipientUserId,
         gameType: requestedGameType,
         role: requestedRole,
-      }).select("_id");
+      }).select("_id borderType");
       if (recipientStamps.length < 2) {
         res.status(400);
         res.send("Recipient does not have a duplicate of this stamp.");
@@ -298,8 +303,9 @@ router.post("/initiate", async (req, res) => {
       }
       const recipientLockedIds = await getLockedStampIds(recipientUserId);
       const availableRecipient = recipientStamps
-        .map((s) => String(s._id))
-        .filter((id) => !recipientLockedIds.has(id));
+        .filter((s) => !recipientLockedIds.has(String(s._id)))
+        .sort((a, b) => tierRank(a.borderType) - tierRank(b.borderType))
+        .map((s) => String(s._id));
       if (availableRecipient.length < 2) {
         res.status(400);
         res.send(
@@ -516,6 +522,7 @@ router.post("/gift", async (req, res) => {
             user: recipientUser._id,
             userId: recipientUserId,
             hidden: false,
+            borderType: "u",
           },
         },
       ],
@@ -813,6 +820,7 @@ router.post("/confirm", async (req, res) => {
             user: recipientUser._id,
             userId: trade.recipientId,
             hidden: false,
+            borderType: "u",
           },
         },
       ],
@@ -832,6 +840,7 @@ router.post("/confirm", async (req, res) => {
             user: initiatorUser._id,
             userId: trade.initiatorId,
             hidden: false,
+            borderType: "u",
           },
         },
       ],
