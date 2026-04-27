@@ -164,7 +164,6 @@ module.exports = class Microphone extends Item {
   hold(player) {
     super.hold(player);
 
-    player.game.sendAlert(`${player.name} is placing Bets…`);
     this.MovesOptions = ["Check", "Fold"];
     this.MinRaise = 1;
     if (this.game.lastAmountBid > 0) {
