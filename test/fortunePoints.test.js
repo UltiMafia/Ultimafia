@@ -6,6 +6,7 @@ const {
   alignmentRowsToWinRateMap,
   isMajorFaction,
   computeFactionFortunePoints,
+  computeSoloPayoutsForSetup,
 } = require("../modules/fortunePoints");
 
 describe("modules/fortunePoints", function () {
@@ -437,6 +438,92 @@ describe("modules/fortunePoints", function () {
         },
       });
       pointsWonByFactions.Village.should.equal(60);
+    });
+  });
+
+  describe("computeSoloPayoutsForSetup", function () {
+    it("returns one row per faction in alignmentRows with computed solo payout", function () {
+      const result = computeSoloPayoutsForSetup({
+        setupStats: {
+          alignmentRows: [
+            ["Village", "ranked", true],
+            ["Village", "ranked", false],
+            ["Mafia", "ranked", true],
+            ["Jester", "competitive", true],
+          ],
+        },
+      });
+      const byFaction = Object.fromEntries(result.map((r) => [r.faction, r]));
+
+      // Village 1/2 = 50% → (1 - 0.5) * 120 = 60
+      byFaction.Village.soloPayout.should.equal(60);
+      byFaction.Village.isMajor.should.be.true;
+      byFaction.Village.hasHistoricalWinrate.should.be.true;
+
+      // Mafia 1/1 = 100% → (1 - 1) * 120 = 0
+      byFaction.Mafia.soloPayout.should.equal(0);
+
+      // Jester 1/1 = 100% → min(120, sqrt(0.1/1) * 80) ≈ 25
+      byFaction.Jester.isMajor.should.be.false;
+      byFaction.Jester.soloPayout.should.equal(25);
+    });
+
+    it("falls back to default priors for factions with no ranked/comp games", function () {
+      const result = computeSoloPayoutsForSetup({
+        setupStats: {
+          alignmentRows: [
+            // Only unranked rows — no eligible history.
+            ["Village", "unranked", true],
+            ["Jester", "unranked", false],
+          ],
+        },
+      });
+      const byFaction = Object.fromEntries(result.map((r) => [r.faction, r]));
+
+      byFaction.Village.hasHistoricalWinrate.should.be.false;
+      byFaction.Village.winrate.should.equal(0.5);
+      byFaction.Village.soloPayout.should.equal(60); // major default
+
+      byFaction.Jester.hasHistoricalWinrate.should.be.false;
+      byFaction.Jester.winrate.should.equal(0.1);
+      byFaction.Jester.soloPayout.should.equal(80); // anchor independent
+    });
+
+    it("sorts majors first, then alphabetically within each group", function () {
+      const result = computeSoloPayoutsForSetup({
+        setupStats: {
+          alignmentRows: [
+            ["Jester", "ranked", true],
+            ["Village", "ranked", true],
+            ["Cult", "ranked", true],
+            ["Werewolf", "ranked", true],
+            ["Mafia", "ranked", true],
+          ],
+        },
+      });
+      result.map((r) => r.faction).should.deep.equal([
+        "Cult",
+        "Mafia",
+        "Village",
+        "Jester",
+        "Werewolf",
+      ]);
+    });
+
+    it("returns an empty array when setupStats has no alignmentRows", function () {
+      computeSoloPayoutsForSetup({ setupStats: null }).should.deep.equal([]);
+      computeSoloPayoutsForSetup({ setupStats: {} }).should.deep.equal([]);
+      computeSoloPayoutsForSetup({}).should.deep.equal([]);
+    });
+
+    it("uses caller-supplied K for major payouts", function () {
+      const result = computeSoloPayoutsForSetup({
+        setupStats: {
+          alignmentRows: [["Village", "ranked", false]], // 0% winrate
+        },
+        K: 200,
+      });
+      result[0].soloPayout.should.equal(200); // (1 - 0) * 200
     });
   });
 });

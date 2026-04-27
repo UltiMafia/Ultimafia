@@ -130,9 +130,53 @@ function alignmentRowsToWinRateMap(setupStats) {
   return map;
 }
 
+/**
+ * Per-faction solo-win fortune payouts for a setup, derived from its historical
+ * ranked/competitive winrate. Faction list is taken from setupStats.alignmentRows;
+ * factions with no eligible games fall back to the same priors as a real payout
+ * computation (50% major / 10% independent).
+ *
+ * @param {object} opts
+ * @param {object} opts.setupStats SetupVersion.setupStats (needs alignmentRows).
+ * @param {number} [opts.K]        Base payout (default constants.fortunePointsNominalK).
+ * @returns {Array<{ faction: string, isMajor: boolean, winrate: number,
+ *                   hasHistoricalWinrate: boolean, soloPayout: number }>}
+ *          Sorted majors-first then alphabetically.
+ */
+function computeSoloPayoutsForSetup(opts) {
+  const setupStats = opts && opts.setupStats;
+  const K = opts && opts.K != null ? opts.K : constants.fortunePointsNominalK;
+  const alignmentWinRates = alignmentRowsToWinRateMap(setupStats);
+
+  const factions = Object.keys(alignmentWinRates);
+  const result = factions.map((faction) => {
+    const observed = winRateFromAlignmentEntries(alignmentWinRates[faction]);
+    const hasHistoricalWinrate = observed != null && !Number.isNaN(observed);
+    const winrate = hasHistoricalWinrate
+      ? observed
+      : isMajorFaction(faction)
+      ? DEFAULT_MAJOR_WR
+      : DEFAULT_INDEPENDENT_WR;
+    return {
+      faction,
+      isMajor: isMajorFaction(faction),
+      winrate,
+      hasHistoricalWinrate,
+      soloPayout: Math.round(soloPayout(faction, winrate, K)),
+    };
+  });
+
+  result.sort((a, b) => {
+    if (a.isMajor !== b.isMajor) return a.isMajor ? -1 : 1;
+    return a.faction.localeCompare(b.faction);
+  });
+  return result;
+}
+
 module.exports = {
   winRateFromAlignmentEntries,
   isMajorFaction,
   computeFactionFortunePoints,
+  computeSoloPayoutsForSetup,
   alignmentRowsToWinRateMap,
 };
