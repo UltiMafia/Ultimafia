@@ -47,6 +47,28 @@ export default function WackyWordsGame() {
   const extraInfo = currentState && currentState.extraInfo;
   const meetings = currentState ? currentState.meetings : {};
   const self = game.self;
+  const isSpectator = game.isSpectator;
+
+  const spectatorMeetingFilter = (m) => {
+    if (m.name === "Vote Kick") return false;
+    if (m.inputType === "text") return false;
+    if (m.inputType === "showAllOptions") return false;
+    return true;
+  };
+  const spectatorVotingOptions = (() => {
+    if (!isSpectator) return null;
+    const seen = new Set();
+    const options = [];
+    for (const m of Object.values(meetings || {})) {
+      if (!m || m.inputType !== "showAllOptions") continue;
+      for (const t of m.targets || []) {
+        if (seen.has(t)) continue;
+        seen.add(t);
+        options.push(t);
+      }
+    }
+    return options.length > 0 ? options : null;
+  })();
 
   const displayQuestion = pickDisplayQuestion(
     extraInfo?.currentQuestion,
@@ -133,7 +155,13 @@ export default function WackyWordsGame() {
                   showStatus={!isQuestionShowable(displayQuestion)}
                 />
                 {isCurrentState && (
-                  <AcrotopiaActionArea hasPending={hasPendingAction} />
+                  <AcrotopiaActionArea
+                    hasPending={hasPendingAction}
+                    meetingFilter={isSpectator ? spectatorMeetingFilter : undefined}
+                  />
+                )}
+                {isCurrentState && isSpectator && spectatorVotingOptions && (
+                  <SpectatorResponses options={spectatorVotingOptions} />
                 )}
                 {showResponses && (
                   <AcrotopiaResponses
@@ -183,6 +211,8 @@ export default function WackyWordsGame() {
             players={game.players}
             isCurrentState={isCurrentState}
             bannerNav={bannerNav}
+            actionMeetingFilter={isSpectator ? spectatorMeetingFilter : undefined}
+            spectatorVotingOptions={isSpectator ? spectatorVotingOptions : null}
           />
         }
       />
@@ -330,7 +360,7 @@ function AcrotopiaAskerStatus({ asker, showStatus }) {
   );
 }
 
-function AcrotopiaActionArea({ hasPending }) {
+function AcrotopiaActionArea({ hasPending, meetingFilter }) {
   return (
     <section
       className={`acrotopia-action-area${
@@ -339,10 +369,28 @@ function AcrotopiaActionArea({ hasPending }) {
     >
       <ActionList
         bare
-        meetingFilter={(m) => m.name !== "Vote Kick"}
+        meetingFilter={meetingFilter || ((m) => m.name !== "Vote Kick")}
         hideIfEmpty
         className="acrotopia-action-list"
       />
+    </section>
+  );
+}
+
+function SpectatorResponses({ options }) {
+  return (
+    <section className="acrotopia-section">
+      <h3 className="acrotopia-section-label">Responses</h3>
+      <ul className="acrotopia-responses">
+        {options.map((opt, i) => (
+          <li key={`${opt}-${i}`} className="acrotopia-response">
+            <span className="acrotopia-response-quote" aria-hidden="true">
+              &ldquo;
+            </span>
+            <span className="acrotopia-response-text">{opt}</span>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -418,6 +466,8 @@ function HistoryKeeperMobile({
   players,
   isCurrentState,
   bannerNav,
+  actionMeetingFilter,
+  spectatorVotingOptions,
 }) {
   if (stateViewing < 0) return null;
   const state = history.states[stateViewing];
@@ -445,7 +495,13 @@ function HistoryKeeperMobile({
             showStatus={!isQuestionShowable(displayQuestion)}
           />
           {isCurrentState && (
-            <AcrotopiaActionArea hasPending={hasPendingAction} />
+            <AcrotopiaActionArea
+              hasPending={hasPendingAction}
+              meetingFilter={actionMeetingFilter}
+            />
+          )}
+          {isCurrentState && spectatorVotingOptions && (
+            <SpectatorResponses options={spectatorVotingOptions} />
           )}
           {showResponses && responseHistory && responseHistory.length > 0 && (
             <AcrotopiaResponses
