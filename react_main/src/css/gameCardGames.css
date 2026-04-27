@@ -666,3 +666,439 @@
   85% { opacity: 1; transform: translateX(0); }
   100% { opacity: 0; transform: translateX(20px); }
 }
+
+/* ===== Cheat board ===== */
+
+.ch-board {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 18px;
+  padding: 16px 12px;
+}
+
+.ch-pregame {
+  padding: 16px;
+  text-align: center;
+  opacity: 0.7;
+}
+
+.ch-others {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+}
+
+.ch-empty-others {
+  opacity: 0.6;
+  font-size: 0.9rem;
+  padding: 8px 0;
+}
+
+.ch-opponent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  min-width: 88px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.ch-opponent-turn {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.08);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+.ch-opponent-name {
+  font-size: 0.9rem;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ch-card-fan {
+  position: relative;
+  width: 60px;
+  height: 70px;
+}
+
+.ch-fan-card {
+  position: absolute;
+  top: 0;
+  left: 8px;
+  pointer-events: none;
+  transform-origin: bottom center;
+}
+
+.ch-fan-card-1 { transform: rotate(0deg); }
+.ch-fan-card-2 { transform: rotate(-7deg) translate(-2px, 0); }
+.ch-fan-card-3 { transform: rotate(-14deg) translate(-4px, 0); }
+
+.ch-card-count {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.4rem;
+  color: #fff;
+  text-shadow: 0 0 4px #000, 0 0 4px #000, 0 0 6px #000;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.ch-current {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ch-current-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+}
+
+.ch-current-rank {
+  font-size: 2.2rem;
+  font-weight: bold;
+  line-height: 1.1;
+  color: var(--scheme-color-text);
+}
+
+.ch-turn-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  opacity: 0.85;
+}
+
+.ch-turn-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #888;
+}
+
+.ch-turn-mine .ch-turn-dot {
+  background: #4caf50;
+  box-shadow: 0 0 6px #4caf50;
+}
+
+.ch-turn-mine {
+  opacity: 1;
+  font-weight: 600;
+}
+
+.ch-stack-info {
+  margin-left: 8px;
+  opacity: 0.8;
+}
+
+.ch-stack-info strong {
+  color: #fff;
+}
+
+.ch-hand {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ch-hand-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+  text-align: center;
+}
+
+.ch-hand-empty-note {
+  text-align: center;
+  opacity: 0.5;
+  font-size: 0.9rem;
+  padding: 12px;
+}
+
+.ch-hand-fan {
+  position: relative;
+  width: var(--ch-fan-width, 320px);
+  max-width: 100%;
+  height: 140px;
+  margin: 0 auto;
+  padding: 30px 0 0;
+}
+
+.ch-hand-card {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 70px;
+  height: 96px;
+  margin-left: -35px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transform-origin: bottom center;
+  transform: translateX(var(--dx, 0)) rotate(var(--rot, 0));
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.ch-hand-card .card {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  margin-left: -22px;
+  transform: scale(1.55);
+  transform-origin: bottom center;
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+.ch-hand-card .card:hover {
+  transform: scale(1.55);
+  box-shadow: none;
+}
+
+.ch-hand-card:hover:not(.ch-hand-card-disabled) {
+  transform: translateX(var(--dx, 0)) translateY(-18px)
+    rotate(var(--rot, 0));
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5));
+}
+
+.ch-hand-card-selected {
+  transform: translateX(var(--dx, 0)) translateY(-26px) rotate(var(--rot, 0));
+  filter: drop-shadow(0 6px 12px rgba(255, 215, 0, 0.55));
+}
+
+.ch-hand-card-selected:hover:not(.ch-hand-card-disabled) {
+  transform: translateX(var(--dx, 0)) translateY(-36px)
+    rotate(var(--rot, 0));
+}
+
+.ch-hand-card-selected .card {
+  outline: 3px solid #ffd700;
+  outline-offset: 1px;
+  border-radius: 4px;
+}
+
+.ch-hand-card-match::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  margin-left: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4caf50;
+  box-shadow: 0 0 6px #4caf50;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.ch-hand-card-disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.2) brightness(0.85);
+}
+
+.ch-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.ch-action-btn {
+  padding: 10px 28px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: background 0.15s ease, transform 0.05s ease;
+  color: #fff;
+}
+
+.ch-action-btn:active:not(.ch-action-disabled) {
+  transform: scale(0.97);
+}
+
+.ch-action-play {
+  background: #2e7d32;
+  border-color: #1b5e20;
+}
+
+.ch-action-play:hover:not(.ch-action-disabled) {
+  background: #43a047;
+}
+
+.ch-action-calllie {
+  background: #c62828;
+  border-color: #8b1d1d;
+}
+
+.ch-action-calllie:hover:not(.ch-action-disabled) {
+  background: #ef5350;
+}
+
+.ch-action-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ch-play-count {
+  font-weight: normal;
+  font-size: 0.85rem;
+  opacity: 0.85;
+  margin-left: 4px;
+}
+
+.ch-key-hint {
+  font-size: 0.7rem;
+  font-weight: normal;
+  opacity: 0.75;
+  margin-left: 4px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.ch-lastplay {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  opacity: 0.85;
+  text-align: center;
+  color: var(--scheme-color-text);
+}
+
+.ch-lastplay-mine {
+  opacity: 1;
+  font-weight: 600;
+}
+
+.ch-opponent-lastplay {
+  border-color: #c62828;
+  background: rgba(198, 40, 40, 0.12);
+  box-shadow: 0 0 6px rgba(198, 40, 40, 0.4);
+}
+
+.ch-opponent-claim {
+  font-size: 0.72rem;
+  opacity: 0.85;
+  text-align: center;
+  margin-top: 2px;
+  color: #ffb4b4;
+}
+
+.ch-toasts {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+  z-index: 50;
+  min-height: 0;
+}
+
+.ch-toast {
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: rgba(20, 20, 20, 0.85);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  animation: ch-toast-fade 1.5s ease-in-out forwards;
+}
+
+@keyframes ch-toast-fade {
+  0% { opacity: 0; transform: translateY(-6px); }
+  10% { opacity: 1; transform: translateY(0); }
+  85% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-6px); }
+}
+
+@media (max-width: 768px) {
+  .ch-key-hint {
+    display: none;
+  }
+
+  .ch-board {
+    gap: 10px;
+    padding: 8px 6px;
+  }
+
+  .ch-others {
+    gap: 6px;
+  }
+
+  .ch-opponent {
+    padding: 4px 6px;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .ch-opponent-name {
+    font-size: 0.75rem;
+    max-width: 80px;
+  }
+
+  .ch-card-fan {
+    width: 38px;
+    height: 50px;
+  }
+
+  .ch-fan-card {
+    transform-origin: bottom center;
+  }
+
+  .ch-fan-card-1 { transform: scale(0.7) rotate(0deg); }
+  .ch-fan-card-2 { transform: scale(0.7) rotate(-7deg) translate(-2px, 0); }
+  .ch-fan-card-3 { transform: scale(0.7) rotate(-14deg) translate(-4px, 0); }
+
+  .ch-card-count {
+    font-size: 1rem;
+  }
+
+  .ch-current-rank {
+    font-size: 1.7rem;
+  }
+
+  .ch-hand-fan {
+    height: 120px;
+    padding-top: 22px;
+  }
+
+  .ch-hand-card {
+    width: 58px;
+    height: 80px;
+    margin-left: -29px;
+  }
+
+  .ch-hand-card .card {
+    transform: scale(1.3);
+  }
+
+  .ch-hand-card .card:hover {
+    transform: scale(1.3);
+  }
+}
