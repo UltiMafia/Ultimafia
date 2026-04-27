@@ -5,122 +5,153 @@ import {
   ThreePanelLayout,
   TopBar,
   ActionList,
-  OptionsList,
   PlayerList,
   SettingsMenu,
   TextMeetingLayout,
   MobileLayout,
   GameTypeContext,
+  SideMenu,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { cardGameAudioConfig } from "../../audio/audioConfigs";
-import { SideMenu } from "./Game";
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/game.css";
 import "css/gameCardGames.css";
 
-export default function RatscrewGame(props) {
+const isKickMeeting = (m) => m && m.name === "Vote Kick";
+const KickActionList = () => (
+  <ActionList meetingFilter={isKickMeeting} hideIfEmpty scrollable={false} />
+);
+const isOtherMeeting = (m) =>
+  m && m.name !== "Vote Kick" && m.name !== "Play Card" && m.name !== "Slap";
+
+export default function RatscrewGame() {
   const game = useContext(GameContext);
-  const isPhoneDevice = useIsPhoneDevice();
 
   const history = game.history;
-  const updateHistory = game.updateHistory;
   const stateViewing = game.stateViewing;
   const updateStateViewing = game.updateStateViewing;
   const self = game.self;
-  const players = game.players;
-  const isSpectator = game.isSpectator;
-  const gameOptions = game.options.gameTypeOptions;
 
   const playBellRef = useRef(false);
+  const [liveExtraInfo, setLiveExtraInfo] = useState(null);
+  const [toasts, setToasts] = useState([]);
+  const toastIdRef = useRef(0);
 
-  const gameType = "Ratscrew";
+  const pushToast = (message) => {
+    const id = ++toastIdRef.current;
+    setToasts((current) => [...current, { id, message }]);
+    setTimeout(() => {
+      setToasts((current) => current.filter((t) => t.id !== id));
+    }, 1000);
+  };
+
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
 
-  // Make player view current state when it changes
   useEffect(() => {
     updateStateViewing({ type: "current" });
   }, [history.currentState]);
 
+  // Live mid-state updates (slap mutations) become stale when the state
+  // changes — the next state's extraInfo is canonical.
+  useEffect(() => {
+    setLiveExtraInfo(null);
+  }, [history.currentState]);
+
   useEffect(() => {
     game.loadAudioFiles(cardGameAudioConfig);
-
-    // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });
   }, []);
 
   useSocketListeners((socket) => {
-    socket.on("state", (state) => {
+    socket.on("state", () => {
       if (playBellRef.current) game.playAudio("ping");
-
       playBellRef.current = true;
     });
-
-    socket.on("winners", (winners) => {});
-    socket.on("cardShuffle", () => {
-      game.playAudio("cardShuffle");
-    });
-    socket.on("chips_large1", () => {
-      game.playAudio("chips_large1");
-    });
-    socket.on("chips_large2", () => {
-      game.playAudio("chips_large2");
-    });
-    socket.on("chips_small1", () => {
-      game.playAudio("chips_small1");
-    });
-    socket.on("chips_small2", () => {
-      game.playAudio("chips_small2");
-    });
+    socket.on("cardShuffle", () => game.playAudio("cardShuffle"));
+    socket.on("chips_large1", () => game.playAudio("chips_large1"));
+    socket.on("chips_large2", () => game.playAudio("chips_large2"));
+    socket.on("chips_small1", () => game.playAudio("chips_small1"));
+    socket.on("chips_small2", () => game.playAudio("chips_small2"));
+    socket.on("ratscrewExtraInfo", (info) => setLiveExtraInfo(info));
+    socket.on("ratscrewToast", ({ message }) => pushToast(message));
   }, game.socket);
 
-  const playerList = (
-    <>
-      {stateViewing < 0 && <PlayerList />}
-      <LiarscardcardViewWrapper
-        history={history}
-        stateViewing={stateViewing}
-        self={self}
-      />
-    </>
+  // Pull the relevant action meetings up here so we can wire keyboard
+  // shortcuts and the on-board buttons to the same handlers.
+  const playMeeting = Object.values(meetings).find(
+    (m) => m && m.name === "Play Card" && m.amMember && !m.finished
+  );
+  const slapMeeting = Object.values(meetings).find(
+    (m) => m && m.name === "Slap" && m.amMember && !m.finished
   );
 
-  const actionsList = (
-    <ActionList
-      title="Play your Cards!"
-      style={{
-        color: history.states?.[stateViewing]?.extraInfo?.isTheFlyingDutchman
-          ? "#718E77"
-          : undefined,
-      }}
+  const handlePlay = () => {
+    if (!playMeeting || !game.socket) return;
+    game.socket.send("vote", { meetingId: playMeeting.id, selection: "Yes" });
+  };
+  const handleSlap = () => {
+    if (!slapMeeting || !game.socket) return;
+    game.socket.send("vote", { meetingId: slapMeeting.id, selection: "Slap" });
+  };
+
+  // Keep the latest closures available to the keydown listener so the
+  // handler doesn't go stale between renders.
+  const handlePlayRef = useRef(handlePlay);
+  const handleSlapRef = useRef(handleSlap);
+  handlePlayRef.current = handlePlay;
+  handleSlapRef.current = handleSlap;
+
+  useEffect(() => {
+    function onKeyDown(e) {
+      const tag = document.activeElement?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (e.code !== "Space" && e.code !== "KeyX") return;
+      // Suppress the browser's default keyboard-activation of any focused
+      // button so we don't fire the action twice (once via the focused
+      // button, once via this listener).
+      e.preventDefault();
+      e.stopPropagation();
+      if (tag === "BUTTON" && document.activeElement.blur) {
+        document.activeElement.blur();
+      }
+      if (e.code === "Space") handleSlapRef.current?.();
+      else handlePlayRef.current?.();
+    }
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
+  }, []);
+
+  const board = (
+    <RatscrewBoard
+      history={history}
+      stateViewing={stateViewing}
+      self={self}
+      socket={game.socket}
+      liveExtraInfo={liveExtraInfo}
+      toasts={toasts}
+      playMeeting={playMeeting}
+      slapMeeting={slapMeeting}
+      handlePlay={handlePlay}
+      handleSlap={handleSlap}
     />
   );
 
   return (
-    <GameTypeContext.Provider
-      value={{
-        singleState: true,
-      }}
-    >
+    <GameTypeContext.Provider value={{ singleState: true }}>
       <TopBar />
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {playerList}
+            <PlayerList />
+            <KickActionList />
             <SettingsMenu />
           </>
         }
-        centerPanelContent={<TextMeetingLayout />}
-        rightPanelContent={
-          <>
-            <OptionsList />
-            <ThePot />
-            {actionsList}
-          </>
-        }
+        centerPanelContent={board}
+        rightPanelContent={<TextMeetingLayout />}
       />
       <MobileLayout
         outerLeftNavigationProps={{
@@ -130,16 +161,16 @@ export default function RatscrewGame(props) {
         }}
         outerLeftContent={
           <>
-            {playerList}
+            <PlayerList />
+            <KickActionList />
           </>
         }
-        innerRightContent={
-          <>
-            <OptionsList />
-            <ThePot />
-            {actionsList}
-          </>
-        }
+        innerRightNavigationProps={{
+          label: "Game",
+          value: "actions",
+          icon: <i className="fas fa-gamepad" />,
+        }}
+        innerRightContent={board}
         chatTab
         hideInfoTab
       />
@@ -147,130 +178,166 @@ export default function RatscrewGame(props) {
   );
 }
 
-export function ThePot() {
-  const game = useContext(GameContext);
-
-  const history = game.history;
-  const stateViewing = game.stateViewing;
-
-  if (stateViewing < 0) return <></>;
-
-  const extraInfo = history.states[stateViewing].extraInfo;
-
-  return (
-    <SideMenu
-      title="Round Info"
-      scrollable
-      content={
-        <table className="options-table">
-          <tbody>
-            Round:
-            {extraInfo.RoundNumber}
-          </tbody>
-          <tbody>
-            Top Card:
-            {
-              <div
-                key={0}
-                className={`card ${
-                  extraInfo.TheStack.length > 0
-                    ? `c${extraInfo.TheStack[extraInfo.TheStack.length - 1]}`
-                    : "card-unknown"
-                }`}
-              ></div>
-            }
-          </tbody>
-          <tbody>
-            The Stack:
-            {extraInfo.TheStack.length}
-          </tbody>
-        </table>
-      }
-    />
-  );
-}
-
-function LiarscardcardViewWrapper(props) {
-  const history = props.history;
-  const stateViewing = props.stateViewing;
-  const self = props.self;
-
-  if (stateViewing < 0) return <></>;
-
-  const extraInfo = history.states[stateViewing].extraInfo;
-
-  return (
-    <SideMenu
-      title="Hand"
-      scrollable
-      className="card-games-wrapper"
-      content={
-        <div className="card-games-players-container">
-          {extraInfo.randomizedPlayers.map((player, index) => (
-            <LiarscardPlayerRow
-              key={index}
-              userId={player.userId}
-              playerName={player.playerName}
-              CardsInHand={player.CardsInHand}
-              isCurrentPlayer={player.playerId === self}
-              isTheFlyingDutchman={extraInfo.isTheFlyingDutchman}
-              whoseTurnIsIt={extraInfo.whoseTurnIsIt}
-            />
-          ))}
-        </div>
-      }
-    />
-  );
-}
-
-function LiarscardPlayerRow({
-  userId,
-  playerName,
-  CardsInHand,
-  isCurrentPlayer,
-  isTheFlyingDutchman,
-  whoseTurnIsIt,
+function RatscrewBoard({
+  history,
+  stateViewing,
+  self,
+  socket,
+  liveExtraInfo,
+  toasts,
+  playMeeting,
+  slapMeeting,
+  handlePlay,
+  handleSlap,
 }) {
-  const isSamePlayer = whoseTurnIsIt === userId;
+  if (stateViewing < 0) {
+    return (
+      <SideMenu
+        title="Ratscrew"
+        scrollable
+        content={<div className="rs-pregame">Waiting for players...</div>}
+      />
+    );
+  }
+
+  // Prefer the live mid-state snapshot when available so slap mutations
+  // (burned cards, pile transfers) reflect immediately.
+  const extraInfo =
+    liveExtraInfo || history.states[stateViewing].extraInfo;
+  if (!extraInfo) return null;
+
+  const stack = extraInfo.TheStack || [];
+
   return (
-    <div className="card-games-player-section">
-      <div
-        className={`card-games-player-name ${
-          isCurrentPlayer ? "current-player" : ""
-        }`}
-        style={
-          isTheFlyingDutchman
-            ? {
-                backgroundColor: isCurrentPlayer ? "#506D56" : "#48654e",
-                borderColor: "#3B5841",
-                cursor: "pointer",
-              }
-            : {
-                cursor: "pointer",
-              }
-        }
-        onClick={() => window.open(`/user/${userId}`, "_blank")}
-      >
-        {playerName}
-      </div>
-      <div
-        className="card-games-card-container"
-        style={
-          isTheFlyingDutchman
-            ? {
-                borderColor: isSamePlayer ? "grey" : "#3B5841",
-              }
-            : {
-                borderColor: isSamePlayer ? "grey" : undefined,
-              }
-        }
-      >
-        <div className="current-rolls">
-          {CardsInHand.map((value, index) => (
-            <div key={index} className={`card ${"card-unknown"}`}></div>
-          ))}
+    <SideMenu
+      title={`Ratscrew — Round ${extraInfo.RoundNumber ?? 1}`}
+      scrollable
+      content={
+        <div className="rs-board">
+          <div className="rs-players">
+            {(extraInfo.randomizedPlayers || []).map((p) => (
+              <RsPlayerHand
+                key={p.userId}
+                player={p}
+                isActiveTurn={extraInfo.whoseTurnIsIt === p.userId}
+                isSelf={p.playerId === self}
+              />
+            ))}
+          </div>
+          {extraInfo.faceChallenge && (
+            <div className="rs-challenge">
+              {extraInfo.faceChallenge.attemptsLeft} attempt
+              {extraInfo.faceChallenge.attemptsLeft === 1 ? "" : "s"} left to
+              meet {extraInfo.faceChallenge.challengerName}'s challenge
+            </div>
+          )}
+          <RsPlayedStack cards={stack} />
+          <RsToasts toasts={toasts} />
+          <div className="rs-actions">
+            <button
+              className="rs-action-btn rs-action-play"
+              onClick={handlePlay}
+              style={playMeeting ? undefined : { visibility: "hidden" }}
+              tabIndex={playMeeting ? 0 : -1}
+              aria-hidden={!playMeeting}
+              title="Play (X)"
+            >
+              Play <span className="rs-key-hint">(X)</span>
+            </button>
+            <button
+              className={`rs-action-btn rs-action-slap${
+                slapMeeting ? "" : " rs-action-disabled"
+              }`}
+              onClick={handleSlap}
+              title="Slap (Space)"
+            >
+              Slap <span className="rs-key-hint">(Space)</span>
+            </button>
+          </div>
+          <ActionList meetingFilter={isOtherMeeting} hideIfEmpty bare />
         </div>
+      }
+    />
+  );
+}
+
+function RsPlayerHand({ player, isActiveTurn, isSelf }) {
+  const count = player.CardsInHand?.length ?? 0;
+  return (
+    <div
+      className={`rs-player${isActiveTurn ? " rs-player-turn" : ""}${
+        isSelf ? " rs-player-self" : ""
+      }`}
+    >
+      <div className="rs-player-name">{player.playerName}</div>
+      <div className="rs-card-fan">
+        <div className="card card-unknown rs-fan-card rs-fan-card-3" />
+        <div className="card card-unknown rs-fan-card rs-fan-card-2" />
+        <div className="card card-unknown rs-fan-card rs-fan-card-1" />
+        <span className="rs-card-count">{count}</span>
       </div>
+    </div>
+  );
+}
+
+// Deterministic pseudo-random per card index — keeps the same card in the
+// same place across re-renders so the pile doesn't jiggle.
+function jitter(seed, range) {
+  const x = Math.sin(seed * 9999.7) * 10000;
+  return (x - Math.floor(x) - 0.5) * 2 * range;
+}
+
+function RsPlayedStack({ cards }) {
+  return (
+    <div className="rs-played">
+      <div className="rs-played-stack">
+        {cards.length === 0 && (
+          <div className="card card-unknown rs-played-empty" />
+        )}
+        {cards.map((entry, i) => {
+          // Backward-compat: legacy entries are bare strings.
+          const value = typeof entry === "object" ? entry.value : entry;
+          const faceDown = typeof entry === "object" && entry.faceDown;
+          // Use a stable id when present so cards don't visually re-shuffle
+          // when a new card is inserted into the middle.
+          const id =
+            typeof entry === "object" && entry.id != null
+              ? entry.id
+              : `legacy-${i}`;
+          const seed = typeof id === "number" ? id : i + 1;
+          const rot = jitter(seed + 1, 22);
+          const dx = jitter(seed + 101, 10);
+          const dy = jitter(seed + 211, 10);
+          const cardClass = faceDown ? "card-unknown" : `c${value}`;
+          return (
+            <div
+              key={id}
+              className={`card ${cardClass} rs-played-card`}
+              style={{
+                transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg) scale(2)`,
+                zIndex: i,
+              }}
+            />
+          );
+        })}
+      </div>
+      <div className="rs-stack-count">
+        <strong>{cards.length}</strong> card{cards.length === 1 ? "" : "s"} in
+        stack
+      </div>
+    </div>
+  );
+}
+
+function RsToasts({ toasts }) {
+  if (!toasts || toasts.length === 0) return null;
+  return (
+    <div className="rs-toasts">
+      {toasts.map((t) => (
+        <div key={t.id} className="rs-toast">
+          {t.message}
+        </div>
+      ))}
     </div>
   );
 }

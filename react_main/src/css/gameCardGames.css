@@ -298,3 +298,270 @@
   flex-wrap: wrap;
   justify-content: center;
 }
+
+/* ===== Ratscrew board ===== */
+
+.rs-board {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 12px;
+}
+
+.rs-pregame {
+  padding: 16px;
+  text-align: center;
+  opacity: 0.7;
+}
+
+.rs-players {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+}
+
+.rs-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  min-width: 88px;
+  transition: border-color 0.15s ease;
+}
+
+.rs-player-turn {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.08);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+.rs-player-self .rs-player-name {
+  font-weight: bold;
+}
+
+.rs-player-name {
+  font-size: 0.9rem;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rs-card-fan {
+  position: relative;
+  width: 60px;
+  height: 70px;
+}
+
+.rs-fan-card {
+  position: absolute;
+  top: 0;
+  left: 8px;
+  pointer-events: none;
+  transform-origin: bottom center;
+}
+
+.rs-fan-card-1 { transform: rotate(0deg); }
+.rs-fan-card-2 { transform: rotate(-7deg) translate(-2px, 0); }
+.rs-fan-card-3 { transform: rotate(-14deg) translate(-4px, 0); }
+
+.rs-card-count {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.4rem;
+  color: #fff;
+  text-shadow: 0 0 4px #000, 0 0 4px #000, 0 0 6px #000;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.rs-challenge {
+  padding: 6px 12px;
+  border-radius: 4px;
+  background: rgba(255, 152, 0, 0.15);
+  border: 1px solid rgba(255, 152, 0, 0.5);
+  font-size: 0.9rem;
+  color: var(--scheme-color-text);
+  text-align: center;
+}
+
+.rs-played {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.rs-played-stack {
+  position: relative;
+  width: 180px;
+  height: 200px;
+}
+
+.rs-played-card,
+.rs-played-empty {
+  position: absolute;
+  top: 70px;
+  left: 68px;
+  pointer-events: none;
+  transform-origin: center;
+}
+
+.rs-played-empty {
+  opacity: 0.3;
+  transform: scale(2);
+  transform-origin: center;
+}
+
+.rs-stack-count {
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
+.rs-stack-count strong {
+  font-size: 1.05rem;
+}
+
+.rs-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.rs-action-btn {
+  padding: 10px 28px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.rs-action-btn:active {
+  transform: scale(0.97);
+}
+
+.rs-action-play {
+  background: #2e7d32;
+  color: #fff;
+  border-color: #1b5e20;
+}
+
+.rs-action-play:hover {
+  background: #43a047;
+}
+
+.rs-action-slap {
+  background: #c62828;
+  color: #fff;
+  border-color: #8b1d1d;
+}
+
+.rs-action-slap:hover {
+  background: #ef5350;
+}
+
+.rs-action-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.rs-key-hint {
+  font-size: 0.7rem;
+  font-weight: normal;
+  opacity: 0.75;
+  margin-left: 4px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Tighter player section on mobile so the played stack and action buttons
+   stay above the fold. */
+@media (max-width: 768px) {
+  .rs-board {
+    gap: 10px;
+    padding: 8px 6px;
+  }
+
+  .rs-players {
+    gap: 6px;
+  }
+
+  .rs-player {
+    padding: 4px 6px;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .rs-player-name {
+    font-size: 0.75rem;
+    max-width: 80px;
+  }
+
+  .rs-card-fan {
+    width: 38px;
+    height: 50px;
+  }
+
+  .rs-fan-card {
+    transform-origin: bottom center;
+    transform: scale(0.7);
+  }
+
+  .rs-fan-card-1 { transform: scale(0.7) rotate(0deg); }
+  .rs-fan-card-2 { transform: scale(0.7) rotate(-7deg) translate(-2px, 0); }
+  .rs-fan-card-3 { transform: scale(0.7) rotate(-14deg) translate(-4px, 0); }
+
+  .rs-card-count {
+    font-size: 1rem;
+  }
+
+  .rs-key-hint {
+    display: none;
+  }
+}
+
+.rs-toasts {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.rs-toast {
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: rgba(20, 20, 20, 0.85);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  animation: rs-toast-fade 1s ease-in-out forwards;
+}
+
+@keyframes rs-toast-fade {
+  0% { opacity: 0; transform: translateX(20px); }
+  15% { opacity: 1; transform: translateX(0); }
+  85% { opacity: 1; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(20px); }
+}
