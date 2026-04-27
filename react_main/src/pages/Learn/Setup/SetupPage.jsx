@@ -64,6 +64,7 @@ import {
 import { RoleCount } from "components/Roles";
 import { PieChart } from "./PieChart";
 import { SetupWinRateBars } from "./SetupWinRateBars";
+import { FortunePayouts } from "./FortunePayouts";
 
 import "css/buttons.css";
 import "css/setupPage.css";
@@ -1086,6 +1087,40 @@ export function SetupPage() {
                   </Box>
                 </div>
               </Grid>
+              {(setup.ranked || setup.competitive) && (
+                <Grid item xs={12}>
+                  <div className="box-panel">
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      flexWrap="wrap"
+                      sx={{ px: 2, pt: 1.5, pb: 0.5, gap: 1 }}
+                    >
+                      <Box>
+                        <Typography
+                          component="span"
+                          sx={{ fontWeight: 700, fontSize: "1.25rem" }}
+                        >
+                          Fortune Payouts
+                        </Typography>
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          sx={{ ml: 1, opacity: 0.6, fontWeight: 400 }}
+                        >
+                          · Solo win, derived from ranked + competitive winrates
+                        </Typography>
+                      </Box>
+                    </Stack>
+                    <Box sx={{ maxWidth: 720, px: 2, pb: 2 }}>
+                      <FortunePayouts
+                        payouts={statsBundle?.fortunePayouts}
+                      />
+                    </Box>
+                  </div>
+                </Grid>
+              )}
             </Grid>
           )}
           {!shouldDisplayStats && (
