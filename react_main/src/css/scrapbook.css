@@ -201,7 +201,7 @@
   position: relative;
   width: 48px;
   height: 48px;
-  background-color: #fdf6e3;
+  background-color: #e6e4de;
   border-radius: 2px;
   display: flex;
   align-items: center;
@@ -243,7 +243,7 @@
   height: 0;
   border-style: solid;
   border-width: 0 0 8px 8px;
-  border-color: transparent transparent #e8dfc5 transparent;
+  border-color: transparent transparent #c9c6bf transparent;
 }
 
 .stamp-badge {
@@ -282,29 +282,22 @@
 }
 
 .stamp--border-ranked {
-  box-shadow: 0 0 0 2px #d50032, 0 1px 3px rgba(0, 0, 0, 0.15);
+  background-color: #fbe2dc;
 }
 
 .stamp--border-competitive {
-  box-shadow: 0 0 0 2px #ff8c00, 0 1px 3px rgba(0, 0, 0, 0.15);
+  background-color: #fde2c4;
+  outline: 2px solid #d4a017;
+  outline-offset: -2px;
 }
 
-.stamp--clickable.stamp--border-ranked:hover {
-  box-shadow: 0 0 0 2px #d50032, 0 3px 8px rgba(0, 0, 0, 0.3);
-}
-
-.stamp--clickable.stamp--border-competitive:hover {
-  box-shadow: 0 0 0 2px #ff8c00, 0 3px 8px rgba(0, 0, 0, 0.3);
-}
 
 .stamp--shiny {
   background-image: linear-gradient(
     115deg,
-    #fdf6e3 30%,
-    rgba(255, 245, 200, 0.95) 45%,
-    #ffffff 50%,
-    rgba(255, 245, 200, 0.95) 55%,
-    #fdf6e3 70%
+    transparent 30%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 70%
   );
   background-size: 250% 100%;
   background-repeat: no-repeat;
