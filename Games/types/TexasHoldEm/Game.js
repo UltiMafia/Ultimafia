@@ -51,14 +51,7 @@ module.exports = class TexasHoldEmGame extends Game {
 
     //information about last turn's bid
     this.lastAmountBid = 0;
-    this.lastFaceBid = 1;
     this.lastBidder = null;
-    this.allRolledDice = []; //Used for counting dice on lie or spot on calls. player.diceRolled would remove dice if player left, so
-    // this got created.
-
-    this.allDice = 0; //all dice counted together, used for variable under this and messages sent regarding high bids
-    this.gameMasterAnnoyedByHighBidsThisRoundYet = false; //when bid is a lot higher than all dice together, this turns on, and players
-    // will only be able to bid by one amount higher each turn for the rest of the round.
 
     this.chatName = "Casino";
 
@@ -80,6 +73,12 @@ module.exports = class TexasHoldEmGame extends Game {
     }
 
     super.sendAlert(message, recipients, extraStyle);
+  }
+
+  // Suppress the generic role-reveal alert ("X's role is Player.") — every
+  // poker player is just a "Player," there's no role to spoil.
+  isNoReveal() {
+    return true;
   }
 
   start() {
@@ -225,18 +224,10 @@ module.exports = class TexasHoldEmGame extends Game {
         } //Dealer
       }
     }
-    this.sendAlert(
-      `${this.SmallBlind.name} is The Small Blind and bets ${Math.ceil(
-        this.minimumBet / 2.0
-      )}.`
-    );
     this.SmallBlind.Chips -= Math.ceil(this.minimumBet / 2.0);
     this.SmallBlind.AmountBidding = Math.ceil(this.minimumBet / 2.0);
     this.ThePot += Math.ceil(this.minimumBet / 2.0);
     this.lastAmountBid = Math.ceil(this.minimumBet / 2.0);
-    this.sendAlert(
-      `${this.BigBlind.name} is The Big Blind and bets ${this.minimumBet}.`
-    );
     this.BigBlind.Chips -= this.minimumBet;
     this.BigBlind.AmountBidding = this.minimumBet;
     this.ThePot += this.minimumBet;
@@ -364,7 +355,6 @@ module.exports = class TexasHoldEmGame extends Game {
           if (player.hasFolded == true) {
             return;
           }
-          player.holdItem("ShowdownTime");
           player.hasHadTurn = false;
           player.AmountBidding = 0;
         });
@@ -380,188 +370,182 @@ module.exports = class TexasHoldEmGame extends Game {
     super.incrementState();
   }
 
+  // Score exactly 5 cards. Returns { score, scoreType, cards }.
+  scoreFiveCards(cards) {
+    const sortedCards = this.sortCards([...cards]);
+    let allSameSuit = true;
+    let streight = true;
+    let lowAce = false;
+    const counts = new Array(13).fill(0);
+
+    for (const card of sortedCards) {
+      const tempCard = this.readCard(card);
+      counts[tempCard[0] - 2]++;
+      for (const cardB of sortedCards) {
+        const tempCardB = this.readCard(cardB);
+        if (card === sortedCards[0] && card !== cardB) {
+          if (
+            parseInt(tempCard[0] - tempCardB[0]) !==
+            parseInt(sortedCards.indexOf(cardB))
+          ) {
+            // Low ace (A-2-3-4-5) — sorted desc that becomes [A,5,4,3,2]
+            if (
+              this.readCard(sortedCards[0])[0] === 14 &&
+              this.readCard(sortedCards[1])[0] === 5 &&
+              this.readCard(sortedCards[2])[0] === 4 &&
+              this.readCard(sortedCards[3])[0] === 3 &&
+              this.readCard(sortedCards[4])[0] === 2
+            ) {
+              streight = true;
+              lowAce = true;
+            } else {
+              streight = false;
+            }
+          }
+        }
+        if (card !== cardB && tempCard[1] !== tempCardB[1]) {
+          allSameSuit = false;
+        }
+      }
+    }
+
+    let score = 0;
+    let scoreType = "High Card";
+    let four = false;
+    let five = false;
+    let three = false;
+    let fiveValue;
+    let fourValue;
+    let threeValue;
+    let pairs = 0;
+    const pairValues = [];
+
+    for (let x = 0; x < counts.length; x++) {
+      if (counts[x] === 5) {
+        five = true;
+        fiveValue = x + 2;
+      }
+      if (counts[x] === 4) {
+        four = true;
+        fourValue = x + 2;
+      }
+      if (counts[x] === 3) {
+        three = true;
+        threeValue = x + 2;
+      }
+      if (counts[x] === 2) {
+        pairs += 1;
+        pairValues.push(x + 2);
+      }
+    }
+
+    if (five && allSameSuit) {
+      scoreType = "Five Flush";
+      score = 13000 + fiveValue;
+    } else if (three && pairs > 0 && allSameSuit) {
+      scoreType = "Flush house";
+      score = 12000 + threeValue + pairValues[0];
+    } else if (five) {
+      scoreType = "Five of a kind";
+      score = 11000 + fiveValue;
+    } else if (
+      streight &&
+      allSameSuit &&
+      this.readCard(sortedCards[0])[0] === 14 &&
+      !lowAce
+    ) {
+      scoreType = "Royal Flush";
+      score = 10000;
+    } else if (streight && allSameSuit) {
+      scoreType = "Straight flush";
+      score = 9000 + this.readCard(sortedCards[0])[0];
+    } else if (four) {
+      scoreType = "Four of a kind";
+      score = 8000 + fourValue;
+    } else if (three && pairs > 0) {
+      scoreType = "Full house";
+      score = 7000 + threeValue + pairValues[0];
+    } else if (allSameSuit) {
+      scoreType = "Flush";
+      score = 6000 + this.readCard(sortedCards[0])[0];
+    } else if (streight) {
+      scoreType = "Straight";
+      score = 5000 + this.readCard(sortedCards[0])[0];
+    } else if (three) {
+      scoreType = "Three of a kind";
+      score = 4000 + threeValue;
+    } else if (pairs > 1) {
+      scoreType = "Two Pairs";
+      score = 3000 + pairValues[0] + pairValues[1];
+    } else if (pairs > 0) {
+      scoreType = "Pair";
+      score = 2000 + pairValues[0];
+    } else {
+      score = this.readCard(sortedCards[0])[0];
+    }
+
+    return { score, scoreType, cards: sortedCards };
+  }
+
+  // Pick the best 5-card subset out of N cards (handles 5..7).
+  bestHandFromCards(cards) {
+    if (cards.length <= 5) return this.scoreFiveCards(cards);
+    let best = null;
+    const recurse = (start, picked) => {
+      if (picked.length === 5) {
+        const result = this.scoreFiveCards(picked);
+        if (!best || result.score > best.score) best = result;
+        return;
+      }
+      for (let i = start; i < cards.length; i++) {
+        picked.push(cards[i]);
+        recurse(i + 1, picked);
+        picked.pop();
+      }
+    };
+    recurse(0, []);
+    return best;
+  }
+
   AwardRoundWinner() {
-    this.randomizedPlayers.forEach((player) => {
-      if (player.alive != true) {
-        return;
-      }
-      if (player.hasFolded == true) {
-        return;
-      }
-      let allSameSuit = true;
-      let streight = true;
-      let lowAce = false;
-      var counts = [
-        0, //2-0
-        0, //3-1
-        0, //4-2
-        0, //5-3
-        0, //6-4
-        0, //7-5
-        0, //8-6
-        0, //9-7
-        0, //10-8
-        0, //Jack-9
-        0, //Queen-10
-        0, //King-11
-        0, //Ace-12
-      ];
-
-      player.ShowdownCards = this.sortCards(player.ShowdownCards);
-      if (player.ShowdownCards.length < 5) {
-        return;
-      }
-      this.sendAlert(`${player.name} uses ${player.ShowdownCards.join(", ")}!`);
-      for (let card of player.ShowdownCards) {
-        let tempCard = this.readCard(card);
-        if (!counts[tempCard[0]]) {
-          counts[tempCard[0]] = 0;
-        }
-        counts[tempCard[0] - 2]++;
-        for (let cardB of player.ShowdownCards) {
-          let tempCardB = this.readCard(cardB);
-          if (card == player.ShowdownCards[0]) {
-            if (card != cardB) {
-              //this.sendAlert(`${card} ${tempCard[0]}-${cardB} ${tempCardB[0]} is ${tempCard[0]-tempCardB[0]} Index ${player.ShowdownCards.indexOf(cardB)}!`);
-              if (
-                parseInt(tempCard[0] - tempCardB[0]) !=
-                parseInt(player.ShowdownCards.indexOf(cardB))
-              ) {
-                //Low Ace Check
-                if (
-                  this.readCard(player.ShowdownCards[0])[0] == 14 &&
-                  this.readCard(player.ShowdownCards[1])[0] == 5 &&
-                  this.readCard(player.ShowdownCards[2])[0] == 4 &&
-                  this.readCard(player.ShowdownCards[3])[0] == 3 &&
-                  this.readCard(player.ShowdownCards[4])[0] == 2
-                ) {
-                  streight = true;
-                  lowAce = true;
-                } else {
-                  streight = false;
-                }
-              }
-            }
-          }
-          if (card != cardB) {
-            if (tempCard[1] != tempCardB[1]) {
-              allSameSuit = false;
-            }
-          }
-        }
-      }
-      let score = 0;
-      let four = false;
-      let five = false;
-      let fiveValue;
-      let fourValue;
-      let three = false;
-      let threeValue;
-      let pairs = 0;
-      let pairValues = [];
-
-      for (let x = 0; x < counts.length; x++) {
-        //this.sendAlert(`Value ${x+2} Amounts ${counts[x]}!`);
-        if (counts[x] == 5) {
-          five = true;
-          fiveValue = x + 2;
-        }
-        if (counts[x] == 4) {
-          four = true;
-          fourValue = x + 2;
-        }
-        if (counts[x] == 3) {
-          three = true;
-          threeValue = x + 2;
-        }
-        if (counts[x] == 2) {
-          pairs += 1;
-          pairValues.push(x + 2);
-        }
-      }
-
-      if (five == true && allSameSuit == true) {
-        player.ScoreType = "Five Flush";
-        score += 13000;
-        score += fiveValue;
-      } else if (three == true && pairs > 0 && allSameSuit == true) {
-        player.ScoreType = "Flush house";
-        score += 12000;
-        score += threeValue;
-        score += pairValues[0];
-      } else if (five == true) {
-        player.ScoreType = "Five of a kind";
-        score += 11000;
-        score += fiveValue;
-      } else if (
-        streight == true &&
-        allSameSuit == true &&
-        this.readCard(player.ShowdownCards[0])[0] == 14 &&
-        lowAce != true
-      ) {
-        player.ScoreType = "Royal Flush";
-        score += 10000;
-      } else if (streight == true && allSameSuit == true) {
-        player.ScoreType = "Straight flush";
-        score += 9000;
-        score += this.readCard(player.ShowdownCards[0])[0];
-      } else if (four == true) {
-        player.ScoreType = "Four of a kind";
-        score += 8000;
-        score += fourValue;
-      } else if (three == true && pairs > 0) {
-        player.ScoreType = "Full house";
-        score += 7000;
-        score += threeValue;
-        score += pairValues[0];
-      } else if (allSameSuit == true) {
-        player.ScoreType = "Flush";
-        score += 6000;
-        score += this.readCard(player.ShowdownCards[0])[0];
-      } else if (streight == true) {
-        player.ScoreType = "Straight";
-        score += 5000;
-        score += this.readCard(player.ShowdownCards[0])[0];
-      } else if (three == true) {
-        player.ScoreType = "Three of a kind";
-        score += 4000;
-        score += threeValue;
-      } else if (pairs > 1) {
-        player.ScoreType = "Two Pairs";
-        score += 3000;
-        score += pairValues[0];
-        score += pairValues[1];
-      } else if (pairs > 0) {
-        player.ScoreType = "Pair";
-        score += 2000;
-        score += pairValues[0];
-      } else {
-        player.ScoreType = "High Card";
-        score += this.readCard(player.ShowdownCards[0])[0];
-      }
-      player.Score = score;
-    });
-    let highest = [
-      this.randomizedPlayers.filter((p) => p.alive && p.hasFolded != true)[0],
-    ];
-    for (let player of this.randomizedPlayers.filter(
+    const contenders = this.randomizedPlayers.filter(
       (p) => p.alive && p.hasFolded != true
-    )) {
+    );
+    if (contenders.length === 0) return;
+
+    for (const player of contenders) {
+      const available = [...player.CardsInHand, ...this.CommunityCards];
+      if (available.length < 5) {
+        player.Score = 0;
+        player.ScoreType = "No Hand";
+        continue;
+      }
+      const best = this.bestHandFromCards(available);
+      player.ShowdownCards = best.cards;
+      player.Score = best.score;
+      player.ScoreType = best.scoreType;
+    }
+
+    let highest = [contenders[0]];
+    for (let i = 1; i < contenders.length; i++) {
+      const player = contenders[i];
       if (player.Score > highest[0].Score) {
         highest = [player];
-      } else if (player != highest[0] && player.Score == highest[0].Score) {
+      } else if (player.Score === highest[0].Score) {
         highest.push(player);
       }
     }
-    this.sendAlert(`The Round has Concluded`);
-    for (let player of highest) {
+
+    const share = Math.floor(this.ThePot / highest.length);
+    for (const player of highest) {
+      player.Chips += parseInt(share);
       this.sendAlert(
-        `${player.name} has Won ${Math.floor(
-          this.ThePot / highest.length
-        )} from The Pot with a ${player.ScoreType}!`
+        `${player.name} wins ${share} chips from the Pot with a ${player.ScoreType}!`
       );
-      //this.sendAlert(`${player.name} had a score of ${player.Score}!`);
-      player.Chips += parseInt(Math.floor(this.ThePot / highest.length));
+      this.broadcast("pokerToast", {
+        message: `${player.name} wins ${share} with ${player.ScoreType}`,
+        time: Date.now(),
+      });
     }
   }
 
@@ -606,7 +590,6 @@ module.exports = class TexasHoldEmGame extends Game {
       if (player.alive) {
         let Cards = this.drawDiscardPile.drawMultiple(amount);
         player.CardsInHand.push(...Cards);
-        player.sendAlert(`${Cards.join(", ")} have been added to your Hand!`);
       }
     });
   }
@@ -632,9 +615,6 @@ module.exports = class TexasHoldEmGame extends Game {
     this.broadcast("cardShuffle");
     let Cards = this.drawDiscardPile.drawMultiple(amount);
     this.CommunityCards.push(...Cards);
-    this.sendAlert(
-      `${Cards.join(", ")} have been added to the Community Cards!`
-    );
   }
 
   addToPot(player, type, amount) {
@@ -650,7 +630,6 @@ module.exports = class TexasHoldEmGame extends Game {
     }
 
     if (type == "Bet") {
-      this.sendAlert(`${player.name} bets ${amount} into the Pot!`);
       player.Chips = parseInt(player.Chips) - parseInt(amount);
       player.AmountBidding += parseInt(amount);
       this.ThePot += parseInt(amount);
@@ -666,11 +645,6 @@ module.exports = class TexasHoldEmGame extends Game {
 
     if (type == "Call") {
       if (player.Chips >= this.lastAmountBid - player.AmountBidding) {
-        this.sendAlert(
-          `${player.name} calls and puts ${
-            this.lastAmountBid - player.AmountBidding
-          } into the Pot!`
-        );
         this.ThePot += parseInt(this.lastAmountBid - player.AmountBidding);
         player.Chips =
           parseInt(player.Chips) - (this.lastAmountBid - player.AmountBidding);
@@ -688,72 +662,28 @@ module.exports = class TexasHoldEmGame extends Game {
         this.sendAlert(`${player.name} has Nothing to put into the Pot!`);
       }
     }
-    /*
-    if(type == "Raise"){
-      if(player.Chips >= (this.lastAmountBid-player.AmountBidding)+amount){
-      this.sendAlert(`${player.name} raises and puts ${(this.lastAmountBid-player.AmountBidding)+amount} into the Pot!`);
-      player.Chips = player.Chips - ((this.lastAmountBid-player.AmountBidding)+amount);
-      player.AmountBidding += ((this.lastAmountBid-player.AmountBidding)+amount);
-      this.lastAmountBid = player.AmountBidding;
-      this.ThePot += ((this.lastAmountBid-player.AmountBidding)+amount);
-      }
-    }
-    */
-  }
-
-  addDice(player, amount, midRound, noMessage) {
-    if (amount == null || amount <= 0) {
-      amount = 1;
-    }
-    player.diceNum = player.diceNum + amount;
-    if (noMessage != true) {
-      this.sendAlert(`${player.name} has Gained a Dice!`);
-    }
-    if (midRound == true) {
-      player.queueAlert(`You gain a Dice!`);
-      let dice;
-      let info;
-      for (let x = 0; x < amount; x++) {
-        dice = Math.floor(Math.random() * 6) + 1;
-        player.rolledDice.push(dice);
-        if (dice == 1) {
-          info = ":Dice1:";
-        }
-        if (dice == 2) {
-          info = ":Dice2:";
-        }
-        if (dice == 3) {
-          info = ":Dice3:";
-        }
-        if (dice == 4) {
-          info = ":Dice4:";
-        }
-        if (dice == 5) {
-          info = ":Dice5:";
-        }
-        if (dice == 6) {
-          info = ":Dice6:";
-        }
-        player.queueAlert(`You gain a ${info} !`);
-        this.allDice += 1;
-        this.allRolledDice.push(dice);
-      }
-    }
   }
 
   getStateInfo(state) {
     var info = super.getStateInfo(state);
     const simplifiedPlayers = this.simplifyPlayers(this.randomizedPlayers);
+    const currentPlayer =
+      this.randomizedPlayersCopy?.[this.currentIndex] ?? null;
     info.extraInfo = {
       randomizedPlayers: simplifiedPlayers,
       isTheFlyingDutchman:
         this.chatName == "The Flying Dutchman" ? true : false,
-      whoseTurnIsIt:
-        this.randomizedPlayersCopy?.[this.currentIndex]?.user.id ?? 0,
+      whoseTurnIsIt: currentPlayer?.user.id ?? 0,
+      whoseTurnName: currentPlayer?.name ?? "",
       ThePot: this.ThePot,
       RoundNumber: this.RoundNumber,
       Phase: this.Phase,
       CommunityCards: this.CommunityCards,
+      dealerId: this.Dealer?.user.id ?? null,
+      smallBlindId: this.SmallBlind?.user.id ?? null,
+      bigBlindId: this.BigBlind?.user.id ?? null,
+      lastAmountBid: this.lastAmountBid,
+      minimumBet: this.minimumBet,
     };
     return info;
   }
@@ -767,7 +697,9 @@ module.exports = class TexasHoldEmGame extends Game {
           playerId: player.id,
           userId: player.user.id,
           playerName: player.name,
-          CardsInHand: player.CardsInHand,
+          // Folded players' hole cards are never sent to clients — that data
+          // is private once they leave the round.
+          CardsInHand: player.hasFolded ? [] : player.CardsInHand,
           Chips: player.Chips,
           Bets: player.AmountBidding,
           Folded: player.hasFolded,
@@ -817,16 +749,8 @@ module.exports = class TexasHoldEmGame extends Game {
       !this.finished &&
       this.randomizedPlayers.includes(player)
     ) {
-      const deadPlayerIndex = this.randomizedPlayers.findIndex(
-        (randomizedPlayer) => randomizedPlayer.id === player.id
-      );
-      this.randomizedPlayers = this.randomizedPlayers.filter(
-        (rPlayer) => rPlayer.id !== player.id
-      );
-
-      this.sendAlert(
-        `${player.name} vegged, but their ${player.rolledDice.length} dice will still count towards this round's total.`
-      );
+      player.hasFolded = true;
+      this.sendAlert(`${player.name} vegged and was folded out of the round.`);
     }
   }
 

@@ -90,8 +90,16 @@ module.exports = class Microphone extends Item {
               this.game.lastAmountBid
             ) {
               this.game.addToPot(this.actor, "Call");
+              this.game.broadcast("pokerToast", {
+                message: `${this.actor.name} calls ${this.target}`,
+                time: Date.now(),
+              });
             } else {
               this.game.addToPot(this.actor, "Bet", this.target);
+              this.game.broadcast("pokerToast", {
+                message: `${this.actor.name} raises ${this.target}`,
+                time: Date.now(),
+              });
             }
 
             this.actor.hasHadTurn = true;
@@ -123,22 +131,34 @@ module.exports = class Microphone extends Item {
           item: this,
           run: function () {
             if (this.target == "Call") {
-              //this.game.sendAlert(`${this.actor.name} Calls!`);
+              this.game.broadcast("pokerToast", {
+                message: `${this.actor.name} calls`,
+                time: Date.now(),
+              });
               this.game.addToPot(this.actor, "Call");
               this.actor.hasHadTurn = true;
             }
             if (this.target == "All-In") {
-              this.game.sendAlert(`${this.actor.name} goes All In!`);
+              this.game.broadcast("pokerToast", {
+                message: `${this.actor.name} goes all-in`,
+                time: Date.now(),
+              });
               this.game.addToPot(this.actor, "Bet", this.actor.Chips);
               this.actor.hasHadTurn = true;
             }
             if (this.target == "Fold") {
-              this.game.sendAlert(`${this.actor.name} Folds!`);
+              this.game.broadcast("pokerToast", {
+                message: `${this.actor.name} folds`,
+                time: Date.now(),
+              });
               this.actor.hasFolded = true;
               this.actor.hasHadTurn = true;
             }
             if (this.target == "Check") {
-              this.game.sendAlert(`${this.actor.name} Checks!`);
+              this.game.broadcast("pokerToast", {
+                message: `${this.actor.name} checks`,
+                time: Date.now(),
+              });
               this.actor.hasHadTurn = true;
             }
 
@@ -164,7 +184,6 @@ module.exports = class Microphone extends Item {
   hold(player) {
     super.hold(player);
 
-    player.game.sendAlert(`${player.name} is placing Bets…`);
     this.MovesOptions = ["Check", "Fold"];
     this.MinRaise = 1;
     if (this.game.lastAmountBid > 0) {

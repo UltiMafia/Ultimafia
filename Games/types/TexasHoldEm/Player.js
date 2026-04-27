@@ -6,6 +6,12 @@ module.exports = class TexasHoldEmPlayer extends Player {
     this.usesCount = 0;
     this.CardsInHand = [];
     this.AmountBidding = 0;
+    // Override the generic "X was killed." with poker-flavored text.
+    this.deathMessages = (type, name) => {
+      if (type === "leave") return `${name} left the game.`;
+      if (type === "veg") return `${name} turned into a vegetable.`;
+      return `${name} has lost all their money.`;
+    };
   }
   /*
   parseCommand(message) {
