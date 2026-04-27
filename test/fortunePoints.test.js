@@ -525,5 +525,51 @@ describe("modules/fortunePoints", function () {
       });
       result[0].soloPayout.should.equal(200); // (1 - 0) * 200
     });
+
+    it("accepts factions + alignmentWinRates directly (no setupStats)", function () {
+      const result = computeSoloPayoutsForSetup({
+        factions: ["Village", "Jester"],
+        alignmentWinRates: {
+          Village: [["ranked", true]],
+        },
+      });
+      const byFaction = Object.fromEntries(result.map((r) => [r.faction, r]));
+
+      // Village 1/1 = 100% → 0 payout, has history
+      byFaction.Village.hasHistoricalWinrate.should.be.true;
+      byFaction.Village.soloPayout.should.equal(0);
+
+      // Jester not in winrates → default 10% → anchor payout 80
+      byFaction.Jester.hasHistoricalWinrate.should.be.false;
+      byFaction.Jester.soloPayout.should.equal(80);
+    });
+
+    it("matches computeFactionFortunePoints solo numbers for the same inputs", function () {
+      // The two helpers must agree on solo-win payouts; computeFactionFortunePoints
+      // is now defined in terms of computeSoloPayoutsForSetup.
+      const factionNames = ["Village", "Mafia", "Jester"];
+      const alignmentWinRates = {
+        Village: [["ranked", true], ["ranked", false], ["ranked", false]], // 33%
+        Mafia: [["competitive", true], ["competitive", true]], // 100%
+        // Jester missing → default 10%
+      };
+
+      const soloRows = computeSoloPayoutsForSetup({
+        factions: factionNames,
+        alignmentWinRates,
+      });
+      const soloByFaction = Object.fromEntries(
+        soloRows.map((r) => [r.faction, r.soloPayout])
+      );
+
+      for (const winner of factionNames) {
+        const { pointsWonByFactions } = computeFactionFortunePoints({
+          factionNames,
+          winningFactions: [winner],
+          alignmentWinRates,
+        });
+        pointsWonByFactions[winner].should.equal(soloByFaction[winner]);
+      }
+    });
   });
 });

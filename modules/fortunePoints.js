@@ -54,14 +54,6 @@ function isMajorFaction(factionKey) {
   return false;
 }
 
-function winrateFor(factionKey, alignmentWinRates) {
-  const wr = winRateFromAlignmentEntries((alignmentWinRates || {})[factionKey]);
-  if (wr == null || Number.isNaN(wr)) {
-    return isMajorFaction(factionKey) ? DEFAULT_MAJOR_WR : DEFAULT_INDEPENDENT_WR;
-  }
-  return wr;
-}
-
 function soloPayout(factionKey, wr, K) {
   if (isMajorFaction(factionKey)) {
     return (1 - wr) * K;
@@ -89,6 +81,14 @@ function computeFactionFortunePoints(opts) {
   const winSet = new Set(winningFactions);
   const isJoint = winSet.size >= 2;
 
+  const soloRows = computeSoloPayoutsForSetup({
+    factions: factionNames,
+    alignmentWinRates: opts.alignmentWinRates,
+    K,
+  });
+  const rowByFaction = {};
+  for (const r of soloRows) rowByFaction[r.faction] = r;
+
   const pointsWonByFactions = {};
   const pointsLostByFactions = {};
 
@@ -101,10 +101,10 @@ function computeFactionFortunePoints(opts) {
       continue;
     }
 
-    const wr = winrateFor(f, opts.alignmentWinRates);
-    let payout = soloPayout(f, wr, K);
-    if (isJoint) payout *= jointDampFor(f);
-    pointsWonByFactions[f] = Math.round(payout);
+    const row = rowByFaction[f];
+    pointsWonByFactions[f] = isJoint
+      ? Math.round(row.soloPayoutExact * jointDampFor(f))
+      : row.soloPayout;
   }
 
   return { pointsWonByFactions, pointsLostByFactions };
@@ -131,24 +131,35 @@ function alignmentRowsToWinRateMap(setupStats) {
 }
 
 /**
- * Per-faction solo-win fortune payouts for a setup, derived from its historical
- * ranked/competitive winrate. Faction list is taken from setupStats.alignmentRows;
- * factions with no eligible games fall back to the same priors as a real payout
- * computation (50% major / 10% independent).
+ * Per-faction solo-win fortune payouts, derived from historical
+ * ranked/competitive winrate. Factions with no eligible games fall back to
+ * the same priors as a real payout computation (50% major / 10% independent).
+ *
+ * Faction list comes from `opts.factions` if given, otherwise from the keys of
+ * `opts.alignmentWinRates`, otherwise from the keys derived from
+ * `opts.setupStats.alignmentRows`.
+ *
+ * Each row exposes both `soloPayout` (rounded int, for display) and
+ * `soloPayoutExact` (float, for callers like `computeFactionFortunePoints`
+ * that need to apply joint dampening before a final round).
  *
  * @param {object} opts
- * @param {object} opts.setupStats SetupVersion.setupStats (needs alignmentRows).
- * @param {number} [opts.K]        Base payout (default constants.fortunePointsNominalK).
+ * @param {object} [opts.setupStats]        SetupVersion.setupStats; used when alignmentWinRates not provided.
+ * @param {object} [opts.alignmentWinRates] factionKey → Array<[gameType, won]>; takes precedence over setupStats.
+ * @param {string[]} [opts.factions]        Explicit faction list; defaults to alignmentWinRates keys.
+ * @param {number} [opts.K]                 Base payout (default constants.fortunePointsNominalK).
  * @returns {Array<{ faction: string, isMajor: boolean, winrate: number,
- *                   hasHistoricalWinrate: boolean, soloPayout: number }>}
+ *                   hasHistoricalWinrate: boolean, soloPayout: number,
+ *                   soloPayoutExact: number }>}
  *          Sorted majors-first then alphabetically.
  */
 function computeSoloPayoutsForSetup(opts) {
-  const setupStats = opts && opts.setupStats;
-  const K = opts && opts.K != null ? opts.K : constants.fortunePointsNominalK;
-  const alignmentWinRates = alignmentRowsToWinRateMap(setupStats);
+  const o = opts || {};
+  const K = o.K != null ? o.K : constants.fortunePointsNominalK;
+  const alignmentWinRates =
+    o.alignmentWinRates || alignmentRowsToWinRateMap(o.setupStats);
+  const factions = o.factions || Object.keys(alignmentWinRates);
 
-  const factions = Object.keys(alignmentWinRates);
   const result = factions.map((faction) => {
     const observed = winRateFromAlignmentEntries(alignmentWinRates[faction]);
     const hasHistoricalWinrate = observed != null && !Number.isNaN(observed);
@@ -157,12 +168,14 @@ function computeSoloPayoutsForSetup(opts) {
       : isMajorFaction(faction)
       ? DEFAULT_MAJOR_WR
       : DEFAULT_INDEPENDENT_WR;
+    const exact = soloPayout(faction, winrate, K);
     return {
       faction,
       isMajor: isMajorFaction(faction),
       winrate,
       hasHistoricalWinrate,
-      soloPayout: Math.round(soloPayout(faction, winrate, K)),
+      soloPayout: Math.round(exact),
+      soloPayoutExact: exact,
     };
   });
 
