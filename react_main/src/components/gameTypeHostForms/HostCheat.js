@@ -98,16 +98,6 @@ export default function HostCheat() {
       max: 3,
       step: 0.5,
     },
-    {
-      label: "Call Lie (minutes)",
-      ref: "callLieLength",
-      type: "number",
-      showIf: "configureDuration",
-      value: defaults.showdownLength,
-      min: 0.5,
-      max: 3,
-      step: 0.5,
-    },
   ];
     
   sortInitialFormFields(initialFormFields);
@@ -129,7 +119,6 @@ export default function HostCheat() {
         readyCheck: getFormFieldValue("readyCheck"),
         stateLengths: {
           "Play Cards": getFormFieldValue("playCardsLength"),
-          "Call Lie": getFormFieldValue("callLieLength"),
         },
         startingChips: getFormFieldValue("startingChips"),
         minimumBet: getFormFieldValue("minimumBet"),
