@@ -32,6 +32,11 @@ const RANK_NAMES = {
 const rankLabel = (n) =>
   RANK_NAMES[n] || (typeof n === "number" ? String(n) : "—");
 
+// Spell out small counts so the player can tell quantity from card rank
+// at a glance ("three 2s" reads better than "3 2s").
+const COUNT_WORDS = ["zero", "one", "two", "three", "four"];
+const countWord = (n) => COUNT_WORDS[n] || String(n);
+
 function rankValue(card) {
   const rank = card.split("-")[0];
   if (rank === "Ace") return 1;
@@ -53,6 +58,14 @@ export default function CheatGame() {
   const [liveExtraInfo, setLiveExtraInfo] = useState(null);
   const [toasts, setToasts] = useState([]);
   const toastIdRef = useRef(0);
+  const [revealedPlay, setRevealedPlay] = useState(null);
+  const revealTimeoutRef = useRef(null);
+  // Dedup toasts/reveals by the server-side `time` field. The shared socket
+  // wrapper replays past messages whenever a new listener is registered, so
+  // a single broadcast can otherwise fire multiple times when the React
+  // useEffect re-binds.
+  const seenToastTimesRef = useRef(new Set());
+  const seenRevealTimesRef = useRef(new Set());
 
   const pushToast = (message) => {
     const id = ++toastIdRef.current;
@@ -74,6 +87,11 @@ export default function CheatGame() {
   // when a new state arrives — the canonical extraInfo is then in history.
   useEffect(() => {
     setLiveExtraInfo(null);
+    setRevealedPlay(null);
+    if (revealTimeoutRef.current) {
+      clearTimeout(revealTimeoutRef.current);
+      revealTimeoutRef.current = null;
+    }
   }, [history.currentState]);
 
   useEffect(() => {
@@ -92,7 +110,26 @@ export default function CheatGame() {
     socket.on("chips_small1", () => game.playAudio("chips_small1"));
     socket.on("chips_small2", () => game.playAudio("chips_small2"));
     socket.on("cheatExtraInfo", (info) => setLiveExtraInfo(info));
-    socket.on("cheatToast", ({ message }) => pushToast(message));
+    socket.on("cheatToast", ({ message, time }) => {
+      if (time != null) {
+        if (seenToastTimesRef.current.has(time)) return;
+        seenToastTimesRef.current.add(time);
+      }
+      pushToast(message);
+    });
+    socket.on("cheatReveal", (data) => {
+      const t = data?.time;
+      if (t != null) {
+        if (seenRevealTimesRef.current.has(t)) return;
+        seenRevealTimesRef.current.add(t);
+      }
+      setRevealedPlay(data);
+      if (revealTimeoutRef.current) clearTimeout(revealTimeoutRef.current);
+      revealTimeoutRef.current = setTimeout(() => {
+        setRevealedPlay(null);
+        revealTimeoutRef.current = null;
+      }, 3500);
+    });
   }, game.socket);
 
   const playMeeting = Object.values(meetings).find(
@@ -142,6 +179,7 @@ export default function CheatGame() {
       socket={game.socket}
       liveExtraInfo={liveExtraInfo}
       toasts={toasts}
+      revealedPlay={revealedPlay}
       playMeeting={playMeeting}
       submitMeeting={submitMeeting}
       callLieMeeting={callLieMeeting}
@@ -195,6 +233,7 @@ function CheatBoard({
   socket,
   liveExtraInfo,
   toasts,
+  revealedPlay,
   playMeeting,
   submitMeeting,
   callLieMeeting,
@@ -308,13 +347,10 @@ function CheatBoard({
             ))}
           </div>
 
-          <ChCurrentCard
+          <ChCardPile
             rank={extraInfo.RankNumber}
-            stackCount={(extraInfo.TheStack || []).length}
-            turnLabel={turnLabel}
-            isMyTurn={isMyTurn}
             lastPlay={extraInfo.lastPlay}
-            selfPlayerId={self}
+            revealedPlay={revealedPlay}
           />
 
           <ChToasts toasts={toasts} />
@@ -331,10 +367,13 @@ function CheatBoard({
             <button
               className="ch-action-btn ch-action-play"
               onClick={handlePlay}
-              style={canPlay ? undefined : { visibility: "hidden" }}
-              tabIndex={canPlay ? 0 : -1}
-              aria-hidden={!canPlay}
-              title="Play selected cards"
+              style={isMyTurn ? undefined : { visibility: "hidden" }}
+              tabIndex={isMyTurn ? 0 : -1}
+              aria-hidden={!isMyTurn}
+              disabled={!canPlay}
+              title={
+                canPlay ? "Play selected cards" : "Select cards first"
+              }
             >
               Play
               {selected.size > 0 && (
@@ -366,7 +405,10 @@ function ChOpponent({ player, isActiveTurn, isLastPlayer, lastPlayInfo }) {
         isLastPlayer ? " ch-opponent-lastplay" : ""
       }`}
     >
-      <div className="ch-opponent-name">{player.playerName}</div>
+      <div className="ch-opponent-row">
+        <span className="ch-opponent-name">{player.playerName}</span>
+        <span className="ch-opponent-count-inline">{count}</span>
+      </div>
       <div className="ch-card-fan">
         <div className="card card-unknown ch-fan-card ch-fan-card-3" />
         <div className="card card-unknown ch-fan-card ch-fan-card-2" />
@@ -375,41 +417,84 @@ function ChOpponent({ player, isActiveTurn, isLastPlayer, lastPlayInfo }) {
       </div>
       {isLastPlayer && lastPlayInfo && (
         <div className="ch-opponent-claim">
-          claimed {lastPlayInfo.cardCount} × {rankLabel(lastPlayInfo.claimedRank)}
+          played {countWord(lastPlayInfo.cardCount)}{" "}
+          {rankLabel(lastPlayInfo.claimedRank)}
+          {lastPlayInfo.cardCount === 1 ? "" : "s"}
         </div>
       )}
     </div>
   );
 }
 
-function ChCurrentCard({
-  rank,
-  stackCount,
-  turnLabel,
-  isMyTurn,
-  lastPlay,
-  selfPlayerId,
-}) {
-  const isOwnLastPlay = lastPlay?.playerId === selfPlayerId;
-  return (
-    <div className="ch-current">
-      <div className="ch-current-label">Current card</div>
-      <div className="ch-current-rank">{rankLabel(rank)}</div>
-      <div className={`ch-turn-line${isMyTurn ? " ch-turn-mine" : ""}`}>
-        <span className="ch-turn-dot" />
-        <span>{turnLabel}</span>
-        <span className="ch-stack-info">
-          Stack: <strong>{stackCount}</strong>
-        </span>
-      </div>
-      {lastPlay && (
-        <div
-          className={`ch-lastplay${isOwnLastPlay ? " ch-lastplay-mine" : ""}`}
+function ChCardPile({ rank, lastPlay, revealedPlay }) {
+  const isRevealed = !!revealedPlay;
+  const items = isRevealed
+    ? revealedPlay.cards
+    : lastPlay && lastPlay.cardCount > 0
+    ? Array.from({ length: lastPlay.cardCount }, () => null)
+    : [];
+
+  let footer = null;
+  if (isRevealed) {
+    const n = revealedPlay.cards.length;
+    footer = (
+      <span>
+        <strong>{revealedPlay.liarName}</strong> played {countWord(n)}{" "}
+        {rankLabel(revealedPlay.claimedRank)}
+        {n === 1 ? "" : "s"}
+        {" — "}
+        <span
+          className={
+            revealedPlay.wasLying
+              ? "ch-pile-result-lied"
+              : "ch-pile-result-truth"
+          }
         >
-          Last: <strong>{lastPlay.playerName}</strong> claimed{" "}
-          {lastPlay.cardCount} × {rankLabel(lastPlay.claimedRank)}
-        </div>
-      )}
+          {revealedPlay.wasLying ? "lied!" : "truth"}
+        </span>
+      </span>
+    );
+  } else if (lastPlay && lastPlay.cardCount > 0) {
+    footer = (
+      <span>
+        <strong>{lastPlay.playerName}</strong> played{" "}
+        {countWord(lastPlay.cardCount)} {rankLabel(lastPlay.claimedRank)}
+        {lastPlay.cardCount === 1 ? "" : "s"}
+      </span>
+    );
+  }
+
+  return (
+    <div className={`ch-pile${isRevealed ? " ch-pile-reveal" : ""}`}>
+      <div className="ch-pile-header">
+        <span className="ch-pile-label">Card pile</span>
+        <span className="ch-pile-next">next card: {rankLabel(rank)}</span>
+      </div>
+      <div className="ch-pile-stack">
+        {items.length === 0 && (
+          <div className="card card-unknown ch-pile-empty" />
+        )}
+        {items.map((card, i) => {
+          const seed = i + 1;
+          const rot = jitter(seed, 22);
+          const dx = jitter(seed + 100, 8);
+          const dy = jitter(seed + 200, 6);
+          const cardClass = card ? `c${card}` : "card-unknown";
+          return (
+            <div
+              key={i}
+              className={`card ${cardClass} ch-pile-card`}
+              style={{
+                "--ch-pile-dx": `${dx}px`,
+                "--ch-pile-dy": `${dy}px`,
+                "--ch-pile-rot": `${rot}deg`,
+                zIndex: i,
+              }}
+            />
+          );
+        })}
+      </div>
+      {footer && <div className="ch-pile-footer">{footer}</div>}
     </div>
   );
 }
@@ -418,7 +503,6 @@ function ChOwnHand({ cards, selected, onToggle, disabled, requiredRank }) {
   if (!cards || cards.length === 0) {
     return (
       <div className="ch-hand ch-hand-empty">
-        <div className="ch-hand-label">Your hand</div>
         <div className="ch-hand-empty-note">No cards</div>
       </div>
     );
@@ -432,7 +516,6 @@ function ChOwnHand({ cards, selected, onToggle, disabled, requiredRank }) {
 
   return (
     <div className="ch-hand">
-      <div className="ch-hand-label">Your hand</div>
       <div
         className="ch-hand-fan"
         style={{ "--ch-fan-width": `${Math.max(220, fanStep * (n - 1) + 110)}px` }}
@@ -466,6 +549,12 @@ function ChOwnHand({ cards, selected, onToggle, disabled, requiredRank }) {
       </div>
     </div>
   );
+}
+
+// Deterministic per-card jitter so the pile doesn't jiggle on re-render.
+function jitter(seed, range) {
+  const x = Math.sin(seed * 9999.7) * 10000;
+  return (x - Math.floor(x) - 0.5) * 2 * range;
 }
 
 function ChToasts({ toasts }) {

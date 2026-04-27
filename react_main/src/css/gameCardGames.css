@@ -722,6 +722,18 @@
   white-space: nowrap;
 }
 
+.ch-opponent-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Inline count is the mobile fallback for the fan; hidden on desktop where
+   the fan stack already shows the count. */
+.ch-opponent-count-inline {
+  display: none;
+}
+
 .ch-card-fan {
   position: relative;
   width: 60px;
@@ -754,78 +766,92 @@
   z-index: 10;
 }
 
-.ch-current {
+/* ===== Combined Card Pile panel (next-rank header + played pile + caption) ===== */
+
+.ch-pile {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 10px 14px;
+  gap: 8px;
+  padding: 10px 14px 14px;
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: filter 0.2s ease, border-color 0.2s ease;
 }
 
-.ch-current-label {
-  font-size: 0.75rem;
+.ch-pile-reveal {
+  border-color: rgba(255, 215, 0, 0.5);
+  filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.45));
+}
+
+.ch-pile-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.ch-pile-label {
+  font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  opacity: 0.7;
-}
-
-.ch-current-rank {
-  font-size: 2.2rem;
-  font-weight: bold;
-  line-height: 1.1;
+  font-weight: 600;
   color: var(--scheme-color-text);
 }
 
-.ch-turn-line {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.ch-pile-next {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  color: var(--scheme-color-text);
+}
+
+.ch-pile-stack {
+  position: relative;
+  width: 110px;
+  height: 110px;
+}
+
+.ch-pile-card,
+.ch-pile-empty {
+  position: absolute;
+  top: 25px;
+  left: 33px;
+  pointer-events: none;
+  transform-origin: center;
+}
+
+.ch-pile-card {
+  transform: translate(var(--ch-pile-dx, 0), var(--ch-pile-dy, 0))
+    rotate(var(--ch-pile-rot, 0))
+    scale(var(--ch-pile-scale, 1.5));
+}
+
+.ch-pile-empty {
+  opacity: 0.25;
+  transform: scale(var(--ch-pile-scale, 1.5));
+}
+
+.ch-pile-footer {
   font-size: 0.85rem;
-  margin-top: 4px;
-  opacity: 0.85;
+  text-align: center;
+  color: var(--scheme-color-text);
+  opacity: 0.9;
 }
 
-.ch-turn-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #888;
-}
-
-.ch-turn-mine .ch-turn-dot {
-  background: #4caf50;
-  box-shadow: 0 0 6px #4caf50;
-}
-
-.ch-turn-mine {
-  opacity: 1;
+.ch-pile-result-lied {
+  color: #ef5350;
   font-weight: 600;
 }
 
-.ch-stack-info {
-  margin-left: 8px;
-  opacity: 0.8;
-}
-
-.ch-stack-info strong {
-  color: #fff;
+.ch-pile-result-truth {
+  color: #66bb6a;
+  font-weight: 600;
 }
 
 .ch-hand {
   display: flex;
   flex-direction: column;
   gap: 6px;
-}
-
-.ch-hand-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  opacity: 0.7;
-  text-align: center;
 }
 
 .ch-hand-empty-note {
@@ -960,9 +986,15 @@
   background: #ef5350;
 }
 
-.ch-action-disabled {
-  opacity: 0.4;
+.ch-action-disabled,
+.ch-action-btn:disabled {
+  opacity: 0.45;
   cursor: not-allowed;
+}
+
+.ch-action-play:disabled:hover,
+.ch-action-calllie:disabled:hover {
+  background: inherit;
 }
 
 .ch-play-count {
@@ -979,19 +1011,6 @@
   margin-left: 4px;
   letter-spacing: 0;
   text-transform: none;
-}
-
-.ch-lastplay {
-  margin-top: 4px;
-  font-size: 0.85rem;
-  opacity: 0.85;
-  text-align: center;
-  color: var(--scheme-color-text);
-}
-
-.ch-lastplay-mine {
-  opacity: 1;
-  font-weight: 600;
 }
 
 .ch-opponent-lastplay {
@@ -1043,44 +1062,92 @@
   }
 
   .ch-board {
-    gap: 10px;
+    gap: 8px;
     padding: 8px 6px;
   }
 
+  /* Opponents collapse into tiny card-shaped pills laid out across the
+     row. Each pill shows just `Name 17` so several opponents fit without
+     scrolling on a phone. */
   .ch-others {
-    gap: 6px;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
   }
 
   .ch-opponent {
-    padding: 4px 6px;
+    padding: 4px 8px;
     min-width: 0;
-    gap: 2px;
+    gap: 0;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 5px;
+  }
+
+  .ch-opponent-row {
+    gap: 6px;
   }
 
   .ch-opponent-name {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     max-width: 80px;
   }
 
+  .ch-opponent-count-inline {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--scheme-color-text);
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.12);
+    min-width: 18px;
+    text-align: center;
+  }
+
+  .ch-opponent-claim {
+    font-size: 0.62rem;
+    line-height: 1.1;
+    margin-top: 2px;
+  }
+
+  /* Hide the desktop fan + its count badge entirely on mobile. */
   .ch-card-fan {
-    width: 38px;
-    height: 50px;
+    display: none;
   }
 
-  .ch-fan-card {
-    transform-origin: bottom center;
+  /* Smaller card pile on mobile so the hand has more room. */
+  .ch-pile {
+    padding: 6px 10px 8px;
+    gap: 4px;
   }
 
-  .ch-fan-card-1 { transform: scale(0.7) rotate(0deg); }
-  .ch-fan-card-2 { transform: scale(0.7) rotate(-7deg) translate(-2px, 0); }
-  .ch-fan-card-3 { transform: scale(0.7) rotate(-14deg) translate(-4px, 0); }
-
-  .ch-card-count {
-    font-size: 1rem;
+  .ch-pile {
+    --ch-pile-scale: 1.05;
   }
 
-  .ch-current-rank {
-    font-size: 1.7rem;
+  .ch-pile-stack {
+    width: 80px;
+    height: 80px;
+  }
+
+  .ch-pile-card,
+  .ch-pile-empty {
+    top: 18px;
+    left: 23px;
+  }
+
+  .ch-pile-label {
+    font-size: 0.75rem;
+  }
+
+  .ch-pile-next {
+    font-size: 0.7rem;
+  }
+
+  .ch-pile-footer {
+    font-size: 0.75rem;
   }
 
   .ch-hand-fan {
