@@ -37,6 +37,7 @@ export default function RatscrewGame() {
   const [liveExtraInfo, setLiveExtraInfo] = useState(null);
   const [toasts, setToasts] = useState([]);
   const toastIdRef = useRef(0);
+  const [showRulesModal, setShowRulesModal] = useState(true);
 
   const pushToast = (message) => {
     const id = ++toastIdRef.current;
@@ -124,6 +125,8 @@ export default function RatscrewGame() {
     return () => window.removeEventListener("keydown", onKeyDown, true);
   }, []);
 
+  const gameOptions = game.options?.gameTypeOptions || {};
+
   const board = (
     <RatscrewBoard
       history={history}
@@ -174,7 +177,103 @@ export default function RatscrewGame() {
         chatTab
         hideInfoTab
       />
+      {showRulesModal && Object.keys(gameOptions).length > 0 && (
+        <RatscrewRulesModal
+          options={gameOptions}
+          onClose={() => setShowRulesModal(false)}
+        />
+      )}
     </GameTypeContext.Provider>
+  );
+}
+
+function MiniCard({ value }) {
+  const cls = value ? `c${value}` : "card-unknown";
+  return <div className={`card ${cls} rs-mini-card`} />;
+}
+
+function RuleRow({ label, cards }) {
+  return (
+    <div className="rs-rule-row">
+      <div className="rs-rule-cards">
+        {cards.map((v, i) => (
+          <MiniCard key={i} value={v} />
+        ))}
+      </div>
+      <div className="rs-rule-label">{label}</div>
+    </div>
+  );
+}
+
+function RatscrewRulesModal({ options, onClose }) {
+  return (
+    <div className="rs-modal-backdrop" onClick={onClose}>
+      <div className="rs-modal" onClick={(e) => e.stopPropagation()}>
+        <h2 className="rs-modal-title">Ratscrew — Active Rules</h2>
+        <p className="rs-modal-subtitle">Slap when the pile shows:</p>
+        <div className="rs-rules-grid">
+          <RuleRow
+            label={
+              <>
+                <b>Doubles</b> — same as the previous card
+              </>
+            }
+            cards={["7-Hearts", "7-Spades"]}
+          />
+          <RuleRow
+            label={
+              <>
+                <b>Sandwich</b> — same as the card two below
+              </>
+            }
+            cards={["7-Hearts", "3-Clubs", "7-Spades"]}
+          />
+          <RuleRow
+            label={
+              <>
+                Same as the <b>bottom</b> card of the pile
+              </>
+            }
+            cards={["7-Hearts", null, null, "7-Spades"]}
+          />
+          {options.sumToTen && (
+            <RuleRow
+              label={
+                <>
+                  <b>Sum to 10</b> — top + previous = 10
+                </>
+              }
+              cards={["4-Hearts", "6-Spades"]}
+            />
+          )}
+          {options.marriageRule && (
+            <RuleRow
+              label={
+                <>
+                  <b>Marriage</b> — King and Queen adjacent
+                </>
+              }
+              cards={["King-Hearts", "Queen-Spades"]}
+            />
+          )}
+        </div>
+        <p className="rs-modal-subtitle">Face cards:</p>
+        <ul className="rs-modal-list">
+          <li>
+            Throwing a face card forces the next player to also throw a face
+            card — fail and they lose the pile.
+          </li>
+          <li>Attempts allowed: J = 1, Q = 2, K = 3, A = 4</li>
+        </ul>
+        <p className="rs-modal-subtitle">Missed slaps:</p>
+        <ul className="rs-modal-list">
+          <li>Burn one card face-down into the pile.</li>
+        </ul>
+        <button className="rs-modal-btn" onClick={onClose}>
+          Got it
+        </button>
+      </div>
+    </div>
   );
 }
 
