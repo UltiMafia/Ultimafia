@@ -24,15 +24,12 @@ module.exports = class RatscrewGame extends Game {
         name: "Play Cards",
         length: options.settings.stateLengths["Play Cards"],
       },
-      {
-        name: "Slap",
-        length: 1000 * 15,
-      },
-      {
-        name: "Call Lie",
-        length: 1000 * 10,
-      },
     ];
+
+    // Face-card challenge tracking. When a face card is played, the next
+    // player has `attemptsLeft` cards to play another face card or the
+    // pile goes to `challenger`. Reset on slap or successful challenge.
+    this.faceChallenge = null; // { challenger, attemptsLeft }
 
     //settings
     /*
@@ -49,6 +46,8 @@ module.exports = class RatscrewGame extends Game {
     this.randomizedPlayersCopy = []; //copy of above, but players don't get removed on dying / leaving. Used for deciding next player's
     // turn, since variable above would mess up indexes when players got removed.
     this.currentIndex = 0; //Index of player's current turn.
+    this.nextToPlay = null; // Player object — whose turn it currently is.
+    this.stackEntryId = 0; // Monotonic id for each card placed in TheStack.
 
     //information about last turn's bid
     this.lastBidder = null;
@@ -162,64 +161,215 @@ module.exports = class RatscrewGame extends Game {
         nextPlayer.howManySelected = false;
         nextPlayer.whichFaceSelected = false;
         nextPlayer.holdItem("Microphone");
+        // Initial turn assignment.
+        this.nextToPlay = nextPlayer;
         return;
       }
     }
   }
 
-  //Called each round, cycles between players.
-  incrementCurrentIndex() {
-    this.currentIndex =
-      (this.currentIndex + 1) % this.randomizedPlayersCopy.length;
-    while (
-      !this.randomizedPlayersCopy[this.currentIndex].alive ||
-      this.randomizedPlayersCopy[this.currentIndex].CardsInHand.length <= 0
+  // Advance the turn to the next alive player who still has cards.
+  // Wraps around the round-robin order.
+  rotateNextToPlay() {
+    if (!this.nextToPlay) {
+      this.nextToPlay = this.randomizedPlayersCopy[0];
+    }
+    const order = this.randomizedPlayersCopy;
+    const startIdx = Math.max(order.indexOf(this.nextToPlay), 0);
+    for (let i = 1; i <= order.length; i++) {
+      const candidate = order[(startIdx + i) % order.length];
+      if (candidate && candidate.alive && candidate.CardsInHand.length > 0) {
+        this.nextToPlay = candidate;
+        return;
+      }
+    }
+    // No eligible player — game is effectively over.
+  }
+
+  // Force the next-to-play to a specific player (used when a slap or face-card
+  // challenge winner takes the pile).
+  setNextToPlay(player) {
+    this.nextToPlay = player;
+    if (
+      !this.nextToPlay.alive ||
+      this.nextToPlay.CardsInHand.length === 0
     ) {
-      this.currentIndex =
-        (this.currentIndex + 1) % this.randomizedPlayersCopy.length;
+      this.rotateNextToPlay();
     }
   }
 
-  //After someone uses microphone, it passes it to the next player.
+  //After someone plays, the state restarts and turn advances.
   incrementState() {
     let previousState = this.getStateName();
 
-    console.log(this.spectatorMeetFilter);
-    if (previousState == "Call Lie") {
+    if (previousState == "Play Cards") {
       this.RoundNumber++;
-
-      for (let player of this.randomizedPlayersCopy) {
-        if (player.hasSlapped == true) {
-          player.CardsInHand.push(...this.TheStack);
-          this.sendAlert(`${player.name} gains the stack!`);
-          this.TheStack = [];
-          this.FaceCardBlock = false;
-          this.FaceCardPlayed = false;
-          this.FacePlayer = null;
-        }
-
-        player.hasSlapped = false;
-        player.hasLied = false;
-      }
-      if (this.FaceCardBlock != true) {
-        this.incrementCurrentIndex();
-      }
-      if (this.FaceCardPlayed == true) {
-        this.FaceCardBlock = true;
-        this.sendAlert(
-          `${
-            this.randomizedPlayersCopy[this.currentIndex].name
-          } must play a face card in the next ${this.FaceCardNumber} or ${
-            this.FacePlayer.name
-          } gains the stack!`
-        );
-      }
-      this.sendAlert(
-        `${this.randomizedPlayersCopy[this.currentIndex].name}'s Turn!`
-      );
+      // Turn advancement is handled inline by playCard / applySlap.
     }
 
     super.incrementState();
+  }
+
+  // ---- Card helpers ----
+
+  // Returns the numeric rank of a card object/string, or null if face-down.
+  getCardRank(entry) {
+    if (!entry) return null;
+    if (typeof entry === "object") {
+      if (entry.faceDown) return null;
+      return this.readCard(entry.value)[0];
+    }
+    return this.readCard(entry)[0];
+  }
+
+  isFaceCard(rank) {
+    // Ace, Jack, Queen, King
+    return rank === 1 || rank === 11 || rank === 12 || rank === 13;
+  }
+
+  faceCardAttempts(rank) {
+    if (rank === 11) return 1; // Jack
+    if (rank === 12) return 2; // Queen
+    if (rank === 13) return 3; // King
+    if (rank === 1) return 4; // Ace
+    return 0;
+  }
+
+  // ---- Slap mechanic ----
+
+  // Returns { valid: bool, reason: string|null } given current stack state.
+  validateSlap() {
+    const stack = this.TheStack;
+    if (stack.length === 0) return { valid: false, reason: "empty stack" };
+
+    const topRank = this.getCardRank(stack[stack.length - 1]);
+    if (topRank == null) return { valid: false, reason: "top is face-down" };
+
+    // Doubles: top matches the card immediately under it
+    if (stack.length >= 2) {
+      const prevRank = this.getCardRank(stack[stack.length - 2]);
+      if (prevRank != null && topRank === prevRank) {
+        return { valid: true, reason: "doubles" };
+      }
+    }
+
+    // Sandwich: top matches the card two below it (X-Y-X)
+    if (stack.length >= 3) {
+      const twoBackRank = this.getCardRank(stack[stack.length - 3]);
+      if (twoBackRank != null && topRank === twoBackRank) {
+        return { valid: true, reason: "sandwich" };
+      }
+    }
+
+    // Top-bottom: top matches the bottom-most face-up card
+    for (let i = 0; i < stack.length - 1; i++) {
+      const bottomRank = this.getCardRank(stack[i]);
+      if (bottomRank == null) continue;
+      if (bottomRank === topRank) {
+        return { valid: true, reason: "top-bottom" };
+      }
+      break;
+    }
+
+    return { valid: false, reason: "no match" };
+  }
+
+  applySlap(player) {
+    const result = this.validateSlap();
+
+    if (result.valid) {
+      this.toast(`${player.name} slaps and takes the pile`);
+      this.transferPileTo(player);
+      // Slap interrupts any face-card challenge.
+      this.faceChallenge = null;
+      // Winner of the pile starts the next play.
+      this.setNextToPlay(player);
+      this.broadcastExtraInfoUpdate();
+      // Force the state to cycle so a fresh Play Card meeting opens for the
+      // slapper on their new turn. Deferred to escape the action's call stack.
+      setImmediate(() => this.gotoNextState());
+    } else {
+      // Invalid slap — burn one card from the slapper, face-down, into the
+      // middle of the stack so it doesn't trigger any combinations.
+      if (player.CardsInHand.length === 0) {
+        this.toast(`${player.name} is out!`);
+        player.kill("Basic", player, true);
+        this.broadcastExtraInfoUpdate();
+        return;
+      }
+      const burned = player.CardsInHand.shift();
+      const middle = Math.floor(this.TheStack.length / 2);
+      this.TheStack.splice(middle, 0, this.pushStackEntry(burned, true));
+      this.toast(`${player.name} burns a card`);
+      this.broadcastExtraInfoUpdate();
+    }
+  }
+
+  // Push a fresh extraInfo snapshot to all clients. Used for mid-state
+  // mutations (slap) so the UI reflects new card counts and pile state
+  // without waiting for the next state change.
+  broadcastExtraInfoUpdate() {
+    const info = this.getStateInfo();
+    this.broadcast("ratscrewExtraInfo", info.extraInfo);
+  }
+
+  // Send a transient on-board notification (rendered by the client as a
+  // 1-second toast).
+  toast(message) {
+    this.broadcast("ratscrewToast", { message, time: Date.now() });
+  }
+
+  pushStackEntry(value, faceDown) {
+    this.stackEntryId += 1;
+    return { value, faceDown, id: this.stackEntryId };
+  }
+
+  // ---- Pile + turn helpers ----
+
+  transferPileTo(player) {
+    const cardValues = this.TheStack.map((entry) =>
+      typeof entry === "object" ? entry.value : entry
+    );
+    player.CardsInHand.push(...cardValues);
+    this.TheStack = [];
+  }
+
+
+  // ---- Card play resolution ----
+
+  playCard(actor) {
+    if (actor.CardsInHand.length === 0) return;
+    const card = actor.CardsInHand.shift();
+    this.TheStack.push(this.pushStackEntry(card, false));
+    const rank = this.readCard(card)[0];
+
+    if (this.isFaceCard(rank)) {
+      // Played a face card — start (or escalate) a challenge.
+      this.faceChallenge = {
+        challenger: actor,
+        attemptsLeft: this.faceCardAttempts(rank),
+      };
+      this.rotateNextToPlay();
+      return;
+    }
+
+    if (this.faceChallenge) {
+      this.faceChallenge.attemptsLeft -= 1;
+      if (this.faceChallenge.attemptsLeft <= 0) {
+        const challenger = this.faceChallenge.challenger;
+        this.toast(`${challenger.name} wins the pile!`);
+        this.transferPileTo(challenger);
+        this.faceChallenge = null;
+        // Pile winner plays next.
+        this.setNextToPlay(challenger);
+        return;
+      }
+      // Same player keeps playing until they hit a face card or run out
+      // of attempts. Do NOT rotate the turn.
+      return;
+    }
+
+    this.rotateNextToPlay();
   }
 
   sortCards(cards) {
@@ -404,12 +554,17 @@ module.exports = class RatscrewGame extends Game {
       randomizedPlayers: simplifiedPlayers,
       isTheFlyingDutchman:
         this.chatName == "The Flying Dutchman" ? true : false,
-      whoseTurnIsIt:
-        this.randomizedPlayersCopy?.[this.currentIndex]?.user.id ?? 0,
+      whoseTurnIsIt: this.nextToPlay?.user?.id ?? 0,
       ThePot: this.ThePot,
       RoundNumber: this.RoundNumber,
       RankNumber: this.RankNumber,
       TheStack: this.TheStack,
+      faceChallenge: this.faceChallenge
+        ? {
+            challengerName: this.faceChallenge.challenger.name,
+            attemptsLeft: this.faceChallenge.attemptsLeft,
+          }
+        : null,
     };
     return info;
   }
