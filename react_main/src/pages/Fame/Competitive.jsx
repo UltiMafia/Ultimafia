@@ -413,32 +413,72 @@ function GameHistory({ roundInfo, canManageCompetitive, reloadRoundInfo }) {
                   </Stack>
                 </Grid2>
                 <Grid2 size={1}>
-                  {gameCompletion.pointsEarnedByPlayers.map(
-                    (pointsEarnedByPlayer) => {
+                  {(() => {
+                    const winners = gameCompletion.pointsEarnedByPlayers
+                      .filter((p) => p.points !== 0)
+                      .slice()
+                      .sort((a, b) => b.points - a.points);
+                    const losers = gameCompletion.pointsEarnedByPlayers.filter(
+                      (p) => p.points === 0
+                    );
+                    const renderRow = (pointsEarnedByPlayer) => {
                       const userId = pointsEarnedByPlayer.userId;
                       const user = roundInfo.users[userId].user || {};
                       return (
                         <Stack
                           direction="row"
-                          spacing={1}
+                          spacing={0.5}
                           key={userId}
                           sx={{
                             alignItems: "center",
+                            "& .user-name .MuiTypography-root": {
+                              fontSize: "0.75rem",
+                            },
                           }}
                         >
                           <NameWithAvatar
                             id={userId}
                             name={user.name}
                             avatar={user.avatar}
+                            small
                           />
-                          <Typography sx={{ marginLeft: "auto !important" }}>
+                          <Typography
+                            variant="caption"
+                            sx={{ marginLeft: "auto !important" }}
+                          >
                             {Math.trunc(pointsEarnedByPlayer.points)}
                           </Typography>
-                          <img src={POINTS_ICON} alt="Fortune" />
+                          <img
+                            src={POINTS_ICON}
+                            alt="Fortune"
+                            style={{ height: 16, width: 16 }}
+                          />
                         </Stack>
                       );
-                    }
-                  )}
+                    };
+                    return (
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{ alignItems: "flex-start" }}
+                      >
+                        <Stack
+                          direction="column"
+                          spacing={0.25}
+                          sx={{ flex: 1, minWidth: 0 }}
+                        >
+                          {winners.map(renderRow)}
+                        </Stack>
+                        <Stack
+                          direction="column"
+                          spacing={0.25}
+                          sx={{ flex: 1, minWidth: 0 }}
+                        >
+                          {losers.map(renderRow)}
+                        </Stack>
+                      </Stack>
+                    );
+                  })()}
                 </Grid2>
               </Grid2>
             </Paper>
