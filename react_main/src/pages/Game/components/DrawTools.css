@@ -1,0 +1,55 @@
+.draw-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  user-select: none;
+}
+
+.draw-tools-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.draw-tools-color {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #444;
+  border-radius: 4px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.draw-tools-color.active {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px #000;
+}
+
+.draw-tools-brushes {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.draw-tools-size,
+.draw-tools-erase,
+.draw-tools-undo,
+.draw-tools-clear {
+  padding: 6px 12px;
+  border: 1px solid #555;
+  background: #222;
+  color: #eee;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.draw-tools-size.active,
+.draw-tools-erase.active {
+  background: #555;
+  color: #fff;
+}
+
+.draw-tools-clear {
+  margin-left: auto;
+}
