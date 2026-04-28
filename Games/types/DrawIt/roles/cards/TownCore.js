@@ -15,9 +15,11 @@ module.exports = class TownCore extends Card {
         whileDead: true,
         speakDead: true,
       },
-      // Hidden chat for players who have already guessed (and the drawer once Reveal begins).
-      // Membership is gated by shouldMeet so the meeting silently includes only the right
-      // subset of players each state.
+      // Hidden chat for players who have already guessed (the round winners).
+      // During Draw: only guessers see it — non-guessers can't peek at hints
+      // or banter that might spoil the word.
+      // During Reveal: everyone joins so the round-losers can see what the
+      // winners were saying once the round is over.
       SecretChat: {
         states: ["Draw", "Reveal"],
         flags: ["group", "speech"],
@@ -25,16 +27,12 @@ module.exports = class TownCore extends Card {
         shouldMeet: function () {
           const game = this.game;
           if (!game) return false;
+          // End-of-round: everyone joins to read the winners' chat.
+          if (game.getStateName() === "Reveal") return true;
+          // During Draw: only the round winners (guessers) are members.
           if (
             Array.isArray(game.currentGuessers) &&
             game.currentGuessers.includes(this.player)
-          ) {
-            return true;
-          }
-          if (
-            typeof game.isDrawer === "function" &&
-            game.isDrawer(this.player) &&
-            game.getStateName() === "Reveal"
           ) {
             return true;
           }
