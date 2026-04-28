@@ -7,6 +7,7 @@ export const gamesIcons = {
   Acrotopia: require("images/game_icons/Acrotopia.png"),
   "Secret Dictator": require("images/game_icons/SecretDictator.png"),
   "Wacky Words": require("images/game_icons/WackyWords.png"),
+  "Draw It": require("images/game_icons/DrawIt.png"),
   "Liars Dice": require("images/game_icons/LiarsDice.png"),
   "Texas Hold Em": require("images/game_icons/TexasHoldEm.png"),
   Cheat: require("images/game_icons/Cheat.png"),

@@ -23,6 +23,7 @@ import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
 import SecretDictatorGame from "./SecretDictatorGame";
 import WackyWordsGame from "./WackyWordsGame";
+import DrawItGame from "./DrawItGame";
 import LiarsDiceGame from "./LiarsDiceGame";
 import TexasHoldEmGame from "./TexasHoldEmGame";
 import CheatGame from "./CheatGame";
@@ -976,6 +977,7 @@ export default function Game() {
             {gameType === "Acrotopia" && <AcrotopiaGame />}
             {gameType === "Secret Dictator" && <SecretDictatorGame />}
             {gameType === "Wacky Words" && <WackyWordsGame />}
+            {gameType === "Draw It" && <DrawItGame />}
             {gameType === "Liars Dice" && <LiarsDiceGame />}
             {gameType === "Texas Hold Em" && <TexasHoldEmGame />}
             {gameType === "Cheat" && <CheatGame />}
