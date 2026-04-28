@@ -75,21 +75,28 @@
 .draw-action-list .action {
   border: 2px solid var(--draw-pick-outline);
   border-radius: 8px;
-}
-
-.draw-action-list .action > div:nth-of-type(2),
-.draw-action-list .action .MuiBox-root:nth-of-type(2) {
-  flex-direction: row !important;
-  flex-wrap: wrap;
+  align-items: stretch !important;
+  padding: 8px !important;
   gap: 8px !important;
-  justify-content: center;
 }
 
-.draw-action-list .action .MuiBox-root[role],
-.draw-action-list .action > div > div {
-  flex: 1 1 0;
-  min-width: 120px;
+/* The option list is the second child of .action (after the title). Force it
+   to lay out horizontally so the two prompts sit side by side. */
+.draw-action-list .action > *:last-child {
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  gap: 8px !important;
+  justify-content: stretch !important;
+  width: 100% !important;
+}
+
+/* Each option becomes a flex-equal cell. */
+.draw-action-list .action > *:last-child > * {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
   text-align: center;
+  padding: 12px !important;
+  border-radius: 6px;
 }
 
 .draw-round-info {
