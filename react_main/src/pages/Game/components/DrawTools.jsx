@@ -22,12 +22,13 @@ export default function DrawTools({
   onErase,
   onClear,
   onUndo,
-  disabled,
+  hidden,
 }) {
-  if (disabled) return null;
-
   return (
-    <div className="draw-tools">
+    <div
+      className="draw-tools"
+      style={hidden ? { visibility: "hidden", pointerEvents: "none" } : undefined}
+    >
       <div className="draw-tools-palette">
         {PALETTE.map((c) => (
           <button
@@ -61,7 +62,11 @@ export default function DrawTools({
           >
             <span
               className="draw-tools-size-dot"
-              style={{ width: s.val * 2, height: s.val * 2 }}
+              style={{
+                width: s.val * 2,
+                height: s.val * 2,
+                background: eraseMode ? "#ffffff" : color,
+              }}
             />
           </button>
         ))}
@@ -71,8 +76,10 @@ export default function DrawTools({
             "draw-tools-erase" + (eraseMode ? " active" : "")
           }
           onClick={() => onErase(!eraseMode)}
+          aria-label="eraser"
+          title="Eraser"
         >
-          Erase
+          <span className="draw-tools-erase-icon" />
         </button>
         <button type="button" className="draw-tools-undo" onClick={onUndo}>
           Undo

@@ -31,31 +31,39 @@
 
 .draw-tools-brushes {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding-left: 4px;
 }
 
 /* Brush-size buttons: just the dot, no chip behind. The dot itself has a
-   thin outline that thickens / colors when active. */
+   thin outline that thickens / colors when active. Tight gap between the
+   three size circles so they read as a single control group. */
 .draw-tools-size {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border: none;
   background: none;
   cursor: pointer;
   padding: 0;
 }
 
+.draw-tools-sizes-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+}
+
 .draw-tools-size-dot {
   display: inline-block;
-  background: var(--scheme-color-text, currentColor);
   border-radius: 50%;
-  border: 2px solid transparent;
+  border: 2px solid var(--scheme-color-text, #888);
   box-sizing: content-box;
 }
 
@@ -64,7 +72,40 @@
   box-shadow: 0 0 0 2px var(--draw-pick-outline, #ffb74d);
 }
 
-.draw-tools-erase,
+/* Eraser: 36px circle with diagonal red slash. */
+.draw-tools-erase {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--scheme-color-border, #555);
+  background: #ffffff;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 8px;
+  position: relative;
+}
+
+.draw-tools-erase-icon {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 1.5px),
+    #d32f2f calc(50% - 1.5px),
+    #d32f2f calc(50% + 1.5px),
+    transparent calc(50% + 1.5px)
+  );
+}
+
+.draw-tools-erase.active {
+  border-color: var(--draw-pick-outline, #ffb74d);
+  box-shadow: 0 0 0 2px var(--draw-pick-outline, #ffb74d);
+}
+
 .draw-tools-undo,
 .draw-tools-clear {
   padding: 6px 12px;
@@ -73,12 +114,6 @@
   color: var(--scheme-color-text, #eee);
   cursor: pointer;
   border-radius: 4px;
-}
-
-.draw-tools-erase.active {
-  background: var(--draw-pick-outline, #ffb74d);
-  color: #111;
-  border-color: var(--draw-pick-outline, #ffb74d);
 }
 
 .draw-tools-clear {

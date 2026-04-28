@@ -255,18 +255,17 @@ export default function DrawItGame() {
         hideIfEmpty
         className="draw-action-list"
       />
-      {isDrawer && stateName === "Draw" && isCurrentState && (
-        <DrawTools
-          color={color}
-          size={size}
-          eraseMode={eraseMode}
-          onColor={setColor}
-          onSize={setSize}
-          onErase={setEraseMode}
-          onClear={() => emitClear(game.socket)}
-          onUndo={() => emitUndo(game.socket)}
-        />
-      )}
+      <DrawTools
+        color={color}
+        size={size}
+        eraseMode={eraseMode}
+        onColor={setColor}
+        onSize={setSize}
+        onErase={setEraseMode}
+        onClear={() => emitClear(game.socket)}
+        onUndo={() => emitUndo(game.socket)}
+        hidden={!(isDrawer && stateName === "Draw" && isCurrentState)}
+      />
       {!isPostgame && (
         <div className="draw-canvas-wrap">
           {isCurrentState && (
@@ -355,18 +354,17 @@ export default function DrawItGame() {
               hideIfEmpty
               className="draw-action-list"
             />
-            {isDrawer && stateName === "Draw" && isCurrentState && (
-              <DrawTools
-                color={color}
-                size={size}
-                eraseMode={eraseMode}
-                onColor={setColor}
-                onSize={setSize}
-                onErase={setEraseMode}
-                onClear={() => emitClear(game.socket)}
-                onUndo={() => emitUndo(game.socket)}
-              />
-            )}
+            <DrawTools
+              color={color}
+              size={size}
+              eraseMode={eraseMode}
+              onColor={setColor}
+              onSize={setSize}
+              onErase={setEraseMode}
+              onClear={() => emitClear(game.socket)}
+              onUndo={() => emitUndo(game.socket)}
+              hidden={!(isDrawer && stateName === "Draw" && isCurrentState)}
+            />
             {!isPostgame && (
               <div className="draw-canvas-wrap">
                 {isCurrentState && (
