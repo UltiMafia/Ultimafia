@@ -138,12 +138,12 @@ export default function DrawCanvas({
       redraw();
     };
 
-    socket.on("drawDelta", onDelta);
-    socket.on("canvasState", onCanvasState);
-    return () => {
-      socket.off("drawDelta", onDelta);
-      socket.off("canvasState", onCanvasState);
-    };
+    // The project's custom Socket has no per-listener removal; use a flag
+    // so stale callbacks no-op after this effect tears down.
+    let active = true;
+    socket.on("drawDelta", (delta) => { if (active) onDelta(delta); });
+    socket.on("canvasState", (payload) => { if (active) onCanvasState(payload); });
+    return () => { active = false; };
   }, [socket, mode, redraw, initialStrokes]);
 
   // Drawer-mode pointer handlers
@@ -163,7 +163,7 @@ export default function DrawCanvas({
     const pending = pendingPointsRef.current;
     if (pending.length === 0 || !currentStrokeRef.current) return;
     const stroke = currentStrokeRef.current;
-    socket.emit("drawStroke", {
+    socket.send("drawStroke", {
       strokeId: stroke.id,
       color: stroke.color,
       size: stroke.size,
@@ -212,7 +212,7 @@ export default function DrawCanvas({
     evt.preventDefault();
     flushPending();
     const stroke = currentStrokeRef.current;
-    if (socket) socket.emit("endStroke", { strokeId: stroke.id });
+    if (socket) socket.send("endStroke", { strokeId: stroke.id });
     currentStrokeRef.current = null;
     pendingPointsRef.current = [];
   }, [mode, flushPending, socket]);
@@ -233,8 +233,8 @@ export default function DrawCanvas({
 
 // Imperative helpers for drawer parent component to call
 export function emitUndo(socket) {
-  if (socket) socket.emit("undoStroke");
+  if (socket) socket.send("undoStroke");
 }
 export function emitClear(socket) {
-  if (socket) socket.emit("clearCanvas");
+  if (socket) socket.send("clearCanvas");
 }
