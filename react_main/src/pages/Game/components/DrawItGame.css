@@ -1,0 +1,148 @@
+/* Draw It game page layout */
+
+.draw-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  flex: 1;
+  min-height: 0;
+}
+
+.draw-stage-mobile {
+  padding: 4px;
+}
+
+.draw-word-display {
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.draw-word-display-reveal {
+  background: rgba(255, 152, 0, 0.15);
+}
+
+.draw-word-length {
+  opacity: 0.7;
+  font-size: 0.9em;
+}
+
+.draw-canvas-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+.draw-canvas-wrap .draw-canvas,
+.draw-canvas-wrap canvas {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  background: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.draw-action-list {
+  flex: 0 0 auto;
+}
+
+.draw-round-info {
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 8px 0;
+}
+
+.draw-round-line {
+  font-weight: 600;
+}
+
+.draw-turn-line {
+  margin-top: 4px;
+  opacity: 0.85;
+}
+
+.draw-score-chip {
+  display: inline-block;
+  min-width: 22px;
+  padding: 1px 6px;
+  margin-right: 6px;
+  text-align: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.draw-row-drawer {
+  color: #ffb74d;
+  margin-left: 6px;
+}
+
+.draw-row-guessed {
+  color: #66bb6a;
+  margin-left: 6px;
+}
+
+/* Secret chat collapsible header */
+.draw-secret-chat {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 0;
+  margin-top: 6px;
+}
+
+.draw-secret-chat-toggle {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.draw-secret-chat-toggle:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.draw-secret-chat-caret {
+  display: inline-block;
+  width: 14px;
+  opacity: 0.7;
+}
+
+.draw-secret-chat-list {
+  list-style: none;
+  margin: 4px 0 0 0;
+  padding: 0 8px;
+}
+
+.draw-secret-chat-row {
+  font-size: 0.9rem;
+  padding: 2px 0;
+}
+
+.draw-secret-chat-rank {
+  display: inline-block;
+  width: 22px;
+  opacity: 0.6;
+}
+
+.draw-secret-chat-empty {
+  font-size: 0.85rem;
+  opacity: 0.6;
+  padding: 2px 0;
+}
