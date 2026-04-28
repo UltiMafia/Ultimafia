@@ -34,10 +34,11 @@
 .draw-canvas-wrap {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
-  flex: 1;
+  flex: 0 0 auto;
   min-height: 0;
+  margin-top: 0;
 }
 
 .draw-canvas-wrap .draw-canvas,
