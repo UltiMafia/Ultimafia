@@ -318,6 +318,23 @@ module.exports = class DrawItGame extends Game {
     return false;
   }
 
+  checkAllMeetingsReady() {
+    // Draw and Reveal must run for their full timer regardless of meeting state.
+    // (Drawing happens via socket events, not meetings, so the engine's default
+    // "all meetings ready -> advance" check would skip Draw instantly.)
+    const stateName = this.getStateName();
+    if (stateName === "Draw" || stateName === "Reveal") return;
+
+    // Pick advances early once the drawer has picked a word. Otherwise wait
+    // for the 5s timer (which then auto-picks the first option in beginDrawState).
+    if (stateName === "Pick") {
+      if (this.currentWord) super.checkAllMeetingsReady();
+      return;
+    }
+
+    super.checkAllMeetingsReady();
+  }
+
   checkWinConditions() {
     if (this.currentRound < this.roundAmt) {
       return [false, undefined];
