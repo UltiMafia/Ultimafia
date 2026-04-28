@@ -1,4 +1,4 @@
-const Role = require("../../../../core/Role");
+const Role = require("../../Role");
 
 module.exports = class Player extends Role {
   constructor(player, data) {
