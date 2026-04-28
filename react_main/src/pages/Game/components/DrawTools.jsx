@@ -48,51 +48,54 @@ export default function DrawTools({
         ))}
       </div>
       <div className="draw-tools-brushes">
-        {SIZES.map((s) => (
+        <div className="draw-tools-brushes-left">
+          {SIZES.map((s) => (
+            <button
+              key={s.key}
+              type="button"
+              className={
+                "draw-tools-size" + (size === s.val ? " active" : "")
+              }
+              onClick={() => onSize(s.val)}
+              aria-label={`brush ${s.key}`}
+              title={`${s.key} (${s.val}px)`}
+            >
+              <span
+                className="draw-tools-size-dot"
+                style={{
+                  width: s.val * 2,
+                  height: s.val * 2,
+                  background: eraseMode ? "#ffffff" : color,
+                }}
+              />
+            </button>
+          ))}
           <button
-            key={s.key}
             type="button"
             className={
-              "draw-tools-size" +
-              (size === s.val ? " active" : "")
+              "draw-tools-erase" + (eraseMode ? " active" : "")
             }
-            onClick={() => onSize(s.val)}
-            aria-label={`brush ${s.key}`}
-            title={`${s.key} (${s.val}px)`}
+            onClick={() => onErase(!eraseMode)}
+            aria-label="eraser"
+            title="Eraser"
           >
-            <span
-              className="draw-tools-size-dot"
-              style={{
-                width: s.val * 2,
-                height: s.val * 2,
-                background: eraseMode ? "#ffffff" : color,
-              }}
-            />
+            <span className="draw-tools-erase-icon" />
           </button>
-        ))}
-        <button
-          type="button"
-          className={
-            "draw-tools-erase" + (eraseMode ? " active" : "")
-          }
-          onClick={() => onErase(!eraseMode)}
-          aria-label="eraser"
-          title="Eraser"
-        >
-          <span className="draw-tools-erase-icon" />
-        </button>
-        <button type="button" className="draw-tools-undo" onClick={onUndo}>
-          Undo
-        </button>
-        <button
-          type="button"
-          className="draw-tools-clear"
-          onClick={() => {
-            if (window.confirm("Clear the canvas?")) onClear();
-          }}
-        >
-          Clear
-        </button>
+        </div>
+        <div className="draw-tools-brushes-right">
+          <button type="button" className="draw-tools-undo" onClick={onUndo}>
+            Undo
+          </button>
+          <button
+            type="button"
+            className="draw-tools-clear"
+            onClick={() => {
+              if (window.confirm("Clear the canvas?")) onClear();
+            }}
+          >
+            Clear
+          </button>
+        </div>
       </div>
     </div>
   );
