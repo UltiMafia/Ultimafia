@@ -620,6 +620,36 @@ const AchievementData = {
   Cheat: {},
   "Connect Four": {},
   Ratscrew: {},
+  // TODO Wave 8 verify schema — listener classes for `internal` entries are
+  // not yet created under Games/types/DrawIt/achievements/. Grants are wired
+  // inline in Games/types/DrawIt/Game.js for now.
+  "Draw It": {
+    "First Stroke": {
+      ID: "DrawIt1",
+      internal: ["FirstStroke"],
+      description: "Play your first Draw It game.",
+      reward: 5,
+    },
+    Skribbler: {
+      ID: "DrawIt2",
+      internal: ["Skribbler"],
+      description: "Play 25 Draw It games.",
+      reward: 25,
+    },
+    "Crystal Clear": {
+      ID: "DrawIt3",
+      internal: ["CrystalClear"],
+      description:
+        "As the drawer, earn 10 points (max average) on a single turn.",
+      reward: 20,
+    },
+    Bullseye: {
+      ID: "DrawIt4",
+      internal: ["Bullseye"],
+      description: "Be the first to guess correctly 5 times in one Draw It game.",
+      reward: 20,
+    },
+  },
 };
 
 //export const achievementList = AchievementData

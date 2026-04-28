@@ -40,6 +40,27 @@ module.exports = class DrawItGame extends Game {
   async start() {
     this.turnOrder = Random.randomizeArray([...this.players]);
 
+    // TODO Wave 8 wire achievement grant — replace inline grants with proper
+    // listener classes under Games/types/DrawIt/achievements/.
+    this.events.on("aboutToFinish", () => {
+      if (!this.achievementsAllowed || !this.achievementsAllowed()) return;
+      for (const p of this.players) {
+        if (!p || !p.user) continue;
+        const earned = p.user.achievements || [];
+        const played = (p.user.gamesPlayed || 0) + 1;
+        // First Stroke — play your first Draw It game.
+        if (played >= 1 && !earned.includes("DrawIt1")) {
+          if (!p.EarnedAchievements.includes("DrawIt1"))
+            p.EarnedAchievements.push("DrawIt1");
+        }
+        // Skribbler — play 25 Draw It games.
+        if (played >= 25 && !earned.includes("DrawIt2")) {
+          if (!p.EarnedAchievements.includes("DrawIt2"))
+            p.EarnedAchievements.push("DrawIt2");
+        }
+      }
+    });
+
     if (this.wordDeckId) {
       try {
         const deck = await models.WordDeck.findOne({
@@ -115,6 +136,20 @@ module.exports = class DrawItGame extends Game {
     const ranks = this.currentGuessers.map((_, i) => i);
     const drawerPts = drawerScore(ranks);
     if (drawer) drawer.addScore(drawerPts);
+
+    // Crystal Clear — drawer earns max-average (10) on a single turn.
+    // TODO Wave 8 wire achievement grant via listener class.
+    if (
+      drawer &&
+      drawerPts === 10 &&
+      this.achievementsAllowed &&
+      this.achievementsAllowed() &&
+      drawer.user &&
+      !(drawer.user.achievements || []).includes("DrawIt3") &&
+      !drawer.EarnedAchievements.includes("DrawIt3")
+    ) {
+      drawer.EarnedAchievements.push("DrawIt3");
+    }
 
     this.queueAlert(`The word was "${this.currentWord}".`);
     if (drawer) {
@@ -250,6 +285,24 @@ module.exports = class DrawItGame extends Game {
     if (matchesWord(message, this.currentWord)) {
       const rank = this.currentGuessers.length;
       this.currentGuessers.push(player);
+
+      // Bullseye — first to guess 5 times in one game.
+      // TODO Wave 8 wire achievement grant via listener class.
+      if (rank === 0) {
+        if (!player._drawItFirstGuesses) player._drawItFirstGuesses = 0;
+        player._drawItFirstGuesses += 1;
+        if (
+          player._drawItFirstGuesses === 5 &&
+          this.achievementsAllowed &&
+          this.achievementsAllowed() &&
+          player.user &&
+          !(player.user.achievements || []).includes("DrawIt4") &&
+          !player.EarnedAchievements.includes("DrawIt4")
+        ) {
+          player.EarnedAchievements.push("DrawIt4");
+        }
+      }
+
       const pts = guesserScore(rank);
       player.addScore(pts);
       this.queueAlert(`${player.name} guessed! (+${pts})`);
