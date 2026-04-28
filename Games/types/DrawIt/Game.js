@@ -148,6 +148,99 @@ module.exports = class DrawItGame extends Game {
     return player === this.getCurrentDrawer();
   }
 
+  handleStrokeEvent(player, eventType, payload) {
+    if (this.getStateName() !== "Draw") return;
+    if (!this.isDrawer(player)) return;
+
+    if (eventType === "drawStroke") {
+      if (!payload.strokeId || typeof payload.strokeId !== "string") return;
+
+      let stroke = this.currentStrokes.find((s) => s.id === payload.strokeId);
+      if (!stroke) {
+        stroke = {
+          id: payload.strokeId.slice(0, 32),
+          color: this.sanitizeColor(payload.color),
+          size: this.sanitizeSize(payload.size),
+          mode: payload.mode === "erase" ? "erase" : "draw",
+          points: [],
+          sealed: false,
+        };
+        // Cap total strokes per turn to avoid runaway memory.
+        if (this.currentStrokes.length < 500) {
+          this.currentStrokes.push(stroke);
+        } else {
+          return;
+        }
+      }
+
+      if (Array.isArray(payload.points)) {
+        const truncated = payload.points.slice(0, 200);
+        const pts = [];
+        for (const pair of truncated) {
+          if (!Array.isArray(pair) || pair.length < 2) continue;
+          const x = +pair[0];
+          const y = +pair[1];
+          if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+          pts.push([
+            Math.max(0, Math.min(800, x)),
+            Math.max(0, Math.min(600, y)),
+          ]);
+        }
+        stroke.points.push(...pts);
+        this.broadcastStrokeDelta({
+          type: "strokePoints",
+          strokeId: stroke.id,
+          color: stroke.color,
+          size: stroke.size,
+          mode: stroke.mode,
+          points: pts,
+        });
+      }
+    } else if (eventType === "endStroke") {
+      const stroke = this.currentStrokes.find((s) => s.id === payload.strokeId);
+      if (stroke) stroke.sealed = true;
+      this.broadcastStrokeDelta({ type: "endStroke", strokeId: payload.strokeId });
+    } else if (eventType === "undo") {
+      const last = this.currentStrokes.pop();
+      if (last) this.broadcastStrokeDelta({ type: "undo", strokeId: last.id });
+    } else if (eventType === "clearCanvas") {
+      this.currentStrokes = [];
+      this.broadcastStrokeDelta({ type: "clearCanvas" });
+    }
+  }
+
+  sanitizeColor(c) {
+    return /^#[0-9a-fA-F]{6}$/.test(c) ? c : "#000000";
+  }
+
+  sanitizeSize(s) {
+    return [4, 8, 16].includes(+s) ? +s : 8;
+  }
+
+  broadcastStrokeDelta(delta) {
+    for (const p of this.players) {
+      if (this.isDrawer(p)) continue;
+      if (p.send) p.send("drawDelta", delta);
+    }
+    // Spectators
+    if (Array.isArray(this.spectators)) {
+      for (const s of this.spectators) {
+        if (s.send) s.send("drawDelta", delta);
+      }
+    }
+  }
+
+  // Available for explicit canvas re-broadcast on reconnect. The standard
+  // sendStateInfo() path already includes `strokes` in extraInfo, so explicit
+  // invocation is generally not required — kept here as a targeted hook in
+  // case a future client wants a discrete `canvasState` event.
+  sendCanvasState(player) {
+    if (this.getStateName() !== "Draw") return;
+    if (player && player.send) {
+      player.send("canvasState", { strokes: this.currentStrokes });
+    }
+  }
+
   handlePotentialGuess(player, message) {
     if (this.getStateName() !== "Draw") return false;
     if (this.isDrawer(player)) return false;
