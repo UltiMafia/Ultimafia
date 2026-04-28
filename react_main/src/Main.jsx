@@ -260,8 +260,13 @@ function Header({ setShowAnnouncementTemporarily }) {
                     hide: !user.loggedIn,
                   },
                   {
-                    text: "Decks",
+                    text: "Character Decks",
                     path: "/play/decks",
+                    hide: !user.loggedIn,
+                  },
+                  {
+                    text: "Word Decks",
+                    path: "/play/wordDecks",
                     hide: !user.loggedIn,
                   },
                 ],
@@ -347,7 +352,8 @@ function Header({ setShowAnnouncementTemporarily }) {
                   path: "/play/create",
                   hide: !user.loggedIn,
                 },
-                { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
+                { text: "Character Decks", path: "/play/decks", hide: !user.loggedIn },
+                { text: "Word Decks", path: "/play/wordDecks", hide: !user.loggedIn },
               ]}
             />
             <NavDropdown
