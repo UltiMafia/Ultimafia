@@ -43,8 +43,8 @@ module.exports = class TownCore extends Card {
       },
       // Drawer-only meeting during Pick. The targets are the two word options
       // refreshed at the start of each Pick state by the listener below.
-      "Pick Word": {
-        actionName: "Pick Word",
+      "Pick a prompt to draw": {
+        actionName: "Pick a prompt to draw",
         states: ["Pick"],
         flags: ["voting", "noVeg"],
         inputType: "showAllOptions",
@@ -73,9 +73,9 @@ module.exports = class TownCore extends Card {
         if (
           this.game.currentWordOptions &&
           this.game.currentWordOptions.length > 0 &&
-          this.meetings["Pick Word"]
+          this.meetings["Pick a prompt to draw"]
         ) {
-          this.meetings["Pick Word"].targets = [
+          this.meetings["Pick a prompt to draw"].targets = [
             ...this.game.currentWordOptions,
           ];
         }

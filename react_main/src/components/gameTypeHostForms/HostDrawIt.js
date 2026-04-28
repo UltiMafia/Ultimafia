@@ -31,9 +31,11 @@ export default function HostDrawIt() {
       options: [
         { label: "30s", value: 30 },
         { label: "60s", value: 60 },
-        { label: "80s (default)", value: 80 },
+        { label: "90s", value: 90 },
         { label: "120s", value: 120 },
+        { label: "150s (default)", value: 150 },
         { label: "180s", value: 180 },
+        { label: "240s", value: 240 },
       ],
     },
     {

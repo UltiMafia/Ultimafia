@@ -26,12 +26,12 @@ export default function WordDisplay({
   }
 
   if (stateName === "Pick") {
+    if (isDrawer) {
+      // Drawer sees the meeting widget; no banner needed.
+      return null;
+    }
     return (
-      <div className="draw-word-display">
-        {isDrawer
-          ? "Pick a word from the prompt above"
-          : "Drawer is choosing a word…"}
-      </div>
+      <div className="draw-word-display">Drawer is choosing a word…</div>
     );
   }
 

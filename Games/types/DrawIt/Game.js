@@ -17,9 +17,9 @@ module.exports = class DrawItGame extends Game {
     this.states = [
       { name: "Postgame" },
       { name: "Pregame" },
-      { name: "Pick", length: 5 * 1000 },
+      { name: "Pick", length: 10 * 1000 },
       { name: "Draw", length: options.settings.stateLengths["Draw"] },
-      { name: "Reveal", length: 5 * 1000 },
+      { name: "Reveal", length: 8 * 1000 },
     ];
 
     this.roundAmt = options.settings.roundAmt;
@@ -325,13 +325,8 @@ module.exports = class DrawItGame extends Game {
     const stateName = this.getStateName();
     if (stateName === "Draw" || stateName === "Reveal") return;
 
-    // Pick advances early once the drawer has picked a word. Otherwise wait
-    // for the 5s timer (which then auto-picks the first option in beginDrawState).
-    if (stateName === "Pick") {
-      if (this.currentWord) super.checkAllMeetingsReady();
-      return;
-    }
-
+    // Pick advances as soon as the drawer's Pick Word meeting is ready (i.e. they
+    // voted). If they don't pick within the timer, beginDrawState auto-picks.
     super.checkAllMeetingsReady();
   }
 

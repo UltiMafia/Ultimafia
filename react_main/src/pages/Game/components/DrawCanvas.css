@@ -1,6 +1,6 @@
 .draw-canvas {
   width: 100%;
-  max-width: 800px;
+  max-width: 560px;
   aspect-ratio: 4 / 3;
   background: #ffffff;
   border: 1px solid #444;

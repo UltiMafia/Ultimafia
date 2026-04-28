@@ -56,6 +56,42 @@
   flex: 0 0 auto;
 }
 
+/* Pick-prompt action: side-by-side options with theme-aware outline.
+   The engine renders the meeting via a Material-UI <Box className="action">
+   containing a flex-column list of <Box> option rows. We flip the inner
+   list to a row and add a colored outline that adapts to light/dark mode. */
+:root {
+  --draw-pick-outline: rgb(237, 179, 52); /* yellow (dark-mode default) */
+}
+.light-mode {
+  --draw-pick-outline: #d32f2f; /* red */
+}
+@media (prefers-color-scheme: light) {
+  html:not(.dark-mode) {
+    --draw-pick-outline: #d32f2f;
+  }
+}
+
+.draw-action-list .action {
+  border: 2px solid var(--draw-pick-outline);
+  border-radius: 8px;
+}
+
+.draw-action-list .action > div:nth-of-type(2),
+.draw-action-list .action .MuiBox-root:nth-of-type(2) {
+  flex-direction: row !important;
+  flex-wrap: wrap;
+  gap: 8px !important;
+  justify-content: center;
+}
+
+.draw-action-list .action .MuiBox-root[role],
+.draw-action-list .action > div > div {
+  flex: 1 1 0;
+  min-width: 120px;
+  text-align: center;
+}
+
 .draw-round-info {
   padding: 8px 12px;
   font-size: 0.95rem;

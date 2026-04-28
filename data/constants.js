@@ -274,8 +274,8 @@ module.exports = {
     "Draw It": {
       Draw: {
         min: 30 * 1000,
-        max: 180 * 1000,
-        default: 80 * 1000,
+        max: 240 * 1000,
+        default: 150 * 1000,
       },
     },
   },
