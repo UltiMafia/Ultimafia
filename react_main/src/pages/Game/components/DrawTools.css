@@ -10,13 +10,13 @@
 .draw-tools-palette {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   justify-content: center;
 }
 
 .draw-tools-color {
-  width: 24px;
-  height: 24px;
+  width: 36px;
+  height: 36px;
   border: 2px solid var(--scheme-color-border, #444);
   border-radius: 50%;
   padding: 0;
@@ -31,30 +31,37 @@
 
 .draw-tools-brushes {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
 }
 
+/* Brush-size buttons: just the dot, no chip behind. The dot itself has a
+   thin outline that thickens / colors when active. */
 .draw-tools-size {
-  width: 36px;
-  height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--scheme-color-border, #555);
-  background: var(--scheme-color-sec, #222);
-  color: var(--scheme-color-text, #eee);
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: none;
   cursor: pointer;
-  border-radius: 50%;
   padding: 0;
 }
 
 .draw-tools-size-dot {
   display: inline-block;
-  background: currentColor;
+  background: var(--scheme-color-text, currentColor);
   border-radius: 50%;
+  border: 2px solid transparent;
+  box-sizing: content-box;
+}
+
+.draw-tools-size.active .draw-tools-size-dot {
+  border-color: var(--draw-pick-outline, #ffb74d);
+  box-shadow: 0 0 0 2px var(--draw-pick-outline, #ffb74d);
 }
 
 .draw-tools-erase,
@@ -68,7 +75,6 @@
   border-radius: 4px;
 }
 
-.draw-tools-size.active,
 .draw-tools-erase.active {
   background: var(--draw-pick-outline, #ffb74d);
   color: #111;

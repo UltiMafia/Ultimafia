@@ -253,8 +253,15 @@ module.exports = class DrawItGame extends Game {
   }
 
   broadcastStrokeDelta(delta) {
+    // Drawer's local canvas already reflects their own pointer events for
+    // strokePoints/endStroke, so we skip the drawer for those. But for
+    // undo/clearCanvas the drawer's local strokesRef hasn't been mutated, so
+    // they need the broadcast too — otherwise their own canvas keeps the
+    // strokes after they hit Undo or Clear.
+    const includeDrawer =
+      delta.type === "undo" || delta.type === "clearCanvas";
     for (const p of this.players) {
-      if (this.isDrawer(p)) continue;
+      if (this.isDrawer(p) && !includeDrawer) continue;
       if (p.send) p.send("drawDelta", delta);
     }
     // Spectators
