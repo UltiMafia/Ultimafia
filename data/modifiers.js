@@ -1444,6 +1444,7 @@ const modifierData = {
   "Secret Dictator": {},
   "Secret Hitler": {},
   "Wacky Words": {},
+  "Draw It": {},
   "Liars Dice": {},
   "Texas Hold Em": {},
   Cheat: {},

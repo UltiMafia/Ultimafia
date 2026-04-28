@@ -356,7 +356,13 @@ module.exports = class DrawItGame extends Game {
       guessers: this.currentGuessers.map((p) => p.name),
       scores,
       strokes: this.currentStrokes,
+      wordOptions: this.currentWordOptions,
     };
+
+    // Reveal everyone's word at end-of-turn so the WordDisplay banner can show it.
+    if (info.name === "Reveal") {
+      info.extraInfo.currentWord = this.currentWord;
+    }
 
     // For Postgame, also expose the full drawing history for replay.
     if (info.name === "Postgame") {
