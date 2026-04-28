@@ -35,12 +35,9 @@ export default function WordDisplay({
     );
   }
 
-  if (isDrawer && currentWord) {
-    return (
-      <div className="draw-word-display">
-        Word: <strong>{currentWord}</strong>
-      </div>
-    );
+  if (isDrawer) {
+    // Drawer sees the word as an overlay on the canvas; hide the banner.
+    return <div className="draw-word-display">&nbsp;</div>;
   }
 
   if (wordLength) {

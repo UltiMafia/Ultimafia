@@ -32,6 +32,7 @@
 }
 
 .draw-canvas-wrap {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -39,6 +40,23 @@
   flex: 0 0 auto;
   min-height: 0;
   margin-top: 0;
+}
+
+.draw-canvas-word-overlay {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(calc(-250px + 8px));
+  background: rgba(0, 0, 0, 0.85);
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 2;
 }
 
 .draw-canvas-wrap .draw-canvas,

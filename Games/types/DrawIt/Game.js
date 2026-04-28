@@ -110,10 +110,7 @@ module.exports = class DrawItGame extends Game {
 
     const drawer = this.getCurrentDrawer();
     if (drawer) {
-      this.queueAlert(`${drawer.name} is choosing a word…`);
-      drawer.queueAlert(
-        `Pick a word: ${this.currentWordOptions.join(" / ")}`
-      );
+      this.queueAlert(`${drawer.name} is drawing.`);
     }
   }
 
@@ -123,12 +120,6 @@ module.exports = class DrawItGame extends Game {
     }
     this.usedWords.push(...this.currentWordOptions);
     this.currentWordOptions = [];
-
-    const drawer = this.getCurrentDrawer();
-    if (drawer) {
-      this.queueAlert(`${drawer.name} is drawing!`);
-      drawer.queueAlert(`Your word is: ${this.currentWord}`);
-    }
   }
 
   beginRevealState() {
@@ -249,7 +240,7 @@ module.exports = class DrawItGame extends Game {
   }
 
   sanitizeSize(s) {
-    return [4, 8, 16].includes(+s) ? +s : 8;
+    return [10, 25, 40].includes(+s) ? +s : 25;
   }
 
   broadcastStrokeDelta(delta) {
@@ -337,6 +328,19 @@ module.exports = class DrawItGame extends Game {
     super.checkAllMeetingsReady();
   }
 
+  // Skip the engine's default veg-kick countdown for our states. Pick falls back
+  // to auto-pick on timeout; Draw/Reveal must run their full timer; nobody should
+  // be kicked for failing to act.
+  createNextStateTimer(stateInfo) {
+    const name = stateInfo && stateInfo.name;
+    if (name === "Pick" || name === "Draw" || name === "Reveal") {
+      this.createTimer("main", stateInfo.length, () => this.gotoNextState());
+      this.checkAllMeetingsReady();
+      return;
+    }
+    super.createNextStateTimer(stateInfo);
+  }
+
   checkWinConditions() {
     if (this.currentRound < this.roundAmt) {
       return [false, undefined];
@@ -378,8 +382,10 @@ module.exports = class DrawItGame extends Game {
       wordOptions: this.currentWordOptions,
     };
 
-    // Reveal everyone's word at end-of-turn so the WordDisplay banner can show it.
-    if (info.name === "Reveal") {
+    // Expose currentWord during Draw and Reveal — the drawer's overlay needs
+    // it during Draw, and at Reveal everyone sees the answer. Non-drawers'
+    // UI deliberately doesn't render the word during Draw.
+    if (info.name === "Draw" || info.name === "Reveal") {
       info.extraInfo.currentWord = this.currentWord;
     }
 

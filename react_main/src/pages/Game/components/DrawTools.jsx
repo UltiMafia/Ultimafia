@@ -8,9 +8,9 @@ const PALETTE = [
 ];
 
 const SIZES = [
-  { key: "S", val: 3 },
-  { key: "M", val: 10 },
-  { key: "L", val: 15 },
+  { key: "S", val: 10 },
+  { key: "M", val: 25 },
+  { key: "L", val: 40 },
 ];
 
 export default function DrawTools({
@@ -63,8 +63,8 @@ export default function DrawTools({
               <span
                 className="draw-tools-size-dot"
                 style={{
-                  width: s.val * 2,
-                  height: s.val * 2,
+                  width: Math.min(s.val, 22),
+                  height: Math.min(s.val, 22),
                   background: eraseMode ? "#ffffff" : color,
                 }}
               />

@@ -278,6 +278,9 @@ export default function DrawItGame() {
               eraseMode={eraseMode}
             />
           )}
+          {isDrawer && stateName === "Draw" && currentWord && (
+            <div className="draw-canvas-word-overlay">{currentWord}</div>
+          )}
         </div>
       )}
       {postgameReplay}
