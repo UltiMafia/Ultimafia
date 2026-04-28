@@ -8,9 +8,9 @@ const PALETTE = [
 ];
 
 const SIZES = [
-  { key: "S", val: 4 },
-  { key: "M", val: 8 },
-  { key: "L", val: 16 },
+  { key: "S", val: 3 },
+  { key: "M", val: 10 },
+  { key: "L", val: 15 },
 ];
 
 export default function DrawTools({
@@ -57,8 +57,12 @@ export default function DrawTools({
             }
             onClick={() => onSize(s.val)}
             aria-label={`brush ${s.key}`}
+            title={`${s.key} (${s.val}px)`}
           >
-            {s.key}
+            <span
+              className="draw-tools-size-dot"
+              style={{ width: s.val * 2, height: s.val * 2 }}
+            />
           </button>
         ))}
         <button

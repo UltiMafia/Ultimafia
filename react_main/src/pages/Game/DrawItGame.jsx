@@ -255,6 +255,18 @@ export default function DrawItGame() {
         hideIfEmpty
         className="draw-action-list"
       />
+      {isDrawer && stateName === "Draw" && isCurrentState && (
+        <DrawTools
+          color={color}
+          size={size}
+          eraseMode={eraseMode}
+          onColor={setColor}
+          onSize={setSize}
+          onErase={setEraseMode}
+          onClear={() => emitClear(game.socket)}
+          onUndo={() => emitUndo(game.socket)}
+        />
+      )}
       {!isPostgame && (
         <div className="draw-canvas-wrap">
           {isCurrentState && (
@@ -268,18 +280,6 @@ export default function DrawItGame() {
             />
           )}
         </div>
-      )}
-      {isDrawer && stateName === "Draw" && isCurrentState && (
-        <DrawTools
-          color={color}
-          size={size}
-          eraseMode={eraseMode}
-          onColor={setColor}
-          onSize={setSize}
-          onErase={setEraseMode}
-          onClear={() => emitClear(game.socket)}
-          onUndo={() => emitUndo(game.socket)}
-        />
       )}
       {postgameReplay}
     </div>
@@ -355,6 +355,18 @@ export default function DrawItGame() {
               hideIfEmpty
               className="draw-action-list"
             />
+            {isDrawer && stateName === "Draw" && isCurrentState && (
+              <DrawTools
+                color={color}
+                size={size}
+                eraseMode={eraseMode}
+                onColor={setColor}
+                onSize={setSize}
+                onErase={setEraseMode}
+                onClear={() => emitClear(game.socket)}
+                onUndo={() => emitUndo(game.socket)}
+              />
+            )}
             {!isPostgame && (
               <div className="draw-canvas-wrap">
                 {isCurrentState && (
@@ -368,18 +380,6 @@ export default function DrawItGame() {
                   />
                 )}
               </div>
-            )}
-            {isDrawer && stateName === "Draw" && isCurrentState && (
-              <DrawTools
-                color={color}
-                size={size}
-                eraseMode={eraseMode}
-                onColor={setColor}
-                onSize={setSize}
-                onErase={setEraseMode}
-                onClear={() => emitClear(game.socket)}
-                onUndo={() => emitUndo(game.socket)}
-              />
             )}
             {postgameReplay}
           </div>
