@@ -19,7 +19,7 @@ module.exports = class DrawItGame extends Game {
       { name: "Pregame" },
       { name: "Pick", length: 10 * 1000 },
       { name: "Draw", length: options.settings.stateLengths["Draw"] },
-      { name: "Reveal", length: 8 * 1000 },
+      { name: "Reveal", length: 5 * 1000 },
     ];
 
     this.roundAmt = options.settings.roundAmt;
@@ -142,15 +142,19 @@ module.exports = class DrawItGame extends Game {
       drawer.EarnedAchievements.push("DrawIt3");
     }
 
-    this.queueAlert(`The word was "${this.currentWord}".`);
+    const now = Date.now();
+    this.broadcast("drawToast", {
+      message: `Word: ${this.currentWord}`,
+      time: now,
+    });
     if (drawer) {
-      if (drawerPts > 0) {
-        this.queueAlert(
-          `${drawer.name} earned ${drawerPts} points (drawer average).`
-        );
-      } else {
-        this.queueAlert(`${drawer.name} earned no points (no one guessed).`);
-      }
+      this.broadcast("drawToast", {
+        message:
+          drawerPts > 0
+            ? `${drawer.name} earned ${drawerPts} (drawer)`
+            : `${drawer.name} earned 0 (no one guessed)`,
+        time: now + 1,
+      });
     }
 
     this.drawingHistory.push({
@@ -303,7 +307,10 @@ module.exports = class DrawItGame extends Game {
 
       const pts = guesserScore(rank);
       player.addScore(pts);
-      this.queueAlert(`${player.name} guessed! (+${pts})`);
+      this.broadcast("drawToast", {
+        message: `${player.name} guessed! (+${pts})`,
+        time: Date.now(),
+      });
 
       const remaining = this.players.filter(
         (p) => !this.isDrawer(p) && !this.currentGuessers.includes(p)

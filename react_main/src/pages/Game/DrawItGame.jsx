@@ -29,6 +29,23 @@ export default function DrawItGame() {
 
   const playBellRef = useRef(false);
 
+  // Toast notifications for guesses + score reveals.
+  const [toasts, setToasts] = useState([]);
+  const toastIdRef = useRef(0);
+  const seenToastTimesRef = useRef(new Set());
+
+  const pushToast = (message, time) => {
+    if (time != null) {
+      if (seenToastTimesRef.current.has(time)) return;
+      seenToastTimesRef.current.add(time);
+    }
+    const id = ++toastIdRef.current;
+    setToasts((current) => [...current, { id, message }]);
+    setTimeout(() => {
+      setToasts((current) => current.filter((t) => t.id !== id));
+    }, 2500);
+  };
+
   useEffect(() => {
     updateStateViewing({ type: "current" });
   }, [history.currentState]);
@@ -43,6 +60,7 @@ export default function DrawItGame() {
       playBellRef.current = true;
     });
     socket.on("winners", () => {});
+    socket.on("drawToast", ({ message, time }) => pushToast(message, time));
   }, game.socket);
 
   // Drawing tool state (drawer-only)
@@ -281,6 +299,7 @@ export default function DrawItGame() {
           {isDrawer && stateName === "Draw" && currentWord && (
             <div className="draw-canvas-word-overlay">{currentWord}</div>
           )}
+          <DrawToasts toasts={toasts} />
         </div>
       )}
       {postgameReplay}
@@ -380,6 +399,10 @@ export default function DrawItGame() {
                     eraseMode={eraseMode}
                   />
                 )}
+                {isDrawer && stateName === "Draw" && currentWord && (
+                  <div className="draw-canvas-word-overlay">{currentWord}</div>
+                )}
+                <DrawToasts toasts={toasts} />
               </div>
             )}
             {postgameReplay}
@@ -387,5 +410,18 @@ export default function DrawItGame() {
         }
       />
     </GameTypeContext.Provider>
+  );
+}
+
+function DrawToasts({ toasts }) {
+  if (!toasts || toasts.length === 0) return null;
+  return (
+    <div className="draw-toasts">
+      {toasts.map((t) => (
+        <div key={t.id} className="draw-toast">
+          {t.message}
+        </div>
+      ))}
+    </div>
   );
 }

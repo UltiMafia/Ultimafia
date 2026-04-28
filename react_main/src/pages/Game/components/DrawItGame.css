@@ -42,6 +42,36 @@
   margin-top: 0;
 }
 
+.draw-toasts {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.draw-toast {
+  background: rgba(20, 20, 20, 0.92);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--draw-pick-outline, #ffb74d);
+  animation: draw-toast-pop 0.2s ease-out;
+}
+
+@keyframes draw-toast-pop {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .draw-canvas-word-overlay {
   position: absolute;
   top: 8px;
