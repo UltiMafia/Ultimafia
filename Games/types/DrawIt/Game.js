@@ -220,4 +220,54 @@ module.exports = class DrawItGame extends Game {
       wordDeckId: this.wordDeckId,
     };
   }
+
+  /**
+   * Decide what should happen with a chat message before the meeting broadcasts it.
+   * Returns an object: { allow: boolean, routeTo?: string }.
+   * - allow=false: drop the message silently.
+   * - routeTo: change recipients to those of the named meeting.
+   */
+  preprocessMessage(sender, content, meeting) {
+    if (!meeting || !sender) return { allow: true };
+
+    // Only filter the common Village meeting in DrawIt; all other meetings
+    // (e.g. SecretChat, Pregame, Spectator) pass through untouched.
+    if (meeting.name !== "Village") return { allow: true };
+
+    const stateName = this.getStateName();
+
+    // Drawer cannot talk during Pick/Draw to avoid leaking the word.
+    // After Reveal, the round is over — speech is fine.
+    if (this.isDrawer(sender)) {
+      if (stateName === "Pick" || stateName === "Draw") {
+        return { allow: false };
+      }
+      return { allow: true };
+    }
+
+    // Guess detection during the Draw state.
+    if (
+      stateName === "Draw" &&
+      Array.isArray(this.currentGuessers) &&
+      !this.currentGuessers.includes(sender)
+    ) {
+      if (this.handlePotentialGuess(sender, content)) {
+        // The guess was correct — handlePotentialGuess already broadcast the
+        // alert and added the sender to currentGuessers; suppress the raw chat
+        // so the word itself isn't echoed to non-guessers.
+        return { allow: false };
+      }
+    }
+
+    // Once a player has guessed, route their subsequent messages to the
+    // SecretChat meeting so non-guessers don't see hints/spoilers.
+    if (
+      Array.isArray(this.currentGuessers) &&
+      this.currentGuessers.includes(sender)
+    ) {
+      return { allow: true, routeTo: "SecretChat" };
+    }
+
+    return { allow: true };
+  }
 };

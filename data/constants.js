@@ -76,6 +76,7 @@ module.exports = {
     "Battlesnakes",
     "Dice Wars",
     "Connect Four",
+    "Draw It",
   ],
   // Game types that remain valid for existing setups/stats but cannot be
   // created or hosted anymore. Acrotopia is covered by Wacky Words' acronym mode.
@@ -95,6 +96,7 @@ module.exports = {
     Battlesnakes: ["Town", "Host"],
     "Dice Wars": ["Military", "Host"],
     "Connect Four": ["Town", "Host"],
+    "Draw It": ["Town"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -110,6 +112,7 @@ module.exports = {
     Battlesnakes: ["Day"],
     "Dice Wars": ["Play"],
     "Connect Four": ["Turn"],
+    "Draw It": ["Pick"],
   },
   configurableStates: {
     Mafia: {
@@ -266,6 +269,13 @@ module.exports = {
         min: 30 * 1000,
         max: 5 * 60 * 1000,
         default: 1 * 60 * 1000,
+      },
+    },
+    "Draw It": {
+      Draw: {
+        min: 30 * 1000,
+        max: 180 * 1000,
+        default: 80 * 1000,
       },
     },
   },
