@@ -46,7 +46,14 @@ export default function DrawCanvas({
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H);
 
-    let pointBudget = mode === "replay" ? playhead : Infinity;
+    // In replay mode, `playhead` caps the number of points drawn across all
+    // strokes. If undefined or Infinity, render the full drawing.
+    let pointBudget =
+      mode === "replay"
+        ? playhead === undefined || playhead === Infinity
+          ? Infinity
+          : playhead
+        : Infinity;
     let drawn = 0;
     for (const stroke of strokesRef.current) {
       if (mode === "replay" && drawn >= pointBudget) break;

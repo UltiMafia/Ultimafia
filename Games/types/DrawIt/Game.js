@@ -357,6 +357,12 @@ module.exports = class DrawItGame extends Game {
       scores,
       strokes: this.currentStrokes,
     };
+
+    // For Postgame, also expose the full drawing history for replay.
+    if (info.name === "Postgame") {
+      info.extraInfo.drawingHistory = this.drawingHistory;
+    }
+
     return info;
   }
 

@@ -50,6 +50,11 @@ export default function DrawItGame() {
   const [size, setSize] = useState(8);
   const [eraseMode, setEraseMode] = useState(false);
 
+  // Postgame replay state
+  const [replayTurnIndex, setReplayTurnIndex] = useState(0);
+  const [replayPlayhead, setReplayPlayhead] = useState(Infinity);
+  const replayIntervalRef = useRef(null);
+
   const currentState = history.states[stateViewing];
   const extraInfo = (currentState && currentState.extraInfo) || {};
   const stateName = currentState ? currentState.name : "";
@@ -68,6 +73,9 @@ export default function DrawItGame() {
   const guessers = Array.isArray(extraInfo.guessers) ? extraInfo.guessers : [];
   const scores = extraInfo.scores || {};
   const initialStrokes = Array.isArray(extraInfo.strokes) ? extraInfo.strokes : [];
+  const drawingHistory = Array.isArray(extraInfo.drawingHistory)
+    ? extraInfo.drawingHistory
+    : null;
 
   const isCurrentState = stateViewing === history.currentState;
 
@@ -124,6 +132,114 @@ export default function DrawItGame() {
     </>
   );
 
+  const isPostgame = stateName === "Postgame";
+
+  const startReplayAnimation = (totalPoints) => {
+    if (replayIntervalRef.current) {
+      clearInterval(replayIntervalRef.current);
+      replayIntervalRef.current = null;
+    }
+    if (!totalPoints || totalPoints <= 0) {
+      setReplayPlayhead(0);
+      return;
+    }
+    setReplayPlayhead(0);
+    let ph = 0;
+    const stepSize = Math.max(1, Math.ceil(totalPoints / 100));
+    replayIntervalRef.current = setInterval(() => {
+      ph += stepSize;
+      if (ph >= totalPoints) {
+        setReplayPlayhead(totalPoints);
+        clearInterval(replayIntervalRef.current);
+        replayIntervalRef.current = null;
+      } else {
+        setReplayPlayhead(ph);
+      }
+    }, 50);
+  };
+
+  // Cleanup replay animation on unmount
+  useEffect(() => {
+    return () => {
+      if (replayIntervalRef.current) {
+        clearInterval(replayIntervalRef.current);
+        replayIntervalRef.current = null;
+      }
+    };
+  }, []);
+
+  const postgameReplay =
+    isPostgame && drawingHistory && drawingHistory.length > 0 ? (
+      <div className="draw-it-postgame">
+        <h3>Drawings replay</h3>
+        <div className="draw-it-turn-list">
+          {drawingHistory.map((turn, i) => (
+            <button
+              key={i}
+              type="button"
+              className={
+                "draw-it-turn-btn" +
+                (i === replayTurnIndex ? " active" : "")
+              }
+              onClick={() => {
+                if (replayIntervalRef.current) {
+                  clearInterval(replayIntervalRef.current);
+                  replayIntervalRef.current = null;
+                }
+                setReplayTurnIndex(i);
+                setReplayPlayhead(Infinity);
+              }}
+            >
+              Turn {i + 1}: {turn.drawer || "—"} drew "{turn.word}"
+            </button>
+          ))}
+        </div>
+
+        {(() => {
+          const turn = drawingHistory[replayTurnIndex];
+          if (!turn) return null;
+          const turnStrokes = Array.isArray(turn.strokes) ? turn.strokes : [];
+          const totalPoints = turnStrokes.reduce(
+            (acc, s) =>
+              acc + (s && Array.isArray(s.points) ? s.points.length : 0),
+            0
+          );
+          const effectivePlayhead =
+            replayPlayhead === Infinity ? totalPoints : replayPlayhead;
+          return (
+            <div className="draw-it-replay">
+              <DrawCanvas
+                mode="replay"
+                strokes={turnStrokes}
+                playhead={effectivePlayhead}
+              />
+              <div className="draw-it-replay-controls">
+                <button
+                  type="button"
+                  onClick={() => startReplayAnimation(totalPoints)}
+                >
+                  ▶ Replay
+                </button>
+                <input
+                  type="range"
+                  min={0}
+                  max={totalPoints}
+                  value={effectivePlayhead}
+                  onChange={(e) => {
+                    if (replayIntervalRef.current) {
+                      clearInterval(replayIntervalRef.current);
+                      replayIntervalRef.current = null;
+                    }
+                    setReplayPlayhead(Number(e.target.value));
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })()}
+      </div>
+    ) : null;
+
   const centerContent = (
     <div className="draw-stage">
       <WordDisplay
@@ -139,18 +255,20 @@ export default function DrawItGame() {
         hideIfEmpty
         className="draw-action-list"
       />
-      <div className="draw-canvas-wrap">
-        {isCurrentState && (
-          <DrawCanvas
-            mode={canvasMode}
-            socket={game.socket}
-            initialStrokes={initialStrokes}
-            color={color}
-            size={size}
-            eraseMode={eraseMode}
-          />
-        )}
-      </div>
+      {!isPostgame && (
+        <div className="draw-canvas-wrap">
+          {isCurrentState && (
+            <DrawCanvas
+              mode={canvasMode}
+              socket={game.socket}
+              initialStrokes={initialStrokes}
+              color={color}
+              size={size}
+              eraseMode={eraseMode}
+            />
+          )}
+        </div>
+      )}
       {isDrawer && stateName === "Draw" && isCurrentState && (
         <DrawTools
           color={color}
@@ -163,6 +281,7 @@ export default function DrawItGame() {
           onUndo={() => emitUndo(game.socket)}
         />
       )}
+      {postgameReplay}
     </div>
   );
 
@@ -236,18 +355,20 @@ export default function DrawItGame() {
               hideIfEmpty
               className="draw-action-list"
             />
-            <div className="draw-canvas-wrap">
-              {isCurrentState && (
-                <DrawCanvas
-                  mode={canvasMode}
-                  socket={game.socket}
-                  initialStrokes={initialStrokes}
-                  color={color}
-                  size={size}
-                  eraseMode={eraseMode}
-                />
-              )}
-            </div>
+            {!isPostgame && (
+              <div className="draw-canvas-wrap">
+                {isCurrentState && (
+                  <DrawCanvas
+                    mode={canvasMode}
+                    socket={game.socket}
+                    initialStrokes={initialStrokes}
+                    color={color}
+                    size={size}
+                    eraseMode={eraseMode}
+                  />
+                )}
+              </div>
+            )}
             {isDrawer && stateName === "Draw" && isCurrentState && (
               <DrawTools
                 color={color}
@@ -260,6 +381,7 @@ export default function DrawItGame() {
                 onUndo={() => emitUndo(game.socket)}
               />
             )}
+            {postgameReplay}
           </div>
         }
       />
