@@ -114,6 +114,12 @@ module.exports = {
     "Connect Four": ["Turn"],
     "Spot It": ["Round"],
   },
+  competitiveDefaults: {
+    Mafia: {
+      extendLength: 3,
+      pregameWaitLength: 1,
+    },
+  },
   configurableStates: {
     Mafia: {
       Day: {

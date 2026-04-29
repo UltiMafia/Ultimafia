@@ -629,13 +629,14 @@ router.post("/host", async function (req, res) {
 
     var configuredStateLengths = Object(req.body.stateLengths);
     var stateLengths = {};
+    var isCompetitive = Boolean(req.body.competitive);
 
     for (let stateName in constants.configurableStates[gameType]) {
       let min = constants.configurableStates[gameType][stateName].min;
       let max = constants.configurableStates[gameType][stateName].max;
       let stateLength = Number(configuredStateLengths[stateName]) * 60 * 1000;
 
-      if (isNaN(stateLength) || stateLength < min || stateLength > max)
+      if (isCompetitive || isNaN(stateLength) || stateLength < min || stateLength > max)
         stateLength = constants.configurableStates[gameType][stateName].default;
 
       stateLengths[stateName] = stateLength;
@@ -817,6 +818,11 @@ router.post("/host", async function (req, res) {
       return;
     }
 
+    if (isCompetitive && gameType === "Mafia") {
+      settings.extendLength = constants.competitiveDefaults.Mafia.extendLength;
+      settings.pregameWaitLength = constants.competitiveDefaults.Mafia.pregameWaitLength;
+    }
+
     if (settings.anonymousGame) {
       let decks = [];
       for (let item of settings.anonymousDeckId.split(",")) {
@@ -921,7 +927,7 @@ router.post("/host", async function (req, res) {
         spectating: Boolean(req.body.spectating),
         rehostId: rehostId,
         scheduled: scheduled,
-        readyCheck: Boolean(req.body.readyCheck),
+        readyCheck: isCompetitive ? true : Boolean(req.body.readyCheck),
         noVeg: Boolean(req.body.noVeg),
         stateLengths: stateLengths,
         gameTypeOptions: JSON.stringify({ deckSize: req.body.deckSize || "standard" }),
