@@ -18,6 +18,7 @@ const HOST_OPTIONS_VERSIONS = {
   Cheat: 2,
   Ratscrew: 2,
   "Connect Four": 2,
+  "Spot It": 1,
 };
 
 // Associate all of the existing saved options per game type into a map
@@ -165,6 +166,10 @@ var defaultOptions = {
     boardX: 6,
     boardY: 7,
     turnLength: 1,
+  },
+  "Spot It": existingHostOptions["Spot It"] || {
+    ...commonHostOptions,
+    roundLength: 55,
   },
 };
 

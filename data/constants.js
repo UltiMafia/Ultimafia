@@ -76,6 +76,7 @@ module.exports = {
     "Battlesnakes",
     "Dice Wars",
     "Connect Four",
+    "Spot It",
   ],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
   alignments: {
@@ -92,6 +93,7 @@ module.exports = {
     Battlesnakes: ["Town", "Host"],
     "Dice Wars": ["Military", "Host"],
     "Connect Four": ["Town", "Host"],
+    "Spot It": ["Town"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -107,6 +109,7 @@ module.exports = {
     Battlesnakes: ["Day"],
     "Dice Wars": ["Play"],
     "Connect Four": ["Turn"],
+    "Spot It": ["Round"],
   },
   configurableStates: {
     Mafia: {
@@ -263,6 +266,13 @@ module.exports = {
         min: 30 * 1000,
         max: 5 * 60 * 1000,
         default: 1 * 60 * 1000,
+      },
+    },
+    "Spot It": {
+      Round: {
+        min: 5 * 60 * 1000,
+        max: 15 * 60 * 1000,
+        default: 10 * 60 * 1000,
       },
     },
   },

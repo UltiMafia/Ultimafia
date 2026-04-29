@@ -1450,6 +1450,7 @@ const modifierData = {
   Ratscrew: {},
   Battlesnakes: {},
   "Connect Four": {},
+  "Spot It": {},
   "Dice Wars": {},
 };
 

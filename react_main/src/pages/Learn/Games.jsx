@@ -20,6 +20,7 @@ import LearnLiarsDice from "./gameTypes/LearnLiarsDice";
 import LearnTexasHoldEm from "./gameTypes/LearnTexasHoldEm";
 import LearnCheat from "./gameTypes/LearnCheat";
 import LearnRatscrew from "./gameTypes/LearnRatscrew";
+import LearnSpotIt from "./gameTypes/LearnSpotIt";
 import LearnBattlesnakes from "./gameTypes/LearnBattlesnakes";
 import LearnDiceWars from "./gameTypes/LearnDiceWars";
 import LearnConnectFour from "./gameTypes/LearnConnectFour";
@@ -134,6 +135,8 @@ export default function Games(props) {
         return <LearnTexasHoldEm Layout={LearnTabsLayout} />;
       case "Cheat":
         return <LearnCheat Layout={LearnTabsLayout} />;
+      case "Spot It":
+        return <LearnSpotIt Layout={LearnTabsLayout} />;
       case "Ratscrew":
         return <LearnRatscrew Layout={LearnTabsLayout} />;
       case "Battlesnakes":

@@ -916,6 +916,7 @@ router.post("/host", async function (req, res) {
         readyCheck: Boolean(req.body.readyCheck),
         noVeg: Boolean(req.body.noVeg),
         stateLengths: stateLengths,
+        gameTypeOptions: JSON.stringify({ deckSize: req.body.deckSize || "standard" }),
         ...settings,
       });
 
@@ -1322,6 +1323,11 @@ const settingsChecks = {
       boardY,
     };
     // return "Connect Four is currently not available.";
+  },
+  "Spot It": (settings, setup) => {
+    return {
+      deckSize: settings.deckSize || "standard",
+    };
   },
 };
 

@@ -8,6 +8,10 @@ export const randomizeMeetingTargetsWithSeed = ({
   playerIds,
   seed,
 }) => {
+  if (!targets || !Array.isArray(targets)) {
+    return [];
+  }
+
   const idToOrder = playerIds.reduce(
     (acc, val, index) => ({
       ...acc,

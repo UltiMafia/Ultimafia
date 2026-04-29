@@ -30,6 +30,7 @@ import RatscrewGame from "./RatscrewGame";
 import BattlesnakesGame from "./BattlesnakesGame";
 import DiceWarsGame from "./DiceWarsGame";
 import ConnectFourGame from "./ConnectFourGame";
+import SpotItGame from "./SpotItGame";
 import { GameContext, SiteInfoContext, UserContext } from "Contexts";
 import Dropdown from "../../components/Dropdown";
 import Setup from "../../components/Setup";
@@ -377,7 +378,7 @@ export default function Game() {
       }:${port}`;
     else
       socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${
-        import.meta.env.REACT_APP_SOCKET_URI
+        import.meta.env[`REACT_APP_SOCKET_URI_${port}`] || import.meta.env.REACT_APP_SOCKET_URI
       }/${port}`;
 
     var newSocket = new Socket(socketURL);
@@ -985,6 +986,7 @@ export default function Game() {
               <DiceWarsGame />
             )}
             {gameType === "Connect Four" && <ConnectFourGame />}
+            {gameType === "Spot It" && <SpotItGame />}
           </Box>
         </Stack>
         <UrgencyOverlay hidden={!isUrgent} />
@@ -1762,7 +1764,7 @@ function getAllMessagesToDisplay(history) {
     const stateData = history.states[state];
     const stateMeetings = stateData.meetings;
     if (!stateMeetings) {
-      return;
+      continue;
     }
 
     let stateMessages = [];

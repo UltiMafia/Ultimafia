@@ -386,6 +386,7 @@ const gameSettingData = {
   },
   Battlesnakes: {},
   "Dice Wars": {},
+  "Spot It": {},
   "Connect Four": {
     Whispers: {
       category: "Standard",

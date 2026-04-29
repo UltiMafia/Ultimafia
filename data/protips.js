@@ -46,6 +46,12 @@ const protips = {
   ],
   Cheat: ["Count the cards!", "Call It", "Cheaters sometimes prosper!"],
   Ratscrew: ["Count the cards!", "Slap It", "Embrace your inner Pimp!"],
+  "Spot It": [
+    "Be the first to spot the matching symbol!",
+    "Focus on your card first, then scan the center.",
+    "There is always exactly one match between any two cards.",
+    "Speed is everything!",
+  ],
   "Connect Four": [
     "Pay attention to the other players.",
     "Beware of diagonals.",

@@ -131,3 +131,7 @@
 .game-icon.Dice-Wars {
   background-image: url("/src/images/game_icons/DiceWars.png");
 }
+
+.game-icon.Spot-It {
+  background-image: url("/src/images/game_icons/SpotIt.png");
+}

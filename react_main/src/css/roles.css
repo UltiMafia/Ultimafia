@@ -3216,6 +3216,21 @@
   background-image: url("/src/images/roles/minigame/connectfour/starman-vivid.png");
 }
 
+/***********
+*
+* Spot It
+*
+***********/
+
+.role-icon-vivid-Spot-It-Towerer {
+  background-image: url("/src/images/roles/village/demolitionist-vivid.png");
+}
+
+.role-icon-vivid-Spot-It-Weller {
+  background-image: url("/src/images/roles/cult/selkie-vivid.png");
+}
+
+
 /***************
 
 Game Settings

@@ -6530,6 +6530,18 @@ const roleData = {
       description: ["Can place counters on the board."],
     },
   },
+  "Spot It": {
+    Towerer: {
+      alignment: "Town",
+      tags: ["None"],
+      description: ["Turns the game into The Tower, where players must find the matching symbol with their card!"],
+    },
+    Weller: {
+      alignment: "Town",
+      tags: ["None"],
+      description: ["Turns the game into The Well, where players must get rid of their cards first!"],
+    }, 
+  },
 };
 
 module.exports = roleData;
