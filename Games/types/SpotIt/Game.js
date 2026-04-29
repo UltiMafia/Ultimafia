@@ -174,7 +174,9 @@ module.exports = class SpotItGame extends Game {
     }
 
     if (winners.groupAmt() > 0) finished = true;
-    else if (this.roundNumber >= this.totalRounds) {
+
+    // Tower mode: deck exhausted
+    if (!finished && !this.isWell && this.deck.length === 0) {
       let maxScore = -1;
       let winner = null;
       for (let player of this.players) {
@@ -183,11 +185,21 @@ module.exports = class SpotItGame extends Game {
           winner = player;
         }
       }
-      if (winner) winners.addPlayer(winner);
+      if (winner) winners.addPlayer(winner, winner.name);
       finished = true;
+    }
+
+    // Well mode: someone emptied their stack
+    if (!finished && this.isWell) {
+      for (let player of this.players) {
+        if (player.cardStack && player.cardStack.length === 0) {
+          winners.addPlayer(player, player.name);
+          finished = true;
+        }
+      }
     }
 
     winners.determinePlayers();
     return [finished, winners];
   }
-};
+}
