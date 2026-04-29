@@ -433,6 +433,7 @@ module.exports = class MafiaGame extends Game {
 
         for (let member of meeting.members)
           if (
+            member.player.alive &&
             member.canVote &&
             !meeting.votes[member.id] &&
             !member.player.votedForExtension
