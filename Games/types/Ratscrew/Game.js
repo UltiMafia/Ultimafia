@@ -357,6 +357,14 @@ module.exports = class RatscrewGame extends Game {
     );
     player.CardsInHand.push(...cardValues);
     this.TheStack = [];
+
+    // Pile cleared. Any other alive player with no cards is now eliminated.
+    for (const p of this.players.array()) {
+      if (p.alive && p !== player && p.CardsInHand.length === 0) {
+        this.toast(`${p.name} is out!`);
+        p.kill("Basic", player, true);
+      }
+    }
   }
 
 
