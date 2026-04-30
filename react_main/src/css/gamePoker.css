@@ -870,3 +870,183 @@
     width: min(280px, calc(100vw - 24px));
   }
 }
+
+/* ----- Hand History dropdown ----- */
+.poker-history {
+  width: 100%;
+  max-width: 720px;
+  margin: 8px auto 4px;
+  font-family: inherit;
+}
+
+.poker-history-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 14px;
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--scheme-color, #f0e7c8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.poker-history-toggle:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.poker-history-toggle-chevron {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.poker-history-panel {
+  margin-top: 8px;
+  padding: 10px 12px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+.poker-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.poker-history-entry {
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+}
+
+.poker-history-entry-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.poker-history-entry-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.poker-history-entry-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.poker-history-entry-initial {
+  font-weight: 700;
+  color: var(--scheme-color, #f0e7c8);
+}
+
+.poker-history-entry-meta {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+}
+
+.poker-history-entry-winner {
+  font-weight: 700;
+}
+
+.poker-history-entry-pot {
+  opacity: 0.85;
+}
+
+.poker-history-entry-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.poker-history-entry-body--folded {
+  font-style: italic;
+  opacity: 0.75;
+  font-size: 13px;
+}
+
+.poker-history-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.poker-history-row-label {
+  width: 56px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.65;
+}
+
+.poker-history-cards {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.poker-history-card {
+  transform: scale(0.55);
+  transform-origin: top left;
+  margin-right: -22px;
+  margin-bottom: -36px;
+}
+
+.poker-history-card--empty {
+  opacity: 0.25;
+}
+
+.poker-history-card--highlight {
+  box-shadow: 0 0 0 2px gold, 0 0 6px 2px rgba(255, 215, 0, 0.6);
+  border-radius: 6px;
+}
+
+.poker-history-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.poker-history-page-btn {
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--scheme-color, #f0e7c8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.poker-history-page-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.poker-history-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.poker-history-page-indicator {
+  font-size: 12px;
+  opacity: 0.85;
+  min-width: 40px;
+  text-align: center;
+}

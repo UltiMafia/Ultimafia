@@ -16,6 +16,7 @@ import { GameContext } from "../../Contexts";
 import { cardGameAudioConfig } from "../../audio/audioConfigs";
 import PokerTable from "./PokerTable";
 import PokerActions from "./PokerActions";
+import PokerHandHistory from "./PokerHandHistory";
 
 import "css/game.css";
 import "css/gameCardGames.css";
@@ -97,8 +98,16 @@ export default function TexasHoldEmGame(props) {
     </>
   );
 
+  const stateViewing = game.stateViewing;
+  const currentExtraInfo =
+    stateViewing >= 0
+      ? history?.states?.[stateViewing]?.extraInfo
+      : null;
+  const handHistory = currentExtraInfo?.handHistory ?? [];
+
   const centerPanel = (
     <div className="poker-center-panel">
+      <PokerHandHistory history={handHistory} />
       <PokerTable />
       <PokerActions />
       <PokerToasts toasts={toasts} />
@@ -136,6 +145,7 @@ export default function TexasHoldEmGame(props) {
         }}
         innerRightContent={
           <div className="poker-center-panel">
+            <PokerHandHistory history={handHistory} />
             <PokerTable />
             <PokerActions />
             <PokerToasts toasts={toasts} />
