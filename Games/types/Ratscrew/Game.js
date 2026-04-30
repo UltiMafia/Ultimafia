@@ -371,6 +371,21 @@ module.exports = class RatscrewGame extends Game {
   // ---- Card play resolution ----
 
   playCard(actor) {
+    // If we're in a face-card challenge and it's the defender's turn but
+    // they have no cards left to attempt, the challenger wins the pile.
+    if (
+      this.faceChallenge &&
+      actor !== this.faceChallenge.challenger &&
+      actor.CardsInHand.length === 0
+    ) {
+      const challenger = this.faceChallenge.challenger;
+      this.toast(`${challenger.name} wins the pile!`);
+      this.transferPileTo(challenger);
+      this.faceChallenge = null;
+      this.setNextToPlay(challenger);
+      return;
+    }
+
     if (actor.CardsInHand.length === 0) return;
     const card = actor.CardsInHand.shift();
     this.TheStack.push(this.pushStackEntry(card, false));
