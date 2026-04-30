@@ -25,7 +25,14 @@ export default function HostDiceWars() {
         { label: "4", value: 4 },
         { label: "8", value: 8 },
         { label: "16", value: 16 },
+        { label: "20", value: 20 },
       ],
+    },
+    {
+      label: "Discard reserve dice each turn",
+      ref: "discardReserveDice",
+      type: "boolean",
+      value: defaults.discardReserveDice,
     },
     {
       label: "Lobby",
@@ -120,6 +127,8 @@ export default function HostDiceWars() {
           Play: getFormFieldValue("playLength"),
         },
         mapSize: getFormFieldValue("mapSize"),
+        maxDice: getFormFieldValue("maxDice"),
+        discardReserveDice: getFormFieldValue("discardReserveDice"),
         anonymousGame: getFormFieldValue("anonymousGame"),
         anonymousDeckId: getFormFieldValue("anonymousDeckId"),
       });
