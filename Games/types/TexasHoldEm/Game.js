@@ -53,6 +53,9 @@ module.exports = class TexasHoldEmGame extends Game {
     this.lastAmountBid = 0;
     this.lastBidder = null;
 
+    //hand history of past rounds for the dropdown UI
+    this.handHistory = [];
+
     this.chatName = "Casino";
 
     this.spectatorMeetFilter = {
@@ -269,10 +272,25 @@ module.exports = class TexasHoldEmGame extends Game {
       if (playersInGame.length == 1) {
         this.sendAlert(`The Round has Concluded`);
         this.RoundNumber++;
+        const foldWinner = playersInGame[0];
+        const foldPot = parseInt(this.ThePot);
         this.sendAlert(
-          `${playersInGame[0].name} has Won ${this.ThePot} from The Pot by not folding!`
+          `${foldWinner.name} has Won ${foldPot} from The Pot by not folding!`
         );
-        playersInGame[0].Chips += parseInt(this.ThePot);
+        foldWinner.Chips += foldPot;
+
+        // Record a redacted hand history entry — winner's hole cards stay
+        // private when the round is decided by folds only.
+        this.handHistory.push({
+          winnerId: foldWinner.user.id,
+          winnerName: foldWinner.name,
+          scoreType: null,
+          showdownCards: null,
+          holeCards: null,
+          communityCards: [...this.CommunityCards],
+          pot: foldPot,
+          revealed: false,
+        });
 
         this.removeHands();
         this.discardCommunityCards();
@@ -546,6 +564,18 @@ module.exports = class TexasHoldEmGame extends Game {
         message: `${player.name} wins ${share} with ${player.ScoreType}`,
         time: Date.now(),
       });
+
+      // Record a fully revealed hand history entry for this showdown winner.
+      this.handHistory.push({
+        winnerId: player.user.id,
+        winnerName: player.name,
+        scoreType: player.ScoreType,
+        showdownCards: [...(player.ShowdownCards || [])],
+        holeCards: [...(player.CardsInHand || [])],
+        communityCards: [...this.CommunityCards],
+        pot: parseInt(share),
+        revealed: true,
+      });
     }
   }
 
@@ -684,6 +714,7 @@ module.exports = class TexasHoldEmGame extends Game {
       bigBlindId: this.BigBlind?.user.id ?? null,
       lastAmountBid: this.lastAmountBid,
       minimumBet: this.minimumBet,
+      handHistory: this.handHistory,
     };
     return info;
   }
