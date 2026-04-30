@@ -180,7 +180,7 @@ module.exports = class LiarsDiceGame extends Game {
           );
         } else {
           this.sendAlert(
-            `${player.name} called a lie. Bid was at least ${this.lastAmountBid}x  ${dieIcon} 's by ${bidderName} — and there were ${diceCount}x. ${player.name} loses a die.`
+            `${player.name} called a bluff on ${this.lastAmountBid}x ${dieIcon} but there were ${diceCount}x. ${player.name} loses a die.`
           );
         }
         this.removeDice(player);
@@ -192,7 +192,7 @@ module.exports = class LiarsDiceGame extends Game {
           );
         } else {
           this.sendAlert(
-            `${player.name} called a lie. Bid was at least ${this.lastAmountBid}x  ${dieIcon} 's by ${bidderName} — but there were only ${diceCount}x. ${bidderName} loses a die.`
+            `${player.name} called a bluff on ${this.lastAmountBid}x ${dieIcon} and there were only ${diceCount}x. ${bidderName} loses a die.`
           );
         }
         this.removeDice(this.lastBidder);
@@ -398,7 +398,7 @@ module.exports = class LiarsDiceGame extends Game {
       const dieIcon = `:dice${this.lastFaceBid}:`;
       if (diceCount == this.lastAmountBid) {
         this.sendAlert(
-          `${player.name} called spot on. Bid was ${this.lastAmountBid}x  ${dieIcon} 's by ${bidderName} — exactly ${diceCount}x. Everyone except ${player.name} loses a die.`
+          `SPOT ON! Everyone except ${player.name} loses a die.`
         );
 
         if (player.correctSpotOnsInARow >= 2) {
@@ -551,7 +551,7 @@ module.exports = class LiarsDiceGame extends Game {
         });
       } else {
         this.sendAlert(
-          `${player.name} called spot on. Bid was ${this.lastAmountBid}x  ${dieIcon} 's by ${bidderName} — but there were ${diceCount}x. ${player.name} loses a die.`
+          `${player.name} called SPOT ON on ${this.lastAmountBid}x ${dieIcon} but there were ${diceCount}x. ${player.name} loses a die.`
         );
         player.correctSpotOnsInARow = 0;
 
