@@ -246,9 +246,9 @@ module.exports = {
         default: 1 * 60 * 1000,
       },
       Showdown: {
-        min: 10 * 1000,
-        max: 5 * 60 * 1000,
-        default: 10 * 1000,
+        min: 3 * 1000,
+        max: 30 * 1000,
+        default: 5 * 1000,
       },
     },
     Cheat: {

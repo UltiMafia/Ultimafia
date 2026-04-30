@@ -113,14 +113,14 @@ export default function HostTexasHoldEm() {
       step: 0.5,
     },
     {
-      label: "Showdown (minutes)",
+      label: "Showdown (seconds)",
       ref: "showdownLength",
       type: "number",
       showIf: "configureDuration",
       value: defaults.showdownLength,
-      min: 0.5,
-      max: 3,
-      step: 0.5,
+      min: 3,
+      max: 30,
+      step: 1,
     },
   ];
 
@@ -143,7 +143,10 @@ export default function HostTexasHoldEm() {
         readyCheck: getFormFieldValue("readyCheck"),
         stateLengths: {
           "Place Bets": getFormFieldValue("placeBetsLength"),
-          Showdown: getFormFieldValue("showdownLength"),
+          // Showdown is configured in seconds, but the route multiplies
+          // every state length by 60 * 1000 to convert minutes to ms.
+          // Divide by 60 here so the final value lands in (seconds * 1000) ms.
+          Showdown: getFormFieldValue("showdownLength") / 60,
         },
         startingChips: getFormFieldValue("startingChips"),
         minimumBet: getFormFieldValue("minimumBet"),
