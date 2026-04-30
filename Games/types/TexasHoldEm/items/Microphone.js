@@ -186,7 +186,7 @@ module.exports = class Microphone extends Item {
 
     this.MovesOptions = ["Check", "Fold"];
     this.MinRaise = 1;
-    if (this.game.lastAmountBid > 0) {
+    if (this.game.lastAmountBid > player.AmountBidding) {
       this.MovesOptions = ["Call", "Fold"];
       this.MinRaise = this.game.minimumBet;
     }
