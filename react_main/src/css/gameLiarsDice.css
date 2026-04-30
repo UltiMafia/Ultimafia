@@ -45,6 +45,8 @@
   flex-shrink: 0;
   cursor: pointer;
   padding: 6px 4px;
+  width: 120px;
+  box-sizing: border-box;
 }
 
 .ld-player-name-small {
@@ -286,6 +288,7 @@
   .ld-player-avatar {
     padding: 4px 2px;
     gap: 4px;
+    width: 72px;
   }
 
   .ld-player-avatar .avatar {
