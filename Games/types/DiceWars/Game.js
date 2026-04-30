@@ -720,7 +720,15 @@ module.exports = class DiceWarsGame extends Game {
       );
 
       // Check if defender is eliminated
+      const wasAlive = defender && defender.alive;
       this.checkElimination(defenderId);
+      if (wasAlive && defender && !defender.alive) {
+        // Kill reward: grant up to 5 extra dice on the conquering territory
+        const room = this.maxDicePerTerritory - toTerritory.dice;
+        if (room > 0) {
+          toTerritory.dice += Math.min(5, room);
+        }
+      }
     } else {
       // Defender wins
       fromTerritory.dice = 1;
