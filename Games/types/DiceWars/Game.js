@@ -926,15 +926,30 @@ module.exports = class DiceWarsGame extends Game {
       }
     }
 
-    // Store surplus dice (max 4x the max dice limit)
-    const maxSurplus = this.maxDicePerTerritory * 4;
-    this.surplusDice[playerId] = Math.min(surplusDice, maxSurplus);
+    // Store surplus dice (max 4x the max dice limit), unless host opted to discard reserves
+    const discardReserve = !!(
+      this.options &&
+      this.options.settings &&
+      this.options.settings.discardReserveDice
+    );
+    if (discardReserve) {
+      this.surplusDice[playerId] = 0;
+    } else {
+      const maxSurplus = this.maxDicePerTerritory * 4;
+      this.surplusDice[playerId] = Math.min(surplusDice, maxSurplus);
+    }
 
     if (bonusDice > 0) {
       const player = this.players.array().find((p) => p.id === playerId);
       let message = `${player.name} received ${bonusDice} bonus dice`;
       if (distributedDice < bonusDice) {
-        message += ` (${distributedDice} placed, ${this.surplusDice[playerId]} stored)`;
+        if (discardReserve) {
+          message += ` (${distributedDice} placed, ${
+            bonusDice - distributedDice
+          } discarded)`;
+        } else {
+          message += ` (${distributedDice} placed, ${this.surplusDice[playerId]} stored)`;
+        }
       }
       this.sendAlert(message);
     }
