@@ -315,9 +315,10 @@ module.exports = class RatscrewGame extends Game {
     } else {
       // Invalid slap — burn one card from the slapper, face-down, into the
       // middle of the stack so it doesn't trigger any combinations.
+      // A player with no cards survives a wrong slap; elimination only
+      // happens when the pile is awarded to someone else (see transferPileTo).
       if (player.CardsInHand.length === 0) {
-        this.toast(`${player.name} is out!`);
-        player.kill("Basic", player, true);
+        this.toast(`${player.name} has no cards to burn`);
         this.broadcastExtraInfoUpdate();
         return;
       }
