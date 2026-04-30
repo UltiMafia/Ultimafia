@@ -1401,7 +1401,13 @@ export function MobileLayout({
               direction="row"
               onClick={() => setSelectedPanel("chat")}
               sx={{
+                flex: 1,
+                minWidth: 0,
+                maxWidth: "140px",
                 filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
               }}
             >
               {!singleState && <Divider orientation="vertical" flexItem />}
@@ -4979,8 +4985,25 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
     }
   }
 
+  const canChangeSetup =
+    game.gameType === "Mafia" &&
+    !game.review &&
+    !game.options?.competitive &&
+    game.history.currentState === -1 &&
+    game.self &&
+    game.players[game.self] &&
+    game.players[game.self].userId === game.hostId;
+
   const menuContent = (
-    <Form compact fields={formFields} onChange={handleFieldChange} />
+    <Stack direction="column" spacing={1}>
+      <Form compact fields={formFields.slice(0, 1)} onChange={handleFieldChange} />
+      {canChangeSetup && (
+        <Button onClick={() => game.setChangeSetupDialogOpen(true)}>
+          Change Setup
+        </Button>
+      )}
+      <Form compact fields={formFields.slice(1)} onChange={handleFieldChange} />
+    </Stack>
   );
 
   const menuFooter = (
@@ -5006,21 +5029,6 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
       >
         Save
       </Button>
-      {!game.review &&
-        !game.options?.competitive &&
-        game.history.currentState === -1 &&
-        game.self &&
-        game.players[game.self] &&
-        game.players[game.self].userId === game.hostId && (
-          <Button
-            onClick={() => game.setChangeSetupDialogOpen(true)}
-            sx={{
-              flex: "1",
-            }}
-          >
-            Change Setup
-          </Button>
-        )}
       {onLeave && (
         <Button
           onClick={onLeave}
