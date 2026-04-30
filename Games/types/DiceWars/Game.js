@@ -486,9 +486,8 @@ module.exports = class DiceWarsGame extends Game {
     }
 
     // Turn-order compensation: later players get bonus dice placed on their territories
-    // bonusDice = ceil(territories_per_player / 4)
-    const territoriesPerPlayer = Math.ceil(numTerritories / numPlayers);
-    const bonusDiceUnit = Math.ceil(territoriesPerPlayer / 4);
+    // Mild ramp: player at index i gets exactly i bonus dice (1 per turn-order position)
+    const bonusDiceUnit = 1;
 
     for (let i = 0; i < numPlayers; i++) {
       this.surplusDice[activePlayers[i].id] = 0;
