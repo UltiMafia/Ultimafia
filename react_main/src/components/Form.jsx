@@ -7,6 +7,7 @@ import CustomMarkdown from "components/CustomMarkdown";
 import { useOnOutsideClick } from "./Basic";
 import { useErrorAlert } from "./Alerts";
 import DeckPicker from "./DeckPicker";
+import WordDeckPicker from "./WordDeckPicker";
 
 import "react-mde/lib/styles/css/react-mde.css";
 import "react-mde/lib/styles/css/react-mde-editor.css";
@@ -262,6 +263,31 @@ export default function Form({
               key={field.ref}
             >
               <DeckPicker
+                value={value || ""}
+                onChange={(newValue) => {
+                  if (field.fixed) return;
+                  onChange({
+                    ref: field.ref,
+                    prop: "value",
+                    value: newValue,
+                  });
+                }}
+                disabled={disabled}
+                placeholder={field.placeholder}
+                label={compact ? field.label : undefined}
+                helperText={field.extraInfo}
+              />
+            </FormField>
+          );
+        case "wordDeckPicker":
+          return (
+            <FormField
+              field={field}
+              deps={deps}
+              compact={compact}
+              key={field.ref}
+            >
+              <WordDeckPicker
                 value={value || ""}
                 onChange={(newValue) => {
                   if (field.fixed) return;

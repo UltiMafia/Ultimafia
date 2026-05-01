@@ -452,6 +452,15 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
         </InfoSection>
       );
       break;
+    case "Draw It":
+      if (!hasGameTypeOptions) break;
+      result.push(
+        <InfoSection title="Draw It settings">
+          <InfoRow title="No. Rounds" content={gameTypeOptions.roundAmt} key="roundAmt" />
+          <InfoRow title="Word Deck" content={gameTypeOptions.wordDeckId || "(default)"} key="wordDeckId" />
+        </InfoSection>
+      );
+      break;
     case "Liars Dice":
       if (!hasGameTypeOptions) break;
       result.push(
@@ -1012,6 +1021,20 @@ export function parseGamePopover(game) {
               key="turnOnCaps"
             />
           )}
+        </InfoSection>
+      );
+      break;
+    case "Draw It":
+      const roundAmtDI = game.settings.gameTypeOptions.roundAmt;
+      const wordDeckIdDI = game.settings.gameTypeOptions.wordDeckId;
+      result.push(
+        <InfoSection title="Draw It specific settings">
+          <InfoRow title="No. Rounds" content={roundAmtDI} key="roundAmt" />
+          <InfoRow
+            title="Word Deck"
+            content={wordDeckIdDI || "(default)"}
+            key="wordDeckId"
+          />
         </InfoSection>
       );
       break;

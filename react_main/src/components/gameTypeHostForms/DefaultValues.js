@@ -15,6 +15,7 @@ const HOST_OPTIONS_VERSIONS = {
   Resistance: 2,
   "Secret Dictator": 2,
   "Wacky Words": 2,
+  "Draw It": 2,
   Cheat: 2,
   Ratscrew: 2,
   "Connect Four": 2,
@@ -148,6 +149,13 @@ var defaultOptions = {
     nightLength: 2,
     isRankedChoice: false,
     votesToPoints: false,
+  },
+  "Draw It": existingHostOptions["Draw It"] || {
+    ...commonHostOptions,
+    lobby: "Games",
+    roundAmt: 3,
+    wordDeckId: "default",
+    drawLength: 60,
   },
   Battlesnakes: existingHostOptions["Battlesnakes"] || {
     ...commonHostOptions,

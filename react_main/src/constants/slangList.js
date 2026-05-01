@@ -139,7 +139,7 @@ export const slangList = {
   },
   veg: {
     definition:
-      "Veg: when a player's inactivity or inability to complete in-game tasks causes the game to automatically kill them.",
+      "Veg: when a player dies due to being AFK or inactive — typically because they failed to take their required action. The game automatically kills them.",
     emoji: "🥕",
   },
   unvote: {
@@ -383,6 +383,26 @@ export const slangList = {
     definition:
       "When a player gives away that they're town because they don't know something that would be obvious to them if they were evil. Can be faked.",
   },
+  towntell: {
+    definition:
+      "Towntell. A behavior or play that makes a player look town-aligned, especially while their alignment is not yet confirmed.",
+  },
+  scumtell: {
+    definition:
+      "Scumtell. A behavior or play that makes a player look scum-aligned, especially while their alignment is not yet confirmed. Opposite of towntell.",
+  },
+  yakked: {
+    definition:
+      "When a player has been converted by the Yakuza into a Mafioso.",
+  },
+  masoned: {
+    definition:
+      "When a player has been converted by the Masons into a Mason.",
+  },
+  culted: {
+    definition:
+      "When a player has been converted by the Cult into a Cult member.",
+  },
   softing: {
     definition:
       "Softclaim. When a player hints towards what their role is without explicitly saying it. A soft can be used to strengthen one's eventual hard claim.",
@@ -596,6 +616,7 @@ export const slangList = {
   GR: { definition: "Graverobber" },
   GS: { definition: "Gunsmith" },
   HB: { definition: "Heartbreaker" },
+  ILLU: { definition: "Illusionist" },
   JAN: { definition: "Janitor" },
   LAW: { definition: "Lawyer" },
   LK: { definition: "Lightkeeper" },
@@ -626,3 +647,8 @@ slangList.scummy = slangList.scum;
 slangList.sr = slangList.scumread;
 slangList.tr = slangList.townread;
 slangList.auto = slangList.autowin;
+slangList.scumtold = slangList.scumtell;
+slangList.vegged = slangList.veg;
+slangList.vegging = slangList.veg;
+slangList.slipped = slangList.slip;
+slangList.slipping = slangList.slip;

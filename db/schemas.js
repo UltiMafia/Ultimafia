@@ -15,6 +15,19 @@ const anonymousDeck = new mongoose.Schema({
   featured: { type: Boolean, index: true },
 });
 
+const wordDeck = new mongoose.Schema({
+  id: { type: String, index: true },
+  name: String,
+  description: { type: String, default: "" },
+  creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  words: [{ type: String }],
+  voteCount: { type: Number, default: 0 },
+  featured: { type: Boolean, default: false },
+  disabled: { type: Boolean, default: false },
+  coverPhoto: { type: String, default: "" },
+  isDefault: { type: Boolean, default: false },
+});
+
 const skillRating = new mongoose.Schema({
   mu: { type: Number }, // mean
   sigma: { type: Number }, // deviation
@@ -132,6 +145,9 @@ var schemas = {
     anonymousDecks: [
       { type: mongoose.Schema.Types.ObjectId, ref: "AnonymousDeck" },
     ],
+    wordDecks: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "WordDeck" },
+    ],
     customEmotes: [
       { type: mongoose.Schema.Types.ObjectId, ref: "CustomEmote" },
     ],
@@ -155,6 +171,7 @@ var schemas = {
       deathMessageEnabled: { type: Number, default: 0 },
       deathMessageChange: { type: Number, default: 0 },
       anonymousDeck: { type: Number, default: 0 },
+      wordDeck: { type: Number, default: 0 },
       customEmotes: { type: Number, default: 0 },
       customEmotesExtra: { type: Number, default: 0 },
       archivedGames: { type: Number, default: 0 },
@@ -281,6 +298,7 @@ var schemas = {
     },
   }),
   AnonymousDeck: anonymousDeck,
+  WordDeck: wordDeck,
   CustomEmote: new mongoose.Schema({
     id: { type: String, index: true },
     name: { type: String, index: true },
