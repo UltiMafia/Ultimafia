@@ -447,7 +447,13 @@ module.exports = class DrawItGame extends Game {
   }
 
   checkWinConditions() {
-    if (this.currentRound < this.roundAmt) {
+    // End detection keys off drawingHistory.length (one push per completed
+    // turn, applied inside beginRevealState BEFORE the engine's next
+    // checkGameEnd) rather than currentRound. currentRound only ticks at
+    // the start of a new round's Pick, which would be too late — the game
+    // would otherwise spill into an extra Pick state and display N+1/N.
+    const totalTurns = this.roundAmt * this.turnOrder.length;
+    if (this.drawingHistory.length < totalTurns) {
       return [false, undefined];
     }
 
