@@ -10,7 +10,7 @@ describe("DrawIt Game class basics", () => {
       isTest: true,
       settings: {
         roundAmt: options.roundAmt || 3,
-        wordDeckId: null, // forces the fallback to default-items
+        wordDeckId: null, // forces the fallback to the default deck
         stateLengths: { Draw: 60_000 },
         pregameCountdownLength: 0,
         setup: { total: 3 },

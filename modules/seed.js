@@ -11,6 +11,7 @@ module.exports.seedDefaultWordDecks = async function () {
           $set: {
             id: deck.id,
             name: deck.name,
+            description: deck.description || "",
             words: deck.words,
             coverPhoto: deck.coverPhoto || "",
             isDefault: true,
@@ -24,5 +25,15 @@ module.exports.seedDefaultWordDecks = async function () {
     } catch (e) {
       logger.error(`Failed seeding deck ${deck.id}: ${e}`);
     }
+  }
+
+  try {
+    const currentIds = defaultDecks.map((d) => d.id);
+    await models.WordDeck.deleteMany({
+      isDefault: true,
+      id: { $nin: currentIds },
+    });
+  } catch (e) {
+    logger.error(`Failed pruning stale default decks: ${e}`);
   }
 };

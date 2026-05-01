@@ -18,6 +18,7 @@ const anonymousDeck = new mongoose.Schema({
 const wordDeck = new mongoose.Schema({
   id: { type: String, index: true },
   name: String,
+  description: { type: String, default: "" },
   creator: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   words: [{ type: String }],
   voteCount: { type: Number, default: 0 },

@@ -1,99 +1,107 @@
+const animals = [
+  "dog","cat","cow","pig","horse","sheep","goat","chicken","duck",
+  "rabbit","mouse","rat","hamster","squirrel","fox","wolf","bear",
+  "lion","tiger","leopard","cheetah","panther","jaguar","elephant",
+  "rhino","hippo","giraffe","zebra","kangaroo","koala","panda","monkey",
+  "gorilla","chimp","sloth","skunk","raccoon","badger","beaver","otter",
+  "seal","walrus","whale","dolphin","shark","octopus","squid","crab",
+  "lobster","starfish","jellyfish","seahorse","fish","frog","toad",
+  "snake","lizard","turtle","crocodile","alligator","chameleon","gecko",
+  "iguana","penguin","ostrich","eagle","hawk","owl","parrot","peacock",
+  "flamingo","swan","goose","pigeon","sparrow","robin","crow","raven",
+  "vulture","bat","bee","butterfly","spider","ant","beetle","ladybug",
+  "snail","worm","scorpion","centipede","camel","donkey","moose","deer",
+  "elk","bison","buffalo","yak","platypus","hedgehog","mole",
+];
+
+const body = [
+  "head","face","eye","nose","mouth","ear","hair","tooth","tongue",
+  "lip","cheek","chin","forehead","eyebrow","eyelash","neck","throat",
+  "shoulder","arm","elbow","wrist","hand","finger","thumb","fingernail",
+  "palm","fist","chest","back","stomach","waist","hip","leg","knee",
+  "ankle","foot","toe","heel","sole","beard","mustache","skull","brain",
+  "heart","lung","liver","bone","muscle","skin","smile","frown","wink",
+];
+
+const fruitsVeggies = [
+  "apple","banana","grape","orange","lemon","lime","strawberry","cherry",
+  "pear","peach","pineapple","watermelon","mango","kiwi","blueberry",
+  "raspberry","plum","apricot","coconut","papaya","fig","pomegranate",
+  "carrot","potato","tomato","onion","garlic","broccoli","cauliflower",
+  "cucumber","pepper","corn","celery","cabbage","lettuce","spinach",
+  "pea","bean","mushroom","pumpkin","radish","beet","eggplant",
+  "zucchini","asparagus","artichoke","leek","ginger","chili","avocado",
+  "olive","yam","turnip","squash","melon","date","raisin","prune",
+  "cranberry","blackberry","gooseberry",
+];
+
+const items = [
+  "chair","lamp","cup","key","hammer","bottle","book","clock","candle",
+  "phone","pencil","scissors","pillow","toothbrush","umbrella","shoe",
+  "hat","ring","watch","glasses","backpack","fork","spoon","knife",
+  "plate","mug","bowl","kettle","fridge","oven","sink","mirror","brush",
+  "comb","soap","bucket","ladder","saw","drill","wrench","screwdriver",
+  "nail","rope","balloon","kite","torch","battery","camera","wallet",
+  "envelope","stamp","coin","ticket","map","compass","binoculars","tent",
+  "tape","glue","stapler","ruler","crayon","marker","whistle","drum",
+  "guitar","piano","violin","horn","boot","sandal","glove","scarf",
+  "tie","belt","button","zipper","easel","broom","mop","towel","basket",
+  "vase","frame","cushion",
+];
+
+const sports = [
+  "football","soccer","baseball","basketball","tennis","golf","hockey",
+  "rugby","cricket","volleyball","badminton","ping-pong","bowling",
+  "darts","chess","checkers","cards","dice","domino","puzzle","yo-yo",
+  "frisbee","racket","stick","puck","goalpost","net","trophy",
+  "medal","ribbon","scoreboard","stadium","field","court",
+  "track","gym","pool","ball","helmet","jersey","cleats",
+  "skis","snowboard","surfboard","skates","boxing","karate",
+  "judo","fencing","archery","javelin","shotput","hurdle","trampoline",
+];
+
+const vehicles = [
+  "car","truck","bus","van","taxi","bicycle","motorcycle","scooter",
+  "skateboard","train","subway","tram","monorail","plane","helicopter",
+  "rocket","spaceship","ufo","hot-air-balloon","blimp","glider",
+  "boat","ship","yacht","canoe","kayak","raft","submarine","jetski",
+  "ferry","sailboat","tugboat","cruise","tractor","bulldozer","crane",
+  "forklift","ambulance","firetruck","police","limousine","convertible",
+  "wagon","cart","sled","skate","snowmobile","atv","tank","dirigible",
+  "moped","rickshaw",
+];
+
+const categories = [
+  "Animals",
+  "Body & Faces",
+  "Fruits & Veggies",
+  "Items",
+  "Sports & Games",
+  "Vehicles",
+];
+
+const seen = new Set();
+const words = [];
+for (const w of [
+  ...animals,
+  ...body,
+  ...fruitsVeggies,
+  ...items,
+  ...sports,
+  ...vehicles,
+]) {
+  if (!seen.has(w)) {
+    seen.add(w);
+    words.push(w);
+  }
+}
+
 module.exports = [
   {
-    id: "default-items",
-    name: "Items",
-    coverPhoto: "/wordDecks/cover-default-items.webp",
-    words: [
-      "chair","lamp","cup","key","hammer","bottle","book","clock","candle",
-      "phone","pencil","scissors","pillow","toothbrush","umbrella","shoe",
-      "hat","ring","watch","glasses","backpack","fork","spoon","knife",
-      "plate","mug","bowl","kettle","fridge","oven","sink","mirror","brush",
-      "comb","soap","bucket","ladder","saw","drill","wrench","screwdriver",
-      "nail","rope","balloon","kite","torch","battery","camera","wallet",
-      "envelope","stamp","coin","ticket","map","compass","binoculars","tent",
-      "tape","glue","stapler","ruler","crayon","marker","whistle","drum",
-      "guitar","piano","violin","horn","boot","sandal","glove","scarf",
-      "tie","belt","button","zipper","easel","broom","mop","towel","basket",
-      "vase","frame","cushion",
-    ],
-  },
-  {
-    id: "default-fruits-veggies",
-    name: "Fruits & Veggies",
-    coverPhoto: "/wordDecks/cover-default-fruits-veggies.webp",
-    words: [
-      "apple","banana","grape","orange","lemon","lime","strawberry","cherry",
-      "pear","peach","pineapple","watermelon","mango","kiwi","blueberry",
-      "raspberry","plum","apricot","coconut","papaya","fig","pomegranate",
-      "carrot","potato","tomato","onion","garlic","broccoli","cauliflower",
-      "cucumber","pepper","corn","celery","cabbage","lettuce","spinach",
-      "pea","bean","mushroom","pumpkin","radish","beet","eggplant",
-      "zucchini","asparagus","artichoke","leek","ginger","chili","avocado",
-      "olive","yam","turnip","squash","melon","date","raisin","prune",
-      "cranberry","blackberry","gooseberry",
-    ],
-  },
-  {
-    id: "default-vehicles",
-    name: "Vehicles",
-    coverPhoto: "/wordDecks/cover-default-vehicles.webp",
-    words: [
-      "car","truck","bus","van","taxi","bicycle","motorcycle","scooter",
-      "skateboard","train","subway","tram","monorail","plane","helicopter",
-      "rocket","spaceship","ufo","hot-air-balloon","blimp","glider",
-      "boat","ship","yacht","canoe","kayak","raft","submarine","jetski",
-      "ferry","sailboat","tugboat","cruise","tractor","bulldozer","crane",
-      "forklift","ambulance","firetruck","police","limousine","convertible",
-      "wagon","cart","sled","skate","snowmobile","atv","tank","dirigible",
-      "moped","rickshaw",
-    ],
-  },
-  {
-    id: "default-animals",
-    name: "Animals",
-    coverPhoto: "/wordDecks/cover-default-animals.webp",
-    words: [
-      "dog","cat","cow","pig","horse","sheep","goat","chicken","duck",
-      "rabbit","mouse","rat","hamster","squirrel","fox","wolf","bear",
-      "lion","tiger","leopard","cheetah","panther","jaguar","elephant",
-      "rhino","hippo","giraffe","zebra","kangaroo","koala","panda","monkey",
-      "gorilla","chimp","sloth","skunk","raccoon","badger","beaver","otter",
-      "seal","walrus","whale","dolphin","shark","octopus","squid","crab",
-      "lobster","starfish","jellyfish","seahorse","fish","frog","toad",
-      "snake","lizard","turtle","crocodile","alligator","chameleon","gecko",
-      "iguana","penguin","ostrich","eagle","hawk","owl","parrot","peacock",
-      "flamingo","swan","goose","pigeon","sparrow","robin","crow","raven",
-      "vulture","bat","bee","butterfly","spider","ant","beetle","ladybug",
-      "snail","worm","scorpion","centipede","camel","donkey","moose","deer",
-      "elk","bison","buffalo","yak","platypus","hedgehog","mole",
-    ],
-  },
-  {
-    id: "default-body",
-    name: "Body & Faces",
-    coverPhoto: "/wordDecks/cover-default-body.webp",
-    words: [
-      "head","face","eye","nose","mouth","ear","hair","tooth","tongue",
-      "lip","cheek","chin","forehead","eyebrow","eyelash","neck","throat",
-      "shoulder","arm","elbow","wrist","hand","finger","thumb","fingernail",
-      "palm","fist","chest","back","stomach","waist","hip","leg","knee",
-      "ankle","foot","toe","heel","sole","beard","mustache","skull","brain",
-      "heart","lung","liver","bone","muscle","skin","smile","frown","wink",
-    ],
-  },
-  {
-    id: "default-sports",
-    name: "Sports & Games",
-    coverPhoto: "/wordDecks/cover-default-sports.webp",
-    words: [
-      "football","soccer","baseball","basketball","tennis","golf","hockey",
-      "rugby","cricket","volleyball","badminton","ping-pong","bowling",
-      "darts","chess","checkers","cards","dice","domino","puzzle","yo-yo",
-      "frisbee","racket","bat","stick","puck","goalpost","net","trophy",
-      "medal","ribbon","whistle","scoreboard","stadium","field","court",
-      "track","gym","pool","ring","ball","glove","helmet","jersey","cleats",
-      "skis","snowboard","surfboard","skates","boxing","karate",
-      "judo","fencing","archery","javelin","shotput","hurdle","trampoline",
-    ],
+    id: "default",
+    name: "Classics",
+    description: `Categories: ${categories.join(", ")}`,
+    coverPhoto: "",
+    words,
   },
 ];

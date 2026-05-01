@@ -77,6 +77,7 @@ router.post("/create", async function (req, res) {
     deck.editing = Boolean(req.body.editing);
     deck.id = String(req.body.id || "");
     deck.name = String(req.body.name || "");
+    deck.description = String(req.body.description || "");
 
     // deck name
     if (!deck.name || !deck.name.length) {
@@ -85,6 +86,11 @@ router.post("/create", async function (req, res) {
     }
     if (deck.name.length > constants.maxWordDeckNameLength) {
       errors.unprocessable(res, "Deck name is too long.");
+      return;
+    }
+
+    if (deck.description.length > constants.maxWordDeckDescriptionLength) {
+      errors.unprocessable(res, "Deck description is too long.");
       return;
     }
 
@@ -97,7 +103,13 @@ router.post("/create", async function (req, res) {
     if (req.body.editing) {
       await models.WordDeck.updateOne(
         { id: deck.id },
-        { $set: { name: deck.name, words: cleanedWords } }
+        {
+          $set: {
+            name: deck.name,
+            description: deck.description,
+            words: cleanedWords,
+          },
+        }
       ).exec();
       res.send(req.body.id);
       return;
@@ -115,7 +127,7 @@ router.post("/create", async function (req, res) {
     ).exec();
 
     deck = await models.WordDeck.findOne({ _id: deck._id }).select(
-      "id name words"
+      "id name description words"
     );
 
     models.SiteActivity.create({
@@ -387,7 +399,7 @@ router.get("/featured", async function (req, res) {
       })
         .skip(start)
         .limit(pageSize)
-        .select("id name words creator coverPhoto voteCount isDefault")
+        .select("id name description words creator coverPhoto voteCount isDefault")
         .populate("creator", "id name avatar -_id")
         .lean();
       decks = attachWordPreviews(decks);
@@ -431,7 +443,7 @@ router.get("/search", async function (req, res) {
     if (start < deckLimit) {
       var decks = await models.WordDeck.find(searchClause)
         .limit(deckLimit)
-        .select("id name words coverPhoto voteCount isDefault")
+        .select("id name description words coverPhoto voteCount isDefault")
         .lean();
       var count = decks.length;
       decks = decks.slice(start, start + pageSize);
@@ -474,7 +486,7 @@ router.get("/popular", async function (req, res) {
     if (start < deckLimit) {
       var decks = await models.WordDeck.find(searchClause)
         .limit(deckLimit)
-        .select("id name words coverPhoto voteCount isDefault")
+        .select("id name description words coverPhoto voteCount isDefault")
         .lean();
       var count = decks.length;
       decks = decks.slice(start, start + pageSize);
@@ -516,7 +528,7 @@ router.get("/yours", async function (req, res) {
       .populate({
         path: "wordDecks",
         select:
-          "id name words disabled featured coverPhoto voteCount creator isDefault",
+          "id name description words disabled featured coverPhoto voteCount creator isDefault",
         options: { limit: deckLimit },
         populate: [
           {
@@ -580,7 +592,7 @@ router.get("/:id", async function (req, res) {
     let deckId = String(req.params.id);
     let deck = await models.WordDeck.findOne({ id: deckId })
       .select(
-        "id name creator words disabled featured coverPhoto voteCount isDefault"
+        "id name description creator words disabled featured coverPhoto voteCount isDefault"
       )
       .populate({
         path: "creator",

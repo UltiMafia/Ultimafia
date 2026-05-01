@@ -54,7 +54,7 @@ module.exports = class DrawItGame extends Game {
       }
     }
     if (!this.wordPool.length) {
-      const fallback = defaultDecks.find((d) => d.id === "default-items");
+      const fallback = defaultDecks.find((d) => d.id === "default");
       this.wordPool = Random.randomizeArray([...fallback.words]);
     }
 

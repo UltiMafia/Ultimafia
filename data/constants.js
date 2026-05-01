@@ -294,6 +294,7 @@ module.exports = {
   maxWordDeckSize: 500,
   maxWordLength: 30,
   maxWordDeckNameLength: 25,
+  maxWordDeckDescriptionLength: 120,
   maxOwnedCustomEmotes: 10,
   maxOwnedCustomEmotesExtra: 10,
   maxArchivedGamesMax: 10,
