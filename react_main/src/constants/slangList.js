@@ -139,7 +139,7 @@ export const slangList = {
   },
   veg: {
     definition:
-      "Veg: when a player's inactivity or inability to complete in-game tasks causes the game to automatically kill them.",
+      "Veg: when a player dies due to being AFK or inactive — typically because they failed to take their required action. The game automatically kills them.",
     emoji: "🥕",
   },
   unvote: {
@@ -647,3 +647,5 @@ slangList.sr = slangList.scumread;
 slangList.tr = slangList.townread;
 slangList.auto = slangList.autowin;
 slangList.scumtold = slangList.scumtell;
+slangList.vegged = slangList.veg;
+slangList.vegging = slangList.veg;
