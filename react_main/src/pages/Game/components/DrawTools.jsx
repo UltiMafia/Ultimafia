@@ -68,8 +68,11 @@ export default function DrawTools({
               <span
                 className="draw-tools-size-dot"
                 style={{
-                  width: Math.min(s.val, 22),
-                  height: Math.min(s.val, 22),
+                  // Raw brush size — no clamp. The previous Math.min(s.val,22)
+                  // collapsed M (25) and L (40) to the same 22px dot, making
+                  // the three sizes look identical on mobile.
+                  width: s.val,
+                  height: s.val,
                   background: eraseMode ? "#ffffff" : color,
                 }}
               />
