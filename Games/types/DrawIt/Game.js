@@ -40,27 +40,6 @@ module.exports = class DrawItGame extends Game {
   async start() {
     this.turnOrder = Random.randomizeArray([...this.players]);
 
-    // TODO Wave 8 wire achievement grant — replace inline grants with proper
-    // listener classes under Games/types/DrawIt/achievements/.
-    this.events.on("aboutToFinish", () => {
-      if (!this.achievementsAllowed || !this.achievementsAllowed()) return;
-      for (const p of this.players) {
-        if (!p || !p.user) continue;
-        const earned = p.user.achievements || [];
-        const played = (p.user.gamesPlayed || 0) + 1;
-        // First Stroke — play your first Draw It game.
-        if (played >= 1 && !earned.includes("DrawIt1")) {
-          if (!p.EarnedAchievements.includes("DrawIt1"))
-            p.EarnedAchievements.push("DrawIt1");
-        }
-        // Skribbler — play 25 Draw It games.
-        if (played >= 25 && !earned.includes("DrawIt2")) {
-          if (!p.EarnedAchievements.includes("DrawIt2"))
-            p.EarnedAchievements.push("DrawIt2");
-        }
-      }
-    });
-
     if (this.wordDeckId) {
       try {
         const deck = await models.WordDeck.findOne({
