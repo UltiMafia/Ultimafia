@@ -7,45 +7,17 @@ module.exports = class WinIfWithAllCards extends Card {
 
     this.winCheck = {
       priority: 0,
+      // Win when you are the only alive non-Host player. Elimination is
+      // handled by transferPileTo when the pile clears, so the cards-based
+      // win check is no longer needed — the game always reaches a single
+      // surviving player before this fires.
       check: function (counts, winners, aliveCount) {
         if (
-          this.game.MaxRounds != 0 &&
-          this.game.RoundNumber > this.game.MaxRounds
-        ) {
-          let max = -1;
-          let maxPlayer;
-          for (let player of this.game.players) {
-            if (player.alive) {
-              if (player.CardsInHand.length > max) {
-                maxPlayer = player;
-                max = player.CardsInHand.length;
-              }
-            }
-          }
-          if (maxPlayer == this.player) {
-            winners.addPlayer(this.player, this.name);
-            return;
-          }
-        }
-        if (
+          this.player.alive &&
           this.game.alivePlayers().filter((p) => p.role.name != "Host")
-            .length == 1 &&
-          this.player.alive
+            .length === 1
         ) {
           winners.addPlayer(this.player, this.name);
-          return;
-        }
-        let playersWithCard = this.game
-          .alivePlayers()
-          .filter(
-            (p) =>
-              p.role.name != "Host" &&
-              p != this.player &&
-              p.CardsInHand.length > 0
-          );
-        if (playersWithCard.length <= 0 && this.player.alive) {
-          winners.addPlayer(this.player, this.name);
-          return;
         }
       },
     };

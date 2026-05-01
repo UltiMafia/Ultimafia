@@ -326,8 +326,31 @@ module.exports = class RatscrewGame extends Game {
       const middle = Math.floor(this.TheStack.length / 2);
       this.TheStack.splice(middle, 0, this.pushStackEntry(burned, true));
       this.toast(`${player.name} burns a card`);
+      // The slapper may have just burned their last card while a face-card
+      // challenge was active. Resolve it now so the game doesn't get stuck
+      // with a defender who has no cards and no playCard event coming.
+      this.maybeResolveStuckChallenge();
       this.broadcastExtraInfoUpdate();
     }
+  }
+
+  // If a face-card challenge is active but the defender (anyone other than
+  // the challenger) is alive with no cards left to attempt, mark the
+  // challenger as the winner immediately. transferPileTo will then
+  // eliminate the now-cardless defender.
+  maybeResolveStuckChallenge() {
+    if (!this.faceChallenge) return false;
+    const challenger = this.faceChallenge.challenger;
+    const defender = this.nextToPlay;
+    if (!defender || defender === challenger) return false;
+    if (!defender.alive) return false;
+    if (defender.CardsInHand.length > 0) return false;
+
+    this.toast(`${challenger.name} wins the pile!`);
+    this.transferPileTo(challenger);
+    this.faceChallenge = null;
+    this.setNextToPlay(challenger);
+    return true;
   }
 
   // Push a fresh extraInfo snapshot to all clients. Used for mid-state
