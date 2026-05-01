@@ -649,3 +649,5 @@ slangList.auto = slangList.autowin;
 slangList.scumtold = slangList.scumtell;
 slangList.vegged = slangList.veg;
 slangList.vegging = slangList.veg;
+slangList.slipped = slangList.slip;
+slangList.slipping = slangList.slip;
