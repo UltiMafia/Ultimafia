@@ -616,6 +616,7 @@ export const slangList = {
   GR: { definition: "Graverobber" },
   GS: { definition: "Gunsmith" },
   HB: { definition: "Heartbreaker" },
+  ILLU: { definition: "Illusionist" },
   JAN: { definition: "Janitor" },
   LAW: { definition: "Lawyer" },
   LK: { definition: "Lightkeeper" },
