@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 import "css/main.css";
 import { Auth } from "../../components/Auth";
 import IconGallery from "../../components/IconGallery";
-import bannerImage from "../../images/welcome_page/banner.png";
+import bannerImage from "../../images/welcome_page/banner.webp";
 import welcomeImage1 from "../../images/welcome_page/welcome-page_1.png";
 import welcomeImage2 from "../../images/welcome_page/welcome-page_2.png";
 import welcomeImage3 from "../../images/welcome_page/welcome-page_3.png";

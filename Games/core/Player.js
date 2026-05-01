@@ -269,6 +269,44 @@ module.exports = class Player {
       }
     });
 
+    socket.on("drawStroke", (payload) => {
+      try {
+        if (typeof this.game.handleStrokeEvent !== "function") return;
+        if (typeof payload !== "object" || payload === null) return;
+        this.game.handleStrokeEvent(this, "drawStroke", payload);
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
+    socket.on("endStroke", (payload) => {
+      try {
+        if (typeof this.game.handleStrokeEvent !== "function") return;
+        if (typeof payload !== "object" || payload === null) return;
+        this.game.handleStrokeEvent(this, "endStroke", payload);
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
+    socket.on("undoStroke", () => {
+      try {
+        if (typeof this.game.handleStrokeEvent !== "function") return;
+        this.game.handleStrokeEvent(this, "undo", {});
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
+    socket.on("clearCanvas", () => {
+      try {
+        if (typeof this.game.handleStrokeEvent !== "function") return;
+        this.game.handleStrokeEvent(this, "clearCanvas", {});
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
     socket.on("vote", (vote) => {
       try {
         if (typeof vote != "object") return;

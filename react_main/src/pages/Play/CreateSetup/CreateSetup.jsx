@@ -19,6 +19,7 @@ import CreateJottoSetup from "./CreateJottoSetup";
 import CreateAcrotopiaSetup from "./CreateAcrotopiaSetup";
 import CreateSecretDictatorSetup from "./CreateSecretDictatorSetup";
 import CreateWackyWordsSetup from "./CreateWackyWordsSetup";
+import CreateDrawItSetup from "./CreateDrawItSetup";
 import CreateLiarsDiceSetup from "./CreateLiarsDiceSetup";
 import CreateTexasHoldEmSetup from "./CreateTexasHoldEmSetup";
 import CreateCheatSetup from "./CreateCheatSetup";
@@ -76,6 +77,8 @@ export default function CreateSetup(props) {
         return <CreateSecretDictatorSetup />;
       case "Wacky Words":
         return <CreateWackyWordsSetup />;
+      case "Draw It":
+        return <CreateDrawItSetup />;
       case "Liars Dice":
         return <CreateLiarsDiceSetup />;
       case "Texas Hold Em":

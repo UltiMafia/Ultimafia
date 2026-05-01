@@ -266,6 +266,14 @@ const shopItems = [
     onBuy: async function (userId) {},
   },
   {
+    name: "Word Deck",
+    desc: "Create word decks of drawable nouns for the Draw It minigame.",
+    key: "wordDeck",
+    price: 100,
+    limit: constants.maxOwnedWordDecks,
+    onBuy: async function (userId) {},
+  },
+  {
     name: "Custom Emotes",
     desc: "Create custom emotes that you can use in game.",
     key: "customEmotes",

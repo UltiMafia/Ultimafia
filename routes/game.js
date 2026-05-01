@@ -1274,6 +1274,15 @@ const settingsChecks = {
       votesToPoints,
     };
   },
+  "Draw It": (settings, setup) => {
+    let roundAmt = settings.roundAmt;
+    let wordDeckId = settings.wordDeckId;
+
+    return {
+      roundAmt,
+      wordDeckId,
+    };
+  },
   "Liars Dice": (settings, setup) => {
     let wildOnes = settings.wildOnes;
     let spotOn = settings.spotOn;

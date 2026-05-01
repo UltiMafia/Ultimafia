@@ -34,6 +34,11 @@ const protips = {
   Acrotopia: [],
   "Secret Dictator": ["Count the cards!"],
   "Wacky Words": ["Be wacky.", "Be bold.", "Be brave.", "Be funny."],
+  "Draw It": [
+    "Pick the simpler of the two words — clearer drawings score higher.",
+    "Once you've guessed, head to the secret chat to celebrate.",
+    "Make your own word deck for your group's inside jokes.",
+  ],
   "Liars Dice": [
     "Call it!!!!",
     "99% of gamblers quit before they win big!",
