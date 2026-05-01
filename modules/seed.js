@@ -12,6 +12,7 @@ module.exports.seedDefaultWordDecks = async function () {
             id: deck.id,
             name: deck.name,
             words: deck.words,
+            coverPhoto: deck.coverPhoto || "",
             isDefault: true,
             featured: true,
             disabled: false,

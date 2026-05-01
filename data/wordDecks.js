@@ -2,6 +2,7 @@ module.exports = [
   {
     id: "default-items",
     name: "Items",
+    coverPhoto: "/wordDecks/cover-default-items.webp",
     words: [
       "chair","lamp","cup","key","hammer","bottle","book","clock","candle",
       "phone","pencil","scissors","pillow","toothbrush","umbrella","shoe",
@@ -19,6 +20,7 @@ module.exports = [
   {
     id: "default-fruits-veggies",
     name: "Fruits & Veggies",
+    coverPhoto: "/wordDecks/cover-default-fruits-veggies.webp",
     words: [
       "apple","banana","grape","orange","lemon","lime","strawberry","cherry",
       "pear","peach","pineapple","watermelon","mango","kiwi","blueberry",
@@ -34,6 +36,7 @@ module.exports = [
   {
     id: "default-vehicles",
     name: "Vehicles",
+    coverPhoto: "/wordDecks/cover-default-vehicles.webp",
     words: [
       "car","truck","bus","van","taxi","bicycle","motorcycle","scooter",
       "skateboard","train","subway","tram","monorail","plane","helicopter",
@@ -48,6 +51,7 @@ module.exports = [
   {
     id: "default-animals",
     name: "Animals",
+    coverPhoto: "/wordDecks/cover-default-animals.webp",
     words: [
       "dog","cat","cow","pig","horse","sheep","goat","chicken","duck",
       "rabbit","mouse","rat","hamster","squirrel","fox","wolf","bear",
@@ -67,6 +71,7 @@ module.exports = [
   {
     id: "default-body",
     name: "Body & Faces",
+    coverPhoto: "/wordDecks/cover-default-body.webp",
     words: [
       "head","face","eye","nose","mouth","ear","hair","tooth","tongue",
       "lip","cheek","chin","forehead","eyebrow","eyelash","neck","throat",
@@ -79,6 +84,7 @@ module.exports = [
   {
     id: "default-sports",
     name: "Sports & Games",
+    coverPhoto: "/wordDecks/cover-default-sports.webp",
     words: [
       "football","soccer","baseball","basketball","tennis","golf","hockey",
       "rugby","cricket","volleyball","badminton","ping-pong","bowling",
