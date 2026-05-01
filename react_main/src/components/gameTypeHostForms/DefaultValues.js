@@ -153,7 +153,7 @@ var defaultOptions = {
     ...commonHostOptions,
     lobby: "Games",
     roundAmt: 3,
-    wordDeckId: "",
+    wordDeckId: "default",
     drawLength: 60,
   },
   Battlesnakes: existingHostOptions["Battlesnakes"] || {

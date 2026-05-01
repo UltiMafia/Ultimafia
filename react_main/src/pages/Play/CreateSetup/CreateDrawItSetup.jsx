@@ -22,7 +22,8 @@ export default function CreateDrawItSetup() {
       label: "Word Deck",
       ref: "wordDeckId",
       type: "text",
-      placeholder: "Word deck id (leave blank for default)",
+      value: "default",
+      placeholder: "Word deck id",
     },
     {
       label: "Number of Rounds",
