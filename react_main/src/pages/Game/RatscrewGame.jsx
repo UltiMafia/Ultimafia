@@ -309,7 +309,7 @@ function RatscrewBoard({
 
   return (
     <SideMenu
-      title={`Ratscrew — Round ${extraInfo.RoundNumber ?? 1}`}
+      title="Ratscrew"
       scrollable
       content={
         <div className="rs-board">
