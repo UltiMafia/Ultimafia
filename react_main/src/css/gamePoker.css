@@ -919,22 +919,27 @@
 }
 
 .poker-history-entry {
-  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
+  font-size: 13px;
+  flex-wrap: wrap;
 }
 
-.poker-history-entry-header {
+.poker-history-entry-winner-block {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .poker-history-entry-avatar {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.1);
@@ -955,57 +960,44 @@
   color: var(--scheme-color, #f0e7c8);
 }
 
-.poker-history-entry-meta {
-  display: flex;
-  flex-direction: column;
-  font-size: 13px;
+.poker-history-entry-crown {
+  font-size: 14px;
+  line-height: 1;
 }
 
-.poker-history-entry-winner {
+.poker-history-entry-name {
   font-weight: 700;
 }
 
-.poker-history-entry-pot {
+.poker-history-entry-info {
   opacity: 0.85;
+  flex-shrink: 0;
 }
 
-.poker-history-entry-body {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.poker-history-entry-body--folded {
+.poker-history-entry-folded {
   font-style: italic;
   opacity: 0.75;
-  font-size: 13px;
 }
 
-.poker-history-row {
+.poker-history-entry-cards {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 2px;
+  margin-left: auto;
 }
 
-.poker-history-row-label {
-  width: 56px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  opacity: 0.65;
-}
-
-.poker-history-cards {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
+.poker-history-cards-divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.18);
+  margin: 0 6px;
 }
 
 .poker-history-card {
-  transform: scale(0.55);
+  transform: scale(0.42);
   transform-origin: top left;
-  margin-right: -22px;
-  margin-bottom: -36px;
+  margin-right: -32px;
+  margin-bottom: -50px;
 }
 
 .poker-history-card--empty {

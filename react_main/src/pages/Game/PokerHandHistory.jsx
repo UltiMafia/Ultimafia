@@ -41,7 +41,7 @@ function HandHistoryEntry({ entry, players, cacheVal }) {
 
   return (
     <div className="poker-history-entry">
-      <div className="poker-history-entry-header">
+      <div className="poker-history-entry-winner-block">
         <div className="poker-history-entry-avatar">
           {avatarUrl ? (
             <img src={avatarUrl} alt={entry.winnerName} />
@@ -49,52 +49,39 @@ function HandHistoryEntry({ entry, players, cacheVal }) {
             <span className="poker-history-entry-initial">{initial}</span>
           )}
         </div>
-        <div className="poker-history-entry-meta">
-          <div className="poker-history-entry-winner">{entry.winnerName}</div>
-          <div className="poker-history-entry-pot">
-            won <strong>{entry.pot}</strong> chips
-            {entry.revealed && entry.scoreType ? (
-              <> with a <strong>{entry.scoreType}</strong></>
-            ) : null}
-          </div>
-        </div>
+        <span className="poker-history-entry-crown" aria-label="winner">
+          👑
+        </span>
+        <div className="poker-history-entry-name">{entry.winnerName}</div>
       </div>
-
+      <div className="poker-history-entry-info">
+        won <strong>{entry.pot}</strong> chips
+        {entry.revealed && entry.scoreType ? (
+          <> with a <strong>{entry.scoreType}</strong></>
+        ) : null}
+      </div>
       {entry.revealed ? (
-        <div className="poker-history-entry-body">
-          <div className="poker-history-row">
-            <div className="poker-history-row-label">Hole</div>
-            <div className="poker-history-cards">
-              {hole.length === 0
-                ? [0, 1].map((i) => <PokerCardImg key={i} card={null} />)
-                : hole.map((card, i) => (
-                    <PokerCardImg
-                      key={i}
-                      card={card}
-                      highlighted={highlightSet?.has(card)}
-                    />
-                  ))}
-            </div>
-          </div>
-          <div className="poker-history-row">
-            <div className="poker-history-row-label">Board</div>
-            <div className="poker-history-cards">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <PokerCardImg
-                  key={i}
-                  card={community[i]}
-                  highlighted={
-                    community[i] ? highlightSet?.has(community[i]) : false
-                  }
-                />
-              ))}
-            </div>
-          </div>
+        <div className="poker-history-entry-cards">
+          {(hole.length === 0 ? [null, null] : hole).map((card, i) => (
+            <PokerCardImg
+              key={`h${i}`}
+              card={card}
+              highlighted={card ? highlightSet?.has(card) : false}
+            />
+          ))}
+          <span className="poker-history-cards-divider" aria-hidden />
+          {Array.from({ length: 5 }).map((_, i) => (
+            <PokerCardImg
+              key={`b${i}`}
+              card={community[i]}
+              highlighted={
+                community[i] ? highlightSet?.has(community[i]) : false
+              }
+            />
+          ))}
         </div>
       ) : (
-        <div className="poker-history-entry-body poker-history-entry-body--folded">
-          Won by fold
-        </div>
+        <div className="poker-history-entry-folded">Won by fold</div>
       )}
     </div>
   );
