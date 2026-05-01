@@ -3,7 +3,7 @@ import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 
 import Setups from "./Setup/SetupPage";
 import RolePage from "./role/RolePage";
-import Games from "./Games";
+import LearnGames from "./LearnGames";
 import LearnGlossary from "./LearnGlossary";
 
 import "css/play.css";
@@ -21,7 +21,7 @@ export default function Learn(props) {
       <Box sx={{ flexGrow: 1 }}>
         <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
           <Routes>
-            <Route path="games" element={<Games />} />
+            <Route path="games" element={<LearnGames />} />
             <Route path="setup/:setupId" element={<Setups />} />
             <Route path="role/:RoleName" element={<RolePage />} />
             <Route path="glossary" element={<LearnGlossary />} />

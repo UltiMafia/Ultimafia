@@ -365,7 +365,7 @@ function LearnGameBody({ gameType, Layout }) {
   }
 }
 
-export default function Games() {
+export default function LearnGames() {
   const defaultGameType = "Mafia";
   const location = useLocation();
   const params = new URLSearchParams(location.search);
