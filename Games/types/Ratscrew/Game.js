@@ -359,10 +359,13 @@ module.exports = class RatscrewGame extends Game {
     this.TheStack = [];
 
     // Pile cleared. Any other alive player with no cards is now eliminated.
+    // Use "silent" killType so the engine's empty death message + generic
+    // role-reveal alert ("X's role is Player.") don't get queued — the
+    // toast above is the only notification we want.
     for (const p of this.players.array()) {
       if (p.alive && p !== player && p.CardsInHand.length === 0) {
         this.toast(`${p.name} is out!`);
-        p.kill("Basic", player, true);
+        p.kill("silent", player, true);
       }
     }
   }
@@ -403,7 +406,15 @@ module.exports = class RatscrewGame extends Game {
 
     if (this.faceChallenge) {
       this.faceChallenge.attemptsLeft -= 1;
-      if (this.faceChallenge.attemptsLeft <= 0) {
+      // Resolve the challenge if attempts ran out OR the defender just
+      // played their last card. Without the empty-hand short-circuit, the
+      // engine would wait for another playCard from a player who has none
+      // — and the WinIfWithAllCards win-check (defender alive but cardless)
+      // would end the game before the pile is transferred.
+      if (
+        this.faceChallenge.attemptsLeft <= 0 ||
+        actor.CardsInHand.length === 0
+      ) {
         const challenger = this.faceChallenge.challenger;
         this.toast(`${challenger.name} wins the pile!`);
         this.transferPileTo(challenger);
