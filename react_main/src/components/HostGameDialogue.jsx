@@ -36,6 +36,7 @@ import HostRatscrew from "./gameTypeHostForms/HostRatscrew";
 import HostBattlesnakes from "./gameTypeHostForms/HostBattlesnakes";
 import HostDiceWars from "./gameTypeHostForms/HostDiceWars";
 import HostConnectFour from "./gameTypeHostForms/HostConnectFour";
+import HostSpotIt from "./gameTypeHostForms/HostSpotIt";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { getSetupBackgroundColor } from "pages/Play/LobbyBrowser/gameRowColors";
 
@@ -77,6 +78,8 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
         return HostDiceWars();
       case "Connect Four":
         return HostConnectFour();
+      case "Spot It":
+        return HostSpotIt();
     }
 
     // Fail fast

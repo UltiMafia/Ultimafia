@@ -2019,7 +2019,7 @@
 }
 
 .role-icon-vivid-Mafia-Magistrate {
-  background-image: url("/src/images/roles/independent/magistrate-vivid.png");
+  background-image: url("/src/images/roles/village/magistrate-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Palladist {
@@ -3224,6 +3224,20 @@
 
 .role-icon-vivid-Draw-It-Painter {
   background-image: url("/src/images/roles/village/painter-vivid.png");
+}
+
+/***********
+*
+* Spot It
+*
+***********/
+
+.role-icon-vivid-Spot-It-Towerer {
+  background-image: url("/src/images/roles/village/demolitionist-vivid.png");
+}
+
+.role-icon-vivid-Spot-It-Weller {
+  background-image: url("/src/images/roles/cult/selkie-vivid.png");
 }
 
 /***************

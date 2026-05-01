@@ -31,6 +31,7 @@ import RatscrewGame from "./RatscrewGame";
 import BattlesnakesGame from "./BattlesnakesGame";
 import DiceWarsGame from "./DiceWarsGame";
 import ConnectFourGame from "./ConnectFourGame";
+import SpotItGame from "./SpotItGame";
 import { GameContext, SiteInfoContext, UserContext } from "Contexts";
 import Dropdown from "../../components/Dropdown";
 import Setup from "../../components/Setup";
@@ -96,7 +97,6 @@ import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
 
 import lore from "images/emotes/lore.webp";
 import poison from "images/emotes/poison.webp";
-import unicorn from "images/emotes/unicorn.webp";
 import exit from "images/emotes/exit.png";
 import veg from "images/emotes/veg.webp";
 import { usePopover, InfoPopover, SetupInfo } from "components/Popover";
@@ -378,7 +378,7 @@ export default function Game() {
       }:${port}`;
     else
       socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${
-        import.meta.env.REACT_APP_SOCKET_URI
+        import.meta.env[`REACT_APP_SOCKET_URI_${port}`] || import.meta.env.REACT_APP_SOCKET_URI
       }/${port}`;
 
     var newSocket = new Socket(socketURL);
@@ -987,6 +987,7 @@ export default function Game() {
               <DiceWarsGame />
             )}
             {gameType === "Connect Four" && <ConnectFourGame />}
+            {gameType === "Spot It" && <SpotItGame />}
           </Box>
         </Stack>
         <UrgencyOverlay hidden={!isUrgent} />
@@ -1027,10 +1028,7 @@ export default function Game() {
           gameType={gameType}
           currentSetup={setup}
           onSetupChange={(setupId) => {
-            socket.send("speak", {
-              content: `/changeSetup ${setupId}`,
-              meetingId: "main",
-            });
+            socket.send("changeSetup", setupId);
             setChangeSetupDialogOpen(false);
           }}
         />
@@ -1169,21 +1167,6 @@ export function TopBar() {
           </IconButton>
         </Tooltip>
       )}
-
-      {!game.review &&
-        game.history.currentState === -1 &&
-        game.self &&
-        game.players[game.self] &&
-        game.players[game.self].userId === game.hostId && (
-          <Tooltip title="Change Setup">
-            <IconButton
-              size="large"
-              onClick={() => game.setChangeSetupDialogOpen(true)}
-            >
-              <img src={unicorn} alt="Change Setup" />
-            </IconButton>
-          </Tooltip>
-        )}
 
       {!game.review && game.history.currentState === -2 && (
         <Tooltip title="Rehost">
@@ -1420,7 +1403,13 @@ export function MobileLayout({
               direction="row"
               onClick={() => setSelectedPanel("chat")}
               sx={{
+                flex: 1,
+                minWidth: 0,
+                maxWidth: "140px",
                 filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
               }}
             >
               {!singleState && <Divider orientation="vertical" flexItem />}
@@ -1758,7 +1747,7 @@ function getAllMessagesToDisplay(history) {
     const stateData = history.states[state];
     const stateMeetings = stateData.meetings;
     if (!stateMeetings) {
-      return;
+      continue;
     }
 
     let stateMessages = [];
@@ -4998,8 +4987,25 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
     }
   }
 
+  const canChangeSetup =
+    game.gameType === "Mafia" &&
+    !game.review &&
+    !game.options?.competitive &&
+    game.history.currentState === -1 &&
+    game.self &&
+    game.players[game.self] &&
+    game.players[game.self].userId === game.hostId;
+
   const menuContent = (
-    <Form compact fields={formFields} onChange={handleFieldChange} />
+    <Stack direction="column" spacing={1}>
+      <Form compact fields={formFields.slice(0, 1)} onChange={handleFieldChange} />
+      {canChangeSetup && (
+        <Button onClick={() => game.setChangeSetupDialogOpen(true)}>
+          Change Setup
+        </Button>
+      )}
+      <Form compact fields={formFields.slice(1)} onChange={handleFieldChange} />
+    </Stack>
   );
 
   const menuFooter = (

@@ -45,5 +45,6 @@ export const ExtraRoleData = {
   "Texas Hold Em": {},
   Cheat: {},
   "Connect Four": {},
+  "Spot It": {},
   Ratscrew: {},
 };

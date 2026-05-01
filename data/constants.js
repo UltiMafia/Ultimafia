@@ -77,6 +77,7 @@ module.exports = {
     "Dice Wars",
     "Connect Four",
     "Draw It",
+    "Spot It",
   ],
   // Game types that remain valid for existing setups/stats but cannot be
   // created or hosted anymore. Acrotopia is covered by Wacky Words' acronym mode.
@@ -97,6 +98,7 @@ module.exports = {
     "Dice Wars": ["Military", "Host"],
     "Connect Four": ["Town", "Host"],
     "Draw It": ["Town"],
+    "Spot It": ["Town"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -113,6 +115,13 @@ module.exports = {
     "Dice Wars": ["Play"],
     "Connect Four": ["Turn"],
     "Draw It": ["Pick"],
+    "Spot It": ["Round"],
+  },
+  competitiveDefaults: {
+    Mafia: {
+      extendLength: 3,
+      pregameWaitLength: 1,
+    },
   },
   configurableStates: {
     Mafia: {
@@ -276,6 +285,13 @@ module.exports = {
         min: 30 * 1000,
         max: 240 * 1000,
         default: 150 * 1000,
+      },
+    },
+    "Spot It": {
+      Round: {
+        min: 5 * 60 * 1000,
+        max: 15 * 60 * 1000,
+        default: 10 * 60 * 1000,
       },
     },
   },
@@ -512,7 +528,6 @@ module.exports = {
     deleteFanart: true,
     seeModPanel: true,
     deleteViolation: true,
-    viewSiteActivity: true,
   },
   defaultGroups: {
     Owner: {
@@ -578,7 +593,6 @@ module.exports = {
         "deleteStrategy",
         "deleteFanart",
         "seeModPanel",
-        "viewSiteActivity",
       ],
     },
     Liaison: {
@@ -641,7 +655,6 @@ module.exports = {
         "playCompetitive",
         "deleteStrategy",
         "deleteFanart",
-        "viewSiteActivity",
       ],
     },
     Dev: {

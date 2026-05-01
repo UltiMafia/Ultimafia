@@ -212,6 +212,7 @@ const modifierData = {
   Cheat: {},
   Ratscrew: {},
   "Connect Four": {},
+  "Spot It": {},
 };
 
 module.exports = modifierData;

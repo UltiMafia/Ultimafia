@@ -1533,6 +1533,10 @@ const countChecks = {
 
     return true;
   },
+  "Spot It": (roles, count, total, closed, unique) => {
+    if (total < 2) return "Must have at least 2 players.";
+    return true;
+  },
 };
 
 const optionsChecks = {
@@ -1596,6 +1600,9 @@ const optionsChecks = {
     return setup;
   },
   "Connect Four": (setup) => {
+    return setup;
+  },
+  "Spot It": (setup) => {
     return setup;
   },
 };

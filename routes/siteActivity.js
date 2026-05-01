@@ -54,8 +54,7 @@ function parseWindow(req) {
 
 async function guard(req, res) {
   const userId = await routeUtils.verifyLoggedIn(req);
-  if (!(await routeUtils.verifyPermission(res, userId, "viewSiteActivity")))
-    return null;
+  if (!userId) return null;
   return userId;
 }
 

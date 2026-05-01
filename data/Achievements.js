@@ -619,6 +619,7 @@ const AchievementData = {
   "Texas Hold Em": {},
   Cheat: {},
   "Connect Four": {},
+  "Spot It": {},
   Ratscrew: {},
   // TODO Wave 8 verify schema — listener classes for `internal` entries are
   // not yet created under Games/types/DrawIt/achievements/. Grants are wired

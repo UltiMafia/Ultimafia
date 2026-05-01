@@ -403,6 +403,27 @@ module.exports = class Player {
       }
     });
 
+    socket.on("changeSetup", (setupId) => {
+      try {
+        setupId = String(setupId);
+
+        if (!Utils.validProp(setupId)) return;
+
+        if (this.game.started || this.user.id != this.game.hostId) {
+          return;
+        }
+
+        if (this.game.canChangeSetup() != true) {
+          this.game.sendAlert(`The setup cannot be changed.`);
+          return;
+        }
+
+        this.game.changeSetup(setupId);
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
     socket.on("slurDetected", () => {
       this.sendAlert(
         "Warning: Your message contains inappropriate language. Please revise your message without using offensive terms."
@@ -672,21 +693,6 @@ module.exports = class Player {
             return;
           }
         }
-        return;
-      case "changeSetup":
-        const setupToQuery = cmd.args[0];
-        if (
-          this.game.started ||
-          this.user.id != this.game.hostId ||
-          cmd.args.length == 0
-        ) {
-          return;
-        }
-        if (this.game.canChangeSetup() != true) {
-          this.game.sendAlert(`The setup cannot be changed.`);
-          return;
-        }
-        this.game.changeSetup(setupToQuery);
         return;
       case "diceroll":
           if (this.game.ranked || this.game.competitive) {

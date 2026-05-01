@@ -331,7 +331,7 @@ function ChartPanel({ title, data, colors, unit = "games" }) {
   );
 }
 
-export default function MetricsTab({ windowKey }) {
+export default function Metrics({ windowKey }) {
   const errorAlert = useErrorAlert();
   const [summary, setSummary] = useState(null);
   const [games, setGames] = useState(null);
