@@ -383,6 +383,26 @@ export const slangList = {
     definition:
       "When a player gives away that they're town because they don't know something that would be obvious to them if they were evil. Can be faked.",
   },
+  towntell: {
+    definition:
+      "Towntell. A behavior or play that makes a player look town-aligned, especially while their alignment is not yet confirmed.",
+  },
+  scumtell: {
+    definition:
+      "Scumtell. A behavior or play that makes a player look scum-aligned, especially while their alignment is not yet confirmed. Opposite of towntell.",
+  },
+  yakked: {
+    definition:
+      "When a player has been converted by the Yakuza into a Mafioso.",
+  },
+  masoned: {
+    definition:
+      "When a player has been converted by the Masons into a Mason.",
+  },
+  culted: {
+    definition:
+      "When a player has been converted by the Cult into a Cult member.",
+  },
   softing: {
     definition:
       "Softclaim. When a player hints towards what their role is without explicitly saying it. A soft can be used to strengthen one's eventual hard claim.",
@@ -626,3 +646,4 @@ slangList.scummy = slangList.scum;
 slangList.sr = slangList.scumread;
 slangList.tr = slangList.townread;
 slangList.auto = slangList.autowin;
+slangList.scumtold = slangList.scumtell;
