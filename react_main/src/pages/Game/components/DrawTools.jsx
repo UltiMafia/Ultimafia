@@ -1,10 +1,15 @@
 import React from "react";
 import "./DrawTools.css";
 
+// Palette tuned for legibility on the white canvas. Pure primaries (#ff0000,
+// #ffff00, #00ff00, #00ffff, #ff00ff) wash out badly; darker/saturated tones
+// — roughly Material 700 — keep their identity at any brush size. Yellow is
+// kept slightly brighter (amber, not mustard) since the user finds the deep
+// version too dim.
 const PALETTE = [
-  "#000000", "#ffffff", "#7f7f7f", "#8b4513",
-  "#ff0000", "#ff7f00", "#ffff00", "#00ff00",
-  "#00ffff", "#0000ff", "#7f00ff", "#ff00ff",
+  "#000000", "#ffffff", "#616161", "#6d4c41",
+  "#d32f2f", "#ef6c00", "#f9a825", "#2e7d32",
+  "#00838f", "#1565c0", "#6a1b9a", "#ad1457",
 ];
 
 const SIZES = [
