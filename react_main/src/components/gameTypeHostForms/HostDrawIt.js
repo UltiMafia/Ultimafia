@@ -19,7 +19,7 @@ export default function HostDrawIt() {
     {
       label: "Word Deck",
       ref: "wordDeckId",
-      type: "text",
+      type: "wordDeckPicker",
       value: defaults.wordDeckId,
       placeholder: "Word deck id",
     },
@@ -30,10 +30,10 @@ export default function HostDrawIt() {
       value: defaults.drawLength,
       options: [
         { label: "30s", value: 30 },
-        { label: "60s", value: 60 },
+        { label: "60s (default)", value: 60 },
         { label: "90s", value: 90 },
         { label: "120s", value: 120 },
-        { label: "150s (default)", value: 150 },
+        { label: "150s", value: 150 },
         { label: "180s", value: 180 },
         { label: "240s", value: 240 },
       ],
@@ -97,7 +97,7 @@ export default function HostDrawIt() {
     var scheduled = getFormFieldValue("scheduled");
 
     if (setupId) {
-      const drawSeconds = Number(getFormFieldValue("drawLength")) || 80;
+      const drawSeconds = Number(getFormFieldValue("drawLength")) || 60;
       const hostPromise = axios.post("/api/game/host", {
         gameType: gameType,
         setup: setupId,

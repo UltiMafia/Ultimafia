@@ -3216,6 +3216,16 @@
   background-image: url("/src/images/roles/minigame/connectfour/starman-vivid.png");
 }
 
+/***********
+*
+* Draw It
+*
+***********/
+
+.role-icon-vivid-Draw-It-Player {
+  background-image: url("/src/images/roles/village/painter-vivid.png");
+}
+
 /***************
 
 Game Settings
