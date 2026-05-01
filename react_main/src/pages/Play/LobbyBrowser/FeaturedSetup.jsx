@@ -41,6 +41,7 @@ export const FeaturedSetup = ({ lobby, glowingHostButton }) => {
         open={ishostGameDialogueOpen}
         setOpen={setIshostGameDialogueOpen}
         setup={featuredSetup}
+        defaultLobby={lobby}
       />
       <Paper>
         <Stack direction="row" spacing={0.5} padding={1}>

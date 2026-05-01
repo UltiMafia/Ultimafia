@@ -187,6 +187,7 @@ export const GameRow = (props) => {
         open={ishostGameDialogueOpen}
         setOpen={setIshostGameDialogueOpen}
         setup={props.game.setup}
+        defaultLobby={props.game.lobbyName || props.lobby}
       />
       <Stack
         direction="row"

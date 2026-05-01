@@ -93,6 +93,7 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
           open={ishostGameDialogueOpen}
           setOpen={setIshostGameDialogueOpen}
           setup={selSetup}
+          defaultLobby={lobby}
         />
       )}
       <Stack spacing={1}>{setupRows}</Stack>
