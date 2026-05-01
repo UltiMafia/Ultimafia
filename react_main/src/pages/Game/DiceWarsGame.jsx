@@ -690,57 +690,39 @@ function DiceWarsBoardWrapper({
                   border: "2px solid #444",
                   borderRadius: 12,
                   padding: "32px",
-                  maxWidth: 460,
-                  textAlign: "left",
+                  maxWidth: 400,
+                  textAlign: "center",
                   color: "#FFF",
                   boxShadow: "0 4px 24px #000a",
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <h2 style={{ margin: "0 0 16px", fontSize: "22px", textAlign: "center" }}>
+                <h2 style={{ margin: "0 0 16px", fontSize: "22px" }}>
                   Dice Wars
                 </h2>
-                <ul style={{ margin: "0 0 20px", paddingLeft: 20, fontSize: "14px", lineHeight: 1.55, color: "#CCC" }}>
-                  <li>
-                    Attack a neighboring territory: both sides roll their dice
-                    and the higher total wins. Tie goes to the defender.
-                  </li>
-                  <li>
-                    At the end of your turn, you gain reinforcement dice equal
-                    to the size of your largest connected region (+3), placed
-                    randomly across your territories.
-                  </li>
-                  <li>
-                    Each territory holds up to a maximum number of dice (host
-                    option, configurable up to 20).
-                  </li>
-                  <li>
-                    Eliminate a player and your conquering territory
-                    immediately gains up to 5 bonus dice (capped at the max).
-                  </li>
-                  <li>
-                    Reinforcements that don&apos;t fit are normally stored as
-                    reserves &mdash; but the host can choose to discard
-                    overflow each turn instead.
-                  </li>
-                </ul>
-                <div style={{ textAlign: "center" }}>
-                  <button
-                    onClick={() => setShowIntro(false)}
-                    style={{
-                      padding: "10px 32px",
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                      background: "#4a90d9",
-                      color: "#FFF",
-                      border: "none",
-                      borderRadius: 6,
-                      cursor: "pointer",
-                    }}
-                  >
-                    Got it
-                  </button>
-                </div>
+                <p style={{ margin: "0 0 16px", fontSize: "15px", lineHeight: 1.5, color: "#CCC" }}>
+                  Attack neighboring territories by rolling dice. Keep your
+                  territories connected to earn more reinforcements!
+                </p>
+                <p style={{ margin: "0 0 24px", fontSize: "14px", lineHeight: 1.6, color: "#AAA" }}>
+                  reinforcements: N + 3<br />
+                  kill: +5
+                </p>
+                <button
+                  onClick={() => setShowIntro(false)}
+                  style={{
+                    padding: "10px 32px",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    background: "#4a90d9",
+                    color: "#FFF",
+                    border: "none",
+                    borderRadius: 6,
+                    cursor: "pointer",
+                  }}
+                >
+                  Got it
+                </button>
               </div>
             </div>
           )}
