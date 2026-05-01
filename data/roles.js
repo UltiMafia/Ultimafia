@@ -6384,7 +6384,7 @@ const roleData = {
     },
   },
   "Draw It": {
-    Player: {
+    Painter: {
       alignment: "Town",
       tags: ["None"],
       description: ["Draws words on their turn and guesses words on others' turns."],
