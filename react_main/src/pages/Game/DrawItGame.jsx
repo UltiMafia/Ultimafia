@@ -247,7 +247,9 @@ export default function DrawItGame() {
     }
     setReplayPlayhead(0);
     let ph = 0;
-    const stepSize = Math.max(1, Math.ceil(totalPoints / 100));
+    // ~33 frames across the full drawing → finishes the replay in roughly
+    // a third of the time the original animation took (3x speed).
+    const stepSize = Math.max(1, Math.ceil(totalPoints / 33));
     replayIntervalRef.current = setInterval(() => {
       ph += stepSize;
       if (ph >= totalPoints) {
