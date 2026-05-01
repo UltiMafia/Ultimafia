@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Box,
@@ -8,28 +8,132 @@ import {
   FormControl,
   Tabs,
   Tab,
+  Link,
+  List,
+  ListItem,
+  ListItemText,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Stack,
 } from "@mui/material";
 
-import LearnMafia from "./gameTypes/LearnMafia";
-import LearnResistance from "./gameTypes/LearnResistance";
-import LearnJotto from "./gameTypes/LearnJotto";
-import LearnAcrotopia from "./gameTypes/LearnAcrotopia";
-import LearnSecretDictator from "./gameTypes/LearnSecretDictator";
-import LearnWackyWords from "./gameTypes/LearnWackyWords";
-import LearnLiarsDice from "./gameTypes/LearnLiarsDice";
-import LearnTexasHoldEm from "./gameTypes/LearnTexasHoldEm";
-import LearnCheat from "./gameTypes/LearnCheat";
-import LearnRatscrew from "./gameTypes/LearnRatscrew";
-import LearnSpotIt from "./gameTypes/LearnSpotIt";
-import LearnBattlesnakes from "./gameTypes/LearnBattlesnakes";
-import LearnDiceWars from "./gameTypes/LearnDiceWars";
-import LearnConnectFour from "./gameTypes/LearnConnectFour";
+import {
+  RoleSearch,
+  ModifierSearch,
+  GameSettingSearch,
+} from "components/Roles";
+import { AchievementSearch } from "components/Achievements";
+import { SiteInfoContext } from "Contexts";
+import { hyphenDelimit } from "utils";
 
 import { ActiveGameTypes, DisabledGameTypes } from "Constants";
 import GameIcon from "components/GameIcon";
 
+import {
+  getLearnGameDescription,
+} from "../../../../data/descriptions.js";
+
 const TAB_IDS = ["roles", "modifiers", "items", "mechanics", "achievements"];
-const TAB_LABELS = { roles: "Roles", modifiers: "Modifiers", items: "Items", mechanics: "Mechanics", achievements: "Achievements" };
+const TAB_LABELS = {
+  roles: "Roles",
+  modifiers: "Modifiers",
+  items: "Items",
+  mechanics: "Mechanics",
+  achievements: "Achievements",
+};
+
+const WACKY_WORDS_MECHANICS = [
+  {
+    name: "Reverse Mode",
+    text: "Instead of a prompt leading to an answer, the players first come up with answers, then they come up with funny prompts that could have been given to get those answers!",
+  },
+  {
+    name: "Wacky People",
+    text: "Things get more personal! Players answer questions about themselves, then other players also answer the prompt. After, players need to try and find the real answer! Players score 2 points for guessing the correct answer, players score 1 point for convincing another person to guess their answer, and the true answerer gets 2 points when players guess their answer!",
+  },
+  {
+    name: "Acrotopia",
+    text: "All players are given an acronym and tasked to create a backronym based on it! All players then vote for their favorites, with the winners of each round getting points. The person with the most points at the end of the game is declared the winner.",
+  },
+  {
+    name: "Wacky Decisions",
+    text: "Players will try to create would you rather questions that split the votes. Each round one player will create a would you rather question and other players will answer. Points will be given to that player based on how close the players were to a 50/50 split.",
+  },
+];
+
+function LearnGameDescription({ blocks }) {
+  if (!blocks || !Array.isArray(blocks)) return null;
+  return (
+    <>
+      {blocks.map((block, i) => {
+        if (block.type === "heading") {
+          return (
+            <Typography key={i} variant="h6" gutterBottom component="div">
+              {block.content}
+            </Typography>
+          );
+        }
+        if (block.type === "paragraph") {
+          if (block.parts?.length) {
+            return (
+              <Typography key={i} variant="body1" paragraph component="div">
+                {block.parts.map((part, j) =>
+                  part.type === "link" ? (
+                    <Link
+                      key={j}
+                      href={part.href}
+                      target="_blank"
+                      rel="noopener noreferrer nofollow"
+                    >
+                      {part.content}
+                    </Link>
+                  ) : (
+                    <React.Fragment key={j}>{part.content}</React.Fragment>
+                  )
+                )}
+              </Typography>
+            );
+          }
+          return (
+            <Typography key={i} variant="body1" paragraph>
+              {block.content}
+            </Typography>
+          );
+        }
+        if (block.type === "list") {
+          return (
+            <List
+              key={i}
+              dense
+              disablePadding
+              sx={{
+                listStyleType: "disc",
+                pl: 2,
+                mb: 2,
+                "& .MuiListItem-root": { display: "list-item" },
+              }}
+            >
+              {block.items.map((item, j) => (
+                <ListItem key={j} disablePadding sx={{ py: 0.25 }}>
+                  <ListItemText
+                    primary={item}
+                    primaryTypographyProps={{ variant: "body1" }}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          );
+        }
+        return null;
+      })}
+    </>
+  );
+}
 
 function LearnTabsLayout({
   children,
@@ -75,7 +179,10 @@ function LearnTabsLayout({
               disabled={!enabledTabs.includes(id)}
               sx={
                 !enabledTabs.includes(id)
-                  ? { color: "text.disabled", "&.Mui-disabled": { opacity: 0.6 } }
+                  ? {
+                      color: "text.disabled",
+                      "&.Mui-disabled": { opacity: 0.6 },
+                    }
                   : undefined
               }
             />
@@ -94,14 +201,171 @@ function LearnTabsLayout({
       <Box role="tabpanel" hidden={value !== "mechanics"} id="learn-tab-mechanics">
         {value === "mechanics" && mechanicsContent}
       </Box>
-      <Box role="tabpanel" hidden={value !== "achievements"} id="learn-tab-achievements">
+      <Box
+        role="tabpanel"
+        hidden={value !== "achievements"}
+        id="learn-tab-achievements"
+      >
         {value === "achievements" && achievementsContent}
       </Box>
     </div>
   );
 }
 
-export default function Games(props) {
+function useDocumentTitle(gameType) {
+  useEffect(() => {
+    document.title = `Learn ${gameType} | UltiMafia`;
+  }, [gameType]);
+}
+
+function MafiaLearn({ Layout }) {
+  const gameType = "Mafia";
+  useDocumentTitle(gameType);
+  const siteInfo = useContext(SiteInfoContext);
+
+  const items = useMemo(() => {
+    const gameItems = siteInfo.items?.[gameType] || [];
+    return gameItems.map((entry) => {
+      const iconName = entry.icon || entry.name;
+      const iconClass = `icon item item-${gameType}-${hyphenDelimit(iconName)}`;
+      return {
+        name: entry.name,
+        text: entry.description,
+        icon: <div className={iconClass} />,
+      };
+    });
+  }, [siteInfo.items, gameType]);
+
+  const itemsTable = (
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Name</TableCell>
+            <TableCell>Description</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {items.map((entry, index) => (
+            <TableRow key={index}>
+              <TableCell>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{ alignItems: "center", textAlign: "left" }}
+                >
+                  {entry.icon}
+                  <Typography>{entry.name}</Typography>
+                </Stack>
+              </TableCell>
+              <TableCell>
+                <Typography variant="body2">{entry.text}</Typography>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+
+  const description = getLearnGameDescription(gameType);
+
+  return (
+    <Layout
+      rolesContent={<RoleSearch gameType={gameType} />}
+      modifiersContent={<ModifierSearch gameType={gameType} />}
+      itemsContent={itemsTable}
+      mechanicsContent={<GameSettingSearch gameType={gameType} curMods={{}} />}
+      achievementsContent={
+        <Box sx={{ pt: 2 }}>
+          <AchievementSearch />
+        </Box>
+      }
+    >
+      <LearnGameDescription blocks={description} />
+    </Layout>
+  );
+}
+
+function WackyWordsMechanicsTable() {
+  return (
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Mode</TableCell>
+            <TableCell>Description</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {WACKY_WORDS_MECHANICS.map((row, index) => (
+            <TableRow key={index}>
+              <TableCell component="th" scope="row">
+                <Typography fontWeight="medium">{row.name}</Typography>
+              </TableCell>
+              <TableCell>
+                <Typography variant="body2">{row.text}</Typography>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
+
+function SimpleRoleLearn({
+  Layout,
+  gameType,
+  extras = {},
+}) {
+  useDocumentTitle(gameType);
+  const description = getLearnGameDescription(gameType);
+
+  return (
+    <Layout
+      rolesContent={<RoleSearch gameType={gameType} />}
+      modifiersContent={extras.modifiersContent}
+      itemsContent={extras.itemsContent}
+      mechanicsContent={extras.mechanicsContent}
+      achievementsContent={extras.achievementsContent}
+    >
+      <LearnGameDescription blocks={description} />
+    </Layout>
+  );
+}
+
+function LearnGameBody({ gameType, Layout }) {
+  switch (gameType) {
+    case "Mafia":
+      return <MafiaLearn Layout={Layout} />;
+    case "Wacky Words":
+      return (
+        <SimpleRoleLearn
+          Layout={Layout}
+          gameType={gameType}
+          extras={{ mechanicsContent: <WackyWordsMechanicsTable /> }}
+        />
+      );
+    case "Resistance":
+    case "Jotto":
+    case "Acrotopia":
+    case "Secret Dictator":
+    case "Liars Dice":
+    case "Texas Hold Em":
+    case "Cheat":
+    case "Spot It":
+    case "Ratscrew":
+    case "Battlesnakes":
+    case "Dice Wars":
+    case "Connect Four":
+      return <SimpleRoleLearn Layout={Layout} gameType={gameType} />;
+    default:
+      return null;
+  }
+}
+
+export default function Games() {
   const defaultGameType = "Mafia";
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -119,41 +383,16 @@ export default function Games(props) {
     localStorage.setItem("gameType", newValue);
   };
 
-  function LearnPage() {
-    switch (gameType) {
-      case "Mafia":
-        return <LearnMafia Layout={LearnTabsLayout} />;
-      case "Resistance":
-        return <LearnResistance Layout={LearnTabsLayout} />;
-      case "Jotto":
-        return <LearnJotto Layout={LearnTabsLayout} />;
-      case "Acrotopia":
-        return <LearnAcrotopia Layout={LearnTabsLayout} />;
-      case "Secret Dictator":
-        return <LearnSecretDictator Layout={LearnTabsLayout} />;
-      case "Wacky Words":
-        return <LearnWackyWords Layout={LearnTabsLayout} />;
-      case "Liars Dice":
-        return <LearnLiarsDice Layout={LearnTabsLayout} />;
-      case "Texas Hold Em":
-        return <LearnTexasHoldEm Layout={LearnTabsLayout} />;
-      case "Cheat":
-        return <LearnCheat Layout={LearnTabsLayout} />;
-      case "Spot It":
-        return <LearnSpotIt Layout={LearnTabsLayout} />;
-      case "Ratscrew":
-        return <LearnRatscrew Layout={LearnTabsLayout} />;
-      case "Battlesnakes":
-        return <LearnBattlesnakes Layout={LearnTabsLayout} />;
-      case "Dice Wars":
-        return <LearnDiceWars Layout={LearnTabsLayout} />;
-      case "Connect Four":
-        return <LearnConnectFour Layout={LearnTabsLayout} />;
-      default:
-        setGameType(defaultGameType);
-        return <></>;
+  useEffect(() => {
+    if (!ActiveGameTypes.includes(gameType)) {
+      setGameType(defaultGameType);
+      localStorage.setItem("gameType", defaultGameType);
     }
-  }
+  }, [gameType, defaultGameType]);
+
+  const resolvedGameType = ActiveGameTypes.includes(gameType)
+    ? gameType
+    : defaultGameType;
 
   return (
     <>
@@ -163,7 +402,7 @@ export default function Games(props) {
         </Typography>
         <FormControl variant="standard" size="small" sx={{ minWidth: 180 }}>
           <Select
-            value={gameType}
+            value={resolvedGameType}
             onChange={handleGameChange}
             displayEmpty
             sx={{
@@ -188,7 +427,12 @@ export default function Games(props) {
           </Select>
         </FormControl>
       </Box>
-      <Box>{LearnPage()}</Box>
+      <Box>
+        <LearnGameBody
+          gameType={resolvedGameType}
+          Layout={LearnTabsLayout}
+        />
+      </Box>
     </>
   );
 }
