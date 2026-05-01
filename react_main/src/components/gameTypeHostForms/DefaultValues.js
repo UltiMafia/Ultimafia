@@ -170,7 +170,7 @@ var defaultOptions = {
     existingHostOptions["DiceWars"] || {
       ...commonHostOptions,
       mapSize: 30,
-      maxDice: 8,
+      maxDice: 20,
       discardReserveDice: true,
       playLength: 30,
     },
