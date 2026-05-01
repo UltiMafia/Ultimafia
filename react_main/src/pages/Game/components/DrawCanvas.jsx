@@ -88,13 +88,62 @@ export default function DrawCanvas({
     ctx.globalCompositeOperation = "source-over";
   }, [mode, playhead]);
 
-  // Sync replay strokes prop -> strokesRef
+  // Replay-mode rendering: draw the supplied strokes (up to `playhead`)
+  // directly into the canvas. Self-contained so it doesn't race with the
+  // `redraw` useCallback or the `strokesRef` initializer — both of which
+  // could leave the canvas blank when the parent swaps in a new turn's
+  // strokes (the postgame "Drawings replay" use case).
   useEffect(() => {
-    if (mode === "replay") {
-      strokesRef.current = replayStrokes || [];
-      redraw();
+    if (mode !== "replay") return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+
+    ctx.clearRect(0, 0, LOGICAL_W, LOGICAL_H);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, LOGICAL_W, LOGICAL_H);
+
+    const strokes = Array.isArray(replayStrokes) ? replayStrokes : [];
+    const pointBudget =
+      playhead === undefined || playhead === Infinity ? Infinity : playhead;
+    let drawn = 0;
+
+    for (const stroke of strokes) {
+      if (drawn >= pointBudget) break;
+      if (!stroke || !Array.isArray(stroke.points) || stroke.points.length === 0) continue;
+
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.lineWidth = stroke.size;
+      if (stroke.mode === "erase") {
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.strokeStyle = "rgba(0,0,0,1)";
+      } else {
+        ctx.globalCompositeOperation = "source-over";
+        ctx.strokeStyle = stroke.color;
+      }
+
+      const limit = Math.min(
+        stroke.points.length,
+        Math.max(0, pointBudget - drawn)
+      );
+
+      ctx.beginPath();
+      const [x0, y0] = stroke.points[0];
+      ctx.moveTo(x0, y0);
+      for (let i = 1; i < limit; i++) {
+        const [x, y] = stroke.points[i];
+        ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      drawn += stroke.points.length;
     }
-  }, [mode, replayStrokes, redraw]);
+
+    ctx.globalCompositeOperation = "source-over";
+    // Keep strokesRef in sync for any external reads (none in replay today).
+    strokesRef.current = strokes;
+  }, [mode, replayStrokes, playhead]);
 
   // Sync initialStrokes -> strokesRef on state transitions. extraInfo.strokes
   // is stable within a state, so this only fires when the engine ships a new

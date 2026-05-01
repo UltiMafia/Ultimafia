@@ -375,7 +375,6 @@ export default function DrawItGame() {
         {turn && (
           <div className="draw-it-replay">
             <DrawCanvas
-              key={replayTurnIndex}
               mode="replay"
               strokes={turnStrokes}
               playhead={effectivePlayhead}
