@@ -270,7 +270,6 @@ module.exports = class TexasHoldEmGame extends Game {
         (p) => p.alive && p.hasFolded != true
       );
       if (playersInGame.length == 1) {
-        this.sendAlert(`The Round has Concluded`);
         this.RoundNumber++;
         const foldWinner = playersInGame[0];
         const foldPot = parseInt(this.ThePot);
@@ -386,6 +385,22 @@ module.exports = class TexasHoldEmGame extends Game {
     }
 
     super.incrementState();
+  }
+
+  // Showdown has no meetings, so the default checkAllMeetingsReady would
+  // see "no meetings, all ready" and advance instantly. Hold the state for
+  // its full configured length so players can see the revealed hole cards.
+  createNextStateTimer(stateInfo) {
+    if (this.getStateName() === "Showdown") {
+      this.createTimer("main", stateInfo.length, () => this.gotoNextState());
+      return;
+    }
+    super.createNextStateTimer(stateInfo);
+  }
+
+  checkAllMeetingsReady() {
+    if (this.getStateName() === "Showdown") return;
+    super.checkAllMeetingsReady();
   }
 
   // Score exactly 5 cards. Returns { score, scoreType, cards }.
