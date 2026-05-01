@@ -139,9 +139,24 @@ export default function DrawItGame() {
   }, [stateName]);
   const scores = extraInfo.scores || {};
   const initialStrokes = Array.isArray(extraInfo.strokes) ? extraInfo.strokes : [];
-  const drawingHistory = Array.isArray(extraInfo.drawingHistory)
-    ? extraInfo.drawingHistory
-    : null;
+  // drawingHistory is only attached to the Postgame state's extraInfo. During
+  // review (game.review === true) the user can scrub to any state, so fall
+  // back to scanning all states' extraInfo for the array — the postgame
+  // replay is then accessible from anywhere in the review timeline.
+  const drawingHistory = useMemo(() => {
+    if (Array.isArray(extraInfo.drawingHistory)) {
+      return extraInfo.drawingHistory;
+    }
+    if (game.review && history && history.states) {
+      for (const id in history.states) {
+        const ei = history.states[id] && history.states[id].extraInfo;
+        if (ei && Array.isArray(ei.drawingHistory)) {
+          return ei.drawingHistory;
+        }
+      }
+    }
+    return null;
+  }, [extraInfo.drawingHistory, game.review, history]);
 
   const isCurrentState = stateViewing === history.currentState;
 
@@ -279,7 +294,11 @@ export default function DrawItGame() {
   };
 
   const renderReplay = (mobile) => {
-    if (!isPostgame || !drawingHistory || drawingHistory.length === 0) {
+    if (
+      (!isPostgame && !game.review) ||
+      !drawingHistory ||
+      drawingHistory.length === 0
+    ) {
       return null;
     }
 
