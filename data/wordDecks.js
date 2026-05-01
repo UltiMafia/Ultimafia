@@ -71,7 +71,7 @@ const vehicles = [
   "moped","rickshaw",
 ];
 
-const categories = [
+const classicsCategories = [
   "Animals",
   "Body & Faces",
   "Fruits & Veggies",
@@ -80,28 +80,108 @@ const categories = [
   "Vehicles",
 ];
 
-const seen = new Set();
-const words = [];
-for (const w of [
-  ...animals,
-  ...body,
-  ...fruitsVeggies,
-  ...items,
-  ...sports,
-  ...vehicles,
-]) {
-  if (!seen.has(w)) {
-    seen.add(w);
-    words.push(w);
+const ultimafiaRoles = [
+  "mafia","villager","doctor","cop","vigilante","jester","witch",
+  "godfather","mason","escort","bomber","detective","sheriff","hunter",
+  "traitor","executioner","survivor","baker","clown","cultist","bodyguard",
+  "blacksmith","oracle","lover","watcher","tracker","exorcist","ghost",
+  "vampire","werewolf","zombie","alien","angel","banshee","devotee",
+  "arsonist","gunsmith","prince","mayor","framer","stalker","ghoul",
+  "fool","miller","neighbor","lookout","jailer","deputy","butler",
+  "bartender","pirate","mime","magician","clairvoyant","chemist",
+  "amnesiac","gambler","fortuneteller","trickster","reaper","monk",
+];
+
+const ultimafiaGameTypes = [
+  "draw-it","resistance","jotto","acrotopia","cheat","ratscrew",
+  "holdem","dicewars","liars-dice","secret-dictator","split-decision",
+  "connect-four","battlesnakes","wacky-words",
+];
+
+const ultimafiaItems = [
+  "gun","vest","badge","mask","potion","scroll","dagger","gem",
+  "bomb","telescope","crystal-ball","doll","falcon","envelope",
+  "clover","armor","blade","fishing-rod","golden-ticket","bread",
+  "coffee","cat","cave-in","cannon","syringe","journal","tarot",
+];
+
+const ultimafiaFeatures = [
+  "stamp","scrapbook","ranked","competitive","lobby","queue","setup",
+  "deck","achievement","trophy","medal","heart","profile","avatar",
+  "emote","role-marker","anonymous","shop","friend","forum","thread",
+  "mod","admin","elo","host","ready-check","schedule","private",
+  "spectator","postgame","replay","leaderboard","tournament","graveyard",
+];
+
+const ultimafiaTerminology = [
+  "lynch","vote","action","ability","alignment","faction","kill",
+  "day","night","claim","counterclaim","fakeclaim","wifom","scumread",
+  "townread","lurker","breadcrumb","jailed","silenced","blocked",
+  "framed","watched","tracked","investigated","healed","doused",
+  "ignited","redirected","cleaned","suspect","flip","condemn",
+  "hammer","bandwagon","bus","mislynch","autoloss","whisper","alert",
+];
+
+const ultimafiaTropes = [
+  "pizza","fedora","suit","cigar","tommy-gun","rose","alibi",
+  "evidence","briefcase","henchman","capo","racket","syndicate",
+  "speakeasy","casino","wiretap","cement-shoes","loanshark","bookmaker",
+];
+
+const ultimafiaCategories = [
+  "Roles",
+  "Game Types",
+  "Items",
+  "Features",
+  "Terminology",
+  "Tropes",
+];
+
+function dedupe(lists) {
+  const seen = new Set();
+  const out = [];
+  for (const list of lists) {
+    for (const w of list) {
+      if (!seen.has(w)) {
+        seen.add(w);
+        out.push(w);
+      }
+    }
   }
+  return out;
 }
+
+const classicsWords = dedupe([
+  animals,
+  body,
+  fruitsVeggies,
+  items,
+  sports,
+  vehicles,
+]);
+
+const ultimafiaWords = dedupe([
+  ultimafiaRoles,
+  ultimafiaGameTypes,
+  ultimafiaItems,
+  ultimafiaFeatures,
+  ultimafiaTerminology,
+  ultimafiaTropes,
+]);
 
 module.exports = [
   {
     id: "default",
     name: "Classics",
-    description: `Categories: ${categories.join(", ")}`,
-    coverPhoto: "",
-    words,
+    description: `Categories: ${classicsCategories.join(", ")}`,
+    coverPhoto: "/wordDecks/cover-default-items.webp",
+    words: classicsWords,
+  },
+  {
+    id: "default-ultimafia",
+    name: "Ultimafia",
+    description: `Categories: ${ultimafiaCategories.join(", ")}`,
+    coverPhoto: "/wordDecks/cover-default-ultimafia.webp",
+    words: ultimafiaWords,
   },
 ];
