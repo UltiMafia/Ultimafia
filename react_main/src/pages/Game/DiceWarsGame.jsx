@@ -727,7 +727,7 @@ function DiceWarsBoardWrapper({
             </div>
           )}
           {/* Game board */}
-          <svg ref={svgRef} style={{ display: "block", margin: "0 auto", width: "100%", maxHeight: "75vh", height: "auto" }} />
+          <svg ref={svgRef} style={{ display: "block", margin: "0 auto", width: "100%", maxHeight: "55vh", height: "auto" }} />
           {/* End Turn button */}
           {!isReview &&
             stateViewing !== -2 &&
