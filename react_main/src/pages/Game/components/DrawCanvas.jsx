@@ -96,6 +96,16 @@ export default function DrawCanvas({
     }
   }, [mode, replayStrokes, redraw]);
 
+  // Sync initialStrokes -> strokesRef on state transitions. extraInfo.strokes
+  // is stable within a state, so this only fires when the engine ships a new
+  // state (e.g. Reveal -> Pick clears strokes via beginPickState), wiping the
+  // previous turn's drawing for everyone before the next turn begins.
+  useEffect(() => {
+    if (mode === "replay") return;
+    strokesRef.current = initialStrokes ? [...initialStrokes] : [];
+    redraw();
+  }, [mode, initialStrokes, redraw]);
+
   // Initial draw
   useEffect(() => {
     redraw();

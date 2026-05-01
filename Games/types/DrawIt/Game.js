@@ -84,6 +84,17 @@ module.exports = class DrawItGame extends Game {
 
   incrementState() {
     super.incrementState();
+
+    // Reset GuessedWord effects on every state transition — the speech-circle
+    // membership only lasts for the state in which the guess happened.
+    for (const p of this.players) {
+      if (!Array.isArray(p.effects)) continue;
+      const toRemove = p.effects.filter(
+        (e) => e && e.name === "GuessedWord"
+      );
+      for (const e of toRemove) e.remove();
+    }
+
     const stateName = this.getStateName();
 
     if (stateName === "Pick") {
@@ -96,9 +107,29 @@ module.exports = class DrawItGame extends Game {
   }
 
   beginPickState() {
+    // Reveal is the showdown (previous drawing + word visible). Pick is for
+    // word selection on a clean canvas — wipe the previous drawing now.
+    // We push a full canvasState (rather than a clearCanvas delta) because
+    // canvasState is what the React canvas listens to for authoritative
+    // resyncs; deltas can race with state-info prop updates and get
+    // silently overwritten.
     this.currentStrokes = [];
+    this.broadcastCanvasState();
+
     this.currentGuessers = [];
     this.currentWord = null;
+
+    // Rotate to the next drawer here (rather than at the end of Reveal) so
+    // Reveal still highlights the player who actually drew this turn. The
+    // very first Pick of a game leaves currentDrawerIndex at 0 (untouched
+    // because there's no previous Reveal to advance from).
+    if (this.drawingHistory && this.drawingHistory.length > 0) {
+      this.currentDrawerIndex += 1;
+      if (this.currentDrawerIndex >= this.turnOrder.length) {
+        this.currentDrawerIndex = 0;
+        this.currentRound += 1;
+      }
+    }
 
     if (this.wordPool.length === 0) {
       this.wordPool = Random.randomizeArray([...this.usedWords]);
@@ -123,6 +154,22 @@ module.exports = class DrawItGame extends Game {
   }
 
   beginRevealState() {
+    // Showdown: explicitly resync every client's canvas to the final drawing.
+    // The drawer's mode flips from "drawer" to "viewer" at this transition,
+    // which used to wipe their local canvas via React's useEffect before the
+    // state-info prop could repopulate it. Pushing canvasState here makes
+    // the drawing reliably visible to everyone for the 5-second showdown.
+    this.broadcastCanvasState();
+
+    // Belt-and-braces: re-emit the guesser list so clients render a check
+    // mark for the player whose guess triggered the state transition. The
+    // mid-Draw drawGuessers event sometimes races the state event on the
+    // client and the snapshot carried in extraInfo can lose the last entry.
+    this.broadcast(
+      "drawGuessers",
+      this.currentGuessers.map((p) => p.name)
+    );
+
     const drawer = this.getCurrentDrawer();
     const ranks = this.currentGuessers.map((_, i) => i);
     const drawerPts = drawerScore(ranks);
@@ -157,17 +204,33 @@ module.exports = class DrawItGame extends Game {
       });
     }
 
+    // Per-player score events for the inline "+X" popups beside each name in
+    // the player list. Kinds: "first" (first guesser, star), "drawer"
+    // (drawer, paintbrush), "guesser" (everyone else who guessed).
+    const scoreEvents = this.currentGuessers.map((p, i) => ({
+      name: p.name,
+      delta: guesserScore(i),
+      kind: i === 0 ? "first" : "guesser",
+    }));
+    if (drawer && drawerPts > 0) {
+      scoreEvents.push({
+        name: drawer.name,
+        delta: drawerPts,
+        kind: "drawer",
+      });
+    }
+    this.broadcast("drawScoreEvents", scoreEvents);
+
     this.drawingHistory.push({
       drawer: drawer ? drawer.name : null,
       word: this.currentWord,
       strokes: [...this.currentStrokes],
     });
 
-    this.currentDrawerIndex += 1;
-    if (this.currentDrawerIndex >= this.turnOrder.length) {
-      this.currentDrawerIndex = 0;
-      this.currentRound += 1;
-    }
+    // The drawer index is rotated at Pick start, not here. During Reveal
+    // we want extraInfo.drawer to still point at the player who actually
+    // drew this round (paintbrush stays on them, the last-guesser's check
+    // mark isn't masked).
   }
 
   getCurrentDrawer() {
@@ -247,6 +310,22 @@ module.exports = class DrawItGame extends Game {
     return [10, 25, 40].includes(+s) ? +s : 25;
   }
 
+  // Send everyone (players + spectators) the authoritative canvas state.
+  // Used at state transitions where strokes change wholesale (Reveal start
+  // for the showdown, Pick start to wipe the previous drawing) and for the
+  // late-join / reconnect path during Draw.
+  broadcastCanvasState() {
+    const payload = { strokes: this.currentStrokes };
+    for (const p of this.players) {
+      if (p && p.send) p.send("canvasState", payload);
+    }
+    if (Array.isArray(this.spectators)) {
+      for (const s of this.spectators) {
+        if (s && s.send) s.send("canvasState", payload);
+      }
+    }
+  }
+
   broadcastStrokeDelta(delta) {
     // Drawer's local canvas already reflects their own pointer events for
     // strokePoints/endStroke, so we skip the drawer for those. But for
@@ -287,6 +366,13 @@ module.exports = class DrawItGame extends Game {
     if (matchesWord(message, this.currentWord)) {
       const rank = this.currentGuessers.length;
       this.currentGuessers.push(player);
+      // Mark the player as a member of the post-guess speech circle.
+      // Subsequent Village messages from them will be filtered to reach only
+      // the drawer + other GuessedWord-effect holders (see preprocessMessage).
+      // No try/catch: if this throws, scoring would still mark the player as
+      // a guesser while speech-filtering wouldn't — the resulting drift is a
+      // far worse failure mode (word leaks to non-guessers) than crashing.
+      player.giveEffect("GuessedWord");
 
       // Bullseye — first to guess 5 times in one game.
       // TODO Wave 8 wire achievement grant via listener class.
@@ -307,10 +393,22 @@ module.exports = class DrawItGame extends Game {
 
       const pts = guesserScore(rank);
       player.addScore(pts);
+      // Private confirmation in the guesser's own chat — the canvas overlay
+      // hides the word from non-drawers during Draw, so they can otherwise
+      // miss confirmation that they got the answer right.
+      player.sendAlert(`You've guessed the word: ${this.currentWord}`);
       this.broadcast("drawToast", {
         message: `${player.name} guessed! (+${pts})`,
         time: Date.now(),
       });
+      // Live-update everyone's guesser list so the player-list check marks
+      // appear immediately. extraInfo.guessers is only refreshed at state
+      // transitions, so without this clients wouldn't see the marks until
+      // Reveal.
+      this.broadcast(
+        "drawGuessers",
+        this.currentGuessers.map((p) => p.name)
+      );
 
       const remaining = this.players.filter(
         (p) => !this.isDrawer(p) && !this.currentGuessers.includes(p)
@@ -411,51 +509,66 @@ module.exports = class DrawItGame extends Game {
     };
   }
 
+  // Returns true if the player currently holds the GuessedWord effect, i.e.
+  // they have guessed correctly this round.
+  hasGuessedEffect(player) {
+    if (!player || !Array.isArray(player.effects)) return false;
+    return player.effects.some((e) => e && e.name === "GuessedWord");
+  }
+
+  // The current speech circle: drawer + everyone holding GuessedWord. These
+  // are the only players who can both read and write the post-guess chatter
+  // hidden inside the Village meeting.
+  getSpeechCircle() {
+    return this.players.filter(
+      (p) => this.isDrawer(p) || this.hasGuessedEffect(p)
+    );
+  }
+
   /**
-   * Decide what should happen with a chat message before the meeting broadcasts it.
-   * Returns an object: { allow: boolean, routeTo?: string }.
+   * Decide what should happen with a chat message before the Village meeting
+   * broadcasts it. Returns an object: { allow: boolean, recipients?: array }.
    * - allow=false: drop the message silently.
-   * - routeTo: change recipients to those of the named meeting.
+   * - recipients: deliver only to this restricted player list.
    */
   preprocessMessage(sender, content, meeting) {
     if (!meeting || !sender) return { allow: true };
 
-    // Only filter the common Village meeting in DrawIt; all other meetings
-    // (e.g. SecretChat, Pregame, Spectator) pass through untouched.
+    // Only filter the common Village meeting; all others (Pregame, Spectator)
+    // pass through untouched.
     if (meeting.name !== "Village") return { allow: true };
 
     const stateName = this.getStateName();
 
-    // Drawer cannot talk during Pick/Draw to avoid leaking the word.
-    // After Reveal, the round is over — speech is fine.
-    if (this.isDrawer(sender)) {
-      if (stateName === "Pick" || stateName === "Draw") {
-        return { allow: false };
-      }
-      return { allow: true };
+    // Drawer can't speak during Pick (no word chosen yet — no speech circle
+    // exists, easy to leak). Drop those messages.
+    if (this.isDrawer(sender) && stateName === "Pick") {
+      return { allow: false };
     }
 
-    // Guess detection during the Draw state.
+    // Guess detection during Draw — only for non-drawers who haven't already
+    // entered the speech circle.
     if (
       stateName === "Draw" &&
-      Array.isArray(this.currentGuessers) &&
-      !this.currentGuessers.includes(sender)
+      !this.isDrawer(sender) &&
+      !this.hasGuessedEffect(sender)
     ) {
       if (this.handlePotentialGuess(sender, content)) {
-        // The guess was correct — handlePotentialGuess already broadcast the
-        // alert and added the sender to currentGuessers; suppress the raw chat
-        // so the word itself isn't echoed to non-guessers.
+        // The guess was correct — alert was broadcast and the GuessedWord
+        // effect applied; suppress the raw chat so the word itself isn't
+        // echoed to non-guessers.
         return { allow: false };
       }
     }
 
-    // Once a player has guessed, route their subsequent messages to the
-    // SecretChat meeting so non-guessers don't see hints/spoilers.
+    // Inside the speech circle (drawer during Draw, or anyone with the
+    // GuessedWord effect): the message stays in Village but reaches only the
+    // circle. Everyone outside the circle never sees these messages.
     if (
-      Array.isArray(this.currentGuessers) &&
-      this.currentGuessers.includes(sender)
+      this.hasGuessedEffect(sender) ||
+      (this.isDrawer(sender) && stateName === "Draw")
     ) {
-      return { allow: true, routeTo: "SecretChat" };
+      return { allow: true, recipients: this.getSpeechCircle() };
     }
 
     return { allow: true };

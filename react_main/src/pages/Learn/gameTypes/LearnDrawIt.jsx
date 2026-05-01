@@ -105,13 +105,13 @@ export default function LearnDrawIt({ Layout }) {
       </TableContainer>
 
       <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
-        Secret chat
+        Once you've guessed
       </Typography>
       <Typography variant="body2" paragraph>
-        Once you guess the word, you're moved into a secret chat with the other
-        correct guessers (and the drawer once their turn ends). You can keep
-        chatting freely without spoiling the answer for the players still
-        guessing.
+        Once you guess the word, your subsequent messages stay in the main
+        chat but are only visible to the drawer and other correct guessers —
+        so you can chat freely without spoiling the answer for the players
+        still guessing.
       </Typography>
 
       <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>

@@ -16,7 +16,7 @@ import { GameContext } from "../../Contexts";
 import DrawCanvas, { emitUndo, emitClear } from "./components/DrawCanvas";
 import DrawTools from "./components/DrawTools";
 import WordDisplay from "./components/WordDisplay";
-import DrawSecretChat from "./components/DrawSecretChat";
+import DrawGuessedList from "./components/DrawGuessedList";
 
 import "./components/DrawItGame.css";
 
@@ -48,7 +48,7 @@ export default function DrawItGame() {
 
   useEffect(() => {
     updateStateViewing({ type: "current" });
-  }, [history.currentState]);
+  }, [history.currentState, updateStateViewing]);
 
   useEffect(() => {
     if (game.review) updateStateViewing({ type: "first" });
@@ -59,13 +59,27 @@ export default function DrawItGame() {
       if (playBellRef.current) game.playAudio("ping");
       playBellRef.current = true;
     });
-    socket.on("winners", () => {});
     socket.on("drawToast", ({ message, time }) => pushToast(message, time));
+    socket.on("drawGuessers", (names) => {
+      if (Array.isArray(names)) {
+        setLiveGuessers((current) =>
+          names.length > current.length ? names : current
+        );
+      }
+    });
+    socket.on("drawScoreEvents", (events) => {
+      if (!Array.isArray(events)) return;
+      const map = {};
+      for (const e of events) {
+        if (e && e.name) map[e.name] = e;
+      }
+      setScoreEventsByName(map);
+    });
   }, game.socket);
 
   // Drawing tool state (drawer-only)
   const [color, setColor] = useState("#000000");
-  const [size, setSize] = useState(8);
+  const [size, setSize] = useState(10);
   const [eraseMode, setEraseMode] = useState(false);
 
   // Postgame replay state
@@ -86,9 +100,40 @@ export default function DrawItGame() {
   const round = extraInfo.round;
   const totalRounds = extraInfo.totalRounds;
   const wordLength = extraInfo.wordLength || null;
-  const currentWord = extraInfo.currentWord || null; // server only sends to drawer
-  const revealedWord = extraInfo.revealedWord || null;
-  const guessers = Array.isArray(extraInfo.guessers) ? extraInfo.guessers : [];
+  // currentWord: present in extraInfo for everyone during Draw + Reveal. The
+  // engine doesn't filter it per-recipient, so non-drawers technically have
+  // the word in their socket payload during Draw — UI just hides it. Treat
+  // any client-side use as if it were public.
+  const currentWord = extraInfo.currentWord || null;
+  // Live guessers list. extraInfo.guessers only refreshes on state
+  // transitions; the server emits "drawGuessers" mid-Draw (and again at
+  // Reveal start) so check marks appear as soon as each player solves the
+  // word. We fully reset on Pick (new round); for other states we keep the
+  // longer of the live list and extraInfo's snapshot, so a race between
+  // the drawGuessers and state events can't drop the last guesser.
+  const [liveGuessers, setLiveGuessers] = useState([]);
+  useEffect(() => {
+    if (stateName === "Pick") {
+      setLiveGuessers([]);
+      return;
+    }
+    setLiveGuessers((current) => {
+      const fromExtra = Array.isArray(extraInfo.guessers)
+        ? extraInfo.guessers
+        : [];
+      return fromExtra.length > current.length ? fromExtra : current;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateName]);
+  const guessers = liveGuessers;
+
+  // Per-player score-event popups shown beside the player list during Reveal.
+  // Cleared at Pick (next round). Server emits "drawScoreEvents" at Reveal
+  // start with [{name, delta, kind: "first"|"guesser"|"drawer"}, ...].
+  const [scoreEventsByName, setScoreEventsByName] = useState({});
+  useEffect(() => {
+    if (stateName === "Pick") setScoreEventsByName({});
+  }, [stateName]);
   const scores = extraInfo.scores || {};
   const initialStrokes = Array.isArray(extraInfo.strokes) ? extraInfo.strokes : [];
   const drawingHistory = Array.isArray(extraInfo.drawingHistory)
@@ -97,10 +142,31 @@ export default function DrawItGame() {
 
   const isCurrentState = stateViewing === history.currentState;
 
-  // Player list scoreboard chip
-  const renderPlayerMarker = (player) => (
-    <span className="draw-score-chip">{scores[player.name] ?? 0}</span>
-  );
+  // Player list scoreboard chip + transient "+X" popup with an icon
+  // representing how the points were earned (first guesser ★, drawer 🖌, or
+  // any guesser ✓). The popup shows during Reveal and clears at Pick.
+  const renderPlayerMarker = (player) => {
+    const evt = scoreEventsByName[player.name];
+    return (
+      <>
+        <span className="draw-score-chip">{scores[player.name] ?? 0}</span>
+        {evt && (
+          <span className={`draw-score-event draw-score-event-${evt.kind}`}>
+            +{evt.delta}
+            {evt.kind === "first" && (
+              <i className="fas fa-star draw-score-event-icon" />
+            )}
+            {evt.kind === "drawer" && (
+              <i className="fas fa-paint-brush draw-score-event-icon" />
+            )}
+            {evt.kind === "guesser" && (
+              <i className="fas fa-check-circle draw-score-event-icon" />
+            )}
+          </span>
+        )}
+      </>
+    );
+  };
   const renderPlayerRowEnd = (player) => {
     if (player.name === drawer) {
       return (
@@ -258,18 +324,20 @@ export default function DrawItGame() {
       </div>
     ) : null;
 
-  const centerContent = (
-    <div className="draw-stage">
+  // Center panel JSX is identical between desktop and mobile except for the
+  // outer class and a mobile-only chat row during Draw. Render it once so
+  // changes (e.g. the Reveal-state word overlay) can't drift between layouts.
+  const renderCenter = (mobile = false) => (
+    <div className={`draw-stage${mobile ? " draw-stage-mobile" : ""}`}>
       <WordDisplay
         isDrawer={isDrawer}
         stateName={stateName}
         currentWord={currentWord}
         wordLength={wordLength}
-        revealedWord={revealedWord}
       />
       <ActionList
         bare
-        meetingFilter={(m) => m.name !== "Vote Kick" && m.name !== "SecretChat"}
+        meetingFilter={(m) => m.name !== "Vote Kick"}
         hideIfEmpty
         className="draw-action-list"
       />
@@ -296,10 +364,17 @@ export default function DrawItGame() {
               eraseMode={eraseMode}
             />
           )}
-          {isDrawer && stateName === "Draw" && currentWord && (
-            <div className="draw-canvas-word-overlay">{currentWord}</div>
-          )}
+          {currentWord &&
+            ((isDrawer && stateName === "Draw") ||
+              stateName === "Reveal") && (
+              <div className="draw-canvas-word-overlay">{currentWord}</div>
+            )}
           <DrawToasts toasts={toasts} />
+        </div>
+      )}
+      {mobile && stateName === "Draw" && !isDrawer && (
+        <div className="draw-mobile-chat">
+          <TextMeetingLayout />
         </div>
       )}
       {postgameReplay}
@@ -309,10 +384,11 @@ export default function DrawItGame() {
   const rightContent = (
     <>
       <TextMeetingLayout />
-      <DrawSecretChat
+      <DrawGuessedList
         guessers={guessers}
         me={selfPlayer}
         stateName={stateName}
+        isDrawer={isDrawer}
       />
     </>
   );
@@ -322,7 +398,7 @@ export default function DrawItGame() {
       <TopBar />
       <ThreePanelLayout
         leftPanelContent={leftContent}
-        centerPanelContent={centerContent}
+        centerPanelContent={renderCenter()}
         rightPanelContent={rightContent}
       />
       <MobileLayout
@@ -361,53 +437,7 @@ export default function DrawItGame() {
           value: "actions",
           icon: <i className="fas fa-paint-brush" />,
         }}
-        innerRightContent={
-          <div className="draw-stage draw-stage-mobile">
-            <WordDisplay
-              isDrawer={isDrawer}
-              stateName={stateName}
-              currentWord={currentWord}
-              wordLength={wordLength}
-              revealedWord={revealedWord}
-            />
-            <ActionList
-              bare
-              meetingFilter={(m) => m.name !== "Vote Kick" && m.name !== "SecretChat"}
-              hideIfEmpty
-              className="draw-action-list"
-            />
-            <DrawTools
-              color={color}
-              size={size}
-              eraseMode={eraseMode}
-              onColor={setColor}
-              onSize={setSize}
-              onErase={setEraseMode}
-              onClear={() => emitClear(game.socket)}
-              onUndo={() => emitUndo(game.socket)}
-              hidden={!(isDrawer && stateName === "Draw" && isCurrentState)}
-            />
-            {!isPostgame && (
-              <div className="draw-canvas-wrap">
-                {isCurrentState && (
-                  <DrawCanvas
-                    mode={canvasMode}
-                    socket={game.socket}
-                    initialStrokes={initialStrokes}
-                    color={color}
-                    size={size}
-                    eraseMode={eraseMode}
-                  />
-                )}
-                {isDrawer && stateName === "Draw" && currentWord && (
-                  <div className="draw-canvas-word-overlay">{currentWord}</div>
-                )}
-                <DrawToasts toasts={toasts} />
-              </div>
-            )}
-            {postgameReplay}
-          </div>
-        }
+        innerRightContent={renderCenter(true)}
       />
     </GameTypeContext.Provider>
   );

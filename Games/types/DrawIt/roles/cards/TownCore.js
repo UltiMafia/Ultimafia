@@ -5,39 +5,16 @@ module.exports = class TownCore extends Card {
     super(role);
 
     this.meetings = {
-      // Common chat for everyone. Speech is preprocessed by DrawItGame.preprocessMessage:
-      // - the drawer's messages are silenced during Pick/Draw,
-      // - non-drawer messages that match the current word are converted into guess events,
-      // - players who have already guessed have their messages rerouted to SecretChat.
+      // Common chat for everyone. DrawItGame.preprocessMessage hides speech
+      // selectively: drawer is silenced during Pick, drawer + guessers form a
+      // hidden speech circle during Draw (their messages stay in Village but
+      // reach only the circle), and word-matches are converted into guesses
+      // before the raw text echoes.
       Village: {
         states: ["*"],
         flags: ["group", "speech"],
         whileDead: true,
         speakDead: true,
-      },
-      // Hidden chat for players who have already guessed (the round winners).
-      // During Draw: only guessers see it — non-guessers can't peek at hints
-      // or banter that might spoil the word.
-      // During Reveal: everyone joins so the round-losers can see what the
-      // winners were saying once the round is over.
-      SecretChat: {
-        states: ["Draw", "Reveal"],
-        flags: ["group", "speech"],
-        whileDead: true,
-        shouldMeet: function () {
-          const game = this.game;
-          if (!game) return false;
-          // End-of-round: everyone joins to read the winners' chat.
-          if (game.getStateName() === "Reveal") return true;
-          // During Draw: only the round winners (guessers) are members.
-          if (
-            Array.isArray(game.currentGuessers) &&
-            game.currentGuessers.includes(this.player)
-          ) {
-            return true;
-          }
-          return false;
-        },
       },
       // Drawer-only meeting during Pick. The targets are the two word options
       // refreshed at the start of each Pick state by the listener below.
