@@ -483,7 +483,7 @@ module.exports = class DrawItGame extends Game {
     for (const p of this.players) scores[p.name] = p.getScore();
 
     info.extraInfo = {
-      round: this.currentRound + 1,
+      round: Math.min(this.currentRound + 1, this.roundAmt),
       totalRounds: this.roundAmt,
       drawer: drawer ? drawer.name : null,
       wordLength: this.currentWord ? this.currentWord.length : null,

@@ -293,6 +293,110 @@
   to   { opacity: 1; transform: scale(1); }
 }
 
+/* Postgame drawings replay */
+.draw-it-postgame {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.draw-it-replay-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.draw-it-replay-grid-mobile {
+  /* Up to 3 drawer columns per page on mobile (set on the parent via prop). */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.draw-it-replay-column {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.draw-it-replay-drawer {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 4px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.draw-it-replay-word {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: inherit;
+  font: inherit;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.draw-it-replay-word:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.draw-it-replay-word-active {
+  background: var(--draw-pick-outline, #ffb74d);
+  color: #1a1a1a;
+  border-color: var(--draw-pick-outline, #ffb74d);
+}
+
+.draw-it-replay-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+}
+
+.draw-it-replay-pagination button {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: inherit;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+.draw-it-replay-pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.draw-it-replay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.draw-it-replay-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.draw-it-replay-controls input[type="range"] {
+  flex: 1;
+}
+
 /* Already-guessed sidebar list (collapsible) */
 .draw-guessed-list {
   border-top: 1px solid rgba(255, 255, 255, 0.08);

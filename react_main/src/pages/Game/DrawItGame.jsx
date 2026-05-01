@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   useSocketListeners,
@@ -86,6 +86,9 @@ export default function DrawItGame() {
   const [replayTurnIndex, setReplayTurnIndex] = useState(0);
   const [replayPlayhead, setReplayPlayhead] = useState(Infinity);
   const replayIntervalRef = useRef(null);
+  // Mobile pagination — show this many drawers per page in the replay grid.
+  const REPLAY_DRAWERS_PER_PAGE = 3;
+  const [replayDrawerPage, setReplayDrawerPage] = useState(0);
 
   const currentState = history.states[stateViewing];
   const extraInfo = (currentState && currentState.extraInfo) || {};
@@ -252,77 +255,157 @@ export default function DrawItGame() {
     };
   }, []);
 
-  const postgameReplay =
-    isPostgame && drawingHistory && drawingHistory.length > 0 ? (
+  // Group postgame turns into one column per drawer (in turn-order). Each
+  // column lists the words that drawer drew; clicking a word loads its
+  // replay below the grid.
+  const drawerColumns = useMemo(() => {
+    if (!Array.isArray(drawingHistory)) return [];
+    const map = new Map();
+    drawingHistory.forEach((turn, idx) => {
+      const name = (turn && turn.drawer) || "—";
+      if (!map.has(name)) map.set(name, []);
+      map.get(name).push({ ...turn, index: idx });
+    });
+    return Array.from(map, ([name, turns]) => ({ name, turns }));
+  }, [drawingHistory]);
+
+  const handleSelectReplayTurn = (idx) => {
+    if (replayIntervalRef.current) {
+      clearInterval(replayIntervalRef.current);
+      replayIntervalRef.current = null;
+    }
+    setReplayTurnIndex(idx);
+    setReplayPlayhead(Infinity);
+  };
+
+  const renderReplay = (mobile) => {
+    if (!isPostgame || !drawingHistory || drawingHistory.length === 0) {
+      return null;
+    }
+
+    const pageCount = mobile
+      ? Math.max(1, Math.ceil(drawerColumns.length / REPLAY_DRAWERS_PER_PAGE))
+      : 1;
+    const safePage = Math.min(replayDrawerPage, pageCount - 1);
+    const visibleColumns = mobile
+      ? drawerColumns.slice(
+          safePage * REPLAY_DRAWERS_PER_PAGE,
+          safePage * REPLAY_DRAWERS_PER_PAGE + REPLAY_DRAWERS_PER_PAGE
+        )
+      : drawerColumns;
+
+    const turn = drawingHistory[replayTurnIndex];
+    const turnStrokes =
+      turn && Array.isArray(turn.strokes) ? turn.strokes : [];
+    const totalPoints = turnStrokes.reduce(
+      (acc, s) =>
+        acc + (s && Array.isArray(s.points) ? s.points.length : 0),
+      0
+    );
+    const effectivePlayhead =
+      replayPlayhead === Infinity ? totalPoints : replayPlayhead;
+
+    return (
       <div className="draw-it-postgame">
         <h3>Drawings replay</h3>
-        <div className="draw-it-turn-list">
-          {drawingHistory.map((turn, i) => (
-            <button
-              key={i}
-              type="button"
-              className={
-                "draw-it-turn-btn" +
-                (i === replayTurnIndex ? " active" : "")
-              }
-              onClick={() => {
-                if (replayIntervalRef.current) {
-                  clearInterval(replayIntervalRef.current);
-                  replayIntervalRef.current = null;
+        <div
+          className={
+            "draw-it-replay-grid" +
+            (mobile ? " draw-it-replay-grid-mobile" : "")
+          }
+          style={
+            mobile
+              ? undefined
+              : {
+                  gridTemplateColumns: `repeat(${Math.max(
+                    1,
+                    drawerColumns.length
+                  )}, minmax(0, 1fr))`,
                 }
-                setReplayTurnIndex(i);
-                setReplayPlayhead(Infinity);
-              }}
-            >
-              Turn {i + 1}: {turn.drawer || "—"} drew "{turn.word}"
-            </button>
+          }
+        >
+          {visibleColumns.map((col) => (
+            <div key={col.name} className="draw-it-replay-column">
+              <div className="draw-it-replay-drawer">{col.name}</div>
+              {col.turns.map((t) => (
+                <button
+                  key={t.index}
+                  type="button"
+                  className={
+                    "draw-it-replay-word" +
+                    (t.index === replayTurnIndex
+                      ? " draw-it-replay-word-active"
+                      : "")
+                  }
+                  onClick={() => handleSelectReplayTurn(t.index)}
+                >
+                  {t.word ? `"${t.word}"` : "—"}
+                </button>
+              ))}
+            </div>
           ))}
         </div>
-
-        {(() => {
-          const turn = drawingHistory[replayTurnIndex];
-          if (!turn) return null;
-          const turnStrokes = Array.isArray(turn.strokes) ? turn.strokes : [];
-          const totalPoints = turnStrokes.reduce(
-            (acc, s) =>
-              acc + (s && Array.isArray(s.points) ? s.points.length : 0),
-            0
-          );
-          const effectivePlayhead =
-            replayPlayhead === Infinity ? totalPoints : replayPlayhead;
-          return (
-            <div className="draw-it-replay">
-              <DrawCanvas
-                mode="replay"
-                strokes={turnStrokes}
-                playhead={effectivePlayhead}
+        {mobile && pageCount > 1 && (
+          <div className="draw-it-replay-pagination">
+            <button
+              type="button"
+              onClick={() =>
+                setReplayDrawerPage((p) => Math.max(0, p - 1))
+              }
+              disabled={safePage === 0}
+            >
+              ‹
+            </button>
+            <span>
+              {safePage + 1} / {pageCount}
+            </span>
+            <button
+              type="button"
+              onClick={() =>
+                setReplayDrawerPage((p) =>
+                  Math.min(pageCount - 1, p + 1)
+                )
+              }
+              disabled={safePage >= pageCount - 1}
+            >
+              ›
+            </button>
+          </div>
+        )}
+        {turn && (
+          <div className="draw-it-replay">
+            <DrawCanvas
+              key={replayTurnIndex}
+              mode="replay"
+              strokes={turnStrokes}
+              playhead={effectivePlayhead}
+            />
+            <div className="draw-it-replay-controls">
+              <button
+                type="button"
+                onClick={() => startReplayAnimation(totalPoints)}
+              >
+                ▶ Replay
+              </button>
+              <input
+                type="range"
+                min={0}
+                max={totalPoints}
+                value={effectivePlayhead}
+                onChange={(e) => {
+                  if (replayIntervalRef.current) {
+                    clearInterval(replayIntervalRef.current);
+                    replayIntervalRef.current = null;
+                  }
+                  setReplayPlayhead(Number(e.target.value));
+                }}
               />
-              <div className="draw-it-replay-controls">
-                <button
-                  type="button"
-                  onClick={() => startReplayAnimation(totalPoints)}
-                >
-                  ▶ Replay
-                </button>
-                <input
-                  type="range"
-                  min={0}
-                  max={totalPoints}
-                  value={effectivePlayhead}
-                  onChange={(e) => {
-                    if (replayIntervalRef.current) {
-                      clearInterval(replayIntervalRef.current);
-                      replayIntervalRef.current = null;
-                    }
-                    setReplayPlayhead(Number(e.target.value));
-                  }}
-                />
-              </div>
             </div>
-          );
-        })()}
+          </div>
+        )}
       </div>
-    ) : null;
+    );
+  };
 
   // Center panel JSX is identical between desktop and mobile except for the
   // outer class and a mobile-only chat row during Draw. Render it once so
@@ -379,7 +462,7 @@ export default function DrawItGame() {
           <TextMeetingLayout />
         </div>
       )}
-      {postgameReplay}
+      {renderReplay(mobile)}
     </div>
   );
 
