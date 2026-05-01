@@ -204,6 +204,21 @@ function WordDeckRow(props) {
             <Typography className="deck-name">
               {filterProfanity(deck.name || "", user.settings)}
             </Typography>
+            {deck.description ? (
+              <Typography
+                variant="body2"
+                style={{
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  opacity: 0.75,
+                  fontStyle: "italic",
+                }}
+                title={deck.description}
+              >
+                {filterProfanity(deck.description, user.settings)}
+              </Typography>
+            ) : null}
             <div className="deck-preview-row">
               <Typography
                 variant="body2"

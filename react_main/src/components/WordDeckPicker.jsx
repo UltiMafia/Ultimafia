@@ -192,6 +192,22 @@ export default function WordDeckPicker({
                     >
                       {filterProfanity(deck.name || "", user.settings)}
                     </Typography>
+                    {deck.description ? (
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          opacity: 0.7,
+                          lineHeight: 1.2,
+                          fontStyle: "italic",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                        title={deck.description}
+                      >
+                        {filterProfanity(deck.description, user.settings)}
+                      </Typography>
+                    ) : null}
                     {wordCount != null && (
                       <Typography
                         variant="caption"

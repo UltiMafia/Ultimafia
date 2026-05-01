@@ -7,6 +7,7 @@ import "css/deck.css";
 import "css/form.css";
 
 const MAX_NAME_LENGTH = 25;
+const MAX_DESCRIPTION_LENGTH = 120;
 const MAX_WORD_DECK_SIZE = 500;
 const MIN_WORD_DECK_SIZE = 20;
 const MAX_WORD_LENGTH = 30;
@@ -22,6 +23,7 @@ export default function CreateWordDeck() {
   const errorAlert = useErrorAlert();
 
   const [deckName, setDeckName] = useState("");
+  const [deckDescription, setDeckDescription] = useState("");
   const [wordsText, setWordsText] = useState("");
   const [editing, setEditing] = useState(false);
   const [isDefault, setIsDefault] = useState(false);
@@ -52,6 +54,7 @@ export default function CreateWordDeck() {
       .then((res) => {
         const deck = res.data;
         setDeckName(deck.name || "");
+        setDeckDescription(deck.description || "");
         setCoverPhoto(deck.coverPhoto || "");
         setIsDefault(!!deck.isDefault);
         const words = Array.isArray(deck.words) ? deck.words : [];
@@ -187,6 +190,7 @@ export default function CreateWordDeck() {
         editing: editing,
         id: editId || undefined,
         name: deckName.trim(),
+        description: deckDescription.trim(),
         words: parsed.cleaned,
       })
       .then(async (res) => {
@@ -303,6 +307,23 @@ export default function CreateWordDeck() {
                   onChange={(e) => setDeckName(e.target.value)}
                   placeholder="Enter deck name"
                   maxLength={MAX_NAME_LENGTH}
+                  disabled={inputsDisabled}
+                />
+                <label
+                  className="deck-field-label"
+                  htmlFor="deck-description-input"
+                  style={{ marginTop: 12, display: "block" }}
+                >
+                  Description (optional)
+                </label>
+                <input
+                  id="deck-description-input"
+                  className="deck-input deck-name-input"
+                  type="text"
+                  value={deckDescription}
+                  onChange={(e) => setDeckDescription(e.target.value)}
+                  placeholder="What's in this deck?"
+                  maxLength={MAX_DESCRIPTION_LENGTH}
                   disabled={inputsDisabled}
                 />
               </div>
