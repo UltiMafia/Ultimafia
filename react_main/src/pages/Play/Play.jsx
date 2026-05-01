@@ -49,6 +49,8 @@ export default function Play(props) {
   const CreateSetup = lazy(() => import("./CreateSetup/CreateSetup"));
   const DeckSelector = lazy(() => import("./Decks/DeckSelector"));
   const CreateDecks = lazy(() => import("./Decks/CreateDeck"));
+  const WordDeckSelector = lazy(() => import("./WordDecks/WordDeckSelector"));
+  const CreateWordDeck = lazy(() => import("./WordDecks/CreateWordDeck"));
   const HostBrowser = lazy(() => import("./Host/HostBrowser"));
 
   return (
@@ -61,6 +63,8 @@ export default function Play(props) {
             <Route path="decks" element={<DeckSelector />} />
             <Route path="create" element={<CreateSetup />} />
             <Route path="createDeck" element={<CreateDecks />} />
+            <Route path="wordDecks" element={<WordDeckSelector />} />
+            <Route path="createWordDeck" element={<CreateWordDeck />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </Suspense>

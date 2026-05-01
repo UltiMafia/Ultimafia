@@ -199,6 +199,7 @@ const modifierData = {
   Acrotopia: {},
   "Secret Dictator": {},
   "Wacky Words": {},
+  "Draw It": {},
   "Liars Dice": {
     Gun: {
       internal: ["Gun"],

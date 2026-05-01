@@ -6383,6 +6383,13 @@ const roleData = {
       description: ["Can make Prompets/Acronyms", "Facilitates the game."],
     },
   },
+  "Draw It": {
+    Painter: {
+      alignment: "Town",
+      tags: ["None"],
+      description: ["Draws words on their turn and guesses words on others' turns."],
+    },
+  },
   "Liars Dice": {
     Liar: {
       alignment: "Liars",

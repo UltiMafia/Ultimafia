@@ -12,6 +12,7 @@ const authRouter = require("./routes/auth");
 const gameRouter = require("./routes/game");
 const setupRouter = require("./routes/setup");
 const deckRouter = require("./routes/anonymousDeck");
+const wordDeckRouter = require("./routes/wordDeck");
 const roleRouter = require("./routes/roles");
 const achievementsRouter = require("./routes/achievements");
 const userRouter = require("./routes/user");
@@ -36,6 +37,8 @@ const siteActivityRouter = require("./routes/siteActivity");
 const compression = require("compression");
 const cors = require("cors");
 const itemsRouter = require("./routes/items");
+const { seedDefaultWordDecks } = require("./modules/seed");
+const db = require("./db/db");
 
 const session = require("./modules/session");
 const csrf = require("./modules/csrf");
@@ -75,6 +78,7 @@ apiRouter.use("/auth", authRouter);
 apiRouter.use("/game", gameRouter);
 apiRouter.use("/setup", setupRouter);
 apiRouter.use("/deck", deckRouter);
+apiRouter.use("/wordDeck", wordDeckRouter);
 apiRouter.use("/roles", roleRouter);
 apiRouter.use("/achievements", achievementsRouter);
 apiRouter.use("/user", userRouter);
@@ -99,6 +103,11 @@ apiRouter.use("/site-activity", siteActivityRouter);
 apiRouter.use("/fanart", fanartRouter);
 
 app.use("/api", apiRouter);
+
+// Seed default word decks once the mongoose connection is established.
+db.promise
+  .then(() => seedDefaultWordDecks())
+  .catch((e) => console.error("Default deck seeding failed", e));
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "react_main/build_public/index.html"));

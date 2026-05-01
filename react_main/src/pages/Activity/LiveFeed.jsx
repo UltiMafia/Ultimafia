@@ -1,4 +1,11 @@
-import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import axios from "axios";
 import {
   Box,
@@ -10,6 +17,7 @@ import {
 } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
+import { UserContext } from "Contexts";
 import ActivityRow from "./ActivityRow";
 
 // Three mutually-exclusive category tabs. Each owns a set of per-type sub
@@ -93,6 +101,7 @@ function FilterChip({ label, active, onClick }) {
 
 export default function LiveFeed({ windowKey }) {
   const errorAlert = useErrorAlert();
+  const user = useContext(UserContext);
   // `useErrorAlert` returns a fresh function each render, so binding it
   // through a ref keeps `load`'s identity stable — otherwise the useEffect
   // below re-fires every render and we request-spam the backend.
@@ -111,7 +120,18 @@ export default function LiveFeed({ windowKey }) {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(false);
 
-  const category = CATEGORIES[categoryIdx];
+  const categories = useMemo(() => {
+    if (user?.perms?.seeModPanel) return CATEGORIES;
+    return CATEGORIES.filter((c) => c.key !== "mod");
+  }, [user?.perms?.seeModPanel]);
+
+  useEffect(() => {
+    if (categoryIdx >= categories.length) {
+      setCategoryIdx(0);
+    }
+  }, [categoryIdx, categories.length]);
+
+  const category = categories[categoryIdx] || categories[0];
   const activeTypes = typesByCat[category.key];
 
   // Depend on categoryIdx (primitive) rather than `category` (a fresh object
@@ -119,7 +139,8 @@ export default function LiveFeed({ windowKey }) {
   // every render and the feed is stuck in a "Loading…" refetch loop.
   const load = useCallback(() => {
     setLoading(true);
-    const cats = CATEGORIES[categoryIdx].serverCategories.join(",");
+    const selectedCategory = categories[categoryIdx] || categories[0];
+    const cats = selectedCategory.serverCategories.join(",");
     axios
       .get(`/api/site-activity/feed`, {
         params: { window: windowKey, categories: cats, page },
@@ -130,7 +151,7 @@ export default function LiveFeed({ windowKey }) {
       })
       .catch((e) => errorAlertRef.current(e))
       .finally(() => setLoading(false));
-  }, [windowKey, categoryIdx, page]);
+  }, [windowKey, categoryIdx, page, categories]);
 
   useEffect(() => {
     load();
@@ -193,7 +214,7 @@ export default function LiveFeed({ windowKey }) {
           },
         }}
       >
-        {CATEGORIES.map((c) => (
+        {categories.map((c) => (
           <Tab key={c.key} label={c.label} />
         ))}
       </Tabs>

@@ -2970,6 +2970,10 @@ module.exports = class Game {
         this.hasGovernor = this.setup.roles[0]["Governor:"];
         this.hasGambler = this.setup.roles[0]["Gambler:"];
         this.hasHost = this.setup.roles[0]["Host:"];
+      } else if (this.type == "Draw It") {
+        // TODO Wave 8 verify: Draw It currently has no host/optional-role flags
+        // to mirror; setup-time flags (if any) would be wired here. Settings
+        // like roundAmt/wordDeckId are read from options.settings in DrawItGame.
       }
 
       this.sendAlert(`The setup has been changed to ${this.setup.name}.`);

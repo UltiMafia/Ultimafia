@@ -1,0 +1,20 @@
+.draw-canvas {
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 4 / 3;
+  background: #ffffff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  display: block;
+  touch-action: none;
+}
+
+.draw-canvas-drawer {
+  cursor: crosshair;
+}
+
+.draw-canvas-viewer,
+.draw-canvas-replay {
+  cursor: default;
+  pointer-events: none;
+}

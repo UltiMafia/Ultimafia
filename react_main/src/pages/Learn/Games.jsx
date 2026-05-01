@@ -16,6 +16,7 @@ import LearnJotto from "./gameTypes/LearnJotto";
 import LearnAcrotopia from "./gameTypes/LearnAcrotopia";
 import LearnSecretDictator from "./gameTypes/LearnSecretDictator";
 import LearnWackyWords from "./gameTypes/LearnWackyWords";
+import LearnDrawIt from "./gameTypes/LearnDrawIt";
 import LearnLiarsDice from "./gameTypes/LearnLiarsDice";
 import LearnTexasHoldEm from "./gameTypes/LearnTexasHoldEm";
 import LearnCheat from "./gameTypes/LearnCheat";
@@ -133,6 +134,8 @@ export default function Games(props) {
         return <LearnSecretDictator Layout={LearnTabsLayout} />;
       case "Wacky Words":
         return <LearnWackyWords Layout={LearnTabsLayout} />;
+      case "Draw It":
+        return <LearnDrawIt Layout={LearnTabsLayout} />;
       case "Liars Dice":
         return <LearnLiarsDice Layout={LearnTabsLayout} />;
       case "Texas Hold Em":

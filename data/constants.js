@@ -76,6 +76,7 @@ module.exports = {
     "Battlesnakes",
     "Dice Wars",
     "Connect Four",
+    "Draw It",
     "Spot It",
   ],
   // Game types that remain valid for existing setups/stats but cannot be
@@ -96,6 +97,7 @@ module.exports = {
     Battlesnakes: ["Town", "Host"],
     "Dice Wars": ["Military", "Host"],
     "Connect Four": ["Town", "Host"],
+    "Draw It": ["Town"],
     "Spot It": ["Town"],
   },
   startStates: {
@@ -112,6 +114,7 @@ module.exports = {
     Battlesnakes: ["Day"],
     "Dice Wars": ["Play"],
     "Connect Four": ["Turn"],
+    "Draw It": ["Pick"],
     "Spot It": ["Round"],
   },
   competitiveDefaults: {
@@ -277,6 +280,13 @@ module.exports = {
         default: 1 * 60 * 1000,
       },
     },
+    "Draw It": {
+      Draw: {
+        min: 30 * 1000,
+        max: 240 * 1000,
+        default: 150 * 1000,
+      },
+    },
     "Spot It": {
       Round: {
         min: 5 * 60 * 1000,
@@ -295,6 +305,12 @@ module.exports = {
   maxFavSetups: 500,
   maxFavRoles: 100,
   maxOwnedAnonymousDecks: 10,
+  maxOwnedWordDecks: 5,
+  minWordDeckSize: 20,
+  maxWordDeckSize: 500,
+  maxWordLength: 30,
+  maxWordDeckNameLength: 25,
+  maxWordDeckDescriptionLength: 120,
   maxOwnedCustomEmotes: 10,
   maxOwnedCustomEmotesExtra: 10,
   maxArchivedGamesMax: 10,

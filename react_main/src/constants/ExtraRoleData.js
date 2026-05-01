@@ -40,6 +40,7 @@ export const ExtraRoleData = {
   Acrotopia: {},
   "Secret Dictator": {},
   "Wacky Words": {},
+  "Draw It": {},
   "Liars Dice": {},
   "Texas Hold Em": {},
   Cheat: {},
