@@ -32,6 +32,7 @@ export default function SpotItGame(props) {
   const [toasts, setToasts] = useState([]);
   const toastIdRef = useRef(0);
   const [liveExtraInfo, setLiveExtraInfo] = useState(null);
+  const [showIntro, setShowIntro] = useState(true);
 
   const handlersRef = useRef({});
   handlersRef.current.state = () => {
@@ -117,6 +118,9 @@ export default function SpotItGame(props) {
     <div style={{ position: "relative", height: "100%" }}>
       <SpotItBoard self={self} liveExtraInfo={liveExtraInfo} />
       <SpotItToasts toasts={toasts} />
+      {showIntro && activeExtraInfo && (
+        <SpotItIntro isWell={isWell} onDismiss={() => setShowIntro(false)} />
+      )}
     </div>
   );
 
@@ -145,6 +149,62 @@ export default function SpotItGame(props) {
         hideInfoTab
       />
     </GameTypeContext.Provider>
+  );
+}
+
+function SpotItIntro({ isWell, onDismiss }) {
+  const title = isWell ? "The Well" : "Tower";
+  const tagline = isWell
+    ? "Find matches, clear your stack and win!"
+    : "Find as many matches from your card to earn points!";
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        background: "rgba(0,0,0,0.7)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+      }}
+      onClick={onDismiss}
+    >
+      <div
+        style={{
+          background: "#222",
+          border: "2px solid #444",
+          borderRadius: 12,
+          padding: "32px",
+          maxWidth: 400,
+          textAlign: "center",
+          color: "#FFF",
+          boxShadow: "0 4px 24px #000a",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 style={{ margin: "0 0 16px", fontSize: "22px" }}>{title}</h2>
+        <p style={{ margin: "0 0 24px", fontSize: "15px", lineHeight: 1.5, color: "#CCC" }}>
+          {tagline}
+        </p>
+        <button
+          onClick={onDismiss}
+          style={{
+            padding: "10px 32px",
+            fontSize: "16px",
+            fontWeight: "bold",
+            background: "#4a90d9",
+            color: "#FFF",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+          }}
+        >
+          Got it
+        </button>
+      </div>
+    </div>
   );
 }
 
