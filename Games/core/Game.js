@@ -3509,8 +3509,55 @@ module.exports = class Game {
           },
         }
       ).exec();
+
+      await this.recordLabPoolMilestone(setup);
     } catch (e) {
       logger.error("Error recording setup statistics: ", e);
+    }
+  }
+
+  async recordLabPoolMilestone(setup) {
+    try {
+      if (!setup || !setup._id) return;
+      // Atomic increment + read-back; the labStatus filter ensures we
+      // only count plays while the setup is actually in the pool, and
+      // protects against races between concurrent game finishes.
+      const updated = await models.Setup.findOneAndUpdate(
+        { _id: new ObjectID(setup._id), labStatus: "IN_POOL" },
+        { $inc: { labPlaysCount: 1 } },
+        { new: true }
+      );
+      if (!updated) return;
+
+      const plays = updated.labPlaysCount;
+      const RANK_UP_PLAYS = 10;
+      const GRADUATE_PLAYS = 30;
+      const GRADUATE_REWARD_COINS = 100;
+
+      if (plays >= GRADUATE_PLAYS) {
+        const set = {
+          labStatus: "GRADUATED",
+          labGraduatedAt: new Date(),
+        };
+        if (!updated.ranked) {
+          set.ranked = true;
+          set.labRankedAt = updated.labRankedAt || new Date();
+        }
+        await models.Setup.updateOne({ _id: updated._id }, { $set: set });
+        if (updated.creator) {
+          await models.User.updateOne(
+            { _id: updated.creator },
+            { $inc: { coins: GRADUATE_REWARD_COINS } }
+          );
+        }
+      } else if (plays >= RANK_UP_PLAYS && !updated.ranked) {
+        await models.Setup.updateOne(
+          { _id: updated._id },
+          { $set: { ranked: true, labRankedAt: new Date() } }
+        );
+      }
+    } catch (e) {
+      logger.error("Error recording Lab pool milestone: ", e);
     }
   }
 
