@@ -45,7 +45,7 @@ module.exports = class SpotItGame extends Game {
     
     this.symbols = [];
 
-    this.isWell = this.setup.roles[0]["Weller:"] > 0;
+    this.isWell = this.setup.roles[0]["Welldigger:"] > 0;
     this.deckSize = options.settings.deckSize || "standard";
   }
 
