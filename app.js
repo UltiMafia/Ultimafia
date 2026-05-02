@@ -34,6 +34,7 @@ const vanityUrlRouter = require("./routes/vanityUrl");
 const familyRouter = require("./routes/family");
 const fanartRouter = require("./routes/fanart");
 const siteActivityRouter = require("./routes/siteActivity");
+const labRouter = require("./routes/lab");
 const compression = require("compression");
 const cors = require("cors");
 const itemsRouter = require("./routes/items");
@@ -101,6 +102,7 @@ apiRouter.use("/family", familyRouter);
 apiRouter.use("/items", itemsRouter);
 apiRouter.use("/site-activity", siteActivityRouter);
 apiRouter.use("/fanart", fanartRouter);
+apiRouter.use("/lab", labRouter);
 
 app.use("/api", apiRouter);
 

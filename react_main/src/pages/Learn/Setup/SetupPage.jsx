@@ -64,6 +64,7 @@ import {
 import { RoleCount } from "components/Roles";
 import { PieChart } from "./PieChart";
 import { SetupWinRateBars } from "./SetupWinRateBars";
+import { LabSubmissionPanel } from "./LabSubmissionPanel";
 
 import "css/buttons.css";
 import "css/setupPage.css";
@@ -864,6 +865,21 @@ export function SetupPage() {
                   </div>
                 </div>
               )}
+              <LabSubmissionPanel
+                setup={setup}
+                isSetupCreator={isSetupCreator}
+                onSubmitted={() =>
+                  setSetup((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          labStatus: "PENDING_APPROVAL",
+                          labSubmittedAt: new Date().toISOString(),
+                        }
+                      : prev
+                  )
+                }
+              />
               <SetupStrategiesSection setupId={setupId} />
             </>
           }
