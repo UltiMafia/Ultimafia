@@ -15,11 +15,10 @@ import {
   Divider,
   Grid,
   LinearProgress,
-  List,
-  ListItemButton,
-  ListItemText,
+  Link,
   Paper,
   Stack,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -123,10 +122,12 @@ function JoinLabDialog({ open, onClose, onSubmitted }) {
   const { submissionMaxPlays: SUBMISSION_MAX_PLAYS } = useLabConsts();
   const [setups, setSetups] = useState(undefined);
   const [submitting, setSubmitting] = useState(null);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     if (!open) return;
     setSetups(undefined);
+    setQuery("");
     axios
       .get("/api/lab/eligible-setups")
       .then((res) => setSetups(res.data.setups || []))
@@ -149,6 +150,13 @@ function JoinLabDialog({ open, onClose, onSubmitted }) {
       .finally(() => setSubmitting(null));
   }
 
+  const filteredSetups =
+    setups && query
+      ? setups.filter((s) =>
+          (s.name || "").toLowerCase().includes(query.toLowerCase())
+        )
+      : setups;
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Join The Lab</DialogTitle>
@@ -157,36 +165,72 @@ function JoinLabDialog({ open, onClose, onSubmitted }) {
           <Loading small />
         ) : setups.length === 0 ? (
           <Typography variant="body2" sx={{ py: 2, textAlign: "center" }}>
-            No eligible setups found.
+            No eligible setups found.{" "}
+            <Link
+              component={RouterLink}
+              to="/play/create?game=Mafia"
+              onClick={onClose}
+            >
+              Create one now!
+            </Link>
           </Typography>
         ) : (
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            Pick one of your Mafia setups with fewer than {SUBMISSION_MAX_PLAYS} clean plays.
-            Submitted setups go through mod review before entering the pool.
-          </Typography>
-        )}
-        {setups !== undefined && setups.length > 0 && (
-          <List dense disablePadding>
-            {setups.map((s) => (
-              <ListItemButton
-                key={s.id}
-                disabled={!!submitting}
-                onClick={() => onPick(s)}
+          <>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              Pick one of your Mafia setups with fewer than {SUBMISSION_MAX_PLAYS} clean plays.
+              Submitted setups go through mod review before entering the pool.
+            </Typography>
+            <TextField
+              size="small"
+              fullWidth
+              placeholder="Search by setup name…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              sx={{ mb: 1 }}
+            />
+            {filteredSetups.length === 0 ? (
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ py: 2, textAlign: "center" }}
               >
-                <ListItemText
-                  primary={
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <Typography variant="body1">{s.name}</Typography>
-                      {s.ranked && <Chip size="small" label="Ranked" color="info" />}
-                      {s.competitive && <Chip size="small" label="Competitive" color="secondary" />}
+                No setups match "{query}".
+              </Typography>
+            ) : (
+              <Stack spacing={1}>
+                {filteredSetups.map((s) => (
+                  <Paper
+                    key={s.id}
+                    variant="outlined"
+                    sx={{ p: 1 }}
+                  >
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      alignItems="center"
+                    >
+                      <Box sx={{ minWidth: 0, flex: "1 1 auto" }}>
+                        <Setup setup={s} />
+                      </Box>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        disabled={!!submitting}
+                        onClick={() => onPick(s)}
+                        sx={{ flex: "0 0 auto" }}
+                      >
+                        {submitting === s.id ? (
+                          <i className="fas fa-spinner fa-spin" />
+                        ) : (
+                          "Submit"
+                        )}
+                      </Button>
                     </Stack>
-                  }
-                  secondary={`${s.total} players · ${s.playedCount} / ${SUBMISSION_MAX_PLAYS} plays so far`}
-                />
-                {submitting === s.id && <i className="fas fa-spinner fa-spin" />}
-              </ListItemButton>
-            ))}
-          </List>
+                  </Paper>
+                ))}
+              </Stack>
+            )}
+          </>
         )}
       </DialogContent>
       <DialogActions>
@@ -196,58 +240,17 @@ function JoinLabDialog({ open, onClose, onSubmitted }) {
   );
 }
 
-function MySubmissionPanel({ user }) {
-  const errorAlert = useErrorAlert();
+const STATUS_META = {
+  PENDING_APPROVAL: { label: "Pending approval", color: "warning" },
+  IN_POOL: { label: "In the pool", color: "info" },
+  GRADUATED: { label: "Graduated", color: "success" },
+  DISQUALIFIED: { label: "Disqualified", color: "error" },
+  EXPIRED: { label: "Expired", color: "default" },
+};
+
+function CurrentSubmissionRow({ submission }) {
   const { rankUpPlays: RANK_UP_PLAYS, graduatePlays: GRADUATE_PLAYS } =
     useLabConsts();
-  const [submission, setSubmission] = useState(undefined);
-  const [joinOpen, setJoinOpen] = useState(false);
-
-  function refresh() {
-    if (!user.loggedIn) return;
-    axios
-      .get("/api/lab/my-submission")
-      .then((res) => setSubmission(res.data.setup))
-      .catch(errorAlert);
-  }
-
-  useEffect(() => {
-    refresh();
-  }, [user.loggedIn]);
-
-  if (!user.loggedIn) return null;
-  if (submission === undefined) return null;
-
-  if (submission === null) {
-    return (
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          spacing={1}
-          alignItems={{ sm: "center" }}
-          justifyContent="space-between"
-        >
-          <Box>
-            <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 0.5 }}>
-              Your Lab submission
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              You don't have a setup in The Lab right now.
-            </Typography>
-          </Box>
-          <Button variant="contained" onClick={() => setJoinOpen(true)}>
-            Join The Lab
-          </Button>
-        </Stack>
-        <JoinLabDialog
-          open={joinOpen}
-          onClose={() => setJoinOpen(false)}
-          onSubmitted={refresh}
-        />
-      </Paper>
-    );
-  }
-
   const plays = submission.labPlaysCount || 0;
   const rankedReached = plays >= RANK_UP_PLAYS;
   const daysLeft =
@@ -257,26 +260,16 @@ function MySubmissionPanel({ user }) {
           Math.ceil((submission.labExpiresAt - Date.now()) / (24 * 60 * 60 * 1000))
         )
       : null;
+  const meta = STATUS_META[submission.labStatus];
 
   return (
-    <Paper sx={{ p: 2, mb: 2 }}>
-      <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 1 }}>
-        Your Lab submission
-      </Typography>
+    <Paper variant="outlined" sx={{ p: 1 }}>
       <Stack spacing={1}>
         <Stack direction="row" spacing={1} alignItems="center">
-          <RouterLink to={`/learn/setup/${submission.id}`}>
-            <Typography variant="body1">{submission.name}</Typography>
-          </RouterLink>
-          <Chip
-            size="small"
-            label={
-              submission.labStatus === "PENDING_APPROVAL"
-                ? "Pending approval"
-                : "In the pool"
-            }
-            color={submission.labStatus === "IN_POOL" ? "info" : "warning"}
-          />
+          <Box sx={{ minWidth: 0, flex: "1 1 auto" }}>
+            <Setup setup={submission} />
+          </Box>
+          {meta && <Chip size="small" label={meta.label} color={meta.color} />}
         </Stack>
         {submission.labStatus === "IN_POOL" && (
           <>
@@ -293,6 +286,139 @@ function MySubmissionPanel({ user }) {
           </>
         )}
       </Stack>
+    </Paper>
+  );
+}
+
+function PastSubmissionsSection({ past }) {
+  const [filter, setFilter] = useState("ALL");
+  const counts = past.reduce((acc, s) => {
+    acc[s.labStatus] = (acc[s.labStatus] || 0) + 1;
+    return acc;
+  }, {});
+  const filtered =
+    filter === "ALL" ? past : past.filter((s) => s.labStatus === filter);
+
+  if (past.length === 0) return null;
+
+  const statusOrder = ["GRADUATED", "DISQUALIFIED", "EXPIRED"];
+
+  return (
+    <Box sx={{ mt: 2 }}>
+      <Typography variant="subtitle2" sx={{ mb: 1 }}>
+        Your past Lab setups
+      </Typography>
+      <Stack direction="row" spacing={0.5} sx={{ mb: 1, flexWrap: "wrap" }} useFlexGap>
+        <Chip
+          size="small"
+          label={`All (${past.length})`}
+          color={filter === "ALL" ? "primary" : "default"}
+          onClick={() => setFilter("ALL")}
+          variant={filter === "ALL" ? "filled" : "outlined"}
+        />
+        {statusOrder.map((status) =>
+          counts[status] ? (
+            <Chip
+              key={status}
+              size="small"
+              label={`${STATUS_META[status].label} (${counts[status]})`}
+              color={filter === status ? STATUS_META[status].color : "default"}
+              onClick={() => setFilter(status)}
+              variant={filter === status ? "filled" : "outlined"}
+            />
+          ) : null
+        )}
+      </Stack>
+      {filtered.length === 0 ? (
+        <Typography variant="body2" color="text.secondary" sx={{ py: 1 }}>
+          No setups in this category.
+        </Typography>
+      ) : (
+        <Stack spacing={1}>
+          {filtered.map((s) => {
+            const meta = STATUS_META[s.labStatus];
+            return (
+              <Paper key={s.id} variant="outlined" sx={{ p: 1 }}>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Box sx={{ minWidth: 0, flex: "1 1 auto" }}>
+                    <Setup setup={s} />
+                  </Box>
+                  {meta && (
+                    <Chip size="small" label={meta.label} color={meta.color} />
+                  )}
+                </Stack>
+                {s.labStatus === "DISQUALIFIED" && s.labRejectionReason && (
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block" }}>
+                    Reason: {s.labRejectionReason}
+                  </Typography>
+                )}
+              </Paper>
+            );
+          })}
+        </Stack>
+      )}
+    </Box>
+  );
+}
+
+function MySubmissionPanel({ user }) {
+  const errorAlert = useErrorAlert();
+  const [submission, setSubmission] = useState(undefined);
+  const [past, setPast] = useState([]);
+  const [joinOpen, setJoinOpen] = useState(false);
+
+  function refresh() {
+    if (!user.loggedIn) return;
+    axios
+      .get("/api/lab/my-submission")
+      .then((res) => {
+        setSubmission(res.data.setup);
+        setPast(res.data.past || []);
+      })
+      .catch(errorAlert);
+  }
+
+  useEffect(() => {
+    refresh();
+  }, [user.loggedIn]);
+
+  if (!user.loggedIn) return null;
+  if (submission === undefined) return null;
+
+  return (
+    <Paper sx={{ p: 2, mb: 2 }}>
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        spacing={1}
+        alignItems={{ sm: "center" }}
+        justifyContent="space-between"
+        sx={{ mb: submission ? 1 : 0 }}
+      >
+        <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+          Your Lab submission
+        </Typography>
+        {!submission && (
+          <Button variant="contained" onClick={() => setJoinOpen(true)}>
+            Join The Lab
+          </Button>
+        )}
+      </Stack>
+
+      {submission ? (
+        <CurrentSubmissionRow submission={submission} />
+      ) : (
+        <Typography variant="body2" color="text.secondary">
+          You don't have a setup in The Lab right now.
+        </Typography>
+      )}
+
+      <PastSubmissionsSection past={past} />
+
+      <JoinLabDialog
+        open={joinOpen}
+        onClose={() => setJoinOpen(false)}
+        onSubmitted={refresh}
+      />
     </Paper>
   );
 }

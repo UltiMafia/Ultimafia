@@ -190,18 +190,34 @@ router.get("/my-submission", async function (req, res) {
     const userId = await routeUtils.verifyLoggedIn(req);
     const user = await models.User.findOne({ id: userId, deleted: false }).select("_id");
     if (!user) {
-      res.send({ setup: null });
+      res.send({ setup: null, past: [] });
       return;
     }
 
-    const setup = await models.Setup.findOne({
-      creator: user._id,
-      labStatus: { $in: ["PENDING_APPROVAL", "IN_POOL"] },
-    })
-      .select(POOL_SELECT + " labSubmittedAt labRankedAt labRejectionReason")
-      .populate("creator", "id name avatar");
+    const select =
+      POOL_SELECT +
+      " labSubmittedAt labRankedAt labGraduatedAt labRejectionReason";
 
-    res.send({ setup: setup ? poolEntryView(setup) : null });
+    const [current, past] = await Promise.all([
+      models.Setup.findOne({
+        creator: user._id,
+        labStatus: { $in: ["PENDING_APPROVAL", "IN_POOL"] },
+      })
+        .select(select)
+        .populate("creator", "id name avatar"),
+      models.Setup.find({
+        creator: user._id,
+        labStatus: { $in: ["GRADUATED", "DISQUALIFIED", "EXPIRED"] },
+      })
+        .sort({ labSubmittedAt: -1 })
+        .select(select)
+        .populate("creator", "id name avatar"),
+    ]);
+
+    res.send({
+      setup: current ? poolEntryView(current) : null,
+      past: past.map(poolEntryView),
+    });
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Failed to load your Lab submission. Please try again.");
