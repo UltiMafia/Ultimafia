@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
-  useSocketListeners,
   ThreePanelLayout,
   TopBar,
   SettingsMenu,
@@ -30,12 +29,36 @@ export default function SpotItGame(props) {
     if (game.review) updateStateViewing({ type: "first" });
   }, [game.review, updateStateViewing]);
 
-  useSocketListeners((socket) => {
-    socket.on("state", () => {
-      updateStateViewing({ type: "current" });
-    });
+  const [toasts, setToasts] = useState([]);
+  const toastIdRef = useRef(0);
+  const [liveExtraInfo, setLiveExtraInfo] = useState(null);
+
+  const handlersRef = useRef({});
+  handlersRef.current.state = () => {
+    updateStateViewing({ type: "current" });
+    setLiveExtraInfo(null);
+  };
+  handlersRef.current.toast = ({ message }) => {
+    const id = ++toastIdRef.current;
+    setToasts((current) => [...current, { id, message }]);
+    setTimeout(() => {
+      setToasts((current) => current.filter((t) => t.id !== id));
+    }, 3000);
+  };
+  handlersRef.current.extraInfo = (info) => setLiveExtraInfo(info);
+
+  const registeredSocketRef = useRef(null);
+  useEffect(() => {
+    const socket = game.socket;
+    if (!socket || !socket.on) return;
+    if (registeredSocketRef.current === socket) return;
+    registeredSocketRef.current = socket;
+
+    socket.on("state", (...args) => handlersRef.current.state?.(...args));
     socket.on("winners", () => {});
-  }, game.socket);
+    socket.on("spotItToast", (data) => handlersRef.current.toast?.(data));
+    socket.on("spotItExtraInfo", (data) => handlersRef.current.extraInfo?.(data));
+  }, [game.socket]);
 
   const stateIndex = stateViewing < 0 ? history.states.length - 1 : stateViewing;
   const extraInfo = history.states[stateIndex]?.extraInfo;
@@ -47,10 +70,12 @@ export default function SpotItGame(props) {
     }
   }, [extraInfo]);
 
-  const activeExtraInfo = extraInfo || lastExtraInfo;
+  const activeExtraInfo = liveExtraInfo || extraInfo || lastExtraInfo;
   const scores = activeExtraInfo?.scores;
   const cardStackSizes = activeExtraInfo?.cardStackSizes;
   const isWell = activeExtraInfo?.isWell;
+  const disqualifiedIds = activeExtraInfo?.disqualified || [];
+  const lastWinnerId = activeExtraInfo?.lastWinner;
 
   const renderPlayerMarker = (player) => {
     if (isWell) {
@@ -68,11 +93,31 @@ export default function SpotItGame(props) {
     );
   };
 
+  const renderPlayerRowEnd = (player) => {
+    if (lastWinnerId === player.id) {
+      return <i className="fas fa-star" style={{ color: "#ffc107", fontSize: "1.2rem" }} title="Round winner" />;
+    }
+    if (disqualifiedIds.includes(player.id)) {
+      return <i className="fas fa-times-circle" style={{ color: "#e02626", fontSize: "1.2rem" }} title="Disqualified" />;
+    }
+    return null;
+  };
+
   const leftPanel = (
     <>
-      <PlayerList renderMarker={extraInfo ? renderPlayerMarker : undefined} />
+      <PlayerList
+        renderMarker={extraInfo ? renderPlayerMarker : undefined}
+        renderRowEnd={extraInfo ? renderPlayerRowEnd : undefined}
+      />
       <SettingsMenu />
     </>
+  );
+
+  const board = (
+    <div style={{ position: "relative", height: "100%" }}>
+      <SpotItBoard self={self} liveExtraInfo={liveExtraInfo} />
+      <SpotItToasts toasts={toasts} />
+    </div>
   );
 
   return (
@@ -80,39 +125,85 @@ export default function SpotItGame(props) {
       <TopBar />
       <ThreePanelLayout
         leftPanelContent={leftPanel}
-        centerPanelContent={<SpotItBoard self={self} />}
+        centerPanelContent={board}
         rightPanelContent={<TextMeetingLayout />}
       />
       <MobileLayout
+        outerLeftNavigationProps={{
+          label: "Info",
+          value: "players",
+          icon: <i className="fas fa-info" />,
+        }}
         outerLeftContent={leftPanel}
-        innerRightContent={<TextMeetingLayout />}
-        centerContent={<SpotItBoard self={self} />}
+        innerRightNavigationProps={{
+          label: "Game",
+          value: "actions",
+          icon: <i className="fas fa-gamepad" />,
+        }}
+        innerRightContent={board}
+        chatTab
+        hideInfoTab
       />
     </GameTypeContext.Provider>
   );
 }
 
-function SpotItBoard({ self }) {
+function SpotItToasts({ toasts }) {
+  if (!toasts || toasts.length === 0) return null;
+  return (
+    <div style={{
+      position: "absolute",
+      top: "16px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      display: "flex",
+      flexDirection: "column",
+      gap: "8px",
+      pointerEvents: "none",
+      zIndex: 50,
+    }}>
+      {toasts.map((t) => (
+        <div key={t.id} style={{
+          padding: "10px 18px",
+          borderRadius: "8px",
+          background: "rgba(20, 20, 20, 0.9)",
+          color: "#fff",
+          fontSize: "1.1rem",
+          fontWeight: 600,
+          boxShadow: "0 2px 12px rgba(0, 0, 0, 0.6)",
+          animation: "spotit-toast-fade 3s ease-in-out forwards",
+        }}>
+          {t.message}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SpotItBoard({ self, liveExtraInfo }) {
   const game = useContext(GameContext);
   const history = game.history;
   const stateViewing = game.stateViewing;
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    const handleResize = () => setIsMobile(window.innerWidth < 900);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   if (stateViewing < 0) return <div></div>;
 
-  const extraInfo = history.states[stateViewing]?.extraInfo;
+  const extraInfo = liveExtraInfo || history.states[stateViewing]?.extraInfo;
   if (!extraInfo) return <div style={{ padding: "16px" }}>Loading...</div>;
 
   const { centerCard = [], playerCards = {} } = extraInfo;
   const myCard = playerCards?.[self] || [];
+  const paused = extraInfo.paused;
+  const disqualifiedHere = extraInfo.disqualified?.includes(self);
 
   const handleSymbolClick = (symbolPath) => {
+    if (paused || disqualifiedHere) return;
     const meetings = history.states[stateViewing]?.meetings;
     const claimMeeting = meetings && Object.values(meetings).find(m => m.name === "Claim Match");
     if (claimMeeting) {
@@ -125,22 +216,24 @@ function SpotItBoard({ self }) {
 
   return (
     <div style={{
-      padding: "16px",
-      paddingTop: isMobile ? "0" : "80px",
+      padding: isMobile ? "8px" : "16px",
+      paddingTop: isMobile ? "8px" : "80px",
       display: "flex",
-      gap: isMobile ? "0" : "32px",
+      gap: isMobile ? "12px" : "32px",
       justifyContent: "center",
-      alignItems: "flex-start",
+      alignItems: "center",
       flexDirection: isMobile ? "column" : "row",
       height: "100%",
+      overflow: "auto",
+      boxSizing: "border-box",
     }}>
-      <div>
-        <h3 style={{ textAlign: "center" }}>Center Card</h3>
-        <SpotItCard symbols={centerCard} onSymbolClick={handleSymbolClick} isCenter />
+      <div style={{ width: isMobile ? "100%" : undefined }}>
+        <h3 style={{ textAlign: "center", margin: isMobile ? "4px 0" : undefined }}>Center Card</h3>
+        <SpotItCard symbols={centerCard} onSymbolClick={handleSymbolClick} isCenter mobile={isMobile} />
       </div>
-      <div>
-        <h3 style={{ textAlign: "center" }}>Your Card</h3>
-        <SpotItCard symbols={myCard} onSymbolClick={handleSymbolClick} />
+      <div style={{ width: isMobile ? "100%" : undefined }}>
+        <h3 style={{ textAlign: "center", margin: isMobile ? "4px 0" : undefined }}>Your Card</h3>
+        <SpotItCard symbols={myCard} onSymbolClick={handleSymbolClick} mobile={isMobile} />
       </div>
     </div>
   );
@@ -157,11 +250,11 @@ function seededRandom(seed) {
   };
 }
 
-function SpotItCard({ symbols, onSymbolClick, isCenter }) {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+function SpotItCard({ symbols, onSymbolClick, isCenter, mobile }) {
+  const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    const handleResize = () => setViewportWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -170,30 +263,54 @@ function SpotItCard({ symbols, onSymbolClick, isCenter }) {
     return <div style={{ padding: "16px", textAlign: "center" }}>Loading card...</div>;
   }
 
-  const cardSize = isMobile ? Math.min(window.innerWidth - 40, 250) : 300;
-  const center = cardSize / 2;
+  const cardWidth = mobile ? Math.min(viewportWidth - 32, 480) : 300;
+  const cardHeight = mobile ? 200 : 300;
+  const padding = 8;
 
-  // Seed based on the whole card's symbol set so it's stable but unique per card
   const rand = seededRandom(symbols.join(","));
   const placed = [];
 
-  const positions = symbols.map((_, i) => {
-    const baseSize = symbols.length > 8 ? 20 : 30;
-    let size = baseSize + Math.floor(rand() * 20);
+  const refDim = mobile ? Math.min(cardWidth, cardHeight) : cardWidth;
+  const sizeScale = refDim / 250;
+  const cx = cardWidth / 2;
+  const cy = cardHeight / 2;
+  const circleRadius = Math.min(cardWidth, cardHeight) / 2;
 
-    let x = center, y = center;
+  const positions = symbols.map((_, i) => {
+    const baseSize = (symbols.length > 8 ? 22 : 28) * sizeScale;
+    let size = Math.round(baseSize + rand() * 14 * sizeScale);
+
+    let x = cx, y = cy;
     let placed_successfully = false;
 
-    for (let shrink = 0; shrink < 3; shrink++) {
+    for (let shrink = 0; shrink < 5; shrink++) {
       const r = (size / 2) * Math.SQRT2;
-      const maxR = center - r - 6;
-      if (maxR <= 0) { size = Math.floor(size * 0.8); continue; }
+
+      let canPlace = true;
+      if (mobile) {
+        if (cardWidth - 2 * (r + padding) <= 0 || cardHeight - 2 * (r + padding) <= 0) {
+          canPlace = false;
+        }
+      } else {
+        if (circleRadius - r - padding <= 0) canPlace = false;
+      }
+      if (!canPlace) {
+        size = Math.max(Math.floor(size * 0.8), 12);
+        continue;
+      }
 
       for (let attempt = 0; attempt < 300; attempt++) {
-        const angle = rand() * 2 * Math.PI;
-        const radius = (0.3 + rand() * 0.7) * maxR;
-        const tx = center + radius * Math.cos(angle);
-        const ty = center + radius * Math.sin(angle);
+        let tx, ty;
+        if (mobile) {
+          tx = (r + padding) + rand() * (cardWidth - 2 * (r + padding));
+          ty = (r + padding) + rand() * (cardHeight - 2 * (r + padding));
+        } else {
+          const maxR = circleRadius - r - padding;
+          const angle = rand() * 2 * Math.PI;
+          const radius = (0.3 + rand() * 0.7) * maxR;
+          tx = cx + radius * Math.cos(angle);
+          ty = cy + radius * Math.sin(angle);
+        }
 
         let overlaps = false;
         for (const p of placed) {
@@ -210,7 +327,20 @@ function SpotItCard({ symbols, onSymbolClick, isCenter }) {
         }
       }
       if (placed_successfully) break;
-      size = Math.max(Math.floor(size * 0.9), 90);
+      size = Math.max(Math.floor(size * 0.85), 12);
+    }
+
+    if (!placed_successfully) {
+      const r = (size / 2) * Math.SQRT2;
+      if (mobile) {
+        x = Math.max(r + padding, Math.min(cardWidth - r - padding, x));
+        y = Math.max(r + padding, Math.min(cardHeight - r - padding, y));
+      } else {
+        const maxR = Math.max(circleRadius - r - padding, 0);
+        const angle = (i / symbols.length) * 2 * Math.PI;
+        x = cx + maxR * Math.cos(angle);
+        y = cy + maxR * Math.sin(angle);
+      }
     }
 
     const rotation = Math.floor(rand() * 360);
@@ -223,9 +353,9 @@ function SpotItCard({ symbols, onSymbolClick, isCenter }) {
       position: "relative",
       background: isCenter ? "#2a2a4a" : "#1a1a2e",
       border: isCenter ? "2px solid #7c7cff" : "2px solid #444",
-      borderRadius: "50%",
-      width: `${cardSize}px`,
-      height: `${cardSize}px`,
+      borderRadius: mobile ? "16px" : "50%",
+      width: `${cardWidth}px`,
+      height: `${cardHeight}px`,
       margin: "0 auto",
       overflow: "hidden",
       flexShrink: 0,

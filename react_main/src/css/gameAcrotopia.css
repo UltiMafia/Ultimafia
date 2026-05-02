@@ -499,3 +499,10 @@
 .game .acrotopia-stage-mobile .acrotopia-prompt-text {
   font-size: 1rem;
 }
+
+@keyframes spotit-toast-fade {
+  0% { opacity: 0; transform: translateY(-8px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-8px); }
+}
