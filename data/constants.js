@@ -410,11 +410,13 @@ module.exports = {
   minimumGamesForRanked: 5,
   minimumPointsForCompetitive: 150,
 
-  // The Lab — milestones and lifecycle
+  // The Lab — milestones and lifecycle. Single source of truth; the
+  // frontend reads these via GET /api/lab/constants (mounted into
+  // SiteInfoContext) rather than mirroring them in a JS file.
   lab: {
     rankUpPlays: 10,
     graduatePlays: 30,
-    poolTenureDays: 30,
+    poolTenureDays: 90,
     graduateRewardCoins: 100,
     submissionMaxPlays: 30,
     challengeId: "Advanced4",

@@ -35,6 +35,11 @@ function poolEntryView(setup) {
   };
 }
 
+router.get("/constants", function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  res.send(constants.lab);
+});
+
 router.get("/pool", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -379,6 +384,72 @@ router.post("/reject", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not reject setup. Please try again.");
+  }
+});
+
+router.post("/admit", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "manageLab"))) return;
+
+    const setupId = String(req.body.setupId);
+    const setup = await models.Setup.findOne({ id: setupId }).select(
+      "_id labStatus gameType ranked closed"
+    );
+    if (!setup) {
+      errors.notFound(res, "That setup does not exist.");
+      return;
+    }
+    if (setup.labStatus !== "NOT_JOINED") {
+      errors.conflict(
+        res,
+        "This setup has already been through The Lab and cannot be admitted again."
+      );
+      return;
+    }
+    if (setup.gameType !== "Mafia") {
+      errors.conflict(res, "Only Mafia setups can be admitted to The Lab.");
+      return;
+    }
+    if (setup.closed) {
+      errors.conflict(res, "Closed setups cannot be admitted to The Lab.");
+      return;
+    }
+    const cleanGames = await models.Game.countDocuments({
+      setup: setup._id,
+      endTime: { $gt: 0 },
+      $or: [{ left: [] }, { left: { $exists: false } }],
+      hadVeg: { $ne: true },
+    });
+    if (cleanGames >= SUBMISSION_MAX_PLAYS) {
+      errors.conflict(
+        res,
+        `Setups with ${SUBMISSION_MAX_PLAYS} or more clean plays don't need The Lab.`
+      );
+      return;
+    }
+
+    const moderator = await models.User.findOne({ id: userId }).select("_id");
+    const now = new Date();
+    await models.Setup.updateOne(
+      { _id: setup._id, labStatus: "NOT_JOINED" },
+      {
+        $set: {
+          labStatus: "IN_POOL",
+          labSubmittedAt: now,
+          labApprovedAt: now,
+          labApprovedBy: moderator ? moderator._id : undefined,
+          labPlaysCount: 0,
+          labRejectionReason: null,
+        },
+      }
+    );
+
+    routeUtils.createModAction(userId, "Admit Setup to Lab", [setupId]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not admit setup. Please try again.");
   }
 });
 

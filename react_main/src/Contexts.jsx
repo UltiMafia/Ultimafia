@@ -442,6 +442,11 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
         .then((res) =>
           updateSiteInfo({ type: "setProp", prop: "items", value: res.data })
         ),
+      axios
+        .get("/api/lab/constants")
+        .then((res) =>
+          updateSiteInfo({ type: "setProp", prop: "lab", value: res.data })
+        ),
     ]).then(() => {
       setSiteInfoLoading(false);
     });
@@ -454,7 +459,8 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
     siteInfoVal.modifiers &&
     siteInfoVal.gamesettings &&
     siteInfoVal.items &&
-    siteInfoVal.tags;
+    siteInfoVal.tags &&
+    siteInfoVal.lab;
 
   return (
     <SiteInfoContext.Provider value={siteInfoVal}>

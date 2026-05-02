@@ -1,20 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import { Box, Button, Chip, Stack, Tooltip, Typography } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
-import { Lab as LabConsts } from "constants/Lab";
+import { SiteInfoContext, UserContext } from "Contexts";
 
-const {
-  rankUpPlays: RANK_UP_PLAYS,
-  graduatePlays: GRADUATE_PLAYS,
-  poolTenureDays: POOL_TENURE_DAYS,
-} = LabConsts;
-
-function daysRemaining(approvedAtMs) {
+function daysRemaining(approvedAtMs, poolTenureDays) {
   if (!approvedAtMs) return null;
   const elapsedMs = Date.now() - approvedAtMs;
-  const remainingMs = POOL_TENURE_DAYS * 24 * 60 * 60 * 1000 - elapsedMs;
+  const remainingMs = poolTenureDays * 24 * 60 * 60 * 1000 - elapsedMs;
   return Math.max(0, Math.ceil(remainingMs / (24 * 60 * 60 * 1000)));
 }
 
@@ -33,14 +27,24 @@ function StatusChip({ status }) {
 
 export function LabSubmissionPanel({ setup, isSetupCreator, onSubmitted }) {
   const errorAlert = useErrorAlert();
+  const siteInfo = useContext(SiteInfoContext);
+  const user = useContext(UserContext);
   const [submitting, setSubmitting] = useState(false);
+  const [admitting, setAdmitting] = useState(false);
 
-  if (!setup) return null;
+  if (!setup || !siteInfo?.lab) return null;
+
+  const RANK_UP_PLAYS = siteInfo.lab.rankUpPlays;
+  const GRADUATE_PLAYS = siteInfo.lab.graduatePlays;
+  const POOL_TENURE_DAYS = siteInfo.lab.poolTenureDays;
 
   const status = setup.labStatus || "NOT_JOINED";
   const showsToPublic = status === "IN_POOL" || status === "GRADUATED";
+  const canManageLab = !!user?.perms?.manageLab;
 
-  if (!isSetupCreator && !showsToPublic) return null;
+  if (!isSetupCreator && !showsToPublic && !(canManageLab && status === "NOT_JOINED")) {
+    return null;
+  }
 
   function onSubmit() {
     if (submitting) return;
@@ -60,10 +64,36 @@ export function LabSubmissionPanel({ setup, isSetupCreator, onSubmitted }) {
       .finally(() => setSubmitting(false));
   }
 
+  function onAdmit() {
+    if (admitting) return;
+    if (
+      !window.confirm(
+        "Admit this setup directly to The Lab pool? This bypasses the submission queue."
+      )
+    )
+      return;
+    setAdmitting(true);
+    axios
+      .post("/api/lab/admit", { setupId: setup.id })
+      .then(() => {
+        if (onSubmitted) onSubmitted();
+      })
+      .catch(errorAlert)
+      .finally(() => setAdmitting(false));
+  }
+
   const playsCount = setup.labPlaysCount || 0;
   const daysLeft = daysRemaining(
-    setup.labApprovedAt ? new Date(setup.labApprovedAt).getTime() : null
+    setup.labApprovedAt ? new Date(setup.labApprovedAt).getTime() : null,
+    POOL_TENURE_DAYS
   );
+  const showSubmit =
+    isSetupCreator && status === "NOT_JOINED" && setup.gameType === "Mafia";
+  const showAdmit =
+    canManageLab &&
+    status === "NOT_JOINED" &&
+    setup.gameType === "Mafia" &&
+    !setup.closed;
 
   return (
     <div className="box-panel">
@@ -94,25 +124,44 @@ export function LabSubmissionPanel({ setup, isSetupCreator, onSubmitted }) {
             </Typography>
           )}
 
-          {isSetupCreator && status === "NOT_JOINED" && setup.gameType === "Mafia" && (
-            <Tooltip
-              title={
-                setup.closed
-                  ? "Closed setups can't enter The Lab."
-                  : "Submit this setup to be reviewed by mods. Approved setups get featured in daily challenges."
-              }
-            >
-              <span>
-                <Button
-                  variant="contained"
-                  size="small"
-                  disabled={submitting || setup.closed}
-                  onClick={onSubmit}
+          {(showSubmit || showAdmit) && (
+            <Stack direction="row" spacing={1}>
+              {showSubmit && (
+                <Tooltip
+                  title={
+                    setup.closed
+                      ? "Closed setups can't enter The Lab."
+                      : "Submit this setup to be reviewed by mods. Approved setups get featured in daily challenges."
+                  }
                 >
-                  Submit to The Lab
-                </Button>
-              </span>
-            </Tooltip>
+                  <span>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      disabled={submitting || setup.closed}
+                      onClick={onSubmit}
+                    >
+                      Submit to The Lab
+                    </Button>
+                  </span>
+                </Tooltip>
+              )}
+              {showAdmit && (
+                <Tooltip title="Mod action: admit this setup directly to the pool, bypassing the submission queue.">
+                  <span>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      size="small"
+                      disabled={admitting}
+                      onClick={onAdmit}
+                    >
+                      Admit to Lab (mod)
+                    </Button>
+                  </span>
+                </Tooltip>
+              )}
+            </Stack>
           )}
         </Stack>
       </div>

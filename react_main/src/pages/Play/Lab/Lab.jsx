@@ -25,24 +25,22 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import { UserContext } from "Contexts";
+import { SiteInfoContext, UserContext } from "Contexts";
 import Setup from "components/Setup";
 import HostGameDialogue from "components/HostGameDialogue";
 import { Loading } from "components/Loading";
 import { useErrorAlert } from "components/Alerts";
 import { NameWithAvatar } from "pages/User/User";
 import { PageNav } from "components/Nav";
-import { Lab as LabConsts } from "constants/Lab";
 
-const {
-  rankUpPlays: RANK_UP_PLAYS,
-  graduatePlays: GRADUATE_PLAYS,
-  poolTenureDays: POOL_TENURE_DAYS,
-  graduateRewardCoins: GRADUATE_REWARD_COINS,
-  submissionMaxPlays: SUBMISSION_MAX_PLAYS,
-} = LabConsts;
+function useLabConsts() {
+  const siteInfo = useContext(SiteInfoContext);
+  return siteInfo.lab;
+}
 
 function PoolEntryCard({ entry }) {
+  const { rankUpPlays: RANK_UP_PLAYS, graduatePlays: GRADUATE_PLAYS } =
+    useLabConsts();
   const [hostOpen, setHostOpen] = useState(false);
   const plays = entry.labPlaysCount || 0;
   const rankedReached = plays >= RANK_UP_PLAYS;
@@ -122,6 +120,7 @@ function PoolEntryCard({ entry }) {
 
 function JoinLabDialog({ open, onClose, onSubmitted }) {
   const errorAlert = useErrorAlert();
+  const { submissionMaxPlays: SUBMISSION_MAX_PLAYS } = useLabConsts();
   const [setups, setSetups] = useState(undefined);
   const [submitting, setSubmitting] = useState(null);
 
@@ -199,6 +198,8 @@ function JoinLabDialog({ open, onClose, onSubmitted }) {
 
 function MySubmissionPanel({ user }) {
   const errorAlert = useErrorAlert();
+  const { rankUpPlays: RANK_UP_PLAYS, graduatePlays: GRADUATE_PLAYS } =
+    useLabConsts();
   const [submission, setSubmission] = useState(undefined);
   const [joinOpen, setJoinOpen] = useState(false);
 
@@ -322,6 +323,13 @@ function FeaturedTodayBanner() {
 export default function Lab() {
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
+  const {
+    rankUpPlays: RANK_UP_PLAYS,
+    graduatePlays: GRADUATE_PLAYS,
+    poolTenureDays: POOL_TENURE_DAYS,
+    graduateRewardCoins: GRADUATE_REWARD_COINS,
+    submissionMaxPlays: SUBMISSION_MAX_PLAYS,
+  } = useLabConsts();
   const [setups, setSetups] = useState([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
