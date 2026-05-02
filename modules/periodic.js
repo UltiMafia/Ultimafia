@@ -303,6 +303,26 @@ module.exports = function () {
       },
       interval: 1000 * 60,
     },
+    expireLabPoolEntries: {
+      run: async function () {
+        try {
+          const tenureMs = 90 * 24 * 60 * 60 * 1000;
+          const cutoff = new Date(Date.now() - tenureMs);
+          const result = await models.Setup.updateMany(
+            { labStatus: "IN_POOL", labApprovedAt: { $lt: cutoff } },
+            { $set: { labStatus: "EXPIRED" } }
+          );
+          if (result.modifiedCount > 0) {
+            logger.info(
+              `Expired ${result.modifiedCount} setup(s) from The Lab pool.`
+            );
+          }
+        } catch (e) {
+          logger.error("Error expiring Lab pool entries: ", e);
+        }
+      },
+      interval: 1000 * 60 * 60,
+    },
     expireLeavePenalties: {
       run: async function () {
         const now = Date.now();
