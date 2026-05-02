@@ -2,17 +2,28 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { Link as RouterLink } from "react-router-dom";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   Grid,
   LinearProgress,
+  List,
+  ListItemButton,
+  ListItemText,
   Paper,
   Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { UserContext } from "Contexts";
 import Setup from "components/Setup";
@@ -21,9 +32,15 @@ import { Loading } from "components/Loading";
 import { useErrorAlert } from "components/Alerts";
 import { NameWithAvatar } from "pages/User/User";
 import { PageNav } from "components/Nav";
+import { Lab as LabConsts } from "constants/Lab";
 
-const RANK_UP_PLAYS = 10;
-const GRADUATE_PLAYS = 30;
+const {
+  rankUpPlays: RANK_UP_PLAYS,
+  graduatePlays: GRADUATE_PLAYS,
+  poolTenureDays: POOL_TENURE_DAYS,
+  graduateRewardCoins: GRADUATE_REWARD_COINS,
+  submissionMaxPlays: SUBMISSION_MAX_PLAYS,
+} = LabConsts;
 
 function PoolEntryCard({ entry }) {
   const [hostOpen, setHostOpen] = useState(false);
@@ -103,16 +120,98 @@ function PoolEntryCard({ entry }) {
   );
 }
 
+function JoinLabDialog({ open, onClose, onSubmitted }) {
+  const errorAlert = useErrorAlert();
+  const [setups, setSetups] = useState(undefined);
+  const [submitting, setSubmitting] = useState(null);
+
+  useEffect(() => {
+    if (!open) return;
+    setSetups(undefined);
+    axios
+      .get("/api/lab/eligible-setups")
+      .then((res) => setSetups(res.data.setups || []))
+      .catch((e) => {
+        errorAlert(e);
+        setSetups([]);
+      });
+  }, [open]);
+
+  function onPick(setup) {
+    if (submitting) return;
+    setSubmitting(setup.id);
+    axios
+      .post("/api/lab/submit", { setupId: setup.id })
+      .then(() => {
+        onSubmitted();
+        onClose();
+      })
+      .catch(errorAlert)
+      .finally(() => setSubmitting(null));
+  }
+
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle>Join The Lab</DialogTitle>
+      <DialogContent dividers>
+        {setups === undefined ? (
+          <Loading small />
+        ) : setups.length === 0 ? (
+          <Typography variant="body2" sx={{ py: 2, textAlign: "center" }}>
+            No eligible setups found.
+          </Typography>
+        ) : (
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            Pick one of your Mafia setups with fewer than {SUBMISSION_MAX_PLAYS} clean plays.
+            Submitted setups go through mod review before entering the pool.
+          </Typography>
+        )}
+        {setups !== undefined && setups.length > 0 && (
+          <List dense disablePadding>
+            {setups.map((s) => (
+              <ListItemButton
+                key={s.id}
+                disabled={!!submitting}
+                onClick={() => onPick(s)}
+              >
+                <ListItemText
+                  primary={
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Typography variant="body1">{s.name}</Typography>
+                      {s.ranked && <Chip size="small" label="Ranked" color="info" />}
+                      {s.competitive && <Chip size="small" label="Competitive" color="secondary" />}
+                    </Stack>
+                  }
+                  secondary={`${s.total} players · ${s.playedCount} / ${SUBMISSION_MAX_PLAYS} plays so far`}
+                />
+                {submitting === s.id && <i className="fas fa-spinner fa-spin" />}
+              </ListItemButton>
+            ))}
+          </List>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
 function MySubmissionPanel({ user }) {
   const errorAlert = useErrorAlert();
   const [submission, setSubmission] = useState(undefined);
+  const [joinOpen, setJoinOpen] = useState(false);
 
-  useEffect(() => {
+  function refresh() {
     if (!user.loggedIn) return;
     axios
       .get("/api/lab/my-submission")
       .then((res) => setSubmission(res.data.setup))
       .catch(errorAlert);
+  }
+
+  useEffect(() => {
+    refresh();
   }, [user.loggedIn]);
 
   if (!user.loggedIn) return null;
@@ -121,13 +220,29 @@ function MySubmissionPanel({ user }) {
   if (submission === null) {
     return (
       <Paper sx={{ p: 2, mb: 2 }}>
-        <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 0.5 }}>
-          Your Lab submission
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          You don't have a setup in The Lab right now. Open one of your unranked setups
-          and click "Submit to The Lab" to enter the pool.
-        </Typography>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={1}
+          alignItems={{ sm: "center" }}
+          justifyContent="space-between"
+        >
+          <Box>
+            <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 0.5 }}>
+              Your Lab submission
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              You don't have a setup in The Lab right now.
+            </Typography>
+          </Box>
+          <Button variant="contained" onClick={() => setJoinOpen(true)}>
+            Join The Lab
+          </Button>
+        </Stack>
+        <JoinLabDialog
+          open={joinOpen}
+          onClose={() => setJoinOpen(false)}
+          onSubmitted={refresh}
+        />
       </Paper>
     );
   }
@@ -239,11 +354,51 @@ export default function Lab() {
         <Box>
           <Typography variant="h4">The Lab</Typography>
           <Typography variant="body2" color="text.secondary">
-            New unranked setups looking for plays. Hit {RANK_UP_PLAYS} clean plays to
-            become ranked, and {GRADUATE_PLAYS} to graduate (creator earns 100 coins).
+            Setups looking for plays. Hit {RANK_UP_PLAYS} clean plays to become ranked,
+            and {GRADUATE_PLAYS} to graduate (creator earns {GRADUATE_REWARD_COINS} coins).
           </Typography>
         </Box>
       </Stack>
+
+      <Accordion sx={{ mb: 2 }} disableGutters>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+            What is The Lab?
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Stack spacing={1.5}>
+            <Typography variant="body2">
+              The Lab exists to <b>promote setup diversity</b>. Hundreds of player-made
+              setups never get the plays they need to break into the rotation, so the
+              same handful of featured and ranked setups dominate. The Lab is a
+              structured way to surface new setups and give them a real shot.
+            </Typography>
+            <Typography variant="body2">
+              <b>How a setup joins:</b> the creator submits one of their Mafia setups
+              (with fewer than {SUBMISSION_MAX_PLAYS} clean plays) for review. Mods
+              approve or reject. Approved setups enter the pool.
+            </Typography>
+            <Typography variant="body2">
+              <b>Daily challenges:</b> while the pool is non-empty, the Tier 2 daily
+              challenge for every player becomes "Play a game on [a Lab setup]",
+              replacing the usual "Win as [role]" challenge. This drives plays to setups
+              in the pool.
+            </Typography>
+            <Typography variant="body2">
+              <b>Milestones:</b> at <b>{RANK_UP_PLAYS} clean plays</b> in the pool, the
+              setup is automatically marked ranked. At <b>{GRADUATE_PLAYS} clean plays</b>,
+              the setup graduates from the pool and the creator earns{" "}
+              <b>{GRADUATE_REWARD_COINS} coins</b>.
+            </Typography>
+            <Typography variant="body2">
+              <b>Expiration:</b> setups have <b>{POOL_TENURE_DAYS} days</b> in the pool
+              to reach graduation. Setups that don't make it expire and leave the pool.
+              Each setup can only enter The Lab once.
+            </Typography>
+          </Stack>
+        </AccordionDetails>
+      </Accordion>
 
       <FeaturedTodayBanner />
 

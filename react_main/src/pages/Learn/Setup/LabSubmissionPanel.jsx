@@ -3,10 +3,13 @@ import axios from "axios";
 import { Box, Button, Chip, Stack, Tooltip, Typography } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
+import { Lab as LabConsts } from "constants/Lab";
 
-const RANK_UP_PLAYS = 10;
-const GRADUATE_PLAYS = 30;
-const POOL_TENURE_DAYS = 90;
+const {
+  rankUpPlays: RANK_UP_PLAYS,
+  graduatePlays: GRADUATE_PLAYS,
+  poolTenureDays: POOL_TENURE_DAYS,
+} = LabConsts;
 
 function daysRemaining(approvedAtMs) {
   if (!approvedAtMs) return null;
@@ -91,21 +94,19 @@ export function LabSubmissionPanel({ setup, isSetupCreator, onSubmitted }) {
             </Typography>
           )}
 
-          {isSetupCreator && status === "NOT_JOINED" && (
+          {isSetupCreator && status === "NOT_JOINED" && setup.gameType === "Mafia" && (
             <Tooltip
               title={
-                setup.ranked
-                  ? "Already-ranked setups can't enter The Lab."
-                  : setup.closed
-                    ? "Closed setups can't enter The Lab."
-                    : "Submit this setup to be reviewed by mods. Approved setups get featured in daily challenges."
+                setup.closed
+                  ? "Closed setups can't enter The Lab."
+                  : "Submit this setup to be reviewed by mods. Approved setups get featured in daily challenges."
               }
             >
               <span>
                 <Button
                   variant="contained"
                   size="small"
-                  disabled={submitting || setup.ranked || setup.closed}
+                  disabled={submitting || setup.closed}
                   onClick={onSubmit}
                 >
                   Submit to The Lab
