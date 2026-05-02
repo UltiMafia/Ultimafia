@@ -25,6 +25,21 @@ export interface LoadedTrack {
 export default class AudioManager {
   tracks: Record<string, LoadedTrack> = {};
 
+  constructor() {
+    // Without this, iOS Safari treats every HTMLAudioElement as exclusive
+    // "playback" audio and pauses other tabs' media (YouTube, Spotify, etc.)
+    // when we play a UI sound — e.g. the ready-check ping silencing a video
+    // the user was watching. "ambient" lets our sounds mix in instead.
+    const nav = navigator as Navigator & {
+      audioSession?: { type?: string };
+    };
+    if (nav.audioSession) {
+      try {
+        nav.audioSession.type = "ambient";
+      } catch {}
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------------------
