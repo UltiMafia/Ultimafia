@@ -14,7 +14,6 @@ module.exports = class ClaimMatch extends Card {
         action: {
           item: this,
           run: function () {
-            console.log("ClaimMatch run called", this.actor?.name, this.target);
             this.game.claimMatch(this.actor, this.target);
           },
         },

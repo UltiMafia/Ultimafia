@@ -40,6 +40,8 @@ module.exports = class SpotItGame extends Game {
     this.centerCard = [];
     this.scores = {};
     this.roundNumber = 0;
+    this.disqualified = new Set();
+    this.lastWinner = null;
     
     this.symbols = [];
 
@@ -86,49 +88,93 @@ module.exports = class SpotItGame extends Game {
   }
 
   claimMatch(player, symbolPath) {
+    if (this.matchPaused) return false;
+    if (this.disqualified.has(player.id)) return false;
+
     const playerSymbols = player.card.map(i => this.symbols[i]);
     const centerSymbols = this.centerCard.map(i => this.symbols[i]);
+    const isMatch = playerSymbols.includes(symbolPath) && centerSymbols.includes(symbolPath);
 
-    if (playerSymbols.includes(symbolPath) && centerSymbols.includes(symbolPath)) {
-      this.sendAlert(`${player.name} found a match!`);
-      if (this.isWell) {
-        this.centerCard = player.card;
-        player.cardStack.shift();
+    if (isMatch) {
+      this.matchPaused = true;
+      this.lastWinner = player.id;
+      this.broadcast("spotItToast", { message: `${player.name} wins!` });
+      this.broadcast("spotItExtraInfo", this.getStateInfo().extraInfo);
 
-        if (player.cardStack.length === 0) {
-          this.sendAlert(`${player.name} emptied their stack and wins!`);
-          this.immediateEnd();
-          return true;
-        }
+      setTimeout(() => {
+        this.matchPaused = false;
+        this.disqualified.clear();
+        this.lastWinner = null;
+        if (this.finished) return;
 
-        player.card = player.cardStack[0];
-      } else {
-        this.scores[player.id]++;
+        if (this.isWell) {
+          this.centerCard = player.card;
+          player.cardStack.shift();
 
-        const oldCenter = this.centerCard;
-        player.card = oldCenter;
+          if (player.cardStack.length === 0) {
+            this.sendAlert(`${player.name} emptied their stack and wins!`);
+            this.immediateEnd();
+            return;
+          }
 
-        if (this.deck.length > 0) {
-          this.centerCard = this.deck.pop();
-          this.roundNumber++;
+          player.card = player.cardStack[0];
         } else {
-          this.immediateEnd();
-          return true;
+          this.scores[player.id]++;
+
+          const oldCenter = this.centerCard;
+          player.card = oldCenter;
+
+          if (this.deck.length > 0) {
+            this.centerCard = this.deck.pop();
+            this.roundNumber++;
+          } else {
+            this.immediateEnd();
+            return;
+          }
         }
-      }
 
-      for (let p of this.players) {
-        p.getMeetings().forEach((meeting) => {
-          if (meeting.name === "Claim Match") meeting.cancel(true, true);
-        });
-      }
-
-      const stateInfo = this.getStateInfo();
-      this.broadcastState(stateInfo);
-      this.addStateExtraInfoToHistories(stateInfo.extraInfo, this.currentState);
+        const stateInfo = this.getStateInfo();
+        this.broadcast("spotItExtraInfo", stateInfo.extraInfo);
+        this.addStateExtraInfoToHistories(stateInfo.extraInfo, this.currentState);
+      }, 3000);
 
       return true;
     }
+
+    this.disqualified.add(player.id);
+    this.broadcast("spotItToast", { message: `${player.name} is disqualified!` });
+
+    const remaining = this.players.filter(p => !this.disqualified.has(p.id));
+    if (remaining.length === 0) {
+      this.matchPaused = true;
+    }
+    this.broadcast("spotItExtraInfo", this.getStateInfo().extraInfo);
+
+    if (remaining.length === 0) {
+      this.broadcast("spotItToast", { message: "No one wins!" });
+
+      setTimeout(() => {
+        this.matchPaused = false;
+        this.disqualified.clear();
+        this.lastWinner = null;
+        if (this.finished) return;
+
+        if (!this.isWell) {
+          if (this.deck.length > 0) {
+            this.centerCard = this.deck.pop();
+            this.roundNumber++;
+          } else {
+            this.immediateEnd();
+            return;
+          }
+        }
+
+        const stateInfo = this.getStateInfo();
+        this.broadcast("spotItExtraInfo", stateInfo.extraInfo);
+        this.addStateExtraInfoToHistories(stateInfo.extraInfo, this.currentState);
+      }, 3000);
+    }
+
     return false;
   }
 
@@ -147,6 +193,9 @@ module.exports = class SpotItGame extends Game {
       isWell: this.isWell,
       cardStackSizes: this.isWell ?
         Object.fromEntries(this.players.map(p => [p.id, p.cardStack?.length || 0])) : {},
+      disqualified: Array.from(this.disqualified),
+      lastWinner: this.lastWinner,
+      paused: !!this.matchPaused,
     };
     return info;
   }
