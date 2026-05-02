@@ -3530,9 +3530,11 @@ module.exports = class Game {
       if (!updated) return;
 
       const plays = updated.labPlaysCount;
-      const RANK_UP_PLAYS = 10;
-      const GRADUATE_PLAYS = 30;
-      const GRADUATE_REWARD_COINS = 100;
+      const {
+        rankUpPlays: RANK_UP_PLAYS,
+        graduatePlays: GRADUATE_PLAYS,
+        graduateRewardCoins: GRADUATE_REWARD_COINS,
+      } = constants.lab;
 
       if (plays >= GRADUATE_PLAYS) {
         const set = {

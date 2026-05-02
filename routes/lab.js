@@ -4,14 +4,17 @@ const models = require("../db/models");
 const routeUtils = require("./utils");
 const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
+const constants = require("../data/constants");
 
 const router = express.Router();
 
-const POOL_TENURE_DAYS = 90;
-const RANK_UP_PLAYS = 10;
-const GRADUATE_PLAYS = 30;
-const GRADUATE_REWARD_COINS = 100;
-const LAB_CHALLENGE_ID = "Advanced4";
+const {
+  rankUpPlays: RANK_UP_PLAYS,
+  graduatePlays: GRADUATE_PLAYS,
+  poolTenureDays: POOL_TENURE_DAYS,
+  submissionMaxPlays: SUBMISSION_MAX_PLAYS,
+  challengeId: LAB_CHALLENGE_ID,
+} = constants.lab;
 
 const POOL_SELECT =
   "id name gameType total roles featured ranked competitive labStatus labApprovedAt labPlaysCount creator";
@@ -123,6 +126,59 @@ router.get("/featured-today", async function (req, res) {
   }
 });
 
+router.get("/eligible-setups", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const user = await models.User.findOne({ id: userId, deleted: false }).select("_id");
+    if (!user) {
+      res.send({ setups: [] });
+      return;
+    }
+
+    const setups = await models.Setup.find({
+      creator: user._id,
+      gameType: "Mafia",
+      labStatus: "NOT_JOINED",
+      closed: { $ne: true },
+    })
+      .select("id name gameType total ranked competitive featured roles")
+      .sort({ _id: -1 })
+      .lean();
+
+    if (setups.length === 0) {
+      res.send({ setups: [] });
+      return;
+    }
+
+    const setupIds = setups.map((s) => s._id);
+    const playCounts = await models.Game.aggregate([
+      {
+        $match: {
+          setup: { $in: setupIds },
+          endTime: { $gt: 0 },
+          $or: [{ left: [] }, { left: { $exists: false } }],
+          hadVeg: { $ne: true },
+        },
+      },
+      { $group: { _id: "$setup", count: { $sum: 1 } } },
+    ]);
+    const countBySetup = {};
+    for (const row of playCounts) {
+      countBySetup[String(row._id)] = row.count;
+    }
+
+    const eligible = setups
+      .map((s) => ({ ...s, playedCount: countBySetup[String(s._id)] || 0 }))
+      .filter((s) => s.playedCount < SUBMISSION_MAX_PLAYS);
+
+    res.send({ setups: eligible });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Failed to load your eligible setups. Please try again.");
+  }
+});
+
 router.get("/my-submission", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -178,12 +234,12 @@ router.post("/submit", async function (req, res) {
       );
       return;
     }
-    if (setup.ranked) {
-      errors.conflict(res, "Already-ranked setups are not eligible for The Lab.");
-      return;
-    }
     if (setup.closed) {
       errors.conflict(res, "Closed setups cannot be submitted to The Lab.");
+      return;
+    }
+    if (setup.gameType !== "Mafia") {
+      errors.conflict(res, "Only Mafia setups can be submitted to The Lab.");
       return;
     }
     // Setup.played is not maintained at write time; count clean games live.
@@ -193,10 +249,10 @@ router.post("/submit", async function (req, res) {
       $or: [{ left: [] }, { left: { $exists: false } }],
       hadVeg: { $ne: true },
     });
-    if (cleanGames < 1) {
+    if (cleanGames >= SUBMISSION_MAX_PLAYS) {
       errors.conflict(
         res,
-        "Your setup needs at least one completed clean game before it can join The Lab."
+        `Setups with ${SUBMISSION_MAX_PLAYS} or more clean plays don't need The Lab.`
       );
       return;
     }

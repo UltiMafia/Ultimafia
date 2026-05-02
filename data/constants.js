@@ -410,6 +410,16 @@ module.exports = {
   minimumGamesForRanked: 5,
   minimumPointsForCompetitive: 150,
 
+  // The Lab — milestones and lifecycle
+  lab: {
+    rankUpPlays: 10,
+    graduatePlays: 30,
+    poolTenureDays: 30,
+    graduateRewardCoins: 100,
+    submissionMaxPlays: 30,
+    challengeId: "Advanced4",
+  },
+
   defaultSkillRatingMu: 750,
   defaultSkillRatingSigma: 250,
 

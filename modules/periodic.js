@@ -306,7 +306,8 @@ module.exports = function () {
     expireLabPoolEntries: {
       run: async function () {
         try {
-          const tenureMs = 90 * 24 * 60 * 60 * 1000;
+          const tenureMs =
+            constants.lab.poolTenureDays * 24 * 60 * 60 * 1000;
           const cutoff = new Date(Date.now() - tenureMs);
           const result = await models.Setup.updateMany(
             { labStatus: "IN_POOL", labApprovedAt: { $lt: cutoff } },
