@@ -58,6 +58,14 @@ export const DailyChallengeData = {
     extraData: "Role Name",
     reward: 5,
   },
+  "Play a game on ExtraData": {
+    ID: "Advanced4",
+    tier: 2,
+    internal: ["PlayLabSetup"],
+    description: "Complete a clean game (no vegs or leavers) on ExtraData.",
+    extraData: "Lab Setup",
+    reward: 5,
+  },
   /*
     "Win in a Featured Setup": {
       ID: "Advanced3",

@@ -200,11 +200,36 @@ module.exports = function () {
               .filter((c) => c[1].tier == 1)
               .map((c) => [c[1].ID, 0, c[1].extraData || null])
           );
-          let tierTwo = Random.randArrayVal(
-            Object.entries(DailyChallengeData)
-              .filter((c) => c[1].tier == 2)
-              .map((c) => [c[1].ID, 0, c[1].extraData || null])
-          );
+          // Tier 2 special-case: if there are any setups in the Lab pool,
+          // always pick the PlayLabSetup challenge and substitute a random
+          // pool setup. When the pool is empty, fall back to the normal
+          // random pick over all tier-2 challenges (today: WinAsRole).
+          const labPoolSetups = await models.Setup.find({
+            labStatus: "IN_POOL",
+          })
+            .select("_id")
+            .lean();
+          let tierTwo;
+          if (labPoolSetups.length > 0) {
+            const labChallengeEntry = Object.entries(DailyChallengeData).find(
+              (c) => c[1].internal && c[1].internal.includes("PlayLabSetup")
+            );
+            tierTwo = [
+              labChallengeEntry[1].ID,
+              0,
+              labChallengeEntry[1].extraData,
+            ];
+          } else {
+            tierTwo = Random.randArrayVal(
+              Object.entries(DailyChallengeData)
+                .filter(
+                  (c) =>
+                    c[1].tier == 2 &&
+                    !(c[1].internal && c[1].internal.includes("PlayLabSetup"))
+                )
+                .map((c) => [c[1].ID, 0, c[1].extraData || null])
+            );
+          }
           let tierThree = Random.randArrayVal(
             Object.entries(DailyChallengeData)
               .filter((c) => c[1].tier == 3)
@@ -226,6 +251,8 @@ module.exports = function () {
                     )
                     .map((role) => role[0])
                 );
+              } else if (c[2] == "Lab Setup") {
+                c[2] = Random.randArrayVal(labPoolSetups)._id.toString();
               }
             }
           }

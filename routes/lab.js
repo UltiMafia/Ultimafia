@@ -11,6 +11,7 @@ const POOL_TENURE_DAYS = 90;
 const RANK_UP_PLAYS = 10;
 const GRADUATE_PLAYS = 30;
 const GRADUATE_REWARD_COINS = 100;
+const LAB_CHALLENGE_ID = "Advanced4";
 
 const POOL_SELECT =
   "id name gameType total roles featured ranked competitive labStatus labApprovedAt labPlaysCount creator";
@@ -78,8 +79,48 @@ router.get("/pool", async function (req, res) {
 
 router.get("/featured-today", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
-  // null = no Lab setup is featured in today's daily challenge.
-  res.send({ setup: null });
+  try {
+    // The periodic refresh sets every user's dailyChallenges to the same
+    // value, so peek at any user with challenges and look for an active
+    // Lab challenge in their tier-2 slot.
+    const sampleUser = await models.User.findOne({
+      deleted: false,
+      dailyChallenges: { $exists: true, $ne: [] },
+    })
+      .select("dailyChallenges")
+      .lean();
+
+    if (!sampleUser || !sampleUser.dailyChallenges) {
+      res.send({ setup: null });
+      return;
+    }
+
+    const labChallenge = sampleUser.dailyChallenges
+      .map((c) => c.split(":"))
+      .find((c) => c[0] === LAB_CHALLENGE_ID);
+
+    if (!labChallenge || !labChallenge[2]) {
+      res.send({ setup: null });
+      return;
+    }
+
+    let setup = null;
+    try {
+      setup = await models.Setup.findOne({
+        _id: new mongoose.Types.ObjectId(labChallenge[2]),
+        labStatus: "IN_POOL",
+      })
+        .select(POOL_SELECT)
+        .populate("creator", "id name avatar");
+    } catch (e) {
+      // Invalid ObjectId — treat as no featured setup
+    }
+
+    res.send({ setup: setup ? poolEntryView(setup) : null });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Failed to load today's Lab setup. Please try again.");
+  }
 });
 
 router.get("/my-submission", async function (req, res) {

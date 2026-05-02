@@ -59,6 +59,17 @@ const DailyChallengeData = {
     extraData: "Role Name",
     reward: 5,
   },
+  "Play a game on ExtraData": {
+    // Advanced3 was reserved for an unshipped "Win in a Featured Setup"
+    // challenge; using Advanced4 to avoid any chance of collision with
+    // legacy data referencing the older ID.
+    ID: "Advanced4",
+    tier: 2,
+    internal: ["PlayLabSetup"],
+    description: "Complete a clean game (no vegs or leavers) on ExtraData.",
+    extraData: "Lab Setup",
+    reward: 5,
+  },
   /*
     "Win in a Featured Setup": {
       ID: "Advanced3",

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
+import axios from "axios";
 import { Box, Divider, Paper, Stack, Typography } from "@mui/material";
 import { UserContext } from "Contexts";
 import { DailyChallengeData } from "constants/DailyChallenge";
@@ -9,8 +10,27 @@ import LobbySidebarPanel from "./LobbySidebarPanel";
 
 export const DailyChallenges = () => {
   const user = useContext(UserContext);
+  const [labFeatured, setLabFeatured] = useState(null);
 
   let dailys = user.dailyChallenges?.map((m) => m.split(":"));
+
+  const hasLabChallenge = dailys?.some((quest) => {
+    const meta = Object.values(DailyChallengeData).find(
+      (d) => d.ID === quest[0]
+    );
+    return meta?.internal?.includes("PlayLabSetup");
+  });
+
+  useEffect(() => {
+    if (!hasLabChallenge) {
+      setLabFeatured(null);
+      return;
+    }
+    axios
+      .get("/api/lab/featured-today")
+      .then((res) => setLabFeatured(res.data.setup))
+      .catch(() => setLabFeatured(null));
+  }, [hasLabChallenge]);
 
   if (!dailys || dailys.length <= 0) {
     return "";
@@ -21,8 +41,14 @@ export const DailyChallenges = () => {
     let thing = Object.entries(DailyChallengeData).filter(
       (DailyChallenge) => quest[0] == DailyChallenge[1].ID
     );
-    let name = thing[0][0].replace(`ExtraData`, quest[2]);
-    let description = thing[0][1].description.replace(`ExtraData`, quest[2]);
+    const isLabSetup = thing[0][1].internal?.includes("PlayLabSetup");
+    const labSetupName =
+      isLabSetup && labFeatured && labFeatured._id === quest[2]
+        ? labFeatured.name
+        : null;
+    const displayValue = isLabSetup ? labSetupName || "a featured Lab setup" : quest[2];
+    let name = thing[0][0].replace(`ExtraData`, displayValue);
+    let description = thing[0][1].description.replace(`ExtraData`, displayValue);
     let reward = thing[0][1].reward;
     let isRole = thing[0][1].extraData == "Role Name";
 
