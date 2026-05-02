@@ -260,6 +260,7 @@ function Header({ setShowAnnouncementTemporarily }) {
                     path: "/play/create",
                     hide: !user.loggedIn,
                   },
+                  { text: "The Lab", path: "/play/lab" },
                   {
                     text: "Character Decks",
                     path: "/play/decks",
@@ -350,6 +351,7 @@ function Header({ setShowAnnouncementTemporarily }) {
                   path: "/play/create",
                   hide: !user.loggedIn,
                 },
+                { text: "The Lab", path: "/play/lab" },
                 { text: "Character Decks", path: "/play/decks", hide: !user.loggedIn },
                 { text: "Word Decks", path: "/play/wordDecks", hide: !user.loggedIn },
               ]}

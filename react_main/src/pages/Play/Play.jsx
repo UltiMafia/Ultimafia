@@ -52,6 +52,7 @@ export default function Play(props) {
   const WordDeckSelector = lazy(() => import("./WordDecks/WordDeckSelector"));
   const CreateWordDeck = lazy(() => import("./WordDecks/CreateWordDeck"));
   const HostBrowser = lazy(() => import("./Host/HostBrowser"));
+  const Lab = lazy(() => import("./Lab/Lab"));
 
   return (
     <>
@@ -65,6 +66,7 @@ export default function Play(props) {
             <Route path="createDeck" element={<CreateDecks />} />
             <Route path="wordDecks" element={<WordDeckSelector />} />
             <Route path="createWordDeck" element={<CreateWordDeck />} />
+            <Route path="lab" element={<Lab />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </Suspense>
