@@ -124,6 +124,7 @@ function getTabValue(pathname) {
   if (pathname.includes("/competitive")) return "competitive";
   if (pathname.includes("/handbook")) return "handbook";
   if (pathname.includes("/flagged-intake")) return "flagged-intake";
+  if (pathname.includes("/lab-queue")) return "lab-queue";
   if (pathname.includes("/volunteer")) return "volunteer";
   return "log";
 }
@@ -156,8 +157,13 @@ export default function Moderation() {
       !user?.perms?.whitelist
     ) {
       navigate("/policy/moderation", { replace: true });
+    } else if (
+      location.pathname.includes("/lab-queue") &&
+      !user?.perms?.manageLab
+    ) {
+      navigate("/policy/moderation", { replace: true });
     }
-  }, [location.pathname, user?.perms?.viewModActions, user?.perms?.manageCompetitive, user?.perms?.whitelist, navigate]);
+  }, [location.pathname, user?.perms?.viewModActions, user?.perms?.manageCompetitive, user?.perms?.whitelist, user?.perms?.manageLab, navigate]);
 
   const handleTabChange = (_, newValue) => {
     const base = "/policy/moderation";
@@ -166,6 +172,7 @@ export default function Moderation() {
     else if (newValue === "competitive") navigate(`${base}/competitive`);
     else if (newValue === "handbook") navigate(`${base}/handbook`);
     else if (newValue === "flagged-intake") navigate(`${base}/flagged-intake`);
+    else if (newValue === "lab-queue") navigate(`${base}/lab-queue`);
     else if (newValue === "volunteer") navigate(`${base}/volunteer`);
   };
 
@@ -183,6 +190,9 @@ export default function Moderation() {
         )}
         {user?.perms?.whitelist && (
           <Tab label="Flagged Intake" value="flagged-intake" />
+        )}
+        {user?.perms?.manageLab && (
+          <Tab label="Lab Queue" value="lab-queue" />
         )}
       </Tabs>
 

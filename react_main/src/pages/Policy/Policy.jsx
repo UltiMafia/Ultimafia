@@ -11,6 +11,7 @@ import Reports from "./Reports";
 import CompetitiveManagement from "./Moderation/CompetitiveManagement";
 import StaffHandbook from "./Moderation/StaffHandbook";
 import FlaggedIntake from "./Moderation/FlaggedIntake";
+import LabQueue from "./Moderation/LabQueue";
 import Volunteer from "./Moderation/Volunteer";
 
 function ReportsRedirect() {
@@ -44,6 +45,7 @@ export default function Policy() {
           <Route path="competitive" element={<CompetitiveManagement />} />
           <Route path="handbook" element={<StaffHandbook />} />
           <Route path="flagged-intake" element={<FlaggedIntake />} />
+          <Route path="lab-queue" element={<LabQueue />} />
           <Route path="volunteer" element={<Volunteer />} />
         </Route>
         <Route path="reports/*" element={<ReportsRedirect />} />
