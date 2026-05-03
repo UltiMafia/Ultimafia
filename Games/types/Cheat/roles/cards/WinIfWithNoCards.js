@@ -1,5 +1,4 @@
 const Card = require("../../Card");
-const Action = require("../../Action");
 
 module.exports = class WinIfWithNoCards extends Card {
   constructor(role) {
@@ -39,31 +38,5 @@ module.exports = class WinIfWithNoCards extends Card {
       },
     };
 
-    this.listeners = {
-      start: function () {
-        if (!this.game.hasGovernor) return;
-        if (!this.game.enablePunctuation) {
-          this.meetings["Give Response"].textOptions.alphaOnlyWithSpaces = true;
-        }
-      },
-      state: function (stateInfo) {
-        if (stateInfo.name != "Call Lie") {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          labels: ["hidden"],
-          run: function () {
-            if (this.actor.CardsInHand.length <= 0) {
-              this.actor.HasNoCards = true;
-            }
-          },
-        });
-
-        this.game.queueAction(action);
-      },
-    };
   }
 };

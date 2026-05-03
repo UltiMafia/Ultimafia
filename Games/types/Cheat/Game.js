@@ -244,6 +244,17 @@ module.exports = class CheatGame extends Game {
     const claimedRank = this.RankNumber;
     const cardsCopy = [...cards];
 
+    // Close the previous play's call-lie window. If its author emptied
+    // their hand and no one called lie before this new play, they've
+    // survived the challenge window and win.
+    if (
+      this.lastPlay &&
+      this.lastPlay.player !== actor &&
+      this.lastPlay.player.CardsInHand.length === 0
+    ) {
+      this.lastPlay.player.HasNoCards = true;
+    }
+
     for (let card of cardsCopy) {
       const idx = actor.CardsInHand.indexOf(card);
       if (idx !== -1) actor.CardsInHand.splice(idx, 1);
@@ -300,6 +311,12 @@ module.exports = class CheatGame extends Game {
     );
     const taker = actuallyLied ? liar : caller;
     taker.CardsInHand.push(...stackCards);
+
+    // Honest play that emptied the liar's hand: the miscall locks in
+    // their win — they survived the call-lie window.
+    if (!actuallyLied && liar.CardsInHand.length === 0) {
+      liar.HasNoCards = true;
+    }
 
     // Tell clients which cards were just revealed so they can flip the
     // played pile face-up briefly before it disappears. The `time` field
