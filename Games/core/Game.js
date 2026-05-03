@@ -3412,34 +3412,49 @@ module.exports = class Game {
       );
       const winners = new Set(this.winners.getPlayers());
 
-      const factionToStarters = {};
+      // Bucket by FINAL role at game end, not the player's starting role.
+      // A player who converted (e.g. Village → Cult) and won with their new
+      // team should credit that team — otherwise the starting faction picks
+      // up a win it didn't earn, inflating its win rate on this setup.
+      const finalRoleByPlayer = {};
       for (const playerId in this.originalRoles) {
-        const fk =
-          this.startingFactions[playerId] ||
-          (() => {
-            const roleName = this.originalRoles[playerId].split(":")[0];
-            const alignment = this.getRoleAlignment(roleName);
-            const alignmentIsFaction =
-              alignment === "Village" ||
-              alignment === "Mafia" ||
-              alignment === "Cult";
-            let factionName = alignmentIsFaction ? alignment : roleName;
-            if (factionName === "Traitor") factionName = "Mafia";
-            return factionName;
-          })();
-        if (!factionToStarters[fk]) factionToStarters[fk] = [];
-        factionToStarters[fk].push(playerId);
+        const player = this.players[playerId];
+        let roleName, modifier, alignment;
+        if (player && player.role) {
+          roleName = player.role.name;
+          modifier = player.role.modifier;
+          alignment = player.role.alignment;
+        } else {
+          const original = this.originalRoles[playerId];
+          [roleName, modifier] = original.split(":");
+          alignment = this.getRoleAlignment(roleName);
+        }
+        finalRoleByPlayer[playerId] = { roleName, modifier, alignment };
+      }
+
+      const factionToPlayers = {};
+      for (const playerId in finalRoleByPlayer) {
+        const { roleName, alignment } = finalRoleByPlayer[playerId];
+        const alignmentIsFaction =
+          alignment === "Village" ||
+          alignment === "Mafia" ||
+          alignment === "Cult";
+        let factionName = alignmentIsFaction ? alignment : roleName;
+        if (factionName === "Traitor") factionName = "Mafia";
+        if (!factionToPlayers[factionName]) factionToPlayers[factionName] = [];
+        factionToPlayers[factionName].push(playerId);
       }
 
       const alignmentRows = [];
-      for (const f of Object.keys(factionToStarters)) {
-        const anyWon = factionToStarters[f].some((pid) => winners.has(pid));
+      for (const f of Object.keys(factionToPlayers)) {
+        const anyWon = factionToPlayers[f].some((pid) => winners.has(pid));
         alignmentRows.push([f, gameTypeTag, anyWon]);
       }
 
       const roleRows = [];
-      for (const playerId in this.originalRoles) {
-        const roleKey = this.originalRoles[playerId];
+      for (const playerId in finalRoleByPlayer) {
+        const { roleName, modifier } = finalRoleByPlayer[playerId];
+        const roleKey = modifier ? `${roleName}:${modifier}` : roleName;
         const won = winners.has(playerId);
         roleRows.push([roleKey, gameTypeTag, won]);
       }
@@ -3449,9 +3464,8 @@ module.exports = class Game {
       var roleWins = {};
       var alignmentWins = {};
 
-      for (let playerId in this.originalRoles) {
-        let roleName = this.originalRoles[playerId].split(":")[0];
-        let alignment = this.getRoleAlignment(roleName);
+      for (let playerId in finalRoleByPlayer) {
+        const { roleName, alignment } = finalRoleByPlayer[playerId];
 
         if (rolePlays[roleName] == null) rolePlays[roleName] = 0;
         if (alignmentPlays[alignment] == null) alignmentPlays[alignment] = 0;
@@ -3461,12 +3475,11 @@ module.exports = class Game {
       }
 
       for (let playerId of this.winners.getPlayers()) {
-        if (!this.originalRoles[playerId]) {
+        if (!finalRoleByPlayer[playerId]) {
           continue;
         }
 
-        let roleName = this.originalRoles[playerId].split(":")[0];
-        let alignment = this.getRoleAlignment(roleName);
+        const { roleName, alignment } = finalRoleByPlayer[playerId];
 
         if (roleWins[roleName] == null) roleWins[roleName] = 0;
         if (alignmentWins[alignment] == null) alignmentWins[alignment] = 0;
