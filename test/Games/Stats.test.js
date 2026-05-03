@@ -6,6 +6,7 @@ const db = require("../../db/db");
 const redis = require("../../modules/redis");
 const shortid = require("shortid");
 const Game = require("../../Games/types/Mafia/Game");
+const MafiaWinners = require("../../Games/types/Mafia/Winners");
 const User = require("../../Games/core/User");
 const Socket = require("../../lib/sockets").TestSocket;
 const models = require("../../db/models");
@@ -565,6 +566,72 @@ describe("Stats recording", function () {
       for (const row of sv.setupStats.gameLengthRows) {
         row[0].should.equal("competitive");
       }
+    });
+
+    it("conversion: villager converted to Mafia, Mafia wins → Village win rate is 0%", async function () {
+      // 3 Villager + 1 Yakuza. Yakuza converts a Villager to Mafioso, then
+      // Mafia wins (Yakuza + converted Villager). The pre-fix behaviour
+      // bucketed every player by their starting role, so this game would
+      // record [Village, true] in alignmentRows — a Village "win" the
+      // Village never actually earned. After the fix, final roles are used
+      // and Village registers as [Village, false] (0%) while Mafia is true.
+      const setupConfig = {
+        id: `stats-${shortid.generate()}`,
+        total: 4,
+        roles: [{ Villager: 3, Yakuza: 1 }],
+      };
+      await seedSetupAndVersion(setupConfig);
+
+      const { game } = await makeGame(setupConfig, { stateLength: 60000 });
+
+      const yakuza = game.players.filter((p) => p.role.name === "Yakuza")[0];
+      const villagers = game.players.filter((p) => p.role.name === "Villager");
+      yakuza.should.exist;
+      villagers.length.should.equal(3);
+
+      // Yakuza converts the first villager to Mafioso (the actual Yakuza
+      // mechanic also kills the Yakuza via seppuku — we don't need to
+      // simulate the kill since dead players still count as winners).
+      const convertedVillager = villagers[0];
+      convertedVillager.setRole("Mafioso", null, true, true, true, "Mafia");
+      convertedVillager.role.name.should.equal("Mafioso");
+      convertedVillager.role.alignment.should.equal("Mafia");
+
+      // Mafia wins: the Yakuza and the converted Mafioso. recordSetupStats
+      // is normally called by endPostgame after this.winners is populated;
+      // build the same shape directly.
+      const winners = new MafiaWinners(game);
+      winners.addPlayer(yakuza, "Mafia");
+      winners.addPlayer(convertedVillager, "Mafia");
+      winners.determinePlayers();
+      game.winners = winners;
+
+      const setupDoc = await models.Setup.findOne({ id: setupConfig.id });
+      await game.recordSetupStats(setupDoc);
+
+      const sv = await fetchSv(setupDoc);
+
+      // Two Village starters remain Village at game end (the third one was
+      // converted), so alignmentRows for Village must be tagged false.
+      const villageRows = sv.setupStats.alignmentRows.filter(
+        (r) => r[0] === "Village"
+      );
+      const mafiaRows = sv.setupStats.alignmentRows.filter(
+        (r) => r[0] === "Mafia"
+      );
+      villageRows.length.should.equal(1);
+      villageRows[0][2].should.equal(false);
+      mafiaRows.length.should.equal(1);
+      mafiaRows[0][2].should.equal(true);
+
+      // Aggregate maps reflect final roles too. Mongoose Map fields come
+      // back as plain objects via .lean().
+      const plays = sv.alignmentPlays || {};
+      const wins = sv.alignmentWins || {};
+      plays.Village.should.equal(2);
+      plays.Mafia.should.equal(2);
+      expect(wins.Village).to.equal(undefined);
+      wins.Mafia.should.equal(2);
     });
 
     it("vegged game: totalVegs incremented; played/alignmentRows NOT touched", async function () {
