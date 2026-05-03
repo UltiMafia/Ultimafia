@@ -492,6 +492,16 @@ export default function Lab() {
             and {GRADUATE_PLAYS} to graduate (creator earns {GRADUATE_REWARD_COINS} coins).
           </Typography>
         </Box>
+        {user?.perms?.manageLab && (
+          <Button
+            variant="outlined"
+            color="secondary"
+            component={RouterLink}
+            to="/policy/moderation/lab-queue"
+          >
+            Approve Lab setups
+          </Button>
+        )}
       </Stack>
 
       <Accordion sx={{ mb: 2 }} disableGutters>
@@ -501,36 +511,30 @@ export default function Lab() {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Stack spacing={1.5}>
-            <Typography variant="body2">
-              The Lab exists to <b>promote setup diversity</b>. Hundreds of player-made
-              setups never get the plays they need to break into the rotation, so the
-              same handful of featured and ranked setups dominate. The Lab is a
-              structured way to surface new setups and give them a real shot.
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            The Lab promotes <b>setup diversity</b> by surfacing new player-made
+            setups and giving them a real shot at plays.
+          </Typography>
+          <Box
+            component="ul"
+            sx={{ pl: 3, m: 0, "& li": { mb: 0.5 } }}
+          >
+            <Typography component="li" variant="body2">
+              <b>Join:</b> Submit new Mafia setups
             </Typography>
-            <Typography variant="body2">
-              <b>How a setup joins:</b> the creator submits one of their Mafia setups
-              (with fewer than {SUBMISSION_MAX_PLAYS} clean plays) for review. Mods
-              approve or reject. Approved setups enter the pool.
+            <Typography component="li" variant="body2">
+              <b>Promotion:</b> Your setups get featured in daily challenges
             </Typography>
-            <Typography variant="body2">
-              <b>Daily challenges:</b> while the pool is non-empty, the Tier 2 daily
-              challenge for every player becomes "Play a game on [a Lab setup]",
-              replacing the usual "Win as [role]" challenge. This drives plays to setups
-              in the pool.
+            <Typography component="li" variant="body2">
+              <b>Milestones:</b> Your setups get ranked-approved after{" "}
+              {RANK_UP_PLAYS} plays and graduate with{" "}
+              {GRADUATE_REWARD_COINS} coins at {GRADUATE_PLAYS} plays
             </Typography>
-            <Typography variant="body2">
-              <b>Milestones:</b> at <b>{RANK_UP_PLAYS} clean plays</b> in the pool, the
-              setup is automatically marked ranked. At <b>{GRADUATE_PLAYS} clean plays</b>,
-              the setup graduates from the pool and the creator earns{" "}
-              <b>{GRADUATE_REWARD_COINS} coins</b>.
+            <Typography component="li" variant="body2">
+              <b>Disqualification:</b> Setups can only be in the lab for{" "}
+              {POOL_TENURE_DAYS} days
             </Typography>
-            <Typography variant="body2">
-              <b>Expiration:</b> setups have <b>{POOL_TENURE_DAYS} days</b> in the pool
-              to reach graduation. Setups that don't make it expire and leave the pool.
-              Each setup can only enter The Lab once.
-            </Typography>
-          </Stack>
+          </Box>
         </AccordionDetails>
       </Accordion>
 
