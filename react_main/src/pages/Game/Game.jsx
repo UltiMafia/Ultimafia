@@ -500,7 +500,11 @@ export default function Game() {
         })
         .catch((e) => {
           setLeave(true);
-          errorAlert(e);
+          if (e?.response?.status === 401) {
+            errorAlert("Please log in to review this game.");
+          } else {
+            errorAlert(e);
+          }
         });
     }
   }, [review]);
