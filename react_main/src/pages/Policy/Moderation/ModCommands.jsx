@@ -36,6 +36,7 @@ export { COMMAND_COLOR };
 export function ModCommands(props) {
   const fixedHeight = props.fixedHeight || false;
   const prefilledArgs = props.prefilledArgs || {};
+  const allowedCategories = props.allowedCategories || null;
   const setCommandsAvailable = props.setCommandsAvailable;
 
   const [command, setCommand] = useState();
@@ -65,6 +66,14 @@ export function ModCommands(props) {
     const command = modCommands[commandName];
     const category = command.category || "Ungrouped";
     const argNames = command.args.map((arg) => arg.name);
+
+    // Optionally limit drawer to specific command categories.
+    if (
+      Array.isArray(allowedCategories) &&
+      allowedCategories.length > 0 &&
+      !allowedCategories.includes(category)
+    )
+      continue;
 
     // Skip actions that aren't "contextual" to the page that we're on
     if (userId && !argNames.includes("userId")) continue;

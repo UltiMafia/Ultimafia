@@ -1,9 +1,6 @@
 import React, {
   useReducer,
-  useContext,
   useState,
-  useRef,
-  useLayoutEffect,
 } from "react";
 import { NavLink, Routes, Route, Navigate } from "react-router-dom";
 
@@ -12,6 +9,7 @@ import Board from "./Board";
 import Thread from "./Thread";
 import SearchResults from "./SearchResults";
 import ForumSearch from "./ForumSearch";
+import ModerationSideDrawer from "components/ModerationSideDrawer";
 
 import "css/forums.css";
 import { Button } from "@mui/material";
@@ -19,9 +17,15 @@ import { Button } from "@mui/material";
 export default function Forums() {
   const [forumNavInfo, updateForumNavInfo] = useForumNavInfo();
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
+  const [moderationDrawerOpen, setModerationDrawerOpen] = useState(false);
 
   return (
     <div className="forums">
+      <ModerationSideDrawer
+        open={moderationDrawerOpen}
+        setOpen={setModerationDrawerOpen}
+        allowedCategories={["Forum Management"]}
+      />
       <ForumNav
         forumNavInfo={forumNavInfo}
         onSearchClick={() => setSearchDialogOpen(true)}

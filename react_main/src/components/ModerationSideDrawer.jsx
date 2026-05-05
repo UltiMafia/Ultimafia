@@ -20,7 +20,12 @@ import { useErrorAlert } from "components/Alerts";
 import { ModCommands, COMMAND_COLOR } from "pages/Policy/Moderation";
 import hammer from "images/emotes/hammer.webp";
 
-export default function ModerationSideDrawer({ open, setOpen, prefilledArgs }) {
+export default function ModerationSideDrawer({
+  open,
+  setOpen,
+  prefilledArgs,
+  allowedCategories,
+}) {
   const [commandsAvailable, setCommandsAvailable] = useState(false);
 
   const user = useContext(UserContext);
@@ -78,6 +83,7 @@ export default function ModerationSideDrawer({ open, setOpen, prefilledArgs }) {
         <ModCommands
           height={"100%"}
           prefilledArgs={prefilledArgs}
+          allowedCategories={allowedCategories}
           setCommandsAvailable={setCommandsAvailable}
         />
       </SwipeableDrawer>

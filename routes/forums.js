@@ -997,6 +997,44 @@ router.post("/reply", async function (req, res) {
       );
     }
 
+    // Notify users whose replies were quoted in this post.
+    // Quote links are inserted as:
+    // /community/forums/thread/<threadId>?reply=<replyId>
+    const quotedReplyIds = Array.from(
+      new Set(
+        [...content.matchAll(/\/community\/forums\/thread\/[^)\s?]+\?reply=([\w-]+)/g)]
+          .map((match) => match[1])
+          .filter(Boolean)
+      )
+    );
+
+    if (quotedReplyIds.length > 0) {
+      const quotedReplies = await models.ForumReply.find({
+        id: { $in: quotedReplyIds },
+      })
+        .select("id author")
+        .populate("author", "id");
+
+      const quotedUserIds = Array.from(
+        new Set(
+          quotedReplies
+            .map((quotedReply) => quotedReply.author?.id)
+            .filter((quotedUserId) => quotedUserId && quotedUserId !== userId)
+        )
+      );
+
+      if (quotedUserIds.length > 0) {
+        routeUtils.createNotification(
+          {
+            content: `${userName} quoted your post.`,
+            icon: "quote-left",
+            link: `/community/forums/thread/${threadId}?reply=${reply.id}`,
+          },
+          quotedUserIds
+        );
+      }
+    }
+
     res.send(String(page));
   } catch (e) {
     logger.error(e);
