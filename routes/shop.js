@@ -363,6 +363,14 @@ const shopItems = [
     onBuy: async function (userId) {},
   },
   {
+    name: "Forum Banner",
+    desc: "Upload a slim banner that appears above your forum post header.",
+    key: "forumBanner",
+    price: 30,
+    limit: 1,
+    onBuy: async function (userId) {},
+  },
+  {
     name: "Create Family",
     desc: "Create a Crime Family and top the leaderboard",
     key: "createFamily",

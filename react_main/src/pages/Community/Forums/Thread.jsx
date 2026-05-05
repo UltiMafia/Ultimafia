@@ -16,6 +16,25 @@ import { ThreadPoll } from "components/Poll";
 import { VoteWidget } from "components/VoteWidget";
 import { NameWithAvatar } from "../../User/User";
 
+function formatForumDate(timestamp) {
+  if (!timestamp) return null;
+
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return null;
+
+  return date.toLocaleDateString();
+}
+
+function getFirstDateValue(author, keys) {
+  if (!author) return null;
+
+  for (const key of keys) {
+    if (author[key]) return author[key];
+  }
+
+  return null;
+}
+
 export default function Thread(props) {
   const [threadInfo, setThreadInfo] = useState({});
   const [loaded, setLoaded] = useState(false);
@@ -103,7 +122,10 @@ export default function Thread(props) {
     setShowReplyForm(true);
 
     if (reply) {
-      var newContent = `${replyContent}\n\n> ##### @${reply.author.name}:\n`;
+      const profilePath = reply.author.vanityUrl
+        ? `/user/${reply.author.vanityUrl}`
+        : `/user/${reply.author.id}`;
+      var newContent = `${replyContent}\n\n> ##### [${reply.author.name}](${profilePath}) said: [↻](/community/forums/thread/${threadId}?reply=${reply.id})\n`;
       var quotedContent = reply.content.split("\n");
 
       for (let i = 0; i < quotedContent.length; i++)
@@ -318,6 +340,30 @@ function Post(props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
+  const profileJoinDate = formatForumDate(
+    getFirstDateValue(postInfo.author, [
+      "joinDate",
+      "createdAt",
+      "created",
+      "joined",
+    ])
+  );
+  const profileLastSeenDate = formatForumDate(
+    getFirstDateValue(postInfo.author, [
+      "lastSeen",
+      "lastActive",
+      "lastOnline",
+      "lastVisited",
+      "lastVisit",
+    ])
+  );
+  const authorSubContent =
+    profileJoinDate || profileLastSeenDate ? (
+      <div className="forum-author-meta">
+        {profileJoinDate && <div>Join Date {profileJoinDate}</div>}
+        {profileLastSeenDate && <div>Last Seen {profileLastSeenDate}</div>}
+      </div>
+    ) : null;
 
   function onDeleteClick() {
     const shouldDelete = window.confirm(
@@ -416,6 +462,13 @@ function Post(props) {
       <div className="main-wrapper">
         <div className="heading">
           <div className="heading-left">
+            {postInfo.author?.forumBanner && (
+              <img
+                className="forum-author-banner"
+                src={`/uploads/${postInfo.author.id}_forumBanner.webp`}
+                alt={`${postInfo.author.name} forum banner`}
+              />
+            )}
             {hasTitle && (
               <div className="title">
                 {locked && <i className="fas fa-lock" />}
@@ -430,6 +483,9 @@ function Post(props) {
                 avatar={postInfo.author.avatar}
                 groups={postInfo.author.groups}
                 vanityUrl={postInfo.author.vanityUrl}
+                includeMiniprofile
+                large
+                subContent={authorSubContent}
               />
               <div className="post-date">
                 <Time minSec millisec={Date.now() - postInfo.postDate} />

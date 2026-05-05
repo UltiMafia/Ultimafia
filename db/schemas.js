@@ -64,6 +64,7 @@ var schemas = {
     discordUsername: String,
     avatar: Boolean,
     banner: Boolean,
+    forumBanner: Boolean,
     profileBackground: Boolean,
     bio: {
       type: String,
@@ -179,6 +180,7 @@ var schemas = {
       bonusRedHearts: { type: Number, default: 0 },
       vanityUrl: { type: Number, default: 0 },
       profileBackground: { type: Number, default: 0 },
+      forumBanner: { type: Number, default: 0 },
       createFamily: { type: Number, default: 0 },
     },
     stats: {},
