@@ -1383,7 +1383,7 @@ export function MobileLayout({
           sx={{
             "& > .MuiBottomNavigationAction-root": {
               minWidth: "unset",
-              width: "56px",
+              flex: 1,
             },
           }}
         >
@@ -1406,7 +1406,7 @@ export function MobileLayout({
               direction="row"
               onClick={() => setSelectedPanel("chat")}
               sx={{
-                flex: 1,
+                flex: 2,
                 minWidth: 0,
                 filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
                 alignItems: "center",
