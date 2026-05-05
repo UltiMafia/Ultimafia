@@ -465,6 +465,8 @@ export default function MafiaGame() {
           <>
             <PlayerList />
             <SpeechFilter />
+            <PinnedMessages />
+            <Notes />
           </>
         }
         innerRightContent={
@@ -496,12 +498,7 @@ export default function MafiaGame() {
             <LastWillEntry />
           </>
         }
-        additionalInfoContent={
-          <>
-            <PinnedMessages />
-            <Notes />
-          </>
-        }
+        hideInfoTab
       />
     </GameTypeContext.Provider>
   );

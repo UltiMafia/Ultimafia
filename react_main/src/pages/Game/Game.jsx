@@ -1395,7 +1395,6 @@ export function MobileLayout({
               icon={<i className="fas fa-info" />}
             />
           )}
-          <BottomNavigationAction {...innerRightNavigationProps} />
           {chatTab ? (
             <BottomNavigationAction
               label="Chat"
@@ -1409,7 +1408,6 @@ export function MobileLayout({
               sx={{
                 flex: 1,
                 minWidth: 0,
-                maxWidth: "140px",
                 filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
                 alignItems: "center",
                 justifyContent: "center",
@@ -1421,6 +1419,7 @@ export function MobileLayout({
               {!singleState && <Divider orientation="vertical" flexItem />}
             </Stack>
           )}
+          <BottomNavigationAction {...innerRightNavigationProps} />
           <BottomNavigationAction
             label="Menu"
             value="menu"
