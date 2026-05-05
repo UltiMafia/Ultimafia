@@ -360,10 +360,19 @@ function Post(props) {
   const authorSubContent =
     profileJoinDate || profileLastSeenDate ? (
       <div className="forum-author-meta">
+        <div>
+          <Time minSec millisec={Date.now() - postInfo.postDate} /> ago
+        </div>
         {profileJoinDate && <div>Join Date {profileJoinDate}</div>}
         {profileLastSeenDate && <div>Last Seen {profileLastSeenDate}</div>}
       </div>
-    ) : null;
+    ) : (
+      <div className="forum-author-meta">
+        <div>
+          <Time minSec millisec={Date.now() - postInfo.postDate} /> ago
+        </div>
+      </div>
+    );
 
   function onDeleteClick() {
     const shouldDelete = window.confirm(
@@ -487,15 +496,16 @@ function Post(props) {
                 large
                 subContent={authorSubContent}
               />
-              <div className="post-date">
-                <Time minSec millisec={Date.now() - postInfo.postDate} />
-                {" ago"}
-              </div>
             </div>
           </div>
           <div className="btns-wrapper">
             {!postInfo.deleted && (
               <>
+                {onReplyClick &&
+                  user.perms.postReply &&
+                  (!locked || user.perms.postInLocked) && (
+                    <i className="fas fa-reply" onClick={onReplyClick} />
+                  )}
                 {itemType === "thread" && user.perms.pinThreads && (
                   <i
                     className={`fas fa-thumbtack ${
