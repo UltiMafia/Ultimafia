@@ -443,6 +443,11 @@ router.get("/:id/review/data", async function (req, res) {
       return;
     }
 
+    if (!userId && !game.guests) {
+      errors.unauthorized(res, "You must be logged in to review this game.");
+      return;
+    }
+
     if (game !== null) {
       game = game.toJSON();
       game.users = await Promise.all(
