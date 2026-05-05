@@ -565,6 +565,42 @@ export default function Settings() {
         ),
       },
       {
+        label: "Upload Forum Banner",
+        ref: "forumBannerUpload",
+        type: "custom",
+        groupName: "Profile",
+        showIf: (deps) =>
+          deps.user.itemsOwned && deps.user.itemsOwned.forumBanner,
+        extraInfo:
+          "Upload a slim banner shown above your forum post header (500x100 recommended, max 2 MB).",
+        render: (deps) => (
+          <Stack direction="row" spacing={1} alignItems="center">
+            <HiddenUpload
+              name="forumBanner"
+              onClick={deps.onForumBannerEdit}
+              onFileUpload={deps.onForumBannerUpload}
+            >
+              <Button variant="outlined">Upload Forum Banner</Button>
+            </HiddenUpload>
+            {deps.user.forumBanner && (
+              <>
+                <Typography variant="caption" sx={{ color: "success.main" }}>
+                  Forum banner uploaded
+                </Typography>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  size="small"
+                  onClick={deps.onForumBannerRemove}
+                >
+                  Remove
+                </Button>
+              </>
+            )}
+          </Stack>
+        ),
+      },
+      {
         label: "Background Display Mode",
         ref: "backgroundRepeatMode",
         type: "select",
@@ -775,6 +811,9 @@ export default function Settings() {
               onProfileBackgroundEdit,
               onProfileBackgroundUpload,
               onProfileBackgroundRemove,
+              onForumBannerEdit,
+              onForumBannerUpload,
+              onForumBannerRemove,
             }}
             onChange={(action) => onSettingChange(action, updateProfileFields)}
             wrapGroupsInPaper
@@ -1377,6 +1416,68 @@ export default function Settings() {
     }
 
     return true;
+  }
+
+  function onForumBannerEdit() {
+    if (!user.itemsOwned || !user.itemsOwned.forumBanner) {
+      errorAlert("You must purchase Forum Banner with coins from the Shop.");
+      return false;
+    }
+
+    return true;
+  }
+
+  function onForumBannerRemove() {
+    if (!window.confirm("Are you sure you wish to remove your forum banner?")) {
+      return;
+    }
+
+    axios
+      .delete("/api/user/forumBanner")
+      .then(() => {
+        siteInfo.showAlert("Forum banner removed", "success");
+        user.set(
+          update(user.state, {
+            forumBanner: { $set: false },
+          })
+        );
+        siteInfo.clearCache();
+      })
+      .catch(errorAlert);
+  }
+
+  function onForumBannerUpload(files, type) {
+    if (!files.length) return;
+
+    if (!user.itemsOwned || !user.itemsOwned.forumBanner) {
+      errorAlert("You must purchase Forum Banner with coins from the Shop.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", files[0]);
+
+    for (let el of document.getElementsByClassName("hidden-upload"))
+      el.value = "";
+
+    axios
+      .post(`/api/user/${type}`, formData)
+      .then(() => {
+        siteInfo.showAlert("Forum banner uploaded", "success");
+
+        user.set(
+          update(user.state, {
+            forumBanner: { $set: true },
+          })
+        );
+
+        siteInfo.clearCache();
+      })
+      .catch((e) => {
+        if (e.response == null || e.response.status === 413)
+          errorAlert("File too large, must be less than 2 MB.");
+        else errorAlert(e);
+      });
   }
 
   function onProfileBackgroundRemove() {

@@ -2204,6 +2204,7 @@ router.post("/banner", async function (req, res) {
       })
       .toFile(`${process.env.UPLOAD_PATH}/${userId}_banner.webp`);
     await models.User.updateOne({ id: userId }, { $set: { banner: true } });
+    await redis.cacheUserInfo(userId, true);
 
     res.sendStatus(200);
   } catch (e) {
@@ -2224,11 +2225,90 @@ router.post("/banner/clear", async function (req, res) {
     if (fs.existsSync(bannerPath)) fs.unlinkSync(bannerPath);
 
     await models.User.updateOne({ id: userId }, { $set: { banner: false } });
+    await redis.cacheUserInfo(userId, true);
 
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not clear banner. Please try again.");
+  }
+});
+
+router.post("/forumBanner", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var itemsOwned = await redis.getUserItemsOwned(userId);
+
+    if (!itemsOwned.forumBanner) {
+      errors.forbidden(
+        res,
+        "You must purchase Forum Banner with coins from the Shop."
+      );
+      return;
+    }
+
+    var form = new formidable();
+    form.maxFileSize = 2 * 1024 * 1024;
+    form.maxFields = 1;
+
+    var [fields, files] = await form.parseAsync(req);
+
+    if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
+      fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
+
+    await sharp(files.image.path)
+      .webp({ quality: 90 })
+      .resize({
+        width: 500,
+        height: 100,
+        fit: "cover",
+        position: "center",
+        kernel: sharp.kernel.lanczos3,
+      })
+      .toFile(`${process.env.UPLOAD_PATH}/${userId}_forumBanner.webp`);
+
+    await models.User.updateOne({ id: userId }, { $set: { forumBanner: true } });
+    await redis.cacheUserInfo(userId, true);
+
+    res.sendStatus(200);
+  } catch (e) {
+    if (e.message.indexOf("maxFileSize exceeded") == 0)
+      errors.payloadTooLarge(
+        res,
+        "Image is too large, forum banner must be less than 2 MB."
+      );
+    else {
+      logger.error(e);
+      errors.serverError(res, "Could not upload forum banner image. Please try again.");
+    }
+  }
+});
+
+router.delete("/forumBanner", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var itemsOwned = await redis.getUserItemsOwned(userId);
+
+    if (!itemsOwned.forumBanner) {
+      errors.forbidden(
+        res,
+        "You must purchase Forum Banner with coins from the Shop."
+      );
+      return;
+    }
+
+    const filePath = `${process.env.UPLOAD_PATH}/${userId}_forumBanner.webp`;
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    await models.User.updateOne({ id: userId }, { $set: { forumBanner: false } });
+    await redis.cacheUserInfo(userId, true);
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not remove forum banner image. Please try again.");
   }
 });
 
