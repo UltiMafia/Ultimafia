@@ -361,7 +361,7 @@ const AchievementData = {
       ID: "Mafia49",
       internal: ["OracleRevealEvil"],
       description: "As Oracle, have your death reveal an Evil-aligned player.",
-      reward: 25,
+      reward: 20,
       roles: ["Oracle"],
     },
     "Happy Hour": {
@@ -431,14 +431,14 @@ const AchievementData = {
       internal: ["SamuraiKillConverter"],
       description:
         "As Samurai, kill a Cult-aligned converter in your duel.",
-      reward: 25,
+      reward: 30,
       roles: ["Samurai"],
     },
     "Mayor And Orders": {
       ID: "Mafia59",
       internal: ["MayorRevealWin"],
       description: "As Mayor, reveal yourself and win.",
-      reward: 25,
+      reward: 20,
       roles: ["Mayor"],
     },
     "Pulling The Strings": {
@@ -446,7 +446,7 @@ const AchievementData = {
       internal: ["WitchRedirectEvilKill"],
       description:
         "As Witch, redirect a kill so that an Evil player kills another Evil player.",
-      reward: 25,
+      reward: 30,
       roles: ["Witch"],
     },
     "Fresh Blood": {
@@ -460,14 +460,14 @@ const AchievementData = {
       ID: "Mafia62",
       internal: ["WerewolfFullMoonKills"],
       description: "As Werewolf, cause 3 deaths during a single Full Moon.",
-      reward: 25,
+      reward: 30,
       roles: ["Werewolf"],
     },
     "Last One Standing": {
       ID: "Mafia63",
       internal: ["SerialKillerSoleSurvivor"],
       description: "As Serial Killer, win as the last player alive.",
-      reward: 25,
+      reward: 30,
       roles: ["Serial Killer"],
     },
     "Harvest Moon": {
@@ -490,7 +490,7 @@ const AchievementData = {
       internal: ["SurvivorUnvisited"],
       description:
         "As Survivor, survive to the end of the game without being visited at night.",
-      reward: 25,
+      reward: 20,
       roles: ["Survivor"],
     },
     "First Contact": {
@@ -511,28 +511,28 @@ const AchievementData = {
       ID: "Mafia69",
       internal: ["CthulhuThreeInsane"],
       description: "As Cthulhu, drive 3 different players insane.",
-      reward: 25,
+      reward: 20,
       roles: ["Cthulhu"],
     },
     Consumed: {
       ID: "Mafia70",
       internal: ["BlobThreeAbsorbs"],
       description: "As Blob, absorb 3 players.",
-      reward: 25,
+      reward: 20,
       roles: ["Blob"],
     },
     Assimilation: {
       ID: "Mafia71",
       internal: ["GreyGooThreeConverts"],
       description: "As Grey Goo, create 3 other Grey Goos.",
-      reward: 25,
+      reward: 30,
       roles: ["Grey Goo"],
     },
     "Divine Right": {
       ID: "Mafia72",
       internal: ["EmperorDecreeWin"],
       description: "As Emperor, win by successfully calling two duels.",
-      reward: 25,
+      reward: 20,
       roles: ["Emperor"],
     },
     "Caped Crusader": {
@@ -581,14 +581,14 @@ const AchievementData = {
       internal: ["BraggadociousSoloWin"],
       description:
         "As a Braggadocious player, win solo as an Independent role.",
-      reward: 25,
+      reward: 30,
     },
     "Jack Of All Trades": {
       ID: "Mafia80",
       internal: ["AllAlignmentWins"],
       description:
         "Win at least once as a Village, Mafia, Cult, and Independent role.",
-      reward: 50,
+      reward: 30,
     },
     "Role Tourist": {
       ID: "Mafia81",
