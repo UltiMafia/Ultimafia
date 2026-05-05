@@ -35,3 +35,6 @@ firebase.json
 
 .DS_Store
 .claude
+.agents/
+.codex/
+AGENTS.md
