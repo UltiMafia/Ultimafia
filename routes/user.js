@@ -1012,6 +1012,12 @@ router.post("/karma", async function (req, res) {
 router.get("/:id/love", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
+    const reqUserId = await routeUtils.verifyLoggedIn(req, true);
+    if (!reqUserId) {
+      res.status(401).send("You must be logged in to view this.");
+      return;
+    }
+
     const identifier = String(req.params.id);
     const userId = await resolveUserId(identifier);
 
@@ -1045,6 +1051,12 @@ router.get("/:id/love", async function (req, res) {
 router.get("/:id/friends", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
+    const reqUserId = await routeUtils.verifyLoggedIn(req, true);
+    if (!reqUserId) {
+      res.status(401).send("You must be logged in to view this.");
+      return;
+    }
+
     const identifier = String(req.params.id);
     const userId = await resolveUserId(identifier);
 
@@ -1169,6 +1181,12 @@ router.get("/:id/setups", async function (req, res) {
 router.get("/:id/games", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
+    const reqUserId = await routeUtils.verifyLoggedIn(req, true);
+    if (!reqUserId) {
+      res.status(401).send("You must be logged in to view this.");
+      return;
+    }
+
     const identifier = String(req.params.id);
     const userId = await resolveUserId(identifier);
 
@@ -1356,6 +1374,12 @@ router.get("/:id/reports", async function (req, res) {
 
 router.get("/:id/info", async function (req, res) {
   try {
+    const reqUserId = await routeUtils.verifyLoggedIn(req, true);
+    if (!reqUserId) {
+      res.status(401).send("You must be logged in to view this.");
+      return;
+    }
+
     const identifier = String(req.params.id);
     const userId = await resolveUserId(identifier);
 
