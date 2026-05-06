@@ -3510,7 +3510,7 @@ export function ActionList({
 
 function Inventory({ items, actionsByItemId, gameType, metadataByName }) {
   const columns = 5;
-  const minimumRows = 5;
+  const minimumRows = 2;
   const safeItems = Array.isArray(items) ? items : [];
   const itemCount = safeItems.length;
   const rowsNeeded = itemCount > 0 ? Math.ceil(itemCount / columns) : 0;

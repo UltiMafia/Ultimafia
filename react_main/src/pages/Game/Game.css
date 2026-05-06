@@ -11,8 +11,8 @@ html {
 
 .inventory-grid {
   display: grid;
-  grid-template-columns: repeat(5, 38px);
-  grid-auto-rows: 38px;
+  grid-template-columns: repeat(5, 56px);
+  grid-auto-rows: 56px;
   gap: 6px;
   justify-content: center;
   margin: 0 auto;
@@ -71,8 +71,8 @@ html {
 }
 
 .inventory-icon {
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   background-size: cover;
 }
 
