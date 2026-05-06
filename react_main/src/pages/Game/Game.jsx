@@ -3545,6 +3545,16 @@ export function InventoryPanel({
   accordion = true,
 }) {
   const siteInfo = useContext(SiteInfoContext);
+  const itemCount = Array.isArray(items) ? items.length : 0;
+  const [expanded, setExpanded] = useState(itemCount > 0);
+  const prevItemCount = useRef(itemCount);
+
+  useEffect(() => {
+    if (prevItemCount.current === 0 && itemCount > 0) {
+      setExpanded(true);
+    }
+    prevItemCount.current = itemCount;
+  }, [itemCount]);
 
   const metadataByName = useMemo(() => {
     const map = {};
@@ -3573,8 +3583,6 @@ export function InventoryPanel({
 
   if (!show) return null;
 
-  const itemCount = Array.isArray(items) ? items.length : 0;
-
   const title = (
     <InventoryCountBadge count={itemCount}>Inventory</InventoryCountBadge>
   );
@@ -3583,7 +3591,8 @@ export function InventoryPanel({
     <SideMenu
       title={title}
       isAccordionMenu={accordion}
-      defaultExpanded={itemCount > 0}
+      expanded={expanded}
+      onChange={() => setExpanded((e) => !e)}
       content={
         <div className="inventory-section">
           <Inventory
