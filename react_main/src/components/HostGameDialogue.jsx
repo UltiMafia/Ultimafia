@@ -40,7 +40,7 @@ import HostSpotIt from "./gameTypeHostForms/HostSpotIt";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { getSetupBackgroundColor } from "pages/Play/LobbyBrowser/gameRowColors";
 
-export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck }) {
+export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck, defaultLobby }) {
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
@@ -99,9 +99,14 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
           if (field.ref === "anonymousDeckId") field.value = preSelectedDeck;
         }
       }
+      if (defaultLobby) {
+        for (let field of newFormFields) {
+          if (field.ref === "lobby") field.value = defaultLobby;
+        }
+      }
       updateFormFields({ type: "setFields", fields: newFormFields });
     },
-    [setup.gameType, preSelectedDeck]
+    [setup.gameType, preSelectedDeck, defaultLobby]
   );
 
   function getFormFieldValue(ref) {
