@@ -50,6 +50,11 @@ export function StampItem({ gameType, role, count, hasLock, clickable, onClick, 
           <RoleCount role={role} gameType={gameType} small showPopover={false} />
         </div>
         <div className="stamp-fold" />
+        {borderType === "r" && (
+          <div className="stamp-rank-heart" aria-label="Ranked">
+            <i className="fas fa-heart" />
+          </div>
+        )}
         {count > 1 && (
           <div className={`stamp-badge${count > 99 ? " star" : ""}`}>
             {count > 99 ? "\u2605" : count}

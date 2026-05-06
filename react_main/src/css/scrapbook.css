@@ -285,6 +285,32 @@
   background-color: #fbe2dc;
 }
 
+.stamp-rank-heart {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  color: #e23b3b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.stamp--small .stamp-rank-heart {
+  width: 12px;
+  height: 12px;
+  font-size: 7px;
+  top: -3px;
+  right: -3px;
+}
+
 .stamp--border-competitive {
   background-color: #fde2c4;
   outline: 2px solid #d4a017;
