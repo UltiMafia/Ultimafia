@@ -71,6 +71,48 @@ const vehicles = [
   "moped","rickshaw",
 ];
 
+const emotions = [
+  "happy","sad","angry","scared","surprised","disgusted","tired","sleepy",
+  "excited","laugh","cry","yell","blush","sob","scream","grin","pout",
+  "gasp","yawn","sweat","shiver","hug","kiss","wave","shrug","wink","cheer",
+];
+
+const nature = [
+  "sun","moon","star","cloud","rain","snow","lightning","rainbow",
+  "tornado","mountain","volcano","cliff","cave",
+  "desert","forest","beach","island",
+  "river","lake","ocean","waterfall","iceberg","tree","leaf",
+  "flower","rose","tulip","sunflower","cactus","grass",
+  "rock","sand","mud","ice","fire","wind","fog","earth","comet",
+];
+
+const food = [
+  "pizza","burger","hotdog","sandwich","sushi","taco","burrito","pancake",
+  "waffle","donut","cake","pie","cookie","cupcake","muffin","ice-cream",
+  "popsicle","candy","chocolate","lollipop","popcorn","pretzel","bread",
+  "bagel","croissant","pasta","fries","cheese","bacon","steak",
+  "coffee","tea","soda","wine","beer","cocktail",
+];
+
+const places = [
+  "house","cabin","castle","tower",
+  "skyscraper","lighthouse","windmill","barn","silo","church",
+  "pyramid","school","library","museum","hospital",
+  "bank","factory","mall","theater","restaurant","cafe",
+  "hotel","airport","bridge","tunnel","fountain","statue",
+  "igloo","treehouse","greenhouse","prison","farm","fence",
+];
+
+const jobs = [
+  "chef","baker","waiter","doctor","nurse","dentist","scientist","teacher",
+  "student","farmer","fisherman","carpenter","plumber","electrician",
+  "mechanic","painter","writer","artist","musician","singer","dancer",
+  "actor","photographer","reporter","janitor","firefighter","police",
+  "soldier","sailor","pilot","astronaut","cowboy","knight","king","queen",
+  "prince","princess","wizard","ninja","samurai","magician","detective",
+  "judge","lawyer","priest","monk","robot","clown","barber","gardener",
+];
+
 const classicsCategories = [
   "Animals",
   "Body & Faces",
@@ -78,6 +120,11 @@ const classicsCategories = [
   "Items",
   "Sports & Games",
   "Vehicles",
+  "Emotions & Actions",
+  "Nature & Weather",
+  "Food & Drinks",
+  "Buildings & Places",
+  "Jobs & People",
 ];
 
 const ultimafiaRoles = [
@@ -158,6 +205,11 @@ const classicsWords = dedupe([
   items,
   sports,
   vehicles,
+  emotions,
+  nature,
+  food,
+  places,
+  jobs,
 ]);
 
 const ultimafiaWords = dedupe([
