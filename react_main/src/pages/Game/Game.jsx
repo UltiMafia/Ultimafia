@@ -3583,6 +3583,7 @@ export function InventoryPanel({
     <SideMenu
       title={title}
       isAccordionMenu={accordion}
+      defaultExpanded={itemCount > 0}
       content={
         <div className="inventory-section">
           <Inventory
