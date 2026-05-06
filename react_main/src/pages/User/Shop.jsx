@@ -16,6 +16,7 @@ import {
   Paper,
   Grid2,
   CardActionArea,
+  Divider,
   Tabs,
   Tab,
   Dialog,
@@ -29,7 +30,6 @@ import {
 import { Loading } from "../../components/Loading";
 
 import coin from "images/umcoin.png";
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 const SHOP_CATEGORIES = [
   { key: "profile", label: "Profile" },
@@ -76,7 +76,6 @@ export default function Shop(props) {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
-  const isPhoneDevice = useIsPhoneDevice();
   const location = useLocation();
   const [autoBuyTriggered, setAutoBuyTriggered] = useState(false);
 
@@ -305,122 +304,96 @@ export default function Shop(props) {
   }
 
   const itemsByCategory = useMemo(() => {
-    const map = Object.fromEntries(
-      SHOP_CATEGORIES.map((c) => [c.key, []])
-    );
+    const map = Object.fromEntries(SHOP_CATEGORIES.map((c) => [c.key, []]));
     shopInfo.shopItems.forEach((item, i) => {
-      const cat = item.category && map[item.category] ? item.category : SHOP_CATEGORIES[0].key;
+      const cat =
+        item.category && map[item.category]
+          ? item.category
+          : SHOP_CATEGORIES[0].key;
       map[cat].push({ item, index: i });
     });
-    for (const key of Object.keys(map)) {
-      map[key].sort((a, b) => {
-        const aOwned = user.itemsOwned?.[a.item.key] || 0;
-        const bOwned = user.itemsOwned?.[b.item.key] || 0;
-        const aDisabled = a.item.disabled || aOwned === a.item.limit;
-        const bDisabled = b.item.disabled || bOwned === b.item.limit;
-        return Number(aDisabled) - Number(bDisabled);
-      });
-    }
     return map;
-  }, [shopInfo.shopItems, user.itemsOwned]);
+  }, [shopInfo.shopItems]);
 
-  const handleItemClick = (item, i) => {
-    if (item.key === "stamp") {
-      setStampDialogOpen(true);
-      setShowSuggestions(true);
-      axios.get("/api/shop/stampSuggestions")
-        .then((res) => setStampSuggestions(res.data))
-        .catch(() => setStampSuggestions([]));
-    } else {
-      onBuyItem(i);
-    }
-  };
-
-  const renderShopRow = ({ item, index: i }) => {
+  const renderShopCard = ({ item, index: i }) => {
     const numOwned = user.itemsOwned[item.key] || 0;
     const disabled = item.disabled || numOwned === item.limit;
-    const ownedLabel =
-      item.limit != null ? `${numOwned} / ${item.limit}` : `${numOwned}`;
 
     return (
-      <Card
-        key={item.key}
-        variant="outlined"
-        sx={{
-          opacity: disabled ? 0.5 : 1,
-          borderRadius: 1,
+      <Grid2
+        size={{
+          xs: 12,
+          md: 6,
         }}
+        key={i}
       >
-        <CardActionArea
-          disabled={disabled}
-          onClick={() => handleItemClick(item, i)}
-          sx={{ px: 1.5, py: 1 }}
+        <Card
+          variant="outlined"
+          sx={(theme) => ({
+            width: "100%",
+            height: "100%",
+            opacity: disabled ? "50%" : undefined,
+            borderColor: theme.palette.primary.main,
+          })}
         >
-          <Stack
-            direction="row"
-            alignItems="center"
-            spacing={1.5}
-            sx={{ width: "100%" }}
+          <CardActionArea
+            disabled={disabled}
+            onClick={() => {
+              if (item.key === "stamp") {
+                setStampDialogOpen(true);
+                setShowSuggestions(true);
+                axios.get("/api/shop/stampSuggestions")
+                  .then((res) => setStampSuggestions(res.data))
+                  .catch(() => setStampSuggestions([]));
+              } else {
+                onBuyItem(i);
+              }
+            }}
+            sx={{ px: 1.5, py: 1 }}
           >
-            <Stack sx={{ flex: 1, minWidth: 0 }} spacing={0.25}>
-              <Stack
-                direction="row"
-                alignItems="baseline"
-                spacing={1}
-                flexWrap="wrap"
-              >
-                <Typography
-                  variant="subtitle1"
-                  sx={{ fontWeight: 600, lineHeight: 1.25 }}
-                >
-                  {item.name}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ fontVariantNumeric: "tabular-nums" }}
-                >
-                  Owned {ownedLabel}
-                </Typography>
-              </Stack>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{
-                  lineHeight: 1.35,
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                  minHeight: "calc(2 * 1.35em)",
-                }}
-              >
-                {item.desc}
-              </Typography>
-            </Stack>
             <Stack
               direction="row"
-              spacing={0.5}
+              spacing={1.5}
               alignItems="center"
-              sx={{
-                flexShrink: 0,
-                minWidth: isPhoneDevice ? 56 : 72,
-                justifyContent: "flex-end",
-                fontVariantNumeric: "tabular-nums",
-              }}
+              sx={{ width: "100%" }}
             >
-              <Typography variant="h4" sx={{ fontWeight: 600 }}>
-                {item.price}
-              </Typography>
-              <img
-                src={coin}
-                alt="coin"
-                style={{ width: 28, height: 28 }}
-              />
+              <Stack sx={{ flex: 1, minWidth: 0 }}>
+                <Stack direction="row" spacing={1} alignItems="baseline">
+                  <Typography variant="h3" sx={{ lineHeight: 1.2 }}>
+                    {item.name}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Owned: {numOwned}
+                    {item.limit != null && ` / ${item.limit}`}
+                  </Typography>
+                </Stack>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    lineHeight: 1.4,
+                    minHeight: "calc(2 * 1.4em)",
+                  }}
+                >
+                  {item.desc}
+                </Typography>
+              </Stack>
+              <Stack
+                direction="row"
+                spacing={0.5}
+                alignItems="center"
+                sx={{ flexShrink: 0 }}
+              >
+                <Typography>{item.price}</Typography>
+                <img src={coin} style={{ width: "20px", height: "20px" }} />
+              </Stack>
             </Stack>
-          </Stack>
-        </CardActionArea>
-      </Card>
+          </CardActionArea>
+        </Card>
+      </Grid2>
     );
   };
 
@@ -464,34 +437,62 @@ export default function Shop(props) {
       </Tabs>
 
       {activeTab === "shop" && (
-        <Stack spacing={2.5} sx={{ pt: 1 }}>
-          {SHOP_CATEGORIES.map((c) => {
-            const entries = itemsByCategory[c.key] || [];
-            if (entries.length === 0) return null;
-            return (
-              <Box key={c.key}>
-                <Typography
-                  variant="h3"
-                  sx={{
-                    pb: 0.5,
-                    mb: 1,
-                    borderBottom: 1,
-                    borderColor: "divider",
-                  }}
-                >
-                  {c.label}
-                </Typography>
-                <Grid2 container spacing={0.75}>
-                  {entries.map((entry) => (
-                    <Grid2 key={entry.item.key} size={{ xs: 12, md: 6 }}>
-                      {renderShopRow(entry)}
-                    </Grid2>
-                  ))}
-                </Grid2>
-              </Box>
-            );
-          })}
-        </Stack>
+        <>
+          <Divider flexItem orientation="horizontal" />
+          <Stack spacing={2.5} sx={{ pt: 1 }}>
+            {SHOP_CATEGORIES.map((c) => {
+              const entries = itemsByCategory[c.key] || [];
+              if (entries.length === 0) return null;
+              return (
+                <Box key={c.key}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={1.5}
+                    sx={{ mb: 1.5 }}
+                  >
+                    <Box
+                      sx={(theme) => ({
+                        flex: 1,
+                        height: "1px",
+                        background: `linear-gradient(to right, transparent, ${theme.palette.primary.main}99)`,
+                      })}
+                    />
+                    <Typography
+                      variant="h4"
+                      sx={(theme) => ({
+                        fontWeight: 700,
+                        letterSpacing: "0.28em",
+                        textTransform: "uppercase",
+                        color: theme.palette.primary.main,
+                        fontSize: { xs: 16, md: 20 },
+                        whiteSpace: "nowrap",
+                        "&::before, &::after": {
+                          content: '"\\25C6"',
+                          margin: "0 0.65em",
+                          fontSize: "0.7em",
+                          opacity: 0.7,
+                        },
+                      })}
+                    >
+                      {c.label}
+                    </Typography>
+                    <Box
+                      sx={(theme) => ({
+                        flex: 1,
+                        height: "1px",
+                        background: `linear-gradient(to left, transparent, ${theme.palette.primary.main}99)`,
+                      })}
+                    />
+                  </Stack>
+                  <Grid2 container spacing={1}>
+                    {entries.map((entry) => renderShopCard(entry))}
+                  </Grid2>
+                </Box>
+              );
+            })}
+          </Stack>
+        </>
       )}
 
       {activeTab === "manage" && (
