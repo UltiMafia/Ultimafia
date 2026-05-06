@@ -3,11 +3,11 @@ const Random = require("../../../../../lib/Random");
 const Action = require("../../Action");
 const { PRIORITY_BECOME_DEAD_ROLE } = require("../../const/Priority");
 const { PRIORITY_OVERTHROW_VOTE } = require("../../const/Priority");
-
+ 
 module.exports = class GuessTheOgre extends Card {
   constructor(role) {
     super(role);
-
+ 
     this.passiveActions = [
       {
         ability: ["Effect"],
@@ -23,9 +23,15 @@ module.exports = class GuessTheOgre extends Card {
             return;
           }
           let players = this.game.alivePlayers().filter((p) => p.isEvil());
-
+ 
+          // Bail out if there are no eligible evil players to receive the
+          // alert (e.g. all evils are dead or converted). Without this guard
+          // Random.randArrayVal returns undefined and victim.queueAlert
+          // throws "Cannot read properties of undefined (reading 'queueAlert')".
+          if (players.length === 0) return;
+ 
           let victim = Random.randArrayVal(players, true);
-
+ 
           victim.queueAlert(
             `You learn there is an Ogre in Town! If you guess who they are they will get condemned.`
           );
@@ -35,7 +41,7 @@ module.exports = class GuessTheOgre extends Card {
     ];
   }
 };
-
+ 
 function isPrevTarget(player) {
   return this.role && player == this.role.data.prevTarget;
 }
