@@ -29,6 +29,8 @@ const JOINT_DAMP_INDEPENDENT = 0.7;
 const ANCHOR_WR = 0.1;
 const ANCHOR_PAYOUT = 80;
 const INDEPENDENT_CAP = 120;
+const MIN_FORTUNE_GAMES = 5;
+const LOW_SAMPLE_PAYOUT = 60;
 
 const MAJOR_NAMES = ["Village", "Mafia", "RedMafia", "Cult"];
 
@@ -182,6 +184,11 @@ export function FortuneCalculatorContent() {
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           Add the factions in your game and set each one's historical winrate.
           Hover a payout to see the formula with your values.
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          Note: setups with fewer than {MIN_FORTUNE_GAMES} ranked/competitive
+          plays always pay a flat {LOW_SAMPLE_PAYOUT} fortune (solo or joint),
+          ignoring winrate — small samples are too noisy to scale.
         </Typography>
 
         <Stack

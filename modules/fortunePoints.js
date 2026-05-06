@@ -31,6 +31,11 @@ const INDEPENDENT_CAP = 120;
 const JOINT_DAMP_MAJOR = 0.9;
 const JOINT_DAMP_INDEPENDENT = 0.7;
 
+// Setups with fewer than this many ranked/competitive plays always pay a flat
+// LOW_SAMPLE_PAYOUT regardless of computed winrate — small samples are noisy.
+const MIN_FORTUNE_GAMES = 5;
+const LOW_SAMPLE_PAYOUT = 60;
+
 // Priors when a faction has no ranked/competitive history yet.
 // Majors get a neutral 50/50 (→ half of K on a solo win); independents
 // get the anchor itself (→ exactly the anchor payout).
@@ -48,6 +53,15 @@ function winRateFromAlignmentEntries(entries) {
   }
   if (games === 0) return null;
   return wins / games;
+}
+
+function countFortuneGames(entries) {
+  if (!entries || !entries.length) return 0;
+  let games = 0;
+  for (const [gameType] of entries) {
+    if (FORTUNE_GAME_TYPES.has(gameType)) games++;
+  }
+  return games;
 }
 
 function isMajorFaction(factionKey) {
@@ -104,9 +118,13 @@ function computeFactionFortunePoints(opts) {
     }
 
     const row = rowByFaction[f];
-    pointsWonByFactions[f] = isJoint
-      ? Math.round(row.soloPayoutExact * jointDampFor(f))
-      : row.soloPayout;
+    if (row.lowSampleSize) {
+      pointsWonByFactions[f] = row.soloPayout;
+    } else {
+      pointsWonByFactions[f] = isJoint
+        ? Math.round(row.soloPayoutExact * jointDampFor(f))
+        : row.soloPayout;
+    }
   }
 
   return { pointsWonByFactions, pointsLostByFactions };
@@ -213,18 +231,24 @@ function computeSoloPayoutsForSetup(opts) {
 
   const result = factions.map((faction) => {
     const observed = winRateFromAlignmentEntries(alignmentWinRates[faction]);
+    const games = countFortuneGames(alignmentWinRates[faction]);
     const hasHistoricalWinrate = observed != null && !Number.isNaN(observed);
     const winrate = hasHistoricalWinrate
       ? observed
       : isMajorFaction(faction)
       ? DEFAULT_MAJOR_WR
       : DEFAULT_INDEPENDENT_WR;
-    const exact = soloPayout(faction, winrate, K);
+    const lowSampleSize = games < MIN_FORTUNE_GAMES;
+    const exact = lowSampleSize
+      ? LOW_SAMPLE_PAYOUT
+      : soloPayout(faction, winrate, K);
     return {
       faction,
       isMajor: isMajorFaction(faction),
       winrate,
       hasHistoricalWinrate,
+      games,
+      lowSampleSize,
       soloPayout: Math.round(exact),
       soloPayoutExact: exact,
     };
@@ -239,9 +263,12 @@ function computeSoloPayoutsForSetup(opts) {
 
 module.exports = {
   winRateFromAlignmentEntries,
+  countFortuneGames,
   isMajorFaction,
   computeFactionFortunePoints,
   computeSoloPayoutsForSetup,
   alignmentRowsToWinRateMap,
   getMafiaFactionsFromSetup,
+  MIN_FORTUNE_GAMES,
+  LOW_SAMPLE_PAYOUT,
 };
