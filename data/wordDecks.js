@@ -4,23 +4,23 @@ const animals = [
   "lion","tiger","leopard","elephant",
   "rhino","hippo","giraffe","zebra","kangaroo","koala","panda","monkey",
   "gorilla","sloth","skunk","raccoon","beaver","otter",
-  "seal","walrus","whale","dolphin","shark","octopus","crab",
+  "seal","walrus","whale","dolphin","shark","octopus","squid","crab",
   "lobster","starfish","jellyfish","seahorse","fish","frog",
   "snake","lizard","turtle","crocodile","chameleon",
   "penguin","ostrich","eagle","owl","parrot","peacock",
-  "flamingo","swan","robin","crow",
-  "bat","bee","butterfly","spider","ant","ladybug",
+  "flamingo","swan","pigeon","robin","crow",
+  "bat","bee","butterfly","spider","ant","beetle","ladybug",
   "snail","worm","scorpion","camel","donkey","moose","deer",
   "bison","yak","platypus","hedgehog",
 ];
 
 const body = [
   "head","face","eye","nose","mouth","ear","hair","tooth","tongue",
-  "lip","cheek","chin","forehead","eyebrow","eyelash","neck",
-  "shoulder","arm","elbow","hand","finger","thumb","fingernail",
+  "lip","cheek","chin","forehead","eyebrow","eyelash","neck","throat",
+  "shoulder","arm","elbow","wrist","hand","finger","thumb","fingernail",
   "palm","fist","chest","back","stomach","waist","hip","leg","knee",
   "ankle","foot","toe","heel","sole","beard","mustache","skull","brain",
-  "heart","bone","smile","frown",
+  "heart","bone","muscle","skin","smile","frown","wink",
 ];
 
 const fruitsVeggies = [
@@ -39,22 +39,22 @@ const items = [
   "hat","ring","watch","glasses","backpack","fork","spoon","knife",
   "plate","bowl","kettle","fridge","oven","sink","mirror","brush",
   "comb","soap","bucket","ladder","saw","drill","wrench","screwdriver",
-  "nail","rope","balloon","kite","torch","camera","wallet",
+  "nail","rope","balloon","kite","torch","battery","camera","wallet",
   "envelope","stamp","coin","ticket","map","compass","binoculars","tent",
-  "stapler","ruler","crayon","whistle","drum",
-  "guitar","piano","violin","boot","sandal","glove","scarf",
+  "tape","glue","stapler","ruler","crayon","marker","whistle","drum",
+  "guitar","piano","violin","horn","boot","sandal","glove","scarf",
   "tie","belt","button","zipper","easel","broom","mop","towel","basket",
-  "vase","frame",
+  "vase","frame","cushion",
 ];
 
 const sports = [
   "football","soccer","baseball","basketball","tennis","golf","hockey",
   "volleyball","badminton","ping-pong","bowling",
   "darts","chess","checkers","cards","dice","domino","puzzle","yo-yo",
-  "frisbee","racket","goalpost","trophy",
+  "frisbee","racket","stick","goalpost","net","trophy",
   "medal","ribbon","scoreboard","stadium","field","court",
   "track","gym","pool","ball","helmet","jersey",
-  "skis","snowboard","surfboard","skates","boxing",
+  "skis","snowboard","surfboard","skates","boxing","karate",
   "fencing","archery","javelin","hurdle","trampoline",
 ];
 
