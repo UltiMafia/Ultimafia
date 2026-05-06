@@ -432,18 +432,22 @@ export default function DrawItGame() {
   // changes (e.g. the Reveal-state word overlay) can't drift between layouts.
   const renderCenter = (mobile = false) => (
     <div className={`draw-stage${mobile ? " draw-stage-mobile" : ""}`}>
-      <WordDisplay
-        isDrawer={isDrawer}
-        stateName={stateName}
-        currentWord={currentWord}
-        wordLength={wordLength}
-      />
-      <ActionList
-        bare
-        meetingFilter={(m) => m.name !== "Vote Kick"}
-        hideIfEmpty
-        className="draw-action-list"
-      />
+      {!isPostgame && (
+        <>
+          <WordDisplay
+            isDrawer={isDrawer}
+            stateName={stateName}
+            currentWord={currentWord}
+            wordLength={wordLength}
+          />
+          <ActionList
+            bare
+            meetingFilter={(m) => m.name !== "Vote Kick"}
+            hideIfEmpty
+            className="draw-action-list"
+          />
+        </>
+      )}
       {isDrawer && (
         <DrawTools
           color={color}
