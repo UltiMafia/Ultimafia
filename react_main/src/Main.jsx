@@ -1,4 +1,5 @@
-import React, { lazy, useState, useContext, useEffect, Suspense } from "react";
+import React, { useState, useContext, useEffect, Suspense } from "react";
+import { lazyWithRetry, clearChunkReloadFlag } from "./lib/lazyWithRetry";
 import { Route, Link, NavLink, Navigate, Routes, useLocation } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import axios from "axios";
@@ -104,15 +105,19 @@ function Main(props) {
 
   const loading = isUserLoading || isSiteInfoLoading;
 
-  const Game = lazy(() => import("pages/Game/Game"));
-  const Play = lazy(() => import("pages/Play/Play"));
-  const Community = lazy(() => import("pages/Community/Community"));
-  const Fame = lazy(() => import("pages/Fame/Fame"));
-  const Learn = lazy(() => import("pages/Learn/Learn"));
-  const Policy = lazy(() => import("pages/Policy/Policy"));
-  const SiteActivity = lazy(() => import("pages/Activity/Activity"));
-  const User = lazy(() => import("pages/User/User"));
-  const Welcome = lazy(() => import("pages/Welcome/Welcome"));
+  useEffect(() => {
+    clearChunkReloadFlag();
+  }, []);
+
+  const Game = lazyWithRetry(() => import("pages/Game/Game"));
+  const Play = lazyWithRetry(() => import("pages/Play/Play"));
+  const Community = lazyWithRetry(() => import("pages/Community/Community"));
+  const Fame = lazyWithRetry(() => import("pages/Fame/Fame"));
+  const Learn = lazyWithRetry(() => import("pages/Learn/Learn"));
+  const Policy = lazyWithRetry(() => import("pages/Policy/Policy"));
+  const SiteActivity = lazyWithRetry(() => import("pages/Activity/Activity"));
+  const User = lazyWithRetry(() => import("pages/User/User"));
+  const Welcome = lazyWithRetry(() => import("pages/Welcome/Welcome"));
 
   const siteContent = (
     <Stack sx={{
