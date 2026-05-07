@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext, useRef, useMemo } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
@@ -11,7 +11,6 @@ import {
   Button,
   Typography,
   Card,
-  CardContent,
   TextField,
   Stack,
   Paper,
@@ -31,7 +30,13 @@ import {
 import { Loading } from "../../components/Loading";
 
 import coin from "images/umcoin.png";
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+
+const SHOP_CATEGORIES = [
+  { key: "profile", label: "Profile" },
+  { key: "decksEmotes", label: "Decks & Emotes" },
+  { key: "game", label: "Game" },
+  { key: "site", label: "Site" },
+];
 
 function parseGameId(input) {
   const trimmed = (input || "").trim();
@@ -71,7 +76,6 @@ export default function Shop(props) {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
-  const isPhoneDevice = useIsPhoneDevice();
   const location = useLocation();
   const [autoBuyTriggered, setAutoBuyTriggered] = useState(false);
 
@@ -299,41 +303,38 @@ export default function Shop(props) {
       .catch(errorAlert);
   }
 
-  const shopItems = shopInfo.shopItems.map((item, i) => {
+  const itemsByCategory = useMemo(() => {
+    const map = Object.fromEntries(SHOP_CATEGORIES.map((c) => [c.key, []]));
+    shopInfo.shopItems.forEach((item, i) => {
+      const cat =
+        item.category && map[item.category]
+          ? item.category
+          : SHOP_CATEGORIES[0].key;
+      map[cat].push({ item, index: i });
+    });
+    return map;
+  }, [shopInfo.shopItems]);
+
+  const renderShopCard = ({ item, index: i }) => {
     const numOwned = user.itemsOwned[item.key] || 0;
     const disabled = item.disabled || numOwned === item.limit;
-
-    const price = (
-      <Stack
-        direction="row"
-        spacing={1}
-        sx={{
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Typography>{item.price}</Typography>
-        <img src={coin} style={{ width: "20px", height: "20px" }} />
-      </Stack>
-    );
 
     return (
       <Grid2
         size={{
           xs: 12,
-          sm: 6,
-          md: 3,
+          md: 6,
         }}
         key={i}
       >
         <Card
           variant="outlined"
-          sx={{
-            height: "100%",
+          sx={(theme) => ({
             width: "100%",
+            height: "100%",
             opacity: disabled ? "50%" : undefined,
-            minHeight: isPhoneDevice ? undefined : "15em",
-          }}
+            borderColor: theme.palette.primary.main,
+          })}
         >
           <CardActionArea
             disabled={disabled}
@@ -348,64 +349,53 @@ export default function Shop(props) {
                 onBuyItem(i);
               }
             }}
-            sx={{
-              height: "100%",
-              width: "100%",
-            }}
+            sx={{ px: 1.5, py: 1 }}
           >
-            <CardContent
-              sx={{
-                height: "100%",
-                width: "100%",
-              }}
+            <Stack
+              direction="row"
+              spacing={1.5}
+              alignItems="center"
+              sx={{ width: "100%" }}
             >
-              <Stack
-                direction={isPhoneDevice ? "row" : "column"}
-                spacing={1}
-                sx={{
-                  height: "100%",
-                  width: "100%",
-                }}
-              >
-                <Stack
-                  direction="column"
-                  spacing={1}
-                  sx={{
-                    height: "100%",
-                    flex: "1",
-                    marginBottom: isPhoneDevice ? undefined : 1,
-                  }}
-                >
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography
-                      variant="h3"
-                      sx={{ flex: isPhoneDevice ? "1" : undefined }}
-                    >
-                      {item.name}
-                    </Typography>
-                    {isPhoneDevice && price}
-                  </Stack>
-                  <Typography variant="caption">
-                    Owned: {user.itemsOwned[item.key] || 0}
+              <Stack sx={{ flex: 1, minWidth: 0 }}>
+                <Stack direction="row" spacing={1} alignItems="baseline">
+                  <Typography variant="h3" sx={{ lineHeight: 1.2 }}>
+                    {item.name}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Owned: {numOwned}
                     {item.limit != null && ` / ${item.limit}`}
                   </Typography>
-                  <Paper
-                    sx={{
-                      p: 1,
-                      flex: isPhoneDevice ? undefined : "1",
-                    }}
-                  >
-                    <Typography variant="body2">{item.desc}</Typography>
-                  </Paper>
                 </Stack>
-                {!isPhoneDevice && <Box sx={{ pt: 1 }}>{price}</Box>}
+                <Typography
+                  variant="body2"
+                  sx={{
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    lineHeight: 1.4,
+                    minHeight: "calc(2 * 1.4em)",
+                  }}
+                >
+                  {item.desc}
+                </Typography>
               </Stack>
-            </CardContent>
+              <Stack
+                direction="row"
+                spacing={0.5}
+                alignItems="center"
+                sx={{ flexShrink: 0 }}
+              >
+                <Typography>{item.price}</Typography>
+                <img src={coin} style={{ width: "20px", height: "20px" }} />
+              </Stack>
+            </Stack>
           </CardActionArea>
         </Card>
       </Grid2>
     );
-  });
+  };
 
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
 
@@ -449,9 +439,59 @@ export default function Shop(props) {
       {activeTab === "shop" && (
         <>
           <Divider flexItem orientation="horizontal" />
-          <Grid2 container spacing={1}>
-            {shopItems}
-          </Grid2>
+          <Stack spacing={2.5} sx={{ pt: 1 }}>
+            {SHOP_CATEGORIES.map((c) => {
+              const entries = itemsByCategory[c.key] || [];
+              if (entries.length === 0) return null;
+              return (
+                <Box key={c.key}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={1.5}
+                    sx={{ mb: 1.5 }}
+                  >
+                    <Box
+                      sx={(theme) => ({
+                        flex: 1,
+                        height: "1px",
+                        background: `linear-gradient(to right, transparent, ${theme.palette.primary.main}99)`,
+                      })}
+                    />
+                    <Typography
+                      variant="h4"
+                      sx={(theme) => ({
+                        fontWeight: 700,
+                        letterSpacing: "0.28em",
+                        textTransform: "uppercase",
+                        color: theme.palette.primary.main,
+                        fontSize: { xs: 16, md: 20 },
+                        whiteSpace: "nowrap",
+                        "&::before, &::after": {
+                          content: '"\\25C6"',
+                          margin: "0 0.65em",
+                          fontSize: "0.7em",
+                          opacity: 0.7,
+                        },
+                      })}
+                    >
+                      {c.label}
+                    </Typography>
+                    <Box
+                      sx={(theme) => ({
+                        flex: 1,
+                        height: "1px",
+                        background: `linear-gradient(to left, transparent, ${theme.palette.primary.main}99)`,
+                      })}
+                    />
+                  </Stack>
+                  <Grid2 container spacing={1}>
+                    {entries.map((entry) => renderShopCard(entry))}
+                  </Grid2>
+                </Box>
+              );
+            })}
+          </Stack>
         </>
       )}
 
