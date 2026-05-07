@@ -299,6 +299,8 @@
   flex-direction: column;
   gap: 12px;
   margin-top: 8px;
+  flex: 1;
+  min-height: 0;
 }
 
 .draw-it-replay-grid {
@@ -383,6 +385,14 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+.draw-it-replay .draw-canvas {
+  max-height: 100%;
+  min-height: 0;
 }
 
 .draw-it-replay-controls {
