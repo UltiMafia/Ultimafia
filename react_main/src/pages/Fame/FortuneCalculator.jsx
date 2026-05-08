@@ -29,7 +29,7 @@ const JOINT_DAMP_INDEPENDENT = 0.7;
 const ANCHOR_WR = 0.1;
 const ANCHOR_PAYOUT = 80;
 const INDEPENDENT_CAP = 120;
-const MIN_FORTUNE_GAMES = 5;
+const MIN_FORTUNE_GAMES = 25;
 const LOW_SAMPLE_PAYOUT = 60;
 
 const MAJOR_NAMES = ["Village", "Mafia", "RedMafia", "Cult"];

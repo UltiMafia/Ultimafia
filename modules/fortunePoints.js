@@ -33,7 +33,7 @@ const JOINT_DAMP_INDEPENDENT = 0.7;
 
 // Setups with fewer than this many ranked/competitive plays always pay a flat
 // LOW_SAMPLE_PAYOUT regardless of computed winrate — small samples are noisy.
-const MIN_FORTUNE_GAMES = 5;
+const MIN_FORTUNE_GAMES = 25;
 const LOW_SAMPLE_PAYOUT = 60;
 
 // Priors when a faction has no ranked/competitive history yet.
