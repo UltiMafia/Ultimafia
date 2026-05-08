@@ -100,8 +100,9 @@ describe("modules/fortunePoints", function () {
     function winratesFor(map) {
       const out = {};
       for (const [f, rate] of Object.entries(map)) {
-        // Build ranked rows that yield the target rate at the smallest sample.
-        const denom = 10;
+        // Build ranked rows that yield the target rate at a sample above
+        // MIN_FORTUNE_GAMES so the formula path runs (not the low-sample flat).
+        const denom = 30;
         const wins = Math.round(rate * denom);
         const losses = denom - wins;
         out[f] = [];
@@ -190,7 +191,7 @@ describe("modules/fortunePoints", function () {
     function winratesFor(map) {
       const out = {};
       for (const [f, rate] of Object.entries(map)) {
-        const denom = 10;
+        const denom = 30;
         const wins = Math.round(rate * denom);
         out[f] = [];
         for (let i = 0; i < wins; i++) out[f].push(["ranked", true]);
@@ -336,7 +337,7 @@ describe("modules/fortunePoints", function () {
       // Jester 5% solo would be ~113.14; joint damp 0.7 → ~79.20 → 79.
       const alignmentWinRates = {
         Mafia: (function () {
-          const wins = 4, losses = 6;
+          const wins = 12, losses = 18;
           const rows = [];
           for (let i = 0; i < wins; i++) rows.push(["ranked", true]);
           for (let i = 0; i < losses; i++) rows.push(["ranked", false]);
