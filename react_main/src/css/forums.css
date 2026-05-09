@@ -669,6 +669,284 @@
   }
 }
 
+.thread-wrapper .thread-main-row {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-start;
+  gap: var(--mui-spacing);
+  margin-top: var(--mui-spacing);
+}
+
+.thread-wrapper .thread-post-col {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.thread-wrapper .thread-post-col .post {
+  margin-top: 0;
+}
+
+.thread-wrapper .restricted-panel {
+  flex: 0 0 280px;
+  width: 280px;
+  padding: var(--mui-spacing);
+  border-left: 3px solid var(--theme-color);
+  box-sizing: border-box;
+}
+
+.thread-wrapper .restricted-panel-header {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.thread-wrapper .restricted-panel-header i {
+  opacity: 0.4;
+}
+
+.thread-wrapper .restricted-panel-header i.active {
+  color: var(--theme-color);
+  opacity: 1;
+}
+
+.thread-wrapper .restricted-panel-subtitle {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.thread-wrapper .restricted-poster-list {
+  display: flex;
+  flex-flow: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.thread-wrapper .poster-list-item {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  background-color: var(--scheme-color-sec);
+  border-radius: 4px;
+}
+
+.thread-wrapper .poster-list-item.author-item {
+  border-left: 2px solid var(--theme-color);
+}
+
+.thread-wrapper .poster-list-item .chip-label {
+  font-size: 11px;
+  opacity: 0.55;
+  font-style: italic;
+  margin-left: auto;
+}
+
+.thread-wrapper .chip-remove {
+  margin-left: auto;
+  font-size: 11px;
+  cursor: pointer;
+  opacity: 0.4;
+}
+
+.thread-wrapper .chip-remove:hover {
+  opacity: 1;
+  color: #e05252;
+}
+
+.thread-wrapper .no-extra-posters {
+  font-size: 12px;
+  opacity: 0.5;
+  font-style: italic;
+}
+
+.thread-wrapper .add-poster-row {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.thread-wrapper .add-poster-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--scheme-color-border);
+  background-color: var(--scheme-color);
+  color: var(--scheme-color-text);
+  font-size: 13px;
+}
+
+.thread-wrapper .restricted-notice {
+  margin-top: var(--mui-spacing);
+  padding: 8px 12px;
+  border-radius: 4px;
+  background-color: var(--scheme-color-sec);
+  opacity: 0.75;
+  font-size: 14px;
+}
+
+.thread-wrapper .btns-wrapper i.active {
+  color: var(--theme-color);
+}
+
+.thread-wrapper .roster-restricted-badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background-color: var(--theme-color);
+  color: #fff;
+}
+
+.thread-wrapper .roster-restricted-badge.inactive {
+  background-color: transparent;
+  color: var(--scheme-color-text);
+  border: 1px solid var(--scheme-color-border);
+  opacity: 0.6;
+}
+
+.thread-wrapper .roster-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 10px;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.thread-wrapper .roster-entry {
+  display: flex;
+  flex-flow: column;
+  gap: 0;
+}
+
+.thread-wrapper .poster-list-item.clickable {
+  cursor: pointer;
+}
+
+.thread-wrapper .poster-list-item.clickable:hover {
+  background-color: var(--scheme-color);
+}
+
+.thread-wrapper .roster-tags {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.thread-wrapper .roster-tag-editor {
+  display: flex;
+  flex-flow: column;
+  gap: 4px;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  background-color: var(--scheme-color);
+  border-radius: 0 0 4px 4px;
+  border-top: 1px solid var(--scheme-color-border);
+}
+
+.thread-wrapper .tag-editor-row {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.thread-wrapper .tag-add-row {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+}
+
+.thread-wrapper .tag-add-row input[type="text"] {
+  flex: 1;
+  min-width: 0;
+  padding: 3px 7px;
+  border-radius: 4px;
+  border: 1px solid var(--scheme-color-border);
+  background-color: var(--scheme-color-sec);
+  color: var(--scheme-color-text);
+  font-size: 12px;
+}
+
+.thread-wrapper .roster-color-input {
+  width: 26px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: none;
+}
+
+.thread-wrapper .preset-chips {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 4px;
+  padding: 4px 0;
+  border-top: 1px solid var(--scheme-color-border);
+  border-bottom: 1px solid var(--scheme-color-border);
+  margin: 4px 0;
+}
+
+.thread-wrapper .preset-chip-wrap {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 2px;
+}
+
+.thread-wrapper .preset-chip {
+  cursor: pointer;
+  opacity: 0.85;
+}
+
+.thread-wrapper .preset-chip:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.thread-wrapper .preset-remove {
+  font-size: 9px;
+  margin-left: 0;
+}
+
+.thread-wrapper .preset-save-btn {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--theme-color);
+  color: var(--theme-color);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  opacity: 0.35;
+}
+
+.thread-wrapper .preset-save-btn:hover {
+  opacity: 0.85;
+  background-color: var(--theme-color);
+  color: #fff;
+}
+
 @media (max-width: 500px) {
   .md-content img {
     max-width: 100%;

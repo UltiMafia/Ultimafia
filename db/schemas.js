@@ -498,6 +498,24 @@ var schemas = {
     subscribers: [String], // Array of user IDs subscribed to this thread
     deleted: { type: Boolean, default: false },
     pending: { type: Boolean, default: false },
+    restricted: { type: Boolean, default: false },
+    tagPresets: [
+      {
+        text: { type: String, default: "" },
+        color: { type: String, default: "#888888" },
+      },
+    ],
+    roster: [
+      {
+        userId: String,
+        tags: [
+          {
+            text: { type: String, default: "" },
+            color: { type: String, default: "#888888" },
+          },
+        ],
+      },
+    ],
   }),
   ForumReply: new mongoose.Schema({
     id: { type: String, index: true },

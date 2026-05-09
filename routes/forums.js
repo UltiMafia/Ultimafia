@@ -298,7 +298,32 @@ router.get("/thread/:id", async function (req, res) {
           return await redis.getBasicUserInfo(subId, true);
         })
       );
+
+      // Check if user is in roster (for restriction)
+      const rosterIds = (thread.roster || []).map((r) => r.userId);
+      thread.isAllowedPoster = rosterIds.indexOf(userId) !== -1;
     }
+
+    if ((thread.roster || []).length > 0) {
+      thread.rosterUsers = await Promise.all(
+        (thread.roster || []).map(async (entry) => ({
+          user: await redis.getBasicUserInfo(entry.userId, true),
+          tags: (entry.tags || []).map((t) => ({
+            _id: String(t._id),
+            text: t.text,
+            color: t.color,
+          })),
+        }))
+      );
+    }
+
+    thread.tagPresets = (thread.tagPresets || []).map((p) => ({
+      _id: String(p._id),
+      text: p.text,
+      color: p.color,
+    }));
+
+    delete thread.roster;
 
     res.send(thread);
 
@@ -498,6 +523,11 @@ router.post("/thread", async function (req, res) {
       postDate: Date.now(),
       bumpDate: Date.now(),
     });
+
+    if (req.body.restricted) {
+      thread.restricted = true;
+    }
+
     await thread.save();
 
     // Create poll if poll data is provided
@@ -757,6 +787,38 @@ router.post("/thread/toggleLocked", async function (req, res) {
   }
 });
 
+router.post("/thread/toggleRestricted", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var threadId = String(req.body.thread);
+
+    var thread = await models.ForumThread.findOne({ id: threadId, deleted: false })
+      .select("author restricted")
+      .populate("author", "id");
+
+    if (!thread) {
+      errors.notFound(res, "That thread does not exist. It may have been removed.");
+      return;
+    }
+
+    if (thread.author.id !== userId) {
+      errors.forbidden(res, "Only the thread author can change this setting.");
+      return;
+    }
+
+    const newRestricted = !thread.restricted;
+    await models.ForumThread.updateOne(
+      { id: threadId },
+      { $set: { restricted: newRestricted } }
+    ).exec();
+
+    res.send({ restricted: newRestricted });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not update thread restriction. Please try again.");
+  }
+});
+
 router.post("/thread/edit", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
@@ -856,6 +918,145 @@ router.post("/thread/notify", async function (req, res) {
   }
 });
 
+router.post("/thread/roster", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var threadId = String(req.body.thread);
+    var action = String(req.body.action); // "add", "remove", "addTag", "removeTag"
+
+    var thread = await models.ForumThread.findOne({ id: threadId, deleted: false })
+      .select("author roster")
+      .populate("author", "id");
+
+    if (!thread) {
+      errors.notFound(res, "That thread does not exist. It may have been removed.");
+      return;
+    }
+
+    if (thread.author.id !== userId) {
+      errors.forbidden(res, "Only the thread author can manage the roster.");
+      return;
+    }
+
+    if (action === "add") {
+      var username = String(req.body.username || "").trim();
+
+      if (!username) {
+        errors.unprocessable(res, "Username is required.");
+        return;
+      }
+
+      const escaped = username.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const targetUser = await models.User.findOne({
+        name: new RegExp(`^${escaped}$`, "i"),
+      }).select("id");
+
+      if (!targetUser) {
+        errors.notFound(res, "User not found.");
+        return;
+      }
+
+      const alreadyIn = (thread.roster || []).some(
+        (r) => r.userId === targetUser.id
+      );
+      if (alreadyIn) {
+        errors.unprocessable(res, "User is already in the roster.");
+        return;
+      }
+
+      await models.ForumThread.updateOne(
+        { id: threadId },
+        { $push: { roster: { userId: targetUser.id, tags: [] } } }
+      ).exec();
+
+      const userInfo = await redis.getBasicUserInfo(targetUser.id, true);
+      res.send({ user: userInfo, tags: [] });
+
+    } else if (action === "remove") {
+      var targetUserId = String(req.body.userId || "").trim();
+
+      await models.ForumThread.updateOne(
+        { id: threadId },
+        { $pull: { roster: { userId: targetUserId } } }
+      ).exec();
+
+      res.sendStatus(200);
+
+    } else if (action === "addTag") {
+      var targetUserId = String(req.body.userId || "").trim();
+      var text = String(req.body.text || "").trim().slice(0, 30);
+      var color = String(req.body.color || "#888888");
+      if (!/^#[0-9a-fA-F]{6}$/.test(color)) color = "#888888";
+
+      if (!text) {
+        errors.unprocessable(res, "Tag text is required.");
+        return;
+      }
+
+      const updated = await models.ForumThread.findOneAndUpdate(
+        { id: threadId, "roster.userId": targetUserId },
+        { $push: { "roster.$.tags": { text, color } } },
+        { new: true }
+      ).select("roster");
+
+      const entry = (updated.roster || []).find((r) => r.userId === targetUserId);
+      const newTag = entry?.tags?.[entry.tags.length - 1];
+      res.send({ _id: String(newTag._id), text: newTag.text, color: newTag.color });
+
+    } else if (action === "removeTag") {
+      var targetUserId = String(req.body.userId || "").trim();
+      var tagId = String(req.body.tagId || "").trim();
+
+      await models.ForumThread.updateOne(
+        { id: threadId, "roster.userId": targetUserId },
+        { $pull: { "roster.$.tags": { _id: tagId } } }
+      ).exec();
+
+      res.sendStatus(200);
+
+    } else if (action === "savePreset") {
+      var text = String(req.body.text || "").trim().slice(0, 30);
+      var color = String(req.body.color || "#888888");
+      if (!/^#[0-9a-fA-F]{6}$/.test(color)) color = "#888888";
+
+      if (!text) {
+        errors.unprocessable(res, "Tag text is required.");
+        return;
+      }
+
+      const updatedPreset = await models.ForumThread.findOneAndUpdate(
+        { id: threadId },
+        { $push: { tagPresets: { text, color } } },
+        { new: true }
+      ).select("tagPresets");
+
+      const newPreset =
+        updatedPreset.tagPresets[updatedPreset.tagPresets.length - 1];
+      res.send({
+        _id: String(newPreset._id),
+        text: newPreset.text,
+        color: newPreset.color,
+      });
+
+    } else if (action === "removePreset") {
+      var presetId = String(req.body.presetId || "").trim();
+
+      await models.ForumThread.updateOne(
+        { id: threadId },
+        { $pull: { tagPresets: { _id: presetId } } }
+      ).exec();
+
+      res.sendStatus(200);
+
+    } else {
+      errors.unprocessable(res, "Invalid action.");
+    }
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not update roster. Please try again.");
+  }
+});
+
 router.post("/thread/move", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
@@ -913,7 +1114,7 @@ router.post("/reply", async function (req, res) {
       id: threadId,
       deleted: false,
     })
-      .select("board author replyCount locked replyNotify subscribers")
+      .select("board author replyCount locked replyNotify subscribers restricted roster")
       .populate("board", "id rank")
       .populate("author", "id");
 
@@ -939,6 +1140,15 @@ router.post("/reply", async function (req, res) {
     ) {
       errors.forbidden(res, "Thread is locked.");
       return;
+    }
+
+    if (thread.restricted) {
+      const isAuthor = thread.author.id === userId;
+      const isInRoster = (thread.roster || []).some((r) => r.userId === userId);
+      if (!isAuthor && !isInRoster) {
+        errors.forbidden(res, "This thread is restricted. Only selected users can post.");
+        return;
+      }
     }
 
     var page =
