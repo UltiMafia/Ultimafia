@@ -127,6 +127,7 @@ export default function Board(props) {
           >
             {thread.locked && <i className="fas fa-lock" />}
             {thread.pinned && <i className="fas fa-thumbtack" />}
+            {thread.restricted && <i className="fas fa-user-lock" title="Restricted thread" />}
             {thread.title}
           </Link>
           <NameWithAvatar
@@ -221,6 +222,7 @@ function CreateThreadModal(props) {
   const [pollQuestion, setPollQuestion] = useState("");
   const [pollOptions, setPollOptions] = useState("");
   const [pollExpiration, setPollExpiration] = useState("");
+  const [restricted, setRestricted] = useState(false);
 
   const errorAlert = useErrorAlert();
   const header = "Create Thread";
@@ -275,6 +277,14 @@ function CreateThreadModal(props) {
           </div>
         </>
       )}
+      <div className="field-wrapper">
+        <div className="label">Restrict Posting</div>
+        <input
+          type="checkbox"
+          checked={restricted}
+          onChange={(e) => setRestricted(e.target.checked)}
+        />
+      </div>
     </div>
   );
 
@@ -299,6 +309,7 @@ function CreateThreadModal(props) {
     setPollQuestion("");
     setPollOptions("");
     setPollExpiration("");
+    setRestricted(false);
   }
 
   function onPostThread() {
@@ -317,17 +328,21 @@ function CreateThreadModal(props) {
       };
     }
 
+    if (restricted) {
+      threadData.restricted = true;
+    }
+
     axios
       .post("/api/forums/thread", threadData)
       .then((res) => {
         props.setShow(false);
         props.setRedirect(`/community/forums/thread/${res.data}`);
 
-        // Reset poll fields
         setIncludePoll(false);
         setPollQuestion("");
         setPollOptions("");
         setPollExpiration("");
+        setRestricted(false);
       })
       .catch(errorAlert);
   }

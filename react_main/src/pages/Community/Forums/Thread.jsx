@@ -43,6 +43,10 @@ export default function Thread(props) {
   const [replyContent, setReplyContent] = useState("");
   const [page, setPage] = useState(1);
   const [scrolled, setScrolled] = useState(false);
+  const [newRosterUsername, setNewRosterUsername] = useState("");
+  const [expandedRosterId, setExpandedRosterId] = useState(null);
+  const [newTagText, setNewTagText] = useState("");
+  const [newTagColor, setNewTagColor] = useState("#888888");
 
   const replyFormRef = useRef();
   const { threadId } = useParams();
@@ -224,9 +228,186 @@ export default function Thread(props) {
     );
   }
 
+  function onRestrictToggled() {
+    axios
+      .post("/api/forums/thread/toggleRestricted", { thread: threadInfo.id })
+      .then((res) => {
+        setThreadInfo(
+          update(threadInfo, { restricted: { $set: res.data.restricted } })
+        );
+      })
+      .catch(errorAlert);
+  }
+
+  function onAddRosterEntry() {
+    if (!newRosterUsername.trim()) return;
+    axios
+      .post("/api/forums/thread/roster", {
+        thread: threadInfo.id,
+        action: "add",
+        username: newRosterUsername.trim(),
+      })
+      .then((res) => {
+        setThreadInfo(
+          update(threadInfo, {
+            rosterUsers: { $set: [...(threadInfo.rosterUsers || []), res.data] },
+          })
+        );
+        setNewRosterUsername("");
+        setExpandedRosterId(res.data.user.id);
+      })
+      .catch(errorAlert);
+  }
+
+  function onRemoveRosterEntry(targetUserId) {
+    axios
+      .post("/api/forums/thread/roster", {
+        thread: threadInfo.id,
+        action: "remove",
+        userId: targetUserId,
+      })
+      .then(() => {
+        setThreadInfo(
+          update(threadInfo, {
+            rosterUsers: {
+              $set: (threadInfo.rosterUsers || []).filter(
+                (e) => e.user.id !== targetUserId
+              ),
+            },
+          })
+        );
+        if (expandedRosterId === targetUserId) setExpandedRosterId(null);
+      })
+      .catch(errorAlert);
+  }
+
+  function onAddTag(targetUserId) {
+    if (!newTagText.trim()) return;
+    axios
+      .post("/api/forums/thread/roster", {
+        thread: threadInfo.id,
+        action: "addTag",
+        userId: targetUserId,
+        text: newTagText.trim(),
+        color: newTagColor,
+      })
+      .then((res) => {
+        setThreadInfo(
+          update(threadInfo, {
+            rosterUsers: {
+              $set: (threadInfo.rosterUsers || []).map((e) =>
+                e.user.id === targetUserId
+                  ? { ...e, tags: [...(e.tags || []), res.data] }
+                  : e
+              ),
+            },
+          })
+        );
+      })
+      .catch(errorAlert);
+  }
+
+  function onRemoveTag(targetUserId, tagId) {
+    axios
+      .post("/api/forums/thread/roster", {
+        thread: threadInfo.id,
+        action: "removeTag",
+        userId: targetUserId,
+        tagId,
+      })
+      .then(() => {
+        setThreadInfo(
+          update(threadInfo, {
+            rosterUsers: {
+              $set: (threadInfo.rosterUsers || []).map((e) =>
+                e.user.id === targetUserId
+                  ? { ...e, tags: (e.tags || []).filter((t) => t._id !== tagId) }
+                  : e
+              ),
+            },
+          })
+        );
+      })
+      .catch(errorAlert);
+  }
+
+  function onSavePreset() {
+    if (!newTagText.trim()) {
+      errorAlert("Type a tag name first, then click the bookmark to save it.");
+      return;
+    }
+    axios
+      .post("/api/forums/thread/roster", {
+        thread: threadInfo.id,
+        action: "savePreset",
+        text: newTagText.trim(),
+        color: newTagColor,
+      })
+      .then((res) => {
+        setThreadInfo(
+          update(threadInfo, {
+            tagPresets: {
+              $set: [...(threadInfo.tagPresets || []), res.data],
+            },
+          })
+        );
+      })
+      .catch(errorAlert);
+  }
+
+  function onRemovePreset(presetId) {
+    axios
+      .post("/api/forums/thread/roster", {
+        thread: threadInfo.id,
+        action: "removePreset",
+        presetId,
+      })
+      .then(() => {
+        setThreadInfo(
+          update(threadInfo, {
+            tagPresets: {
+              $set: (threadInfo.tagPresets || []).filter(
+                (p) => p._id !== presetId
+              ),
+            },
+          })
+        );
+      })
+      .catch(errorAlert);
+  }
+
+  function onApplyPreset(preset, targetUserId) {
+    axios
+      .post("/api/forums/thread/roster", {
+        thread: threadInfo.id,
+        action: "addTag",
+        userId: targetUserId,
+        text: preset.text,
+        color: preset.color,
+      })
+      .then((res) => {
+        setThreadInfo(
+          update(threadInfo, {
+            rosterUsers: {
+              $set: (threadInfo.rosterUsers || []).map((e) =>
+                e.user.id === targetUserId
+                  ? { ...e, tags: [...(e.tags || []), res.data] }
+                  : e
+              ),
+            },
+          })
+        );
+      })
+      .catch(errorAlert);
+  }
+
   if (redirect) return <Navigate to={redirect} />;
 
   if (!loaded) return <Loading small />;
+
+  const isAuthor = user.id === threadInfo.author?.id;
+  const canReply =
+    !threadInfo.restricted || isAuthor || threadInfo.isAllowedPoster;
 
   const replies = threadInfo.replies.map((reply) => (
     <Post
@@ -240,6 +421,7 @@ export default function Thread(props) {
       setVoteItemHolder={setThreadInfo}
       itemKey="replies"
       locked={threadInfo.locked}
+      canReply={canReply}
       permaLink={`/community/forums/thread/${threadId}?reply=${reply.id}`}
       onReplyClick={() => onReplyClick(reply)}
       onDelete={() => onThreadPageNav(page)}
@@ -250,21 +432,176 @@ export default function Thread(props) {
 
   return (
     <div className="thread-wrapper">
-      <Post
-        postInfo={threadInfo}
-        itemType="thread"
-        voteItem={threadInfo}
-        setVoteItemHolder={setThreadInfo}
-        locked={threadInfo.locked}
-        onReplyClick={() => onReplyClick()}
-        onDelete={onThreadDeleted}
-        onRestore={() => onThreadPageNav(page)}
-        onEdit={() => onThreadPageNav(page)}
-        onNotifyToggled={onNotifyToggled}
-        onPinToggled={onPinToggled}
-        onLockToggled={onLockToggled}
-        hasTitle
-      />
+      <div className="thread-main-row">
+        <div className="thread-post-col">
+          <Post
+            postInfo={threadInfo}
+            itemType="thread"
+            voteItem={threadInfo}
+            setVoteItemHolder={setThreadInfo}
+            locked={threadInfo.locked}
+            canReply={canReply}
+            onReplyClick={() => onReplyClick()}
+            onDelete={onThreadDeleted}
+            onRestore={() => onThreadPageNav(page)}
+            onEdit={() => onThreadPageNav(page)}
+            onNotifyToggled={onNotifyToggled}
+            onPinToggled={onPinToggled}
+            onLockToggled={onLockToggled}
+            onRestrictToggled={onRestrictToggled}
+            hasTitle
+          />
+        </div>
+        {((threadInfo.rosterUsers || []).length > 0 || isAuthor) && (
+          <div className="restricted-panel span-panel">
+            <div className="restricted-panel-header">
+              <i className="fas fa-users" />
+              <span>People</span>
+              <span
+                className={`roster-restricted-badge${threadInfo.restricted ? "" : " inactive"}`}
+              >
+                Restricted
+              </span>
+            </div>
+            <div className="restricted-poster-list">
+              {(threadInfo.rosterUsers || []).length === 0 && (
+                <span className="no-extra-posters">No one added yet.</span>
+              )}
+              {(threadInfo.rosterUsers || []).map((entry) => (
+                <div key={entry.user.id} className="roster-entry">
+                  <div
+                    className={`poster-list-item${isAuthor ? " clickable" : ""}`}
+                    onClick={() =>
+                      isAuthor &&
+                      setExpandedRosterId(
+                        expandedRosterId === entry.user.id
+                          ? null
+                          : entry.user.id
+                      )
+                    }
+                  >
+                    <NameWithAvatar
+                      small
+                      id={entry.user.id}
+                      name={entry.user.name}
+                      avatar={entry.user.avatar}
+                      vanityUrl={entry.user.vanityUrl}
+                    />
+                    <div className="roster-tags">
+                      {(entry.tags || []).map((tag) => (
+                        <span
+                          key={tag._id}
+                          className="roster-tag"
+                          style={{ backgroundColor: tag.color }}
+                        >
+                          {tag.text}
+                        </span>
+                      ))}
+                    </div>
+                    {isAuthor && (
+                      <i
+                        className="fas fa-times chip-remove"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRemoveRosterEntry(entry.user.id);
+                        }}
+                        title="Remove"
+                      />
+                    )}
+                  </div>
+                  {isAuthor && expandedRosterId === entry.user.id && (
+                    <div className="roster-tag-editor">
+                      {(entry.tags || []).map((tag) => (
+                        <div key={tag._id} className="tag-editor-row">
+                          <span
+                            className="roster-tag"
+                            style={{ backgroundColor: tag.color }}
+                          >
+                            {tag.text}
+                          </span>
+                          <i
+                            className="fas fa-times chip-remove"
+                            onClick={() => onRemoveTag(entry.user.id, tag._id)}
+                            title="Remove tag"
+                          />
+                        </div>
+                      ))}
+                      {(threadInfo.tagPresets || []).length > 0 && (
+                        <div className="preset-chips">
+                          {(threadInfo.tagPresets || []).map((preset) => (
+                            <div key={preset._id} className="preset-chip-wrap">
+                              <span
+                                className="roster-tag preset-chip"
+                                style={{ backgroundColor: preset.color }}
+                                onClick={() =>
+                                  onApplyPreset(preset, entry.user.id)
+                                }
+                                title="Click to apply"
+                              >
+                                {preset.text}
+                              </span>
+                              <i
+                                className="fas fa-times chip-remove preset-remove"
+                                onClick={() => onRemovePreset(preset._id)}
+                                title="Delete preset"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <div className="tag-add-row">
+                        <input
+                          type="text"
+                          value={newTagText}
+                          onChange={(e) => setNewTagText(e.target.value)}
+                          onKeyDown={(e) =>
+                            e.key === "Enter" && onAddTag(entry.user.id)
+                          }
+                          placeholder="Tag name..."
+                        />
+                        <input
+                          className="roster-color-input"
+                          type="color"
+                          value={newTagColor}
+                          onChange={(e) => setNewTagColor(e.target.value)}
+                        />
+                        <div
+                          className="btn btn-theme-sec"
+                          onClick={() => onAddTag(entry.user.id)}
+                        >
+                          Add
+                        </div>
+                        <div
+                          className="preset-save-btn"
+                          onClick={onSavePreset}
+                          title="Save as preset"
+                        >
+                          <i className="fas fa-bookmark" />
+                          Save
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            {isAuthor && (
+              <div className="add-poster-row">
+                <input
+                  type="text"
+                  value={newRosterUsername}
+                  onChange={(e) => setNewRosterUsername(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && onAddRosterEntry()}
+                  placeholder="Add username..."
+                />
+                <div className="btn btn-theme-sec" onClick={onAddRosterEntry}>
+                  Add
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
       <ThreadPoll threadId={threadId} locked={threadInfo.locked} />
       <div className="reply-form-wrapper" ref={replyFormRef}>
         {showReplyForm && (
@@ -299,7 +636,8 @@ export default function Thread(props) {
           onNav={onThreadPageNav}
         />
         {user.perms.postReply &&
-          (!threadInfo.locked || user.perms.postInLocked) && (
+          (!threadInfo.locked || user.perms.postInLocked) &&
+          canReply && (
             <div style={{ marginTop: "16px" }}>
               <Button
                 variant="contained"
@@ -311,6 +649,12 @@ export default function Thread(props) {
               </Button>
             </div>
           )}
+        {threadInfo.restricted && !canReply && (
+          <div className="restricted-notice">
+            <i className="fas fa-user-lock" /> You are not allowed to post in
+            this thread.
+          </div>
+        )}
       </div>
     </div>
   );
@@ -327,6 +671,7 @@ function Post(props) {
   const hasTitle = props.hasTitle;
   const permaLink = props.permaLink;
   const locked = props.locked;
+  const canReply = props.canReply !== false;
   const onReplyClick = props.onReplyClick;
   const onDelete = props.onDelete;
   const onRestore = props.onRestore;
@@ -334,6 +679,7 @@ function Post(props) {
   const onNotifyToggled = props.onNotifyToggled;
   const onPinToggled = props.onPinToggled;
   const onLockToggled = props.onLockToggled;
+  const onRestrictToggled = props.onRestrictToggled;
 
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(postInfo.content);
@@ -482,6 +828,9 @@ function Post(props) {
               <div className="title">
                 {locked && <i className="fas fa-lock" />}
                 {postInfo.pinned && <i className="fas fa-thumbtack" />}
+                {postInfo.restricted && (
+                  <i className="fas fa-user-lock" title="Restricted thread" />
+                )}
                 {postInfo.title}
               </div>
             )}
@@ -503,7 +852,8 @@ function Post(props) {
               <>
                 {onReplyClick &&
                   user.perms.postReply &&
-                  (!locked || user.perms.postInLocked) && (
+                  (!locked || user.perms.postInLocked) &&
+                  canReply && (
                     <i className="fas fa-reply" onClick={onReplyClick} />
                   )}
                 {itemType === "thread" && user.perms.pinThreads && (
@@ -520,6 +870,19 @@ function Post(props) {
                     onClick={onToggleLockedClick}
                   />
                 )}
+                {itemType === "thread" &&
+                  onRestrictToggled &&
+                  user.id === postInfo.author?.id && (
+                    <i
+                      className={`fas fa-user-lock${postInfo.restricted ? " active" : ""}`}
+                      onClick={onRestrictToggled}
+                      title={
+                        postInfo.restricted
+                          ? "Remove posting restriction"
+                          : "Restrict posting to selected users"
+                      }
+                    />
+                  )}
                 {(user.perms.deleteAnyPost ||
                   (user.perms.deleteOwnPost &&
                     postInfo.author.id === user.id)) && (
