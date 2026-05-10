@@ -16,6 +16,7 @@ services:
       - "3001:3001"
     volumes:
       - ./:/home/um/
+      - web_node_modules:/home/um/react_main/node_modules
     networks:
       - my_net
     logging:
@@ -42,3 +43,9 @@ services:
       - "9230:9230"
       - "9231:9231"
       - "9232:9232"
+    volumes:
+      - backend_node_modules:/home/um/node_modules
+
+volumes:
+  web_node_modules:
+  backend_node_modules:

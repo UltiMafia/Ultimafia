@@ -499,6 +499,7 @@ var schemas = {
     deleted: { type: Boolean, default: false },
     pending: { type: Boolean, default: false },
     restricted: { type: Boolean, default: false },
+    mutedTags: [{ type: String }],
     tagPresets: [
       {
         text: { type: String, default: "" },

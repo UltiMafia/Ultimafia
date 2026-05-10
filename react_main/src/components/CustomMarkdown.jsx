@@ -206,6 +206,61 @@ function centerify(children) {
   return transform(Array.isArray(children) ? children : [children]);
 }
 
+function mentionify(children, tagColorMap) {
+  if (!children) return children;
+
+  function transform(nodeChildren) {
+    return nodeChildren.flatMap((child, idx) => {
+      if (typeof child !== "string") return child;
+
+      const parts = [];
+      // Only match button-inserted pings: @!TagName (role) or @:Username (user)
+      const regex = /@([!:])([\w-]+)/g;
+      let lastIndex = 0;
+      let match;
+
+      while ((match = regex.exec(child)) !== null) {
+        const before = child.slice(lastIndex, match.index);
+        if (before) parts.push(before);
+
+        const isRole = match[1] === "!";
+        const name = match[2];
+        const tagColor = isRole && tagColorMap && tagColorMap[name.toLowerCase()];
+
+        if (isRole) {
+          parts.push(
+            <span
+              key={`mention-${idx}-${match.index}`}
+              className="forum-mention forum-mention-tag"
+              style={tagColor ? { backgroundColor: tagColor } : {}}
+            >
+              @{name}
+            </span>
+          );
+        } else {
+          parts.push(
+            <span
+              key={`mention-${idx}-${match.index}`}
+              className="forum-mention forum-mention-user"
+            >
+              @{name}
+            </span>
+          );
+        }
+
+        lastIndex = regex.lastIndex;
+      }
+
+      const after = child.slice(lastIndex);
+      if (after) parts.push(after);
+
+      return parts.length ? parts : child;
+    });
+  }
+
+  return transform(Array.isArray(children) ? children : [children]);
+}
+
 function roleifyMarkdown(children, siteInfo) {
   if (!children) return children;
   const roles = siteInfo?.roles?.Mafia || [];
@@ -254,6 +309,11 @@ function roleifyMarkdown(children, siteInfo) {
 
 export default function CustomMarkdown(props) {
   const siteInfo = useContext(SiteInfoContext);
+  // Build a lowercase-keyed map of tag text → color for mention coloring
+  const tagColorMap = props.mentionTags
+    ? Object.fromEntries(props.mentionTags.map((t) => [t.text.toLowerCase(), t.color]))
+    : null;
+
   return (
     <ReactMarkdown
       components={{
@@ -278,7 +338,10 @@ export default function CustomMarkdown(props) {
             <p {...rest}>
               {roleifyMarkdown(
                 emotify(
-                  colorify(sizeify(centerify(spoilerify(properties.children))))
+                  mentionify(
+                    colorify(sizeify(centerify(spoilerify(properties.children)))),
+                    tagColorMap
+                  )
                 ),
                 siteInfo
               )}

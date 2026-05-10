@@ -992,6 +992,8 @@ export function TextEditor(props) {
       generateMarkdownPreview={(markdown) =>
         Promise.resolve(<CustomMarkdown>{markdown}</CustomMarkdown>)
       }
+      suggestionTriggerCharacters={props.suggestionTriggerCharacters}
+      loadSuggestions={props.loadSuggestions}
     />
   );
 }
