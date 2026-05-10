@@ -9,6 +9,7 @@ const ArrayHash = require("../../core/ArrayHash");
 const questionList = require("./data/questions");
 const neighborQuestionList = require("./data/neighborQuestions");
 const decisionsList = require("./data/decisions");
+const SpeedUpMeeting = require("./SpeedUpMeeting");
 
 // Acronym letter weights use dictionary-weighted first-letter-of-word
 // frequency (how often each letter begins a unique English word), not
@@ -111,6 +112,7 @@ module.exports = class WackyWordsGame extends Game {
 
     this.currentRound = 0;
     this.currentResponse = "";
+    this.speedUpMeeting = undefined;
     this.shuffledQuestions = Random.randomizeArray(questionList);
     this.secondPromptBank = this.shuffledQuestions;
     this.promptMode = false;
@@ -125,6 +127,23 @@ module.exports = class WackyWordsGame extends Game {
 
     // hacky implementation
     this.playerHasVoted = {};
+
+    this.events.on("state", (stateInfo) => {
+      if (stateInfo.name !== "Night" && stateInfo.name !== "Day") return;
+
+      if (this.speedUpMeeting) {
+        this.speedUpMeeting.finished = true;
+      }
+
+      this.speedUpMeeting = this.createMeeting(SpeedUpMeeting);
+      for (let player of this.players) {
+        this.speedUpMeeting.join(player);
+      }
+      this.speedUpMeeting.init();
+      for (let player of this.players) {
+        player.sendMeeting(this.speedUpMeeting);
+      }
+    });
   }
 
   start() {
@@ -159,6 +178,11 @@ module.exports = class WackyWordsGame extends Game {
     if (this.getStateName() == "Night") {
       this.saveResponseHistory("name");
       this.emptyResponseHistory();
+
+      if (this.speedUpMeeting) {
+        this.speedUpMeeting.finished = true;
+      }
+
       if (this.shuffledQuestions.length > 0) {
         this.promptMode = false;
         this.hostChoosePrompts = false;
@@ -185,10 +209,13 @@ module.exports = class WackyWordsGame extends Game {
           this.generateNewQuestion();
         }
       }
+
       return;
     }
 
     if (this.getStateName() == "Day") {
+      this.clearTimer("speedUp");
+
       this.saveResponseHistory("anon");
       let action = new Action({
         actor: {
@@ -218,6 +245,15 @@ module.exports = class WackyWordsGame extends Game {
       }
       this.queueAction(action);
     }
+  }
+
+  async speedUp() {
+    for (const player of this.players) {
+      if (player.alive && !player.left && !this.playerHasVoted[player.name]) {
+        await this.vegPlayer(player);
+      }
+    }
+    this.gotoNextState();
   }
 
   generateNewQuestion() {

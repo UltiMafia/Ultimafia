@@ -632,6 +632,8 @@ function getRolesByAlignment(siteInfo, gameType, roles) {
 
   for (let i in roles) {
     eventsPerRoleset[i] = {};
+    rolesDividedByAlignment[i] = {};
+    rolesDividedByRoleset[i] = {};
     for (let role in roles[i]) {
       let roleName = role.split(":")[0];
       const modifiers = role.split(":")[1];
@@ -643,7 +645,7 @@ function getRolesByAlignment(siteInfo, gameType, roles) {
         continue;
       }
 
-      for (let roleObj of siteInfo.roles[gameType]) {
+      for (let roleObj of (siteInfo.roles?.[gameType] ?? [])) {
         if (roleObj.name === roleName) {
           const alignment = roleObj.alignment;
 
@@ -662,11 +664,8 @@ function getRolesByAlignment(siteInfo, gameType, roles) {
             continue;
           }
 
-          if (!rolesDividedByAlignment[i]) rolesDividedByAlignment[i] = {};
           if (!rolesDividedByAlignment[i][alignment])
             rolesDividedByAlignment[i][alignment] = {};
-          if (!rolesDividedByRoleset[i])
-            rolesDividedByRoleset[i] = {};
 
           rolesDividedByAlignment[i][alignment][role] = roles[i][role];
           rolesDividedByRoleset[i][role] = roles[i][role];

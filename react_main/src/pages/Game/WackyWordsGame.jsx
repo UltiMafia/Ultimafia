@@ -50,7 +50,7 @@ export default function WackyWordsGame() {
   const isSpectator = game.isSpectator;
 
   const spectatorMeetingFilter = (m) => {
-    if (m.name === "Vote Kick") return false;
+    if (m.name === "Vote Kick" || m.name === "Speed Up") return false;
     if (m.inputType === "text") return false;
     if (m.inputType === "showAllOptions") return false;
     return true;
@@ -80,6 +80,7 @@ export default function WackyWordsGame() {
     (m) =>
       m &&
       m.name !== "Vote Kick" &&
+      m.name !== "Speed Up" &&
       !m.finished &&
       m.amMember &&
       !(m.votes && m.votes[self])
@@ -128,7 +129,7 @@ export default function WackyWordsGame() {
               renderRowEnd={extraInfo ? renderPlayerRowEnd : undefined}
             />
             <ActionList
-              meetingFilter={(m) => m.name === "Vote Kick"}
+              meetingFilter={(m) => m.name === "Vote Kick" || m.name === "Speed Up"}
               hideIfEmpty
               scrollable={false}
             />
@@ -190,7 +191,7 @@ export default function WackyWordsGame() {
               renderRowEnd={extraInfo ? renderPlayerRowEnd : undefined}
             />
             <ActionList
-              meetingFilter={(m) => m.name === "Vote Kick"}
+              meetingFilter={(m) => m.name === "Vote Kick" || m.name === "Speed Up"}
               hideIfEmpty
               scrollable={false}
             />
@@ -369,7 +370,7 @@ function AcrotopiaActionArea({ hasPending, meetingFilter }) {
     >
       <ActionList
         bare
-        meetingFilter={meetingFilter || ((m) => m.name !== "Vote Kick")}
+        meetingFilter={meetingFilter || ((m) => m.name !== "Vote Kick" && m.name !== "Speed Up")}
         hideIfEmpty
         className="acrotopia-action-list"
       />

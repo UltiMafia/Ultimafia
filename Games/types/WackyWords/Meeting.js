@@ -6,14 +6,12 @@ module.exports = class WackyWordsMeeting extends Meeting {
   }
 
   vote(voter, selection) {
-    if (this.name != "Give Response") {
-      this.game.markVoted(voter);
-      super.vote(voter, selection);
-      return;
-    }
-
     this.game.markVoted(voter);
     super.vote(voter, selection);
+
+    if (this.game.speedUpMeeting && !this.game.speedUpMeeting.finished) {
+      this.game.speedUpMeeting.enableVote(voter);
+    }
   }
 
   rejectVote(voter, selection, msg) {
