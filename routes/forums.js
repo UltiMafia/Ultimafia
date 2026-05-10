@@ -10,38 +10,59 @@ const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
 const router = express.Router();
 
-async function notifyMentionedUsers(content, userId, userName, link) {
-  const mentionMatches = content.match(/@[\w-]+/g) || [];
-  const mentionNames = Array.from(
-    new Set(mentionMatches.map((mention) => mention.replace("@", "")))
+async function notifyMentionedUsers(content, userId, userName, link, threadId) {
+  // @!TagName = role ping, @Name = user ping
+  const roleMentions = Array.from(
+    new Set((content.match(/@!([\w-]+)/g) || []).map((m) => m.slice(2)))
+  );
+  const userMentions = Array.from(
+    new Set((content.match(/@:([\w-]+)/g) || []).map((m) => m.slice(2)))
   );
 
-  if (mentionNames.length === 0) return;
+  if (roleMentions.length === 0 && userMentions.length === 0) return;
 
-  const mentionedUserIds = new Set();
-
-  for (const mentionName of mentionNames) {
-    const escapedMentionName = mentionName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const mentionRegex = new RegExp(`^${escapedMentionName}$`, "i");
-    const mentionedUser = await models.User.findOne({ name: mentionRegex }).select(
-      "id"
-    );
-
-    if (mentionedUser && mentionedUser.id !== userId) {
-      mentionedUserIds.add(mentionedUser.id);
+  // Role pings
+  if (roleMentions.length > 0 && threadId) {
+    const thread = await models.ForumThread.findOne({ id: threadId }).select("roster");
+    if (thread) {
+      const rosterByTag = {};
+      for (const entry of thread.roster || []) {
+        for (const tag of entry.tags || []) {
+          const key = tag.text.toLowerCase();
+          if (!rosterByTag[key]) rosterByTag[key] = [];
+          rosterByTag[key].push(entry.userId);
+        }
+      }
+      const roleIds = [];
+      for (const roleName of roleMentions) {
+        for (const uid of rosterByTag[roleName.toLowerCase()] || []) {
+          if (uid !== userId) roleIds.push(uid);
+        }
+      }
+      if (roleIds.length > 0) {
+        routeUtils.createNotification(
+          { content: `${userName} mentioned your role in a forum post.`, icon: "at", link },
+          roleIds
+        );
+      }
     }
   }
 
-  if (mentionedUserIds.size === 0) return;
-
-  routeUtils.createNotification(
-    {
-      content: `${userName} mentioned you in a forum post.`,
-      icon: "at",
-      link,
-    },
-    Array.from(mentionedUserIds)
-  );
+  // User pings
+  const userIds = [];
+  for (const mentionName of userMentions) {
+    const escaped = mentionName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const mentionedUser = await models.User.findOne({
+      name: new RegExp(`^${escaped}$`, "i"),
+    }).select("id");
+    if (mentionedUser && mentionedUser.id !== userId) userIds.push(mentionedUser.id);
+  }
+  if (userIds.length > 0) {
+    routeUtils.createNotification(
+      { content: `${userName} mentioned you in a forum post.`, icon: "at", link },
+      userIds
+    );
+  }
 }
 
 router.get("/categories", async function (req, res) {
@@ -300,8 +321,12 @@ router.get("/thread/:id", async function (req, res) {
       );
 
       // Check if user is in roster (for restriction)
-      const rosterIds = (thread.roster || []).map((r) => r.userId);
-      thread.isAllowedPoster = rosterIds.indexOf(userId) !== -1;
+      const rosterEntry = (thread.roster || []).find((r) => r.userId === userId);
+      thread.isAllowedPoster = !!rosterEntry;
+      const mutedSet = new Set(thread.mutedTags || []);
+      thread.isMuted =
+        mutedSet.size > 0 &&
+        !!(rosterEntry && (rosterEntry.tags || []).some((t) => mutedSet.has(t.text)));
     }
 
     if ((thread.roster || []).length > 0) {
@@ -322,6 +347,7 @@ router.get("/thread/:id", async function (req, res) {
       text: p.text,
       color: p.color,
     }));
+
 
     delete thread.roster;
 
@@ -1057,6 +1083,51 @@ router.post("/thread/roster", async function (req, res) {
   }
 });
 
+router.post("/thread/roster/mute", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!userId) return;
+
+    const threadId = String(req.body.thread);
+    const tagText = String(req.body.tagText);
+
+    const thread = await models.ForumThread.findOne({ id: threadId })
+      .select("author mutedTags")
+      .populate("author", "id -_id");
+
+    if (!thread) {
+      errors.notFound(res, "Thread not found.");
+      return;
+    }
+
+    if (thread.author.id !== userId) {
+      errors.forbidden(res, "Only the thread author can mute roles.");
+      return;
+    }
+
+    const mutedTags = thread.mutedTags || [];
+    const alreadyMuted = mutedTags.includes(tagText);
+
+    if (alreadyMuted) {
+      await models.ForumThread.updateOne(
+        { id: threadId },
+        { $pull: { mutedTags: tagText } }
+      );
+    } else {
+      await models.ForumThread.updateOne(
+        { id: threadId },
+        { $addToSet: { mutedTags: tagText } }
+      );
+    }
+
+    res.send({ muted: !alreadyMuted, tagText });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not update mute status. Please try again.");
+  }
+});
+
 router.post("/thread/move", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
@@ -1142,10 +1213,22 @@ router.post("/reply", async function (req, res) {
       return;
     }
 
+    const isAuthor = thread.author.id === userId;
+    const rosterEntry = (thread.roster || []).find((r) => r.userId === userId);
+    const mutedTagSet = new Set(thread.mutedTags || []);
+    const isMutedByTag =
+      !isAuthor &&
+      mutedTagSet.size > 0 &&
+      rosterEntry &&
+      (rosterEntry.tags || []).some((t) => mutedTagSet.has(t.text));
+
+    if (isMutedByTag) {
+      errors.forbidden(res, "You have been muted in this thread.");
+      return;
+    }
+
     if (thread.restricted) {
-      const isAuthor = thread.author.id === userId;
-      const isInRoster = (thread.roster || []).some((r) => r.userId === userId);
-      if (!isAuthor && !isInRoster) {
+      if (!isAuthor && !rosterEntry) {
         errors.forbidden(res, "This thread is restricted. Only selected users can post.");
         return;
       }
@@ -1204,7 +1287,8 @@ router.post("/reply", async function (req, res) {
       content,
       userId,
       userName,
-      `/community/forums/thread/${threadId}?reply=${reply.id}`
+      `/community/forums/thread/${threadId}?reply=${reply.id}`,
+      threadId
     );
 
     // Notify thread author if they have notifications enabled

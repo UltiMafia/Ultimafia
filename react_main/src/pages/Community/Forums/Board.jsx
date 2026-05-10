@@ -277,13 +277,13 @@ function CreateThreadModal(props) {
           </div>
         </>
       )}
-      <div className="field-wrapper">
-        <div className="label">Restrict Posting</div>
+      <div className="field-wrapper" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         <input
           type="checkbox"
           checked={restricted}
           onChange={(e) => setRestricted(e.target.checked)}
         />
+        <div className="label" style={{ margin: 0 }}>People List</div>
       </div>
     </div>
   );

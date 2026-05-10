@@ -35,6 +35,96 @@ function getFirstDateValue(author, keys) {
   return null;
 }
 
+function MentionEditor({ value, onChange, rosterUsers, mentionTagMap }) {
+  const editorRef = useRef(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerQuery, setPickerQuery] = useState("");
+
+  const allCandidates = [
+    ...mentionTagMap.map((t) => ({ type: "tag", name: t.text, color: t.color })),
+    ...(rosterUsers || [])
+      .map((e) => ({ type: "user", name: e.user?.name }))
+      .filter((c) => c.name),
+  ];
+
+  const filtered = pickerQuery
+    ? allCandidates.filter((c) =>
+        c.name.toLowerCase().includes(pickerQuery.toLowerCase())
+      )
+    : allCandidates;
+
+  function insertAtCursor(text) {
+    const ta = editorRef.current?.querySelector("textarea");
+    const pos = ta ? ta.selectionStart : value.length;
+    const next = value.slice(0, pos) + text + " " + value.slice(pos);
+    onChange(next);
+    setPickerOpen(false);
+    setPickerQuery("");
+    setTimeout(() => {
+      if (ta) {
+        ta.focus();
+        const newPos = pos + text.length + 1;
+        ta.setSelectionRange(newPos, newPos);
+      }
+    }, 0);
+  }
+
+  function onSelect(candidate) {
+    if (candidate.type === "tag") {
+      insertAtCursor(`@!${candidate.name}`);
+    } else {
+      insertAtCursor(`@:${candidate.name}`);
+    }
+  }
+
+  return (
+    <div className="mention-autocomplete-wrapper" ref={editorRef}>
+      <TextEditor value={value} onChange={onChange} />
+      <div className="mention-picker-row">
+        <button
+          className="mention-ping-btn"
+          type="button"
+          onClick={() => { setPickerOpen((o) => !o); setPickerQuery(""); }}
+        >
+          <i className="fas fa-at" /> Ping
+        </button>
+        {pickerOpen && (
+          <div className="mention-dropdown">
+            <input
+              className="mention-search"
+              autoFocus
+              placeholder="Search..."
+              value={pickerQuery}
+              onChange={(e) => setPickerQuery(e.target.value)}
+            />
+            {filtered.length === 0 && (
+              <div className="mention-no-results">No matches</div>
+            )}
+            {filtered.map((c) => (
+              <div
+                key={`${c.type}-${c.name}`}
+                className="mention-item"
+                onMouseDown={(e) => { e.preventDefault(); onSelect(c); }}
+              >
+                {c.type === "tag" ? (
+                  <span className="mention-item-tag" style={{ backgroundColor: c.color }}>
+                    {c.name}
+                    <span className="mention-item-type">role</span>
+                  </span>
+                ) : (
+                  <span className="mention-item-user">
+                    <i className="fas fa-user" /> {c.name}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Thread(props) {
   const [threadInfo, setThreadInfo] = useState({});
   const [loaded, setLoaded] = useState(false);
@@ -47,6 +137,7 @@ export default function Thread(props) {
   const [expandedRosterId, setExpandedRosterId] = useState(null);
   const [newTagText, setNewTagText] = useState("");
   const [newTagColor, setNewTagColor] = useState("#888888");
+  const [rolesDashboardOpen, setRolesDashboardOpen] = useState(false);
 
   const replyFormRef = useRef();
   const { threadId } = useParams();
@@ -281,25 +372,57 @@ export default function Thread(props) {
       .catch(errorAlert);
   }
 
-  function onAddTag(targetUserId) {
-    if (!newTagText.trim()) return;
+  function onMuteTag(tagText) {
     axios
-      .post("/api/forums/thread/roster", {
+      .post("/api/forums/thread/roster/mute", {
         thread: threadInfo.id,
-        action: "addTag",
-        userId: targetUserId,
-        text: newTagText.trim(),
-        color: newTagColor,
+        tagText,
       })
       .then((res) => {
+        const next = res.data.muted
+          ? [...(threadInfo.mutedTags || []), tagText]
+          : (threadInfo.mutedTags || []).filter((t) => t !== tagText);
+        setThreadInfo(update(threadInfo, { mutedTags: { $set: next } }));
+      })
+      .catch(errorAlert);
+  }
+
+function onAddTag(targetUserId) {
+    if (!newTagText.trim()) return;
+    const text = newTagText.trim();
+    const alreadyPreset = (threadInfo.tagPresets || []).some(
+      (p) => p.text === text
+    );
+    const tagReq = axios.post("/api/forums/thread/roster", {
+      thread: threadInfo.id,
+      action: "addTag",
+      userId: targetUserId,
+      text,
+      color: newTagColor,
+    });
+    const presetReq = alreadyPreset
+      ? Promise.resolve(null)
+      : axios.post("/api/forums/thread/roster", {
+          thread: threadInfo.id,
+          action: "savePreset",
+          text,
+          color: newTagColor,
+        });
+    Promise.all([tagReq, presetReq])
+      .then(([tagRes, presetRes]) => {
         setThreadInfo(
           update(threadInfo, {
             rosterUsers: {
               $set: (threadInfo.rosterUsers || []).map((e) =>
                 e.user.id === targetUserId
-                  ? { ...e, tags: [...(e.tags || []), res.data] }
+                  ? { ...e, tags: [...(e.tags || []), tagRes.data] }
                   : e
               ),
+            },
+            tagPresets: {
+              $set: presetRes
+                ? [...(threadInfo.tagPresets || []), presetRes.data]
+                : threadInfo.tagPresets,
             },
           })
         );
@@ -406,8 +529,22 @@ export default function Thread(props) {
   if (!loaded) return <Loading small />;
 
   const isAuthor = user.id === threadInfo.author?.id;
+  const isMuted = !!threadInfo.isMuted || false;
+
+  // Build tag color map from all applied tags across roster users + presets
+  const mentionTagMap = (() => {
+    const map = {};
+    for (const p of (threadInfo.tagPresets || []))
+      map[p.text.toLowerCase()] = { text: p.text, color: p.color };
+    for (const entry of (threadInfo.rosterUsers || []))
+      for (const t of (entry.tags || []))
+        if (!map[t.text.toLowerCase()])
+          map[t.text.toLowerCase()] = { text: t.text, color: t.color };
+    return Object.values(map);
+  })();
   const canReply =
-    !threadInfo.restricted || isAuthor || threadInfo.isAllowedPoster;
+    !isMuted &&
+    (!threadInfo.restricted || isAuthor || threadInfo.isAllowedPoster);
 
   const replies = threadInfo.replies.map((reply) => (
     <Post
@@ -427,6 +564,7 @@ export default function Thread(props) {
       onDelete={() => onThreadPageNav(page)}
       onRestore={() => onThreadPageNav(page)}
       onEdit={() => onThreadPageNav(page)}
+      mentionTags={mentionTagMap}
     />
   ));
 
@@ -449,20 +587,74 @@ export default function Thread(props) {
             onPinToggled={onPinToggled}
             onLockToggled={onLockToggled}
             onRestrictToggled={onRestrictToggled}
+            mentionTags={mentionTagMap}
             hasTitle
           />
         </div>
-        {((threadInfo.rosterUsers || []).length > 0 || isAuthor) && (
+        {((threadInfo.rosterUsers || []).length > 0 || threadInfo.restricted) && (
           <div className="restricted-panel span-panel">
             <div className="restricted-panel-header">
               <i className="fas fa-users" />
               <span>People</span>
-              <span
-                className={`roster-restricted-badge${threadInfo.restricted ? "" : " inactive"}`}
-              >
-                Restricted
-              </span>
+              {isAuthor && (
+                <span
+                  className={`roster-restricted-badge${threadInfo.restricted ? "" : " inactive"} clickable-badge`}
+                  onClick={onRestrictToggled}
+                  title={threadInfo.restricted ? "Click to unrestrict" : "Click to restrict posting to people list"}
+                >
+                  {threadInfo.restricted ? "Restricted" : "Unrestricted"}
+                </span>
+              )}
+              {!isAuthor && threadInfo.restricted && (
+                <span className="roster-restricted-badge">
+                  Restricted
+                </span>
+              )}
             </div>
+            {isAuthor && (() => {
+              const seenTexts = new Set();
+              const allTags = [];
+              for (const entry of (threadInfo.rosterUsers || [])) {
+                for (const tag of (entry.tags || [])) {
+                  if (!seenTexts.has(tag.text)) {
+                    seenTexts.add(tag.text);
+                    allTags.push(tag);
+                  }
+                }
+              }
+              if (allTags.length === 0) return null;
+              const mutedSet = new Set(threadInfo.mutedTags || []);
+              return (
+                <div className="roles-section">
+                  <div
+                    className="roles-section-label clickable-badge"
+                    onClick={() => setRolesDashboardOpen((o) => !o)}
+                  >
+                    Roles Dashboard
+                    <i className={`fas fa-chevron-${rolesDashboardOpen ? "up" : "down"}`} style={{ marginLeft: 6, fontSize: 10 }} />
+                  </div>
+                  {rolesDashboardOpen && (
+                    <div className="roles-list">
+                      {allTags.map((tag) => {
+                        const muted = mutedSet.has(tag.text);
+                        return (
+                          <div key={tag.text} className="role-row">
+                            <span className="roster-tag" style={{ backgroundColor: tag.color }}>
+                              {tag.text}
+                            </span>
+                            <i
+                              className={`fas fa-volume-mute role-mute-btn${muted ? " active" : ""}`}
+                              onClick={() => onMuteTag(tag.text)}
+                              title={muted ? "Unmute role" : "Mute role"}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
             <div className="restricted-poster-list">
               {(threadInfo.rosterUsers || []).length === 0 && (
                 <span className="no-extra-posters">No one added yet.</span>
@@ -606,7 +798,12 @@ export default function Thread(props) {
       <div className="reply-form-wrapper" ref={replyFormRef}>
         {showReplyForm && (
           <div className="reply-form span-panel">
-            <TextEditor value={replyContent} onChange={setReplyContent} />
+            <MentionEditor
+              value={replyContent}
+              onChange={setReplyContent}
+              rosterUsers={threadInfo.rosterUsers}
+              mentionTagMap={mentionTagMap}
+            />
             <div className="post-btn-wrapper">
               <div className="post-reply btn btn-theme" onClick={onPostReply}>
                 Post
@@ -649,7 +846,12 @@ export default function Thread(props) {
               </Button>
             </div>
           )}
-        {threadInfo.restricted && !canReply && (
+        {isMuted && (
+          <div className="restricted-notice muted-notice">
+            <i className="fas fa-volume-mute" /> You have been muted in this thread.
+          </div>
+        )}
+        {!isMuted && threadInfo.restricted && !canReply && (
           <div className="restricted-notice">
             <i className="fas fa-user-lock" /> You are not allowed to post in
             this thread.
@@ -680,6 +882,7 @@ function Post(props) {
   const onPinToggled = props.onPinToggled;
   const onLockToggled = props.onLockToggled;
   const onRestrictToggled = props.onRestrictToggled;
+  const mentionTags = props.mentionTags;
 
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(postInfo.content);
@@ -870,19 +1073,6 @@ function Post(props) {
                     onClick={onToggleLockedClick}
                   />
                 )}
-                {itemType === "thread" &&
-                  onRestrictToggled &&
-                  user.id === postInfo.author?.id && (
-                    <i
-                      className={`fas fa-user-lock${postInfo.restricted ? " active" : ""}`}
-                      onClick={onRestrictToggled}
-                      title={
-                        postInfo.restricted
-                          ? "Remove posting restriction"
-                          : "Restrict posting to selected users"
-                      }
-                    />
-                  )}
                 {(user.perms.deleteAnyPost ||
                   (user.perms.deleteOwnPost &&
                     postInfo.author.id === user.id)) && (
@@ -993,7 +1183,7 @@ function Post(props) {
         </div>
         {!editing && (
           <div className="md-content">
-            <CustomMarkdown>{content}</CustomMarkdown>
+            <CustomMarkdown mentionTags={mentionTags}>{content}</CustomMarkdown>
           </div>
         )}
         {editing && (

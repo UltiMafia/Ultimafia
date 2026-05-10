@@ -2,6 +2,9 @@
 FROM node:22-alpine AS development
 WORKDIR /home/um/react_main
 
+COPY package*.json ./
+RUN npm install
+
 EXPOSE 80
 EXPOSE 3001
 CMD ["npm", "start"]
