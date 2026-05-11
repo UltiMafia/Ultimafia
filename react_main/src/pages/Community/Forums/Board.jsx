@@ -223,6 +223,9 @@ function CreateThreadModal(props) {
   const [pollOptions, setPollOptions] = useState("");
   const [pollExpiration, setPollExpiration] = useState("");
   const [restricted, setRestricted] = useState(false);
+  const [includePetition, setIncludePetition] = useState(false);
+  const [petitionTitle, setPetitionTitle] = useState("");
+  const [petitionBody, setPetitionBody] = useState("");
 
   const errorAlert = useErrorAlert();
   const header = "Create Thread";
@@ -285,6 +288,39 @@ function CreateThreadModal(props) {
         />
         <div className="label" style={{ margin: 0 }}>People List</div>
       </div>
+      <div className="field-wrapper" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <input
+          type="checkbox"
+          checked={includePetition}
+          onChange={(e) => setIncludePetition(e.target.checked)}
+        />
+        <div className="label" style={{ margin: 0 }}>Petition</div>
+      </div>
+      {includePetition && (
+        <>
+          <div className="field-wrapper">
+            <div className="label">Petition Title</div>
+            <input
+              type="text"
+              value={petitionTitle}
+              onChange={(e) => setPetitionTitle(e.target.value)}
+              placeholder="What is your petition?"
+              maxLength={200}
+            />
+          </div>
+          <div className="field-wrapper">
+            <div className="label">Petition Body</div>
+            <textarea
+              value={petitionBody}
+              onChange={(e) => setPetitionBody(e.target.value)}
+              placeholder="Describe what you are petitioning for..."
+              maxLength={5000}
+              rows={4}
+              style={{ width: "100%", resize: "vertical" }}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 
@@ -310,6 +346,9 @@ function CreateThreadModal(props) {
     setPollOptions("");
     setPollExpiration("");
     setRestricted(false);
+    setIncludePetition(false);
+    setPetitionTitle("");
+    setPetitionBody("");
   }
 
   function onPostThread() {
@@ -332,6 +371,13 @@ function CreateThreadModal(props) {
       threadData.restricted = true;
     }
 
+    if (includePetition && petitionTitle.trim()) {
+      threadData.petition = {
+        title: petitionTitle.trim(),
+        body: petitionBody,
+      };
+    }
+
     axios
       .post("/api/forums/thread", threadData)
       .then((res) => {
@@ -343,6 +389,9 @@ function CreateThreadModal(props) {
         setPollOptions("");
         setPollExpiration("");
         setRestricted(false);
+        setIncludePetition(false);
+        setPetitionTitle("");
+        setPetitionBody("");
       })
       .catch(errorAlert);
   }

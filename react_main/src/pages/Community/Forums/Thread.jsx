@@ -138,6 +138,9 @@ export default function Thread(props) {
   const [newTagText, setNewTagText] = useState("");
   const [newTagColor, setNewTagColor] = useState("#888888");
   const [rolesDashboardOpen, setRolesDashboardOpen] = useState(false);
+  const [petitionEditing, setPetitionEditing] = useState(false);
+  const [petitionEditTitle, setPetitionEditTitle] = useState("");
+  const [petitionEditBody, setPetitionEditBody] = useState("");
 
   const replyFormRef = useRef();
   const { threadId } = useParams();
@@ -524,6 +527,75 @@ function onAddTag(targetUserId) {
       .catch(errorAlert);
   }
 
+  function onSignPetition() {
+    axios
+      .post("/api/forums/thread/petition/sign", { thread: threadInfo.id })
+      .then((res) => {
+        setThreadInfo(
+          update(threadInfo, {
+            petition: {
+              signers: { $set: res.data.signers },
+              signCount: { $set: res.data.signCount },
+              hasSigned: { $set: res.data.hasSigned },
+            },
+          })
+        );
+      })
+      .catch(errorAlert);
+  }
+
+  function onStartEditPetition() {
+    setPetitionEditTitle(threadInfo.petition?.title || "");
+    setPetitionEditBody(threadInfo.petition?.body || "");
+    setPetitionEditing(true);
+  }
+
+  function onCancelEditPetition() {
+    setPetitionEditing(false);
+    setPetitionEditTitle("");
+    setPetitionEditBody("");
+  }
+
+  function onSavePetition() {
+    if (!petitionEditTitle.trim()) {
+      errorAlert("Petition title is required.");
+      return;
+    }
+    axios
+      .post("/api/forums/thread/petition", {
+        thread: threadInfo.id,
+        action: "set",
+        title: petitionEditTitle.trim(),
+        body: petitionEditBody,
+      })
+      .then((res) => {
+        setThreadInfo(
+          update(threadInfo, { petition: { $set: res.data.petition } })
+        );
+        setPetitionEditing(false);
+      })
+      .catch(errorAlert);
+  }
+
+  function onRemovePetition() {
+    const shouldRemove = window.confirm(
+      "Are you sure you wish to remove this petition?"
+    );
+    if (!shouldRemove) return;
+    axios
+      .post("/api/forums/thread/petition", {
+        thread: threadInfo.id,
+        action: "remove",
+      })
+      .then(() => {
+        setThreadInfo(
+          update(threadInfo, { petition: { $set: null } })
+        );
+        setPetitionEditing(false);
+      })
+      .catch(errorAlert);
+  }
+
   if (redirect) return <Navigate to={redirect} />;
 
   if (!loaded) return <Loading small />;
@@ -591,6 +663,9 @@ function onAddTag(targetUserId) {
             hasTitle
           />
         </div>
+        {(((threadInfo.rosterUsers || []).length > 0 || threadInfo.restricted) ||
+          threadInfo.petition) && (
+          <div className="thread-sidebar-col">
         {((threadInfo.rosterUsers || []).length > 0 || threadInfo.restricted) && (
           <div className="restricted-panel span-panel">
             <div className="restricted-panel-header">
@@ -791,6 +866,103 @@ function onAddTag(targetUserId) {
                 </div>
               </div>
             )}
+          </div>
+        )}
+        {threadInfo.petition && (
+          <div className="petition-panel span-panel">
+            <div className="petition-panel-header">
+              <i className="fas fa-file-signature" />
+              <span>Petition</span>
+              <span className="petition-sign-count-badge" title="Total signatures">
+                {threadInfo.petition.signCount || 0}
+              </span>
+              {isAuthor && !petitionEditing && (
+                <>
+                  <i
+                    className="fas fa-pencil-alt petition-action-btn"
+                    onClick={onStartEditPetition}
+                    title="Edit petition"
+                  />
+                  <i
+                    className="fas fa-times petition-action-btn"
+                    onClick={onRemovePetition}
+                    title="Remove petition"
+                  />
+                </>
+              )}
+            </div>
+            {petitionEditing ? (
+              <div className="petition-edit-form">
+                <input
+                  type="text"
+                  value={petitionEditTitle}
+                  onChange={(e) => setPetitionEditTitle(e.target.value)}
+                  placeholder="Petition title..."
+                  maxLength={200}
+                />
+                <textarea
+                  value={petitionEditBody}
+                  onChange={(e) => setPetitionEditBody(e.target.value)}
+                  placeholder="Describe what you are petitioning for..."
+                  maxLength={5000}
+                  rows={4}
+                />
+                <div className="petition-edit-buttons">
+                  <div className="btn btn-theme" onClick={onSavePetition}>
+                    Save
+                  </div>
+                  <div className="btn btn-theme-sec" onClick={onCancelEditPetition}>
+                    Cancel
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="petition-title">{threadInfo.petition.title}</div>
+                {threadInfo.petition.body && (
+                  <div className="petition-body">
+                    <CustomMarkdown>{threadInfo.petition.body}</CustomMarkdown>
+                  </div>
+                )}
+                <div className="petition-signers">
+                  {(threadInfo.petition.signers || []).length === 0 && (
+                    <span className="petition-no-signers">No signatures yet.</span>
+                  )}
+                  {(threadInfo.petition.signers || []).map((signer) => (
+                    <div
+                      className="petition-signer"
+                      key={signer.id}
+                      title={signer.name}
+                    >
+                      <NameWithAvatar
+                        small
+                        id={signer.id}
+                        name=" "
+                        avatar={signer.avatar}
+                        vanityUrl={signer.vanityUrl}
+                      />
+                    </div>
+                  ))}
+                </div>
+                {user.loggedIn && (
+                  <div
+                    className={`petition-sign-btn btn ${
+                      threadInfo.petition.hasSigned ? "btn-theme-sec" : "btn-theme"
+                    }`}
+                    onClick={onSignPetition}
+                  >
+                    <i
+                      className={`fas fa-${
+                        threadInfo.petition.hasSigned ? "check" : "signature"
+                      }`}
+                    />
+                    {threadInfo.petition.hasSigned ? "Signed" : "Sign"}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
           </div>
         )}
       </div>
