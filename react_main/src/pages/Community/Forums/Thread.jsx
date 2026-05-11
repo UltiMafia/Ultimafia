@@ -1020,13 +1020,6 @@ function Post(props) {
       <div className="main-wrapper">
         <div className="heading">
           <div className="heading-left">
-            {postInfo.author?.forumBanner && (
-              <img
-                className="forum-author-banner"
-                src={`/uploads/${postInfo.author.id}_forumBanner.webp`}
-                alt={`${postInfo.author.name} forum banner`}
-              />
-            )}
             {hasTitle && (
               <div className="title">
                 {locked && <i className="fas fa-lock" />}
@@ -1037,17 +1030,26 @@ function Post(props) {
                 {postInfo.title}
               </div>
             )}
-            <div className="post-info">
-              <NameWithAvatar
-                id={postInfo.author.id}
-                name={postInfo.author.name}
-                avatar={postInfo.author.avatar}
-                groups={postInfo.author.groups}
-                vanityUrl={postInfo.author.vanityUrl}
-                includeMiniprofile
-                large
-                subContent={authorSubContent}
-              />
+            <div className="author-row">
+              <div className="post-info">
+                <NameWithAvatar
+                  id={postInfo.author.id}
+                  name={postInfo.author.name}
+                  avatar={postInfo.author.avatar}
+                  groups={postInfo.author.groups}
+                  vanityUrl={postInfo.author.vanityUrl}
+                  includeMiniprofile
+                  large
+                  subContent={authorSubContent}
+                />
+              </div>
+              {postInfo.author?.forumBanner && (
+                <img
+                  className="forum-author-banner"
+                  src={`/uploads/${postInfo.author.id}_forumBanner.webp`}
+                  alt={`${postInfo.author.name} forum banner`}
+                />
+              )}
             </div>
           </div>
           <div className="btns-wrapper">
