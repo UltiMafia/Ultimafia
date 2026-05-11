@@ -451,12 +451,25 @@
   min-width: 0;
 }
 
+.thread-wrapper .post .author-row {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.thread-wrapper .post .author-row .post-info {
+  flex: 0 0 auto;
+}
+
 .thread-wrapper .forum-author-banner {
-  width: 100%;
-  max-height: 100px;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+  height: 100px;
   object-fit: cover;
   border-radius: 6px;
-  margin-bottom: 10px;
   border: 1px solid var(--scheme-color-border);
 }
 
@@ -1225,5 +1238,18 @@
 
   .forums .thread-wrapper .post .btns-wrapper i:first-child {
     margin-left: 0px;
+  }
+
+  .forums .thread-wrapper .post .author-row {
+    flex-flow: column;
+    align-items: stretch;
+    width: 100%;
+    gap: var(--mui-spacing);
+  }
+
+  .forums .thread-wrapper .forum-author-banner {
+    width: 100%;
+    height: auto;
+    max-height: 100px;
   }
 }
