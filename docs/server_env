@@ -47,5 +47,11 @@ RESERVED_NAMES={}
 #optional
 REPORT_DISCORD_WEBHOOK=[{"boards": ["boardShortId"], "hook": "discordWebhookUrl"}]
 
+# optional - GitHub PAT used to file user-submitted feedback as issues
+# Token needs "issues: write" permission on the repo below
+GITHUB_ACCESS_TOKEN=
+GITHUB_FEEDBACK_OWNER=ultimafia
+GITHUB_FEEDBACK_REPO=ultimafia
+
 #optional - dev use only
 DEV_USERNAME=x
