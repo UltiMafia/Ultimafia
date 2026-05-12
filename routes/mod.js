@@ -3557,9 +3557,23 @@ router.post("/reports/:id/complete", async (req, res) => {
       .getReportReporters(report)
       .map((r) => r.userId)
       .filter((id, i, arr) => arr.indexOf(id) === i);
+
+    let verdictSentence;
+    if (dismissed) {
+      verdictSentence = "No violation was issued.";
+    } else if (warning) {
+      verdictSentence = "A warning was issued.";
+    } else {
+      const isPermanent = banLengthMs === 0;
+      const banDuration = isPermanent
+        ? "permanently"
+        : `for ${banLengthStr}`;
+      verdictSentence = `A violation was issued and the user has been ${finalRuling.banType} banned ${banDuration}.`;
+    }
+
     await routeUtils.createNotification(
       {
-        content: `Your report on ${reportedName} has been completed.`,
+        content: `Your report on ${reportedName} has been completed. ${verdictSentence}`,
         icon: "flag",
       },
       reporterIds
