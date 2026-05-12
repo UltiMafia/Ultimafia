@@ -348,6 +348,23 @@ router.get("/thread/:id", async function (req, res) {
       color: p.color,
     }));
 
+    if (thread.petition && thread.petition.active) {
+      const signerIds = thread.petition.signers || [];
+      const signerUsers = await Promise.all(
+        signerIds.map((sid) => redis.getBasicUserInfo(sid, true))
+      );
+      thread.petition = {
+        active: true,
+        title: thread.petition.title || "",
+        body: thread.petition.body || "",
+        signers: signerUsers,
+        signCount: signerUsers.length,
+        hasSigned: userId ? signerIds.includes(userId) : false,
+      };
+    } else {
+      thread.petition = null;
+    }
+
 
     delete thread.roster;
 
@@ -552,6 +569,19 @@ router.post("/thread", async function (req, res) {
 
     if (req.body.restricted) {
       thread.restricted = true;
+    }
+
+    if (req.body.petition) {
+      const pTitle = String(req.body.petition.title || "").trim().slice(0, 200);
+      const pBody = String(req.body.petition.body || "").slice(0, 5000);
+      if (pTitle.length > 0) {
+        thread.petition = {
+          active: true,
+          title: pTitle,
+          body: pBody,
+          signers: [],
+        };
+      }
     }
 
     await thread.save();
@@ -1125,6 +1155,139 @@ router.post("/thread/roster/mute", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not update mute status. Please try again.");
+  }
+});
+
+router.post("/thread/petition", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!userId) return;
+
+    const threadId = String(req.body.thread);
+    const action = String(req.body.action || "set");
+
+    const thread = await models.ForumThread.findOne({ id: threadId, deleted: false })
+      .select("author petition")
+      .populate("author", "id");
+
+    if (!thread) {
+      errors.notFound(res, "That thread does not exist. It may have been removed.");
+      return;
+    }
+
+    if (thread.author.id !== userId) {
+      errors.forbidden(res, "Only the thread author can manage the petition.");
+      return;
+    }
+
+    if (action === "remove") {
+      await models.ForumThread.updateOne(
+        { id: threadId },
+        {
+          $set: {
+            petition: { active: false, title: "", body: "", signers: [] },
+          },
+        }
+      ).exec();
+      res.send({ petition: null });
+      return;
+    }
+
+    const title = String(req.body.title || "").trim().slice(0, 200);
+    const body = String(req.body.body || "").slice(0, 5000);
+
+    if (!title) {
+      errors.unprocessable(res, "Petition title is required.");
+      return;
+    }
+
+    const wasActive = !!(thread.petition && thread.petition.active);
+    const preservedSigners = wasActive ? (thread.petition.signers || []) : [];
+
+    await models.ForumThread.updateOne(
+      { id: threadId },
+      {
+        $set: {
+          "petition.active": true,
+          "petition.title": title,
+          "petition.body": body,
+          ...(wasActive ? {} : { "petition.signers": [] }),
+        },
+      }
+    ).exec();
+
+    const signerUsers = await Promise.all(
+      preservedSigners.map((sid) => redis.getBasicUserInfo(sid, true))
+    );
+
+    res.send({
+      petition: {
+        active: true,
+        title,
+        body,
+        signers: signerUsers,
+        signCount: signerUsers.length,
+        hasSigned: preservedSigners.includes(userId),
+      },
+    });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not update petition. Please try again.");
+  }
+});
+
+router.post("/thread/petition/sign", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!userId) return;
+
+    const threadId = String(req.body.thread);
+
+    const thread = await models.ForumThread.findOne({ id: threadId, deleted: false })
+      .select("petition");
+
+    if (!thread) {
+      errors.notFound(res, "That thread does not exist. It may have been removed.");
+      return;
+    }
+
+    if (!thread.petition || !thread.petition.active) {
+      errors.notFound(res, "This thread does not have a petition.");
+      return;
+    }
+
+    const signers = thread.petition.signers || [];
+    const alreadySigned = signers.includes(userId);
+
+    if (alreadySigned) {
+      await models.ForumThread.updateOne(
+        { id: threadId },
+        { $pull: { "petition.signers": userId } }
+      ).exec();
+    } else {
+      await models.ForumThread.updateOne(
+        { id: threadId },
+        { $addToSet: { "petition.signers": userId } }
+      ).exec();
+    }
+
+    const updated = await models.ForumThread.findOne({ id: threadId })
+      .select("petition");
+    const signerIds = (updated && updated.petition && updated.petition.signers) || [];
+    const signerUsers = await Promise.all(
+      signerIds.map((sid) => redis.getBasicUserInfo(sid, true))
+    );
+
+    res.send({
+      signers: signerUsers,
+      signCount: signerUsers.length,
+      hasSigned: !alreadySigned,
+    });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not update petition signature. Please try again.");
   }
 });
 

@@ -517,6 +517,12 @@ var schemas = {
         ],
       },
     ],
+    petition: {
+      active: { type: Boolean, default: false },
+      title: { type: String, default: "" },
+      body: { type: String, default: "" },
+      signers: [{ type: String }],
+    },
   }),
   ForumReply: new mongoose.Schema({
     id: { type: String, index: true },
