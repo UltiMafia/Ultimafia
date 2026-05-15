@@ -152,6 +152,11 @@ const learnGameDescriptions = [
         content:
           "Draw It is a turn-based draw-and-guess minigame for 3–12 players. Each turn, one player picks a word from the chosen deck and draws it on a shared canvas while everyone else types guesses in chat. Speed-tier scoring rewards quick guessers, and the drawer earns the average of their guessers' scores — so the clearer you draw, the better.",
       },
+      {
+        type: "paragraph",
+        content:
+          "Once you guess the word, your subsequent messages stay in the main chat but are only visible to the drawer and other correct guessers — so you can chat freely without spoiling the answer for the players still guessing.",
+      },
     ],
   },
   {

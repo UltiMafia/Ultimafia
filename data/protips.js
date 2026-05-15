@@ -37,10 +37,16 @@ const protips = {
   "Draw It": [
     "Pick the simpler of the two words — clearer drawings score higher.",
     "Once you've guessed, head to the secret chat to celebrate.",
-    "Make your own word deck for your group's inside jokes.",
+    "Make your own word deck for your friend group's inside jokes. You can build your own decks of 20–500 single-word nouns from the Word Decks page.",
+    "Highest total score across all rounds wins. Ties become co-winners.",
+    "Drawer earns the rounded average of all their guessers' scores this turn — clarity beats difficulty. Zero guessers means zero points.",
+    "Guessers earn 10 / 8 / 6 / 4 / 2 / 1 points by guess order. Sixth and beyond all earn 1 point.",
+    "The word is revealed and points are tallied for the turn before the next drawer is up.",
+    "The drawer draws their word on a shared canvas while everyone else types guesses in the common chat. The state ends early once everyone has guessed correctly.",
+    "The drawer chooses one of two words from the chosen deck. If they don't pick in time, the first option is auto-selected.",
   ],
   "Liars Dice": [
-    "Call it!!!!",
+    "Call it.",
     "99% of gamblers quit before they win big!",
     "It's always Spot On.",
   ],
