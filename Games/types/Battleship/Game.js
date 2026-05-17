@@ -195,8 +195,15 @@ module.exports = class BattleshipGame extends Game {
     return boardLogic.allShipsSunk(oppBoard.fleet);
   }
 
+  ensureBoard(playerId) {
+    if (!this.boards[playerId]) {
+      this.boards[playerId] = this.createEmptyBoardState();
+    }
+    return this.boards[playerId];
+  }
+
   buildOwnBoardCells(playerId, revealShips) {
-    const board = this.boards[playerId];
+    const board = this.ensureBoard(playerId);
     const opponent = this.players.array().find((p) => p.id !== playerId);
     const incoming = opponent ? this.boards[opponent.id]?.shots || {} : {};
 
@@ -232,7 +239,7 @@ module.exports = class BattleshipGame extends Game {
   }
 
   buildEnemyBoardCells(playerId) {
-    const board = this.boards[playerId];
+    const board = this.ensureBoard(playerId);
     const opponent = this.players.array().find((p) => p.id !== playerId);
     const oppFleet = opponent ? this.boards[opponent.id]?.fleet || [] : [];
     const revealAll =
@@ -339,6 +346,11 @@ module.exports = class BattleshipGame extends Game {
     for (let spectator of this.spectatorsOld) {
       if (spectator.send) spectator.send("battleshipView", spectatorView);
     }
+  }
+
+  getStateName(state) {
+    const info = super.getStateInfo(state);
+    return info.name.replace(/[0-9]*/g, "").trim();
   }
 
   getPublicExtraInfo() {
