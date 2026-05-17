@@ -1125,7 +1125,7 @@ module.exports = class Game {
     }
 
     // Tell clients the game started, assign roles, and move to the next state
-    this.assignRoles();
+    await this.assignRoles();
     this.captureStartingFactions();
     this.started = true;
     this.broadcast("start");
@@ -1417,7 +1417,7 @@ module.exports = class Game {
     }
   }
 
-  assignRoles() {
+  async assignRoles() {
     var roleset = this.generateRoleset();
 
     var hasHost = Object.keys(roleset).some(
@@ -1509,24 +1509,92 @@ module.exports = class Game {
 
     this.numHostInGame = hostCount;
     let remainingToAssign = players.slice(hostCount);
-    var randomPlayers = Random.randomizeArray(remainingToAssign);
 
-    var i = 0;
+    // Load role boosts for unranked Mafia games
+    let playerBoosts = {};
+    if (this.type === "Mafia" && !this.ranked && !this.competitive) {
+      const nonBotPlayers = remainingToAssign.filter((p) => !p.isBot);
+      if (nonBotPlayers.length > 0) {
+        const userIds = nonBotPlayers.map((p) => p.userId || p.user.id);
+        const boostedUsers = await models.User.find({
+          id: { $in: userIds },
+          roleBoostRole: { $ne: null },
+          "itemsOwned.roleBoostCharge": { $gt: 0 },
+        })
+          .select("id roleBoostRole itemsOwned")
+          .lean();
+        if (boostedUsers.length > 0) {
+          const stampCounts = await models.Stamp.aggregate([
+            {
+              $match: {
+                userId: { $in: boostedUsers.map((u) => u.id) },
+                gameType: "Mafia",
+              },
+            },
+            { $group: { _id: { userId: "$userId", role: "$role" }, count: { $sum: 1 } } },
+          ]);
+          const countMap = {};
+          for (const s of stampCounts) {
+            if (!countMap[s._id.userId]) countMap[s._id.userId] = {};
+            countMap[s._id.userId][s._id.role] = s.count;
+          }
+          for (const u of boostedUsers) {
+            const stampCount = countMap[u.id]?.[u.roleBoostRole] || 0;
+            const charges = u.itemsOwned?.roleBoostCharge || 0;
+            const weight = 1 + charges * 0.02 + stampCount * 0.02;
+            playerBoosts[u.id] = { role: u.roleBoostRole, weight };
+            console.log(`[RoleBoost] user=${u.id} role=${u.roleBoostRole} stamps=${stampCount} charges=${charges} weight=${weight.toFixed(2)}`);
+          }
+        }
+      }
+    }
+
+    const hasBoostedPlayers = Object.keys(playerBoosts).length > 0;
 
     if (
       this.HaveHostingState &&
       this.type == "Mafia" &&
       this.advancedHosting == true
     ) {
+      var randomPlayers = Random.randomizeArray(remainingToAssign);
       for (let player of randomPlayers) {
         player.setRole("Contestant", undefined, false, true, true);
         this.originalRoles[player.id] = "Contestant";
       }
+    } else if (hasBoostedPlayers) {
+      // Weighted assignment: each boost charge adds +10% weight for the preferred role
+      let pool = [...remainingToAssign];
+      for (let roleName in roleset) {
+        const baseRole = roleName.split(":")[0];
+        for (let j = 0; j < roleset[roleName]; j++) {
+          if (pool.length === 0) continue;
+          const weights = pool.map((p) => {
+            const uid = p.userId || p.user.id;
+            const boost = playerBoosts[uid];
+            return boost && boost.role === baseRole ? boost.weight : 1;
+          });
+          const totalWeight = weights.reduce((a, b) => a + b, 0);
+          let rand = Math.random() * totalWeight;
+          let selectedIdx = 0;
+          for (let k = 0; k < weights.length; k++) {
+            rand -= weights[k];
+            if (rand <= 0) {
+              selectedIdx = k;
+              break;
+            }
+          }
+          const player = pool[selectedIdx];
+          pool.splice(selectedIdx, 1);
+          player.setRole(roleName, undefined, false, true, true);
+          this.originalRoles[player.id] = roleName;
+        }
+      }
     } else {
+      var randomPlayers = Random.randomizeArray(remainingToAssign);
+      var i = 0;
       for (let roleName in roleset) {
         for (let j = 0; j < roleset[roleName]; j++) {
           let player = randomPlayers[i];
-          //player.setRole(roleName);
           if (!player) continue;
           player.setRole(roleName, undefined, false, true, true);
           this.originalRoles[player.id] = roleName;

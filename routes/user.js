@@ -389,7 +389,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive joined favoriteRoles roleIconCredits _id"
+        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive joined favoriteRoles roleIconCredits itemsOwned roleBoostRole _id"
       )
       .populate({
         path: "setups",
@@ -536,7 +536,7 @@ router.get("/:id/profile", async function (req, res) {
     // Fetch stamps sorted by creation time to preserve acquisition order
     var stampQuery = isSelf ? { userId } : { userId, hidden: { $ne: true } };
     var stamps = await models.Stamp.find(stampQuery)
-      .select("gameType role borderType hidden _id createdAt")
+      .select("gameType role borderType hidden roleBoostEnabled _id createdAt")
       .sort("createdAt")
       .lean();
 
@@ -576,6 +576,7 @@ router.get("/:id/profile", async function (req, res) {
             role: s.role,
             count: 0,
             borderType: "u",
+            boostEnabled: false,
           };
           visibleOrder.push(stampKey);
         }
@@ -584,6 +585,9 @@ router.get("/:id/profile", async function (req, res) {
           visibleGroups[stampKey].borderType,
           bt
         );
+        if (s.roleBoostEnabled) {
+          visibleGroups[stampKey].boostEnabled = true;
+        }
       }
       if (isSelf) {
         stampDetails.push({
@@ -592,6 +596,7 @@ router.get("/:id/profile", async function (req, res) {
           role: s.role,
           borderType: bt,
           hidden: s.hidden,
+          roleBoostEnabled: !!s.roleBoostEnabled,
         });
       }
     }
@@ -600,6 +605,8 @@ router.get("/:id/profile", async function (req, res) {
     if (isSelf) {
       user.hiddenStamps = hiddenOrder.map((k) => hiddenGroups[k]);
       user.stampDetails = stampDetails;
+      user.roleBoostRole = user.roleBoostRole || null;
+      user.roleBoostCharges = user.itemsOwned?.roleBoostCharge || 0;
 
       // Locked stamp ids + per-roleKey locked counts from active trades.
       const activeTrades = await models.StampTrade.find({

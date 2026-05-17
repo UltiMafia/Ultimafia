@@ -160,7 +160,10 @@ export default function Profile() {
   const [favoriteRoles, setFavoriteRoles] = useState([]);
   const [roleIconCredits, setRoleIconCredits] = useState([]);
   const [stamps, setStamps] = useState([]);
+  const [stampDetails, setStampDetails] = useState([]);
   const [hiddenStamps, setHiddenStamps] = useState([]);
+  const [roleBoostRole, setRoleBoostRole] = useState(null);
+  const [roleBoostCharges, setRoleBoostCharges] = useState(0);
   const [lockedCountsByRoleKey, setLockedCountsByRoleKey] = useState({});
   const [pendingConfirmationTrades, setPendingConfirmationTrades] = useState([]);
   const [profileRefetchKey, setProfileRefetchKey] = useState(0);
@@ -357,7 +360,10 @@ export default function Profile() {
           );
           setTrophies(res.data.trophies || []);
           setStamps(res.data.stamps || []);
+          setStampDetails(res.data.stampDetails || []);
           setHiddenStamps(res.data.hiddenStamps || []);
+          setRoleBoostRole(res.data.roleBoostRole || null);
+          setRoleBoostCharges(res.data.roleBoostCharges || 0);
           setLockedCountsByRoleKey(res.data.lockedCountsByRoleKey || {});
           setPendingConfirmationTrades(
             res.data.pendingConfirmationTrades || []
@@ -1519,6 +1525,7 @@ export default function Profile() {
             </div>
             <Scrapbook
               stamps={stamps}
+              stampDetails={stampDetails}
               hiddenStamps={hiddenStamps}
               isSelf={isSelf}
               lockedCountsByRoleKey={lockedCountsByRoleKey}
@@ -1527,6 +1534,9 @@ export default function Profile() {
               profileUserName={name}
               panelStyle={panelStyle}
               headingStyle={headingStyle}
+              roleBoostRole={roleBoostRole}
+              roleBoostCharges={roleBoostCharges}
+              onBoostChange={setRoleBoostRole}
             />
             {!isPhoneDevice && (
               <Box

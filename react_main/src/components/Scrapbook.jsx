@@ -11,6 +11,10 @@ import {
   DialogActions,
   Button,
   Stack,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { SiteInfoContext, UserContext } from "Contexts";
 import { RoleCount } from "components/Roles";
@@ -30,7 +34,7 @@ const ITEMS_PER_PAGE = 20;
 const ITEMS_PER_SPREAD = ITEMS_PER_PAGE * 2;
 const FLIP_DURATION_MS = 550;
 
-export function StampItem({ gameType, role, count, hasLock, clickable, onClick, size, borderType }) {
+export function StampItem({ gameType, role, count, hasLock, clickable, onClick, size, borderType, boostEnabled, onBoostToggle }) {
   const label = gameType === "Mafia" ? role : `${gameType} - ${role}`;
   const classNames = ["stamp"];
   if (clickable) classNames.push("stamp--clickable");
@@ -38,7 +42,6 @@ export function StampItem({ gameType, role, count, hasLock, clickable, onClick, 
   if (size === "small") classNames.push("stamp--small");
   if (borderType === "r") classNames.push("stamp--border-ranked");
   else if (borderType === "c") classNames.push("stamp--border-competitive");
-  if (count > 99) classNames.push("stamp--shiny");
 
   return (
     <Tooltip title={label} arrow>
@@ -56,8 +59,8 @@ export function StampItem({ gameType, role, count, hasLock, clickable, onClick, 
           </div>
         )}
         {count > 1 && (
-          <div className={`stamp-badge${count > 99 ? " star" : ""}`}>
-            {count > 99 ? "\u2605" : count}
+          <div className="stamp-badge">
+            {count > 999 ? "999+" : count}
           </div>
         )}
         {hasLock && (
@@ -65,17 +68,31 @@ export function StampItem({ gameType, role, count, hasLock, clickable, onClick, 
             <i className="fas fa-lock" />
           </div>
         )}
+        {onBoostToggle && (
+          <div
+            className={`stamp-boost${boostEnabled ? " stamp-boost--active" : ""}`}
+            aria-label={boostEnabled ? "Remove role boost" : "Apply role boost"}
+            onClick={(e) => {
+              e.stopPropagation();
+              onBoostToggle();
+            }}
+          >
+            <i className="fas fa-bolt" />
+          </div>
+        )}
       </div>
     </Tooltip>
   );
 }
 
-function renderStamp(s, { lockedCountsByRoleKey, isSelf, onStampClick, onRequestTrade, keyPrefix = "" }) {
+function renderStamp(s, { lockedCountsByRoleKey, isSelf, onStampClick, onRequestTrade, onBoostToggle, activeBoostRole, keyPrefix = "" }) {
   const key = `${s.gameType}:${s.role}`;
   const lockedCount = lockedCountsByRoleKey?.[key] || 0;
   const selfClickable = isSelf && s.count >= 2;
   const requestable = !isSelf && !!onRequestTrade && s.count >= 2;
   const clickable = selfClickable || requestable;
+  const canBoost = isSelf && s.gameType === "Mafia";
+  const boostEnabled = canBoost && activeBoostRole === s.role;
   return (
     <StampItem
       key={`${keyPrefix}${key}`}
@@ -85,6 +102,8 @@ function renderStamp(s, { lockedCountsByRoleKey, isSelf, onStampClick, onRequest
       borderType={s.borderType}
       hasLock={lockedCount > 0}
       clickable={clickable}
+      boostEnabled={boostEnabled}
+      onBoostToggle={canBoost ? () => onBoostToggle(s) : undefined}
       onClick={
         selfClickable
           ? () => onStampClick(s)
@@ -383,23 +402,64 @@ export default function Scrapbook({
   profileUserName,
   panelStyle = {},
   headingStyle = {},
+  stampDetails = [],
+  roleBoostRole = null,
+  roleBoostCharges = 0,
+  onBoostChange,
 }) {
   const [showHidden, setShowHidden] = useState(false);
   const [spreadIndex, setSpreadIndex] = useState(0);
   const [page, setPage] = useState(1);
   const [tradeModalStamp, setTradeModalStamp] = useState(null);
   const [requestTradeStamp, setRequestTradeStamp] = useState(null);
+  const [localStamps, setLocalStamps] = useState(stamps);
+  const [activeBoostRole, setActiveBoostRole] = useState(roleBoostRole);
+  const [sortBy, setSortBy] = useState("default");
   const siteInfo = useContext(SiteInfoContext);
+  const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
-  const hasVisible = stamps.length > 0;
+
+  useEffect(() => {
+    setLocalStamps(stamps);
+  }, [stamps]);
+
+  useEffect(() => {
+    setActiveBoostRole(roleBoostRole);
+  }, [roleBoostRole]);
+
+  function handleBoostToggle(stamp) {
+    if (roleBoostCharges === 0) {
+      siteInfo.showAlert("You need Role Boost Charges. Buy them in the Shop.", "error");
+      return;
+    }
+    const newRole = activeBoostRole === stamp.role ? null : stamp.role;
+    axios
+      .post("/api/shop/set-role-boost", { role: newRole })
+      .then((res) => {
+        setActiveBoostRole(res.data.roleBoostRole);
+        if (onBoostChange) onBoostChange(res.data.roleBoostRole);
+      })
+      .catch(errorAlert);
+  }
   const hasHidden = hiddenStamps.length > 0;
+  const hasVisible = localStamps.length > 0;
 
   if (!hasVisible && !hasHidden) return null;
 
   const rolesRaw = siteInfo?.rolesRaw || {};
 
+  const TIER_ORDER = { c: 0, r: 1, u: 2 };
+  const sortedStamps = [...localStamps].sort((a, b) => {
+    if (sortBy === "az") return a.role.localeCompare(b.role);
+    if (sortBy === "za") return b.role.localeCompare(a.role);
+    if (sortBy === "most") return b.count - a.count;
+    if (sortBy === "least") return a.count - b.count;
+    if (sortBy === "tier") return (TIER_ORDER[a.borderType] ?? 2) - (TIER_ORDER[b.borderType] ?? 2);
+    return 0;
+  });
+
   const uniqueRoles = new Set();
-  for (const s of stamps)
+  for (const s of localStamps)
     if (isCountableScrapbookRole(rolesRaw, s.gameType, s.role))
       uniqueRoles.add(`${s.gameType}:${s.role}`);
   for (const s of hiddenStamps)
@@ -408,13 +468,13 @@ export default function Scrapbook({
   const uniqueCount = uniqueRoles.size;
   const totalRoles = getTotalObtainableStamps(rolesRaw);
 
-  const maxSpreads = Math.max(Math.ceil(stamps.length / ITEMS_PER_SPREAD), 1);
+  const maxSpreads = Math.max(Math.ceil(sortedStamps.length / ITEMS_PER_SPREAD), 1);
   const safeSpreadIndex = Math.min(spreadIndex, maxSpreads - 1);
   const maxPage = Math.max(
-    Math.ceil(stamps.length / STAMPS_PER_PAGE_MOBILE),
+    Math.ceil(sortedStamps.length / STAMPS_PER_PAGE_MOBILE),
     1
   );
-  const pageStamps = stamps.slice(
+  const pageStamps = sortedStamps.slice(
     (page - 1) * STAMPS_PER_PAGE_MOBILE,
     page * STAMPS_PER_PAGE_MOBILE
   );
@@ -424,13 +484,48 @@ export default function Scrapbook({
     isSelf,
     onStampClick: (s) => setTradeModalStamp(s),
     onRequestTrade: !isSelf && profileUserId ? (s) => setRequestTradeStamp(s) : null,
+    onBoostToggle: isSelf ? handleBoostToggle : null,
+    activeBoostRole,
   };
 
   return (
     <div className="box-panel scrapbook-panel" style={panelStyle}>
-      <Typography variant="h3" style={headingStyle}>
-        Scrapbook {totalRoles > 0 && `(${uniqueCount}/${totalRoles})`}
-      </Typography>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 1 }}>
+        <Typography variant="h3" style={headingStyle}>
+          Scrapbook {totalRoles > 0 && `(${uniqueCount}/${totalRoles})`}
+        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap" }}>
+          {isSelf && activeBoostRole && (() => {
+            const boostedStamp = localStamps.find((s) => s.role === activeBoostRole && s.gameType === "Mafia");
+            const stampPct = boostedStamp ? boostedStamp.count * 2 : 0;
+            const chargePct = roleBoostCharges * 2;
+            const totalPct = chargePct + stampPct;
+            return (
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, fontSize: "0.9rem", fontWeight: 600 }}>
+                <i className="fas fa-bolt" style={{ color: "#f5a623", fontSize: "1rem" }} />
+                <span style={{ color: "#f5a623" }}>{activeBoostRole}: +{totalPct}%</span>
+                <span style={{ fontSize: "0.75rem", opacity: 0.7, fontWeight: 400 }}>({chargePct}% charges + {stampPct}% stamps)</span>
+              </Box>
+            );
+          })()}
+          <FormControl size="small" sx={{ minWidth: 110 }}>
+            <InputLabel sx={{ fontSize: "0.8rem" }}>Sort</InputLabel>
+            <Select
+              value={sortBy}
+              label="Sort"
+              onChange={(e) => { setSortBy(e.target.value); setSpreadIndex(0); setPage(1); }}
+              sx={{ fontSize: "0.8rem" }}
+            >
+              <MenuItem value="default">Default</MenuItem>
+              <MenuItem value="az">A – Z</MenuItem>
+              <MenuItem value="za">Z – A</MenuItem>
+              <MenuItem value="most">Most</MenuItem>
+              <MenuItem value="least">Fewest</MenuItem>
+              <MenuItem value="tier">Tier</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+      </Box>
       <div className="content">
         {hasVisible ? (
           isPhoneDevice ? (
@@ -450,7 +545,7 @@ export default function Scrapbook({
           ) : (
             <>
               <BookSpread
-                stamps={stamps}
+                stamps={sortedStamps}
                 spreadIndex={safeSpreadIndex}
                 maxSpreads={maxSpreads}
                 onFlip={setSpreadIndex}

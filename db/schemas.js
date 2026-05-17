@@ -182,6 +182,7 @@ var schemas = {
       profileBackground: { type: Number, default: 0 },
       forumBanner: { type: Number, default: 0 },
       createFamily: { type: Number, default: 0 },
+      roleBoostCharge: { type: Number, default: 0 },
     },
     stats: {},
     winRate: { type: Number, default: 0 },
@@ -189,6 +190,7 @@ var schemas = {
     achievements: [],
     achievementCount: { type: Number, default: 0 },
     favoriteRoles: { type: [String], default: [] },
+    roleBoostRole: { type: String, default: null },
     roleIconCredits: { type: [String], default: [] },
     redHearts: { type: Number, default: 0 },
     goldHearts: { type: Number, default: 0 },
@@ -389,6 +391,7 @@ var schemas = {
     role: { type: String },
     borderType: { type: String, enum: ["u", "r", "c"], default: "u", index: true },
     hidden: { type: Boolean, default: false },
+    roleBoostEnabled: { type: Boolean, default: false },
     createdAt: { type: Number, default: Date.now },
   })
     .index({ userId: 1, gameId: 1 }, { unique: true })

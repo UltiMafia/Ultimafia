@@ -446,6 +446,15 @@ const shopItems = [
       }
     },
   },
+  {
+    name: "Role Pick Boost",
+    desc: "+2% per charge and +2% per stamp of that role in unranked games. Toggle which role in Scrapbook.",
+    key: "roleBoostCharge",
+    category: "game",
+    price: 10,
+    limit: 10,
+    onBuy: async function (userId) {},
+  },
 ];
 
 router.get("/info", async function (req, res) {
@@ -949,6 +958,32 @@ router.post("/stamp/toggle-hide", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Error toggling stamp visibility. Please try again.");
+  }
+});
+
+router.post("/set-role-boost", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    const { role } = req.body;
+
+    if (role) {
+      // Validate user has a stamp for this role
+      const stamp = await models.Stamp.findOne({ userId, role, gameType: "Mafia" });
+      if (!stamp) {
+        return res.status(400).send("You don't have a stamp for this role.");
+      }
+      // Validate user has boost charges
+      const user = await models.User.findOne({ id: userId }).select("itemsOwned");
+      if (!user || !(user.itemsOwned?.roleBoostCharge > 0)) {
+        return res.status(400).send("You have no Role Boost Charges.");
+      }
+    }
+
+    await models.User.updateOne({ id: userId }, { $set: { roleBoostRole: role || null } });
+    res.send({ roleBoostRole: role || null });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Error setting role boost. Please try again.");
   }
 });
 

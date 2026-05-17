@@ -135,8 +135,8 @@ module.exports = class MafiaGame extends Game {
     }
   }
 
-  assignRoles() {
-    super.assignRoles();
+  async assignRoles() {
+    await super.assignRoles();
 
     this.rebroadcastSetup();
 
