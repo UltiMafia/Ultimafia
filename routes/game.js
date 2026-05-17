@@ -1365,6 +1365,9 @@ const settingsChecks = {
       deckSize: settings.deckSize || "standard",
     };
   },
+  Battleship: (settings, setup) => {
+    return {};
+  },
 };
 
 module.exports = router;

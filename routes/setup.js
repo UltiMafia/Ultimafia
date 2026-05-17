@@ -1537,6 +1537,10 @@ const countChecks = {
     if (total < 2) return "Must have at least 2 players.";
     return true;
   },
+  Battleship: (roles, count, total, closed, unique) => {
+    if (total !== 2) return "Battleship requires exactly 2 players.";
+    return true;
+  },
 };
 
 const optionsChecks = {
@@ -1603,6 +1607,9 @@ const optionsChecks = {
     return setup;
   },
   "Spot It": (setup) => {
+    return setup;
+  },
+  Battleship: (setup) => {
     return setup;
   },
 };

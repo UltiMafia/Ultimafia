@@ -31,6 +31,7 @@ import RatscrewGame from "./RatscrewGame";
 import BattlesnakesGame from "./BattlesnakesGame";
 import DiceWarsGame from "./DiceWarsGame";
 import ConnectFourGame from "./ConnectFourGame";
+import BattleshipGame from "./BattleshipGame";
 import SpotItGame from "./SpotItGame";
 import { GameContext, SiteInfoContext, UserContext } from "Contexts";
 import Dropdown from "../../components/Dropdown";
@@ -992,6 +993,7 @@ export default function Game() {
             )}
             {gameType === "Connect Four" && <ConnectFourGame />}
             {gameType === "Spot It" && <SpotItGame />}
+            {gameType === "Battleship" && <BattleshipGame />}
           </Box>
         </Stack>
         <UrgencyOverlay hidden={!isUrgent} />

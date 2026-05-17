@@ -28,6 +28,7 @@ import CreateBattlesnakesSetup from "./CreateBattlesnakesSetup";
 import CreateDiceWarsSetup from "./CreateDiceWarsSetup";
 import CreateConnectFourSetup from "./CreateConnectFourSetup";
 import CreateSpotItSetup from "./CreateSpotItSetup";
+import CreateBattleshipSetup from "./CreateBattleshipSetup";
 
 import { ActiveGameTypes, DisabledGameTypes } from "Constants";
 import GameIcon from "components/GameIcon";
@@ -95,6 +96,8 @@ export default function CreateSetup(props) {
         return <CreateConnectFourSetup />;
       case "Spot It":
         return <CreateSpotItSetup />;
+      case "Battleship":
+        return <CreateBattleshipSetup />;
       default:
         setGameType(defaultGameType);
         return null;
