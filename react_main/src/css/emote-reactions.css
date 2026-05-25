@@ -1,0 +1,63 @@
+.emote-reactions {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.emote-reactions-picker.dropdown .dropdown-control {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 4px;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.emote-reactions-picker.dropdown .dropdown-control:hover {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.emote-reactions-picker.dropdown .dropdown-control img {
+  width: 24px;
+  height: 24px;
+}
+
+.reaction-chip {
+  display: inline-flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--scheme-color-border);
+  background-color: var(--scheme-color);
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
+.reaction-chip:hover {
+  background-color: var(--scheme-color-sec);
+}
+
+.reaction-chip.mine {
+  border-color: var(--theme-color);
+  background-color: rgba(var(--theme-color-rgb, 100, 149, 237), 0.15);
+}
+
+.reaction-chip .emote {
+  --emote-size: 20px;
+}
+
+.reaction-unicode {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.reaction-count {
+  font-size: 13px !important;
+  line-height: 1 !important;
+  font-weight: 600;
+}

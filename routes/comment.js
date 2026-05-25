@@ -4,6 +4,10 @@ const constants = require("../data/constants");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
+const {
+  getReactionSummaries,
+  attachReactionSummaries,
+} = require("../modules/reactions");
 const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
 const router = express.Router();
@@ -42,7 +46,20 @@ router.get("/", async function (req, res) {
     var comments = [];
     for (var i = 0; i < commentDocs.length; i++) {
       let comment = commentDocs[i].toJSON();
-      comment.author = await redis.getBasicUserInfo(comment.author.id, true);
+      const authorId = comment.author?.id;
+
+      if (authorId) {
+        comment.author = await redis.getBasicUserInfo(authorId, true);
+      } else {
+        comment.author = {
+          id: "",
+          name: "[deleted]",
+          avatar: false,
+          groups: [],
+          settings: {},
+        };
+      }
+
       comments.push(comment);
     }
 
@@ -62,6 +79,23 @@ router.get("/", async function (req, res) {
         return comment;
       });
     }
+
+    let reactionSummaries = {};
+    try {
+      reactionSummaries = await getReactionSummaries(
+        commentIds.filter(Boolean),
+        userId
+      );
+    } catch (reactionErr) {
+      logger.error("Failed to load comment reactions:", reactionErr);
+    }
+
+    comments = attachReactionSummaries(comments, reactionSummaries);
+
+    comments = comments.map((comment) => ({
+      ...comment,
+      vote: comment.vote ?? 0,
+    }));
 
     res.send({ comments, maxPage, page });
   } catch (e) {

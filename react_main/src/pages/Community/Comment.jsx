@@ -7,6 +7,8 @@ import { Time } from "components/Basic";
 import CustomMarkdown from "components/CustomMarkdown";
 
 import { VoteWidget } from "components/VoteWidget";
+import { EmoteReactions } from "components/EmoteReactions";
+import "css/emote-reactions.css";
 import { NameWithAvatar } from "../User/User";
 
 import { Box, Divider, Grid, IconButton, Paper, Stack } from "@mui/material";
@@ -112,6 +114,14 @@ export const Comment = (props) => {
               >
                 <CustomMarkdown>{content}</CustomMarkdown>
               </Box>
+              {!comment.deleted && (
+                <EmoteReactions
+                  item={comment}
+                  itemType="comment"
+                  itemHolder={comments}
+                  setItemHolder={setComments}
+                />
+              )}
             </Stack>
           </Stack>
         </Paper>

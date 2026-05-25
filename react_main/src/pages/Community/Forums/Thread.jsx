@@ -14,6 +14,8 @@ import { Loading } from "components/Loading";
 import { ThreadPoll } from "components/Poll";
 
 import { VoteWidget } from "components/VoteWidget";
+import { EmoteReactions } from "components/EmoteReactions";
+import "css/emote-reactions.css";
 import { NameWithAvatar } from "../../User/User";
 
 function formatForumDate(timestamp) {
@@ -1176,7 +1178,7 @@ function Post(props) {
   return (
     <div
       className={`post span-panel ${postInfo.deleted ? "deleted" : ""} ${
-        props.className
+        props.className || ""
       }`}
       id={id}
     >
@@ -1359,6 +1361,15 @@ function Post(props) {
           <div className="md-content">
             <CustomMarkdown mentionTags={mentionTags}>{content}</CustomMarkdown>
           </div>
+        )}
+        {!postInfo.deleted && !editing && (
+          <EmoteReactions
+            item={voteItem}
+            itemType={itemType}
+            itemHolder={voteItemHolder}
+            setItemHolder={setVoteItemHolder}
+            itemKey={itemKey}
+          />
         )}
         {editing && (
           <div className="edit-wrapper">

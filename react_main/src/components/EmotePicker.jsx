@@ -34,7 +34,10 @@ function EmotePicker({ onEmoteSelected, className = "" }) {
   });
 
   function selectEmote(emote) {
-    onEmoteSelected(emote.emoji);
+    const value = emote.isCustom
+      ? emote.names?.[0] || emote.id
+      : emote.emoji;
+    onEmoteSelected(value);
     closePopover();
   }
 
@@ -46,6 +49,8 @@ function EmotePicker({ onEmoteSelected, className = "" }) {
           onClick={handleClick}
           sx={{
             height: "100%",
+            backgroundColor: "transparent",
+            border: `1px solid ${theme.palette.primary.main}`,
           }}
         >
           <img src={happy} />
