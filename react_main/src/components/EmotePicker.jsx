@@ -47,17 +47,10 @@ function EmotePicker({ onEmoteSelected, className = "" }) {
         <Button
           className="dropdown-control"
           onClick={handleClick}
-          disableElevation
           sx={{
             height: "100%",
-            minWidth: 0,
-            padding: 0,
             backgroundColor: "transparent",
-            boxShadow: "none",
-            "&:hover": {
-              backgroundColor: "transparent",
-              boxShadow: "none",
-            },
+            border: "1px solid gold",
           }}
         >
           <img src={happy} />
