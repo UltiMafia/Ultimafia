@@ -50,7 +50,7 @@ function EmotePicker({ onEmoteSelected, className = "" }) {
           sx={{
             height: "100%",
             backgroundColor: "transparent",
-            border: "1px solid gold",
+            border: `1px solid ${theme.palette.primary.main}`,
           }}
         >
           <img src={happy} />

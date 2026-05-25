@@ -63,19 +63,10 @@ router.get("/", async function (req, res) {
       comments.push(comment);
     }
 
-    var commentIds = comments.map((comment) => comment.id).filter(Boolean);
-
-    let reactionSummaries = {};
-    try {
-      reactionSummaries = await getReactionSummaries(commentIds, userId);
-    } catch (reactionErr) {
-      logger.error("Failed to load comment reactions:", reactionErr);
-    }
-
-    comments = attachReactionSummaries(comments, reactionSummaries);
+    var votes = {};
+    var commentIds = comments.map((comment) => comment.id);
 
     if (userId) {
-      var votes = {};
       var voteList = await models.ForumVote.find({
         voter: userId,
         item: { $in: commentIds },
@@ -88,6 +79,23 @@ router.get("/", async function (req, res) {
         return comment;
       });
     }
+
+    let reactionSummaries = {};
+    try {
+      reactionSummaries = await getReactionSummaries(
+        commentIds.filter(Boolean),
+        userId
+      );
+    } catch (reactionErr) {
+      logger.error("Failed to load comment reactions:", reactionErr);
+    }
+
+    comments = attachReactionSummaries(comments, reactionSummaries);
+
+    comments = comments.map((comment) => ({
+      ...comment,
+      vote: comment.vote ?? 0,
+    }));
 
     res.send({ comments, maxPage, page });
   } catch (e) {

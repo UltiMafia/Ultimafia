@@ -269,6 +269,15 @@ router.get("/thread/:id", async function (req, res) {
       return;
     }
 
+    var vote;
+
+    if (userId) {
+      vote = await models.ForumVote.findOne({
+        voter: userId,
+        item: threadId,
+      }).select("direction");
+    }
+
     var replyFilter = { thread: thread._id, page: page };
 
     if (!canViewDeleted) replyFilter.deleted = false;
@@ -324,28 +333,9 @@ router.get("/thread/:id", async function (req, res) {
       logger.error("Failed to load forum reactions:", reactionErr);
     }
 
+    thread.vote = (vote && vote.direction) || 0;
     thread.reactions = reactionSummaries[threadId] || [];
     replies = attachReactionSummaries(replies, reactionSummaries);
-
-    if (userId) {
-      const voteItems = [
-        threadId,
-        ...replies.map((reply) => reply.id).filter(Boolean),
-      ];
-      const voteList = await models.ForumVote.find({
-        voter: userId,
-        item: { $in: voteItems },
-      }).select("item direction");
-
-      const votes = {};
-      for (let voteDoc of voteList) votes[voteDoc.item] = voteDoc.direction;
-
-      thread.vote = votes[threadId] || 0;
-      replies = replies.map((reply) => {
-        reply.vote = votes[reply.id] || 0;
-        return reply;
-      });
-    }
 
     thread.replies = replies;
     thread.pageCount =
@@ -356,6 +346,14 @@ router.get("/thread/:id", async function (req, res) {
     delete thread.replyCount;
 
     if (userId) {
+      for (let reply of replies) {
+        vote = await models.ForumVote.findOne({
+          voter: userId,
+          item: reply.id,
+        }).select("direction");
+        reply.vote = (vote && vote.direction) || 0;
+      }
+
       // Add subscription status for current user
       var subscribers = thread.subscribers || [];
       thread.isSubscribed = subscribers.indexOf(userId) !== -1;
@@ -374,6 +372,10 @@ router.get("/thread/:id", async function (req, res) {
       thread.isMuted =
         mutedSet.size > 0 &&
         !!(rosterEntry && (rosterEntry.tags || []).some((t) => mutedSet.has(t.text)));
+    } else {
+      for (let reply of replies) {
+        reply.vote = 0;
+      }
     }
 
     if ((thread.roster || []).length > 0) {
