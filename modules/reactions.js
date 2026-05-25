@@ -1,47 +1,59 @@
 const models = require("../db/models");
-const { getBasicUserInfo } = require("./redis");
 
 async function getReactionSummaries(itemIds, userId) {
   const summaries = {};
+  const validItemIds = itemIds.filter(Boolean);
 
-  if (!itemIds.length) return summaries;
+  if (!validItemIds.length) return summaries;
 
-  for (const id of itemIds) summaries[id] = [];
+  for (const id of validItemIds) summaries[id] = [];
 
-  const grouped = await models.ItemReaction.aggregate([
-    { $match: { item: { $in: itemIds } } },
-    {
-      $group: {
-        _id: { item: "$item", emote: "$emote", emoteKind: "$emoteKind" },
-        count: { $sum: 1 },
-        emotePath: { $first: "$emotePath" },
-      },
-    },
-    { $sort: { count: -1 } },
-  ]);
+  if (!models.ItemReaction) return summaries;
 
-  const userReactions = userId
-    ? await models.ItemReaction.find({
-        reactor: userId,
-        item: { $in: itemIds },
-      })
-        .select("item emote -_id")
-        .lean()
-    : [];
+  const allReactions = await models.ItemReaction.find({
+    item: { $in: validItemIds },
+  })
+    .select("item emote emoteKind emotePath reactor -_id")
+    .lean();
 
-  const userReactionSet = new Set(
-    userReactions.map((r) => `${r.item}:${r.emote}`)
-  );
+  const userReactionSet = new Set();
 
-  for (const row of grouped) {
-    const itemId = row._id.item;
+  for (const reaction of allReactions) {
+    if (userId && String(reaction.reactor) === String(userId)) {
+      userReactionSet.add(`${reaction.item}:${reaction.emote}`);
+    }
+  }
+
+  const buckets = {};
+
+  for (const reaction of allReactions) {
+    const bucketKey = `${reaction.item}:${reaction.emote}`;
+    if (!buckets[bucketKey]) {
+      buckets[bucketKey] = {
+        item: reaction.item,
+        emote: reaction.emote,
+        emoteKind: reaction.emoteKind || "unicode",
+        emotePath: reaction.emotePath || "",
+        count: 0,
+      };
+    }
+    buckets[bucketKey].count += 1;
+  }
+
+  for (const bucket of Object.values(buckets)) {
+    const itemId = bucket.item;
+    if (!summaries[itemId]) summaries[itemId] = [];
     summaries[itemId].push({
-      emote: row._id.emote,
-      emoteKind: row._id.emoteKind || "unicode",
-      emotePath: row.emotePath || "",
-      count: row.count,
-      mine: userReactionSet.has(`${itemId}:${row._id.emote}`),
+      emote: bucket.emote,
+      emoteKind: bucket.emoteKind,
+      emotePath: bucket.emotePath,
+      count: bucket.count,
+      mine: userReactionSet.has(`${itemId}:${bucket.emote}`),
     });
+  }
+
+  for (const itemId of Object.keys(summaries)) {
+    summaries[itemId].sort((a, b) => b.count - a.count);
   }
 
   return summaries;
@@ -107,6 +119,7 @@ async function getItemReactionContext(itemId, itemType) {
 }
 
 async function getReactionDetails(itemId) {
+  const { getBasicUserInfo } = require("./redis");
   const reactions = await models.ItemReaction.find({ item: itemId })
     .select("emote emoteKind emotePath reactor -_id")
     .lean();

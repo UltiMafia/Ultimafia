@@ -46,13 +46,32 @@ router.get("/", async function (req, res) {
     var comments = [];
     for (var i = 0; i < commentDocs.length; i++) {
       let comment = commentDocs[i].toJSON();
-      comment.author = await redis.getBasicUserInfo(comment.author.id, true);
+      const authorId = comment.author?.id;
+
+      if (authorId) {
+        comment.author = await redis.getBasicUserInfo(authorId, true);
+      } else {
+        comment.author = {
+          id: "",
+          name: "[deleted]",
+          avatar: false,
+          groups: [],
+          settings: {},
+        };
+      }
+
       comments.push(comment);
     }
 
-    var commentIds = comments.map((comment) => comment.id);
+    var commentIds = comments.map((comment) => comment.id).filter(Boolean);
 
-    const reactionSummaries = await getReactionSummaries(commentIds, userId);
+    let reactionSummaries = {};
+    try {
+      reactionSummaries = await getReactionSummaries(commentIds, userId);
+    } catch (reactionErr) {
+      logger.error("Failed to load comment reactions:", reactionErr);
+    }
+
     comments = attachReactionSummaries(comments, reactionSummaries);
 
     res.send({ comments, maxPage, page });

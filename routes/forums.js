@@ -294,7 +294,12 @@ router.get("/thread/:id", async function (req, res) {
     thread.author = await redis.getBasicUserInfo(thread.author.id, true);
     thread.vote = (vote && vote.direction) || 0;
 
-    const reactionSummaries = await getReactionSummaries([threadId], userId);
+    let reactionSummaries = {};
+    try {
+      reactionSummaries = await getReactionSummaries([threadId], userId);
+    } catch (reactionErr) {
+      logger.error("Failed to load thread reactions:", reactionErr);
+    }
     thread.reactions = reactionSummaries[threadId] || [];
 
     thread.replies = replies;
