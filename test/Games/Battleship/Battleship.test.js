@@ -4,7 +4,13 @@ const should = chai.should();
 const boardLogic = require("../../../Games/types/Battleship/boardLogic");
 const constants = require("../../../data/constants");
 
-const { SHIP_SPECS, SHIP_TYPES, validateFleet, resolveFire } = boardLogic;
+const {
+  SHIP_SPECS,
+  SHIP_TYPES,
+  validateFleet,
+  resolveFire,
+  allShipsSunk,
+} = boardLogic;
 
 function validFleet() {
   return [
@@ -59,6 +65,18 @@ describe("Games/Battleship", function () {
     });
   });
 
+  describe("allShipsSunk", function () {
+    it("does not treat an empty fleet as sunk", function () {
+      allShipsSunk([]).should.be.false;
+    });
+
+    it("does not treat an unplaced fleet as sunk before all ships are hit", function () {
+      allShipsSunk([
+        { type: "destroyer", cells: [[0, 0], [0, 1]], hits: 0 },
+      ]).should.be.false;
+    });
+  });
+
   describe("resolveFire", function () {
     it("marks hits and detects a sink win", function () {
       const attacker = emptyBoardState();
@@ -76,6 +94,16 @@ describe("Games/Battleship", function () {
       second.won.should.be.true;
       attacker.shots["9,9"].result.should.equal("sunk");
       attacker.shots["9,8"].result.should.equal("sunk");
+    });
+
+    it("does not declare a win against an empty fleet", function () {
+      const attacker = emptyBoardState();
+      const defender = emptyBoardState();
+
+      const outcome = resolveFire(attacker, defender, 0, 0);
+      should.not.exist(outcome.error);
+      outcome.result.should.equal("miss");
+      outcome.won.should.be.false;
     });
 
     it("rejects duplicate shots", function () {

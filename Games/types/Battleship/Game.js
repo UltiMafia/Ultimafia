@@ -231,9 +231,16 @@ module.exports = class BattleshipGame extends Game {
   }
 
   hasWon(player) {
+    if (this.getStateName() !== "Combat") return false;
+
     const opponent = this.getOpponent(player);
     if (!opponent) return false;
+
     const oppBoard = this.boards[opponent.id];
+    if (!oppBoard?.placementReady || oppBoard.fleet.length === 0) {
+      return false;
+    }
+
     return boardLogic.allShipsSunk(oppBoard.fleet);
   }
 
@@ -444,9 +451,15 @@ module.exports = class BattleshipGame extends Game {
   }
 
   checkWinConditions() {
+    const winners = new Winners(this);
+
+    if (this.getStateName() !== "Combat") {
+      winners.determinePlayers();
+      return [false, winners];
+    }
+
     let finished = false;
     const winQueue = new Queue();
-    const winners = new Winners(this);
     const aliveCount = this.alivePlayers().length;
 
     for (let player of this.players) {

@@ -80,6 +80,7 @@ function validateFleet(ships, gridSize = GRID_SIZE) {
 }
 
 function allShipsSunk(fleet) {
+  if (!fleet || fleet.length === 0) return false;
   return fleet.every((ship) => ship.hits >= ship.cells.length);
 }
 
