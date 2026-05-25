@@ -34,7 +34,10 @@ function EmotePicker({ onEmoteSelected, className = "" }) {
   });
 
   function selectEmote(emote) {
-    onEmoteSelected(emote.emoji);
+    const value = emote.isCustom
+      ? emote.names?.[0] || emote.id
+      : emote.emoji;
+    onEmoteSelected(value);
     closePopover();
   }
 

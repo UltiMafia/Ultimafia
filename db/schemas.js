@@ -550,6 +550,18 @@ var schemas = {
       toJSON: { virtuals: true },
     }
   ),
+  ItemReaction: new mongoose.Schema({
+    reactor: { type: String, index: true },
+    item: { type: String, index: true },
+    itemType: { type: String, index: true },
+    emote: { type: String, index: true },
+    emoteKind: {
+      type: String,
+      default: "unicode",
+      enum: ["unicode", "site", "custom"],
+    },
+    emotePath: { type: String, default: "" },
+  }),
   KarmaVote: new mongoose.Schema(
     {
       voterId: { type: String, index: true },
@@ -1063,6 +1075,9 @@ schemas.ForumVote.virtual("user", {
   foreignField: "id",
   justOne: true,
 });
+
+schemas.ItemReaction.index({ reactor: 1, item: 1, emote: 1 }, { unique: true });
+schemas.ItemReaction.index({ item: 1, itemType: 1 });
 
 schemas.KarmaVote.virtual("voter", {
   ref: "User",

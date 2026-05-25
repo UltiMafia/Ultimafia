@@ -7,6 +7,7 @@ const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const { getBasicUserInfo } = require("../modules/redis");
 const logger = require("../modules/logging")(".");
+const { getReactionSummaries } = require("../modules/reactions");
 const errors = require("../lib/errors");
 const router = express.Router();
 
@@ -292,6 +293,10 @@ router.get("/thread/:id", async function (req, res) {
     thread = thread.toJSON();
     thread.author = await redis.getBasicUserInfo(thread.author.id, true);
     thread.vote = (vote && vote.direction) || 0;
+
+    const reactionSummaries = await getReactionSummaries([threadId], userId);
+    thread.reactions = reactionSummaries[threadId] || [];
+
     thread.replies = replies;
     thread.pageCount =
       Math.ceil(thread.replyCount / constants.repliesPerPage) || 1;

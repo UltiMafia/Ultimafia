@@ -4,6 +4,10 @@ const constants = require("../data/constants");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
+const {
+  getReactionSummaries,
+  attachReactionSummaries,
+} = require("../modules/reactions");
 const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
 const router = express.Router();
@@ -46,22 +50,10 @@ router.get("/", async function (req, res) {
       comments.push(comment);
     }
 
-    var votes = {};
     var commentIds = comments.map((comment) => comment.id);
 
-    if (userId) {
-      var voteList = await models.ForumVote.find({
-        voter: userId,
-        item: { $in: commentIds },
-      }).select("item direction");
-
-      for (let vote of voteList) votes[vote.item] = vote.direction;
-
-      comments = comments.map((comment) => {
-        comment.vote = votes[comment.id] || 0;
-        return comment;
-      });
-    }
+    const reactionSummaries = await getReactionSummaries(commentIds, userId);
+    comments = attachReactionSummaries(comments, reactionSummaries);
 
     res.send({ comments, maxPage, page });
   } catch (e) {

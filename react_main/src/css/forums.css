@@ -709,6 +709,14 @@
   flex: 1;
 }
 
+.thread-wrapper .post.thread-op {
+  flex-flow: column nowrap;
+}
+
+.thread-wrapper .post.thread-op .main-wrapper {
+  width: 100%;
+}
+
 .thread-wrapper .thread-post-col .post .md-content {
   flex: 1;
 }

@@ -14,6 +14,8 @@ import { Loading } from "components/Loading";
 import { ThreadPoll } from "components/Poll";
 
 import { VoteWidget } from "components/VoteWidget";
+import { EmoteReactions } from "components/EmoteReactions";
+import "css/emote-reactions.css";
 import { NameWithAvatar } from "../../User/User";
 
 function formatForumDate(timestamp) {
@@ -1042,6 +1044,7 @@ function Post(props) {
   const voteItemHolder = props.voteItemHolder;
   const setVoteItemHolder = props.setVoteItemHolder;
   const itemKey = props.itemKey;
+  const useEmoteReactions = itemType === "thread";
   const hasTitle = props.hasTitle;
   const permaLink = props.permaLink;
   const locked = props.locked;
@@ -1176,19 +1179,21 @@ function Post(props) {
   return (
     <div
       className={`post span-panel ${postInfo.deleted ? "deleted" : ""} ${
-        props.className
-      }`}
+        useEmoteReactions ? "thread-op " : ""
+      }${props.className || ""}`}
       id={id}
     >
-      <div className="vote-wrapper">
-        <VoteWidget
-          item={voteItem}
-          itemType={itemType}
-          itemHolder={voteItemHolder}
-          setItemHolder={setVoteItemHolder}
-          itemKey={itemKey}
-        />
-      </div>
+      {!useEmoteReactions && (
+        <div className="vote-wrapper">
+          <VoteWidget
+            item={voteItem}
+            itemType={itemType}
+            itemHolder={voteItemHolder}
+            setItemHolder={setVoteItemHolder}
+            itemKey={itemKey}
+          />
+        </div>
+      )}
       <div className="main-wrapper">
         <div className="heading">
           <div className="heading-left">
@@ -1359,6 +1364,15 @@ function Post(props) {
           <div className="md-content">
             <CustomMarkdown mentionTags={mentionTags}>{content}</CustomMarkdown>
           </div>
+        )}
+        {useEmoteReactions && !postInfo.deleted && !editing && (
+          <EmoteReactions
+            item={voteItem}
+            itemType={itemType}
+            itemHolder={voteItemHolder}
+            setItemHolder={setVoteItemHolder}
+            itemKey={itemKey}
+          />
         )}
         {editing && (
           <div className="edit-wrapper">

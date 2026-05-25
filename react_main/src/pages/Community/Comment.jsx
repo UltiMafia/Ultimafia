@@ -6,7 +6,8 @@ import { useErrorAlert } from "components/Alerts";
 import { Time } from "components/Basic";
 import CustomMarkdown from "components/CustomMarkdown";
 
-import { VoteWidget } from "components/VoteWidget";
+import { EmoteReactions } from "components/EmoteReactions";
+import "css/emote-reactions.css";
 import { NameWithAvatar } from "../User/User";
 
 import { Box, Divider, Grid, IconButton, Paper, Stack } from "@mui/material";
@@ -52,13 +53,7 @@ export const Comment = (props) => {
     <Grid container>
       <Grid item xs={12} md={props?.fullWidth ? 12 : 6}>
         <Paper sx={{ p: 1 }} className={`${comment.deleted ? "deleted" : ""}`}>
-          <Stack direction="row" spacing={1} alignItems="flex-start">
-            <VoteWidget
-              item={comment}
-              itemHolder={comments}
-              setItemHolder={setComments}
-              itemType="comment"
-            />
+          <Stack direction="column" spacing={1}>
             <Stack direction="column" spacing={1} flexGrow="1">
               <Stack direction="row" spacing={1} alignItems="center">
                 <NameWithAvatar
@@ -112,6 +107,14 @@ export const Comment = (props) => {
               >
                 <CustomMarkdown>{content}</CustomMarkdown>
               </Box>
+              {!comment.deleted && (
+                <EmoteReactions
+                  item={comment}
+                  itemType="comment"
+                  itemHolder={comments}
+                  setItemHolder={setComments}
+                />
+              )}
             </Stack>
           </Stack>
         </Paper>
