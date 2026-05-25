@@ -3208,6 +3208,16 @@
 
 /***********
 *
+* Battleship
+*
+***********/
+
+.role-icon-vivid-Battleship-Admiral {
+  background-image: url("/src/images/roles/village/admiral-vivid.png");
+}
+
+/***********
+*
 * Connect Four
 *
 ***********/

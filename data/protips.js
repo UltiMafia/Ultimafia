@@ -71,6 +71,12 @@ const protips = {
     "We've got five years.",
     "Planet Earth is blue and there's nothing I can do.",
   ],
+  Battleship: [
+    "Place ships in varied positions—don't cluster them in a corner.",
+    "When you hit, target adjacent cells to find the rest of the ship.",
+    "Track your misses so you don't waste turns.",
+    "Finish one ship before spreading shots across the board.",
+  ],
   "Dice Wars": [
     "Focus on expanding your territory early in the game.",
     "Try to keep your borders well-defended with higher dice counts.",

@@ -16,6 +16,7 @@ export const gamesIcons = {
   "Connect Four": require("images/game_icons/ConnectFour.png"),
   "Dice Wars": require("images/game_icons/DiceWars.png"),
   "Spot It": require("images/game_icons/SpotIt.png"),
+  Battleship: require("images/game_icons/Battleship.png"),
 };
 
 export default function GameIcon(props) {

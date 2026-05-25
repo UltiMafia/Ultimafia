@@ -619,6 +619,7 @@ const AchievementData = {
   "Texas Hold Em": {},
   Cheat: {},
   "Connect Four": {},
+  Battleship: {},
   "Spot It": {},
   Ratscrew: {},
   // TODO Wave 8 verify schema — listener classes for `internal` entries are

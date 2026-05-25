@@ -1537,6 +1537,27 @@ const countChecks = {
     if (total < 2) return "Must have at least 2 players.";
     return true;
   },
+  Battleship: (roleset, count, total) => {
+    const playerTotal = constants.fixedPlayerTotals.Battleship;
+    if (total !== playerTotal) {
+      return `Battleship requires exactly ${playerTotal} players.`;
+    }
+
+    let admiralCount = 0;
+    for (let role in roleset) {
+      const roleName = role.split(":")[0];
+      if (roleName !== "Admiral") {
+        return "Battleship only supports the Admiral role.";
+      }
+      admiralCount += roleset[role];
+    }
+
+    if (admiralCount !== playerTotal) {
+      return `Battleship requires exactly ${playerTotal} Admirals.`;
+    }
+
+    return true;
+  },
 };
 
 const optionsChecks = {
@@ -1603,6 +1624,9 @@ const optionsChecks = {
     return setup;
   },
   "Spot It": (setup) => {
+    return setup;
+  },
+  Battleship: (setup) => {
     return setup;
   },
 };

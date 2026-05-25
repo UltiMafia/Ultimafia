@@ -104,6 +104,7 @@ const artContributors = {
     Battlesnakes: ["Snake:vivid"],
     "Dice Wars": ["General:vivid"],
     "Connect Four": ["Starman:vivid"],
+    Battleship: ["Admiral:vivid"],
   },
 }
 
