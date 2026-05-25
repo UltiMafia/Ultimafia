@@ -1437,6 +1437,7 @@ export function ThreePanelLayout({
   leftPanelContent,
   centerPanelContent,
   rightPanelContent,
+  className,
 }) {
   const isPhoneDevice = useIsPhoneDevice();
 
@@ -1446,7 +1447,11 @@ export function ThreePanelLayout({
   }
 
   return (
-    <Stack className="main" direction="row" sx={{ gap: 2 }}>
+    <Stack
+      className={`main${className ? ` ${className}` : ""}`}
+      direction="row"
+      sx={{ gap: 2 }}
+    >
       <div className="left-panel panel with-radial-gradient">
         {leftPanelContent}
       </div>

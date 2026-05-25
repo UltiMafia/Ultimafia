@@ -6,7 +6,6 @@ import {
   ThreePanelLayout,
   TopBar,
   TextMeetingLayout,
-  ActionList,
   PlayerList,
   SettingsMenu,
   MobileLayout,
@@ -45,10 +44,10 @@ export default function BattleshipGame() {
     <GameTypeContext.Provider value={{ singleState: true }}>
       <TopBar />
       <ThreePanelLayout
+        className="battleship-layout"
         leftPanelContent={
           <>
-            {history.currentState < 0 && <PlayerList />}
-            <ActionList />
+            <PlayerList />
             <SettingsMenu />
           </>
         }
@@ -66,7 +65,7 @@ export default function BattleshipGame() {
         outerLeftContent={
           <>
             <PlayerList />
-            <ActionList />
+            <SettingsMenu />
           </>
         }
         innerRightContent={<BattleshipBoardWrapper />}
@@ -91,6 +90,7 @@ function BattleshipBoardWrapper() {
     <SideMenu
       title="Fleet"
       scrollable
+      flex={1}
       content={
         <BattleshipStage
           review={game.review}
