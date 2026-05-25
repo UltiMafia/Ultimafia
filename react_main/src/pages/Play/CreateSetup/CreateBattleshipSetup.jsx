@@ -7,6 +7,9 @@ import { SiteInfoContext } from "../../../Contexts";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 
+const BATTLESHIP_PLAYER_TOTAL = 2;
+const BATTLESHIP_FIXED_ROLES = [{ "Admiral:": BATTLESHIP_PLAYER_TOTAL }];
+
 export default function CreateBattleshipSetup() {
   const gameType = "Battleship";
   const location = useLocation();
@@ -42,11 +45,11 @@ export default function CreateBattleshipSetup() {
     document.title = "Create Battleship Setup | UltiMafia";
   }, []);
 
-  function onCreateSetup(roleData, editing, setRedirect, gameSettings) {
+  function onCreateSetup(_roleData, editing, setRedirect, gameSettings) {
     axios
       .post("/api/setup/create", {
         gameType: gameType,
-        roles: roleData.roles,
+        roles: BATTLESHIP_FIXED_ROLES,
         gameSettings: gameSettings,
         name: formFields[0].value,
         startState: "Place Ships",
@@ -75,6 +78,8 @@ export default function CreateBattleshipSetup() {
       closedField={{ value: false }}
       formFieldValueMods={formFieldValueMods}
       onCreateSetup={onCreateSetup}
+      fixedRoles={BATTLESHIP_FIXED_ROLES}
+      fixedPlayerTotal={BATTLESHIP_PLAYER_TOTAL}
     />
   );
 }

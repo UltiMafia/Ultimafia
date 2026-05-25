@@ -13,6 +13,8 @@ const {
   resolveFire,
 } = boardLogic;
 
+const PLAYER_TOTAL = 2;
+
 module.exports = class BattleshipGame extends Game {
   constructor(options) {
     super(options);
@@ -44,7 +46,46 @@ module.exports = class BattleshipGame extends Game {
     this.gameOverReveal = false;
   }
 
+  getPlayerTotal() {
+    return PLAYER_TOTAL;
+  }
+
+  checkGameStart() {
+    if (Number(this.setup.total) !== PLAYER_TOTAL) {
+      this.sendAlert(
+        `Battleship requires a ${PLAYER_TOTAL}-player setup.`,
+        undefined,
+        undefined,
+        ["info"]
+      );
+      return;
+    }
+
+    if (this.players.length !== PLAYER_TOTAL) return;
+
+    super.checkGameStart();
+  }
+
+  calculateStateOffset() {
+    const start = this.setup.startState;
+    if (!start) return;
+
+    for (let i = 2; i < this.states.length; i++) {
+      if (this.states[i].name === start) {
+        this.stateOffset = i - 2;
+        return;
+      }
+    }
+  }
+
   start() {
+    if (this.players.length !== PLAYER_TOTAL) {
+      this.sendAlert(
+        `Battleship cannot start without exactly ${PLAYER_TOTAL} players.`
+      );
+      return;
+    }
+
     for (let player of this.players) {
       this.boards[player.id] = this.createEmptyBoardState();
     }
@@ -84,7 +125,8 @@ module.exports = class BattleshipGame extends Game {
   }
 
   getOpponent(player) {
-    return this.players.find((p) => p.id !== player.id);
+    const opponents = this.players.filter((p) => p.id !== player.id);
+    return opponents.length === 1 ? opponents[0] : null;
   }
 
   allPlayersPlaced() {

@@ -2,6 +2,7 @@ const chai = require("chai");
 const should = chai.should();
 
 const boardLogic = require("../../../Games/types/Battleship/boardLogic");
+const constants = require("../../../data/constants");
 
 const { SHIP_SPECS, SHIP_TYPES, validateFleet, resolveFire } = boardLogic;
 
@@ -20,6 +21,12 @@ function emptyBoardState() {
 }
 
 describe("Games/Battleship", function () {
+  describe("player limit", function () {
+    it("is fixed at 2 players for release", function () {
+      constants.fixedPlayerTotals.Battleship.should.equal(2);
+    });
+  });
+
   describe("validateFleet", function () {
     it("accepts a valid classic fleet", function () {
       should.not.exist(validateFleet(validFleet()));

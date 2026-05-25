@@ -122,6 +122,10 @@ module.exports = {
     "Spot It": ["Round"],
     Battleship: ["Place Ships"],
   },
+  // Game types locked to a single player count for release (min === max).
+  fixedPlayerTotals: {
+    Battleship: 2,
+  },
   competitiveDefaults: {
     Mafia: {
       extendLength: 3,

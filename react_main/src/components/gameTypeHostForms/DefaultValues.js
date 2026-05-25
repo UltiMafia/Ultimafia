@@ -187,6 +187,7 @@ var defaultOptions = {
   },
   Battleship: existingHostOptions["Battleship"] || {
     ...commonHostOptions,
+    readyCheck: false,
     placeShipsLength: 3,
     combatLength: 1,
   },
