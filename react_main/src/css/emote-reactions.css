@@ -10,6 +10,13 @@
   min-width: 36px;
   min-height: 36px;
   padding: 4px;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.emote-reactions-picker.dropdown .dropdown-control:hover {
+  background-color: transparent;
+  box-shadow: none;
 }
 
 .emote-reactions-picker.dropdown .dropdown-control img {
@@ -53,8 +60,4 @@
   font-size: 13px !important;
   line-height: 1 !important;
   font-weight: 600;
-}
-
-.thread-wrapper .post.thread-op .main-wrapper {
-  width: 100%;
 }

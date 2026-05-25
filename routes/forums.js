@@ -327,6 +327,26 @@ router.get("/thread/:id", async function (req, res) {
     thread.reactions = reactionSummaries[threadId] || [];
     replies = attachReactionSummaries(replies, reactionSummaries);
 
+    if (userId) {
+      const voteItems = [
+        threadId,
+        ...replies.map((reply) => reply.id).filter(Boolean),
+      ];
+      const voteList = await models.ForumVote.find({
+        voter: userId,
+        item: { $in: voteItems },
+      }).select("item direction");
+
+      const votes = {};
+      for (let voteDoc of voteList) votes[voteDoc.item] = voteDoc.direction;
+
+      thread.vote = votes[threadId] || 0;
+      replies = replies.map((reply) => {
+        reply.vote = votes[reply.id] || 0;
+        return reply;
+      });
+    }
+
     thread.replies = replies;
     thread.pageCount =
       Math.ceil(thread.replyCount / constants.repliesPerPage) || 1;

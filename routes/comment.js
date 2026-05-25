@@ -74,6 +74,21 @@ router.get("/", async function (req, res) {
 
     comments = attachReactionSummaries(comments, reactionSummaries);
 
+    if (userId) {
+      var votes = {};
+      var voteList = await models.ForumVote.find({
+        voter: userId,
+        item: { $in: commentIds },
+      }).select("item direction");
+
+      for (let vote of voteList) votes[vote.item] = vote.direction;
+
+      comments = comments.map((comment) => {
+        comment.vote = votes[comment.id] || 0;
+        return comment;
+      });
+    }
+
     res.send({ comments, maxPage, page });
   } catch (e) {
     logger.error(e);

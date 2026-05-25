@@ -13,6 +13,7 @@ import { UserContext } from "Contexts";
 import { Loading } from "components/Loading";
 import { ThreadPoll } from "components/Poll";
 
+import { VoteWidget } from "components/VoteWidget";
 import { EmoteReactions } from "components/EmoteReactions";
 import "css/emote-reactions.css";
 import { NameWithAvatar } from "../../User/User";
@@ -1043,7 +1044,6 @@ function Post(props) {
   const voteItemHolder = props.voteItemHolder;
   const setVoteItemHolder = props.setVoteItemHolder;
   const itemKey = props.itemKey;
-  const useEmoteReactions = itemType === "thread" || itemType === "reply";
   const hasTitle = props.hasTitle;
   const permaLink = props.permaLink;
   const locked = props.locked;
@@ -1178,10 +1178,19 @@ function Post(props) {
   return (
     <div
       className={`post span-panel ${postInfo.deleted ? "deleted" : ""} ${
-        useEmoteReactions ? "forum-post-reactions " : ""
-      }${props.className || ""}`}
+        props.className || ""
+      }`}
       id={id}
     >
+      <div className="vote-wrapper">
+        <VoteWidget
+          item={voteItem}
+          itemType={itemType}
+          itemHolder={voteItemHolder}
+          setItemHolder={setVoteItemHolder}
+          itemKey={itemKey}
+        />
+      </div>
       <div className="main-wrapper">
         <div className="heading">
           <div className="heading-left">
@@ -1353,7 +1362,7 @@ function Post(props) {
             <CustomMarkdown mentionTags={mentionTags}>{content}</CustomMarkdown>
           </div>
         )}
-        {useEmoteReactions && !postInfo.deleted && !editing && (
+        {!postInfo.deleted && !editing && (
           <EmoteReactions
             item={voteItem}
             itemType={itemType}

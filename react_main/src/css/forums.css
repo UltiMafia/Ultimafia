@@ -709,14 +709,6 @@
   flex: 1;
 }
 
-.thread-wrapper .post.forum-post-reactions {
-  flex-flow: column nowrap;
-}
-
-.thread-wrapper .post.forum-post-reactions .main-wrapper {
-  width: 100%;
-}
-
 .thread-wrapper .thread-post-col .post .md-content {
   flex: 1;
 }
