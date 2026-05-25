@@ -5,6 +5,6 @@ module.exports = class Survivor extends Role {
     super("Survivor", player, data);
 
     this.alignment = "Independent";
-    this.cards = ["VillageCore", "WinIfAlive"];
+    this.cards = ["VillageCore", "SurvivorHide", "WinIfAlive"];
   }
 };
