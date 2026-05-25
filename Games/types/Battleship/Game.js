@@ -44,6 +44,33 @@ module.exports = class BattleshipGame extends Game {
     this.turnOrder = [];
     this.currentTurnPlayerId = null;
     this.gameOverReveal = false;
+
+    // Admiral's Village meeting is speech-only (always "ready"), which would
+    // otherwise make checkAllMeetingsReady() advance states instantly.
+    this.events.on("state", () => {
+      if (this.started && !this.finished) this.sendBattleshipViews();
+    });
+  }
+
+  checkAllMeetingsReady() {
+    const phase = this.getStateName();
+    if (phase === "Place Ships" || phase === "Combat") return;
+    super.checkAllMeetingsReady();
+  }
+
+  createNextStateTimer(stateInfo) {
+    const phase = stateInfo?.name || this.getStateName();
+
+    if (phase === "Combat") {
+      return;
+    }
+
+    if (phase === "Place Ships") {
+      this.createTimer("main", stateInfo.length, () => this.gotoNextState());
+      return;
+    }
+
+    super.createNextStateTimer(stateInfo);
   }
 
   getPlayerTotal() {
