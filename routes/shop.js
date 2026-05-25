@@ -12,30 +12,67 @@ const router = express.Router();
 const COINS_PER_USD = 5;
 const MIN_PURCHASE_USD = 1;
 const MAX_PURCHASE_USD = 200;
-const PAYPAL_API_BASE = process.env.PAYPAL_API_BASE || "https://api-m.paypal.com";
+const PAYPAL_LIVE_API_BASE = "https://api-m.paypal.com";
+const PAYPAL_SANDBOX_API_BASE = "https://api-m.sandbox.paypal.com";
 
 let payPalTokenCache = {
+  cacheKey: "",
   accessToken: "",
   expiresAt: 0,
 };
 
+function getPayPalEnvironment() {
+  const payPalEnv = String(
+    process.env.PAYPAL_ENV || process.env.PAYPAL_MODE || "live"
+  ).toLowerCase();
+
+  return payPalEnv === "sandbox" ? "sandbox" : "live";
+}
+
+function getPayPalApiBase() {
+  if (process.env.PAYPAL_API_BASE) {
+    return process.env.PAYPAL_API_BASE.replace(/\/+$/, "");
+  }
+
+  return getPayPalEnvironment() === "sandbox"
+    ? PAYPAL_SANDBOX_API_BASE
+    : PAYPAL_LIVE_API_BASE;
+}
+
+function getPayPalCredentials() {
+  const environment = getPayPalEnvironment();
+  const prefix = environment === "sandbox" ? "PAYPAL_SANDBOX" : "PAYPAL_LIVE";
+
+  return {
+    environment,
+    apiBase: getPayPalApiBase(),
+    clientId:
+      process.env[`${prefix}_CLIENT_ID`] || process.env.PAYPAL_CLIENT_ID || "",
+    clientSecret:
+      process.env[`${prefix}_CLIENT_SECRET`] ||
+      process.env.PAYPAL_CLIENT_SECRET ||
+      "",
+  };
+}
+
 async function getPayPalAccessToken() {
-  const clientId = process.env.PAYPAL_CLIENT_ID;
-  const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+  const { apiBase, clientId, clientSecret } = getPayPalCredentials();
 
   if (!clientId || !clientSecret) {
     const missing = [];
     if (!clientId) {
-      missing.push("PAYPAL_CLIENT_ID");
+      missing.push("PayPal client ID");
     }
     if (!clientSecret) {
-      missing.push("PAYPAL_CLIENT_SECRET");
+      missing.push("PayPal client secret");
     }
     throw new Error(`PayPal credentials are missing: ${missing.join(", ")}.`);
   }
 
   const now = Date.now();
+  const cacheKey = `${apiBase}:${clientId}`;
   if (
+    payPalTokenCache.cacheKey === cacheKey &&
     payPalTokenCache.accessToken &&
     payPalTokenCache.expiresAt &&
     payPalTokenCache.expiresAt > now + 10_000
@@ -44,10 +81,12 @@ async function getPayPalAccessToken() {
   }
 
   const tokenResponse = await axios.post(
-    `${PAYPAL_API_BASE}/v1/oauth2/token`,
+    `${apiBase}/v1/oauth2/token`,
     "grant_type=client_credentials",
     {
       headers: {
+        Accept: "application/json",
+        "Accept-Language": "en_US",
         "Content-Type": "application/x-www-form-urlencoded",
       },
       auth: {
@@ -65,6 +104,7 @@ async function getPayPalAccessToken() {
   }
 
   payPalTokenCache = {
+    cacheKey,
     accessToken,
     expiresAt: now + expiresInSeconds * 1000,
   };
@@ -77,11 +117,11 @@ function getPayPalRequestPhase(error) {
   if (url.includes("/v1/oauth2/token")) {
     return "token";
   }
-  if (url.includes("/v2/checkout/orders")) {
-    return "create-order";
-  }
   if (url.includes("/capture")) {
     return "capture-order";
+  }
+  if (url.includes("/v2/checkout/orders")) {
+    return "create-order";
   }
   return "unknown";
 }
@@ -629,10 +669,12 @@ router.post(
 router.get("/paypal-client-id", async function (req, res) {
   try {
     await routeUtils.verifyLoggedIn(req);
-    if (!process.env.PAYPAL_CLIENT_ID || !process.env.PAYPAL_CLIENT_SECRET) {
+    const { clientId, clientSecret } = getPayPalCredentials();
+
+    if (!clientId || !clientSecret) {
       return res.status(500).send("PayPal is not configured.");
     }
-    return res.send({ clientId: process.env.PAYPAL_CLIENT_ID });
+    return res.send({ clientId });
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not load PayPal configuration. Please refresh and try again.");
@@ -657,10 +699,11 @@ router.post("/paypal/create-order", async function (req, res) {
     }
 
     const coins = amountUsd * COINS_PER_USD;
+    const { apiBase } = getPayPalCredentials();
     const accessToken = await getPayPalAccessToken();
 
     const createResponse = await axios.post(
-      `${PAYPAL_API_BASE}/v2/checkout/orders`,
+      `${apiBase}/v2/checkout/orders`,
       {
         intent: "CAPTURE",
         purchase_units: [
@@ -701,10 +744,14 @@ router.post("/paypal/create-order", async function (req, res) {
     const phase = getPayPalRequestPhase(e);
     const paypalStatus = e?.response?.status;
     const paypalData = e?.response?.data;
+    const { apiBase, environment } = getPayPalCredentials();
     logger.error({
       message: "PayPal create-order failed",
       phase,
+      environment,
+      apiBase,
       status: paypalStatus,
+      paypalDebugId: e?.response?.headers?.["paypal-debug-id"],
       data: paypalData || e?.message || e,
     });
 
@@ -751,9 +798,10 @@ router.post("/paypal/capture-order", async function (req, res) {
       });
     }
 
+    const { apiBase } = getPayPalCredentials();
     const accessToken = await getPayPalAccessToken();
     const captureResponse = await axios.post(
-      `${PAYPAL_API_BASE}/v2/checkout/orders/${paypalOrderId}/capture`,
+      `${apiBase}/v2/checkout/orders/${paypalOrderId}/capture`,
       {},
       {
         headers: {
@@ -832,7 +880,17 @@ router.post("/paypal/capture-order", async function (req, res) {
       balance: updatedUser?.coins ?? 0,
     });
   } catch (e) {
-    logger.error(e?.response?.data || e);
+    const phase = getPayPalRequestPhase(e);
+    const { apiBase, environment } = getPayPalCredentials();
+    logger.error({
+      message: "PayPal capture-order failed",
+      phase,
+      environment,
+      apiBase,
+      status: e?.response?.status,
+      paypalDebugId: e?.response?.headers?.["paypal-debug-id"],
+      data: e?.response?.data || e?.message || e,
+    });
     errors.serverError(res, "Error capturing PayPal payment. Please try again.");
     return;
   }
