@@ -513,18 +513,23 @@ export function SetupPage() {
 
   // Night order: flatten setup roles with siteInfo, collect night actions, sort by priority
   let useingRoles = [];
-  if (setup && siteInfo?.rolesRaw?.[setup.gameType]) {
+  if (
+    setup &&
+    Array.isArray(setup.roles) &&
+    siteInfo?.rolesRaw?.[setup.gameType]
+  ) {
+    const rolesRaw = siteInfo.rolesRaw[setup.gameType];
     for (let i = 0; i < setup.roles.length; i++) {
-      useingRoles = useingRoles.concat(
-        Object.keys(setup.roles[i]).map((key) => [
-          key,
-          siteInfo.rolesRaw[setup.gameType][key.split(":")[0]],
-        ])
-      );
+      for (const key of Object.keys(setup.roles[i] || {})) {
+        const roleData = rolesRaw[key.split(":")[0]];
+        if (roleData) {
+          useingRoles.push([key, roleData]);
+        }
+      }
     }
   }
   const roles = useingRoles;
-  const hasMafia = roles.filter((r) => r[1].alignment === "Mafia").length > 0;
+  const hasMafia = roles.some((r) => r[1].alignment === "Mafia");
   const nightRoles = roles.filter((r) => r[1].nightOrder != null);
   let nightActions = [];
   if (hasMafia) {
