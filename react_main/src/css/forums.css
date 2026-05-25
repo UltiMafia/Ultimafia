@@ -709,11 +709,11 @@
   flex: 1;
 }
 
-.thread-wrapper .post.thread-op {
+.thread-wrapper .post.forum-post-reactions {
   flex-flow: column nowrap;
 }
 
-.thread-wrapper .post.thread-op .main-wrapper {
+.thread-wrapper .post.forum-post-reactions .main-wrapper {
   width: 100%;
 }
 

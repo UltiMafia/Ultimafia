@@ -7,7 +7,10 @@ const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const { getBasicUserInfo } = require("../modules/redis");
 const logger = require("../modules/logging")(".");
-const { getReactionSummaries } = require("../modules/reactions");
+const {
+  getReactionSummaries,
+  attachReactionSummaries,
+} = require("../modules/reactions");
 const errors = require("../lib/errors");
 const router = express.Router();
 
@@ -266,15 +269,6 @@ router.get("/thread/:id", async function (req, res) {
       return;
     }
 
-    var vote;
-
-    if (userId) {
-      vote = await models.ForumVote.findOne({
-        voter: userId,
-        item: threadId,
-      }).select("direction");
-    }
-
     var replyFilter = { thread: thread._id, page: page };
 
     if (!canViewDeleted) replyFilter.deleted = false;
@@ -286,21 +280,52 @@ router.get("/thread/:id", async function (req, res) {
 
     for (let i in replies) {
       let reply = replies[i].toJSON();
-      reply.author = await redis.getBasicUserInfo(reply.author.id, true);
+      const authorId = reply.author?.id;
+
+      if (authorId) {
+        reply.author = await redis.getBasicUserInfo(authorId, true);
+      } else {
+        reply.author = {
+          id: "",
+          name: "[deleted]",
+          avatar: false,
+          groups: [],
+          settings: {},
+        };
+      }
+
       replies[i] = reply;
     }
 
     thread = thread.toJSON();
-    thread.author = await redis.getBasicUserInfo(thread.author.id, true);
-    thread.vote = (vote && vote.direction) || 0;
+    const threadAuthorId = thread.author?.id;
+
+    if (threadAuthorId) {
+      thread.author = await redis.getBasicUserInfo(threadAuthorId, true);
+    } else {
+      thread.author = {
+        id: "",
+        name: "[deleted]",
+        avatar: false,
+        groups: [],
+        settings: {},
+      };
+    }
+
+    const reactionItemIds = [
+      threadId,
+      ...replies.map((reply) => reply.id).filter(Boolean),
+    ];
 
     let reactionSummaries = {};
     try {
-      reactionSummaries = await getReactionSummaries([threadId], userId);
+      reactionSummaries = await getReactionSummaries(reactionItemIds, userId);
     } catch (reactionErr) {
-      logger.error("Failed to load thread reactions:", reactionErr);
+      logger.error("Failed to load forum reactions:", reactionErr);
     }
+
     thread.reactions = reactionSummaries[threadId] || [];
+    replies = attachReactionSummaries(replies, reactionSummaries);
 
     thread.replies = replies;
     thread.pageCount =
@@ -311,14 +336,6 @@ router.get("/thread/:id", async function (req, res) {
     delete thread.replyCount;
 
     if (userId) {
-      for (let reply of replies) {
-        vote = await models.ForumVote.findOne({
-          voter: userId,
-          item: reply.id,
-        }).select("direction");
-        reply.vote = (vote && vote.direction) || 0;
-      }
-
       // Add subscription status for current user
       var subscribers = thread.subscribers || [];
       thread.isSubscribed = subscribers.indexOf(userId) !== -1;
