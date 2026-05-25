@@ -4951,8 +4951,14 @@ const roleData = {
     },
     Survivor: {
       alignment: "Independent",
-      tags: ["Basic"],
-      description: ["You win if alive at the end of the game."],
+      tags: ["Survivor", "Visit Interaction", "Visiting", "Basic"],
+      description: [
+        "Each night, you can choose to hide behind one player.",
+        "While hiding behind someone, all actions taken upon your target will be copied onto you as well.",
+        "While hiding behind someone, actions taken upon you will fail.",
+        "You win if alive at the end of the game.",
+      ],
+      nightOrder: [["Hide", PRIORITY_COPY_ACTIONS]],
     },
     "Old Maid": {
       alignment: "Independent",
@@ -5291,8 +5297,11 @@ const roleData = {
     },
     Supervillain: {
       alignment: "Independent",
-      tags: ["Independent", "Basic"],
-      description: ["You win if you are the only Independent player alive."],
+      tags: ["Independent", "Meetings", "Basic"],
+      description: [
+        "Each night, you invite all Independent players to an anonymous Villain meeting.",
+        "You win if you are the only Independent player alive.",
+      ],
     },
     Monk: {
       alignment: "Independent",

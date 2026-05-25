@@ -5,6 +5,6 @@ module.exports = class Supervillain extends Role {
     super("Supervillain", player, data);
 
     this.alignment = "Independent";
-    this.cards = ["VillageCore", "WinAloneIndependent"];
+    this.cards = ["VillageCore", "VillainMeeting", "WinAloneIndependent"];
   }
 };
