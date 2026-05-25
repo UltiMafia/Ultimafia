@@ -212,6 +212,7 @@ const modifierData = {
   Cheat: {},
   Ratscrew: {},
   "Connect Four": {},
+  Battleship: {},
   "Spot It": {},
 };
 

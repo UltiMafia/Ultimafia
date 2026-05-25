@@ -1,7 +1,6 @@
 const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
-const child_process = require("child_process");
 const Random = require("../lib/Random");
 const constants = require("../data/constants");
 const DailyChallengeData = require("../data/DailyChallenge");

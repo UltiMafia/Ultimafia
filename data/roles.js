@@ -6537,6 +6537,15 @@ const roleData = {
       description: ["Can place counters on the board."],
     },
   },
+  Battleship: {
+    Admiral: {
+      alignment: "Town",
+      tags: ["None"],
+      description: [
+        "Command your fleet on a hidden grid and sink all enemy ships before yours are destroyed.",
+      ],
+    },
+  },
   "Spot It": {
     Steeplejack: {
       alignment: "Town",

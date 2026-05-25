@@ -19,6 +19,7 @@ const HOST_OPTIONS_VERSIONS = {
   Cheat: 2,
   Ratscrew: 2,
   "Connect Four": 2,
+  Battleship: 1,
   "Spot It": 1,
   "Dice Wars": 2,
 };
@@ -183,6 +184,11 @@ var defaultOptions = {
   "Spot It": existingHostOptions["Spot It"] || {
     ...commonHostOptions,
     roundLength: 55,
+  },
+  Battleship: existingHostOptions["Battleship"] || {
+    ...commonHostOptions,
+    placeShipsLength: 3,
+    combatLength: 1,
   },
 };
 

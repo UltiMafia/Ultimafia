@@ -219,6 +219,7 @@ const tagData = {
   Ratscrew: {},
   Battlesnakes: {},
   "Connect Four": {},
+  Battleship: {},
   "Spot It": {},
   "Dice Wars": {},
 };

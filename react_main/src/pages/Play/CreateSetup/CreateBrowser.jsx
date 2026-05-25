@@ -113,6 +113,9 @@ export default function CreateSetup(props) {
   const resetFormFields = props.resetFormFields;
   const formFieldValueMods = props.formFieldValueMods;
   const onCreateSetup = props.onCreateSetup;
+  const fixedRoles = props.fixedRoles;
+  const fixedPlayerTotal = props.fixedPlayerTotal;
+  const useFixedRoles = Boolean(fixedRoles?.length);
 
   const errorAlert = useErrorAlert();
   const [selRoleSet, setSelRoleSet] = useState(0);
@@ -333,7 +336,15 @@ export default function CreateSetup(props) {
 
       return newRoleData;
     },
-    { roles: [{}], roleGroupSizes: [1], closed: false }
+    useFixedRoles
+      ? {
+          roles: fixedRoles.map((roleSet) => ({ ...roleSet })),
+          roleGroupSizes: fixedRoles.map((roleSet) =>
+            Object.values(roleSet).reduce((sum, n) => sum + n, 0)
+          ),
+          closed: false,
+        }
+      : { roles: [{}], roleGroupSizes: [1], closed: false }
   );
 
   const [gameSettings, updateGameSettings] = useReducer(
@@ -786,8 +797,16 @@ export default function CreateSetup(props) {
 
   return (
     <Stack direction="column" spacing={1}>
-      <RoleSearch onAddClick={onAddRole} gameType={gameType} />
-      {siteInfo.modifiers[props.gameType].length > 0 && (
+      {useFixedRoles && (
+        <Paper sx={{ p: 1 }}>
+          <Typography variant="body1">
+            Battleship is a {fixedPlayerTotal}-player game. Each setup uses{" "}
+            {fixedPlayerTotal} Admirals (one per player).
+          </Typography>
+        </Paper>
+      )}
+      {!useFixedRoles && <RoleSearch onAddClick={onAddRole} gameType={gameType} />}
+      {!useFixedRoles && siteInfo.modifiers[props.gameType].length > 0 && (
         <Paper sx={{ p: 1 }}>
           <Accordion>
             <AccordionSummary>
@@ -803,7 +822,7 @@ export default function CreateSetup(props) {
           </Accordion>
         </Paper>
       )}
-      {siteInfo.modifiers[props.gameType].length > 0 && (
+      {!useFixedRoles && siteInfo.modifiers[props.gameType].length > 0 && (
         <StickyStateViewer
           isSticky={modifiers.length > 0}
           title="Selected Modifiers"
@@ -820,7 +839,8 @@ export default function CreateSetup(props) {
           </Grid2>
         </StickyStateViewer>
       )}
-      {roleSets}
+      {!useFixedRoles && roleSets}
+      {!useFixedRoles && (
       <Paper
         sx={{
           p: 1,
@@ -874,6 +894,7 @@ export default function CreateSetup(props) {
           </Grid2>
         </Grid2>
       </Paper>
+      )}
       <GameSettingSearch
         onAddClick={(gameSetting) =>
           updateGameSettings({ type: "add", gameSetting: gameSetting })

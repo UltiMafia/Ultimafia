@@ -666,6 +666,18 @@ router.post("/host", async function (req, res) {
       return;
     }
 
+    const fixedPlayerTotal = constants.fixedPlayerTotals?.[gameType];
+    if (
+      fixedPlayerTotal != null &&
+      Number(setup.total) !== fixedPlayerTotal
+    ) {
+      errors.badRequest(
+        res,
+        `${gameType} only supports ${fixedPlayerTotal}-player setups.`
+      );
+      return;
+    }
+
     if (req.body.ranked && !setup.ranked) {
       errors.forbidden(
         res,
@@ -1364,6 +1376,9 @@ const settingsChecks = {
     return {
       deckSize: settings.deckSize || "standard",
     };
+  },
+  Battleship: (settings, setup) => {
+    return {};
   },
 };
 

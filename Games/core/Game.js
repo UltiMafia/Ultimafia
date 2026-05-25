@@ -1791,10 +1791,12 @@ module.exports = class Game {
 
   calculateStateOffset() {
     let start = this.setup.startState;
-    if (this.getGameSetting("Day Start")) {
-      start = "Day";
-    } else {
-      start = "Night";
+    if (this.type === "Mafia") {
+      if (this.getGameSetting("Day Start")) {
+        start = "Day";
+      } else {
+        start = "Night";
+      }
     }
     if (this.HaveHostingState == true) {
       start = "Hosting";

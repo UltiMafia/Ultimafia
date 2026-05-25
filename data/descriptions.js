@@ -309,6 +309,16 @@ const learnGameDescriptions = [
     ],
   },
   {
+    gameType: "Battleship",
+    description: [
+      {
+        type: "paragraph",
+        content:
+          "Battleship is a two-player naval duel. Each Admiral places a fleet on a hidden 10×10 grid, then players take turns calling coordinates to find and sink the enemy ships. The first player to destroy the opposing fleet wins.",
+      },
+    ],
+  },
+  {
     gameType: "Connect Four",
     description: [
       {

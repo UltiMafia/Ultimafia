@@ -37,6 +37,7 @@ import HostBattlesnakes from "./gameTypeHostForms/HostBattlesnakes";
 import HostDiceWars from "./gameTypeHostForms/HostDiceWars";
 import HostConnectFour from "./gameTypeHostForms/HostConnectFour";
 import HostSpotIt from "./gameTypeHostForms/HostSpotIt";
+import HostBattleship from "./gameTypeHostForms/HostBattleship";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { getSetupBackgroundColor } from "pages/Play/LobbyBrowser/gameRowColors";
 
@@ -80,6 +81,8 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
         return HostConnectFour();
       case "Spot It":
         return HostSpotIt();
+      case "Battleship":
+        return HostBattleship();
     }
 
     // Fail fast

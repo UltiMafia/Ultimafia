@@ -47,4 +47,5 @@ export const ExtraRoleData = {
   "Connect Four": {},
   "Spot It": {},
   Ratscrew: {},
+  Battleship: {},
 };
