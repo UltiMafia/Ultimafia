@@ -17,6 +17,9 @@ const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
 const fortunePoints = require("../modules/fortunePoints");
 const errors = require("../lib/errors");
+const {
+  syncRankedCompetitiveAccess,
+} = require("../modules/userEligibility");
 const router = express.Router();
 
 router.get("/groups", async function (req, res) {
@@ -4078,54 +4081,45 @@ router.post("/syncCompetitiveApprovals", async function (req, res) {
     if (!(await routeUtils.verifyPermission(res, userId, "adjustMinGames")))
       return;
 
-    if (!(await redis.getAutoApprovalEnabled())) {
-      res.status(400).send(
-        "Auto-approval must be enabled. This sync only adds Competitive Player to users who have Ranked Player and would have been auto-approved."
-      );
-      return;
+    const minimumGames = await redis.getMinimumGamesForRanked();
+    const minimumPoints = constants.minimumPointsForCompetitive;
+    const usersToSync = await models.User.aggregate([
+      {
+        $match: {
+          deleted: false,
+          banned: { $ne: true },
+          flagged: { $ne: true },
+        },
+      },
+      {
+        $project: {
+          id: 1,
+          gamesPlayed: { $size: "$games" },
+        },
+      },
+      {
+        $match: {
+          gamesPlayed: { $gte: minimumGames },
+        },
+      },
+    ]);
+
+    let rankedGranted = 0;
+    let competitiveGranted = 0;
+    for (const user of usersToSync) {
+      const result = await syncRankedCompetitiveAccess(user.id, {
+        minimumGames,
+        minimumPoints,
+      });
+      if (result.rankedGranted) rankedGranted++;
+      if (result.competitiveGranted) competitiveGranted++;
     }
 
-    const rankedGroup = await models.Group.findOne({ name: "Ranked Player" }).select("_id");
-    const competitiveGroup = await models.Group.findOne({ name: "Competitive Player" }).select("_id");
-    if (!rankedGroup || !competitiveGroup) {
-      errors.notFound(res, "Required groups not found.");
-      return;
-    }
-
-    const inRanked = await models.InGroup.find({ group: rankedGroup._id })
-      .select("user")
-      .lean();
-    const rankedUserIds = inRanked.map((r) => r.user);
-    const inCompetitive = await models.InGroup.find({
-      group: competitiveGroup._id,
-      user: { $in: rankedUserIds },
-    })
-      .select("user")
-      .lean();
-    const competitiveUserIds = new Set(inCompetitive.map((c) => String(c.user)));
-
-    const usersToAdd = await models.User.find({
-      _id: { $in: rankedUserIds },
-      deleted: false,
-      flagged: { $ne: true },
-    })
-      .select("_id id")
-      .lean();
-
-    let restored = 0;
-    for (const user of usersToAdd) {
-      if (!competitiveUserIds.has(String(user._id))) {
-        await models.InGroup.create({
-          user: user._id,
-          group: competitiveGroup._id,
-        });
-        await redis.cacheUserPermissions(user.id);
-        restored++;
-      }
-    }
-
-    routeUtils.createModAction(userId, "Sync Competitive Approvals", [restored]);
-    res.json({ restored });
+    routeUtils.createModAction(userId, "Sync Competitive Approvals", [
+      rankedGranted,
+      competitiveGranted,
+    ]);
+    res.json({ rankedGranted, competitiveGranted });
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not sync competitive approvals. Please try again.");

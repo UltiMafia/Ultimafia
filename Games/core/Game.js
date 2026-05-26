@@ -33,6 +33,9 @@ const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const axios = require("axios");
 const fortunePoints = require("../../modules/fortunePoints");
+const {
+  syncRankedCompetitiveAccess,
+} = require("../../modules/userEligibility");
 
 module.exports = class Game {
   constructor(options) {
@@ -3779,6 +3782,10 @@ module.exports = class Game {
             },
           }
         ).exec();
+
+        if (!player.isBot) {
+          await syncRankedCompetitiveAccess(player.user.id);
+        }
 
         if (player.DailyTracker && player.DailyTracker.length >= 1) {
           await models.User.updateOne(

@@ -6,9 +6,11 @@ const crypto = require("crypto");
 const constants = require("../data/constants");
 const routeUtils = require("../routes/utils");
 const models = require("../db/models");
-const redis = require("../modules/redis");
 const fbServiceAccount = require("../" + process.env.FIREBASE_JSON_FILE);
 const logger = require("../modules/logging")(".");
+const {
+  syncRankedCompetitiveAccess,
+} = require("../modules/userEligibility");
 const { sendFlaggedUserDiscordAlert } = require("./report");
 const router = express.Router();
 const passport = require("passport");
@@ -423,25 +425,7 @@ async function authSuccess(req, uid, email, discordProfile) {
 
         sendFlaggedUserDiscordAlert(name, id, flagReason || "Suspicious IP");
       } else {
-        var rankedGroup = await models.Group.findOne({
-          name: "Ranked Player",
-        }).select("_id");
-        var inGroup = new models.InGroup({
-          user: user._id,
-          group: rankedGroup._id,
-        });
-        await inGroup.save();
-
-        if (await redis.getAutoApprovalEnabled()) {
-          var competitiveGroup = await models.Group.findOne({
-            name: "Competitive Player",
-          }).select("_id");
-          var inCompetitiveGroup = new models.InGroup({
-            user: user._id,
-            group: competitiveGroup._id,
-          });
-          await inCompetitiveGroup.save();
-        }
+        await syncRankedCompetitiveAccess(id);
       }
     } else if (!id && bannedUser) {
       //(8) (9)
@@ -515,33 +499,7 @@ async function authSuccess(req, uid, email, discordProfile) {
         );
       }
 
-      // When auto-approval is on, ensure returning users who qualify get Competitive Player.
-      // This heals users who may have lost it (e.g. from cache/DB issues) and keeps them in sync.
-      if (await redis.getAutoApprovalEnabled()) {
-        const fullUser = await models.User.findOne({ id, deleted: false }).select("_id flagged");
-        if (fullUser && !fullUser.flagged) {
-          const rankedGroup = await models.Group.findOne({ name: "Ranked Player" }).select("_id");
-          const competitiveGroup = await models.Group.findOne({ name: "Competitive Player" }).select("_id");
-          if (rankedGroup && competitiveGroup) {
-            const inRanked = await models.InGroup.findOne({
-              user: fullUser._id,
-              group: rankedGroup._id,
-            });
-            const inCompetitive = await models.InGroup.findOne({
-              user: fullUser._id,
-              group: competitiveGroup._id,
-            });
-            if (inRanked && !inCompetitive) {
-              const inCompetitiveGroup = new models.InGroup({
-                user: fullUser._id,
-                group: competitiveGroup._id,
-              });
-              await inCompetitiveGroup.save();
-              await redis.cacheUserPermissions(id);
-            }
-          }
-        }
-      }
+      await syncRankedCompetitiveAccess(id);
     }
 
     req.session.user = {
