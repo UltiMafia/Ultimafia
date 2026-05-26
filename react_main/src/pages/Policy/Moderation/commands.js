@@ -1021,7 +1021,7 @@ export function useModCommands(argValues, commandRan, setResults) {
           .then((res) => {
             const status = res.data.autoApprovalEnabled ? "enabled" : "disabled";
             siteInfo.showAlert(
-              `Auto-approval for Ranked and Competitive is now ${status}. New users will${res.data.autoApprovalEnabled ? " " : " not "}be immediately approved upon account creation.`,
+              `Legacy auto-approval flag is now ${status}. Ranked and Competitive access is granted when users meet the configured requirements.`,
               "success"
             );
             commandRan();
@@ -1037,11 +1037,12 @@ export function useModCommands(argValues, commandRan, setResults) {
         axios
           .post("/api/mod/syncCompetitiveApprovals")
           .then((res) => {
-            const count = res.data.restored;
+            const rankedCount = res.data.rankedGranted || 0;
+            const competitiveCount = res.data.competitiveGranted || 0;
             siteInfo.showAlert(
-              count > 0
-                ? `Restored Competitive Player group to ${count} user(s) who had lost it.`
-                : "No users needed restoration; all qualifying users already have Competitive Player.",
+              rankedCount > 0 || competitiveCount > 0
+                ? `Granted Ranked Player to ${rankedCount} user(s) and Competitive Player to ${competitiveCount} user(s).`
+                : "No users needed restoration; all qualifying users already have the right access.",
               "success"
             );
             commandRan();
