@@ -186,6 +186,73 @@ describe("Games/Mafia", function () {
       game.winners.groups["Mafia"].should.have.lengthOf(1);
     });
 
+    it("should show the first unblocked mafia kill voter to watchers", async function () {
+      this.timeout(10000);
+
+      await db.promise;
+      await redis.client.flushdbAsync();
+
+      const setup = {
+        total: 6,
+        roles: [{ Watcher: 1, Drunk: 1, Villager: 1, Mafioso: 3 }],
+      };
+      const game = await makeGame(setup);
+      const roles = getRoles(game);
+      const mafiosi = roles["Mafioso"];
+      const target = roles["Villager"];
+
+      addListenerToPlayer(roles["Watcher"], "meeting", function (meeting) {
+        if (meeting.name == "Watch") {
+          this.sendToServer("vote", {
+            selection: target.id,
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      addListenerToPlayer(roles["Drunk"], "meeting", function (meeting) {
+        if (meeting.name == "Block") {
+          this.sendToServer("vote", {
+            selection: mafiosi[0].id,
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      for (let mafioso of mafiosi) {
+        addListenerToPlayer(mafioso, "meeting", function (meeting) {
+          if (meeting.name == "Mafia Kill") {
+            this.sendToServer("vote", {
+              selection: target.id,
+              meetingId: meeting.id,
+            });
+          }
+        });
+      }
+
+      addListenerToPlayers(game.players, "meeting", function (meeting) {
+        if (meeting.name == "Village") {
+          this.sendToServer("vote", {
+            selection: mafiosi[0].id,
+            meetingId: meeting.id,
+          });
+        }
+      });
+
+      await waitForGameEnd(game);
+
+      gameHasAlert(
+        game,
+        `${target.name} was visited by ${mafiosi[1].name}`,
+        "Watcher"
+      ).should.be.true;
+      gameHasAlert(
+        game,
+        `${target.name} was visited by ${mafiosi[0].name}`,
+        "Watcher"
+      ).should.be.false;
+    });
+
     it("should allow the game to continue after a death", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
