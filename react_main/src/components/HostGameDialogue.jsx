@@ -47,55 +47,59 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
   const isPhoneDevice = useIsPhoneDevice();
   const navigate = useNavigate();
 
-  const [initialFormFields, onHostGame] = GameTypeHostForm(setup.gameType);
+  function getNormalizedGameType(gameType) {
+    return String(gameType || "").trim();
+  }
+
+  const [initialFormFields, onHostGame, supportsGameType] = GameTypeHostForm(
+    getNormalizedGameType(setup.gameType)
+  );
 
   function GameTypeHostForm(gameType) {
     switch (gameType) {
       case "Mafia":
-        return HostMafia();
+        return [...HostMafia(), true];
       case "Resistance":
-        return HostResistance();
+        return [...HostResistance(), true];
       case "Jotto":
-        return HostJotto();
+        return [...HostJotto(), true];
       case "Acrotopia":
-        return HostAcrotopia();
+        return [...HostAcrotopia(), true];
       case "Secret Dictator":
-        return HostSecretDictator();
+        return [...HostSecretDictator(), true];
       case "Wacky Words":
-        return HostWackyWords();
+        return [...HostWackyWords(), true];
       case "Draw It":
-        return HostDrawIt();
+        return [...HostDrawIt(), true];
       case "Liars Dice":
-        return HostLiarsDice();
+        return [...HostLiarsDice(), true];
       case "Texas Hold Em":
-        return HostTexasHoldEm();
+        return [...HostTexasHoldEm(), true];
       case "Cheat":
-        return HostCheat();
+        return [...HostCheat(), true];
       case "Ratscrew":
-        return HostRatscrew();
+        return [...HostRatscrew(), true];
       case "Battlesnakes":
-        return HostBattlesnakes();
+        return [...HostBattlesnakes(), true];
       case "Dice Wars":
-        return HostDiceWars();
+        return [...HostDiceWars(), true];
       case "Connect Four":
-        return HostConnectFour();
+        return [...HostConnectFour(), true];
       case "Spot It":
-        return HostSpotIt();
+        return [...HostSpotIt(), true];
       case "Battleship":
-        return HostBattleship();
+        return [...HostBattleship(), true];
     }
 
-    // Fail fast
-    throw new Error(
-      `Failed to get form fields for game type: ${setup.gameType}`
-    );
+    console.error(`Failed to get form fields for game type: ${setup.gameType}`);
+    return [[], () => Promise.reject(new Error("Unsupported game type for hosting.")), false];
   }
 
   const [formFields, updateFormFields] = useForm(initialFormFields);
 
   useEffect(
     function () {
-      const [newFormFields, newOnHostGame] = GameTypeHostForm(setup.gameType);
+      const [newFormFields] = GameTypeHostForm(getNormalizedGameType(setup.gameType));
       if (preSelectedDeck) {
         for (let field of newFormFields) {
           if (field.ref === "anonymousGame") field.value = true;
@@ -117,6 +121,10 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
   }
 
   const onHostGameWrapper = () => {
+    if (!supportsGameType) {
+      errorAlert("This setup cannot be hosted right now. Please refresh and try again.");
+      return;
+    }
     onHostGame(setup.id, getFormFieldValue)
       .then((res) => {
         navigate(`/game/${res.data}`);
