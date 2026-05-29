@@ -342,6 +342,26 @@ export default function Settings() {
       value: mode,
     },
     {
+      label: "Font",
+      ref: "fontFamily",
+      type: "select",
+      groupName: "Appearance",
+      options: [
+        {
+          label: "Default (Roboto Slab)",
+          value: "default",
+        },
+        {
+          label: "System (system-ui)",
+          value: "system",
+        },
+        {
+          label: "Readable (Tahoma)",
+          value: "readable",
+        },
+      ],
+    },
+    {
       label: "Custom Site Primary Color",
       ref: "customPrimaryColor",
       type: "color",

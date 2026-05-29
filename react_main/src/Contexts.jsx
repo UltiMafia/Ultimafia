@@ -9,6 +9,7 @@ import { GlobalStyles, useColorScheme, useTheme } from "@mui/material";
 import { getIconFilter } from "utilsFolder/iconFilter";
 import { generateContrastLookup, autoContrastColor } from "utilsFolder/autoContrast";
 import { getSiteTheme } from "./constants/themes";
+import { resolveFontFamilySetting } from "./constants/fontFamilies";
 
 export const UserContext = React.createContext();
 export const SiteInfoContext = React.createContext();
@@ -207,12 +208,17 @@ export function UserProvider({
     let palette =
       user.loggedIn && user.settings ? user.settings.siteColorScheme : "dark";
     if (palette === "retro") palette = "dark"; // Backwards compatibility for stored settings.
-    setSiteTheme(getSiteTheme(custom, palette));
+    const fontFamily =
+      user.loggedIn && user.settings?.fontFamily
+        ? user.settings.fontFamily
+        : "default";
+    setSiteTheme(getSiteTheme(custom, palette, fontFamily));
   }, [
     user.loaded,
     user.loggedIn,
     user.settings?.siteColorScheme,
     user.settings?.customPrimaryColor,
+    user.settings?.fontFamily,
     setSiteTheme,
   ]);
 
@@ -244,6 +250,10 @@ export function UserProvider({
     }
   }, [user.loaded, user.loggedIn, user.settings?.siteColorScheme, setMode]);
 
+  const fonts = resolveFontFamilySetting(
+    user.settings?.fontFamily || "default"
+  );
+
   return (
     <>
       <GlobalStyles
@@ -253,6 +263,11 @@ export function UserProvider({
           },
           html: {
             fontSize: fontSize,
+            fontFamily: fonts.body,
+            "--primaryFont": fonts.primaryFont,
+          },
+          body: {
+            fontFamily: fonts.body,
           },
           ...iconFilter,
         }}
