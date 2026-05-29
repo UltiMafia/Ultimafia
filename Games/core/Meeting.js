@@ -889,7 +889,7 @@ module.exports = class Meeting {
     }
 
     // join veg kick meeting if needed
-    if (player.alive && player.hasVotedInAllCoreMeetings()) {
+    if (player.alive && player.hasVotedInAllMeetings()) {
       this.game.vegKickMeeting.enableKicks(player);
     }
 
