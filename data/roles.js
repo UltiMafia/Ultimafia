@@ -1572,7 +1572,7 @@ const roleData = {
         "Each night, you can choose to visit one player.",
         //"Pays a visit to another player at night.",
         //"Annoyingly, this visit has no effect.",
-        "Town roles with the Scatterbrained modifier appear as this role to self.",
+        "Town roles with the Humble modifier and a night meeting appear as this role to self.",
       ],
       nightOrder: [["Visit", PRIORITY_SUPPORT_VISIT_DEFAULT]],
     },
@@ -3293,7 +3293,7 @@ const roleData = {
       tags: ["Night-Acting", "Visiting", "Basic"],
       description: [
         "Each night, you can choose to visit one player.",
-        "Mafia roles with the Scatterbrained modifier appear as this role to self.",
+        "Mafia roles with the Humble modifier and a night meeting appear as this role to self.",
       ],
       nightOrder: [["Visit", PRIORITY_SUPPORT_VISIT_DEFAULT]],
     },
@@ -4861,7 +4861,7 @@ const roleData = {
       tags: ["Visiting", "Basic"],
       description: [
         "Each night, you can choose to visit one player.",
-        "Bogeyman roles with the Scatterbrained modifier appear as this role to self.",
+        "Bogeyman roles with the Humble modifier and a night meeting appear as this role to self.",
       ],
       nightOrder: [["Visit", PRIORITY_SUPPORT_VISIT_DEFAULT]],
     },

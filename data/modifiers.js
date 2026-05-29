@@ -1189,20 +1189,10 @@ const modifierData = {
     Humble: {
       category: "Appearance",
       internal: ["Humble"],
-      tags: ["Vanilla", "Villager", "Self Appearance"],
+      tags: ["Vanilla", "Villager", "Visitor", "Self Appearance"],
       description:
-        "You see self as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) with no modifier.",
+        "You see self as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) with no modifier. If you have a night meeting, you instead see self as Visitor (Village) / Trespasser (Mafia) / Bogeyman (Cult) / Fool (Independent) with no modifier.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Scatterbrained"],
-    },
-    Scatterbrained: {
-      category: "Appearance",
-      internal: ["Scatterbrained"],
-      tags: ["Visitor"],
-      description:
-        "You see self as Visitor (Village) / Trespasser (Mafia) / Bogeyman (Cult) / Fool (Independent) with no modifier.",
-      eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Humble"],
     },
     Modest: {
       category: "Appearance",
