@@ -35,6 +35,11 @@ export const mafiaSfxConfig: AudioEntry[] = [
   { fileName: "condemn" },
   { fileName: "explosion", volume: 0.5 },
   { fileName: "snowball", volume: 0.5 },
+  { fileName: "jinx" },
+  { fileName: "party" },
+  { fileName: "snowstorm" },
+  { fileName: "bombtick" },
+  { fileName: "stab" },
 ];
 
 export const mafiaMusicConfig: AudioEntry[] = [
@@ -138,4 +143,11 @@ export const battlesnakesAudioConfig: AudioEntry[] = [
     overrides: true,
     channel: "music",
   },
+];
+
+// ---------------------------------------------------------------------------
+// Battleship
+// ---------------------------------------------------------------------------
+export const battleshipAudioConfig: AudioEntry[] = [
+  { fileName: "explosion", volume: 0.5 },
 ];

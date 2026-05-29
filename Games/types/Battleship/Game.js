@@ -232,6 +232,7 @@ module.exports = class BattleshipGame extends Game {
         `${player.name} sank the enemy ${outcome.sunkShip.type}!`
       );
     } else if (outcome.result === "hit") {
+      this.broadcast("audio", "explosion");
       this.sendAlert(`${player.name} scored a hit!`);
     } else {
       this.sendAlert(`${player.name} missed.`);

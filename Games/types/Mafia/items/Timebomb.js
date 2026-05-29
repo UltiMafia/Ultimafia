@@ -14,8 +14,11 @@ module.exports = class Timebomb extends Item {
     this.listeners = {
       state: function (stateInfo) {
         if (!stateInfo.name.match(/Day/)) {
+          this.stopBombTick();
           return;
         }
+
+        this.startBombTick();
 
         if (this.timer) {
           return;
@@ -28,6 +31,7 @@ module.exports = class Timebomb extends Item {
             return;
           }
 
+          this.clearTimers();
           this.drop();
           if (!this.holder.alive) {
             return;
@@ -105,6 +109,7 @@ module.exports = class Timebomb extends Item {
               `:timebomb: ${this.actor.name} passes the bomb to ${this.target.name}…`
             );
             this.item.incrementMeetingName();
+            this.item.startBombTick();
             this.game.instantMeeting(this.item.meetings, [this.target]);
           },
         },
@@ -134,5 +139,46 @@ module.exports = class Timebomb extends Item {
     delete this.meetings[this.getCurrentMeetingName()];
     this.currentMeetingIndex += 1;
     this.meetings[this.getCurrentMeetingName()] = mtg;
+  }
+
+  startBombTick() {
+    if (this.tickInterval) {
+      return;
+    }
+
+    this.tickInterval = setInterval(() => {
+      if (this.game.finished || !this.holder?.alive) {
+        this.stopBombTick();
+        return;
+      }
+
+      this.holder.send("audio", "bombtick");
+    }, 1000);
+  }
+
+  stopBombTick() {
+    if (this.tickInterval) {
+      clearInterval(this.tickInterval);
+      this.tickInterval = null;
+    }
+  }
+
+  clearTimers() {
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
+
+    if (this.soundTimer) {
+      clearTimeout(this.soundTimer);
+      this.soundTimer = null;
+    }
+
+    this.stopBombTick();
+  }
+
+  drop(nope) {
+    this.stopBombTick();
+    super.drop(nope);
   }
 };

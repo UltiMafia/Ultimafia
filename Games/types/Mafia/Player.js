@@ -346,6 +346,10 @@ module.exports = class MafiaPlayer extends Player {
       this.game.broadcast("condemn");
     }
 
+    if (killType === "curse") {
+      this.game.broadcast("audio", "jinx");
+    }
+
     if (this.queuedGraveyardParticipationMessage) {
       return;
     }
