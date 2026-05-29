@@ -22,5 +22,20 @@ module.exports = class Flier extends Item {
         priority: MEETING_DEAD_PARTY,
       },
     };
+
+    this.listeners = {
+      state: function (stateInfo) {
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+
+        if (this.game.partySoundState === this.game.currentState) {
+          return;
+        }
+
+        this.game.partySoundState = this.game.currentState;
+        this.game.broadcast("audio", "party");
+      },
+    };
   }
 };

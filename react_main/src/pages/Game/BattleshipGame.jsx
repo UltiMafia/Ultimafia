@@ -14,6 +14,7 @@ import {
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { battleshipAudioConfig } from "../../audio/audioConfigs";
 
 import "css/game.css";
 import "css/gameBattleship.css";
@@ -31,6 +32,10 @@ export default function BattleshipGame() {
   const game = useContext(GameContext);
   const history = game.history;
   const updateStateViewing = game.updateStateViewing;
+
+  useEffect(() => {
+    game.loadAudioFiles(battleshipAudioConfig);
+  }, []);
 
   useEffect(() => {
     updateStateViewing({ type: "current" });

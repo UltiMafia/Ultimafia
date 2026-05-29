@@ -21,7 +21,7 @@ module.exports = class Snowstorm extends Item {
     };
 
     this.listeners = {
-      state: function () {
+      state: function (stateInfo) {
         const state = this.game.getStateName();
         if (state == "Day") {
           this.drop();
@@ -30,6 +30,11 @@ module.exports = class Snowstorm extends Item {
 
         if (state != "Night") {
           return;
+        }
+
+        if (this.game.snowstormSoundState !== this.game.currentState) {
+          this.game.snowstormSoundState = this.game.currentState;
+          this.game.broadcast("audio", "snowstorm");
         }
 
         if (this.holder.getRoleAlignment() != "Cult") {

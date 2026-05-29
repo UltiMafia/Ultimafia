@@ -19,6 +19,8 @@ module.exports = class Knife extends Item {
           labels: ["stab"],
           item: this,
           run: function () {
+            this.game.broadcast("audio", "stab");
+
             var reveal = this.item.reveal;
             if (reveal == null) {
               reveal = Random.randArrayVal([true, false]);
