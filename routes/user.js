@@ -1895,6 +1895,11 @@ router.post("/settings/update", async function (req, res) {
       return;
     }
 
+    if (prop === "fontFamily" && !["default", "system", "readable"].includes(value)) {
+      errors.badRequest(res, "Invalid font family setting.");
+      return;
+    }
+
     var itemsOwned = await redis.getUserItemsOwned(userId);
 
     if (

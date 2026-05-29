@@ -98,6 +98,7 @@ var schemas = {
       disableAllCensors: { type: Boolean, default: false },
       hideDeleted: Boolean,
       fontSize: { type: String, default: "system" },
+      fontFamily: { type: String, default: "default" },
       minimumContrast: { type: String, default: "3.5" },
       siteColorScheme: { type: String, default: "dark" },
       disableProTips: { type: Boolean, default: false },

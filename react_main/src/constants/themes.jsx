@@ -8,6 +8,7 @@ import {
   isHalloweenThemeActive,
   isValentinesThemeActive,
 } from "../utils/holidayThemes";
+import { resolveFontFamilySetting } from "./fontFamilies";
 
 const CUSTOM_EXPAND_ICON = (
   <Box
@@ -32,7 +33,12 @@ const CUSTOM_EXPAND_ICON = (
   </Box>
 );
 
-export function getSiteTheme(customPrimaryColor, sitePalette = "dark") {
+export function getSiteTheme(
+  customPrimaryColor,
+  sitePalette = "dark",
+  fontFamilySetting = "default"
+) {
+  const fonts = resolveFontFamilySetting(fontFamilySetting);
   const isValentines = isValentinesThemeActive();
   const isHalloween = isHalloweenThemeActive();
 
@@ -218,22 +224,46 @@ export function getSiteTheme(customPrimaryColor, sitePalette = "dark") {
       colorSchemeSelector: "data",
     },
     typography: {
-      h1: { fontFamily: "RobotoSlab", fontSize: "2.00em", fontWeight: "bold" },
-      h2: { fontFamily: "RobotoSlab", fontSize: "1.50em", fontWeight: "bold" },
-      h3: { fontFamily: "RobotoSlab", fontSize: "1.17em", fontWeight: "bold" },
-      h4: { fontFamily: "RobotoSlab", fontSize: "1.00em", fontWeight: "bold" },
-      h5: { fontFamily: "RobotoSlab", fontSize: "0.83em", fontWeight: "bold" },
-      h6: { fontFamily: "RobotoSlab", fontSize: "0.67em", fontWeight: "bold" },
-      body1: { fontFamily: "Roboto" },
-      body2: { fontFamily: "Roboto" },
-      subtitle1: { fontFamily: "Roboto" },
-      subtitle2: { fontFamily: "Roboto" },
-      caption: { fontFamily: "Roboto" },
-      button: { fontFamily: "Roboto" },
-      overline: { fontFamily: "Roboto" },
+      h1: {
+        fontFamily: fonts.heading,
+        fontSize: "2.00em",
+        fontWeight: "bold",
+      },
+      h2: {
+        fontFamily: fonts.heading,
+        fontSize: "1.50em",
+        fontWeight: "bold",
+      },
+      h3: {
+        fontFamily: fonts.heading,
+        fontSize: "1.17em",
+        fontWeight: "bold",
+      },
+      h4: {
+        fontFamily: fonts.heading,
+        fontSize: "1.00em",
+        fontWeight: "bold",
+      },
+      h5: {
+        fontFamily: fonts.heading,
+        fontSize: "0.83em",
+        fontWeight: "bold",
+      },
+      h6: {
+        fontFamily: fonts.heading,
+        fontSize: "0.67em",
+        fontWeight: "bold",
+      },
+      body1: { fontFamily: fonts.body },
+      body2: { fontFamily: fonts.body },
+      subtitle1: { fontFamily: fonts.body },
+      subtitle2: { fontFamily: fonts.body },
+      caption: { fontFamily: fonts.body },
+      button: { fontFamily: fonts.body },
+      overline: { fontFamily: fonts.body },
       italicRelation: {
         // "Created by", "Authored by", "In love with", etc.
-        fontFamily: "RobotoSlab",
+        fontFamily: fonts.heading,
         fontSize: "1em",
         fontStyle: "italic",
       },
