@@ -87,11 +87,6 @@ module.exports = class Game {
       options.settings.pregameCountdownLength != null
         ? options.settings.pregameCountdownLength
         : process.env.NODE_ENV.includes("development") ? 1000 : 10000;
-    // Max time in the kick phase before the day/night advances anyway
-    this.vegKickCountdownLength =
-      options.settings.vegKickCountdownLength != null
-        ? options.settings.vegKickCountdownLength
-        : 300000;
     this.postgameLength = 1000 * 60 * 2;
     this.players = new ArrayHash();
     this.playersGone = {};
@@ -2198,17 +2193,10 @@ module.exports = class Game {
     this.clearTimer("main");
     this.clearTimer("secondary");
 
-    // Proceed after the kick phase even if the kick threshold is never met
-    this.createTimer("vegKickCountdown", this.vegKickCountdownLength, () => {
-      if (this.vegKickMeeting !== undefined) {
-        this.gotoNextState();
-      }
-    });
-
     this.vegKickMeeting = this.createMeeting(VegKickMeeting, "vegKickMeeting");
 
     for (let player of this.players) {
-      let canKick = player.alive && player.hasVotedInAllCoreMeetings();
+      let canKick = player.alive && player.hasVotedInAllMeetings();
       if (!canKick) {
         player.sendAlert(
           ":system: You will be kicked if you fail to take your actions."
@@ -2223,6 +2211,7 @@ module.exports = class Game {
     for (let player of this.players) {
       player.sendMeeting(this.vegKickMeeting);
     }
+    this.checkAllMeetingsReady();
   }
 
   broadcastState(stateInfo = this.getStateInfo()) {
@@ -2471,25 +2460,49 @@ module.exports = class Game {
   }
 
   checkAllMeetingsReady() {
-    // The kick phase uses vegKick / vegKickCountdown timers instead
-    if (this.vegKickMeeting !== undefined) {
-      return;
+    var allReady = true;
+
+    if (this.type == "Mafia" && this.getStateName() == "Day") {
+      for (let meeting of this.meetings) {
+        let extraConditionDuringKicks = true;
+        if (this.vegKickMeeting !== undefined) {
+          extraConditionDuringKicks =
+            meeting.name !== "Vote Kick" && !meeting.noVeg;
+        }
+
+        // during kicks, we need to exclude the votekick and noveg meetings
+        if (meeting.Important != true) {
+          continue;
+        }
+        if (!meeting.ready && extraConditionDuringKicks) {
+          allReady = false;
+          break;
+        }
+      }
+      if (allReady) {
+        for (let player of this.players) {
+          if (player.hasVotedInAllCoreMeetings()) {
+            player.giveEffect("Unveggable");
+          }
+        }
+        this.gotoNextState();
+      }
     }
 
-    var allReady = true;
-    const isMafiaDay = this.type == "Mafia" && this.getStateName() == "Day";
-
     for (let meeting of this.meetings) {
-      if (isMafiaDay && meeting.Important != true) {
-        continue;
+      let extraConditionDuringKicks = true;
+      if (this.vegKickMeeting !== undefined) {
+        extraConditionDuringKicks =
+          meeting.name !== "Vote Kick" && !meeting.noVeg;
       }
 
-      const mustBeReady =
-        this.currentState === -2 ||
-        meeting.Important == true ||
-        !meeting.noVeg;
-
-      if (!meeting.ready && mustBeReady) {
+      // during kicks, we need to exclude the votekick and noveg meetings.
+      // In postgame (currentState === -2), always require the kudos vote to be ready
+      // so the noVeg exclusion does not cause the vote to freeze after one voter.
+      if (
+        !meeting.ready &&
+        (extraConditionDuringKicks || this.currentState === -2)
+      ) {
         allReady = false;
         break;
       }
