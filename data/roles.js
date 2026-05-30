@@ -2495,6 +2495,14 @@ const roleData = {
         Spymaster: [
           "If a Spymaster is Present, you learn evil players at game start (like Merlin). Godfather and Cultist (Respected) stay hidden.",
         ],
+        Morgana: [
+          "Morgana appears as Seer to a Retired Seer, like Resistance Morgana to Percival.",
+        ],
+      },
+      SpecialInteractionsModifiers: {
+        Retired: [
+          "Acts as Resistance Percival: knows which players are the Seer (Morgana also appears as Seer). Does not learn evil players or use Merlin condemn-guess rules.",
+        ],
       },
     },
     Mole: {
@@ -3776,10 +3784,35 @@ const roleData = {
       ],
       SpecialInteractions: {
         Seer: ["Acts as Merlin: learns evil players at game start (Godfather and Cultist (Respected) stay hidden)."],
+        "Seer:Retired": ["Acts as Percival: knows who the Seer is (Morgana also appears as Seer)."],
         Templar: ["Acts as Tristan/Isolde: mutual knowledge with no guess-loss epilogue."],
         Godfather: ["Acts as Mordred: hidden from the Seer's opening reveal."],
         "Cultist (Respected)": ["Acts as Mordred: hidden from the Seer's opening reveal."],
+        Morgana: ["Acts as Resistance Morgana: appears as Seer to Seer:Retired."],
+        "Resistance Assassin": [
+          "Placeholder for Resistance Assassin epilogue guess (not yet implemented in mission mode).",
+        ],
       },
+    },
+    Morgana: {
+      alignment: "Mafia",
+      tags: ["Deception", "Resistance", "Information", "Advanced"],
+      description: [
+        "You appear as Seer to Seer:Retired.",
+        "Migrated from Resistance Morgana.",
+      ],
+      SpecialInteractions: {
+        "Seer:Retired": ["You appear as Seer to Seer:Retired, like Resistance Morgana to Percival."],
+        Spymaster: ["Used in Spymaster mission setups migrated from Resistance."],
+      },
+    },
+    "Resistance Assassin": {
+      alignment: "Mafia",
+      tags: ["Resistance", "Placeholder", "Setup Changes"],
+      description: [
+        "Placeholder role for the Resistance Assassin epilogue guess mechanic.",
+        "Migrated from Resistance Assassin; special guess behavior is not implemented yet.",
+      ],
     },
     Assassin: {
       alignment: "Mafia",

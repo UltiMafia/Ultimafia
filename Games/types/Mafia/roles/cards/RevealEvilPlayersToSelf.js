@@ -25,7 +25,11 @@ module.exports = class RevealEvilPlayersToSelf extends Card {
           return;
         }
 
-        if(!this.hasAbility(["Information"])){
+        if (!this.hasAbility(["Information"])) {
+          return;
+        }
+
+        if (this.role.modifier.split("/").includes("Retired")) {
           return;
         }
 

@@ -6,6 +6,10 @@ module.exports = class AddDusk extends Card {
     super(role);
     this.listeners = {
       extraStateCheck: function (stateName) {
+        if (this.role.modifier.split("/").includes("Retired")) {
+          return;
+        }
+
         if (this.game.ExtraStates == null) {
           this.game.ExtraStates = [];
         }

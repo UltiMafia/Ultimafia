@@ -32,8 +32,30 @@ module.exports = class Retired extends Card {
     };
 
     this.listeners = {
+      start: function () {
+        if (this.role.name !== "Seer") {
+          return;
+        }
+        if (!this.role.modifier.split("/").includes("Retired")) {
+          return;
+        }
+
+        for (let player of this.game.players) {
+          if (player.role.appearance.percival) {
+            player.role.revealToPlayer(this.player, false, "percival");
+          }
+        }
+      },
       SwitchRoleBefore: function (player) {
         if (player != this.player) return;
+
+        if (
+          this.role.name === "Seer" &&
+          this.role.modifier.split("/").includes("Retired")
+        ) {
+          return;
+        }
+
         this.player.role.data.reroll = true;
 
         for (let item of this.player.items) {

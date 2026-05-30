@@ -72,7 +72,9 @@ module.exports = class WinWithFaction extends Card {
 
         //Const
         const seersInGame = this.game.players.filter(
-          (p) => p.role.name == "Seer"
+          (p) =>
+            p.role.name == "Seer" &&
+            !p.role.modifier.split("/").includes("Retired")
         );
         const poetsInGame = this.game.players.filter(
           (p) => p.role.name == "Poet"
@@ -804,6 +806,9 @@ module.exports = class WinWithFaction extends Card {
           priority: PRIORITY_SUNSET_DEFAULT,
           run: function () {
             if (this.target.role.name !== "Seer") {
+              return;
+            }
+            if (this.target.role.modifier.split("/").includes("Retired")) {
               return;
             }
             if (!this.target.hasAbility(["Win-Con", "WhenDead"])) {
