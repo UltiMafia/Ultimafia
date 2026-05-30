@@ -189,6 +189,205 @@ export default function ReportDetail({
 
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
+          {report.aiRecommendation && (
+            <Card
+              sx={{
+                p: 3,
+                mb: 3,
+                borderLeft: "6px solid",
+                borderColor:
+                  report.aiRecommendation.recommendedAction === "ban"
+                    ? "error.main"
+                    : report.aiRecommendation.recommendedAction === "warning"
+                    ? "warning.main"
+                    : "success.main",
+                bgcolor: "background.paper",
+                borderRadius: 2,
+              }}
+            >
+              <Stack spacing={2}>
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Stack direction="row" spacing={1.5} alignItems="center">
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: "bold",
+                        textTransform: "uppercase",
+                        letterSpacing: 1.5,
+                        color: "primary.main",
+                      }}
+                    >
+                      AI Assistant
+                    </Typography>
+                    <Chip
+                      label={`RECOMMENDATION: ${report.aiRecommendation.recommendedAction.toUpperCase()}`}
+                      color={
+                        report.aiRecommendation.recommendedAction === "ban"
+                          ? "error"
+                          : report.aiRecommendation.recommendedAction === "warning"
+                          ? "warning"
+                          : "success"
+                      }
+                      size="small"
+                      sx={{ fontWeight: "bold" }}
+                    />
+                  </Stack>
+                  <Typography variant="caption" color="textSecondary">
+                    Evaluated using {report.aiRecommendation.provider} ({report.aiRecommendation.model})
+                  </Typography>
+                </Stack>
+
+                <Divider />
+
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <Stack spacing={1.5}>
+                      <Box>
+                        <Typography variant="caption" color="textSecondary" sx={{ display: "block" }}>
+                          Confidence Score
+                        </Typography>
+                        <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 0.5 }}>
+                          <Box
+                            sx={{
+                              width: "100%",
+                              height: 8,
+                              bgcolor: "rgba(255, 255, 255, 0.1)",
+                              borderRadius: 4,
+                              position: "relative",
+                              overflow: "hidden",
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                height: "100%",
+                                width: `${Math.round((report.aiRecommendation.confidence || 0) * 100)}%`,
+                                bgcolor:
+                                  report.aiRecommendation.recommendedAction === "ban"
+                                    ? "error.main"
+                                    : report.aiRecommendation.recommendedAction === "warning"
+                                    ? "warning.main"
+                                    : "success.main",
+                              }}
+                            />
+                          </Box>
+                          <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                            {Math.round((report.aiRecommendation.confidence || 0) * 100)}%
+                          </Typography>
+                        </Stack>
+                      </Box>
+
+                      {report.aiRecommendation.recommendedAction === "ban" && (
+                        <Box>
+                          <Typography variant="caption" color="textSecondary" sx={{ display: "block" }}>
+                            Suggested Ban Details
+                          </Typography>
+                          <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
+                            <Chip
+                              label={`Type: ${report.aiRecommendation.banType || "site"}`}
+                              size="small"
+                              variant="outlined"
+                            />
+                            <Chip
+                              label={`Length: ${report.aiRecommendation.banLength || "24 hours"}`}
+                              size="small"
+                              variant="outlined"
+                            />
+                          </Stack>
+                        </Box>
+                      )}
+
+                      {report.aiRecommendation.rule && (
+                        <Box>
+                          <Typography variant="caption" color="textSecondary" sx={{ display: "block" }}>
+                            Suggested Violation Rule
+                          </Typography>
+                          <Typography variant="body2" sx={{ fontWeight: "medium", mt: 0.5 }}>
+                            {report.aiRecommendation.rule} ({report.aiRecommendation.category || "Community"})
+                          </Typography>
+                        </Box>
+                      )}
+                    </Stack>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <Stack spacing={1}>
+                      <Box>
+                        <Typography variant="caption" color="textSecondary" sx={{ display: "block" }}>
+                          AI Reasoning & Assessment
+                        </Typography>
+                        <Typography variant="body2" sx={{ mt: 0.5, fontStyle: "italic", whiteSpace: "pre-wrap" }}>
+                          "{report.aiRecommendation.reasoning}"
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  </Grid>
+                </Grid>
+
+                {report.aiRecommendation.notes && (
+                  <Box sx={{ mt: 1, p: 1.5, bgcolor: "rgba(255, 255, 255, 0.03)", borderRadius: 1 }}>
+                    <Typography variant="caption" color="textSecondary" sx={{ display: "block" }}>
+                      AI Suggested Moderation Notes (Public)
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 0.5 }}>
+                      {report.aiRecommendation.notes}
+                    </Typography>
+                  </Box>
+                )}
+
+                {report.status !== "complete" && (
+                  <Stack direction="row" justifyContent="flex-end" sx={{ mt: 1 }}>
+                    <Button
+                      variant="contained"
+                      color={
+                        report.aiRecommendation.recommendedAction === "ban"
+                          ? "error"
+                          : report.aiRecommendation.recommendedAction === "warning"
+                          ? "warning"
+                          : "success"
+                      }
+                      onClick={() => {
+                        const rec = report.aiRecommendation;
+                        if (rec.recommendedAction === "dismiss") {
+                          setFinalRuling({
+                            banType: "dismiss",
+                            rule: "",
+                            offenseNumber: 1,
+                            notes: rec.notes || "",
+                          });
+                        } else if (rec.recommendedAction === "warning") {
+                          setFinalRuling({
+                            banType: "warning",
+                            rule: "",
+                            offenseNumber: 1,
+                            notes: rec.notes || "",
+                          });
+                        } else if (rec.recommendedAction === "ban") {
+                          setFinalRuling({
+                            banType: rec.banType || "site",
+                            rule: rec.rule || "",
+                            offenseNumber: 1,
+                            notes: rec.notes || "",
+                          });
+                        }
+                        setShowCompleteDialog(true);
+                      }}
+                      sx={{
+                        textTransform: "none",
+                        fontWeight: "bold",
+                        px: 3,
+                      }}
+                    >
+                      Apply AI Recommendation & Complete Report
+                    </Button>
+                  </Stack>
+                )}
+              </Stack>
+            </Card>
+          )}
+
           <Card sx={{ p: 2, mb: 2 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>
               Report Information
