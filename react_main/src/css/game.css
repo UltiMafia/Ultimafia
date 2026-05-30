@@ -117,6 +117,24 @@
   background-color: var(--scheme-color-background);
   border-radius: var(--mui-shape-borderRadius);
   cursor: pointer;
+  border: none;
+  font: inherit;
+  color: inherit;
+}
+
+.game .tab:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.game .vote .voter-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.game .action-option-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .game .tab.sel {
@@ -686,6 +704,12 @@
 
 .game .player .role-marker i {
   margin: 8px;
+}
+
+.game .player .role-marker:focus-visible {
+  outline: 2px solid #62a0db;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .game .player .role {

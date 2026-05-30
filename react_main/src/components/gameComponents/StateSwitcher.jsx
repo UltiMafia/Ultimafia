@@ -87,7 +87,6 @@ export default function StateSwitcher({ stateRange = null }) {
     // If you change the sizing of this, make sure to tweak the padInvisibleLeft and padInvisibleRight calcs accordingly
     return (
       <Tab
-        component="div"
         key={stateNum}
         aria-label={stateName}
         icon={
@@ -136,6 +135,7 @@ export default function StateSwitcher({ stateRange = null }) {
 
       {!hideFastForward && (
         <IconButton
+          aria-label="Go to first state"
           sx={{
             visibility: leftArrowVisible ? undefined : "hidden",
           }}
@@ -173,6 +173,7 @@ export default function StateSwitcher({ stateRange = null }) {
 
       {!hideFastForward && (
         <IconButton
+          aria-label="Go to current state"
           sx={{
             visibility: rightArrowVisible ? undefined : "hidden",
           }}

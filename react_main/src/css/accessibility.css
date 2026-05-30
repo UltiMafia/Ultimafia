@@ -1,0 +1,52 @@
+:root {
+  --focus-ring-color: var(--mui-palette-primary-main, #efbf04);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+}
+
+/* Visible keyboard focus — :focus-visible avoids rings on mouse clicks */
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible,
+[role="menuitem"]:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.sub-nav a:focus-visible {
+  outline-offset: -2px;
+}
+
+.nav .MuiButton-root:focus-visible,
+.nav .MuiIconButton-root:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Interactive role icons in setup lists */
+.role-count-wrap:focus-visible,
+.role-count-wrap [role="button"]:focus-visible,
+.setup [role="button"]:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: 4px;
+}
+
+/* Game-specific focus rings (higher contrast on dark backgrounds) */
+.game .tab:focus-visible,
+.game .btn.btn-theme:focus-visible,
+.game .vote .voter-btn:focus-visible,
+.game .action-option-btn:focus-visible {
+  outline: 2px solid #62a0db;
+  outline-offset: 2px;
+}
+
+.game .player-list .player:focus-within {
+  box-shadow: 0 0 0 2px #62a0db;
+}

@@ -23,6 +23,7 @@ import { usePopoverOpen } from "../hooks/usePopoverOpen";
 import { Loading } from "./Loading";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 import { PopoverContent } from "./Popover";
+import { getKeyboardActivationProps } from "../utils/keyboard";
 import { getAlignmentColor, SmallRoleList } from "./Setup";
 import { CellSearch, Cell } from "./CellSearch";
 
@@ -345,6 +346,32 @@ export function RoleCount({
 
   const popoverDisabled = !showPopover || (roleClass == "null" && !alignment);
   const popoverOpen = !popoverDisabled && canOpenPopover;
+
+  const isInteractive =
+    onClick || makeRolePrediction || !popoverDisabled;
+
+  const keyboardProps = isInteractive
+    ? getKeyboardActivationProps(handleRoleCountClick, {
+        ariaLabel: roleName
+          ? `View role: ${roleName}`
+          : alignment
+          ? `View ${alignment} roleset`
+          : undefined,
+        ariaHaspopup: !popoverDisabled,
+        ariaExpanded: popoverOpen,
+      })
+    : {};
+
+  const popoverProps = {
+    ...keyboardProps,
+    onClick: handleRoleCountClick,
+    onMouseEnter: handleMouseEnter,
+    onMouseLeave: handleMouseLeave,
+    style: {
+      cursor: isInteractive ? "pointer" : "default",
+    },
+  };
+
   const mapAlignmentToText = {
     Village: "Village 💙",
     Mafia: "Mafia 🔪",
@@ -424,7 +451,6 @@ export function RoleCount({
       for (let i in otherRoles) {
         let roleSet = otherRoles[i];
         for (let thing in roleSet) {
-          //!specials.includes([thing.split(":")[0],roleData.SpecialInteractions[thing.split(":")[0]]])
           if (
             roleData.SpecialInteractions[thing.split(":")[0]] &&
             !specialRoles.includes(thing.split(":")[0])
@@ -481,14 +507,6 @@ export function RoleCount({
   ) : (
     ""
   );
-
-  const popoverProps = {
-    "aria-owns": popoverOpen ? "mouse-over-popover" : undefined,
-    "aria-haspopup": "true",
-    onClick: handleRoleCountClick,
-    onMouseEnter: handleMouseEnter,
-    onMouseLeave: handleMouseLeave,
-  };
 
   let layoutContent,
     popoverTitle = null,

@@ -20,6 +20,7 @@ import CookieBanner from "./components/CookieBanner";
 import NavDropdown from "./components/NavDropdown";
 import { Loading } from "./components/Loading";
 import "css/main.css";
+import "css/accessibility.css";
 
 // Navigation icons removed - now using text-only navigation
 import {
