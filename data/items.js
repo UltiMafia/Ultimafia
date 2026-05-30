@@ -194,7 +194,6 @@ const modifierData = {
         "Can be passed around at night, If the player holding the doll dies, Creepy Girl wins.",
     },
   },
-  Resistance: {},
   Jotto: {},
   Acrotopia: {},
   "Secret Dictator": {},

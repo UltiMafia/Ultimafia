@@ -22,7 +22,7 @@ Games/                  # Game engine
     effects/            # Status effects
     meetings/           # Vote/action meetings
     const/              # Constants (Priority.js, MeetingFlag.js)
-  types/                # Other game types (Resistance, TexasHoldEm, SecretDictator, etc.)
+  types/                # Other game types (TexasHoldEm, SecretDictator, etc.; Resistance removed — use Mafia Spymaster)
 routes/                 # Express API endpoints (~25 route files)
 modules/                # Server modules (chat.js, redis.js, competitive.js, session.js, logging.js)
 lib/                    # Utilities (sockets.js, Translator.js, Utils.js)

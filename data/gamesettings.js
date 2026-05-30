@@ -289,24 +289,6 @@ const gameSettingData = {
     },
     */
   },
-  Resistance: {
-    Whispers: {
-      category: "Standard",
-      internal: ["Whispers"],
-      tags: ["Speaking", "Chat"],
-      description:
-        "Allow players to privately contact another player in the village meeting.",
-    },
-    "Whisper Leak Chance": {
-      category: "Standard",
-      internal: ["Whispers"],
-      tags: ["Speaking", "Chat"],
-      description:
-        "Whispers will have 1% chance to leak (Add this additional times to increase the leak chance). If a whisper leaks then everyone will see it.",
-      allowDuplicate: true,
-      requires: ["Whispers"],
-    },
-  },
   Jotto: {},
   Acrotopia: {},
   "Secret Dictator": {},

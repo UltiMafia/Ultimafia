@@ -12,7 +12,6 @@ const HOST_OPTIONS_VERSIONS = {
   "Liars Dice": 2,
   Battlesnakes: 2,
   "Texas Hold Em": 3,
-  Resistance: 2,
   "Secret Dictator": 2,
   "Wacky Words": 2,
   "Draw It": 2,
@@ -125,12 +124,6 @@ var defaultOptions = {
     playCardsLength: 2,
     sumToTen: false,
     marriageRule: false,
-  },
-  Resistance: existingHostOptions["Resistance"] || {
-    ...commonHostOptions,
-    teamSelLength: 2,
-    teamApprovalLength: 0.5,
-    missionLength: 0.5,
   },
   "Secret Dictator": existingHostOptions["Secret Dictator"] || {
     ...commonHostOptions,

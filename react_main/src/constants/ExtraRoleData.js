@@ -35,7 +35,6 @@ export const ExtraRoleData = {
     },
 
   },
-  Resistance: {},
   Jotto: {},
   Acrotopia: {},
   "Secret Dictator": {},

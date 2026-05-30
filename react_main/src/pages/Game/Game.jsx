@@ -18,7 +18,6 @@ import Newspaper, {
   ObituariesMessage,
 } from "../../components/gameComponents/Newspaper";
 import MafiaGame from "./MafiaGame";
-import ResistanceGame from "./ResistanceGame";
 import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
 import SecretDictatorGame from "./SecretDictatorGame";
@@ -652,9 +651,7 @@ export default function Game() {
       // Only show modal if this is for the current player and game type supports it
       if (
         info.playerId === selfRef.current &&
-        (gameType === "Mafia" ||
-          gameType === "Resistance" ||
-          gameType === "Secret Dictator")
+        (gameType === "Mafia" || gameType === "Secret Dictator")
       ) {
         setRoleRevealData(info.roleData);
         setRoleRevealModalOpen(true);
@@ -977,7 +974,6 @@ export default function Game() {
               setShowModal={setShowFirstGameModal}
             />
             {gameType === "Mafia" && <MafiaGame />}
-            {gameType === "Resistance" && <ResistanceGame />}
             {gameType === "Jotto" && <JottoGame />}
             {gameType === "Acrotopia" && <AcrotopiaGame />}
             {gameType === "Secret Dictator" && <SecretDictatorGame />}
@@ -1018,9 +1014,7 @@ export default function Game() {
           }
           isPenaltyEnforced={!!(options.ranked || options.competitive)}
         />
-        {(gameType === "Mafia" ||
-          gameType === "Resistance" ||
-          gameType === "Secret Dictator") && (
+        {(gameType === "Mafia" || gameType === "Secret Dictator") && (
           <RoleRevealModal
             open={roleRevealModalOpen}
             onClose={() => setRoleRevealModalOpen(false)}

@@ -1448,12 +1448,6 @@ const countChecks = {
 
     return true;
   },
-  Resistance: (roles, count, total, closed, unique) => {
-    if (count["Resistance"] < 1 || count["Spies"] < 1)
-      return "Must have at least one Resistance member and at leasty one Spies member.";
-
-    return true;
-  },
   Battlesnakes: (roles, count, total, closed, unique) => {
     if (total < 2 || total > 10)
       return "Only 2 to 10 players for now. Will support more players soon.";
@@ -1592,29 +1586,6 @@ const optionsChecks = {
       return setup;
     }
 
-    var firstTeamSize = Number(setup.firstTeamSize);
-    var lastTeamSize = Number(setup.lastTeamSize);
-    var numMissions = Number(setup.numMissions);
-    var teamFailLimit = Number(setup.teamFailLimit);
-
-    if (firstTeamSize < 2 || firstTeamSize > setup.total - 1)
-      return "First team size must be between 2 and the number of players minus 1.";
-
-    if (lastTeamSize < firstTeamSize)
-      return "Last team size cannot be smaller than the first team size.";
-
-    if (lastTeamSize > setup.total - 1)
-      return "Last team size must be at most 1 less than the number of players.";
-
-    if (numMissions < 2 || numMissions > 10)
-      return "Number of missions must be between 2 and 10.";
-
-    if (teamFailLimit < 1 || teamFailLimit > setup.total)
-      return "Team fail limit must be between 1 and the number of players.";
-
-    return { firstTeamSize, lastTeamSize, numMissions, teamFailLimit };
-  },
-  Resistance: (setup) => {
     var firstTeamSize = Number(setup.firstTeamSize);
     var lastTeamSize = Number(setup.lastTeamSize);
     var numMissions = Number(setup.numMissions);

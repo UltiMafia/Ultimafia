@@ -23,7 +23,6 @@ import { useForm } from "components/Form";
 import Setup from "components/Setup";
 
 import HostMafia from "./gameTypeHostForms/HostMafia";
-import HostResistance from "./gameTypeHostForms/HostResistance";
 import HostJotto from "./gameTypeHostForms/HostJotto";
 import HostAcrotopia from "./gameTypeHostForms/HostAcrotopia";
 import HostSecretDictator from "./gameTypeHostForms/HostSecretDictator";
@@ -59,8 +58,6 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
     switch (gameType) {
       case "Mafia":
         return [...HostMafia(), true];
-      case "Resistance":
-        return [...HostResistance(), true];
       case "Jotto":
         return [...HostJotto(), true];
       case "Acrotopia":
