@@ -76,17 +76,21 @@ export const Announcement = ({
     stopLoading();
   };
   const CloseButton = (
-    <Box onClick={closeAnnouncements} sx={{ ml: -1, mt: -0.5 }}>
-      <IconButton color="info" sx={{ p: 0.5 }}>
-        <i className="far fa-times-circle"></i>
-      </IconButton>
-    </Box>
+    <IconButton
+      aria-label="Close announcement"
+      color="info"
+      sx={{ p: 0.5 }}
+      onClick={closeAnnouncements}
+    >
+      <i className="far fa-times-circle" />
+    </IconButton>
   );
 
   // const ScrollButtonsWidth = 35;
   const iconHeight = 15; // default: 20px
   const PrevButton = (
     <IconButton
+      aria-label="Previous announcement"
       disabled={loading || !showPrevButton}
       color="info"
       sx={{ width: `${iconHeight + 8}px`, p: 0.5 }}
@@ -100,6 +104,7 @@ export const Announcement = ({
   );
   const NextButton = (
     <IconButton
+      aria-label="Next announcement"
       disabled={loading || !showNextButton}
       color="info"
       sx={{ width: `${iconHeight + 8}px`, p: 0.5 }}

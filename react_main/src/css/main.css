@@ -285,12 +285,12 @@ div.center {
   border-color: #ced4da;
 }
 
-div:focus,
-input:focus {
+div:focus:not(:focus-visible),
+input:focus:not(:focus-visible) {
   outline: none;
 }
 
-.btn:focus {
+.btn:focus:not(:focus-visible) {
   box-shadow: none;
 }
 

@@ -1,6 +1,14 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation, NavLink } from "react-router-dom";
-import { Menu, MenuItem, Box, Divider, IconButton, Typography, Stack, Button } from "@mui/material";
+import { useLocation, NavLink } from "react-router-dom";
+import {
+  Menu,
+  MenuItem,
+  Box,
+  Divider,
+  IconButton,
+  Typography,
+  Button,
+} from "@mui/material";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 
 export default function NavDropdown({
@@ -8,15 +16,16 @@ export default function NavDropdown({
   items,
   customTrigger,
   onMenuItemClick: customOnMenuItemClick,
-  groups, // For mobile unified menu - array of {label, items}
-  isMobileMenu = false, // Flag to indicate this is the mobile unified menu
+  groups,
+  isMobileMenu = false,
+  triggerAriaLabel,
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const location = useLocation();
   const isMobile = useIsPhoneDevice();
   const open = Boolean(anchorEl);
+  const menuId = `nav-menu-${label || triggerAriaLabel || "custom"}`;
 
-  // Flatten items for mobile menu or use regular items
   const allItems = groups
     ? groups.reduce((acc, group, groupIndex) => {
         if (groupIndex > 0) {
@@ -26,7 +35,6 @@ export default function NavDropdown({
       }, [])
     : items;
 
-  // Check if any of the dropdown items are currently active
   const isActive = allItems.some((item) => {
     if (item.hide || item.divider) return false;
     return (
@@ -47,56 +55,53 @@ export default function NavDropdown({
   const handleMenuItemClick = (item) => {
     handleClose();
 
-    // If item has custom onClick, use that
     if (item.onClick) {
       item.onClick();
       return;
     }
 
-    // If parent has custom handler, use that
     if (customOnMenuItemClick) {
       customOnMenuItemClick(item.path);
       return;
     }
   };
 
-  // Render custom trigger if provided
+  const menuTriggerProps = {
+    "aria-haspopup": "true",
+    "aria-expanded": open,
+    "aria-controls": open ? menuId : undefined,
+    onClick: handleClick,
+  };
+
   const triggerContent = customTrigger ? (
-    <Box
-      component="span"
-      onClick={handleClick}
-      sx={{
-        display: "inline-flex",
-        alignItems: "center",
-        cursor: "pointer",
-      }}
+    <IconButton
+      {...menuTriggerProps}
+      aria-label={triggerAriaLabel || "User menu"}
+      sx={{ p: 0 }}
     >
       {customTrigger}
-    </Box>
+    </IconButton>
   ) : isMobileMenu ? (
-    <IconButton
-      large
-      onClick={handleClick}
-      aria-label="menu"
-    >
+    <IconButton {...menuTriggerProps} aria-label="Menu" size="large">
       <i className="fas fa-bars" />
     </IconButton>
   ) : (
     <Button
       variant="text"
-      onClick={handleClick}
+      {...menuTriggerProps}
       sx={{
         px: 1,
         cursor: "pointer",
         textTransform: "uppercase",
         color: "inherit",
-        backgroundColor: !isMobileMenu && isActive ? "rgba(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-selectedOpacity));" : undefined,
+        backgroundColor:
+          !isMobileMenu && isActive
+            ? "rgba(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-selectedOpacity));"
+            : undefined,
       }}
       endIcon={<i className="fas fa-caret-down" aria-hidden="true" />}
     >
-      <Typography variant="h3">
-        {label}
-      </Typography>
+      <Typography variant="h3">{label}</Typography>
     </Button>
   );
 
@@ -104,6 +109,7 @@ export default function NavDropdown({
     <>
       {triggerContent}
       <Menu
+        id={menuId}
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -128,7 +134,6 @@ export default function NavDropdown({
         {allItems.map((item, index) => {
           if (item.hide) return null;
 
-          // Handle dividers
           if (item.divider) {
             return <Divider key={`divider-${index}`} />;
           }

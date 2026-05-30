@@ -136,6 +136,14 @@ export function getSiteTheme(
       defaultProps: {
         disableRipple: true,
       },
+      styleOverrides: {
+        root: {
+          "&:focus-visible": {
+            outline: "2px solid var(--mui-palette-primary-main)",
+            outlineOffset: "2px",
+          },
+        },
+      },
     },
     MuiLink: {
       styleOverrides: {
@@ -176,6 +184,16 @@ export function getSiteTheme(
         root: ({ theme }) => ({
           borderBottom: `1px solid ${theme.palette.divider}`,
         }),
+      },
+    },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          "&:focus-visible": {
+            outline: "2px solid var(--mui-palette-primary-main)",
+            outlineOffset: "2px",
+          },
+        },
       },
     },
   };

@@ -196,12 +196,32 @@ export default function UserNavSection({
           </Link>
         </Box>
       </Stack>
-      <Badge badgeContent={unreadCount} color="error" max={99}>
-        <NavDropdown
-          items={userMenuItems}
-          customTrigger={<Avatar id={user.id} name={user.name} hasImage={user.avatar} />}
-        />
-      </Badge>
+      <Tooltip title="Announcements">
+        <IconButton
+          aria-label="Announcements"
+          onClick={openAnnouncements}
+          size="small"
+        >
+          <i className="fas fa-bullhorn" />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Notifications">
+        <IconButton
+          aria-label="Notifications"
+          component={Link}
+          to="/user/inbox"
+          size="small"
+        >
+          <Badge badgeContent={unreadCount} color="error" max={99}>
+            <i className="fas fa-inbox" />
+          </Badge>
+        </IconButton>
+      </Tooltip>
+      <NavDropdown
+        items={userMenuItems}
+        triggerAriaLabel="User menu"
+        customTrigger={<Avatar id={user.id} name={user.name} hasImage={user.avatar} />}
+      />
     </Stack>
   );
 }

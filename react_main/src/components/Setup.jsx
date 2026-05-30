@@ -246,15 +246,15 @@ export default function Setup(props) {
 
   if (multi) {
     roleCounts.unshift(
-      <i
-        onClick={cycleSetups}
-        className="fas fa-list-alt"
+      <IconButton
         key="multi"
-        style={{
-          fontSize: "1.5rem",
-          cursor: "pointer",
-        }}
-      />
+        aria-label="Cycle role sets"
+        onClick={cycleSetups}
+        size="small"
+        sx={{ fontSize: "1.5rem" }}
+      >
+        <i className="fas fa-list-alt" />
+      </IconButton>
     );
   }
 
@@ -265,25 +265,26 @@ export default function Setup(props) {
 
   if (overSize) {
     roleCounts[maxIconsTotal - 1] = (
-      <i
-        onClick={handleClick}
-        className="fas fa-ellipsis-h"
-        style={{
-          fontSize: "1.5rem",
-          marginLeft: "4px",
-          cursor: "pointer",
-        }}
+      <IconButton
         key="ellipses"
-      />
+        aria-label="Show all roles"
+        onClick={handleClick}
+        size="small"
+        sx={{ fontSize: "1.5rem", marginLeft: "4px" }}
+      >
+        <i className="fas fa-ellipsis-h" />
+      </IconButton>
     );
   }
+
+  const setupName = filterProfanity(props.setup.name, user.settings);
 
   return (
     <>
       <InfoPopover
         {...popoverProps}
         page={`/learn/setup/${props.setup.id}`}
-        title={filterProfanity(props.setup.name, user.settings)}
+        title={setupName}
       />
       <Card
         variant="outlined"
@@ -308,13 +309,21 @@ export default function Setup(props) {
           }}
         >
           <Stack
+            component="button"
+            type="button"
             direction="column"
-            aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
             aria-haspopup="true"
+            aria-expanded={popoverOpen}
+            aria-label={`View setup: ${setupName}`}
             onClick={handleClick}
             sx={{
               justifyContent: "center",
               cursor: "pointer",
+              border: "none",
+              background: "none",
+              font: "inherit",
+              color: "inherit",
+              textAlign: "inherit",
               borderTopLeftRadius: "var(--mui-shape-borderRadius)",
               borderBottomLeftRadius: "var(--mui-shape-borderRadius)",
               bgcolor: popoverOpen ? "rgba(12, 12, 12, 0.15)" : undefined,
@@ -337,7 +346,7 @@ export default function Setup(props) {
             }}
           >
             <Typography variant="body2" className="setup-name">
-              {filterProfanity(props.setup.name, user.settings)}
+              {setupName}
             </Typography>
             <Stack
               direction="row"
@@ -496,19 +505,9 @@ function EventPool({ events, gameType, otherRoles, small = false }) {
     popoverOpen,
     openByClick,
     anchorEl,
-    handleClick,
-    handleMouseEnter,
-    handleMouseLeave,
     closePopover,
+    interactiveProps,
   } = usePopoverOpen();
-
-  const popoverProps = {
-    "aria-owns": popoverOpen ? "mouse-over-popover" : undefined,
-    "aria-haspopup": "true",
-    onClick: handleClick,
-    onMouseEnter: handleMouseEnter,
-    onMouseLeave: handleMouseLeave,
-  };
 
   const popoverTitle = "Event Pool";
   const popoverContent = (
@@ -522,7 +521,8 @@ function EventPool({ events, gameType, otherRoles, small = false }) {
     <>
       <div
         className="role-count-wrap event-pool-wrap"
-        {...popoverProps}
+        {...interactiveProps}
+        aria-label="Event pool"
         style={{
           cursor: "pointer",
         }}
@@ -560,23 +560,13 @@ function BanishedPool({ roles, gameType, otherRoles, small = false }) {
     popoverOpen,
     openByClick,
     anchorEl,
-    handleClick,
-    handleMouseEnter,
-    handleMouseLeave,
     closePopover,
+    interactiveProps,
   } = usePopoverOpen();
 
   if (Object.keys(roles) === 0) {
     return <></>;
   }
-
-  const popoverProps = {
-    "aria-owns": popoverOpen ? "mouse-over-popover" : undefined,
-    "aria-haspopup": "true",
-    onClick: handleClick,
-    onMouseEnter: handleMouseEnter,
-    onMouseLeave: handleMouseLeave,
-  };
 
   const popoverTitle = "Banished Pool";
   const popoverContent = (
@@ -590,7 +580,8 @@ function BanishedPool({ roles, gameType, otherRoles, small = false }) {
     <>
       <div
         className="role-count-wrap event-pool-wrap"
-        {...popoverProps}
+        {...interactiveProps}
+        aria-label="Banished pool"
         style={{
           cursor: "pointer",
         }}

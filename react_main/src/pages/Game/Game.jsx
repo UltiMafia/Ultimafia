@@ -4128,13 +4128,21 @@ function ActionSelect(props) {
                 </div>
               )}
               <Typography
-                className="voter"
+                component="button"
+                type="button"
+                className="voter voter-btn"
+                disabled={notClickable}
+                onClick={() => onSelectVote(rowItem.id)}
                 sx={{
-                  cursor: "pointer",
+                  cursor: notClickable ? "default" : "pointer",
                   fontWeight: "bold",
                   color: nameColorOverride ? nameColorOverride : undefined,
+                  background: "none",
+                  border: "none",
+                  font: "inherit",
+                  textAlign: "left",
+                  padding: 0,
                 }}
-                onClick={() => onSelectVote(rowItem.id)}
               >
                 {rowItem.name}
               </Typography>
@@ -4332,13 +4340,23 @@ function ActionSelectShowAllOptions(props) {
 
           return (
             <Box
+              component="button"
+              type="button"
               key={option.id}
+              className="action-option-btn"
+              disabled={notClickable}
+              aria-pressed={isSelected}
               onClick={() => handleOptionClick(option.id)}
               sx={{
                 cursor: notClickable ? "default" : "pointer",
                 padding: "8px 12px",
                 borderRadius: 1,
                 backgroundColor: "background.default",
+                border: "none",
+                font: "inherit",
+                color: "inherit",
+                textAlign: "left",
+                width: "100%",
                 "&:hover": notClickable
                   ? {}
                   : {
@@ -4454,10 +4472,12 @@ function ActionImageButtons(props) {
     var targetDisplay = getTargetDisplay(target, meeting, props.players);
     const isSelected = selectedTarget === target;
     return (
-      <div
+      <button
+        type="button"
         className="btn btn-theme"
         key={target}
         onClick={() => handleClick(target)}
+        aria-pressed={isSelected}
         style={isSelected ? selectedStyle : unselectedStyle}
       >
         <div style={imgContainerStyle}>
@@ -4467,7 +4487,7 @@ function ActionImageButtons(props) {
             className="action-icon"
           />
         </div>
-      </div>
+      </button>
     );
   });
 
@@ -4524,16 +4544,18 @@ function PlayingCardButtons(props) {
       (votes[meeting.members[0].id] &&
         votes[meeting.members[0].id].includes(target));
     return (
-      <div
+      <button
+        type="button"
         className="btn btn-theme"
         key={target}
         onClick={() => handleClick(target)}
+        aria-pressed={isSelected}
         style={isSelected ? selectedStyle : unselectedStyle}
       >
         <div style={imgContainerStyle}>
           <div className={`card ${`c${targetDisplay}`}`}></div>
         </div>
-      </div>
+      </button>
     );
   });
 
@@ -5180,9 +5202,9 @@ function FirstGameModal(props) {
   );
 
   const modalFooter = (
-    <div className="btn btn-theme" onClick={cancel}>
+    <button type="button" className="btn btn-theme" onClick={cancel}>
       Close
-    </div>
+    </button>
   );
 
   function cancel() {

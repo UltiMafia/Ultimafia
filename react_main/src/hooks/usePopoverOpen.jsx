@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { activateOnEnterOrSpace } from "../utils/keyboard";
 
 export const usePopoverOpen = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -31,6 +32,21 @@ export const usePopoverOpen = () => {
     setOpenByHover(false);
   };
 
+  const handleKeyDown = (e) => {
+    activateOnEnterOrSpace(e, handleClick);
+  };
+
+  const interactiveProps = {
+    role: "button",
+    tabIndex: 0,
+    onClick: handleClick,
+    onMouseEnter: handleMouseEnter,
+    onMouseLeave: handleMouseLeave,
+    onKeyDown: handleKeyDown,
+    "aria-haspopup": "true",
+    "aria-expanded": popoverOpen,
+  };
+
   return {
     popoverOpen,
     openByClick,
@@ -38,6 +54,8 @@ export const usePopoverOpen = () => {
     handleMouseEnter,
     handleMouseLeave,
     handleClick,
+    handleKeyDown,
     closePopover,
+    interactiveProps,
   };
 };

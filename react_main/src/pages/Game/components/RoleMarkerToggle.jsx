@@ -1,5 +1,6 @@
 import React, { useRef, useCallback } from "react";
 import { usePopover, InfoPopover } from "components/Popover";
+import { getKeyboardActivationProps } from "utils/keyboard";
 
 export default function RoleMarkerToggle({
   playerId,
@@ -37,13 +38,16 @@ export default function RoleMarkerToggle({
       <InfoPopover {...popoverProps} title={"Mark Role as"} />
       <div
         className="role-marker"
-        onClick={handleClick}
         ref={roleMarkerRef}
+        {...getKeyboardActivationProps(handleClick, {
+          ariaLabel: "Mark player role",
+          ariaHaspopup: true,
+        })}
         style={{
           cursor: "pointer",
         }}
       >
-        <i className="fas fa-user-edit"></i>
+        <i className="fas fa-user-edit" />
       </div>
     </>
   );
