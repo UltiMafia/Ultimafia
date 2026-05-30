@@ -24,6 +24,7 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
   const [setups, setSetups] = useState([]);
   const [selSetup, setSelSetup] = useState(null);
   const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
+  const isMountedRef = useRef(true);
 
   const user = useContext(UserContext);
   const isPhoneDevice = useIsPhoneDevice();
@@ -31,11 +32,15 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
   useEffect(() => {
     if (lobby !== "Competitive") {
       getRecentlyPlayedSetups({ lobby }).then((playedSetups) => {
-        setSetups(playedSetups);
-        setTitle("Most Popular Setups");
+        if (isMountedRef.current) {
+          setSetups(playedSetups);
+          setTitle("Most Popular Setups");
+        }
       });
     } else {
       axios.get(`/api/competitive/roundInfo`).then((response) => {
+        if (!isMountedRef.current) return;
+
         const roundInfo = response.data;
         if (roundInfo.round) {
           const allowedSetups = roundInfo.allowedSetups.map((allowedSetup) => {
@@ -46,6 +51,11 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
         }
       });
     }
+
+    // Cleanup on unmount
+    return () => {
+      isMountedRef.current = false;
+    };
   }, [lobby]);
 
   if (!setups?.length) {

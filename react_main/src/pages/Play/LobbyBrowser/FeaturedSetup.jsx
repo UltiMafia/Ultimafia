@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import axios from "axios";
 import { Button, Paper, Stack } from "@mui/material";
 import { UserContext } from "Contexts";
@@ -9,6 +9,7 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 export const FeaturedSetup = ({ lobby, glowingHostButton }) => {
   const [featuredSetup, setFeaturedSetup] = useState(null);
   const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
+  const isMountedRef = useRef(true);
 
   const user = useContext(UserContext);
   const isPhoneDevice = useIsPhoneDevice();
@@ -27,8 +28,15 @@ export const FeaturedSetup = ({ lobby, glowingHostButton }) => {
     axios
       .get(`/api/setup/featuredSetup?featuredCategory=${featuredCategory}`)
       .then((res) => {
-        setFeaturedSetup(res.data);
+        if (isMountedRef.current) {
+          setFeaturedSetup(res.data);
+        }
       });
+
+    // Cleanup on unmount
+    return () => {
+      isMountedRef.current = false;
+    };
   }, [lobby]);
 
   if (!featuredSetup) {
