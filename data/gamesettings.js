@@ -114,6 +114,13 @@ const gameSettingData = {
       allowDuplicate: true,
       maxCount: 10,
     },
+    "Speed Rounds": {
+      category: "Timer",
+      internal: ["SpeedRounds"],
+      tags: ["Timer", "Day", "Night"],
+      description:
+        "Uses fast timers (Day: 20-25 seconds, Night: 5-8 seconds) each cycle.",
+    },
     "Scaling Timer": {
       category: "Timer",
       internal: ["LengthScaling"],

@@ -4,6 +4,7 @@ import React, {
   useReducer,
   useContext,
   useCallback,
+  useRef,
 } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import update from "immutability-helper";
@@ -122,6 +123,7 @@ export default function CreateSetup(props) {
   const [redirect, setRedirect] = useState("");
   const [editing, setEditing] = useState(false);
   const [modifiers, setModifiers] = useState([]);
+  const setupFormRef = useRef(null);
 
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -130,6 +132,7 @@ export default function CreateSetup(props) {
   const isPhoneDevice = useIsPhoneDevice();
 
   const gameTypeSettings = siteInfo.gamesettings[gameType];
+  const isMafiaSetup = gameType === "Mafia";
 
   const [roleData, updateRoleData] = useReducer(
     (roleData, action) => {
@@ -389,6 +392,8 @@ export default function CreateSetup(props) {
           });
         case "setFromSetup":
           return action.gameSettings;
+        case "setAll":
+          return action.gameSettings;
         default:
           throw new Error();
       }
@@ -520,6 +525,44 @@ export default function CreateSetup(props) {
     
     setModifiers(tmpModifiers);
     */
+  }
+
+  function applyMafiaSpeedRoundsPreset() {
+    updateRoleData({
+      type: "setFromSetup",
+      roles: [{ "Villager:": 2, "Mafioso:": 1 }],
+      closed: true,
+      useRoleGroups: false,
+      roleGroupSizes: [1],
+    });
+    setSelRoleSet(0);
+
+    updateGameSettings({
+      type: "setAll",
+      gameSettings: {
+        "Speed Rounds": true,
+        "Must Condemn": true,
+        "Alignment Only Reveal": true,
+      },
+    });
+
+    updateFormFields([
+      { ref: "closed", prop: "value", value: true },
+      { ref: "useRoleGroups", prop: "value", value: false },
+      { ref: "count-Village", prop: "value", value: 2 },
+      { ref: "count-Mafia", prop: "value", value: 1 },
+      { ref: "count-Cult", prop: "value", value: 0 },
+      { ref: "count-Independent", prop: "value", value: 0 },
+    ]);
+
+    setTimeout(() => {
+      if (setupFormRef.current) {
+        setupFormRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 0);
   }
 
   if (editing && !params.get("edit")) {
@@ -696,6 +739,25 @@ export default function CreateSetup(props) {
               >
                 <i
                   className="fa-copy fas"
+                  aria-hidden="true"
+                  style={{ fontSize: isPhoneDevice ? "0.5em" : "1em" }}
+                />
+              </Button>
+            )}
+            {isMafiaSetup && (
+              <Button
+                onClick={applyMafiaSpeedRoundsPreset}
+                sx={{
+                  padding: 1,
+                  bgcolor: "#f4b400",
+                  alignSelf: "stretch",
+                  minWidth: "0px",
+                  ml: 1,
+                }}
+                title="Apply Speed Rounds preset"
+              >
+                <i
+                  className="fa-bolt fas"
                   aria-hidden="true"
                   style={{ fontSize: isPhoneDevice ? "0.5em" : "1em" }}
                 />
@@ -955,6 +1017,7 @@ export default function CreateSetup(props) {
         </Stack>
       </Paper>
       <Paper
+        ref={setupFormRef}
         sx={{
           p: 1,
           width: isPhoneDevice ? undefined : "50%",
