@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext, useCallback, useRef } from "react";
 import { Navigate, useLocation, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
@@ -55,6 +55,7 @@ export default function LobbyBrowser() {
   const { loading, setLoading } = useLoading();
   const location = useLocation();
   const navigate = useNavigate();
+  const isMountedRef = useRef(true);
 
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
@@ -66,6 +67,16 @@ export default function LobbyBrowser() {
   const glowingHostButton = user.canPlayRanked
     ? !hasOneOpenGame
     : !hasOneOpenUrankedGame;
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+      if (refreshTimeoutId) {
+        clearTimeout(refreshTimeoutId);
+      }
+    };
+  }, [refreshTimeoutId]);
 
   useEffect(() => {
     localStorage.setItem("lobby", lobbyName);
@@ -87,6 +98,8 @@ export default function LobbyBrowser() {
 
   const getOpenGameCounts = useCallback(async () => {
     return axios.get(`/api/game/openCounts`).then(({ data }) => {
+      if (!isMountedRef.current) return;
+
       setOpenGamesCounts(data?.counts || {});
       setHasOneOpenGame(Boolean(data?.hasOpen));
       setHasOneOpenUrankedGame(Boolean(data?.hasOpenUnranked));
@@ -106,25 +119,36 @@ export default function LobbyBrowser() {
           _listType
         )}&lobby=${lobbyName}&${filterArg}`
       );
+      if (!isMountedRef.current) return;
+
       if (res.data.length > 0 || _page === 1) {
         setListType(_listType);
         setPage(_page);
         setGames(res.data);
       }
     } catch (err) {
-      errorAlert();
+      if (isMountedRef.current) {
+        errorAlert();
+      }
     }
-    setLoading(false);
-    finallyCallback && finallyCallback();
+    if (isMountedRef.current) {
+      setLoading(false);
+    }
+    if (isMountedRef.current && finallyCallback) {
+      finallyCallback();
+    }
   };
 
   const refreshGames = async () => {
+    if (!isMountedRef.current) return;
+
     window.gtag("event", "refreshing_games_hehe", {
       gayness: Math.random(),
     });
     // This is a nice trick to allow spam-clicking the Refresh button
     setRefreshButtonIsSpinning(false);
     await new Promise((res) => setTimeout(res));
+    if (!isMountedRef.current) return;
     setRefreshButtonIsSpinning(true);
 
     if (refreshTimeoutId) {
@@ -135,11 +159,15 @@ export default function LobbyBrowser() {
       // The animation is so beautiful… It must keep spinning! (although the games have already been refreshed)
       const minAnimationTime = 100;
       await new Promise((res) => {
-        setRefreshTimeoutId(setTimeout(res, minAnimationTime));
+        const timeoutId = setTimeout(res, minAnimationTime);
+        if (isMountedRef.current) {
+          setRefreshTimeoutId(timeoutId);
+        }
       });
       // "But bro, this is bad UX - don't leave users hanging" nah, 100ms is short enough
-
-      setRefreshButtonIsSpinning(false);
+      if (isMountedRef.current) {
+        setRefreshButtonIsSpinning(false);
+      }
     };
     getGameList(listType, page, callback);
     getOpenGameCounts();

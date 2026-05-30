@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
@@ -10,6 +10,7 @@ import LobbySidebarPanel from "pages/Play/LobbyBrowser/LobbySidebarPanel";
 export function RecentForumReplies() {
   const [newestThreads, setNewestThreads] = useState([]);
   const [recentReplies, setRecentReplies] = useState([]);
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
     const fetchForumActivity = async () => {
@@ -48,14 +49,18 @@ export function RecentForumReplies() {
           }
         }
 
+        if (!isMountedRef.current) return;
+
         threads.sort((a, b) => (b.date || 0) - (a.date || 0));
         replies.sort((a, b) => (b.date || 0) - (a.date || 0));
         setNewestThreads(threads.slice(0, 1));
         setRecentReplies(replies.slice(0, 5));
       } catch (e) {
         // Silently ignore; show empty state below
-        setNewestThreads([]);
-        setRecentReplies([]);
+        if (isMountedRef.current) {
+          setNewestThreads([]);
+          setRecentReplies([]);
+        }
       }
     };
 
@@ -65,8 +70,11 @@ export function RecentForumReplies() {
     // Poll every 30 seconds for updates
     const interval = setInterval(fetchForumActivity, 30000);
 
-    // Cleanup interval on unmount
-    return () => clearInterval(interval);
+    // Cleanup interval and mounted status on unmount
+    return () => {
+      isMountedRef.current = false;
+      clearInterval(interval);
+    };
   }, []);
 
   return (

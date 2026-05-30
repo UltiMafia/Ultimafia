@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import axios from "axios";
 
 import { useErrorAlert } from "../../components/Alerts";
@@ -25,6 +25,7 @@ export default function Comments(props) {
   const [showInput, setShowInput] = useState(false);
   const [postContent, setPostContent] = useState("");
   const [loaded, setLoaded] = useState(false);
+  const isMountedRef = useRef(true);
 
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
@@ -35,6 +36,13 @@ export default function Comments(props) {
     setShowInput(false);
     onCommentsPageNav(1);
   }, [locationKey]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   function buildQuery(_page) {
     const parts = [`page=${_page}`];
@@ -50,6 +58,8 @@ export default function Comments(props) {
     axios
       .get(`/api/comment?${buildQuery(_page)}`)
       .then((res) => {
+        if (!isMountedRef.current) return;
+
         setLoaded(true);
         const data = res.data || {};
         const fetched = Array.isArray(data) ? data : data.comments || [];
@@ -68,7 +78,11 @@ export default function Comments(props) {
         setMaxPage(fetchedMaxPage);
         setPage(Math.min(_page, fetchedMaxPage));
       })
-      .catch(errorAlert);
+      .catch((err) => {
+        if (isMountedRef.current) {
+          errorAlert(err);
+        }
+      });
   }
 
   function onPostSubmit() {
@@ -76,11 +90,17 @@ export default function Comments(props) {
     axios
       .post("/api/comment", { content: postContent, location: postLocation })
       .then(() => {
-        onCommentsPageNav(1);
-        setPostContent("");
-        setShowInput(false);
+        if (isMountedRef.current) {
+          onCommentsPageNav(1);
+          setPostContent("");
+          setShowInput(false);
+        }
       })
-      .catch(errorAlert);
+      .catch((err) => {
+        if (isMountedRef.current) {
+          errorAlert(err);
+        }
+      });
   }
 
   function onPostCancel() {

@@ -53,6 +53,7 @@ export default function Chat() {
 
   const messageListRef = useRef();
   const oldScrollHeight = useRef();
+  const isMountedRef = useRef(true);
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
   const theme = useTheme();
@@ -62,6 +63,13 @@ export default function Chat() {
   useEffect(() => {
     if (!user.loggedIn && token) setToken("");
   }, [user.loggedIn]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!token) return;
@@ -204,9 +212,15 @@ export default function Chat() {
     axios
       .get("/api/chat/connect")
       .then((res) => {
-        setToken(res.data);
+        if (isMountedRef.current) {
+          setToken(res.data);
+        }
       })
-      .catch(errorAlert);
+      .catch((err) => {
+        if (isMountedRef.current) {
+          errorAlert(err);
+        }
+      });
   }
 
   function onOpenNewChatDialog() {

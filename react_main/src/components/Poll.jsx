@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 import {
   Paper,
@@ -171,6 +171,7 @@ export function Poll({ lobby, threadId, locked }) {
   const [allPolls, setAllPolls] = useState([]);
   const [pollPage, setPollPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const isMountedRef = useRef(true);
 
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
@@ -196,6 +197,13 @@ export function Poll({ lobby, threadId, locked }) {
     }
   }, [lobby]);
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   const fetchThreadPoll = async () => {
     if (!user.loggedIn) {
       return;
@@ -204,15 +212,21 @@ export function Poll({ lobby, threadId, locked }) {
     setLoading(true);
     try {
       const response = await axios.get(`/api/poll/thread/${threadId}`);
-      if (response.data.poll) {
-        setAllPolls([response.data.poll]);
-      } else {
-        setAllPolls([]);
+      if (isMountedRef.current) {
+        if (response.data.poll) {
+          setAllPolls([response.data.poll]);
+        } else {
+          setAllPolls([]);
+        }
       }
     } catch (error) {
-      errorAlert();
+      if (isMountedRef.current) {
+        errorAlert();
+      }
     }
-    setLoading(false);
+    if (isMountedRef.current) {
+      setLoading(false);
+    }
   };
 
   const fetchPolls = async () => {
@@ -226,6 +240,8 @@ export function Poll({ lobby, threadId, locked }) {
       const response = await axios.get(
         `/api/poll/list/${lobby}?page=${pollPage}`
       );
+      if (!isMountedRef.current) return;
+
       const { currentPoll, activePolls, polls } = response.data;
 
       setCurrentPoll(currentPoll);
@@ -256,9 +272,13 @@ export function Poll({ lobby, threadId, locked }) {
 
       setAllPolls(combined);
     } catch (error) {
-      errorAlert();
+      if (isMountedRef.current) {
+        errorAlert();
+      }
     }
-    setLoading(false);
+    if (isMountedRef.current) {
+      setLoading(false);
+    }
   };
 
   const onPollPageNav = (page) => {
@@ -322,13 +342,17 @@ export function Poll({ lobby, threadId, locked }) {
       });
 
       // Refresh the poll data - use appropriate fetch function
-      if (isThreadPoll) {
-        fetchThreadPoll();
-      } else {
-        fetchPolls();
+      if (isMountedRef.current) {
+        if (isThreadPoll) {
+          fetchThreadPoll();
+        } else {
+          fetchPolls();
+        }
       }
     } catch (error) {
-      errorAlert();
+      if (isMountedRef.current) {
+        errorAlert();
+      }
     }
   };
 

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
@@ -12,6 +12,7 @@ export default function CreateConnectFourSetup() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const errorAlert = useErrorAlert();
+  const isMountedRef = useRef(true);
   const [formFields, updateFormFields, resetFormFields] = useForm([
     {
       label: "Setup Name",
@@ -40,6 +41,9 @@ export default function CreateConnectFourSetup() {
 
   useEffect(() => {
     document.title = "Create Connect Four Setup | UltiMafia";
+    return () => {
+      isMountedRef.current = false;
+    };
   }, []);
 
   function onCreateSetup(roleData, editing, setRedirect, gameSettings) {
@@ -57,13 +61,19 @@ export default function CreateConnectFourSetup() {
         id: params.get("edit"),
       })
       .then((res) => {
-        siteInfo.showAlert(
-          `${editing ? "Edited" : "Created"} setup '${formFields[0].value}'`,
-          "success"
-        );
-        setRedirect(res.data);
+        if (isMountedRef.current) {
+          siteInfo.showAlert(
+            `${editing ? "Edited" : "Created"} setup '${formFields[0].value}'`,
+            "success"
+          );
+          setRedirect(res.data);
+        }
       })
-      .catch(errorAlert);
+      .catch((err) => {
+        if (isMountedRef.current) {
+          errorAlert(err);
+        }
+      });
   }
 
   return (
