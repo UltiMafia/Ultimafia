@@ -1560,9 +1560,59 @@ const countChecks = {
   },
 };
 
+function mafiaSetupHasSpymaster(setup) {
+  const roleName = "Spymaster";
+
+  if (setup.closed) {
+    for (const alignment of ["Village", "Mafia", "Cult", "Independent"]) {
+      if (
+        setup.roles[alignment] &&
+        setup.roles[alignment].some((r) => r.split(":")[0] === roleName)
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  for (const roleSet of setup.roles) {
+    for (const key of Object.keys(roleSet)) {
+      if (key.split(":")[0] === roleName) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 const optionsChecks = {
   Mafia: (setup) => {
-    return setup;
+    if (!mafiaSetupHasSpymaster(setup)) {
+      return setup;
+    }
+
+    var firstTeamSize = Number(setup.firstTeamSize);
+    var lastTeamSize = Number(setup.lastTeamSize);
+    var numMissions = Number(setup.numMissions);
+    var teamFailLimit = Number(setup.teamFailLimit);
+
+    if (firstTeamSize < 2 || firstTeamSize > setup.total - 1)
+      return "First team size must be between 2 and the number of players minus 1.";
+
+    if (lastTeamSize < firstTeamSize)
+      return "Last team size cannot be smaller than the first team size.";
+
+    if (lastTeamSize > setup.total - 1)
+      return "Last team size must be at most 1 less than the number of players.";
+
+    if (numMissions < 2 || numMissions > 10)
+      return "Number of missions must be between 2 and 10.";
+
+    if (teamFailLimit < 1 || teamFailLimit > setup.total)
+      return "Team fail limit must be between 1 and the number of players.";
+
+    return { firstTeamSize, lastTeamSize, numMissions, teamFailLimit };
   },
   Resistance: (setup) => {
     var firstTeamSize = Number(setup.firstTeamSize);

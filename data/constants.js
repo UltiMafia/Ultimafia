@@ -144,6 +144,16 @@ module.exports = {
         max: 10 * 60 * 1000,
         default: 2 * 60 * 1000,
       },
+      "Team Approval": {
+        min: 0.1 * 60 * 1000,
+        max: 2 * 60 * 1000,
+        default: 0.5 * 60 * 1000,
+      },
+      Mission: {
+        min: 0.1 * 60 * 1000,
+        max: 1 * 60 * 1000,
+        default: 0.5 * 60 * 1000,
+      },
     },
     Resistance: {
       "Team Selection": {

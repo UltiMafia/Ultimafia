@@ -72,6 +72,16 @@ module.exports = class MafiaGame extends Game {
         name: "Day",
         length: this.BaseDayLength,
       },
+      {
+        name: "Team Approval",
+        length:
+          options.settings.stateLengths["Team Approval"] || 1000 * 60,
+      },
+      {
+        name: "Mission",
+        length: options.settings.stateLengths["Mission"] || 1000 * 60,
+        skipChecks: [() => this.currentTeamFail],
+      },
     ];
     this.useObituaries = true;
     this.pregameWaitLength = options.settings.pregameWaitLength;
@@ -224,8 +234,103 @@ module.exports = class MafiaGame extends Game {
     for (let player of this.players) player.recordStat("totalGames");
   }
 
+  get currentTeamSize() {
+    if (!this.teamSizes) {
+      return 0;
+    }
+    return this.teamSizes[this.mission - 1];
+  }
+
+  get currentLeader() {
+    return this.players.at(this.leaderIndex);
+  }
+
+  recordMissionTeam(team) {
+    this.currentMissionHistory = {
+      mission: this.mission,
+      team: team,
+    };
+  }
+
+  recordMissionFails(numFails) {
+    if (numFails === -1) {
+      this.currentMissionHistory = {
+        mission: this.mission,
+        team: [],
+      };
+    }
+
+    this.currentMissionHistory.numFails = numFails;
+    const winningTeam =
+      this.currentMissionHistory.numFails === 0 ? "rebels" : "spies";
+
+    this.missionRecord.missionHistory.push(this.currentMissionHistory);
+    this.missionRecord.score[winningTeam] += 1;
+    this.currentMissionHistory = null;
+    this.checkGameEnd();
+  }
+
   incrementState(index, skipped) {
+    if (this.ResistanceMode) {
+      let previousState = this.getStateInfo().name;
+
+      if (previousState.match(/Mission/)) {
+        if (this.currentMissionFails > 0) {
+          this.missionFails++;
+          var plural = this.currentMissionFails > 1;
+          this.queueAlert(
+            `Mission ${this.mission} failed due to ${
+              this.currentMissionFails
+            } team member${plural ? "s" : ""}.`
+          );
+        } else {
+          this.queueAlert(`Mission ${this.mission} succeeded.`);
+        }
+
+        this.recordMissionFails(this.currentMissionFails);
+
+        this.mission++;
+        this.currentMissionFails = 0;
+        this.teamFails = 0;
+      } else if (
+        previousState.match(/Team Approval/) &&
+        this.teamFails >= this.teamFailLimit
+      ) {
+        this.queueAlert(
+          `Mission ${this.mission} failed due to lack of a team.`
+        );
+        this.recordMissionFails(-1);
+
+        this.missionFails++;
+        this.mission++;
+        this.currentMissionFails = 0;
+        this.teamFails = 0;
+      }
+    }
+
     super.incrementState(index, skipped);
+
+    if (this.ResistanceMode && this.getStateInfo().name.match(/Night/)) {
+      this.currentTeamFail = false;
+
+      for (let player of this.players) {
+        for (let item of player.items) {
+          if (item.name === "MissionLeader") {
+            item.drop();
+          }
+        }
+      }
+
+      this.leaderIndex++;
+
+      if (this.leaderIndex == this.players.length) {
+        this.leaderIndex = 0;
+      }
+
+      if (this.currentLeader?.alive) {
+        this.currentLeader.holdItem("MissionLeader", this);
+      }
+    }
 
     if (
       (!this.getGameSetting("Day Start") && this.getStateName() == "Night") ||
@@ -347,6 +452,26 @@ module.exports = class MafiaGame extends Game {
   getStateInfo(state) {
     var info = super.getStateInfo(state);
     info.dayCount = this.dayCount;
+
+    if (this.ResistanceMode) {
+      info.mission = this.mission;
+      info.extraInfo = this.missionRecord;
+
+      if (info.name == "Mission") {
+        info = {
+          ...info,
+          name: `Mission ${this.mission}`,
+        };
+      } else if (info.name != "Pregame" && info.name != "Postgame") {
+        info = {
+          ...info,
+          name: `${info.name} ${this.dayCount}`,
+        };
+      }
+
+      return info;
+    }
+
     info.extraInfo = {
       wordLength: this.wordLength,
       //responseHistory: this.GhostClues,
@@ -694,6 +819,14 @@ module.exports = class MafiaGame extends Game {
       if (player.hasItem("Ouija Board")) {
         return true;
       }
+    }
+
+    if (this.ResistanceMode) {
+      if (state == "Day") {
+        return true;
+      }
+    } else if (state == "Team Approval" || state == "Mission") {
+      return true;
     }
 
     return false;

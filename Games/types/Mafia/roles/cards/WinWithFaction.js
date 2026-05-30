@@ -30,6 +30,28 @@ module.exports = class WinWithFaction extends Card {
           winners.addPlayer(role.player, role.player.faction);
         }
 
+        if (this.game.ResistanceMode) {
+          const threshold = Math.ceil(this.game.numMissions / 2);
+
+          if (
+            this.player.faction == "Village" &&
+            this.game.missionRecord.score.rebels >= threshold
+          ) {
+            factionWin(this);
+            return;
+          }
+
+          if (
+            EVIL_FACTIONS.includes(this.player.faction) &&
+            this.game.missionRecord.score.spies >= threshold
+          ) {
+            factionWin(this);
+            return;
+          }
+
+          return;
+        }
+
         //Const
         const ONE_NIGHT = this.game.IsBloodMoon == true;
         const CULT_IN_GAME =

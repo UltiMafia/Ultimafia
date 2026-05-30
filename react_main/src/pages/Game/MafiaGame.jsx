@@ -22,6 +22,95 @@ import {
 import { GameContext, SiteInfoContext } from "../../Contexts";
 import { mafiaAudioConfig } from "../../audio/audioConfigs";
 import { SideMenu } from "./Game";
+
+function MissionScoreKeeper() {
+  const game = useContext(GameContext);
+  const history = game.history;
+  const stateViewing = game.stateViewing;
+
+  if (stateViewing < 0) return null;
+
+  const missionRecord = history.states[stateViewing]?.extraInfo;
+  if (!missionRecord?.missionHistory) return null;
+
+  const numMissions = game.setup?.numMissions || game.numMissions || 5;
+
+  return (
+    <SideMenu
+      title="Mission Score"
+      scrollable
+      content={
+        <>
+          <div className="rst">
+            <div className="rst-name">Total Missions</div>
+            {numMissions}
+          </div>
+          <MissionScoreBoard score={missionRecord?.score} />
+          <MissionHistoryPanel
+            missionHistory={missionRecord?.missionHistory}
+          />
+        </>
+      }
+    />
+  );
+}
+
+function MissionScoreBoard(props) {
+  const score = props.score || { rebels: 0, spies: 0 };
+
+  return (
+    <div className="rst-score">
+      <MissionScoreBox team="rebels" scoreValue={score.rebels || 0} />
+      <MissionScoreBox team="spies" scoreValue={score.spies || 0} />
+    </div>
+  );
+}
+
+function MissionScoreBox(props) {
+  const label = props.team.charAt(0).toUpperCase() + props.team.slice(1);
+
+  return (
+    <div className="rst-score-box">
+      <div className="rst-score-box-name">{label}</div>
+      <div className={`rst-score-box-value rst-score-box-${props.team || ""}`}>
+        {props.scoreValue}
+      </div>
+    </div>
+  );
+}
+
+function MissionHistoryPanel(props) {
+  const missionHistory = props.missionHistory || [];
+
+  const rows = missionHistory.map((history, i) => {
+    const success = history.numFails === 0 ? "success" : "fail";
+
+    if (history.numFails === -1) {
+      return (
+        <div className="rst-mh-row" key={i}>
+          <div className={`rst-mh-status rst-mh-${success}`}>X</div>
+          <div className="rst-mh-team">rejected</div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="rst-mh-row" key={i}>
+        <div className={`rst-mh-status rst-mh-${success}`}>
+          {history.numFails}
+        </div>
+        <div className="rst-mh-team">{history.team.join(" ")}</div>
+      </div>
+    );
+  });
+
+  return (
+    <div className="rst">
+      <div className="rst-name">Mission History</div>
+      <div className="rst-mh-all-rows">{rows}</div>
+    </div>
+  );
+}
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { StrategiesPanel, StrategiesSection } from "components/Strategies";
 
@@ -433,6 +522,7 @@ export default function MafiaGame() {
         centerPanelContent={<TextMeetingLayout />}
         rightPanelContent={
           <>
+            <MissionScoreKeeper />
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             {isViewingPregame ? (
               <>
@@ -471,6 +561,7 @@ export default function MafiaGame() {
         }
         innerRightContent={
           <>
+            <MissionScoreKeeper />
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             {isViewingPregame ? (
               <>

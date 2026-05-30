@@ -2136,6 +2136,9 @@ const roleData = {
       ],
       SpecialInteractions: {
         Ghost: ["If a Ghost is Present, a Templar will not learn any words."],
+        Spymaster: [
+          "If a Spymaster is Present, acts as Tristan/Isolde with mutual knowledge and no guess-loss epilogue.",
+        ],
       },
     },
     //reflexive roles
@@ -2489,6 +2492,9 @@ const roleData = {
       ],
       SpecialInteractions: {
         Ghost: ["If a Ghost is Present, a Seer will not learn any words."],
+        Spymaster: [
+          "If a Spymaster is Present, you learn evil players at game start (like Merlin). Godfather and Cultist (Respected) stay hidden.",
+        ],
       },
     },
     Mole: {
@@ -2636,6 +2642,9 @@ const roleData = {
       ],
       SpecialInteractions: {
         Ghost: ["If a Ghost is Present, a Godfather will learn the real word."],
+        Spymaster: [
+          "If a Spymaster is Present, acts as Mordred and stays hidden from the Seer's opening reveal.",
+        ],
       },
     },
     Gramps: {
@@ -3754,6 +3763,22 @@ const roleData = {
       ],
       SpecialInteractions: {
         Ghost: ["If a Ghost is Present, an Imposter will learn the real word."],
+      },
+    },
+    Spymaster: {
+      alignment: "Mafia",
+      tags: ["Setup Changes", "Mini-Game", "Resistance", "Advanced"],
+      description: [
+        "Replaces the Mafia kill and Day condemn vote with a Resistance-style mission game.",
+        "Each night the rotating leader assembles a team; the group approves or rejects it.",
+        "Approved teams go on missions; Village wins enough successful missions, Mafia/Cult win enough failures.",
+        "Other night actions and Mafia/Cult faction meetings still work normally.",
+      ],
+      SpecialInteractions: {
+        Seer: ["Acts as Merlin: learns evil players at game start (Godfather and Cultist (Respected) stay hidden)."],
+        Templar: ["Acts as Tristan/Isolde: mutual knowledge with no guess-loss epilogue."],
+        Godfather: ["Acts as Mordred: hidden from the Seer's opening reveal."],
+        "Cultist (Respected)": ["Acts as Mordred: hidden from the Seer's opening reveal."],
       },
     },
     Assassin: {
