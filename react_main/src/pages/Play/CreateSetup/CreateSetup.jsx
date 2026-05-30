@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import {
   SwipeableDrawer,
   List,
@@ -46,10 +46,22 @@ export default function CreateSetup(props) {
       : requestedGameType
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const gameParam = new URLSearchParams(location.search).get("game");
+    if (gameParam && gameParam !== gameType) {
+      setGameType(gameParam);
+      localStorage.setItem("gameType", gameParam);
+    }
+  }, [location.search]);
 
   const handleListItemClick = (newValue) => {
     setGameType(newValue);
     localStorage.setItem("gameType", newValue);
+    const params = new URLSearchParams(location.search);
+    params.set("game", newValue);
+    navigate({ pathname: location.pathname, search: params.toString() });
     setDrawerOpen(false);
   };
 

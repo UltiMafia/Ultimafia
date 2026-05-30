@@ -23,6 +23,8 @@ export default function CreateMafiaSetup() {
       ref: "closed",
       type: "boolean",
       groupName: "Closed Roles Settings",
+      groupTooltip: "How roles are assigned and managed in the game",
+      infoTooltip: "Players don't know what roles exist in the game",
     },
     {
       label: "Unique Roles",
@@ -30,6 +32,7 @@ export default function CreateMafiaSetup() {
       type: "boolean",
       groupName: "Closed Roles Settings",
       showIf: "closed",
+      infoTooltip: "Each role can appear only once in the setup",
     },
     {
       label: "Unique Without Modifier",
@@ -37,6 +40,8 @@ export default function CreateMafiaSetup() {
       type: "boolean",
       groupName: "Closed Roles Settings",
       showIf: "unique",
+      infoTooltip:
+        "When unique, treats roles with different modifiers as the same role (e.g. Doctor and Doctor (Retired))",
     },
     {
       label: "Role Groups",
@@ -44,6 +49,8 @@ export default function CreateMafiaSetup() {
       type: "boolean",
       groupName: "Closed Roles Settings",
       showIf: "closed",
+      infoTooltip:
+        "Roles are grouped into categories instead of listing exact roles",
     },
     {
       label: "Village Count",

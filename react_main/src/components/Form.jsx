@@ -52,6 +52,13 @@ function FormField({
 }) {
   const separateLabel = forceSeparateLabel || (field.type !== "boolean" && !compact);
   const isUnsaved = deps !== undefined && deps[field.saveBtnDiffer] !== field.value;
+  const tooltipIcon = field.infoTooltip ? (
+    <Tooltip title={field.infoTooltip}>
+      <IconButton size="small" sx={{ p: 0.25 }}>
+        <i className="fas fa-info-circle" />
+      </IconButton>
+    </Tooltip>
+  ) : null;
 
   const unsavedIndicator = (
     <>
@@ -120,6 +127,7 @@ function FormField({
           >
             {field.label}
           </Typography>
+          {tooltipIcon}
           {unsavedIndicator}
           {buttons}
         </Stack>
@@ -185,6 +193,9 @@ export default function Form({
   }, {});
 
   const groupedFormFields = Object.keys(formFieldGroups).map((group) => {
+    const groupTooltip =
+      formFieldGroups[group].find((field) => field.groupTooltip)?.groupTooltip ||
+      null;
     const formFields = formFieldGroups[group].map((field) => {
       const disabled =
         typeof field.disabled == "function"
@@ -379,6 +390,18 @@ export default function Form({
             </FormField>
           );
         case "boolean":
+          const booleanLabel = (
+            <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
+              <Typography>{field.label}</Typography>
+              {field.infoTooltip && (
+                <Tooltip title={field.infoTooltip}>
+                  <IconButton size="small" sx={{ p: 0.25 }}>
+                    <i className="fas fa-info-circle" />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Stack>
+          );
           return (
             <FormField
               field={field}
@@ -387,7 +410,7 @@ export default function Form({
               key={field.ref}
             >
               <FormControlLabel
-                label={field.label}
+                label={booleanLabel}
                 control={
                   <Checkbox
                     defaultChecked={field.value || false}
@@ -572,13 +595,26 @@ export default function Form({
     const groupFormFields = (
       <Stack direction="column" spacing={1} key={group}>
         {group !== UNGROUPED_NAME && (
-          <Typography variant="h2" sx={{
-            borderBottom: 1,
-            borderColor: "divider",
-            pt: 1,
-          }}>
-            {group}
-          </Typography>
+          <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
+            <Typography
+              variant="h2"
+              sx={{
+                borderBottom: 1,
+                borderColor: "divider",
+                pt: 1,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {group}
+            </Typography>
+            {groupTooltip && (
+              <Tooltip title={groupTooltip}>
+                <IconButton size="small" sx={{ p: 0.25 }}>
+                  <i className="fas fa-info-circle" />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Stack>
         )}
         <Box sx={{
           maxWidth: !isPhoneDevice && halfWidth ? "50%" : undefined,

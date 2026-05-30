@@ -713,16 +713,29 @@ module.exports = class MafiaGame extends Game {
 
   createNextStateTimer(stateInfo) {
     let length = stateInfo.length;
+    const isSpeedRounds = Boolean(this.getGameSetting("Speed Rounds"));
+
+    if (isSpeedRounds && stateInfo.name === "Day") {
+      length = Random.randInt(20, 25) * 1000;
+    } else if (isSpeedRounds && stateInfo.name === "Night") {
+      length = Random.randInt(5, 8) * 1000;
+    }
+
     let totalPlayers = this.players.length;
     let alivePlayers = this.alivePlayers().length;
     if (
+      !isSpeedRounds &&
       this.getStateName() == "Day" &&
       this.isTimerScaling() &&
       totalPlayers - 1 > alivePlayers
     ) {
       length = Math.ceil((length * alivePlayers) / totalPlayers);
     }
-    if (this.getStateName() == "Day" && this.TimerDecayAmount > 0) {
+    if (
+      !isSpeedRounds &&
+      this.getStateName() == "Day" &&
+      this.TimerDecayAmount > 0
+    ) {
       length = length - this.TimerDecayAmountTotal;
       this.TimerDecayAmountTotal += this.TimerDecayAmount;
       if (length < 1000 * 60) {
