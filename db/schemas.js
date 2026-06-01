@@ -91,6 +91,7 @@ var schemas = {
       textColor: String,
       warnTextColor: String,
       ignoreTextColor: { type: Boolean, default: false },
+      accessibleNameColors: { type: Boolean, default: false },
       nameColor: String,
       warnNameColor: String,
       onlyFriendDMs: { type: Boolean, default: false },
