@@ -139,6 +139,29 @@ module.exports = class Player {
     var speechPast = [];
     var votePast = [];
 
+    const sendRankedCompetitiveChatCooldown = (meetingId) => {
+      const cooldownMs =
+        this.game.started && (this.game.ranked || this.game.competitive)
+          ? constants.rankedCompetitiveMsgCooldownMs
+          : 0;
+
+      if (!cooldownMs || !Spam.isFixedCooldownActive(speechPast, cooldownMs)) {
+        return false;
+      }
+
+      const sentAt = Date.now();
+      this.send("speakCooldown", {
+        meetingId,
+        sentAt,
+        cooldownMs: Spam.getFixedCooldownRemainingMs(
+          speechPast,
+          cooldownMs,
+          sentAt
+        ),
+      });
+      return true;
+    };
+
     socket.on("readyCheck verify", () => {
         try {
             this.game.playerReady(this);
@@ -192,6 +215,8 @@ module.exports = class Player {
           });
           return;
         }
+
+        if (sendRankedCompetitiveChatCooldown(message.meetingId)) return;
 
         if (
           message.content[0] == "/" &&
@@ -256,6 +281,8 @@ module.exports = class Player {
           });
           return;
         }
+
+        if (sendRankedCompetitiveChatCooldown(quote.toMeetingId)) return;
 
         speechPast.push(Date.now());
 

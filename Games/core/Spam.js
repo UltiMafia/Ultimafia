@@ -54,4 +54,15 @@ module.exports = class Spam {
 
     return maxCooldownMs;
   }
+
+  static getFixedCooldownRemainingMs(past, cooldownMs, now = Date.now()) {
+    if (!cooldownMs || past.length === 0) return 0;
+
+    const elapsed = now - past[past.length - 1];
+    return Math.max(0, cooldownMs - elapsed);
+  }
+
+  static isFixedCooldownActive(past, cooldownMs, now = Date.now()) {
+    return this.getFixedCooldownRemainingMs(past, cooldownMs, now) > 0;
+  }
 };
