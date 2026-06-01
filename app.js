@@ -47,6 +47,7 @@ const csrf = require("./modules/csrf");
 const passport = require("passport");
 
 const app = express();
+const frontendBuildPath = path.join(__dirname, "react_main/build_public");
 
 app.use(morgan("combined", { stream: logger.stream }));
 app.use(express.json());
@@ -107,6 +108,7 @@ apiRouter.use("/site-activity", siteActivityRouter);
 apiRouter.use("/fanart", fanartRouter);
 
 app.use("/api", apiRouter);
+app.use(express.static(frontendBuildPath));
 
 // Seed default word decks once the mongoose connection is established.
 db.promise
@@ -114,7 +116,7 @@ db.promise
   .catch((e) => console.error("Default deck seeding failed", e));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "react_main/build_public/index.html"));
+  res.sendFile(path.join(frontendBuildPath, "index.html"));
 });
 
 app.all("/*", function (req, res, next) {

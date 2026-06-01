@@ -246,7 +246,7 @@ export function useModCommands(argValues, commandRan, setResults) {
       },
     },
     "Remove User from Group": {
-      perm: "removeFromGroup",
+      perm: "giveGroup",
       category: "Group Management",
       args: [
         {
@@ -1439,32 +1439,6 @@ export function useModCommands(argValues, commandRan, setResults) {
           })
           .then(() => {
             siteInfo.showAlert("Contributor credit updated.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Manage Donor Status": {
-      perm: "changeUsersName",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/toggleDonor", { userId: argValues.userId })
-          .then((res) => {
-            const assigned = res.data?.isDonor === true;
-            siteInfo.showAlert(
-              assigned
-                ? "Donor status assigned."
-                : "Donor status removed.",
-              "success"
-            );
             commandRan();
           })
           .catch(errorAlert);

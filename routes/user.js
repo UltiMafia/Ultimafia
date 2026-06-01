@@ -106,6 +106,7 @@ router.get("/info", async function (req, res) {
     user.perms = (await redis.getUserPermissions(userId)) || {};
     user.rank = String(user.perms.rank || 0);
     user.perms = user.perms.perms || {};
+    user.isDonor = await redis.userInDonorGroup(userId);
     delete user.status;
 
     res.send(user);
@@ -1898,6 +1899,14 @@ router.post("/settings/update", async function (req, res) {
     if (prop === "fontFamily" && !["default", "system", "readable"].includes(value)) {
       errors.badRequest(res, "Invalid font family setting.");
       return;
+    }
+
+    if (prop === "hideDonorBadge") {
+      if (!(await redis.userInDonorGroup(userId))) {
+        errors.forbidden(res, "Only donors can change this setting.");
+        return;
+      }
+      value = value === "true" || value === true ? "true" : "false";
     }
 
     var itemsOwned = await redis.getUserItemsOwned(userId);
