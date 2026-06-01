@@ -35,6 +35,10 @@ import { NameWithAvatar, StatusIcon } from "../User/User";
 import { UserContext } from "../../Contexts";
 import { MaxChatMessageLength } from "../../Constants";
 import { Time, UserText, useOnOutsideClick } from "../../components/Basic";
+import {
+  resolveDisplayNameColor,
+  resolveDisplayTextColor,
+} from "../../utils/accessibleNameColors";
 
 import "css/chat.css";
 
@@ -707,12 +711,26 @@ function Message(props) {
     socket.send("deleteMessage", message.id);
   }
 
-  const textColorOverride =
-    !user.settings?.ignoreTextColor &&
-    message.sender.settings &&
-    message.sender.settings.textColor
-      ? user.autoContrastColor(message.sender.settings.textColor)
-      : null;
+  const theme = useTheme();
+  const accessibleNameColors = user.settings?.accessibleNameColors;
+  const rawNameColor = message.sender.settings?.nameColor || null;
+  const rawTextColor = message.sender.settings?.textColor || null;
+
+  const textColorOverride = resolveDisplayTextColor({
+    accessibleNameColors,
+    ignoreTextColor: user.settings?.ignoreTextColor,
+    rawTextColor,
+    autoContrastColor: user.autoContrastColor.bind(user),
+    theme,
+  });
+
+  const nameColorOverride = resolveDisplayNameColor({
+    accessibleNameColors,
+    ignoreTextColor: user.settings?.ignoreTextColor,
+    rawNameColor,
+    autoContrastColor: user.autoContrastColor.bind(user),
+    theme,
+  });
 
   return (
     <Box
@@ -742,7 +760,10 @@ function Message(props) {
           id={message.sender.id}
           name={message.sender.name}
           avatar={message.sender.avatar}
-          color={message.sender.settings && message.sender.settings.nameColor}
+          color={nameColorOverride || ""}
+          nameColorSwatch={
+            accessibleNameColors && rawNameColor ? rawNameColor : undefined
+          }
           groups={message.sender.groups}
           vanityUrl={message.sender.vanityUrl}
           noLink={isSelf}

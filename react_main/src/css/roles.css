@@ -129,6 +129,54 @@
   right: -5px;
 }
 
+.role .modifier-modified-fourfold {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 1rem;
+  height: 1rem;
+  background-size: 100% 100%;
+  background-image: url("/src/images/modifiers/modified-fourfold.png");
+  image-rendering: crisp-edges;
+}
+
+.role.small .modifier-modified-fourfold {
+  top: -5px;
+  right: -5px;
+}
+
+.role .modifier-modified-quintuple {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 1rem;
+  height: 1rem;
+  background-size: 100% 100%;
+  background-image: url("/src/images/modifiers/modified-quintuple.png");
+  image-rendering: crisp-edges;
+}
+
+.role.small .modifier-modified-quintuple {
+  top: -5px;
+  right: -5px;
+}
+
+.role .modifier-modified-sextuple {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 1rem;
+  height: 1rem;
+  background-size: 100% 100%;
+  background-image: url("/src/images/modifiers/modified-sextuple.png");
+  image-rendering: crisp-edges;
+}
+
+.role.small .modifier-modified-sextuple {
+  top: -5px;
+  right: -5px;
+}
+
 .modifiers-select {
   display: flex;
   flex-flow: row;
