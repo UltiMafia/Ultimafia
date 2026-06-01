@@ -4,20 +4,5 @@
     "ghcr.io/devcontainers/features/node:1": {
       "version": "22.17.0"
     }
-  },
-  "forwardPorts": [80, 3000, 3001],
-  "portsAttributes": {
-    "3001": {
-      "label": "UltiMafia frontend (Rsbuild)",
-      "onAutoForward": "notify"
-    },
-    "80": {
-      "label": "UltiMafia frontend (docker 80→3001)",
-      "onAutoForward": "silent"
-    },
-    "3000": {
-      "label": "UltiMafia API",
-      "onAutoForward": "silent"
-    }
   }
 }
