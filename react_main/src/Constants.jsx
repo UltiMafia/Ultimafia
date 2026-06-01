@@ -81,7 +81,25 @@ export const RatingThresholds = {
   abandons: {},
 };
 
-export const MaxModifiersPerRole = 3;
+export const MaxModifiersPerRole = 6;
+
+/** CSS class on role icons when a role has multiple modifiers (2–6). */
+export const ModifiedRoleBadgeClasses = {
+  2: "modifier-modified-twice",
+  3: "modifier-modified-thrice",
+  4: "modifier-modified-fourfold",
+  5: "modifier-modified-quintuple",
+  6: "modifier-modified-sextuple",
+};
+
+export function getModifiedRoleBadgeClass(modifierCount) {
+  if (modifierCount <= 1) return null;
+  return (
+    ModifiedRoleBadgeClasses[
+      Math.min(modifierCount, MaxModifiersPerRole)
+    ] ?? ModifiedRoleBadgeClasses[MaxModifiersPerRole]
+  );
+}
 
 export const RequiredTotalForStats = 1;
 
