@@ -345,7 +345,7 @@ router.post("/removeFromGroup", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var groupName = routeUtils.capitalizeWords(String(req.body.groupName));
     var userIdToRemove = String(req.body.userId);
-    var perm = "removeFromGroup";
+    var perm = "giveGroup";
 
     var group = await models.Group.findOne({ name: groupName }).select("rank");
 
@@ -435,69 +435,6 @@ router.post("/assignCredit", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not update contributor credit. Please try again.");
-  }
-});
-
-router.post("/toggleDonor", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdTarget = String(req.body.userId || "").trim();
-    var perm = "changeUsersName";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    if (!userIdTarget) {
-      res.status(400);
-      res.send("User is required.");
-      return;
-    }
-
-    var donorGroup = await models.Group.findOne({ name: "Donor" }).select(
-      "_id"
-    );
-    if (!donorGroup) {
-      errors.notFound(res, "Donor group does not exist.");
-      return;
-    }
-
-    var userToUpdate = await models.User.findOne({
-      id: userIdTarget,
-      deleted: false,
-    }).select("_id");
-
-    if (!userToUpdate) {
-      errors.notFound(res, "User does not exist.");
-      return;
-    }
-
-    var inGroup = await models.InGroup.findOne({
-      user: userToUpdate._id,
-      group: donorGroup._id,
-    });
-
-    var nowDonor;
-    if (inGroup) {
-      await models.InGroup.deleteOne({ _id: inGroup._id }).exec();
-      nowDonor = false;
-    } else {
-      await new models.InGroup({
-        user: userToUpdate._id,
-        group: donorGroup._id,
-      }).save();
-      nowDonor = true;
-    }
-
-    await redis.cacheUserInfo(userIdTarget, true);
-    await redis.cacheUserPermissions(userIdTarget);
-
-    routeUtils.createModAction(userId, "Manage Donor Status", [
-      userIdTarget,
-      nowDonor ? "assigned" : "revoked",
-    ]);
-    res.json({ isDonor: nowDonor });
-  } catch (e) {
-    logger.error(e);
-    errors.serverError(res, "Could not update donor status. Please try again.");
   }
 });
 

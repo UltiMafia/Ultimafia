@@ -153,6 +153,25 @@ async function invalidateAllCachedUsers() {
   await deleteKeysByPattern("user:*:info:id");
 }
 
+function isSettingsFlagEnabled(settings, flag) {
+  const value = settings && settings[flag];
+  return value === true || value === "true";
+}
+
+async function userInDonorGroup(userId) {
+  const [donorGroup, user] = await Promise.all([
+    models.Group.findOne({ name: "Donor" }).select("_id").lean().exec(),
+    models.User.findOne({ id: userId, deleted: false }).select("_id").lean().exec(),
+  ]);
+
+  if (!donorGroup || !user) return false;
+
+  return !!(await models.InGroup.exists({
+    user: user._id,
+    group: donorGroup._id,
+  }));
+}
+
 async function cacheUserInfo(userId, reset) {
   var exists = await userCached(userId);
 
@@ -258,6 +277,9 @@ async function cacheUserInfo(userId, reset) {
       "id name rank badge badgeColor -_id"
     );
     var groups = inGroups.map((inGroup) => inGroup.toJSON().group);
+    if (isSettingsFlagEnabled(user.settings, "hideDonorBadge")) {
+      groups = groups.filter((group) => group.name !== "Donor");
+    }
     await client.setAsync(`user:${userId}:info:groups`, JSON.stringify(groups));
   }
 
@@ -1595,6 +1617,7 @@ module.exports = {
   getUserInfo,
   getUserInfoBulk,
   getBasicUserInfo,
+  userInDonorGroup,
   getUserName,
   getUserStatus,
   getBlockedUsers,

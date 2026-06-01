@@ -665,6 +665,15 @@ export default function Settings() {
         type: "boolean",
         groupName: "Stat Hiding",
       },
+      {
+        label: "Hide Donor Badge",
+        ref: "hideDonorBadge",
+        type: "boolean",
+        groupName: "Profile",
+        showIf: (deps) => deps.user.isDonor,
+        extraInfo:
+          "Hide the donor heart badge on your profile and posts. You will remain in the Donor group and on the Donors page.",
+      },
     ],
     [accounts]
   );
@@ -1236,7 +1245,20 @@ export default function Settings() {
           prop: action.ref,
           value: action.value,
         })
-        .then(() => user.updateSetting(action.ref, action.value))
+        .then(() => {
+          user.updateSetting(action.ref, action.value);
+          if (action.ref === "hideDonorBadge") {
+            axios.get("/api/user/info").then((res) => {
+              if (res.data.id) {
+                user.set(
+                  update(user, {
+                    groups: { $set: res.data.groups || [] },
+                  })
+                );
+              }
+            });
+          }
+        })
         .catch(errorAlert);
     }
     update(action);

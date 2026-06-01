@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import axios from "axios";
 import {
   Typography,
@@ -10,11 +10,13 @@ import {
   Stack,
   Button,
   Link,
+  IconButton,
+  Popover,
 } from "@mui/material";
 import { useErrorAlert } from "../../components/Alerts";
 import { UserContext, SiteInfoContext } from "../../Contexts";
 import { Avatar } from "../User/User";
-import { TextEditor } from "../../components/Form";
+import { TextEditor, UserSearchSelect } from "../../components/Form";
 import CustomMarkdown from "../../components/CustomMarkdown";
 
 export default function Donors(props) {
@@ -24,13 +26,14 @@ export default function Donors(props) {
   const [loaded, setLoaded] = useState(false);
   const [editingDonor, setEditingDonor] = useState(null);
   const [editBio, setEditBio] = useState("");
+  const [addAnchor, setAddAnchor] = useState(null);
+  const [addSelectKey, setAddSelectKey] = useState(0);
 
   const errorAlert = useErrorAlert();
+  const canManageDonors = Boolean(user?.perms?.giveGroup);
 
-  useEffect(() => {
-    document.title = "Donors | UltiMafia";
-
-    axios
+  const fetchDonors = useCallback(() => {
+    return axios
       .get("/api/site/donors")
       .then((res) => {
         const data = Array.isArray(res.data) ? res.data : [];
@@ -42,7 +45,44 @@ export default function Donors(props) {
         setLoaded(true);
         errorAlert(e);
       });
-  }, []);
+  }, [errorAlert]);
+
+  useEffect(() => {
+    document.title = "Donors | UltiMafia";
+    fetchDonors();
+  }, [fetchDonors]);
+
+  function openAddPopover(event) {
+    setAddAnchor(event.currentTarget);
+    setAddSelectKey((k) => k + 1);
+  }
+
+  function closeAddPopover() {
+    setAddAnchor(null);
+  }
+
+  function addDonor(userId) {
+    if (!userId) return;
+
+    axios
+      .post("/api/mod/addToGroup", { groupName: "Donor", userId })
+      .then(() => {
+        siteInfo.showAlert("Donor status assigned.", "success");
+        closeAddPopover();
+        fetchDonors();
+      })
+      .catch(errorAlert);
+  }
+
+  function removeDonor(userId) {
+    axios
+      .post("/api/mod/removeFromGroup", { groupName: "Donor", userId })
+      .then(() => {
+        siteInfo.showAlert("Donor status removed.", "success");
+        fetchDonors();
+      })
+      .catch(errorAlert);
+  }
 
   if (!loaded) {
     return (
@@ -120,19 +160,38 @@ export default function Donors(props) {
           }}
           onClick={() => handleCardClick(donor)}
         >
-          {isOwn && !isEditing && (
+          {(canManageDonors || (isOwn && !isEditing)) && (
             <Box
               sx={{
                 position: "absolute",
                 top: 8,
                 right: 8,
                 zIndex: 1,
+                display: "flex",
+                alignItems: "center",
+                gap: 0.5,
               }}
             >
-              <i
-                className="fas fa-pencil-alt"
-                style={{ fontSize: "16px", opacity: 0.7 }}
-              />
+              {isOwn && !isEditing && (
+                <i
+                  className="fas fa-pencil-alt"
+                  style={{ fontSize: "16px", opacity: 0.7 }}
+                />
+              )}
+              {canManageDonors && (
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeDonor(donor.id);
+                  }}
+                  sx={{ color: "error.main" }}
+                  title="Remove donor status"
+                  aria-label={`Remove ${donor.name} from donors`}
+                >
+                  <i className="fas fa-times" />
+                </IconButton>
+              )}
             </Box>
           )}
           <CardContent>
@@ -248,9 +307,27 @@ export default function Donors(props) {
   return (
     <>
       <Box mb={4}>
-        <Typography variant="h2" gutterBottom>
-          Donors
-        </Typography>
+        <Stack
+          direction="row"
+          spacing={1}
+          alignItems="center"
+          sx={{ mb: 1 }}
+        >
+          <Typography variant="h2" gutterBottom sx={{ mb: 0 }}>
+            Donors
+          </Typography>
+          {canManageDonors && (
+            <IconButton
+              size="small"
+              onClick={openAddPopover}
+              sx={{ color: "primary.main" }}
+              title="Assign donor status"
+              aria-label="Assign donor status"
+            >
+              <i className="fas fa-plus" />
+            </IconButton>
+          )}
+        </Stack>
         <Typography variant="body1" paragraph>
           This page exists to thank the many people who have financially
           supported UltiMafia at their own expense. If you have donated to
@@ -274,6 +351,27 @@ export default function Donors(props) {
       <Grid2 container spacing={1}>
         {donorCards}
       </Grid2>
+      <Popover
+        open={Boolean(addAnchor)}
+        anchorEl={addAnchor}
+        onClose={closeAddPopover}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        transformOrigin={{ vertical: "top", horizontal: "left" }}
+      >
+        <Box sx={{ p: 2, width: 280 }}>
+          <Typography variant="subtitle2" sx={{ mb: 1 }}>
+            Assign donor status
+          </Typography>
+          <UserSearchSelect
+            key={addSelectKey}
+            value=""
+            onChange={(userId) => {
+              if (userId) addDonor(userId);
+            }}
+            placeholder="Search user…"
+          />
+        </Box>
+      </Popover>
     </>
   );
 }
