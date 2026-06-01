@@ -227,10 +227,16 @@ export default function Rules() {
           be notified of the decision.
         </Typography>
         <Typography variant="body2" paragraph>
-          Note: You can only appeal reports that resulted in violations. Reports
+          You can only appeal reports that resulted in violations. Reports
           that were dismissed cannot be appealed. If you
           already have a pending appeal for a violation, you must wait for it
           to be reviewed before filing another appeal for the same violation.
+        </Typography>
+        <Typography variant="body2" paragraph>
+          Please note that a violation can only be appealed once. Please include 
+          as much detail and evidence that you can provide as low-effort appeals 
+          will not be taken seriously by the team and could result in a dismissal 
+          if detail is poor or lacking.
         </Typography>
       </TabPanel>
 
