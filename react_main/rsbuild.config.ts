@@ -29,9 +29,11 @@ export default defineConfig({
   },
   server: {
     port: 3001,
+    // Listen on all interfaces so Docker/Codespaces port forwarding works.
+    host: "0.0.0.0",
     proxy: {
-      "/api": "http://backend:3000",
-      "/uploads": "http://backend:3000",
+      "/api": process.env.RSBUILD_API_PROXY || "http://backend:3000",
+      "/uploads": process.env.RSBUILD_API_PROXY || "http://backend:3000",
     },
   },
 });
