@@ -1,5 +1,5 @@
 const models = require("../db/models");
-const redis = require("./redis");
+const redis = require("../modules/redis");
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const shortid = require("shortid");
