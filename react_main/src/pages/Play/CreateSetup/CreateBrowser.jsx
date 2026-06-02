@@ -490,10 +490,11 @@ export default function CreateSetup(props) {
   );
 
   function onAddModifier(mod) {
-    let tmpModifiers = modifiers.filter((m) => m);
-    if (tmpModifiers.length >= MaxModifiersPerRole) {
+    let index = modifiers.length;
+    if (index > 2) {
       return;
     }
+    let tmpModifiers = modifiers.filter((m) => m);
     tmpModifiers.push(mod);
     tmpModifiers = tmpModifiers.sort((a, b) => a.name.localeCompare(b.name));
     tmpModifiers = setModifiers(tmpModifiers);

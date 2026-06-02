@@ -2,7 +2,7 @@ import React, { useState, useContext, useRef, useEffect, useMemo } from "react";
 import { UserContext, SiteInfoContext } from "../Contexts";
 import { SearchBar } from "./Nav";
 import { hyphenDelimit } from "../utils";
-import { Alignments, getModifiedRoleBadgeClass } from "../Constants";
+import { Alignments } from "../Constants";
 import {
   Link,
   List,
@@ -594,20 +594,21 @@ export function RoleCount({
     // Determine which modifier icon to display
     let modifierIcon = null;
     if (modifiers && modifiers.trim()) {
-      const modifierCount =
-        roleData?.modifierNameList?.filter((m) => m).length || 0;
+      const modifierCount = roleData?.modifiers?.length || 0;
       if (modifierCount === 1) {
+        // Show the actual modifier icon
         const firstModifier = roleData.modifiers[0];
         modifierIcon = (
           <div
             className={`modifier modifier-${gameType}-${firstModifier.name}`}
           />
         );
-      } else {
-        const badgeClass = getModifiedRoleBadgeClass(modifierCount);
-        if (badgeClass) {
-          modifierIcon = <div className={badgeClass} />;
-        }
+      } else if (modifierCount === 2) {
+        // Show modified-twice icon
+        modifierIcon = <div className="modifier-modified-twice" />;
+      } else if (modifierCount >= 3) {
+        // Show modified-thrice icon
+        modifierIcon = <div className="modifier-modified-thrice" />;
       }
     }
 

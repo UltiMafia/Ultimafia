@@ -50,28 +50,3 @@ button:focus-visible,
 .game .player-list .player:focus-within {
   box-shadow: 0 0 0 2px #62a0db;
 }
-
-.name-color-swatch {
-  display: inline-block;
-  flex-shrink: 0;
-  border-radius: 50%;
-  border: 1px solid rgba(128, 128, 128, 0.45);
-  box-sizing: border-box;
-}
-
-.name-color-swatch-small {
-  width: 10px;
-  height: 10px;
-}
-
-.name-color-swatch-regular {
-  width: 12px;
-  height: 12px;
-}
-
-.avatar.avatar-rip-icon {
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  image-rendering: crisp-edges;
-}

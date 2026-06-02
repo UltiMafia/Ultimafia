@@ -13,6 +13,9 @@ import {
 
 import photographer from "images/roles/village/photographer-vivid.png";
 
+const PREVIEW_SIZE = 300;
+const OUTPUT_SIZE = 256;
+
 export default function AvatarUpload(props) {
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
@@ -26,6 +29,28 @@ export default function AvatarUpload(props) {
   const fileInputRef = useRef();
   const canvasRef = useRef();
   const imageRef = useRef();
+
+  function getDisplayMetrics(img, zoomValue) {
+    const baseScale = Math.max(
+      PREVIEW_SIZE / img.naturalWidth,
+      PREVIEW_SIZE / img.naturalHeight
+    );
+    const scaledWidth = img.naturalWidth * baseScale * zoomValue;
+    const scaledHeight = img.naturalHeight * baseScale * zoomValue;
+    return { baseScale, scaledWidth, scaledHeight };
+  }
+
+  function clampPosition(nextPosition, img, zoomValue) {
+    if (!img) return nextPosition;
+    const { scaledWidth, scaledHeight } = getDisplayMetrics(img, zoomValue);
+    const maxOffsetX = Math.max(0, (scaledWidth - PREVIEW_SIZE) / 2);
+    const maxOffsetY = Math.max(0, (scaledHeight - PREVIEW_SIZE) / 2);
+
+    return {
+      x: Math.max(-maxOffsetX, Math.min(maxOffsetX, nextPosition.x)),
+      y: Math.max(-maxOffsetY, Math.min(maxOffsetY, nextPosition.y)),
+    };
+  }
 
   const handleOpenUpload = () => {
     let shouldOpen = true;
@@ -74,10 +99,11 @@ export default function AvatarUpload(props) {
 
   const handleMouseMove = (e) => {
     if (isDragging) {
-      setPosition({
+      const nextPosition = {
         x: e.clientX - dragStart.x,
         y: e.clientY - dragStart.y,
-      });
+      };
+      setPosition(clampPosition(nextPosition, imageRef.current, zoom));
     }
   };
 
@@ -96,11 +122,13 @@ export default function AvatarUpload(props) {
 
   const handleTouchMove = (e) => {
     if (isDragging && e.touches[0]) {
+      e.preventDefault();
       const touch = e.touches[0];
-      setPosition({
+      const nextPosition = {
         x: touch.clientX - dragStart.x,
         y: touch.clientY - dragStart.y,
-      });
+      };
+      setPosition(clampPosition(nextPosition, imageRef.current, zoom));
     }
   };
 
@@ -114,34 +142,32 @@ export default function AvatarUpload(props) {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-    const previewSize = 300;
-    const outputSize = previewSize;
+    canvas.width = OUTPUT_SIZE;
+    canvas.height = OUTPUT_SIZE;
 
-    canvas.width = outputSize;
-    canvas.height = outputSize;
+    const image = imageRef.current;
+    const { baseScale } = getDisplayMetrics(image, zoom);
+    const activeScale = baseScale * zoom;
 
-    const img = imageRef.current;
-    // Display width is previewSize * zoom; map viewport pixels to source pixels
-    const pixelsPerDisplayPx = img.naturalWidth / (previewSize * zoom);
+    // Image top-left in preview coordinates after centering + drag
+    const imageLeft = (PREVIEW_SIZE - image.naturalWidth * activeScale) / 2 + position.x;
+    const imageTop = (PREVIEW_SIZE - image.naturalHeight * activeScale) / 2 + position.y;
 
-    const centerX = img.naturalWidth / 2 - position.x * pixelsPerDisplayPx;
-    const centerY = img.naturalHeight / 2 - position.y * pixelsPerDisplayPx;
-
-    const cropSizeInSourcePixels = previewSize * pixelsPerDisplayPx;
-
-    const sx = centerX - cropSizeInSourcePixels / 2;
-    const sy = centerY - cropSizeInSourcePixels / 2;
+    // Map preview square back into source image coordinates.
+    const sx = (0 - imageLeft) / activeScale;
+    const sy = (0 - imageTop) / activeScale;
+    const cropSizeInSourcePixels = PREVIEW_SIZE / activeScale;
 
     ctx.drawImage(
-      img,
+      image,
       sx,
       sy,
       cropSizeInSourcePixels,
       cropSizeInSourcePixels,
       0,
       0,
-      outputSize,
-      outputSize
+      OUTPUT_SIZE,
+      OUTPUT_SIZE
     );
 
     canvas.toBlob((blob) => {
@@ -165,6 +191,11 @@ export default function AvatarUpload(props) {
       img.src = imageUrl;
     }
   }, [imageUrl, cropDialogOpen]);
+
+  useEffect(() => {
+    if (!imageRef.current) return;
+    setPosition((prev) => clampPosition(prev, imageRef.current, zoom));
+  }, [zoom]);
 
   useEffect(() => {
     return () => {
@@ -283,8 +314,8 @@ export default function AvatarUpload(props) {
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2, py: 2 }}>
             <Box
               sx={{
-                width: 300,
-                height: 300,
+                width: PREVIEW_SIZE,
+                height: PREVIEW_SIZE,
                 margin: "0 auto",
                 position: "relative",
                 overflow: "hidden",
@@ -308,12 +339,15 @@ export default function AvatarUpload(props) {
                   alt="Preview"
                   style={{
                     position: "absolute",
-                    left: `calc(50% + ${position.x}px)`,
-                    top: `calc(50% + ${position.y}px)`,
-                    transform: "translate(-50%, -50%)",
+                    top: "50%",
+                    left: "50%",
+                    transform: `translate(calc(-50% + ${position.x}px), calc(-50% + ${position.y}px)) scale(${zoom})`,
+                    transformOrigin: "center",
                     maxWidth: "none",
-                    width: `${300 * zoom}px`,
+                    width: "auto",
                     height: "auto",
+                    minWidth: `${PREVIEW_SIZE}px`,
+                    minHeight: `${PREVIEW_SIZE}px`,
                     userSelect: "none",
                     pointerEvents: "none",
                   }}
@@ -324,7 +358,7 @@ export default function AvatarUpload(props) {
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 2, px: 2 }}>
               <IconButton
-                onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
+                onClick={() => setZoom((z) => Math.max(1, z - 0.1))}
                 size="small"
               >
                 -
@@ -332,13 +366,13 @@ export default function AvatarUpload(props) {
               <Slider
                 value={zoom}
                 onChange={(e, value) => setZoom(value)}
-                min={0.5}
+                min={1}
                 max={3}
                 step={0.1}
                 sx={{ flex: 1 }}
               />
               <IconButton
-                onClick={() => setZoom(Math.min(3, zoom + 0.1))}
+                onClick={() => setZoom((z) => Math.min(3, z + 0.1))}
                 size="small"
               >
                 +

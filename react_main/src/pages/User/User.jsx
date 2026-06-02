@@ -10,7 +10,6 @@ import Inbox from "./Inbox";
 import Family from "./Family";
 import { UserContext, SiteInfoContext, GameContext } from "Contexts";
 import AvatarUpload from "components/AvatarUpload";
-import ripEmote from "images/emotes/rip.webp";
 
 import "css/user.css";
 import { Time, youtubeRegex } from "components/Basic";
@@ -293,35 +292,6 @@ export default function User(props) {
   );
 }
 
-function RipAvatarIcon({ small, large, absoluteLeftAvatarPx }) {
-  let avatarSize = 40;
-  if (small) {
-    avatarSize = 20;
-  } else if (large) {
-    avatarSize = 100;
-  }
-
-  const style = {
-    display: "inline-block",
-    width: `${avatarSize}px`,
-    height: `${avatarSize}px`,
-    backgroundImage: `url(${ripEmote})`,
-    flexShrink: 0,
-  };
-
-  if (absoluteLeftAvatarPx) {
-    style.position = "absolute";
-    style.left = absoluteLeftAvatarPx;
-    if (!small) {
-      style.transform = "translateY(12px)";
-    }
-  } else {
-    style.position = "relative";
-  }
-
-  return <div className="avatar avatar-rip-icon" style={style} aria-hidden />;
-}
-
 export function Avatar(props) {
   const small = props.small;
   const mediumlarge = props.mediumlarge;
@@ -517,8 +487,6 @@ export function NameWithAvatar(props) {
   const large = props.large;
   const isSquare = props.isSquare;
   const subContent = props.subContent;
-  const ripAvatar = props.ripAvatar;
-  const nameColorSwatch = props.nameColorSwatch;
 
   const game = useContext(GameContext);
   const user = useContext(UserContext);
@@ -563,43 +531,25 @@ export function NameWithAvatar(props) {
         alignItems: "center",
       }}
     >
-      {ripAvatar ? (
-        <RipAvatarIcon
-          small={small}
-          large={large}
-          absoluteLeftAvatarPx={absoluteLeftAvatarPx}
-        />
-      ) : (
-        <Avatar
-          hasImage={avatar}
-          id={id}
-          avatarId={avatarId}
-          name={name}
-          small={small}
-          large={large}
-          isSquare={isSquare}
-          dead={dead}
-          active={active}
-          deckProfile={deckProfile}
-          absoluteLeftAvatarPx={absoluteLeftAvatarPx}
-        />
-      )}
+      <Avatar
+        hasImage={avatar}
+        id={id}
+        avatarId={avatarId}
+        name={name}
+        small={small}
+        large={large}
+        isSquare={isSquare}
+        dead={dead}
+        active={active}
+        deckProfile={deckProfile}
+        absoluteLeftAvatarPx={absoluteLeftAvatarPx}
+      />
       <Stack direction="column">
         <div
           className={`user-name ${props.dead ? "dead" : autoColor}`} 
           style={{ ...(autoColor ? { color: autoColor } : {}), display: "inline" }}
         >
           <Stack direction="row" spacing={0.5} alignItems="center">
-            {nameColorSwatch && (
-              <span
-                className={`name-color-swatch ${
-                  small ? "name-color-swatch-small" : "name-color-swatch-regular"
-                }`}
-                style={{ backgroundColor: nameColorSwatch }}
-                title="Name color"
-                aria-label="Name color"
-              />
-            )}
             <Typography>
               {name}
             </Typography>
