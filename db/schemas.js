@@ -1012,6 +1012,20 @@ var schemas = {
       linkedViolationTicketId: { type: String, index: true },
       linkedBanId: { type: String, index: true },
       linkedAppealId: { type: String, index: true },
+      aiRecommendation: {
+        isViolation: Boolean,
+        confidence: Number,
+        rule: String,
+        category: String,
+        reasoning: String,
+        recommendedAction: String,
+        banType: String,
+        banLength: String,
+        notes: String,
+        evaluatedAt: Number,
+        provider: String,
+        model: String,
+      },
       reopenedAt: { type: Number },
       reopenedBy: { type: String },
       reopenedCount: { type: Number, default: 0 },
@@ -1366,5 +1380,34 @@ schemas.ViolationTicket.index({ userId: 1, violationId: 1 });
 schemas.ViolationTicket.index({ userId: 1, activeUntil: 1 });
 schemas.ViolationTicket.index({ userId: 1, violationName: 1, activeUntil: 1 });
 schemas.PayPalShopOrder.index({ userId: 1, createdAt: -1 });
+
+// Post-save hook on Game to process any pending reports associated with this game when it ends
+schemas.Game.post("save", async function (doc) {
+  try {
+    const Report = mongoose.model("Report");
+    // Find all reports with this gameId that have not been completed or evaluated yet
+    const reports = await Report.find({
+      gameId: doc.id,
+      status: { $ne: "complete" },
+      $or: [
+        { aiRecommendation: { $exists: false } },
+        { aiRecommendation: null },
+        { "aiRecommendation.evaluatedAt": { $exists: false } },
+        { "aiRecommendation.evaluatedAt": null }
+      ]
+    });
+
+    if (reports.length > 0) {
+      const { moderateReport } = require("../modules/aiModeration");
+      for (const report of reports) {
+        moderateReport(report.id).catch((err) => {
+          console.error(`AI Moderation error triggered post-game-save for report ${report.id}:`, err);
+        });
+      }
+    }
+  } catch (err) {
+    console.error("Error in Game schema post-save AI moderation hook:", err);
+  }
+});
 
 module.exports = schemas;

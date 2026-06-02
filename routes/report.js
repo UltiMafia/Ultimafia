@@ -158,6 +158,12 @@ router.post("/send", async function (req, res) {
       );
     }
 
+    // Trigger AI auto-moderation asynchronously
+    const aiModeration = require("../modules/aiModeration");
+    aiModeration.moderateReport(report.id).catch((err) => {
+      logger.error("AI Moderation error:", err);
+    });
+
     try {
       // Only send Discord notification for new reports, not when merged into existing
       if (!merged) {

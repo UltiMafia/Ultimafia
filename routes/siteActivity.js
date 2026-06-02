@@ -488,7 +488,9 @@ async function fetchModActions(cutoff, limit) {
     contentPreview: truncate(
       [(r.args || []).join(" "), r.reason].filter(Boolean).join(" · ")
     ),
-    link: null,
+    link: (r.name && r.name.toLowerCase().includes("report") && r.args && r.args[0])
+      ? `/policy/moderation/reports/${r.args[0]}`
+      : null,
   }));
 }
 
@@ -507,7 +509,7 @@ async function fetchReports(cutoff, limit) {
     targetUserId: r.reportedUserId,
     targetLabel: r.status || null,
     contentPreview: "",
-    link: `/policy/moderation/reports`,
+    link: `/policy/moderation/reports/${r.id}`,
   }));
 }
 
@@ -844,7 +846,18 @@ router.get("/feed", async function (req, res) {
     const actorInfo = {};
     await Promise.all(
       actorIds.map(async (id) => {
-        actorInfo[id] = await getBasicUserInfo(id, true);
+        if (id === "AI Moderator") {
+          actorInfo[id] = {
+            id: "AI Moderator",
+            name: "AI Assistant",
+            avatar: false,
+            status: "online",
+            groups: [],
+            settings: {},
+          };
+        } else {
+          actorInfo[id] = await getBasicUserInfo(id, true);
+        }
       })
     );
 

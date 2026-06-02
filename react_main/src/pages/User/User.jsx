@@ -472,7 +472,7 @@ export function NameWithAvatar(props) {
   const id = props.id;
   const name = props.name || "[deleted]";
   const avatar = props.avatar;
-  const noLink = props.name ? props.noLink : true;
+  const noLink = props.name ? (id === "AI Moderator" ? true : props.noLink) : true;
   const color = props.color;
   const newTab = props.newTab;
   const small = props.small;
