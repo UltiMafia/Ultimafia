@@ -1,0 +1,26 @@
+{
+  "name": "Ultimafia",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22.17.0"
+    }
+  },
+  "forwardPorts": [80, 2999, 3000, 3001, 3010],
+  "portsAttributes": {
+    "3001": {
+      "label": "Frontend",
+      "onAutoForward": "openBrowser"
+    },
+    "3000": {
+      "label": "Backend"
+    },
+    "2999": {
+      "label": "Chat"
+    },
+    "3010": {
+      "label": "Games"
+    }
+  },
+  "postStartCommand": "docker compose -f docker-compose-core.yml -f docker-compose-dev.yml up -d"
+}
