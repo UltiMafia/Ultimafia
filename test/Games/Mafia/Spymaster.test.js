@@ -124,6 +124,33 @@ describe("Games/Mafia/Spymaster", function () {
     noKill.shouldDisableMeeting("Mafia Action").should.be.false;
   });
 
+  it("skips Team Approval and Mission without Spymaster", async function () {
+    await db.promise;
+    await redis.client.flushdbAsync();
+
+    const game = await makeGame({
+      total: 5,
+      roles: [{ Villager: 4, Mafioso: 1 }],
+    });
+    await waitForResult(() => game.started);
+
+    game.ResistanceMode.should.not.be.true;
+    game.shouldSkipState("Team Approval").should.be.true;
+    game.shouldSkipState("Mission").should.be.true;
+
+    const teamApproval = game.states.find((s) => s.name === "Team Approval");
+    const mission = game.states.find((s) => s.name === "Mission");
+    teamApproval.skipChecks[0].call(game).should.be.true;
+    mission.skipChecks[0].call(game).should.be.true;
+
+    game.ResistanceMode = true;
+    teamApproval.skipChecks[0].call(game).should.be.false;
+    mission.skipChecks[0].call(game).should.be.false;
+
+    game.currentTeamFail = true;
+    mission.skipChecks[0].call(game).should.be.true;
+  });
+
   it("skips Day and runs Team Approval after Dawn", async function () {
     await db.promise;
     await redis.client.flushdbAsync();

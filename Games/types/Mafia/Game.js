@@ -76,11 +76,18 @@ module.exports = class MafiaGame extends Game {
         name: "Team Approval",
         length:
           options.settings.stateLengths["Team Approval"] || 1000 * 60,
+        skipChecks: [function () {
+          return !this.ResistanceMode;
+        }],
       },
       {
         name: "Mission",
         length: options.settings.stateLengths["Mission"] || 1000 * 60,
-        skipChecks: [() => this.currentTeamFail],
+        skipChecks: [
+          function () {
+            return !this.ResistanceMode || this.currentTeamFail;
+          },
+        ],
       },
     ];
     this.useObituaries = true;
