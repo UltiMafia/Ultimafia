@@ -17,6 +17,7 @@ export const FeaturedSetup = ({ lobby, glowingHostButton }) => {
 
   // Fetch the featured setup for this lobby
   useEffect(() => {
+    isMountedRef.current = true;
     var featuredCategory = "main";
 
     if (lobby === "Games") {

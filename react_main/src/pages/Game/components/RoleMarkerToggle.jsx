@@ -39,6 +39,7 @@ export default function RoleMarkerToggle({
       <div
         className="role-marker"
         ref={roleMarkerRef}
+        onClick={handleClick}
         {...getKeyboardActivationProps(handleClick, {
           ariaLabel: "Mark player role",
           ariaHaspopup: true,

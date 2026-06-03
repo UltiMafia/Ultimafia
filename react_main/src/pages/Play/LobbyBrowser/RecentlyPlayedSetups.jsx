@@ -30,6 +30,7 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
   const isPhoneDevice = useIsPhoneDevice();
 
   useEffect(() => {
+    isMountedRef.current = true;
     if (lobby !== "Competitive") {
       getRecentlyPlayedSetups({ lobby }).then((playedSetups) => {
         if (isMountedRef.current) {
