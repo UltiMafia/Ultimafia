@@ -850,6 +850,14 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
           type: "start",
           date: startDate,
         };
+      } else if (roundInfo.round.openPhaseEndedAt) {
+        roundInfo.nextEvent = {
+          type: "graceEnd",
+          date: new Date(
+            roundInfo.round.openPhaseEndedAt +
+              constants.competitiveHeartGracePeriodMillis
+          ),
+        };
       } else {
         endOfRoundDay.setUTCDate(
           startDate.getUTCDate() +
