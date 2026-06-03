@@ -70,6 +70,11 @@ app.use(
   "/uploads",
   express.static(path.join(__dirname, process.env.UPLOAD_PATH), {
     maxAge: "1h",
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith("_avatar.webp")) {
+        res.setHeader("Cache-Control", "no-cache");
+      }
+    },
   })
 );
 
