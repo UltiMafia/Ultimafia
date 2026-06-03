@@ -594,16 +594,21 @@ export function RoleCount({
     // Determine which modifier icon to display
     let modifierIcon = null;
     if (modifiers && modifiers.trim()) {
-      const modifierCount =
-        roleData?.modifierNameList?.filter((m) => m).length || 0;
+      const modifierNames = (roleData?.modifierNameList || []).filter(
+        Boolean
+      );
+      const modifierCount = modifierNames.length;
       if (modifierCount === 1) {
-        const firstModifier = roleData.modifiers[0];
-        modifierIcon = (
-          <div
-            className={`modifier modifier-${gameType}-${firstModifier.name}`}
-          />
-        );
-      } else {
+        const firstModifierName =
+          roleData?.modifiers?.[0]?.name ?? modifierNames[0];
+        if (firstModifierName) {
+          modifierIcon = (
+            <div
+              className={`modifier modifier-${gameType}-${firstModifierName}`}
+            />
+          );
+        }
+      } else if (modifierCount > 1) {
         const badgeClass = getModifiedRoleBadgeClass(modifierCount);
         if (badgeClass) {
           modifierIcon = <div className={badgeClass} />;
