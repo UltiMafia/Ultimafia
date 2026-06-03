@@ -1463,10 +1463,25 @@ export function ThreePanelLayout({
   );
 }
 
+function getSpeechMeetings(meetings, isSpectator) {
+  return Object.values(meetings || {}).filter(
+    (meeting) =>
+      meeting.speech &&
+      (isSpectator || meeting.name !== "Spectator Meeting")
+  );
+}
+
+function getDefaultSpeechMeetingId(speechMeetings) {
+  const meeting =
+    speechMeetings.find((m) => m.name !== "Spectator Meeting") ||
+    speechMeetings[0];
+  return meeting?.id;
+}
+
 export function TextMeetingLayout() {
   const game = useContext(GameContext);
   const { singleState } = useContext(GameTypeContext);
-  const { isolationEnabled, isolatedPlayers } = game;
+  const { isolationEnabled, isolatedPlayers, isSpectator } = game;
   const { history, players, stateViewing, updateHistory, settings, filters, spectators } =
     game;
 
@@ -1483,9 +1498,7 @@ export function TextMeetingLayout() {
   const speechDisplayRef = useRef();
   const hasMouse = useMediaQuery("(pointer:fine)");
 
-  const speechMeetings = Object.values(meetings).filter(
-    (meeting) => meeting.speech
-  );
+  const speechMeetings = getSpeechMeetings(meetings, isSpectator);
 
   function onTabChange(event, newValue) {
     updateHistory({
@@ -1501,15 +1514,22 @@ export function TextMeetingLayout() {
   useEffect(() => {
     if (stateViewing == null || !speechMeetings.length) return;
 
-    const selTabMissing = selTab && !meetings[selTab];
-    if (!selTab || selTabMissing) {
+    const visibleSpeechMeetings = getSpeechMeetings(meetings, isSpectator);
+    const selTabMeeting = selTab ? meetings[selTab] : null;
+    const selTabMissing =
+      (selTab && !selTabMeeting) ||
+      (selTabMeeting &&
+        !visibleSpeechMeetings.some((meeting) => meeting.id === selTab));
+
+    const defaultMeetingId = getDefaultSpeechMeetingId(speechMeetings);
+    if ((!selTab || selTabMissing) && defaultMeetingId) {
       updateHistory({
         type: "selTab",
         state: stateViewing,
-        meetingId: speechMeetings[0].id,
+        meetingId: defaultMeetingId,
       });
     }
-  }, [stateViewing, speechMeetings, selTab]);
+  }, [stateViewing, speechMeetings, selTab, meetings, isSpectator]);
 
   useEffect(() => {
     if (stateViewing === history.currentState) setAutoScroll(true);

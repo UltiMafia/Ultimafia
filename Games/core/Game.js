@@ -389,7 +389,10 @@ module.exports = class Game {
 
   getMeeting(meetingId, state) {
     state = state == null ? this.currentState : state;
-    return this.history.states[state].meetings[meetingId];
+    let meeting = this.history.states[state]?.meetings[meetingId];
+    if (meeting) return meeting;
+
+    return this.spectatorHistory.states[state]?.meetings[meetingId];
   }
 
   getMeetingByName(name) {
@@ -2423,9 +2426,13 @@ module.exports = class Game {
     var meeting = typeof type == "function" ? type : this.getMeetingClass(type);
     meeting = new meeting(this, name);
 
-    this.history.addMeeting(meeting);
+    if (!this.isSpectatorOnlyMeeting(meeting))
+      this.history.addMeeting(meeting);
 
-    if (this.isSpectatorMeeting(meeting))
+    if (
+      this.isSpectatorOnlyMeeting(meeting) ||
+      this.isSpectatorMeeting(meeting)
+    )
       this.spectatorHistory.addMeeting(meeting);
 
     return meeting;
@@ -2457,7 +2464,11 @@ module.exports = class Game {
   }
 
   removeMeeting(meeting) {
-    this.history.removeMeeting(meeting);
+    if (!this.isSpectatorOnlyMeeting(meeting))
+      this.history.removeMeeting(meeting);
+
+    if (this.isSpectatorOnlyMeeting(meeting))
+      this.spectatorHistory.removeMeeting(meeting);
   }
 
   checkAllMeetingsReady() {
@@ -2514,6 +2525,10 @@ module.exports = class Game {
 
   finishMeetings() {
     for (let meeting of this.meetings) if (!meeting.finished) meeting.finish();
+  }
+
+  isSpectatorOnlyMeeting(meeting) {
+    return meeting.name === "Spectator Meeting";
   }
 
   isSpectatorMeeting(meeting) {
