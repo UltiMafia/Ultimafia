@@ -1,3 +1,4 @@
+require("dotenv").config();
 const mongoose = require("mongoose");
 const oHash = require("object-hash");
 const models = require("../db/models");
