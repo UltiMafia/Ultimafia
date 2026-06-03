@@ -5,16 +5,18 @@ export const useLoading = ({ minLoadingTime } = {}) => {
   const [isFakeLoading, setIsFakeLoading] = useState(false);
 
   useEffect(() => {
-    let timeout;
-    if (value) {
-      setIsFakeLoading(true);
-      timeout = setTimeout(
-        () => setIsFakeLoading(false),
-        minLoadingTime ?? 200
-      );
+    if (!value) {
+      setIsFakeLoading(false);
+      return;
     }
 
-    return () => timeout && clearTimeout(timeout);
+    setIsFakeLoading(true);
+    const timeout = setTimeout(
+      () => setIsFakeLoading(false),
+      minLoadingTime ?? 200
+    );
+
+    return () => clearTimeout(timeout);
   }, [value, minLoadingTime]);
 
   const setLoading = (newValue) => {

@@ -17,17 +17,23 @@ export const DailyChallenges = () => {
   }
 
   const dailyRows = dailys.map((quest) => {
-    //quest[0]
-    let thing = Object.entries(DailyChallengeData).filter(
-      (DailyChallenge) => quest[0] == DailyChallenge[1].ID
+    const thing = Object.entries(DailyChallengeData).find(
+      ([, data]) => quest[0] == data.ID
     );
-    let name = thing[0][0].replace(`ExtraData`, quest[2]);
-    let description = thing[0][1].description.replace(`ExtraData`, quest[2]);
-    let reward = thing[0][1].reward;
-    let isRole = thing[0][1].extraData == "Role Name";
+    if (!thing) return null;
+
+    const [, challengeData] = thing;
+    const name = thing[0].replace(`ExtraData`, quest[2]);
+    const description = challengeData.description.replace(
+      `ExtraData`,
+      quest[2]
+    );
+    const reward = challengeData.reward;
+    const isRole = challengeData.extraData == "Role Name";
 
     return (
       <Box
+        key={quest.join(":")}
         sx={{
           pt: 0.5,
         }}
@@ -82,7 +88,7 @@ export const DailyChallenges = () => {
         spacing={1}
         divider={<Divider orientation="horizontal" flexItem />}
       >
-        {dailyRows}
+        {dailyRows.filter(Boolean)}
       </Stack>
     </LobbySidebarPanel>
   );

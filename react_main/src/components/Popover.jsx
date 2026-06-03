@@ -267,7 +267,9 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
   result.push(<InfoRow title="ID" content={setup.id} key="setupId" />);
 
   const IMPORTANT_GAME_SETTINGS = ["Whispers"];
-  let settings = siteInfo.gamesettings[setup.gameType].map((gameSetting) => {
+  const gameSettingsList = siteInfo.gamesettings?.[setup.gameType];
+  let settings = (gameSettingsList || []).map((gameSetting) => {
+    if (!gameSetting) return;
     let setupValue = setup.gameSettings[gameSetting.name];
     if (setupValue === undefined) {
       setupValue = false;
@@ -839,7 +841,7 @@ export function parseGamePopover(game) {
   //State lengths
   const stateLengths = [];
 
-  for (let stateName of GameStates[game.type]) {
+  for (let stateName of GameStates[game.type] || []) {
     stateLengths.push(
       <InfoRow
         title={stateName}
