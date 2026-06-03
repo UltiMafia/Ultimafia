@@ -205,6 +205,14 @@ async function awardRoundTrophy(seasonNumber, roundNumber, userId) {
 }
 
 async function confirmStandings(seasonNumber, roundNumber) {
+  const season = await models.CompetitiveSeason.findOne({
+    number: seasonNumber,
+  })
+    .select("numRounds")
+    .lean();
+
+  const awardRoundCrownTrophy = season?.numRounds !== 1;
+
   const roundInfo = await redis.getCompRoundInfo(
     seasonNumber,
     roundNumber,
@@ -263,8 +271,9 @@ async function confirmStandings(seasonNumber, roundNumber) {
       console.error(`[confirmStandings]: Error updating championship points for ${userId}`, e);
     }
 
-    // if the user got first place, then award them a round trophy
-    if (roundStanding.ranking === 0) {
+    // Round winners earn a crown trophy; single-round seasons skip this and
+    // award gold/silver/bronze at endSeason instead.
+    if (roundStanding.ranking === 0 && awardRoundCrownTrophy) {
       try {
         await awardRoundTrophy(seasonNumber, roundNumber, userId);
       }
