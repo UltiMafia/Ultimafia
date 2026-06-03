@@ -1234,7 +1234,7 @@ export function TopBar() {
           {buttonGroup}
         </Stack>
         <Typography variant="h3">
-          {game.setup.name}
+          {game.setup?.name}
         </Typography>
         <SetupInfo
           setup={game.setup}
@@ -1499,14 +1499,17 @@ export function TextMeetingLayout() {
   useEffect(() => doAutoScroll());
 
   useEffect(() => {
-    if (stateViewing != null && !selTab && speechMeetings.length) {
+    if (stateViewing == null || !speechMeetings.length) return;
+
+    const selTabMissing = selTab && !meetings[selTab];
+    if (!selTab || selTabMissing) {
       updateHistory({
         type: "selTab",
         state: stateViewing,
         meetingId: speechMeetings[0].id,
       });
     }
-  }, [stateViewing, speechMeetings]);
+  }, [stateViewing, speechMeetings, selTab]);
 
   useEffect(() => {
     if (stateViewing === history.currentState) setAutoScroll(true);
@@ -1656,15 +1659,19 @@ export function TextMeetingLayout() {
     game.pinnedMessages,
   ]);
 
-  var canSpeak = selTab;
+  const activeMeeting = selTab ? meetings[selTab] : null;
+
+  var canSpeak = activeMeeting;
   canSpeak =
     canSpeak &&
-    (meetings[selTab].members.length > 1 || history.currentState == -1 || meetings[selTab].name == "Spectator Meeting");
+    (activeMeeting.members.length > 1 ||
+      history.currentState == -1 ||
+      activeMeeting.name == "Spectator Meeting");
   canSpeak =
     canSpeak &&
     stateViewing === history.currentState &&
-    (meetings[selTab].amMember &&
-    meetings[selTab].canTalk);
+    activeMeeting.amMember &&
+    activeMeeting.canTalk;
   return (
     <>
       <Box
@@ -1820,7 +1827,7 @@ function getMessagesToDisplay(
 ) {
   var messages;
 
-  if (selTab) messages = [...meetings[selTab].messages];
+  if (selTab && meetings[selTab]) messages = [...meetings[selTab].messages];
   else messages = [];
 
   if (filters && (filters.from || filters.contains))
@@ -1891,7 +1898,7 @@ function getMessagesToDisplay(
 
   var voteRecord;
 
-  if (selTab) voteRecord = meetings[selTab].voteRecord;
+  if (selTab && meetings[selTab]) voteRecord = meetings[selTab].voteRecord;
   else voteRecord = [];
 
   for (let meetingId in meetings)
@@ -2542,9 +2549,9 @@ function SpeechInput(props) {
   }
 
   useEffect(() => {
-    if (!selTab) return <></>;
+    if (!selTab || !meetings[selTab]) return;
 
-    const speechAbilities = meetings[selTab].speechAbilities;
+    const speechAbilities = meetings[selTab].speechAbilities || [];
     const newDropdownOptions = [
       { label: "Say", id: "Say", placeholder: "to everyone" },
     ];
@@ -2556,7 +2563,7 @@ function SpeechInput(props) {
         let targetDisplay = target;
 
         if (ability.targetType === "player")
-          targetDisplay = players[target].name;
+          targetDisplay = players[target]?.name || target;
 
         newDropdownOptions.push({
           label: ability.name,
@@ -2710,6 +2717,7 @@ function SpeechInput(props) {
     if (
       e.target.value.length > 0 &&
       (e.target.value[0] !== "/" || e.target.value.slice(0, 4) === "/me ") &&
+      meetings[selTab] &&
       !meetings[selTab].anonymous &&
       speechDropdownValue === "Say"
     ) {

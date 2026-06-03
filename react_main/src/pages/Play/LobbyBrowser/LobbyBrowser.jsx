@@ -110,7 +110,12 @@ export default function LobbyBrowser() {
     setLoading(true);
     var filterArg = getPageNavFilterArg(_page, page, games, "endTime");
 
-    if (filterArg == null) return;
+    if (filterArg == null) {
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
+      return;
+    }
 
     filterArg += `&page=${_page}`;
     try {
