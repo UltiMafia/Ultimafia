@@ -4146,10 +4146,7 @@ function ActionSelect(props) {
             voteCountStyle = { backgroundColor: "#4c7dbd" };
           }
 
-          var nameColorOverride = null;
-          if (rowIsSpecial) {
-            nameColorOverride = "grey";
-          }
+          const nameColor = rowIsSpecial ? "text.disabled" : "primary.main";
 
           return (
             <Box
@@ -4171,24 +4168,30 @@ function ActionSelect(props) {
                 sx={{
                   cursor: notClickable ? "default" : "pointer",
                   fontWeight: "bold",
-                  color: nameColorOverride ? nameColorOverride : undefined,
+                  color: nameColor,
                   background: "none",
                   border: "none",
                   font: "inherit",
                   textAlign: "left",
                   padding: 0,
+                  "&.Mui-disabled": {
+                    color: nameColor,
+                    opacity: 1,
+                  },
                 }}
               >
                 {rowItem.name}
               </Typography>
               {!rowItem.canVote && !rowIsSpecial && (
-                <Typography className="selection">does not vote</Typography>
+                <Typography className="selection" sx={{ color: "primary.main" }}>
+                  does not vote
+                </Typography>
               )}
               {rowItem.canVote && rowItem.hasVoted && (
-                <Typography>votes</Typography>
+                <Typography sx={{ color: "primary.main" }}>votes</Typography>
               )}
               {rowItem.canVote && rowItem.selection.length > 0 && (
-                <Typography className="selection">
+                <Typography className="selection" sx={{ color: "primary.main" }}>
                   {rowItem.selection.join(", ")}
                 </Typography>
               )}
@@ -4403,7 +4406,7 @@ function ActionSelectShowAllOptions(props) {
               <Typography
                 sx={{
                   fontWeight: isSelected ? "bold" : "normal",
-                  color: isSelected ? "primary.main" : "text.primary",
+                  color: "primary.main",
                 }}
               >
                 {option.label}

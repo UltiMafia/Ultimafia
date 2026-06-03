@@ -45,8 +45,8 @@ export default function LobbyBrowser() {
   const theme = useTheme();
   const defaultLobbyName = lobbies[0].name;
   const [openGamesCounts, setOpenGamesCounts] = useState({});
-  const [refreshTimeoutId, setRefreshTimeoutId] = useState(null);
   const [refreshButtonIsSpinning, setRefreshButtonIsSpinning] = useState(false);
+  const refreshTimeoutRef = useRef(null);
   const [hasOneOpenUrankedGame, setHasOneOpenUrankedGame] = useState(false);
   const [hasOneOpenGame, setHasOneOpenGame] = useState(false);
   const [listType, setListType] = useState("All");
@@ -68,15 +68,15 @@ export default function LobbyBrowser() {
     ? !hasOneOpenGame
     : !hasOneOpenUrankedGame;
 
-  // Cleanup on unmount
   useEffect(() => {
+    isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
-      if (refreshTimeoutId) {
-        clearTimeout(refreshTimeoutId);
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
       }
     };
-  }, [refreshTimeoutId]);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("lobby", lobbyName);
@@ -151,18 +151,15 @@ export default function LobbyBrowser() {
     if (!isMountedRef.current) return;
     setRefreshButtonIsSpinning(true);
 
-    if (refreshTimeoutId) {
-      clearTimeout(refreshTimeoutId);
+    if (refreshTimeoutRef.current) {
+      clearTimeout(refreshTimeoutRef.current);
     }
 
     const callback = async () => {
       // The animation is so beautiful… It must keep spinning! (although the games have already been refreshed)
       const minAnimationTime = 100;
       await new Promise((res) => {
-        const timeoutId = setTimeout(res, minAnimationTime);
-        if (isMountedRef.current) {
-          setRefreshTimeoutId(timeoutId);
-        }
+        refreshTimeoutRef.current = setTimeout(res, minAnimationTime);
       });
       // "But bro, this is bad UX - don't leave users hanging" nah, 100ms is short enough
       if (isMountedRef.current) {
