@@ -95,6 +95,10 @@ import {
 } from "@mui/material";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
+import {
+  resolveDisplayNameColor,
+  resolveDisplayTextColor,
+} from "../../utils/accessibleNameColors";
 
 import lore from "images/emotes/lore.webp";
 import poison from "images/emotes/poison.webp";
@@ -1988,7 +1992,9 @@ function getContentClasses(message) {
 function Message(props) {
   const isPhoneDevice = useIsPhoneDevice();
   const user = useContext(UserContext);
+  const theme = useTheme();
   const [isHovering, setIsHovering] = useState(false);
+  const accessibleNameColors = user.settings?.accessibleNameColors;
 
   // Mobile only - users pin message by long pressing them
   const messageLongPress = useLongPress(
@@ -2130,6 +2136,9 @@ function Message(props) {
   const stateMeetingDefined =
     stateMeetings !== undefined &&
     stateMeetings[message.meetingId] !== undefined;
+  const isGraveyardMessage =
+    stateMeetingDefined &&
+    stateMeetings[message.meetingId].name === "Graveyard";
 
   const playerDead =
     props.stateViewing >= 0 &&
@@ -2188,18 +2197,28 @@ function Message(props) {
     }
   }
 
+  const rawNameColor =
+    message.nameColor && message.nameColor !== "" ? message.nameColor : null;
+  const rawTextColor =
+    message.textColor && message.textColor !== "" ? message.textColor : null;
+
   let contentStyle = {};
-  if (!user.settings?.ignoreTextColor && message.textColor !== "") {
-    contentStyle.color = user.autoContrastColor(message.textColor);
-  }
-  else if (contentClass.includes("content") && extraStyle) {
+  const resolvedTextColor = resolveDisplayTextColor({
+    accessibleNameColors,
+    ignoreTextColor: user.settings?.ignoreTextColor,
+    rawTextColor,
+    autoContrastColor: user.autoContrastColor.bind(user),
+    theme,
+  });
+  if (resolvedTextColor) {
+    contentStyle.color = resolvedTextColor;
+  } else if (contentClass.includes("content") && extraStyle) {
     if (extraStyle.color) {
       contentStyle = {
         ...extraStyle,
-        color: user.autoContrastColor(contentStyle.color),
+        color: user.autoContrastColor(extraStyle.color),
       };
-    }
-    else {
+    } else {
       contentStyle = extraStyle;
     }
   }
@@ -2259,15 +2278,23 @@ function Message(props) {
             )}
             {player && (
               <NameWithAvatar
-                dead={playerDead && props.stateViewing > 0}
+                dead={
+                  playerDead && props.stateViewing > 0 && !isGraveyardMessage
+                }
+                ripAvatar={isGraveyardMessage}
                 id={player.userId}
                 avatarId={avatarId}
                 name={player.name}
                 avatar={player.avatar}
-                color={
-                  !user.settings?.ignoreTextColor && message.nameColor !== ""
-                    ? user.autoContrastColor(message.nameColor)
-                    : ""
+                color={resolveDisplayNameColor({
+                  accessibleNameColors,
+                  ignoreTextColor: user.settings?.ignoreTextColor,
+                  rawNameColor,
+                  autoContrastColor: user.autoContrastColor.bind(user),
+                  theme,
+                })}
+                nameColorSwatch={
+                  accessibleNameColors && rawNameColor ? rawNameColor : undefined
                 }
                 noLink
                 small={smallAvatar}
@@ -2919,6 +2946,9 @@ export function SideMenu({
 
 export function PlayerRows({ players, className = "", renderMarker, renderRowEnd }) {
   const game = useContext(GameContext);
+  const user = useContext(UserContext);
+  const theme = useTheme();
+  const accessibleNameColors = user.settings?.accessibleNameColors;
   const [activity, updateActivity] = useActivity();
   const [visibleTyping, setVisibleTyping] = useState({});
   const typingTimeoutsRef = useRef({});
@@ -3152,7 +3182,18 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
           avatarId={avatarId}
           name={player.name}
           avatar={player.avatar}
-          color={player.nameColor}
+          color={resolveDisplayNameColor({
+            accessibleNameColors,
+            ignoreTextColor: user.settings?.ignoreTextColor,
+            rawNameColor: player.nameColor,
+            autoContrastColor: user.autoContrastColor.bind(user),
+            theme,
+          })}
+          nameColorSwatch={
+            accessibleNameColors && player.nameColor
+              ? player.nameColor
+              : undefined
+          }
           active={activity.speaking[player.id]}
           noLink={stateViewing >= 0 && game.options.anonymousGame}
           includeMiniprofile

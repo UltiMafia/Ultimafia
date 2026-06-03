@@ -114,25 +114,26 @@ export default function AvatarUpload(props) {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-  const previewSize = 300;
-
-  const outputSize = Math.round(previewSize * zoom);
+    const previewSize = 300;
+    const outputSize = previewSize;
 
     canvas.width = outputSize;
     canvas.height = outputSize;
 
-    const scale = imageRef.current.naturalWidth / 300;
+    const img = imageRef.current;
+    // Display width is previewSize * zoom; map viewport pixels to source pixels
+    const pixelsPerDisplayPx = img.naturalWidth / (previewSize * zoom);
 
-    const centerX = imageRef.current.naturalWidth / 2 - position.x * scale;
-    const centerY = imageRef.current.naturalHeight / 2 - position.y * scale;
+    const centerX = img.naturalWidth / 2 - position.x * pixelsPerDisplayPx;
+    const centerY = img.naturalHeight / 2 - position.y * pixelsPerDisplayPx;
 
-    const cropSizeInSourcePixels = (previewSize * scale) / zoom;
+    const cropSizeInSourcePixels = previewSize * pixelsPerDisplayPx;
 
     const sx = centerX - cropSizeInSourcePixels / 2;
     const sy = centerY - cropSizeInSourcePixels / 2;
 
     ctx.drawImage(
-      imageRef.current,
+      img,
       sx,
       sy,
       cropSizeInSourcePixels,
@@ -307,12 +308,11 @@ export default function AvatarUpload(props) {
                   alt="Preview"
                   style={{
                     position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: `translate(calc(-50% + ${position.x}px), calc(-50% + ${position.y}px)) scale(${zoom})`,
-                    transformOrigin: "center",
+                    left: `calc(50% + ${position.x}px)`,
+                    top: `calc(50% + ${position.y}px)`,
+                    transform: "translate(-50%, -50%)",
                     maxWidth: "none",
-                    width: "300px",
+                    width: `${300 * zoom}px`,
                     height: "auto",
                     userSelect: "none",
                     pointerEvents: "none",
