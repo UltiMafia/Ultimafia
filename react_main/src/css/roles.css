@@ -562,6 +562,14 @@
   background-image: url("/src/images/roles/village/apothecary-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Arbiter {
+  background-image: url("/src/images/roles/village/arbiter-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Tutor {
+  background-image: url("/src/images/roles/village/tutor-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Scientist {
   background-image: url("/src/images/roles/village/scientist-vivid.png");
 }
@@ -1269,6 +1277,18 @@
   background-image: url("/src/images/roles/mafia/crank-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Charlatan {
+  background-image: url("/src/images/roles/mafia/charlatan-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Repoman {
+  background-image: url("/src/images/roles/mafia/repoman-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Spymaster {
+  background-image: url("/src/images/roles/mafia/spymaster-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Interrogator {
   background-image: url("/src/images/roles/mafia/interrogator-vivid.png");
 }
@@ -1848,6 +1868,10 @@
 
 .role-icon-vivid-Mafia-Blob {
   background-image: url("/src/images/roles/independent/blob-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Banker {
+  background-image: url("/src/images/roles/independent/banker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Joker {
@@ -2998,65 +3022,6 @@
 /* for role prediction */
 .modifier-Mafia-Unknown {
   background-image: url("/src/images/modifiers/unknown-modifier.png");
-}
-
-/***********
-*
-* Resistance
-*
-***********/
-
-/*
-* Resistance
-*/
-
-.role-icon-vivid-Resistance-Rebel {
-  background-image: url("/src/images/roles/minigame/res/res-rebel-vivid.png");
-}
-
-.role-icon-vivid-Resistance-Merlin {
-  background-image: url("/src/images/roles/minigame/res/res-merlin-vivid.png");
-}
-
-.role-icon-vivid-Resistance-Percival {
-  background-image: url("/src/images/roles/minigame/res/res-percival-vivid.png");
-}
-
-.role-icon-vivid-Resistance-Tristan {
-  background-image: url("/src/images/roles/minigame/res/res-tristan-vivid.png");
-}
-
-.role-icon-vivid-Resistance-Isolde {
-  background-image: url("/src/images/roles/minigame/res/res-isolde-vivid.png");
-}
-
-/*
-* Spies
-*/
-
-.role-icon-vivid-Resistance-Spy {
-  background-image: url("/src/images/roles/minigame/res/res-spy-vivid.png");
-}
-
-.role-icon-vivid-Resistance-Morgana {
-  background-image: url("/src/images/roles/minigame/res/res-morgana-vivid.png");
-}
-
-.role-icon-vivid-Resistance-Mordred {
-  background-image: url("/src/images/roles/minigame/res/res-mordred-vivid.png");
-}
-
-.role-icon-vivid-Resistance-Assassin {
-  background-image: url("/src/images/roles/minigame/res/res-assassin-vivid.png");
-}
-
-.role-icon-vivid-Resistance-Oberon {
-  background-image: url("/src/images/roles/minigame/res/res-oberon-vivid.png");
-}
-
-/* for role prediction */
-.modifier-Resistance-Unknown {
-  background-position: -144px -32px;
 }
 
 /***********

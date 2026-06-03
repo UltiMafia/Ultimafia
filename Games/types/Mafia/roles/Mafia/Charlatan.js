@@ -1,8 +1,8 @@
 const Role = require("../../Role");
 
-module.exports = class Morgana extends Role {
+module.exports = class Charlatan extends Role {
   constructor(player, data) {
-    super("Morgana", player, data);
+    super("Charlatan", player, data);
 
     this.alignment = "Mafia";
     this.appearance.percival = "Seer";

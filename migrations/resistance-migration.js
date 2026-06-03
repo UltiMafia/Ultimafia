@@ -14,7 +14,7 @@ const logger = require("../modules/logging")(".");
  *   Spy → Spymaster
  *   Oberon → Mafioso:Lone
  *   Mordred → Godfather
- *   Morgana → Morgana
+ *   Morgana → Charlatan
  *   Assassin → Resistance Assassin
  *   Lunatic → Mafioso (fallback for unlisted Resistance roles → Villager)
  *
@@ -39,7 +39,7 @@ const ROLE_MAP = {
   Spy: "Spymaster",
   Oberon: "Mafioso:Lone",
   Mordred: "Godfather",
-  Morgana: "Morgana",
+  Morgana: "Charlatan",
   Assassin: "Resistance Assassin",
   Lunatic: "Mafioso",
 };
