@@ -637,7 +637,10 @@ export default function Competitive() {
           caption = `Next round starts on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
         } else if (currentRoundInfo.nextEvent.type === "complete") {
           displayTitle = `Season ${currentRoundInfo.seasonNumber} - Round ${currentRoundInfo.round.number} - Day ${currentRoundInfo.round.currentDay}`;
-          caption = `Current round closes on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+          caption = `Open phase may end on ${date.toLocaleDateString()} ${date.toLocaleTimeString()} (or sooner at 1,500 fortune)`;
+        } else if (currentRoundInfo.nextEvent.type === "graceEnd") {
+          displayTitle = `Season ${currentRoundInfo.seasonNumber} - Round ${currentRoundInfo.round.number} - Grace period`;
+          caption = `Gold hearts reset on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
         } else if (currentRoundInfo.nextEvent.type === "account") {
           displayTitle = `Season ${currentRoundInfo.seasonNumber} - Round ${currentRoundInfo.round.number} - Closed`;
           caption = `Round standings confirm on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;

@@ -48,31 +48,32 @@ export function CompetitiveFaqContent() {
         <Typography variant="h3">When and how do I get gold hearts?</Typography>
       </Stack>
       <Typography paragraph>
-        All players receive 4 gold hearts per day for the first
-        <Typography
-          sx={{ display: "inline", fontWeight: "bold", fontStyle: "italic" }}
-        >
-          {" eight "}
-        </Typography>
-        days of a round. Each day progresses to the next when UTC/GMT midnight
-        passes. These gold hearts are consumed upon the completion of a
-        competitive game (they are not spent if a player leaves the game). All
-        players will eventually receive a total of 32 gold hearts per round.
-        Your gold hearts roll over between days in a round, but are reset to 0
-        at the start of a new round.
+        All players receive 4 gold hearts per UTC/GMT day while a round is in
+        its open phase. The open phase ends when either someone reaches 1,500
+        fortune points in the round, or the round&apos;s scheduled open days run
+        out—whichever happens first. Gold hearts are consumed when a
+        competitive game finishes (they are not spent if you leave early).
+        Hearts roll over between open days, but not into the next round.
+      </Typography>
+      <Typography paragraph>
+        When the open phase ends, everyone has 24 hours to spend any remaining
+        gold hearts on competitive games. After that grace period, all gold
+        hearts reset to 0 and the round moves into review days (no new
+        competitive games until the next round).
       </Typography>
       <Typography variant="h3" gutterBottom>
         How are rounds structured?
       </Typography>
       <Typography paragraph>
-        A competitive season is divided into multiple rounds. Each round
-        consists of eight open days and four review days, which are followed by
-        a one day break before the next round begins. During open days, players
-        can play competitive games and earn fortune points. During review days,
-        players cannot play competitive games, and admins may review games.
-        After the review days, the standings are confirmed and players are
-        awarded prestige points based on how many fortune points they earned
-        compared to other players.
+        A competitive season is divided into multiple rounds. Each round has up
+        to eight open days (or fewer if someone hits 1,500 fortune first), then
+        a 24-hour grace period to finish hearts, then four review days, followed
+        by a one day break before the next round begins. During open days and
+        the grace period, players can play competitive games and earn fortune
+        points. During review days, players cannot play competitive games, and
+        admins may review games. After the review days, the standings are
+        confirmed and players are awarded prestige points based on how many
+        fortune points they earned compared to other players.
       </Typography>
       <Typography paragraph>
         Competitive games may only be played using specific setups - these

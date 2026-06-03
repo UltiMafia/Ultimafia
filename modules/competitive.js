@@ -11,6 +11,84 @@ const constants = require("../data/constants");
 // v2: proposed to make it more possible to climb up after a round is determined
 const POINTS_TABLE = [20, 18, 16, 14, 12, 10, 9, 8, 7, 6, 3, 3, 3, 3, 3]
 
+async function getMaxRoundFortune(seasonNumber, roundNumber) {
+  const result = await models.CompetitiveGameCompletion.aggregate([
+    {
+      $match: {
+        season: seasonNumber,
+        round: roundNumber,
+        valid: true,
+      },
+    },
+    {
+      $group: {
+        _id: "$userId",
+        total: { $sum: "$points" },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        maxFortune: { $max: "$total" },
+      },
+    },
+  ]);
+
+  return result[0]?.maxFortune ?? 0;
+}
+
+async function hasRoundFortuneHammer(seasonNumber, roundNumber) {
+  const maxFortune = await getMaxRoundFortune(seasonNumber, roundNumber);
+  return maxFortune >= constants.competitiveRoundFortuneHammer;
+}
+
+async function endOpenPhase(roundId, seasonNumber, roundNumber) {
+  const now = Date.now();
+  await models.CompetitiveRound.updateOne(
+    { _id: ObjectID(roundId) },
+    {
+      $set: {
+        openPhaseEndedAt: now,
+        remainingOpenDays: 0,
+      },
+    }
+  ).exec();
+  await redis.invalidateCompRoundCache(seasonNumber, roundNumber);
+}
+
+async function endGracePeriod(roundId, seasonNumber, roundNumber) {
+  const now = new Date();
+  console.log(`[progressCompetitive]: Grace period ended, resetting gold hearts`);
+  await models.User.updateMany({}, { $set: { goldHearts: 0 } }).exec();
+  await redis.invalidateAllCachedUsers();
+  await models.CompetitiveRound.updateOne(
+    { _id: ObjectID(roundId) },
+    {
+      $set: {
+        completed: true,
+        dateCompleted: now.toISOString().split("T")[0],
+      },
+    }
+  ).exec();
+  await redis.invalidateCompRoundCache(seasonNumber, roundNumber);
+}
+
+async function checkFortuneHammerAndEndOpenPhase(seasonNumber, round) {
+  if (round.completed || round.openPhaseEndedAt || round.currentDay < 1) {
+    return false;
+  }
+
+  if (!(await hasRoundFortuneHammer(seasonNumber, round.number))) {
+    return false;
+  }
+
+  console.log(
+    `[progressCompetitive]: Fortune hammer (${constants.competitiveRoundFortuneHammer}) reached in season ${seasonNumber} round ${round.number}`
+  );
+  await endOpenPhase(round._id, seasonNumber, round.number);
+  return true;
+}
+
 async function progressCompetitive() {
   // Get the current season, if any
   const currentSeason = await models.CompetitiveSeason.findOne({
@@ -84,6 +162,32 @@ async function progressCompetitive() {
     await redis.invalidateAllCachedUsers();
   } else if (!currentRound.completed) {
     const now = new Date();
+    const nowMillis = now.getTime();
+
+    if (currentRound.openPhaseEndedAt) {
+      if (!currentSeason.paused) {
+        const graceEndsAt =
+          currentRound.openPhaseEndedAt +
+          constants.competitiveHeartGracePeriodMillis;
+        if (nowMillis >= graceEndsAt) {
+          await endGracePeriod(
+            currentRound._id,
+            seasonNumber,
+            currentRound.number
+          );
+        }
+      }
+      return;
+    }
+
+    if (!currentSeason.paused) {
+      if (
+        await checkFortuneHammerAndEndOpenPhase(seasonNumber, currentRound)
+      ) {
+        return;
+      }
+    }
+
     const startDate = new Date(currentRound.startDate);
     let endOfRoundDay = new Date(startDate);
 
@@ -118,10 +222,17 @@ async function progressCompetitive() {
           constants.openDaysPerCompetitiveRound - currentRound.remainingOpenDays <
           constants.openDaysPerCompetitiveRound
         ) {
-          console.log(`[progressCompetitive]: Giving everyone 4 gold hearts`);
-          await models.User.updateMany({}, { $inc: { goldHearts: 4 } }).exec();
+          console.log(
+            `[progressCompetitive]: Giving everyone ${constants.goldHeartsPerCompetitiveDay} gold hearts`
+          );
+          await models.User.updateMany(
+            {},
+            { $inc: { goldHearts: constants.goldHeartsPerCompetitiveDay } }
+          ).exec();
           await redis.invalidateAllCachedUsers();
         }
+
+        const remainingOpenDaysAfter = currentRound.remainingOpenDays - 1;
 
         await models.CompetitiveRound.updateOne(
           { _id: ObjectID(currentRound._id) },
@@ -132,17 +243,37 @@ async function progressCompetitive() {
             },
           }
         ).exec();
+
+        if (remainingOpenDaysAfter <= 0) {
+          console.log(
+            `[progressCompetitive]: Open days exhausted for season ${seasonNumber} round ${currentRound.number}`
+          );
+          await endOpenPhase(
+            currentRound._id,
+            seasonNumber,
+            currentRound.number
+          );
+        } else if (
+          await hasRoundFortuneHammer(seasonNumber, currentRound.number)
+        ) {
+          console.log(
+            `[progressCompetitive]: Fortune hammer (${constants.competitiveRoundFortuneHammer}) reached after day progression`
+          );
+          await endOpenPhase(
+            currentRound._id,
+            seasonNumber,
+            currentRound.number
+          );
+        }
       } else {
-        // We are on the last open day, the day has ended, so complete the round
-        await models.CompetitiveRound.updateOne(
-          { _id: ObjectID(currentRound._id) },
-          {
-            $set: {
-              completed: true,
-              dateCompleted: now.toISOString().split("T")[0],
-            },
-          }
-        ).exec();
+        console.log(
+          `[progressCompetitive]: Open phase ended for season ${seasonNumber} round ${currentRound.number}`
+        );
+        await endOpenPhase(
+          currentRound._id,
+          seasonNumber,
+          currentRound.number
+        );
       }
     } else {
       // Nothing to do, we are still on the same round's day
@@ -517,4 +648,5 @@ module.exports = {
   progressCompetitive,
   accountCompetitiveRounds,
   endSeason,
+  checkFortuneHammerAndEndOpenPhase,
 };

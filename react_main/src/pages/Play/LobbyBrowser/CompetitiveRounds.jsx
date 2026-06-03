@@ -37,6 +37,7 @@ function startsInParts(dateStr) {
 
 const RAIL_COLOR = {
   ongoing: "error.main",
+  grace: "warning.main",
   upcoming: "primary.main",
   review: "info.main",
 };
@@ -74,6 +75,21 @@ function StatusBadge({ kind }) {
           LIVE
         </Typography>
       </Stack>
+    );
+  }
+  if (kind === "grace") {
+    return (
+      <Typography
+        variant="caption"
+        sx={{
+          fontWeight: 700,
+          letterSpacing: "0.12em",
+          lineHeight: 1,
+          color: "warning.main",
+        }}
+      >
+        GRACE
+      </Typography>
     );
   }
   if (kind === "review") {
@@ -219,6 +235,26 @@ function RoundRow({ round }) {
         </Typography>
       )}
 
+      {kind === "grace" &&
+        (() => {
+          const graceEnd =
+            round.openPhaseEndedAt + 24 * 60 * 60 * 1000;
+          const diffMs = graceEnd - Date.now();
+          const hours = Math.max(0, Math.ceil(diffMs / 3_600_000));
+          return (
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
+              Finish hearts ·{" "}
+              <Box
+                component="span"
+                sx={{ color: "text.primary", fontWeight: 600 }}
+              >
+                {hours}h
+              </Box>{" "}
+              left
+            </Typography>
+          );
+        })()}
+
       {kind === "review" && (
         <Typography variant="caption" sx={{ color: "text.secondary" }}>
           Reviewing ·{" "}
@@ -290,6 +326,12 @@ export function CompetitiveRounds() {
             let kind = status;
             if (
               status === "ongoing" &&
+              round.openPhaseEndedAt &&
+              !round.completed
+            ) {
+              kind = "grace";
+            } else if (
+              status === "ongoing" &&
               round.remainingOpenDays <= 0 &&
               round.remainingReviewDays > 0
             ) {
@@ -303,7 +345,7 @@ export function CompetitiveRounds() {
             });
           }
         }
-        const order = { ongoing: 0, review: 1, upcoming: 2 };
+        const order = { ongoing: 0, grace: 1, review: 2, upcoming: 3 };
         collected.sort((a, b) => {
           if (a._kind !== b._kind) return order[a._kind] - order[b._kind];
           if (a._kind === "upcoming") {

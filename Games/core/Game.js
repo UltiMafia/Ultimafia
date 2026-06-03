@@ -33,6 +33,7 @@ const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const axios = require("axios");
 const fortunePoints = require("../../modules/fortunePoints");
+const competitive = require("../../modules/competitive");
 const {
   syncRankedCompetitiveAccess,
 } = require("../../modules/userEligibility");
@@ -3575,6 +3576,11 @@ module.exports = class Game {
           await gameCompletion.save();
         }
       }
+
+      await competitive.checkFortuneHammerAndEndOpenPhase(
+        seasonNumber,
+        currentRound
+      );
     } catch (e) {
       logger.error("Error recording competitive completion: ", e);
     }

@@ -929,6 +929,8 @@ var schemas = {
     dateCompleted: { type: String }, // YYYY-MM-DD (inclusive)
     remainingOpenDays: { type: Number, required: true },
     remainingReviewDays: { type: Number, required: true },
+    /** UTC millis when daily hearts stopped; grace period follows before review. */
+    openPhaseEndedAt: { type: Number, default: null },
     minimumPoints: { type: Number, default: 150 },
   }),
   CompetitiveGameCompletion: new mongoose.Schema({

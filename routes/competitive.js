@@ -392,13 +392,11 @@ router.post("/endRoundEarly", async function (req, res) {
       { _id: ObjectID(competitiveRound._id) },
       {
         $set: {
-          completed: true,
-          dateCompleted: now.toISOString().split("T")[0],
+          openPhaseEndedAt: now.getTime(),
           remainingOpenDays: 0,
         },
         $inc: {
           currentDay: 1,
-          remainingReviewDays: -1,
         },
       }
     );
@@ -408,7 +406,8 @@ router.post("/endRoundEarly", async function (req, res) {
     routeUtils.createModAction(modUserId, "End Round Early", [season, round]);
 
     res.json({
-      message: "Round moved to first review day.",
+      message:
+        "Round open phase ended; players have 24 hours to finish remaining gold hearts.",
       season,
       round,
     });
