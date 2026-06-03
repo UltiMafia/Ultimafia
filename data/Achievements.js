@@ -610,7 +610,6 @@ const AchievementData = {
       reward: 50,
     },
   },
-  Resistance: {},
   Jotto: {},
   Acrotopia: {},
   "Secret Dictator": {},

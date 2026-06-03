@@ -2963,12 +2963,6 @@ module.exports = class Game {
         this.hasHost = this.setup.roles[0]["Host:"];
       } else if (this.type == "Liars Dice") {
         this.hasHost = this.setup.roles[0]["Host:"];
-      } else if (this.type == "Resistance") {
-        this.numMissions = this.setup.numMissions;
-        this.teamFailLimit = this.setup.teamFailLimit;
-        this.teamSizeSlope =
-          (this.setup.lastTeamSize - this.setup.firstTeamSize) /
-          this.numMissions;
       } else if (this.type == "Wacky Words") {
         this.hasAlien = this.setup.roles[0]["Alien:"];
         this.hasNeighbor = this.setup.roles[0]["Neighbor:"];

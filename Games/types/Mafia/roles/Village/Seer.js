@@ -19,6 +19,7 @@ module.exports = class Seer extends Role {
       condemn: "real",
       death: "Villager",
       investigate: "real",
+      percival: "Seer",
     };
   }
 };

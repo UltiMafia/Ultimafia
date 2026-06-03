@@ -18,7 +18,7 @@ export const GameTypes = [
 ];
 
 // Game types retained for existing setups/stats but no longer creatable or hostable.
-export const DisabledGameTypes = ["Acrotopia"];
+export const DisabledGameTypes = ["Acrotopia", "Resistance"];
 export const ActiveGameTypes = GameTypes.filter(
   (g) => !DisabledGameTypes.includes(g)
 );
@@ -52,7 +52,6 @@ export const Alignments = {
 
 export const GameStates = {
   Mafia: ["Day", "Night"],
-  Resistance: ["Team Selection", "Team Approval", "Mission"],
   Jotto: ["Select Word", "Guess Word"],
   Acrotopia: ["Day", "Night"],
   "Secret Dictator": [

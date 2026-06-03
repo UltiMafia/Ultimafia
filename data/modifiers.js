@@ -1428,7 +1428,6 @@ const modifierData = {
       description: "Mafia roles with this modifier applied join the Red Mafia.",
     },
   },
-  Resistance: {},
   Jotto: {},
   Acrotopia: {},
   "Secret Dictator": {},

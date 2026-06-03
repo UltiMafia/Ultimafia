@@ -84,7 +84,7 @@ module.exports = {
   ],
   // Game types that remain valid for existing setups/stats but cannot be
   // created or hosted anymore. Acrotopia is covered by Wacky Words' acronym mode.
-  disabledGameTypes: ["Acrotopia"],
+  disabledGameTypes: ["Acrotopia", "Resistance"],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
   alignments: {
     Mafia: ["Village", "Mafia", "Cult", "Independent", "Event"],
@@ -106,7 +106,6 @@ module.exports = {
   },
   startStates: {
     Mafia: ["Night", "Day"],
-    Resistance: ["Team Selection"],
     Jotto: ["Select Word"],
     Acrotopia: ["Night"],
     "Secret Dictator": ["Nomination"],
@@ -142,13 +141,6 @@ module.exports = {
       Night: {
         min: 1 * 60 * 1000,
         max: 10 * 60 * 1000,
-        default: 2 * 60 * 1000,
-      },
-    },
-    Resistance: {
-      "Team Selection": {
-        min: 1 * 60 * 1000,
-        max: 5 * 60 * 1000,
         default: 2 * 60 * 1000,
       },
       "Team Approval": {

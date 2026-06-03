@@ -1,12 +1,16 @@
 const Item = require("../Item");
 
-module.exports = class Leader extends Item {
+module.exports = class MissionLeader extends Item {
   constructor(game) {
-    super("Leader");
+    super("MissionLeader");
+
+    this.cannotBeStolen = true;
+    this.cannotBeSnooped = true;
+    this.lifespan = 1;
 
     this.listeners = {
       state: function (stateInfo) {
-        if (stateInfo.name.match(/Team Selection/)) {
+        if (stateInfo.name.match(/Night/)) {
           this.game.queueAlert(
             `${this.game.currentLeader.name} is the leader.`
           );
@@ -14,9 +18,10 @@ module.exports = class Leader extends Item {
         }
       },
     };
+
     this.meetings = {
       "Assemble Team": {
-        states: ["Team Selection"],
+        states: ["Night"],
         flags: ["voting", "multi", "mustAct"],
         targets: { include: ["alive"], exclude: [] },
         multiMin: game.currentTeamSize,
@@ -24,21 +29,28 @@ module.exports = class Leader extends Item {
         action: {
           run: function () {
             for (let player of this.game.players) {
-              player.role.meetings["Mission Success"].disabled = true;
-              player.role.meetings["Approve Team"].disabled = false;
+              for (let meeting of player.getMeetings()) {
+                if (meeting.name === "Mission Success") {
+                  meeting.disabled = true;
+                }
+                if (meeting.name === "Approve Team") {
+                  meeting.disabled = false;
+                }
+              }
             }
 
-            for (let target of this.target)
-              target.role.meetings["Mission Success"].disabled = false;
-
-            // this.actor.role.meetings["Approve Team"].disabled = true;
+            for (let target of this.target) {
+              for (let meeting of target.getMeetings()) {
+                if (meeting.name === "Mission Success") {
+                  meeting.disabled = false;
+                }
+              }
+            }
 
             var selectedNames = this.target.map((t) => t.name);
-            // for displaying mission history
             this.game.recordMissionTeam(selectedNames);
-
             this.game.queueAlert(`Team selected: ${selectedNames.join(", ")}`);
-            this.actor.dropItem("Leader");
+            this.holder.dropItem("MissionLeader");
           },
         },
       },

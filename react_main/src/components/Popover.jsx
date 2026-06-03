@@ -359,6 +359,33 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
   const hasGameTypeOptions =
     gameTypeOptions && Object.keys(gameTypeOptions).length > 0;
 
+  if (setup.gameType === "Mafia" && setup.numMissions != null) {
+    result.push(
+      <InfoSection title="Mission settings">
+        <InfoRow
+          title="First Team Size"
+          content={setup.firstTeamSize}
+          key="firstTeamSize"
+        />
+        <InfoRow
+          title="Last Team Size"
+          content={setup.lastTeamSize}
+          key="lastTeamSize"
+        />
+        <InfoRow
+          title="Number of Missions"
+          content={setup.numMissions}
+          key="numMissions"
+        />
+        <InfoRow
+          title="Team Formation Attempts"
+          content={setup.teamFailLimit}
+          key="teamFailLimit"
+        />
+      </InfoSection>
+    );
+  }
+
   switch (setup.gameType) {
     /*
     case "Mafia":
@@ -381,32 +408,6 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
       );
       break;
       */
-    case "Resistance":
-      result.push(
-        <InfoSection title="Resistance settings">
-          <InfoRow
-            title="First Team Size"
-            content={setup.firstTeamSize}
-            key="firstTeamSize"
-          />
-          <InfoRow
-            title="Last Team Size"
-            content={setup.lastTeamSize}
-            key="lastTeamSize"
-          />
-          <InfoRow
-            title="Number of Missions"
-            content={setup.numMissions}
-            key="numMissions"
-          />
-          <InfoRow
-            title="Team Formation Attempts"
-            content={setup.teamFailLimit}
-            key="teamFailLimit"
-          />
-        </InfoSection>
-      );
-      break;
     case "Jotto":
       if (!hasGameTypeOptions) break;
       result.push(

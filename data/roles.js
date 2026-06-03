@@ -2136,6 +2136,9 @@ const roleData = {
       ],
       SpecialInteractions: {
         Ghost: ["If a Ghost is Present, a Templar will not learn any words."],
+        Spymaster: [
+          "If a Spymaster is Present, acts as Tristan/Isolde with mutual knowledge and no guess-loss epilogue.",
+        ],
       },
     },
     //reflexive roles
@@ -2489,6 +2492,17 @@ const roleData = {
       ],
       SpecialInteractions: {
         Ghost: ["If a Ghost is Present, a Seer will not learn any words."],
+        Spymaster: [
+          "If a Spymaster is Present, you learn evil players at game start (like Merlin). Godfather and Cultist (Respected) stay hidden.",
+        ],
+        Morgana: [
+          "Morgana appears as Seer to a Retired Seer, like Resistance Morgana to Percival.",
+        ],
+      },
+      SpecialInteractionsModifiers: {
+        Retired: [
+          "Acts as Resistance Percival: knows which players are the Seer (Morgana also appears as Seer). Does not learn evil players or use Merlin condemn-guess rules.",
+        ],
       },
     },
     Mole: {
@@ -2636,6 +2650,9 @@ const roleData = {
       ],
       SpecialInteractions: {
         Ghost: ["If a Ghost is Present, a Godfather will learn the real word."],
+        Spymaster: [
+          "If a Spymaster is Present, acts as Mordred and stays hidden from the Seer's opening reveal.",
+        ],
       },
     },
     Gramps: {
@@ -3755,6 +3772,47 @@ const roleData = {
       SpecialInteractions: {
         Ghost: ["If a Ghost is Present, an Imposter will learn the real word."],
       },
+    },
+    Spymaster: {
+      alignment: "Mafia",
+      tags: ["Setup Changes", "Mini-Game", "Resistance", "Advanced"],
+      description: [
+        "Replaces the Mafia kill and Day condemn vote with a Resistance-style mission game.",
+        "Each night the rotating leader assembles a team; the group approves or rejects it.",
+        "Approved teams go on missions; Village wins enough successful missions, Mafia/Cult win enough failures.",
+        "Other night actions and Mafia/Cult faction meetings still work normally.",
+      ],
+      SpecialInteractions: {
+        Seer: ["Acts as Merlin: learns evil players at game start (Godfather and Cultist (Respected) stay hidden)."],
+        "Seer:Retired": ["Acts as Percival: knows who the Seer is (Morgana also appears as Seer)."],
+        Templar: ["Acts as Tristan/Isolde: mutual knowledge with no guess-loss epilogue."],
+        Godfather: ["Acts as Mordred: hidden from the Seer's opening reveal."],
+        "Cultist (Respected)": ["Acts as Mordred: hidden from the Seer's opening reveal."],
+        Morgana: ["Acts as Resistance Morgana: appears as Seer to Seer:Retired."],
+        "Resistance Assassin": [
+          "Placeholder for Resistance Assassin epilogue guess (not yet implemented in mission mode).",
+        ],
+      },
+    },
+    Morgana: {
+      alignment: "Mafia",
+      tags: ["Deception", "Resistance", "Information", "Advanced"],
+      description: [
+        "You appear as Seer to Seer:Retired.",
+        "Migrated from Resistance Morgana.",
+      ],
+      SpecialInteractions: {
+        "Seer:Retired": ["You appear as Seer to Seer:Retired, like Resistance Morgana to Percival."],
+        Spymaster: ["Used in Spymaster mission setups migrated from Resistance."],
+      },
+    },
+    "Resistance Assassin": {
+      alignment: "Mafia",
+      tags: ["Resistance", "Placeholder", "Setup Changes"],
+      description: [
+        "Placeholder role for the Resistance Assassin epilogue guess mechanic.",
+        "Migrated from Resistance Assassin; special guess behavior is not implemented yet.",
+      ],
     },
     Assassin: {
       alignment: "Mafia",
@@ -6240,76 +6298,6 @@ const roleData = {
     },
   },
 
-  Resistance: {
-    //Resistance
-    Rebel: {
-      alignment: "Resistance",
-      tags: ["None"],
-      description: ["Wins if a certain number of missions are successful."],
-    },
-    Merlin: {
-      alignment: "Resistance",
-      tags: ["None"],
-      description: [
-        "Knows the alignment of all spies.",
-        "If the Rebels would win, the spies can guess who Merlin is to win instead.",
-      ],
-    },
-    Percival: {
-      alignment: "Resistance",
-      tags: ["None"],
-      description: ["Knows who is Merlin."],
-    },
-
-    Tristan: {
-      alignment: "Resistance",
-      tags: ["None"],
-      description: [
-        "Knows who is Isolde.",
-        "If the Rebels would win, the spies can guess who Tristan and Isolde are to win instead.",
-        "If Spies choose to guess who Tristan and Isolde are their guess for Merlin will not count.",
-      ],
-    },
-    Isolde: {
-      alignment: "Resistance",
-      tags: ["None"],
-      description: [
-        "Knows who is Tristan.",
-        "If the Rebels would win, the spies can guess who Tristan and Isolde are to win instead.",
-        "If Spies choose to guess who Tristan and Isolde are their guess for Merlin will not count.",
-      ],
-    },
-    //Spies
-    Spy: {
-      alignment: "Spies",
-      tags: ["None"],
-      description: ["Wins if a certain number of missions fail."],
-    },
-    Oberon: {
-      alignment: "Spies",
-      tags: ["None"],
-      description: [
-        "Does not know who the other spies are and spies do not know them.",
-      ],
-    },
-    Morgana: {
-      alignment: "Spies",
-      tags: ["None"],
-      description: ["Appears as Merlin to Percival."],
-    },
-    Mordred: {
-      alignment: "Spies",
-      tags: ["None"],
-      description: ["Cannot be seen by Merlin."],
-    },
-    Assassin: {
-      alignment: "Spies",
-      tags: ["None"],
-      description: [
-        "Will be the only player to guess Merlin or Tristan and Isolde.",
-      ],
-    },
-  },
   Jotto: {
     Player: {
       alignment: "Town",

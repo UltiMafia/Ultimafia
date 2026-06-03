@@ -1233,9 +1233,6 @@ const settingsChecks = {
 
     return { extendLength, pregameWaitLength, advancedHosting };
   },
-  Resistance: (settings, setup) => {
-    return {};
-  },
   Jotto: (settings, setup) => {
     let wordLength = Number(settings.wordLength);
     if (wordLength < 4 || wordLength > 5) {

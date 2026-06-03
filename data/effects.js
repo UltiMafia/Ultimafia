@@ -150,7 +150,6 @@ const effectData = {
         "Polarised players will die if they visit another player at night.",
     },
   },
-  Resistance: {},
   Jotto: {},
   Acrotopia: {},
   "Secret Dictator": {},

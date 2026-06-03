@@ -13,9 +13,15 @@ module.exports = class LoseIfSeerGuessed extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT + 1,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
+        if (this.role.modifier.split("/").includes("Retired")) {
+          return;
+        }
+
         // win by guessing seer
         const seersInGame = this.game.players.filter(
-          (p) => p.role.name == "Seer"
+          (p) =>
+            p.role.name == "Seer" &&
+            !p.role.modifier.split("/").includes("Retired")
         );
 
         if (!this.game.guessedSeers) {

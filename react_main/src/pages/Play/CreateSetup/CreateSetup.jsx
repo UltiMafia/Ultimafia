@@ -14,7 +14,6 @@ import {
 } from "@mui/material";
 
 import CreateMafiaSetup from "./CreateMafiaSetup";
-import CreateResistanceSetup from "./CreateResistanceSetup";
 import CreateJottoSetup from "./CreateJottoSetup";
 import CreateAcrotopiaSetup from "./CreateAcrotopiaSetup";
 import CreateSecretDictatorSetup from "./CreateSecretDictatorSetup";
@@ -80,8 +79,6 @@ export default function CreateSetup(props) {
     switch (gameType) {
       case "Mafia":
         return <CreateMafiaSetup />;
-      case "Resistance":
-        return <CreateResistanceSetup />;
       case "Jotto":
         return <CreateJottoSetup />;
       case "Acrotopia":

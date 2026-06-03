@@ -28,7 +28,6 @@ const protips = {
     "Have a clear town member? It can be convenient for everyone else to self vote so that they can choose who to condemn.",
     "Finding players that you can trust (a townread) is often just as important as finding those that you can't.",
   ],
-  Resistance: [],
   Jotto: [],
   Battlesnakes: ["Sometimes, size does matter."],
   Acrotopia: [],

@@ -142,6 +142,42 @@ export default function CreateMafiaSetup() {
         },
       ],
     },
+    {
+      label: "First Team Size",
+      ref: "firstTeamSize",
+      type: "number",
+      groupName: "Resistance (Spymaster)",
+      value: "2",
+      min: "2",
+      max: "49",
+    },
+    {
+      label: "Last Team Size",
+      ref: "lastTeamSize",
+      type: "number",
+      groupName: "Resistance (Spymaster)",
+      value: "4",
+      min: "2",
+      max: "49",
+    },
+    {
+      label: "Number of Missions",
+      ref: "numMissions",
+      type: "number",
+      groupName: "Resistance (Spymaster)",
+      value: "5",
+      min: "2",
+      max: "10",
+    },
+    {
+      label: "Team Formation Attempts",
+      ref: "teamFailLimit",
+      type: "number",
+      groupName: "Resistance (Spymaster)",
+      value: "5",
+      min: "1",
+      max: "49",
+    },
   ]);
 
   const formFieldValueMods = {
@@ -178,6 +214,18 @@ export default function CreateMafiaSetup() {
         noDeathLimit: formFields[11].value,
         ForceMustAct: formFields[12].value,
         GameEndEvent: formFields[13].value,
+        firstTeamSize: Number(
+          formFields.find((f) => f.ref === "firstTeamSize")?.value || 2
+        ),
+        lastTeamSize: Number(
+          formFields.find((f) => f.ref === "lastTeamSize")?.value || 4
+        ),
+        numMissions: Number(
+          formFields.find((f) => f.ref === "numMissions")?.value || 5
+        ),
+        teamFailLimit: Number(
+          formFields.find((f) => f.ref === "teamFailLimit")?.value || 5
+        ),
         editing: editing,
         id: params.get("edit"),
         copiedFrom: !editing ? params.get("copy") || undefined : undefined,

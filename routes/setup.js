@@ -1448,12 +1448,6 @@ const countChecks = {
 
     return true;
   },
-  Resistance: (roles, count, total, closed, unique) => {
-    if (count["Resistance"] < 1 || count["Spies"] < 1)
-      return "Must have at least one Resistance member and at leasty one Spies member.";
-
-    return true;
-  },
   Battlesnakes: (roles, count, total, closed, unique) => {
     if (total < 2 || total > 10)
       return "Only 2 to 10 players for now. Will support more players soon.";
@@ -1560,11 +1554,38 @@ const countChecks = {
   },
 };
 
+function mafiaSetupHasSpymaster(setup) {
+  const roleName = "Spymaster";
+
+  if (setup.closed) {
+    for (const alignment of ["Village", "Mafia", "Cult", "Independent"]) {
+      if (
+        setup.roles[alignment] &&
+        setup.roles[alignment].some((r) => r.split(":")[0] === roleName)
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  for (const roleSet of setup.roles) {
+    for (const key of Object.keys(roleSet)) {
+      if (key.split(":")[0] === roleName) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 const optionsChecks = {
   Mafia: (setup) => {
-    return setup;
-  },
-  Resistance: (setup) => {
+    if (!mafiaSetupHasSpymaster(setup)) {
+      return setup;
+    }
+
     var firstTeamSize = Number(setup.firstTeamSize);
     var lastTeamSize = Number(setup.lastTeamSize);
     var numMissions = Number(setup.numMissions);

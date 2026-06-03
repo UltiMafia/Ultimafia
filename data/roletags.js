@@ -206,7 +206,6 @@ const tagData = {
       definition: "Village cannot when this is alive.",
     },
   },
-  Resistance: {},
   Jotto: {},
   Acrotopia: {},
   "Secret Dictator": {},
