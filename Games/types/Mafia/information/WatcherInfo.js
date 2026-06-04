@@ -36,18 +36,9 @@ module.exports = class WatcherInfo extends Information {
     } else {
       visitors = this.getVisitorsAppearance(this.target);
     }
-    let MafiaKill = this.getVisitors(this.target, "mafia");
+    let MafiaKill = this.getMafiaKillVisitors(this.target);
 
-    if (
-      MafiaKill &&
-      MafiaKill.length > 1 &&
-      this.limtMafia == true &&
-      this.forceCount == false
-    ) {
-      for (let x = 1; x < MafiaKill.length; x++) {
-        visitors.splice(visitors.indexOf(MafiaKill[x]), 1);
-      }
-    }
+    visitors = this.limitMafiaVisitors(visitors, MafiaKill);
 
     if (visitors.includes(this.creator)) {
       while (visitors.includes(this.creator)) {
@@ -61,6 +52,50 @@ module.exports = class WatcherInfo extends Information {
   getInfoRaw() {
     super.getInfoRaw();
     return this.mainInfo;
+  }
+
+  getMafiaKillVisitors(target) {
+    let visitors = [];
+
+    for (let action of this.game.actions[0]) {
+      if (!action.hasLabel("mafia")) {
+        continue;
+      }
+
+      let toCheck = action.target;
+      if (!Array.isArray(action.target)) {
+        toCheck = [action.target];
+      }
+
+      if (
+        toCheck.includes(target) &&
+        !action.hasLabel("hidden") &&
+        action.actors.length > 0
+      ) {
+        visitors.push(...action.actors);
+      }
+    }
+
+    return visitors;
+  }
+
+  limitMafiaVisitors(visitors, MafiaKill) {
+    if (MafiaKill == null) {
+      MafiaKill = this.getMafiaKillVisitors(this.target);
+    }
+
+    if (
+      MafiaKill &&
+      MafiaKill.length > 1 &&
+      this.limtMafia == true &&
+      this.forceCount == false
+    ) {
+      visitors = visitors.filter(
+        (visitor) => visitor === MafiaKill[0] || !MafiaKill.includes(visitor)
+      );
+    }
+
+    return visitors;
   }
 
   getInfoFormated() {
@@ -84,7 +119,7 @@ module.exports = class WatcherInfo extends Information {
   }
 
   isTrue() {
-    let visitors = this.getVisitors(this.target);
+    let visitors = this.limitMafiaVisitors(this.getVisitors(this.target));
     if (visitors.includes(this.creator)) {
       while (visitors.includes(this.creator)) {
         visitors.splice(visitors.indexOf(this.creator), 1);
@@ -133,7 +168,7 @@ module.exports = class WatcherInfo extends Information {
   }
 
   makeTrue() {
-    let visitors = this.getVisitors(this.target);
+    let visitors = this.limitMafiaVisitors(this.getVisitors(this.target));
     if (visitors.includes(this.creator)) {
       while (visitors.includes(this.creator)) {
         visitors.splice(visitors.indexOf(this.creator), 1);
@@ -142,7 +177,7 @@ module.exports = class WatcherInfo extends Information {
     this.mainInfo = visitors;
   }
   makeFalse() {
-    let visitors = this.getVisitors(this.target);
+    let visitors = this.limitMafiaVisitors(this.getVisitors(this.target));
     if (visitors.includes(this.creator)) {
       while (visitors.includes(this.creator)) {
         visitors.splice(visitors.indexOf(this.creator), 1);
@@ -177,7 +212,7 @@ module.exports = class WatcherInfo extends Information {
     }
   }
   makeFavorable() {
-    let visitors = this.getVisitors(this.target);
+    let visitors = this.limitMafiaVisitors(this.getVisitors(this.target));
     if (visitors.includes(this.creator)) {
       while (visitors.includes(this.creator)) {
         visitors.splice(visitors.indexOf(this.creator), 1);
@@ -202,7 +237,7 @@ module.exports = class WatcherInfo extends Information {
     }
   }
   makeUnfavorable() {
-    let visitors = this.getVisitors(this.target);
+    let visitors = this.limitMafiaVisitors(this.getVisitors(this.target));
     if (visitors.includes(this.creator)) {
       while (visitors.includes(this.creator)) {
         visitors.splice(visitors.indexOf(this.creator), 1);

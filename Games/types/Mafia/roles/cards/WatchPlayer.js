@@ -22,7 +22,8 @@ module.exports = class WatchPlayer extends Card {
               "WatcherInfo",
               this.actor,
               this.game,
-              this.target
+              this.target,
+              true
             );
             info.processInfo();
 

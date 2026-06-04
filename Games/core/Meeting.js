@@ -1292,16 +1292,34 @@ module.exports = class Meeting {
 
   // only people who voted for the final target are actors
   actors = () => {
+    const targets = Array.isArray(this.finalTarget)
+      ? this.finalTarget
+      : [this.finalTarget];
+    const voterOrder = {};
+
+    if (this.name.endsWith(" Kill")) {
+      for (let i = 0; i < this.voteRecord.length; i++) {
+        const vote = this.voteRecord[i];
+
+        if (vote.type !== "vote" || voterOrder[vote.voterId] != null) {
+          continue;
+        }
+
+        for (const target of targets) {
+          if (target instanceof Player && vote.target === target.id) {
+            voterOrder[vote.voterId] = i;
+            break;
+          }
+        }
+      }
+    }
+
     var actors = Object.keys(this.votes)
       .filter((pId) => {
         if (!this.votes[pId] || this.votes[pId] === "*") {
           return false;
         }
-        let targets = this.finalTarget;
         let votes = this.votes[pId];
-        if (!Array.isArray(targets)) {
-          targets = [targets];
-        }
         if (!Array.isArray(votes)) {
           votes = [votes];
         }
@@ -1316,7 +1334,18 @@ module.exports = class Meeting {
         }
         return false;
       })
-      .sort((a, b) => this.members[b].leader - this.members[a].leader)
+      .sort((a, b) => {
+        if (this.name.endsWith(" Kill")) {
+          const aOrder = voterOrder[a] ?? Number.MAX_SAFE_INTEGER;
+          const bOrder = voterOrder[b] ?? Number.MAX_SAFE_INTEGER;
+
+          if (aOrder !== bOrder) {
+            return aOrder - bOrder;
+          }
+        }
+
+        return this.members[b].leader - this.members[a].leader;
+      })
       .map((pId) => this.game.getPlayer(pId));
     return actors;
   };
