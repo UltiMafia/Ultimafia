@@ -124,7 +124,7 @@ describe("Games/Mafia/Spymaster", function () {
     noKill.shouldDisableMeeting("Mafia Action").should.be.false;
   });
 
-  it("does not add mission states to the base cycle without Spymaster", async function () {
+  it("skips Team Approval and Mission without Spymaster", async function () {
     await db.promise;
     await redis.client.flushdbAsync();
 
@@ -134,24 +134,21 @@ describe("Games/Mafia/Spymaster", function () {
     });
     await waitForResult(() => game.started);
 
-    should.not.exist(game.states.find((s) => s.name === "Team Approval"));
-    should.not.exist(game.states.find((s) => s.name === "Mission"));
+    game.ResistanceMode.should.not.be.true;
+    game.shouldSkipState("Team Approval").should.be.true;
+    game.shouldSkipState("Mission").should.be.true;
 
-    const dayIndex = game.states.findIndex((s) => s.name === "Day");
-    game.stateIndexRecord = [dayIndex];
-    const [nextIndex] = game.getNextStateIndex();
-    game.states[nextIndex].name.should.equal("Night");
-  });
+    const teamApproval = game.states.find((s) => s.name === "Team Approval");
+    const mission = game.states.find((s) => s.name === "Mission");
+    teamApproval.skipChecks[0].call(game).should.be.true;
+    mission.skipChecks[0].call(game).should.be.true;
 
-  it("registers mission states when Spymaster is present", async function () {
-    await db.promise;
-    await redis.client.flushdbAsync();
+    game.ResistanceMode = true;
+    teamApproval.skipChecks[0].call(game).should.be.false;
+    mission.skipChecks[0].call(game).should.be.false;
 
-    const game = await makeGame(spymasterSetup());
-    await waitForResult(() => game.started);
-
-    should.exist(game.states.find((s) => s.name === "Team Approval"));
-    should.exist(game.states.find((s) => s.name === "Mission"));
+    game.currentTeamFail = true;
+    mission.skipChecks[0].call(game).should.be.true;
   });
 
   it("skips Day and runs Team Approval after Dawn", async function () {
