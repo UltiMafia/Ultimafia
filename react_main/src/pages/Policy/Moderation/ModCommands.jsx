@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import update from "immutability-helper";
 import {
   Dialog,
@@ -20,6 +20,7 @@ import { useErrorAlert } from "components/Alerts";
 import { UserSearchSelect } from "components/Form";
 import { SearchBar } from "components/Nav";
 import { UserContext, SiteInfoContext } from "Contexts";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import {
   COMMAND_COLOR,
@@ -51,7 +52,9 @@ export function ModCommands(props) {
   const errorAlert = useErrorAlert();
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
+  const isPhoneDevice = useIsPhoneDevice();
   const modCommands = useModCommands(argValues, commandRan, props.setResults);
+  const useNestedScroll = fixedHeight && !isPhoneDevice;
 
   function closeDialogue() {
     setArgValues(prefilledArgs);
@@ -108,8 +111,7 @@ export function ModCommands(props) {
     return 0;
   });
 
-  // Let the parent know that commands are available if needed
-  if (setCommandsAvailable) setCommandsAvailable(false);
+  let hasAvailableCommands = false;
 
   // Finally, do a nested map of group -> option
   const options = groupOptionKeys.map((category) => {
@@ -129,7 +131,7 @@ export function ModCommands(props) {
           matchesSearch &&
           !modCommands[commandName].hidden
         ) {
-          if (setCommandsAvailable) setCommandsAvailable(true);
+          hasAvailableCommands = true;
           return (
             <Typography
               onClick={openDialogue}
@@ -172,6 +174,12 @@ export function ModCommands(props) {
       </Stack>
     );
   });
+
+  useEffect(() => {
+    if (setCommandsAvailable) {
+      setCommandsAvailable(hasAvailableCommands);
+    }
+  }, [hasAvailableCommands, setCommandsAvailable]);
 
   if (command) {
     args = modCommands[command].args.map((arg) => {
@@ -384,8 +392,10 @@ export function ModCommands(props) {
         <Stack
           direction="column"
           sx={{
-            height: fixedHeight ? "360px" : undefined,
-            overflowY: fixedHeight ? "scroll" : undefined,
+            height: useNestedScroll ? "360px" : undefined,
+            overflowY: useNestedScroll ? "auto" : undefined,
+            WebkitOverflowScrolling: useNestedScroll ? "touch" : undefined,
+            overscrollBehavior: useNestedScroll ? "contain" : undefined,
           }}
         >
           {options}

@@ -2,3 +2,9 @@
   border-radius: var(--mui-shape-borderRadius);
   background-color: var(--scheme-color-background);
 }
+
+/* Avoid iOS Safari trapping page scroll inside nested panels */
+.moderation {
+  touch-action: manipulation;
+  -webkit-overflow-scrolling: touch;
+}

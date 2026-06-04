@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import {
   Box,
@@ -27,7 +27,7 @@ export function GroupPanels({ user }) {
 
   const canManageGroup = Boolean(user?.perms?.giveGroup);
 
-  const fetchGroups = useCallback(() => {
+  function fetchGroups() {
     return axios
       .get("/api/mod/groups")
       .then((res) => {
@@ -38,11 +38,11 @@ export function GroupPanels({ user }) {
         setLoaded(true);
         errorAlert(e);
       });
-  }, [errorAlert]);
+  }
 
   useEffect(() => {
     fetchGroups();
-  }, [fetchGroups]);
+  }, []);
 
   function openAddPopover(event, groupName) {
     setAddAnchor(event.currentTarget);
