@@ -29,7 +29,7 @@ module.exports = class RevealEvilPlayersToSelf extends Card {
           return;
         }
 
-        if (this.role.modifier.split("/").includes("Retired")) {
+        if (this.modifier.split("/").includes("Retired")) {
           return;
         }
 
