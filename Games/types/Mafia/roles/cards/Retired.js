@@ -33,10 +33,10 @@ module.exports = class Retired extends Card {
 
     this.listeners = {
       start: function () {
-        if (this.role.name !== "Seer") {
+        if (this.name !== "Seer") {
           return;
         }
-        if (!this.role.modifier.split("/").includes("Retired")) {
+        if (!this.modifier.split("/").includes("Retired")) {
           return;
         }
 
@@ -50,8 +50,8 @@ module.exports = class Retired extends Card {
         if (player != this.player) return;
 
         if (
-          this.role.name === "Seer" &&
-          this.role.modifier.split("/").includes("Retired")
+          this.name === "Seer" &&
+          this.modifier.split("/").includes("Retired")
         ) {
           return;
         }

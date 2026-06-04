@@ -13,7 +13,7 @@ module.exports = class LoseIfSeerGuessed extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT + 1,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if (this.role.modifier.split("/").includes("Retired")) {
+        if (this.modifier.split("/").includes("Retired")) {
           return;
         }
 
