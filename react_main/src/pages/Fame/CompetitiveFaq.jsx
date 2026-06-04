@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useTheme } from "@mui/material/styles";
 import {
   Typography,
   Link,
@@ -18,7 +19,7 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 const POINTS_ICON = require(`images/points.png`);
 const PRESTIGE_ICON = require(`images/prestige.png`);
 
-export function CompetitiveFaqContent() {
+export default function CompetitiveFaq() {
   const isPhoneDevice = useIsPhoneDevice();
 
   return (
@@ -242,8 +243,4 @@ export function CompetitiveFaqContent() {
       </Typography>
     </>
   );
-}
-
-export default function CompetitiveFaq() {
-  return <CompetitiveFaqContent />;
 }
