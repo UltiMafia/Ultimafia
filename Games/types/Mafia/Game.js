@@ -72,16 +72,6 @@ module.exports = class MafiaGame extends Game {
         name: "Day",
         length: this.BaseDayLength,
       },
-      {
-        name: "Team Approval",
-        length:
-          options.settings.stateLengths["Team Approval"] || 1000 * 60,
-      },
-      {
-        name: "Mission",
-        length: options.settings.stateLengths["Mission"] || 1000 * 60,
-        skipChecks: [() => this.currentTeamFail],
-      },
     ];
     this.useObituaries = true;
     this.pregameWaitLength = options.settings.pregameWaitLength;

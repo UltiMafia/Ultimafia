@@ -46,6 +46,8 @@ module.exports = class MissionGame extends Card {
 
         this.game.leaderIndex = Random.randInt(0, this.game.players.length - 1);
 
+        this.registerMissionStates();
+
         for (let p of this.game.players) {
           p.holdItem("NoVillageMeeting");
           p.holdItem("NoMafiaKill");
@@ -100,5 +102,41 @@ module.exports = class MissionGame extends Card {
         },
       },
     };
+  }
+
+  registerMissionStates() {
+    const game = this.game;
+    if (game.states.some((s) => s.name === "Team Approval")) {
+      return;
+    }
+
+    const dayIndex = game.states.findIndex((s) => s.name === "Day");
+    if (dayIndex === -1) {
+      return;
+    }
+
+    const teamApprovalLength =
+      game.stateLengths?.["Team Approval"] || 1000 * 60;
+    const missionLength = game.stateLengths?.["Mission"] || 1000 * 60;
+
+    game.addStateType(
+      "Team Approval",
+      dayIndex + 1,
+      teamApprovalLength,
+      false,
+      function () {
+        return !game.ResistanceMode;
+      }
+    );
+
+    game.addStateType(
+      "Mission",
+      dayIndex + 2,
+      missionLength,
+      false,
+      function () {
+        return !game.ResistanceMode || game.currentTeamFail;
+      }
+    );
   }
 };

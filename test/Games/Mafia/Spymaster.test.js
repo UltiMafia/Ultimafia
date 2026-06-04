@@ -124,6 +124,36 @@ describe("Games/Mafia/Spymaster", function () {
     noKill.shouldDisableMeeting("Mafia Action").should.be.false;
   });
 
+  it("does not add mission states to the base cycle without Spymaster", async function () {
+    await db.promise;
+    await redis.client.flushdbAsync();
+
+    const game = await makeGame({
+      total: 5,
+      roles: [{ Villager: 4, Mafioso: 1 }],
+    });
+    await waitForResult(() => game.started);
+
+    should.not.exist(game.states.find((s) => s.name === "Team Approval"));
+    should.not.exist(game.states.find((s) => s.name === "Mission"));
+
+    const dayIndex = game.states.findIndex((s) => s.name === "Day");
+    game.stateIndexRecord = [dayIndex];
+    const [nextIndex] = game.getNextStateIndex();
+    game.states[nextIndex].name.should.equal("Night");
+  });
+
+  it("registers mission states when Spymaster is present", async function () {
+    await db.promise;
+    await redis.client.flushdbAsync();
+
+    const game = await makeGame(spymasterSetup());
+    await waitForResult(() => game.started);
+
+    should.exist(game.states.find((s) => s.name === "Team Approval"));
+    should.exist(game.states.find((s) => s.name === "Mission"));
+  });
+
   it("skips Day and runs Team Approval after Dawn", async function () {
     await db.promise;
     await redis.client.flushdbAsync();
