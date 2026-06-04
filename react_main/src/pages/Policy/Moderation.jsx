@@ -78,6 +78,8 @@ export default function Moderation() {
   }, []);
 
   useEffect(() => {
+    if (!user.loaded) return;
+
     if (
       location.pathname.includes("/reports") &&
       !user?.perms?.viewModActions
@@ -94,7 +96,14 @@ export default function Moderation() {
     ) {
       navigate("/policy/moderation", { replace: true });
     }
-  }, [location.pathname, user?.perms?.viewModActions, user?.perms?.manageCompetitive, user?.perms?.whitelist, navigate]);
+  }, [
+    location.pathname,
+    user.loaded,
+    user?.perms?.viewModActions,
+    user?.perms?.manageCompetitive,
+    user?.perms?.whitelist,
+    navigate,
+  ]);
 
   const handleTabChange = (_, newValue) => {
     const base = "/policy/moderation";
@@ -108,7 +117,18 @@ export default function Moderation() {
 
   return (
     <Box>
-      <Tabs value={tabValue} onChange={handleTabChange}>
+      <Tabs
+        value={tabValue}
+        onChange={handleTabChange}
+        variant="scrollable"
+        scrollButtons="auto"
+        allowScrollButtonsMobile
+        sx={{
+          borderBottom: 1,
+          borderColor: "divider",
+          mb: 2,
+        }}
+      >
         <Tab label="Moderation Log" value="log" />
         <Tab label="Staff Handbook" value="handbook" />
         <Tab label="Volunteer" value="volunteer" />

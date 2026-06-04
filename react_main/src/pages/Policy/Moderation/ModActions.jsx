@@ -205,7 +205,7 @@ export function ModActions(props) {
                 size="small"
               />
             )}
-            sx={{ width: 290 }}
+            sx={{ width: "100%", maxWidth: 290 }}
             freeSolo
             clearOnEscape
           />
@@ -224,7 +224,7 @@ export function ModActions(props) {
                 size="small"
               />
             )}
-            sx={{ width: 290 }}
+            sx={{ width: "100%", maxWidth: 290 }}
             clearOnEscape
           />
         </Stack>
@@ -246,23 +246,30 @@ function ModActionArg({ label, arg }) {
   var value = null;
   const [userInfo, setUserInfo] = useState(null);
 
-  useEffect(
-    async function () {
-      if (label === "User") {
-        try {
-          const res = await axios.get(`/api/user/${arg}/info`);
-          setUserInfo(res.data);
-        } catch (e) {
+  useEffect(() => {
+    if (label !== "User") return;
+
+    let cancelled = false;
+
+    axios
+      .get(`/api/user/${arg}/info`)
+      .then((res) => {
+        if (!cancelled) setUserInfo(res.data);
+      })
+      .catch(() => {
+        if (!cancelled) {
           setUserInfo({
             id: arg,
             name: `[not found: ${arg}]`,
             avatar: false,
           });
         }
-      }
-    },
-    [label, arg]
-  );
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [label, arg]);
 
   if (userInfo) {
     value = (
