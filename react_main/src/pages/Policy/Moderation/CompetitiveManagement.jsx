@@ -19,11 +19,8 @@ import Setup from "components/Setup";
 
 import { COMMAND_COLOR } from "./commands";
 
-const DEFAULT_MINIMUM_POINTS = 150;
-
 export default function CompetitiveManagement() {
   const [seasonData, setSeasonData] = useState(null);
-  const [roundSettings, setRoundSettings] = useState({});
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [addSetupDialogOpen, setAddSetupDialogOpen] = useState(false);
@@ -56,7 +53,6 @@ export default function CompetitiveManagement() {
             return;
           }
           setSeasonData(response.data);
-          setRoundSettings(response.data.roundSettings || {});
           setLoading(false);
         } else {
           errorAlert("Invalid season data received.");
@@ -104,42 +100,21 @@ export default function CompetitiveManagement() {
     }
   };
 
-  const handleMinimumPointsChange = (roundNumber, value) => {
-    const numValue = parseInt(value, 10);
-    setRoundSettings((prev) => ({
-      ...prev,
-      [roundNumber]: {
-        ...prev[roundNumber],
-        minimumPoints: isNaN(numValue) ? DEFAULT_MINIMUM_POINTS : numValue,
-      },
-    }));
-  };
-
   const handleSave = () => {
     if (!seasonData) return;
 
     setSaving(true);
 
-    const setupOrderPromise = axios.post("/api/competitive/updateSetupOrder", {
-      setupOrder: seasonData.setupOrder,
-    });
-
-    const roundSettingsPromise = axios.post(
-      "/api/competitive/updateRoundSettings",
-      {
-        roundSettings: roundSettings,
-      }
-    );
-
-    Promise.all([setupOrderPromise, roundSettingsPromise])
+    axios
+      .post("/api/competitive/updateSetupOrder", {
+        setupOrder: seasonData.setupOrder,
+      })
       .then(() => {
         siteInfo.showAlert("Changes saved successfully.", "success");
         setSaving(false);
       })
       .catch((error) => {
-        errorAlert(
-          error.response?.data || "Failed to save changes."
-        );
+        errorAlert(error.response?.data || "Failed to save changes.");
         setSaving(false);
       });
   };
@@ -177,7 +152,6 @@ export default function CompetitiveManagement() {
               response.data.setupOrder
             ) {
               setSeasonData(response.data);
-              setRoundSettings(response.data.roundSettings || {});
               setAddSetupDialogOpen(false);
               setSetupIdToAdd("");
               setAddingSetup(false);
@@ -266,23 +240,6 @@ export default function CompetitiveManagement() {
                           <i className="fas fa-plus" />
                         </IconButton>
                       </Stack>
-                      <TextField
-                        label="Minimum Points"
-                        type="number"
-                        size="small"
-                        value={
-                          roundSettings[roundIndex + 1]?.minimumPoints ??
-                          DEFAULT_MINIMUM_POINTS
-                        }
-                        onChange={(e) =>
-                          handleMinimumPointsChange(
-                            roundIndex + 1,
-                            e.target.value
-                          )
-                        }
-                        inputProps={{ min: 0 }}
-                        sx={{ mb: 1, maxWidth: 200 }}
-                      />
                       <Stack direction="column" spacing={1}>
                         {roundSetups && roundSetups.length > 0 ? (
                           roundSetups.map((setupNumber, setupIndex) => {
@@ -318,65 +275,39 @@ export default function CompetitiveManagement() {
                                   display: "flex",
                                   alignItems: "center",
                                   gap: 1,
-                                  p: 1,
-                                  backgroundColor: "var(--scheme-color)",
-                                  borderRadius: 1,
                                 }}
                               >
-                                <Stack direction="column" spacing={0.5}>
-                                  <IconButton
-                                    size="small"
-                                    onClick={() =>
-                                      moveSetup(roundIndex, setupIndex, "up")
-                                    }
-                                    disabled={roundIndex === 0}
-                                    sx={{
-                                      width: "24px",
-                                      height: "24px",
-                                      fontSize: "16px",
-                                    }}
-                                  >
-                                    ↑
-                                  </IconButton>
-                                  <IconButton
-                                    size="small"
-                                    onClick={() =>
-                                      moveSetup(
-                                        roundIndex,
-                                        setupIndex,
-                                        "down"
-                                      )
-                                    }
-                                    disabled={
-                                      roundIndex ===
-                                      seasonData.setupOrder.length - 1
-                                    }
-                                    sx={{
-                                      width: "24px",
-                                      height: "24px",
-                                      fontSize: "16px",
-                                    }}
-                                  >
-                                    ↓
-                                  </IconButton>
-                                </Stack>
-                                <Box sx={{ flex: 1 }}>
-                                  {setup.id ? (
-                                    <Setup setup={setup} />
-                                  ) : (
-                                    <Typography color="error">
-                                      Setup missing id:{" "}
-                                      {JSON.stringify(setup)}
-                                    </Typography>
-                                  )}
-                                </Box>
+                                <Setup setup={setup} />
+                                <IconButton
+                                  size="small"
+                                  onClick={() =>
+                                    moveSetup(roundIndex, setupIndex, "up")
+                                  }
+                                  disabled={roundIndex === 0}
+                                  title="Move to previous round"
+                                >
+                                  <i className="fas fa-arrow-up" />
+                                </IconButton>
+                                <IconButton
+                                  size="small"
+                                  onClick={() =>
+                                    moveSetup(roundIndex, setupIndex, "down")
+                                  }
+                                  disabled={
+                                    roundIndex ===
+                                    seasonData.setupOrder.length - 1
+                                  }
+                                  title="Move to next round"
+                                >
+                                  <i className="fas fa-arrow-down" />
+                                </IconButton>
                                 <IconButton
                                   size="small"
                                   onClick={() =>
                                     handleRemoveSetup(roundIndex, setupIndex)
                                   }
                                   sx={{ color: "error.main" }}
-                                  title="Remove setup from this round"
+                                  title="Remove setup from round"
                                 >
                                   <i className="fas fa-times" />
                                 </IconButton>
@@ -385,70 +316,51 @@ export default function CompetitiveManagement() {
                           })
                         ) : (
                           <Typography color="text.secondary">
-                            No setups in this round
+                            No setups in this round.
                           </Typography>
                         )}
                       </Stack>
                     </Box>
                   ))
                 ) : (
-                  <Typography color="text.secondary">
-                    No rounds configured
-                  </Typography>
+                  <Typography>No rounds configured.</Typography>
                 )}
               </Stack>
             </Box>
-            <Stack direction="row" justifyContent="flex-end" spacing={1}>
-              <Button
-                onClick={handleSave}
-                disabled={saving}
-                variant="contained"
-              >
-                {saving ? "Saving..." : "Save Changes"}
-              </Button>
-            </Stack>
+
+            <Button
+              variant="contained"
+              onClick={handleSave}
+              disabled={saving}
+              sx={{ alignSelf: "flex-start" }}
+            >
+              {saving ? "Saving..." : "Save Changes"}
+            </Button>
           </>
-        ) : null}
+        ) : (
+          <Typography>No active competitive season found.</Typography>
+        )}
       </Stack>
 
       <Dialog
         open={addSetupDialogOpen}
         onClose={() => setAddSetupDialogOpen(false)}
       >
-        <DialogTitle>
-          Add Setup to Round{" "}
-          {addSetupRoundIndex !== null ? addSetupRoundIndex + 1 : ""}
-        </DialogTitle>
+        <DialogTitle>Add Setup to Round</DialogTitle>
         <DialogContent>
-          <Stack direction="column" spacing={2} sx={{ mt: 1 }}>
+          <Stack spacing={2} sx={{ mt: 1, minWidth: 300 }}>
             <TextField
               label="Setup ID"
               value={setupIdToAdd}
               onChange={(e) => setSetupIdToAdd(e.target.value)}
-              placeholder="Enter competitive setup ID"
               fullWidth
-              disabled={addingSetup}
-              onKeyPress={(e) => {
-                if (
-                  e.key === "Enter" &&
-                  !addingSetup &&
-                  setupIdToAdd.trim()
-                ) {
-                  handleConfirmAddSetup();
-                }
-              }}
             />
-            <Stack direction="row" justifyContent="flex-end" spacing={1}>
+            <Stack direction="row" spacing={1} justifyContent="flex-end">
+              <Button onClick={() => setAddSetupDialogOpen(false)}>Cancel</Button>
               <Button
-                onClick={() => setAddSetupDialogOpen(false)}
-                disabled={addingSetup}
-              >
-                Cancel
-              </Button>
-              <Button
+                variant="contained"
                 onClick={handleConfirmAddSetup}
                 disabled={addingSetup || !setupIdToAdd.trim()}
-                variant="contained"
               >
                 {addingSetup ? "Adding..." : "Add Setup"}
               </Button>

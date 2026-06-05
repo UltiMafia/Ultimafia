@@ -1011,38 +1011,18 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Toggle Auto-Approval": {
-      perm: "adjustMinGames",
+    "Clear Legacy Groups": {
+      rank: Infinity,
       category: "Site Management",
       args: [],
       run: function () {
         axios
-          .post("/api/mod/autoApproval")
+          .post("/api/mod/clearLegacyGroups")
           .then((res) => {
-            const status = res.data.autoApprovalEnabled ? "enabled" : "disabled";
             siteInfo.showAlert(
-              `Legacy auto-approval flag is now ${status}. Ranked and Competitive access is granted when users meet the configured requirements.`,
-              "success"
-            );
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Sync Competitive Approvals": {
-      perm: "adjustMinGames",
-      category: "Site Management",
-      args: [],
-      run: function () {
-        axios
-          .post("/api/mod/syncCompetitiveApprovals")
-          .then((res) => {
-            const rankedCount = res.data.rankedGranted || 0;
-            const competitiveCount = res.data.competitiveGranted || 0;
-            siteInfo.showAlert(
-              rankedCount > 0 || competitiveCount > 0
-                ? `Granted Ranked Player to ${rankedCount} user(s) and Competitive Player to ${competitiveCount} user(s).`
-                : "No users needed restoration; all qualifying users already have the right access.",
+              res.data && typeof res.data === "string"
+                ? res.data
+                : "Legacy ranked/competitive group memberships cleared.",
               "success"
             );
             commandRan();
@@ -1085,72 +1065,6 @@ export function useModCommands(argValues, commandRan, setResults) {
           .post("/api/setup/competitive", argValues)
           .then(() => {
             siteInfo.showAlert("Setup competitive status toggled.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Ranked Approve": {
-      perm: "approveRanked",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/rankedApprove", argValues)
-          .then(() => {
-            siteInfo.showAlert("User approved for ranked play.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Fix Access": {
-      perms: ["approveRanked", "approveCompetitive"],
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/fixAccess", argValues)
-          .then((res) => {
-            siteInfo.showAlert(
-              res.data && typeof res.data === "string" ? res.data : "Access restored.",
-              "success"
-            );
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Competitive Approve": {
-      perm: "approveCompetitive",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/competitiveApprove", argValues)
-          .then(() => {
-            siteInfo.showAlert(
-              "User approved for competitive play.",
-              "success"
-            );
             commandRan();
           })
           .catch(errorAlert);

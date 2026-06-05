@@ -1909,6 +1909,10 @@ router.post("/settings/update", async function (req, res) {
       value = value === "true" || value === true ? "true" : "false";
     }
 
+    if (prop === "seenRankedWarning" || prop === "seenCompetitiveWarning") {
+      value = value === "true" || value === true;
+    }
+
     var itemsOwned = await redis.getUserItemsOwned(userId);
 
     if (

@@ -8,9 +8,6 @@ const routeUtils = require("../routes/utils");
 const models = require("../db/models");
 const fbServiceAccount = require("../" + process.env.FIREBASE_JSON_FILE);
 const logger = require("../modules/logging")(".");
-const {
-  syncRankedCompetitiveAccess,
-} = require("../modules/userEligibility");
 const { sendFlaggedUserDiscordAlert } = require("./report");
 const router = express.Router();
 const passport = require("passport");
@@ -424,8 +421,6 @@ async function authSuccess(req, uid, email, discordProfile) {
         );
 
         sendFlaggedUserDiscordAlert(name, id, flagReason || "Suspicious IP");
-      } else {
-        await syncRankedCompetitiveAccess(id);
       }
     } else if (!id && bannedUser) {
       //(8) (9)
@@ -499,7 +494,6 @@ async function authSuccess(req, uid, email, discordProfile) {
         );
       }
 
-      await syncRankedCompetitiveAccess(id);
     }
 
     req.session.user = {

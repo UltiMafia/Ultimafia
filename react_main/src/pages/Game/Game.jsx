@@ -115,6 +115,10 @@ import { Timer } from "components/gameComponents/Timer";
 import { ChangeHeadPing } from "components/gameComponents/ChangeHeadPing";
 import RoleRevealModal from "components/gameComponents/RoleRevealModal";
 import ChangeSetupDialog from "components/gameComponents/ChangeSetupDialog";
+import RankedCompetitiveWarningModal, {
+  acknowledgeModeWarning,
+  getPendingModeWarnings,
+} from "components/RankedCompetitiveWarningModal";
 import UrgencyOverlay from "./components/UrgencyOverlay";
 import ReadyCheckDialog from "./components/ReadyCheck";
 import RoleMarkerToggle from "./components/RoleMarkerToggle";
@@ -175,8 +179,11 @@ export default function Game() {
   const [roleRevealData, setRoleRevealData] = useState(null);
   const [hostId, setHostId] = useState(null);
   const [changeSetupDialogOpen, setChangeSetupDialogOpen] = useState(false);
+  const [modeWarning, setModeWarning] = useState(null);
+  const [pendingModeWarnings, setPendingModeWarnings] = useState([]);
 
   const playersRef = useRef();
+  const connectionPreparedRef = useRef(false);
   const selfRef = useRef();
   const noLeaveRef = useRef();
 
@@ -533,7 +540,7 @@ export default function Game() {
         !finished &&
         !review
       ) {
-        getConnectionInfo();
+        prepareConnection();
       }
 
       return;
@@ -841,7 +848,7 @@ export default function Game() {
     });
   }, [connected]);
 
-  function getConnectionInfo() {
+  function connectToGame() {
     const urlParams = new URLSearchParams(window.location.search);
     const isSpectating = urlParams.get("spectate") === "true";
 
@@ -865,6 +872,64 @@ export default function Game() {
           errorAlert(e);
         }
       });
+  }
+
+  async function prepareConnection() {
+    if (connectionPreparedRef.current) {
+      connectToGame();
+      return;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const isSpectating = urlParams.get("spectate") === "true";
+
+    if (isSpectating || review) {
+      connectionPreparedRef.current = true;
+      connectToGame();
+      return;
+    }
+
+    try {
+      const res = await axios.get(`/api/game/${gameId}/info`);
+      const gameSettings = res.data?.settings || {};
+      const warnings = getPendingModeWarnings(user, {
+        ranked: gameSettings.ranked,
+        competitive: gameSettings.competitive,
+      });
+
+      if (warnings.length > 0) {
+        setPendingModeWarnings(warnings);
+        setModeWarning(warnings[0]);
+        return;
+      }
+
+      connectionPreparedRef.current = true;
+      connectToGame();
+    } catch (e) {
+      const msg = e && e.response && e.response.data;
+      if (msg === "Game not found.") setReview(true);
+      else {
+        setLeave(true);
+        errorAlert(e);
+      }
+    }
+  }
+
+  async function handleModeWarningAcknowledge() {
+    try {
+      await acknowledgeModeWarning(user, modeWarning);
+      const remaining = pendingModeWarnings.slice(1);
+      setPendingModeWarnings(remaining);
+      if (remaining.length > 0) {
+        setModeWarning(remaining[0]);
+      } else {
+        setModeWarning(null);
+        connectionPreparedRef.current = true;
+        connectToGame();
+      }
+    } catch (e) {
+      errorAlert(e);
+    }
   }
 
   function onMessageQuote(message) {
@@ -896,6 +961,12 @@ export default function Game() {
   else if (!loaded || stateViewing == null)
     return (
       <div className="game">
+        <RankedCompetitiveWarningModal
+          mode={modeWarning}
+          show={Boolean(modeWarning)}
+          onAcknowledge={handleModeWarningAcknowledge}
+          onCancel={() => setLeave(true)}
+        />
         <Loading />
       </div>
     );

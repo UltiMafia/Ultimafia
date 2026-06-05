@@ -117,14 +117,16 @@ export function ModCommands(props) {
   const options = groupOptionKeys.map((category) => {
     const groupOptions = groupedOptions[category]
       .map((commandName) => {
+        const commandDef = modCommands[commandName];
         const commandPerms =
-          modCommands[commandName].perms ||
-          (modCommands[commandName].perm
-            ? [modCommands[commandName].perm]
-            : []);
-        const userHasPermission = commandPerms.some(
-          (perm) => user.perms[perm]
-        );
+          commandDef.perms ||
+          (commandDef.perm ? [commandDef.perm] : []);
+        const rankRequired = commandDef.rank;
+        const userRank = Number(user.rank || 0);
+        const userHasPermission =
+          rankRequired != null
+            ? userRank >= rankRequired
+            : commandPerms.some((perm) => user.perms[perm]);
         const matchesSearch =
           !searchVal || commandName.toLowerCase().includes(searchVal);
 

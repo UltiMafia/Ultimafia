@@ -1,26 +1,23 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 
-import axios from "axios";
 import {
-  Alert,
   Box,
   Button,
-  Divider,
-  IconButton,
-  Paper,
   Stack,
-  TextField,
-  Typography,
 } from "@mui/material";
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import Form from "components/Form";
 import { useForm } from "components/Form";
 import Setup from "components/Setup";
+import RankedCompetitiveWarningModal, {
+  acknowledgeModeWarning,
+  getPendingModeWarnings,
+} from "components/RankedCompetitiveWarningModal";
 
 import HostMafia from "./gameTypeHostForms/HostMafia";
 import HostJotto from "./gameTypeHostForms/HostJotto";
@@ -45,6 +42,8 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
   const navigate = useNavigate();
+  const [warningMode, setWarningMode] = useState(null);
+  const [pendingWarnings, setPendingWarnings] = useState([]);
 
   function getNormalizedGameType(gameType) {
     return String(gameType || "").trim();
@@ -117,17 +116,49 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
     for (let field of formFields) if (field.ref === ref) return field.value;
   }
 
-  const onHostGameWrapper = () => {
-    if (!supportsGameType) {
-      errorAlert("This setup cannot be hosted right now. Please refresh and try again.");
-      return;
-    }
+  function hostGameNow() {
     onHostGame(setup.id, getFormFieldValue)
       .then((res) => {
         navigate(`/game/${res.data}`);
       })
       .catch(errorAlert);
-  };
+  }
+
+  function beginHostFlow() {
+    if (!supportsGameType) {
+      errorAlert("This setup cannot be hosted right now. Please refresh and try again.");
+      return;
+    }
+
+    const warnings = getPendingModeWarnings(user, {
+      ranked: getFormFieldValue("ranked"),
+      competitive: getFormFieldValue("competitive"),
+    });
+
+    if (warnings.length > 0) {
+      setPendingWarnings(warnings);
+      setWarningMode(warnings[0]);
+      return;
+    }
+
+    hostGameNow();
+  }
+
+  async function handleWarningAcknowledge() {
+    try {
+      await acknowledgeModeWarning(user, warningMode);
+      const remaining = pendingWarnings.slice(1);
+      setPendingWarnings(remaining);
+      if (remaining.length > 0) {
+        setWarningMode(remaining[0]);
+      } else {
+        setWarningMode(null);
+        hostGameNow();
+      }
+    } catch (e) {
+      errorAlert(e);
+    }
+  }
 
   const lobby = getFormFieldValue("lobby");
   const isRanked = getFormFieldValue("ranked");
@@ -143,15 +174,17 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
     }
   }, [isCompetitive]);
 
-  var alertText = "";
-
-  if (!user.canPlayRanked && isRanked) {
-    // TODO use npm link so that the frontend can access constants.js and stop hardcoding this
-    alertText = `You must play 5 games before playing ranked.`;
-  }
-
   return (
     <>
+      <RankedCompetitiveWarningModal
+        mode={warningMode}
+        show={Boolean(warningMode)}
+        onAcknowledge={handleWarningAcknowledge}
+        onCancel={() => {
+          setWarningMode(null);
+          setPendingWarnings([]);
+        }}
+      />
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
@@ -176,7 +209,7 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
               </Button>
               <div style={{ flex: "1" }} />
               <Button
-                onClick={onHostGameWrapper}
+                onClick={beginHostFlow}
                 sx={{
                   flex: "1",
                 }}
@@ -195,7 +228,6 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
                 true
               )}
             />
-            {alertText && <Alert severity="warning">{alertText}</Alert>}
             <Form compact fields={formFields} onChange={updateFormFields} />
           </Stack>
         </DialogContent>
