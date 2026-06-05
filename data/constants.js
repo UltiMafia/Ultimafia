@@ -347,7 +347,9 @@ module.exports = {
   msgSpamRateLimit: 10,
   voteSpamSumLimit: 15,
   voteSpamRateLimit: 10,
-  rankedCompetitiveMsgCooldownMs: 2 * 1000,
+  rankedCompetitiveTypingWpm: 130,
+  rankedCompetitiveAvgWordLength: 3.9914985005289525,
+  rankedCompetitiveQuoteCooldownMs: 2 * 1000,
 
   maxUserNameLength: 20,
   maxGroupNameLength: 20,

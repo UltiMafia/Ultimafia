@@ -138,28 +138,21 @@ module.exports = class Player {
       );
     var speechPast = [];
     var votePast = [];
+    var lastQuoteMessageId = null;
+    var lastQuoteTime = 0;
 
-    const sendRankedCompetitiveChatCooldown = (meetingId) => {
-      const cooldownMs =
-        this.game.started && (this.game.ranked || this.game.competitive)
-          ? constants.rankedCompetitiveMsgCooldownMs
-          : 0;
+    const isRankedCompetitive = () =>
+      this.game.started && (this.game.ranked || this.game.competitive);
 
-      if (!cooldownMs || !Spam.isFixedCooldownActive(speechPast, cooldownMs)) {
-        return false;
-      }
+    const sendSpeakCooldown = (meetingId, cooldownMs) => {
+      if (!cooldownMs) return;
 
       const sentAt = Date.now();
       this.send("speakCooldown", {
         meetingId,
         sentAt,
-        cooldownMs: Spam.getFixedCooldownRemainingMs(
-          speechPast,
-          cooldownMs,
-          sentAt
-        ),
+        cooldownMs,
       });
-      return true;
     };
 
     socket.on("readyCheck verify", () => {
@@ -216,7 +209,19 @@ module.exports = class Player {
           return;
         }
 
-        if (sendRankedCompetitiveChatCooldown(message.meetingId)) return;
+        if (isRankedCompetitive()) {
+          const typingCooldownMs = Spam.getTypingSpeedCooldownRemainingMs(
+            speechPast,
+            message.content,
+            constants.rankedCompetitiveTypingWpm,
+            constants.rankedCompetitiveAvgWordLength
+          );
+
+          if (typingCooldownMs > 0) {
+            sendSpeakCooldown(message.meetingId, typingCooldownMs);
+            return;
+          }
+        }
 
         if (
           message.content[0] == "/" &&
@@ -282,9 +287,25 @@ module.exports = class Player {
           return;
         }
 
-        if (sendRankedCompetitiveChatCooldown(quote.toMeetingId)) return;
+        if (
+          isRankedCompetitive() &&
+          quote.messageId === lastQuoteMessageId
+        ) {
+          const elapsed = Date.now() - lastQuoteTime;
+          const quoteCooldownMs = Math.max(
+            0,
+            constants.rankedCompetitiveQuoteCooldownMs - elapsed
+          );
+
+          if (quoteCooldownMs > 0) {
+            sendSpeakCooldown(quote.toMeetingId, quoteCooldownMs);
+            return;
+          }
+        }
 
         speechPast.push(Date.now());
+        lastQuoteMessageId = quote.messageId;
+        lastQuoteTime = Date.now();
 
         var meeting = this.game.getMeeting(quote.toMeetingId);
         if (!meeting) return;

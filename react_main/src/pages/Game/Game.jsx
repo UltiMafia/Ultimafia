@@ -2537,6 +2537,7 @@ export function Timestamp(props) {
 }
 
 function SpeechInput(props) {
+  const game = useContext(GameContext);
   const socket = props.socket;
   const meetings = props.meetings;
   const selTab = props.selTab;
@@ -2545,6 +2546,7 @@ function SpeechInput(props) {
 
   const speechInput = props.speechInput;
   const setSpeechInput = props.setSpeechInput;
+  const pendingSpeechRef = useRef(null);
   const [speechDropdownOptions, setSpeechDropdownOptions] = useState([]);
   const [speechDropdownValue, setSpeechDropdownValue] = useState("Say");
   const [lastTyped, setLastTyped] = useState(0);
@@ -2623,6 +2625,30 @@ function SpeechInput(props) {
       socket.send("typing", { meetingId: typingIn, isTyping: false });
     }
   }, [lastTyped]);
+
+  useEffect(() => {
+    if (
+      pendingSpeechRef.current == null ||
+      !game.self ||
+      !selTab ||
+      !isCurrentState
+    ) {
+      return;
+    }
+
+    const meeting = meetings[selTab];
+    if (!meeting?.messages?.length) return;
+
+    const lastMessage = meeting.messages[meeting.messages.length - 1];
+    if (
+      lastMessage.senderId === game.self &&
+      !lastMessage.isQuote &&
+      lastMessage.content === pendingSpeechRef.current
+    ) {
+      setSpeechInput("");
+      pendingSpeechRef.current = null;
+    }
+  }, [game.history, game.self, selTab, isCurrentState, meetings, setSpeechInput]);
 
   useEffect(() => {
     if (!socket.on) return;
@@ -2755,9 +2781,20 @@ function SpeechInput(props) {
 
       if (abilityName === "Say") abilityName = null;
 
+      const isCommand =
+        speechInput[0] === "/" && speechInput.slice(0, 4) !== "/me ";
+
       if (textIncludesSlurs(speechInput)) {
         socket.send("slurDetected");
+        pendingSpeechRef.current = null;
+        setSpeechInput("");
       } else {
+        if (isCommand) {
+          pendingSpeechRef.current = null;
+        } else {
+          pendingSpeechRef.current = speechInput;
+        }
+
         socket.send("speak", {
           content: speechInput,
           meetingId: selTab,
@@ -2766,9 +2803,11 @@ function SpeechInput(props) {
           ...checkboxOptions,
         });
         props.setAutoScroll(true);
-      }
 
-      setSpeechInput("");
+        if (isCommand) {
+          setSpeechInput("");
+        }
+      }
     } else if (e.key === "Tab") {
       e.preventDefault();
       const words = speechInput.split(" ");

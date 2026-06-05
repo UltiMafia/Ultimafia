@@ -65,4 +65,58 @@ module.exports = class Spam {
   static isFixedCooldownActive(past, cooldownMs, now = Date.now()) {
     return this.getFixedCooldownRemainingMs(past, cooldownMs, now) > 0;
   }
+
+  static getMessageCharCountExcludingWhitespace(content) {
+    let count = 0;
+
+    for (let i = 0; i < content.length; i++) {
+      if (!/\s/.test(content[i])) {
+        count += 1;
+      }
+    }
+
+    return count;
+  }
+
+  static getRankedCompetitiveMinIntervalMs(content, wpm, avgWordLength) {
+    const messageLen = this.getMessageCharCountExcludingWhitespace(content);
+    return ((messageLen / avgWordLength) / wpm) * 60 * 1000;
+  }
+
+  static getTypingSpeedCooldownRemainingMs(
+    past,
+    content,
+    wpm,
+    avgWordLength,
+    now = Date.now()
+  ) {
+    if (past.length === 0) return 0;
+
+    const minIntervalMs = this.getRankedCompetitiveMinIntervalMs(
+      content,
+      wpm,
+      avgWordLength
+    );
+    const elapsed = now - past[past.length - 1];
+
+    return Math.max(0, minIntervalMs - elapsed);
+  }
+
+  static isTypingSpeedViolation(
+    past,
+    content,
+    wpm,
+    avgWordLength,
+    now = Date.now()
+  ) {
+    return (
+      this.getTypingSpeedCooldownRemainingMs(
+        past,
+        content,
+        wpm,
+        avgWordLength,
+        now
+      ) > 0
+    );
+  }
 };
