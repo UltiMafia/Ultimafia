@@ -15,6 +15,8 @@ module.exports = function (type, name) {
     curse: `${name} feels a chill run down their spine!`,
     blood: `${name} died from a lack of blood.`,
     love: `${name} misses their beloved too much.`,
+    ballroomUnpaired: `${name} could not find a partner and must leave the ball.`,
+    ballroomUnpartnered: `${name} no longer has a partner and must leave the ball.`,
     famine: `${name} could not survive the famine.`,
     polarised: `${name} was shocked on contact with their polar opposite.`,
     eaten: `${name} was eaten.`,

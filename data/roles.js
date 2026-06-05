@@ -6297,6 +6297,18 @@ const roleData = {
         ],
       },
     },
+    "Ballroom": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, the game will instead begin in a Reception phase.",
+        "During the Reception phase, players may try to form pairs with each other.",
+        "If there are any unpaired players at the end of the Reception phase, they will be killed of.",
+        "Meanwhile, every pair by the end of the Reception will become effectively linked so that if any member of that pair dies, both will die",
+        "During all future phases, a vote on a member of a pair will count as a vote for a predetermined member of the pair, for actions where it wouldn't matter which member was chosen.",
+        "On odd phases, the predetermined member is the one who proposed the pair while on even phases, it's the other member.",
+      ],
+    },
   },
 
   Jotto: {

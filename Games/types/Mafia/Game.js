@@ -772,11 +772,22 @@ module.exports = class MafiaGame extends Game {
         return true;
       }
     }
+    if (this.HaveReceptionState == true) {
+      this.events.emit("extraStateCheck", "Reception");
+      if (!this.ExtraStates.includes("Reception")) {
+        this.HaveReceptionStateBlock = null;
+      } else {
+        return true;
+      }
+    }
     if (state == "Day") {
       if (this.HaveHostingStateBlock == "Night") {
         return true;
       }
       if (this.HavePrologueStateBlock == "Night") {
+        return true;
+      }
+      if (this.HaveReceptionStateBlock == "Night") {
         return true;
       }
       if (this.AdmiralStateBlock == "Night") {
@@ -788,6 +799,9 @@ module.exports = class MafiaGame extends Game {
         return true;
       }
       if (this.HavePrologueStateBlock == "Day") {
+        return true;
+      }
+      if (this.HaveReceptionStateBlock == "Day") {
         return true;
       }
       if (this.AdmiralStateBlock == "Day") {
