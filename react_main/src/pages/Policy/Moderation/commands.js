@@ -1110,8 +1110,8 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Fix Ranked Access": {
-      perm: "approveRanked",
+    "Fix Access": {
+      perms: ["approveRanked", "approveCompetitive"],
       category: "User Management",
       args: [
         {
@@ -1122,10 +1122,10 @@ export function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/api/mod/fixRankedAccess", argValues)
+          .post("/api/mod/fixAccess", argValues)
           .then((res) => {
             siteInfo.showAlert(
-              res.data && typeof res.data === "string" ? res.data : "Ranked access restored.",
+              res.data && typeof res.data === "string" ? res.data : "Access restored.",
               "success"
             );
             commandRan();

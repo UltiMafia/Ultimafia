@@ -2591,15 +2591,26 @@ router.post("/rankedApprove", async function (req, res) {
   }
 });
 
-// Fix ranked access for returning approved players (e.g. stale cache after long inactivity)
-router.post("/fixRankedAccess", async function (req, res) {
+// Fix ranked/competitive access for returning approved players (e.g. stale cache after long inactivity)
+router.post("/fixAccess", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var userIdToFix = String(req.body.userId);
-    var perm = "approveRanked";
 
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+    const canApproveRanked = await routeUtils.verifyPermission(
+      userId,
+      "approveRanked"
+    );
+    const canApproveCompetitive = await routeUtils.verifyPermission(
+      userId,
+      "approveCompetitive"
+    );
+
+    if (!canApproveRanked && !canApproveCompetitive) {
+      errors.forbidden(res, "You do not have the required permissions.");
+      return;
+    }
 
     var userToFix = await models.User.findOne({
       id: userIdToFix,
@@ -2611,18 +2622,31 @@ router.post("/fixRankedAccess", async function (req, res) {
       return;
     }
 
-    var group = await models.Group.findOne({ name: "Ranked Player" }).select(
-      "_id"
+    const groups = await models.Group.find({
+      name: { $in: ["Ranked Player", "Competitive Player"] },
+    }).select("_id name");
+    const rankedGroup = groups.find((group) => group.name === "Ranked Player");
+    const competitiveGroup = groups.find(
+      (group) => group.name === "Competitive Player"
     );
-    var inGroup = await models.InGroup.findOne({
-      user: userToFix._id,
-      group: group._id,
-    });
 
-    if (!inGroup) {
+    const inGroups = await models.InGroup.find({
+      user: userToFix._id,
+      group: { $in: groups.map((group) => group._id) },
+    }).select("group");
+
+    const inRankedGroup = inGroups.some(
+      (entry) => rankedGroup && String(entry.group) === String(rankedGroup._id)
+    );
+    const inCompetitiveGroup = inGroups.some(
+      (entry) =>
+        competitiveGroup && String(entry.group) === String(competitiveGroup._id)
+    );
+
+    if (!inRankedGroup && !inCompetitiveGroup) {
       res.status(400);
       res.send(
-        "User is not in Ranked Player group. Approve them for ranked first, then use this if they still cannot play."
+        "User is not in Ranked Player or Competitive Player group. Approve them first, then use this if they still cannot play."
       );
       return;
     }
@@ -2630,13 +2654,20 @@ router.post("/fixRankedAccess", async function (req, res) {
     await redis.cacheUserInfo(userIdToFix, true);
     await redis.cacheUserPermissions(userIdToFix);
 
-    routeUtils.createModAction(userId, "Fix Ranked Access", [userIdToFix]);
+    const approvedGroups = [];
+    if (inRankedGroup) approvedGroups.push("Ranked Player");
+    if (inCompetitiveGroup) approvedGroups.push("Competitive Player");
+
+    routeUtils.createModAction(userId, "Fix Access", [
+      userIdToFix,
+      approvedGroups.join(", "),
+    ]);
     res.send(
-      "Ranked access cache refreshed for user. They should be able to join ranked games now."
+      `Access cache refreshed for user (${approvedGroups.join(", ")}). They should be able to join those game modes now.`
     );
   } catch (e) {
     logger.error(e);
-    errors.serverError(res, "Could not fix ranked access: " + e.message);
+    errors.serverError(res, "Could not fix access: " + e.message);
   }
 });
 
