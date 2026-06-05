@@ -17,9 +17,6 @@ const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
 const fortunePoints = require("../modules/fortunePoints");
 const errors = require("../lib/errors");
-const {
-  syncRankedCompetitiveAccess,
-} = require("../modules/userEligibility");
 const router = express.Router();
 
 router.get("/groups", async function (req, res) {
@@ -1612,20 +1609,6 @@ router.post("/restoreDeletedUser", async (req, res) => {
 
     await userDoc.save();
 
-    const rankedPlayerGroup = await models.Group.findOne({
-      name: "Ranked Player",
-    })
-      .select("_id")
-      .lean();
-
-    if (rankedPlayerGroup) {
-      await models.InGroup.updateOne(
-        { user: userDoc._id, group: rankedPlayerGroup._id },
-        { user: userDoc._id, group: rankedPlayerGroup._id },
-        { upsert: true }
-      ).exec();
-    }
-
     await models.Ban.deleteMany({ userId: userDoc.id }).exec();
 
     await redis.deleteUserInfo(userDoc.id);
@@ -2543,181 +2526,57 @@ router.post("/announcement", async function (req, res) {
   }
 });
 
-router.post("/rankedApprove", async function (req, res) {
+router.post("/clearLegacyGroups", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToApprove = String(req.body.userId);
-    var perm = "approveRanked";
 
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    var userToApprove = await models.User.findOne({
-      id: userIdToApprove,
-      deleted: false,
-    }).select("_id");
-
-    if (!userToApprove) {
-      errors.notFound(res, "User does not exist.");
+    if (!(await routeUtils.verifyPermission(res, userId, null, Infinity)))
       return;
-    }
-
-    var group = await models.Group.findOne({ name: "Ranked Player" }).select(
-      "_id"
-    );
-    var inGroup = await models.InGroup.findOne({
-      user: userToApprove._id,
-      group: group._id,
-    });
-
-    if (inGroup) {
-      errors.conflict(res, "User is already approved for ranked.");
-      return;
-    }
-
-    inGroup = new models.InGroup({
-      user: userToApprove._id,
-      group: group._id,
-    });
-    await inGroup.save();
-    await redis.cacheUserInfo(userIdToApprove, true);
-    await redis.cacheUserPermissions(userIdToApprove);
-
-    routeUtils.createModAction(userId, "Ranked Approve", [userIdToApprove]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    errors.serverError(res, "Could not approve user. Please try again.");
-  }
-});
-
-// Fix ranked/competitive access for returning approved players (e.g. stale cache after long inactivity)
-router.post("/fixAccess", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToFix = String(req.body.userId);
-
-    const canApproveRanked = await routeUtils.verifyPermission(
-      userId,
-      "approveRanked"
-    );
-    const canApproveCompetitive = await routeUtils.verifyPermission(
-      userId,
-      "approveCompetitive"
-    );
-
-    if (!canApproveRanked && !canApproveCompetitive) {
-      errors.forbidden(res, "You do not have the required permissions.");
-      return;
-    }
-
-    var userToFix = await models.User.findOne({
-      id: userIdToFix,
-      deleted: false,
-    }).select("_id");
-
-    if (!userToFix) {
-      errors.notFound(res, "User does not exist.");
-      return;
-    }
 
     const groups = await models.Group.find({
       name: { $in: ["Ranked Player", "Competitive Player"] },
     }).select("_id name");
-    const rankedGroup = groups.find((group) => group.name === "Ranked Player");
-    const competitiveGroup = groups.find(
-      (group) => group.name === "Competitive Player"
-    );
 
-    const inGroups = await models.InGroup.find({
-      user: userToFix._id,
-      group: { $in: groups.map((group) => group._id) },
-    }).select("group");
-
-    const inRankedGroup = inGroups.some(
-      (entry) => rankedGroup && String(entry.group) === String(rankedGroup._id)
-    );
-    const inCompetitiveGroup = inGroups.some(
-      (entry) =>
-        competitiveGroup && String(entry.group) === String(competitiveGroup._id)
-    );
-
-    if (!inRankedGroup && !inCompetitiveGroup) {
-      res.status(400);
-      res.send(
-        "User is not in Ranked Player or Competitive Player group. Approve them first, then use this if they still cannot play."
-      );
+    if (groups.length === 0) {
+      res.send("No legacy ranked/competitive player groups found.");
       return;
     }
 
-    await redis.cacheUserInfo(userIdToFix, true);
-    await redis.cacheUserPermissions(userIdToFix);
+    const groupIds = groups.map((group) => group._id);
+    const memberships = await models.InGroup.find({
+      group: { $in: groupIds },
+    }).select("user");
+    const deleteResult = await models.InGroup.deleteMany({
+      group: { $in: groupIds },
+    }).exec();
+    await models.Group.deleteMany({ _id: { $in: groupIds } }).exec();
 
-    const approvedGroups = [];
-    if (inRankedGroup) approvedGroups.push("Ranked Player");
-    if (inCompetitiveGroup) approvedGroups.push("Competitive Player");
+    const affectedUserIds = [
+      ...new Set(
+        (
+          await models.User.find({
+            _id: { $in: memberships.map((entry) => entry.user) },
+          })
+            .select("id")
+            .lean()
+        ).map((user) => user.id)
+      ),
+    ];
 
-    routeUtils.createModAction(userId, "Fix Access", [
-      userIdToFix,
-      approvedGroups.join(", "),
+    for (const affectedUserId of affectedUserIds) {
+      await redis.cacheUserPermissions(affectedUserId);
+    }
+
+    routeUtils.createModAction(userId, "Clear Legacy Groups", [
+      deleteResult.deletedCount,
     ]);
     res.send(
-      `Access cache refreshed for user (${approvedGroups.join(", ")}). They should be able to join those game modes now.`
+      `Removed ${deleteResult.deletedCount} legacy group membership(s) and deleted ${groups.length} group document(s). Refreshed permissions for ${affectedUserIds.length} user(s).`
     );
   } catch (e) {
     logger.error(e);
-    errors.serverError(res, "Could not fix access: " + e.message);
-  }
-});
-
-router.post("/competitiveApprove", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToApprove = String(req.body.userId);
-    var perm = "approveCompetitive";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    var userToApprove = await models.User.findOne({
-      id: userIdToApprove,
-      deleted: false,
-    }).select("_id");
-
-    if (!userToApprove) {
-      errors.notFound(res, "User does not exist.");
-      return;
-    }
-
-    var group = await models.Group.findOne({
-      name: "Competitive Player",
-    }).select("_id");
-    var inGroup = await models.InGroup.findOne({
-      user: userToApprove._id,
-      group: group._id,
-    });
-
-    if (inGroup) {
-      errors.conflict(res, "User is already approved for Competitive.");
-      return;
-    }
-
-    inGroup = new models.InGroup({
-      user: userToApprove._id,
-      group: group._id,
-    });
-    await inGroup.save();
-    await redis.cacheUserInfo(userIdToApprove, true);
-    await redis.cacheUserPermissions(userIdToApprove);
-
-    routeUtils.createModAction(userId, "Competitive Approve", [
-      userIdToApprove,
-    ]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    errors.serverError(res, "Could not approve user. Please try again.");
+    errors.serverError(res, "Could not clear legacy groups. Please try again.");
   }
 });
 
@@ -4005,92 +3864,6 @@ router.post("/reports/:id/rule", async (req, res) => {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not update rule. Please try again.");
-  }
-});
-
-router.get("/autoApproval", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-
-    if (!(await routeUtils.verifyPermission(res, userId, "adjustMinGames")))
-      return;
-
-    const enabled = await redis.getAutoApprovalEnabled();
-    res.json({ autoApprovalEnabled: enabled });
-  } catch (e) {
-    logger.error(e);
-    errors.serverError(res, "Could not get auto-approval status. Please refresh and try again.");
-  }
-});
-
-router.post("/autoApproval", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-
-    if (!(await routeUtils.verifyPermission(res, userId, "adjustMinGames")))
-      return;
-
-    const enabled = !(await redis.getAutoApprovalEnabled());
-    await redis.setAutoApprovalEnabled(enabled);
-
-    routeUtils.createModAction(userId, "Toggle Auto-Approval", [enabled]);
-
-    res.json({ autoApprovalEnabled: enabled });
-  } catch (e) {
-    logger.error(e);
-    errors.serverError(res, "Could not toggle auto-approval. Please try again.");
-  }
-});
-
-router.post("/syncCompetitiveApprovals", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-
-    if (!(await routeUtils.verifyPermission(res, userId, "adjustMinGames")))
-      return;
-
-    const minimumGames = await redis.getMinimumGamesForRanked();
-    const minimumPoints = constants.minimumPointsForCompetitive;
-    const usersToSync = await models.User.aggregate([
-      {
-        $match: {
-          deleted: false,
-          banned: { $ne: true },
-          flagged: { $ne: true },
-        },
-      },
-      {
-        $project: {
-          id: 1,
-          gamesPlayed: { $size: "$games" },
-        },
-      },
-      {
-        $match: {
-          gamesPlayed: { $gte: minimumGames },
-        },
-      },
-    ]);
-
-    let rankedGranted = 0;
-    let competitiveGranted = 0;
-    for (const user of usersToSync) {
-      const result = await syncRankedCompetitiveAccess(user.id, {
-        minimumGames,
-        minimumPoints,
-      });
-      if (result.rankedGranted) rankedGranted++;
-      if (result.competitiveGranted) competitiveGranted++;
-    }
-
-    routeUtils.createModAction(userId, "Sync Competitive Approvals", [
-      rankedGranted,
-      competitiveGranted,
-    ]);
-    res.json({ rankedGranted, competitiveGranted });
-  } catch (e) {
-    logger.error(e);
-    errors.serverError(res, "Could not sync competitive approvals. Please try again.");
   }
 });
 

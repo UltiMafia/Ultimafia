@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Button, Paper, Stack } from "@mui/material";
-import { UserContext } from "Contexts";
 import Setup from "components/Setup";
 import HostGameDialogue from "components/HostGameDialogue";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
@@ -11,7 +10,6 @@ export const FeaturedSetup = ({ lobby, glowingHostButton }) => {
   const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
   const isMountedRef = useRef(true);
 
-  const user = useContext(UserContext);
   const isPhoneDevice = useIsPhoneDevice();
   const isButtonGlowing = !ishostGameDialogueOpen && glowingHostButton;
 
@@ -22,8 +20,6 @@ export const FeaturedSetup = ({ lobby, glowingHostButton }) => {
 
     if (lobby === "Games") {
       featuredCategory = "minigames";
-    } else if (user.gamesPlayed && !user.canPlayRanked) {
-      featuredCategory = "classic";
     }
 
     axios

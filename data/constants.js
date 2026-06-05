@@ -426,9 +426,6 @@ module.exports = {
   // Penalties reset in level after 3 days
   leavePenaltyDurationMillis: 259200000,
 
-  minimumGamesForRanked: 5,
-  minimumPointsForCompetitive: 150,
-
   defaultSkillRatingMu: 750,
   defaultSkillRatingSigma: 250,
 
@@ -452,6 +449,8 @@ module.exports = {
     "changeName",
     "changeBday",
     "viewVotes",
+    "playRanked",
+    "playCompetitive",
   ],
   // Perms that can only be granted by a user with rank Infinity
   protectedPerms: [
@@ -540,7 +539,6 @@ module.exports = {
     editAnyDeck: true,
     createPoll: true,
     manageCompetitive: true,
-    adjustMinGames: true,
     awardTrophy: true,
     awardStamp: true,
     deleteStrategy: true,
@@ -692,16 +690,6 @@ module.exports = {
       rank: 1,
       visible: false,
       perms: [],
-    },
-    "Ranked Player": {
-      rank: 0,
-      visible: false,
-      perms: ["playRanked"],
-    },
-    "Competitive Player": {
-      rank: 0,
-      visible: false,
-      perms: ["playRanked", "playCompetitive"],
     },
   },
 

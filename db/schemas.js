@@ -117,6 +117,8 @@ var schemas = {
       deathMessage: String,
       vanityUrl: { type: String, default: "" },
       backgroundRepeatMode: { type: String, default: "repeat" },
+      seenRankedWarning: { type: Boolean, default: false },
+      seenCompetitiveWarning: { type: Boolean, default: false },
     },
     accounts: {
       discord: String,
