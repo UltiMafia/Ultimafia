@@ -3610,6 +3610,62 @@ module.exports = class Game {
     }
   }
 
+  static buildNumericIncrements(before, after, prefix) {
+    const increments = {};
+    const keys = new Set([
+      ...Object.keys(before || {}),
+      ...Object.keys(after || {}),
+    ]);
+
+    for (const key of keys) {
+      if (key.includes(".") || key.startsWith("$")) continue;
+
+      const beforeValue = before ? before[key] : undefined;
+      const afterValue = after ? after[key] : undefined;
+      const path = prefix ? `${prefix}.${key}` : key;
+
+      if (typeof afterValue === "number") {
+        const diff = afterValue - (Number(beforeValue) || 0);
+        if (diff) increments[path] = diff;
+      } else if (
+        afterValue &&
+        typeof afterValue === "object" &&
+        !Array.isArray(afterValue)
+      ) {
+        Object.assign(
+          increments,
+          Game.buildNumericIncrements(beforeValue || {}, afterValue, path)
+        );
+      }
+    }
+
+    return increments;
+  }
+
+  buildStatsIncrements(player) {
+    return Game.buildNumericIncrements(
+      player.user.initialStats || {},
+      player.user.stats || {},
+      "stats"
+    );
+  }
+
+  getUserStatsRateUpdates(stats) {
+    const updates = {};
+    const mafiaStats = stats && stats["Mafia"];
+    if (mafiaStats) {
+      updates.winRate =
+        (mafiaStats.all?.wins?.count || 0) /
+        (mafiaStats.all?.wins?.total || 1);
+      if (mafiaStats.unranked) {
+        updates.unrankedWinRate =
+          (mafiaStats.unranked.wins.count || 0) /
+          (mafiaStats.unranked.wins.total || 1);
+      }
+    }
+    return updates;
+  }
+
   async endPostgame() {
     try {
       if (this.postgameOver) return;
@@ -3773,39 +3829,43 @@ module.exports = class Game {
         }
 
         const skipStatsSave = this.type === "Mafia" && this.hadVegKill;
+        const statIncrements = skipStatsSave
+          ? {}
+          : this.buildStatsIncrements(player);
         const userSet = {
           playedGame: true,
           achievementCount: player.user.achievements.length,
         };
-        if (!skipStatsSave) {
-          userSet.stats = player.user.stats;
-          const mafiaStats = player.user.stats["Mafia"];
-          if (mafiaStats) {
-            userSet.winRate =
-              (mafiaStats.all?.wins?.count || 0) /
-              (mafiaStats.all?.wins?.total || 1);
-            if (mafiaStats.unranked) {
-              userSet.unrankedWinRate =
-                (mafiaStats.unranked.wins.count || 0) /
-                (mafiaStats.unranked.wins.total || 1);
-            }
-          }
-        }
+        const incOps = {
+          coins: coinsEarned,
+          kudos:
+            kudosTarget && kudosTarget.user.id == player.user.id ? 1 : 0,
+          points: pointsWon > 0 ? pointsWon : 0,
+          pointsNegative: pointsWon < 0 ? -pointsWon : 0,
+          ...statIncrements,
+        };
         await models.User.updateOne(
           { id: player.user.id },
           {
             $push: { games: game._id },
             $addToSet: { achievements: { $each: player.EarnedAchievements } },
             $set: userSet,
-            $inc: {
-              coins: coinsEarned,
-              kudos:
-                kudosTarget && kudosTarget.user.id == player.user.id ? 1 : 0,
-              points: pointsWon > 0 ? pointsWon : 0,
-              pointsNegative: pointsWon < 0 ? -pointsWon : 0,
-            },
+            $inc: incOps,
           }
         ).exec();
+
+        if (Object.keys(statIncrements).length > 0) {
+          const freshUser = await models.User.findOne({ id: player.user.id })
+            .select("stats")
+            .lean();
+          const rateUpdates = this.getUserStatsRateUpdates(freshUser?.stats);
+          if (Object.keys(rateUpdates).length > 0) {
+            await models.User.updateOne(
+              { id: player.user.id },
+              { $set: rateUpdates }
+            ).exec();
+          }
+        }
 
         if (!player.isBot) {
           await syncRankedCompetitiveAccess(player.user.id);
