@@ -206,6 +206,65 @@ describe("Stats recording", function () {
   });
 
   describe("Player stats — completed games", function () {
+    it("persists stat deltas without overwriting newer game results", async function () {
+      const user = makeUser();
+      await seedUserDoc(user);
+
+      const firstSnapshot = new User({
+        id: user.id,
+        socket: new Socket(),
+        name: user.name,
+        settings: {},
+        stats: {},
+      });
+      const secondSnapshot = new User({
+        id: user.id,
+        socket: new Socket(),
+        name: user.name,
+        settings: {},
+        stats: {},
+      });
+
+      firstSnapshot.stats.Mafia = {
+        all: {
+          totalGames: 1,
+          wins: { count: 0, total: 1 },
+        },
+      };
+      secondSnapshot.stats.Mafia = {
+        all: {
+          totalGames: 1,
+          wins: { count: 1, total: 1 },
+        },
+      };
+
+      await models.User.updateOne(
+        { id: user.id },
+        {
+          $inc: Game.buildNumericIncrements(
+            firstSnapshot.initialStats,
+            firstSnapshot.stats,
+            "stats"
+          ),
+        }
+      ).exec();
+      await models.User.updateOne(
+        { id: user.id },
+        {
+          $inc: Game.buildNumericIncrements(
+            secondSnapshot.initialStats,
+            secondSnapshot.stats,
+            "stats"
+          ),
+        }
+      ).exec();
+
+      const doc = await getUserDoc(user);
+      doc.stats.Mafia.all.totalGames.should.equal(2);
+      doc.stats.Mafia.all.wins.total.should.equal(2);
+      doc.stats.Mafia.all.wins.count.should.equal(1);
+    });
+
     it("unranked game: records Mafia.unranked only", async function () {
       const { game } = await makeGame(mafiaSetup(), {
         preJoinHook: autoVillageWin(),
