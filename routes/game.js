@@ -13,6 +13,47 @@ const router = express.Router();
 const axios = require("axios");
 const errors = require("../lib/errors");
 
+function alignPopulatedUsersWithSeats(seatIds, idMapJson, populatedUsers) {
+  if (!seatIds?.length) return [];
+
+  const userById = {};
+  for (const user of populatedUsers || []) {
+    if (user) userById[user.id] = user;
+  }
+
+  const seatIdToUserId = {};
+  const idMap =
+    typeof idMapJson === "string"
+      ? JSON.parse(idMapJson || "{}")
+      : idMapJson || {};
+  for (const [userId, seatId] of Object.entries(idMap)) {
+    seatIdToUserId[seatId] = userId;
+  }
+
+  return seatIds.map((seatId) => {
+    const mappedUserId = seatIdToUserId[seatId];
+    if (!mappedUserId) return null;
+    return userById[mappedUserId] || null;
+  });
+}
+
+async function enrichReviewUser(user) {
+  if (!user) return null;
+
+  const vanityUrl = await models.VanityUrl.findOne({
+    userId: user.id,
+  }).select("url -_id");
+
+  return {
+    ...user,
+    settings: {
+      textColor: user.settings.textColor,
+      nameColor: user.settings.textColor,
+    },
+    vanityUrl: vanityUrl?.url,
+  };
+}
+
 async function userCanPlayCompetitive(userId, minimumPoints = constants.minimumPointsForCompetitive) {
   const user = await redis.getUserInfo(userId);
 
@@ -453,52 +494,44 @@ router.get("/:id/review/data", async function (req, res) {
 
     if (game !== null) {
       game = game.toJSON();
-      game.users = await Promise.all(
-        game.users.map(async (user) => {
-          // Get vanity URL for each user
-          const vanityUrl = await models.VanityUrl.findOne({
-            userId: user.id,
-          }).select("url -_id");
 
-          return {
-            ...user,
-            settings: {
-              textColor: user.settings.textColor,
-              nameColor: user.settings.textColor,
-            },
-            vanityUrl: vanityUrl?.url,
-          };
-        })
-      );
+      // Guest seats are omitted from older stored users arrays; realign with playerIdMap.
+      if (game.users.length !== game.players.length) {
+        game.users = alignPopulatedUsersWithSeats(
+          game.players,
+          game.playerIdMap,
+          game.users
+        );
+      }
+
+      const spectatorIdMap = game.spectatorIdMap || "{}";
+      if (
+        Object.keys(JSON.parse(spectatorIdMap)).length > 0 &&
+        game.spectatorsUsers.length !== game.spectators.length
+      ) {
+        game.spectatorsUsers = alignPopulatedUsersWithSeats(
+          game.spectators,
+          spectatorIdMap,
+          game.spectatorsUsers
+        );
+      }
+
+      game.users = await Promise.all(game.users.map(enrichReviewUser));
       game.spectatorsUsers = await Promise.all(
-        game.spectatorsUsers.map(async (user) => {
-          // Get vanity URL for each user
-          const vanityUrl = await models.VanityUrl.findOne({
-            userId: user.id,
-          }).select("url -_id");
-
-          return {
-            ...user,
-            settings: {
-              textColor: user.settings.textColor,
-              nameColor: user.settings.textColor,
-            },
-            vanityUrl: vanityUrl?.url,
-          };
-        })
+        game.spectatorsUsers.map(enrichReviewUser)
       );
 
       for (let user of game.users) {
-        utils.remapCustomEmotes(user, user.id);
+        if (user) utils.remapCustomEmotes(user, user.id);
       }
 
       for (let spectator of game.spectatorsUsers) {
-        utils.remapCustomEmotes(spectator, spectator.id);
+        if (spectator) utils.remapCustomEmotes(spectator, spectator.id);
       }
 
       function userIsInGame() {
         for (let user of game.users) {
-          if (user.id == userId) {
+          if (user && user.id == userId) {
             return true;
           }
         }
