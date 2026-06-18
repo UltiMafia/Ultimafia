@@ -346,6 +346,7 @@ var schemas = {
     playerIdMap: { type: String, default: "{}" },
     playerAlignmentMap: { type: String, default: "{}" },
     playerRoleMap: { type: String, default: "{}" },
+    spectatorIdMap: { type: String, default: "{}" },
     history: String,
     startTime: Number,
     endTime: { type: Number, index: true },

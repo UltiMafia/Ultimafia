@@ -3719,14 +3719,16 @@ module.exports = class Game {
         playerAlignmentMap[userId] = alignment;
         playerRoleMap[userId] = roleName;
 
-        if (user) users.push(user._id);
+        users.push(user ? user._id : null);
       }
       let spectators = [];
+      let spectatorIdMap = {};
 
-      for(let spec of this.spectatorsOld){
+      for (let spec of this.spectatorsOld) {
         let userId = spec.userId || spec.user.id;
         let user = await models.User.findOne({ id: userId }).select("_id");
-        if (user) spectators.push(user._id);
+        spectatorIdMap[userId] = spec.id;
+        spectators.push(user ? user._id : null);
       }
 
       var playerNames = players.map((p) => p.name);
@@ -3755,6 +3757,7 @@ module.exports = class Game {
         playerIdMap: JSON.stringify(playerIdMap),
         playerAlignmentMap: JSON.stringify(playerAlignmentMap),
         playerRoleMap: JSON.stringify(playerRoleMap),
+        spectatorIdMap: JSON.stringify(spectatorIdMap),
         history: JSON.stringify(history),
         startTime: this.startTime,
         endTime: Date.now(),
