@@ -2224,6 +2224,11 @@ module.exports = class Game {
     for (let player of this.players) {
       player.sendMeeting(this.vegKickMeeting);
     }
+
+    for (let player of this.players) {
+      player.warnOfVoteKick();
+    }
+
     this.checkAllMeetingsReady();
   }
 
