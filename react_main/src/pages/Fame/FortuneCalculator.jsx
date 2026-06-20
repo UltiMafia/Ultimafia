@@ -31,6 +31,8 @@ const ANCHOR_PAYOUT = 80;
 const INDEPENDENT_CAP = 120;
 const MIN_FORTUNE_GAMES = 25;
 const LOW_SAMPLE_PAYOUT = 60;
+const TWO_FACTION_MIN = 50;
+const TWO_FACTION_MAX = 70;
 
 const MAJOR_NAMES = ["Village", "Mafia", "RedMafia", "Cult"];
 
@@ -53,7 +55,12 @@ function colorForButton(name) {
   return FACTION_COLORS[name] || INDEPENDENT_COLOR;
 }
 
-function soloPayout(category, wrPercent) {
+function clampTwoFaction(payout, factionCount) {
+  if (factionCount !== 2) return payout;
+  return Math.max(TWO_FACTION_MIN, Math.min(TWO_FACTION_MAX, payout));
+}
+
+function rawSoloPayout(category, wrPercent) {
   const wr = wrPercent / 100;
   if (category === "major") {
     return (1 - wr) * K;
@@ -62,35 +69,53 @@ function soloPayout(category, wrPercent) {
   return Math.min(INDEPENDENT_CAP, raw);
 }
 
-function jointPayout(category, wrPercent) {
+function rawJointPayout(category, wrPercent) {
   const damp =
     category === "major" ? JOINT_DAMP_MAJOR : JOINT_DAMP_INDEPENDENT;
-  return soloPayout(category, wrPercent) * damp;
+  return rawSoloPayout(category, wrPercent) * damp;
 }
 
-function soloFormula(category, wrPercent) {
+function soloPayout(category, wrPercent, factionCount) {
+  return clampTwoFaction(Math.round(rawSoloPayout(category, wrPercent)), factionCount);
+}
+
+function jointPayout(category, wrPercent, factionCount) {
+  return clampTwoFaction(Math.round(rawJointPayout(category, wrPercent)), factionCount);
+}
+
+function clampSuffix(raw, factionCount) {
+  if (factionCount !== 2) return "";
+  const clamped = clampTwoFaction(raw, factionCount);
+  if (clamped === raw) return "";
+  return ` → clamp(${TWO_FACTION_MIN}–${TWO_FACTION_MAX}) = ${clamped}`;
+}
+
+function soloFormula(category, wrPercent, factionCount) {
   const wr = wrPercent / 100;
   const wrStr = wr.toFixed(2);
   if (category === "major") {
-    const result = Math.round((1 - wr) * K);
-    return `(1 − ${wrStr}) × ${K} = ${result}`;
+    const raw = Math.round((1 - wr) * K);
+    return `(1 − ${wrStr}) × ${K} = ${raw}${clampSuffix(raw, factionCount)}`;
   }
   if (wr <= 0) {
-    return `min(${INDEPENDENT_CAP}, √(${ANCHOR_WR} / 0) × ${ANCHOR_PAYOUT}) = ${INDEPENDENT_CAP}`;
+    const raw = INDEPENDENT_CAP;
+    return `min(${INDEPENDENT_CAP}, √(${ANCHOR_WR} / 0) × ${ANCHOR_PAYOUT}) = ${raw}${clampSuffix(raw, factionCount)}`;
   }
-  const raw = Math.sqrt(ANCHOR_WR / wr) * ANCHOR_PAYOUT;
-  if (raw >= INDEPENDENT_CAP) {
-    return `min(${INDEPENDENT_CAP}, √(${ANCHOR_WR} / ${wrStr}) × ${ANCHOR_PAYOUT}) = ${INDEPENDENT_CAP}`;
+  const exact = Math.sqrt(ANCHOR_WR / wr) * ANCHOR_PAYOUT;
+  if (exact >= INDEPENDENT_CAP) {
+    const raw = INDEPENDENT_CAP;
+    return `min(${INDEPENDENT_CAP}, √(${ANCHOR_WR} / ${wrStr}) × ${ANCHOR_PAYOUT}) = ${raw}${clampSuffix(raw, factionCount)}`;
   }
-  return `√(${ANCHOR_WR} / ${wrStr}) × ${ANCHOR_PAYOUT} ≈ ${Math.round(raw)}`;
+  const raw = Math.round(exact);
+  return `√(${ANCHOR_WR} / ${wrStr}) × ${ANCHOR_PAYOUT} ≈ ${raw}${clampSuffix(raw, factionCount)}`;
 }
 
-function jointFormula(category, wrPercent) {
-  const solo = Math.round(soloPayout(category, wrPercent));
+function jointFormula(category, wrPercent, factionCount) {
+  const solo = Math.round(rawSoloPayout(category, wrPercent));
   const damp =
     category === "major" ? JOINT_DAMP_MAJOR : JOINT_DAMP_INDEPENDENT;
-  const result = Math.round(soloPayout(category, wrPercent) * damp);
-  return `${solo} × ${damp} = ${result}`;
+  const raw = Math.round(rawSoloPayout(category, wrPercent) * damp);
+  return `${solo} × ${damp} = ${raw}${clampSuffix(raw, factionCount)}`;
 }
 
 function PayoutCell({ value, formula }) {
@@ -190,6 +215,12 @@ export function FortuneCalculatorContent() {
           plays always pay a flat {LOW_SAMPLE_PAYOUT} fortune (solo or joint),
           ignoring winrate — small samples are too noisy to scale.
         </Typography>
+        {factions.length === 2 && (
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Two-faction setups clamp per-win payouts to {TWO_FACTION_MIN}–
+            {TWO_FACTION_MAX} fortune after the formula (solo or joint).
+          </Typography>
+        )}
 
         <Stack
           direction="row"
@@ -300,14 +331,14 @@ export function FortuneCalculatorContent() {
                     </TableCell>
                     <TableCell align="center">
                       <PayoutCell
-                        value={Math.round(soloPayout(f.category, f.wr))}
-                        formula={soloFormula(f.category, f.wr)}
+                        value={soloPayout(f.category, f.wr, factions.length)}
+                        formula={soloFormula(f.category, f.wr, factions.length)}
                       />
                     </TableCell>
                     <TableCell align="center">
                       <PayoutCell
-                        value={Math.round(jointPayout(f.category, f.wr))}
-                        formula={jointFormula(f.category, f.wr)}
+                        value={jointPayout(f.category, f.wr, factions.length)}
+                        formula={jointFormula(f.category, f.wr, factions.length)}
                       />
                     </TableCell>
                     <TableCell align="right">
@@ -346,6 +377,12 @@ export function FortuneCalculatorContent() {
           />
           <Chip
             label={`Major joint damp = ${JOINT_DAMP_MAJOR}`}
+            size="small"
+            variant="outlined"
+            sx={{ borderColor: MAJOR_GROUP_COLOR, color: MAJOR_GROUP_COLOR }}
+          />
+          <Chip
+            label={`Two-faction clamp = ${TWO_FACTION_MIN}–${TWO_FACTION_MAX}`}
             size="small"
             variant="outlined"
             sx={{ borderColor: MAJOR_GROUP_COLOR, color: MAJOR_GROUP_COLOR }}
@@ -454,7 +491,9 @@ export function FortuneCalculatorContent() {
         <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
           Joint wins are dampened because sharing the game is easier than
           winning alone. Lower historical winrate pays more — defying odds
-          earns the bigger reward.
+          earns the bigger reward. In two-faction setups (e.g. Village vs
+          Mafia), per-win payouts are clamped to {TWO_FACTION_MIN}–
+          {TWO_FACTION_MAX} after the formula.
         </Typography>
       </Paper>
     </Stack>

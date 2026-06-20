@@ -109,12 +109,14 @@ export default function CompetitiveFaq() {
       </Typography>
       <Typography paragraph>
         Payouts use a fixed scale (K = 120) and empirical win rates from the
-        setup’s statistics (all game types combined). In a two-faction game,
-        your faction’s payout when you win is proportional to how often the
-        opposing faction wins in the historical data. With more than two
-        scoring groups, payouts use each group’s own historical win rate.
-        Certain independent roles have a maximum fortune award of 120 points per
-        win so rare roles do not pay out extreme values.
+        setup’s statistics (all game types combined). In a two-faction game
+        (e.g. Village vs Mafia or Village vs Cult), your faction’s payout when
+        you win is proportional to how often the opposing faction wins in the
+        historical data, then clamped to a minimum of 50 and a maximum of 70
+        fortune per win. With more than two scoring groups, payouts use each
+        group’s own historical win rate without that clamp. Certain independent
+        roles have a maximum fortune award of 120 points per win so rare roles
+        do not pay out extreme values.
       </Typography>
       <Stack
         direction="row"
