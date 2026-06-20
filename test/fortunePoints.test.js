@@ -112,22 +112,23 @@ describe("modules/fortunePoints", function () {
       return out;
     }
 
-    it("should pay 96 to Village winning solo at 20% historical WR", function () {
+    it("should clamp to 70 when Village would pay 96 in a two-faction game", function () {
       const { pointsWonByFactions } = computeFactionFortunePoints({
         factionNames: ["Village", "Mafia"],
         winningFactions: ["Village"],
         alignmentWinRates: winratesFor({ Village: 0.2, Mafia: 0.4 }),
       });
-      pointsWonByFactions.Village.should.equal(96);
+      pointsWonByFactions.Village.should.equal(70);
     });
 
-    it("should pay 72 to Mafia winning solo at 40% historical WR", function () {
+    it("should clamp to 70 when raw solo payout exceeds the two-faction max", function () {
       const { pointsWonByFactions } = computeFactionFortunePoints({
         factionNames: ["Village", "Mafia"],
         winningFactions: ["Mafia"],
         alignmentWinRates: winratesFor({ Village: 0.2, Mafia: 0.4 }),
       });
-      pointsWonByFactions.Mafia.should.equal(72);
+      // Raw (1 - 0.4) * 120 = 72 → clamped to 70.
+      pointsWonByFactions.Mafia.should.equal(70);
     });
 
     it("should pay 96 to Cult winning solo at 20% historical WR", function () {
@@ -148,42 +149,41 @@ describe("modules/fortunePoints", function () {
       pointsWonByFactions.Village.should.equal(60);
     });
 
-    it("should pay the full K=120 when a major has never won historically", function () {
+    it("should clamp to 70 when a major has never won historically in a two-faction game", function () {
       const { pointsWonByFactions } = computeFactionFortunePoints({
         factionNames: ["Village", "Mafia"],
         winningFactions: ["Village"],
         alignmentWinRates: winratesFor({ Village: 0, Mafia: 1 }),
       });
-      pointsWonByFactions.Village.should.equal(120);
+      pointsWonByFactions.Village.should.equal(70);
     });
 
-    it("should pay 0 when a major has always won historically (expected outcome)", function () {
+    it("should clamp to 50 when a major has always won historically in a two-faction game", function () {
       const { pointsWonByFactions } = computeFactionFortunePoints({
         factionNames: ["Village", "Mafia"],
         winningFactions: ["Mafia"],
         alignmentWinRates: winratesFor({ Village: 0, Mafia: 1 }),
       });
-      pointsWonByFactions.Mafia.should.equal(0);
+      pointsWonByFactions.Mafia.should.equal(50);
     });
 
-    it("should treat RedMafia like other majors", function () {
+    it("should clamp RedMafia solo wins to 70 in a two-faction game", function () {
       const { pointsWonByFactions } = computeFactionFortunePoints({
         factionNames: ["Village", "RedMafia"],
         winningFactions: ["RedMafia"],
         alignmentWinRates: winratesFor({ Village: 0.8, RedMafia: 0.2 }),
       });
-      pointsWonByFactions.RedMafia.should.equal(96);
+      pointsWonByFactions.RedMafia.should.equal(70);
     });
 
-    it("should respect a custom K override", function () {
+    it("should clamp custom K payouts to 70 in a two-faction game", function () {
       const { pointsWonByFactions } = computeFactionFortunePoints({
         factionNames: ["Village", "Mafia"],
         winningFactions: ["Village"],
         alignmentWinRates: winratesFor({ Village: 0.2, Mafia: 0.4 }),
         K: 200,
       });
-      // (1 - 0.2) * 200 = 160
-      pointsWonByFactions.Village.should.equal(160);
+      pointsWonByFactions.Village.should.equal(70);
     });
   });
 
@@ -242,42 +242,40 @@ describe("modules/fortunePoints", function () {
       return { [faction]: rows };
     }
 
-    it("should pay exactly the anchor payout (80) at the anchor winrate (10%)", function () {
+    it("should clamp the anchor payout to 70 in a two-faction game", function () {
       const { pointsWonByFactions } = computeFactionFortunePoints({
         factionNames: ["Village", "Jester"],
         winningFactions: ["Jester"],
         alignmentWinRates: indepWinrates("Jester", 0.10),
       });
-      pointsWonByFactions.Jester.should.equal(80);
+      pointsWonByFactions.Jester.should.equal(70);
     });
 
-    it("should pay more than the anchor below the anchor winrate (5% → ~113)", function () {
+    it("should clamp to 70 when the formula would pay more in a two-faction game", function () {
       const { pointsWonByFactions } = computeFactionFortunePoints({
         factionNames: ["Village", "Jester"],
         winningFactions: ["Jester"],
         alignmentWinRates: indepWinrates("Jester", 0.05),
       });
-      // sqrt(0.10 / 0.05) * 80 = sqrt(2) * 80 ≈ 113.14
-      pointsWonByFactions.Jester.should.equal(113);
+      pointsWonByFactions.Jester.should.equal(70);
     });
 
-    it("should cap at 120 when the formula would pay more (1% WR)", function () {
+    it("should clamp to 70 at the independent cap in a two-faction game", function () {
       const { pointsWonByFactions } = computeFactionFortunePoints({
         factionNames: ["Village", "Jester"],
         winningFactions: ["Jester"],
         alignmentWinRates: indepWinrates("Jester", 0.01),
       });
-      // sqrt(10)*80 ≈ 253 → capped to 120.
-      pointsWonByFactions.Jester.should.equal(120);
+      pointsWonByFactions.Jester.should.equal(70);
     });
 
-    it("should cap at 120 for a 0% WR independent (would be infinity)", function () {
+    it("should clamp to 70 for a 0% WR independent in a two-faction game", function () {
       const { pointsWonByFactions } = computeFactionFortunePoints({
         factionNames: ["Village", "Jester"],
         winningFactions: ["Jester"],
         alignmentWinRates: indepWinrates("Jester", 0),
       });
-      pointsWonByFactions.Jester.should.equal(120);
+      pointsWonByFactions.Jester.should.equal(70);
     });
 
     it("should pay less than the anchor above the anchor winrate (20% → ~57)", function () {
@@ -290,14 +288,13 @@ describe("modules/fortunePoints", function () {
       pointsWonByFactions.Jester.should.equal(57);
     });
 
-    it("should pay ~25 for an always-winning independent (100%)", function () {
+    it("should clamp to 50 for an always-winning independent in a two-faction game", function () {
       const { pointsWonByFactions } = computeFactionFortunePoints({
         factionNames: ["Village", "Jester"],
         winningFactions: ["Jester"],
         alignmentWinRates: indepWinrates("Jester", 1),
       });
-      // sqrt(0.1)*80 ≈ 25.30 → 25.
-      pointsWonByFactions.Jester.should.equal(25);
+      pointsWonByFactions.Jester.should.equal(50);
     });
   });
 
@@ -417,13 +414,13 @@ describe("modules/fortunePoints", function () {
       pointsWonByFactions.Village.should.equal(60);
     });
 
-    it("should use the anchor (10%) as the prior for an independent with no historical data", function () {
+    it("should pay the low-sample flat when an independent has no ranked/comp games", function () {
       const { pointsWonByFactions } = computeFactionFortunePoints({
         factionNames: ["Village", "Jester"],
         winningFactions: ["Jester"],
         alignmentWinRates: {},
       });
-      pointsWonByFactions.Jester.should.equal(80);
+      pointsWonByFactions.Jester.should.equal(60);
     });
 
     it("should ignore unranked rows when computing winrate", function () {
@@ -462,12 +459,12 @@ describe("modules/fortunePoints", function () {
       byFaction.Village.isMajor.should.be.true;
       byFaction.Village.hasHistoricalWinrate.should.be.true;
 
-      // Mafia 1/1 = 100% → (1 - 1) * 120 = 0
-      byFaction.Mafia.soloPayout.should.equal(0);
+      // Fewer than MIN_FORTUNE_GAMES → flat LOW_SAMPLE_PAYOUT.
+      byFaction.Mafia.soloPayout.should.equal(60);
 
-      // Jester 1/1 = 100% → min(120, sqrt(0.1/1) * 80) ≈ 25
+      // Jester 1/1 with low sample → flat LOW_SAMPLE_PAYOUT.
       byFaction.Jester.isMajor.should.be.false;
-      byFaction.Jester.soloPayout.should.equal(25);
+      byFaction.Jester.soloPayout.should.equal(60);
     });
 
     it("falls back to default priors for factions with no ranked/comp games", function () {
@@ -488,7 +485,7 @@ describe("modules/fortunePoints", function () {
 
       byFaction.Jester.hasHistoricalWinrate.should.be.false;
       byFaction.Jester.winrate.should.equal(0.1);
-      byFaction.Jester.soloPayout.should.equal(80); // anchor independent
+      byFaction.Jester.soloPayout.should.equal(60); // low-sample flat
     });
 
     it("sorts majors first, then alphabetically within each group", function () {
@@ -518,10 +515,14 @@ describe("modules/fortunePoints", function () {
       computeSoloPayoutsForSetup({}).should.deep.equal([]);
     });
 
-    it("uses caller-supplied K for major payouts", function () {
+    it("uses caller-supplied K only when sample size is sufficient", function () {
       const result = computeSoloPayoutsForSetup({
         setupStats: {
-          alignmentRows: [["Village", "ranked", false]], // 0% winrate
+          alignmentRows: Array.from({ length: 30 }, () => [
+            "Village",
+            "ranked",
+            false,
+          ]),
         },
         K: 200,
       });
@@ -537,13 +538,13 @@ describe("modules/fortunePoints", function () {
       });
       const byFaction = Object.fromEntries(result.map((r) => [r.faction, r]));
 
-      // Village 1/1 = 100% → 0 payout, has history
+      // Village 1/1 with low sample → flat LOW_SAMPLE_PAYOUT.
       byFaction.Village.hasHistoricalWinrate.should.be.true;
-      byFaction.Village.soloPayout.should.equal(0);
+      byFaction.Village.soloPayout.should.equal(60);
 
-      // Jester not in winrates → default 10% → anchor payout 80
+      // Jester not in winrates → low sample → flat LOW_SAMPLE_PAYOUT.
       byFaction.Jester.hasHistoricalWinrate.should.be.false;
-      byFaction.Jester.soloPayout.should.equal(80);
+      byFaction.Jester.soloPayout.should.equal(60);
     });
 
     it("matches computeFactionFortunePoints solo numbers for the same inputs", function () {
@@ -648,7 +649,7 @@ describe("modules/fortunePoints", function () {
       byFaction.Mafia.hasHistoricalWinrate.should.be.false;
     });
 
-    it("returns the anchor 80 for a no-history independent alongside major defaults", function () {
+    it("returns the low-sample flat for a no-history independent alongside major defaults", function () {
       const result = computeSoloPayoutsForSetup({
         factions: ["Village", "Mafia", "Jester"],
         setupStats: { alignmentRows: [] },
@@ -656,7 +657,7 @@ describe("modules/fortunePoints", function () {
       const byFaction = Object.fromEntries(result.map((r) => [r.faction, r]));
       byFaction.Village.soloPayout.should.equal(60);
       byFaction.Mafia.soloPayout.should.equal(60);
-      byFaction.Jester.soloPayout.should.equal(80);
+      byFaction.Jester.soloPayout.should.equal(60);
       byFaction.Jester.hasHistoricalWinrate.should.be.false;
     });
 
@@ -664,19 +665,48 @@ describe("modules/fortunePoints", function () {
       const result = computeSoloPayoutsForSetup({
         factions: ["Village", "Mafia"],
         setupStats: {
-          alignmentRows: [
-            ["Mafia", "ranked", true],
-            ["Mafia", "ranked", true],
-          ],
+          alignmentRows: Array.from({ length: 30 }, () => [
+            "Mafia",
+            "ranked",
+            true,
+          ]),
         },
       });
       const byFaction = Object.fromEntries(result.map((r) => [r.faction, r]));
       // Village has no rows → default 50% → 60.
       byFaction.Village.soloPayout.should.equal(60);
       byFaction.Village.hasHistoricalWinrate.should.be.false;
-      // Mafia 2/2 → 100% → (1 - 1) * 120 = 0.
-      byFaction.Mafia.soloPayout.should.equal(0);
+      // Mafia 30/30 → 100% → raw 0, clamped to 50 in two-faction setup.
+      byFaction.Mafia.soloPayout.should.equal(50);
       byFaction.Mafia.hasHistoricalWinrate.should.be.true;
+    });
+
+    it("clamps solo payouts to 50–70 for two-faction setups", function () {
+      const result = computeSoloPayoutsForSetup({
+        factions: ["Village", "Mafia"],
+        alignmentWinRates: {
+          Village: Array.from({ length: 30 }, (_, i) => ["ranked", i < 6]),
+          Mafia: Array.from({ length: 30 }, () => ["ranked", true]),
+        },
+      });
+      const byFaction = Object.fromEntries(result.map((r) => [r.faction, r]));
+      byFaction.Village.soloPayout.should.equal(70);
+      byFaction.Mafia.soloPayout.should.equal(50);
+    });
+
+    it("does not clamp solo payouts when more than two factions are present", function () {
+      const result = computeSoloPayoutsForSetup({
+        factions: ["Village", "Mafia", "Cult"],
+        alignmentWinRates: {
+          Village: Array.from({ length: 30 }, (_, i) => ["ranked", i < 6]),
+          Mafia: Array.from({ length: 30 }, () => ["ranked", true]),
+          Cult: Array.from({ length: 30 }, (_, i) => ["ranked", i < 6]),
+        },
+      });
+      const byFaction = Object.fromEntries(result.map((r) => [r.faction, r]));
+      byFaction.Village.soloPayout.should.equal(96);
+      byFaction.Mafia.soloPayout.should.equal(0);
+      byFaction.Cult.soloPayout.should.equal(96);
     });
   });
 });
