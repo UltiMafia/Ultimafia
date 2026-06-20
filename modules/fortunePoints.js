@@ -36,6 +36,10 @@ const JOINT_DAMP_INDEPENDENT = 0.7;
 const MIN_FORTUNE_GAMES = 25;
 const LOW_SAMPLE_PAYOUT = 60;
 
+// Clamping rules for setups with 2 factions and skewed win ratios above the minimum fortune games
+const TWO_FACTION_MIN = 50;
+const TWO_FACTION_MAX = 70;
+
 // Priors when a faction has no ranked/competitive history yet.
 // Majors get a neutral 50/50 (→ half of K on a solo win); independents
 // get the anchor itself (→ exactly the anchor payout).
@@ -96,6 +100,7 @@ function computeFactionFortunePoints(opts) {
   const winningFactions = opts.winningFactions || [];
   const winSet = new Set(winningFactions);
   const isJoint = winSet.size >= 2;
+  const isTwoFactionGame = factionNames.length === 2;
 
   const soloRows = computeSoloPayoutsForSetup({
     factions: factionNames,
@@ -124,6 +129,9 @@ function computeFactionFortunePoints(opts) {
       pointsWonByFactions[f] = isJoint
         ? Math.round(row.soloPayoutExact * jointDampFor(f))
         : row.soloPayout;
+    }
+    if(isTwoFactionGame){
+      pointsWonByFactions[f] = Math.max(TWO_FACTION_MIN, Math.min(TWO_FACTION_MAX,pointsWonByFactions[f]));
     }
   }
 
