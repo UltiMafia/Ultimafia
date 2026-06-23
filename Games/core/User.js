@@ -15,7 +15,6 @@ module.exports = class User {
     this.rankedCount = props.rankedCount;
     this.competitiveCount = props.competitiveCount;
     this.stats = props.stats || dbStats.allStats();
-    this.initialStats = JSON.parse(JSON.stringify(this.stats));
     this.achievements = props.achievements || [];
     if (props.dailyChallenges) {
       this.dailyChallenges =
