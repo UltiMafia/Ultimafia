@@ -28,6 +28,7 @@ const renamedRoleMapping = require("../../data/renamedRoles");
 const renamedModifierMapping = require("../../data/renamedModifiers");
 const routeUtils = require("../../routes/utils");
 const PostgameMeeting = require("./PostgameMeeting");
+const dbStats = require("../../db/stats");
 const VegKickMeeting = require("./VegKickMeeting");
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
@@ -3615,6 +3616,38 @@ module.exports = class Game {
     }
   }
 
+  static buildNumericIncrements(before, after, prefix) {
+    return dbStats.buildNumericIncrements(before, after, prefix);
+  }
+
+  buildStatsIncrements(player) {
+    return dbStats.buildNumericIncrements(
+      player.user.initialStats || {},
+      player.user.stats || {},
+      "stats"
+    );
+  }
+
+  /**
+   * Recompute win rates from persisted stats. Intentionally decoupled from
+   * in-game stat snapshots so concurrent games cannot clobber each other.
+   */
+  static async refreshUserWinRates(userId) {
+    try {
+      const user = await models.User.findOne({ id: userId })
+        .select("stats")
+        .lean();
+      if (!user) return;
+
+      const rateUpdates = dbStats.getWinRateUpdates(user.stats);
+      if (Object.keys(rateUpdates).length === 0) return;
+
+      await models.User.updateOne({ id: userId }, { $set: rateUpdates }).exec();
+    } catch (e) {
+      logger.warn(`refreshUserWinRates failed for ${userId}: ${e.message}`);
+    }
+  }
+
   async endPostgame() {
     try {
       if (this.postgameOver) return;
@@ -3781,39 +3814,50 @@ module.exports = class Game {
         }
 
         const skipStatsSave = this.type === "Mafia" && this.hadVegKill;
+        let statIncrements = {};
+        if (!skipStatsSave) {
+          try {
+            statIncrements = this.buildStatsIncrements(player);
+          } catch (e) {
+            logger.warn(
+              `buildStatsIncrements failed for ${player.user.id} in game ${this.id}: ${e.message}`
+            );
+          }
+        }
+
         const userSet = {
           playedGame: true,
           achievementCount: player.user.achievements.length,
         };
-        if (!skipStatsSave) {
-          userSet.stats = player.user.stats;
-          const mafiaStats = player.user.stats["Mafia"];
-          if (mafiaStats) {
-            userSet.winRate =
-              (mafiaStats.all?.wins?.count || 0) /
-              (mafiaStats.all?.wins?.total || 1);
-            if (mafiaStats.unranked) {
-              userSet.unrankedWinRate =
-                (mafiaStats.unranked.wins.count || 0) /
-                (mafiaStats.unranked.wins.total || 1);
+
+        const incOps = {
+          coins: coinsEarned,
+          kudos:
+            kudosTarget && kudosTarget.user.id == player.user.id ? 1 : 0,
+          points: pointsWon > 0 ? pointsWon : 0,
+          pointsNegative: pointsWon < 0 ? -pointsWon : 0,
+          ...statIncrements,
+        };
+
+        try {
+          await models.User.updateOne(
+            { id: player.user.id },
+            {
+              $push: { games: game._id },
+              $addToSet: { achievements: { $each: player.EarnedAchievements } },
+              $set: userSet,
+              $inc: incOps,
             }
-          }
+          ).exec();
+        } catch (e) {
+          logger.warn(
+            `endPostgame user update failed for ${player.user.id} in game ${this.id}: ${e.message}`
+          );
         }
-        await models.User.updateOne(
-          { id: player.user.id },
-          {
-            $push: { games: game._id },
-            $addToSet: { achievements: { $each: player.EarnedAchievements } },
-            $set: userSet,
-            $inc: {
-              coins: coinsEarned,
-              kudos:
-                kudosTarget && kudosTarget.user.id == player.user.id ? 1 : 0,
-              points: pointsWon > 0 ? pointsWon : 0,
-              pointsNegative: pointsWon < 0 ? -pointsWon : 0,
-            },
-          }
-        ).exec();
+
+        if (Object.keys(statIncrements).length > 0 && !player.isBot) {
+          Game.refreshUserWinRates(player.user.id);
+        }
 
         if (!player.isBot) {
           await syncRankedCompetitiveAccess(player.user.id);
