@@ -1911,48 +1911,76 @@ module.exports = class Player {
   }
 
   recordStat(stat, inc) {
-    if (
-      this.game.type !== "Mafia" &&
-      !this.game.ranked &&
-      !this.game.competitive
-    )
-      return;
+    try {
+      if (
+        this.game.type !== "Mafia" &&
+        !this.game.ranked &&
+        !this.game.competitive
+      )
+        return;
 
-    if (!this.user.stats[this.game.type])
-      this.user.stats[this.game.type] = dbStats.statsSet(this.game.type);
+      if (!this.user.stats[this.game.type])
+        this.user.stats[this.game.type] = dbStats.statsSet(this.game.type);
 
-    const stats = this.user.stats[this.game.type];
+      const stats = this.user.stats[this.game.type];
 
-    const bucket =
-      this.game.ranked || this.game.competitive ? "all" : "unranked";
-    if (!stats[bucket]) stats[bucket] = dbStats.statsObj(this.game.type);
+      const bucket =
+        this.game.ranked || this.game.competitive ? "all" : "unranked";
+      dbStats.ensureBucket(stats, this.game.type, bucket);
 
-    this.updateStatsObj(stats[bucket], stat, inc);
-    this.updateStatsMap(stats[bucket], "bySetup", this.game.setup.id, stat, inc);
+      this.updateStatsObj(stats[bucket], stat, inc);
+      this.updateStatsMap(
+        stats[bucket],
+        "bySetup",
+        this.game.setup.id,
+        stat,
+        inc
+      );
 
-    if (!this.role) return;
+      if (!this.role) return;
 
-    var role = `${this.role.name}${
-      this.role.modifier ? ":" + this.role.modifier : ""
-    }`;
-    this.updateStatsMap(stats[bucket], "byRole", role, stat, inc);
-    this.updateStatsMap(stats[bucket], "byAlignment", this.role.alignment, stat, inc);
+      var role = `${this.role.name}${
+        this.role.modifier ? ":" + this.role.modifier : ""
+      }`;
+      this.updateStatsMap(stats[bucket], "byRole", role, stat, inc);
+      this.updateStatsMap(
+        stats[bucket],
+        "byAlignment",
+        this.role.alignment,
+        stat,
+        inc
+      );
+    } catch (e) {
+      logger.warn(
+        `recordStat(${stat}) failed for user ${this.user.id} in game ${this.game.id}: ${e.message}`
+      );
+    }
   }
 
   updateStatsMap(stats, mapName, key, stat, inc) {
     if (!stats[mapName]) stats[mapName] = {};
 
-    const statsObj = stats[mapName][key] || dbStats.statsObj(this.game.type);
-    this.updateStatsObj(statsObj, stat, inc);
-    stats[mapName][key] = statsObj;
+    if (!stats[mapName][key]) {
+      stats[mapName][key] = dbStats.statsObj(this.game.type);
+    } else {
+      dbStats.ensureStatsObj(stats[mapName][key], this.game.type);
+    }
+
+    this.updateStatsObj(stats[mapName][key], stat, inc);
   }
 
   updateStatsObj(stats, stat, inc) {
     if (stat != "totalGames") {
+      if (!stats[stat] || typeof stats[stat] !== "object") {
+        stats[stat] = { count: 0, total: 0 };
+      }
       stats[stat].total++;
 
       if (inc) stats[stat].count++;
-    } else stats.totalGames++;
+    } else {
+      if (stats.totalGames == null) stats.totalGames = 0;
+      stats.totalGames++;
+    }
   }
 
   swapIdentity(player, winners) {

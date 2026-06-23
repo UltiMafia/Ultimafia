@@ -463,40 +463,7 @@ router.get("/:id/profile", async function (req, res) {
 
     var allStats = dbStats.allStats();
     user.stats = user.stats || allStats;
-
-    const legacyMaps = ["bySetup", "byRole", "byAlignment"];
-    for (let gameType in allStats) {
-      if (!user.stats[gameType])
-        user.stats[gameType] = dbStats.statsSet(gameType);
-      else {
-        let statsSet = dbStats.statsSet(gameType);
-
-        for (let objName in statsSet) {
-          if (!user.stats[gameType][objName])
-            user.stats[gameType][objName] = statsSet[objName];
-          else if (typeof statsSet[objName] === "object") {
-            for (let key in statsSet[objName])
-              if (user.stats[gameType][objName][key] == null)
-                user.stats[gameType][objName][key] = statsSet[objName][key];
-          }
-        }
-
-        // Migrate legacy top-level bySetup/byRole/byAlignment into all bucket
-        for (const mapName of legacyMaps) {
-          const legacy = user.stats[gameType][mapName];
-          if (legacy && typeof legacy === "object" && !Array.isArray(legacy)) {
-            const bucket = user.stats[gameType].all;
-            if (!bucket[mapName]) bucket[mapName] = {};
-            for (const key in legacy) {
-              if (!bucket[mapName][key]) {
-                bucket[mapName][key] = legacy[key];
-              }
-            }
-            delete user.stats[gameType][mapName];
-          }
-        }
-      }
-    }
+    dbStats.normalizeUserStats(user.stats);
 
     var archivedGames = await models.ArchivedGame.find({ user: userMongoId })
       .select("game description")
