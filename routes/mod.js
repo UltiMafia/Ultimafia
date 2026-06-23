@@ -4094,4 +4094,133 @@ router.post("/syncCompetitiveApprovals", async function (req, res) {
   }
 });
 
+router.post("/awardHearts", async (req, res) => {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdToAward = String(req.body.userId);
+    var quantity = Number(req.body.quantity);
+    var heartType = String(req.body.heartType);
+    var perm = "awardTrophy";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    if (!userIdToAward) {
+      errors.badRequest(res, "User is required.");
+      return;
+    }
+
+    if (isNaN(quantity) || quantity < 1) {
+      errors.badRequest(res, "Quantity must be a positive number.");
+      return;
+    }
+
+    const validHeartTypes = ["red", "gold"];
+    if (!validHeartTypes.includes(heartType)) {
+      errors.badRequest(
+        res,
+        `Invalid heart type. Valid types: ${validHeartTypes.join(", ")}`
+      );
+      return;
+    }
+
+    var userToAward = await models.User.findOne({
+      id: userIdToAward,
+      deleted: false,
+    }).select("_id");
+
+    if (!userToAward) {
+      errors.notFound(res, "User does not exist.");
+      return;
+    }
+
+    const updateField =
+      heartType === "red" ? "redHearts" : "goldHearts";
+    await models.User.updateOne(
+      { id: userIdToAward },
+      { $inc: { [updateField]: quantity } }
+    ).exec();
+
+    await redis.cacheUserInfo(userIdToAward, true);
+
+    routeUtils.createModAction(userId, "Award Hearts", [
+      userIdToAward,
+      heartType,
+      String(quantity),
+    ]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not award hearts. Please try again.");
+  }
+});
+
+router.post("/revokeHearts", async (req, res) => {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdToRevoke = String(req.body.userId);
+    var quantity = Number(req.body.quantity);
+    var heartType = String(req.body.heartType);
+    var perm = "awardTrophy";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    if (!userIdToRevoke) {
+      errors.badRequest(res, "User is required.");
+      return;
+    }
+
+    if (isNaN(quantity) || quantity < 1) {
+      errors.badRequest(res, "Quantity must be a positive number.");
+      return;
+    }
+
+    const validHeartTypes = ["red", "gold"];
+    if (!validHeartTypes.includes(heartType)) {
+      errors.badRequest(
+        res,
+        `Invalid heart type. Valid types: ${validHeartTypes.join(", ")}`
+      );
+      return;
+    }
+
+    var userToRevoke = await models.User.findOne({
+      id: userIdToRevoke,
+      deleted: false,
+    }).select("_id");
+
+    if (!userToRevoke) {
+      errors.notFound(res, "User does not exist.");
+      return;
+    }
+
+    const updateField =
+      heartType === "red" ? "redHearts" : "goldHearts";
+    
+    // Get current heart count to prevent negative values
+    const currentHearts = await models.User.findOne({
+      id: userIdToRevoke,
+    }).select(updateField);
+    
+    const currentValue = currentHearts[updateField] || 0;
+    const newValue = Math.max(0, currentValue - quantity);
+    
+    await models.User.updateOne(
+      { id: userIdToRevoke },
+      { $set: { [updateField]: newValue } }
+    ).exec();
+
+    await redis.cacheUserInfo(userIdToRevoke, true);
+
+    routeUtils.createModAction(userId, "Revoke Hearts", [
+      userIdToRevoke,
+      heartType,
+      String(quantity),
+    ]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not revoke hearts. Please try again.");
+  }
+});
+
 module.exports = router;

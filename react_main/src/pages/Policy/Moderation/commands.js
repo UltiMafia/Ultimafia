@@ -1156,6 +1156,76 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Award Hearts": {
+      perm: "changeUsersName",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Heart Type",
+          name: "heartType",
+          type: "select",
+          options: [
+            { value: "red", label: "Red" },
+            { value: "gold", label: "Gold" },
+          ],
+        },
+        {
+          label: "Quantity",
+          name: "quantity",
+          type: "number",
+          default: 1,
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/awardHearts", argValues)
+          .then(() => {
+            siteInfo.showAlert("Hearts awarded.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Revoke Hearts": {
+      perm: "changeUsersName",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Heart Type",
+          name: "heartType",
+          type: "select",
+          options: [
+            { value: "red", label: "Red" },
+            { value: "gold", label: "Gold" },
+          ],
+        },
+        {
+          label: "Quantity",
+          name: "quantity",
+          type: "number",
+          default: 1,
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/revokeHearts", argValues)
+          .then(() => {
+            siteInfo.showAlert("Hearts revoked.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Update Board Description": {
       hidden: true,
       args: [
