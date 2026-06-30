@@ -49,10 +49,17 @@ import { Loading } from "components/Loading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
 import {
   Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Grid,
   IconButton,
+  Paper,
   Popover,
   Stack,
+  TextField,
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
@@ -211,6 +218,13 @@ export default function Profile() {
   const [pokesDisabled, setPokesDisabled] = useState(false);
   const [incomingPokes, setIncomingPokes] = useState([]);
 
+  // Stock Trading States
+  const [stockInfo, setStockInfo] = useState(null);
+  const [tradeModalOpen, setTradeModalOpen] = useState(false);
+  const [tradeType, setTradeType] = useState("buy");
+  const [shareCount, setShareCount] = useState(1);
+  const [tradeSubmitting, setTradeSubmitting] = useState(false);
+
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const navigate = useNavigate();
@@ -300,6 +314,7 @@ export default function Profile() {
       setProfileLoaded(false);
       setCanonicalUserId(null);
       setProfileTotalGames(0);
+      setStockInfo(null);
 
       axios
         .get(`/api/user/${userId}/profile`)
@@ -367,6 +382,7 @@ export default function Profile() {
           setPokeStatus(res.data.pokeStatus || { status: "none" });
           setPokesDisabled(res.data.pokesDisabled || false);
           setIncomingPokes(res.data.incomingPokes || []);
+          setStockInfo(res.data.stockInfo || null);
           setFriendsPage(1);
           loadFriends(resolvedId, "", 1);
 
@@ -1064,6 +1080,227 @@ export default function Profile() {
     return <Navigate to={profilePath} replace />;
   }
 
+  const handleOpenTrade = () => {
+    setTradeType("buy");
+    setShareCount(1);
+    setTradeModalOpen(true);
+  };
+
+  // Calculate pricing preview for modal
+  const tradePreview = React.useMemo(() => {
+    if (!stockInfo || shareCount <= 0) {
+      return { price: 0, creatorFee: 0, systemFee: 0, total: 0 };
+    }
+
+    const currentSupply = stockInfo.shareSupply;
+    let basePrice = 0;
+
+    if (tradeType === "buy") {
+      for (let i = 1; i <= shareCount; i++) {
+        const S = currentSupply + i;
+        basePrice += Math.max(1, Math.floor((S * S) / 100));
+      }
+      const creatorFee = Math.max(1, Math.round(basePrice * 0.05));
+      const systemFee = Math.max(1, Math.round(basePrice * 0.05));
+      return {
+        price: basePrice,
+        creatorFee,
+        systemFee,
+        total: basePrice + creatorFee + systemFee,
+      };
+    } else {
+      const sellCount = Math.min(shareCount, currentSupply);
+      for (let i = 0; i < sellCount; i++) {
+        const S = currentSupply - i;
+        basePrice += Math.max(1, Math.floor((S * S) / 100));
+      }
+      const creatorFee = Math.max(1, Math.round(basePrice * 0.05));
+      const systemFee = Math.max(1, Math.round(basePrice * 0.05));
+      return {
+        price: basePrice,
+        creatorFee,
+        systemFee,
+        total: Math.max(0, basePrice - creatorFee - systemFee),
+      };
+    }
+  }, [stockInfo, tradeType, shareCount]);
+
+  const handleConfirmTrade = () => {
+    if (shareCount <= 0 || !stockInfo) return;
+    setTradeSubmitting(true);
+
+    const endpoint = tradeType === "buy" ? "/api/stocks/buy" : "/api/stocks/sell";
+    axios
+      .post(endpoint, { subjectId: profileUserId, shares: shareCount })
+      .then((res) => {
+        const msg =
+          tradeType === "buy"
+            ? `Successfully bought ${shareCount} shares for ${res.data.total} coins.`
+            : `Successfully sold ${shareCount} shares for ${res.data.totalPayout} coins.`;
+        siteInfo.showAlert(msg, "success");
+        setTradeModalOpen(false);
+        setProfileRefetchKey((k) => k + 1);
+      })
+      .catch((err) => {
+        setTradeSubmitting(false);
+        errorAlert(err);
+      })
+      .finally(() => setTradeSubmitting(false));
+  };
+
+  const tradeModal = stockInfo && (
+    <Dialog open={tradeModalOpen} onClose={() => setTradeModalOpen(false)} fullWidth maxWidth="xs">
+      <DialogTitle sx={{ fontWeight: "bold", borderBottom: 1, borderColor: "divider", pb: 2 }}>
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <Avatar id={profileUserId} name={name} avatar={avatar} size={40} />
+          <Box>
+            <Typography variant="h6" sx={{ lineHeight: 1.2 }}>
+              {name}'s Stock
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Current share supply: {stockInfo.shareSupply}
+            </Typography>
+          </Box>
+        </Stack>
+      </DialogTitle>
+
+      <DialogContent sx={{ py: 3 }}>
+        <Stack spacing={3}>
+          <ToggleButtonGroup
+            value={tradeType}
+            exclusive
+            onChange={(e, val) => {
+              if (val) {
+                setTradeType(val);
+                setShareCount(1);
+              }
+            }}
+            fullWidth
+            color={tradeType === "buy" ? "success" : "error"}
+          >
+            <ToggleButton value="buy" disabled={user.id === profileUserId}>
+              Buy Shares
+            </ToggleButton>
+            <ToggleButton value="sell">Sell Shares</ToggleButton>
+          </ToggleButtonGroup>
+
+          <Box>
+            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+              Number of Shares
+            </Typography>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Button
+                variant="outlined"
+                onClick={() => setShareCount((c) => Math.max(1, c - 1))}
+                sx={{ minWidth: 48 }}
+              >
+                -
+              </Button>
+              <TextField
+                fullWidth
+                type="number"
+                value={shareCount}
+                onChange={(e) => {
+                  const num = Number(e.target.value);
+                  if (num > 0) setShareCount(Math.floor(num));
+                }}
+                slotProps={{ htmlInput: { min: 1, style: { textAlign: "center" } } }}
+              />
+              <Button
+                variant="outlined"
+                onClick={() => setShareCount((c) => c + 1)}
+                sx={{ minWidth: 48 }}
+              >
+                +
+              </Button>
+            </Stack>
+            {tradeType === "sell" && (
+              <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>
+                You own {stockInfo.sharesOwned} shares.
+              </Typography>
+            )}
+          </Box>
+
+          <Paper variant="outlined" sx={{ p: 2, background: "rgba(255,255,255,0.01)" }}>
+            <Stack spacing={1}>
+              <Stack direction="row" justifyContent="space-between">
+                <Typography variant="body2">Base Price:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  {tradePreview.price} Coins
+                </Typography>
+              </Stack>
+              <Stack direction="row" justifyContent="space-between">
+                <Typography variant="body2">Creator Fee (5%):</Typography>
+                <Typography variant="body2" color="success.main">
+                  +{tradePreview.creatorFee} Coins
+                </Typography>
+              </Stack>
+              <Stack direction="row" justifyContent="space-between">
+                <Typography variant="body2">System Fee (5%):</Typography>
+                <Typography variant="body2" color="warning.main">
+                  +{tradePreview.systemFee} Coins
+                </Typography>
+              </Stack>
+              <Box sx={{ borderTop: 1, borderColor: "divider", my: 1, pt: 1 }} />
+              <Stack direction="row" justifyContent="space-between">
+                <Typography sx={{ fontWeight: "bold" }}>
+                  {tradeType === "buy" ? "Total Cost:" : "Total Payout:"}
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold" }}>
+                  {tradePreview.total} Coins
+                </Typography>
+              </Stack>
+            </Stack>
+          </Paper>
+
+          {user.loggedIn && (
+            <Stack direction="row" justifyContent="space-between" sx={{ px: 1 }}>
+              <Typography variant="caption" color="text.secondary">
+                Coins After Trade:
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: "bold",
+                  color:
+                    tradeType === "buy"
+                      ? (user.coins || 0) >= tradePreview.total
+                        ? "success.main"
+                        : "error.main"
+                      : "success.main",
+                }}
+              >
+                {tradeType === "buy"
+                  ? ((user.coins || 0) - tradePreview.total).toFixed(2)
+                  : ((user.coins || 0) + tradePreview.total).toFixed(2)}{" "}
+                Coins
+              </Typography>
+            </Stack>
+          )}
+        </Stack>
+      </DialogContent>
+
+      <DialogActions sx={{ borderTop: 1, borderColor: "divider", p: 2 }}>
+        <Button onClick={() => setTradeModalOpen(false)} disabled={tradeSubmitting}>
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          color={tradeType === "buy" ? "success" : "error"}
+          onClick={handleConfirmTrade}
+          disabled={
+            tradeSubmitting ||
+            shareCount <= 0 ||
+            (tradeType === "buy" && (user.coins || 0) < tradePreview.total) ||
+            (tradeType === "sell" && stockInfo.sharesOwned < shareCount)
+          }
+        >
+          {tradeSubmitting ? "Trading..." : tradeType === "buy" ? "Buy" : "Sell"}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+
   if (!profileLoaded || !user.loaded) return <Loading small />;
 
   const buttonsBox = (
@@ -1080,6 +1317,16 @@ export default function Profile() {
         <Stack direction="row" className="options">
           {!isSelf && user.loggedIn && (
             <>
+              {stockInfo && (
+                <IconButton
+                  aria-label="trade stock"
+                  onClick={handleOpenTrade}
+                  title={`Trade Shares (Current Price: ${stockInfo.buyPrice} Coins)`}
+                  sx={{ cursor: "pointer", touchAction: "manipulation" }}
+                >
+                  <i className="fas fa-chart-line" style={{ color: "gold" }} />
+                </IconButton>
+              )}
               <IconButton aria-label="friend user">
                 <i
                   className={`fas fa-user-plus ${isFriend || isFriendRequested ? "sel" : ""}`}
@@ -1442,6 +1689,7 @@ export default function Profile() {
 
   return (
     <>
+      {tradeModal}
       {stats && (
         <StatsModal
           stats={stats}
