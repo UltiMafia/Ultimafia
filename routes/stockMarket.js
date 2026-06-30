@@ -4,7 +4,6 @@ const routeUtils = require("./utils");
 const errors = require("../lib/errors");
 const logger = require("../modules/logging")(".");
 const stockMarket = require("../lib/StockMarket");
-const shortid = require("shortid");
 
 const router = express.Router();
 
