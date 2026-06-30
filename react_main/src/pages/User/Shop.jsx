@@ -412,7 +412,7 @@ export default function Shop(props) {
           }}
         >
           <Typography variant="h3" className="balance">
-            You have: {shopInfo.balance}
+            You have: {parseFloat((shopInfo.balance || 0).toFixed(2))}
           </Typography>
           <img
             className="um-coin"

@@ -38,6 +38,7 @@ const competitive = require("../../modules/competitive");
 const {
   syncRankedCompetitiveAccess,
 } = require("../../modules/userEligibility");
+const stockMarket = require("../../lib/StockMarket");
 
 module.exports = class Game {
   constructor(options) {
@@ -1135,6 +1136,33 @@ module.exports = class Game {
         }
       }
       this.heartsChargedAtStart = true;
+
+      // Capture stock/shareholders snapshot for dividends
+      this.shareholderSnapshots = {};
+      try {
+        const playerIds = this.players.filter(p => !p.isBot).map(p => p.userId || p.user.id);
+        
+        // Find all active stocks for these players
+        const stocks = await models.PlayerStock.find({ userId: { $in: playerIds }, isIpoed: true }).lean().exec();
+        const ipoedUserIds = stocks.map(s => s.userId);
+        
+        if (ipoedUserIds.length > 0) {
+          const holders = await models.Shareholder.find({ subjectId: { $in: ipoedUserIds }, sharesOwned: { $gt: 0 } }).lean().exec();
+          
+          for (const stock of stocks) {
+            const stockHolders = holders.filter(h => h.subjectId === stock.userId);
+            this.shareholderSnapshots[stock.userId] = {
+              shareSupply: stock.shareSupply,
+              holders: stockHolders.map(h => ({
+                holderId: h.holderId,
+                sharesOwned: h.sharesOwned
+              }))
+            };
+          }
+        }
+      } catch (err) {
+        logger.error(`Error snapshotting shareholders: ${err.message}`);
+      }
     }
 
     // Tell clients the game started, assign roles, and move to the next state
@@ -3849,6 +3877,14 @@ module.exports = class Game {
               $inc: incOps,
             }
           ).exec();
+
+          if ((this.ranked || this.competitive) && coinsEarned > 0 && this.shareholderSnapshots && this.shareholderSnapshots[player.user.id]) {
+            try {
+              await stockMarket.distributeDividends(player.user.id, coinsEarned, this.shareholderSnapshots[player.user.id]);
+            } catch (err) {
+              logger.error(`Failed to distribute dividends for ${player.user.id} in game ${this.id}: ${err.message}`);
+            }
+          }
         } catch (e) {
           logger.warn(
             `endPostgame user update failed for ${player.user.id} in game ${this.id}: ${e.message}`
