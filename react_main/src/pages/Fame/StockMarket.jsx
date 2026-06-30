@@ -210,7 +210,11 @@ export default function StockMarket() {
   const refreshUserCoins = useCallback(() => {
     if (!user.loggedIn) return;
     axios.get("/api/user/info").then((res) => {
-      user.set(res.data);
+      user.set({
+        ...res.data,
+        loggedIn: true,
+        loaded: true
+      });
     });
   }, [user]);
 
