@@ -247,10 +247,11 @@ router.post("/buy", async function (req, res) {
       return errors.badRequest(res, "Invalid buy data. Shares must be a positive integer.");
     }
 
-    // 1. Prevent alt account trading / self trading
+    // 1. Prevent alt account trading (self-buying is allowed)
     const altIds = await routeUtils.getAltAccountIds(subjectId);
-    if (altIds.includes(userId)) {
-      return errors.forbidden(res, "You cannot buy shares of yourself or your alt accounts.");
+    const altsExcludingSelf = altIds.filter(id => id !== subjectId);
+    if (altsExcludingSelf.includes(userId)) {
+      return errors.forbidden(res, "You cannot buy shares of your alt accounts.");
     }
 
     // 2. Fetch stock
