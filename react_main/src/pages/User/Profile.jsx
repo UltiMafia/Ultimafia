@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext, useRef, useMemo } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
@@ -76,6 +76,52 @@ export const POINTS_NEGATIVE_ICON = require(`images/pointsNegative.png`);
 export const PRESTIGE_ICON = require(`images/prestige.png`);
 export const ACHIEVEMENTS_ICON = require(`images/achievements.png`);
 export const DAILY_ICON = require(`images/dailyChallenges.png`);
+
+// Render a sleek sparkline trend curve based on historical price ticks
+function Sparkline({ history }) {
+  const points = React.useMemo(() => {
+    let prices = Array.isArray(history) ? history : [];
+    if (prices.length === 0) prices = [1, 1];
+    if (prices.length === 1) prices = [prices[0], prices[0]];
+
+    const min = Math.min(...prices);
+    const max = Math.max(...prices);
+    const range = max - min === 0 ? 1 : max - min;
+
+    const width = 140;
+    const height = 40;
+    const padding = 4;
+
+    return prices.map((val, idx) => {
+      const x = (idx / (prices.length - 1)) * (width - padding * 2) + padding;
+      const y = height - (((val - min) / range) * (height - padding * 2) + padding);
+      return `${x},${y}`;
+    }).join(" ");
+  }, [history]);
+
+  const isUp = React.useMemo(() => {
+    let prices = Array.isArray(history) ? history : [];
+    if (prices.length < 2) return true;
+    return prices[prices.length - 1] >= prices[prices.length - 2];
+  }, [history]);
+
+  const strokeColor = isUp ? "#4caf50" : "#f44336"; // Green vs red
+
+  return (
+    <Box sx={{ display: "inline-flex", alignItems: "center" }}>
+      <svg width="140" height="40" style={{ overflow: "visible" }}>
+        <polyline
+          fill="none"
+          stroke={strokeColor}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          points={points}
+        />
+      </svg>
+    </Box>
+  );
+}
 
 function FavoritedRolesPanel({
   favoriteRoles = [],
@@ -236,6 +282,45 @@ export default function Profile() {
   const isSelf = profileUserId === user.id;
   const isBlocked = !isSelf && user.blockedUsers.indexOf(profileUserId) !== -1;
   const canViewNameHistory = user.perms.seeModPanel;
+
+  // Calculate pricing preview for modal (called unconditionally before redirects/early returns)
+  const tradePreview = useMemo(() => {
+    if (!stockInfo || shareCount <= 0) {
+      return { price: 0, creatorFee: 0, systemFee: 0, total: 0 };
+    }
+
+    const currentSupply = stockInfo.shareSupply;
+    let basePrice = 0;
+
+    if (tradeType === "buy") {
+      for (let i = 1; i <= shareCount; i++) {
+        const S = currentSupply + i;
+        basePrice += Math.max(1, Math.floor((S * S) / 100));
+      }
+      const creatorFee = Math.max(1, Math.round(basePrice * 0.05));
+      const systemFee = Math.max(1, Math.round(basePrice * 0.05));
+      return {
+        price: basePrice,
+        creatorFee,
+        systemFee,
+        total: basePrice + creatorFee + systemFee,
+      };
+    } else {
+      const sellCount = Math.min(shareCount, currentSupply);
+      for (let i = 0; i < sellCount; i++) {
+        const S = currentSupply - i;
+        basePrice += Math.max(1, Math.floor((S * S) / 100));
+      }
+      const creatorFee = Math.max(1, Math.round(basePrice * 0.05));
+      const systemFee = Math.max(1, Math.round(basePrice * 0.05));
+      return {
+        price: basePrice,
+        creatorFee,
+        systemFee,
+        total: Math.max(0, basePrice - creatorFee - systemFee),
+      };
+    }
+  }, [stockInfo, tradeType, shareCount]);
 
   // userId is the id of the current profile
   // user.id is the id of the current user
@@ -1080,50 +1165,13 @@ export default function Profile() {
     return <Navigate to={profilePath} replace />;
   }
 
+  if (!profileLoaded || !user.loaded) return <Loading small />;
+
   const handleOpenTrade = () => {
     setTradeType("buy");
     setShareCount(1);
     setTradeModalOpen(true);
   };
-
-  // Calculate pricing preview for modal
-  const tradePreview = React.useMemo(() => {
-    if (!stockInfo || shareCount <= 0) {
-      return { price: 0, creatorFee: 0, systemFee: 0, total: 0 };
-    }
-
-    const currentSupply = stockInfo.shareSupply;
-    let basePrice = 0;
-
-    if (tradeType === "buy") {
-      for (let i = 1; i <= shareCount; i++) {
-        const S = currentSupply + i;
-        basePrice += Math.max(1, Math.floor((S * S) / 100));
-      }
-      const creatorFee = Math.max(1, Math.round(basePrice * 0.05));
-      const systemFee = Math.max(1, Math.round(basePrice * 0.05));
-      return {
-        price: basePrice,
-        creatorFee,
-        systemFee,
-        total: basePrice + creatorFee + systemFee,
-      };
-    } else {
-      const sellCount = Math.min(shareCount, currentSupply);
-      for (let i = 0; i < sellCount; i++) {
-        const S = currentSupply - i;
-        basePrice += Math.max(1, Math.floor((S * S) / 100));
-      }
-      const creatorFee = Math.max(1, Math.round(basePrice * 0.05));
-      const systemFee = Math.max(1, Math.round(basePrice * 0.05));
-      return {
-        price: basePrice,
-        creatorFee,
-        systemFee,
-        total: Math.max(0, basePrice - creatorFee - systemFee),
-      };
-    }
-  }, [stockInfo, tradeType, shareCount]);
 
   const handleConfirmTrade = () => {
     if (shareCount <= 0 || !stockInfo) return;
@@ -1301,8 +1349,6 @@ export default function Profile() {
     </Dialog>
   );
 
-  if (!profileLoaded || !user.loaded) return <Loading small />;
-
   const buttonsBox = (
     <Grid
       item
@@ -1317,16 +1363,6 @@ export default function Profile() {
         <Stack direction="row" className="options">
           {!isSelf && user.loggedIn && (
             <>
-              {stockInfo && (
-                <IconButton
-                  aria-label="trade stock"
-                  onClick={handleOpenTrade}
-                  title={`Trade Shares (Current Price: ${stockInfo.buyPrice} Coins)`}
-                  sx={{ cursor: "pointer", touchAction: "manipulation" }}
-                >
-                  <i className="fas fa-chart-line" style={{ color: "gold" }} />
-                </IconButton>
-              )}
               <IconButton aria-label="friend user">
                 <i
                   className={`fas fa-user-plus ${isFriend || isFriendRequested ? "sel" : ""}`}
@@ -1790,6 +1826,60 @@ export default function Profile() {
         </Grid>
         <Grid item xs={12} md={4}>
           <Stack direction="column" spacing={1}>
+            {stockInfo && (
+              <div className="box-panel" style={panelStyle}>
+                <div className="heading" style={headingStyle}>
+                  📈 Stock & Equity
+                </div>
+                <div className="content" style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "16px" }}>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        Current Price
+                      </Typography>
+                      <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold" }}>
+                        {stockInfo.buyPrice} Coins
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Sparkline history={stockInfo.priceHistory} />
+                    </Box>
+                  </Stack>
+
+                  <Grid container spacing={2} sx={{ mt: 0.5, borderTop: "1px solid rgba(255, 255, 255, 0.08)", pt: 1.5 }}>
+                    <Grid item xs={6}>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        Total Supply
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                        {stockInfo.shareSupply} Shares
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        Your Holdings
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontWeight: "bold", color: stockInfo.sharesOwned > 0 ? "success.main" : "text.secondary" }}>
+                        {stockInfo.sharesOwned} Shares
+                      </Typography>
+                    </Grid>
+                  </Grid>
+
+                  {!isSelf && user.loggedIn && (
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      fullWidth
+                      onClick={handleOpenTrade}
+                      sx={{ mt: 1, fontWeight: "bold" }}
+                      startIcon={<i className="fas fa-chart-line" />}
+                    >
+                      Trade Shares
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
             {mediaUrl && (
               <div className="box-panel" style={panelStyle}>
                 <MediaEmbed

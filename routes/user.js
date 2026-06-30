@@ -897,11 +897,23 @@ router.get("/:id/profile", async function (req, res) {
     if (playerStock) {
       const buyPrice = stockMarket.getBuyPrice(playerStock.shareSupply, 1).total;
       const sellPrice = stockMarket.getSellPrice(playerStock.shareSupply, 1).total;
+      
+      const transactions = await models.StockTransaction.find({ subjectId: userId })
+        .sort({ createdAt: 1 })
+        .select("price")
+        .lean()
+        .exec();
+      const history = [1];
+      for (const tx of transactions) {
+        history.push(tx.price);
+      }
+
       user.stockInfo = {
         isIpoed: true,
         shareSupply: playerStock.shareSupply,
         buyPrice,
         sellPrice,
+        priceHistory: history.slice(-10),
         sharesOwned: 0
       };
       if (reqUserId) {
