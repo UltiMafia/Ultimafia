@@ -171,7 +171,7 @@ router.get("/prices/:subjectId", async function (req, res) {
 
 /**
  * POST /api/stocks/ipo
- * Initiates an IPO for the logged-in user. Costs 50 coins.
+ * Initiates an IPO for the logged-in user. Costs 100 coins.
  */
 router.post("/ipo", async function (req, res) {
   try {
@@ -183,16 +183,16 @@ router.post("/ipo", async function (req, res) {
       return errors.conflict(res, "You are already IPO'd.");
     }
 
-    // 2. Check balance (needs 50 coins)
+    // 2. Check balance (needs 100 coins)
     const user = await models.User.findOne({ id: userId }).select("coins").exec();
-    if (!user || user.coins < 50) {
-      return errors.forbidden(res, "Insufficient coins. Starting an IPO costs 50 coins.");
+    if (!user || user.coins < 100) {
+      return errors.forbidden(res, "Insufficient coins. Starting an IPO costs 100 coins.");
     }
 
     // 3. Deduct coins atomically
     const debit = await models.User.updateOne(
-      { id: userId, coins: { $gte: 50 } },
-      { $inc: { coins: -50 } }
+      { id: userId, coins: { $gte: 100 } },
+      { $inc: { coins: -100 } }
     ).exec();
 
     if (debit.modifiedCount === 0 && debit.nModified === 0) {
@@ -219,11 +219,11 @@ router.post("/ipo", async function (req, res) {
       subjectId: userId,
       type: "buy",
       shares: 1,
-      price: 50,
+      price: 100,
       fee: 0
     });
 
-    res.send({ success: true, message: "IPO completed successfully! You purchased your first share for 50 coins." });
+    res.send({ success: true, message: "IPO completed successfully! You purchased your first share for 100 coins." });
   } catch (e) {
     if (e.message === "Not logged in") {
       return errors.unauthorized(res, "You must be logged in to start an IPO.");

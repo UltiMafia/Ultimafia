@@ -202,8 +202,8 @@ export default function StockMarket() {
   // Launch Player IPO
   const handleLaunchIpo = () => {
     const userCoins = user.coins || 0;
-    if (userCoins < 50) {
-      siteInfo.showAlert("You need 50 coins to launch an IPO.", "error");
+    if (userCoins < 100) {
+      siteInfo.showAlert("You need 100 coins to launch an IPO.", "error");
       return;
     }
     setLoading(true);
@@ -674,7 +674,7 @@ export default function StockMarket() {
                       Start your Player IPO
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                      IPOing yourself costs 50 coins. This enables trading of your personal shares on the bonding curve.
+                      IPOing yourself costs 100 coins. This enables trading of your personal shares on the bonding curve.
                       You will automatically receive your first share (owned by you) to kick off the market.
                     </Typography>
                   </Box>
@@ -683,12 +683,12 @@ export default function StockMarket() {
                     <Paper variant="outlined" sx={{ p: 2, display: "flex", gap: 3, background: "rgba(255,255,255,0.02)" }}>
                       <Box>
                         <Typography variant="caption" display="block">IPO Fee</Typography>
-                        <Typography variant="h6" sx={{ fontWeight: "bold", color: "error.main" }}>-50 Coins</Typography>
+                        <Typography variant="h6" sx={{ fontWeight: "bold", color: "error.main" }}>-100 Coins</Typography>
                       </Box>
                       <Box sx={{ borderLeft: 1, borderColor: "divider", pl: 3 }}>
                         <Typography variant="caption" display="block">Your Coins After</Typography>
-                        <Typography variant="h6" sx={{ fontWeight: "bold", color: (user.coins || 0) >= 50 ? "success.main" : "error.main" }}>
-                          {((user.coins || 0) - 50).toFixed(2)} Coins
+                        <Typography variant="h6" sx={{ fontWeight: "bold", color: (user.coins || 0) >= 100 ? "success.main" : "error.main" }}>
+                          {((user.coins || 0) - 100).toFixed(2)} Coins
                         </Typography>
                       </Box>
                     </Paper>
@@ -697,16 +697,16 @@ export default function StockMarket() {
                       variant="contained"
                       color="warning"
                       size="large"
-                      disabled={(user.coins || 0) < 50}
+                      disabled={(user.coins || 0) < 100}
                       onClick={handleLaunchIpo}
                       startIcon={<Icon icon="lucide:coins" />}
                       sx={{ px: 4, py: 1.5, fontWeight: "bold" }}
                     >
-                      Launch IPO for 50 Coins
+                      Launch IPO for 100 Coins
                     </Button>
-                    {(user.coins || 0) < 50 && (
+                    {(user.coins || 0) < 100 && (
                       <Typography variant="caption" color="error">
-                        You need {50 - (user.coins || 0)} more coins to start your IPO.
+                        You need {100 - (user.coins || 0)} more coins to start your IPO.
                       </Typography>
                     )}
                   </Stack>
