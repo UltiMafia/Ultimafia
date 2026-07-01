@@ -567,10 +567,28 @@ router.get("/families/portfolio", async function (req, res) {
       familyMap[f.id] = f;
     }
 
+    const transactions = await models.FamilyStockTransaction.find({
+      userId,
+      familyId: { $in: familyIds }
+    }).lean().exec();
+
+    const costBasisMap = {};
+    for (const tx of transactions) {
+      if (!costBasisMap[tx.familyId]) costBasisMap[tx.familyId] = 0;
+      if (tx.type === "buy") {
+        costBasisMap[tx.familyId] += tx.price + tx.fee;
+      } else {
+        costBasisMap[tx.familyId] -= (tx.price - tx.fee);
+      }
+    }
+
     const result = holdings.map(h => {
       const stock = stockMap[h.familyId] || { shareSupply: 0 };
       const f = familyMap[h.familyId] || { name: "Unknown" };
       const sellPrice = stockMarket.getSellPrice(stock.shareSupply, h.sharesOwned);
+      const costBasis = parseFloat((costBasisMap[h.familyId] || 0).toFixed(2));
+      const liquidValue = sellPrice.total;
+      const unrealizedPnL = parseFloat((liquidValue - costBasis).toFixed(2));
 
       return {
         familyId: h.familyId,
@@ -578,8 +596,11 @@ router.get("/families/portfolio", async function (req, res) {
         avatar: f.avatar,
         background: f.background,
         sharesOwned: h.sharesOwned,
-        averageSellValue: sellPrice.total,
-        currentSingleSellPrice: stockMarket.getSellPrice(stock.shareSupply, 1).total
+        averageSellValue: liquidValue,
+        currentSingleSellPrice: stockMarket.getSellPrice(stock.shareSupply, 1).total,
+        costBasis,
+        unrealizedPnL,
+        dividendsReceived: parseFloat((h.dividendsReceived || 0).toFixed(2))
       };
     });
 

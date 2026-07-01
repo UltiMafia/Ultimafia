@@ -715,11 +715,17 @@ export default function StockMarket() {
                           </Stack>
                         </TableCell>
                         <TableCell align="right">{holding.sharesOwned}</TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                          {(holding.currentSingleSellPrice || 0).toFixed(2)} <Icon icon="lucide:coins" />
+                        <TableCell align="right">
+                          {holding.costBasis.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "gold" }}>
-                          {(holding.averageSellValue || 0).toFixed(2)} <Icon icon="lucide:coins" />
+                          {(holding.averageSellValue || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: "bold", color: holding.unrealizedPnL >= 0 ? "success.main" : "error.main" }}>
+                          {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        </TableCell>
+                        <TableCell align="right" sx={{ color: "gold" }}>
+                          {holding.dividendsReceived.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="center">
                           <Stack direction="row" spacing={1} justifyContent="center">
