@@ -29,6 +29,8 @@ import {
   FormControl,
   InputLabel,
   Grid,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { useErrorAlert } from "../../components/Alerts";
@@ -85,6 +87,8 @@ export default function StockMarket() {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [activeTab, setActiveTab] = useState(0);
   const [marketMode, setMarketMode] = useState("player"); // "player" | "family"
@@ -366,7 +370,7 @@ export default function StockMarket() {
   }
 
   return (
-    <Box sx={{ width: '100%', maxWidth: '100vw', overflowX: 'hidden' }}>
+    <Box sx={{ width: '100%' }}>
       {/* Top Banner & Balance */}
       <Stack
         direction={{ xs: "column", sm: "row" }}
@@ -491,6 +495,91 @@ export default function StockMarket() {
             }}
           />
 
+          {isMobile ? (
+            <Stack spacing={2}>
+              <Stack direction="row" justifyContent="flex-end" mb={1}>
+                <FormControl size="small" sx={{ minWidth: 120 }}>
+                  <InputLabel>Sort By</InputLabel>
+                  <Select
+                    value={sortBy}
+                    label="Sort By"
+                    onChange={(e) => setSortBy(e.target.value)}
+                  >
+                    <MenuItem value="name">Name</MenuItem>
+                    <MenuItem value="marketCap">Market Cap</MenuItem>
+                    <MenuItem value="buyPrice">Buy Price</MenuItem>
+                    <MenuItem value="sellPrice">Sell Price</MenuItem>
+                  </Select>
+                </FormControl>
+                <Button onClick={() => setSortDirection(sortDirection === "asc" ? "desc" : "asc")} sx={{ minWidth: 0, px: 2 }}>
+                  <Icon icon={sortDirection === "asc" ? "lucide:arrow-up" : "lucide:arrow-down"} />
+                </Button>
+              </Stack>
+              {sortedStocks.map((stock) => {
+                const isSelf = stock.userId === user.userId;
+                const name = marketMode === "player" ? stock.username : stock.familyName;
+                return (
+                  <Card key={stock._id || stock.familyId} variant="outlined" sx={{ background: "rgba(0,0,0,0.2)" }}>
+                    <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
+                        <Stack direction="row" spacing={1.5} alignItems="center">
+                          <StockAvatar
+                            targetType={marketMode}
+                            id={marketMode === "player" ? stock.userId : stock.familyId}
+                            name={name}
+                            avatar={stock.avatar}
+                            siteInfo={siteInfo}
+                          />
+                          <Box>
+                            <Typography
+                              component="a"
+                              href={marketMode === "player" ? (stock.vanityUrl ? `/user/${stock.vanityUrl}` : `/user/${stock.userId}`) : undefined}
+                              sx={{
+                                color: stock.nameColor || "text.primary",
+                                textDecoration: "none",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {name}
+                            </Typography>
+                            {isSelf && <Chip size="small" label="You" color="primary" variant="outlined" sx={{ ml: 1, height: 20 }} />}
+                          </Box>
+                        </Stack>
+                        <Box sx={{ width: 60, height: 20 }}>
+                          <Sparkline history={stock.priceHistory} width={60} height={20} />
+                        </Box>
+                      </Stack>
+                      <Grid container spacing={1} mb={2}>
+                        <Grid item xs={4}>
+                          <Typography variant="caption" color="text.secondary" display="block">Buy Price</Typography>
+                          <Typography variant="body2" color="success.main" fontWeight="bold">
+                            {(stock.buyPrice || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Typography variant="caption" color="text.secondary" display="block">Sell Price</Typography>
+                          <Typography variant="body2" color="error.main" fontWeight="bold">
+                            {(stock.sellPrice || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Typography variant="caption" color="text.secondary" display="block">{marketMode === "player" ? "Dividends" : "Treasury"}</Typography>
+                          <Typography variant="body2" color="gold" fontWeight="bold">
+                            {marketMode === "player" ? (stock.dividendsPaidOut || 0).toFixed(2) : (stock.treasuryCoins || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                      <Stack direction="row" spacing={1}>
+                        <Button fullWidth variant="contained" color="success" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "buy", marketMode)}>Buy</Button>
+                        <Button fullWidth variant="contained" color="error" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "sell", marketMode)}>Sell</Button>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+              {sortedStocks.length === 0 && <Typography color="text.secondary" align="center">No markets found.</Typography>}
+            </Stack>
+          ) : (
           <TableContainer component={Paper} variant="outlined" sx={{ width: '100%', overflowX: 'auto' }}>
             <Table>
               <TableHead>
@@ -614,11 +703,97 @@ export default function StockMarket() {
               </TableBody>
             </Table>
           </TableContainer>
+          )}
         </Stack>
       )}
 
       {/* Tab Content: My Portfolio */}
       {activeTab === 1 && user.loggedIn && (
+        isMobile ? (
+            <Stack spacing={2}>
+              {marketMode === "player" ? (
+                portfolio.length === 0 ? (
+                  <Typography color="text.secondary" align="center">You don't own any player shares yet.</Typography>
+                ) : (
+                  portfolio.map((holding) => {
+                    const matchingStock = stocks.find((s) => s.userId === holding.subjectId) || { shareSupply: 0 };
+                    return (
+                      <Card key={holding.subjectId} variant="outlined" sx={{ background: "rgba(0,0,0,0.2)" }}>
+                        <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                          <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
+                            <StockAvatar targetType="player" id={holding.subjectId} name={holding.username} avatar={holding.avatar} siteInfo={siteInfo} />
+                            <Typography component="a" href={holding.vanityUrl ? `/user/${holding.vanityUrl}` : `/user/${holding.subjectId}`} sx={{ color: holding.nameColor || "text.primary", textDecoration: "none", fontWeight: "bold" }}>
+                              {holding.username}
+                            </Typography>
+                          </Stack>
+                          <Grid container spacing={1} mb={2}>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">Shares</Typography>
+                              <Typography variant="body2" fontWeight="bold">{holding.sharesOwned}</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">Liquid Value</Typography>
+                              <Typography variant="body2" color="gold" fontWeight="bold">{(holding.averageSellValue || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} /></Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">P&L</Typography>
+                              <Typography variant="body2" color={(holding.unrealizedPnL || 0) >= 0 ? "success.main" : "error.main"} fontWeight="bold">
+                                {(holding.unrealizedPnL || 0) >= 0 ? "+" : ""}{(holding.unrealizedPnL || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                          <Stack direction="row" spacing={1}>
+                            <Button fullWidth variant="contained" color="success" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "buy", "player")}>Buy More</Button>
+                            <Button fullWidth variant="contained" color="error" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "sell", "player")}>Sell</Button>
+                          </Stack>
+                        </CardContent>
+                      </Card>
+                    );
+                  })
+                )
+              ) : (
+                familyPortfolio.length === 0 ? (
+                  <Typography color="text.secondary" align="center">You don't own any Family ETFs yet.</Typography>
+                ) : (
+                  familyPortfolio.map((holding) => {
+                    const matchingStock = familyStocks.find((s) => s.familyId === holding.subjectId) || { shareSupply: 0 };
+                    return (
+                      <Card key={holding.subjectId} variant="outlined" sx={{ background: "rgba(0,0,0,0.2)" }}>
+                        <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                          <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
+                            <StockAvatar targetType="family" id={holding.subjectId} name={holding.familyName} avatar={holding.avatar} siteInfo={siteInfo} />
+                            <Typography sx={{ color: "text.primary", fontWeight: "bold" }}>
+                              {holding.familyName}
+                            </Typography>
+                          </Stack>
+                          <Grid container spacing={1} mb={2}>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">Shares</Typography>
+                              <Typography variant="body2" fontWeight="bold">{holding.sharesOwned}</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">Liquid Value</Typography>
+                              <Typography variant="body2" color="gold" fontWeight="bold">{(holding.averageSellValue || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} /></Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">P&L</Typography>
+                              <Typography variant="body2" color={(holding.unrealizedPnL || 0) >= 0 ? "success.main" : "error.main"} fontWeight="bold">
+                                {(holding.unrealizedPnL || 0) >= 0 ? "+" : ""}{(holding.unrealizedPnL || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                          <Stack direction="row" spacing={1}>
+                            <Button fullWidth variant="contained" color="success" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "buy", "family")}>Buy More</Button>
+                            <Button fullWidth variant="contained" color="error" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "sell", "family")}>Sell</Button>
+                          </Stack>
+                        </CardContent>
+                      </Card>
+                    );
+                  })
+                )
+              )}
+            </Stack>
+        ) : (
         <TableContainer component={Paper} variant="outlined" sx={{ width: '100%', overflowX: 'auto' }}>
           <Table>
             <TableHead>
@@ -787,6 +962,7 @@ export default function StockMarket() {
             </TableBody>
           </Table>
         </TableContainer>
+        )
       )}
 
       {/* Tab Content: Launch IPO */}
