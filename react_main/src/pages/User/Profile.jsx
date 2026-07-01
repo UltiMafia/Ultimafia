@@ -1732,7 +1732,7 @@ export default function Profile() {
                     </Grid>
                   </Grid>
 
-                  {!isSelf && user.loggedIn && (
+                  {user.loggedIn && (
                     <Button
                       variant="contained"
                       color="warning"
