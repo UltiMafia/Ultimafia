@@ -568,16 +568,16 @@ export default function StockMarket() {
                           <Sparkline history={stock.priceHistory} width={100} height={30} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
-                          {(stock.shareSupply * stock.buyPrice).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {(stock.shareSupply * (stock.buyPrice || 0)).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "success.main", whiteSpace: "nowrap" }}>
-                          {stock.buyPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {(stock.buyPrice || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "error.main", whiteSpace: "nowrap" }}>
-                          {stock.sellPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {(stock.sellPrice || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ color: "gold", whiteSpace: "nowrap" }}>
-                          {stock.dividendsPaidOut.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {(stock.dividendsPaidOut || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="center">
                           <Stack direction="row" spacing={1} justifyContent="center">
