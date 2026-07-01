@@ -515,7 +515,7 @@ export default function StockMarket() {
                   <Icon icon={sortDirection === "asc" ? "lucide:arrow-up" : "lucide:arrow-down"} />
                 </Button>
               </Stack>
-              {sortedStocks.map((stock) => {
+              {filteredStocks.map((stock) => {
                 const isSelf = stock.userId === user.userId;
                 const name = marketMode === "player" ? stock.username : stock.familyName;
                 return (
@@ -577,7 +577,7 @@ export default function StockMarket() {
                   </Card>
                 );
               })}
-              {sortedStocks.length === 0 && <Typography color="text.secondary" align="center">No markets found.</Typography>}
+              {filteredStocks.length === 0 && <Typography color="text.secondary" align="center">No markets found.</Typography>}
             </Stack>
           ) : (
           <TableContainer component={Paper} variant="outlined" sx={{ width: '100%', overflowX: 'auto' }}>
