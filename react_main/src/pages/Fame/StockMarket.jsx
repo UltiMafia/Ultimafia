@@ -516,7 +516,7 @@ export default function StockMarket() {
                 </Button>
               </Stack>
               {filteredStocks.map((stock) => {
-                const isSelf = stock.userId === user.userId;
+                const isSelf = user.loggedIn && marketMode === "player" && stock.userId === user.id;
                 const name = marketMode === "player" ? stock.username : stock.familyName;
                 return (
                   <Card key={stock._id || stock.familyId} variant="outlined" sx={{ background: "rgba(0,0,0,0.2)" }}>
