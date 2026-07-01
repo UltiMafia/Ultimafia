@@ -331,6 +331,7 @@ export default function StockMarket() {
           cursor: "pointer",
           fontWeight: "bold",
           userSelect: "none",
+          whiteSpace: "nowrap",
           "&:hover": {
             backgroundColor: "rgba(255, 255, 255, 0.05)",
           },
@@ -394,7 +395,7 @@ export default function StockMarket() {
                 My Coin Balance
               </Typography>
               <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold", lineHeight: 1 }}>
-                {parseFloat((user.coins || 0).toFixed(2))}
+                {(user.coins || 0).toFixed(2)}
               </Typography>
             </Box>
           </Paper>
@@ -469,7 +470,7 @@ export default function StockMarket() {
                   {renderSortableHeader("Market Cap", "marketCap", "right")}
                   {renderSortableHeader("Buy Price", "buyPrice", "right")}
                   {renderSortableHeader("Sell Price", "sellPrice", "right")}
-                  {renderSortableHeader("Dividends Distributed", "dividends", "right")}
+                  {renderSortableHeader("Dividends", "dividends", "right")}
                   <TableCell align="center" sx={{ fontWeight: "bold" }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -490,7 +491,7 @@ export default function StockMarket() {
                     
                     return (
                       <TableRow key={key} hover>
-                        <TableCell>
+                        <TableCell align="left" sx={{ whiteSpace: "nowrap" }}>
                           <Stack direction="row" spacing={1.5} alignItems="center">
                             <StockAvatar
                               targetType={marketMode}
@@ -507,6 +508,7 @@ export default function StockMarket() {
                                   color: stock.nameColor || "text.primary",
                                   textDecoration: "none",
                                   fontWeight: "bold",
+                                  whiteSpace: "nowrap",
                                   "&:hover": { textDecoration: "underline" },
                                 }}
                               >
@@ -520,6 +522,7 @@ export default function StockMarket() {
                                   color: "text.primary",
                                   textDecoration: "none",
                                   fontWeight: "bold",
+                                  whiteSpace: "nowrap",
                                   "&:hover": { textDecoration: "underline" },
                                 }}
                               >
@@ -529,25 +532,25 @@ export default function StockMarket() {
                             {isSelf && <Chip size="small" label="You" color="primary" variant="outlined" />}
                           </Stack>
                         </TableCell>
-                        <TableCell align="right">{stock.shareSupply}</TableCell>
+                        <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>{stock.shareSupply}</TableCell>
                         {marketMode === "family" && (
-                          <TableCell align="right" sx={{ color: "gold", fontWeight: "bold" }}>
+                          <TableCell align="right" sx={{ color: "gold", fontWeight: "bold", whiteSpace: "nowrap" }}>
                             {stock.treasuryCoins} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                           </TableCell>
                         )}
-                        <TableCell align="center">
+                        <TableCell align="center" sx={{ whiteSpace: "nowrap" }}>
                           <Sparkline history={stock.priceHistory} width={100} height={30} />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold" }}>
+                        <TableCell align="right" sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
                           {(stock.shareSupply * stock.buyPrice).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: "success.main" }}>
+                        <TableCell align="right" sx={{ fontWeight: "bold", color: "success.main", whiteSpace: "nowrap" }}>
                           {stock.buyPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: "error.main" }}>
+                        <TableCell align="right" sx={{ fontWeight: "bold", color: "error.main", whiteSpace: "nowrap" }}>
                           {stock.sellPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ color: "gold" }}>
+                        <TableCell align="right" sx={{ color: "gold", whiteSpace: "nowrap" }}>
                           {stock.dividendsPaidOut.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="center">
