@@ -247,7 +247,6 @@ async function cacheUserInfo(userId, reset) {
     await client.setAsync(`user:${userId}:info:redHearts`, user.redHearts);
     await client.setAsync(`user:${userId}:info:goldHearts`, user.goldHearts);
     await client.setAsync(`user:${userId}:info:points`, user.points);
-    await client.setAsync(`user:${userId}:info:coins`, user.coins || 0);
     await client.setAsync(
       `user:${userId}:info:redHeartRefreshTimestamp`,
       redHeartRefreshTimestamp
@@ -300,7 +299,6 @@ async function cacheUserInfo(userId, reset) {
   client.expire(`user:${userId}:info:redHearts`, 3600);
   client.expire(`user:${userId}:info:goldHearts`, 3600);
   client.expire(`user:${userId}:info:points`, 3600);
-  client.expire(`user:${userId}:info:coins`, 3600);
   client.expire(`user:${userId}:info:redHeartRefreshTimestamp`, 3600);
   client.expire(`user:${userId}:info:goldHeartRefreshTimestamp`, 3600);
   client.expire(`user:${userId}:info:dailyChallenges`, 3600);
@@ -329,7 +327,6 @@ async function deleteUserInfo(userId) {
   await client.delAsync(`user:${userId}:info:redHearts`);
   await client.delAsync(`user:${userId}:info:goldHearts`);
   await client.delAsync(`user:${userId}:info:points`);
-  await client.delAsync(`user:${userId}:info:coins`);
   await client.delAsync(`user:${userId}:info:redHeartRefreshTimestamp`);
   await client.delAsync(`user:${userId}:info:goldHeartRefreshTimestamp`);
   await client.delAsync(`user:${userId}:info:dailyChallenges`);
@@ -362,7 +359,6 @@ async function getUserInfo(userId) {
       `user:${userId}:info:redHearts`,
       `user:${userId}:info:goldHearts`,
       `user:${userId}:info:points`,
-      `user:${userId}:info:coins`,
       `user:${userId}:info:redHeartRefreshTimestamp`,
       `user:${userId}:info:goldHeartRefreshTimestamp`,
       `user:${userId}:info:dailyChallenges`,
@@ -392,7 +388,6 @@ async function getUserInfo(userId) {
     redHearts,
     goldHearts,
     points,
-    coins,
     redHeartRefreshTimestamp,
     goldHeartRefreshTimestamp,
     dailyChallenges,
@@ -421,7 +416,6 @@ async function getUserInfo(userId) {
   info.redHearts = redHearts;
   info.goldHearts = goldHearts;
   info.points = points;
-  info.coins = Number(coins || 0);
   info.redHeartRefreshTimestamp = redHeartRefreshTimestamp;
   info.goldHeartRefreshTimestamp = goldHeartRefreshTimestamp;
   info.dailyChallenges = JSON.parse(dailyChallenges || "[]");

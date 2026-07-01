@@ -799,7 +799,7 @@ export default function StockMarket() {
                     </Button>
                     {(user.coins || 0) < 100 && (
                       <Typography variant="caption" color="error">
-                        You need {100 - (user.coins || 0)} more coins to start your IPO.
+                        You need {(100 - (user.coins || 0)).toFixed(2)} more coins to start your IPO.
                       </Typography>
                     )}
                   </Stack>
@@ -869,7 +869,7 @@ export default function StockMarket() {
                     </Button>
                     {(user.coins || 0) < 200 && (
                       <Typography variant="caption" color="error">
-                        You need {200 - (user.coins || 0)} more coins to launch a Family ETF.
+                        You need {(200 - (user.coins || 0)).toFixed(2)} more coins to launch a Family ETF.
                       </Typography>
                     )}
                   </Stack>
