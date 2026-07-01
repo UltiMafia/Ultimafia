@@ -535,7 +535,7 @@ export default function StockMarket() {
                         <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>{stock.shareSupply}</TableCell>
                         {marketMode === "family" && (
                           <TableCell align="right" sx={{ color: "gold", fontWeight: "bold", whiteSpace: "nowrap" }}>
-                            {stock.treasuryCoins} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                            {(stock.treasuryCoins || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                           </TableCell>
                         )}
                         <TableCell align="center" sx={{ whiteSpace: "nowrap" }}>
@@ -643,7 +643,7 @@ export default function StockMarket() {
                           {holding.costBasis.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "gold" }}>
-                          {holding.averageSellValue} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {(holding.averageSellValue || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: holding.unrealizedPnL >= 0 ? "success.main" : "error.main" }}>
                           {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
@@ -716,10 +716,10 @@ export default function StockMarket() {
                         </TableCell>
                         <TableCell align="right">{holding.sharesOwned}</TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                          {holding.currentSingleSellPrice} <Icon icon="lucide:coins" />
+                          {(holding.currentSingleSellPrice || 0).toFixed(2)} <Icon icon="lucide:coins" />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "gold" }}>
-                          {holding.averageSellValue} <Icon icon="lucide:coins" />
+                          {(holding.averageSellValue || 0).toFixed(2)} <Icon icon="lucide:coins" />
                         </TableCell>
                         <TableCell align="center">
                           <Stack direction="row" spacing={1} justifyContent="center">
