@@ -355,10 +355,13 @@ router.post("/sell", async function (req, res) {
       return errors.notFound(res, "Stock metadata not found.");
     }
 
-    // 3. Calculate sell price and fees
+    // 3. Guard: at least 1 share must remain in circulation at all times
+    if (stock.shareSupply - sharesToSell < 1) {
+      return errors.forbidden(res, "Cannot sell — at least 1 share must remain in circulation.");
+    }
     const { price, creatorFee, systemFee, total } = stockMarket.getSellPrice(stock.shareSupply, sharesToSell);
 
-    // 4. Debit shareholder shares
+    // 5. Debit shareholder shares
     const debitHolding = await models.Shareholder.updateOne(
       { subjectId, holderId: userId, sharesOwned: { $gte: sharesToSell } },
       { $inc: { sharesOwned: -sharesToSell } }
@@ -368,19 +371,19 @@ router.post("/sell", async function (req, res) {
       return errors.forbidden(res, "Insufficient shares owned.");
     }
 
-    // 5. Credit seller
+    // 6. Credit seller
     await models.User.updateOne(
       { id: userId },
       { $inc: { coins: total } }
     ).exec();
 
-    // 6. Credit creator fee to subject
+    // 7. Credit creator fee to subject
     await models.User.updateOne(
       { id: subjectId },
       { $inc: { coins: creatorFee } }
     ).exec();
 
-    // 7. Update PlayerStock stats
+    // 8. Update PlayerStock stats
     await models.PlayerStock.updateOne(
       { userId: subjectId },
       { $inc: { creatorFeesEarned: creatorFee, shareSupply: -sharesToSell } }

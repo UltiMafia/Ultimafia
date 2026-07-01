@@ -478,7 +478,7 @@ export default function StockMarket() {
                               variant="contained"
                               color="success"
                               size="small"
-                              disabled={!user.loggedIn || isSelf}
+                              disabled={!user.loggedIn}
                               onClick={() => openTradeModal(stock, "buy", marketMode)}
                             >
                               Buy
