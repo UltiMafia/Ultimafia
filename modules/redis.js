@@ -181,7 +181,7 @@ async function cacheUserInfo(userId, reset) {
 
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "_id id name avatar banner forumBanner profileBackground blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday pronouns achievements redHearts goldHearts points dailyChallengesCompleted dailyChallenges joined lastActive coins"
+        "_id id name avatar banner forumBanner profileBackground blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday pronouns achievements redHearts goldHearts points dailyChallengesCompleted dailyChallenges joined lastActive"
       )
       .populate({
         path: "customEmotes",
