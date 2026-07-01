@@ -205,7 +205,7 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
               <Stack direction="row" justifyContent="space-between">
                 <Typography variant="body2">Base Price:</Typography>
                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                  {tradePreview.price} Coins
+                  {tradePreview.price.toFixed(2)} Coins
                 </Typography>
               </Stack>
               <Stack direction="row" justifyContent="space-between">
@@ -213,13 +213,13 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
                   {stock.targetType === "player" ? "Creator Fee (5%):" : "Treasury Fee (5%):"}
                 </Typography>
                 <Typography variant="body2" color="success.main">
-                  +{tradePreview.creatorFee} Coins
+                  +{tradePreview.creatorFee.toFixed(2)} Coins
                 </Typography>
               </Stack>
               <Stack direction="row" justifyContent="space-between">
                 <Typography variant="body2">System Fee (5%):</Typography>
                 <Typography variant="body2" color="warning.main">
-                  +{tradePreview.systemFee} Coins
+                  +{tradePreview.systemFee.toFixed(2)} Coins
                 </Typography>
               </Stack>
               <Box sx={{ borderTop: 1, borderColor: "divider", my: 1, pt: 1 }} />
@@ -228,7 +228,7 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
                   {tradeType === "buy" ? "Total Cost:" : "Total Payout:"}
                 </Typography>
                 <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold" }}>
-                  {tradePreview.total} Coins
+                  {tradePreview.total.toFixed(2)} Coins
                 </Typography>
               </Stack>
             </Stack>

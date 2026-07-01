@@ -539,7 +539,7 @@ export default function StockMarket() {
                           <Sparkline history={stock.priceHistory} width={100} height={30} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                          {(stock.shareSupply * stock.buyPrice).toFixed(0)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {(stock.shareSupply * stock.buyPrice).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "success.main" }}>
                           {stock.buyPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
