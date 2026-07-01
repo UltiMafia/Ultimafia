@@ -2021,7 +2021,7 @@ module.exports = class Game {
         extraData
       )}- ${daily[1].description.replace(`ExtraData`, extraData)} (${
         daily[1].reward
-      } Coins)`;
+      } Red Hearts)`;
     }
   }
 
@@ -3871,18 +3871,18 @@ module.exports = class Game {
           player.EarnedAchievements = [];
         }
 
+        let redHeartsEarned = 0;
         if (
           this.hasIntegrity &&
           !this.private &&
           player.DailyTracker &&
           player.DailyTracker.length >= 1
         ) {
-          coinsEarned += player.DailyPayout;
+          redHeartsEarned = player.DailyPayout;
           if (
             player.user.dailyChallenges &&
             player.user.dailyChallenges.length <= 0
           ) {
-            coinsEarned += 20;
             player.DailyCompleted = 1;
           } else {
             player.DailyCompleted = 0;
@@ -3914,6 +3914,10 @@ module.exports = class Game {
           pointsNegative: pointsWon < 0 ? -pointsWon : 0,
           ...statIncrements,
         };
+
+        if (redHeartsEarned > 0) {
+          incOps.redHearts = redHeartsEarned;
+        }
 
         try {
           await models.User.updateOne(
