@@ -283,26 +283,35 @@ router.post("/buy", async function (req, res) {
     // 3. Calculate price and fees
     const { price, creatorFee, systemFee, total } = stockMarket.getBuyPrice(stock.shareSupply, sharesToBuy);
 
-    // 4. Debit buyer
+    // 4. Update PlayerStock stats WITH optimistic locking
+    const stockUpdate = await models.PlayerStock.updateOne(
+      { userId: subjectId, shareSupply: stock.shareSupply },
+      { $inc: { creatorFeesEarned: creatorFee, shareSupply: sharesToBuy } }
+    ).exec();
+
+    if (stockUpdate.modifiedCount === 0 && stockUpdate.nModified === 0) {
+      return errors.conflict(res, "Price changed rapidly! Your transaction was aborted to protect your coins. Please try again.");
+    }
+
+    // 5. Debit buyer
     const debit = await models.User.updateOne(
       { id: userId, coins: { $gte: total } },
       { $inc: { coins: -total } }
     ).exec();
 
     if (debit.modifiedCount === 0 && debit.nModified === 0) {
+      // Rollback stock supply increase
+      await models.PlayerStock.updateOne(
+        { userId: subjectId },
+        { $inc: { creatorFeesEarned: -creatorFee, shareSupply: -sharesToBuy } }
+      ).exec();
       return errors.forbidden(res, `Insufficient coins. Total cost is ${total} coins.`);
     }
 
-    // 5. Credit creator fee to subject
+    // 6. Credit creator fee to subject
     await models.User.updateOne(
       { id: subjectId },
       { $inc: { coins: creatorFee } }
-    ).exec();
-
-    // 6. Update PlayerStock stats
-    await models.PlayerStock.updateOne(
-      { userId: subjectId },
-      { $inc: { creatorFeesEarned: creatorFee, shareSupply: sharesToBuy } }
     ).exec();
 
     // 7. Update Shareholder balance
@@ -379,22 +388,31 @@ router.post("/sell", async function (req, res) {
       return errors.forbidden(res, "Insufficient shares owned.");
     }
 
-    // 6. Credit seller
+    // 6. Update PlayerStock stats WITH optimistic locking
+    const stockUpdate = await models.PlayerStock.updateOne(
+      { userId: subjectId, shareSupply: stock.shareSupply },
+      { $inc: { creatorFeesEarned: creatorFee, shareSupply: -sharesToSell } }
+    ).exec();
+
+    if (stockUpdate.modifiedCount === 0 && stockUpdate.nModified === 0) {
+      // Rollback shareholder debit
+      await models.Shareholder.updateOne(
+        { subjectId, holderId: userId },
+        { $inc: { sharesOwned: sharesToSell } }
+      ).exec();
+      return errors.conflict(res, "Price changed rapidly! Your transaction was aborted. Please try again.");
+    }
+
+    // 7. Credit seller
     await models.User.updateOne(
       { id: userId },
       { $inc: { coins: total } }
     ).exec();
 
-    // 7. Credit creator fee to subject
+    // 8. Credit creator fee to subject
     await models.User.updateOne(
       { id: subjectId },
       { $inc: { coins: creatorFee } }
-    ).exec();
-
-    // 8. Update PlayerStock stats
-    await models.PlayerStock.updateOne(
-      { userId: subjectId },
-      { $inc: { creatorFeesEarned: creatorFee, shareSupply: -sharesToSell } }
     ).exec();
 
     // 8. Log transaction
@@ -717,6 +735,16 @@ router.post("/families/buy", async function (req, res) {
     // Calculate price and fees
     const { price, creatorFee, systemFee, total } = stockMarket.getBuyPrice(stock.shareSupply, sharesToBuy);
 
+    // Update FamilyStock stats WITH optimistic locking
+    const stockUpdate = await models.FamilyStock.updateOne(
+      { familyId, shareSupply: stock.shareSupply },
+      { $inc: { treasuryCoins: creatorFee, shareSupply: sharesToBuy } }
+    ).exec();
+
+    if (stockUpdate.modifiedCount === 0 && stockUpdate.nModified === 0) {
+      return errors.conflict(res, "Price changed rapidly! Your transaction was aborted. Please try again.");
+    }
+
     // Debit buyer
     const debit = await models.User.updateOne(
       { id: userId, coins: { $gte: total } },
@@ -724,14 +752,13 @@ router.post("/families/buy", async function (req, res) {
     ).exec();
 
     if (debit.modifiedCount === 0 && debit.nModified === 0) {
+      // Rollback FamilyStock
+      await models.FamilyStock.updateOne(
+        { familyId },
+        { $inc: { treasuryCoins: -creatorFee, shareSupply: -sharesToBuy } }
+      ).exec();
       return errors.forbidden(res, `Insufficient coins. Total cost is ${total} coins.`);
     }
-
-    // Update FamilyStock stats (creator fee goes to family stock treasuryCoins)
-    await models.FamilyStock.updateOne(
-      { familyId },
-      { $inc: { treasuryCoins: creatorFee, shareSupply: sharesToBuy } }
-    ).exec();
 
     // Update FamilyShareholder balance
     await models.FamilyShareholder.updateOne(
@@ -806,16 +833,25 @@ router.post("/families/sell", async function (req, res) {
       return errors.forbidden(res, "Insufficient shares owned.");
     }
 
+    // Update FamilyStock stats WITH optimistic locking
+    const stockUpdate = await models.FamilyStock.updateOne(
+      { familyId, shareSupply: stock.shareSupply },
+      { $inc: { treasuryCoins: creatorFee, shareSupply: -sharesToSell } }
+    ).exec();
+
+    if (stockUpdate.modifiedCount === 0 && stockUpdate.nModified === 0) {
+      // Rollback shareholder debit
+      await models.FamilyShareholder.updateOne(
+        { familyId, holderId: userId },
+        { $inc: { sharesOwned: sharesToSell } }
+      ).exec();
+      return errors.conflict(res, "Price changed rapidly! Your transaction was aborted. Please try again.");
+    }
+
     // Credit seller
     await models.User.updateOne(
       { id: userId },
       { $inc: { coins: total } }
-    ).exec();
-
-    // Update FamilyStock stats (creator fee goes to family stock treasuryCoins)
-    await models.FamilyStock.updateOne(
-      { familyId },
-      { $inc: { treasuryCoins: creatorFee, shareSupply: -sharesToSell } }
     ).exec();
 
     // Log transaction
