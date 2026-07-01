@@ -92,38 +92,61 @@ router.get("/portfolio", async function (req, res) {
     const holdings = await models.Shareholder.find({ holderId: userId, sharesOwned: { $gt: 0 } }).lean().exec();
     const subjectIds = holdings.map(h => h.subjectId);
 
-    const [stocks, users] = await Promise.all([
+    const [stocks, users, transactions] = await Promise.all([
       models.PlayerStock.find({ userId: { $in: subjectIds } }).lean().exec(),
       models.User.find({ id: { $in: subjectIds } })
         .select("id name avatar settings.nameColor settings.vanityUrl")
+        .lean()
+        .exec(),
+      // Fetch all buy/sell transactions this user made for these stocks
+      models.StockTransaction.find({ userId, subjectId: { $in: subjectIds } })
+        .select("subjectId type price fee shares")
         .lean()
         .exec()
     ]);
 
     const stockMap = {};
-    for (const s of stocks) {
-      stockMap[s.userId] = s;
-    }
+    for (const s of stocks) stockMap[s.userId] = s;
 
     const userMap = {};
-    for (const u of users) {
-      userMap[u.id] = u;
+    for (const u of users) userMap[u.id] = u;
+
+    const holdingMap = {};
+    for (const h of holdings) holdingMap[h.subjectId] = h;
+
+    // Compute net cost basis per stock from transaction history:
+    // costBasis = sum of coins spent on buys - sum of coins received from sells
+    const costBasisMap = {};
+    for (const tx of transactions) {
+      if (!costBasisMap[tx.subjectId]) costBasisMap[tx.subjectId] = 0;
+      if (tx.type === "buy") {
+        costBasisMap[tx.subjectId] += tx.price + tx.fee;
+      } else {
+        costBasisMap[tx.subjectId] -= (tx.price - tx.fee);
+      }
     }
 
-    const result = holdings.map(h => {
-      const stock = stockMap[h.subjectId] || { shareSupply: 0 };
-      const u = userMap[h.subjectId] || { name: "Unknown" };
+    const result = subjectIds.map(subjectId => {
+      const h = holdingMap[subjectId];
+      const stock = stockMap[subjectId] || { shareSupply: 0 };
+      const u = userMap[subjectId] || { name: "Unknown" };
       const sellPrice = stockMarket.getSellPrice(stock.shareSupply, h.sharesOwned);
+      const costBasis = parseFloat((costBasisMap[subjectId] || 0).toFixed(2));
+      const liquidValue = sellPrice.total;
+      const unrealizedPnL = parseFloat((liquidValue - costBasis).toFixed(2));
 
       return {
-        subjectId: h.subjectId,
+        subjectId,
         username: u.name,
         avatar: u.avatar,
         vanityUrl: u.settings?.vanityUrl || "",
         nameColor: u.settings?.nameColor || "",
         sharesOwned: h.sharesOwned,
-        averageSellValue: sellPrice.total,
-        currentSingleSellPrice: stockMarket.getSellPrice(stock.shareSupply, 1).total
+        averageSellValue: liquidValue,
+        currentSingleSellPrice: stockMarket.getSellPrice(stock.shareSupply, 1).total,
+        costBasis,
+        unrealizedPnL,
+        dividendsReceived: parseFloat((h.dividendsReceived || 0).toFixed(2))
       };
     });
 

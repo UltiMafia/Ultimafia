@@ -1383,6 +1383,7 @@ schemas.Shareholder = new mongoose.Schema({
   subjectId: { type: String, required: true, index: true },
   holderId: { type: String, required: true, index: true },
   sharesOwned: { type: Number, default: 0 },
+  dividendsReceived: { type: Number, default: 0 },
 });
 schemas.Shareholder.index({ subjectId: 1, holderId: 1 }, { unique: true });
 
@@ -1408,6 +1409,7 @@ schemas.FamilyShareholder = new mongoose.Schema({
   familyId: { type: String, required: true, index: true },
   holderId: { type: String, required: true, index: true },
   sharesOwned: { type: Number, default: 0 },
+  dividendsReceived: { type: Number, default: 0 },
 });
 schemas.FamilyShareholder.index({ familyId: 1, holderId: 1 }, { unique: true });
 

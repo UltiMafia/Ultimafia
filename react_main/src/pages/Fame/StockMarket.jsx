@@ -388,6 +388,7 @@ export default function StockMarket() {
                   <TableCell align="right">Supply</TableCell>
                   {marketMode === "family" && <TableCell align="right">Treasury Coins</TableCell>}
                   <TableCell align="center">Trend</TableCell>
+                  <TableCell align="right">Market Cap</TableCell>
                   <TableCell align="right">Buy Price</TableCell>
                   <TableCell align="right">Sell Price</TableCell>
                   <TableCell align="right">Dividends Distributed</TableCell>
@@ -397,7 +398,7 @@ export default function StockMarket() {
               <TableBody>
                 {filteredStocks.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={marketMode === "family" ? 8 : 7} align="center">
+                    <TableCell colSpan={marketMode === "family" ? 9 : 8} align="center">
                       <Typography color="text.secondary" sx={{ py: 3 }}>
                         No records match your search query.
                       </Typography>
@@ -459,6 +460,9 @@ export default function StockMarket() {
                         <TableCell align="center">
                           <Sparkline history={stock.priceHistory} width={100} height={30} />
                         </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: "bold" }}>
+                          {(stock.shareSupply * stock.buyPrice).toFixed(0)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "success.main" }}>
                           {stock.buyPrice} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
@@ -508,8 +512,10 @@ export default function StockMarket() {
               <TableRow>
                 <TableCell>{marketMode === "player" ? "Player" : "Family Name"}</TableCell>
                 <TableCell align="right">Shares Owned</TableCell>
-                <TableCell align="right">Current Single Price</TableCell>
-                <TableCell align="right">Estimated Liquid Value</TableCell>
+                <TableCell align="right">Cost Basis</TableCell>
+                <TableCell align="right">Liquid Value</TableCell>
+                <TableCell align="right">Unrealized P&amp;L</TableCell>
+                <TableCell align="right">Dividends Received</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -517,7 +523,7 @@ export default function StockMarket() {
               {marketMode === "player" ? (
                 portfolio.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} align="center">
+                    <TableCell colSpan={7} align="center">
                       <Typography color="text.secondary" sx={{ py: 3 }}>
                         You don't own any player shares yet.
                       </Typography>
@@ -552,11 +558,17 @@ export default function StockMarket() {
                           </Stack>
                         </TableCell>
                         <TableCell align="right">{holding.sharesOwned}</TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                          {holding.currentSingleSellPrice} <Icon icon="lucide:coins" />
+                        <TableCell align="right">
+                          {holding.costBasis.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "gold" }}>
-                          {holding.averageSellValue} <Icon icon="lucide:coins" />
+                          {holding.averageSellValue} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: "bold", color: holding.unrealizedPnL >= 0 ? "success.main" : "error.main" }}>
+                          {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        </TableCell>
+                        <TableCell align="right" sx={{ color: "gold" }}>
+                          {holding.dividendsReceived.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="center">
                           <Stack direction="row" spacing={1} justifyContent="center">
