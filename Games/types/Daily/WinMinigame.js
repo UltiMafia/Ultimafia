@@ -1,6 +1,6 @@
 const DailyChallenge = require("../../core/DailyChallenge");
 
-module.exports = class Win3GamesInRow extends DailyChallenge {
+module.exports = class WinMinigame extends DailyChallenge {
   constructor(name, player) {
     super(name, player);
 
@@ -14,28 +14,26 @@ module.exports = class Win3GamesInRow extends DailyChallenge {
             .flat()
             .find((p) => p === this.player)
         ) {
-          for (let Challenge of this.player.user.dailyChallenges) {
-            if (Challenge[0] == this.ID) {
-              Challenge[1] = 0;
-            }
-          }
           return;
         }
         let gameType;
         for (let Challenge of this.player.user.dailyChallenges) {
           if (Challenge[0] == this.ID) {
-            Challenge[1] = parseInt(Challenge[1]) + 1;
-            if (parseInt(Challenge[1]) >= 3) {
-              this.player.DailyPayout += this.reward;
-              this.player.DailyCompleted += 1;
+            gameType = Challenge[2];
+          }
+        }
+        if (this.game.type == gameType) {
+          this.player.DailyPayout += this.reward;
+          this.player.DailyCompleted += 1;
+          for (let Challenge of this.player.user.dailyChallenges) {
+            if (Challenge[0] == this.ID) {
               this.player.user.dailyChallenges.splice(
                 this.player.user.dailyChallenges.indexOf(Challenge),
                 1
               );
-              this.player.CompletedDailyChallenges.push([this.ID, ""]);
-              return;
             }
           }
+          this.player.CompletedDailyChallenges.push([this.ID, gameType]);
         }
       },
     };
