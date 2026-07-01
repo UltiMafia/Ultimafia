@@ -236,15 +236,9 @@ router.post("/ipo", async function (req, res) {
       { upsert: true }
     ).exec();
 
-    // 6. Log transaction
-    await models.StockTransaction.create({
-      userId,
-      subjectId: userId,
-      type: "buy",
-      shares: 1,
-      price: 100,
-      fee: 0
-    });
+    // Note: the IPO fee is a listing cost, not an open-market purchase,
+    // so we intentionally do not log a StockTransaction here. Cost basis
+    // in portfolio analytics should only reflect market trades.
 
     res.send({ success: true, message: "IPO completed successfully! You purchased your first share for 100 coins." });
   } catch (e) {
