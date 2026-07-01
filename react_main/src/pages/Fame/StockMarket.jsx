@@ -34,6 +34,7 @@ import {
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { useErrorAlert } from "../../components/Alerts";
+import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { UserContext, SiteInfoContext } from "../../Contexts";
 import { Avatar } from "../User/User";
 import { Loading } from "../../components/Loading";
@@ -53,7 +54,7 @@ function StockAvatar({ targetType, id, name, avatar, siteInfo }) {
           width: 40,
           height: 40,
           borderRadius: "50%",
-          backgroundImage: `url(/uploads/${id}_family_avatar.webp?t=${siteInfo?.cacheVal || 0})`,
+          backgroundImage: `url(/uploads/${id}_family_avatar.webp?t=${siteInfo?.cacheVal})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           border: "1px solid rgba(255, 255, 255, 0.12)",
@@ -88,7 +89,7 @@ export default function StockMarket() {
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useIsPhoneDevice();
 
   const [activeTab, setActiveTab] = useState(0);
   const [marketMode, setMarketMode] = useState("player"); // "player" | "family"
@@ -205,7 +206,7 @@ export default function StockMarket() {
 
   // Launch Player IPO
   const handleLaunchIpo = () => {
-    const userCoins = user.coins || 0;
+    const userCoins = user.coins;
     if (userCoins < 100) {
       siteInfo.showAlert("You need 100 coins to launch an IPO.", "error");
       return;
@@ -229,7 +230,7 @@ export default function StockMarket() {
       siteInfo.showAlert("Please select a family to launch.", "error");
       return;
     }
-    const userCoins = user.coins || 0;
+    const userCoins = user.coins;
     if (userCoins < 200) {
       siteInfo.showAlert("You need 200 coins to launch a Family ETF.", "error");
       return;
@@ -409,7 +410,7 @@ export default function StockMarket() {
                   Coins
                 </Typography>
                 <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold", lineHeight: 1 }}>
-                  {(user.coins || 0).toFixed(2)}
+                  {user.coins.toFixed(2)}
                 </Typography>
               </Box>
               <Box sx={{ height: 30, borderLeft: '1px solid rgba(255, 215, 0, 0.3)' }} />
@@ -427,7 +428,7 @@ export default function StockMarket() {
                   Net Worth
                 </Typography>
                 <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold", lineHeight: 1 }}>
-                  {((user.coins || 0) + totalStockValue).toFixed(2)}
+                  {(user.coins + totalStockValue).toFixed(2)}
                 </Typography>
               </Box>
             </Box>
@@ -554,25 +555,25 @@ export default function StockMarket() {
                         <Grid item xs={6}>
                           <Typography variant="caption" color="text.secondary" display="block">Buy Price</Typography>
                           <Typography variant="body2" color="success.main" fontWeight="bold">
-                            {(stock.buyPrice || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                            {stock.buyPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>
                           <Typography variant="caption" color="text.secondary" display="block">Sell Price</Typography>
                           <Typography variant="body2" color="error.main" fontWeight="bold">
-                            {(stock.sellPrice || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                            {stock.sellPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>
                           <Typography variant="caption" color="text.secondary" display="block">Market Cap</Typography>
                           <Typography variant="body2" color="text.primary" fontWeight="bold">
-                            {((stock.shareSupply || 0) * (stock.buyPrice || 0)).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                            {(stock.shareSupply * stock.buyPrice).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>
                           <Typography variant="caption" color="text.secondary" display="block">{marketMode === "player" ? "Dividends" : "Treasury"}</Typography>
                           <Typography variant="body2" color="gold" fontWeight="bold">
-                            {marketMode === "player" ? (stock.dividendsPaidOut || 0).toFixed(2) : (stock.treasuryCoins || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                            {marketMode === "player" ? stock.dividendsPaidOut.toFixed(2) : stock.treasuryCoins.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
                           </Typography>
                         </Grid>
                       </Grid>
@@ -663,23 +664,23 @@ export default function StockMarket() {
                         <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>{stock.shareSupply}</TableCell>
                         {marketMode === "family" && (
                           <TableCell align="right" sx={{ fontWeight: "bold", color: "gold", display: { xs: 'none', md: 'table-cell' } }}>
-                            {(stock.treasuryCoins || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                            {stock.treasuryCoins.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                           </TableCell>
                         )}
                         <TableCell align="center" sx={{ whiteSpace: "nowrap", display: { xs: 'none', lg: 'table-cell' } }}>
                           <Sparkline history={stock.priceHistory} width={100} height={30} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", whiteSpace: "nowrap", display: { xs: 'none', md: 'table-cell' } }}>
-                          {(stock.shareSupply * (stock.buyPrice || 0)).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {(stock.shareSupply * stock.buyPrice).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "success.main", whiteSpace: "nowrap" }}>
-                          {(stock.buyPrice || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {stock.buyPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "error.main", whiteSpace: "nowrap", display: { xs: 'none', sm: 'table-cell' } }}>
-                          {(stock.sellPrice || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {stock.sellPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ color: "gold", whiteSpace: "nowrap", display: { xs: 'none', sm: 'table-cell' } }}>
-                          {(stock.dividendsPaidOut || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {stock.dividendsPaidOut.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="center">
                           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="center">
@@ -740,12 +741,12 @@ export default function StockMarket() {
                             </Grid>
                             <Grid item xs={4}>
                               <Typography variant="caption" color="text.secondary" display="block">Liquid Value</Typography>
-                              <Typography variant="body2" color="gold" fontWeight="bold">{(holding.averageSellValue || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} /></Typography>
+                              <Typography variant="body2" color="gold" fontWeight="bold">{holding.averageSellValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} /></Typography>
                             </Grid>
                             <Grid item xs={4}>
                               <Typography variant="caption" color="text.secondary" display="block">P&L</Typography>
-                              <Typography variant="body2" color={(holding.unrealizedPnL || 0) >= 0 ? "success.main" : "error.main"} fontWeight="bold">
-                                {(holding.unrealizedPnL || 0) >= 0 ? "+" : ""}{(holding.unrealizedPnL || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              <Typography variant="body2" color={holding.unrealizedPnL >= 0 ? "success.main" : "error.main"} fontWeight="bold">
+                                {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
                               </Typography>
                             </Grid>
                           </Grid>
@@ -780,12 +781,12 @@ export default function StockMarket() {
                             </Grid>
                             <Grid item xs={4}>
                               <Typography variant="caption" color="text.secondary" display="block">Liquid Value</Typography>
-                              <Typography variant="body2" color="gold" fontWeight="bold">{(holding.averageSellValue || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} /></Typography>
+                              <Typography variant="body2" color="gold" fontWeight="bold">{holding.averageSellValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} /></Typography>
                             </Grid>
                             <Grid item xs={4}>
                               <Typography variant="caption" color="text.secondary" display="block">P&L</Typography>
-                              <Typography variant="body2" color={(holding.unrealizedPnL || 0) >= 0 ? "success.main" : "error.main"} fontWeight="bold">
-                                {(holding.unrealizedPnL || 0) >= 0 ? "+" : ""}{(holding.unrealizedPnL || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              <Typography variant="body2" color={holding.unrealizedPnL >= 0 ? "success.main" : "error.main"} fontWeight="bold">
+                                {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
                               </Typography>
                             </Grid>
                           </Grid>
@@ -854,16 +855,16 @@ export default function StockMarket() {
                         </TableCell>
                         <TableCell align="right">{holding.sharesOwned}</TableCell>
                         <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
-                          {(holding.costBasis || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {holding.costBasis.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "gold", display: { xs: 'none', sm: 'table-cell' } }}>
-                          {(holding.averageSellValue || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {holding.averageSellValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: (holding.unrealizedPnL || 0) >= 0 ? "success.main" : "error.main" }}>
-                          {(holding.unrealizedPnL || 0) >= 0 ? "+" : ""}{(holding.unrealizedPnL || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        <TableCell align="right" sx={{ fontWeight: "bold", color: holding.unrealizedPnL >= 0 ? "success.main" : "error.main" }}>
+                          {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ color: "gold", display: { xs: 'none', sm: 'table-cell' } }}>
-                          {(holding.dividendsReceived || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {holding.dividendsReceived.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="center">
                           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="center">
@@ -930,16 +931,16 @@ export default function StockMarket() {
                         </TableCell>
                         <TableCell align="right">{holding.sharesOwned}</TableCell>
                         <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
-                          {(holding.costBasis || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {holding.costBasis.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "gold", display: { xs: 'none', sm: 'table-cell' } }}>
-                          {(holding.averageSellValue || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {holding.averageSellValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: (holding.unrealizedPnL || 0) >= 0 ? "success.main" : "error.main" }}>
-                          {(holding.unrealizedPnL || 0) >= 0 ? "+" : ""}{(holding.unrealizedPnL || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        <TableCell align="right" sx={{ fontWeight: "bold", color: holding.unrealizedPnL >= 0 ? "success.main" : "error.main" }}>
+                          {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ color: "gold", display: { xs: 'none', sm: 'table-cell' } }}>
-                          {(holding.dividendsReceived || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {holding.dividendsReceived.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="center">
                           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="center">
@@ -1001,8 +1002,8 @@ export default function StockMarket() {
                       </Box>
                       <Box sx={{ borderLeft: 1, borderColor: "divider", pl: 3 }}>
                         <Typography variant="caption" display="block">Your Coins After</Typography>
-                        <Typography variant="h6" sx={{ fontWeight: "bold", color: (user.coins || 0) >= 100 ? "success.main" : "error.main" }}>
-                          {((user.coins || 0) - 100).toFixed(2)} Coins
+                        <Typography variant="h6" sx={{ fontWeight: "bold", color: user.coins >= 100 ? "success.main" : "error.main" }}>
+                          {(user.coins - 100).toFixed(2)} Coins
                         </Typography>
                       </Box>
                     </Paper>
@@ -1011,16 +1012,16 @@ export default function StockMarket() {
                       variant="contained"
                       color="warning"
                       size="large"
-                      disabled={(user.coins || 0) < 100}
+                      disabled={user.coins < 100}
                       onClick={handleLaunchIpo}
                       startIcon={<Icon icon="lucide:coins" />}
                       sx={{ px: 4, py: 1.5, fontWeight: "bold" }}
                     >
                       Launch IPO for 100 Coins
                     </Button>
-                    {(user.coins || 0) < 100 && (
+                    {user.coins < 100 && (
                       <Typography variant="caption" color="error">
-                        You need {(100 - (user.coins || 0)).toFixed(2)} more coins to start your IPO.
+                        You need {(100 - user.coins).toFixed(2)} more coins to start your IPO.
                       </Typography>
                     )}
                   </Stack>
@@ -1071,8 +1072,8 @@ export default function StockMarket() {
                       </Box>
                       <Box sx={{ borderLeft: 1, borderColor: "divider", pl: 3 }}>
                         <Typography variant="caption" display="block">Your Coins After</Typography>
-                        <Typography variant="h6" sx={{ fontWeight: "bold", color: (user.coins || 0) >= 200 ? "success.main" : "error.main" }}>
-                          {((user.coins || 0) - 200).toFixed(2)} Coins
+                        <Typography variant="h6" sx={{ fontWeight: "bold", color: user.coins >= 200 ? "success.main" : "error.main" }}>
+                          {(user.coins - 200).toFixed(2)} Coins
                         </Typography>
                       </Box>
                     </Paper>
@@ -1081,16 +1082,16 @@ export default function StockMarket() {
                       variant="contained"
                       color="info"
                       size="large"
-                      disabled={(user.coins || 0) < 200 || !selectedFamilyId}
+                      disabled={user.coins < 200 || !selectedFamilyId}
                       onClick={handleLaunchFamilyIpo}
                       startIcon={<Icon icon="lucide:coins" />}
                       sx={{ px: 4, py: 1.5, fontWeight: "bold", color: "white" }}
                     >
                       Launch ETF for 200 Coins
                     </Button>
-                    {(user.coins || 0) < 200 && (
+                    {user.coins < 200 && (
                       <Typography variant="caption" color="error">
-                        You need {(200 - (user.coins || 0)).toFixed(2)} more coins to launch a Family ETF.
+                        You need {(200 - user.coins).toFixed(2)} more coins to launch a Family ETF.
                       </Typography>
                     )}
                   </Stack>
