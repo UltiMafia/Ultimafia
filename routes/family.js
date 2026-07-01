@@ -12,6 +12,197 @@ const formidable = bluebird.promisifyAll(require("formidable"), {
 const sharp = require("sharp");
 const fs = require("fs");
 const errors = require("../lib/errors");
+const familyTreasury = require("../lib/FamilyTreasury");
+
+const BASE_FAMILY_MEMBER_LIMIT = 20;
+const EXPANDED_FAMILY_MEMBER_LIMIT = 25;
+const FAMILY_PERKS = [
+  {
+    key: "expandedRoster",
+    name: "Expanded Roster",
+    description: "Raises the family member limit from 20 to 25.",
+    cost: 1000,
+  },
+  {
+    key: "familyBadge",
+    name: "Family Badge",
+    description: "Adds a cosmetic supporter badge to the family profile.",
+    cost: 500,
+  },
+  {
+    key: "trophySpotlight",
+    name: "Trophy Spotlight",
+    description: "Adds a cosmetic trophy spotlight perk to the family profile.",
+    cost: 750,
+  },
+];
+
+function getFamilyMemberLimit(family) {
+  return family?.perks?.includes("expandedRoster")
+    ? EXPANDED_FAMILY_MEMBER_LIMIT
+    : BASE_FAMILY_MEMBER_LIMIT;
+}
+
+function getMembershipRole(inFamily, family, user) {
+  if (!inFamily || !family || !user) return null;
+  const leaderId = family.leader?._id || family.leader;
+  if (leaderId?.toString() === user._id.toString()) return "leader";
+  return inFamily.role || "member";
+}
+
+function canManageFamilyApplications(role) {
+  return role === "leader" || role === "officer";
+}
+
+async function getFamilyMembership(family, user) {
+  if (!family || !user) return null;
+
+  return models.InFamily.findOne({
+    family: family._id,
+    user: user._id,
+  });
+}
+
+function buildFamilyQuests(family, trophyCount, treasuryCoins) {
+  const memberCount = family.members ? family.members.length : 0;
+  const memberLimit = getFamilyMemberLimit(family);
+  const treasury = Number(treasuryCoins || 0);
+  const perkCount = family.perks ? family.perks.length : 0;
+
+  return [
+    {
+      id: "firstFive",
+      name: "First Five",
+      description: "Reach 5 family members.",
+      current: Math.min(memberCount, 5),
+      target: 5,
+      completed: memberCount >= 5,
+    },
+    {
+      id: "fullHouse",
+      name: "Full House",
+      description: `Reach the current member limit of ${memberLimit}.`,
+      current: Math.min(memberCount, memberLimit),
+      target: memberLimit,
+      completed: memberCount >= memberLimit,
+    },
+    {
+      id: "trophyCase",
+      name: "Trophy Case",
+      description: "Collect 5 trophies across all family members.",
+      current: Math.min(trophyCount, 5),
+      target: 5,
+      completed: trophyCount >= 5,
+    },
+    {
+      id: "communityChest",
+      name: "Community Chest",
+      description: "Deposit 1,000 coins into the family treasury.",
+      current: Math.min(treasury, 1000),
+      target: 1000,
+      completed: treasury >= 1000,
+    },
+    {
+      id: "perkCollector",
+      name: "Perk Collector",
+      description: "Buy all family perks.",
+      current: Math.min(perkCount, FAMILY_PERKS.length),
+      target: FAMILY_PERKS.length,
+      completed: perkCount >= FAMILY_PERKS.length,
+    },
+  ];
+}
+
+function getFamilyPerks(family) {
+  const owned = new Set(family?.perks || []);
+
+  return FAMILY_PERKS.map((perk) => ({
+    ...perk,
+    owned: owned.has(perk.key),
+  }));
+}
+
+router.get("/leaderboard", async function (req, res) {
+  try {
+    const families = await models.Family.find({})
+      .select("id name avatar members perks createdAt")
+      .populate("members", "id")
+      .lean();
+
+    const familyIds = families.map((family) => family.id);
+    const treasuryByFamilyId = await familyTreasury.getTreasuryCoinsByFamilyIds(
+      familyIds
+    );
+
+    const memberIds = [];
+    for (const family of families) {
+      for (const member of family.members || []) {
+        if (member?.id) memberIds.push(member.id);
+      }
+    }
+
+    const trophyCounts = memberIds.length
+      ? await models.Trophy.aggregate([
+          {
+            $match: {
+              ownerId: { $in: memberIds },
+              revoked: { $ne: true },
+            },
+          },
+          { $group: { _id: "$ownerId", count: { $sum: 1 } } },
+        ])
+      : [];
+    const trophyCountByUser = new Map(
+      trophyCounts.map((item) => [item._id, item.count])
+    );
+
+    const leaderboard = families
+      .map((family) => {
+        const members = family.members || [];
+        const trophyCount = members.reduce(
+          (total, member) => total + (trophyCountByUser.get(member.id) || 0),
+          0
+        );
+        const treasury = treasuryByFamilyId.get(family.id) || 0;
+        const perks = family.perks || [];
+        const score =
+          trophyCount * 100 +
+          members.length * 25 +
+          perks.length * 50 +
+          Math.floor(treasury / 100);
+
+        return {
+          id: family.id,
+          name: family.name,
+          avatar: family.avatar,
+          memberCount: members.length,
+          trophyCount,
+          treasury,
+          treasuryCoins: treasury,
+          perkCount: perks.length,
+          score,
+          createdAt: family.createdAt,
+        };
+      })
+      .sort(
+        (a, b) =>
+          b.score - a.score ||
+          b.trophyCount - a.trophyCount ||
+          b.memberCount - a.memberCount ||
+          a.createdAt - b.createdAt
+      )
+      .slice(0, 25)
+      .map((family, index) => ({
+        ...family,
+        rank: index + 1,
+      }));
+
+    res.send({ leaderboard });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Error loading family leaderboard.");
+  }
+});
 
 router.get("/user/family", async function (req, res) {
   try {
@@ -42,7 +233,9 @@ router.get("/user/family", async function (req, res) {
 
     // Query family directly and populate leader properly
     const family = await models.Family.findById(familyId)
-      .select("id name avatar leader members background backgroundRepeatMode")
+      .select(
+        "id name avatar leader members background backgroundRepeatMode applicationsOpen perks"
+      )
       .populate("leader", "_id");
 
     if (!family) {
@@ -54,7 +247,9 @@ router.get("/user/family", async function (req, res) {
       family.leader &&
       family.leader._id &&
       family.leader._id.toString() === user._id.toString();
+    const role = getMembershipRole(inFamily, family, user);
     const memberCount = family.members ? family.members.length : 0;
+    const treasuryCoins = await familyTreasury.getTreasuryCoins(family.id);
 
     res.send({
       family: {
@@ -64,7 +259,14 @@ router.get("/user/family", async function (req, res) {
         background: family.background || false,
         backgroundRepeatMode: family.backgroundRepeatMode || "checker",
         isLeader: isLeader,
+        role: role,
+        canManageApplications: canManageFamilyApplications(role),
         memberCount: memberCount,
+        memberLimit: getFamilyMemberLimit(family),
+        applicationsOpen: family.applicationsOpen !== false,
+        treasury: treasuryCoins,
+        treasuryCoins: treasuryCoins,
+        perks: getFamilyPerks(family),
       },
     });
   } catch (e) {
@@ -126,6 +328,7 @@ router.post("/create", async function (req, res) {
       leader: user._id,
       members: [user._id],
       avatar: hasAvatar,
+      applicationsOpen: true,
       createdAt: Date.now(),
     });
 
@@ -135,6 +338,7 @@ router.post("/create", async function (req, res) {
     const inFamily = new models.InFamily({
       user: user._id,
       family: family._id,
+      role: "leader",
     });
     await inFamily.save();
 
@@ -252,6 +456,17 @@ router.get("/:familyId/profile", async function (req, res) {
     var isLeader = user && family.leader._id.toString() === user._id.toString();
     var leaderId = family.leader.id;
     var founderId = family.founder.id;
+    var currentMembership = user ? await getFamilyMembership(family, user) : null;
+    var userRole = getMembershipRole(currentMembership, family, user);
+    var familyMemberships = await models.InFamily.find({
+      family: family._id,
+    }).populate("user", "id");
+    var roleByUserId = new Map(
+      familyMemberships
+        .filter((membership) => membership.user?.id)
+        .map((membership) => [membership.user.id, membership.role || "member"])
+    );
+    var treasuryCoins = await familyTreasury.getTreasuryCoins(familyId);
 
     // Get member info with leader/founder flags
     var members = (family.members || []).map((member) => ({
@@ -261,6 +476,10 @@ router.get("/:familyId/profile", async function (req, res) {
       vanityUrl: member.vanityUrl,
       isLeader: member.id === leaderId,
       isFounder: member.id === founderId,
+      role:
+        member.id === leaderId
+          ? "leader"
+          : roleByUserId.get(member.id) || "member",
     }));
 
     // Get all trophies from all family members, sorted by createdAt
@@ -326,7 +545,20 @@ router.get("/:familyId/profile", async function (req, res) {
       },
       members: members,
       trophies: trophies || [],
+      trophyCount: trophies ? trophies.length : 0,
       isLeader: isLeader,
+      userRole: userRole,
+      canManageApplications: canManageFamilyApplications(userRole),
+      applicationsOpen: family.applicationsOpen !== false,
+      treasury: treasuryCoins,
+      treasuryCoins: treasuryCoins,
+      memberLimit: getFamilyMemberLimit(family),
+      perks: getFamilyPerks(family),
+      quests: buildFamilyQuests(
+        family,
+        trophies ? trophies.length : 0,
+        treasuryCoins
+      ),
     });
   } catch (e) {
     logger.error(e);
@@ -369,6 +601,482 @@ router.post("/:familyId/bio", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not update family bio. Please try again.");
+  }
+});
+
+router.post("/:familyId/applicationsOpen", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var { applicationsOpen } = req.body;
+
+    var user = await models.User.findOne({ id: userId });
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      errors.notFound(res, "Family not found.");
+      return;
+    }
+
+    if (family.leader.toString() !== user._id.toString()) {
+      errors.forbidden(res, "Only the family leader can change application settings.");
+      return;
+    }
+
+    await models.Family.updateOne(
+      { id: familyId },
+      { $set: { applicationsOpen: Boolean(applicationsOpen) } }
+    );
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Error updating application settings.");
+  }
+});
+
+router.post("/:familyId/apply", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var message = String(req.body.message || "").trim();
+
+    if (message.length > 500) {
+      errors.unprocessable(res, "Application message must be 500 characters or less.");
+      return;
+    }
+
+    var user = await models.User.findOne({ id: userId });
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      errors.notFound(res, "Family not found.");
+      return;
+    }
+
+    if (family.applicationsOpen === false) {
+      errors.conflict(res, "This family is not accepting applications.");
+      return;
+    }
+
+    if ((family.members || []).length >= getFamilyMemberLimit(family)) {
+      errors.conflict(res, "This family has reached its member limit.");
+      return;
+    }
+
+    var existingFamily = await models.InFamily.findOne({
+      user: user._id,
+    });
+
+    if (existingFamily) {
+      errors.conflict(res, "You already belong to a family.");
+      return;
+    }
+
+    var existingApplication = await models.FamilyApplication.findOne({
+      familyId: familyId,
+      applicantId: userId,
+      status: "pending",
+    });
+
+    if (existingApplication) {
+      errors.conflict(res, "You already have a pending application for this family.");
+      return;
+    }
+
+    await new models.FamilyApplication({
+      familyId: familyId,
+      family: family._id,
+      applicantId: userId,
+      applicant: user._id,
+      message: message,
+      createdAt: Date.now(),
+    }).save();
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Error submitting family application.");
+  }
+});
+
+router.get("/:familyId/applications", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+
+    var user = await models.User.findOne({ id: userId });
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      errors.notFound(res, "Family not found.");
+      return;
+    }
+
+    var membership = await getFamilyMembership(family, user);
+    var role = getMembershipRole(membership, family, user);
+    if (!canManageFamilyApplications(role)) {
+      errors.forbidden(res, "Only family leaders and officers can view applications.");
+      return;
+    }
+
+    var applications = await models.FamilyApplication.find({
+      familyId: familyId,
+      status: "pending",
+    })
+      .populate("applicant", "id name avatar vanityUrl")
+      .sort("createdAt")
+      .lean();
+
+    res.send({
+      applications: applications
+        .filter((application) => application.applicant)
+        .map((application) => ({
+          id: application._id,
+          applicant: {
+            id: application.applicant.id,
+            name: application.applicant.name,
+            avatar: application.applicant.avatar,
+            vanityUrl: application.applicant.vanityUrl,
+          },
+          message: application.message || "",
+          createdAt: application.createdAt,
+        })),
+    });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Error loading family applications.");
+  }
+});
+
+async function resolveFamilyApplication(req, res, status) {
+  var userId = await routeUtils.verifyLoggedIn(req);
+  var familyId = req.params.familyId;
+  var applicationId = req.params.applicationId;
+
+  var user = await models.User.findOne({ id: userId });
+  var family = await models.Family.findOne({ id: familyId });
+
+  if (!family) {
+    errors.notFound(res, "Family not found.");
+    return;
+  }
+
+  var membership = await getFamilyMembership(family, user);
+  var role = getMembershipRole(membership, family, user);
+  if (!canManageFamilyApplications(role)) {
+    errors.forbidden(res, "Only family leaders and officers can manage applications.");
+    return;
+  }
+
+  var application = await models.FamilyApplication.findOne({
+    _id: applicationId,
+    familyId: familyId,
+    status: "pending",
+  }).populate("applicant", "id name");
+
+  if (!application || !application.applicant) {
+    errors.notFound(res, "Application not found.");
+    return;
+  }
+
+  if (status === "accepted") {
+    if ((family.members || []).length >= getFamilyMemberLimit(family)) {
+      errors.conflict(res, "This family has reached its member limit.");
+      return;
+    }
+
+    var existingFamily = await models.InFamily.findOne({
+      user: application.applicant._id,
+    });
+
+    if (existingFamily) {
+      errors.conflict(res, "User already belongs to a family.");
+      return;
+    }
+
+    await new models.InFamily({
+      user: application.applicant._id,
+      family: family._id,
+      role: "member",
+    }).save();
+
+    await models.Family.updateOne(
+      { id: familyId },
+      { $push: { members: application.applicant._id } }
+    );
+  }
+
+  await models.FamilyApplication.updateOne(
+    { _id: application._id },
+    {
+      $set: {
+        status: status,
+        resolvedAt: Date.now(),
+        resolvedBy: userId,
+      },
+    }
+  );
+
+  await routeUtils.createNotification(
+    {
+      content:
+        status === "accepted"
+          ? `Your application to join ${family.name} was accepted!`
+          : `Your application to join ${family.name} was rejected.`,
+      icon: "fas fa-users",
+      link: `/user/family/${familyId}`,
+    },
+    [application.applicant.id]
+  );
+
+  res.sendStatus(200);
+}
+
+router.post("/:familyId/applications/:applicationId/accept", async function (req, res) {
+  try {
+    await resolveFamilyApplication(req, res, "accepted");
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Error accepting family application.");
+  }
+});
+
+router.post("/:familyId/applications/:applicationId/reject", async function (req, res) {
+  try {
+    await resolveFamilyApplication(req, res, "rejected");
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Error rejecting family application.");
+  }
+});
+
+router.post("/:familyId/member/:memberId/role", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var memberId = req.params.memberId;
+    var role = String(req.body.role || "");
+
+    if (role !== "member" && role !== "officer") {
+      errors.badRequest(res, "Invalid family role.");
+      return;
+    }
+
+    var user = await models.User.findOne({ id: userId });
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      errors.notFound(res, "Family not found.");
+      return;
+    }
+
+    if (family.leader.toString() !== user._id.toString()) {
+      errors.forbidden(res, "Only the family leader can change member roles.");
+      return;
+    }
+
+    var member = await models.User.findOne({ id: memberId });
+    if (!member) {
+      errors.notFound(res, "Member not found.");
+      return;
+    }
+
+    if (family.leader.toString() === member._id.toString()) {
+      errors.conflict(
+        res,
+        "The family leader role is changed by transferring leadership."
+      );
+      return;
+    }
+
+    var result = await models.InFamily.updateOne(
+      { user: member._id, family: family._id },
+      { $set: { role: role } }
+    );
+
+    if (!result.matchedCount) {
+      errors.conflict(res, "User is not a member of this family.");
+      return;
+    }
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Error updating family role.");
+  }
+});
+
+router.get("/:familyId/ledger", async function (req, res) {
+  try {
+    var familyId = req.params.familyId;
+    var ledger = await models.FamilyLedger.find({ familyId: familyId })
+      .populate("user", "id name avatar vanityUrl")
+      .sort("-createdAt")
+      .limit(20)
+      .lean();
+
+    res.send({
+      ledger: ledger.map((entry) => ({
+        id: entry._id,
+        type: entry.type,
+        amount: entry.amount,
+        description: entry.description,
+        createdAt: entry.createdAt,
+        user: entry.user
+          ? {
+              id: entry.user.id,
+              name: entry.user.name,
+              avatar: entry.user.avatar,
+              vanityUrl: entry.user.vanityUrl,
+            }
+          : null,
+      })),
+    });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Error loading family ledger.");
+  }
+});
+
+router.post("/:familyId/treasury/deposit", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var amount = Math.floor(Number(req.body.amount || 0));
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      errors.unprocessable(res, "Deposit amount must be a positive number.");
+      return;
+    }
+
+    var user = await models.User.findOne({ id: userId });
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      errors.notFound(res, "Family not found.");
+      return;
+    }
+
+    var membership = await getFamilyMembership(family, user);
+    if (!membership) {
+      errors.forbidden(res, "Only family members can deposit coins.");
+      return;
+    }
+
+    var debit = await models.User.findOneAndUpdate(
+      { id: userId, coins: { $gte: amount } },
+      { $inc: { coins: -amount } },
+      { new: true }
+    )
+      .select("coins")
+      .lean();
+
+    if (!debit) {
+      errors.forbidden(res, "You do not have enough coins for this deposit.");
+      return;
+    }
+
+    const treasuryCoins = await familyTreasury.depositTreasuryCoins(
+      familyId,
+      amount
+    );
+
+    await new models.FamilyLedger({
+      familyId: familyId,
+      family: family._id,
+      userId: userId,
+      user: user._id,
+      type: "deposit",
+      amount: amount,
+      description: `Deposited ${amount} coins`,
+      createdAt: Date.now(),
+    }).save();
+
+    await redis.cacheUserInfo(userId, true);
+
+    res.send({
+      coins: Number(debit.coins || 0),
+      treasury: treasuryCoins,
+      treasuryCoins: treasuryCoins,
+    });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Error depositing into family treasury.");
+  }
+});
+
+router.post("/:familyId/perks/:perkKey/buy", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var perkKey = req.params.perkKey;
+    var perk = FAMILY_PERKS.find((item) => item.key === perkKey);
+
+    if (!perk) {
+      errors.notFound(res, "Family perk not found.");
+      return;
+    }
+
+    var user = await models.User.findOne({ id: userId });
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      errors.notFound(res, "Family not found.");
+      return;
+    }
+
+    var membership = await getFamilyMembership(family, user);
+    var role = getMembershipRole(membership, family, user);
+    if (!canManageFamilyApplications(role)) {
+      errors.forbidden(res, "Only family leaders and officers can buy perks.");
+      return;
+    }
+
+    if ((family.perks || []).includes(perk.key)) {
+      errors.conflict(res, "This family already owns that perk.");
+      return;
+    }
+
+    const withdrew = await familyTreasury.withdrawTreasuryCoins(
+      familyId,
+      perk.cost
+    );
+
+    if (!withdrew) {
+      errors.forbidden(res, "The family treasury does not have enough coins.");
+      return;
+    }
+
+    var result = await models.Family.updateOne(
+      {
+        id: familyId,
+        perks: { $ne: perk.key },
+      },
+      { $push: { perks: perk.key } }
+    );
+
+    if (!result.modifiedCount) {
+      await familyTreasury.depositTreasuryCoins(familyId, perk.cost);
+      errors.conflict(res, "This family already owns that perk.");
+      return;
+    }
+
+    await new models.FamilyLedger({
+      familyId: familyId,
+      family: family._id,
+      userId: userId,
+      user: user._id,
+      type: "perk",
+      amount: -perk.cost,
+      description: `Bought ${perk.name}`,
+      createdAt: Date.now(),
+    }).save();
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Error buying family perk.");
   }
 });
 
@@ -418,6 +1126,14 @@ router.post("/:familyId/transferLeadership", async function (req, res) {
     await models.Family.updateOne(
       { id: familyId },
       { $set: { leader: newLeader._id } }
+    );
+    await models.InFamily.updateOne(
+      { user: user._id, family: family._id },
+      { $set: { role: "member" } }
+    );
+    await models.InFamily.updateOne(
+      { user: newLeader._id, family: family._id },
+      { $set: { role: "leader" } }
     );
 
     res.sendStatus(200);
@@ -516,6 +1232,8 @@ router.delete("/:familyId", async function (req, res) {
 
     // Delete all pending join requests
     await models.FamilyJoinRequest.deleteMany({ family: family._id });
+    await models.FamilyApplication.deleteMany({ family: family._id });
+    await models.FamilyLedger.deleteMany({ family: family._id });
 
     // Delete the family avatar if it exists
     const avatarPath = `${process.env.UPLOAD_PATH}/${familyId}_family_avatar.webp`;
@@ -549,17 +1267,19 @@ router.post("/:familyId/requestJoin", async function (req, res) {
       return;
     }
 
-    // Check if requester is the leader
+    // Check if requester is the leader or officer
     var requester = await models.User.findOne({ id: userId });
-    if (family.leader._id.toString() !== requester._id.toString()) {
-      errors.forbidden(res, "Only the family leader can send join requests.");
+    var requesterMembership = await getFamilyMembership(family, requester);
+    var requesterRole = getMembershipRole(requesterMembership, family, requester);
+    if (!canManageFamilyApplications(requesterRole)) {
+      errors.forbidden(res, "Only family leaders and officers can send join requests.");
       return;
     }
 
-    // Check if family is at member limit (20 members)
+    // Check if family is at member limit
     const currentMemberCount = family.members.length;
-    if (currentMemberCount >= 20) {
-      errors.conflict(res, "This family has reached the maximum of 20 members.");
+    if (currentMemberCount >= getFamilyMemberLimit(family)) {
+      errors.conflict(res, "This family has reached its member limit.");
       return;
     }
 
@@ -657,10 +1377,10 @@ router.post("/:familyId/acceptJoin", async function (req, res) {
       return;
     }
 
-    // Check if family is at member limit (20 members)
+    // Check if family is at member limit
     const currentMemberCount = family.members.length;
-    if (currentMemberCount >= 20) {
-      errors.conflict(res, "This family has reached the maximum of 20 members.");
+    if (currentMemberCount >= getFamilyMemberLimit(family)) {
+      errors.conflict(res, "This family has reached its member limit.");
       return;
     }
 
@@ -678,6 +1398,7 @@ router.post("/:familyId/acceptJoin", async function (req, res) {
     var inFamily = new models.InFamily({
       user: user._id,
       family: family._id,
+      role: "member",
     });
     await inFamily.save();
 

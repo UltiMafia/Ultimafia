@@ -1126,6 +1126,31 @@ export default function Settings() {
                   </Box>
                 )}
 
+                {/* Application Settings */}
+                <Box>
+                  <Typography variant="h6" sx={{ mb: 1 }}>
+                    Applications
+                  </Typography>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={userFamily.applicationsOpen !== false}
+                        onChange={(e) =>
+                          onFamilyApplicationsOpenChange(e.target.checked)
+                        }
+                      />
+                    }
+                    label="Allow users to apply from the family page"
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{ mt: 1, display: "block" }}
+                  >
+                    Officers and leaders can accept or reject applications on the
+                    family page.
+                  </Typography>
+                </Box>
+
                 {/* Transfer Leadership */}
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>
@@ -1791,6 +1816,18 @@ export default function Settings() {
       .then(() => {
         siteInfo.showAlert("Background display mode updated", "success");
         loadFamily(); // Reload to update background repeat mode
+      })
+      .catch(errorAlert);
+  }
+
+  function onFamilyApplicationsOpenChange(applicationsOpen) {
+    axios
+      .post(`/api/family/${userFamily.id}/applicationsOpen`, {
+        applicationsOpen,
+      })
+      .then(() => {
+        siteInfo.showAlert("Application settings updated", "success");
+        loadFamily();
       })
       .catch(errorAlert);
   }
