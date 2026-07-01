@@ -354,6 +354,12 @@ export default function StockMarket() {
     );
   };
 
+  const totalStockValue = useMemo(() => {
+    const playerStocksValue = portfolio.reduce((acc, h) => acc + (h.averageSellValue || 0), 0);
+    const familyStocksValue = familyPortfolio.reduce((acc, h) => acc + (h.averageSellValue || 0), 0);
+    return playerStocksValue + familyStocksValue;
+  }, [portfolio, familyPortfolio]);
+
   if (loading && stocks.length === 0 && familyStocks.length === 0) {
     return <Loading />;
   }
@@ -390,13 +396,33 @@ export default function StockMarket() {
             }}
           >
             <Icon icon="lucide:coins" style={{ color: "gold", fontSize: "28px" }} />
-            <Box>
-              <Typography variant="caption" color="text.secondary" display="block">
-                My Coin Balance
-              </Typography>
-              <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold", lineHeight: 1 }}>
-                {(user.coins || 0).toFixed(2)}
-              </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  Coins
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold", lineHeight: 1 }}>
+                  {(user.coins || 0).toFixed(2)}
+                </Typography>
+              </Box>
+              <Box sx={{ height: 30, borderLeft: '1px solid rgba(255, 215, 0, 0.3)' }} />
+              <Box>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  Stock Value
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold", lineHeight: 1 }}>
+                  {totalStockValue.toFixed(2)}
+                </Typography>
+              </Box>
+              <Box sx={{ height: 30, borderLeft: '1px solid rgba(255, 215, 0, 0.3)' }} />
+              <Box>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  Net Worth
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold", lineHeight: 1 }}>
+                  {((user.coins || 0) + totalStockValue).toFixed(2)}
+                </Typography>
+              </Box>
             </Box>
           </Paper>
         )}
