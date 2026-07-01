@@ -4,6 +4,7 @@ const routeUtils = require("./utils");
 const errors = require("../lib/errors");
 const logger = require("../modules/logging")(".");
 const stockMarket = require("../lib/StockMarket");
+const redis = require("../modules/redis");
 
 const router = express.Router();
 
@@ -240,6 +241,8 @@ router.post("/ipo", async function (req, res) {
     // so we intentionally do not log a StockTransaction here. Cost basis
     // in portfolio analytics should only reflect market trades.
 
+    await redis.cacheUserInfo(userId, true);
+
     res.send({ success: true, message: "IPO completed successfully! You purchased your first share for 100 coins." });
   } catch (e) {
     if (e.message === "Not logged in") {
@@ -318,6 +321,11 @@ router.post("/buy", async function (req, res) {
       price,
       fee: creatorFee + systemFee
     });
+
+    await Promise.all([
+      redis.cacheUserInfo(userId, true),
+      redis.cacheUserInfo(subjectId, true)
+    ]);
 
     res.send({ success: true, price, fee: creatorFee + systemFee, total });
   } catch (e) {
@@ -398,6 +406,11 @@ router.post("/sell", async function (req, res) {
       price,
       fee: creatorFee + systemFee
     });
+
+    await Promise.all([
+      redis.cacheUserInfo(userId, true),
+      redis.cacheUserInfo(subjectId, true)
+    ]);
 
     res.send({ success: true, price, fee: creatorFee + systemFee, totalPayout: total });
   } catch (e) {
@@ -669,6 +682,8 @@ router.post("/families/ipo", async function (req, res) {
       fee: 0
     });
 
+    await redis.cacheUserInfo(userId, true);
+
     res.send({ success: true, message: "Family ETF launched successfully! First share purchased for 200 coins." });
   } catch (e) {
     if (e.message === "Not logged in") {
@@ -734,6 +749,8 @@ router.post("/families/buy", async function (req, res) {
       price,
       fee: creatorFee + systemFee
     });
+
+    await redis.cacheUserInfo(userId, true);
 
     res.send({ success: true, price, fee: creatorFee + systemFee, total });
   } catch (e) {
@@ -810,6 +827,8 @@ router.post("/families/sell", async function (req, res) {
       price,
       fee: creatorFee + systemFee
     });
+
+    await redis.cacheUserInfo(userId, true);
 
     res.send({ success: true, price, fee: creatorFee + systemFee, totalPayout: total });
   } catch (e) {
