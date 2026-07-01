@@ -111,7 +111,7 @@ router.get("/info", async function (req, res) {
     
     // Fetch coin balance directly from database to guarantee consistency with the shop
     const userDb = await models.User.findOne({ id: userId }).select("coins").lean();
-    user.coins = userDb ? (userDb.coins || 0) : 0;
+    user.coins = userDb ? userDb.coins : 0;
     
     delete user.status;
 

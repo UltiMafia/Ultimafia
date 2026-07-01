@@ -251,15 +251,15 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
                   fontWeight: "bold",
                   color:
                     tradeType === "buy"
-                      ? (user.coins || 0) >= tradePreview.total
+                      ? user.coins >= tradePreview.total
                         ? "success.main"
                         : "error.main"
                       : "success.main",
                 }}
               >
                 {tradeType === "buy"
-                  ? ((user.coins || 0) - tradePreview.total).toFixed(2)
-                  : ((user.coins || 0) + tradePreview.total).toFixed(2)}{" "}
+                  ? (user.coins - tradePreview.total).toFixed(2)
+                  : (user.coins + tradePreview.total).toFixed(2)}{" "}
                 Coins
               </Typography>
             </Stack>
@@ -278,7 +278,7 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
           disabled={
             submitting ||
             shareCount <= 0 ||
-            (tradeType === "buy" && (user.coins || 0) < tradePreview.total) ||
+            (tradeType === "buy" && user.coins < tradePreview.total) ||
             (tradeType === "sell" && stock.sharesOwned < shareCount) ||
             (tradeType === "sell" && stock.shareSupply - shareCount < 1)
           }

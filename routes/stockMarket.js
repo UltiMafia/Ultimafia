@@ -147,7 +147,7 @@ router.get("/portfolio", async function (req, res) {
         currentSingleSellPrice: stockMarket.getSellPrice(stock.shareSupply, 1).total,
         costBasis,
         unrealizedPnL,
-        dividendsReceived: parseFloat((h.dividendsReceived || 0).toFixed(2))
+        dividendsReceived: parseFloat(h.dividendsReceived.toFixed(2))
       };
     });
 
@@ -600,7 +600,7 @@ router.get("/families/portfolio", async function (req, res) {
         currentSingleSellPrice: stockMarket.getSellPrice(stock.shareSupply, 1).total,
         costBasis,
         unrealizedPnL,
-        dividendsReceived: parseFloat((h.dividendsReceived || 0).toFixed(2))
+        dividendsReceived: parseFloat(h.dividendsReceived.toFixed(2))
       };
     });
 
