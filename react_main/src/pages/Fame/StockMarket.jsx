@@ -542,10 +542,10 @@ export default function StockMarket() {
                           {(stock.shareSupply * stock.buyPrice).toFixed(0)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "success.main" }}>
-                          {stock.buyPrice} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {stock.buyPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "error.main" }}>
-                          {stock.sellPrice} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {stock.sellPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ color: "gold" }}>
                           {stock.dividendsPaidOut.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
