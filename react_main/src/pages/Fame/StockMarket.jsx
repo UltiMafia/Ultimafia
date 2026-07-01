@@ -458,7 +458,7 @@ export default function StockMarket() {
 
       {/* Market Mode Toggles for All Markets / Portfolio tabs */}
       {activeTab < 2 && (
-        <Stack direction="row" justifyContent="flex-start" sx={{ mb: 3, overflowX: 'auto', width: '100%' }}>
+        <Stack direction="row" justifyContent="flex-start" sx={{ mb: 3, width: '100%', minWidth: 0 }}>
           <ToggleButtonGroup
             value={marketMode}
             exclusive
@@ -470,12 +470,13 @@ export default function StockMarket() {
             }}
             size="small"
             color="primary"
+            sx={{ flexWrap: 'wrap' }}
           >
             <ToggleButton value="player" sx={{ px: { xs: 1, sm: 3 }, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
               <Icon icon="lucide:user" style={{ marginRight: 6 }} /> Player Stocks
             </ToggleButton>
             <ToggleButton value="family" sx={{ px: { xs: 1, sm: 3 }, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
-              <Icon icon="lucide:users" style={{ marginRight: 6 }} /> Family ETFs (Index Funds)
+              <Icon icon="lucide:users" style={{ marginRight: 6 }} /> {isMobile ? "Family ETFs" : "Family ETFs (Index Funds)"}
             </ToggleButton>
           </ToggleButtonGroup>
         </Stack>
