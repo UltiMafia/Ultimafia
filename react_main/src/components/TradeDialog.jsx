@@ -50,13 +50,13 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
         const S = currentSupply + i;
         basePrice += Math.max(1, Math.floor((S * S) / 100));
       }
-      const creatorFee = Math.max(1, Math.round(basePrice * 0.05));
-      const systemFee = Math.max(1, Math.round(basePrice * 0.05));
+      const creatorFee = parseFloat((basePrice * 0.05).toFixed(2));
+      const systemFee = parseFloat((basePrice * 0.05).toFixed(2));
       return {
         price: basePrice,
         creatorFee,
         systemFee,
-        total: basePrice + creatorFee + systemFee,
+        total: parseFloat((basePrice + creatorFee + systemFee).toFixed(2)),
       };
     } else {
       const sellCount = Math.min(shareCount, currentSupply);
@@ -64,13 +64,13 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
         const S = currentSupply - i;
         basePrice += Math.max(1, Math.floor((S * S) / 100));
       }
-      const creatorFee = Math.max(1, Math.round(basePrice * 0.05));
-      const systemFee = Math.max(1, Math.round(basePrice * 0.05));
+      const creatorFee = parseFloat((basePrice * 0.05).toFixed(2));
+      const systemFee = parseFloat((basePrice * 0.05).toFixed(2));
       return {
         price: basePrice,
         creatorFee,
         systemFee,
-        total: Math.max(0, basePrice - creatorFee - systemFee),
+        total: Math.max(0, parseFloat((basePrice - creatorFee - systemFee).toFixed(2))),
       };
     }
   }, [stock, tradeType, shareCount]);
