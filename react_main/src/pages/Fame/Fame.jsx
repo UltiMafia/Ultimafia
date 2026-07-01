@@ -16,7 +16,7 @@ export default function Fame(props) {
   return (
     <>
       <Box maxWidth="1280px" sx={{ flexGrow: 1, margin: "auto" }}>
-        <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
+        <Card sx={{ p: { xs: 1, sm: 2, md: 3 }, textAlign: "justify" }}>
           <Routes>
             <Route path="competitive" element={<Competitive />} />
             <Route path="competitive/faq" element={<CompetitiveFaq />} />

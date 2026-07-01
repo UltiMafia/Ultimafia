@@ -29,6 +29,8 @@ import {
   FormControl,
   InputLabel,
   Grid,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { useErrorAlert } from "../../components/Alerts";
@@ -85,6 +87,8 @@ export default function StockMarket() {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [activeTab, setActiveTab] = useState(0);
   const [marketMode, setMarketMode] = useState("player"); // "player" | "family"
@@ -310,7 +314,7 @@ export default function StockMarket() {
     setTradeModalOpen(true);
   };
 
-  const renderSortableHeader = (label, fieldKey, align = "left") => {
+  const renderSortableHeader = (label, fieldKey, align = "left", extraSx = {}) => {
     const isActive = sortBy === fieldKey;
     const isAsc = sortDirection === "asc";
     
@@ -335,6 +339,7 @@ export default function StockMarket() {
           "&:hover": {
             backgroundColor: "rgba(255, 255, 255, 0.05)",
           },
+          ...extraSx
         }}
       >
         <Stack
@@ -354,12 +359,18 @@ export default function StockMarket() {
     );
   };
 
+  const totalStockValue = useMemo(() => {
+    const playerStocksValue = portfolio.reduce((acc, h) => acc + (h.averageSellValue || 0), 0);
+    const familyStocksValue = familyPortfolio.reduce((acc, h) => acc + (h.averageSellValue || 0), 0);
+    return playerStocksValue + familyStocksValue;
+  }, [portfolio, familyPortfolio]);
+
   if (loading && stocks.length === 0 && familyStocks.length === 0) {
     return <Loading />;
   }
 
   return (
-    <Box>
+    <Box sx={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
       {/* Top Banner & Balance */}
       <Stack
         direction={{ xs: "column", sm: "row" }}
@@ -381,22 +392,44 @@ export default function StockMarket() {
           <Paper
             variant="outlined"
             sx={{
-              p: 2,
+              p: { xs: 1, sm: 2 },
               display: "flex",
               alignItems: "center",
-              gap: 2,
+              gap: { xs: 1, sm: 2 },
               background: "rgba(255, 215, 0, 0.05)",
               borderColor: "gold",
+              overflowX: "auto",
+              maxWidth: "100%",
             }}
           >
             <Icon icon="lucide:coins" style={{ color: "gold", fontSize: "28px" }} />
-            <Box>
-              <Typography variant="caption" color="text.secondary" display="block">
-                My Coin Balance
-              </Typography>
-              <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold", lineHeight: 1 }}>
-                {(user.coins || 0).toFixed(2)}
-              </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  Coins
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold", lineHeight: 1 }}>
+                  {(user.coins || 0).toFixed(2)}
+                </Typography>
+              </Box>
+              <Box sx={{ height: 30, borderLeft: '1px solid rgba(255, 215, 0, 0.3)' }} />
+              <Box>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  Stock Value
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold", lineHeight: 1 }}>
+                  {totalStockValue.toFixed(2)}
+                </Typography>
+              </Box>
+              <Box sx={{ height: 30, borderLeft: '1px solid rgba(255, 215, 0, 0.3)' }} />
+              <Box>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  Net Worth
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold", lineHeight: 1 }}>
+                  {((user.coins || 0) + totalStockValue).toFixed(2)}
+                </Typography>
+              </Box>
             </Box>
           </Paper>
         )}
@@ -409,6 +442,9 @@ export default function StockMarket() {
           setActiveTab(val);
           setSearchQuery("");
         }}
+        variant="scrollable"
+        scrollButtons="auto"
+        allowScrollButtonsMobile
         sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}
       >
         <Tab icon={<Icon icon="lucide:line-chart" />} iconPosition="start" label="All Markets" />
@@ -422,7 +458,7 @@ export default function StockMarket() {
 
       {/* Market Mode Toggles for All Markets / Portfolio tabs */}
       {activeTab < 2 && (
-        <Stack direction="row" justifyContent="flex-start" sx={{ mb: 3 }}>
+        <Stack direction="row" justifyContent="flex-start" sx={{ mb: 3, width: '100%', minWidth: 0 }}>
           <ToggleButtonGroup
             value={marketMode}
             exclusive
@@ -434,12 +470,13 @@ export default function StockMarket() {
             }}
             size="small"
             color="primary"
+            sx={{ flexWrap: 'wrap' }}
           >
-            <ToggleButton value="player" sx={{ px: 3 }}>
+            <ToggleButton value="player" sx={{ px: { xs: 1, sm: 3 }, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
               <Icon icon="lucide:user" style={{ marginRight: 6 }} /> Player Stocks
             </ToggleButton>
-            <ToggleButton value="family" sx={{ px: 3 }}>
-              <Icon icon="lucide:users" style={{ marginRight: 6 }} /> Family ETFs (Index Funds)
+            <ToggleButton value="family" sx={{ px: { xs: 1, sm: 3 }, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+              <Icon icon="lucide:users" style={{ marginRight: 6 }} /> {isMobile ? "Family ETFs" : "Family ETFs (Index Funds)"}
             </ToggleButton>
           </ToggleButtonGroup>
         </Stack>
@@ -459,18 +496,109 @@ export default function StockMarket() {
             }}
           />
 
-          <TableContainer component={Paper} variant="outlined">
+          {isMobile ? (
+            <Stack spacing={2}>
+              <Stack direction="row" justifyContent="flex-end" mb={1}>
+                <FormControl size="small" sx={{ minWidth: 120 }}>
+                  <InputLabel>Sort By</InputLabel>
+                  <Select
+                    value={sortBy}
+                    label="Sort By"
+                    onChange={(e) => setSortBy(e.target.value)}
+                  >
+                    <MenuItem value="name">Name</MenuItem>
+                    <MenuItem value="marketCap">Market Cap</MenuItem>
+                    <MenuItem value="buyPrice">Buy Price</MenuItem>
+                    <MenuItem value="sellPrice">Sell Price</MenuItem>
+                  </Select>
+                </FormControl>
+                <Button onClick={() => setSortDirection(sortDirection === "asc" ? "desc" : "asc")} sx={{ minWidth: 0, px: 2 }}>
+                  <Icon icon={sortDirection === "asc" ? "lucide:arrow-up" : "lucide:arrow-down"} />
+                </Button>
+              </Stack>
+              {filteredStocks.map((stock) => {
+                const isSelf = user.loggedIn && marketMode === "player" && stock.userId === user.id;
+                const name = marketMode === "player" ? stock.username : stock.familyName;
+                return (
+                  <Card key={stock._id || stock.familyId} variant="outlined" sx={{ background: "rgba(0,0,0,0.2)" }}>
+                    <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
+                        <Stack direction="row" spacing={1.5} alignItems="center">
+                          <StockAvatar
+                            targetType={marketMode}
+                            id={marketMode === "player" ? stock.userId : stock.familyId}
+                            name={name}
+                            avatar={stock.avatar}
+                            siteInfo={siteInfo}
+                          />
+                          <Box>
+                            <Typography
+                              component="a"
+                              href={marketMode === "player" ? (stock.vanityUrl ? `/user/${stock.vanityUrl}` : `/user/${stock.userId}`) : undefined}
+                              sx={{
+                                color: stock.nameColor || "text.primary",
+                                textDecoration: "none",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {name}
+                            </Typography>
+                            {isSelf && <Chip size="small" label="You" color="primary" variant="outlined" sx={{ ml: 1, height: 20 }} />}
+                          </Box>
+                        </Stack>
+                        <Box sx={{ width: 60, height: 20 }}>
+                          <Sparkline history={stock.priceHistory} width={60} height={20} />
+                        </Box>
+                      </Stack>
+                      <Grid container spacing={1} mb={2}>
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary" display="block">Buy Price</Typography>
+                          <Typography variant="body2" color="success.main" fontWeight="bold">
+                            {(stock.buyPrice || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary" display="block">Sell Price</Typography>
+                          <Typography variant="body2" color="error.main" fontWeight="bold">
+                            {(stock.sellPrice || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary" display="block">Market Cap</Typography>
+                          <Typography variant="body2" color="text.primary" fontWeight="bold">
+                            {((stock.shareSupply || 0) * (stock.buyPrice || 0)).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary" display="block">{marketMode === "player" ? "Dividends" : "Treasury"}</Typography>
+                          <Typography variant="body2" color="gold" fontWeight="bold">
+                            {marketMode === "player" ? (stock.dividendsPaidOut || 0).toFixed(2) : (stock.treasuryCoins || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                      <Stack direction="row" spacing={1}>
+                        <Button fullWidth variant="contained" color="success" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "buy", marketMode)}>Buy</Button>
+                        <Button fullWidth variant="contained" color="error" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "sell", marketMode)}>Sell</Button>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+              {filteredStocks.length === 0 && <Typography color="text.secondary" align="center">No markets found.</Typography>}
+            </Stack>
+          ) : (
+          <TableContainer component={Paper} variant="outlined" sx={{ width: '100%', overflowX: 'auto' }}>
             <Table>
               <TableHead>
                 <TableRow>
                   {renderSortableHeader(marketMode === "player" ? "Player" : "Family Name", "name")}
-                  {renderSortableHeader("Supply", "supply", "right")}
-                  {marketMode === "family" && <TableCell align="right" sx={{ fontWeight: "bold" }}>Treasury Coins</TableCell>}
-                  <TableCell align="center" sx={{ fontWeight: "bold" }}>Trend</TableCell>
-                  {renderSortableHeader("Market Cap", "marketCap", "right")}
+                  {renderSortableHeader("Supply", "supply", "right", { display: { xs: 'none', md: 'table-cell' } })}
+                  {marketMode === "family" && <TableCell align="right" sx={{ fontWeight: "bold", display: { xs: 'none', md: 'table-cell' } }}>Treasury Coins</TableCell>}
+                  <TableCell align="center" sx={{ fontWeight: "bold", display: { xs: 'none', lg: 'table-cell' } }}>Trend</TableCell>
+                  {renderSortableHeader("Market Cap", "marketCap", "right", { display: { xs: 'none', md: 'table-cell' } })}
                   {renderSortableHeader("Buy Price", "buyPrice", "right")}
-                  {renderSortableHeader("Sell Price", "sellPrice", "right")}
-                  {renderSortableHeader("Dividends", "dividends", "right")}
+                  {renderSortableHeader("Sell Price", "sellPrice", "right", { display: { xs: 'none', sm: 'table-cell' } })}
+                  {renderSortableHeader("Dividends", "dividends", "right", { display: { xs: 'none', sm: 'table-cell' } })}
                   <TableCell align="center" sx={{ fontWeight: "bold" }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -532,29 +660,29 @@ export default function StockMarket() {
                             {isSelf && <Chip size="small" label="You" color="primary" variant="outlined" />}
                           </Stack>
                         </TableCell>
-                        <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>{stock.shareSupply}</TableCell>
+                        <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>{stock.shareSupply}</TableCell>
                         {marketMode === "family" && (
-                          <TableCell align="right" sx={{ color: "gold", fontWeight: "bold", whiteSpace: "nowrap" }}>
+                          <TableCell align="right" sx={{ fontWeight: "bold", color: "gold", display: { xs: 'none', md: 'table-cell' } }}>
                             {(stock.treasuryCoins || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                           </TableCell>
                         )}
-                        <TableCell align="center" sx={{ whiteSpace: "nowrap" }}>
+                        <TableCell align="center" sx={{ whiteSpace: "nowrap", display: { xs: 'none', lg: 'table-cell' } }}>
                           <Sparkline history={stock.priceHistory} width={100} height={30} />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
-                          {(stock.shareSupply * stock.buyPrice).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        <TableCell align="right" sx={{ fontWeight: "bold", whiteSpace: "nowrap", display: { xs: 'none', md: 'table-cell' } }}>
+                          {(stock.shareSupply * (stock.buyPrice || 0)).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "success.main", whiteSpace: "nowrap" }}>
-                          {stock.buyPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {(stock.buyPrice || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: "error.main", whiteSpace: "nowrap" }}>
-                          {stock.sellPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        <TableCell align="right" sx={{ fontWeight: "bold", color: "error.main", whiteSpace: "nowrap", display: { xs: 'none', sm: 'table-cell' } }}>
+                          {(stock.sellPrice || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ color: "gold", whiteSpace: "nowrap" }}>
-                          {stock.dividendsPaidOut.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        <TableCell align="right" sx={{ color: "gold", whiteSpace: "nowrap", display: { xs: 'none', sm: 'table-cell' } }}>
+                          {(stock.dividendsPaidOut || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="center">
-                          <Stack direction="row" spacing={1} justifyContent="center">
+                          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="center">
                             <Button
                               variant="contained"
                               color="success"
@@ -582,21 +710,107 @@ export default function StockMarket() {
               </TableBody>
             </Table>
           </TableContainer>
+          )}
         </Stack>
       )}
 
       {/* Tab Content: My Portfolio */}
       {activeTab === 1 && user.loggedIn && (
-        <TableContainer component={Paper} variant="outlined">
+        isMobile ? (
+            <Stack spacing={2}>
+              {marketMode === "player" ? (
+                portfolio.length === 0 ? (
+                  <Typography color="text.secondary" align="center">You don't own any player shares yet.</Typography>
+                ) : (
+                  portfolio.map((holding) => {
+                    const matchingStock = stocks.find((s) => s.userId === holding.subjectId) || { shareSupply: 0 };
+                    return (
+                      <Card key={holding.subjectId} variant="outlined" sx={{ background: "rgba(0,0,0,0.2)" }}>
+                        <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                          <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
+                            <StockAvatar targetType="player" id={holding.subjectId} name={holding.username} avatar={holding.avatar} siteInfo={siteInfo} />
+                            <Typography component="a" href={holding.vanityUrl ? `/user/${holding.vanityUrl}` : `/user/${holding.subjectId}`} sx={{ color: holding.nameColor || "text.primary", textDecoration: "none", fontWeight: "bold" }}>
+                              {holding.username}
+                            </Typography>
+                          </Stack>
+                          <Grid container spacing={1} mb={2}>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">Shares</Typography>
+                              <Typography variant="body2" fontWeight="bold">{holding.sharesOwned}</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">Liquid Value</Typography>
+                              <Typography variant="body2" color="gold" fontWeight="bold">{(holding.averageSellValue || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} /></Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">P&L</Typography>
+                              <Typography variant="body2" color={(holding.unrealizedPnL || 0) >= 0 ? "success.main" : "error.main"} fontWeight="bold">
+                                {(holding.unrealizedPnL || 0) >= 0 ? "+" : ""}{(holding.unrealizedPnL || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                          <Stack direction="row" spacing={1}>
+                            <Button fullWidth variant="contained" color="success" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "buy", "player")}>Buy More</Button>
+                            <Button fullWidth variant="contained" color="error" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "sell", "player")}>Sell</Button>
+                          </Stack>
+                        </CardContent>
+                      </Card>
+                    );
+                  })
+                )
+              ) : (
+                familyPortfolio.length === 0 ? (
+                  <Typography color="text.secondary" align="center">You don't own any Family ETFs yet.</Typography>
+                ) : (
+                  familyPortfolio.map((holding) => {
+                    const matchingStock = familyStocks.find((s) => s.familyId === holding.subjectId) || { shareSupply: 0 };
+                    return (
+                      <Card key={holding.subjectId} variant="outlined" sx={{ background: "rgba(0,0,0,0.2)" }}>
+                        <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                          <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
+                            <StockAvatar targetType="family" id={holding.subjectId} name={holding.familyName} avatar={holding.avatar} siteInfo={siteInfo} />
+                            <Typography sx={{ color: "text.primary", fontWeight: "bold" }}>
+                              {holding.familyName}
+                            </Typography>
+                          </Stack>
+                          <Grid container spacing={1} mb={2}>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">Shares</Typography>
+                              <Typography variant="body2" fontWeight="bold">{holding.sharesOwned}</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">Liquid Value</Typography>
+                              <Typography variant="body2" color="gold" fontWeight="bold">{(holding.averageSellValue || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} /></Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">P&L</Typography>
+                              <Typography variant="body2" color={(holding.unrealizedPnL || 0) >= 0 ? "success.main" : "error.main"} fontWeight="bold">
+                                {(holding.unrealizedPnL || 0) >= 0 ? "+" : ""}{(holding.unrealizedPnL || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                          <Stack direction="row" spacing={1}>
+                            <Button fullWidth variant="contained" color="success" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "buy", "family")}>Buy More</Button>
+                            <Button fullWidth variant="contained" color="error" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "sell", "family")}>Sell</Button>
+                          </Stack>
+                        </CardContent>
+                      </Card>
+                    );
+                  })
+                )
+              )}
+            </Stack>
+        ) : (
+        <TableContainer component={Paper} variant="outlined" sx={{ width: '100%', overflowX: 'auto' }}>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>{marketMode === "player" ? "Player" : "Family Name"}</TableCell>
-                <TableCell align="right">Shares Owned</TableCell>
-                <TableCell align="right">Cost Basis</TableCell>
-                <TableCell align="right">Liquid Value</TableCell>
+                <TableCell align="right">Shares</TableCell>
+                <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>Cost Basis</TableCell>
+                <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Liquid Value</TableCell>
                 <TableCell align="right">Unrealized P&amp;L</TableCell>
-                <TableCell align="right">Dividends Received</TableCell>
+                <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Dividends</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -639,20 +853,20 @@ export default function StockMarket() {
                           </Stack>
                         </TableCell>
                         <TableCell align="right">{holding.sharesOwned}</TableCell>
-                        <TableCell align="right">
-                          {holding.costBasis.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                          {(holding.costBasis || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: "gold" }}>
+                        <TableCell align="right" sx={{ fontWeight: "bold", color: "gold", display: { xs: 'none', sm: 'table-cell' } }}>
                           {(holding.averageSellValue || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: holding.unrealizedPnL >= 0 ? "success.main" : "error.main" }}>
-                          {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        <TableCell align="right" sx={{ fontWeight: "bold", color: (holding.unrealizedPnL || 0) >= 0 ? "success.main" : "error.main" }}>
+                          {(holding.unrealizedPnL || 0) >= 0 ? "+" : ""}{(holding.unrealizedPnL || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ color: "gold" }}>
-                          {holding.dividendsReceived.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        <TableCell align="right" sx={{ color: "gold", display: { xs: 'none', sm: 'table-cell' } }}>
+                          {(holding.dividendsReceived || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="center">
-                          <Stack direction="row" spacing={1} justifyContent="center">
+                          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="center">
                             <Button
                               variant="contained"
                               color="success"
@@ -715,20 +929,20 @@ export default function StockMarket() {
                           </Stack>
                         </TableCell>
                         <TableCell align="right">{holding.sharesOwned}</TableCell>
-                        <TableCell align="right">
-                          {holding.costBasis.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                          {(holding.costBasis || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: "gold" }}>
+                        <TableCell align="right" sx={{ fontWeight: "bold", color: "gold", display: { xs: 'none', sm: 'table-cell' } }}>
                           {(holding.averageSellValue || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: holding.unrealizedPnL >= 0 ? "success.main" : "error.main" }}>
-                          {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        <TableCell align="right" sx={{ fontWeight: "bold", color: (holding.unrealizedPnL || 0) >= 0 ? "success.main" : "error.main" }}>
+                          {(holding.unrealizedPnL || 0) >= 0 ? "+" : ""}{(holding.unrealizedPnL || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ color: "gold" }}>
-                          {holding.dividendsReceived.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        <TableCell align="right" sx={{ color: "gold", display: { xs: 'none', sm: 'table-cell' } }}>
+                          {(holding.dividendsReceived || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="center">
-                          <Stack direction="row" spacing={1} justifyContent="center">
+                          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="center">
                             <Button
                               variant="contained"
                               color="success"
@@ -755,6 +969,7 @@ export default function StockMarket() {
             </TableBody>
           </Table>
         </TableContainer>
+        )
       )}
 
       {/* Tab Content: Launch IPO */}
