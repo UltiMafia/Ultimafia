@@ -551,19 +551,25 @@ export default function StockMarket() {
                         </Box>
                       </Stack>
                       <Grid container spacing={1} mb={2}>
-                        <Grid item xs={4}>
+                        <Grid item xs={6}>
                           <Typography variant="caption" color="text.secondary" display="block">Buy Price</Typography>
                           <Typography variant="body2" color="success.main" fontWeight="bold">
                             {(stock.buyPrice || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
                           </Typography>
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={6}>
                           <Typography variant="caption" color="text.secondary" display="block">Sell Price</Typography>
                           <Typography variant="body2" color="error.main" fontWeight="bold">
                             {(stock.sellPrice || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
                           </Typography>
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary" display="block">Market Cap</Typography>
+                          <Typography variant="body2" color="text.primary" fontWeight="bold">
+                            {((stock.shareSupply || 0) * (stock.buyPrice || 0)).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
                           <Typography variant="caption" color="text.secondary" display="block">{marketMode === "player" ? "Dividends" : "Treasury"}</Typography>
                           <Typography variant="body2" color="gold" fontWeight="bold">
                             {marketMode === "player" ? (stock.dividendsPaidOut || 0).toFixed(2) : (stock.treasuryCoins || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
