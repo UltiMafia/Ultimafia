@@ -244,18 +244,53 @@ export default function StockMarket() {
       });
   };
 
-  // Filter stocks depending on tab selection
+  const [sortBy, setSortBy] = useState("name"); // "name" | "supply" | "marketCap" | "buyPrice" | "sellPrice" | "dividends"
+  const [sortDirection, setSortDirection] = useState("asc");
+
+  // Filter and sort stocks depending on tab selection and sort settings
   const filteredStocks = useMemo(() => {
+    let list = [];
     if (marketMode === "player") {
-      return stocks.filter((stock) =>
+      list = stocks.filter((stock) =>
         stock.username.toLowerCase().includes(searchQuery.toLowerCase())
       );
     } else {
-      return familyStocks.filter((stock) =>
+      list = familyStocks.filter((stock) =>
         stock.familyName.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
-  }, [stocks, familyStocks, marketMode, searchQuery]);
+
+    list.sort((a, b) => {
+      let aVal, bVal;
+      const isPlayer = marketMode === "player";
+      
+      if (sortBy === "name") {
+        aVal = isPlayer ? a.username.toLowerCase() : a.familyName.toLowerCase();
+        bVal = isPlayer ? b.username.toLowerCase() : b.familyName.toLowerCase();
+      } else if (sortBy === "supply") {
+        aVal = a.shareSupply;
+        bVal = b.shareSupply;
+      } else if (sortBy === "marketCap") {
+        aVal = a.shareSupply * a.buyPrice;
+        bVal = b.shareSupply * b.buyPrice;
+      } else if (sortBy === "buyPrice") {
+        aVal = a.buyPrice;
+        bVal = b.buyPrice;
+      } else if (sortBy === "sellPrice") {
+        aVal = a.sellPrice;
+        bVal = b.sellPrice;
+      } else if (sortBy === "dividends") {
+        aVal = isPlayer ? a.dividendsPaidOut : a.dividendsPaidOut;
+        bVal = isPlayer ? b.dividendsPaidOut : b.dividendsPaidOut;
+      }
+
+      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    return list;
+  }, [stocks, familyStocks, marketMode, searchQuery, sortBy, sortDirection]);
 
   // Find owned shares count for selected stock in modal
   const ownedSharesCount = useMemo(() => {
@@ -273,6 +308,49 @@ export default function StockMarket() {
     setSelectedStock({ ...item, targetType });
     setTradeType(type);
     setTradeModalOpen(true);
+  };
+
+  const renderSortableHeader = (label, fieldKey, align = "left") => {
+    const isActive = sortBy === fieldKey;
+    const isAsc = sortDirection === "asc";
+    
+    const handleSort = () => {
+      if (isActive) {
+        setSortDirection(isAsc ? "desc" : "asc");
+      } else {
+        setSortBy(fieldKey);
+        setSortDirection(fieldKey === "name" ? "asc" : "desc");
+      }
+    };
+
+    return (
+      <TableCell
+        align={align}
+        onClick={handleSort}
+        sx={{
+          cursor: "pointer",
+          fontWeight: "bold",
+          userSelect: "none",
+          "&:hover": {
+            backgroundColor: "rgba(255, 255, 255, 0.05)",
+          },
+        }}
+      >
+        <Stack
+          direction="row"
+          spacing={0.5}
+          alignItems="center"
+          justifyContent={align === "right" ? "flex-end" : align === "center" ? "center" : "flex-start"}
+        >
+          <span>{label}</span>
+          {isActive ? (
+            <Icon icon={isAsc ? "lucide:chevron-up" : "lucide:chevron-down"} style={{ fontSize: "16px", color: "gold" }} />
+          ) : (
+            <Icon icon="lucide:chevrons-up-down" style={{ fontSize: "16px", color: "gray", opacity: 0.5 }} />
+          )}
+        </Stack>
+      </TableCell>
+    );
   };
 
   if (loading && stocks.length === 0 && familyStocks.length === 0) {
@@ -384,15 +462,15 @@ export default function StockMarket() {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>{marketMode === "player" ? "Player" : "Family Name"}</TableCell>
-                  <TableCell align="right">Supply</TableCell>
-                  {marketMode === "family" && <TableCell align="right">Treasury Coins</TableCell>}
-                  <TableCell align="center">Trend</TableCell>
-                  <TableCell align="right">Market Cap</TableCell>
-                  <TableCell align="right">Buy Price</TableCell>
-                  <TableCell align="right">Sell Price</TableCell>
-                  <TableCell align="right">Dividends Distributed</TableCell>
-                  <TableCell align="center">Actions</TableCell>
+                  {renderSortableHeader(marketMode === "player" ? "Player" : "Family Name", "name")}
+                  {renderSortableHeader("Supply", "supply", "right")}
+                  {marketMode === "family" && <TableCell align="right" sx={{ fontWeight: "bold" }}>Treasury Coins</TableCell>}
+                  <TableCell align="center" sx={{ fontWeight: "bold" }}>Trend</TableCell>
+                  {renderSortableHeader("Market Cap", "marketCap", "right")}
+                  {renderSortableHeader("Buy Price", "buyPrice", "right")}
+                  {renderSortableHeader("Sell Price", "sellPrice", "right")}
+                  {renderSortableHeader("Dividends Distributed", "dividends", "right")}
+                  <TableCell align="center" sx={{ fontWeight: "bold" }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
