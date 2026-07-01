@@ -36,16 +36,16 @@ describe("lib/StockMarket", function () {
       result.total.should.equal(0);
     });
 
-    it("calculates buy price and 5% fees (min 1 coin)", function () {
+    it("calculates buy price and 5% fees", function () {
       // Current supply = 9, buy 1 share.
       // 10th share base price: calculatePrice(10) = 1
-      // fees: 5% of 1 is 0.05 -> round to 0 -> min 1 coin system fee and 1 coin creator fee.
-      // total = 1 + 1 + 1 = 3
+      // fees: 5% of 1 is 0.05.
+      // total = 1 + 0.05 + 0.05 = 1.10
       const result = stockMarket.getBuyPrice(9, 1);
       result.price.should.equal(1);
-      result.creatorFee.should.equal(1);
-      result.systemFee.should.equal(1);
-      result.total.should.equal(3);
+      result.creatorFee.should.equal(0.05);
+      result.systemFee.should.equal(0.05);
+      result.total.should.equal(1.10);
     });
 
     it("calculates buy price for multiple shares", function () {
@@ -53,14 +53,14 @@ describe("lib/StockMarket", function () {
       // P(20) = Math.floor(400/100) = 4
       // P(21) = Math.floor(441/100) = 4
       // Total price = 8
-      // Creator fee = max(1, round(8 * 0.05)) = max(1, 0) = 1
-      // System fee = max(1, round(8 * 0.05)) = max(1, 0) = 1
-      // Total cost = 8 + 1 + 1 = 10
+      // Creator fee = 8 * 0.05 = 0.4
+      // System fee = 8 * 0.05 = 0.4
+      // Total cost = 8 + 0.4 + 0.4 = 8.80
       const result = stockMarket.getBuyPrice(19, 2);
       result.price.should.equal(8);
-      result.creatorFee.should.equal(1);
-      result.systemFee.should.equal(1);
-      result.total.should.equal(10);
+      result.creatorFee.should.equal(0.4);
+      result.systemFee.should.equal(0.4);
+      result.total.should.equal(8.8);
     });
   });
 
@@ -83,19 +83,21 @@ describe("lib/StockMarket", function () {
     it("calculates sell price correctly with fees subtracted", function () {
       // Current supply = 50, sell 1 share.
       // S=50 base price: P(50) = 25.
-      // Creator fee = round(25 * 0.05) = round(1.25) = 1.
-      // System fee = round(25 * 0.05) = round(1.25) = 1.
-      // Total received = 25 - 1 - 1 = 23.
+      // Creator fee = 25 * 0.05 = 1.25.
+      // System fee = 25 * 0.05 = 1.25.
+      // Total received = 25 - 1.25 - 1.25 = 22.50.
       const result = stockMarket.getSellPrice(50, 1);
       result.price.should.equal(25);
-      result.creatorFee.should.equal(1);
-      result.systemFee.should.equal(1);
-      result.total.should.equal(23);
+      result.creatorFee.should.equal(1.25);
+      result.systemFee.should.equal(1.25);
+      result.total.should.equal(22.5);
     });
   });
 
   describe("distributeDividends & distributeFamilyDividends", function () {
     let originalBulkWrite;
+    let originalShareholderBulkWrite;
+    let originalFamilyShareholderBulkWrite;
     let originalUpdateOne;
     let originalFamilyUpdateOne;
     let bulkWriteCalls = [];
@@ -104,11 +106,21 @@ describe("lib/StockMarket", function () {
 
     before(function () {
       originalBulkWrite = models.User.bulkWrite;
+      originalShareholderBulkWrite = models.Shareholder.bulkWrite;
+      originalFamilyShareholderBulkWrite = models.FamilyShareholder.bulkWrite;
       originalUpdateOne = models.PlayerStock.updateOne;
       originalFamilyUpdateOne = models.FamilyStock.updateOne;
 
       models.User.bulkWrite = async function (ops) {
         bulkWriteCalls.push(ops);
+        return { ok: 1 };
+      };
+
+      models.Shareholder.bulkWrite = async function (ops) {
+        return { ok: 1 };
+      };
+
+      models.FamilyShareholder.bulkWrite = async function (ops) {
         return { ok: 1 };
       };
 
@@ -125,6 +137,8 @@ describe("lib/StockMarket", function () {
 
     after(function () {
       models.User.bulkWrite = originalBulkWrite;
+      models.Shareholder.bulkWrite = originalShareholderBulkWrite;
+      models.FamilyShareholder.bulkWrite = originalFamilyShareholderBulkWrite;
       models.PlayerStock.updateOne = originalUpdateOne;
       models.FamilyStock.updateOne = originalFamilyUpdateOne;
     });
