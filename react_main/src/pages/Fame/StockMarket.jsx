@@ -366,7 +366,7 @@ export default function StockMarket() {
   }
 
   return (
-    <Box>
+    <Box sx={{ width: '100%', maxWidth: '100vw', overflowX: 'hidden' }}>
       {/* Top Banner & Balance */}
       <Stack
         direction={{ xs: "column", sm: "row" }}
@@ -438,6 +438,9 @@ export default function StockMarket() {
           setActiveTab(val);
           setSearchQuery("");
         }}
+        variant="scrollable"
+        scrollButtons="auto"
+        allowScrollButtonsMobile
         sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}
       >
         <Tab icon={<Icon icon="lucide:line-chart" />} iconPosition="start" label="All Markets" />
@@ -451,7 +454,7 @@ export default function StockMarket() {
 
       {/* Market Mode Toggles for All Markets / Portfolio tabs */}
       {activeTab < 2 && (
-        <Stack direction="row" justifyContent="flex-start" sx={{ mb: 3 }}>
+        <Stack direction="row" justifyContent="flex-start" sx={{ mb: 3, overflowX: 'auto', width: '100%' }}>
           <ToggleButtonGroup
             value={marketMode}
             exclusive
