@@ -105,7 +105,6 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
       .finally(() => setSubmitting(false));
   };
 
-  const isBuyDisabled = stock.targetType === "player" && user.id === stock.id;
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
@@ -157,7 +156,7 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
             fullWidth
             color={tradeType === "buy" ? "success" : "error"}
           >
-            <ToggleButton value="buy" disabled={isBuyDisabled}>
+            <ToggleButton value="buy">
               Buy Shares
             </ToggleButton>
             <ToggleButton value="sell">Sell Shares</ToggleButton>
@@ -194,9 +193,16 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
               </Button>
             </Stack>
             {tradeType === "sell" && (
-              <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>
-                You own {stock.sharesOwned} shares.
-              </Typography>
+              <Box sx={{ mt: 0.5 }}>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  You own {stock.sharesOwned} shares.
+                </Typography>
+                {stock.shareSupply - shareCount < 1 && (
+                  <Typography variant="caption" color="error.main" display="block">
+                    At least 1 share must remain in circulation.
+                  </Typography>
+                )}
+              </Box>
             )}
           </Box>
 
@@ -273,7 +279,8 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
             submitting ||
             shareCount <= 0 ||
             (tradeType === "buy" && (user.coins || 0) < tradePreview.total) ||
-            (tradeType === "sell" && stock.sharesOwned < shareCount)
+            (tradeType === "sell" && stock.sharesOwned < shareCount) ||
+            (tradeType === "sell" && stock.shareSupply - shareCount < 1)
           }
         >
           {submitting ? "Trading..." : tradeType === "buy" ? "Buy" : "Sell"}

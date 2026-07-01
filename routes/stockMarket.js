@@ -771,6 +771,11 @@ router.post("/families/sell", async function (req, res) {
       return errors.notFound(res, "Family stock metadata not found.");
     }
 
+    // Guard: at least 1 share must remain in circulation at all times
+    if (stock.shareSupply - sharesToSell < 1) {
+      return errors.forbidden(res, "Cannot sell — at least 1 share must remain in circulation.");
+    }
+
     // Calculate sell price and fees
     const { price, creatorFee, systemFee, total } = stockMarket.getSellPrice(stock.shareSupply, sharesToSell);
 
