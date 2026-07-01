@@ -370,7 +370,7 @@ export default function StockMarket() {
   }
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
       {/* Top Banner & Balance */}
       <Stack
         direction={{ xs: "column", sm: "row" }}
