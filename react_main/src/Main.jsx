@@ -291,6 +291,7 @@ function Header({ setShowAnnouncementTemporarily }) {
                 items: [
                   { text: "Hall of Fame", path: "/fame/hall-of-fame" },
                   { text: "Competitive", path: "/fame/competitive" },
+                  { text: "Stock Market", path: "/fame/stocks" },
                   { text: "Contributors", path: "/fame/contributors" },
                   { text: "Donors", path: "/fame/donors" },
                 ],
@@ -374,6 +375,7 @@ function Header({ setShowAnnouncementTemporarily }) {
               items={[
                 { text: "Hall of Fame", path: "/fame/hall-of-fame" },
                 { text: "Competitive", path: "/fame/competitive" },
+                { text: "Stock Market", path: "/fame/stocks" },
                 { text: "Contributors", path: "/fame/contributors" },
                 { text: "Donors", path: "/fame/donors" },
               ]}

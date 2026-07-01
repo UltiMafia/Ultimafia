@@ -18,6 +18,7 @@ const dbStats = require("../db/stats");
 const { colorHasGoodContrastForBothThemes } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
+const stockMarket = require("../lib/StockMarket");
 const router = express.Router();
 
 /** Keep in sync with `isRetroThemeForcedByCalendar` in react_main/src/utils/holidayThemes.js */
@@ -107,6 +108,11 @@ router.get("/info", async function (req, res) {
     user.rank = String(user.perms.rank || 0);
     user.perms = user.perms.perms || {};
     user.isDonor = await redis.userInDonorGroup(userId);
+    
+    // Fetch coin balance directly from database to guarantee consistency with the shop
+    const userDb = await models.User.findOne({ id: userId }).select("coins").lean();
+    user.coins = userDb ? (userDb.coins || 0) : 0;
+    
     delete user.status;
 
     res.send(user);
@@ -889,6 +895,38 @@ router.get("/:id/profile", async function (req, res) {
           });
         }
       }
+    }
+
+    // Fetch player stock info if they are IPOed
+    const playerStock = await models.PlayerStock.findOne({ userId, isIpoed: true }).lean().exec();
+    if (playerStock) {
+      const buyPrice = stockMarket.getBuyPrice(playerStock.shareSupply, 1).total;
+      const sellPrice = stockMarket.getSellPrice(playerStock.shareSupply, 1).total;
+      
+      const transactions = await models.StockTransaction.find({ subjectId: userId })
+        .sort({ createdAt: 1 })
+        .select("price")
+        .lean()
+        .exec();
+      const history = [1];
+      for (const tx of transactions) {
+        history.push(tx.price);
+      }
+
+      user.stockInfo = {
+        isIpoed: true,
+        shareSupply: playerStock.shareSupply,
+        buyPrice,
+        sellPrice,
+        priceHistory: history.slice(-10),
+        sharesOwned: 0
+      };
+      if (reqUserId) {
+        const holding = await models.Shareholder.findOne({ subjectId: userId, holderId: reqUserId }).select("sharesOwned").lean().exec();
+        user.stockInfo.sharesOwned = holding ? holding.sharesOwned : 0;
+      }
+    } else {
+      user.stockInfo = null;
     }
 
     res.send(user);

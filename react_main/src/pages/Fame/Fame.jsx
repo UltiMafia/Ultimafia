@@ -8,13 +8,14 @@ import Contributors from "./Contributors";
 import Competitive from "./Competitive";
 import CompetitiveFaq from "./CompetitiveFaq";
 import HallOfFame from "./HallOfFame";
+import StockMarket from "./StockMarket";
 
 export default function Fame(props) {
   const theme = useTheme();
 
   return (
     <>
-      <Box maxWidth="1080px" sx={{ flexGrow: 1 }}>
+      <Box maxWidth="1280px" sx={{ flexGrow: 1, margin: "auto" }}>
         <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
           <Routes>
             <Route path="competitive" element={<Competitive />} />
@@ -22,6 +23,7 @@ export default function Fame(props) {
             <Route path="hall-of-fame" element={<HallOfFame />} />
             <Route path="contributors" element={<Contributors />} />
             <Route path="donors" element={<Donors />} />
+            <Route path="stocks" element={<StockMarket />} />
             <Route path="*" element={<Navigate to="competitive" />} />
           </Routes>
         </Card>

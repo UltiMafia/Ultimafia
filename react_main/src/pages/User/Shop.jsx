@@ -263,7 +263,7 @@ export default function Shop(props) {
   function onBuyItem(index) {
     const item = shopInfo.shopItems[index];
     const shouldBuy = window.confirm(
-      `Are you sure you wish to buy ${item.name} for ${item.price} coins?`
+      `Are you sure you wish to buy ${item.name} for ${item.price.toFixed(2)} coins?`
     );
 
     if (!shouldBuy) return;
@@ -387,7 +387,7 @@ export default function Shop(props) {
                 alignItems="center"
                 sx={{ flexShrink: 0 }}
               >
-                <Typography>{item.price}</Typography>
+                <Typography>{item.price.toFixed(2)}</Typography>
                 <img src={coin} style={{ width: "20px", height: "20px" }} />
               </Stack>
             </Stack>
@@ -412,7 +412,7 @@ export default function Shop(props) {
           }}
         >
           <Typography variant="h3" className="balance">
-            You have: {shopInfo.balance}
+            You have: {(shopInfo.balance || 0).toFixed(2)}
           </Typography>
           <img
             className="um-coin"
@@ -706,7 +706,7 @@ export default function Shop(props) {
                 .post("/api/shop/checkStampEligibility", { gameId })
                 .then((eligibility) => {
                   const shouldBuy = window.confirm(
-                    `You will receive a stamp for ${eligibility.data.role}. Purchase for ${stampItem.price} coins?`
+                    `You will receive a stamp for ${eligibility.data.role}. Purchase for ${stampItem.price.toFixed(2)} coins?`
                   );
                   if (!shouldBuy) return;
                   return axios.post("/api/shop/spendCoins", {

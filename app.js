@@ -39,6 +39,7 @@ const siteActivityRouter = require("./routes/siteActivity");
 const compression = require("compression");
 const cors = require("cors");
 const itemsRouter = require("./routes/items");
+const stockMarketRouter = require("./routes/stockMarket");
 const { seedDefaultWordDecks } = require("./modules/seed");
 const db = require("./db/db");
 
@@ -110,6 +111,7 @@ apiRouter.use("/family", familyRouter);
 apiRouter.use("/items", itemsRouter);
 apiRouter.use("/site-activity", siteActivityRouter);
 apiRouter.use("/fanart", fanartRouter);
+apiRouter.use("/stocks", stockMarketRouter);
 
 app.use("/api", apiRouter);
 

@@ -38,6 +38,7 @@ const competitive = require("../../modules/competitive");
 const {
   syncRankedCompetitiveAccess,
 } = require("../../modules/userEligibility");
+const stockMarket = require("../../lib/StockMarket");
 
 module.exports = class Game {
   constructor(options) {
@@ -1135,6 +1136,81 @@ module.exports = class Game {
         }
       }
       this.heartsChargedAtStart = true;
+
+      // Capture stock/shareholders snapshot for dividends
+      this.shareholderSnapshots = {};
+      this.familyShareholderSnapshots = {};
+      this.playerToFamilyMap = {};
+      try {
+        const playerIds = this.players.filter(p => !p.isBot).map(p => p.userId || p.user.id);
+        
+        // Find all active stocks for these players
+        const stocks = await models.PlayerStock.find({ userId: { $in: playerIds }, isIpoed: true }).lean().exec();
+        const ipoedUserIds = stocks.map(s => s.userId);
+        
+        if (ipoedUserIds.length > 0) {
+          const holders = await models.Shareholder.find({ subjectId: { $in: ipoedUserIds }, sharesOwned: { $gt: 0 } }).lean().exec();
+          
+          for (const stock of stocks) {
+            const stockHolders = holders.filter(h => h.subjectId === stock.userId);
+            this.shareholderSnapshots[stock.userId] = {
+              shareSupply: stock.shareSupply,
+              holders: stockHolders.map(h => ({
+                holderId: h.holderId,
+                sharesOwned: h.sharesOwned
+              }))
+            };
+          }
+        }
+
+        // Family ETF Snapshotting
+        const users = await models.User.find({ id: { $in: playerIds } }).select("_id id").lean().exec();
+        const userIdToObjectIdMap = {};
+        const objectIds = [];
+        for (const u of users) {
+          userIdToObjectIdMap[u.id] = u._id;
+          objectIds.push(u._id);
+        }
+
+        if (objectIds.length > 0) {
+          const inFamilies = await models.InFamily.find({ user: { $in: objectIds } }).populate("family").lean().exec();
+          const playerIdToFamilyIdMap = {};
+          const familyIds = [];
+          
+          for (const inf of inFamilies) {
+            if (inf.family && inf.family.id) {
+              const matchingUser = users.find(u => u._id.toString() === inf.user.toString());
+              if (matchingUser) {
+                playerIdToFamilyIdMap[matchingUser.id] = inf.family.id;
+                familyIds.push(inf.family.id);
+              }
+            }
+          }
+
+          if (familyIds.length > 0) {
+            const familyStocks = await models.FamilyStock.find({ familyId: { $in: familyIds }, isIpoed: true }).lean().exec();
+            const ipoedFamilyIds = familyStocks.map(fs => fs.familyId);
+
+            if (ipoedFamilyIds.length > 0) {
+              const familyHolders = await models.FamilyShareholder.find({ familyId: { $in: ipoedFamilyIds }, sharesOwned: { $gt: 0 } }).lean().exec();
+
+              for (const fs of familyStocks) {
+                const stockHolders = familyHolders.filter(h => h.familyId === fs.familyId);
+                this.familyShareholderSnapshots[fs.familyId] = {
+                  shareSupply: fs.shareSupply,
+                  holders: stockHolders.map(h => ({
+                    holderId: h.holderId,
+                    sharesOwned: h.sharesOwned
+                  }))
+                };
+              }
+              this.playerToFamilyMap = playerIdToFamilyIdMap;
+            }
+          }
+        }
+      } catch (err) {
+        logger.error(`Error snapshotting shareholders: ${err.message}`);
+      }
     }
 
     // Tell clients the game started, assign roles, and move to the next state
@@ -3849,6 +3925,25 @@ module.exports = class Game {
               $inc: incOps,
             }
           ).exec();
+
+          if ((this.ranked || this.competitive) && coinsEarned > 0) {
+            if (this.shareholderSnapshots && this.shareholderSnapshots[player.user.id]) {
+              try {
+                await stockMarket.distributeDividends(player.user.id, coinsEarned, this.shareholderSnapshots[player.user.id]);
+              } catch (err) {
+                logger.error(`Failed to distribute dividends for ${player.user.id} in game ${this.id}: ${err.message}`);
+              }
+            }
+
+            const familyId = this.playerToFamilyMap && this.playerToFamilyMap[player.user.id];
+            if (familyId && this.familyShareholderSnapshots && this.familyShareholderSnapshots[familyId]) {
+              try {
+                await stockMarket.distributeFamilyDividends(familyId, coinsEarned, this.familyShareholderSnapshots[familyId]);
+              } catch (err) {
+                logger.error(`Failed to distribute family dividends for ${familyId} from player ${player.user.id} in game ${this.id}: ${err.message}`);
+              }
+            }
+          }
         } catch (e) {
           logger.warn(
             `endPostgame user update failed for ${player.user.id} in game ${this.id}: ${e.message}`

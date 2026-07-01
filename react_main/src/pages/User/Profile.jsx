@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext, useRef, useMemo } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
@@ -40,6 +40,8 @@ import RapSheet from "../../components/RapSheet";
 import TrophyCase from "components/TrophyCase";
 import { AchievementPanel } from "components/Achievements";
 import Scrapbook from "components/Scrapbook";
+import TradeDialog from "components/TradeDialog";
+import Sparkline from "components/Sparkline";
 import PendingTradeConfirmations from "components/PendingTradeConfirmations";
 import CasePanel from "components/CasePanel";
 import { RoleCount } from "components/Roles";
@@ -49,10 +51,17 @@ import { Loading } from "components/Loading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
 import {
   Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Grid,
   IconButton,
+  Paper,
   Popover,
   Stack,
+  TextField,
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
@@ -69,6 +78,8 @@ export const POINTS_NEGATIVE_ICON = require(`images/pointsNegative.png`);
 export const PRESTIGE_ICON = require(`images/prestige.png`);
 export const ACHIEVEMENTS_ICON = require(`images/achievements.png`);
 export const DAILY_ICON = require(`images/dailyChallenges.png`);
+
+
 
 function FavoritedRolesPanel({
   favoriteRoles = [],
@@ -211,6 +222,10 @@ export default function Profile() {
   const [pokesDisabled, setPokesDisabled] = useState(false);
   const [incomingPokes, setIncomingPokes] = useState([]);
 
+  // Stock Trading States
+  const [stockInfo, setStockInfo] = useState(null);
+  const [tradeModalOpen, setTradeModalOpen] = useState(false);
+
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const navigate = useNavigate();
@@ -222,6 +237,8 @@ export default function Profile() {
   const isSelf = profileUserId === user.id;
   const isBlocked = !isSelf && user.blockedUsers.indexOf(profileUserId) !== -1;
   const canViewNameHistory = user.perms.seeModPanel;
+
+
 
   // userId is the id of the current profile
   // user.id is the id of the current user
@@ -300,6 +317,7 @@ export default function Profile() {
       setProfileLoaded(false);
       setCanonicalUserId(null);
       setProfileTotalGames(0);
+      setStockInfo(null);
 
       axios
         .get(`/api/user/${userId}/profile`)
@@ -367,6 +385,7 @@ export default function Profile() {
           setPokeStatus(res.data.pokeStatus || { status: "none" });
           setPokesDisabled(res.data.pokesDisabled || false);
           setIncomingPokes(res.data.incomingPokes || []);
+          setStockInfo(res.data.stockInfo || null);
           setFriendsPage(1);
           loadFriends(resolvedId, "", 1);
 
@@ -1066,6 +1085,10 @@ export default function Profile() {
 
   if (!profileLoaded || !user.loaded) return <Loading small />;
 
+  const handleOpenTrade = () => {
+    setTradeModalOpen(true);
+  };
+
   const buttonsBox = (
     <Grid
       item
@@ -1442,6 +1465,19 @@ export default function Profile() {
 
   return (
     <>
+      <TradeDialog
+        open={tradeModalOpen}
+        onClose={() => setTradeModalOpen(false)}
+        stock={stockInfo ? {
+          targetType: "player",
+          id: profileUserId,
+          name: name,
+          avatar: avatar,
+          shareSupply: stockInfo.shareSupply,
+          sharesOwned: stockInfo.sharesOwned
+        } : null}
+        onSuccess={refetchProfile}
+      />
       {stats && (
         <StatsModal
           stats={stats}
@@ -1657,6 +1693,68 @@ export default function Profile() {
               <RapSheet userId={profileUserId} />
             )}
             {trophyCase}
+            {stockInfo && (
+              <div className="box-panel" style={panelStyle}>
+                <Typography variant="h3" sx={headingStyle}>
+                  Stock & Equity
+                </Typography>
+                <div className="content" style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "16px" }}>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        Current Price
+                      </Typography>
+                      <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold" }}>
+                        {stockInfo.buyPrice.toFixed(2)} Coins
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Sparkline history={stockInfo.priceHistory} />
+                    </Box>
+                  </Stack>
+
+                  <Grid container spacing={2} sx={{ mt: 0.5, borderTop: "1px solid rgba(255, 255, 255, 0.08)", pt: 1.5 }}>
+                    <Grid item xs={4}>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        Total Supply
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                        {stockInfo.shareSupply} Shares
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        Market Cap
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontWeight: "bold", color: "gold" }}>
+                        {(stockInfo.shareSupply * stockInfo.buyPrice).toFixed(2)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        Your Holdings
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontWeight: "bold", color: stockInfo.sharesOwned > 0 ? "success.main" : "text.secondary" }}>
+                        {stockInfo.sharesOwned} Shares
+                      </Typography>
+                    </Grid>
+                  </Grid>
+
+                  {user.loggedIn && (
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      fullWidth
+                      onClick={handleOpenTrade}
+                      sx={{ mt: 1, fontWeight: "bold" }}
+                      startIcon={<i className="fas fa-chart-line" />}
+                    >
+                      Trade Shares
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
             {hasAnyStats &&
               !settings.hideStatistics && (
                 <div className="box-panel ratings" style={panelStyle}>
