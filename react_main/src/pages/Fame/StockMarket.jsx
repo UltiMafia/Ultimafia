@@ -371,7 +371,7 @@ export default function StockMarket() {
   }
 
   return (
-    <Box sx={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
+    <Box sx={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden', textAlign: 'left' }}>
       {/* Top Banner & Balance */}
       <Stack
         direction={{ xs: "column", sm: "row" }}
@@ -393,7 +393,7 @@ export default function StockMarket() {
           <Paper
             variant="outlined"
             sx={{
-              p: { xs: 1, sm: 2 },
+              p: { xs: 1.5, sm: 2 },
               display: "flex",
               alignItems: "center",
               gap: { xs: 1, sm: 2 },
@@ -403,8 +403,10 @@ export default function StockMarket() {
               maxWidth: "100%",
             }}
           >
-            <Icon icon="lucide:coins" style={{ color: "gold", fontSize: "28px" }} />
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ display: { xs: "none", sm: "block" } }}>
+              <Icon icon="lucide:coins" style={{ color: "gold", fontSize: "28px" }} />
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flex: 1, justifyContent: { xs: 'space-between', sm: 'flex-start' } }}>
               <Box>
                 <Typography variant="caption" color="text.secondary" display="block">
                   Coins
