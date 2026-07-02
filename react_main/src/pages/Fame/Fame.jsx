@@ -15,7 +15,14 @@ export default function Fame(props) {
 
   return (
     <>
-      <Box sx={{ width: '100%', flexGrow: 1 }}>
+      <Box sx={{ 
+        width: { xs: '100%', md: '1280px' }, 
+        maxWidth: '100vw',
+        position: 'relative',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        flexGrow: 1 
+      }}>
         <Card sx={{ p: { xs: 1, sm: 2, md: 3 } }}>
           <Routes>
             <Route path="competitive" element={<Competitive />} />

@@ -403,10 +403,10 @@ export default function StockMarket() {
               maxWidth: "100%",
             }}
           >
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
+            <Box sx={{ display: "flex", alignItems: "center", mr: { xs: 0.5, sm: 0 } }}>
               <Icon icon="lucide:coins" style={{ color: "gold", fontSize: "28px" }} />
             </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flex: 1, justifyContent: { xs: 'center', sm: 'flex-start' } }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 2 }, flex: 1, justifyContent: { xs: 'center', sm: 'flex-start' } }}>
               <Box sx={{ flex: { xs: 1, sm: 'initial' }, textAlign: { xs: 'center', sm: 'left' } }}>
                 <Typography variant="caption" color="text.secondary" display="block">
                   Coins
