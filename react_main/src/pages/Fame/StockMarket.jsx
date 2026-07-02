@@ -406,8 +406,8 @@ export default function StockMarket() {
             <Box sx={{ display: { xs: "none", sm: "block" } }}>
               <Icon icon="lucide:coins" style={{ color: "gold", fontSize: "28px" }} />
             </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flex: 1, justifyContent: { xs: 'space-between', sm: 'flex-start' } }}>
-              <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 }, flex: 1, justifyContent: { xs: 'center', sm: 'flex-start' } }}>
+              <Box sx={{ flex: { xs: 1, sm: 'initial' }, textAlign: { xs: 'center', sm: 'left' } }}>
                 <Typography variant="caption" color="text.secondary" display="block">
                   Coins
                 </Typography>
@@ -416,7 +416,7 @@ export default function StockMarket() {
                 </Typography>
               </Box>
               <Box sx={{ height: 30, borderLeft: '1px solid rgba(255, 215, 0, 0.3)' }} />
-              <Box>
+              <Box sx={{ flex: { xs: 1, sm: 'initial' }, textAlign: { xs: 'center', sm: 'left' } }}>
                 <Typography variant="caption" color="text.secondary" display="block">
                   Stock Value
                 </Typography>
@@ -425,7 +425,7 @@ export default function StockMarket() {
                 </Typography>
               </Box>
               <Box sx={{ height: 30, borderLeft: '1px solid rgba(255, 215, 0, 0.3)' }} />
-              <Box>
+              <Box sx={{ flex: { xs: 1, sm: 'initial' }, textAlign: { xs: 'center', sm: 'left' } }}>
                 <Typography variant="caption" color="text.secondary" display="block">
                   Net Worth
                 </Typography>
