@@ -904,21 +904,31 @@ router.get("/:id/profile", async function (req, res) {
       const sellPrice = stockMarket.getSellPrice(playerStock.shareSupply, 1).total;
       
       const transactions = await models.StockTransaction.find({ subjectId: userId })
-        .sort({ createdAt: 1 })
-        .select("price")
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .select("price shares type")
         .lean()
         .exec();
-      const history = [1];
+      
+      let supply = playerStock.shareSupply;
+      const history = [];
       for (const tx of transactions) {
-        history.push(tx.price);
+        history.push(stockMarket.calculatePrice(supply));
+        if (tx.type === "buy") {
+          supply = Math.max(1, supply - (tx.shares || 0));
+        } else if (tx.type === "sell") {
+          supply += (tx.shares || 0);
+        }
       }
-
+      history.push(stockMarket.calculatePrice(supply));
+      history.reverse();
+ 
       user.stockInfo = {
         isIpoed: true,
         shareSupply: playerStock.shareSupply,
         buyPrice,
         sellPrice,
-        priceHistory: history.slice(-10),
+        priceHistory: history,
         sharesOwned: 0
       };
       if (reqUserId) {
