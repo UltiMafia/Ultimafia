@@ -1785,6 +1785,12 @@ module.exports = class Player {
     }
 
     this.game.resetLastDeath = true;
+    const currentPhase = this.game.getStateName();
+    if (currentPhase === "Night" || currentPhase === "Dawn") {
+      this.game.lastDeathState = "Night";
+    } else if (currentPhase === "Day" || currentPhase === "Dusk" || currentPhase === "Give Clue") {
+      this.game.lastDeathState = "Day";
+    }
     this.game.queueDeath(this);
 
 

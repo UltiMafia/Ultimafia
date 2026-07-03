@@ -18,6 +18,7 @@ module.exports = class Meteor extends Event {
   doEvent() {
     super.doEvent();
     let victim = Random.randArrayVal(this.game.alivePlayers());
+    const game = this.game;
     this.action = new Action({
       actor: victim,
       target: victim,
@@ -25,15 +26,20 @@ module.exports = class Meteor extends Event {
       priority: PRIORITY_EFFECT_GIVER_DEFAULT,
       labels: ["hidden", "absolute"],
       run: function () {
-        if (this.game.SilentEvents != false) {
-          this.game.queueAlert(
-            `A giant meteor will destroy the town and no one will win if no one dies today.`
-          );
+        if (game.SilentEvents != false) {
+          const phrase = game.getStateName() === "Night"
+            ? "A giant meteor will destroy the town and no one will win if no one dies tonight."
+            : "A giant meteor will destroy the town and no one will win if no one dies today.";
+          game.queueAlert(phrase);
         }
 
         this.actor.giveEffect("Meteor", 1);
       },
     });
-    this.game.queueAction(this.action);
+    if (this.game.getStateName() === "Night") {
+      this.game.queueAction(this.action);
+    } else {
+      this.action.do();
+    }
   }
 };
