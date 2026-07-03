@@ -1784,7 +1784,13 @@ module.exports = class Player {
       this.game.hadVegKill = true;
     }
 
-    this.game.resetLastDeath = true;
+    if (
+      !this.game.shouldCountDeathForStalemate ||
+      this.game.shouldCountDeathForStalemate(killType)
+    ) {
+      this.game.resetLastDeath = true;
+    }
+
     this.game.queueDeath(this);
 
 
