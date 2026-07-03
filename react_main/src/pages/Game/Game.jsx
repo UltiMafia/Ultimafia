@@ -2639,11 +2639,16 @@ function SpeechInput(props) {
     const meeting = meetings[selTab];
     if (!meeting?.messages?.length) return;
 
+    const pending = pendingSpeechRef.current;
     const lastMessage = meeting.messages[meeting.messages.length - 1];
+    const matchesSender =
+      lastMessage.senderId === game.self ||
+      (pending.anonymous && lastMessage.senderId === "anonymous");
+
     if (
-      lastMessage.senderId === game.self &&
       !lastMessage.isQuote &&
-      lastMessage.content === pendingSpeechRef.current
+      lastMessage.content === pending.content &&
+      matchesSender
     ) {
       setSpeechInput("");
       pendingSpeechRef.current = null;
@@ -2792,7 +2797,10 @@ function SpeechInput(props) {
         if (isCommand) {
           pendingSpeechRef.current = null;
         } else {
-          pendingSpeechRef.current = speechInput;
+          pendingSpeechRef.current = {
+            content: speechInput,
+            anonymous: Boolean(abilityName),
+          };
         }
 
         socket.send("speak", {
