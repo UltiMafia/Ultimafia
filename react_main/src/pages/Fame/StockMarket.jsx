@@ -371,7 +371,7 @@ export default function StockMarket() {
   }
 
   return (
-    <Box sx={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
+    <Box sx={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden', textAlign: 'left' }}>
       {/* Top Banner & Balance */}
       <Stack
         direction={{ xs: "column", sm: "row" }}
@@ -393,7 +393,7 @@ export default function StockMarket() {
           <Paper
             variant="outlined"
             sx={{
-              p: { xs: 1, sm: 2 },
+              p: { xs: 1.5, sm: 2 },
               display: "flex",
               alignItems: "center",
               gap: { xs: 1, sm: 2 },
@@ -403,9 +403,11 @@ export default function StockMarket() {
               maxWidth: "100%",
             }}
           >
-            <Icon icon="lucide:coins" style={{ color: "gold", fontSize: "28px" }} />
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Box>
+            <Box sx={{ display: "flex", alignItems: "center", mr: { xs: 0.5, sm: 0 } }}>
+              <Icon icon="lucide:coins" style={{ color: "gold", fontSize: "28px" }} />
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 2 }, flex: 1, justifyContent: { xs: 'center', sm: 'flex-start' } }}>
+              <Box sx={{ flex: { xs: 1, sm: 'initial' }, textAlign: { xs: 'center', sm: 'left' } }}>
                 <Typography variant="caption" color="text.secondary" display="block">
                   Coins
                 </Typography>
@@ -414,7 +416,7 @@ export default function StockMarket() {
                 </Typography>
               </Box>
               <Box sx={{ height: 30, borderLeft: '1px solid rgba(255, 215, 0, 0.3)' }} />
-              <Box>
+              <Box sx={{ flex: { xs: 1, sm: 'initial' }, textAlign: { xs: 'center', sm: 'left' } }}>
                 <Typography variant="caption" color="text.secondary" display="block">
                   Stock Value
                 </Typography>
@@ -423,7 +425,7 @@ export default function StockMarket() {
                 </Typography>
               </Box>
               <Box sx={{ height: 30, borderLeft: '1px solid rgba(255, 215, 0, 0.3)' }} />
-              <Box>
+              <Box sx={{ flex: { xs: 1, sm: 'initial' }, textAlign: { xs: 'center', sm: 'left' } }}>
                 <Typography variant="caption" color="text.secondary" display="block">
                   Net Worth
                 </Typography>
