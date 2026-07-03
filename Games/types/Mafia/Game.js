@@ -97,6 +97,7 @@ module.exports = class MafiaGame extends Game {
     this.noDeathLimit = this.setup.noDeathLimit;
     this.statesSinceLastDeath = 0;
     this.resetLastDeath = false;
+    this.meteorWarningPhase = null;
     this.extensions = 0;
     this.extensionVotes = 0;
     this.hasBeenDay = false;
@@ -506,6 +507,13 @@ module.exports = class MafiaGame extends Game {
     return mustCondemn;
   }
 
+  shouldCountDeathForStalemate(killType) {
+    if (killType === "condemn") return true;
+
+    const stateName = this.getStateName();
+    return stateName === "Night" || stateName === "Dawn";
+  }
+
   inactivityCheck() {
     var stateName = this.getStateName();
 
@@ -518,21 +526,22 @@ module.exports = class MafiaGame extends Game {
         }
       }
       if (this.statesSinceLastDeath >= this.noDeathLimit - 1) {
-        if (stateName == "Night") {
+        const warnOnDay =
+          this.getGameSetting("Day Start") && stateName == "Day";
+        const warnOnNight =
+          !this.getGameSetting("Day Start") && stateName == "Night";
+
+        if (warnOnDay || warnOnNight) {
+          this.meteorWarningPhase = warnOnDay ? "Day" : "Night";
           let event = this.createGameEvent(this.GameEndEvent);
           event.doEvent();
           event = null;
-          /*
-        this.queueAlert(
-          "A giant meteor will destroy the town and no one will win if no one dies today."
-        );
-        */
         }
       }
     } else if (this.resetLastDeath) {
       this.statesSinceLastDeath = 0;
       this.resetLastDeath = false;
-      this.meteorImminent = false;
+      this.meteorWarningPhase = null;
     }
   }
 
@@ -578,13 +587,6 @@ module.exports = class MafiaGame extends Game {
     this.extensionVotes = 0;
 
     for (let player of this.players) player.votedForExtension = false;
-    /*
-    if (
-      this.statesSinceLastDeath >= this.noDeathLimit &&
-      prevStateName == "Day"
-    )
-      this.meteorImminent = true;
-    */
     super.checkVeg();
   }
 
@@ -595,22 +597,6 @@ module.exports = class MafiaGame extends Game {
       (this.dayCount == 0 ||
         (this.dayCount == 1 && this.getGameSetting("Day Start")))
     );
-  }
-
-  checkGameEnd() {
-    var finished = super.checkGameEnd();
-
-    if (finished) return finished;
-
-    if (this.meteorImminent && !this.resetLastDeath) {
-      this.queueAlert("A giant meteor obliterates the town!");
-
-      var winners = new Winners(this);
-      winners.addGroup("No one");
-      this.endGame(winners);
-
-      return true;
-    }
   }
 
   checkWinConditions() {

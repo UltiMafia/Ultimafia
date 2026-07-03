@@ -1,40 +1,47 @@
 const Effect = require("../Effect");
-const Action = require("../Action");
-const Random = require("../../../../lib/Random");
 
 module.exports = class Meteor extends Effect {
   constructor(lifespan) {
     super("Meteor");
-    this.lifespan = lifespan;
+    this.lifespan = lifespan ?? Infinity;
 
     this.listeners = {
-      state: function (stateInfo) {
-        if (!stateInfo.name.match(/Day/)) {
+      death: function (player, killer, deathType, instant) {
+        const warningPhase = this.game.meteorWarningPhase || "Day";
+
+        if (warningPhase === "Day" && deathType !== "condemn") {
           return;
         }
-      },
-      death: function (player, killer, deathType, instant) {
+
         this.remove();
       },
       afterActions: function () {
-        if (
-          this.game.getStateName() == "Night" ||
-          this.game.getStateName() == "Dawn"
-        ) {
+        const stateName = this.game.getStateName();
+        const warningPhase = this.game.meteorWarningPhase || "Day";
+
+        if (stateName !== warningPhase) {
           return;
         }
-        for (let player of this.game.alivePlayers()) {
-          player.kill("basic");
+
+        this.game.queueAlert("A giant meteor obliterates the town!");
+
+        for (let player of [...this.game.alivePlayers()]) {
+          player.kill("basic", null, true);
         }
         this.game.MeteorLanded = true;
+        this.remove();
+
+        var [finished, winners] = this.game.checkWinConditions();
+        if (!finished || winners.groupAmt() <= 0) {
+          winners.addGroup("No one");
+        }
+        this.game.endGame(winners);
       },
       handleWinBlockers: function (winners) {
-        if (
-          this.game.getStateName() == "Night" ||
-          this.game.getStateName() == "Dawn"
-        ) {
+        if (!this.game.MeteorLanded) {
           return;
         }
+
         let AllPlayers = this.game.players.filter((p) => p);
         for (let y = 0; y < AllPlayers.length; y++) {
           if (
