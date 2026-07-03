@@ -22,17 +22,22 @@ router.get("/", async function (req, res) {
   try {
     const stocks = await models.PlayerStock.find({ isIpoed: true }).lean().exec();
     const userIds = stocks.map(s => s.userId);
-
-    const [users, transactions] = await Promise.all([
+    const [users, transactionsGrouped] = await Promise.all([
       models.User.find({ id: { $in: userIds } })
         .select("id name avatar settings.nameColor settings.vanityUrl")
         .lean()
         .exec(),
-      models.StockTransaction.find({ subjectId: { $in: userIds } })
-        .sort({ createdAt: 1 })
-        .select("subjectId price")
-        .lean()
-        .exec()
+      models.StockTransaction.aggregate([
+        { $match: { subjectId: { $in: userIds } } },
+        { $sort: { createdAt: -1 } },
+        { $group: {
+            _id: "$subjectId",
+            txs: { $push: { type: "$type", shares: "$shares" } }
+        } },
+        { $project: {
+            txs: { $slice: ["$txs", 10] }
+        } }
+      ]).exec()
     ]);
 
     const userMap = {};
@@ -40,19 +45,27 @@ router.get("/", async function (req, res) {
       userMap[u.id] = u;
     }
 
+    const txsMap = {};
+    for (const g of transactionsGrouped) {
+      txsMap[g._id] = g.txs;
+    }
+
     const historyMap = {};
-    for (const userId of userIds) {
-      historyMap[userId] = [1];
-    }
-    for (const tx of transactions) {
-      if (historyMap[tx.subjectId]) {
-        historyMap[tx.subjectId].push(tx.price);
+    for (const stock of stocks) {
+      const txs = txsMap[stock.userId] || [];
+      let supply = stock.shareSupply;
+      const prices = [];
+      for (const tx of txs) {
+        prices.push(stockMarket.calculatePrice(supply));
+        if (tx.type === "buy") {
+          supply = Math.max(1, supply - (tx.shares || 0));
+        } else if (tx.type === "sell") {
+          supply += (tx.shares || 0);
+        }
       }
-    }
-    for (const userId of userIds) {
-      if (historyMap[userId].length > 10) {
-        historyMap[userId] = historyMap[userId].slice(-10);
-      }
+      prices.push(stockMarket.calculatePrice(supply));
+      prices.reverse();
+      historyMap[stock.userId] = prices;
     }
 
     const result = stocks.map(stock => {
@@ -449,16 +462,22 @@ router.get("/families", async function (req, res) {
     const stocks = await models.FamilyStock.find({ isIpoed: true }).lean().exec();
     const familyIds = stocks.map(s => s.familyId);
 
-    const [families, transactions] = await Promise.all([
+    const [families, transactionsGrouped] = await Promise.all([
       models.Family.find({ id: { $in: familyIds } })
         .select("id name avatar background")
         .lean()
         .exec(),
-      models.FamilyStockTransaction.find({ familyId: { $in: familyIds } })
-        .sort({ createdAt: 1 })
-        .select("familyId price")
-        .lean()
-        .exec()
+      models.FamilyStockTransaction.aggregate([
+        { $match: { familyId: { $in: familyIds } } },
+        { $sort: { createdAt: -1 } },
+        { $group: {
+            _id: "$familyId",
+            txs: { $push: { type: "$type", shares: "$shares" } }
+        } },
+        { $project: {
+            txs: { $slice: ["$txs", 10] }
+        } }
+      ]).exec()
     ]);
 
     const familyMap = {};
@@ -466,19 +485,27 @@ router.get("/families", async function (req, res) {
       familyMap[f.id] = f;
     }
 
+    const txsMap = {};
+    for (const g of transactionsGrouped) {
+      txsMap[g._id] = g.txs;
+    }
+
     const historyMap = {};
-    for (const familyId of familyIds) {
-      historyMap[familyId] = [1];
-    }
-    for (const tx of transactions) {
-      if (historyMap[tx.familyId]) {
-        historyMap[tx.familyId].push(tx.price);
+    for (const stock of stocks) {
+      const txs = txsMap[stock.familyId] || [];
+      let supply = stock.shareSupply;
+      const prices = [];
+      for (const tx of txs) {
+        prices.push(stockMarket.calculatePrice(supply));
+        if (tx.type === "buy") {
+          supply = Math.max(1, supply - (tx.shares || 0));
+        } else if (tx.type === "sell") {
+          supply += (tx.shares || 0);
+        }
       }
-    }
-    for (const familyId of familyIds) {
-      if (historyMap[familyId].length > 10) {
-        historyMap[familyId] = historyMap[familyId].slice(-10);
-      }
+      prices.push(stockMarket.calculatePrice(supply));
+      prices.reverse();
+      historyMap[stock.familyId] = prices;
     }
 
     const result = stocks.map(stock => {
@@ -711,15 +738,9 @@ router.post("/families/ipo", async function (req, res) {
       { upsert: true }
     ).exec();
 
-    // 8. Log transaction
-    await models.FamilyStockTransaction.create({
-      userId,
-      familyId,
-      type: "buy",
-      shares: 1,
-      price: 200,
-      fee: 0
-    });
+    // Note: the IPO fee is a listing cost, not an open-market purchase,
+    // so we intentionally do not log a FamilyStockTransaction here. Cost basis
+    // in portfolio analytics should only reflect market trades.
 
     await redis.cacheUserInfo(userId, true);
 
