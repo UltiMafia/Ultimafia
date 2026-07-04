@@ -8,6 +8,24 @@ const redis = require("../modules/redis");
 
 const router = express.Router();
 
+// Simple in-memory mutex to prevent race conditions on stock trades
+const tradeLocks = new Map();
+
+async function acquireTradeLock(key) {
+  while (tradeLocks.get(key)) {
+    await tradeLocks.get(key);
+  }
+  let resolveLock;
+  const lockPromise = new Promise(resolve => {
+    resolveLock = resolve;
+  });
+  tradeLocks.set(key, lockPromise);
+  return () => {
+    tradeLocks.delete(key);
+    resolveLock();
+  };
+}
+
 // Helper to check positive integers
 function isPositiveInteger(val) {
   const num = Number(val);
@@ -214,49 +232,44 @@ router.post("/ipo", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
 
-    // 1. Check existing IPO
-    const stock = await models.PlayerStock.findOne({ userId }).exec();
-    if (stock && stock.isIpoed) {
-      return errors.conflict(res, "You are already IPO'd.");
+    const releaseLock = await acquireTradeLock(`player:${userId}`);
+    try {
+      // 1. Check existing IPO
+      const stock = await models.PlayerStock.findOne({ userId }).exec();
+      if (stock && stock.isIpoed) {
+        return errors.conflict(res, "You are already IPO'd.");
+      }
+
+      // 2. Deduct coins atomically FIRST
+      const debit = await models.User.updateOne(
+        { id: userId, coins: { $gte: 100 } },
+        { $inc: { coins: -100 } }
+      ).exec();
+
+      if (debit.modifiedCount === 0 && debit.nModified === 0) {
+        return errors.forbidden(res, "Insufficient coins. Starting an IPO costs 100 coins.");
+      }
+
+      // 3. Create/update PlayerStock
+      await models.PlayerStock.findOneAndUpdate(
+        { userId },
+        { isIpoed: true, shareSupply: 1 },
+        { upsert: true, new: true }
+      ).exec();
+
+      // 4. Grant the first share to the creator
+      await models.Shareholder.findOneAndUpdate(
+        { subjectId: userId, holderId: userId },
+        { $inc: { sharesOwned: 1 } },
+        { upsert: true }
+      ).exec();
+
+      await redis.cacheUserInfo(userId, true);
+
+      res.send({ success: true, message: "IPO completed successfully! You purchased your first share for 100 coins." });
+    } finally {
+      releaseLock();
     }
-
-    // 2. Check balance (needs 100 coins)
-    const user = await models.User.findOne({ id: userId }).select("coins").exec();
-    if (!user || user.coins < 100) {
-      return errors.forbidden(res, "Insufficient coins. Starting an IPO costs 100 coins.");
-    }
-
-    // 3. Deduct coins atomically
-    const debit = await models.User.updateOne(
-      { id: userId, coins: { $gte: 100 } },
-      { $inc: { coins: -100 } }
-    ).exec();
-
-    if (debit.modifiedCount === 0 && debit.nModified === 0) {
-      return errors.forbidden(res, "Insufficient coins.");
-    }
-
-    // 4. Create/update PlayerStock
-    await models.PlayerStock.findOneAndUpdate(
-      { userId },
-      { isIpoed: true, shareSupply: 1 },
-      { upsert: true, new: true }
-    ).exec();
-
-    // 5. Grant the first share to the creator
-    await models.Shareholder.findOneAndUpdate(
-      { subjectId: userId, holderId: userId },
-      { $inc: { sharesOwned: 1 } },
-      { upsert: true }
-    ).exec();
-
-    // Note: the IPO fee is a listing cost, not an open-market purchase,
-    // so we intentionally do not log a StockTransaction here. Cost basis
-    // in portfolio analytics should only reflect market trades.
-
-    await redis.cacheUserInfo(userId, true);
-
-    res.send({ success: true, message: "IPO completed successfully! You purchased your first share for 100 coins." });
   } catch (e) {
     if (e.message === "Not logged in") {
       return errors.unauthorized(res, "You must be logged in to start an IPO.");
@@ -280,76 +293,72 @@ router.post("/buy", async function (req, res) {
       return errors.badRequest(res, "Invalid buy data. Shares must be a positive integer.");
     }
 
-    // 1. Prevent alt account trading (self-buying is allowed)
-    const altIds = await routeUtils.getAltAccountIds(subjectId);
-    const altsExcludingSelf = altIds.filter(id => id !== subjectId);
-    if (altsExcludingSelf.includes(userId)) {
-      return errors.forbidden(res, "You cannot buy shares of your alt accounts.");
-    }
+    const releaseLock = await acquireTradeLock(`player:${subjectId}`);
+    try {
+      // 1. Prevent alt account trading (self-buying is allowed)
+      const altIds = await routeUtils.getAltAccountIds(subjectId);
+      const altsExcludingSelf = altIds.filter(id => id !== subjectId);
+      if (altsExcludingSelf.includes(userId)) {
+        return errors.forbidden(res, "You cannot buy shares of your alt accounts.");
+      }
 
-    // 2. Fetch stock
-    const stock = await models.PlayerStock.findOne({ userId: subjectId }).exec();
-    if (!stock || !stock.isIpoed) {
-      return errors.notFound(res, "This player has not IPO'd.");
-    }
+      // 2. Fetch stock
+      const stock = await models.PlayerStock.findOne({ userId: subjectId }).exec();
+      if (!stock || !stock.isIpoed) {
+        return errors.notFound(res, "This player has not IPO'd.");
+      }
 
-    // 3. Calculate price and fees
-    const { price, creatorFee, systemFee, total } = stockMarket.getBuyPrice(stock.shareSupply, sharesToBuy);
+      // 3. Calculate price and fees
+      const { price, creatorFee, systemFee, total } = stockMarket.getBuyPrice(stock.shareSupply, sharesToBuy);
 
-    // 4. Update PlayerStock stats WITH optimistic locking
-    const stockUpdate = await models.PlayerStock.updateOne(
-      { userId: subjectId, shareSupply: stock.shareSupply },
-      { $inc: { creatorFeesEarned: creatorFee, shareSupply: sharesToBuy } }
-    ).exec();
+      // 4. Debit buyer FIRST to safely guarantee funds before any state changes
+      const debit = await models.User.updateOne(
+        { id: userId, coins: { $gte: total } },
+        { $inc: { coins: -total } }
+      ).exec();
 
-    if (stockUpdate.modifiedCount === 0 && stockUpdate.nModified === 0) {
-      return errors.conflict(res, "Price changed rapidly! Your transaction was aborted to protect your coins. Please try again.");
-    }
+      if (debit.modifiedCount === 0 && debit.nModified === 0) {
+        return errors.forbidden(res, `Insufficient coins. Total cost is ${total} coins.`);
+      }
 
-    // 5. Debit buyer
-    const debit = await models.User.updateOne(
-      { id: userId, coins: { $gte: total } },
-      { $inc: { coins: -total } }
-    ).exec();
-
-    if (debit.modifiedCount === 0 && debit.nModified === 0) {
-      // Rollback stock supply increase
+      // 5. Update PlayerStock stats (No optimistic locking needed because of Mutex)
       await models.PlayerStock.updateOne(
         { userId: subjectId },
-        { $inc: { creatorFeesEarned: -creatorFee, shareSupply: -sharesToBuy } }
+        { $inc: { creatorFeesEarned: creatorFee, shareSupply: sharesToBuy } }
       ).exec();
-      return errors.forbidden(res, `Insufficient coins. Total cost is ${total} coins.`);
+
+      // 6. Credit creator fee to subject
+      await models.User.updateOne(
+        { id: subjectId },
+        { $inc: { coins: creatorFee } }
+      ).exec();
+
+      // 7. Update Shareholder balance
+      await models.Shareholder.updateOne(
+        { subjectId, holderId: userId },
+        { $inc: { sharesOwned: sharesToBuy } },
+        { upsert: true }
+      ).exec();
+
+      // 8. Log transaction
+      await models.StockTransaction.create({
+        userId,
+        subjectId,
+        type: "buy",
+        shares: sharesToBuy,
+        price,
+        fee: creatorFee + systemFee
+      });
+
+      await Promise.all([
+        redis.cacheUserInfo(userId, true),
+        redis.cacheUserInfo(subjectId, true)
+      ]);
+
+      res.send({ success: true, price, fee: creatorFee + systemFee, total });
+    } finally {
+      releaseLock();
     }
-
-    // 6. Credit creator fee to subject
-    await models.User.updateOne(
-      { id: subjectId },
-      { $inc: { coins: creatorFee } }
-    ).exec();
-
-    // 7. Update Shareholder balance
-    await models.Shareholder.updateOne(
-      { subjectId, holderId: userId },
-      { $inc: { sharesOwned: sharesToBuy } },
-      { upsert: true }
-    ).exec();
-
-    // 8. Log transaction
-    await models.StockTransaction.create({
-      userId,
-      subjectId,
-      type: "buy",
-      shares: sharesToBuy,
-      price,
-      fee: creatorFee + systemFee
-    });
-
-    await Promise.all([
-      redis.cacheUserInfo(userId, true),
-      redis.cacheUserInfo(subjectId, true)
-    ]);
-
-    res.send({ success: true, price, fee: creatorFee + systemFee, total });
   } catch (e) {
     if (e.message === "Not logged in") {
       return errors.unauthorized(res, "You must be logged in to buy shares.");
@@ -373,77 +382,73 @@ router.post("/sell", async function (req, res) {
       return errors.badRequest(res, "Invalid sell data. Shares must be a positive integer.");
     }
 
-    // 1. Check holding
-    const holding = await models.Shareholder.findOne({ subjectId, holderId: userId }).exec();
-    if (!holding || holding.sharesOwned < sharesToSell) {
-      return errors.forbidden(res, "Insufficient shares owned.");
-    }
+    const releaseLock = await acquireTradeLock(`player:${subjectId}`);
+    try {
+      // 1. Check holding
+      const holding = await models.Shareholder.findOne({ subjectId, holderId: userId }).exec();
+      if (!holding || holding.sharesOwned < sharesToSell) {
+        return errors.forbidden(res, "Insufficient shares owned.");
+      }
 
-    // 2. Fetch stock
-    const stock = await models.PlayerStock.findOne({ userId: subjectId }).exec();
-    if (!stock) {
-      return errors.notFound(res, "Stock metadata not found.");
-    }
+      // 2. Fetch stock
+      const stock = await models.PlayerStock.findOne({ userId: subjectId }).exec();
+      if (!stock) {
+        return errors.notFound(res, "Stock metadata not found.");
+      }
 
-    // 3. Guard: at least 1 share must remain in circulation at all times
-    if (stock.shareSupply - sharesToSell < 1) {
-      return errors.forbidden(res, "Cannot sell — at least 1 share must remain in circulation.");
-    }
-    const { price, creatorFee, systemFee, total } = stockMarket.getSellPrice(stock.shareSupply, sharesToSell);
+      // 3. Guard: at least 1 share must remain in circulation at all times
+      if (stock.shareSupply - sharesToSell < 1) {
+        return errors.forbidden(res, "Cannot sell — at least 1 share must remain in circulation.");
+      }
+      const { price, creatorFee, systemFee, total } = stockMarket.getSellPrice(stock.shareSupply, sharesToSell);
 
-    // 5. Debit shareholder shares
-    const debitHolding = await models.Shareholder.updateOne(
-      { subjectId, holderId: userId, sharesOwned: { $gte: sharesToSell } },
-      { $inc: { sharesOwned: -sharesToSell } }
-    ).exec();
-
-    if (debitHolding.modifiedCount === 0 && debitHolding.nModified === 0) {
-      return errors.forbidden(res, "Insufficient shares owned.");
-    }
-
-    // 6. Update PlayerStock stats WITH optimistic locking
-    const stockUpdate = await models.PlayerStock.updateOne(
-      { userId: subjectId, shareSupply: stock.shareSupply },
-      { $inc: { creatorFeesEarned: creatorFee, shareSupply: -sharesToSell } }
-    ).exec();
-
-    if (stockUpdate.modifiedCount === 0 && stockUpdate.nModified === 0) {
-      // Rollback shareholder debit
-      await models.Shareholder.updateOne(
-        { subjectId, holderId: userId },
-        { $inc: { sharesOwned: sharesToSell } }
+      // 4. Debit shareholder shares FIRST
+      const debitHolding = await models.Shareholder.updateOne(
+        { subjectId, holderId: userId, sharesOwned: { $gte: sharesToSell } },
+        { $inc: { sharesOwned: -sharesToSell } }
       ).exec();
-      return errors.conflict(res, "Price changed rapidly! Your transaction was aborted. Please try again.");
+
+      if (debitHolding.modifiedCount === 0 && debitHolding.nModified === 0) {
+        return errors.forbidden(res, "Insufficient shares owned.");
+      }
+
+      // 5. Update PlayerStock stats (No optimistic locking needed because of Mutex)
+      await models.PlayerStock.updateOne(
+        { userId: subjectId },
+        { $inc: { creatorFeesEarned: creatorFee, shareSupply: -sharesToSell } }
+      ).exec();
+
+      // 6. Credit seller
+      await models.User.updateOne(
+        { id: userId },
+        { $inc: { coins: total } }
+      ).exec();
+
+      // 7. Credit creator fee to subject
+      await models.User.updateOne(
+        { id: subjectId },
+        { $inc: { coins: creatorFee } }
+      ).exec();
+
+      // 8. Log transaction
+      await models.StockTransaction.create({
+        userId,
+        subjectId,
+        type: "sell",
+        shares: sharesToSell,
+        price,
+        fee: creatorFee + systemFee
+      });
+
+      await Promise.all([
+        redis.cacheUserInfo(userId, true),
+        redis.cacheUserInfo(subjectId, true)
+      ]);
+
+      res.send({ success: true, price, fee: creatorFee + systemFee, totalPayout: total });
+    } finally {
+      releaseLock();
     }
-
-    // 7. Credit seller
-    await models.User.updateOne(
-      { id: userId },
-      { $inc: { coins: total } }
-    ).exec();
-
-    // 8. Credit creator fee to subject
-    await models.User.updateOne(
-      { id: subjectId },
-      { $inc: { coins: creatorFee } }
-    ).exec();
-
-    // 8. Log transaction
-    await models.StockTransaction.create({
-      userId,
-      subjectId,
-      type: "sell",
-      shares: sharesToSell,
-      price,
-      fee: creatorFee + systemFee
-    });
-
-    await Promise.all([
-      redis.cacheUserInfo(userId, true),
-      redis.cacheUserInfo(subjectId, true)
-    ]);
-
-    res.send({ success: true, price, fee: creatorFee + systemFee, totalPayout: total });
   } catch (e) {
     if (e.message === "Not logged in") {
       return errors.unauthorized(res, "You must be logged in to sell shares.");
@@ -687,64 +692,60 @@ router.post("/families/ipo", async function (req, res) {
       return errors.badRequest(res, "Missing familyId.");
     }
 
-    // 1. Fetch user ObjectId
-    const userObj = await models.User.findOne({ id: userId }).select("_id coins").exec();
-    if (!userObj) {
-      return errors.notFound(res, "User not found.");
+    const releaseLock = await acquireTradeLock(`family:${familyId}`);
+    try {
+      // 1. Fetch user ObjectId
+      const userObj = await models.User.findOne({ id: userId }).select("_id coins").exec();
+      if (!userObj) {
+        return errors.notFound(res, "User not found.");
+      }
+
+      // 2. Fetch family and verify leader/founder status
+      const family = await models.Family.findOne({ id: familyId }).exec();
+      if (!family) {
+        return errors.notFound(res, "Family not found.");
+      }
+
+      if (family.leader.toString() !== userObj._id.toString() && family.founder.toString() !== userObj._id.toString()) {
+        return errors.forbidden(res, "Only the Family Leader or Founder can launch the Family ETF.");
+      }
+
+      // 3. Check existing IPO
+      const stock = await models.FamilyStock.findOne({ familyId }).exec();
+      if (stock && stock.isIpoed) {
+        return errors.conflict(res, "This Family ETF has already been launched.");
+      }
+
+      // 4. Deduct coins atomically FIRST
+      const debit = await models.User.updateOne(
+        { id: userId, coins: { $gte: 200 } },
+        { $inc: { coins: -200 } }
+      ).exec();
+
+      if (debit.modifiedCount === 0 && debit.nModified === 0) {
+        return errors.forbidden(res, "Insufficient coins. Launching a Family ETF costs 200 coins.");
+      }
+
+      // 5. Create/update FamilyStock
+      await models.FamilyStock.findOneAndUpdate(
+        { familyId },
+        { isIpoed: true, shareSupply: 1 },
+        { upsert: true, new: true }
+      ).exec();
+
+      // 6. Grant the first share to the leader/founder who paid
+      await models.FamilyShareholder.findOneAndUpdate(
+        { familyId, holderId: userId },
+        { $inc: { sharesOwned: 1 } },
+        { upsert: true }
+      ).exec();
+
+      await redis.cacheUserInfo(userId, true);
+
+      res.send({ success: true, message: "Family ETF launched successfully! First share purchased for 200 coins." });
+    } finally {
+      releaseLock();
     }
-
-    // 2. Fetch family and verify leader/founder status
-    const family = await models.Family.findOne({ id: familyId }).exec();
-    if (!family) {
-      return errors.notFound(res, "Family not found.");
-    }
-
-    if (family.leader.toString() !== userObj._id.toString() && family.founder.toString() !== userObj._id.toString()) {
-      return errors.forbidden(res, "Only the Family Leader or Founder can launch the Family ETF.");
-    }
-
-    // 3. Check existing IPO
-    const stock = await models.FamilyStock.findOne({ familyId }).exec();
-    if (stock && stock.isIpoed) {
-      return errors.conflict(res, "This Family ETF has already been launched.");
-    }
-
-    // 4. Check coin balance (costs 200 coins)
-    if (userObj.coins < 200) {
-      return errors.forbidden(res, "Insufficient coins. Launching a Family ETF costs 200 coins.");
-    }
-
-    // 5. Deduct coins atomically
-    const debit = await models.User.updateOne(
-      { id: userId, coins: { $gte: 200 } },
-      { $inc: { coins: -200 } }
-    ).exec();
-
-    if (debit.modifiedCount === 0 && debit.nModified === 0) {
-      return errors.forbidden(res, "Insufficient coins.");
-    }
-
-    // 6. Create/update FamilyStock
-    await models.FamilyStock.findOneAndUpdate(
-      { familyId },
-      { isIpoed: true, shareSupply: 1 },
-      { upsert: true, new: true }
-    ).exec();
-
-    // 7. Grant the first share to the leader/founder who paid
-    await models.FamilyShareholder.findOneAndUpdate(
-      { familyId, holderId: userId },
-      { $inc: { sharesOwned: 1 } },
-      { upsert: true }
-    ).exec();
-
-    // Note: the IPO fee is a listing cost, not an open-market purchase,
-    // so we intentionally do not log a FamilyStockTransaction here. Cost basis
-    // in portfolio analytics should only reflect market trades.
-
-    await redis.cacheUserInfo(userId, true);
-
-    res.send({ success: true, message: "Family ETF launched successfully! First share purchased for 200 coins." });
   } catch (e) {
     if (e.message === "Not logged in") {
       return errors.unauthorized(res, "You must be logged in to launch a Family ETF.");
@@ -768,60 +769,56 @@ router.post("/families/buy", async function (req, res) {
       return errors.badRequest(res, "Invalid buy data. Shares must be a positive integer.");
     }
 
-    // Fetch stock
-    const stock = await models.FamilyStock.findOne({ familyId }).exec();
-    if (!stock || !stock.isIpoed) {
-      return errors.notFound(res, "This Family ETF has not been launched.");
-    }
+    const releaseLock = await acquireTradeLock(`family:${familyId}`);
+    try {
+      // Fetch stock
+      const stock = await models.FamilyStock.findOne({ familyId }).exec();
+      if (!stock || !stock.isIpoed) {
+        return errors.notFound(res, "This Family ETF has not been launched.");
+      }
 
-    // Calculate price and fees
-    const { price, creatorFee, systemFee, total } = stockMarket.getBuyPrice(stock.shareSupply, sharesToBuy);
+      // Calculate price and fees
+      const { price, creatorFee, systemFee, total } = stockMarket.getBuyPrice(stock.shareSupply, sharesToBuy);
 
-    // Update FamilyStock stats WITH optimistic locking
-    const stockUpdate = await models.FamilyStock.updateOne(
-      { familyId, shareSupply: stock.shareSupply },
-      { $inc: { treasuryCoins: creatorFee, shareSupply: sharesToBuy } }
-    ).exec();
+      // Debit buyer FIRST safely
+      const debit = await models.User.updateOne(
+        { id: userId, coins: { $gte: total } },
+        { $inc: { coins: -total } }
+      ).exec();
 
-    if (stockUpdate.modifiedCount === 0 && stockUpdate.nModified === 0) {
-      return errors.conflict(res, "Price changed rapidly! Your transaction was aborted. Please try again.");
-    }
+      if (debit.modifiedCount === 0 && debit.nModified === 0) {
+        return errors.forbidden(res, `Insufficient coins. Total cost is ${total} coins.`);
+      }
 
-    // Debit buyer
-    const debit = await models.User.updateOne(
-      { id: userId, coins: { $gte: total } },
-      { $inc: { coins: -total } }
-    ).exec();
-
-    if (debit.modifiedCount === 0 && debit.nModified === 0) {
-      // Rollback FamilyStock
+      // Update FamilyStock stats
       await models.FamilyStock.updateOne(
         { familyId },
-        { $inc: { treasuryCoins: -creatorFee, shareSupply: -sharesToBuy } }
+        { $inc: { treasuryCoins: creatorFee, shareSupply: sharesToBuy } }
       ).exec();
-      return errors.forbidden(res, `Insufficient coins. Total cost is ${total} coins.`);
+
+      // Update FamilyShareholder balance
+      await models.FamilyShareholder.updateOne(
+        { familyId, holderId: userId },
+        { $inc: { sharesOwned: sharesToBuy } },
+        { upsert: true }
+      ).exec();
+
+      // Log transaction
+      await models.FamilyStockTransaction.create({
+        userId,
+        familyId,
+        type: "buy",
+        shares: sharesToBuy,
+        price,
+        fee: creatorFee + systemFee
+      });
+
+      await redis.cacheUserInfo(userId, true);
+
+      res.send({ success: true, price, fee: creatorFee + systemFee, total });
+    } finally {
+      releaseLock();
     }
-
-    // Update FamilyShareholder balance
-    await models.FamilyShareholder.updateOne(
-      { familyId, holderId: userId },
-      { $inc: { sharesOwned: sharesToBuy } },
-      { upsert: true }
-    ).exec();
-
-    // Log transaction
-    await models.FamilyStockTransaction.create({
-      userId,
-      familyId,
-      type: "buy",
-      shares: sharesToBuy,
-      price,
-      fee: creatorFee + systemFee
-    });
-
-    await redis.cacheUserInfo(userId, true);
-
-    res.send({ success: true, price, fee: creatorFee + systemFee, total });
   } catch (e) {
     if (e.message === "Not logged in") {
       return errors.unauthorized(res, "You must be logged in to buy family shares.");
@@ -845,70 +842,66 @@ router.post("/families/sell", async function (req, res) {
       return errors.badRequest(res, "Invalid sell data. Shares must be a positive integer.");
     }
 
-    // Check holding
-    const holding = await models.FamilyShareholder.findOne({ familyId, holderId: userId }).exec();
-    if (!holding || holding.sharesOwned < sharesToSell) {
-      return errors.forbidden(res, "Insufficient shares owned.");
-    }
+    const releaseLock = await acquireTradeLock(`family:${familyId}`);
+    try {
+      // Check holding
+      const holding = await models.FamilyShareholder.findOne({ familyId, holderId: userId }).exec();
+      if (!holding || holding.sharesOwned < sharesToSell) {
+        return errors.forbidden(res, "Insufficient shares owned.");
+      }
 
-    // Fetch stock
-    const stock = await models.FamilyStock.findOne({ familyId }).exec();
-    if (!stock) {
-      return errors.notFound(res, "Family stock metadata not found.");
-    }
+      // Fetch stock
+      const stock = await models.FamilyStock.findOne({ familyId }).exec();
+      if (!stock) {
+        return errors.notFound(res, "Family stock metadata not found.");
+      }
 
-    // Guard: at least 1 share must remain in circulation at all times
-    if (stock.shareSupply - sharesToSell < 1) {
-      return errors.forbidden(res, "Cannot sell — at least 1 share must remain in circulation.");
-    }
+      // Guard: at least 1 share must remain in circulation at all times
+      if (stock.shareSupply - sharesToSell < 1) {
+        return errors.forbidden(res, "Cannot sell — at least 1 share must remain in circulation.");
+      }
 
-    // Calculate sell price and fees
-    const { price, creatorFee, systemFee, total } = stockMarket.getSellPrice(stock.shareSupply, sharesToSell);
+      // Calculate sell price and fees
+      const { price, creatorFee, systemFee, total } = stockMarket.getSellPrice(stock.shareSupply, sharesToSell);
 
-    // Debit shareholder shares
-    const debitHolding = await models.FamilyShareholder.updateOne(
-      { familyId, holderId: userId, sharesOwned: { $gte: sharesToSell } },
-      { $inc: { sharesOwned: -sharesToSell } }
-    ).exec();
-
-    if (debitHolding.modifiedCount === 0 && debitHolding.nModified === 0) {
-      return errors.forbidden(res, "Insufficient shares owned.");
-    }
-
-    // Update FamilyStock stats WITH optimistic locking
-    const stockUpdate = await models.FamilyStock.updateOne(
-      { familyId, shareSupply: stock.shareSupply },
-      { $inc: { treasuryCoins: creatorFee, shareSupply: -sharesToSell } }
-    ).exec();
-
-    if (stockUpdate.modifiedCount === 0 && stockUpdate.nModified === 0) {
-      // Rollback shareholder debit
-      await models.FamilyShareholder.updateOne(
-        { familyId, holderId: userId },
-        { $inc: { sharesOwned: sharesToSell } }
+      // Debit shareholder shares FIRST safely
+      const debitHolding = await models.FamilyShareholder.updateOne(
+        { familyId, holderId: userId, sharesOwned: { $gte: sharesToSell } },
+        { $inc: { sharesOwned: -sharesToSell } }
       ).exec();
-      return errors.conflict(res, "Price changed rapidly! Your transaction was aborted. Please try again.");
+
+      if (debitHolding.modifiedCount === 0 && debitHolding.nModified === 0) {
+        return errors.forbidden(res, "Insufficient shares owned.");
+      }
+
+      // Update FamilyStock stats (No optimistic locking needed because of Mutex)
+      await models.FamilyStock.updateOne(
+        { familyId },
+        { $inc: { treasuryCoins: creatorFee, shareSupply: -sharesToSell } }
+      ).exec();
+
+      // Credit seller
+      await models.User.updateOne(
+        { id: userId },
+        { $inc: { coins: total } }
+      ).exec();
+
+      // Log transaction
+      await models.FamilyStockTransaction.create({
+        userId,
+        familyId,
+        type: "sell",
+        shares: sharesToSell,
+        price,
+        fee: creatorFee + systemFee
+      });
+
+      await redis.cacheUserInfo(userId, true);
+
+      res.send({ success: true, price, fee: creatorFee + systemFee, totalPayout: total });
+    } finally {
+      releaseLock();
     }
-
-    // Credit seller
-    await models.User.updateOne(
-      { id: userId },
-      { $inc: { coins: total } }
-    ).exec();
-
-    // Log transaction
-    await models.FamilyStockTransaction.create({
-      userId,
-      familyId,
-      type: "sell",
-      shares: sharesToSell,
-      price,
-      fee: creatorFee + systemFee
-    });
-
-    await redis.cacheUserInfo(userId, true);
-
-    res.send({ success: true, price, fee: creatorFee + systemFee, totalPayout: total });
   } catch (e) {
     if (e.message === "Not logged in") {
       return errors.unauthorized(res, "You must be logged in to sell family shares.");
