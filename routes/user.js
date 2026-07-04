@@ -930,7 +930,8 @@ router.get("/:id/profile", async function (req, res) {
         buyPrice,
         sellPrice,
         priceHistory: history,
-        sharesOwned: 0
+        sharesOwned: 0,
+        dividendsPaidOut: playerStock.dividendsPaidOut || 0
       };
       if (reqUserId) {
         const holding = await models.Shareholder.findOne({ subjectId: userId, holderId: reqUserId }).select("sharesOwned").lean().exec();
