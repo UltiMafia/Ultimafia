@@ -516,9 +516,15 @@ export default function StockMarket() {
                     onChange={(e) => setSortBy(e.target.value)}
                   >
                     <MenuItem value="name">Name</MenuItem>
+                    <MenuItem value="supply">Supply</MenuItem>
                     <MenuItem value="marketCap">Market Cap</MenuItem>
                     <MenuItem value="buyPrice">Buy Price</MenuItem>
                     <MenuItem value="sellPrice">Sell Price</MenuItem>
+                    {marketMode === "player" ? (
+                      <MenuItem value="dividends">Dividends</MenuItem>
+                    ) : (
+                      <MenuItem value="treasury">Treasury</MenuItem>
+                    )}
                   </Select>
                 </FormControl>
                 <Button onClick={() => setSortDirection(sortDirection === "asc" ? "desc" : "asc")} sx={{ minWidth: 0, px: 2 }}>
