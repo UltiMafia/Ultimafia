@@ -1717,7 +1717,7 @@ export default function Profile() {
                   </Stack>
 
                   <Grid container spacing={2} sx={{ mt: 0.5, borderTop: "1px solid rgba(255, 255, 255, 0.08)", pt: 1.5 }}>
-                    <Grid item xs={4}>
+                    <Grid item xs={6}>
                       <Typography variant="caption" color="text.secondary" display="block">
                         Total Supply
                       </Typography>
@@ -1725,20 +1725,28 @@ export default function Profile() {
                         {stockInfo.shareSupply} Shares
                       </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={6}>
                       <Typography variant="caption" color="text.secondary" display="block">
                         Market Cap
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor }}>
-                        {(stockInfo.marketCap).toFixed(2)}
+                        {stockInfo.marketCap.toFixed(2)} Coins
                       </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={6}>
                       <Typography variant="caption" color="text.secondary" display="block">
                         Your Holdings
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: "bold", color: stockInfo.sharesOwned > 0 ? "success.main" : "text.secondary" }}>
                         {stockInfo.sharesOwned} Shares
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="caption" color="text.secondary" display="block">
+                        Dividends Paid
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor }}>
+                        {(stockInfo.dividendsPaidOut || 0).toFixed(2)} Coins
                       </Typography>
                     </Grid>
                   </Grid>
