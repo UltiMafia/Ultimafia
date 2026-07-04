@@ -122,14 +122,17 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
                 width: 40,
                 height: 40,
                 borderRadius: "50%",
-                backgroundImage: stock.avatar ? `url(/uploads/${stock.id}_family_avatar.webp)` : "none",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
+                border: "1px solid rgba(255, 255, 255, 0.12)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: stock.avatar ? "none" : "rgba(255, 255, 255, 0.05)",
-                border: "1px solid rgba(255, 255, 255, 0.12)",
+                ...(stock.avatar ? {
+                  backgroundImage: `url(/uploads/${stock.id}_family_avatar.webp?t=${siteInfo?.cacheVal})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                } : {
+                  backgroundColor: "rgba(255, 255, 255, 0.05)",
+                }),
               }}
             >
               {!stock.avatar && <Icon icon="lucide:users" style={{ fontSize: "20px" }} />}
