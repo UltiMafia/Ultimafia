@@ -750,8 +750,8 @@ export default function StockMarket() {
                             </Grid>
                             <Grid item xs={4}>
                               <Typography variant="caption" color="text.secondary" display="block">P&L</Typography>
-                              <Typography variant="body2" color={holding.unrealizedPnL >= 0 ? "success.main" : "error.main"} fontWeight="bold">
-                                {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              <Typography variant="body2" color={holding.totalPnL >= 0 ? "success.main" : "error.main"} fontWeight="bold">
+                                {holding.totalPnL >= 0 ? "+" : ""}{holding.totalPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
                               </Typography>
                             </Grid>
                           </Grid>
@@ -790,8 +790,8 @@ export default function StockMarket() {
                             </Grid>
                             <Grid item xs={4}>
                               <Typography variant="caption" color="text.secondary" display="block">P&L</Typography>
-                              <Typography variant="body2" color={holding.unrealizedPnL >= 0 ? "success.main" : "error.main"} fontWeight="bold">
-                                {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              <Typography variant="body2" color={holding.totalPnL >= 0 ? "success.main" : "error.main"} fontWeight="bold">
+                                {holding.totalPnL >= 0 ? "+" : ""}{holding.totalPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
                               </Typography>
                             </Grid>
                           </Grid>
@@ -860,13 +860,13 @@ export default function StockMarket() {
                         </TableCell>
                         <TableCell align="right">{holding.sharesOwned}</TableCell>
                         <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
-                          {holding.costBasis.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {holding.netInvestment.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "gold", display: { xs: 'none', sm: 'table-cell' } }}>
                           {holding.averageSellValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: holding.unrealizedPnL >= 0 ? "success.main" : "error.main" }}>
-                          {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        <TableCell align="right" sx={{ fontWeight: "bold", color: holding.totalPnL >= 0 ? "success.main" : "error.main" }}>
+                          {holding.totalPnL >= 0 ? "+" : ""}{holding.totalPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ color: "gold", display: { xs: 'none', sm: 'table-cell' } }}>
                           {holding.dividendsReceived.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
@@ -936,13 +936,13 @@ export default function StockMarket() {
                         </TableCell>
                         <TableCell align="right">{holding.sharesOwned}</TableCell>
                         <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
-                          {holding.costBasis.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {holding.netInvestment.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "gold", display: { xs: 'none', sm: 'table-cell' } }}>
                           {holding.averageSellValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: holding.unrealizedPnL >= 0 ? "success.main" : "error.main" }}>
-                          {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        <TableCell align="right" sx={{ fontWeight: "bold", color: holding.totalPnL >= 0 ? "success.main" : "error.main" }}>
+                          {holding.totalPnL >= 0 ? "+" : ""}{holding.totalPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ color: "gold", display: { xs: 'none', sm: 'table-cell' } }}>
                           {holding.dividendsReceived.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
