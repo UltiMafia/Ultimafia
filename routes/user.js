@@ -926,6 +926,7 @@ router.get("/:id/profile", async function (req, res) {
       user.stockInfo = {
         isIpoed: true,
         shareSupply: playerStock.shareSupply,
+        marketCap: playerStock.shareSupply * stockMarket.calculatePrice(playerStock.shareSupply),
         buyPrice,
         sellPrice,
         priceHistory: history,
