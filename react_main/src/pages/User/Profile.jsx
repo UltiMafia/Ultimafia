@@ -148,6 +148,9 @@ function RoleIconCreditsPanel({
 }
 
 export default function Profile() {
+  const theme = useTheme();
+  const goldColor = theme.palette.mode === "light" ? "#b8860b" : "gold";
+
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [name, setName] = useState();
   const [avatar, setAvatar] = useState();
@@ -1704,7 +1707,7 @@ export default function Profile() {
                       <Typography variant="caption" color="text.secondary" display="block">
                         Current Price
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold" }}>
+                      <Typography variant="h6" sx={{ fontWeight: "bold", color: goldColor }}>
                         {stockInfo.buyPrice.toFixed(2)} Coins
                       </Typography>
                     </Box>
@@ -1726,7 +1729,7 @@ export default function Profile() {
                       <Typography variant="caption" color="text.secondary" display="block">
                         Market Cap
                       </Typography>
-                      <Typography variant="body2" sx={{ fontWeight: "bold", color: "gold" }}>
+                      <Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor }}>
                         {(stockInfo.marketCap).toFixed(2)}
                       </Typography>
                     </Grid>

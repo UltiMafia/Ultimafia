@@ -189,6 +189,35 @@ describe("lib/StockMarket", function () {
         updateOneCalls[0].filter.userId.should.equal("subject1");
         updateOneCalls[0].update.$inc.dividendsPaidOut.should.equal(10);
       });
+
+      it("does not distribute dividends to game participants, except the subject user themselves", async function () {
+        const snapshot = {
+          shareSupply: 10,
+          holders: [
+            { holderId: "h1", sharesOwned: 6 },
+            { holderId: "subject1", sharesOwned: 4 }
+          ]
+        };
+
+        // coinsEarned = 20. Dividend pool = 20 * 0.5 = 10.
+        // Participants are ["h1", "subject1"].
+        // h1 (6 shares) is excluded.
+        // subject1 (4 shares) is NOT excluded because they are the subject! -> gets 4 coins
+        const res = await stockMarket.distributeDividends("subject1", 20, snapshot, ["h1", "subject1"]);
+        res.length.should.equal(1);
+
+        res[0].holderId.should.equal("subject1");
+        res[0].payout.should.equal(4);
+
+        bulkWriteCalls.length.should.equal(1);
+        bulkWriteCalls[0].length.should.equal(1);
+        bulkWriteCalls[0][0].updateOne.filter.id.should.equal("subject1");
+        bulkWriteCalls[0][0].updateOne.update.$inc.coins.should.equal(4);
+
+        updateOneCalls.length.should.equal(1);
+        updateOneCalls[0].filter.userId.should.equal("subject1");
+        updateOneCalls[0].update.$inc.dividendsPaidOut.should.equal(4);
+      });
     });
 
     describe("distributeFamilyDividends", function () {
@@ -230,6 +259,34 @@ describe("lib/StockMarket", function () {
         familyUpdateOneCalls.length.should.equal(1);
         familyUpdateOneCalls[0].filter.familyId.should.equal("familyA");
         familyUpdateOneCalls[0].update.$inc.dividendsPaidOut.should.equal(10);
+      });
+
+      it("does not distribute family dividends to game participants, except the winner themselves", async function () {
+        const snapshot = {
+          shareSupply: 10,
+          holders: [
+            { holderId: "h1", sharesOwned: 6 },
+            { holderId: "winner1", sharesOwned: 4 }
+          ]
+        };
+
+        // coinsEarned = 40. Dividend pool = 40 * 0.25 = 10.
+        // Participants are ["h1", "winner1"], but winnerId is "winner1".
+        // h1 is excluded. winner1 is NOT excluded because they are the winner! -> gets 4 coins
+        const res = await stockMarket.distributeFamilyDividends("familyA", 40, snapshot, ["h1", "winner1"], "winner1");
+        res.length.should.equal(1);
+
+        res[0].holderId.should.equal("winner1");
+        res[0].payout.should.equal(4);
+
+        bulkWriteCalls.length.should.equal(1);
+        bulkWriteCalls[0].length.should.equal(1);
+        bulkWriteCalls[0][0].updateOne.filter.id.should.equal("winner1");
+        bulkWriteCalls[0][0].updateOne.update.$inc.coins.should.equal(4);
+
+        familyUpdateOneCalls.length.should.equal(1);
+        familyUpdateOneCalls[0].filter.familyId.should.equal("familyA");
+        familyUpdateOneCalls[0].update.$inc.dividendsPaidOut.should.equal(4);
       });
     });
   });

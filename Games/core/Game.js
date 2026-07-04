@@ -3842,6 +3842,13 @@ module.exports = class Game {
         await this.recordCompetitiveCompletions(gameDocument._id);
       }
 
+      const allParticipantIds = Array.from(
+        new Set([
+          ...this.players.filter((p) => !p.isBot).map((p) => p.userId || p.user.id),
+          ...Object.keys(this.playersGone || {}),
+        ])
+      );
+
       for (let player of this.players) {
         let coinsEarned = 0;
         if (this.ranked && player.won) {
@@ -3929,7 +3936,7 @@ module.exports = class Game {
           if ((this.ranked || this.competitive) && coinsEarned > 0) {
             if (this.shareholderSnapshots && this.shareholderSnapshots[player.user.id]) {
               try {
-                await stockMarket.distributeDividends(player.user.id, coinsEarned, this.shareholderSnapshots[player.user.id]);
+                await stockMarket.distributeDividends(player.user.id, coinsEarned, this.shareholderSnapshots[player.user.id], allParticipantIds);
               } catch (err) {
                 logger.error(`Failed to distribute dividends for ${player.user.id} in game ${this.id}: ${err.message}`);
               }
@@ -3938,7 +3945,7 @@ module.exports = class Game {
             const familyId = this.playerToFamilyMap && this.playerToFamilyMap[player.user.id];
             if (familyId && this.familyShareholderSnapshots && this.familyShareholderSnapshots[familyId]) {
               try {
-                await stockMarket.distributeFamilyDividends(familyId, coinsEarned, this.familyShareholderSnapshots[familyId]);
+                await stockMarket.distributeFamilyDividends(familyId, coinsEarned, this.familyShareholderSnapshots[familyId], allParticipantIds, player.user.id);
               } catch (err) {
                 logger.error(`Failed to distribute family dividends for ${familyId} from player ${player.user.id} in game ${this.id}: ${err.message}`);
               }
