@@ -667,9 +667,9 @@ router.get("/families/eligible", async function (req, res) {
 
     const familyIds = families.map(f => f.id);
     const ipoedStocks = await models.FamilyStock.find({ familyId: { $in: familyIds }, isIpoed: true }).select("familyId").lean().exec();
-    const ipoedIds = ipoedStocks.map(s => s.familyId);
+    const ipoedIdsSet = new Set(ipoedStocks.map(s => s.familyId));
 
-    const eligible = families.filter(f => !ipoedIds.includes(f.id));
+    const eligible = families.filter(f => !ipoedIdsSet.has(f.id));
     res.send(eligible);
   } catch (e) {
     if (e.message === "Not logged in") {

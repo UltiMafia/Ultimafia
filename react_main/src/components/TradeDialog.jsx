@@ -12,7 +12,8 @@ import {
   ToggleButtonGroup,
   Button,
   TextField,
-  Paper
+  Paper,
+  useTheme
 } from "@mui/material";
 import { UserContext, SiteInfoContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
@@ -23,6 +24,9 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+  const theme = useTheme();
+
+  const goldColor = theme.palette.mode === "light" ? "#b8860b" : "gold";
 
   const [tradeType, setTradeType] = useState(initialType);
   const [shareCount, setShareCount] = useState(1);
@@ -111,7 +115,7 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
       <DialogTitle sx={{ fontWeight: "bold", borderBottom: 1, borderColor: "divider", pb: 2 }}>
         <Stack direction="row" spacing={1.5} alignItems="center">
           {stock.targetType === "player" ? (
-            <Avatar id={stock.id} name={stock.name} avatar={stock.avatar} size={40} />
+            <Avatar id={stock.id} name={stock.name} hasImage={stock.avatar} size={40} />
           ) : (
             <Box
               sx={{
@@ -206,7 +210,7 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
             )}
           </Box>
 
-          <Paper variant="outlined" sx={{ p: 2, background: "rgba(255,255,255,0.01)" }}>
+          <Paper variant="outlined" sx={{ p: 2, backgroundColor: theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(255, 255, 255, 0.02)" }}>
             <Stack spacing={1}>
               <Stack direction="row" justifyContent="space-between">
                 <Typography variant="body2">Base Price:</Typography>
@@ -233,7 +237,7 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
                 <Typography sx={{ fontWeight: "bold" }}>
                   {tradeType === "buy" ? "Total Cost:" : "Total Payout:"}
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold" }}>
+                <Typography variant="h6" sx={{ fontWeight: "bold", color: goldColor }}>
                   {tradePreview.total.toFixed(2)} Coins
                 </Typography>
               </Stack>
