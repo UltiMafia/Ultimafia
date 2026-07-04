@@ -1727,7 +1727,7 @@ export default function Profile() {
                         Market Cap
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: "bold", color: "gold" }}>
-                        {(stockInfo.shareSupply * stockInfo.buyPrice).toFixed(2)}
+                        {(stockInfo.marketCap).toFixed(2)}
                       </Typography>
                     </Grid>
                     <Grid item xs={4}>

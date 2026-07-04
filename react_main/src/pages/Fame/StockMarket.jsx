@@ -276,14 +276,17 @@ export default function StockMarket() {
         aVal = a.shareSupply;
         bVal = b.shareSupply;
       } else if (sortBy === "marketCap") {
-        aVal = a.shareSupply * a.buyPrice;
-        bVal = b.shareSupply * b.buyPrice;
+        aVal = a.marketCap;
+        bVal = b.marketCap;
       } else if (sortBy === "buyPrice") {
         aVal = a.buyPrice;
         bVal = b.buyPrice;
       } else if (sortBy === "sellPrice") {
         aVal = a.sellPrice;
         bVal = b.sellPrice;
+      } else if (sortBy === "treasury") {
+        aVal = isPlayer ? 0 : a.treasuryCoins;
+        bVal = isPlayer ? 0 : b.treasuryCoins;
       } else if (sortBy === "dividends") {
         aVal = isPlayer ? a.dividendsPaidOut : a.dividendsPaidOut;
         bVal = isPlayer ? b.dividendsPaidOut : b.dividendsPaidOut;
@@ -569,7 +572,7 @@ export default function StockMarket() {
                         <Grid item xs={6}>
                           <Typography variant="caption" color="text.secondary" display="block">Market Cap</Typography>
                           <Typography variant="body2" color="text.primary" fontWeight="bold">
-                            {(stock.shareSupply * stock.buyPrice).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                            {(stock.marketCap).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>
@@ -596,7 +599,7 @@ export default function StockMarket() {
                 <TableRow>
                   {renderSortableHeader(marketMode === "player" ? "Player" : "Family Name", "name")}
                   {renderSortableHeader("Supply", "supply", "right", { display: { xs: 'none', md: 'table-cell' } })}
-                  {marketMode === "family" && <TableCell align="right" sx={{ fontWeight: "bold", display: { xs: 'none', md: 'table-cell' } }}>Treasury Coins</TableCell>}
+                  {marketMode === "family" && renderSortableHeader("Treasury Coins", "treasury", "right", { display: { xs: 'none', md: 'table-cell' } })}
                   <TableCell align="center" sx={{ fontWeight: "bold", display: { xs: 'none', lg: 'table-cell' } }}>Trend</TableCell>
                   {renderSortableHeader("Market Cap", "marketCap", "right", { display: { xs: 'none', md: 'table-cell' } })}
                   {renderSortableHeader("Buy Price", "buyPrice", "right")}
@@ -673,7 +676,7 @@ export default function StockMarket() {
                           <Sparkline history={stock.priceHistory} width={100} height={30} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", whiteSpace: "nowrap", display: { xs: 'none', md: 'table-cell' } }}>
-                          {(stock.shareSupply * stock.buyPrice).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {(stock.marketCap).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: "success.main", whiteSpace: "nowrap" }}>
                           {stock.buyPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
@@ -810,9 +813,9 @@ export default function StockMarket() {
               <TableRow>
                 <TableCell>{marketMode === "player" ? "Player" : "Family Name"}</TableCell>
                 <TableCell align="right">Shares</TableCell>
-                <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>Cost Basis</TableCell>
+                <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>Net Investment</TableCell>
                 <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Liquid Value</TableCell>
-                <TableCell align="right">Unrealized P&amp;L</TableCell>
+                <TableCell align="right">Total P&amp;L</TableCell>
                 <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Dividends</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>

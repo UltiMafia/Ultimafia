@@ -8,29 +8,338 @@ const redis = require("../modules/redis");
 
 const router = express.Router();
 
-// Simple in-memory mutex to prevent race conditions on stock trades
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+// In-memory mutex to serialize trades per stock within a single process.
+// The optimistic lock on shareSupply serves as the multi-process safety net.
 const tradeLocks = new Map();
 
 async function acquireTradeLock(key) {
-  while (tradeLocks.get(key)) {
-    await tradeLocks.get(key);
-  }
+  const prev = tradeLocks.get(key) || Promise.resolve();
   let resolveLock;
-  const lockPromise = new Promise(resolve => {
+  const lockPromise = new Promise((resolve) => {
     resolveLock = resolve;
   });
   tradeLocks.set(key, lockPromise);
+  await prev;
   return () => {
-    tradeLocks.delete(key);
+    if (tradeLocks.get(key) === lockPromise) tradeLocks.delete(key);
     resolveLock();
   };
 }
 
-// Helper to check positive integers
 function isPositiveInteger(val) {
   const num = Number(val);
   return Number.isInteger(num) && num > 0;
 }
+
+/** Returns true if a MongoDB updateOne/findOneAndUpdate actually modified a document. */
+function wasModified(result) {
+  return (result.modifiedCount || 0) > 0 || (result.nModified || 0) > 0;
+}
+
+/**
+ * Reconstructs a recent price trendline by walking the last N transactions
+ * backwards from the current supply.
+ */
+function buildPriceHistory(stocks, txsMap, idField) {
+  const historyMap = {};
+  for (const stock of stocks) {
+    const entityId = stock[idField];
+    const txs = txsMap[entityId] || [];
+    let supply = stock.shareSupply;
+    const prices = [];
+    for (const tx of txs) {
+      prices.push(stockMarket.calculatePrice(supply));
+      if (tx.type === "buy") {
+        supply = Math.max(1, supply - (tx.shares || 0));
+      } else if (tx.type === "sell") {
+        supply += (tx.shares || 0);
+      }
+    }
+    prices.push(stockMarket.calculatePrice(supply));
+    prices.reverse();
+    historyMap[entityId] = prices;
+  }
+  return historyMap;
+}
+
+/**
+ * Computes net cost basis per entity from a user's transaction history.
+ * costBasis = sum(buy price + fee) - sum(sell price - fee)
+ */
+function buildCostBasisMap(transactions, idField) {
+  const costBasisMap = {};
+  for (const tx of transactions) {
+    const entityId = tx[idField];
+    if (!costBasisMap[entityId]) costBasisMap[entityId] = 0;
+    if (tx.type === "buy") {
+      costBasisMap[entityId] += tx.price + tx.fee;
+    } else {
+      costBasisMap[entityId] -= (tx.price - tx.fee);
+    }
+  }
+  return costBasisMap;
+}
+
+// ---------------------------------------------------------------------------
+// Trade configuration — defines the differences between player and family
+// ---------------------------------------------------------------------------
+
+const PLAYER_TRADE_CONFIG = {
+  stockModel: models.PlayerStock,
+  shareholderModel: models.Shareholder,
+  transactionModel: models.StockTransaction,
+  // Field name for the entity ID in request body / params
+  requestIdField: "subjectId",
+  // How to build a MongoDB filter to find the stock document
+  getStockFilter: (entityId) => ({ userId: entityId }),
+  // How to build a MongoDB filter to find a shareholder document
+  getShareholderFilter: (entityId, holderId) => ({ subjectId: entityId, holderId }),
+  // How to build the transaction log document
+  getTxData: (userId, entityId, type, shares, price, fee) => ({
+    userId, subjectId: entityId, type, shares, price, fee,
+  }),
+  // Field name in the stock document that accumulates trade fees
+  feeField: "creatorFeesEarned",
+  // Lock key prefix
+  lockPrefix: "player",
+  // Whether to credit the trade fee to the entity's user wallet
+  // (true for players, false for families where it goes to treasury via feeField)
+  creditFeeToUser: true,
+  // Whether to invalidate the entity user's cache after a trade
+  cacheEntityUser: true,
+  // Entity label for log messages
+  entityLabel: "player",
+  notFoundBuyMsg: "This player has not IPO'd.",
+  notFoundSellMsg: "Stock metadata not found.",
+  authBuyMsg: "You must be logged in to buy shares.",
+  authSellMsg: "You must be logged in to sell shares.",
+};
+
+const FAMILY_TRADE_CONFIG = {
+  stockModel: models.FamilyStock,
+  shareholderModel: models.FamilyShareholder,
+  transactionModel: models.FamilyStockTransaction,
+  requestIdField: "familyId",
+  getStockFilter: (entityId) => ({ familyId: entityId }),
+  getShareholderFilter: (entityId, holderId) => ({ familyId: entityId, holderId }),
+  getTxData: (userId, entityId, type, shares, price, fee) => ({
+    userId, familyId: entityId, type, shares, price, fee,
+  }),
+  feeField: "treasuryCoins",
+  lockPrefix: "family",
+  creditFeeToUser: false,
+  cacheEntityUser: false,
+  entityLabel: "family",
+  notFoundBuyMsg: "This Family ETF has not been launched.",
+  notFoundSellMsg: "Family stock metadata not found.",
+  authBuyMsg: "You must be logged in to buy family shares.",
+  authSellMsg: "You must be logged in to sell family shares.",
+};
+
+// ---------------------------------------------------------------------------
+// Trade handler factories
+// ---------------------------------------------------------------------------
+
+function createBuyHandler(config) {
+  return async function (req, res) {
+    try {
+      const userId = await routeUtils.verifyLoggedIn(req);
+      const entityId = req.body[config.requestIdField];
+      const sharesToBuy = Number(req.body.shares);
+
+      if (!entityId || !isPositiveInteger(sharesToBuy)) {
+        return errors.badRequest(res, "Invalid buy data. Shares must be a positive integer.");
+      }
+
+      const releaseLock = await acquireTradeLock(`${config.lockPrefix}:${entityId}`);
+      try {
+        // 1. Fetch stock
+        const stock = await config.stockModel.findOne(config.getStockFilter(entityId)).exec();
+        if (!stock || !stock.isIpoed) {
+          return errors.notFound(res, config.notFoundBuyMsg);
+        }
+
+        // 2. Calculate price and fees
+        const { price, creatorFee, systemFee, total } = stockMarket.getBuyPrice(stock.shareSupply, sharesToBuy);
+
+        // 3. Debit buyer FIRST to guarantee funds before any state changes
+        const debit = await models.User.updateOne(
+          { id: userId, coins: { $gte: total } },
+          { $inc: { coins: -total } }
+        ).exec();
+
+        if (!wasModified(debit)) {
+          return errors.forbidden(res, `Insufficient coins. Total cost is ${total} coins.`);
+        }
+
+        // 4. Update stock stats (optimistic lock on shareSupply as multi-process safety net)
+        const stockUpdate = await config.stockModel.updateOne(
+          { ...config.getStockFilter(entityId), shareSupply: stock.shareSupply },
+          { $inc: { [config.feeField]: creatorFee, shareSupply: sharesToBuy } }
+        ).exec();
+
+        if (!wasModified(stockUpdate)) {
+          // Supply changed between read and write — refund buyer
+          try {
+            await models.User.updateOne({ id: userId }, { $inc: { coins: total } }).exec();
+          } catch (refundErr) {
+            logger.error(`CRITICAL: Failed to refund ${total} coins to ${userId} after buy conflict on ${config.entityLabel} ${entityId}: ${refundErr.message}`);
+          }
+          return errors.conflict(res, "Price changed. Your coins have been refunded. Please try again.");
+        }
+
+        // 5. Credit creator fee to entity's user wallet (player stocks only)
+        if (config.creditFeeToUser) {
+          await models.User.updateOne(
+            { id: entityId },
+            { $inc: { coins: creatorFee } }
+          ).exec();
+        }
+
+        // 6. Update shareholder balance
+        await config.shareholderModel.updateOne(
+          config.getShareholderFilter(entityId, userId),
+          { $inc: { sharesOwned: sharesToBuy } },
+          { upsert: true }
+        ).exec();
+
+        // 7. Log transaction
+        await config.transactionModel.create(
+          config.getTxData(userId, entityId, "buy", sharesToBuy, price, creatorFee + systemFee)
+        );
+
+        // 8. Invalidate caches
+        const cacheOps = [redis.cacheUserInfo(userId, true)];
+        if (config.cacheEntityUser) {
+          cacheOps.push(redis.cacheUserInfo(entityId, true));
+        }
+        await Promise.all(cacheOps);
+
+        res.send({ success: true, price, fee: creatorFee + systemFee, total });
+      } finally {
+        releaseLock();
+      }
+    } catch (e) {
+      if (e.message === "Not logged in") {
+        return errors.unauthorized(res, config.authBuyMsg);
+      }
+      logger.error(e);
+      errors.serverError(res);
+    }
+  };
+}
+
+function createSellHandler(config) {
+  return async function (req, res) {
+    try {
+      const userId = await routeUtils.verifyLoggedIn(req);
+      const entityId = req.body[config.requestIdField];
+      const sharesToSell = Number(req.body.shares);
+
+      if (!entityId || !isPositiveInteger(sharesToSell)) {
+        return errors.badRequest(res, "Invalid sell data. Shares must be a positive integer.");
+      }
+
+      const releaseLock = await acquireTradeLock(`${config.lockPrefix}:${entityId}`);
+      try {
+        // 1. Check holding
+        const holding = await config.shareholderModel.findOne(
+          config.getShareholderFilter(entityId, userId)
+        ).exec();
+        if (!holding || holding.sharesOwned < sharesToSell) {
+          return errors.forbidden(res, "Insufficient shares owned.");
+        }
+
+        // 2. Fetch stock
+        const stock = await config.stockModel.findOne(config.getStockFilter(entityId)).exec();
+        if (!stock) {
+          return errors.notFound(res, config.notFoundSellMsg);
+        }
+
+        // 3. Guard: at least 1 share must remain in circulation
+        if (stock.shareSupply - sharesToSell < 1) {
+          return errors.forbidden(res, "Cannot sell — at least 1 share must remain in circulation.");
+        }
+
+        // 4. Calculate sell price and fees
+        const { price, creatorFee, systemFee, total } = stockMarket.getSellPrice(stock.shareSupply, sharesToSell);
+
+        // 5. Debit shareholder shares FIRST
+        const debitHolding = await config.shareholderModel.updateOne(
+          { ...config.getShareholderFilter(entityId, userId), sharesOwned: { $gte: sharesToSell } },
+          { $inc: { sharesOwned: -sharesToSell } }
+        ).exec();
+
+        if (!wasModified(debitHolding)) {
+          return errors.forbidden(res, "Insufficient shares owned.");
+        }
+
+        // 6. Update stock stats (optimistic lock on shareSupply as multi-process safety net)
+        const stockUpdate = await config.stockModel.updateOne(
+          { ...config.getStockFilter(entityId), shareSupply: stock.shareSupply },
+          { $inc: { [config.feeField]: creatorFee, shareSupply: -sharesToSell } }
+        ).exec();
+
+        if (!wasModified(stockUpdate)) {
+          // Supply changed between read and write — refund shares
+          try {
+            await config.shareholderModel.updateOne(
+              config.getShareholderFilter(entityId, userId),
+              { $inc: { sharesOwned: sharesToSell } }
+            ).exec();
+          } catch (refundErr) {
+            logger.error(`CRITICAL: Failed to refund ${sharesToSell} shares to ${userId} after sell conflict on ${config.entityLabel} ${entityId}: ${refundErr.message}`);
+          }
+          return errors.conflict(res, "Price changed. Your shares have been refunded. Please try again.");
+        }
+
+        // 7. Credit seller
+        await models.User.updateOne(
+          { id: userId },
+          { $inc: { coins: total } }
+        ).exec();
+
+        // 8. Credit creator fee to entity's user wallet (player stocks only)
+        if (config.creditFeeToUser) {
+          await models.User.updateOne(
+            { id: entityId },
+            { $inc: { coins: creatorFee } }
+          ).exec();
+        }
+
+        // 9. Log transaction
+        await config.transactionModel.create(
+          config.getTxData(userId, entityId, "sell", sharesToSell, price, creatorFee + systemFee)
+        );
+
+        // 10. Invalidate caches
+        const cacheOps = [redis.cacheUserInfo(userId, true)];
+        if (config.cacheEntityUser) {
+          cacheOps.push(redis.cacheUserInfo(entityId, true));
+        }
+        await Promise.all(cacheOps);
+
+        res.send({ success: true, price, fee: creatorFee + systemFee, totalPayout: total });
+      } finally {
+        releaseLock();
+      }
+    } catch (e) {
+      if (e.message === "Not logged in") {
+        return errors.unauthorized(res, config.authSellMsg);
+      }
+      logger.error(e);
+      errors.serverError(res);
+    }
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Player stock read routes
+// ---------------------------------------------------------------------------
 
 /**
  * GET /api/stocks
@@ -68,28 +377,13 @@ router.get("/", async function (req, res) {
       txsMap[g._id] = g.txs;
     }
 
-    const historyMap = {};
-    for (const stock of stocks) {
-      const txs = txsMap[stock.userId] || [];
-      let supply = stock.shareSupply;
-      const prices = [];
-      for (const tx of txs) {
-        prices.push(stockMarket.calculatePrice(supply));
-        if (tx.type === "buy") {
-          supply = Math.max(1, supply - (tx.shares || 0));
-        } else if (tx.type === "sell") {
-          supply += (tx.shares || 0);
-        }
-      }
-      prices.push(stockMarket.calculatePrice(supply));
-      prices.reverse();
-      historyMap[stock.userId] = prices;
-    }
+    const historyMap = buildPriceHistory(stocks, txsMap, "userId");
 
     const result = stocks.map(stock => {
       const u = userMap[stock.userId] || { name: "Unknown" };
       const buyPrice = stockMarket.getBuyPrice(stock.shareSupply, 1);
       const sellPrice = stockMarket.getSellPrice(stock.shareSupply, 1);
+      const marketCap = stock.shareSupply * stockMarket.calculatePrice(stock.shareSupply);
 
       return {
         userId: stock.userId,
@@ -98,6 +392,7 @@ router.get("/", async function (req, res) {
         vanityUrl: u.settings?.vanityUrl || "",
         nameColor: u.settings?.nameColor || "",
         shareSupply: stock.shareSupply,
+        marketCap,
         buyPrice: buyPrice.total,
         sellPrice: sellPrice.total,
         creatorFeesEarned: stock.creatorFeesEarned,
@@ -130,7 +425,6 @@ router.get("/portfolio", async function (req, res) {
         .select("id name avatar settings.nameColor settings.vanityUrl")
         .lean()
         .exec(),
-      // Fetch all buy/sell transactions this user made for these stocks
       models.StockTransaction.find({ userId, subjectId: { $in: subjectIds } })
         .select("subjectId type price fee shares")
         .lean()
@@ -146,17 +440,7 @@ router.get("/portfolio", async function (req, res) {
     const holdingMap = {};
     for (const h of holdings) holdingMap[h.subjectId] = h;
 
-    // Compute net cost basis per stock from transaction history:
-    // costBasis = sum of coins spent on buys - sum of coins received from sells
-    const costBasisMap = {};
-    for (const tx of transactions) {
-      if (!costBasisMap[tx.subjectId]) costBasisMap[tx.subjectId] = 0;
-      if (tx.type === "buy") {
-        costBasisMap[tx.subjectId] += tx.price + tx.fee;
-      } else {
-        costBasisMap[tx.subjectId] -= (tx.price - tx.fee);
-      }
-    }
+    const costBasisMap = buildCostBasisMap(transactions, "subjectId");
 
     const result = subjectIds.map(subjectId => {
       const h = holdingMap[subjectId];
@@ -207,12 +491,14 @@ router.get("/prices/:subjectId", async function (req, res) {
     const user = await models.User.findOne({ id: subjectId }).select("name settings.nameColor").lean().exec();
     const buy1 = stockMarket.getBuyPrice(stock.shareSupply, 1);
     const sell1 = stockMarket.getSellPrice(stock.shareSupply, 1);
+    const marketCap = stock.shareSupply * stockMarket.calculatePrice(stock.shareSupply);
 
     res.send({
       userId: stock.userId,
       username: user ? user.name : "Unknown",
       nameColor: user?.settings?.nameColor || "",
       shareSupply: stock.shareSupply,
+      marketCap,
       buyPrice1: buy1.total,
       sellPrice1: sell1.total,
       creatorFeesEarned: stock.creatorFeesEarned,
@@ -223,6 +509,10 @@ router.get("/prices/:subjectId", async function (req, res) {
     errors.serverError(res);
   }
 });
+
+// ---------------------------------------------------------------------------
+// Player stock write routes
+// ---------------------------------------------------------------------------
 
 /**
  * POST /api/stocks/ipo
@@ -246,7 +536,7 @@ router.post("/ipo", async function (req, res) {
         { $inc: { coins: -100 } }
       ).exec();
 
-      if (debit.modifiedCount === 0 && debit.nModified === 0) {
+      if (!wasModified(debit)) {
         return errors.forbidden(res, "Insufficient coins. Starting an IPO costs 100 coins.");
       }
 
@@ -279,184 +569,15 @@ router.post("/ipo", async function (req, res) {
   }
 });
 
-/**
- * POST /api/stocks/buy
- * Buys N shares of a player.
- */
-router.post("/buy", async function (req, res) {
-  try {
-    const userId = await routeUtils.verifyLoggedIn(req);
-    const { subjectId, shares } = req.body;
+/** POST /api/stocks/buy — Buys N shares of a player. */
+router.post("/buy", createBuyHandler(PLAYER_TRADE_CONFIG));
 
-    const sharesToBuy = Number(shares);
-    if (!subjectId || !isPositiveInteger(sharesToBuy)) {
-      return errors.badRequest(res, "Invalid buy data. Shares must be a positive integer.");
-    }
+/** POST /api/stocks/sell — Sells N shares of a player. */
+router.post("/sell", createSellHandler(PLAYER_TRADE_CONFIG));
 
-    const releaseLock = await acquireTradeLock(`player:${subjectId}`);
-    try {
-      // 1. Prevent alt account trading (self-buying is allowed)
-      const altIds = await routeUtils.getAltAccountIds(subjectId);
-      const altsExcludingSelf = altIds.filter(id => id !== subjectId);
-      if (altsExcludingSelf.includes(userId)) {
-        return errors.forbidden(res, "You cannot buy shares of your alt accounts.");
-      }
-
-      // 2. Fetch stock
-      const stock = await models.PlayerStock.findOne({ userId: subjectId }).exec();
-      if (!stock || !stock.isIpoed) {
-        return errors.notFound(res, "This player has not IPO'd.");
-      }
-
-      // 3. Calculate price and fees
-      const { price, creatorFee, systemFee, total } = stockMarket.getBuyPrice(stock.shareSupply, sharesToBuy);
-
-      // 4. Debit buyer FIRST to safely guarantee funds before any state changes
-      const debit = await models.User.updateOne(
-        { id: userId, coins: { $gte: total } },
-        { $inc: { coins: -total } }
-      ).exec();
-
-      if (debit.modifiedCount === 0 && debit.nModified === 0) {
-        return errors.forbidden(res, `Insufficient coins. Total cost is ${total} coins.`);
-      }
-
-      // 5. Update PlayerStock stats (No optimistic locking needed because of Mutex)
-      await models.PlayerStock.updateOne(
-        { userId: subjectId },
-        { $inc: { creatorFeesEarned: creatorFee, shareSupply: sharesToBuy } }
-      ).exec();
-
-      // 6. Credit creator fee to subject
-      await models.User.updateOne(
-        { id: subjectId },
-        { $inc: { coins: creatorFee } }
-      ).exec();
-
-      // 7. Update Shareholder balance
-      await models.Shareholder.updateOne(
-        { subjectId, holderId: userId },
-        { $inc: { sharesOwned: sharesToBuy } },
-        { upsert: true }
-      ).exec();
-
-      // 8. Log transaction
-      await models.StockTransaction.create({
-        userId,
-        subjectId,
-        type: "buy",
-        shares: sharesToBuy,
-        price,
-        fee: creatorFee + systemFee
-      });
-
-      await Promise.all([
-        redis.cacheUserInfo(userId, true),
-        redis.cacheUserInfo(subjectId, true)
-      ]);
-
-      res.send({ success: true, price, fee: creatorFee + systemFee, total });
-    } finally {
-      releaseLock();
-    }
-  } catch (e) {
-    if (e.message === "Not logged in") {
-      return errors.unauthorized(res, "You must be logged in to buy shares.");
-    }
-    logger.error(e);
-    errors.serverError(res);
-  }
-});
-
-/**
- * POST /api/stocks/sell
- * Sells N shares of a player.
- */
-router.post("/sell", async function (req, res) {
-  try {
-    const userId = await routeUtils.verifyLoggedIn(req);
-    const { subjectId, shares } = req.body;
-
-    const sharesToSell = Number(shares);
-    if (!subjectId || !isPositiveInteger(sharesToSell)) {
-      return errors.badRequest(res, "Invalid sell data. Shares must be a positive integer.");
-    }
-
-    const releaseLock = await acquireTradeLock(`player:${subjectId}`);
-    try {
-      // 1. Check holding
-      const holding = await models.Shareholder.findOne({ subjectId, holderId: userId }).exec();
-      if (!holding || holding.sharesOwned < sharesToSell) {
-        return errors.forbidden(res, "Insufficient shares owned.");
-      }
-
-      // 2. Fetch stock
-      const stock = await models.PlayerStock.findOne({ userId: subjectId }).exec();
-      if (!stock) {
-        return errors.notFound(res, "Stock metadata not found.");
-      }
-
-      // 3. Guard: at least 1 share must remain in circulation at all times
-      if (stock.shareSupply - sharesToSell < 1) {
-        return errors.forbidden(res, "Cannot sell — at least 1 share must remain in circulation.");
-      }
-      const { price, creatorFee, systemFee, total } = stockMarket.getSellPrice(stock.shareSupply, sharesToSell);
-
-      // 4. Debit shareholder shares FIRST
-      const debitHolding = await models.Shareholder.updateOne(
-        { subjectId, holderId: userId, sharesOwned: { $gte: sharesToSell } },
-        { $inc: { sharesOwned: -sharesToSell } }
-      ).exec();
-
-      if (debitHolding.modifiedCount === 0 && debitHolding.nModified === 0) {
-        return errors.forbidden(res, "Insufficient shares owned.");
-      }
-
-      // 5. Update PlayerStock stats (No optimistic locking needed because of Mutex)
-      await models.PlayerStock.updateOne(
-        { userId: subjectId },
-        { $inc: { creatorFeesEarned: creatorFee, shareSupply: -sharesToSell } }
-      ).exec();
-
-      // 6. Credit seller
-      await models.User.updateOne(
-        { id: userId },
-        { $inc: { coins: total } }
-      ).exec();
-
-      // 7. Credit creator fee to subject
-      await models.User.updateOne(
-        { id: subjectId },
-        { $inc: { coins: creatorFee } }
-      ).exec();
-
-      // 8. Log transaction
-      await models.StockTransaction.create({
-        userId,
-        subjectId,
-        type: "sell",
-        shares: sharesToSell,
-        price,
-        fee: creatorFee + systemFee
-      });
-
-      await Promise.all([
-        redis.cacheUserInfo(userId, true),
-        redis.cacheUserInfo(subjectId, true)
-      ]);
-
-      res.send({ success: true, price, fee: creatorFee + systemFee, totalPayout: total });
-    } finally {
-      releaseLock();
-    }
-  } catch (e) {
-    if (e.message === "Not logged in") {
-      return errors.unauthorized(res, "You must be logged in to sell shares.");
-    }
-    logger.error(e);
-    errors.serverError(res);
-  }
-});
+// ---------------------------------------------------------------------------
+// Family ETF read routes
+// ---------------------------------------------------------------------------
 
 /**
  * GET /api/stocks/families
@@ -495,28 +616,13 @@ router.get("/families", async function (req, res) {
       txsMap[g._id] = g.txs;
     }
 
-    const historyMap = {};
-    for (const stock of stocks) {
-      const txs = txsMap[stock.familyId] || [];
-      let supply = stock.shareSupply;
-      const prices = [];
-      for (const tx of txs) {
-        prices.push(stockMarket.calculatePrice(supply));
-        if (tx.type === "buy") {
-          supply = Math.max(1, supply - (tx.shares || 0));
-        } else if (tx.type === "sell") {
-          supply += (tx.shares || 0);
-        }
-      }
-      prices.push(stockMarket.calculatePrice(supply));
-      prices.reverse();
-      historyMap[stock.familyId] = prices;
-    }
+    const historyMap = buildPriceHistory(stocks, txsMap, "familyId");
 
     const result = stocks.map(stock => {
       const f = familyMap[stock.familyId] || { name: "Unknown" };
       const buyPrice = stockMarket.getBuyPrice(stock.shareSupply, 1);
       const sellPrice = stockMarket.getSellPrice(stock.shareSupply, 1);
+      const marketCap = stock.shareSupply * stockMarket.calculatePrice(stock.shareSupply);
 
       return {
         familyId: stock.familyId,
@@ -524,6 +630,7 @@ router.get("/families", async function (req, res) {
         avatar: f.avatar,
         background: f.background,
         shareSupply: stock.shareSupply,
+        marketCap,
         buyPrice: buyPrice.total,
         sellPrice: sellPrice.total,
         treasuryCoins: stock.treasuryCoins,
@@ -604,15 +711,7 @@ router.get("/families/portfolio", async function (req, res) {
       familyId: { $in: familyIds }
     }).lean().exec();
 
-    const costBasisMap = {};
-    for (const tx of transactions) {
-      if (!costBasisMap[tx.familyId]) costBasisMap[tx.familyId] = 0;
-      if (tx.type === "buy") {
-        costBasisMap[tx.familyId] += tx.price + tx.fee;
-      } else {
-        costBasisMap[tx.familyId] -= (tx.price - tx.fee);
-      }
-    }
+    const costBasisMap = buildCostBasisMap(transactions, "familyId");
 
     const result = holdings.map(h => {
       const stock = stockMap[h.familyId] || { shareSupply: 0 };
@@ -661,6 +760,7 @@ router.get("/families/prices/:familyId", async function (req, res) {
     const family = await models.Family.findOne({ id: familyId }).select("name avatar background").lean().exec();
     const buy1 = stockMarket.getBuyPrice(stock.shareSupply, 1);
     const sell1 = stockMarket.getSellPrice(stock.shareSupply, 1);
+    const marketCap = stock.shareSupply * stockMarket.calculatePrice(stock.shareSupply);
 
     res.send({
       familyId: stock.familyId,
@@ -668,6 +768,7 @@ router.get("/families/prices/:familyId", async function (req, res) {
       avatar: family?.avatar,
       background: family?.background,
       shareSupply: stock.shareSupply,
+      marketCap,
       buyPrice1: buy1.total,
       sellPrice1: sell1.total,
       treasuryCoins: stock.treasuryCoins,
@@ -678,6 +779,10 @@ router.get("/families/prices/:familyId", async function (req, res) {
     errors.serverError(res);
   }
 });
+
+// ---------------------------------------------------------------------------
+// Family ETF write routes
+// ---------------------------------------------------------------------------
 
 /**
  * POST /api/stocks/families/ipo
@@ -722,7 +827,7 @@ router.post("/families/ipo", async function (req, res) {
         { $inc: { coins: -200 } }
       ).exec();
 
-      if (debit.modifiedCount === 0 && debit.nModified === 0) {
+      if (!wasModified(debit)) {
         return errors.forbidden(res, "Insufficient coins. Launching a Family ETF costs 200 coins.");
       }
 
@@ -755,160 +860,10 @@ router.post("/families/ipo", async function (req, res) {
   }
 });
 
-/**
- * POST /api/stocks/families/buy
- * Buys N shares of a Family ETF.
- */
-router.post("/families/buy", async function (req, res) {
-  try {
-    const userId = await routeUtils.verifyLoggedIn(req);
-    const { familyId, shares } = req.body;
+/** POST /api/stocks/families/buy — Buys N shares of a Family ETF. */
+router.post("/families/buy", createBuyHandler(FAMILY_TRADE_CONFIG));
 
-    const sharesToBuy = Number(shares);
-    if (!familyId || !isPositiveInteger(sharesToBuy)) {
-      return errors.badRequest(res, "Invalid buy data. Shares must be a positive integer.");
-    }
-
-    const releaseLock = await acquireTradeLock(`family:${familyId}`);
-    try {
-      // Fetch stock
-      const stock = await models.FamilyStock.findOne({ familyId }).exec();
-      if (!stock || !stock.isIpoed) {
-        return errors.notFound(res, "This Family ETF has not been launched.");
-      }
-
-      // Calculate price and fees
-      const { price, creatorFee, systemFee, total } = stockMarket.getBuyPrice(stock.shareSupply, sharesToBuy);
-
-      // Debit buyer FIRST safely
-      const debit = await models.User.updateOne(
-        { id: userId, coins: { $gte: total } },
-        { $inc: { coins: -total } }
-      ).exec();
-
-      if (debit.modifiedCount === 0 && debit.nModified === 0) {
-        return errors.forbidden(res, `Insufficient coins. Total cost is ${total} coins.`);
-      }
-
-      // Update FamilyStock stats
-      await models.FamilyStock.updateOne(
-        { familyId },
-        { $inc: { treasuryCoins: creatorFee, shareSupply: sharesToBuy } }
-      ).exec();
-
-      // Update FamilyShareholder balance
-      await models.FamilyShareholder.updateOne(
-        { familyId, holderId: userId },
-        { $inc: { sharesOwned: sharesToBuy } },
-        { upsert: true }
-      ).exec();
-
-      // Log transaction
-      await models.FamilyStockTransaction.create({
-        userId,
-        familyId,
-        type: "buy",
-        shares: sharesToBuy,
-        price,
-        fee: creatorFee + systemFee
-      });
-
-      await redis.cacheUserInfo(userId, true);
-
-      res.send({ success: true, price, fee: creatorFee + systemFee, total });
-    } finally {
-      releaseLock();
-    }
-  } catch (e) {
-    if (e.message === "Not logged in") {
-      return errors.unauthorized(res, "You must be logged in to buy family shares.");
-    }
-    logger.error(e);
-    errors.serverError(res);
-  }
-});
-
-/**
- * POST /api/stocks/families/sell
- * Sells N shares of a Family ETF.
- */
-router.post("/families/sell", async function (req, res) {
-  try {
-    const userId = await routeUtils.verifyLoggedIn(req);
-    const { familyId, shares } = req.body;
-
-    const sharesToSell = Number(shares);
-    if (!familyId || !isPositiveInteger(sharesToSell)) {
-      return errors.badRequest(res, "Invalid sell data. Shares must be a positive integer.");
-    }
-
-    const releaseLock = await acquireTradeLock(`family:${familyId}`);
-    try {
-      // Check holding
-      const holding = await models.FamilyShareholder.findOne({ familyId, holderId: userId }).exec();
-      if (!holding || holding.sharesOwned < sharesToSell) {
-        return errors.forbidden(res, "Insufficient shares owned.");
-      }
-
-      // Fetch stock
-      const stock = await models.FamilyStock.findOne({ familyId }).exec();
-      if (!stock) {
-        return errors.notFound(res, "Family stock metadata not found.");
-      }
-
-      // Guard: at least 1 share must remain in circulation at all times
-      if (stock.shareSupply - sharesToSell < 1) {
-        return errors.forbidden(res, "Cannot sell — at least 1 share must remain in circulation.");
-      }
-
-      // Calculate sell price and fees
-      const { price, creatorFee, systemFee, total } = stockMarket.getSellPrice(stock.shareSupply, sharesToSell);
-
-      // Debit shareholder shares FIRST safely
-      const debitHolding = await models.FamilyShareholder.updateOne(
-        { familyId, holderId: userId, sharesOwned: { $gte: sharesToSell } },
-        { $inc: { sharesOwned: -sharesToSell } }
-      ).exec();
-
-      if (debitHolding.modifiedCount === 0 && debitHolding.nModified === 0) {
-        return errors.forbidden(res, "Insufficient shares owned.");
-      }
-
-      // Update FamilyStock stats (No optimistic locking needed because of Mutex)
-      await models.FamilyStock.updateOne(
-        { familyId },
-        { $inc: { treasuryCoins: creatorFee, shareSupply: -sharesToSell } }
-      ).exec();
-
-      // Credit seller
-      await models.User.updateOne(
-        { id: userId },
-        { $inc: { coins: total } }
-      ).exec();
-
-      // Log transaction
-      await models.FamilyStockTransaction.create({
-        userId,
-        familyId,
-        type: "sell",
-        shares: sharesToSell,
-        price,
-        fee: creatorFee + systemFee
-      });
-
-      await redis.cacheUserInfo(userId, true);
-
-      res.send({ success: true, price, fee: creatorFee + systemFee, totalPayout: total });
-    } finally {
-      releaseLock();
-    }
-  } catch (e) {
-    if (e.message === "Not logged in") {
-      return errors.unauthorized(res, "You must be logged in to sell family shares.");
-    }
-    logger.error(e);
-    errors.serverError(res);
-  }
-});
+/** POST /api/stocks/families/sell — Sells N shares of a Family ETF. */
+router.post("/families/sell", createSellHandler(FAMILY_TRADE_CONFIG));
 
 module.exports = router;
