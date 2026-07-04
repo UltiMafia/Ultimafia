@@ -37,6 +37,7 @@ import { useErrorAlert } from "../../components/Alerts";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { UserContext, SiteInfoContext } from "../../Contexts";
 import { Avatar } from "../User/User";
+import { resolveDisplayNameColor } from "../../utils/accessibleNameColors";
 import { Loading } from "../../components/Loading";
 import TradeDialog from "../../components/TradeDialog";
 import Sparkline from "../../components/Sparkline";
@@ -544,7 +545,12 @@ export default function StockMarket() {
                               component="a"
                               href={marketMode === "player" ? (stock.vanityUrl ? `/user/${stock.vanityUrl}` : `/user/${stock.userId}`) : undefined}
                               sx={{
-                                color: stock.nameColor || "text.primary",
+                                color: resolveDisplayNameColor({
+                                  accessibleNameColors: user.settings?.accessibleNameColors,
+                                  rawNameColor: stock.nameColor,
+                                  autoContrastColor: user.autoContrastColor ? user.autoContrastColor.bind(user) : (c => c),
+                                  theme
+                                }) || "text.primary",
                                 textDecoration: "none",
                                 fontWeight: "bold",
                               }}
@@ -655,7 +661,12 @@ export default function StockMarket() {
                                 component="a"
                                 href={stock.vanityUrl ? `/user/${stock.vanityUrl}` : `/user/${stock.userId}`}
                                 sx={{
-                                  color: stock.nameColor || "text.primary",
+                                  color: resolveDisplayNameColor({
+                                    accessibleNameColors: user.settings?.accessibleNameColors,
+                                    rawNameColor: stock.nameColor,
+                                    autoContrastColor: user.autoContrastColor ? user.autoContrastColor.bind(user) : (c => c),
+                                    theme
+                                  }) || "text.primary",
                                   textDecoration: "none",
                                   fontWeight: "bold",
                                   whiteSpace: "nowrap",
@@ -751,7 +762,20 @@ export default function StockMarket() {
                         <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
                           <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
                             <StockAvatar targetType="player" id={holding.subjectId} name={holding.username} avatar={holding.avatar} siteInfo={siteInfo} />
-                            <Typography component="a" href={holding.vanityUrl ? `/user/${holding.vanityUrl}` : `/user/${holding.subjectId}`} sx={{ color: holding.nameColor || "text.primary", textDecoration: "none", fontWeight: "bold" }}>
+                            <Typography
+                              component="a"
+                              href={holding.vanityUrl ? `/user/${holding.vanityUrl}` : `/user/${holding.subjectId}`}
+                              sx={{
+                                color: resolveDisplayNameColor({
+                                  accessibleNameColors: user.settings?.accessibleNameColors,
+                                  rawNameColor: holding.nameColor,
+                                  autoContrastColor: user.autoContrastColor ? user.autoContrastColor.bind(user) : (c => c),
+                                  theme
+                                }) || "text.primary",
+                                textDecoration: "none",
+                                fontWeight: "bold"
+                              }}
+                            >
                               {holding.username}
                             </Typography>
                           </Stack>
@@ -892,11 +916,16 @@ export default function StockMarket() {
                               avatar={holding.avatar}
                               siteInfo={siteInfo}
                             />
-                            <Typography
+                             <Typography
                               component="a"
                               href={holding.vanityUrl ? `/user/${holding.vanityUrl}` : `/user/${holding.subjectId}`}
                               sx={{
-                                color: holding.nameColor || "text.primary",
+                                color: resolveDisplayNameColor({
+                                  accessibleNameColors: user.settings?.accessibleNameColors,
+                                  rawNameColor: holding.nameColor,
+                                  autoContrastColor: user.autoContrastColor ? user.autoContrastColor.bind(user) : (c => c),
+                                  theme
+                                }) || "text.primary",
                                 textDecoration: "none",
                                 fontWeight: "bold",
                                 "&:hover": { textDecoration: "underline" },
