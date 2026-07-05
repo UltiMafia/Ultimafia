@@ -380,8 +380,8 @@ export default function StockMarket() {
   };
 
   const totalStockValue = useMemo(() => {
-    const playerStocksValue = portfolio.reduce((acc, h) => acc + (h.averageSellValue || 0), 0);
-    const familyStocksValue = familyPortfolio.reduce((acc, h) => acc + (h.averageSellValue || 0), 0);
+    const playerStocksValue = portfolio.reduce((acc, h) => acc + (h.liquidValue || 0), 0);
+    const familyStocksValue = familyPortfolio.reduce((acc, h) => acc + (h.liquidValue || 0), 0);
     return playerStocksValue + familyStocksValue;
   }, [portfolio, familyPortfolio]);
 
@@ -816,7 +816,7 @@ export default function StockMarket() {
                             </Grid>
                             <Grid item xs={4}>
                               <Typography variant="caption" color="text.secondary" display="block">Liquid Value</Typography>
-                              <Typography variant="body2" color={goldColor} fontWeight="bold">{holding.averageSellValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} /></Typography>
+                              <Typography variant="body2" color={goldColor} fontWeight="bold">{holding.liquidValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} /></Typography>
                             </Grid>
                             <Grid item xs={4}>
                               <Typography variant="caption" color="text.secondary" display="block">P&L</Typography>
@@ -869,7 +869,7 @@ export default function StockMarket() {
                             </Grid>
                             <Grid item xs={4}>
                               <Typography variant="caption" color="text.secondary" display="block">Liquid Value</Typography>
-                              <Typography variant="body2" color={goldColor} fontWeight="bold">{holding.averageSellValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} /></Typography>
+                              <Typography variant="body2" color={goldColor} fontWeight="bold">{holding.liquidValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} /></Typography>
                             </Grid>
                             <Grid item xs={4}>
                               <Typography variant="caption" color="text.secondary" display="block">P&L</Typography>
@@ -976,7 +976,7 @@ export default function StockMarket() {
                           {holding.costBasis.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: goldColor, display: { xs: 'none', sm: 'table-cell' } }}>
-                          {holding.averageSellValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {holding.liquidValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: holding.unrealizedPnL >= 0 ? "success.main" : "error.main" }}>
                           {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
@@ -1057,7 +1057,7 @@ export default function StockMarket() {
                           {holding.costBasis.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: goldColor, display: { xs: 'none', sm: 'table-cell' } }}>
-                          {holding.averageSellValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {holding.liquidValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: holding.unrealizedPnL >= 0 ? "success.main" : "error.main" }}>
                           {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />

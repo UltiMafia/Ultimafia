@@ -475,7 +475,7 @@ router.get("/portfolio", async function (req, res) {
         vanityUrl: u.settings?.vanityUrl || "",
         nameColor: u.settings?.nameColor || "",
         sharesOwned: h.sharesOwned,
-        averageSellValue: liquidValue,
+        liquidValue,
         currentSingleSellPrice: stockMarket.getSellPrice(stock.shareSupply, 1).total,
         netInvestment: costBasis,
         costBasis,
@@ -569,9 +569,22 @@ router.post("/ipo", async function (req, res) {
       // 4. Grant the first share to the creator
       await models.Shareholder.findOneAndUpdate(
         { subjectId: userId, holderId: userId },
-        { $inc: { sharesOwned: 1 } },
+        { 
+          $inc: { sharesOwned: 1 },
+          $set: { costBasis: 100, averageBuyPrice: 100, dividendsReceived: 0 }
+        },
         { upsert: true }
       ).exec();
+
+      // 5. Log transaction
+      await models.StockTransaction.create({
+        userId,
+        subjectId: userId,
+        type: "buy",
+        shares: 1,
+        price: 100,
+        fee: 0,
+      });
 
       await redis.cacheUserInfo(userId, true);
 
@@ -742,7 +755,7 @@ router.get("/families/portfolio", async function (req, res) {
         avatar: f.avatar,
         background: f.background,
         sharesOwned: h.sharesOwned,
-        averageSellValue: liquidValue,
+        liquidValue,
         currentSingleSellPrice: stockMarket.getSellPrice(stock.shareSupply, 1).total,
         netInvestment: costBasis,
         costBasis,
@@ -858,9 +871,22 @@ router.post("/families/ipo", async function (req, res) {
       // 6. Grant the first share to the leader/founder who paid
       await models.FamilyShareholder.findOneAndUpdate(
         { familyId, holderId: userId },
-        { $inc: { sharesOwned: 1 } },
+        { 
+          $inc: { sharesOwned: 1 },
+          $set: { costBasis: 200, averageBuyPrice: 200, dividendsReceived: 0 }
+        },
         { upsert: true }
       ).exec();
+
+      // 7. Log transaction
+      await models.FamilyStockTransaction.create({
+        userId,
+        familyId,
+        type: "buy",
+        shares: 1,
+        price: 200,
+        fee: 0,
+      });
 
       await redis.cacheUserInfo(userId, true);
 
