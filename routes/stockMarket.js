@@ -208,9 +208,17 @@ function createBuyHandler(config) {
         }
 
         // 6. Update shareholder balance
+        const currentHolding = await config.shareholderModel.findOne(
+          config.getShareholderFilter(entityId, userId)
+        ).lean().exec();
+        const needsReset = !currentHolding || currentHolding.sharesOwned === 0;
+
         await config.shareholderModel.updateOne(
           config.getShareholderFilter(entityId, userId),
-          { $inc: { sharesOwned: sharesToBuy } },
+          {
+            $inc: { sharesOwned: sharesToBuy },
+            ...(needsReset ? { $set: { dividendsReceived: 0 } } : {})
+          },
           { upsert: true }
         ).exec();
 
