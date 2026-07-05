@@ -3,7 +3,7 @@ import { badMathRandomWithStringSeed } from "../utilsFolder";
 
 // words and subjects you should be avoiding
 export const slurs = [
-  "ovpug"
+  "ovpug",
   "nob",
   "ornare",
   "puvax",
