@@ -30,9 +30,11 @@ async function migrate() {
         averageBuyPrice = avgPrice;
       }
     }
+    // Safety check: force costBasis to be consistent with the actual shares owned in the DB
+    const finalCostBasis = (h.sharesOwned || 0) * averageBuyPrice;
     await models.Shareholder.updateOne(
       { _id: h._id },
-      { $set: { costBasis, averageBuyPrice } }
+      { $set: { costBasis: finalCostBasis, averageBuyPrice } }
     );
   }
   console.log("Player holdings migrated.");
@@ -61,9 +63,11 @@ async function migrate() {
         averageBuyPrice = avgPrice;
       }
     }
+    // Safety check: force costBasis to be consistent with the actual shares owned in the DB
+    const finalCostBasis = (h.sharesOwned || 0) * averageBuyPrice;
     await models.FamilyShareholder.updateOne(
       { _id: h._id },
-      { $set: { costBasis, averageBuyPrice } }
+      { $set: { costBasis: finalCostBasis, averageBuyPrice } }
     );
   }
   console.log("Family holdings migrated.");

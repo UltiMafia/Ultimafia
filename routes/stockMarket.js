@@ -566,23 +566,23 @@ router.post("/ipo", async function (req, res) {
         { upsert: true, new: true }
       ).exec();
 
-      // 4. Grant the first share to the creator
+      // 4. Grant the first share to the creator (cost basis set to market price of 1 coin)
       await models.Shareholder.findOneAndUpdate(
         { subjectId: userId, holderId: userId },
         { 
           $inc: { sharesOwned: 1 },
-          $set: { costBasis: 100, averageBuyPrice: 100, dividendsReceived: 0 }
+          $set: { costBasis: 1, averageBuyPrice: 1, dividendsReceived: 0 }
         },
         { upsert: true }
       ).exec();
 
-      // 5. Log transaction
+      // 5. Log transaction (price represents share value, remaining 99 is sunk IPO launch fee)
       await models.StockTransaction.create({
         userId,
         subjectId: userId,
         type: "buy",
         shares: 1,
-        price: 100,
+        price: 1,
         fee: 0,
       });
 
@@ -868,23 +868,23 @@ router.post("/families/ipo", async function (req, res) {
         { upsert: true, new: true }
       ).exec();
 
-      // 6. Grant the first share to the leader/founder who paid
+      // 6. Grant the first share to the leader/founder who paid (cost basis set to market price of 1 coin)
       await models.FamilyShareholder.findOneAndUpdate(
         { familyId, holderId: userId },
         { 
           $inc: { sharesOwned: 1 },
-          $set: { costBasis: 200, averageBuyPrice: 200, dividendsReceived: 0 }
+          $set: { costBasis: 1, averageBuyPrice: 1, dividendsReceived: 0 }
         },
         { upsert: true }
       ).exec();
 
-      // 7. Log transaction
+      // 7. Log transaction (price represents share value, remaining 199 is sunk IPO launch fee)
       await models.FamilyStockTransaction.create({
         userId,
         familyId,
         type: "buy",
         shares: 1,
-        price: 200,
+        price: 1,
         fee: 0,
       });
 
