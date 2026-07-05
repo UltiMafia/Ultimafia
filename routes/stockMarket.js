@@ -67,21 +67,28 @@ function buildPriceHistory(stocks, txsMap, idField) {
 }
 
 /**
- * Computes net investment per entity from a user's transaction history.
- * netInvestment = sum(buy price + fee) - sum(sell price - fee)
+ * Computes cost basis and average buy price per entity from a user's transaction history.
  */
-function buildNetInvestmentMap(transactions, idField) {
-  const netInvestmentMap = {};
+function buildPositionStatsMap(transactions, idField) {
+  const statsMap = {};
   for (const tx of transactions) {
     const entityId = tx[idField];
-    if (!netInvestmentMap[entityId]) netInvestmentMap[entityId] = 0;
+    if (!statsMap[entityId]) {
+      statsMap[entityId] = { costBasis: 0, shares: 0, averageBuyPrice: 0 };
+    }
+    const stats = statsMap[entityId];
     if (tx.type === "buy") {
-      netInvestmentMap[entityId] += tx.price + tx.fee;
+      stats.costBasis += tx.price + tx.fee;
+      stats.shares += tx.shares;
+      stats.averageBuyPrice = stats.shares > 0 ? stats.costBasis / stats.shares : 0;
     } else {
-      netInvestmentMap[entityId] -= (tx.price - tx.fee);
+      const avgPrice = stats.shares > 0 ? stats.costBasis / stats.shares : 0;
+      stats.shares = Math.max(0, stats.shares - tx.shares);
+      stats.costBasis = stats.shares * avgPrice;
+      stats.averageBuyPrice = avgPrice;
     }
   }
-  return netInvestmentMap;
+  return statsMap;
 }
 
 // ---------------------------------------------------------------------------
@@ -426,6 +433,7 @@ router.get("/portfolio", async function (req, res) {
         .lean()
         .exec(),
       models.StockTransaction.find({ userId, subjectId: { $in: subjectIds } })
+        .sort({ createdAt: 1 })
         .select("subjectId type price fee shares")
         .lean()
         .exec()
@@ -440,16 +448,17 @@ router.get("/portfolio", async function (req, res) {
     const holdingMap = {};
     for (const h of holdings) holdingMap[h.subjectId] = h;
 
-    const netInvestmentMap = buildNetInvestmentMap(transactions, "subjectId");
+    const statsMap = buildPositionStatsMap(transactions, "subjectId");
 
     const result = subjectIds.map(subjectId => {
       const h = holdingMap[subjectId];
       const stock = stockMap[subjectId] || { shareSupply: 0 };
       const u = userMap[subjectId] || { name: "Unknown" };
       const sellPrice = stockMarket.getSellPrice(stock.shareSupply, h.sharesOwned);
-      const netInvestment = parseFloat((netInvestmentMap[subjectId] || 0).toFixed(2));
+      const stats = statsMap[subjectId] || { costBasis: 0, averageBuyPrice: 0 };
+      const costBasis = parseFloat(stats.costBasis.toFixed(2));
       const liquidValue = sellPrice.total;
-      const totalPnL = parseFloat((liquidValue - netInvestment).toFixed(2));
+      const totalPnL = parseFloat((liquidValue - costBasis).toFixed(2));
 
       return {
         subjectId,
@@ -460,7 +469,9 @@ router.get("/portfolio", async function (req, res) {
         sharesOwned: h.sharesOwned,
         averageSellValue: liquidValue,
         currentSingleSellPrice: stockMarket.getSellPrice(stock.shareSupply, 1).total,
-        netInvestment,
+        netInvestment: costBasis,
+        costBasis,
+        averageBuyPrice: parseFloat(stats.averageBuyPrice.toFixed(2)),
         totalPnL,
         dividendsReceived: parseFloat(h.dividendsReceived.toFixed(2))
       };
@@ -709,17 +720,18 @@ router.get("/families/portfolio", async function (req, res) {
     const transactions = await models.FamilyStockTransaction.find({
       userId,
       familyId: { $in: familyIds }
-    }).lean().exec();
+    }).sort({ createdAt: 1 }).lean().exec();
 
-    const netInvestmentMap = buildNetInvestmentMap(transactions, "familyId");
+    const statsMap = buildPositionStatsMap(transactions, "familyId");
 
     const result = holdings.map(h => {
       const stock = stockMap[h.familyId] || { shareSupply: 0 };
       const f = familyMap[h.familyId] || { name: "Unknown" };
       const sellPrice = stockMarket.getSellPrice(stock.shareSupply, h.sharesOwned);
-      const netInvestment = parseFloat((netInvestmentMap[h.familyId] || 0).toFixed(2));
+      const stats = statsMap[h.familyId] || { costBasis: 0, averageBuyPrice: 0 };
+      const costBasis = parseFloat(stats.costBasis.toFixed(2));
       const liquidValue = sellPrice.total;
-      const totalPnL = parseFloat((liquidValue - netInvestment).toFixed(2));
+      const totalPnL = parseFloat((liquidValue - costBasis).toFixed(2));
 
       return {
         familyId: h.familyId,
@@ -729,7 +741,9 @@ router.get("/families/portfolio", async function (req, res) {
         sharesOwned: h.sharesOwned,
         averageSellValue: liquidValue,
         currentSingleSellPrice: stockMarket.getSellPrice(stock.shareSupply, 1).total,
-        netInvestment,
+        netInvestment: costBasis,
+        costBasis,
+        averageBuyPrice: parseFloat(stats.averageBuyPrice.toFixed(2)),
         totalPnL,
         dividendsReceived: parseFloat(h.dividendsReceived.toFixed(2))
       };

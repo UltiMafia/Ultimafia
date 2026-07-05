@@ -814,6 +814,7 @@ export default function StockMarket() {
                             <Grid item xs={4}>
                               <Typography variant="caption" color="text.secondary" display="block">Shares</Typography>
                               <Typography variant="body2" fontWeight="bold">{holding.sharesOwned}</Typography>
+                              <Typography variant="caption" color="text.secondary" display="block">Avg Cost/Share: {holding.averageBuyPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "9px" }} /></Typography>
                             </Grid>
                             <Grid item xs={4}>
                               <Typography variant="caption" color="text.secondary" display="block">Liquid Value</Typography>
@@ -826,9 +827,9 @@ export default function StockMarket() {
                               </Typography>
                             </Grid>
                             <Grid item xs={6}>
-                              <Typography variant="caption" color="text.secondary" display="block">Net Investment</Typography>
+                              <Typography variant="caption" color="text.secondary" display="block">Cost Basis</Typography>
                               <Typography variant="body2" color="text.primary" fontWeight="bold">
-                                {holding.netInvestment.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                                {holding.costBasis.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
                               </Typography>
                             </Grid>
                             <Grid item xs={6}>
@@ -852,12 +853,12 @@ export default function StockMarket() {
                   <Typography color="text.secondary" align="center">You don't own any Family ETFs yet.</Typography>
                 ) : (
                   familyPortfolio.map((holding) => {
-                    const matchingStock = familyStocks.find((s) => s.familyId === holding.subjectId) || { shareSupply: 0 };
+                    const matchingStock = familyStocks.find((s) => s.familyId === holding.familyId) || { shareSupply: 0 };
                     return (
-                      <Card key={holding.subjectId} variant="outlined" sx={{ backgroundColor: theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(0, 0, 0, 0.2)" }}>
+                      <Card key={holding.familyId} variant="outlined" sx={{ backgroundColor: theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(0, 0, 0, 0.2)" }}>
                         <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
                           <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
-                            <StockAvatar targetType="family" id={holding.subjectId} name={holding.familyName} avatar={holding.avatar} siteInfo={siteInfo} />
+                            <StockAvatar targetType="family" id={holding.familyId} name={holding.familyName} avatar={holding.avatar} siteInfo={siteInfo} />
                             <Typography sx={{ color: "text.primary", fontWeight: "bold" }}>
                               {holding.familyName}
                             </Typography>
@@ -866,6 +867,7 @@ export default function StockMarket() {
                             <Grid item xs={4}>
                               <Typography variant="caption" color="text.secondary" display="block">Shares</Typography>
                               <Typography variant="body2" fontWeight="bold">{holding.sharesOwned}</Typography>
+                              <Typography variant="caption" color="text.secondary" display="block">Avg Cost/Share: {holding.averageBuyPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "9px" }} /></Typography>
                             </Grid>
                             <Grid item xs={4}>
                               <Typography variant="caption" color="text.secondary" display="block">Liquid Value</Typography>
@@ -878,9 +880,9 @@ export default function StockMarket() {
                               </Typography>
                             </Grid>
                             <Grid item xs={6}>
-                              <Typography variant="caption" color="text.secondary" display="block">Net Investment</Typography>
+                              <Typography variant="caption" color="text.secondary" display="block">Cost Basis</Typography>
                               <Typography variant="body2" color="text.primary" fontWeight="bold">
-                                {holding.netInvestment.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                                {holding.costBasis.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
                               </Typography>
                             </Grid>
                             <Grid item xs={6}>
@@ -916,9 +918,9 @@ export default function StockMarket() {
               <TableRow>
                 <TableCell>{marketMode === "player" ? "Player" : "Family Name"}</TableCell>
                 <TableCell align="right">Shares</TableCell>
-                <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>Net Investment</TableCell>
+                <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>Cost Basis</TableCell>
                 <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Liquid Value</TableCell>
-                <TableCell align="right">Total P&amp;L</TableCell>
+                <TableCell align="right">P&amp;L</TableCell>
                 <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Dividends</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
@@ -966,9 +968,14 @@ export default function StockMarket() {
                             </Typography>
                           </Stack>
                         </TableCell>
-                        <TableCell align="right">{holding.sharesOwned}</TableCell>
+                        <TableCell align="right">
+                          {holding.sharesOwned}
+                          <Typography variant="caption" color="text.secondary" display="block">
+                            Avg Cost/Share: {holding.averageBuyPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "9px" }} />
+                          </Typography>
+                        </TableCell>
                         <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
-                          {holding.netInvestment.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {holding.costBasis.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: goldColor, display: { xs: 'none', sm: 'table-cell' } }}>
                           {holding.averageSellValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
@@ -1042,9 +1049,14 @@ export default function StockMarket() {
                             </Typography>
                           </Stack>
                         </TableCell>
-                        <TableCell align="right">{holding.sharesOwned}</TableCell>
+                        <TableCell align="right">
+                          {holding.sharesOwned}
+                          <Typography variant="caption" color="text.secondary" display="block">
+                            Avg Cost/Share: {holding.averageBuyPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "9px" }} />
+                          </Typography>
+                        </TableCell>
                         <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
-                          {holding.netInvestment.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          {holding.costBasis.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ fontWeight: "bold", color: goldColor, display: { xs: 'none', sm: 'table-cell' } }}>
                           {holding.averageSellValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
