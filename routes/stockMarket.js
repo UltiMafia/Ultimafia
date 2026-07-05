@@ -466,7 +466,7 @@ router.get("/portfolio", async function (req, res) {
       const averageBuyPrice = parseFloat((h.averageBuyPrice || 0).toFixed(2));
       
       const liquidValue = sellPrice.total;
-      const totalPnL = parseFloat((liquidValue - costBasis).toFixed(2));
+      const unrealizedPnL = parseFloat((liquidValue - costBasis).toFixed(2));
 
       return {
         subjectId,
@@ -480,7 +480,7 @@ router.get("/portfolio", async function (req, res) {
         netInvestment: costBasis,
         costBasis,
         averageBuyPrice,
-        totalPnL,
+        unrealizedPnL,
         dividendsReceived: parseFloat((h.dividendsReceived || 0).toFixed(2))
       };
     });
@@ -734,7 +734,7 @@ router.get("/families/portfolio", async function (req, res) {
       const averageBuyPrice = parseFloat((h.averageBuyPrice || 0).toFixed(2));
       
       const liquidValue = sellPrice.total;
-      const totalPnL = parseFloat((liquidValue - costBasis).toFixed(2));
+      const unrealizedPnL = parseFloat((liquidValue - costBasis).toFixed(2));
 
       return {
         familyId: h.familyId,
@@ -747,7 +747,7 @@ router.get("/families/portfolio", async function (req, res) {
         netInvestment: costBasis,
         costBasis,
         averageBuyPrice,
-        totalPnL,
+        unrealizedPnL,
         dividendsReceived: parseFloat((h.dividendsReceived || 0).toFixed(2))
       };
     });

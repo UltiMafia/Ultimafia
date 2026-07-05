@@ -602,43 +602,18 @@ export default function StockMarket() {
                             {stock.shareSupply}
                           </Typography>
                         </Grid>
-                        {marketMode === "player" ? (
-                          <>
-                            <Grid item xs={6}>
-                              <Typography variant="caption" color="text.secondary" display="block">Market Cap</Typography>
-                              <Typography variant="body2" color="text.primary" fontWeight="bold">
-                                {(stock.marketCap).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={6}>
-                              <Typography variant="caption" color="text.secondary" display="block">Dividends</Typography>
-                              <Typography variant="body2" color={goldColor} fontWeight="bold">
-                                {stock.dividendsPaidOut.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
-                              </Typography>
-                            </Grid>
-                          </>
-                        ) : (
-                          <>
-                            <Grid item xs={4}>
-                              <Typography variant="caption" color="text.secondary" display="block">Market Cap</Typography>
-                              <Typography variant="body2" color="text.primary" fontWeight="bold">
-                                {(stock.marketCap).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={4}>
-                              <Typography variant="caption" color="text.secondary" display="block">Treasury</Typography>
-                              <Typography variant="body2" color={goldColor} fontWeight="bold">
-                                {stock.treasuryCoins.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={4}>
-                              <Typography variant="caption" color="text.secondary" display="block">Dividends</Typography>
-                              <Typography variant="body2" color={goldColor} fontWeight="bold">
-                                {stock.dividendsPaidOut.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
-                              </Typography>
-                            </Grid>
-                          </>
-                        )}
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary" display="block">Market Cap</Typography>
+                          <Typography variant="body2" color="text.primary" fontWeight="bold">
+                            {(stock.marketCap).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary" display="block">{marketMode === "player" ? "Dividends" : "Treasury"}</Typography>
+                          <Typography variant="body2" color={goldColor} fontWeight="bold">
+                            {marketMode === "player" ? stock.dividendsPaidOut.toFixed(2) : stock.treasuryCoins.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                          </Typography>
+                        </Grid>
                       </Grid>
                       <Stack direction="row" spacing={1}>
                         <Button fullWidth variant="contained" color="success" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "buy", marketMode)}>Buy</Button>
@@ -845,8 +820,8 @@ export default function StockMarket() {
                             </Grid>
                             <Grid item xs={4}>
                               <Typography variant="caption" color="text.secondary" display="block">P&L</Typography>
-                              <Typography variant="body2" color={holding.totalPnL >= 0 ? "success.main" : "error.main"} fontWeight="bold">
-                                {holding.totalPnL >= 0 ? "+" : ""}{holding.totalPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              <Typography variant="body2" color={holding.unrealizedPnL >= 0 ? "success.main" : "error.main"} fontWeight="bold">
+                                {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
                               </Typography>
                             </Grid>
                             <Grid item xs={6}>
@@ -898,8 +873,8 @@ export default function StockMarket() {
                             </Grid>
                             <Grid item xs={4}>
                               <Typography variant="caption" color="text.secondary" display="block">P&L</Typography>
-                              <Typography variant="body2" color={holding.totalPnL >= 0 ? "success.main" : "error.main"} fontWeight="bold">
-                                {holding.totalPnL >= 0 ? "+" : ""}{holding.totalPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              <Typography variant="body2" color={holding.unrealizedPnL >= 0 ? "success.main" : "error.main"} fontWeight="bold">
+                                {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
                               </Typography>
                             </Grid>
                             <Grid item xs={6}>
@@ -1003,8 +978,8 @@ export default function StockMarket() {
                         <TableCell align="right" sx={{ fontWeight: "bold", color: goldColor, display: { xs: 'none', sm: 'table-cell' } }}>
                           {holding.averageSellValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: holding.totalPnL >= 0 ? "success.main" : "error.main" }}>
-                          {holding.totalPnL >= 0 ? "+" : ""}{holding.totalPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        <TableCell align="right" sx={{ fontWeight: "bold", color: holding.unrealizedPnL >= 0 ? "success.main" : "error.main" }}>
+                          {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ color: goldColor, display: { xs: 'none', sm: 'table-cell' } }}>
                           {holding.dividendsReceived.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
@@ -1084,8 +1059,8 @@ export default function StockMarket() {
                         <TableCell align="right" sx={{ fontWeight: "bold", color: goldColor, display: { xs: 'none', sm: 'table-cell' } }}>
                           {holding.averageSellValue.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: holding.totalPnL >= 0 ? "success.main" : "error.main" }}>
-                          {holding.totalPnL >= 0 ? "+" : ""}{holding.totalPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                        <TableCell align="right" sx={{ fontWeight: "bold", color: holding.unrealizedPnL >= 0 ? "success.main" : "error.main" }}>
+                          {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
                         </TableCell>
                         <TableCell align="right" sx={{ color: goldColor, display: { xs: 'none', sm: 'table-cell' } }}>
                           {holding.dividendsReceived.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
