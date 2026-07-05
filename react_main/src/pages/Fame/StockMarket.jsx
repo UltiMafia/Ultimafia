@@ -516,9 +516,15 @@ export default function StockMarket() {
                     onChange={(e) => setSortBy(e.target.value)}
                   >
                     <MenuItem value="name">Name</MenuItem>
+                    <MenuItem value="supply">Supply</MenuItem>
                     <MenuItem value="marketCap">Market Cap</MenuItem>
                     <MenuItem value="buyPrice">Buy Price</MenuItem>
                     <MenuItem value="sellPrice">Sell Price</MenuItem>
+                    {marketMode === "player" ? (
+                      <MenuItem value="dividends">Dividends</MenuItem>
+                    ) : (
+                      <MenuItem value="treasury">Treasury</MenuItem>
+                    )}
                   </Select>
                 </FormControl>
                 <Button onClick={() => setSortDirection(sortDirection === "asc" ? "desc" : "asc")} sx={{ minWidth: 0, px: 2 }}>
@@ -583,18 +589,43 @@ export default function StockMarket() {
                             {stock.shareSupply}
                           </Typography>
                         </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="caption" color="text.secondary" display="block">Market Cap</Typography>
-                          <Typography variant="body2" color="text.primary" fontWeight="bold">
-                            {(stock.marketCap).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="caption" color="text.secondary" display="block">{marketMode === "player" ? "Dividends" : "Treasury"}</Typography>
-                          <Typography variant="body2" color={goldColor} fontWeight="bold">
-                            {marketMode === "player" ? stock.dividendsPaidOut.toFixed(2) : stock.treasuryCoins.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
-                          </Typography>
-                        </Grid>
+                        {marketMode === "player" ? (
+                          <>
+                            <Grid item xs={6}>
+                              <Typography variant="caption" color="text.secondary" display="block">Market Cap</Typography>
+                              <Typography variant="body2" color="text.primary" fontWeight="bold">
+                                {(stock.marketCap).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <Typography variant="caption" color="text.secondary" display="block">Dividends</Typography>
+                              <Typography variant="body2" color={goldColor} fontWeight="bold">
+                                {stock.dividendsPaidOut.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              </Typography>
+                            </Grid>
+                          </>
+                        ) : (
+                          <>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">Market Cap</Typography>
+                              <Typography variant="body2" color="text.primary" fontWeight="bold">
+                                {(stock.marketCap).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">Treasury</Typography>
+                              <Typography variant="body2" color={goldColor} fontWeight="bold">
+                                {stock.treasuryCoins.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">Dividends</Typography>
+                              <Typography variant="body2" color={goldColor} fontWeight="bold">
+                                {stock.dividendsPaidOut.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              </Typography>
+                            </Grid>
+                          </>
+                        )}
                       </Grid>
                       <Stack direction="row" spacing={1}>
                         <Button fullWidth variant="contained" color="success" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "buy", marketMode)}>Buy</Button>
