@@ -66,30 +66,6 @@ function buildPriceHistory(stocks, txsMap, idField) {
   return historyMap;
 }
 
-/**
- * Computes cost basis and average buy price per entity from a user's transaction history.
- */
-function buildPositionStatsMap(transactions, idField) {
-  const statsMap = {};
-  for (const tx of transactions) {
-    const entityId = tx[idField];
-    if (!statsMap[entityId]) {
-      statsMap[entityId] = { costBasis: 0, shares: 0, averageBuyPrice: 0 };
-    }
-    const stats = statsMap[entityId];
-    if (tx.type === "buy") {
-      stats.costBasis += tx.price + tx.fee;
-      stats.shares += tx.shares;
-      stats.averageBuyPrice = stats.shares > 0 ? stats.costBasis / stats.shares : 0;
-    } else {
-      const avgPrice = stats.shares > 0 ? stats.costBasis / stats.shares : 0;
-      stats.shares = Math.max(0, stats.shares - tx.shares);
-      stats.costBasis = stats.shares * avgPrice;
-      stats.averageBuyPrice = avgPrice;
-    }
-  }
-  return statsMap;
-}
 
 // ---------------------------------------------------------------------------
 // Trade configuration — defines the differences between player and family
@@ -213,11 +189,21 @@ function createBuyHandler(config) {
         ).lean().exec();
         const needsReset = !currentHolding || currentHolding.sharesOwned === 0;
 
+        const currentShares = currentHolding ? (currentHolding.sharesOwned || 0) : 0;
+        const currentCostBasis = currentHolding ? (currentHolding.costBasis || 0) : 0;
+        const newShares = currentShares + sharesToBuy;
+        const newCostBasis = currentCostBasis + total;
+        const newAvgBuyPrice = newShares > 0 ? newCostBasis / newShares : 0;
+
         await config.shareholderModel.updateOne(
           config.getShareholderFilter(entityId, userId),
           {
             $inc: { sharesOwned: sharesToBuy },
-            ...(needsReset ? { $set: { dividendsReceived: 0 } } : {})
+            $set: {
+              costBasis: newCostBasis,
+              averageBuyPrice: newAvgBuyPrice,
+              ...(needsReset ? { dividendsReceived: 0 } : {})
+            }
           },
           { upsert: true }
         ).exec();
@@ -284,9 +270,22 @@ function createSellHandler(config) {
         const { price, creatorFee, systemFee, total } = stockMarket.getSellPrice(stock.shareSupply, sharesToSell);
 
         // 5. Debit shareholder shares FIRST
+        const currentShares = holding.sharesOwned || 0;
+        const currentCostBasis = holding.costBasis || 0;
+        const currentAvgBuyPrice = holding.averageBuyPrice || 0;
+        const avgPrice = currentShares > 0 ? currentCostBasis / currentShares : 0;
+        const newShares = Math.max(0, currentShares - sharesToSell);
+        const newCostBasis = newShares * avgPrice;
+
         const debitHolding = await config.shareholderModel.updateOne(
           { ...config.getShareholderFilter(entityId, userId), sharesOwned: { $gte: sharesToSell } },
-          { $inc: { sharesOwned: -sharesToSell } }
+          { 
+            $inc: { sharesOwned: -sharesToSell },
+            $set: { 
+              costBasis: newCostBasis,
+              averageBuyPrice: avgPrice
+            }
+          }
         ).exec();
 
         if (!wasModified(debitHolding)) {
@@ -304,7 +303,13 @@ function createSellHandler(config) {
           try {
             await config.shareholderModel.updateOne(
               config.getShareholderFilter(entityId, userId),
-              { $inc: { sharesOwned: sharesToSell } }
+              { 
+                $inc: { sharesOwned: sharesToSell },
+                $set: { 
+                  costBasis: holding.costBasis || 0,
+                  averageBuyPrice: holding.averageBuyPrice || 0
+                }
+              }
             ).exec();
           } catch (refundErr) {
             logger.error(`CRITICAL: Failed to refund ${sharesToSell} shares to ${userId} after sell conflict on ${config.entityLabel} ${entityId}: ${refundErr.message}`);
@@ -434,15 +439,10 @@ router.get("/portfolio", async function (req, res) {
     const holdings = await models.Shareholder.find({ holderId: userId, sharesOwned: { $gt: 0 } }).lean().exec();
     const subjectIds = holdings.map(h => h.subjectId);
 
-    const [stocks, users, transactions] = await Promise.all([
+    const [stocks, users] = await Promise.all([
       models.PlayerStock.find({ userId: { $in: subjectIds } }).lean().exec(),
       models.User.find({ id: { $in: subjectIds } })
         .select("id name avatar settings.nameColor settings.vanityUrl")
-        .lean()
-        .exec(),
-      models.StockTransaction.find({ userId, subjectId: { $in: subjectIds } })
-        .sort({ createdAt: 1 })
-        .select("subjectId type price fee shares")
         .lean()
         .exec()
     ]);
@@ -456,15 +456,15 @@ router.get("/portfolio", async function (req, res) {
     const holdingMap = {};
     for (const h of holdings) holdingMap[h.subjectId] = h;
 
-    const statsMap = buildPositionStatsMap(transactions, "subjectId");
-
     const result = subjectIds.map(subjectId => {
       const h = holdingMap[subjectId];
       const stock = stockMap[subjectId] || { shareSupply: 0 };
       const u = userMap[subjectId] || { name: "Unknown" };
       const sellPrice = stockMarket.getSellPrice(stock.shareSupply, h.sharesOwned);
-      const stats = statsMap[subjectId] || { costBasis: 0, averageBuyPrice: 0 };
-      const costBasis = parseFloat(stats.costBasis.toFixed(2));
+      
+      const costBasis = parseFloat((h.costBasis || 0).toFixed(2));
+      const averageBuyPrice = parseFloat((h.averageBuyPrice || 0).toFixed(2));
+      
       const liquidValue = sellPrice.total;
       const totalPnL = parseFloat((liquidValue - costBasis).toFixed(2));
 
@@ -479,9 +479,9 @@ router.get("/portfolio", async function (req, res) {
         currentSingleSellPrice: stockMarket.getSellPrice(stock.shareSupply, 1).total,
         netInvestment: costBasis,
         costBasis,
-        averageBuyPrice: parseFloat(stats.averageBuyPrice.toFixed(2)),
+        averageBuyPrice,
         totalPnL,
-        dividendsReceived: parseFloat(h.dividendsReceived.toFixed(2))
+        dividendsReceived: parseFloat((h.dividendsReceived || 0).toFixed(2))
       };
     });
 
@@ -725,19 +725,14 @@ router.get("/families/portfolio", async function (req, res) {
       familyMap[f.id] = f;
     }
 
-    const transactions = await models.FamilyStockTransaction.find({
-      userId,
-      familyId: { $in: familyIds }
-    }).sort({ createdAt: 1 }).lean().exec();
-
-    const statsMap = buildPositionStatsMap(transactions, "familyId");
-
     const result = holdings.map(h => {
       const stock = stockMap[h.familyId] || { shareSupply: 0 };
       const f = familyMap[h.familyId] || { name: "Unknown" };
       const sellPrice = stockMarket.getSellPrice(stock.shareSupply, h.sharesOwned);
-      const stats = statsMap[h.familyId] || { costBasis: 0, averageBuyPrice: 0 };
-      const costBasis = parseFloat(stats.costBasis.toFixed(2));
+      
+      const costBasis = parseFloat((h.costBasis || 0).toFixed(2));
+      const averageBuyPrice = parseFloat((h.averageBuyPrice || 0).toFixed(2));
+      
       const liquidValue = sellPrice.total;
       const totalPnL = parseFloat((liquidValue - costBasis).toFixed(2));
 
@@ -751,9 +746,9 @@ router.get("/families/portfolio", async function (req, res) {
         currentSingleSellPrice: stockMarket.getSellPrice(stock.shareSupply, 1).total,
         netInvestment: costBasis,
         costBasis,
-        averageBuyPrice: parseFloat(stats.averageBuyPrice.toFixed(2)),
+        averageBuyPrice,
         totalPnL,
-        dividendsReceived: parseFloat(h.dividendsReceived.toFixed(2))
+        dividendsReceived: parseFloat((h.dividendsReceived || 0).toFixed(2))
       };
     });
 

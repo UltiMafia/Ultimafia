@@ -31,6 +31,7 @@ import {
   Grid,
   useMediaQuery,
   useTheme,
+  Pagination,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { useErrorAlert } from "../../components/Alerts";
@@ -303,6 +304,18 @@ export default function StockMarket() {
     return list;
   }, [stocks, familyStocks, marketMode, searchQuery, sortBy, sortDirection]);
 
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 20;
+
+  const paginatedStocks = useMemo(() => {
+    const startIndex = (page - 1) * rowsPerPage;
+    return filteredStocks.slice(startIndex, startIndex + rowsPerPage);
+  }, [filteredStocks, page, rowsPerPage]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [marketMode, searchQuery, sortBy, sortDirection]);
+
   // Find owned shares count for selected stock in modal
   const ownedSharesCount = useMemo(() => {
     if (!selectedStock) return 0;
@@ -531,7 +544,7 @@ export default function StockMarket() {
                   <Icon icon={sortDirection === "asc" ? "lucide:arrow-up" : "lucide:arrow-down"} />
                 </Button>
               </Stack>
-              {filteredStocks.map((stock) => {
+              {paginatedStocks.map((stock) => {
                 const isSelf = user.loggedIn && marketMode === "player" && stock.userId === user.id;
                 const name = marketMode === "player" ? stock.username : stock.familyName;
                 return (
@@ -671,7 +684,7 @@ export default function StockMarket() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredStocks.map((stock) => {
+                  paginatedStocks.map((stock) => {
                     const isSelf = user.loggedIn && marketMode === "player" && user.id === stock.userId;
                     const name = marketMode === "player" ? stock.username : stock.familyName;
                     const key = marketMode === "player" ? stock.userId : stock.familyId;
@@ -774,6 +787,16 @@ export default function StockMarket() {
               </TableBody>
             </Table>
           </TableContainer>
+          )}
+          {filteredStocks.length > 0 && (
+            <Box display="flex" justifyContent="center" mt={2}>
+              <Pagination
+                count={Math.ceil(filteredStocks.length / rowsPerPage)}
+                page={page}
+                onChange={(e, val) => setPage(val)}
+                color="primary"
+              />
+            </Box>
           )}
         </Stack>
       )}
