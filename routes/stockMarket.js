@@ -429,6 +429,199 @@ router.get("/", async function (req, res) {
 });
 
 /**
+ * GET /api/stocks/transactions
+ * Lists all stock/family transactions with pagination.
+ */
+router.get("/transactions", async function (req, res) {
+  try {
+    const marketMode = req.query.marketMode || "player"; // "player" | "family"
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.max(1, Math.min(100, parseInt(req.query.limit) || 20));
+    const skip = (page - 1) * limit;
+    const search = req.query.search ? String(req.query.search).trim() : "";
+    const type = req.query.type ? String(req.query.type).trim() : "";
+
+    if (marketMode === "player") {
+      const queryFilter = {};
+      if (type === "buy" || type === "sell") {
+        queryFilter.type = type;
+      }
+
+      if (search) {
+        const matchingUsers = await models.User.find({ name: { $regex: search, $options: "i" } })
+          .select("id")
+          .lean()
+          .exec();
+        const matchingUserIds = matchingUsers.map(u => u.id);
+
+        if (matchingUserIds.length === 0) {
+          return res.send({ total: 0, transactions: [], page, limit });
+        }
+
+        queryFilter.$or = [
+          { userId: { $in: matchingUserIds } },
+          { subjectId: { $in: matchingUserIds } }
+        ];
+      }
+
+      const totalPromise = Object.keys(queryFilter).length > 0
+        ? models.StockTransaction.countDocuments(queryFilter).exec()
+        : models.StockTransaction.estimatedDocumentCount().exec();
+
+      const [total, txs] = await Promise.all([
+        totalPromise,
+        models.StockTransaction.find(queryFilter)
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit)
+          .lean()
+          .exec()
+      ]);
+
+      const userIds = new Set();
+      for (const tx of txs) {
+        userIds.add(tx.userId);
+        userIds.add(tx.subjectId);
+      }
+
+      const users = await models.User.find({ id: { $in: Array.from(userIds) } })
+        .select("id name avatar settings.nameColor settings.vanityUrl")
+        .lean()
+        .exec();
+
+      const userMap = {};
+      for (const u of users) {
+        userMap[u.id] = u;
+      }
+
+      const result = txs.map(tx => {
+        const buyer = userMap[tx.userId] || { name: "Unknown" };
+        const subject = userMap[tx.subjectId] || { name: "Unknown" };
+        return {
+          id: tx._id,
+          userId: tx.userId,
+          buyerName: buyer.name,
+          buyerAvatar: buyer.avatar,
+          buyerNameColor: buyer.settings?.nameColor || "",
+          buyerVanityUrl: buyer.settings?.vanityUrl || "",
+          subjectId: tx.subjectId,
+          subjectName: subject.name,
+          subjectAvatar: subject.avatar,
+          subjectNameColor: subject.settings?.nameColor || "",
+          subjectVanityUrl: subject.settings?.vanityUrl || "",
+          type: tx.type,
+          shares: tx.shares,
+          price: tx.price,
+          fee: tx.fee,
+          createdAt: tx.createdAt
+        };
+      });
+
+      res.send({ total, transactions: result, page, limit });
+    } else {
+      const queryFilter = {};
+      if (type === "buy" || type === "sell") {
+        queryFilter.type = type;
+      }
+
+      if (search) {
+        const [matchingUsers, matchingFamilies] = await Promise.all([
+          models.User.find({ name: { $regex: search, $options: "i" } }).select("id").lean().exec(),
+          models.Family.find({ name: { $regex: search, $options: "i" } }).select("id").lean().exec()
+        ]);
+
+        const matchingUserIds = matchingUsers.map(u => u.id);
+        const matchingFamilyIds = matchingFamilies.map(f => f.id);
+
+        const orConditions = [];
+        if (matchingUserIds.length > 0) {
+          orConditions.push({ userId: { $in: matchingUserIds } });
+        }
+        if (matchingFamilyIds.length > 0) {
+          orConditions.push({ familyId: { $in: matchingFamilyIds } });
+        }
+
+        if (orConditions.length === 0) {
+          return res.send({ total: 0, transactions: [], page, limit });
+        }
+
+        queryFilter.$or = orConditions;
+      }
+
+      const totalPromise = Object.keys(queryFilter).length > 0
+        ? models.FamilyStockTransaction.countDocuments(queryFilter).exec()
+        : models.FamilyStockTransaction.estimatedDocumentCount().exec();
+
+      const [total, txs] = await Promise.all([
+        totalPromise,
+        models.FamilyStockTransaction.find(queryFilter)
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit)
+          .lean()
+          .exec()
+      ]);
+
+      const userIds = new Set();
+      const familyIds = new Set();
+      for (const tx of txs) {
+        userIds.add(tx.userId);
+        familyIds.add(tx.familyId);
+      }
+
+      const [users, families] = await Promise.all([
+        models.User.find({ id: { $in: Array.from(userIds) } })
+          .select("id name avatar settings.nameColor settings.vanityUrl")
+          .lean()
+          .exec(),
+        models.Family.find({ id: { $in: Array.from(familyIds) } })
+          .select("id name avatar background")
+          .lean()
+          .exec()
+      ]);
+
+      const userMap = {};
+      for (const u of users) {
+        userMap[u.id] = u;
+      }
+
+      const familyMap = {};
+      for (const f of families) {
+        familyMap[f.id] = f;
+      }
+
+      const result = txs.map(tx => {
+        const buyer = userMap[tx.userId] || { name: "Unknown" };
+        const family = familyMap[tx.familyId] || { name: "Unknown" };
+        return {
+          id: tx._id,
+          userId: tx.userId,
+          buyerName: buyer.name,
+          buyerAvatar: buyer.avatar,
+          buyerNameColor: buyer.settings?.nameColor || "",
+          buyerVanityUrl: buyer.settings?.vanityUrl || "",
+          familyId: tx.familyId,
+          familyName: family.name,
+          familyAvatar: family.avatar,
+          familyBackground: family.background || false,
+          type: tx.type,
+          shares: tx.shares,
+          price: tx.price,
+          fee: tx.fee,
+          createdAt: tx.createdAt
+        };
+      });
+
+      res.send({ total, transactions: result, page, limit });
+    }
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res);
+  }
+});
+
+
+/**
  * GET /api/stocks/portfolio
  * Gets the logged-in user's stock holdings.
  */

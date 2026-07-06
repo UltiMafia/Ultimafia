@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback, useMemo } from "react";
+import ReactDOM from "react-dom";
 import axios from "axios";
 import {
   Typography,
@@ -114,6 +115,24 @@ export default function StockMarket() {
   const [selectedStock, setSelectedStock] = useState(null);
   const [tradeType, setTradeType] = useState("buy");
 
+  // Transaction State
+  const [txPage, setTxPage] = useState(1);
+  const [txTotal, setTxTotal] = useState(0);
+  const [transactions, setTransactions] = useState([]);
+  const [txLoading, setTxLoading] = useState(false);
+  const [txSearch, setTxSearch] = useState("");
+  const [debouncedTxSearch, setDebouncedTxSearch] = useState("");
+  const [txTypeFilter, setTxTypeFilter] = useState("all"); // "all" | "buy" | "sell"
+
+  // Debounce transaction search
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedTxSearch(txSearch);
+      setTxPage(1);
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [txSearch]);
+
   // Fetch individual player stocks
   const fetchStocks = useCallback(() => {
     return axios
@@ -171,6 +190,34 @@ export default function StockMarket() {
       .catch(errorAlert);
   }, [user.loggedIn, selectedFamilyId, errorAlert]);
 
+  // Fetch all stock/family transactions with pagination
+  const fetchTransactions = useCallback(() => {
+    setTxLoading(true);
+    return axios
+      .get("/api/stocks/transactions", {
+        params: {
+          marketMode,
+          page: txPage,
+          limit: 20,
+          search: debouncedTxSearch,
+          type: txTypeFilter === "all" ? "" : txTypeFilter
+        }
+      })
+      .then((res) => {
+        ReactDOM.unstable_batchedUpdates(() => {
+          setTransactions(res.data.transactions || []);
+          setTxTotal(res.data.total || 0);
+          setTxLoading(false);
+        });
+      })
+      .catch((err) => {
+        ReactDOM.unstable_batchedUpdates(() => {
+          setTxLoading(false);
+        });
+        errorAlert(err);
+      });
+  }, [marketMode, txPage, debouncedTxSearch, txTypeFilter, errorAlert]);
+
   // Refresh user balance info
   const refreshUserCoins = useCallback(() => {
     if (!user.loggedIn) return;
@@ -183,18 +230,42 @@ export default function StockMarket() {
     });
   }, [user]);
 
+  // Check if current user has IPOed themselves
+  const hasIpoed = useMemo(() => {
+    return stocks.some((s) => s.userId === user.id);
+  }, [stocks, user.id]);
+
+  // Define tabs dynamically
+  const tabs = useMemo(() => {
+    const list = [{ label: "All Markets", icon: "lucide:line-chart" }];
+    if (user.loggedIn) {
+      list.push({ label: "My Portfolio", icon: "lucide:briefcase" });
+    }
+    list.push({ label: "Transactions", icon: "lucide:history" });
+    if (user.loggedIn && (!hasIpoed || eligibleFamilies.length > 0)) {
+      list.push({ label: "Launch IPO", icon: "lucide:award" });
+    }
+    return list;
+  }, [user.loggedIn, hasIpoed, eligibleFamilies]);
+
+  const currentTabLabel = tabs[activeTab]?.label;
+
   // Refresh all dashboard metrics
   const refreshAll = useCallback(() => {
     setLoading(true);
     refreshUserCoins();
-    Promise.all([
+    const promises = [
       fetchStocks(),
       fetchPortfolio(),
       fetchFamilyStocks(),
       fetchFamilyPortfolio(),
       fetchEligibleFamilies(),
-    ]).finally(() => setLoading(false));
-  }, [fetchStocks, fetchPortfolio, fetchFamilyStocks, fetchFamilyPortfolio, fetchEligibleFamilies, refreshUserCoins]);
+    ];
+    if (currentTabLabel === "Transactions") {
+      promises.push(fetchTransactions());
+    }
+    Promise.all(promises).finally(() => setLoading(false));
+  }, [fetchStocks, fetchPortfolio, fetchFamilyStocks, fetchFamilyPortfolio, fetchEligibleFamilies, refreshUserCoins, currentTabLabel, fetchTransactions]);
 
   // Initial load
   useEffect(() => {
@@ -203,10 +274,28 @@ export default function StockMarket() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Check if current user has IPOed themselves
-  const hasIpoed = useMemo(() => {
-    return stocks.some((s) => s.userId === user.id);
-  }, [stocks, user.id]);
+  // Fetch transactions when tab active, page, mode, search, or type changes
+  useEffect(() => {
+    if (currentTabLabel === "Transactions") {
+      fetchTransactions();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTabLabel, marketMode, txPage, debouncedTxSearch, txTypeFilter]);
+
+  // Reset transactions page and filters when mode changes
+  useEffect(() => {
+    setTxPage(1);
+    setTxSearch("");
+    setDebouncedTxSearch("");
+    setTxTypeFilter("all");
+  }, [marketMode]);
+
+  // Clamp active tab index
+  useEffect(() => {
+    if (activeTab >= tabs.length) {
+      setActiveTab(0);
+    }
+  }, [tabs, activeTab]);
 
   // Launch Player IPO
   const handleLaunchIpo = () => {
@@ -469,17 +558,13 @@ export default function StockMarket() {
         allowScrollButtonsMobile
         sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}
       >
-        <Tab icon={<Icon icon="lucide:line-chart" />} iconPosition="start" label="All Markets" />
-        {user.loggedIn && (
-          <Tab icon={<Icon icon="lucide:briefcase" />} iconPosition="start" label="My Portfolio" />
-        )}
-        {user.loggedIn && (!hasIpoed || eligibleFamilies.length > 0) && (
-          <Tab icon={<Icon icon="lucide:award" />} iconPosition="start" label="Launch IPO" />
-        )}
+        {tabs.map((t) => (
+          <Tab key={t.label} icon={<Icon icon={t.icon} />} iconPosition="start" label={t.label} />
+        ))}
       </Tabs>
 
-      {/* Market Mode Toggles for All Markets / Portfolio tabs */}
-      {activeTab < 2 && (
+      {/* Market Mode Toggles for All Markets / Portfolio / Transactions tabs */}
+      {(currentTabLabel === "All Markets" || currentTabLabel === "My Portfolio" || currentTabLabel === "Transactions") && (
         <Stack direction="row" justifyContent="flex-start" sx={{ mb: 3, width: '100%', minWidth: 0 }}>
           <ToggleButtonGroup
             value={marketMode}
@@ -505,7 +590,7 @@ export default function StockMarket() {
       )}
 
       {/* Tab Content: All Markets */}
-      {activeTab === 0 && (
+      {currentTabLabel === "All Markets" && (
         <Stack spacing={3}>
           <TextField
             fullWidth
@@ -777,7 +862,7 @@ export default function StockMarket() {
       )}
 
       {/* Tab Content: My Portfolio */}
-      {activeTab === 1 && user.loggedIn && (
+      {currentTabLabel === "My Portfolio" && user.loggedIn && (
         isMobile ? (
             <Stack spacing={2}>
               {marketMode === "player" ? (
@@ -1097,7 +1182,7 @@ export default function StockMarket() {
       )}
 
       {/* Tab Content: Launch IPO */}
-      {activeTab === 2 && user.loggedIn && (
+      {currentTabLabel === "Launch IPO" && user.loggedIn && (
         <Grid container spacing={3}>
           {/* Card 1: Player IPO */}
           {!hasIpoed && (
@@ -1223,6 +1308,322 @@ export default function StockMarket() {
             </Grid>
           )}
         </Grid>
+      )}
+
+      {/* Tab Content: Transactions */}
+      {currentTabLabel === "Transactions" && (
+        <Stack spacing={3}>
+          {/* Filters Row */}
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={2}
+            alignItems={{ xs: "stretch", sm: "center" }}
+          >
+            <TextField
+              size="small"
+              variant="outlined"
+              placeholder="Search trader or stock..."
+              value={txSearch}
+              onChange={(e) => setTxSearch(e.target.value)}
+              InputProps={{
+                startAdornment: <Icon icon="lucide:search" style={{ marginRight: 8, color: "gray" }} />,
+              }}
+              sx={{ flexGrow: 1 }}
+            />
+
+            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flexShrink: 0 }}>
+              <Typography variant="body2" color="text.secondary">
+                Type:
+              </Typography>
+              <ToggleButtonGroup
+                size="small"
+                value={txTypeFilter}
+                exclusive
+                onChange={(e, val) => {
+                  if (val !== null) {
+                    setTxTypeFilter(val);
+                    setTxPage(1);
+                  }
+                }}
+                aria-label="transaction type filter"
+              >
+                <ToggleButton value="all" sx={{ textTransform: "none", fontWeight: "bold" }}>
+                  All
+                </ToggleButton>
+                <ToggleButton value="buy" sx={{ textTransform: "none", fontWeight: "bold" }}>
+                  Buys
+                </ToggleButton>
+                <ToggleButton value="sell" sx={{ textTransform: "none", fontWeight: "bold" }}>
+                  Sells
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Stack>
+          </Stack>
+
+          {txLoading && transactions.length === 0 ? (
+            <Loading small />
+          ) : isMobile ? (
+            <Stack spacing={2}>
+              {transactions.length === 0 ? (
+                <Typography color="text.secondary" align="center">No transactions found.</Typography>
+              ) : (
+                transactions.map((tx) => {
+                  const isBuy = tx.type === "buy";
+                  const targetName = marketMode === "player" ? tx.subjectName : tx.familyName;
+                  const targetId = marketMode === "player" ? tx.subjectId : tx.familyId;
+                  const targetAvatar = marketMode === "player" ? tx.subjectAvatar : tx.familyAvatar;
+                  
+                  return (
+                    <Card key={tx.id} variant="outlined" sx={{ backgroundColor: theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(0, 0, 0, 0.2)" }}>
+                      <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
+                          <Stack direction="row" spacing={1.5} alignItems="center">
+                            <StockAvatar
+                              targetType={marketMode}
+                              id={targetId}
+                              name={targetName}
+                              avatar={targetAvatar}
+                              siteInfo={siteInfo}
+                            />
+                            <Box>
+                              {marketMode === "player" ? (
+                                <Typography
+                                  component="a"
+                                  href={tx.subjectVanityUrl ? `/user/${tx.subjectVanityUrl}` : `/user/${tx.subjectId}`}
+                                  sx={{
+                                    color: resolveDisplayNameColor({
+                                      accessibleNameColors: user.settings?.accessibleNameColors,
+                                      rawNameColor: tx.subjectNameColor,
+                                      autoContrastColor: user.autoContrastColor ? user.autoContrastColor.bind(user) : (c => c),
+                                      theme
+                                    }) || "text.primary",
+                                    textDecoration: "none",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  {targetName}
+                                </Typography>
+                              ) : (
+                                <Typography
+                                  component="a"
+                                  href={`/user/family/${tx.familyId}`}
+                                  sx={{
+                                    color: "text.primary",
+                                    textDecoration: "none",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  {targetName}
+                                </Typography>
+                              )}
+                            </Box>
+                          </Stack>
+                          <Chip
+                            size="small"
+                            label={isBuy ? "BUY" : "SELL"}
+                            color={isBuy ? "success" : "error"}
+                            variant="filled"
+                            sx={{ fontWeight: "bold" }}
+                          />
+                        </Stack>
+                        <Grid container spacing={1} mb={1}>
+                          <Grid item xs={6}>
+                            <Typography variant="caption" color="text.secondary" display="block">Trader</Typography>
+                            <Typography
+                              component="a"
+                              href={tx.buyerVanityUrl ? `/user/${tx.buyerVanityUrl}` : `/user/${tx.userId}`}
+                              sx={{
+                                color: resolveDisplayNameColor({
+                                  accessibleNameColors: user.settings?.accessibleNameColors,
+                                  rawNameColor: tx.buyerNameColor,
+                                  autoContrastColor: user.autoContrastColor ? user.autoContrastColor.bind(user) : (c => c),
+                                  theme
+                                }) || "text.primary",
+                                textDecoration: "none",
+                                fontWeight: "bold",
+                                fontSize: "0.875rem",
+                              }}
+                            >
+                              {tx.buyerName}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="caption" color="text.secondary" display="block">Date</Typography>
+                            <Typography variant="body2" color="text.primary">
+                              {new Date(tx.createdAt).toLocaleDateString()} {new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={4}>
+                            <Typography variant="caption" color="text.secondary" display="block">Shares</Typography>
+                            <Typography variant="body2" fontWeight="bold">{tx.shares}</Typography>
+                          </Grid>
+                          <Grid item xs={4}>
+                            <Typography variant="caption" color="text.secondary" display="block">Price/Share</Typography>
+                            <Typography variant="body2" color="text.primary" fontWeight="bold">
+                              {(tx.price / tx.shares).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={4}>
+                            <Typography variant="caption" color="text.secondary" display="block">{isBuy ? "Total Cost" : "Total Payout"}</Typography>
+                            <Typography variant="body2" color={isBuy ? "success.main" : "error.main"} fontWeight="bold">
+                              {(isBuy ? tx.price + tx.fee : tx.price - tx.fee).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </CardContent>
+                    </Card>
+                  );
+                })
+              )}
+            </Stack>
+          ) : (
+            <TableContainer
+              component={Paper}
+              variant="outlined"
+              sx={{
+                width: '100%',
+                overflowX: 'auto',
+                backgroundColor: "background.paper",
+              }}
+            >
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: "bold" }}>Date/Time</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Trader</TableCell>
+                    <TableCell align="center" sx={{ fontWeight: "bold" }}>Type</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>{marketMode === "player" ? "Player Stock" : "Family ETF"}</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: "bold" }}>Shares</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: "bold" }}>Price/Share</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: "bold" }}>Total Amount</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {transactions.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} align="center">
+                        <Typography color="text.secondary" sx={{ py: 3 }}>
+                          No transactions recorded.
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    transactions.map((tx) => {
+                      const isBuy = tx.type === "buy";
+                      const targetName = marketMode === "player" ? tx.subjectName : tx.familyName;
+                      const targetId = marketMode === "player" ? tx.subjectId : tx.familyId;
+                      const targetAvatar = marketMode === "player" ? tx.subjectAvatar : tx.familyAvatar;
+
+                      return (
+                        <TableRow key={tx.id} hover>
+                          <TableCell sx={{ whiteSpace: "nowrap" }}>
+                            {new Date(tx.createdAt).toLocaleDateString()} {new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                          </TableCell>
+                          <TableCell sx={{ whiteSpace: "nowrap" }}>
+                            <Stack direction="row" spacing={1} alignItems="center">
+                              <Avatar
+                                hasImage={tx.buyerAvatar}
+                                id={tx.userId}
+                                name={tx.buyerName}
+                              />
+                              <Typography
+                                component="a"
+                                href={tx.buyerVanityUrl ? `/user/${tx.buyerVanityUrl}` : `/user/${tx.userId}`}
+                                sx={{
+                                  color: resolveDisplayNameColor({
+                                    accessibleNameColors: user.settings?.accessibleNameColors,
+                                    rawNameColor: tx.buyerNameColor,
+                                    autoContrastColor: user.autoContrastColor ? user.autoContrastColor.bind(user) : (c => c),
+                                    theme
+                                  }) || "text.primary",
+                                  textDecoration: "none",
+                                  fontWeight: "bold",
+                                  "&:hover": { textDecoration: "underline" },
+                                }}
+                              >
+                                {tx.buyerName}
+                              </Typography>
+                            </Stack>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Chip
+                              size="small"
+                              label={isBuy ? "BUY" : "SELL"}
+                              color={isBuy ? "success" : "error"}
+                              variant="outlined"
+                              sx={{ fontWeight: "bold" }}
+                            />
+                          </TableCell>
+                          <TableCell sx={{ whiteSpace: "nowrap" }}>
+                            <Stack direction="row" spacing={1} alignItems="center">
+                              <StockAvatar
+                                targetType={marketMode}
+                                id={targetId}
+                                name={targetName}
+                                avatar={targetAvatar}
+                                siteInfo={siteInfo}
+                              />
+                              {marketMode === "player" ? (
+                                <Typography
+                                  component="a"
+                                  href={tx.subjectVanityUrl ? `/user/${tx.subjectVanityUrl}` : `/user/${tx.subjectId}`}
+                                  sx={{
+                                    color: resolveDisplayNameColor({
+                                      accessibleNameColors: user.settings?.accessibleNameColors,
+                                      rawNameColor: tx.subjectNameColor,
+                                      autoContrastColor: user.autoContrastColor ? user.autoContrastColor.bind(user) : (c => c),
+                                      theme
+                                    }) || "text.primary",
+                                    textDecoration: "none",
+                                    fontWeight: "bold",
+                                    "&:hover": { textDecoration: "underline" },
+                                  }}
+                                >
+                                  {targetName}
+                                </Typography>
+                              ) : (
+                                <Typography
+                                  component="a"
+                                  href={`/user/family/${tx.familyId}`}
+                                  sx={{
+                                    color: "text.primary",
+                                    textDecoration: "none",
+                                    fontWeight: "bold",
+                                    "&:hover": { textDecoration: "underline" },
+                                  }}
+                                >
+                                  {targetName}
+                                </Typography>
+                              )}
+                            </Stack>
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: "bold" }}>{tx.shares}</TableCell>
+                          <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
+                            {(tx.price / tx.shares).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: "bold", color: isBuy ? "success.main" : "error.main", whiteSpace: "nowrap" }}>
+                            {(isBuy ? tx.price + tx.fee : tx.price - tx.fee).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "12px", verticalAlign: "middle" }} />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+
+          {txTotal > 0 && (
+            <Box display="flex" justifyContent="center" mt={2}>
+              <Pagination
+                count={Math.ceil(txTotal / 20)}
+                page={txPage}
+                onChange={(e, val) => setTxPage(val)}
+                color="primary"
+              />
+            </Box>
+          )}
+        </Stack>
       )}
 
       {/* Reusable Buy/Sell Transaction Dialog */}

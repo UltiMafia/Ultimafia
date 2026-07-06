@@ -1396,7 +1396,7 @@ schemas.StockTransaction = new mongoose.Schema({
   shares: { type: Number, required: true },
   price: { type: Number, required: true },
   fee: { type: Number, required: true },
-  createdAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now, index: true },
 });
 
 schemas.FamilyStock = new mongoose.Schema({
@@ -1424,7 +1424,7 @@ schemas.FamilyStockTransaction = new mongoose.Schema({
   shares: { type: Number, required: true },
   price: { type: Number, required: true },
   fee: { type: Number, required: true },
-  createdAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now, index: true },
 });
 
 module.exports = schemas;
