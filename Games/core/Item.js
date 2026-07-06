@@ -18,9 +18,20 @@ module.exports = class Item {
   }
 
   hold(player) {
+    if (this.holder === player && player.items.includes(this)) {
+      return;
+    }
+
+    if (this.holder && this.holder !== player) {
+      this.drop();
+    }
+
     this.game = player.game;
     this.holder = player;
-    this.holder.items.push(this);
+
+    if (!player.items.includes(this)) {
+      player.items.push(this);
+    }
 
     this.applyEffects();
 
@@ -42,8 +53,12 @@ module.exports = class Item {
 
     if (!holder) return;
 
-    let itemArr = holder.items;
-    itemArr.splice(itemArr.indexOf(this), 1);
+    const idx = holder.items.indexOf(this);
+    if (idx !== -1) {
+      holder.items.splice(idx, 1);
+    }
+
+    this.holder = null;
 
     this.game.events.removeListener("state", this.ageListener);
 

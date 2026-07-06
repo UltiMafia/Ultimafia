@@ -70,10 +70,7 @@ module.exports = class HostActions extends Card {
               this.game.instantMeeting(temp.meetings, [this.actor]);
             } else if (this.target === "Gain Gun") {
               let gun = this.actor.holdItem("Gun");
-              for (let x = 0; x < this.actor.role.data.Count; x++) {
-                gun.incrementMeetingName();
-              }
-              this.game.instantMeeting(gun.meetings, [this.actor]);
+              this.actor.instantItemMeeting(gun);
             } else if (this.target === "Reveal Poll Results") {
               if (
                 this.actor.role.data.PollVotes == null ||

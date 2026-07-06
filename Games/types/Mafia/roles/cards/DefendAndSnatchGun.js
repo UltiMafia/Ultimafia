@@ -25,8 +25,7 @@ module.exports = class DefendAndSnatchGun extends Card {
         if (toSnatch) {
           action.item.hold(this.player);
           this.player.queueAlert("You dodge and adeptly snatch the gun…");
-          action.item.incrementMeetingName();
-          this.game.instantMeeting(action.item.meetings, [this.player]);
+          this.player.instantItemMeeting(action.item);
           return;
         }
 

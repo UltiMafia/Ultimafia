@@ -80,8 +80,7 @@ module.exports = class Revolver extends Item {
             this.game.queueAlert(
               `:gun2: ${this.actor.name} passes the Revolver to ${players[rightIdx].name}…`
             );
-            this.item.incrementMeetingName();
-            this.game.instantMeeting(this.item.meetings, [players[rightIdx]]);
+            players[rightIdx].instantItemMeeting(this.item);
           },
         },
       },
