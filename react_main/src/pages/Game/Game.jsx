@@ -59,7 +59,7 @@ import { Loading } from "../../components/Loading";
 import StateSwitcher from "../../components/gameComponents/StateSwitcher";
 
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
-import { hyphenDelimit } from "../../utils";
+import { hyphenDelimit, isBirthdayToday } from "../../utils";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
 import {
@@ -1964,20 +1964,6 @@ function getMessagesToDisplay(
   return messages;
 }
 
-function areSameDay(first, second) {
-  first = new Date(first);
-  second = new Date(second);
-  first.setYear(0);
-  second.setYear(0);
-  if (
-    first.getMonth() === second.getMonth() &&
-    first.getDate() === second.getDate()
-  ) {
-    return true;
-  }
-  return false;
-}
-
 function getContentClasses(message) {
   const contentClasses = ["content"];
 
@@ -2182,7 +2168,7 @@ function Message(props) {
     } else if (
       player.anonId == undefined &&
       player.birthday !== undefined &&
-      areSameDay(Date.now(), player.birthday)
+      isBirthdayToday(player.birthday)
     ) {
       contentClass += " party ";
     } else if (playerFiddled) {

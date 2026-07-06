@@ -28,6 +28,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { UserContext, SiteInfoContext } from "Contexts";
 import { PageNav, SearchBar } from "components/Nav";
 import { useErrorAlert } from "components/Alerts";
+import { formatUTCDateOnly, formatUTCDateTime } from "utils";
 
 export const QUERY_PARAM_SEASON = "season";
 export const QUERY_PARAM_ROUND = "round";
@@ -591,21 +592,32 @@ export default function Competitive() {
       if (currentRoundInfo.seasonPaused) {
         displayTitle = `Season ${currentRoundInfo.seasonNumber} - Round ${currentRoundInfo.round.number} - Paused`;
       } else if (currentRoundInfo.nextEvent) {
-        const date = new Date(currentRoundInfo.nextEvent.date);
         if (currentRoundInfo.nextEvent.type === "start") {
           displayTitle = `Season ${currentRoundInfo.seasonNumber} - Round ${currentRoundInfo.round.number}`;
-          caption = `Next round starts on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+          caption = `Next round starts on ${formatUTCDateOnly(
+            currentRoundInfo.round.startDate
+          )} (UTC)`;
         } else if (currentRoundInfo.nextEvent.type === "complete") {
           displayTitle = `Season ${currentRoundInfo.seasonNumber} - Round ${currentRoundInfo.round.number} - Day ${currentRoundInfo.round.currentDay}`;
-          caption = `Current round closes on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+          caption = `Current round closes on ${formatUTCDateOnly(
+            currentRoundInfo.nextEvent.date
+          )} (UTC)`;
         } else if (currentRoundInfo.nextEvent.type === "account") {
           displayTitle = `Season ${currentRoundInfo.seasonNumber} - Round ${currentRoundInfo.round.number} - Closed`;
-          caption = `Round standings confirm on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+          caption = `Round standings confirm on ${formatUTCDateOnly(
+            currentRoundInfo.nextEvent.date
+          )} (UTC)`;
+        } else if (currentRoundInfo.nextEvent.type === "graceEnd") {
+          displayTitle = `Season ${currentRoundInfo.seasonNumber} - Round ${currentRoundInfo.round.number} - Day ${currentRoundInfo.round.currentDay}`;
+          caption = `Grace period ends on ${formatUTCDateTime(
+            currentRoundInfo.nextEvent.date
+          )}`;
         }
       } else {
-        const date = new Date(currentRoundInfo.round.dateCompleted);
         displayTitle = `Season ${currentRoundInfo.seasonNumber} - Round ${currentRoundInfo.round.number} - Closed`;
-        caption = `Round completed on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+        caption = `Round completed on ${formatUTCDateOnly(
+          currentRoundInfo.round.dateCompleted
+        )} (UTC)`;
       }
     } else {
       displayTitle = `Season ${currentRoundInfo.seasonNumber}`;
