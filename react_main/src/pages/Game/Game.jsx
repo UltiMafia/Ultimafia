@@ -3504,7 +3504,7 @@ export function buildActionDescriptors({
   const inventoryActionDescriptors = {};
 
   Object.values(meetings).forEach((meeting) => {
-    if (!meeting.voting) return;
+    if (!meeting.voting || meeting.finished) return;
 
     const descriptor = createActionDescriptor(
       meeting,

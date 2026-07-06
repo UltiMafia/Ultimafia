@@ -1673,6 +1673,19 @@ module.exports = class Player {
     return item;
   }
 
+  instantItemMeeting(item) {
+    if (typeof item.incrementMeetingName === "function") {
+      const sameNameCount = this.items.filter((i) => i.name === item.name)
+        .length;
+
+      for (let x = 0; x < sameNameCount; x++) {
+        item.incrementMeetingName();
+      }
+    }
+
+    this.game.instantMeeting(item.meetings, [this]);
+  }
+
   giveEffect(effectName, ...args) {
     const effectClass = Utils.importGameClass(
       this.game.type,

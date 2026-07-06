@@ -2721,13 +2721,35 @@ module.exports = class Game {
   // A test branch version of this.makeMeetings()
   // will refactor into makeMeetings when stable
   instantMeeting(meetings, players) {
+    const meetingIdsBefore = new Set(
+      this.history.getMeetings().map((m) => m.id)
+    );
+
     for (let player of players) {
       player.joinMeetings(meetings);
     }
 
+    const newMeetings = this.history
+      .getMeetings()
+      .filter((m) => !meetingIdsBefore.has(m.id));
+
     for (let meetingName in meetings) {
-      let toMeet = this.getMeetingByName(meetingName);
-      toMeet.init();
+      const options = meetings[meetingName];
+      let toMeet = newMeetings.find(
+        (m) => m.name === meetingName && m.item === options.item
+      );
+
+      if (!toMeet) {
+        toMeet = newMeetings.find((m) => m.name === meetingName);
+      }
+
+      if (!toMeet) {
+        toMeet = this.getMeetingByName(meetingName);
+      }
+
+      if (toMeet) {
+        toMeet.init();
+      }
     }
 
     this.sendMeetings(players);

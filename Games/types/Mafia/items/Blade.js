@@ -93,7 +93,7 @@ module.exports = class Blade extends Item {
                   } else if (toIncrease == "Gain") {
                     this.game.sendAlert(`${player.name} gains a Gun.`);
                     let gun = player.holdItem("Gun");
-                    this.game.instantMeeting(gun.meetings, [player]);
+                    player.instantItemMeeting(gun);
                   }
                 }
                 if (player.data.MoveSelected == "Bus") {
