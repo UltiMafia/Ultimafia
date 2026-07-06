@@ -3249,6 +3249,35 @@ module.exports = class Game {
     } catch (e) {
       logger.error(e);
       // this.handleError(e);
+    } finally {
+      this.ensurePostgameTimer();
+    }
+  }
+
+  ensurePostgameTimer() {
+    if (!this.finished || this.postgameOver || this.isTest) return;
+    if (this.timers.postgame) return;
+
+    try {
+      if (!this.postgame) {
+        this.postgame = this.createMeeting(PostgameMeeting);
+
+        for (let player of this.players)
+          if (!player.left) this.postgame.join(player, this.postgame);
+
+        this.postgame.init();
+
+        for (let player of this.players)
+          if (!player.left) player.sendMeeting(this.postgame);
+      }
+
+      this.createTimer("postgame", this.postgameLength, () =>
+        this.endPostgame()
+      );
+    } catch (e) {
+      logger.error(
+        `ensurePostgameTimer failed for game ${this.id}: ${e.message}`
+      );
     }
   }
 
@@ -3724,39 +3753,65 @@ module.exports = class Game {
     }
   }
 
-  async endPostgame() {
+  async finalizePostgameCleanup() {
+    if (this._postgameCleanupDone) return;
+
+    this._postgameCleanupDone = true;
+    this.postgameOver = true;
+    this.clearTimers();
+    this.broadcast("finished");
+
     try {
-      if (this.postgameOver) return;
-
-      var kudosTarget = null;
-      if (this.isKudosEligible()) {
-        this.postgame.finish(true);
-        if (this.postgame.finalTarget && this.postgame.finalTarget !== "*") {
-          kudosTarget = this.postgame.finalTarget;
-          this.sendAlert(
-            `${kudosTarget.name} has received kudos!`,
-            undefined,
-            undefined,
-            ["info"]
-          );
-        }
-      }
-
-      this.postgameOver = true;
-      this.clearTimers();
-      this.broadcast("finished");
       await redis.deleteGame(this.id);
-
-      for (let player of this.players)
-        if (!player.left) player.user.disconnect();
-
-      var setup = await models.Setup.findOne({ id: this.setup.id }).select(
-        "id version rolePlays roleWins played"
+    } catch (e) {
+      logger.error(
+        `finalizePostgameCleanup deleteGame failed for game ${this.id}: ${e.message}`
       );
+    }
 
-      this.recordSetupStats(setup);
+    for (let player of this.players)
+      if (!player.left) player.user.disconnect();
 
-      var history = this.history.getHistoryInfo(null, true);
+    delete games[this.id];
+    deprecationCheck();
+  }
+
+  async endPostgame() {
+    if (this._postgamePersisted && this._postgameCleanupDone) return;
+
+    let kudosTarget = null;
+
+    try {
+      if (!this._postgamePersisted) {
+        if (this.isKudosEligible() && this.postgame) {
+          try {
+            this.postgame.finish(true);
+            if (
+              this.postgame.finalTarget &&
+              this.postgame.finalTarget !== "*"
+            ) {
+              kudosTarget = this.postgame.finalTarget;
+              this.sendAlert(
+                `${kudosTarget.name} has received kudos!`,
+                undefined,
+                undefined,
+                ["info"]
+              );
+            }
+          } catch (e) {
+            logger.warn(
+              `endPostgame kudos failed for game ${this.id}: ${e.message}`
+            );
+          }
+        }
+
+        var setup = await models.Setup.findOne({ id: this.setup.id }).select(
+          "id version rolePlays roleWins played"
+        );
+
+        this.recordSetupStats(setup);
+
+        var history = this.history.getHistoryInfo(null, true);
       var users = [];
       var playersGone = Object.values(this.playersGone);
       var allPlayers = this.players.concat(playersGone);
@@ -4018,11 +4073,13 @@ module.exports = class Game {
         // }
       }
 
-      delete games[this.id];
-      deprecationCheck();
+        this._postgamePersisted = true;
+      }
     } catch (e) {
       logger.error(e);
       // this.handleError(e);
+    } finally {
+      await this.finalizePostgameCleanup();
     }
   }
 
