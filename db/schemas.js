@@ -53,7 +53,7 @@ var schemas = {
     ],
     ip: [{ type: String, index: true }],
     email: [{ type: String, index: true }],
-    birthday: Date,
+    birthday: String,
     pronouns: {
       type: String,
       default: "",

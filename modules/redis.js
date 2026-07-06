@@ -6,6 +6,7 @@ const models = require("../db/models");
 const constants = require("../data/constants");
 const Random = require("./../lib/Random");
 const utils = require("../lib/Utils");
+const dateOnly = require("../lib/dateOnly");
 
 var client = redis.createClient({ url: "redis://redis:6379" });
 
@@ -239,7 +240,10 @@ async function cacheUserInfo(userId, reset) {
     );
     await client.setAsync(`user:${userId}:info:nameChanged`, user.nameChanged);
     await client.setAsync(`user:${userId}:info:bdayChanged`, user.bdayChanged);
-    await client.setAsync(`user:${userId}:info:birthday`, user.birthday || 0);
+    await client.setAsync(
+      `user:${userId}:info:birthday`,
+      dateOnly.normalizeBirthday(user.birthday) || ""
+    );
     await client.setAsync(`user:${userId}:info:pronouns`, user.pronouns);
     await client.setAsync(`user:${userId}:info:gamesPlayed`, gamesPlayed);
     await client.setAsync(`user:${userId}:info:joined`, user.joined || 0);
@@ -408,7 +412,7 @@ async function getUserInfo(userId) {
   info.profileBackground = profileBackground === "true";
   info.nameChanged = nameChanged === "true";
   info.bdayChanged = bdayChanged === "true";
-  info.birthday = birthday;
+  info.birthday = dateOnly.normalizeBirthday(birthday);
   info.pronouns = pronouns;
   info.gamesPlayed = gamesPlayed;
   info.joined = Number(joined || 0);

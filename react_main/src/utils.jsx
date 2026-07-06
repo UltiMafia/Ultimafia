@@ -193,3 +193,67 @@ export function setCaptchaVisible(visible) {
 
   if (el) el.style.visibility = visible ? "visible" : "hidden";
 }
+
+const ISO_DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+export function isDateOnlyString(value) {
+  return typeof value === "string" && ISO_DATE_ONLY_REGEX.test(value);
+}
+
+export function normalizeBirthday(value) {
+  if (value == null || value === "" || value === 0 || value === "0") {
+    return undefined;
+  }
+
+  if (isDateOnlyString(value)) {
+    return value;
+  }
+
+  const date = new Date(value);
+  if (isNaN(date.getTime())) {
+    return undefined;
+  }
+
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+export function formatBirthdayForInput(value) {
+  return normalizeBirthday(value) || "";
+}
+
+export function isBirthdayToday(birthday, when = new Date()) {
+  const normalized = normalizeBirthday(birthday);
+  if (!normalized) return false;
+
+  const [, month, day] = normalized.split("-").map(Number);
+  return when.getMonth() + 1 === month && when.getDate() === day;
+}
+
+export function formatUTCDateOnly(value) {
+  if (!value) return "";
+
+  if (isDateOnlyString(value)) {
+    const [year, month, day] = value.split("-").map(Number);
+    return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString(
+      undefined,
+      { timeZone: "UTC" }
+    );
+  }
+
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return "";
+
+  return date.toLocaleDateString(undefined, { timeZone: "UTC" });
+}
+
+export function formatUTCDateTime(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return "";
+
+  return `${date.toLocaleDateString(undefined, { timeZone: "UTC" })} ${date.toLocaleTimeString(undefined, { timeZone: "UTC" })} UTC`;
+}

@@ -1,4 +1,5 @@
 const dbStats = require("../../db/stats");
+const dateOnly = require("../../lib/dateOnly");
 
 module.exports = class User {
   constructor(props) {
@@ -10,7 +11,7 @@ module.exports = class User {
     this.textColor = props.settings && props.settings.textColor;
     this.nameColor = props.settings && props.settings.nameColor;
     this.customEmotes = props.settings && props.settings.customEmotes;
-    this.birthday = props.birthday;
+    this.birthday = dateOnly.normalizeBirthday(props.birthday);
     this.Protips = props.settings && props.settings.disableProTips;
     this.rankedCount = props.rankedCount;
     this.competitiveCount = props.competitiveCount;

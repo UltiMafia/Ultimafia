@@ -12,6 +12,7 @@ const axios = require("axios");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const utils = require("../lib/Utils");
+const dateOnly = require("../lib/dateOnly");
 const redis = require("../modules/redis");
 const constants = require("../data/constants");
 const dbStats = require("../db/stats");
@@ -1561,7 +1562,7 @@ router.get("/settings/data", async function (req, res) {
 
       user.settings.username = user.name;
       user.settings.pronouns = user.pronouns;
-      user.birthday = Date.parse(user.birthday);
+      user.settings.birthday = dateOnly.normalizeBirthday(user.birthday);
       utils.remapCustomEmotes(user, userId);
 
       // Fetch vanity URL
@@ -2481,7 +2482,12 @@ router.post("/birthday", async function (req, res) {
       return;
     }
 
-    let value = String(req.body.date);
+    let value = String(req.body.date).trim();
+    if (!dateOnly.isDateOnlyString(value)) {
+      errors.badRequest(res, "Birthday must be in YYYY-MM-DD format.");
+      return;
+    }
+
     await models.User.updateOne(
       { id: userId },
       {

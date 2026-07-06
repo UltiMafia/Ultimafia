@@ -16,7 +16,7 @@ import "react-mde/lib/styles/css/react-mde-suggestions.css";
 
 import "css/form.css";
 import "css/markdown.css";
-import { dateToHTMLString } from "../utils";
+import { dateToHTMLString, formatBirthdayForInput } from "../utils";
 import {
   Autocomplete,
   TextField,
@@ -524,15 +524,7 @@ export default function Form({
           }
 
           // Convert date to YYYY-MM-DD format for HTML5 date input
-          const formatDateForInput = (date) => {
-            if (!date) return "";
-            const d = new Date(date);
-            if (isNaN(d.getTime())) return "";
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, "0");
-            const day = String(d.getDate()).padStart(2, "0");
-            return `${year}-${month}-${day}`;
-          };
+          const formatDateForInput = (date) => formatBirthdayForInput(date);
 
           return (
             <FormField
