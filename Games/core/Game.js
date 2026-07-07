@@ -841,6 +841,7 @@ module.exports = class Game {
       customEmotes: player.user.customEmotes,
       alive: player.alive,
       left: true,
+      playerListPosition: this.players.indexOf(player),
       joinTime: player.joinTime, // Preserve join time for host reassignment
     };
   }

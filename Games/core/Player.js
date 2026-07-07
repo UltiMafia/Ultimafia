@@ -889,6 +889,7 @@ module.exports = class Player {
       customEmotes: this.user.customEmotes,
       birthday: this.user.birthday,
       vanityUrl: this.user.vanityUrl,
+      playerListPosition: this.game?.players?.indexOf(this),
     };
 
     if (recipient && recipient.id === this.id) {
