@@ -4010,7 +4010,7 @@ module.exports = class Game {
             }
           ).exec();
 
-          if ((this.ranked || this.competitive) && coinsEarned > 0) {
+          if ((this.ranked || this.competitive) && player.won && coinsEarned > 0) {
             if (this.shareholderSnapshots && this.shareholderSnapshots[player.user.id]) {
               try {
                 await stockMarket.distributeDividends(player.user.id, coinsEarned, this.shareholderSnapshots[player.user.id], allParticipantIds);
