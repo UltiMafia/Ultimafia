@@ -647,7 +647,7 @@ export default function StockMarket() {
                           <Box>
                             <Typography
                               component="a"
-                              href={marketMode === "player" ? (stock.vanityUrl ? `/user/${stock.vanityUrl}` : `/user/${stock.userId}`) : undefined}
+                              href={marketMode === "player" ? (stock.vanityUrl ? `/user/${stock.vanityUrl}` : `/user/${stock.userId}`) : `/user/family/${stock.familyId}`}
                               sx={{
                                 color: resolveDisplayNameColor({
                                   accessibleNameColors: user.settings?.accessibleNameColors,
@@ -657,6 +657,7 @@ export default function StockMarket() {
                                 }) || "text.primary",
                                 textDecoration: "none",
                                 fontWeight: "bold",
+                                "&:hover": { textDecoration: "underline" },
                               }}
                             >
                               {name}
@@ -687,18 +688,43 @@ export default function StockMarket() {
                             {stock.shareSupply}
                           </Typography>
                         </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="caption" color="text.secondary" display="block">Market Cap</Typography>
-                          <Typography variant="body2" color="text.primary" fontWeight="bold">
-                            {(stock.marketCap).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="caption" color="text.secondary" display="block">{marketMode === "player" ? "Dividends" : "Treasury"}</Typography>
-                          <Typography variant="body2" color={goldColor} fontWeight="bold">
-                            {marketMode === "player" ? stock.dividendsPaidOut.toFixed(2) : stock.treasuryCoins.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
-                          </Typography>
-                        </Grid>
+                        {marketMode === "player" ? (
+                          <>
+                            <Grid item xs={6}>
+                              <Typography variant="caption" color="text.secondary" display="block">Market Cap</Typography>
+                              <Typography variant="body2" color="text.primary" fontWeight="bold">
+                                {(stock.marketCap).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <Typography variant="caption" color="text.secondary" display="block">Dividends</Typography>
+                              <Typography variant="body2" color={goldColor} fontWeight="bold">
+                                {stock.dividendsPaidOut.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              </Typography>
+                            </Grid>
+                          </>
+                        ) : (
+                          <>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">Market Cap</Typography>
+                              <Typography variant="body2" color="text.primary" fontWeight="bold">
+                                {(stock.marketCap).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">Treasury</Typography>
+                              <Typography variant="body2" color={goldColor} fontWeight="bold">
+                                {stock.treasuryCoins.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                              <Typography variant="caption" color="text.secondary" display="block">Dividends</Typography>
+                              <Typography variant="body2" color={goldColor} fontWeight="bold">
+                                {stock.dividendsPaidOut.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "10px" }} />
+                              </Typography>
+                            </Grid>
+                          </>
+                        )}
                       </Grid>
                       <Stack direction="row" spacing={1}>
                         <Button fullWidth variant="contained" color="success" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "buy", marketMode)}>Buy</Button>
@@ -942,7 +968,16 @@ export default function StockMarket() {
                         <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
                           <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
                             <StockAvatar targetType="family" id={holding.familyId} name={holding.familyName} avatar={holding.avatar} siteInfo={siteInfo} />
-                            <Typography sx={{ color: "text.primary", fontWeight: "bold" }}>
+                            <Typography
+                              component="a"
+                              href={`/user/family/${holding.familyId}`}
+                              sx={{
+                                color: "text.primary",
+                                textDecoration: "none",
+                                fontWeight: "bold",
+                                "&:hover": { textDecoration: "underline" },
+                              }}
+                            >
                               {holding.familyName}
                             </Typography>
                           </Stack>
@@ -1411,6 +1446,7 @@ export default function StockMarket() {
                                     color: "text.primary",
                                     textDecoration: "none",
                                     fontWeight: "bold",
+                                    "&:hover": { textDecoration: "underline" },
                                   }}
                                 >
                                   {targetName}
@@ -1442,6 +1478,7 @@ export default function StockMarket() {
                                 textDecoration: "none",
                                 fontWeight: "bold",
                                 fontSize: "0.875rem",
+                                "&:hover": { textDecoration: "underline" },
                               }}
                             >
                               {tx.buyerName}
