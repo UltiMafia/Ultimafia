@@ -397,7 +397,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive joined favoriteRoles roleIconCredits _id"
+        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive joined favoriteRoles roleIconCredits skillRating _id"
       )
       .populate({
         path: "setups",
@@ -428,6 +428,51 @@ router.get("/:id/profile", async function (req, res) {
     }
 
     user = user.toJSON();
+
+    if (!user.skillRating) {
+      user.skillRating = {
+        mu: 25.0,
+        sigma: 8.333333333333334,
+        gamesPlayed: 0
+      };
+    }
+
+    if (user.skillRating) {
+      if (user.skillRating.gamesPlayed > 0) {
+        const allRatedUsers = await models.User.find({
+          "skillRating.gamesPlayed": { $gt: 0 },
+          deleted: { $ne: true }
+        }).select("id skillRating").lean();
+
+        const sortedUsers = allRatedUsers.map(u => ({
+          id: u.id,
+          rankScore: parseFloat(((u.skillRating?.mu || 25.0) - 3 * (u.skillRating?.sigma || 8.333333333333334)).toFixed(2))
+        })).sort((a, b) => b.rankScore - a.rankScore);
+
+        const userRankIndex = sortedUsers.findIndex(u => u.id === user.id);
+        if (userRankIndex !== -1) {
+          user.skillRating.rank = userRankIndex + 1;
+          const totalRated = sortedUsers.length;
+          const percentile = ((totalRated - userRankIndex) / totalRated) * 100;
+          
+          let tier = "Bronze";
+          if (percentile >= 98) tier = "Master";
+          else if (percentile >= 90) tier = "Diamond";
+          else if (percentile >= 75) tier = "Platinum";
+          else if (percentile >= 50) tier = "Gold";
+          else if (percentile >= 20) tier = "Silver";
+          
+          user.skillRating.tier = tier;
+        } else {
+          user.skillRating.tier = "Unrated";
+          user.skillRating.rank = null;
+        }
+      } else {
+        user.skillRating.tier = "Unrated";
+        user.skillRating.rank = null;
+      }
+    }
+
     user.groups = (await redis.getBasicUserInfo(userId)).groups;
     user.maxFriendsPage =
       Math.ceil(user.numFriends / constants.friendsPerPage) || 1;

@@ -1,0 +1,284 @@
+const models = require("../db/models");
+
+class AspectSkillRating {
+  constructor(rating = 25.0, uncertainty = 25.0 / 3.0) {
+    this.rating = rating;
+    this.uncertainty = uncertainty;
+  }
+
+  getRank() {
+    return this.rating - 3.0 * this.uncertainty;
+  }
+}
+
+function aspectSkillTwoTeams(winningTeam, losingTeam, config) {
+  if (winningTeam.length === 0 || losingTeam.length === 0) {
+    return [[...winningTeam], [...losingTeam]];
+  }
+
+  const { beta, dynamicsFactor: tau } = config;
+
+  const nW = winningTeam.length;
+  const nL = losingTeam.length;
+
+  const muWinners = winningTeam.reduce((sum, r) => sum + r.rating, 0) / nW;
+  const muLosers = losingTeam.reduce((sum, r) => sum + r.rating, 0) / nL;
+
+  const sigmaSqWinners = winningTeam.reduce((sum, r) => sum + (Math.pow(r.uncertainty, 2) + Math.pow(tau, 2)), 0) / Math.pow(nW, 2);
+  const sigmaSqLosers = losingTeam.reduce((sum, r) => sum + (Math.pow(r.uncertainty, 2) + Math.pow(tau, 2)), 0) / Math.pow(nL, 2);
+
+  const omega = Math.sqrt(sigmaSqWinners + sigmaSqLosers + 2.0 * Math.pow(beta, 2));
+  const oddsRatio = Math.exp((muWinners - muLosers) / omega);
+  const adjustmentRatio = 1.0 / (1.0 + oddsRatio);
+
+  const SIGMA_MIN_SQ = 0.01;
+
+  const newWinners = winningTeam.map(rating => {
+    const varianceWithTau = Math.pow(rating.uncertainty, 2) + Math.pow(tau, 2);
+    const muShift = (varianceWithTau / (nW * omega)) * adjustmentRatio;
+    
+    const shrinkFactor = (varianceWithTau / (Math.pow(nW, 2) * Math.pow(omega, 2))) 
+        * adjustmentRatio 
+        * (1.0 - adjustmentRatio);
+    
+    const newVariance = Math.max(varianceWithTau * (1.0 - shrinkFactor), SIGMA_MIN_SQ);
+
+    return new AspectSkillRating(
+        rating.rating + muShift,
+        Math.sqrt(newVariance)
+    );
+  });
+
+  const newLosers = losingTeam.map(rating => {
+    const varianceWithTau = Math.pow(rating.uncertainty, 2) + Math.pow(tau, 2);
+    const muShift = (varianceWithTau / (nL * omega)) * adjustmentRatio;
+    
+    const shrinkFactor = (varianceWithTau / (Math.pow(nL, 2) * Math.pow(omega, 2))) 
+        * adjustmentRatio 
+        * (1.0 - adjustmentRatio);
+    
+    const newVariance = Math.max(varianceWithTau * (1.0 - shrinkFactor), SIGMA_MIN_SQ);
+
+    return new AspectSkillRating(
+        rating.rating - muShift,
+        Math.sqrt(newVariance)
+    );
+  });
+
+  return [newWinners, newLosers];
+}
+
+function expectedScoreTwoTeams(team1, team2, config) {
+  if (team1.length === 0 || team2.length === 0) {
+    return [0.5, 0.5];
+  }
+
+  const { beta, dynamicsFactor: tau } = config;
+
+  const n1 = team1.length;
+  const n2 = team2.length;
+
+  const mu1 = team1.reduce((sum, r) => sum + r.rating, 0) / n1;
+  const mu2 = team2.reduce((sum, r) => sum + r.rating, 0) / n2;
+
+  const sigmaSq1 = team1.reduce((sum, r) => sum + (Math.pow(r.uncertainty, 2) + Math.pow(tau, 2)), 0) / Math.pow(n1, 2);
+  const sigmaSq2 = team2.reduce((sum, r) => sum + (Math.pow(r.uncertainty, 2) + Math.pow(tau, 2)), 0) / Math.pow(n2, 2);
+
+  const omega = Math.sqrt(sigmaSq1 + sigmaSq2 + 2.0 * Math.pow(beta, 2));
+  const oddsRatio = Math.exp((mu1 - mu2) / omega);
+  const prob1Wins = oddsRatio / (1.0 + oddsRatio);
+
+  return [prob1Wins, 1.0 - prob1Wins];
+}
+
+async function updateGameRatings(game) {
+  if (!game.ranked && !game.competitive) {
+    return;
+  }
+  if (game.skillRefunded) {
+    return;
+  }
+  if (game.skillRatingChanges && game.skillRatingChanges.length > 0) {
+    return;
+  }
+
+  const playerIdMap = typeof game.playerIdMap === "string" ? JSON.parse(game.playerIdMap || "{}") : (game.playerIdMap || {});
+  const winnerIds = new Set();
+  if (Array.isArray(game.winners)) {
+    game.winners.forEach(id => winnerIds.add(id));
+  }
+  if (game.winnersInfo && Array.isArray(game.winnersInfo.players)) {
+    game.winnersInfo.players.forEach(id => winnerIds.add(id));
+  }
+
+  const winningUserIds = [];
+  const losingUserIds = [];
+
+  for (const userId of Object.keys(playerIdMap)) {
+    const pid = playerIdMap[userId];
+    if (winnerIds.has(pid)) {
+      winningUserIds.push(userId);
+    } else {
+      losingUserIds.push(userId);
+    }
+  }
+
+  if (winningUserIds.length === 0 || losingUserIds.length === 0) {
+    return;
+  }
+
+  const allUserIds = [...winningUserIds, ...losingUserIds];
+  const users = await models.User.find({ id: { $in: allUserIds } });
+  const userMap = {};
+  for (const user of users) {
+    userMap[user.id] = user;
+  }
+
+  const winningTeam = winningUserIds.map(userId => {
+    const user = userMap[userId];
+    const mu = user?.skillRating?.mu ?? 25.0;
+    const sigma = user?.skillRating?.sigma ?? (25.0 / 3.0);
+    return new AspectSkillRating(mu, sigma);
+  });
+
+  const losingTeam = losingUserIds.map(userId => {
+    const user = userMap[userId];
+    const mu = user?.skillRating?.mu ?? 25.0;
+    const sigma = user?.skillRating?.sigma ?? (25.0 / 3.0);
+    return new AspectSkillRating(mu, sigma);
+  });
+
+  const [newWinners, newLosers] = aspectSkillTwoTeams(winningTeam, losingTeam, { beta: 6.0, dynamicsFactor: 0.02 });
+
+  const ratingChanges = [];
+  const bulkOps = [];
+
+  for (let i = 0; i < winningUserIds.length; i++) {
+    const userId = winningUserIds[i];
+    const oldRating = winningTeam[i];
+    const newRating = newWinners[i];
+    const muDelta = newRating.rating - oldRating.rating;
+    const sigmaDelta = newRating.uncertainty - oldRating.uncertainty;
+
+    ratingChanges.push({ userId, muDelta, sigmaDelta });
+    bulkOps.push({
+      updateOne: {
+        filter: { id: userId },
+        update: {
+          $set: {
+            "skillRating.mu": newRating.rating,
+            "skillRating.sigma": newRating.uncertainty,
+          },
+          $inc: {
+            "skillRating.gamesPlayed": 1
+          }
+        }
+      }
+    });
+  }
+
+  for (let i = 0; i < losingUserIds.length; i++) {
+    const userId = losingUserIds[i];
+    const oldRating = losingTeam[i];
+    const newRating = newLosers[i];
+    const muDelta = newRating.rating - oldRating.rating;
+    const sigmaDelta = newRating.uncertainty - oldRating.uncertainty;
+
+    ratingChanges.push({ userId, muDelta, sigmaDelta });
+    bulkOps.push({
+      updateOne: {
+        filter: { id: userId },
+        update: {
+          $set: {
+            "skillRating.mu": newRating.rating,
+            "skillRating.sigma": newRating.uncertainty,
+          },
+          $inc: {
+            "skillRating.gamesPlayed": 1
+          }
+        }
+      }
+    });
+  }
+
+  if (bulkOps.length > 0) {
+    await models.User.bulkWrite(bulkOps);
+  }
+
+  // Update game with ratingChanges
+  await models.Game.updateOne(
+    { _id: game._id },
+    { $set: { skillRatingChanges: ratingChanges } }
+  ).exec();
+  game.skillRatingChanges = ratingChanges;
+}
+
+async function refundGameRatings(game) {
+  if (game.skillRefunded) {
+    return;
+  }
+  if (!game.skillRatingChanges || game.skillRatingChanges.length === 0) {
+    return;
+  }
+
+  const bulkOps = [];
+  const SIGMA_MIN = 0.1; // Math.sqrt(0.01)
+
+  for (const change of game.skillRatingChanges) {
+    const user = await models.User.findOne({ id: change.userId }).select("skillRating").lean();
+    if (!user) continue;
+
+    const currentMu = user.skillRating?.mu ?? 25.0;
+    const currentSigma = user.skillRating?.sigma ?? (25.0 / 3.0);
+
+    const newMu = currentMu - change.muDelta;
+    const newSigma = Math.max(SIGMA_MIN, currentSigma - change.sigmaDelta);
+
+    bulkOps.push({
+      updateOne: {
+        filter: { id: change.userId },
+        update: {
+          $set: {
+            "skillRating.mu": newMu,
+            "skillRating.sigma": newSigma,
+          },
+          $inc: {
+            "skillRating.gamesPlayed": -1
+          }
+        }
+      }
+    });
+  }
+
+  if (bulkOps.length > 0) {
+    await models.User.bulkWrite(bulkOps);
+  }
+
+  await models.Game.updateOne(
+    { _id: game._id },
+    { $set: { skillRefunded: true } }
+  ).exec();
+  game.skillRefunded = true;
+}
+
+function getTier(rank, sortedRanks) {
+  if (sortedRanks.length === 0) return "Unranked";
+  const index = sortedRanks.indexOf(rank);
+  if (index === -1) return "Unranked";
+  const percentile = sortedRanks.length > 1 ? (index / (sortedRanks.length - 1)) * 100 : 100;
+  if (percentile >= 98) return "Master";
+  if (percentile >= 90) return "Diamond";
+  if (percentile >= 75) return "Platinum";
+  if (percentile >= 50) return "Gold";
+  if (percentile >= 20) return "Silver";
+  return "Bronze";
+}
+
+module.exports = {
+  AspectSkillRating,
+  aspectSkillTwoTeams,
+  expectedScoreTwoTeams,
+  updateGameRatings,
+  refundGameRatings,
+  getTier,
+};

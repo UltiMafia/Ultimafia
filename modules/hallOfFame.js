@@ -5,6 +5,7 @@ const {
   isCountableScrapbookRole,
   getTotalObtainableStamps,
 } = require("../shared/scrapbook");
+const skillRating = require("./skillRating");
 
 const TOTAL_OBTAINABLE_STAMPS = getTotalObtainableStamps(roleData);
 
@@ -21,6 +22,7 @@ const SUPPORTED_CATEGORIES = [
   "karma",
   "achievements",
   "scrapbook",
+  "skillRating",
 ];
 const SUPPORTED_SORT_DIRECTIONS = ["asc", "desc"];
 const SUPPORTED_SORT_KEYS = [
@@ -39,6 +41,7 @@ const SUPPORTED_SORT_KEYS = [
   "scrapbookCompletion",
   "scrapbookCount",
   "compositeScore",
+  "skillRating",
 ];
 
 const TROPHY_TYPE_WEIGHTS = {
@@ -103,6 +106,12 @@ const CATEGORY_DEFINITIONS = {
     metricLabel: "Scrapbook Completion",
     minGamesRequired: false,
     tieBreakers: ["scrapbookCount", "trophyScore", "achievementScore", "winRate"],
+  },
+  skillRating: {
+    metricKey: "skillRating",
+    metricLabel: "Skill Rating",
+    minGamesRequired: false,
+    tieBreakers: ["winRate", "prestige", "fortune", "wins"],
   },
 };
 
@@ -294,7 +303,7 @@ async function buildRows() {
     playedGame: true,
   })
     .select(
-      "id name avatar stats winRate kudos karma points championshipPoints achievementCount achievements settings"
+      "id name avatar stats winRate kudos karma points championshipPoints achievementCount achievements settings skillRating"
     )
     .lean();
 
@@ -307,6 +316,16 @@ async function buildRows() {
 
   const { scrapbookDataByUser, scrapbookTotal } = scrapbookData;
 
+  const activeRanks = [];
+  for (const user of users) {
+    if (user.skillRating && user.skillRating.gamesPlayed > 0) {
+      const mu = user.skillRating.mu ?? 25.0;
+      const sigma = user.skillRating.sigma ?? (25.0 / 3.0);
+      activeRanks.push(mu - 3.0 * sigma);
+    }
+  }
+  activeRanks.sort((a, b) => a - b);
+
   const rows = users.map((user) => {
     const winsLosses = getWinsLosses(user.stats);
     const trophyData = trophyDataByUser[user.id] || {
@@ -316,6 +335,12 @@ async function buildRows() {
     const scrapbookInfo = scrapbookDataByUser[user.id] || {
       scrapbookCount: 0,
     };
+
+    const mu = user.skillRating?.mu ?? 25.0;
+    const sigma = user.skillRating?.sigma ?? (25.0 / 3.0);
+    const gamesPlayed = user.skillRating?.gamesPlayed ?? 0;
+    const conservativeRank = mu - 3.0 * sigma;
+    const tier = gamesPlayed > 0 ? skillRating.getTier(conservativeRank, activeRanks) : "Unranked";
 
     return {
       userId: user.id,
@@ -343,6 +368,11 @@ async function buildRows() {
         hideStatistics: Boolean(user.settings?.hideStatistics),
         hideKarma: Boolean(user.settings?.hideKarma),
       },
+      skillRating: roundMetric(conservativeRank, 4),
+      skillMu: roundMetric(mu, 4),
+      skillSigma: roundMetric(sigma, 4),
+      skillTier: tier,
+      skillGamesPlayed: gamesPlayed,
     };
   });
 
@@ -394,6 +424,9 @@ function applyCategoryRules(rows, category, minGames) {
   if (category === "winRate") {
     return rows.filter((row) => row.totalGames >= minGames);
   }
+  if (category === "skillRating") {
+    return rows.filter((row) => row.skillGamesPlayed > 0);
+  }
 
   return rows;
 }
@@ -430,6 +463,11 @@ function buildResponseRows(rows) {
     scrapbookCount: row.scrapbookCount,
     scrapbookCompletion: row.scrapbookCompletion,
     compositeScore: row.compositeScore,
+    skillRating: row.skillRating,
+    skillMu: row.skillMu,
+    skillSigma: row.skillSigma,
+    skillTier: row.skillTier,
+    skillGamesPlayed: row.skillGamesPlayed,
   }));
 }
 
