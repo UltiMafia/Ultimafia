@@ -220,10 +220,7 @@ async function refundGameRatings(game) {
     if (!user) continue;
 
     const currentMu = user.skillRating?.mu ?? DEFAULT_MU;
-    const currentSigma = user.skillRating?.sigma ?? DEFAULT_SIGMA;
-
     const newMu = currentMu - change.muDelta;
-    const newSigma = Math.max(SIGMA_MIN, currentSigma - change.sigmaDelta);
 
     bulkOps.push({
       updateOne: {
@@ -231,7 +228,6 @@ async function refundGameRatings(game) {
         update: {
           $set: {
             "skillRating.mu": newMu,
-            "skillRating.sigma": newSigma,
           },
           $inc: {
             "skillRating.gamesPlayed": -1
@@ -266,8 +262,19 @@ function getTier(rank, sortedRanks) {
       hi = mid;
     }
   }
-  // lo is the insertion point; if rank not found exactly, use nearest index
-  const index = lo < sortedRanks.length ? lo : sortedRanks.length - 1;
+  // lo is the insertion point; check if the rank is actually in the array within float tolerance
+  let index = lo;
+  const tolerance = 1e-9;
+  let found = false;
+  if (lo < sortedRanks.length && Math.abs(sortedRanks[lo] - rank) < tolerance) {
+    found = true;
+    index = lo;
+  } else if (lo > 0 && Math.abs(sortedRanks[lo - 1] - rank) < tolerance) {
+    found = true;
+    index = lo - 1;
+  }
+
+  if (!found) return "Unranked";
 
   const percentile = sortedRanks.length > 1 ? (index / (sortedRanks.length - 1)) * 100 : 100;
   if (percentile >= 98) return "Master";
