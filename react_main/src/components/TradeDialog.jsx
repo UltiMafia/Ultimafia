@@ -153,7 +153,7 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
       </DialogTitle>
 
       <DialogContent sx={{ py: 3 }}>
-        <Stack spacing={3}>
+        <Stack spacing={3} sx={{ pt: 1.5 }}>
           <ToggleButtonGroup
             value={tradeType}
             exclusive
