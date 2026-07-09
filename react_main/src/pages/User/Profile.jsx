@@ -1754,7 +1754,7 @@ export default function Profile() {
                   {user.loggedIn && (
                     <Button
                       variant="contained"
-                      color="warning"
+                      color="primary"
                       fullWidth
                       onClick={handleOpenTrade}
                       sx={{ mt: 1, fontWeight: "bold" }}
