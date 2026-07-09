@@ -1858,7 +1858,7 @@ export default function Profile() {
                                 <img
                                   src={TIER_ICONS[skillRating.tier]}
                                   alt={skillRating.tier}
-                                  style={{ width: 64, height: 64, objectFit: "contain" }}
+                                  style={{ width: 64, height: 64, objectFit: "contain", imageRendering: "pixelated" }}
                                 />
                               </Box>
                             )}
