@@ -1716,8 +1716,8 @@ export default function Profile() {
                       <Sparkline history={stockInfo.priceHistory} />
                     </Box>
                   </Stack>
-
-                  <Grid container spacing={2} sx={{ mt: 0.5, borderTop: "1px solid rgba(255, 255, 255, 0.08)", pt: 1.5 }}>
+                  <Box sx={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)", mt: -0.5, mb: -1 }} />
+                  <Grid container spacing={2}>
                     <Grid item xs={6}>
                       <Typography variant="caption" color="text.secondary" display="block">
                         Total Supply
