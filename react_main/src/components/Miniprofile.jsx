@@ -8,22 +8,7 @@ import { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "pages/User/Profile";
 import { PieChart } from "pages/User/PieChart";
 import { Avatar } from "pages/User/User";
 
-import villagerIcon from "images/roles/village/villager-vivid.png";
-import doctorIcon from "images/roles/village/doctor-vivid.png";
-import copIcon from "images/roles/village/cop-vivid.png";
-import sheriffIcon from "images/roles/village/sheriff-vivid.png";
-import stalkerIcon from "images/roles/mafia/stalker-vivid.png";
-import seerIcon from "images/roles/village/seer-vivid.png";
-
-const TIER_ICONS = {
-  "Master": seerIcon,
-  "Diamond": stalkerIcon,
-  "Platinum": sheriffIcon,
-  "Gold": copIcon,
-  "Silver": doctorIcon,
-  "Bronze": villagerIcon,
-  "Unrated": villagerIcon
-};
+import { TIER_ICONS, getConservativeRank } from "utils/skillRating";
 import { UserContext, SiteInfoContext } from "Contexts";
 import ReportDialog from "components/ReportDialog";
 import { useErrorAlert } from "components/Alerts";
@@ -206,7 +191,7 @@ function Miniprofile(props) {
             {user.skillRating.tier} {user.skillRating.rank ? `#${user.skillRating.rank}` : ""}
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            ({((user.skillRating.mu || 25) - 3 * (user.skillRating.sigma || 8.33)).toFixed(1)})
+            ({getConservativeRank(user.skillRating.mu, user.skillRating.sigma, 1)})
           </Typography>
         </Stack>
       )}

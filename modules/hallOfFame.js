@@ -6,6 +6,7 @@ const {
   getTotalObtainableStamps,
 } = require("../shared/scrapbook");
 const skillRating = require("./skillRating");
+const { DEFAULT_MU, DEFAULT_SIGMA } = skillRating;
 
 const TOTAL_OBTAINABLE_STAMPS = getTotalObtainableStamps(roleData);
 
@@ -319,8 +320,8 @@ async function buildRows() {
   const activeRanks = [];
   for (const user of users) {
     if (user.skillRating && user.skillRating.gamesPlayed > 0) {
-      const mu = user.skillRating.mu ?? 25.0;
-      const sigma = user.skillRating.sigma ?? (25.0 / 3.0);
+      const mu = user.skillRating.mu ?? DEFAULT_MU;
+      const sigma = user.skillRating.sigma ?? DEFAULT_SIGMA;
       activeRanks.push(mu - 3.0 * sigma);
     }
   }
@@ -336,8 +337,8 @@ async function buildRows() {
       scrapbookCount: 0,
     };
 
-    const mu = user.skillRating?.mu ?? 25.0;
-    const sigma = user.skillRating?.sigma ?? (25.0 / 3.0);
+    const mu = user.skillRating?.mu ?? DEFAULT_MU;
+    const sigma = user.skillRating?.sigma ?? DEFAULT_SIGMA;
     const gamesPlayed = user.skillRating?.gamesPlayed ?? 0;
     const conservativeRank = mu - 3.0 * sigma;
     const tier = gamesPlayed > 0 ? skillRating.getTier(conservativeRank, activeRanks) : "Unranked";

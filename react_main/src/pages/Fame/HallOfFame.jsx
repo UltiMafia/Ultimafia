@@ -29,21 +29,15 @@ import { UserContext } from "Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { NameWithAvatar } from "pages/User/User";
 
-import villagerIcon from "images/roles/village/villager-vivid.png";
-import doctorIcon from "images/roles/village/doctor-vivid.png";
-import copIcon from "images/roles/village/cop-vivid.png";
-import sheriffIcon from "images/roles/village/sheriff-vivid.png";
-import stalkerIcon from "images/roles/mafia/stalker-vivid.png";
-import seerIcon from "images/roles/village/seer-vivid.png";
-
-const TIER_ICONS = {
-  "Master": seerIcon,
-  "Diamond": stalkerIcon,
-  "Platinum": sheriffIcon,
-  "Gold": copIcon,
-  "Silver": doctorIcon,
-  "Bronze": villagerIcon
-};
+import {
+  TIER_ICONS,
+  villagerIcon,
+  doctorIcon,
+  copIcon,
+  sheriffIcon,
+  stalkerIcon,
+  seerIcon,
+} from "utils/skillRating";
 
 const CATEGORY_OPTIONS = [
   { value: "overall", label: "Overall" },
@@ -268,7 +262,7 @@ function renderMobileMetric(user, category) {
   }
 }
 
-function StandingsTable({
+const StandingsTable = React.memo(function StandingsTable({
   category,
   users,
   currentUserId,
@@ -372,7 +366,7 @@ function StandingsTable({
       })}
     </Stack>
   );
-}
+});
 
 export default function HallOfFame() {
   const [searchParams, setSearchParams] = useSearchParams();

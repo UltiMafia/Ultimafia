@@ -20,6 +20,8 @@ const { colorHasGoodContrastForBothThemes } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
 const stockMarket = require("../lib/StockMarket");
+const skillRatingModule = require("../modules/skillRating");
+const { DEFAULT_MU, DEFAULT_SIGMA } = skillRatingModule;
 const router = express.Router();
 
 /** Keep in sync with `isRetroThemeForcedByCalendar` in react_main/src/utils/holidayThemes.js */
@@ -431,46 +433,45 @@ router.get("/:id/profile", async function (req, res) {
 
     if (!user.skillRating) {
       user.skillRating = {
-        mu: 25.0,
-        sigma: 8.333333333333334,
+        mu: DEFAULT_MU,
+        sigma: DEFAULT_SIGMA,
         gamesPlayed: 0
       };
     }
 
-    if (user.skillRating) {
-      if (user.skillRating.gamesPlayed > 0) {
-        const allRatedUsers = await models.User.find({
-          "skillRating.gamesPlayed": { $gt: 0 },
-          deleted: { $ne: true }
-        }).select("id skillRating").lean();
+    if (user.skillRating.gamesPlayed > 0) {
+      const allRatedUsers = await models.User.find({
+        "skillRating.gamesPlayed": { $gt: 0 },
+        deleted: { $ne: true }
+      }).select("id skillRating").lean();
 
-        const sortedUsers = allRatedUsers.map(u => ({
-          id: u.id,
-          rankScore: parseFloat(((u.skillRating?.mu || 25.0) - 3 * (u.skillRating?.sigma || 8.333333333333334)).toFixed(2))
-        })).sort((a, b) => b.rankScore - a.rankScore);
+      const sortedRanks = allRatedUsers.map(u => {
+        const mu = u.skillRating?.mu ?? DEFAULT_MU;
+        const sigma = u.skillRating?.sigma ?? DEFAULT_SIGMA;
+        return mu - 3.0 * sigma;
+      }).sort((a, b) => a - b);
 
-        const userRankIndex = sortedUsers.findIndex(u => u.id === user.id);
-        if (userRankIndex !== -1) {
-          user.skillRating.rank = userRankIndex + 1;
-          const totalRated = sortedUsers.length;
-          const percentile = ((totalRated - userRankIndex) / totalRated) * 100;
-          
-          let tier = "Bronze";
-          if (percentile >= 98) tier = "Master";
-          else if (percentile >= 90) tier = "Diamond";
-          else if (percentile >= 75) tier = "Platinum";
-          else if (percentile >= 50) tier = "Gold";
-          else if (percentile >= 20) tier = "Silver";
-          
-          user.skillRating.tier = tier;
-        } else {
-          user.skillRating.tier = "Unrated";
-          user.skillRating.rank = null;
-        }
+      const userMu = user.skillRating.mu ?? DEFAULT_MU;
+      const userSigma = user.skillRating.sigma ?? DEFAULT_SIGMA;
+      const userRankScore = userMu - 3.0 * userSigma;
+
+      // Compute rank position (descending order)
+      const sortedDesc = allRatedUsers.map(u => ({
+        id: u.id,
+        rankScore: (u.skillRating?.mu ?? DEFAULT_MU) - 3.0 * (u.skillRating?.sigma ?? DEFAULT_SIGMA)
+      })).sort((a, b) => b.rankScore - a.rankScore);
+      const userRankIndex = sortedDesc.findIndex(u => u.id === user.id);
+
+      if (userRankIndex !== -1) {
+        user.skillRating.rank = userRankIndex + 1;
+        user.skillRating.tier = skillRatingModule.getTier(userRankScore, sortedRanks);
       } else {
         user.skillRating.tier = "Unrated";
         user.skillRating.rank = null;
       }
+    } else {
+      user.skillRating.tier = "Unrated";
+      user.skillRating.rank = null;
     }
 
     user.groups = (await redis.getBasicUserInfo(userId)).groups;

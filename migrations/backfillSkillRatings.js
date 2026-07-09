@@ -2,6 +2,7 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const models = require("../db/models");
 const skillRating = require("../modules/skillRating");
+const { DEFAULT_MU, DEFAULT_SIGMA } = require("../modules/skillRating");
 
 async function backfillSkillRatings() {
   try {
@@ -13,8 +14,8 @@ async function backfillSkillRatings() {
       {},
       {
         $set: {
-          "skillRating.mu": 25.0,
-          "skillRating.sigma": 25.0 / 3.0,
+          "skillRating.mu": DEFAULT_MU,
+          "skillRating.sigma": DEFAULT_SIGMA,
           "skillRating.gamesPlayed": 0,
         }
       }
@@ -34,20 +35,21 @@ async function backfillSkillRatings() {
     );
     console.log(`Clear completed for games: matched ${resetGameResult.matchedCount}, modified ${resetGameResult.modifiedCount}`);
 
-    // 3. Query all ranked or competitive games that successfully ended, sorted chronologically
-    console.log("Fetching ranked and competitive games in chronological order...");
-    const games = await models.Game.find({
+    // 3. Stream ranked/competitive games chronologically instead of loading all into memory
+    console.log("Streaming ranked and competitive games in chronological order...");
+    const cursor = models.Game.find({
       $or: [{ ranked: true }, { competitive: true }],
       endTime: { $exists: true, $gt: 0 },
       broken: { $ne: true }
-    }).sort({ startTime: 1 });
-
-    console.log(`Found ${games.length} games to process.`);
+    }).sort({ startTime: 1 }).lean().cursor();
 
     let processedCount = 0;
     let skippedCount = 0;
+    let totalCount = 0;
 
-    for (const game of games) {
+    for await (const game of cursor) {
+      totalCount++;
+
       // Check if the game has players
       const playerIdMap = typeof game.playerIdMap === "string" ? JSON.parse(game.playerIdMap || "{}") : (game.playerIdMap || {});
       const userIds = Object.keys(playerIdMap);
@@ -61,11 +63,11 @@ async function backfillSkillRatings() {
       processedCount++;
 
       if (processedCount % 50 === 0) {
-        console.log(`Processed ${processedCount}/${games.length} games...`);
+        console.log(`Processed ${processedCount} games (${totalCount} seen so far)...`);
       }
     }
 
-    console.log(`Backfill finished. Processed: ${processedCount}, Skipped: ${skippedCount} games.`);
+    console.log(`Backfill finished. Processed: ${processedCount}, Skipped: ${skippedCount}, Total: ${totalCount} games.`);
   } catch (error) {
     console.error("Backfill failed:", error);
     throw error;

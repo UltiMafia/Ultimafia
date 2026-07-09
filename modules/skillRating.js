@@ -1,7 +1,10 @@
 const models = require("../db/models");
 
+const DEFAULT_MU = 25.0;
+const DEFAULT_SIGMA = DEFAULT_MU / 3.0;
+
 class AspectSkillRating {
-  constructor(rating = 25.0, uncertainty = 25.0 / 3.0) {
+  constructor(rating = DEFAULT_MU, uncertainty = DEFAULT_SIGMA) {
     this.rating = rating;
     this.uncertainty = uncertainty;
   }
@@ -136,15 +139,15 @@ async function updateGameRatings(game) {
 
   const winningTeam = winningUserIds.map(userId => {
     const user = userMap[userId];
-    const mu = user?.skillRating?.mu ?? 25.0;
-    const sigma = user?.skillRating?.sigma ?? (25.0 / 3.0);
+    const mu = user?.skillRating?.mu ?? DEFAULT_MU;
+    const sigma = user?.skillRating?.sigma ?? DEFAULT_SIGMA;
     return new AspectSkillRating(mu, sigma);
   });
 
   const losingTeam = losingUserIds.map(userId => {
     const user = userMap[userId];
-    const mu = user?.skillRating?.mu ?? 25.0;
-    const sigma = user?.skillRating?.sigma ?? (25.0 / 3.0);
+    const mu = user?.skillRating?.mu ?? DEFAULT_MU;
+    const sigma = user?.skillRating?.sigma ?? DEFAULT_SIGMA;
     return new AspectSkillRating(mu, sigma);
   });
 
@@ -153,52 +156,35 @@ async function updateGameRatings(game) {
   const ratingChanges = [];
   const bulkOps = [];
 
-  for (let i = 0; i < winningUserIds.length; i++) {
-    const userId = winningUserIds[i];
-    const oldRating = winningTeam[i];
-    const newRating = newWinners[i];
-    const muDelta = newRating.rating - oldRating.rating;
-    const sigmaDelta = newRating.uncertainty - oldRating.uncertainty;
+  const teams = [
+    { userIds: winningUserIds, ratings: newWinners, oldRatings: winningTeam },
+    { userIds: losingUserIds, ratings: newLosers, oldRatings: losingTeam },
+  ];
 
-    ratingChanges.push({ userId, muDelta, sigmaDelta });
-    bulkOps.push({
-      updateOne: {
-        filter: { id: userId },
-        update: {
-          $set: {
-            "skillRating.mu": newRating.rating,
-            "skillRating.sigma": newRating.uncertainty,
-          },
-          $inc: {
-            "skillRating.gamesPlayed": 1
+  for (const { userIds, ratings, oldRatings } of teams) {
+    for (let i = 0; i < userIds.length; i++) {
+      const userId = userIds[i];
+      const oldRating = oldRatings[i];
+      const newRating = ratings[i];
+      const muDelta = newRating.rating - oldRating.rating;
+      const sigmaDelta = newRating.uncertainty - oldRating.uncertainty;
+
+      ratingChanges.push({ userId, muDelta, sigmaDelta });
+      bulkOps.push({
+        updateOne: {
+          filter: { id: userId },
+          update: {
+            $set: {
+              "skillRating.mu": newRating.rating,
+              "skillRating.sigma": newRating.uncertainty,
+            },
+            $inc: {
+              "skillRating.gamesPlayed": 1
+            }
           }
         }
-      }
-    });
-  }
-
-  for (let i = 0; i < losingUserIds.length; i++) {
-    const userId = losingUserIds[i];
-    const oldRating = losingTeam[i];
-    const newRating = newLosers[i];
-    const muDelta = newRating.rating - oldRating.rating;
-    const sigmaDelta = newRating.uncertainty - oldRating.uncertainty;
-
-    ratingChanges.push({ userId, muDelta, sigmaDelta });
-    bulkOps.push({
-      updateOne: {
-        filter: { id: userId },
-        update: {
-          $set: {
-            "skillRating.mu": newRating.rating,
-            "skillRating.sigma": newRating.uncertainty,
-          },
-          $inc: {
-            "skillRating.gamesPlayed": 1
-          }
-        }
-      }
-    });
+      });
+    }
   }
 
   if (bulkOps.length > 0) {
@@ -221,15 +207,20 @@ async function refundGameRatings(game) {
     return;
   }
 
+  // Batch-fetch all affected users in a single query instead of one-by-one
+  const changeUserIds = game.skillRatingChanges.map(c => c.userId);
+  const usersArr = await models.User.find({ id: { $in: changeUserIds } }).select("id skillRating").lean();
+  const userMap = new Map(usersArr.map(u => [u.id, u]));
+
   const bulkOps = [];
   const SIGMA_MIN = 0.1; // Math.sqrt(0.01)
 
   for (const change of game.skillRatingChanges) {
-    const user = await models.User.findOne({ id: change.userId }).select("skillRating").lean();
+    const user = userMap.get(change.userId);
     if (!user) continue;
 
-    const currentMu = user.skillRating?.mu ?? 25.0;
-    const currentSigma = user.skillRating?.sigma ?? (25.0 / 3.0);
+    const currentMu = user.skillRating?.mu ?? DEFAULT_MU;
+    const currentSigma = user.skillRating?.sigma ?? DEFAULT_SIGMA;
 
     const newMu = currentMu - change.muDelta;
     const newSigma = Math.max(SIGMA_MIN, currentSigma - change.sigmaDelta);
@@ -263,8 +254,21 @@ async function refundGameRatings(game) {
 
 function getTier(rank, sortedRanks) {
   if (sortedRanks.length === 0) return "Unranked";
-  const index = sortedRanks.indexOf(rank);
-  if (index === -1) return "Unranked";
+
+  // Binary search to find insertion index (avoids float equality issues with indexOf)
+  let lo = 0;
+  let hi = sortedRanks.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >>> 1;
+    if (sortedRanks[mid] < rank) {
+      lo = mid + 1;
+    } else {
+      hi = mid;
+    }
+  }
+  // lo is the insertion point; if rank not found exactly, use nearest index
+  const index = lo < sortedRanks.length ? lo : sortedRanks.length - 1;
+
   const percentile = sortedRanks.length > 1 ? (index / (sortedRanks.length - 1)) * 100 : 100;
   if (percentile >= 98) return "Master";
   if (percentile >= 90) return "Diamond";
@@ -275,6 +279,8 @@ function getTier(rank, sortedRanks) {
 }
 
 module.exports = {
+  DEFAULT_MU,
+  DEFAULT_SIGMA,
   AspectSkillRating,
   aspectSkillTwoTeams,
   expectedScoreTwoTeams,

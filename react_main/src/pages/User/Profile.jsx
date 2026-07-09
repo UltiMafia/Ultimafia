@@ -80,22 +80,7 @@ export const PRESTIGE_ICON = require(`images/prestige.png`);
 export const ACHIEVEMENTS_ICON = require(`images/achievements.png`);
 export const DAILY_ICON = require(`images/dailyChallenges.png`);
 
-import villagerIcon from "images/roles/village/villager-vivid.png";
-import doctorIcon from "images/roles/village/doctor-vivid.png";
-import copIcon from "images/roles/village/cop-vivid.png";
-import sheriffIcon from "images/roles/village/sheriff-vivid.png";
-import stalkerIcon from "images/roles/mafia/stalker-vivid.png";
-import seerIcon from "images/roles/village/seer-vivid.png";
-
-const TIER_ICONS = {
-  "Master": seerIcon,
-  "Diamond": stalkerIcon,
-  "Platinum": sheriffIcon,
-  "Gold": copIcon,
-  "Silver": doctorIcon,
-  "Bronze": villagerIcon,
-  "Unrated": villagerIcon
-};
+import { TIER_ICONS, getConservativeRank } from "utils/skillRating";
 
 
 
@@ -1901,7 +1886,7 @@ export default function Profile() {
                               
                               <Typography variant="body2" color="text.primary" sx={{ fontWeight: 600 }}>
                                 Conservative Rank: <span style={{ fontSize: "1.1rem", fontWeight: 800, color: goldColor }}>
-                                  {((skillRating.mu || 25) - 3 * (skillRating.sigma || 8.33)).toFixed(2)}
+                                  {getConservativeRank(skillRating.mu, skillRating.sigma)}
                                 </span>
                               </Typography>
                               
