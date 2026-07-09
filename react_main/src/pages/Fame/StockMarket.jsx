@@ -1252,7 +1252,7 @@ export default function StockMarket() {
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                       Only family Founders or Leaders can launch a Family ETF. It costs 200 coins. 
-                      This allows players to buy shares in your family's collective wins. The {(siteInfo.marketConfig?.creatorFeePct ?? 0.03) * 100}% Creator Fee is paid directly into your Family Treasury!
+                      This allows players to buy shares in your family's collective wins. The {(siteInfo.marketConfig?.creatorFeePct ?? 0.015) * 100}% Creator Fee is paid directly into your Family Treasury!
                     </Typography>
                   </Box>
 

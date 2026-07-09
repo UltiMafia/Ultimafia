@@ -46,8 +46,8 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
       return { price: 0, creatorFee: 0, systemFee: 0, total: 0 };
     }
 
-    const creatorFeePct = siteInfo.marketConfig?.creatorFeePct ?? 0.03;
-    const systemFeePct = siteInfo.marketConfig?.systemFeePct ?? 0.02;
+    const creatorFeePct = siteInfo.marketConfig?.creatorFeePct ?? 0.015;
+    const systemFeePct = siteInfo.marketConfig?.systemFeePct ?? 0.01;
 
     const currentSupply = stock.shareSupply;
     let basePrice = 0;
@@ -227,8 +227,8 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
               <Stack direction="row" justifyContent="space-between">
                 <Typography variant="body2">
                   {stock.targetType === "player" 
-                    ? `Creator Fee (${((siteInfo.marketConfig?.creatorFeePct ?? 0.03) * 100)}%):` 
-                    : `Treasury Fee (${((siteInfo.marketConfig?.creatorFeePct ?? 0.03) * 100)}%):`}
+                    ? `Creator Fee (${((siteInfo.marketConfig?.creatorFeePct ?? 0.015) * 100)}%):` 
+                    : `Treasury Fee (${((siteInfo.marketConfig?.creatorFeePct ?? 0.015) * 100)}%):`}
                 </Typography>
                 <Typography variant="body2" color="success.main">
                   +{tradePreview.creatorFee.toFixed(2)} Coins
@@ -236,7 +236,7 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
               </Stack>
               <Stack direction="row" justifyContent="space-between">
                 <Typography variant="body2">
-                  System Fee ({((siteInfo.marketConfig?.systemFeePct ?? 0.02) * 100)}%):
+                  System Fee ({((siteInfo.marketConfig?.systemFeePct ?? 0.01) * 100)}%):
                 </Typography>
                 <Typography variant="body2" color="warning.main">
                   +{tradePreview.systemFee.toFixed(2)} Coins

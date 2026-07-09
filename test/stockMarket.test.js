@@ -36,17 +36,17 @@ describe("lib/StockMarket", function () {
       result.total.should.equal(0);
     });
 
-    it("calculates buy price and 3% / 2% fees", function () {
+    it("calculates buy price and 1.5% / 1% fees", function () {
       // Current supply = 9, buy 1 share.
       // 10th share base price: calculatePrice(10) = 1
-      // Creator fee: 3% of 1 is 0.03.
-      // System fee: 2% of 1 is 0.02.
-      // total = 1 + 0.03 + 0.02 = 1.05
+      // Creator fee: 1.5% of 1 is 0.015, rounded to 0.02.
+      // System fee: 1% of 1 is 0.01.
+      // total = 1 + 0.02 + 0.01 = 1.03
       const result = stockMarket.getBuyPrice(9, 1);
       result.price.should.equal(1);
-      result.creatorFee.should.equal(0.03);
-      result.systemFee.should.equal(0.02);
-      result.total.should.equal(1.05);
+      result.creatorFee.should.equal(0.01);
+      result.systemFee.should.equal(0.01);
+      result.total.should.equal(1.02);
     });
 
     it("calculates buy price for multiple shares", function () {
@@ -54,14 +54,14 @@ describe("lib/StockMarket", function () {
       // P(20) = Math.floor(400/100) = 4
       // P(21) = Math.floor(441/100) = 4
       // Total price = 8
-      // Creator fee = 8 * 0.03 = 0.24
-      // System fee = 8 * 0.02 = 0.16
-      // Total cost = 8 + 0.24 + 0.16 = 8.40
+      // Creator fee = 8 * 0.015 = 0.12
+      // System fee = 8 * 0.01 = 0.08
+      // Total cost = 8 + 0.12 + 0.08 = 8.20
       const result = stockMarket.getBuyPrice(19, 2);
       result.price.should.equal(8);
-      result.creatorFee.should.equal(0.24);
-      result.systemFee.should.equal(0.16);
-      result.total.should.equal(8.4);
+      result.creatorFee.should.equal(0.12);
+      result.systemFee.should.equal(0.08);
+      result.total.should.equal(8.2);
     });
   });
 
@@ -76,7 +76,7 @@ describe("lib/StockMarket", function () {
     it("limits sold shares to current supply", function () {
       // selling 100 shares at supply 1
       // same as selling 1 share at supply 1
-      // P(1) = 1. fees: 0.03 creator, 0.02 system. Total = max(0, 1 - 0.03 - 0.02) = 0.95.
+      // P(1) = 1. fees: 0.015 creator (0.02), 0.01 system. Total = max(0, 1 - 0.02 - 0.01) = 0.97.
       const res = stockMarket.getSellPrice(1, 100);
       res.price.should.equal(1);
     });
@@ -84,14 +84,14 @@ describe("lib/StockMarket", function () {
     it("calculates sell price correctly with fees subtracted", function () {
       // Current supply = 50, sell 1 share.
       // S=50 base price: P(50) = 25.
-      // Creator fee = 25 * 0.03 = 0.75.
-      // System fee = 25 * 0.02 = 0.50.
-      // Total received = 25 - 0.75 - 0.50 = 23.75.
+      // Creator fee = 25 * 0.015 = 0.375, rounded to 0.38.
+      // System fee = 25 * 0.01 = 0.25.
+      // Total received = 25 - 0.38 - 0.25 = 24.37.
       const result = stockMarket.getSellPrice(50, 1);
       result.price.should.equal(25);
-      result.creatorFee.should.equal(0.75);
-      result.systemFee.should.equal(0.5);
-      result.total.should.equal(23.75);
+      result.creatorFee.should.equal(0.38);
+      result.systemFee.should.equal(0.25);
+      result.total.should.equal(24.37);
     });
   });
 
