@@ -464,6 +464,11 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
         .then((res) =>
           updateSiteInfo({ type: "setProp", prop: "items", value: res.data })
         ),
+      axios
+        .get("/api/stocks/config")
+        .then((res) =>
+          updateSiteInfo({ type: "setProp", prop: "marketConfig", value: res.data })
+        ),
     ]).then(() => {
       setSiteInfoLoading(false);
     });

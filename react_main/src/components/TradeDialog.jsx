@@ -46,6 +46,9 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
       return { price: 0, creatorFee: 0, systemFee: 0, total: 0 };
     }
 
+    const creatorFeePct = siteInfo.marketConfig?.creatorFeePct ?? 0.015;
+    const systemFeePct = siteInfo.marketConfig?.systemFeePct ?? 0.01;
+
     const currentSupply = stock.shareSupply;
     let basePrice = 0;
 
@@ -54,8 +57,8 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
         const S = currentSupply + i;
         basePrice += Math.max(1, Math.floor((S * S) / 100));
       }
-      const creatorFee = parseFloat((basePrice * 0.05).toFixed(2));
-      const systemFee = parseFloat((basePrice * 0.05).toFixed(2));
+      const creatorFee = parseFloat((basePrice * creatorFeePct).toFixed(2));
+      const systemFee = parseFloat((basePrice * systemFeePct).toFixed(2));
       return {
         price: basePrice,
         creatorFee,
@@ -68,8 +71,8 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
         const S = currentSupply - i;
         basePrice += Math.max(1, Math.floor((S * S) / 100));
       }
-      const creatorFee = parseFloat((basePrice * 0.05).toFixed(2));
-      const systemFee = parseFloat((basePrice * 0.05).toFixed(2));
+      const creatorFee = parseFloat((basePrice * creatorFeePct).toFixed(2));
+      const systemFee = parseFloat((basePrice * systemFeePct).toFixed(2));
       return {
         price: basePrice,
         creatorFee,
@@ -77,7 +80,7 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
         total: Math.max(0, parseFloat((basePrice - creatorFee - systemFee).toFixed(2))),
       };
     }
-  }, [stock, tradeType, shareCount]);
+  }, [stock, tradeType, shareCount, siteInfo.marketConfig]);
 
   if (!stock) return null;
 
@@ -150,7 +153,7 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
       </DialogTitle>
 
       <DialogContent sx={{ py: 3 }}>
-        <Stack spacing={3}>
+        <Stack spacing={3} sx={{ pt: 1.5 }}>
           <ToggleButtonGroup
             value={tradeType}
             exclusive
@@ -223,14 +226,18 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
               </Stack>
               <Stack direction="row" justifyContent="space-between">
                 <Typography variant="body2">
-                  {stock.targetType === "player" ? "Creator Fee (5%):" : "Treasury Fee (5%):"}
+                  {stock.targetType === "player" 
+                    ? `Creator Fee (${((siteInfo.marketConfig?.creatorFeePct ?? 0.015) * 100)}%):` 
+                    : `Treasury Fee (${((siteInfo.marketConfig?.creatorFeePct ?? 0.015) * 100)}%):`}
                 </Typography>
                 <Typography variant="body2" color="success.main">
                   +{tradePreview.creatorFee.toFixed(2)} Coins
                 </Typography>
               </Stack>
               <Stack direction="row" justifyContent="space-between">
-                <Typography variant="body2">System Fee (5%):</Typography>
+                <Typography variant="body2">
+                  System Fee ({((siteInfo.marketConfig?.systemFeePct ?? 0.01) * 100)}%):
+                </Typography>
                 <Typography variant="body2" color="warning.main">
                   +{tradePreview.systemFee.toFixed(2)} Coins
                 </Typography>

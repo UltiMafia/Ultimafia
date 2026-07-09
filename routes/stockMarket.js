@@ -8,6 +8,17 @@ const redis = require("../modules/redis");
 
 const router = express.Router();
 
+/**
+ * GET /api/stocks/config
+ * Returns configuration values like fee percentages.
+ */
+router.get("/config", function (req, res) {
+  res.send({
+    creatorFeePct: stockMarket.CREATOR_FEE_PCT,
+    systemFeePct: stockMarket.SYSTEM_FEE_PCT
+  });
+});
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------

@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 import colorContrast from "color-contrast";
+import { Icon } from "@iconify/react";
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import {
@@ -1707,16 +1708,16 @@ export default function Profile() {
                       <Typography variant="caption" color="text.secondary" display="block">
                         Current Price
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: "bold", color: goldColor }}>
-                        {stockInfo.buyPrice.toFixed(2)} Coins
+                      <Typography variant="h4" sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}>
+                        {stockInfo.buyPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "24px", verticalAlign: "middle" }} />
                       </Typography>
                     </Box>
                     <Box>
                       <Sparkline history={stockInfo.priceHistory} />
                     </Box>
                   </Stack>
-
-                  <Grid container spacing={2} sx={{ mt: 0.5, borderTop: "1px solid rgba(255, 255, 255, 0.08)", pt: 1.5 }}>
+                  <Box sx={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)", mt: -0.5, mb: -1 }} />
+                  <Grid container spacing={2}>
                     <Grid item xs={6}>
                       <Typography variant="caption" color="text.secondary" display="block">
                         Total Supply
@@ -1729,8 +1730,8 @@ export default function Profile() {
                       <Typography variant="caption" color="text.secondary" display="block">
                         Market Cap
                       </Typography>
-                      <Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor }}>
-                        {stockInfo.marketCap.toFixed(2)} Coins
+                      <Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}>
+                        {stockInfo.marketCap.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "14px", verticalAlign: "middle" }} />
                       </Typography>
                     </Grid>
                     <Grid item xs={6}>
@@ -1745,8 +1746,8 @@ export default function Profile() {
                       <Typography variant="caption" color="text.secondary" display="block">
                         Dividends Paid
                       </Typography>
-                      <Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor }}>
-                        {(stockInfo.dividendsPaidOut || 0).toFixed(2)} Coins
+                      <Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}>
+                        {(stockInfo.dividendsPaidOut || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "14px", verticalAlign: "middle" }} />
                       </Typography>
                     </Grid>
                   </Grid>
@@ -1754,7 +1755,7 @@ export default function Profile() {
                   {user.loggedIn && (
                     <Button
                       variant="contained"
-                      color="warning"
+                      color="primary"
                       fullWidth
                       onClick={handleOpenTrade}
                       sx={{ mt: 1, fontWeight: "bold" }}
