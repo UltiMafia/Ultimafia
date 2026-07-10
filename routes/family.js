@@ -274,7 +274,7 @@ router.get("/:familyId/profile", async function (req, res) {
       vanityUrl: member.vanityUrl,
       isLeader: member.id === leaderId,
       isFounder: member.id === founderId,
-      role: roleMap[member._id.toString()] || "member",
+      role: member.id === leaderId ? "leader" : (roleMap[member._id.toString()] || "member"),
     }));
 
     // Get all trophies from all family members, sorted by createdAt
