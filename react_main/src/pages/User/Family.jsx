@@ -465,13 +465,13 @@ export default function Family() {
               </Stack>
             </Paper>
             
-            <FamilyProgress family={family} />
             <FamilyStockCard
               stockInfo={family.stockInfo}
               family={family}
               familyId={familyId}
               refreshFamilyTools={refreshFamilyTools}
             />
+            <FamilyProgress family={family} />
             <FamilyApply family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
             <FamilyApplications family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
             <FamilyTreasury family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
