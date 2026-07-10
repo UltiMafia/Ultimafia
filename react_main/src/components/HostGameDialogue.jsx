@@ -37,6 +37,7 @@ import HostDiceWars from "./gameTypeHostForms/HostDiceWars";
 import HostConnectFour from "./gameTypeHostForms/HostConnectFour";
 import HostSpotIt from "./gameTypeHostForms/HostSpotIt";
 import HostBattleship from "./gameTypeHostForms/HostBattleship";
+import HostChess from "./gameTypeHostForms/HostChess";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { getSetupBackgroundColor } from "pages/Play/LobbyBrowser/gameRowColors";
 
@@ -86,6 +87,8 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
         return [...HostSpotIt(), true];
       case "Battleship":
         return [...HostBattleship(), true];
+      case "Chess":
+        return [...HostChess(), true];
     }
 
     console.error(`Failed to get form fields for game type: ${setup.gameType}`);

@@ -308,6 +308,16 @@ const learnGameDescriptions = [
       },
     ],
   },
+  {
+    gameType: "Chess",
+    description: [
+      {
+        type: "paragraph",
+        content:
+          "Chess is a two-player strategy board game played on an 8×8 grid. Players take turns moving their pieces with the goal of checkmating the opponent's king.",
+      },
+    ],
+  },
 ];
 
 const learnGameDescriptionByType = learnGameDescriptions.reduce(

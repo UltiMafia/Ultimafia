@@ -17,6 +17,7 @@ export const gamesIcons = {
   "Dice Wars": require("images/game_icons/DiceWars.png"),
   "Spot It": require("images/game_icons/SpotIt.png"),
   Battleship: require("images/game_icons/Battleship.png"),
+  Chess: require("images/game_icons/Chess.png"),
 };
 
 export default function GameIcon(props) {

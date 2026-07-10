@@ -1418,6 +1418,9 @@ const settingsChecks = {
   Battleship: (settings, setup) => {
     return {};
   },
+  Chess: (settings, setup) => {
+    return {};
+  },
 };
 
 module.exports = router;

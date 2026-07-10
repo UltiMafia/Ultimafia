@@ -218,6 +218,7 @@ const tagData = {
   Ratscrew: {},
   Battlesnakes: {},
   "Connect Four": {},
+  Chess: {},
   Battleship: {},
   "Spot It": {},
   "Dice Wars": {},
