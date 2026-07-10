@@ -1825,7 +1825,7 @@ export default function Profile() {
                   ) : (
                     <>
                       <Stack spacing={2} sx={{ px: 1, py: 1 }}>
-                        <Paper variant="outlined" sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderRadius: 2 }}>
+                        <Paper variant="outlined" sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderRadius: 2, backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : '#ffffff' }}>
                           <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: "text.secondary" }}>
                             Win/Loss Distribution
                           </Typography>
@@ -1849,7 +1849,7 @@ export default function Profile() {
                               display: "flex",
                               alignItems: "center",
                               gap: 2,
-                              backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.01)',
+                              backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : '#ffffff',
                               borderColor: "divider",
                               borderRadius: 2
                             }}
@@ -1922,7 +1922,7 @@ export default function Profile() {
                             </Stack>
                           </Paper>
                         ) : statsBucket === "ranked" ? (
-                          <Paper variant="outlined" sx={{ p: 2, display: "flex", justifyContent: "center", alignItems: "center", borderRadius: 2 }}>
+                          <Paper variant="outlined" sx={{ p: 2, display: "flex", justifyContent: "center", alignItems: "center", borderRadius: 2, backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : '#ffffff' }}>
                             <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic", textAlign: "center", p: 1 }}>
                               No rated games played yet. Play ranked or competitive games to establish a skill rating.
                             </Typography>
