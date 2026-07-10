@@ -1176,8 +1176,6 @@ router.get("/discover", async function (req, res) {
     const search = String(req.query.search || "").trim();
     const sort = String(req.query.sort || "members");
     const openOnly = String(req.query.openOnly || "") === "true";
-    const page = Math.max(1, Number(req.query.page) || 1);
-    const limit = Math.min(48, Math.max(6, Number(req.query.limit) || 12));
     const query = {};
     let viewerFamilyId = null;
     let viewerCanSubmitApplication = false;
@@ -1314,15 +1312,9 @@ router.get("/discover", async function (req, res) {
       return b.memberCount - a.memberCount;
     });
 
-    const total = discoveredFamilies.length;
-    const start = (page - 1) * limit;
-
     res.send({
-      families: discoveredFamilies.slice(start, start + limit),
-      page,
-      limit,
+      families: discoveredFamilies,
       total,
-      totalPages: Math.max(1, Math.ceil(total / limit)),
     });
   } catch (e) {
     logger.error(e);

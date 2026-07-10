@@ -15,7 +15,6 @@ import {
   Grid,
   InputAdornment,
   MenuItem,
-  Pagination,
   Paper,
   Select,
   Stack,
@@ -207,8 +206,6 @@ export default function FamilyDiscovery() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("members");
   const [openOnly, setOpenOnly] = useState(false);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const errorAlert = useErrorAlert();
   const errorAlertRef = useRef(errorAlert);
@@ -225,13 +222,10 @@ export default function FamilyDiscovery() {
           search,
           sort,
           openOnly,
-          page,
-          limit: 12,
         },
       })
       .then((res) => {
         setFamilies(res.data.families || []);
-        setTotalPages(res.data.totalPages || 1);
         setTotal(res.data.total || 0);
         setLoaded(true);
       })
@@ -240,7 +234,7 @@ export default function FamilyDiscovery() {
         setLoaded(true);
         errorAlertRef.current(e);
       });
-  }, [openOnly, page, search, sort]);
+  }, [openOnly, search, sort]);
 
   useEffect(() => {
     document.title = "Find Families | UltiMafia";
@@ -260,17 +254,14 @@ export default function FamilyDiscovery() {
 
   function submitSearch(event) {
     event.preventDefault();
-    setPage(1);
     setSearch(searchInput.trim());
   }
 
   function onSortChange(event) {
-    setPage(1);
     setSort(event.target.value);
   }
 
   function onOpenOnlyChange(event) {
-    setPage(1);
     setOpenOnly(event.target.checked);
   }
 
@@ -381,16 +372,6 @@ export default function FamilyDiscovery() {
                 </Grid>
               ))}
             </Grid>
-            {totalPages > 1 && (
-              <Stack direction="row" sx={{ justifyContent: "center", mt: 2 }}>
-                <Pagination
-                  count={totalPages}
-                  page={page}
-                  onChange={(event, value) => setPage(value)}
-                  color="primary"
-                />
-              </Stack>
-            )}
           </Grid>
         </Grid>
       )}
