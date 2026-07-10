@@ -142,7 +142,7 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
             </Box>
           )}
           <Box>
-            <Typography variant="h5" sx={{ fontWeight: "bold", lineHeight: 1.2 }}>
+            <Typography sx={{ fontWeight: "bold", fontSize: "1.25rem", lineHeight: 1.2 }}>
               {stock.name}
             </Typography>
             <Typography variant="caption" color="text.secondary">
