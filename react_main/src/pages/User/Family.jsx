@@ -224,7 +224,6 @@ export default function Family() {
   if (!family) return <Navigate to="/play" />;
 
   const hasTrophySpotlight = family.perks?.some((p) => p.key === "trophySpotlight" && p.owned);
-  const hasFamilyBadge = family.perks?.some((p) => p.key === "familyBadge" && p.owned);
 
   const panelStyle = {
     backgroundColor: "var(--scheme-color)",
@@ -326,11 +325,6 @@ export default function Family() {
                 <Box>
                   <Typography variant="h2" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     {family.name}
-                    {hasFamilyBadge && (
-                      <Tooltip title="Verified Supporter Family">
-                        <Box component="i" className="fas fa-crown" sx={{ color: "#f5c542", fontSize: "0.8em" }} />
-                      </Tooltip>
-                    )}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Founded by{" "}

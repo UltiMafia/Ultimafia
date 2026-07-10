@@ -980,12 +980,6 @@ const FAMILY_PERKS = [
     cost: 1000,
   },
   {
-    key: "familyBadge",
-    name: "Family Badge",
-    description: "Adds a cosmetic supporter badge to the family profile.",
-    cost: 500,
-  },
-  {
     key: "trophySpotlight",
     name: "Trophy Spotlight",
     description: "Adds a cosmetic trophy spotlight perk to the family profile.",
