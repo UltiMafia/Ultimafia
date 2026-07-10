@@ -322,6 +322,13 @@ router.get("/:familyId/profile", async function (req, res) {
       }
     }
 
+    var userRole = null;
+    if (user) {
+      if (family.founder.id === user.id) userRole = "founder";
+      else if (family.leader.id === user.id) userRole = "leader";
+      else if (members.some((m) => m.id === user.id)) userRole = "member";
+    }
+
     var treasuryCoins = family.treasury || 0;
 
     res.send({
@@ -354,6 +361,7 @@ router.get("/:familyId/profile", async function (req, res) {
       trophies: trophies || [],
       isLeader: isLeader,
       canManageApplications: canManageApplications,
+      userRole: userRole,
     });
   } catch (e) {
     logger.error(e);
