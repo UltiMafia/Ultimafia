@@ -195,8 +195,12 @@ function ChessBoardWrapper() {
 }
 
 function ChessBoardPanel({ extraInfo, self, onMakeMove }) {
+  const game = useContext(GameContext);
+  const players = game.players;
   const { fen, turn, playerColors, history: moveHistory, gameOverReason, winnerColor } = extraInfo;
-  const playerColor = playerColors[self] || "w"; // Default to white if spectator
+  
+  const playerName = players?.[self]?.name || "";
+  const playerColor = playerColors[playerName] || "w"; // Default to white if spectator
 
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [possibleMoves, setPossibleMoves] = useState([]);
