@@ -191,7 +191,7 @@ function Miniprofile(props) {
             {user.skillRating.tier} {user.skillRating.rank ? `#${user.skillRating.rank}` : ""}
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            (Rating: {getConservativeRank(user.skillRating.mu, user.skillRating.sigma, 1)})
+            (CR: {getConservativeRank(user.skillRating.mu, user.skillRating.sigma, 1)})
           </Typography>
         </Stack>
       )}
