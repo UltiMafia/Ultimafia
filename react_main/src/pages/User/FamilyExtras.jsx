@@ -16,13 +16,13 @@ import { NameWithAvatar } from "./User";
 import { SiteInfoContext, UserContext } from "Contexts";
 import { Icon } from "@iconify/react";
 
-const panelStyle = {
+export const panelStyle = {
   backgroundColor: "var(--scheme-color)",
   padding: "16px",
   borderRadius: "4px",
 };
 
-const headingStyle = {
+export const headingStyle = {
   fontSize: "1.25rem",
   fontWeight: 600,
   marginBottom: "8px",
@@ -84,7 +84,7 @@ export function FamilyTreasury({ family, familyId, refreshFamilyTools }) {
       <CoinAmount amount={family.treasury} variant="h4" sx={{ mt: 0.5 }} />
       {Number(family.pendingJoinFees || 0) > 0 && (
         <Typography variant="caption" color="text.secondary" display="block">
-          {Number(family.pendingJoinFees).toLocaleString()} coins are reserved for pending join fee refunds.
+          <CoinAmount amount={Number(family.pendingJoinFees)} /> reserved for pending join fee refunds.
         </Typography>
       )}
       {isFamilyMember && (
@@ -110,7 +110,7 @@ export function FamilyTreasury({ family, familyId, refreshFamilyTools }) {
   );
 }
 
-export function FamilyLedger({ familyId }) {
+export function FamilyLedger({ familyId, refreshKey }) {
   const [ledger, setLedger] = useState([]);
 
   useEffect(() => {
@@ -118,7 +118,7 @@ export function FamilyLedger({ familyId }) {
       .get(`/api/family/${familyId}/ledger`)
       .then((res) => setLedger(res.data.ledger || []))
       .catch(() => setLedger([]));
-  }, [familyId]);
+  }, [familyId, refreshKey]);
 
   if (ledger.length === 0) return null;
 
@@ -277,9 +277,9 @@ export function FamilyPerks({ family, familyId, refreshFamilyTools }) {
                     size="small"
                     variant="outlined"
                     onClick={() => onBuyPerk(perk)}
-                    startIcon={<Box component="i" className="fas fa-coins" sx={{ color: "#f5c542" }} />}
+                  startIcon={<Icon icon="lucide:coins" />}
                   >
-                    {perk.cost}
+                    {Number(perk.cost).toFixed(2)}
                   </Button>
                 )
               )}

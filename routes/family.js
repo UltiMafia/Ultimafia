@@ -1734,6 +1734,14 @@ async function resolveFamilyApplication(req, res, status) {
       }
     );
   } else if (joinFee > 0) {
+    // Credit user first — if this fails, family treasury is unchanged (safe)
+    await models.User.updateOne(
+      { _id: application.applicant._id },
+      { $inc: { coins: joinFee } }
+    );
+
+    // Now deduct from treasury; if this fails, user has extra coins but treasury is intact
+    // (preferred failure mode vs. losing applicant coins permanently)
     await models.Family.updateOne(
       { id: familyId },
       {
@@ -1742,11 +1750,6 @@ async function resolveFamilyApplication(req, res, status) {
           pendingJoinFees: -joinFee,
         },
       }
-    );
-
-    await models.User.updateOne(
-      { _id: application.applicant._id },
-      { $inc: { coins: joinFee } }
     );
 
     try {
@@ -1881,7 +1884,25 @@ router.post("/:familyId/member/:memberId/role", async function (req, res) {
 
 router.get("/:familyId/ledger", async function (req, res) {
   try {
+    var userId = await routeUtils.verifyLoggedIn(req);
     var familyId = req.params.familyId;
+
+    var user = await models.User.findOne({ id: userId }).lean();
+    var family = await models.Family.findOne({ id: familyId }).lean();
+
+    if (!family) {
+      res.status(404);
+      res.send("Family not found.");
+      return;
+    }
+
+    var membership = await getFamilyMembership(family, user);
+    if (!membership) {
+      res.status(403);
+      res.send("Only family members can view the ledger.");
+      return;
+    }
+
     var ledger = await models.FamilyLedger.find({ familyId: familyId })
       .populate("user", "id name avatar vanityUrl")
       .sort("-createdAt")
@@ -1954,21 +1975,34 @@ router.post("/:familyId/treasury/deposit", async function (req, res) {
       return;
     }
 
-    await models.Family.updateOne(
-      { id: familyId },
-      { $inc: { treasury: amount } }
-    );
+    // Credit family treasury. If this fails, roll back the user debit.
+    try {
+      await models.Family.updateOne(
+        { id: familyId },
+        { $inc: { treasury: amount } }
+      );
+    } catch (familyUpdateError) {
+      // Rollback: return coins to user
+      await models.User.updateOne({ id: userId }, { $inc: { coins: amount } });
+      await redis.cacheUserInfo(userId, true);
+      throw familyUpdateError;
+    }
 
-    await new models.FamilyLedger({
-      familyId: familyId,
-      family: family._id,
-      userId: userId,
-      user: user._id,
-      type: "deposit",
-      amount: amount,
-      description: `Deposited ${amount} coins`,
-      createdAt: Date.now(),
-    }).save();
+    // Ledger write is non-financial — failure here is acceptable
+    try {
+      await new models.FamilyLedger({
+        familyId: familyId,
+        family: family._id,
+        userId: userId,
+        user: user._id,
+        type: "deposit",
+        amount: amount,
+        description: `Deposited ${amount} coins`,
+        createdAt: Date.now(),
+      }).save();
+    } catch (ledgerError) {
+      logger.error("Error writing deposit ledger entry:", ledgerError);
+    }
 
     await redis.cacheUserInfo(userId, true);
 
@@ -1996,8 +2030,10 @@ router.post("/:familyId/treasury/withdraw", async function (req, res) {
       return;
     }
 
-    var user = await models.User.findOne({ id: userId });
-    var family = await models.Family.findOne({ id: familyId });
+    var [user, family] = await Promise.all([
+      models.User.findOne({ id: userId }).lean(),
+      models.Family.findOne({ id: familyId }).lean(),
+    ]);
 
     if (!family) {
       res.status(404);
@@ -2005,58 +2041,67 @@ router.post("/:familyId/treasury/withdraw", async function (req, res) {
       return;
     }
 
-    if (family.leader !== userId && family.founder !== userId) {
+    // family.leader and family.founder are ObjectIds — compare via .toString()
+    var isLeaderOrFounder =
+      family.leader.toString() === user._id.toString() ||
+      family.founder.toString() === user._id.toString();
+    if (!isLeaderOrFounder) {
       res.status(403);
       res.send("Only the family leader or founder can withdraw from the treasury.");
       return;
     }
 
-    // Determine available treasury (subtract pending join fees to prevent withdrawing locked coins)
-    const availableTreasury = getAvailableFamilyTreasury(family, family.treasury);
-    if (availableTreasury < amount) {
-      res.status(500);
-      res.send("The family treasury does not have enough available coins.");
-      return;
-    }
-
-    // Deduct from family
-    const debit = await models.Family.findOneAndUpdate(
-      { id: familyId, treasury: { $gte: amount } },
+    // Atomically deduct from treasury, guarding against pendingJoinFees race condition
+    // by embedding the constraint directly in the MongoDB query condition.
+    const updatedFamily = await models.Family.findOneAndUpdate(
+      {
+        id: familyId,
+        $expr: {
+          $gte: [
+            { $subtract: ["$treasury", { $ifNull: ["$pendingJoinFees", 0] }] },
+            amount,
+          ],
+        },
+      },
       { $inc: { treasury: -amount } },
       { new: true }
     );
 
-    if (!debit) {
+    if (!updatedFamily) {
       res.status(500);
       res.send("The family treasury does not have enough available coins.");
       return;
     }
 
-    // Add to user
-    await models.User.updateOne(
+    // Credit user atomically and get updated balance in one query
+    const updatedUser = await models.User.findOneAndUpdate(
       { id: userId },
-      { $inc: { coins: amount } }
-    );
+      { $inc: { coins: amount } },
+      { new: true }
+    ).select("coins balanceDollar").lean();
 
-    await new models.FamilyLedger({
-      familyId: familyId,
-      family: family._id,
-      userId: userId,
-      user: user._id,
-      type: "withdraw",
-      amount: amount,
-      description: `Withdrew ${amount} coins`,
-      createdAt: Date.now(),
-    }).save();
+    // Ledger write is non-financial — failure is acceptable
+    try {
+      await new models.FamilyLedger({
+        familyId: familyId,
+        family: updatedFamily._id,
+        userId: userId,
+        user: user._id,
+        type: "withdraw",
+        amount: amount,
+        description: `Withdrew ${amount} coins`,
+        createdAt: Date.now(),
+      }).save();
+    } catch (ledgerError) {
+      logger.error("Error writing withdrawal ledger entry:", ledgerError);
+    }
 
     await redis.cacheUserInfo(userId, true);
-
-    const updatedUser = await models.User.findOne({ id: userId }).select("coins balanceDollar");
 
     res.send({
       coins: Number(updatedUser.coins || 0),
       balanceDollar: Number(updatedUser.balanceDollar || 0),
-      treasury: Number(debit.treasury || 0),
+      treasury: Number(updatedFamily.treasury || 0),
     });
   } catch (e) {
     logger.error(e);

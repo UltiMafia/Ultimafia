@@ -33,7 +33,9 @@ import {
   FamilyJoinFee, 
   FamilyApply,
   CoinAmount,
-  FamilyProgress
+  FamilyProgress,
+  panelStyle,
+  headingStyle,
 } from "./FamilyExtras";
 
 export default function Family() {
@@ -44,6 +46,7 @@ export default function Family() {
   const [oldBio, setOldBio] = useState("");
   const [editingBio, setEditingBio] = useState(false);
   const [pendingInvite, setPendingInvite] = useState(null);
+  const [ledgerRefreshKey, setLedgerRefreshKey] = useState(0);
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -67,7 +70,7 @@ export default function Family() {
 
   function refreshFamilyTools() {
     loadFamilyProfile();
-    // In a real app we might also refresh pending invites, but profile is main
+    setLedgerRefreshKey((k) => k + 1);
   }
 
   useEffect(() => {
@@ -226,18 +229,6 @@ export default function Family() {
   if (!family) return <Navigate to="/play" />;
 
   const hasTrophySpotlight = family.perks?.some((p) => p.key === "trophySpotlight" && p.owned);
-
-  const panelStyle = {
-    backgroundColor: "var(--scheme-color)",
-    padding: "16px",
-    borderRadius: "4px",
-  };
-
-  const headingStyle = {
-    fontSize: "1.25rem",
-    fontWeight: 600,
-    marginBottom: "8px",
-  };
 
   const membersList = family.members.map((member) => (
     <Box
@@ -471,7 +462,7 @@ export default function Family() {
             <FamilyTreasury family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
             <FamilyJoinFee family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
             <FamilyPerks family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
-            <FamilyLedger familyId={familyId} />
+            <FamilyLedger familyId={familyId} refreshKey={ledgerRefreshKey} />
           </Stack>
         </Grid>
         {isPhoneDevice && (
