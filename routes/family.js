@@ -336,7 +336,10 @@ router.get("/:familyId/profile", async function (req, res) {
     if (user) {
       if (family.founder.id === user.id) userRole = "founder";
       else if (family.leader.id === user.id) userRole = "leader";
-      else if (members.some((m) => m.id === user.id)) userRole = "member";
+      else {
+        var matchedMember = members.find((m) => m.id === user.id);
+        if (matchedMember) userRole = matchedMember.role || "member";
+      }
     }
 
     var treasuryCoins = family.treasury || 0;
