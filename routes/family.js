@@ -1983,6 +1983,87 @@ router.post("/:familyId/treasury/deposit", async function (req, res) {
   }
 });
 
+router.post("/:familyId/treasury/withdraw", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var amount = Math.floor(Number(req.body.amount || 0));
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      res.status(500);
+      res.send("Withdrawal amount must be a positive number.");
+      return;
+    }
+
+    var user = await models.User.findOne({ id: userId });
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      res.status(404);
+      res.send("Family not found.");
+      return;
+    }
+
+    if (family.leader !== userId && family.founder !== userId) {
+      res.status(403);
+      res.send("Only the family leader or founder can withdraw from the treasury.");
+      return;
+    }
+
+    // Determine available treasury (subtract pending join fees to prevent withdrawing locked coins)
+    const availableTreasury = getAvailableFamilyTreasury(family, family.treasury);
+    if (availableTreasury < amount) {
+      res.status(500);
+      res.send("The family treasury does not have enough available coins.");
+      return;
+    }
+
+    // Deduct from family
+    const debit = await models.Family.findOneAndUpdate(
+      { id: familyId, treasury: { $gte: amount } },
+      { $inc: { treasury: -amount } },
+      { new: true }
+    );
+
+    if (!debit) {
+      res.status(500);
+      res.send("The family treasury does not have enough available coins.");
+      return;
+    }
+
+    // Add to user
+    await models.User.updateOne(
+      { id: userId },
+      { $inc: { coins: amount } }
+    );
+
+    await new models.FamilyLedger({
+      familyId: familyId,
+      family: family._id,
+      userId: userId,
+      user: user._id,
+      type: "withdraw",
+      amount: amount,
+      description: `Withdrew ${amount} coins`,
+      createdAt: Date.now(),
+    }).save();
+
+    await redis.cacheUserInfo(userId, true);
+
+    const updatedUser = await models.User.findOne({ id: userId }).select("coins balanceDollar");
+
+    res.send({
+      coins: Number(updatedUser.coins || 0),
+      balanceDollar: Number(updatedUser.balanceDollar || 0),
+      treasury: Number(debit.treasury || 0),
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error withdrawing from family treasury.");
+  }
+});
+
 router.post("/:familyId/perks/:perkKey/buy", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);

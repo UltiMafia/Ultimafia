@@ -49,25 +49,27 @@ export function CoinAmount({ amount, variant = "body2", sx = {} }) {
 }
 
 export function FamilyTreasury({ family, familyId, refreshFamilyTools }) {
-  const [depositAmount, setDepositAmount] = useState("");
+  const [amount, setAmount] = useState("");
   const siteInfo = useContext(SiteInfoContext);
   const user = useContext(UserContext);
   const isFamilyMember = Boolean(family.userRole);
+  const canWithdraw = family.userRole === "leader" || family.userRole === "founder";
 
-  function onDeposit() {
-    const amount = Math.floor(Number(depositAmount));
-    if (!Number.isFinite(amount) || amount <= 0) {
+  function onAction(type) {
+    const amountNum = Math.floor(Number(amount));
+    if (!Number.isFinite(amountNum) || amountNum <= 0) {
       siteInfo.showAlert("Enter a positive coin amount", "error");
       return;
     }
-    if (!window.confirm(`Are you sure you want to deposit ${amount} coins into the family treasury?`)) {
+    const actionWord = type === "deposit" ? "deposit" : "withdraw";
+    if (!window.confirm(`Are you sure you want to ${actionWord} ${amountNum} coins ${type === "deposit" ? "into" : "from"} the family treasury?`)) {
       return;
     }
     axios
-      .post(`/api/family/${familyId}/treasury/deposit`, { amount })
+      .post(`/api/family/${familyId}/treasury/${type}`, { amount: amountNum })
       .then((res) => {
-        siteInfo.showAlert("Coins deposited", "success");
-        setDepositAmount("");
+        siteInfo.showAlert(`Coins ${type === "deposit" ? "deposited" : "withdrawn"}`, "success");
+        setAmount("");
         user.set((prev) => ({
           ...prev,
           coins: Number(res.data.coins ?? prev.coins ?? 0),
@@ -94,13 +96,18 @@ export function FamilyTreasury({ family, familyId, refreshFamilyTools }) {
           <TextField
             size="small"
             type="number"
-            value={depositAmount}
-            onChange={(e) => setDepositAmount(e.target.value)}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
             placeholder="Amount"
           />
-          <Button variant="outlined" onClick={onDeposit}>
+          <Button variant="outlined" onClick={() => onAction("deposit")}>
             Deposit
           </Button>
+          {canWithdraw && (
+            <Button variant="outlined" color="secondary" onClick={() => onAction("withdraw")}>
+              Withdraw
+            </Button>
+          )}
         </Stack>
       )}
     </Paper>
