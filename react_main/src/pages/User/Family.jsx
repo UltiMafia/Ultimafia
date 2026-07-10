@@ -11,6 +11,7 @@ import {
   IconButton,
   Tooltip,
   Chip,
+  LinearProgress,
 } from "@mui/material";
 
 import { UserContext, SiteInfoContext } from "Contexts";
@@ -404,6 +405,40 @@ export default function Family() {
                 />
               </Paper>
             )}
+            <Paper sx={panelStyle}>
+              <Typography variant="h3" sx={headingStyle}>
+                Family Progress
+              </Typography>
+              <Stack direction="column" spacing={2}>
+                {(family.quests || []).map((quest) => (
+                  <Box key={quest.id}>
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      sx={{ mb: 0.5 }}
+                    >
+                      <Typography variant="body2">{quest.name}</Typography>
+                      <Typography variant="caption">
+                        {quest.current}/{quest.target}
+                      </Typography>
+                    </Stack>
+                    <LinearProgress
+                      variant="determinate"
+                      value={Math.min(
+                        100,
+                        (Number(quest.current || 0) /
+                          Number(quest.target || 1)) *
+                          100
+                      )}
+                    />
+                    <Typography variant="caption" color="text.secondary">
+                      {quest.description}
+                    </Typography>
+                  </Box>
+                ))}
+              </Stack>
+            </Paper>
             {!isPhoneDevice && (
               <Box
                 sx={{

@@ -227,7 +227,7 @@ router.get("/:familyId/profile", async function (req, res) {
       .populate("founder", "id name avatar vanityUrl")
       .populate("leader", "id name avatar vanityUrl")
       .populate("members", "id name avatar vanityUrl")
-      .select("id name avatar background backgroundRepeatMode applicationsOpen joinFee treasury perks bio founder leader members trophies createdAt");
+      .select("id name avatar background backgroundRepeatMode applicationsOpen joinFee pendingJoinFees treasury perks bio founder leader members trophies createdAt");
 
     if (!family) {
       res.status(404);
@@ -292,6 +292,8 @@ router.get("/:familyId/profile", async function (req, res) {
         allTrophies = [];
       }
     }
+    
+    var trophyCount = allTrophies.length;
 
     var trophies = (allTrophies || []).map((trophy) => ({
       id: trophy.id,
@@ -330,8 +332,10 @@ router.get("/:familyId/profile", async function (req, res) {
       backgroundRepeatMode: family.backgroundRepeatMode || "checker",
       applicationsOpen: family.applicationsOpen,
       joinFee: family.joinFee,
+      pendingJoinFees: family.pendingJoinFees || 0,
       treasury: treasuryCoins,
       perks: getFamilyPerks(family),
+      memberLimit: getFamilyMemberLimit(family),
       bio: family.bio,
       founder: {
         id: family.founder.id,
@@ -346,6 +350,7 @@ router.get("/:familyId/profile", async function (req, res) {
         vanityUrl: family.leader.vanityUrl,
       },
       members: members,
+      quests: buildFamilyQuests(family, trophyCount, treasuryCoins),
       trophies: trophies || [],
       isLeader: isLeader,
       canManageApplications: canManageApplications,
