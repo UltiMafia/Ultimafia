@@ -3,6 +3,7 @@ const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const models = require("../db/models");
 const logger = require("../modules/logging")(".");
+const stockMarket = require("../lib/StockMarket");
 const router = express.Router();
 const shortid = require("shortid");
 const bluebird = require("bluebird");
@@ -362,6 +363,7 @@ router.get("/:familyId/profile", async function (req, res) {
       isLeader: isLeader,
       canManageApplications: canManageApplications,
       userRole: userRole,
+      stockInfo: await buildFamilyStockInfo(familyId, userId),
     });
   } catch (e) {
     logger.error(e);
@@ -1034,6 +1036,63 @@ function getMembershipRole(inFamily, family, user) {
 
 function canManageFamilyApplications(role) {
   return role === "leader" || role === "officer";
+}
+
+async function buildFamilyStockInfo(familyId, requestingUserId) {
+  const familyStock = await models.FamilyStock.findOne({ familyId, isIpoed: true })
+    .select("shareSupply dividendsPaidOut")
+    .lean()
+    .exec();
+
+  if (!familyStock) return null;
+
+  const buyPrice = stockMarket.getBuyPrice(familyStock.shareSupply, 1).total;
+  const sellPrice = stockMarket.getSellPrice(familyStock.shareSupply, 1).total;
+  const marketCap = familyStock.shareSupply * stockMarket.calculatePrice(familyStock.shareSupply);
+
+  // Build sparkline from last 10 transactions
+  const transactions = await models.FamilyStockTransaction.find({ familyId })
+    .sort("-createdAt")
+    .limit(10)
+    .select("price shares type")
+    .lean()
+    .exec();
+
+  let supply = familyStock.shareSupply;
+  const priceHistory = [];
+  for (const tx of transactions) {
+    priceHistory.push(stockMarket.calculatePrice(supply));
+    if (tx.type === "buy") {
+      supply = Math.max(1, supply - (tx.shares || 0));
+    } else if (tx.type === "sell") {
+      supply += tx.shares || 0;
+    }
+  }
+  priceHistory.push(stockMarket.calculatePrice(supply));
+  priceHistory.reverse();
+
+  let sharesOwned = 0;
+  if (requestingUserId) {
+    const holding = await models.FamilyShareholder.findOne({
+      familyId,
+      holderId: requestingUserId,
+    })
+      .select("sharesOwned")
+      .lean()
+      .exec();
+    sharesOwned = holding ? holding.sharesOwned : 0;
+  }
+
+  return {
+    isIpoed: true,
+    shareSupply: familyStock.shareSupply,
+    marketCap,
+    buyPrice,
+    sellPrice,
+    priceHistory,
+    sharesOwned,
+    dividendsPaidOut: familyStock.dividendsPaidOut || 0,
+  };
 }
 
 async function getFamilyMembership(family, user) {

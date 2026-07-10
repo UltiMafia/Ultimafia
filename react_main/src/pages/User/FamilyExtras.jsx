@@ -11,10 +11,13 @@ import {
   LinearProgress,
   Switch,
   FormControlLabel,
+  Grid,
+  useTheme,
 } from "@mui/material";
 import { NameWithAvatar } from "./User";
 import { SiteInfoContext, UserContext } from "Contexts";
 import { Icon } from "@iconify/react";
+import Sparkline from "components/Sparkline";
 
 export const panelStyle = {
   backgroundColor: "var(--scheme-color)",
@@ -494,6 +497,97 @@ export function FamilyProgress({ family }) {
           </Box>
         ))}
       </Stack>
+    </Paper>
+  );
+}
+
+export function FamilyStockCard({ stockInfo, familyId }) {
+  const theme = useTheme();
+  const goldColor = theme.palette.mode === "light" ? "#b8860b" : "gold";
+
+  if (!stockInfo) return null;
+
+  return (
+    <Paper sx={panelStyle}>
+      <Typography variant="h3" sx={headingStyle}>
+        Stock &amp; Equity
+      </Typography>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: "12px", mt: 1 }}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Box>
+            <Typography variant="caption" color="text.secondary" display="block">
+              Current Price
+            </Typography>
+            <Typography
+              variant="h4"
+              sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}
+            >
+              {stockInfo.buyPrice.toFixed(2)}{" "}
+              <Icon icon="lucide:coins" style={{ fontSize: "24px", verticalAlign: "middle" }} />
+            </Typography>
+          </Box>
+          <Box>
+            <Sparkline history={stockInfo.priceHistory} />
+          </Box>
+        </Stack>
+        <Box sx={{ borderTop: "1px solid rgba(128,128,128,0.2)", mt: -0.5, mb: -1 }} />
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <Typography variant="caption" color="text.secondary" display="block">
+              Total Supply
+            </Typography>
+            <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+              {stockInfo.shareSupply} Shares
+            </Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="caption" color="text.secondary" display="block">
+              Market Cap
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}
+            >
+              {stockInfo.marketCap.toFixed(2)}{" "}
+              <Icon icon="lucide:coins" style={{ fontSize: "14px", verticalAlign: "middle" }} />
+            </Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="caption" color="text.secondary" display="block">
+              Your Holdings
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: "bold", color: stockInfo.sharesOwned > 0 ? "success.main" : "text.secondary" }}
+            >
+              {stockInfo.sharesOwned} Shares
+            </Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="caption" color="text.secondary" display="block">
+              Dividends Paid
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}
+            >
+              {(stockInfo.dividendsPaidOut || 0).toFixed(2)}{" "}
+              <Icon icon="lucide:coins" style={{ fontSize: "14px", verticalAlign: "middle" }} />
+            </Typography>
+          </Grid>
+        </Grid>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          component="a"
+          href={`/fame/market?family=${familyId}`}
+          sx={{ mt: 1, fontWeight: "bold" }}
+          startIcon={<i className="fas fa-chart-line" />}
+        >
+          Trade Shares
+        </Button>
+      </Box>
     </Paper>
   );
 }

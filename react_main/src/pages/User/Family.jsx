@@ -34,6 +34,7 @@ import {
   FamilyApply,
   CoinAmount,
   FamilyProgress,
+  FamilyStockCard,
   panelStyle,
   headingStyle,
 } from "./FamilyExtras";
@@ -457,6 +458,7 @@ export default function Family() {
             </Paper>
             
             <FamilyProgress family={family} />
+            <FamilyStockCard stockInfo={family.stockInfo} familyId={familyId} />
             <FamilyApply family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
             <FamilyApplications family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
             <FamilyTreasury family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
