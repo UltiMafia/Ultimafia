@@ -32,7 +32,8 @@ import {
   FamilyPerks, 
   FamilyJoinFee, 
   FamilyApply,
-  CoinAmount 
+  CoinAmount,
+  FamilyProgress
 } from "./FamilyExtras";
 
 export default function Family() {
@@ -405,40 +406,6 @@ export default function Family() {
                 />
               </Paper>
             )}
-            <Paper sx={panelStyle}>
-              <Typography variant="h3" sx={headingStyle}>
-                Family Progress
-              </Typography>
-              <Stack direction="column" spacing={2}>
-                {(family.quests || []).map((quest) => (
-                  <Box key={quest.id}>
-                    <Stack
-                      direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      sx={{ mb: 0.5 }}
-                    >
-                      <Typography variant="body2">{quest.name}</Typography>
-                      <Typography variant="caption">
-                        {quest.current}/{quest.target}
-                      </Typography>
-                    </Stack>
-                    <LinearProgress
-                      variant="determinate"
-                      value={Math.min(
-                        100,
-                        (Number(quest.current || 0) /
-                          Number(quest.target || 1)) *
-                          100
-                      )}
-                    />
-                    <Typography variant="caption" color="text.secondary">
-                      {quest.description}
-                    </Typography>
-                  </Box>
-                ))}
-              </Stack>
-            </Paper>
             {!isPhoneDevice && (
               <Box
                 sx={{
@@ -465,12 +432,12 @@ export default function Family() {
                       color="success"
                       onClick={onAcceptJoin}
                       disabled={
-                        family && family.members && family.members.length >= 20
+                        family && family.members && family.members.length >= (family.memberLimit || 20)
                       }
                       sx={{ flex: 1 }}
                       title={
-                        family && family.members && family.members.length >= 20
-                          ? "This family has reached the maximum of 20 members."
+                        family && family.members && family.members.length >= (family.memberLimit || 20)
+                          ? `This family has reached the maximum of ${family.memberLimit || 20} members.`
                           : ""
                       }
                     >
@@ -489,6 +456,7 @@ export default function Family() {
               </Paper>
             )}
             
+            <FamilyProgress family={family} />
             <FamilyApply family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
             <FamilyApplications family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
             <FamilyTreasury family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
