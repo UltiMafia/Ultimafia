@@ -235,19 +235,27 @@ export default function Family() {
     <Box
       key={member.id}
       sx={{
-        mb: 1,
+        py: 0.75,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
+        flexWrap: "wrap",
+        gap: 1,
+        "&:not(:last-child)": {
+          borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
+          pb: 1,
+        }
       }}
     >
-      <NameWithAvatar
-        id={member.id}
-        name={member.name}
-        avatar={member.avatar}
-        vanityUrl={member.vanityUrl}
-      />
-      <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+      <Box sx={{ display: "flex", alignItems: "center", minWidth: 0, flex: "1 1 auto" }}>
+        <NameWithAvatar
+          id={member.id}
+          name={member.name}
+          avatar={member.avatar}
+          vanityUrl={member.vanityUrl}
+        />
+      </Box>
+      <Box sx={{ display: "flex", gap: 0.75, alignItems: "center", flexWrap: "wrap" }}>
         {member.isLeader && (
           <i
             className="fas fa-crown"
@@ -262,7 +270,7 @@ export default function Family() {
             title="Founder"
           />
         )}
-        <Chip size="small" label={member.role || "member"} variant="outlined" />
+        <Chip size="small" label={capitalize(member.role || "member")} variant="outlined" />
         {family.isLeader && user.loggedIn && member.id !== user.id && !member.isLeader && (
           <Button
             size="small"
@@ -282,7 +290,7 @@ export default function Family() {
             <IconButton
               size="small"
               onClick={() => onRemoveMember(member.id, member.name)}
-              sx={{ color: "error.main" }}
+              sx={{ color: "error.main", p: 0.5 }}
             >
               <i className="fas fa-trash" />
             </IconButton>
