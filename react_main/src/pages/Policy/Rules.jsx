@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useTheme } from "@mui/material/styles";
 import {
   Typography,
   Table,
@@ -17,6 +16,17 @@ import {
   ListItemText,
 } from "@mui/material";
 import { useViolations } from "../../hooks/useViolations";
+
+const OFFENSE_LABELS = ["1st", "2nd", "3rd", "4th", "5th", "6th"];
+
+const cellSx = {
+  backgroundColor: "var(--scheme-color-sec)",
+};
+
+const headerCellSx = {
+  ...cellSx,
+  fontWeight: "bold",
+};
 
 function RuleDescription({ description }) {
   if (!description) return null;
@@ -45,6 +55,54 @@ function RuleDescription({ description }) {
   );
 }
 
+function OffenseLengthsTable({ offenses }) {
+  const penalties = [
+    ...offenses,
+    ...Array(Math.max(0, 6 - offenses.length)).fill("-"),
+  ];
+
+  return (
+    <TableContainer component={Paper} sx={{ overflowX: "auto", mt: 1, mb: 1 }}>
+      <Table size="small">
+        <TableHead>
+          <TableRow>
+            {OFFENSE_LABELS.map((label) => (
+              <TableCell key={label} sx={headerCellSx} align="center">
+                {label} Offense
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            {penalties.map((penalty, i) => (
+              <TableCell key={i} sx={cellSx} align="center">
+                {penalty}
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
+
+function RuleSection({ rule }) {
+  return (
+    <Box sx={{ mb: 3 }}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{ textDecoration: "underline" }}
+      >
+        {rule.name}
+      </Typography>
+      <RuleDescription description={rule.description} />
+      <OffenseLengthsTable offenses={rule.offenses} />
+    </Box>
+  );
+}
+
 function TabPanel({ children, value, index, ...other }) {
   return (
     <div
@@ -60,7 +118,6 @@ function TabPanel({ children, value, index, ...other }) {
 }
 
 export default function Rules() {
-  const theme = useTheme();
   const { violationDefinitions, loading } = useViolations();
   const [selectedTab, setSelectedTab] = useState(0);
 
@@ -91,7 +148,6 @@ export default function Rules() {
       <Tabs value={selectedTab} onChange={handleTabChange}>
         <Tab label="Community Violations" />
         <Tab label="Game-Related Violations" />
-        <Tab label="Violation Lengths" />
         <Tab label="Filing an Appeal" />
         <Tab label="Other Policies" />
       </Tabs>
@@ -106,17 +162,13 @@ export default function Rules() {
           entirety of the site (including games, forums, chat, and the Discord
           server).
         </Typography>
+        <Typography variant="body1" paragraph>
+          After serving the ban length for an offense, the violation will
+          remain on one's record for three months starting from the day that
+          the ban was first issued.
+        </Typography>
         {communityRules.map((rule) => (
-          <Box key={rule.name} sx={{ mb: 2 }}>
-            <Typography
-              variant="h4"
-              gutterBottom
-              sx={{ textDecoration: "underline" }}
-            >
-              {rule.name}
-            </Typography>
-            <RuleDescription description={rule.description} />
-          </Box>
+          <RuleSection key={rule.name} rule={rule} />
         ))}
       </TabPanel>
 
@@ -127,93 +179,20 @@ export default function Rules() {
         <Typography variant="body1" paragraph>
           These violations will only earn you bans from ranked and competitive
           games; you will be able to access other games and the rest of the
-          site. With the exception of cheating, all game-related violations are 
+          site. With the exception of cheating, all game-related violations are
           preceded by one warning.
-        </Typography>
-        {gameRules.map((rule) => (
-          <Box key={rule.name} sx={{ mb: 2 }}>
-            <Typography
-              variant="h4"
-              gutterBottom
-              sx={{ textDecoration: "underline" }}
-            >
-              {rule.name}
-            </Typography>
-            <RuleDescription description={rule.description} />
-          </Box>
-        ))}
-      </TabPanel>
-
-      <TabPanel value={selectedTab} index={2}>
-        <Typography variant="h3" gutterBottom>
-          Violation Lengths
         </Typography>
         <Typography variant="body1" paragraph>
           After serving the ban length for an offense, the violation will
           remain on one's record for three months starting from the day that
           the ban was first issued.
         </Typography>
-        <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell
-                  sx={{
-                    fontWeight: "bold",
-                    backgroundColor: "var(--scheme-color-sec)",
-                  }}
-                  align="center"
-                >
-                  Violation
-                </TableCell>
-                {[1, 2, 3, 4, 5, 6].map((n) => {
-                  const suffix = n === 1 ? "st" : n === 2 ? "nd" : n === 3 ? "rd" : "th";
-                  return (
-                    <TableCell
-                      key={n}
-                      sx={{
-                        fontWeight: "bold",
-                        backgroundColor: "var(--scheme-color-sec)",
-                      }}
-                      align="center"
-                    >
-                      {n}{suffix} Offense
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {violationDefinitions.map((rule) => (
-                <TableRow key={rule.name}>
-                  <TableCell
-                    sx={{
-                      backgroundColor: "var(--scheme-color-sec)",
-                      fontWeight: 600,
-                    }}
-                    align="center"
-                  >
-                    {rule.name}
-                  </TableCell>
-                  {[...rule.offenses, ...Array(Math.max(0, 6 - rule.offenses.length)).fill("-")].map((penalty, i) => (
-                    <TableCell
-                      key={i}
-                      sx={{
-                        backgroundColor: "var(--scheme-color-sec)",
-                      }}
-                      align="center"
-                    >
-                      {penalty}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        {gameRules.map((rule) => (
+          <RuleSection key={rule.name} rule={rule} />
+        ))}
       </TabPanel>
 
-      <TabPanel value={selectedTab} index={3}>
+      <TabPanel value={selectedTab} index={2}>
         <Typography variant="h3" gutterBottom>
           Filing an Appeal
         </Typography>
@@ -233,14 +212,14 @@ export default function Rules() {
           to be reviewed before filing another appeal for the same violation.
         </Typography>
         <Typography variant="body2" paragraph>
-          Please note that a violation can only be appealed once. Please include 
-          as much detail and evidence that you can provide as low-effort appeals 
-          will not be taken seriously by the team and could result in a dismissal 
+          Please note that a violation can only be appealed once. Please include
+          as much detail and evidence that you can provide as low-effort appeals
+          will not be taken seriously by the team and could result in a dismissal
           if detail is poor or lacking.
         </Typography>
       </TabPanel>
 
-      <TabPanel value={selectedTab} index={4}>
+      <TabPanel value={selectedTab} index={3}>
         <Typography variant="h3" gutterBottom>
           Other Policies
         </Typography>
@@ -253,7 +232,7 @@ export default function Rules() {
           Abetting
         </Typography>
         <Typography variant="body1" paragraph>
-          Encouraging or facilitating other users in violating game rules, 
+          Encouraging or facilitating other users in violating game rules,
           including ban evasion or not informing admins of banned user activity. This includes, but is
           not limited to, urging others to engage in game-related abandonment,
           spam, cheat, or otherwise break established rules whether community
