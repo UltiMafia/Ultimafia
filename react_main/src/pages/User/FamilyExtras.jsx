@@ -9,6 +9,8 @@ import {
   TextField,
   Chip,
   LinearProgress,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import { NameWithAvatar } from "./User";
 import { SiteInfoContext, UserContext } from "Contexts";
@@ -164,14 +166,43 @@ export function FamilyApplications({ familyId, family, refreshFamilyTools }) {
       .catch((e) => siteInfo.showAlert(e.response?.data || "Error", "error"));
   }
 
-  if (!family.canManageApplications || applications.length === 0) return null;
+  function toggleApplicationsOpen() {
+    axios
+      .post(`/api/family/${familyId}/applicationsOpen`, {
+        applicationsOpen: !family.applicationsOpen,
+      })
+      .then(() => {
+        refreshFamilyTools();
+      })
+      .catch((e) => siteInfo.showAlert(e.response?.data || "Error", "error"));
+  }
+
+  if (!family.canManageApplications) return null;
 
   return (
     <Paper sx={panelStyle}>
-      <Typography variant="h3" sx={headingStyle}>
-        Applications
-      </Typography>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography variant="h3" sx={headingStyle}>
+          Applications
+        </Typography>
+        <FormControlLabel
+          control={
+            <Switch
+              size="small"
+              checked={family.applicationsOpen}
+              onChange={toggleApplicationsOpen}
+            />
+          }
+          label={<Typography variant="caption">{family.applicationsOpen ? "Open" : "Closed"}</Typography>}
+          sx={{ mr: 0 }}
+        />
+      </Stack>
       <Stack direction="column" spacing={1}>
+        {applications.length === 0 && (
+          <Typography variant="body2" color="text.secondary">
+            No pending applications.
+          </Typography>
+        )}
         {applications.map((application) => (
           <Box key={application.id}>
             <NameWithAvatar
