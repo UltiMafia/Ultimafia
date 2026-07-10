@@ -135,8 +135,19 @@ router.post("/create", async function (req, res) {
     const inFamily = new models.InFamily({
       user: user._id,
       family: family._id,
+      role: "leader",
     });
     await inFamily.save();
+
+    // Create FamilyStock to initialize treasury
+    const familyStock = new models.FamilyStock({
+      familyId: familyId,
+      isIpoed: false,
+      shareSupply: 0,
+      treasuryCoins: 0,
+      dividendsPaidOut: 0,
+    });
+    await familyStock.save();
 
     res.send({ familyId: familyId });
   } catch (e) {
