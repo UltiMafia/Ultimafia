@@ -1734,18 +1734,11 @@ async function resolveFamilyApplication(req, res, status) {
       }
     );
   } else if (joinFee > 0) {
-    await models.FamilyStock.updateOne(
-      { familyId: familyId },
-      {
-        $inc: {
-          treasuryCoins: -joinFee,
-        },
-      }
-    );
     await models.Family.updateOne(
       { id: familyId },
       {
         $inc: {
+          treasury: -joinFee,
           pendingJoinFees: -joinFee,
         },
       }
