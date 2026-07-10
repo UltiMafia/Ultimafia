@@ -331,7 +331,7 @@ router.get("/:familyId/profile", async function (req, res) {
       applicationsOpen: family.applicationsOpen,
       joinFee: family.joinFee,
       treasury: treasuryCoins,
-      perks: family.perks || [],
+      perks: getFamilyPerks(family),
       bio: family.bio,
       founder: {
         id: family.founder.id,
