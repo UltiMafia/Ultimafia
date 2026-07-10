@@ -36,7 +36,7 @@ export function CoinAmount({ amount, variant = "body2", sx = {} }) {
       sx={{ display: "inline-flex", alignItems: "center", ...sx }}
     >
       <Typography component="span" variant={variant}>
-        {Number(amount || 0).toLocaleString()}
+        {Number(amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </Typography>
       <Box
         component="i"
