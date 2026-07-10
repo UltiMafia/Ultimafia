@@ -116,6 +116,11 @@ function FamilyCard({ family }) {
                 component="div"
                 variant="caption"
                 color="text.secondary"
+                sx={{
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
               >
                 Led by{" "}
                 <NameWithAvatar
@@ -150,14 +155,6 @@ function FamilyCard({ family }) {
               <Box component="i" className="fas fa-users" aria-hidden="true" />
             }
             label={`${family.memberCount}/${family.memberLimit}`}
-            variant="outlined"
-          />
-          <Chip
-            size="small"
-            icon={
-              <Box component="i" className="fas fa-star" aria-hidden="true" />
-            }
-            label={`${family.score} pts`}
             variant="outlined"
           />
         </Stack>
@@ -222,29 +219,17 @@ export default function FamilyDiscovery() {
   const [loaded, setLoaded] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("score");
+  const [sort, setSort] = useState("members");
   const [openOnly, setOpenOnly] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
-  const [leaderboard, setLeaderboard] = useState([]);
   const errorAlert = useErrorAlert();
   const errorAlertRef = useRef(errorAlert);
 
   useEffect(() => {
     errorAlertRef.current = errorAlert;
   }, [errorAlert]);
-
-  const loadLeaderboard = useCallback(() => {
-    axios
-      .get("/api/family/leaderboard")
-      .then((res) => {
-        setLeaderboard(res.data.leaderboard || []);
-      })
-      .catch(() => {
-        setLeaderboard([]);
-      });
-  }, []);
 
   const loadFamilies = useCallback(() => {
     setLoaded(false);
@@ -273,8 +258,7 @@ export default function FamilyDiscovery() {
 
   useEffect(() => {
     document.title = "Find Families | PassionMafia";
-    loadLeaderboard();
-  }, [loadLeaderboard]);
+  }, []);
 
   useEffect(() => {
     loadFamilies();
@@ -359,7 +343,6 @@ export default function FamilyDiscovery() {
               sx={{ flex: 1 }}
             />
             <Select size="small" value={sort} onChange={onSortChange}>
-              <MenuItem value="score">Top Score</MenuItem>
               <MenuItem value="open">Open First</MenuItem>
               <MenuItem value="members">Most Members</MenuItem>
               <MenuItem value="treasury">Most Treasury</MenuItem>
@@ -399,7 +382,7 @@ export default function FamilyDiscovery() {
 
       {loaded && families.length > 0 && (
         <Grid container spacing={2}>
-          <Grid item xs={12} md={8} lg={9}>
+          <Grid item xs={12}>
             <Grid container spacing={2}>
               {families.map((family) => (
                 <Grid item xs={12} md={6} xl={4} key={family.id}>
@@ -416,32 +399,6 @@ export default function FamilyDiscovery() {
                   color="primary"
                 />
               </Stack>
-            )}
-          </Grid>
-          <Grid item xs={12} md={4} lg={3}>
-            {leaderboard.length > 0 && (
-              <Paper sx={{ p: 2, borderRadius: "4px", backgroundColor: "var(--scheme-color)" }}>
-                <Typography variant="h3" sx={{ fontSize: "1.25rem", fontWeight: 600, mb: 1 }}>
-                  Leaderboard
-                </Typography>
-                <Stack direction="column" spacing={1}>
-                  {leaderboard.slice(0, 10).map((entry) => (
-                    <Stack
-                      key={entry.id}
-                      direction="row"
-                      alignItems="center"
-                      justifyContent="space-between"
-                    >
-                      <Typography variant="body2" sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {entry.rank}. {entry.name}
-                      </Typography>
-                      <Typography variant="caption" sx={{ flexShrink: 0, ml: 1 }}>
-                        {entry.score} pts
-                      </Typography>
-                    </Stack>
-                  ))}
-                </Stack>
-              </Paper>
             )}
           </Grid>
         </Grid>

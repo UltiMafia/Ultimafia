@@ -1093,90 +1093,12 @@ function getFamilyPerks(family) {
     owned: owned.has(perk.key),
   }));
 }
-router.get("/leaderboard", async function (req, res) {
-  try {
-    const families = await models.Family.find({})
-      .select("id name avatar avatarUrl members treasury perks createdAt")
-      .populate("members", "id")
-      .lean();
-
-    const memberIds = [];
-    for (const family of families) {
-      for (const member of family.members || []) {
-        if (member?.id) memberIds.push(member.id);
-      }
-    }
-
-    const trophyCounts = memberIds.length
-      ? await models.Trophy.aggregate([
-          {
-            $match: {
-              ownerId: { $in: memberIds },
-              revoked: { $ne: true },
-            },
-          },
-          { $group: { _id: "$ownerId", count: { $sum: 1 } } },
-        ])
-      : [];
-    const trophyCountByUser = new Map(
-      trophyCounts.map((item) => [item._id, item.count])
-    );
-
-
-
-    const leaderboard = families
-      .map((family) => {
-        const members = family.members || [];
-        const trophyCount = members.reduce(
-          (total, member) => total + (trophyCountByUser.get(member.id) || 0),
-          0
-        );
-        const treasury = family.treasury || 0;
-        const perks = family.perks || [];
-        const score =
-          trophyCount * 100 +
-          members.length * 25 +
-          perks.length * 50 +
-          Math.floor(treasury / 100);
-
-        return {
-          id: family.id,
-          name: family.name,
-          avatar: family.avatarUrl || family.avatar,
-          memberCount: members.length,
-          trophyCount,
-          treasury,
-          perkCount: perks.length,
-          score,
-          createdAt: family.createdAt,
-        };
-      })
-      .sort(
-        (a, b) =>
-          b.score - a.score ||
-          b.trophyCount - a.trophyCount ||
-          b.memberCount - a.memberCount ||
-          a.createdAt - b.createdAt
-      )
-      .slice(0, 25)
-      .map((family, index) => ({
-        ...family,
-        rank: index + 1,
-      }));
-
-    res.send({ leaderboard });
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error loading family leaderboard.");
-  }
-});
 
 router.get("/discover", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req, true);
     const search = String(req.query.search || "").trim();
-    const sort = String(req.query.sort || "score");
+    const sort = String(req.query.sort || "members");
     const openOnly = String(req.query.openOnly || "") === "true";
     const page = Math.max(1, Number(req.query.page) || 1);
     const limit = Math.min(48, Math.max(6, Number(req.query.limit) || 12));
@@ -1268,11 +1190,6 @@ router.get("/discover", async function (req, res) {
       const applicationsOpen = family.applicationsOpen !== false;
       const isFull = members.length >= memberLimit;
       const hasPendingApplication = pendingApplicationFamilyIds.has(family.id);
-      const score =
-        trophyCount * 10 +
-        members.length * 25 +
-        perks.length * 50 +
-        Math.floor(treasury / 100);
 
       return {
         id: family.id,
@@ -1294,7 +1211,6 @@ router.get("/discover", async function (req, res) {
         availableTreasury: getAvailableFamilyTreasury(family, treasury),
         perkCount: perks.length,
         trophyCount,
-        score,
         createdAt: family.createdAt,
         bioPreview: String(family.bio || "").replace(/\s+/g, " ").slice(0, 160),
         userIsMember: viewerFamilyId === family.id,
@@ -1315,16 +1231,11 @@ router.get("/discover", async function (req, res) {
       if (sort === "open") {
         return (
           Number(b.applicationsOpen) - Number(a.applicationsOpen) ||
-          b.score - a.score
+          b.memberCount - a.memberCount
         );
       }
 
-      return (
-        b.score - a.score ||
-        b.memberCount - a.memberCount ||
-        b.treasury - a.treasury ||
-        Number(b.createdAt) - Number(a.createdAt)
-      );
+      return b.memberCount - a.memberCount;
     });
 
     const total = discoveredFamilies.length;
