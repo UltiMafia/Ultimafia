@@ -223,9 +223,9 @@ function ChessBoardPanel({ extraInfo, self, onMakeMove }) {
   const board = chess.current.board();
   const isTurn = onMakeMove && playerColor === turn;
 
-  // Map of pieces to Unicode symbols
+  // Map of pieces to Unicode symbols (using solid symbols for both, styled via CSS)
   const pieceSymbols = {
-    w: { p: "♙", r: "♖", n: "♘", b: "♗", q: "♕", k: "♔" },
+    w: { p: "♟", r: "♜", n: "♞", b: "♝", q: "♛", k: "♚" },
     b: { p: "♟", r: "♜", n: "♞", b: "♝", q: "♛", k: "♚" },
   };
 
