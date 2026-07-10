@@ -314,7 +314,109 @@ const learnGameDescriptions = [
       {
         type: "paragraph",
         content:
-          "Chess is a two-player strategy board game played on an 8×8 grid. Players take turns moving their pieces with the goal of checkmating the opponent's king.",
+          "Chess is a two-player strategy board game played on an 8×8 grid. Two players — White and Black — are assigned randomly at the start of the game. White always moves first. Players alternate turns until the game ends.",
+      },
+      { type: "subheading", content: "Goal" },
+      {
+        type: "paragraph",
+        content:
+          "Checkmate your opponent's King. A King is in checkmate when it is under attack (in \"check\") and has no legal move to escape. The player who delivers checkmate wins.",
+      },
+      { type: "subheading", content: "Making a move" },
+      {
+        type: "paragraph",
+        content:
+          "On your turn you must move exactly one piece to a legal square. You can move by clicking a piece on the board and then clicking the destination square (highlighted squares show legal moves), or by typing a move in algebraic notation into the action list (e.g. e4, Nf3, O-O). You cannot pass your turn or move into check.",
+      },
+      { type: "subheading", content: "How each piece moves" },
+      {
+        type: "list",
+        items: [
+          {
+            strong: "King (♚)",
+            text: " — one square in any direction. May never move into check.",
+          },
+          {
+            strong: "Queen (♛)",
+            text: " — any number of squares in any direction (horizontal, vertical, or diagonal). The most powerful piece.",
+          },
+          {
+            strong: "Rook (♜)",
+            text: " — any number of squares horizontally or vertically.",
+          },
+          {
+            strong: "Bishop (♝)",
+            text: " — any number of squares diagonally. Each Bishop stays on its starting color forever.",
+          },
+          {
+            strong: "Knight (♞)",
+            text: " — moves in an L-shape: two squares in one direction then one square perpendicular (or vice versa). The only piece that can jump over others.",
+          },
+          {
+            strong: "Pawn (♟)",
+            text: " — advances one square forward (or two squares on its very first move). Captures one square diagonally forward only.",
+          },
+        ],
+      },
+      { type: "subheading", content: "Special moves" },
+      {
+        type: "list",
+        items: [
+          {
+            strong: "Castling",
+            text: " — Once per game, if neither the King nor the chosen Rook has previously moved and there are no pieces between them, the King slides two squares toward that Rook and the Rook jumps to the other side of the King. Neither piece may be in check before, during, or after castling. Kingside: O-O; Queenside: O-O-O.",
+          },
+          {
+            strong: "En passant",
+            text: " — If a pawn advances two squares on its first move and lands beside an enemy pawn, the enemy pawn may capture it \"in passing\" as if it had moved only one square — but only immediately on the very next move.",
+          },
+          {
+            strong: "Promotion",
+            text: " — When a pawn reaches the far end of the board it must immediately be replaced by a Queen, Rook, Bishop, or Knight of the same color (Queen is almost always best).",
+          },
+        ],
+      },
+      { type: "subheading", content: "Check" },
+      {
+        type: "paragraph",
+        content:
+          "When your King is attacked by an enemy piece you are in check and must resolve it immediately — either by moving the King, blocking the attack, or capturing the attacker. You may never make a move that leaves your own King in check.",
+      },
+      { type: "subheading", content: "How the game ends" },
+      {
+        type: "list",
+        items: [
+          {
+            strong: "Checkmate",
+            text: " — The active player's King is in check with no legal escape. The player who delivered checkmate wins.",
+          },
+          {
+            strong: "Stalemate",
+            text: " — The active player has no legal move but is not in check. The game is a draw.",
+          },
+          {
+            strong: "Insufficient material",
+            text: " — Neither side has enough pieces to deliver checkmate (e.g. King vs. King). Draw.",
+          },
+          {
+            strong: "Threefold repetition",
+            text: " — The same position occurs three times with the same player to move. Draw.",
+          },
+          {
+            strong: "Player leaves",
+            text: " — If either player disconnects or leaves, the game ends immediately.",
+          },
+        ],
+      },
+      { type: "subheading", content: "Host settings" },
+      {
+        type: "list",
+        items: [
+          {
+            strong: "Turn length",
+            text: " — How long each player has to make their move before the turn timer expires.",
+          },
+        ],
       },
     ],
   },
