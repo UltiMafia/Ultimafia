@@ -57,6 +57,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   Grid,
   IconButton,
   Paper,
@@ -79,6 +80,8 @@ export const POINTS_NEGATIVE_ICON = require(`images/pointsNegative.png`);
 export const PRESTIGE_ICON = require(`images/prestige.png`);
 export const ACHIEVEMENTS_ICON = require(`images/achievements.png`);
 export const DAILY_ICON = require(`images/dailyChallenges.png`);
+
+import { TIER_ICONS, getConservativeRank } from "utils/skillRating";
 
 
 
@@ -157,6 +160,7 @@ export default function Profile() {
   const [avatar, setAvatar] = useState();
   const [banner, setBanner] = useState();
   const [profileBackground, setProfileBackground] = useState(false);
+  const [skillRating, setSkillRating] = useState(null);
   const [bio, setBio] = useState("");
   const [oldBio, setOldBio] = useState();
   const [editingBio, setEditingBio] = useState(false);
@@ -390,6 +394,7 @@ export default function Profile() {
           setPokesDisabled(res.data.pokesDisabled || false);
           setIncomingPokes(res.data.incomingPokes || []);
           setStockInfo(res.data.stockInfo || null);
+          setSkillRating(res.data.skillRating || null);
           setFriendsPage(1);
           loadFriends(resolvedId, "", 1);
 
@@ -1819,44 +1824,128 @@ export default function Profile() {
                     </Typography>
                   ) : (
                     <>
-                      <div className="ratings-tabs">
-                        <div
-                          className={
-                            "ratings-tab" +
-                            (ratingsTab === "wins" ? " active" : "")
-                          }
-                          onClick={() => setRatingsTab("wins")}
+                      <Stack spacing={2} sx={{ px: 1, py: 1 }}>
+                        <Paper variant="outlined" sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderRadius: 2 }}>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: "text.secondary" }}>
+                            Win/Loss Distribution
+                          </Typography>
+                          <Box sx={{ my: 1, display: "flex", justifyContent: "center" }}>
+                            <PieChart
+                              wins={getWins(mafiaStats)}
+                              losses={getLosses(mafiaStats)}
+                              abandons={getAbandons(mafiaStats)}
+                            />
+                          </Box>
+                          <Typography variant="body2" sx={{ mt: 1, fontWeight: "bold" }}>
+                            Wins: {Math.round((getWins(mafiaStats) / totalGames) * 100)}% ({getWins(mafiaStats)}W / {getLosses(mafiaStats)}L)
+                          </Typography>
+                        </Paper>
+
+                        {statsBucket === "ranked" && skillRating ? (
+                          <Paper
+                            variant="outlined"
+                            sx={{
+                              p: 2,
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 2,
+                              backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.01)',
+                              borderColor: "divider",
+                              borderRadius: 2
+                            }}
+                          >
+                            {TIER_ICONS[skillRating.tier] && (
+                              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <img
+                                  src={TIER_ICONS[skillRating.tier]}
+                                  alt={skillRating.tier}
+                                  style={{ width: 64, height: 64, objectFit: "contain", imageRendering: "pixelated" }}
+                                />
+                              </Box>
+                            )}
+                            <Stack spacing={0.5} sx={{ width: "100%" }}>
+                              <Stack direction="row" alignItems="center" spacing={1}>
+                                <Typography variant="h5" sx={{ fontWeight: 800, color: "text.primary" }}>
+                                  {skillRating.tier}
+                                </Typography>
+                                {skillRating.rank && (
+                                  <Paper
+                                    sx={{
+                                      px: 1,
+                                      py: 0.25,
+                                      fontSize: "0.75rem",
+                                      fontWeight: "bold",
+                                      backgroundColor: "primary.main",
+                                      color: "primary.contrastText",
+                                      borderRadius: 1
+                                    }}
+                                  >
+                                    Rank #{skillRating.rank}
+                                  </Paper>
+                                )}
+                              </Stack>
+                              
+                              <Typography variant="body2" color="text.primary" sx={{ fontWeight: 600 }}>
+                                Conservative Rank: <span style={{ fontSize: "1.1rem", fontWeight: 800, color: goldColor }}>
+                                  {getConservativeRank(skillRating.mu, skillRating.sigma)}
+                                </span>
+                              </Typography>
+                              
+                              <Divider sx={{ my: 0.5 }} />
+                              
+                              <Grid container spacing={1}>
+                                <Grid item xs={6}>
+                                  <Typography variant="caption" color="text.secondary" display="block">
+                                    Rating (μ)
+                                  </Typography>
+                                  <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                                    {parseFloat((skillRating.mu || 25).toFixed(2))}
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={6}>
+                                  <Typography variant="caption" color="text.secondary" display="block">
+                                    Uncertainty (σ)
+                                  </Typography>
+                                  <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                                    {parseFloat((skillRating.sigma || 8.33).toFixed(2))}
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={12}>
+                                  <Typography variant="caption" color="text.secondary" display="block">
+                                    Rated Matches
+                                  </Typography>
+                                  <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                                    {skillRating.gamesPlayed} games played
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </Stack>
+                          </Paper>
+                        ) : statsBucket === "ranked" ? (
+                          <Paper variant="outlined" sx={{ p: 2, display: "flex", justifyContent: "center", alignItems: "center", borderRadius: 2 }}>
+                            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic", textAlign: "center", p: 1 }}>
+                              No rated games played yet. Play ranked or competitive games to establish a skill rating.
+                            </Typography>
+                          </Paper>
+                        ) : null}
+                      </Stack>
+
+                      <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
+                        <Button
+                          variant="text"
+                          size="small"
+                          onClick={() => setRatingsTab(ratingsTab === "query" ? "wins" : "query")}
+                          startIcon={<i className={ratingsTab === "query" ? "fas fa-chevron-up" : "fas fa-chevron-down"} />}
+                          sx={{ textTransform: "none", fontWeight: 700 }}
                         >
-                          Wins:{" "}
-                          {Math.round(
-                            (getWins(mafiaStats) / totalGames) * 100
-                          )}
-                          %
-                        </div>
-                        <div
-                          className={
-                            "ratings-tab" +
-                            (ratingsTab === "query" ? " active" : "")
-                          }
-                          onClick={() => setRatingsTab("query")}
-                        >
-                          <i className="fas fa-expand-arrows-alt" />
-                        </div>
-                      </div>
-                      {ratingsTab === "wins" && (
-                        <div
-                          className="content"
-                          style={{ padding: "0", justifyContent: "center" }}
-                        >
-                          <PieChart
-                            wins={getWins(mafiaStats)}
-                            losses={getLosses(mafiaStats)}
-                            abandons={getAbandons(mafiaStats)}
-                          />
-                        </div>
-                      )}
+                          {ratingsTab === "query" ? "Hide Detailed Stats Breakdown" : "Show Detailed Stats Breakdown"}
+                        </Button>
+                      </Box>
+
                       {ratingsTab === "query" && (
-                        <StatsQueryView stats={stats} statsBucket={statsBucket} />
+                        <Box sx={{ mt: 2, borderTop: "1px solid", borderColor: "divider", pt: 2 }}>
+                          <StatsQueryView stats={stats} statsBucket={statsBucket} />
+                        </Box>
                       )}
                     </>
                   )}

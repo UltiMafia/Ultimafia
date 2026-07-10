@@ -751,10 +751,37 @@ export function parseGamePopover(game) {
       <Stack
         direction="row"
         style={{ minWidth: "1.5rem", justifyContent: "center" }}
+        key={trophy.key}
       >
         {trophy}
       </Stack>
     ));
+
+    const userRatingChange = game.skillRatingChanges?.find(c => c.userId === userId);
+    if (userRatingChange) {
+      const rankDelta = userRatingChange.muDelta - 3 * userRatingChange.sigmaDelta;
+      const isPositive = rankDelta >= 0;
+      const formattedDelta = (isPositive ? "+" : "") + rankDelta.toFixed(2);
+      trophies.push(
+        <Box
+          sx={{
+            px: 0.75,
+            py: 0.15,
+            fontSize: "0.7rem",
+            fontWeight: "bold",
+            backgroundColor: isPositive ? "success.dark" : "error.dark",
+            color: "white",
+            borderRadius: 1,
+            display: "inline-flex",
+            alignItems: "center",
+            marginLeft: 0.5
+          }}
+          key="ratingDelta"
+        >
+          {formattedDelta}
+        </Box>
+      );
+    }
 
     playerList.push(
       <Stack

@@ -207,6 +207,11 @@ var schemas = {
     playedGame: { type: Boolean, default: false },
     referrer: String,
     transactions: [Number],
+    skillRating: {
+      mu: { type: Number, default: 25.0 },
+      sigma: { type: Number, default: 25.0 / 3.0 },
+      gamesPlayed: { type: Number, default: 0, index: true },
+    },
     deleted: { type: Boolean, default: false },
     banned: { type: Boolean, default: false },
     flagged: { type: Boolean, default: false },
@@ -369,6 +374,14 @@ var schemas = {
     /** Setup version manifest at game end (for backfill / audits). */
     setupVersion: { type: Number, default: null },
     setupStatsBackfilled: { type: Boolean, default: false },
+    skillRatingChanges: [
+      {
+        userId: { type: String, index: true },
+        muDelta: { type: Number },
+        sigmaDelta: { type: Number },
+      },
+    ],
+    skillRefunded: { type: Boolean, default: false },
   }),
   ArchivedGame: new mongoose.Schema({
     user: {

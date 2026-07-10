@@ -20,6 +20,8 @@ const { colorHasGoodContrastForBothThemes } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
 const stockMarket = require("../lib/StockMarket");
+const skillRatingModule = require("../modules/skillRating");
+const { DEFAULT_MU, DEFAULT_SIGMA } = skillRatingModule;
 const router = express.Router();
 
 /** Keep in sync with `isRetroThemeForcedByCalendar` in react_main/src/utils/holidayThemes.js */
@@ -397,7 +399,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive joined favoriteRoles roleIconCredits _id"
+        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive joined favoriteRoles roleIconCredits skillRating _id"
       )
       .populate({
         path: "setups",
@@ -428,6 +430,50 @@ router.get("/:id/profile", async function (req, res) {
     }
 
     user = user.toJSON();
+
+    if (!user.skillRating) {
+      user.skillRating = {
+        mu: DEFAULT_MU,
+        sigma: DEFAULT_SIGMA,
+        gamesPlayed: 0
+      };
+    }
+
+    if (user.skillRating.gamesPlayed > 0) {
+      const allRatedUsers = await models.User.find({
+        "skillRating.gamesPlayed": { $gt: 0 },
+        deleted: { $ne: true }
+      }).select("id skillRating").lean();
+
+      const sortedRanks = allRatedUsers.map(u => {
+        const mu = u.skillRating?.mu ?? DEFAULT_MU;
+        const sigma = u.skillRating?.sigma ?? DEFAULT_SIGMA;
+        return mu - 3.0 * sigma;
+      }).sort((a, b) => a - b);
+
+      const userMu = user.skillRating.mu ?? DEFAULT_MU;
+      const userSigma = user.skillRating.sigma ?? DEFAULT_SIGMA;
+      const userRankScore = userMu - 3.0 * userSigma;
+
+      // Compute rank position (descending order)
+      const sortedDesc = allRatedUsers.map(u => ({
+        id: u.id,
+        rankScore: (u.skillRating?.mu ?? DEFAULT_MU) - 3.0 * (u.skillRating?.sigma ?? DEFAULT_SIGMA)
+      })).sort((a, b) => b.rankScore - a.rankScore);
+      const userRankIndex = sortedDesc.findIndex(u => u.id === user.id);
+
+      if (userRankIndex !== -1) {
+        user.skillRating.rank = userRankIndex + 1;
+        user.skillRating.tier = skillRatingModule.getTier(userRankScore, sortedRanks);
+      } else {
+        user.skillRating.tier = "Unrated";
+        user.skillRating.rank = null;
+      }
+    } else {
+      user.skillRating.tier = "Unrated";
+      user.skillRating.rank = null;
+    }
+
     user.groups = (await redis.getBasicUserInfo(userId)).groups;
     user.maxFriendsPage =
       Math.ceil(user.numFriends / constants.friendsPerPage) || 1;

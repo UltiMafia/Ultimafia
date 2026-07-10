@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 import { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "pages/User/Profile";
 import { PieChart } from "pages/User/PieChart";
 import { Avatar } from "pages/User/User";
+
+import { TIER_ICONS, getConservativeRank } from "utils/skillRating";
 import { UserContext, SiteInfoContext } from "Contexts";
 import ReportDialog from "components/ReportDialog";
 import { useErrorAlert } from "components/Alerts";
@@ -176,6 +178,23 @@ function Miniprofile(props) {
         prefilledArgs={reportPrefilledArgs}
       />
       {!hasDefaultPronouns && <div className="pronouns">({pronouns})</div>}
+      {user.skillRating && (
+        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mt: 1, mb: 1, justifyContent: "center" }}>
+          {TIER_ICONS[user.skillRating.tier] && (
+            <img
+              src={TIER_ICONS[user.skillRating.tier]}
+              alt={user.skillRating.tier}
+              style={{ width: 18, height: 18, objectFit: "contain" }}
+            />
+          )}
+          <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+            {user.skillRating.tier} {user.skillRating.rank ? `#${user.skillRating.rank}` : ""}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            (CR: {getConservativeRank(user.skillRating.mu, user.skillRating.sigma, 1)})
+          </Typography>
+        </Stack>
+      )}
       {pieChart}
       <div className="score-info">
         <div className="score-info-column">

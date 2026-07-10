@@ -20,6 +20,7 @@ const errors = require("../lib/errors");
 const {
   syncRankedCompetitiveAccess,
 } = require("../modules/userEligibility");
+const skillRating = require("../modules/skillRating");
 const router = express.Router();
 
 router.get("/groups", async function (req, res) {
@@ -2095,6 +2096,13 @@ router.post("/refundGame", async (req, res) => {
       return;
     }
 
+    // Refund skill ratings if applicable
+    try {
+      await skillRating.refundGameRatings(game);
+    } catch (e) {
+      logger.error(`Error refunding skill ratings for game ${gameId}:`, e);
+    }
+
     // Parse player maps
     const playerIdMap = JSON.parse(game.playerIdMap || "{}");
     const playerAlignmentMap = JSON.parse(game.playerAlignmentMap || "{}");
@@ -2399,7 +2407,7 @@ router.post("/refundGame", async (req, res) => {
       `Successfully refunded game for ${userIds.length} player(s). ` +
         `Reverted: win/loss/abandonment statistics, kudos, coins from wins, ${
           game.ranked ? "red" : "gold"
-        } hearts, and fortune/misfortune points.`
+        } hearts, skill ratings, and fortune/misfortune points.`
     );
   } catch (e) {
     logger.error(e);

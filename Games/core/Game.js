@@ -39,6 +39,7 @@ const {
   syncRankedCompetitiveAccess,
 } = require("../../modules/userEligibility");
 const stockMarket = require("../../lib/StockMarket");
+const skillRating = require("../../modules/skillRating");
 
 module.exports = class Game {
   constructor(options) {
@@ -3915,6 +3916,12 @@ module.exports = class Game {
         anonymousDeck: this.anonymousDeck,
       });
       const gameDocument = await game.save();
+
+      try {
+        await skillRating.updateGameRatings(gameDocument);
+      } catch (err) {
+        logger.error(`Failed to update skill ratings for game ${this.id}: ${err.message}`);
+      }
 
       if (this.competitive) {
         await this.recordCompetitiveCompletions(gameDocument._id);

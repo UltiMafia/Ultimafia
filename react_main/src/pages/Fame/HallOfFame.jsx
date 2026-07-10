@@ -29,6 +29,16 @@ import { UserContext } from "Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { NameWithAvatar } from "pages/User/User";
 
+import {
+  TIER_ICONS,
+  villagerIcon,
+  doctorIcon,
+  copIcon,
+  sheriffIcon,
+  stalkerIcon,
+  seerIcon,
+} from "utils/skillRating";
+
 const CATEGORY_OPTIONS = [
   { value: "overall", label: "Overall" },
   { value: "prestige", label: "Prestige" },
@@ -38,6 +48,7 @@ const CATEGORY_OPTIONS = [
   { value: "karma", label: "Karma" },
   { value: "achievements", label: "Achievements" },
   { value: "scrapbook", label: "Scrapbook" },
+  { value: "skillRating", label: "Skill Rating" },
 ];
 
 const TIME_RANGE_OPTIONS = [{ value: "all", label: "All Time" }];
@@ -118,6 +129,16 @@ function getColumns(category, isPhoneDevice) {
         { label: "Trophies", sortKey: "trophyScore" },
         { label: "Win Rate", sortKey: "winRate" },
       ];
+    case "skillRating":
+      return [
+        { label: "Rank", sortKey: null },
+        { label: "User", sortKey: "username" },
+        { label: "Tier", sortKey: "skillTier" },
+        { label: "Conservative Rank", sortKey: "skillRating" },
+        { label: "Rating (μ)", sortKey: "skillMu" },
+        { label: "Uncertainty (σ)", sortKey: "skillSigma" },
+        { label: "Matches", sortKey: "skillGamesPlayed" },
+      ];
     default:
       return [
         { label: "Rank", sortKey: null },
@@ -188,6 +209,19 @@ function renderDesktopCells(user, category) {
         <Typography variant="body2">{user.trophyScore}</Typography>,
         <Typography variant="body2">{formatPercent(user.winRate)}</Typography>,
       ];
+    case "skillRating":
+      return [
+        <Stack direction="row" spacing={1} alignItems="center">
+          {TIER_ICONS[user.skillTier] && (
+            <img src={TIER_ICONS[user.skillTier]} alt={user.skillTier} style={{ width: 20, height: 20 }} />
+          )}
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>{user.skillTier}</Typography>
+        </Stack>,
+        <Typography variant="body2" className="score" sx={{ fontWeight: 700 }}>{user.skillRating}</Typography>,
+        <Typography variant="body2" className="score">{user.skillMu}</Typography>,
+        <Typography variant="body2" className="score">{user.skillSigma}</Typography>,
+        <Typography variant="body2">{user.skillGamesPlayed}</Typography>,
+      ];
     default:
       return [
         <Typography variant="body2">{user.fortune}</Typography>,
@@ -214,12 +248,21 @@ function renderMobileMetric(user, category) {
       return `${user.achievementsCount} achievements`;
     case "scrapbook":
       return `${user.scrapbookCompletion}% scrapbook`;
+    case "skillRating":
+      return (
+        <Stack direction="row" spacing={0.5} alignItems="center" justifyContent="flex-end">
+          {TIER_ICONS[user.skillTier] && (
+            <img src={TIER_ICONS[user.skillTier]} alt={user.skillTier} style={{ width: 16, height: 16 }} />
+          )}
+          <span>{user.skillTier} ({user.skillRating})</span>
+        </Stack>
+      );
     default:
       return `${user.fortune} fortune`;
   }
 }
 
-function StandingsTable({
+const StandingsTable = React.memo(function StandingsTable({
   category,
   users,
   currentUserId,
@@ -323,7 +366,7 @@ function StandingsTable({
       })}
     </Stack>
   );
-}
+});
 
 export default function HallOfFame() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -564,6 +607,72 @@ export default function HallOfFame() {
             <Alert severity="info">
               Win Rate rankings require a minimum number of games. Users below the current
               threshold are excluded.
+            </Alert>
+          )}
+
+          {category === "skillRating" && (
+            <Alert
+              severity="info"
+              sx={{
+                '& .MuiAlert-message': { width: '100%' },
+                backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(3, 169, 244, 0.1)' : 'rgba(3, 169, 244, 0.05)',
+                color: (theme) => theme.palette.mode === 'dark' ? '#90caf9' : '#0288d1',
+                border: '1px solid',
+                borderColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(144, 202, 249, 0.3)' : 'rgba(2, 136, 209, 0.3)',
+                '& .MuiAlert-icon': {
+                  color: (theme) => theme.palette.mode === 'dark' ? '#90caf9' : '#0288d1',
+                }
+              }}
+            >
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
+                About the Skill Rating System
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Our leaderboard uses a custom team-summing variant of <strong>OpenSkill</strong>, a Bayesian rating algorithm. It models player skill using two values:
+              </Typography>
+              <Box component="ul" sx={{ pl: 2, mt: 0, mb: 1, '& li': { mb: 0.5 } }}>
+                <li>
+                  <strong>Skill Estimate (μ / Mu):</strong> The system's estimation of your skill level (defaults to 25.0).
+                </li>
+                <li>
+                  <strong>Uncertainty (σ / Sigma):</strong> The system's uncertainty about your rating (defaults to 8.33, decreasing as you play).
+                </li>
+              </Box>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>Conservative Rank:</strong> Standings are sorted by your conservative rank, calculated as <code>μ - 3 × σ</code>. This represents a statistical lower bound, guaranteeing your true skill is at least this high with 99% confidence. This ensures that new players with high uncertainty must play more games to earn a high position on the leaderboard.
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>Percentile Tiers:</strong> Active players with at least one match are placed into competitive tiers based on their conservative rank percentiles:
+              </Typography>
+              <Box component="ul" sx={{ pl: 0, mt: 0, mb: 1, listStyle: 'none', '& li': { display: 'flex', alignItems: 'center', mb: 0.5, gap: 1 } }}>
+                <li>
+                  <img src={seerIcon} alt="Master" style={{ width: 20, height: 20 }} />
+                  <span><strong>Master:</strong> Top 2% (Percentile &ge; 98)</span>
+                </li>
+                <li>
+                  <img src={stalkerIcon} alt="Diamond" style={{ width: 20, height: 20 }} />
+                  <span><strong>Diamond:</strong> Next 8% (Percentile &ge; 90)</span>
+                </li>
+                <li>
+                  <img src={sheriffIcon} alt="Platinum" style={{ width: 20, height: 20 }} />
+                  <span><strong>Platinum:</strong> Next 15% (Percentile &ge; 75)</span>
+                </li>
+                <li>
+                  <img src={copIcon} alt="Gold" style={{ width: 20, height: 20 }} />
+                  <span><strong>Gold:</strong> Next 25% (Percentile &ge; 50)</span>
+                </li>
+                <li>
+                  <img src={doctorIcon} alt="Silver" style={{ width: 20, height: 20 }} />
+                  <span><strong>Silver:</strong> Next 30% (Percentile &ge; 20)</span>
+                </li>
+                <li>
+                  <img src={villagerIcon} alt="Bronze" style={{ width: 20, height: 20 }} />
+                  <span><strong>Bronze:</strong> Bottom 20% (Percentile &lt; 20)</span>
+                </li>
+              </Box>
+              <Typography variant="body2">
+                Only completed ranked or competitive matches are counted.
+              </Typography>
             </Alert>
           )}
 
