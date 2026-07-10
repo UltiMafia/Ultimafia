@@ -28,25 +28,7 @@ import { SiteInfoContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { Loading } from "components/Loading";
 import { NameWithAvatar } from "../User/User";
-
-function CoinAmount({ amount }) {
-  return (
-    <Stack
-      component="span"
-      direction="row"
-      spacing={0.5}
-      sx={{ display: "inline-flex", alignItems: "center" }}
-    >
-      <span>{Number(amount || 0).toLocaleString()}</span>
-      <Box
-        component="i"
-        className="fas fa-coins"
-        aria-label="Coins"
-        sx={{ color: "#f5c542", fontSize: "0.95em" }}
-      />
-    </Stack>
-  );
-}
+import { CoinAmount } from "../User/FamilyExtras";
 
 function FamilyAvatar({ family }) {
   const siteInfo = useContext(SiteInfoContext);

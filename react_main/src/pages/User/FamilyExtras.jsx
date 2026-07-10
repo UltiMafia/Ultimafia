@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { NameWithAvatar } from "./User";
 import { SiteInfoContext, UserContext } from "Contexts";
+import { Icon } from "@iconify/react";
 
 const panelStyle = {
   backgroundColor: "var(--scheme-color)",
@@ -32,18 +33,13 @@ export function CoinAmount({ amount, variant = "body2", sx = {} }) {
     <Stack
       component="span"
       direction="row"
-      spacing={0.75}
+      spacing={0.5}
       sx={{ display: "inline-flex", alignItems: "center", ...sx }}
     >
       <Typography component="span" variant={variant}>
-        {Number(amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        {Number(amount || 0).toFixed(2)}
       </Typography>
-      <Box
-        component="i"
-        className="fas fa-coins"
-        aria-label="Coins"
-        sx={{ color: "#f5c542", fontSize: "0.95em" }}
-      />
+      <Icon icon="lucide:coins" style={{ fontSize: "0.95em" }} />
     </Stack>
   );
 }
