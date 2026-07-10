@@ -223,6 +223,9 @@ export default function Family() {
   if (!familyLoaded) return <Loading small />;
   if (!family) return <Navigate to="/play" />;
 
+  const hasTrophySpotlight = family.perks?.some((p) => p.key === "trophySpotlight" && p.owned);
+  const hasFamilyBadge = family.perks?.some((p) => p.key === "familyBadge" && p.owned);
+
   const panelStyle = {
     backgroundColor: "var(--scheme-color)",
     padding: "16px",
@@ -321,7 +324,14 @@ export default function Family() {
                   />
                 )}
                 <Box>
-                  <Typography variant="h2">{family.name}</Typography>
+                  <Typography variant="h2" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    {family.name}
+                    {hasFamilyBadge && (
+                      <Tooltip title="Verified Supporter Family">
+                        <Box component="i" className="fas fa-crown" sx={{ color: "#f5c542", fontSize: "0.8em" }} />
+                      </Tooltip>
+                    )}
+                  </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Founded by{" "}
                     <NameWithAvatar
@@ -384,7 +394,15 @@ export default function Family() {
               </div>
             </Paper>
             {family.trophies && family.trophies.length > 0 && (
-              <Paper sx={panelStyle}>
+              <Paper 
+                sx={{
+                  ...panelStyle,
+                  ...(hasTrophySpotlight && {
+                    boxShadow: "0 0 25px 2px rgba(255, 215, 0, 0.4)",
+                    border: "1px solid rgba(255, 215, 0, 0.6)",
+                  })
+                }}
+              >
                 <TrophyCase
                   trophies={family.trophies}
                   headingStyle={headingStyle}
