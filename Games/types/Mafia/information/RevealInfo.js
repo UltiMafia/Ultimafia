@@ -58,7 +58,7 @@ module.exports = class RevealInfo extends Information {
     if (this.truthValue == "Normal") {
       this.target.setTempAppearance(
         this.investType,
-        this.target.getRoleAppearance(this.investType)
+        this.target.getAppearance(this.investType)
       );
       this.revealTarget();
     } else if (this.truthValue == "True") {
