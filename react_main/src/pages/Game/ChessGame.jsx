@@ -106,10 +106,56 @@ function ChessBoardWrapper() {
   const history = game.history;
   const stateViewing = game.stateViewing;
 
-  if (stateViewing === -1) return <TextMeetingLayout />;
+  if (stateViewing === -1) {
+    return (
+      <SideMenu
+        title="Chess Board"
+        scrollable
+        content={
+          <div className="chess-container">
+            <ChessBoardPanel
+              extraInfo={{
+                fen: "",
+                turn: "w",
+                playerColors: {},
+                history: [],
+                gameOverReason: null,
+                winnerColor: null,
+              }}
+              self={game.self}
+              onMakeMove={null}
+            />
+          </div>
+        }
+      />
+    );
+  }
 
   const currentState = history.states[stateViewing];
-  if (!currentState?.extraInfo) return <TextMeetingLayout />;
+  if (!currentState?.extraInfo) {
+    return (
+      <SideMenu
+        title="Chess Board"
+        scrollable
+        content={
+          <div className="chess-container">
+            <ChessBoardPanel
+              extraInfo={{
+                fen: "",
+                turn: "w",
+                playerColors: {},
+                history: [],
+                gameOverReason: null,
+                winnerColor: null,
+              }}
+              self={game.self}
+              onMakeMove={null}
+            />
+          </div>
+        }
+      />
+    );
+  }
   
   const extraInfo = currentState.extraInfo;
   const isCurrentState = stateViewing === history.currentState;
