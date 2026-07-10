@@ -597,7 +597,7 @@ router.get("/transactions", async function (req, res) {
           .lean()
           .exec(),
         models.Family.find({ id: { $in: Array.from(familyIds) } })
-          .select("id name avatar background")
+          .select("id name avatar background treasury")
           .lean()
           .exec()
       ]);
@@ -837,7 +837,7 @@ router.get("/families", async function (req, res) {
 
     const [families, transactionsGrouped] = await Promise.all([
       models.Family.find({ id: { $in: familyIds } })
-        .select("id name avatar background")
+        .select("id name avatar background treasury")
         .lean()
         .exec(),
       models.FamilyStockTransaction.aggregate([
@@ -940,7 +940,7 @@ router.get("/families/portfolio", async function (req, res) {
 
     const [stocks, families] = await Promise.all([
       models.FamilyStock.find({ familyId: { $in: familyIds } }).lean().exec(),
-      models.Family.find({ id: { $in: familyIds } }).select("id name avatar background").lean().exec()
+      models.Family.find({ id: { $in: familyIds } }).select("id name avatar background treasury").lean().exec()
     ]);
 
     const stockMap = {};
@@ -1002,7 +1002,7 @@ router.get("/families/prices/:familyId", async function (req, res) {
       return errors.notFound(res, "This family has not launched an ETF or does not exist.");
     }
 
-    const family = await models.Family.findOne({ id: familyId }).select("name avatar background").lean().exec();
+    const family = await models.Family.findOne({ id: familyId }).select("name avatar background treasury").lean().exec();
     const buy1 = stockMarket.getBuyPrice(stock.shareSupply, 1);
     const sell1 = stockMarket.getSellPrice(stock.shareSupply, 1);
     const marketCap = stock.shareSupply * stockMarket.calculatePrice(stock.shareSupply);

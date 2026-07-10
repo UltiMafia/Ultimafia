@@ -226,7 +226,8 @@ router.get("/:familyId/profile", async function (req, res) {
     var family = await models.Family.findOne({ id: familyId })
       .populate("founder", "id name avatar vanityUrl")
       .populate("leader", "id name avatar vanityUrl")
-      .populate("members", "id name avatar vanityUrl");
+      .populate("members", "id name avatar vanityUrl")
+      .select("id name avatar background backgroundRepeatMode applicationsOpen joinFee treasury perks bio founder leader members trophies createdAt");
 
     if (!family) {
       res.status(404);
