@@ -250,6 +250,14 @@ export default function FamilyDiscovery() {
     loadFamilies();
   }, [loadFamilies]);
 
+  // Debounce search input changes (300ms) to trigger search automatically
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearch(searchInput.trim());
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [searchInput]);
+
   function submitSearch(event) {
     event.preventDefault();
     setPage(1);
@@ -341,9 +349,6 @@ export default function FamilyDiscovery() {
               label="Open only"
               sx={{ mx: 0 }}
             />
-            <Button type="submit" variant="contained">
-              Search
-            </Button>
           </Stack>
 
           <Typography variant="caption" color="text.secondary">
