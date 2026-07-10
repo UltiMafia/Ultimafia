@@ -1845,10 +1845,10 @@ export default function Profile() {
                           <Paper
                             variant="outlined"
                             sx={{
-                              p: 2,
+                              p: 1.5,
                               display: "flex",
                               alignItems: "center",
-                              gap: 2,
+                              gap: 1,
                               backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : '#ffffff',
                               borderColor: "divider",
                               borderRadius: 2
