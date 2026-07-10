@@ -581,7 +581,7 @@ export function FamilyStockCard({ stockInfo, familyId }) {
           color="primary"
           fullWidth
           component="a"
-          href={`/fame/market?family=${familyId}`}
+          href={`/fame/stocks?family=${familyId}`}
           sx={{ mt: 1, fontWeight: "bold" }}
           startIcon={<i className="fas fa-chart-line" />}
         >
