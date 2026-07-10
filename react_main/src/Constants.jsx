@@ -15,6 +15,7 @@ export const GameTypes = [
   "Dice Wars",
   "Spot It",
   "Battleship",
+  "Chess",
 ];
 
 // Game types retained for existing setups/stats but no longer creatable or hostable.
@@ -48,6 +49,7 @@ export const Alignments = {
   "Dice Wars": ["Army", "Host"],
   "Spot It": ["Town"],
   Battleship: ["Town"],
+  "Chess": ["Town"],
 };
 
 export const GameStates = {
@@ -71,7 +73,7 @@ export const GameStates = {
   "Connect Four": ["Turn"],
   "Dice Wars": ["Play"],
   "Spot It": ["Round"],
-  Battleship: ["Place Ships", "Combat"],
+  "Chess": ["Turn"],
 };
 
 export const RatingThresholds = {
