@@ -879,6 +879,7 @@ var schemas = {
       default: "",
       maxlength: 20000,
     },
+    treasury: { type: Number, default: 0 },
     founder: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

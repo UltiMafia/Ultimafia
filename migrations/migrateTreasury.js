@@ -7,7 +7,6 @@ const db = require("../db/db");
 async function run() {
   await db.promise;
   
-  // Find all FamilyStocks using lean to get old fields even if removed from schema
   const stocks = await mongoose.connection.collection("familystocks").find({}).toArray();
   console.log(`Found ${stocks.length} family stocks to migrate.`);
 
@@ -16,23 +15,13 @@ async function run() {
   await bluebird.map(
     stocks,
     async (stock) => {
-      let treasury = Number(stock.treasuryCoins || 0);
+      let treasury = Number(stock.treasuryCoins || stock.creatorFeesEarned || 0);
       if (treasury > 0) {
         // Move to Family.treasury
         await models.Family.updateOne(
           { id: stock.familyId },
-          { $inc: { treasury: treasury } }
+          { $set: { treasury: treasury } }
         );
-        
-        // Remove treasuryCoins from FamilyStock and set creatorFeesEarned
-        await mongoose.connection.collection("familystocks").updateOne(
-          { familyId: stock.familyId },
-          { 
-            $unset: { treasuryCoins: "" }, 
-            $set: { creatorFeesEarned: treasury }
-          }
-        );
-        
         migratedCount++;
       }
     },
