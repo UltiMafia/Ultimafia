@@ -12,6 +12,8 @@ import {
   Tooltip,
   Chip,
   LinearProgress,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 
 import { UserContext, SiteInfoContext } from "Contexts";
@@ -48,6 +50,8 @@ export default function Family() {
   const [editingBio, setEditingBio] = useState(false);
   const [pendingInvite, setPendingInvite] = useState(null);
   const [ledgerRefreshKey, setLedgerRefreshKey] = useState(0);
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [menuMember, setMenuMember] = useState(null);
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -255,7 +259,7 @@ export default function Family() {
           vanityUrl={member.vanityUrl}
         />
       </Box>
-      <Box sx={{ display: "flex", gap: 0.75, alignItems: "center", flexWrap: "wrap" }}>
+      <Box sx={{ display: "flex", gap: 0.75, alignItems: "center", flexShrink: 0 }}>
         {member.isLeader && (
           <i
             className="fas fa-crown"
@@ -271,30 +275,16 @@ export default function Family() {
           />
         )}
         <Chip size="small" label={capitalize(member.role || "member")} variant="outlined" />
-        {family.isLeader && user.loggedIn && member.id !== user.id && !member.isLeader && (
-          <Button
+        {family.isLeader && user.loggedIn && member.id !== user.id && (
+          <IconButton
             size="small"
-            variant="outlined"
-            onClick={() => {
-              if (!window.confirm("Change member role?")) return;
-              axios.post(`/api/family/${familyId}/member/${member.id}/role`, { role: member.role === "officer" ? "member" : "officer" })
-                .then(() => refreshFamilyTools())
-                .catch(errorAlert);
+            onClick={(e) => {
+              setMenuAnchorEl(e.currentTarget);
+              setMenuMember(member);
             }}
           >
-            {member.role === "officer" ? "Demote" : "Promote"}
-          </Button>
-        )}
-        {family.isLeader && user.loggedIn && member.id !== user.id && (
-          <Tooltip title="Remove member">
-            <IconButton
-              size="small"
-              onClick={() => onRemoveMember(member.id, member.name)}
-              sx={{ color: "error.main", p: 0.5 }}
-            >
-              <i className="fas fa-trash" />
-            </IconButton>
-          </Tooltip>
+            <i className="fas fa-ellipsis-v" style={{ fontSize: "14px" }} />
+          </IconButton>
         )}
       </Box>
     </Box>
@@ -302,6 +292,47 @@ export default function Family() {
 
   return (
     <>
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl)}
+        onClose={() => {
+          setMenuAnchorEl(null);
+          setMenuMember(null);
+        }}
+      >
+        {menuMember && (
+          <MenuItem
+            onClick={() => {
+              const action = menuMember.role === "officer" ? "demote" : "promote";
+              const newRole = menuMember.role === "officer" ? "member" : "officer";
+              if (window.confirm(`Are you sure you want to ${action} this member?`)) {
+                axios
+                  .post(`/api/family/${familyId}/member/${menuMember.id}/role`, { role: newRole })
+                  .then(() => {
+                    refreshFamilyTools();
+                    setMenuAnchorEl(null);
+                    setMenuMember(null);
+                  })
+                  .catch(errorAlert);
+              }
+            }}
+          >
+            {menuMember.role === "officer" ? "Demote to Member" : "Promote to Officer"}
+          </MenuItem>
+        )}
+        {menuMember && (
+          <MenuItem
+            onClick={() => {
+              onRemoveMember(menuMember.id, menuMember.name);
+              setMenuAnchorEl(null);
+              setMenuMember(null);
+            }}
+            sx={{ color: "error.main" }}
+          >
+            Remove Member
+          </MenuItem>
+        )}
+      </Menu>
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
           <Stack direction="column" spacing={1}>
