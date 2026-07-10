@@ -23,6 +23,15 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import CustomMarkdown from "components/CustomMarkdown";
 import TrophyCase from "components/TrophyCase";
 import { capitalize } from "utils";
+import { 
+  FamilyTreasury, 
+  FamilyLedger, 
+  FamilyApplications, 
+  FamilyPerks, 
+  FamilyJoinFee, 
+  FamilyApply,
+  CoinAmount 
+} from "./FamilyExtras";
 
 export default function Family() {
   const { familyId } = useParams();
@@ -38,25 +47,30 @@ export default function Family() {
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
 
+  function loadFamilyProfile() {
+    axios
+      .get(`/api/family/${familyId}/profile`)
+      .then((res) => {
+        setFamily(res.data);
+        setBio(res.data.bio || "");
+        setFamilyLoaded(true);
+        document.title = `${res.data.name} | UltiMafia`;
+      })
+      .catch((e) => {
+        errorAlert(e);
+        setFamilyLoaded(true);
+      });
+  }
+
+  function refreshFamilyTools() {
+    loadFamilyProfile();
+    // In a real app we might also refresh pending invites, but profile is main
+  }
+
   useEffect(() => {
     if (familyId) {
       setFamilyLoaded(false);
-      axios
-        .get(`/api/family/${familyId}/profile`)
-        .then((res) => {
-          setFamily(res.data);
-          setBio(res.data.bio || "");
-          setFamilyLoaded(true);
-          document.title = `${res.data.name} | UltiMafia`;
-          // Debug: log trophies to console
-          if (res.data.trophies && res.data.trophies.length > 0) {
-            console.log("Family trophies:", res.data.trophies);
-          }
-        })
-        .catch((e) => {
-          errorAlert(e);
-          setFamilyLoaded(true);
-        });
+      loadFamilyProfile();
 
       // Check for pending invite
       if (user.loggedIn) {
@@ -251,6 +265,21 @@ export default function Family() {
             title="Founder"
           />
         )}
+        <Chip size="small" label={member.role || "member"} variant="outlined" />
+        {family.isLeader && user.loggedIn && member.id !== user.id && !member.isLeader && (
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => {
+              if (!window.confirm("Change member role?")) return;
+              axios.post(`/api/family/${familyId}/member/${member.id}/role`, { role: member.role === "officer" ? "member" : "officer" })
+                .then(() => refreshFamilyTools())
+                .catch(errorAlert);
+            }}
+          >
+            {member.role === "officer" ? "Demote" : "Promote"}
+          </Button>
+        )}
         {family.isLeader && user.loggedIn && member.id !== user.id && (
           <Tooltip title="Remove member">
             <IconButton
@@ -411,6 +440,13 @@ export default function Family() {
                 </Stack>
               </Paper>
             )}
+            
+            <FamilyApply family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
+            <FamilyApplications family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
+            <FamilyTreasury family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
+            <FamilyJoinFee family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
+            <FamilyPerks family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
+            <FamilyLedger familyId={familyId} />
             <Paper sx={panelStyle}>
               <Typography variant="h3" sx={headingStyle}>
                 Members
