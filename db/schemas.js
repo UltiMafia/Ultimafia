@@ -958,7 +958,7 @@ var schemas = {
     },
     type: {
       type: String,
-      enum: ["deposit", "perk", "joinFee", "joinFeeRefund"],
+      enum: ["deposit", "withdraw", "perk", "joinFee", "joinFeeRefund"],
       index: true,
     },
     amount: { type: Number, default: 0 },

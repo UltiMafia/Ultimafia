@@ -1971,10 +1971,18 @@ router.get("/:familyId/ledger", async function (req, res) {
       return;
     }
 
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    const totalCount = await models.FamilyLedger.countDocuments({ familyId });
+    const maxPage = Math.ceil(totalCount / limit) || 1;
+
     var ledger = await models.FamilyLedger.find({ familyId: familyId })
       .populate("user", "id name avatar vanityUrl")
       .sort("-createdAt")
-      .limit(20)
+      .skip(skip)
+      .limit(limit)
       .lean();
 
     res.send({
@@ -1993,6 +2001,7 @@ router.get("/:familyId/ledger", async function (req, res) {
             }
           : null,
       })),
+      maxPage,
     });
   } catch (e) {
     logger.error(e);

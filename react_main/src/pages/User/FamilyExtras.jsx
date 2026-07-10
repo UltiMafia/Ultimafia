@@ -19,6 +19,7 @@ import { SiteInfoContext, UserContext } from "Contexts";
 import { Icon } from "@iconify/react";
 import Sparkline from "components/Sparkline";
 import TradeDialog from "components/TradeDialog";
+import { PageNav } from "components/Nav";
 
 export const panelStyle = {
   backgroundColor: "var(--scheme-color)",
@@ -116,32 +117,82 @@ export function FamilyTreasury({ family, familyId, refreshFamilyTools }) {
 
 export function FamilyLedger({ familyId, refreshKey }) {
   const [ledger, setLedger] = useState([]);
+  const [page, setPage] = useState(1);
+  const [maxPage, setMaxPage] = useState(1);
+
+  const loadLedger = (pageToLoad) => {
+    axios
+      .get(`/api/family/${familyId}/ledger?page=${pageToLoad}`)
+      .then((res) => {
+        setLedger(res.data.ledger || []);
+        setMaxPage(res.data.maxPage || 1);
+        setPage(pageToLoad);
+      })
+      .catch(() => {
+        setLedger([]);
+        setMaxPage(1);
+      });
+  };
 
   useEffect(() => {
-    axios
-      .get(`/api/family/${familyId}/ledger`)
-      .then((res) => setLedger(res.data.ledger || []))
-      .catch(() => setLedger([]));
+    loadLedger(1);
   }, [familyId, refreshKey]);
 
   if (ledger.length === 0) return null;
 
   return (
     <Paper sx={panelStyle}>
-      <Typography variant="h3" sx={headingStyle}>
-        History
-      </Typography>
-      <Stack direction="column" spacing={1}>
-        {ledger.slice(0, 5).map((entry) => (
-          <Box key={entry.id}>
-            <Typography variant="body2">{entry.description}</Typography>
-            {entry.user && (
-              <Typography variant="caption" color="text.secondary">
-                by {entry.user.name}
-              </Typography>
-            )}
-          </Box>
-        ))}
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
+        <Typography variant="h3" sx={{ ...headingStyle, mb: 0 }}>
+          History
+        </Typography>
+        {maxPage > 1 && (
+          <PageNav inverted page={page} maxPage={maxPage} onNav={(p) => loadLedger(p)} />
+        )}
+      </Stack>
+      <Stack direction="column" spacing={1.5}>
+        {ledger.map((entry) => {
+          const isNegative = ["withdraw", "joinFeeRefund", "perk"].includes(entry.type);
+          return (
+            <Box
+              key={entry.id}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                "&:not(:last-child)": {
+                  borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
+                  pb: 1,
+                },
+              }}
+            >
+              <Box>
+                <Typography variant="body2">{entry.description}</Typography>
+                {entry.user && (
+                  <Typography variant="caption" color="text.secondary">
+                    by {entry.user.name}
+                  </Typography>
+                )}
+              </Box>
+              <Box sx={{ ml: 1 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: isNegative ? "error.main" : "success.main",
+                    fontWeight: "bold",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                  }}
+                >
+                  {isNegative ? "-" : "+"}
+                  {Math.abs(entry.amount).toFixed(2)}
+                  <Icon icon="lucide:coins" style={{ fontSize: "0.95em" }} />
+                </Typography>
+              </Box>
+            </Box>
+          );
+        })}
       </Stack>
     </Paper>
   );
