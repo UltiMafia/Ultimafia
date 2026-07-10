@@ -258,6 +258,14 @@ router.get("/:familyId/profile", async function (req, res) {
     var leaderId = family.leader.id;
     var founderId = family.founder.id;
 
+    var inFamilies = await models.InFamily.find({ family: family._id }).lean().exec();
+    var roleMap = {};
+    for (const inFam of inFamilies) {
+      if (inFam.user) {
+        roleMap[inFam.user.toString()] = inFam.role || "member";
+      }
+    }
+
     // Get member info with leader/founder flags
     var members = (family.members || []).map((member) => ({
       id: member.id,
@@ -266,6 +274,7 @@ router.get("/:familyId/profile", async function (req, res) {
       vanityUrl: member.vanityUrl,
       isLeader: member.id === leaderId,
       isFounder: member.id === founderId,
+      role: roleMap[member._id.toString()] || "member",
     }));
 
     // Get all trophies from all family members, sorted by createdAt

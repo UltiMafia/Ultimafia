@@ -18,6 +18,7 @@ import { NameWithAvatar } from "./User";
 import { SiteInfoContext, UserContext } from "Contexts";
 import { Icon } from "@iconify/react";
 import Sparkline from "components/Sparkline";
+import TradeDialog from "components/TradeDialog";
 
 export const panelStyle = {
   backgroundColor: "var(--scheme-color)",
@@ -280,7 +281,7 @@ export function FamilyPerks({ family, familyId, refreshFamilyTools }) {
                     size="small"
                     variant="outlined"
                     onClick={() => onBuyPerk(perk)}
-                  startIcon={<Icon icon="lucide:coins" />}
+                    startIcon={<Icon icon="lucide:coins" />}
                   >
                     {Number(perk.cost).toFixed(2)}
                   </Button>
@@ -501,18 +502,38 @@ export function FamilyProgress({ family }) {
   );
 }
 
-export function FamilyStockCard({ stockInfo, familyId }) {
+export function FamilyStockCard({ stockInfo, family, familyId, refreshFamilyTools }) {
   const theme = useTheme();
+  const siteInfo = useContext(SiteInfoContext);
   const goldColor = theme.palette.mode === "light" ? "#b8860b" : "gold";
+  const [tradeModalOpen, setTradeModalOpen] = useState(false);
 
   if (!stockInfo) return null;
 
   return (
-    <Paper sx={panelStyle}>
-      <Typography variant="h3" sx={headingStyle}>
-        Stock &amp; Equity
-      </Typography>
-      <Box sx={{ display: "flex", flexDirection: "column", gap: "12px", mt: 1 }}>
+    <>
+      <TradeDialog
+        open={tradeModalOpen}
+        onClose={() => setTradeModalOpen(false)}
+        stock={
+          stockInfo
+            ? {
+                targetType: "family",
+                id: familyId,
+                name: family.name,
+                avatar: family.avatar,
+                shareSupply: stockInfo.shareSupply,
+                sharesOwned: stockInfo.sharesOwned,
+              }
+            : null
+        }
+        onSuccess={refreshFamilyTools}
+      />
+      <Paper sx={panelStyle}>
+        <Typography variant="h3" sx={headingStyle}>
+          Stock &amp; Equity
+        </Typography>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "12px", mt: 1 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Box>
             <Typography variant="caption" color="text.secondary" display="block">
@@ -576,18 +597,18 @@ export function FamilyStockCard({ stockInfo, familyId }) {
             </Typography>
           </Grid>
         </Grid>
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          component="a"
-          href={`/fame/stocks?family=${familyId}`}
-          sx={{ mt: 1, fontWeight: "bold" }}
-          startIcon={<i className="fas fa-chart-line" />}
-        >
-          Trade Shares
-        </Button>
-      </Box>
-    </Paper>
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={() => setTradeModalOpen(true)}
+            sx={{ mt: 1, fontWeight: "bold" }}
+            startIcon={<i className="fas fa-chart-line" />}
+          >
+            Trade Shares
+          </Button>
+        </Box>
+      </Paper>
+    </>
   );
 }

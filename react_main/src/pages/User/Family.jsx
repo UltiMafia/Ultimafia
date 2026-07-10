@@ -458,7 +458,12 @@ export default function Family() {
             </Paper>
             
             <FamilyProgress family={family} />
-            <FamilyStockCard stockInfo={family.stockInfo} familyId={familyId} />
+            <FamilyStockCard
+              stockInfo={family.stockInfo}
+              family={family}
+              familyId={familyId}
+              refreshFamilyTools={refreshFamilyTools}
+            />
             <FamilyApply family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
             <FamilyApplications family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
             <FamilyTreasury family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
