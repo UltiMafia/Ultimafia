@@ -11,9 +11,11 @@ import {
   Box,
   Button,
   Chip,
+  FormControl,
   FormControlLabel,
   Grid,
   InputAdornment,
+  InputLabel,
   MenuItem,
   Paper,
   Select,
@@ -327,12 +329,21 @@ export default function FamilyDiscovery() {
               }}
               sx={{ flex: 1 }}
             />
-            <Select size="small" value={sort} onChange={onSortChange}>
-              <MenuItem value="open">Open First</MenuItem>
-              <MenuItem value="members">Most Members</MenuItem>
-              <MenuItem value="treasury">Most Treasury</MenuItem>
-              <MenuItem value="newest">Newest</MenuItem>
-            </Select>
+            <FormControl size="small" sx={{ minWidth: 160 }}>
+              <InputLabel id="sort-select-label">Sort by</InputLabel>
+              <Select
+                labelId="sort-select-label"
+                id="sort-select"
+                value={sort}
+                label="Sort by"
+                onChange={onSortChange}
+              >
+                <MenuItem value="open">Open First</MenuItem>
+                <MenuItem value="members">Most Members</MenuItem>
+                <MenuItem value="treasury">Most Treasury</MenuItem>
+                <MenuItem value="newest">Newest</MenuItem>
+              </Select>
+            </FormControl>
             <FormControlLabel
               control={
                 <Switch checked={openOnly} onChange={onOpenOnlyChange} />
