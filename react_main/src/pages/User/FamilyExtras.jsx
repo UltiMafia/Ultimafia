@@ -250,6 +250,7 @@ export function FamilyApplications({ familyId, family, refreshFamilyTools }) {
               size="small"
               checked={family.applicationsOpen}
               onChange={toggleApplicationsOpen}
+              disabled={!family.isLeader}
             />
           }
           label={<Typography variant="caption">{family.applicationsOpen ? "Open" : "Closed"}</Typography>}
