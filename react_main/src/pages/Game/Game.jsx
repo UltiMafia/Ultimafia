@@ -132,28 +132,6 @@ const NO_ONE_NAME = "no one";
 const MAGUS_NAME = "Declare Magus Game";
 const UNKNOWN_NAME = "???";
 
-function getOrderedPlayers(players) {
-  return Object.values(players)
-    .map((player, index) => ({ player, index }))
-    .sort((a, b) => {
-      const aPosition = a.player.playerListPosition;
-      const bPosition = b.player.playerListPosition;
-      const aHasPosition = Number.isFinite(aPosition);
-      const bHasPosition = Number.isFinite(bPosition);
-
-      if (aHasPosition && bHasPosition && aPosition !== bPosition) {
-        return aPosition - bPosition;
-      }
-
-      if (aHasPosition !== bHasPosition) {
-        return aHasPosition ? -1 : 1;
-      }
-
-      return a.index - b.index;
-    })
-    .map(({ player }) => player);
-}
-
 export const GameTypeContext = createContext({
   singleState: false,
 });
@@ -3315,17 +3293,16 @@ export function PlayerList(props) {
 
   const history = game.history;
   const stateViewingInfo = history.states[game.stateViewing];
-  const orderedPlayers = getOrderedPlayers(game.players);
-  const alivePlayers = orderedPlayers.filter(
+  const alivePlayers = Object.values(game.players).filter(
     (p) => !stateViewingInfo.dead[p.id] && !p.left
   );
-  const deadPlayers = orderedPlayers.filter(
+  const deadPlayers = Object.values(game.players).filter(
     (p) =>
       stateViewingInfo.dead[p.id] &&
       !p.left &&
       !stateViewingInfo.exorcised[p.id]
   );
-  const exorcisedPlayers = orderedPlayers.filter(
+  const exorcisedPlayers = Object.values(game.players).filter(
     (p) => stateViewingInfo.exorcised[p.id] && !p.left
   );
 
@@ -5948,40 +5925,19 @@ export function usePlayersReducer() {
         } else {
           newPlayers = update(players, {
             [action.player.id]: {
-              $merge: {
-                ...action.player,
-                left: undefined,
-              },
+              $unset: ["left"],
             },
           });
         }
         break;
       case "remove":
-        {
-          const removedPosition = players[action.playerId]?.playerListPosition;
-
-          newPlayers = Object.keys(players).reduce((result, playerId) => {
-            const player = players[playerId];
-            let playerListPosition = player.playerListPosition;
-
-            if (
-              playerId !== action.playerId &&
-              Number.isFinite(removedPosition) &&
-              Number.isFinite(playerListPosition) &&
-              playerListPosition > removedPosition
-            ) {
-              playerListPosition -= 1;
-            }
-
-            result[playerId] = {
-              ...player,
-              playerListPosition,
-              left: playerId === action.playerId ? true : player.left,
-            };
-
-            return result;
-          }, {});
-        }
+        newPlayers = update(players, {
+          [action.playerId]: {
+            left: {
+              $set: true,
+            },
+          },
+        });
         break;
       case "setProp":
         newPlayers = update(players, {
