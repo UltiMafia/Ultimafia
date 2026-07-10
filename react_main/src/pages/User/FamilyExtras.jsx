@@ -102,11 +102,11 @@ export function FamilyTreasury({ family, familyId, refreshFamilyTools }) {
             placeholder="Amount"
             sx={{ flexGrow: 1, minWidth: "80px" }}
           />
-          <Button variant="contained" onClick={() => onAction("deposit")} sx={{ fontWeight: "bold", px: 2 }}>
+          <Button variant="outlined" onClick={() => onAction("deposit")}>
             Deposit
           </Button>
           {canWithdraw && (
-            <Button variant="contained" color="secondary" onClick={() => onAction("withdraw")} sx={{ fontWeight: "bold", px: 2 }}>
+            <Button variant="outlined" color="secondary" onClick={() => onAction("withdraw")}>
               Withdraw
             </Button>
           )}
@@ -284,7 +284,7 @@ export function FamilyApplications({ familyId, family, refreshFamilyTools }) {
               <Button size="small" variant="contained" color="success" onClick={() => onApplicationAction(application.id, "accept")}>
                 Accept
               </Button>
-              <Button size="small" variant="contained" color="error" onClick={() => onApplicationAction(application.id, "reject")}>
+              <Button size="small" variant="outlined" color="error" onClick={() => onApplicationAction(application.id, "reject")}>
                 Reject
               </Button>
             </Stack>
@@ -331,10 +331,9 @@ export function FamilyPerks({ family, familyId, refreshFamilyTools }) {
                 family.canManageApplications && (
                   <Button
                     size="small"
-                    variant="contained"
+                    variant="outlined"
                     onClick={() => onBuyPerk(perk)}
                     startIcon={<Icon icon="lucide:coins" />}
-                    sx={{ fontWeight: "bold" }}
                   >
                     {Number(perk.cost).toFixed(2)}
                   </Button>
@@ -390,7 +389,7 @@ export function FamilyJoinFee({ family, familyId, refreshFamilyTools }) {
           placeholder="0"
           fullWidth
         />
-        <Button variant="contained" onClick={onSaveJoinFee} fullWidth sx={{ fontWeight: "bold" }}>
+        <Button variant="outlined" onClick={onSaveJoinFee} fullWidth>
           Save Join Fee
         </Button>
         <Typography variant="caption" color="text.secondary">
@@ -480,7 +479,7 @@ export function FamilyApply({ family, familyId, refreshFamilyTools }) {
                 <CoinAmount amount={family.joinFee} variant="body1" sx={{ fontWeight: 700 }} />
               </Box>
             )}
-            <Button variant="contained" color="error" onClick={onCancelApplication}>
+            <Button variant="outlined" color="error" onClick={onCancelApplication}>
               Cancel Application
             </Button>
           </Stack>
