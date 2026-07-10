@@ -243,7 +243,7 @@ export default function FamilyDiscovery() {
   }, [openOnly, page, search, sort]);
 
   useEffect(() => {
-    document.title = "Find Families | PassionMafia";
+    document.title = "Find Families | UltiMafia";
   }, []);
 
   useEffect(() => {
