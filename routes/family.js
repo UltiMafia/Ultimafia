@@ -139,15 +139,7 @@ router.post("/create", async function (req, res) {
     });
     await inFamily.save();
 
-    // Create FamilyStock to initialize treasury
-    const familyStock = new models.FamilyStock({
-      familyId: familyId,
-      isIpoed: false,
-      shareSupply: 0,
-      treasuryCoins: 0,
-      dividendsPaidOut: 0,
-    });
-    await familyStock.save();
+
 
     res.send({ familyId: familyId });
   } catch (e) {
@@ -327,8 +319,7 @@ router.get("/:familyId/profile", async function (req, res) {
       }
     }
 
-    var familyStock = await models.FamilyStock.findOne({ familyId: family.id });
-    var treasuryCoins = familyStock ? familyStock.treasuryCoins : 0;
+    var treasuryCoins = family.treasury || 0;
 
     res.send({
       id: family.id,
@@ -1131,9 +1122,7 @@ router.get("/leaderboard", async function (req, res) {
       trophyCounts.map((item) => [item._id, item.count])
     );
 
-    const familyIds = families.map(f => f.id);
-    const familyStocks = await models.FamilyStock.find({ familyId: { $in: familyIds } }).lean();
-    const treasuryMap = new Map(familyStocks.map(s => [s.familyId, s.treasuryCoins || 0]));
+
 
     const leaderboard = families
       .map((family) => {
@@ -1142,7 +1131,7 @@ router.get("/leaderboard", async function (req, res) {
           (total, member) => total + (trophyCountByUser.get(member.id) || 0),
           0
         );
-        const treasury = treasuryMap.get(family.id) || 0;
+        const treasury = family.treasury || 0;
         const perks = family.perks || [];
         const score =
           trophyCount * 100 +
@@ -1265,9 +1254,7 @@ router.get("/discover", async function (req, res) {
       trophyCounts.map((entry) => [entry._id, entry.count])
     );
 
-    const familyIds = families.map(f => f.id);
-    const familyStocks = await models.FamilyStock.find({ familyId: { $in: familyIds } }).lean();
-    const treasuryMap = new Map(familyStocks.map(s => [s.familyId, s.treasuryCoins || 0]));
+
 
     const discoveredFamilies = families.map((family) => {
       const members = family.members || [];
@@ -1275,7 +1262,7 @@ router.get("/discover", async function (req, res) {
         (total, member) => total + (trophyCountByUser.get(member.id) || 0),
         0
       );
-      const treasury = treasuryMap.get(family.id) || 0;
+      const treasury = family.treasury || 0;
       const perks = family.perks || [];
       const memberLimit = getFamilyMemberLimit(family);
       const applicationsOpen = family.applicationsOpen !== false;
@@ -1516,10 +1503,9 @@ router.post("/:familyId/apply", async function (req, res) {
       paidUserId = userId;
       paidFamilyObjectId = family._id;
 
-      await models.FamilyStock.updateOne(
-        { familyId: familyId },
-        { $inc: { treasuryCoins: joinFee }, $setOnInsert: { isIpoed: false, shareSupply: 0, dividendsPaidOut: 0 } },
-        { upsert: true }
+      await models.Family.updateOne(
+        { id: familyId },
+        { $inc: { treasury: joinFee } }
       );
       await models.Family.updateOne(
         { id: familyId },
@@ -1588,11 +1574,11 @@ router.post("/:familyId/apply", async function (req, res) {
               },
             }
           );
-          await models.FamilyStock.updateOne(
-            { familyId: familyId },
+          await models.Family.updateOne(
+            { id: familyId },
             {
               $inc: {
-                treasuryCoins: -paidJoinFee,
+                treasury: -paidJoinFee,
               },
             }
           );
@@ -1638,11 +1624,11 @@ router.delete("/:familyId/applications/mine", async function (req, res) {
     var joinFee = Math.max(0, Math.floor(Number(application.joinFee || 0)));
 
     if (joinFee > 0) {
-      await models.FamilyStock.updateOne(
-        { familyId: familyId },
+      await models.Family.updateOne(
+        { id: familyId },
         {
           $inc: {
-            treasuryCoins: -joinFee,
+            treasury: -joinFee,
           },
         }
       );
@@ -2056,11 +2042,10 @@ router.post("/:familyId/treasury/deposit", async function (req, res) {
       return;
     }
 
-    var updatedFamilyStock = await models.FamilyStock.findOneAndUpdate(
-      { familyId: familyId },
-      { $inc: { treasuryCoins: amount }, $setOnInsert: { isIpoed: false, shareSupply: 0, dividendsPaidOut: 0 } },
-      { new: true, upsert: true }
-    ).lean();
+    await models.Family.updateOne(
+      { id: familyId },
+      { $inc: { treasury: amount } }
+    );
 
     await new models.FamilyLedger({
       familyId: familyId,
@@ -2078,7 +2063,7 @@ router.post("/:familyId/treasury/deposit", async function (req, res) {
     res.send({
       coins: Number(debit.coins || 0),
       balanceDollar: Number(debit.balanceDollar || 0),
-      treasury: Number((await models.FamilyStock.findOne({familyId: family.id}) || {}).treasuryCoins || 0 || 0),
+      treasury: Number(family.treasury || 0) + amount,
     });
   } catch (e) {
     logger.error(e);

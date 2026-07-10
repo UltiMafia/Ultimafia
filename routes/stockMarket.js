@@ -123,9 +123,10 @@ const FAMILY_TRADE_CONFIG = {
   getTxData: (userId, entityId, type, shares, price, fee) => ({
     userId, familyId: entityId, type, shares, price, fee,
   }),
-  feeField: "treasuryCoins",
+  feeField: "creatorFeesEarned",
   lockPrefix: "family",
   creditFeeToUser: false,
+  creditFeeToFamilyTreasury: true,
   cacheEntityUser: false,
   entityLabel: "family",
   notFoundBuyMsg: "This Family ETF has not been launched.",
@@ -186,11 +187,16 @@ function createBuyHandler(config) {
           return errors.conflict(res, "Price changed. Your coins have been refunded. Please try again.");
         }
 
-        // 5. Credit creator fee to entity's user wallet (player stocks only)
+        // 5. Credit creator fee to entity
         if (config.creditFeeToUser) {
           await models.User.updateOne(
             { id: entityId },
             { $inc: { coins: creatorFee } }
+          ).exec();
+        } else if (config.creditFeeToFamilyTreasury) {
+          await models.Family.updateOne(
+            { id: entityId },
+            { $inc: { treasury: creatorFee } }
           ).exec();
         }
 
@@ -334,11 +340,16 @@ function createSellHandler(config) {
           { $inc: { coins: total } }
         ).exec();
 
-        // 8. Credit creator fee to entity's user wallet (player stocks only)
+        // 8. Credit creator fee to entity
         if (config.creditFeeToUser) {
           await models.User.updateOne(
             { id: entityId },
             { $inc: { coins: creatorFee } }
+          ).exec();
+        } else if (config.creditFeeToFamilyTreasury) {
+          await models.Family.updateOne(
+            { id: entityId },
+            { $inc: { treasury: creatorFee } }
           ).exec();
         }
 
@@ -869,7 +880,7 @@ router.get("/families", async function (req, res) {
         marketCap,
         buyPrice: buyPrice.total,
         sellPrice: sellPrice.total,
-        treasuryCoins: stock.treasuryCoins,
+        treasuryCoins: f ? (f.treasury || 0) : 0,
         dividendsPaidOut: stock.dividendsPaidOut,
         priceHistory: historyMap[stock.familyId]
       };
@@ -1005,7 +1016,7 @@ router.get("/families/prices/:familyId", async function (req, res) {
       marketCap,
       buyPrice1: buy1.total,
       sellPrice1: sell1.total,
-      treasuryCoins: stock.treasuryCoins,
+      treasuryCoins: f ? (f.treasury || 0) : 0,
       dividendsPaidOut: stock.dividendsPaidOut
     });
   } catch (e) {
