@@ -82,6 +82,12 @@ const protips = {
     "Look for opportunities to attack weaker neighboring territories.",
     "Remember that attacking increases your dice count, so plan your moves accordingly.",
   ],
+  Chess: [
+    "Control the center of the board with your pawns and minor pieces.",
+    "Develop your knights and bishops early.",
+    "Don't bring your queen out too early in the game.",
+    "Castle early to ensure your king's safety.",
+  ],
 };
 
 module.exports = protips;
