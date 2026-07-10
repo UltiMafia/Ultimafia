@@ -138,23 +138,27 @@ function FamilyCard({ family }) {
           <Chip
             size="small"
             color={family.applicationsOpen ? "success" : "default"}
-            icon={
-              <Box
-                component="i"
-                className={
-                  family.applicationsOpen ? "fas fa-door-open" : "fas fa-lock"
-                }
-                aria-hidden="true"
-              />
+            label={
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                <Box
+                  component="i"
+                  className={
+                    family.applicationsOpen ? "fas fa-door-open" : "fas fa-lock"
+                  }
+                  aria-hidden="true"
+                />
+                {family.applicationsOpen ? "Applications Open" : "Closed"}
+              </Box>
             }
-            label={family.applicationsOpen ? "Applications Open" : "Closed"}
           />
           <Chip
             size="small"
-            icon={
-              <Box component="i" className="fas fa-users" aria-hidden="true" />
+            label={
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                <Box component="i" className="fas fa-users" aria-hidden="true" />
+                {`${family.memberCount}/${family.memberLimit}`}
+              </Box>
             }
-            label={`${family.memberCount}/${family.memberLimit}`}
             variant="outlined"
           />
         </Stack>
