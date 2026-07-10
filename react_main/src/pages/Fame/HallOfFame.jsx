@@ -29,15 +29,7 @@ import { UserContext } from "Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { NameWithAvatar } from "pages/User/User";
 
-import {
-  TIER_ICONS,
-  villagerIcon,
-  doctorIcon,
-  copIcon,
-  sheriffIcon,
-  stalkerIcon,
-  seerIcon,
-} from "utils/skillRating";
+import { TIER_ICONS } from "utils/skillRating";
 
 const CATEGORY_OPTIONS = [
   { value: "overall", label: "Overall" },
@@ -646,27 +638,27 @@ export default function HallOfFame() {
               </Typography>
               <Box component="ul" sx={{ pl: 0, mt: 0, mb: 1, listStyle: 'none', '& li': { display: 'flex', alignItems: 'center', mb: 0.5, gap: 1 } }}>
                 <li>
-                  <img src={seerIcon} alt="Master" style={{ width: 20, height: 20 }} />
+                  <img src={TIER_ICONS.Master} alt="Master" style={{ width: 20, height: 20 }} />
                   <span><strong>Master:</strong> Top 2% (Percentile &ge; 98)</span>
                 </li>
                 <li>
-                  <img src={stalkerIcon} alt="Diamond" style={{ width: 20, height: 20 }} />
+                  <img src={TIER_ICONS.Diamond} alt="Diamond" style={{ width: 20, height: 20 }} />
                   <span><strong>Diamond:</strong> Next 8% (Percentile &ge; 90)</span>
                 </li>
                 <li>
-                  <img src={sheriffIcon} alt="Platinum" style={{ width: 20, height: 20 }} />
+                  <img src={TIER_ICONS.Platinum} alt="Platinum" style={{ width: 20, height: 20 }} />
                   <span><strong>Platinum:</strong> Next 15% (Percentile &ge; 75)</span>
                 </li>
                 <li>
-                  <img src={copIcon} alt="Gold" style={{ width: 20, height: 20 }} />
+                  <img src={TIER_ICONS.Gold} alt="Gold" style={{ width: 20, height: 20 }} />
                   <span><strong>Gold:</strong> Next 25% (Percentile &ge; 50)</span>
                 </li>
                 <li>
-                  <img src={doctorIcon} alt="Silver" style={{ width: 20, height: 20 }} />
+                  <img src={TIER_ICONS.Silver} alt="Silver" style={{ width: 20, height: 20 }} />
                   <span><strong>Silver:</strong> Next 30% (Percentile &ge; 20)</span>
                 </li>
                 <li>
-                  <img src={villagerIcon} alt="Bronze" style={{ width: 20, height: 20 }} />
+                  <img src={TIER_ICONS.Bronze} alt="Bronze" style={{ width: 20, height: 20 }} />
                   <span><strong>Bronze:</strong> Bottom 20% (Percentile &lt; 20)</span>
                 </li>
               </Box>
