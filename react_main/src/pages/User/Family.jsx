@@ -456,13 +456,6 @@ export default function Family() {
               </Paper>
             )}
             
-            <FamilyProgress family={family} />
-            <FamilyApply family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
-            <FamilyApplications family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
-            <FamilyTreasury family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
-            <FamilyJoinFee family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
-            <FamilyPerks family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
-            <FamilyLedger familyId={familyId} />
             <Paper sx={panelStyle}>
               <Typography variant="h3" sx={headingStyle}>
                 Members
@@ -471,6 +464,14 @@ export default function Family() {
                 {membersList}
               </Stack>
             </Paper>
+            
+            <FamilyProgress family={family} />
+            <FamilyApply family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
+            <FamilyApplications family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
+            <FamilyTreasury family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
+            <FamilyJoinFee family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
+            <FamilyPerks family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
+            <FamilyLedger familyId={familyId} />
           </Stack>
         </Grid>
         {isPhoneDevice && (
