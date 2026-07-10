@@ -213,6 +213,7 @@ const modifierData = {
   "Connect Four": {},
   Battleship: {},
   "Spot It": {},
+  Chess: {},
 };
 
 module.exports = modifierData;
