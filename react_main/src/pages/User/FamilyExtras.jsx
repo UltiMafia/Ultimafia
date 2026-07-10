@@ -93,19 +93,20 @@ export function FamilyTreasury({ family, familyId, refreshFamilyTools }) {
         </Typography>
       )}
       {isFamilyMember && (
-        <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+        <Stack direction="row" spacing={1} sx={{ mt: 1.5 }}>
           <TextField
             size="small"
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="Amount"
+            sx={{ flexGrow: 1, minWidth: "80px" }}
           />
-          <Button variant="outlined" onClick={() => onAction("deposit")}>
+          <Button variant="contained" onClick={() => onAction("deposit")} sx={{ fontWeight: "bold", px: 2 }}>
             Deposit
           </Button>
           {canWithdraw && (
-            <Button variant="outlined" color="secondary" onClick={() => onAction("withdraw")}>
+            <Button variant="contained" color="secondary" onClick={() => onAction("withdraw")} sx={{ fontWeight: "bold", px: 2 }}>
               Withdraw
             </Button>
           )}
@@ -283,7 +284,7 @@ export function FamilyApplications({ familyId, family, refreshFamilyTools }) {
               <Button size="small" variant="contained" color="success" onClick={() => onApplicationAction(application.id, "accept")}>
                 Accept
               </Button>
-              <Button size="small" variant="outlined" color="error" onClick={() => onApplicationAction(application.id, "reject")}>
+              <Button size="small" variant="contained" color="error" onClick={() => onApplicationAction(application.id, "reject")}>
                 Reject
               </Button>
             </Stack>
@@ -330,9 +331,10 @@ export function FamilyPerks({ family, familyId, refreshFamilyTools }) {
                 family.canManageApplications && (
                   <Button
                     size="small"
-                    variant="outlined"
+                    variant="contained"
                     onClick={() => onBuyPerk(perk)}
                     startIcon={<Icon icon="lucide:coins" />}
+                    sx={{ fontWeight: "bold" }}
                   >
                     {Number(perk.cost).toFixed(2)}
                   </Button>
@@ -386,8 +388,9 @@ export function FamilyJoinFee({ family, familyId, refreshFamilyTools }) {
           onChange={(e) => setJoinFeeInput(e.target.value)}
           inputProps={{ min: 0, step: 1 }}
           placeholder="0"
+          fullWidth
         />
-        <Button variant="outlined" onClick={onSaveJoinFee}>
+        <Button variant="contained" onClick={onSaveJoinFee} fullWidth sx={{ fontWeight: "bold" }}>
           Save Join Fee
         </Button>
         <Typography variant="caption" color="text.secondary">
@@ -477,7 +480,7 @@ export function FamilyApply({ family, familyId, refreshFamilyTools }) {
                 <CoinAmount amount={family.joinFee} variant="body1" sx={{ fontWeight: 700 }} />
               </Box>
             )}
-            <Button variant="outlined" color="error" onClick={onCancelApplication}>
+            <Button variant="contained" color="error" onClick={onCancelApplication}>
               Cancel Application
             </Button>
           </Stack>
