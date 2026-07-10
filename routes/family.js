@@ -1071,7 +1071,7 @@ function buildFamilyQuests(family, trophyCount, treasuryCoins) {
       id: "communityChest",
       name: "Community Chest",
       description: "Deposit 1,000 coins into the family treasury.",
-      current: Math.min(treasury, 1000),
+      current: Math.floor(Math.min(treasury, 1000)),
       target: 1000,
       completed: treasury >= 1000,
     },
