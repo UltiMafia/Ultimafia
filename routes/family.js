@@ -1524,7 +1524,7 @@ router.post("/:familyId/apply", async function (req, res) {
           user: user._id,
           type: "joinFee",
           amount: joinFee,
-          description: `Join fee paid by ${user.name}`,
+          description: "Join fee paid",
           createdAt: Date.now(),
         }).save();
       } catch (ledgerError) {
@@ -1639,7 +1639,7 @@ router.delete("/:familyId/applications/mine", async function (req, res) {
           user: user._id,
           type: "joinFeeRefund",
           amount: -joinFee,
-          description: `Refunded join fee to ${user.name} (application cancelled)`,
+          description: "Join fee refunded (application cancelled)",
           createdAt: Date.now(),
         }).save();
       } catch (ledgerError) {
@@ -1826,7 +1826,7 @@ async function resolveFamilyApplication(req, res, status) {
         user: application.applicant._id,
         type: "joinFeeRefund",
         amount: -joinFee,
-        description: `Refunded join fee to ${application.applicant.name}`,
+        description: "Join fee refunded",
         createdAt: Date.now(),
       }).save();
     } catch (ledgerError) {
