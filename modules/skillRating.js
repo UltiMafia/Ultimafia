@@ -224,7 +224,7 @@ async function refundGameRatings(game) {
     const newMu = currentMu - change.muDelta;
     const currentSigma = user.skillRating?.sigma ?? DEFAULT_SIGMA;
     // ensure sigmaDelta is handled safely if it is missing on older changes
-    const newSigma = Math.max(currentSigma - (change.sigmaDelta || 0), 0.1); // Clamp to SIGMA_MIN (sqrt of 0.01)
+    const newSigma = currentSigma - (change.sigmaDelta || 0);
 
     bulkOps.push({
       updateOne: {
