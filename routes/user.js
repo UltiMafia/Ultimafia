@@ -439,41 +439,43 @@ router.get("/:id/profile", async function (req, res) {
       };
     }
 
-    if (user.skillRating.gamesPlayed > 0) {
-      const userMu = user.skillRating.mu ?? DEFAULT_MU;
-      const userSigma = user.skillRating.sigma ?? DEFAULT_SIGMA;
-      const userRankScore = user.skillRating.conservativeRank ?? (userMu - 3.0 * userSigma);
+    if (!user.settings?.hideStatistics) {
+      if (user.skillRating.gamesPlayed > 0) {
+        const userMu = user.skillRating.mu ?? DEFAULT_MU;
+        const userSigma = user.skillRating.sigma ?? DEFAULT_SIGMA;
+        const userRankScore = user.skillRating.conservativeRank ?? (userMu - 3.0 * userSigma);
 
-      const [totalRatedCount, higherRankCount, lowerRankCount] = await Promise.all([
-        models.User.countDocuments({
-          "skillRating.gamesPlayed": { $gt: 0 },
-          deleted: { $ne: true }
-        }),
-        models.User.countDocuments({
-          "skillRating.gamesPlayed": { $gt: 0 },
-          deleted: { $ne: true },
-          "skillRating.conservativeRank": { $gt: userRankScore }
-        }),
-        models.User.countDocuments({
-          "skillRating.gamesPlayed": { $gt: 0 },
-          deleted: { $ne: true },
-          "skillRating.conservativeRank": { $lt: userRankScore }
-        })
-      ]);
+        const [totalRatedCount, higherRankCount, lowerRankCount] = await Promise.all([
+          models.User.countDocuments({
+            "skillRating.gamesPlayed": { $gt: 0 },
+            deleted: { $ne: true }
+          }),
+          models.User.countDocuments({
+            "skillRating.gamesPlayed": { $gt: 0 },
+            deleted: { $ne: true },
+            "skillRating.conservativeRank": { $gt: userRankScore }
+          }),
+          models.User.countDocuments({
+            "skillRating.gamesPlayed": { $gt: 0 },
+            deleted: { $ne: true },
+            "skillRating.conservativeRank": { $lt: userRankScore }
+          })
+        ]);
 
-      user.skillRating.rank = higherRankCount + 1;
+        user.skillRating.rank = higherRankCount + 1;
 
-      const percentile = totalRatedCount > 1 ? (lowerRankCount / (totalRatedCount - 1)) * 100 : 100;
-      
-      if (percentile >= 98) user.skillRating.tier = "Master";
-      else if (percentile >= 90) user.skillRating.tier = "Diamond";
-      else if (percentile >= 75) user.skillRating.tier = "Platinum";
-      else if (percentile >= 50) user.skillRating.tier = "Gold";
-      else if (percentile >= 20) user.skillRating.tier = "Silver";
-      else user.skillRating.tier = "Bronze";
-    } else {
-      user.skillRating.tier = "Unrated";
-      user.skillRating.rank = null;
+        const percentile = totalRatedCount > 1 ? (lowerRankCount / (totalRatedCount - 1)) * 100 : 100;
+        
+        if (percentile >= 98) user.skillRating.tier = "Master";
+        else if (percentile >= 90) user.skillRating.tier = "Diamond";
+        else if (percentile >= 75) user.skillRating.tier = "Platinum";
+        else if (percentile >= 50) user.skillRating.tier = "Gold";
+        else if (percentile >= 20) user.skillRating.tier = "Silver";
+        else user.skillRating.tier = "Bronze";
+      } else {
+        user.skillRating.tier = "Unrated";
+        user.skillRating.rank = null;
+      }
     }
 
     user.groups = (await redis.getBasicUserInfo(userId)).groups;
@@ -825,6 +827,7 @@ router.get("/:id/profile", async function (req, res) {
 
     if (user.settings.hideStatistics) {
       delete user.stats;
+      delete user.skillRating;
     }
     if (user.settings.hideKarma) {
       delete user.karmaInfo;

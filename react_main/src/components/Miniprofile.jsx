@@ -178,7 +178,7 @@ function Miniprofile(props) {
         prefilledArgs={reportPrefilledArgs}
       />
       {!hasDefaultPronouns && <div className="pronouns">({pronouns})</div>}
-      {user.skillRating && (
+      {user.skillRating && !user.settings?.hideStatistics && (
         <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mt: 1, mb: 1, justifyContent: "center" }}>
           {TIER_ICONS[user.skillRating.tier] && (
             <img
