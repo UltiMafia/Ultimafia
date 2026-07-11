@@ -14,17 +14,7 @@ const DEFAULT_PAGE_SIZE = 25;
 const MAX_PAGE_SIZE = 100;
 const DEFAULT_MIN_GAMES = 50;
 const SUPPORTED_TIME_RANGES = ["all"];
-const SUPPORTED_CATEGORIES = [
-  "overall",
-  "prestige",
-  "trophies",
-  "winRate",
-  "kudos",
-  "karma",
-  "achievements",
-  "scrapbook",
-  "skillRating",
-];
+const SUPPORTED_CATEGORIES = ["skillRating", "loot"];
 const SUPPORTED_SORT_DIRECTIONS = ["asc", "desc"];
 const SUPPORTED_SORT_KEYS = [
   "username",
@@ -41,7 +31,7 @@ const SUPPORTED_SORT_KEYS = [
   "achievementsCount",
   "scrapbookCompletion",
   "scrapbookCount",
-  "compositeScore",
+  "lootScore",
   "skillRating",
 ];
 
@@ -53,66 +43,24 @@ const TROPHY_TYPE_WEIGHTS = {
 };
 
 const CATEGORY_DEFINITIONS = {
-  overall: {
-    metricKey: "fortune",
-    metricLabel: "Fortune",
-    minGamesRequired: false,
-    tieBreakers: ["prestige", "trophyScore", "winRate", "kudos", "karma", "wins"],
-  },
-  prestige: {
-    metricKey: "prestige",
-    metricLabel: "Prestige",
-    minGamesRequired: false,
-    tieBreakers: [
-      "fortune",
-      "trophyScore",
-      "winRate",
-      "kudos",
-      "karma",
-      "wins",
-    ],
-  },
-  trophies: {
-    metricKey: "trophyScore",
-    metricLabel: "Trophy Score",
-    minGamesRequired: false,
-    tieBreakers: ["achievementScore", "winRate", "kudos", "karma", "wins"],
-  },
-  winRate: {
-    metricKey: "winRate",
-    metricLabel: "Win Rate",
-    minGamesRequired: true,
-    tieBreakers: ["wins", "trophyScore", "achievementScore", "kudos", "karma"],
-  },
-  kudos: {
-    metricKey: "kudos",
-    metricLabel: "Kudos",
-    minGamesRequired: false,
-    tieBreakers: ["karma", "trophyScore", "achievementScore", "winRate", "wins"],
-  },
-  karma: {
-    metricKey: "karma",
-    metricLabel: "Karma",
-    minGamesRequired: false,
-    tieBreakers: ["kudos", "trophyScore", "achievementScore", "winRate", "wins"],
-  },
-  achievements: {
-    metricKey: "achievementScore",
-    metricLabel: "Achievement Score",
-    minGamesRequired: false,
-    tieBreakers: ["achievementCount", "trophyScore", "winRate", "kudos", "karma"],
-  },
-  scrapbook: {
-    metricKey: "scrapbookCompletion",
-    metricLabel: "Scrapbook Completion",
-    minGamesRequired: false,
-    tieBreakers: ["scrapbookCount", "trophyScore", "achievementScore", "winRate"],
-  },
   skillRating: {
     metricKey: "skillRating",
     metricLabel: "Skill Rating",
     minGamesRequired: false,
     tieBreakers: ["winRate", "prestige", "fortune", "wins"],
+  },
+  loot: {
+    metricKey: "lootScore",
+    metricLabel: "Loot Score",
+    minGamesRequired: false,
+    tieBreakers: [
+      "trophyScore",
+      "kudos",
+      "karma",
+      "achievementScore",
+      "scrapbookCompletion",
+      "wins",
+    ],
   },
 };
 
@@ -158,11 +106,6 @@ function normalizeMetric(value, maxValue) {
   return (value / maxValue) * 100;
 }
 
-function normalizeWinRate(row, minGames) {
-  if (row.totalGames < minGames) return 0;
-  return row.winRate * 100;
-}
-
 function adjustedCommunityScore(value) {
   if (value <= 0) return 0;
   return Math.log10(value + 1) * 25;
@@ -170,10 +113,6 @@ function adjustedCommunityScore(value) {
 
 function getTrophyWeight(type) {
   return TROPHY_TYPE_WEIGHTS[type] || TROPHY_TYPE_WEIGHTS.silver;
-}
-
-function makeStampKey(stamp) {
-  return `${stamp.gameType}:${stamp.role}`;
 }
 
 function compareValues(a, b, key, sortDirection = "desc") {
@@ -187,7 +126,7 @@ function compareValues(a, b, key, sortDirection = "desc") {
 }
 
 function compareRows(a, b, category, sortBy, sortDirection) {
-  const definition = CATEGORY_DEFINITIONS[category] || CATEGORY_DEFINITIONS.overall;
+  const definition = CATEGORY_DEFINITIONS[category] || CATEGORY_DEFINITIONS.skillRating;
   const keys = [sortBy, ...(definition.tieBreakers || []), "username"];
 
   for (const key of keys) {
@@ -364,7 +303,7 @@ async function buildRows() {
       scrapbookCompletion: scrapbookTotal
         ? roundMetric((scrapbookInfo.scrapbookCount / scrapbookTotal) * 100, 2)
         : 0,
-      compositeScore: 0,
+      lootScore: 0,
       privacy: {
         hideStatistics: Boolean(user.settings?.hideStatistics),
         hideKarma: Boolean(user.settings?.hideKarma),
@@ -400,16 +339,14 @@ async function buildRows() {
       row.scrapbookCompletion,
       maxValues.scrapbookCompletion
     );
-    const normalizedWinRate = normalizeWinRate(row, DEFAULT_MIN_GAMES);
     const normalizedKudos = Math.min(adjustedCommunityScore(row.kudos), 100);
     const normalizedKarma = Math.min(adjustedCommunityScore(Math.max(row.karma, 0)), 100);
 
-    row.compositeScore = roundMetric(
-      normalizedTrophyScore * 0.3 +
-        normalizedWinRate * 0.2 +
-        normalizedKudos * 0.15 +
-        normalizedKarma * 0.1 +
-        normalizedAchievementScore * 0.15 +
+    row.lootScore = roundMetric(
+      normalizedTrophyScore * 0.35 +
+        normalizedKudos * 0.2 +
+        normalizedKarma * 0.15 +
+        normalizedAchievementScore * 0.2 +
         normalizedScrapbookCompletion * 0.1,
       2
     );
@@ -421,10 +358,7 @@ async function buildRows() {
   };
 }
 
-function applyCategoryRules(rows, category, minGames) {
-  if (category === "winRate") {
-    return rows.filter((row) => row.totalGames >= minGames);
-  }
+function applyCategoryRules(rows, category) {
   if (category === "skillRating") {
     return rows.filter((row) => row.skillGamesPlayed > 0);
   }
@@ -463,7 +397,7 @@ function buildResponseRows(rows) {
     achievementScore: row.achievementScore,
     scrapbookCount: row.scrapbookCount,
     scrapbookCompletion: row.scrapbookCompletion,
-    compositeScore: row.compositeScore,
+    lootScore: row.lootScore,
     skillRating: row.skillRating,
     skillMu: row.skillMu,
     skillSigma: row.skillSigma,
@@ -473,7 +407,7 @@ function buildResponseRows(rows) {
 }
 
 async function getLeaderboard({
-  category = "overall",
+  category = "skillRating",
   page = 1,
   pageSize = DEFAULT_PAGE_SIZE,
   minGames = DEFAULT_MIN_GAMES,
@@ -521,7 +455,7 @@ async function getLeaderboard({
   }
 
   const { rows, scrapbookTotal } = await buildRows();
-  const filteredRows = applyCategoryRules(rows, category, safeMinGames);
+  const filteredRows = applyCategoryRules(rows, category);
   const rankedRows = assignRanks(filteredRows, category, safeSortBy, safeSortDirection);
   const total = rankedRows.length;
   const pages = Math.max(Math.ceil(total / safePageSize), 1);

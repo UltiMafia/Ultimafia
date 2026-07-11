@@ -1,12 +1,15 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import {
-  Alert,
   Box,
   Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   Divider,
   FormControl,
   Grid2,
+  IconButton,
   InputLabel,
   MenuItem,
   Paper,
@@ -32,23 +35,12 @@ import { NameWithAvatar } from "pages/User/User";
 import { TIER_ICONS } from "utils/skillRating";
 
 const CATEGORY_OPTIONS = [
-  { value: "overall", label: "Overall" },
-  { value: "prestige", label: "Prestige" },
-  { value: "trophies", label: "Trophies" },
-  { value: "winRate", label: "Win Rate" },
-  { value: "kudos", label: "Kudos" },
-  { value: "karma", label: "Karma" },
-  { value: "achievements", label: "Achievements" },
-  { value: "scrapbook", label: "Scrapbook" },
   { value: "skillRating", label: "Skill Rating" },
+  { value: "loot", label: "Loot" },
 ];
 
 const TIME_RANGE_OPTIONS = [{ value: "all", label: "All Time" }];
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
-
-function formatPercent(value) {
-  return `${Math.round(Number(value || 0) * 100)}%`;
-}
 
 function getColumns(category, isPhoneDevice) {
   const compactColumns = [
@@ -59,69 +51,19 @@ function getColumns(category, isPhoneDevice) {
   if (isPhoneDevice) return compactColumns;
 
   switch (category) {
-    case "prestige":
+    case "loot":
       return [
         { label: "Rank", sortKey: null },
         { label: "User", sortKey: "username" },
-        { label: "Prestige", sortKey: "prestige" },
-        { label: "Fortune", sortKey: "fortune" },
-        { label: "Trophies", sortKey: "trophyScore" },
-        { label: "Win Rate", sortKey: "winRate" },
-      ];
-    case "trophies":
-      return [
-        { label: "Rank", sortKey: null },
-        { label: "User", sortKey: "username" },
+        { label: "Loot", sortKey: "lootScore" },
         { label: "Trophies", sortKey: null },
-        { label: "Achievements", sortKey: "achievementsCount" },
-        { label: "Win Rate", sortKey: "winRate" },
-      ];
-    case "winRate":
-      return [
-        { label: "Rank", sortKey: null },
-        { label: "User", sortKey: "username" },
-        { label: "Win Rate", sortKey: "winRate" },
-        { label: "W/L", sortKey: null },
-        { label: "Trophies", sortKey: "trophyScore" },
-        { label: "Kudos", sortKey: "kudos" },
-      ];
-    case "kudos":
-      return [
-        { label: "Rank", sortKey: null },
-        { label: "User", sortKey: "username" },
         { label: "Kudos", sortKey: "kudos" },
         { label: "Karma", sortKey: "karma" },
-        { label: "Trophies", sortKey: "trophyScore" },
-        { label: "Win Rate", sortKey: "winRate" },
-      ];
-    case "karma":
-      return [
-        { label: "Rank", sortKey: null },
-        { label: "User", sortKey: "username" },
-        { label: "Karma", sortKey: "karma" },
-        { label: "Kudos", sortKey: "kudos" },
-        { label: "Trophies", sortKey: "trophyScore" },
-        { label: "Win Rate", sortKey: "winRate" },
-      ];
-    case "achievements":
-      return [
-        { label: "Rank", sortKey: null },
-        { label: "User", sortKey: "username" },
         { label: "Achievements", sortKey: "achievementsCount" },
-        { label: "Trophies", sortKey: "trophyScore" },
-        { label: "Win Rate", sortKey: "winRate" },
-        { label: "Kudos", sortKey: "kudos" },
-      ];
-    case "scrapbook":
-      return [
-        { label: "Rank", sortKey: null },
-        { label: "User", sortKey: "username" },
         { label: "Scrapbook", sortKey: "scrapbookCompletion" },
-        { label: "Unique", sortKey: "scrapbookCount" },
-        { label: "Trophies", sortKey: "trophyScore" },
-        { label: "Win Rate", sortKey: "winRate" },
       ];
     case "skillRating":
+    default:
       return [
         { label: "Rank", sortKey: null },
         { label: "User", sortKey: "username" },
@@ -131,29 +73,14 @@ function getColumns(category, isPhoneDevice) {
         { label: "Uncertainty (σ)", sortKey: "skillSigma" },
         { label: "Matches", sortKey: "skillGamesPlayed" },
       ];
-    default:
-      return [
-        { label: "Rank", sortKey: null },
-        { label: "User", sortKey: "username" },
-        { label: "Fortune", sortKey: "fortune" },
-        { label: "Prestige", sortKey: "prestige" },
-        { label: "Win Rate", sortKey: "winRate" },
-        { label: "Kudos", sortKey: "kudos" },
-      ];
   }
 }
 
 function renderDesktopCells(user, category) {
   switch (category) {
-    case "prestige":
+    case "loot":
       return [
-        <Typography variant="body2">{user.prestige}</Typography>,
-        <Typography variant="body2">{user.fortune}</Typography>,
-        <Typography variant="body2">{user.trophyScore}</Typography>,
-        <Typography variant="body2">{formatPercent(user.winRate)}</Typography>,
-      ];
-    case "trophies":
-      return [
+        <Typography variant="body2">{user.lootScore}</Typography>,
         <Box sx={{ overflowX: "clip" }}>
           <TrophyCase
             trophies={user.trophies}
@@ -161,47 +88,13 @@ function renderDesktopCells(user, category) {
             wrapInPanel={false}
           />
         </Box>,
-        <Typography variant="body2">{user.achievementsCount}</Typography>,
-        <Typography variant="body2">{formatPercent(user.winRate)}</Typography>,
-      ];
-    case "winRate":
-      return [
-        <Typography variant="body2">{formatPercent(user.winRate)}</Typography>,
-        <Typography variant="body2">
-          {user.wins}W / {user.losses}L
-        </Typography>,
-        <Typography variant="body2">{user.trophyScore}</Typography>,
-        <Typography variant="body2">{user.kudos}</Typography>,
-      ];
-    case "kudos":
-      return [
         <Typography variant="body2">{user.kudos}</Typography>,
         <Typography variant="body2">{user.karma}</Typography>,
-        <Typography variant="body2">{user.trophyScore}</Typography>,
-        <Typography variant="body2">{formatPercent(user.winRate)}</Typography>,
-      ];
-    case "karma":
-      return [
-        <Typography variant="body2">{user.karma}</Typography>,
-        <Typography variant="body2">{user.kudos}</Typography>,
-        <Typography variant="body2">{user.trophyScore}</Typography>,
-        <Typography variant="body2">{formatPercent(user.winRate)}</Typography>,
-      ];
-    case "achievements":
-      return [
         <Typography variant="body2">{user.achievementsCount}</Typography>,
-        <Typography variant="body2">{user.trophyScore}</Typography>,
-        <Typography variant="body2">{formatPercent(user.winRate)}</Typography>,
-        <Typography variant="body2">{user.kudos}</Typography>,
-      ];
-    case "scrapbook":
-      return [
         <Typography variant="body2">{`${user.scrapbookCompletion}%`}</Typography>,
-        <Typography variant="body2">{user.scrapbookCount}</Typography>,
-        <Typography variant="body2">{user.trophyScore}</Typography>,
-        <Typography variant="body2">{formatPercent(user.winRate)}</Typography>,
       ];
     case "skillRating":
+    default:
       return [
         <Stack direction="row" spacing={1} alignItems="center">
           {TIER_ICONS[user.skillTier] && (
@@ -214,33 +107,15 @@ function renderDesktopCells(user, category) {
         <Typography variant="body2" className="score">{user.skillSigma}</Typography>,
         <Typography variant="body2">{user.skillGamesPlayed}</Typography>,
       ];
-    default:
-      return [
-        <Typography variant="body2">{user.fortune}</Typography>,
-        <Typography variant="body2">{user.prestige}</Typography>,
-        <Typography variant="body2">{formatPercent(user.winRate)}</Typography>,
-        <Typography variant="body2">{user.kudos}</Typography>,
-      ];
   }
 }
 
 function renderMobileMetric(user, category) {
   switch (category) {
-    case "prestige":
-      return `${user.prestige} prestige`;
-    case "trophies":
-      return `${user.trophyScore} trophy score`;
-    case "winRate":
-      return `${formatPercent(user.winRate)} win rate`;
-    case "kudos":
-      return `${user.kudos} kudos`;
-    case "karma":
-      return `${user.karma} karma`;
-    case "achievements":
-      return `${user.achievementsCount} achievements`;
-    case "scrapbook":
-      return `${user.scrapbookCompletion}% scrapbook`;
+    case "loot":
+      return `${user.lootScore} loot`;
     case "skillRating":
+    default:
       return (
         <Stack direction="row" spacing={0.5} alignItems="center" justifyContent="flex-end">
           {TIER_ICONS[user.skillTier] && (
@@ -249,8 +124,6 @@ function renderMobileMetric(user, category) {
           <span>{user.skillTier} ({user.skillRating})</span>
         </Stack>
       );
-    default:
-      return `${user.fortune} fortune`;
   }
 }
 
@@ -360,15 +233,72 @@ const StandingsTable = React.memo(function StandingsTable({
   );
 });
 
+function SkillRatingAboutContent() {
+  return (
+    <>
+      <Typography variant="body2" sx={{ mb: 1 }}>
+        Our leaderboard uses a custom team-summing variant of <strong>OpenSkill</strong>, a Bayesian rating algorithm. It models player skill using two values:
+      </Typography>
+      <Box component="ul" sx={{ pl: 2, mt: 0, mb: 1, '& li': { mb: 0.5 } }}>
+        <li>
+          <strong>Skill Estimate (μ / Mu):</strong> The system's estimation of your skill level (defaults to 25.0).
+        </li>
+        <li>
+          <strong>Uncertainty (σ / Sigma):</strong> The system's uncertainty about your rating (defaults to 8.33, decreasing as you play).
+        </li>
+      </Box>
+      <Typography variant="body2" sx={{ mb: 1 }}>
+        <strong>Conservative Rank:</strong> Standings are sorted by your conservative rank, calculated as <code>μ - 3 × σ</code>. This represents a statistical lower bound, guaranteeing your true skill is at least this high with 99% confidence. This ensures that new players with high uncertainty must play more games to earn a high position on the leaderboard.
+      </Typography>
+      <Typography variant="body2" sx={{ mb: 1 }}>
+        <strong>Percentile Tiers:</strong> Active players with at least one match are placed into competitive tiers based on their conservative rank percentiles:
+      </Typography>
+      <Box component="ul" sx={{ pl: 0, mt: 0, mb: 1, listStyle: 'none', '& li': { display: 'flex', alignItems: 'center', mb: 0.5, gap: 1 } }}>
+        <li>
+          <img src={TIER_ICONS.Master} alt="Master" style={{ width: 20, height: 20 }} />
+          <span><strong>Master:</strong> Top 2% (Percentile &ge; 98)</span>
+        </li>
+        <li>
+          <img src={TIER_ICONS.Diamond} alt="Diamond" style={{ width: 20, height: 20 }} />
+          <span><strong>Diamond:</strong> Next 8% (Percentile &ge; 90)</span>
+        </li>
+        <li>
+          <img src={TIER_ICONS.Platinum} alt="Platinum" style={{ width: 20, height: 20 }} />
+          <span><strong>Platinum:</strong> Next 15% (Percentile &ge; 75)</span>
+        </li>
+        <li>
+          <img src={TIER_ICONS.Gold} alt="Gold" style={{ width: 20, height: 20 }} />
+          <span><strong>Gold:</strong> Next 25% (Percentile &ge; 50)</span>
+        </li>
+        <li>
+          <img src={TIER_ICONS.Silver} alt="Silver" style={{ width: 20, height: 20 }} />
+          <span><strong>Silver:</strong> Next 30% (Percentile &ge; 20)</span>
+        </li>
+        <li>
+          <img src={TIER_ICONS.Bronze} alt="Bronze" style={{ width: 20, height: 20 }} />
+          <span><strong>Bronze:</strong> Bottom 20% (Percentile &lt; 20)</span>
+        </li>
+      </Box>
+      <Typography variant="body2">
+        Only completed ranked or competitive matches are counted.
+      </Typography>
+    </>
+  );
+}
+
 export default function HallOfFame() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [skillRatingAboutOpen, setSkillRatingAboutOpen] = useState(false);
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
 
-  const category = searchParams.get("category") || "overall";
+  const requestedCategory = searchParams.get("category") || "skillRating";
+  const category = CATEGORY_OPTIONS.some((option) => option.value === requestedCategory)
+    ? requestedCategory
+    : "skillRating";
   const timeRange = searchParams.get("timeRange") || "all";
   const sortBy = searchParams.get("sortBy") || "";
   const sortDirection = searchParams.get("sortDirection") === "asc" ? "asc" : "desc";
@@ -425,6 +355,12 @@ export default function HallOfFame() {
     });
   }
 
+  useEffect(() => {
+    if (requestedCategory !== category) {
+      updateParams({ category, sortBy: null, sortDirection: null, page: 1 });
+    }
+  }, [requestedCategory, category]);
+
   function handleCategoryChange(_, nextValue) {
     updateParams({
       category: nextValue,
@@ -460,7 +396,7 @@ export default function HallOfFame() {
     return <Loading />;
   }
 
-  const activeSortBy = data?.sort?.sortBy || sortBy || data?.metric || "fortune";
+  const activeSortBy = data?.sort?.sortBy || sortBy || data?.metric || "skillRating";
   const activeSortDirection = data?.sort?.sortDirection || sortDirection;
 
   return (
@@ -475,8 +411,8 @@ export default function HallOfFame() {
               variant="body2"
               sx={{ textAlign: isPhoneDevice ? "center" : "left" }}
             >
-              Recognition for top players across trophies, wins, community reputation,
-              achievements, and scrapbook progress.
+              Recognition for top players by skill rating and collected loot — trophies,
+              kudos, karma, achievements, and scrapbook progress.
             </Typography>
           </Stack>
         </Grid2>
@@ -594,86 +530,6 @@ export default function HallOfFame() {
               </FormControl>
             </Grid2>
           </Grid2>
-
-          {category === "winRate" && (
-            <Alert severity="info">
-              Win Rate rankings require a minimum number of games. Users below the current
-              threshold are excluded.
-            </Alert>
-          )}
-
-          {category === "skillRating" && (
-            <Alert
-              severity="info"
-              sx={{
-                '& .MuiAlert-message': { width: '100%' },
-                backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(3, 169, 244, 0.1)' : 'rgba(3, 169, 244, 0.05)',
-                color: (theme) => theme.palette.mode === 'dark' ? '#90caf9' : '#0288d1',
-                border: '1px solid',
-                borderColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(144, 202, 249, 0.3)' : 'rgba(2, 136, 209, 0.3)',
-                '& .MuiAlert-icon': {
-                  color: (theme) => theme.palette.mode === 'dark' ? '#90caf9' : '#0288d1',
-                }
-              }}
-            >
-              <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
-                About the Skill Rating System
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                Our leaderboard uses a custom team-summing variant of <strong>OpenSkill</strong>, a Bayesian rating algorithm. It models player skill using two values:
-              </Typography>
-              <Box component="ul" sx={{ pl: 2, mt: 0, mb: 1, '& li': { mb: 0.5 } }}>
-                <li>
-                  <strong>Skill Estimate (μ / Mu):</strong> The system's estimation of your skill level (defaults to 25.0).
-                </li>
-                <li>
-                  <strong>Uncertainty (σ / Sigma):</strong> The system's uncertainty about your rating (defaults to 8.33, decreasing as you play).
-                </li>
-              </Box>
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                <strong>Conservative Rank:</strong> Standings are sorted by your conservative rank, calculated as <code>μ - 3 × σ</code>. This represents a statistical lower bound, guaranteeing your true skill is at least this high with 99% confidence. This ensures that new players with high uncertainty must play more games to earn a high position on the leaderboard.
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                <strong>Percentile Tiers:</strong> Active players with at least one match are placed into competitive tiers based on their conservative rank percentiles:
-              </Typography>
-              <Box component="ul" sx={{ pl: 0, mt: 0, mb: 1, listStyle: 'none', '& li': { display: 'flex', alignItems: 'center', mb: 0.5, gap: 1 } }}>
-                <li>
-                  <img src={TIER_ICONS.Master} alt="Master" style={{ width: 20, height: 20 }} />
-                  <span><strong>Master:</strong> Top 2% (Percentile &ge; 98)</span>
-                </li>
-                <li>
-                  <img src={TIER_ICONS.Diamond} alt="Diamond" style={{ width: 20, height: 20 }} />
-                  <span><strong>Diamond:</strong> Next 8% (Percentile &ge; 90)</span>
-                </li>
-                <li>
-                  <img src={TIER_ICONS.Platinum} alt="Platinum" style={{ width: 20, height: 20 }} />
-                  <span><strong>Platinum:</strong> Next 15% (Percentile &ge; 75)</span>
-                </li>
-                <li>
-                  <img src={TIER_ICONS.Gold} alt="Gold" style={{ width: 20, height: 20 }} />
-                  <span><strong>Gold:</strong> Next 25% (Percentile &ge; 50)</span>
-                </li>
-                <li>
-                  <img src={TIER_ICONS.Silver} alt="Silver" style={{ width: 20, height: 20 }} />
-                  <span><strong>Silver:</strong> Next 30% (Percentile &ge; 20)</span>
-                </li>
-                <li>
-                  <img src={TIER_ICONS.Bronze} alt="Bronze" style={{ width: 20, height: 20 }} />
-                  <span><strong>Bronze:</strong> Bottom 20% (Percentile &lt; 20)</span>
-                </li>
-              </Box>
-              <Typography variant="body2">
-                Only completed ranked or competitive matches are counted.
-              </Typography>
-            </Alert>
-          )}
-
-          {/* {data?.supportedFilters?.timeRanges?.length === 1 && (
-            <Alert severity="info">
-              The Hall of Fame currently uses all-time cached rankings. Recent and seasonal
-              splits need additional precomputation before they can be enabled.
-            </Alert>
-          )} */}
         </Stack>
       </Paper>
 
@@ -685,9 +541,19 @@ export default function HallOfFame() {
             sx={{ alignItems: "center" }}
           >
             <Stack direction="column" spacing={0}>
-              <Typography variant="h3">
-                {CATEGORY_OPTIONS.find((option) => option.value === category)?.label} Leaders
-              </Typography>
+              <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
+                <Typography variant="h3">
+                  {CATEGORY_OPTIONS.find((option) => option.value === category)?.label} Leaders
+                </Typography>
+                {category === "skillRating" && (
+                  <IconButton
+                    onClick={() => setSkillRatingAboutOpen(true)}
+                    aria-label="skill rating about"
+                  >
+                    <i className="fas fa-question-circle" />
+                  </IconButton>
+                )}
+              </Stack>
               <Typography variant="caption">
                 Sorted by {data?.metricLabel || "leaderboard metric"} (
                 {activeSortDirection === "asc" ? "ascending" : "descending"})
@@ -734,6 +600,19 @@ export default function HallOfFame() {
           )}
         </Stack>
       </Paper>
+
+      <Dialog
+        open={skillRatingAboutOpen}
+        onClose={() => setSkillRatingAboutOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        scroll="body"
+      >
+        <DialogTitle>About the Skill Rating System</DialogTitle>
+        <DialogContent>
+          <SkillRatingAboutContent />
+        </DialogContent>
+      </Dialog>
     </Stack>
   );
 }
