@@ -440,35 +440,37 @@ router.get("/:id/profile", async function (req, res) {
     }
 
     if (user.skillRating.gamesPlayed > 0) {
-      const allRatedUsers = await models.User.find({
-        "skillRating.gamesPlayed": { $gt: 0 },
-        deleted: { $ne: true }
-      }).select("id skillRating").lean();
-
-      const sortedRanks = allRatedUsers.map(u => {
-        const mu = u.skillRating?.mu ?? DEFAULT_MU;
-        const sigma = u.skillRating?.sigma ?? DEFAULT_SIGMA;
-        return mu - 3.0 * sigma;
-      }).sort((a, b) => a - b);
-
       const userMu = user.skillRating.mu ?? DEFAULT_MU;
       const userSigma = user.skillRating.sigma ?? DEFAULT_SIGMA;
-      const userRankScore = userMu - 3.0 * userSigma;
+      const userRankScore = user.skillRating.conservativeRank ?? (userMu - 3.0 * userSigma);
 
-      // Compute rank position (descending order)
-      const sortedDesc = allRatedUsers.map(u => ({
-        id: u.id,
-        rankScore: (u.skillRating?.mu ?? DEFAULT_MU) - 3.0 * (u.skillRating?.sigma ?? DEFAULT_SIGMA)
-      })).sort((a, b) => b.rankScore - a.rankScore);
-      const userRankIndex = sortedDesc.findIndex(u => u.id === user.id);
+      const [totalRatedCount, higherRankCount, lowerRankCount] = await Promise.all([
+        models.User.countDocuments({
+          "skillRating.gamesPlayed": { $gt: 0 },
+          deleted: { $ne: true }
+        }),
+        models.User.countDocuments({
+          "skillRating.gamesPlayed": { $gt: 0 },
+          deleted: { $ne: true },
+          "skillRating.conservativeRank": { $gt: userRankScore }
+        }),
+        models.User.countDocuments({
+          "skillRating.gamesPlayed": { $gt: 0 },
+          deleted: { $ne: true },
+          "skillRating.conservativeRank": { $lt: userRankScore }
+        })
+      ]);
 
-      if (userRankIndex !== -1) {
-        user.skillRating.rank = userRankIndex + 1;
-        user.skillRating.tier = skillRatingModule.getTier(userRankScore, sortedRanks);
-      } else {
-        user.skillRating.tier = "Unrated";
-        user.skillRating.rank = null;
-      }
+      user.skillRating.rank = higherRankCount + 1;
+
+      const percentile = totalRatedCount > 1 ? (lowerRankCount / (totalRatedCount - 1)) * 100 : 100;
+      
+      if (percentile >= 98) user.skillRating.tier = "Master";
+      else if (percentile >= 90) user.skillRating.tier = "Diamond";
+      else if (percentile >= 75) user.skillRating.tier = "Platinum";
+      else if (percentile >= 50) user.skillRating.tier = "Gold";
+      else if (percentile >= 20) user.skillRating.tier = "Silver";
+      else user.skillRating.tier = "Bronze";
     } else {
       user.skillRating.tier = "Unrated";
       user.skillRating.rank = null;

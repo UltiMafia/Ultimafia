@@ -177,6 +177,7 @@ async function updateGameRatings(game) {
             $set: {
               "skillRating.mu": newRating.rating,
               "skillRating.sigma": newRating.uncertainty,
+              "skillRating.conservativeRank": newRating.rating - 3.0 * newRating.uncertainty,
             },
             $inc: {
               "skillRating.gamesPlayed": 1
@@ -228,6 +229,7 @@ async function refundGameRatings(game) {
         update: {
           $set: {
             "skillRating.mu": newMu,
+            "skillRating.conservativeRank": newMu - 3.0 * (user.skillRating?.sigma ?? DEFAULT_SIGMA),
           },
           $inc: {
             "skillRating.gamesPlayed": -1

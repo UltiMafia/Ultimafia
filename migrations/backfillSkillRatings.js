@@ -17,6 +17,7 @@ async function backfillSkillRatings() {
           "skillRating.mu": DEFAULT_MU,
           "skillRating.sigma": DEFAULT_SIGMA,
           "skillRating.gamesPlayed": 0,
+          "skillRating.conservativeRank": 0,
         }
       }
     );
