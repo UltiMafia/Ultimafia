@@ -11,7 +11,7 @@ router.get("/", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req, true);
     const response = await hallOfFame.getLeaderboard({
-      category: String(req.query.category || "overall").trim(),
+      category: String(req.query.category || "skillRating").trim(),
       page: req.query.page,
       pageSize: req.query.pageSize,
       minGames: req.query.minGames,
