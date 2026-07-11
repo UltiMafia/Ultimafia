@@ -31,7 +31,6 @@ const SUPPORTED_SORT_KEYS = [
   "achievementsCount",
   "scrapbookCompletion",
   "scrapbookCount",
-  "lootScore",
   "skillRating",
 ];
 
@@ -50,11 +49,10 @@ const CATEGORY_DEFINITIONS = {
     tieBreakers: ["winRate", "prestige", "fortune", "wins"],
   },
   loot: {
-    metricKey: "lootScore",
-    metricLabel: "Loot Score",
+    metricKey: "trophyScore",
+    metricLabel: "Trophy Score",
     minGamesRequired: false,
     tieBreakers: [
-      "trophyScore",
       "kudos",
       "karma",
       "achievementScore",
@@ -99,16 +97,6 @@ function safeRatio(numerator, denominator) {
 
 function roundMetric(value, digits = 2) {
   return Number(value.toFixed(digits));
-}
-
-function normalizeMetric(value, maxValue) {
-  if (!maxValue || maxValue <= 0) return 0;
-  return (value / maxValue) * 100;
-}
-
-function adjustedCommunityScore(value) {
-  if (value <= 0) return 0;
-  return Math.log10(value + 1) * 25;
 }
 
 function getTrophyWeight(type) {
@@ -303,7 +291,6 @@ async function buildRows() {
       scrapbookCompletion: scrapbookTotal
         ? roundMetric((scrapbookInfo.scrapbookCount / scrapbookTotal) * 100, 2)
         : 0,
-      lootScore: 0,
       privacy: {
         hideStatistics: Boolean(user.settings?.hideStatistics),
         hideKarma: Boolean(user.settings?.hideKarma),
@@ -315,42 +302,6 @@ async function buildRows() {
       skillGamesPlayed: gamesPlayed,
     };
   });
-
-  const maxValues = rows.reduce(
-    (acc, row) => ({
-      trophyScore: Math.max(acc.trophyScore, row.trophyScore),
-      achievementScore: Math.max(acc.achievementScore, row.achievementScore),
-      scrapbookCompletion: Math.max(acc.scrapbookCompletion, row.scrapbookCompletion),
-    }),
-    {
-      trophyScore: 0,
-      achievementScore: 0,
-      scrapbookCompletion: 0,
-    }
-  );
-
-  for (const row of rows) {
-    const normalizedTrophyScore = normalizeMetric(row.trophyScore, maxValues.trophyScore);
-    const normalizedAchievementScore = normalizeMetric(
-      row.achievementScore,
-      maxValues.achievementScore
-    );
-    const normalizedScrapbookCompletion = normalizeMetric(
-      row.scrapbookCompletion,
-      maxValues.scrapbookCompletion
-    );
-    const normalizedKudos = Math.min(adjustedCommunityScore(row.kudos), 100);
-    const normalizedKarma = Math.min(adjustedCommunityScore(Math.max(row.karma, 0)), 100);
-
-    row.lootScore = roundMetric(
-      normalizedTrophyScore * 0.35 +
-        normalizedKudos * 0.2 +
-        normalizedKarma * 0.15 +
-        normalizedAchievementScore * 0.2 +
-        normalizedScrapbookCompletion * 0.1,
-      2
-    );
-  }
 
   return {
     rows,
@@ -397,7 +348,6 @@ function buildResponseRows(rows) {
     achievementScore: row.achievementScore,
     scrapbookCount: row.scrapbookCount,
     scrapbookCompletion: row.scrapbookCompletion,
-    lootScore: row.lootScore,
     skillRating: row.skillRating,
     skillMu: row.skillMu,
     skillSigma: row.skillSigma,

@@ -55,8 +55,7 @@ function getColumns(category, isPhoneDevice) {
       return [
         { label: "Rank", sortKey: null },
         { label: "User", sortKey: "username" },
-        { label: "Loot", sortKey: "lootScore" },
-        { label: "Trophies", sortKey: null },
+        { label: "Trophies", sortKey: "trophyScore" },
         { label: "Kudos", sortKey: "kudos" },
         { label: "Karma", sortKey: "karma" },
         { label: "Achievements", sortKey: "achievementsCount" },
@@ -80,7 +79,6 @@ function renderDesktopCells(user, category) {
   switch (category) {
     case "loot":
       return [
-        <Typography variant="body2">{user.lootScore}</Typography>,
         <Box sx={{ overflowX: "clip" }}>
           <TrophyCase
             trophies={user.trophies}
@@ -113,7 +111,7 @@ function renderDesktopCells(user, category) {
 function renderMobileMetric(user, category) {
   switch (category) {
     case "loot":
-      return `${user.lootScore} loot`;
+      return `${user.trophyScore} trophy score`;
     case "skillRating":
     default:
       return (
