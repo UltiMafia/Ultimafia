@@ -81,6 +81,7 @@ module.exports = {
     "Draw It",
     "Spot It",
     "Battleship",
+    "Chess",
   ],
   // Game types that remain valid for existing setups/stats but cannot be
   // created or hosted anymore. Acrotopia is covered by Wacky Words' acronym mode.
@@ -103,6 +104,7 @@ module.exports = {
     "Draw It": ["Town"],
     "Spot It": ["Town"],
     Battleship: ["Town"],
+    "Chess": ["Town", "Host"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -120,10 +122,12 @@ module.exports = {
     "Draw It": ["Pick"],
     "Spot It": ["Round"],
     Battleship: ["Place Ships"],
+    "Chess": ["Turn"],
   },
   // Game types locked to a single player count for release (min === max).
   fixedPlayerTotals: {
     Battleship: 2,
+    Chess: 2,
   },
   competitiveDefaults: {
     Mafia: {
@@ -275,6 +279,13 @@ module.exports = {
       },
     },
     "Connect Four": {
+      Turn: {
+        min: 30 * 1000,
+        max: 5 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+    },
+    Chess: {
       Turn: {
         min: 30 * 1000,
         max: 5 * 60 * 1000,

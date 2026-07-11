@@ -1552,6 +1552,27 @@ const countChecks = {
 
     return true;
   },
+  Chess: (roleset, count, total) => {
+    const playerTotal = constants.fixedPlayerTotals.Chess || 2;
+    if (total !== playerTotal) {
+      return `Chess requires exactly ${playerTotal} players.`;
+    }
+
+    let grandmasterCount = 0;
+    for (let role in roleset) {
+      const roleName = role.split(":")[0];
+      if (roleName !== "Grandmaster") {
+        return "Chess only supports the Grandmaster role.";
+      }
+      grandmasterCount += roleset[role];
+    }
+
+    if (grandmasterCount !== playerTotal) {
+      return `Chess requires exactly ${playerTotal} Grandmasters.`;
+    }
+
+    return true;
+  },
 };
 
 function mafiaSetupHasSpymaster(setup) {
@@ -1648,6 +1669,9 @@ const optionsChecks = {
     return setup;
   },
   Battleship: (setup) => {
+    return setup;
+  },
+  Chess: (setup) => {
     return setup;
   },
 };

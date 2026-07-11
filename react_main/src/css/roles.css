@@ -3225,6 +3225,10 @@
   background-image: url("/src/images/roles/village/admiral-vivid.png");
 }
 
+.role-icon-vivid-Chess-Grandmaster {
+  background-image: url("/src/images/roles/village/philosopher-vivid.png");
+}
+
 /***********
 *
 * Connect Four

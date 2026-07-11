@@ -143,3 +143,8 @@
 .game-icon.Spot-It {
   background-image: url("/src/images/game_icons/SpotIt.png");
 }
+
+.game-icon.Chess {
+  background-image: url("/src/images/game_icons/Chess.png");
+}
+

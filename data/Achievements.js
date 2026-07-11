@@ -621,6 +621,7 @@ const AchievementData = {
   Battleship: {},
   "Spot It": {},
   Ratscrew: {},
+  Chess: {},
   // TODO Wave 8 verify schema — listener classes for `internal` entries are
   // not yet created under Games/types/DrawIt/achievements/. Grants are wired
   // inline in Games/types/DrawIt/Game.js for now.

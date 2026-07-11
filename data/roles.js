@@ -6535,6 +6535,15 @@ const roleData = {
       description: ["Can place counters on the board."],
     },
   },
+  Chess: {
+    Grandmaster: {
+      alignment: "Town",
+      tags: ["None"],
+      description: [
+        "Play a game of chess against your opponent.",
+      ],
+    },
+  },
   Battleship: {
     Admiral: {
       alignment: "Town",
