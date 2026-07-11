@@ -182,28 +182,23 @@
 
 /* Chess pieces graphics styling */
 .chess-piece {
-  font-size: 2.5rem;
-  line-height: 1;
   display: block;
+  width: 85%;
+  height: 85%;
+  object-fit: contain;
   z-index: 2;
   transition: transform 0.2s ease;
+  image-rendering: pixelated; /* Keep crisp pixel art scaling */
+  user-select: none;
 }
 
 .chess-square:active .chess-piece {
   transform: scale(0.9);
 }
 
-.w-piece {
-  color: #fcfaf2; /* Beautiful warm soft cream */
-  -webkit-text-stroke: 1.2px #1d1b18;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.18), 0 0 1px #1d1b18;
-}
-
-.b-piece {
-  color: #2b2836; /* Clean rich dark slate */
-  -webkit-text-stroke: 1.2px rgba(255, 255, 255, 0.12);
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.25), 0 0 1px #ffffff;
-}
+/* No per-color CSS needed — colors are baked into the images */
+.w-piece {}
+.b-piece {}
 
 /* Coordinates on edge squares */
 .coord {
@@ -371,7 +366,8 @@
   }
   
   .chess-piece {
-    font-size: 2.2rem;
+    width: 90%;
+    height: 90%;
   }
   
   .chess-header {

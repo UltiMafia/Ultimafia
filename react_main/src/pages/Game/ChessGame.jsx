@@ -21,6 +21,25 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import "css/game.css";
 import "css/gameChess.css";
 
+// Pixel-art chess piece images (no font dependency)
+import wkImg from "../../images/chess_pieces/wk.png";
+import wqImg from "../../images/chess_pieces/wq.png";
+import wrImg from "../../images/chess_pieces/wr.png";
+import wbImg from "../../images/chess_pieces/wb.png";
+import wnImg from "../../images/chess_pieces/wn.png";
+import wpImg from "../../images/chess_pieces/wp.png";
+import bkImg from "../../images/chess_pieces/bk.png";
+import bqImg from "../../images/chess_pieces/bq.png";
+import brImg from "../../images/chess_pieces/br.png";
+import bbImg from "../../images/chess_pieces/bb.png";
+import bnImg from "../../images/chess_pieces/bn.png";
+import bpImg from "../../images/chess_pieces/bp.png";
+
+const PIECE_IMGS = {
+  w: { k: wkImg, q: wqImg, r: wrImg, b: wbImg, n: wnImg, p: wpImg },
+  b: { k: bkImg, q: bqImg, r: brImg, b: bbImg, n: bnImg, p: bpImg },
+};
+
 export default function ChessGame(props) {
   const game = useContext(GameContext);
   const isPhoneDevice = useIsPhoneDevice();
@@ -223,11 +242,7 @@ function ChessBoardPanel({ extraInfo, self, onMakeMove }) {
   const board = chess.current.board();
   const isTurn = onMakeMove && playerColor === turn;
 
-  // Map of pieces to Unicode symbols (using solid symbols for both, styled via CSS)
-  const pieceSymbols = {
-    w: { p: "♟", r: "♜", n: "♞", b: "♝", q: "♛", k: "♚" },
-    b: { p: "♟", r: "♜", n: "♞", b: "♝", q: "♛", k: "♚" },
-  };
+  // Piece images are imported at module level in PIECE_IMGS
 
   const ranks = ["8", "7", "6", "5", "4", "3", "2", "1"];
   const files = ["a", "b", "c", "d", "e", "f", "g", "h"];
@@ -330,9 +345,12 @@ function ChessBoardPanel({ extraInfo, self, onMakeMove }) {
                   onClick={() => handleSquareClick(squareName)}
                 >
                   {piece && (
-                    <span className={`chess-piece ${piece.color}-piece`}>
-                      {pieceSymbols[piece.color][piece.type]}
-                    </span>
+                    <img
+                      className={`chess-piece ${piece.color}-piece`}
+                      src={PIECE_IMGS[piece.color][piece.type]}
+                      alt={`${piece.color}${piece.type}`}
+                      draggable={false}
+                    />
                   )}
                   {isPossible && !piece && <span className="possible-dot"></span>}
                   {/* Rank/File coordinates */}
