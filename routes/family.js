@@ -605,10 +605,11 @@ router.post("/:familyId/requestJoin", async function (req, res) {
       return;
     }
 
-    // Check if family is at member limit (20 members)
-    const currentMemberCount = family.members.length;
-    if (currentMemberCount >= 20) {
-      errors.conflict(res, "This family has reached the maximum of 20 members.");
+    // Check if family is at member limit
+    const memberLimit = getFamilyMemberLimit(family);
+    const currentMemberCount = (family.members || []).length;
+    if (currentMemberCount >= memberLimit) {
+      errors.conflict(res, `This family has reached the maximum of ${memberLimit} members.`);
       return;
     }
 
@@ -706,10 +707,11 @@ router.post("/:familyId/acceptJoin", async function (req, res) {
       return;
     }
 
-    // Check if family is at member limit (20 members)
-    const currentMemberCount = family.members.length;
-    if (currentMemberCount >= 20) {
-      errors.conflict(res, "This family has reached the maximum of 20 members.");
+    // Check if family is at member limit
+    const memberLimit = getFamilyMemberLimit(family);
+    const currentMemberCount = (family.members || []).length;
+    if (currentMemberCount >= memberLimit) {
+      errors.conflict(res, `This family has reached the maximum of ${memberLimit} members.`);
       return;
     }
 
