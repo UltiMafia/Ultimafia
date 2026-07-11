@@ -211,6 +211,7 @@ var schemas = {
       mu: { type: Number, default: 25.0 },
       sigma: { type: Number, default: 25.0 / 3.0 },
       gamesPlayed: { type: Number, default: 0, index: true },
+      conservativeRank: { type: Number, default: 0, index: true },
     },
     deleted: { type: Boolean, default: false },
     banned: { type: Boolean, default: false },
