@@ -180,7 +180,6 @@
   }
 }
 
-/* Chess pieces graphics styling */
 .chess-piece {
   display: block;
   width: 85%;
@@ -188,7 +187,6 @@
   object-fit: contain;
   z-index: 2;
   transition: transform 0.2s ease;
-  image-rendering: pixelated; /* Keep crisp pixel art scaling */
   user-select: none;
 }
 

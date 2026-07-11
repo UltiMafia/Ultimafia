@@ -21,19 +21,19 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import "css/game.css";
 import "css/gameChess.css";
 
-// Pixel-art chess piece images (no font dependency)
-import wkImg from "../../images/chess_pieces/wk.png";
-import wqImg from "../../images/chess_pieces/wq.png";
-import wrImg from "../../images/chess_pieces/wr.png";
-import wbImg from "../../images/chess_pieces/wb.png";
-import wnImg from "../../images/chess_pieces/wn.png";
-import wpImg from "../../images/chess_pieces/wp.png";
-import bkImg from "../../images/chess_pieces/bk.png";
-import bqImg from "../../images/chess_pieces/bq.png";
-import brImg from "../../images/chess_pieces/br.png";
-import bbImg from "../../images/chess_pieces/bb.png";
-import bnImg from "../../images/chess_pieces/bn.png";
-import bpImg from "../../images/chess_pieces/bp.png";
+// SVG chess piece images (no font dependency, vector crispness)
+import wkImg from "../../images/chess_pieces/wk.svg";
+import wqImg from "../../images/chess_pieces/wq.svg";
+import wrImg from "../../images/chess_pieces/wr.svg";
+import wbImg from "../../images/chess_pieces/wb.svg";
+import wnImg from "../../images/chess_pieces/wn.svg";
+import wpImg from "../../images/chess_pieces/wp.svg";
+import bkImg from "../../images/chess_pieces/bk.svg";
+import bqImg from "../../images/chess_pieces/bq.svg";
+import brImg from "../../images/chess_pieces/br.svg";
+import bbImg from "../../images/chess_pieces/bb.svg";
+import bnImg from "../../images/chess_pieces/bn.svg";
+import bpImg from "../../images/chess_pieces/bp.svg";
 
 const PIECE_IMGS = {
   w: { k: wkImg, q: wqImg, r: wrImg, b: wbImg, n: wnImg, p: wpImg },
