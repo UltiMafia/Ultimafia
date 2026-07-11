@@ -474,145 +474,12 @@ router.get("/:id/profile", async function (req, res) {
       user.skillRating.rank = null;
     }
 
-    const userMongoId = user._id;
-    delete user._id;
-
-    // Parallelized fetching of independent profile details
-    const [
-      basicUserInfo,
-      totalSetups,
-      totalGames,
-      archivedGames,
-      stamps,
-      activeTrades,
-      pendingTrades,
-      karmaVote,
-      trophies,
-      friendRequestsRaw,
-      inGame,
-      loveDoc,
-      currentLove,
-      isFriendRequestedDoc,
-      isFriendDoc,
-      pokeDoc,
-      loveRequestMarried,
-      loveRequestLover,
-      status,
-      vanityUrl,
-      inFamily,
-      incomingPokesRaw,
-      playerStock,
-      stockTransactions,
-      stockHolding,
-      docSave,
-      hasPermission
-    ] = await Promise.all([
-      redis.getBasicUserInfo(userId),
-      models.Setup.countDocuments({ creator: userMongoId }),
-      models.Game.countDocuments({ users: userMongoId }),
-      models.ArchivedGame.find({ user: userMongoId })
-        .select("game description")
-        .populate({
-          path: "game",
-          select:
-            "id setup lobby endTime private broken ranked competitive spectating anonymousGame users players winners -_id",
-          populate: {
-            path: "setup",
-            select:
-              "id gameType name closed useRoleGroups roleGroupSizes count roles total -_id",
-          },
-          options: {
-            sort: "-endTime",
-            limit: constants.maxArchivedGamesMax,
-          },
-        }),
-      models.Stamp.find(isSelf ? { userId } : { userId, hidden: { $ne: true } })
-        .select("gameType role borderType hidden _id createdAt")
-        .sort("createdAt")
-        .lean(),
-      isSelf
-        ? models.StampTrade.find({
-            $or: [{ initiatorId: userId }, { recipientId: userId }],
-            status: { $in: ["PENDING_RESPONSE", "PENDING_CONFIRMATION"] },
-          }).select(
-            "initiatorId initiatorStamp initiatorGameType initiatorRole recipientId recipientStamp recipientGameType recipientRole"
-          )
-        : Promise.resolve([]),
-      isSelf
-        ? models.StampTrade.find({
-            $or: [{ initiatorId: userId }, { recipientId: userId }],
-            status: { $in: ["PENDING_RESPONSE", "PENDING_CONFIRMATION"] },
-          }).sort({ updatedAt: -1 })
-        : Promise.resolve([]),
-      models.KarmaVote.findOne({ voterId: reqUserId, targetId: userId }),
-      models.Trophy.find({ ownerId: userId, revoked: { $ne: true } })
-        .populate("owner", "id name avatar vanityUrl")
-        .select("id name ownerId owner type createdAt -_id")
-        .sort("-createdAt")
-        .lean(),
-      isSelf
-        ? models.FriendRequest.find({ targetId: userId })
-            .select("userId user")
-            .populate("user", "id name avatar")
-        : Promise.resolve([]),
-      redis.inGame(userId),
-      models.Love.findOne({ userId })
-        .select("loveId type")
-        .populate({
-          path: "love",
-          select: "id name avatar -_id",
-        }),
-      models.Love.findOne({ userId: reqUserId }).select("userId loveId type -_id"),
-      userId
-        ? models.FriendRequest.findOne({ userId: reqUserId, targetId: userId })
-        : Promise.resolve(null),
-      userId
-        ? models.Friend.findOne({ userId: reqUserId, friendId: userId })
-        : Promise.resolve(null),
-      (reqUserId && !isSelf && userId)
-        ? models.Poke.findOne(pokePairIds(reqUserId, userId))
-        : Promise.resolve(null),
-      userId
-        ? models.LoveRequest.findOne({ userId: reqUserId, targetId: userId, type: "Married" })
-        : Promise.resolve(null),
-      userId
-        ? models.LoveRequest.findOne({ userId: reqUserId, targetId: userId, type: "Lover" })
-        : Promise.resolve(null),
-      redis.getUserStatus(userId),
-      models.VanityUrl.findOne({ userId: userId }).select("url -_id"),
-      models.InFamily.findOne({ user: userMongoId }).populate({
-        path: "family",
-        select: "id name avatar -_id",
-      }),
-      isSelf
-        ? models.Poke.find({ to: userId, status: "pending" }).lean()
-        : Promise.resolve([]),
-      models.PlayerStock.findOne({ userId, isIpoed: true }).lean().exec(),
-      models.StockTransaction.find({ subjectId: userId })
-        .sort({ createdAt: -1 })
-        .limit(10)
-        .select("price shares type")
-        .lean()
-        .exec(),
-      reqUserId
-        ? models.Shareholder.findOne({ subjectId: userId, holderId: reqUserId }).select("sharesOwned").lean().exec()
-        : Promise.resolve(null),
-      (!isSelf && userId && reqUserId)
-        ? models.DocSave.find({
-            $or: [
-              { $and: [{ userId: userId }, { saverId: reqUserId }] },
-              { $and: [{ userId: reqUserId }, { saverId: userId }] },
-            ],
-          })
-        : Promise.resolve([]),
-      (reqUserId && !isSelf)
-        ? redis.hasPermission(reqUserId, "seeModPanel")
-        : Promise.resolve(false)
-    ]);
-
-    user.groups = (basicUserInfo || {}).groups;
+    user.groups = (await redis.getBasicUserInfo(userId)).groups;
     user.maxFriendsPage =
       Math.ceil(user.numFriends / constants.friendsPerPage) || 1;
+
+    var userMongoId = user._id;
+    delete user._id;
 
     // Compute win/loss for each game
     user.games = (user.games || []).map((game) => {
@@ -629,6 +496,9 @@ router.get("/:id/profile", async function (req, res) {
       return { ...rest, won };
     });
 
+    const totalSetups = await models.Setup.countDocuments({
+      creator: userMongoId,
+    });
     user.maxSetupsPage =
       Math.max(
         Math.ceil(totalSetups / (constants.userSetupsPerPage || 1)),
@@ -636,6 +506,9 @@ router.get("/:id/profile", async function (req, res) {
       ) || 1;
     user.totalSetups = totalSetups;
 
+    const totalGames = await models.Game.countDocuments({
+      users: userMongoId,
+    });
     user.maxGamesPage =
       Math.max(Math.ceil(totalGames / (constants.userGamesPerPage || 1)), 1) ||
       1;
@@ -645,6 +518,22 @@ router.get("/:id/profile", async function (req, res) {
     user.stats = user.stats || allStats;
     dbStats.normalizeUserStats(user.stats);
 
+    var archivedGames = await models.ArchivedGame.find({ user: userMongoId })
+      .select("game description")
+      .populate({
+        path: "game",
+        select:
+          "id setup lobby endTime private broken ranked competitive spectating anonymousGame users players winners -_id",
+        populate: {
+          path: "setup",
+          select:
+            "id gameType name closed useRoleGroups roleGroupSizes count roles total -_id",
+        },
+        options: {
+          sort: "-endTime",
+          limit: constants.maxArchivedGamesMax,
+        },
+      });
     user.archivedGames = archivedGames.map((item) => {
       const game = item.game._doc;
       let won = null;
@@ -664,6 +553,13 @@ router.get("/:id/profile", async function (req, res) {
         status: "Finished",
       };
     });
+
+    // Fetch stamps sorted by creation time to preserve acquisition order
+    var stampQuery = isSelf ? { userId } : { userId, hidden: { $ne: true } };
+    var stamps = await models.Stamp.find(stampQuery)
+      .select("gameType role borderType hidden _id createdAt")
+      .sort("createdAt")
+      .lean();
 
     // Aggregate by gameType:role, preserving first-occurrence order.
     // borderType per group is the highest tier present (c > r > u).
@@ -727,6 +623,13 @@ router.get("/:id/profile", async function (req, res) {
       user.stampDetails = stampDetails;
 
       // Locked stamp ids + per-roleKey locked counts from active trades.
+      const activeTrades = await models.StampTrade.find({
+        $or: [{ initiatorId: userId }, { recipientId: userId }],
+        status: { $in: ["PENDING_RESPONSE", "PENDING_CONFIRMATION"] },
+      }).select(
+        "initiatorId initiatorStamp initiatorGameType initiatorRole recipientId recipientStamp recipientGameType recipientRole"
+      );
+
       const lockedStampIds = [];
       const lockedCountsByRoleKey = {};
       const incrementLocked = (gameType, role) => {
@@ -747,50 +650,68 @@ router.get("/:id/profile", async function (req, res) {
       user.lockedStampIds = lockedStampIds;
       user.lockedCountsByRoleKey = lockedCountsByRoleKey;
 
-      // Concurrently fetch trading partner details for all pending trades
-      const pendingConfirmationTrades = await Promise.all(
-        pendingTrades.map(async (t) => {
-          const isInitiator = t.initiatorId === userId;
-          const otherUserId = isInitiator ? t.recipientId : t.initiatorId;
-          const otherUser = await models.User.findOne({
-            id: otherUserId,
-          }).select("id name avatar");
-          
-          const autoResponded = !!t.expiresAt;
-          const waitingOnYou =
-            (t.status === "PENDING_RESPONSE" && !isInitiator) ||
-            (t.status === "PENDING_CONFIRMATION" && autoResponded && !isInitiator) ||
-            (t.status === "PENDING_CONFIRMATION" && !autoResponded && isInitiator);
-          return {
-            id: t.id,
-            initiatorGameType: t.initiatorGameType,
-            initiatorRole: t.initiatorRole,
-            recipientGameType: t.recipientGameType,
-            recipientRole: t.recipientRole,
-            other: otherUser
-              ? {
-                  id: otherUser.id,
-                  name: otherUser.name,
-                  avatar: otherUser.avatar,
-                }
-              : null,
-            isInitiator,
-            status: t.status,
-            waitingOnYou,
-            updatedAt: t.updatedAt,
-          };
-        })
-      );
+      // All active trades involving this user.
+      const pendingTrades = await models.StampTrade.find({
+        $or: [{ initiatorId: userId }, { recipientId: userId }],
+        status: { $in: ["PENDING_RESPONSE", "PENDING_CONFIRMATION"] },
+      }).sort({ updatedAt: -1 });
+      const pendingConfirmationTrades = [];
+      for (const t of pendingTrades) {
+        const isInitiator = t.initiatorId === userId;
+        const otherUserId = isInitiator ? t.recipientId : t.initiatorId;
+        const otherUser = await models.User.findOne({
+          id: otherUserId,
+        }).select("id name avatar");
+        // Whose turn is it?
+        // PENDING_RESPONSE: recipient needs to respond.
+        // PENDING_CONFIRMATION: depends on whether auto-responded.
+        //   Auto-responded (profile trade): recipient confirms.
+        //   Normal: initiator confirms.
+        const autoResponded = !!t.expiresAt;
+        const waitingOnYou =
+          (t.status === "PENDING_RESPONSE" && !isInitiator) ||
+          (t.status === "PENDING_CONFIRMATION" && autoResponded && !isInitiator) ||
+          (t.status === "PENDING_CONFIRMATION" && !autoResponded && isInitiator);
+        pendingConfirmationTrades.push({
+          id: t.id,
+          initiatorGameType: t.initiatorGameType,
+          initiatorRole: t.initiatorRole,
+          recipientGameType: t.recipientGameType,
+          recipientRole: t.recipientRole,
+          other: otherUser
+            ? {
+                id: otherUser.id,
+                name: otherUser.name,
+                avatar: otherUser.avatar,
+              }
+            : null,
+          isInitiator,
+          status: t.status,
+          waitingOnYou,
+          updatedAt: t.updatedAt,
+        });
+      }
       user.pendingConfirmationTrades = pendingConfirmationTrades;
     }
 
     var karmaInfo = { voteCount: user.karma, vote: 0 };
+    var karmaVote = await models.KarmaVote.findOne({
+      voterId: reqUserId,
+      targetId: userId,
+    });
     if (karmaVote) {
       karmaInfo.vote = karmaVote.direction;
     }
     user.karmaInfo = karmaInfo;
     user.achievements = user.achievements;
-    
+    const trophies = await models.Trophy.find({
+      ownerId: userId,
+      revoked: { $ne: true },
+    })
+      .populate("owner", "id name avatar vanityUrl")
+      .select("id name ownerId owner type createdAt -_id")
+      .sort("-createdAt")
+      .lean();
     user.trophies = (trophies || []).map((trophy) => ({
       id: trophy.id,
       name: trophy.name,
@@ -806,11 +727,14 @@ router.get("/:id/profile", async function (req, res) {
         : null,
       createdAt: trophy.createdAt,
     }));
-    
     if (isSelf) {
-      // Add vanity URLs to friend requests in parallel
+      var friendRequests = await models.FriendRequest.find({ targetId: userId })
+        .select("userId user")
+        .populate("user", "id name avatar");
+
+      // Add vanity URLs to friend requests
       user.friendRequests = await Promise.all(
-        friendRequestsRaw.map(async (req) => {
+        friendRequests.map(async (req) => {
           const vanityUrl = await models.VanityUrl.findOne({
             userId: req.user.id,
           }).select("url -_id");
@@ -826,55 +750,74 @@ router.get("/:id/profile", async function (req, res) {
     for (let game of user.games)
       if (game.status == null) game.status = "Finished";
 
-    let liveGame;
-    if (inGame) liveGame = await redis.getGameInfo(inGame);
+    var inGame = await redis.inGame(userId);
+    var game;
 
-    if (liveGame && !liveGame.settings.private) {
-      liveGame.settings.setup = await models.Setup.findOne({
-        id: liveGame.settings.setup,
+    if (inGame) game = await redis.getGameInfo(inGame);
+
+    if (game && !game.settings.private) {
+      game.settings.setup = await models.Setup.findOne({
+        id: game.settings.setup,
       }).select(
         "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
       );
-      liveGame.settings.setup = liveGame.settings.setup.toJSON();
+      game.settings.setup = game.settings.setup.toJSON();
 
-      liveGame = {
-        id: liveGame.id,
+      game = {
+        id: game.id,
         setup: {
-          id: liveGame.settings.setup.id,
-          gameType: liveGame.settings.setup.gameType,
-          name: liveGame.settings.setup.name,
-          closed: liveGame.settings.setup.closed,
-          useRoleGroups: liveGame.settings.setup.useRoleGroups,
-          roleGroupSizes: liveGame.settings.setup.roleGroupSizes,
-          count: liveGame.settings.setup.count,
-          roles: liveGame.settings.setup.roles,
-          total: liveGame.settings.setup.total,
+          id: game.settings.setup.id,
+          gameType: game.settings.setup.gameType,
+          name: game.settings.setup.name,
+          closed: game.settings.setup.closed,
+          useRoleGroups: game.settings.setup.useRoleGroups,
+          roleGroupSizes: game.settings.setup.roleGroupSizes,
+          count: game.settings.setup.count,
+          roles: game.settings.setup.roles,
+          total: game.settings.setup.total,
         },
-        players: liveGame.players.length,
-        status: liveGame.status,
-        scheduled: liveGame.settings.scheduled,
-        spectating: liveGame.settings.spectating,
-        lobbyName: liveGame.settings.lobbyName,
-        ranked: liveGame.settings.ranked,
-        competitive: liveGame.settings.competitive,
+        players: game.players.length,
+        status: game.status,
+        scheduled: game.settings.scheduled,
+        spectating: game.settings.spectating,
+        lobbyName: game.settings.lobbyName,
+        ranked: game.settings.ranked,
+        competitive: game.settings.competitive,
       };
 
-      user.games.unshift(liveGame);
+      user.games.unshift(game);
     }
 
-    if (loveDoc !== null) {
-      user.love = loveDoc.toJSON();
+    user.love = await models.Love.findOne({ userId })
+      .select("loveId type")
+      .populate({
+        path: "love",
+        select: "id name avatar -_id",
+      });
+
+    if (user.love !== null) {
+      user.love = user.love.toJSON();
       user.love.love.type = user.love.type;
       user.love = user.love.love;
 
-      if (!isSelf && user.love.type === "Lover" && docSave && docSave.length > 0) {
-        user.saved = true;
+      if (!isSelf && user.love.type === "Lover") {
+        var docSave = await models.DocSave.find({
+          $or: [
+            { $and: [{ userId: userId }, { saverId: reqUserId }] },
+            { $and: [{ userId: reqUserId }, { saverId: userId }] },
+          ],
+        });
+        if (docSave.length > 0) {
+          user.saved = true;
+        }
       }
     } else {
       user.love = {};
     }
 
-    user.currentLove = currentLove;
+    user.currentLove = await models.Love.findOne({ userId: reqUserId }).select(
+      "userId loveId type -_id"
+    );
 
     if (!user.settings) user.settings = {};
 
@@ -887,23 +830,40 @@ router.get("/:id/profile", async function (req, res) {
     if (user.settings.hidePointsNegative) {
       delete user.pointsNegative;
     }
-    
     // Hide join date if user has setting enabled, unless viewer is the profile owner or has seeModPanel permission
-    if (user.settings.hideJoinDate && reqUserId && !isSelf && !hasPermission) {
-      delete user.joined;
+    if (user.settings.hideJoinDate && reqUserId && !isSelf) {
+      const hasPermission = await redis.hasPermission(reqUserId, "seeModPanel");
+      if (!hasPermission) {
+        delete user.joined;
+      }
     }
 
-    user.isFriendRequested = isFriendRequestedDoc != null;
-    user.isFriend = isFriendDoc != null;
+    if (userId) {
+      user.isFriendRequested =
+        (await models.FriendRequest.findOne({
+          userId: reqUserId,
+          targetId: userId,
+        })) != null;
+
+      user.isFriend =
+        (await models.Friend.findOne({
+          userId: reqUserId,
+          friendId: userId,
+        })) != null;
+    } else user.isFriend = false;
 
     user.pokeStatus = { status: "none" };
-    if (reqUserId && !isSelf && user.isFriend && pokeDoc) {
-      if (pokeDoc.status === "pending" && !isPokeExpired(pokeDoc)) {
-        user.pokeStatus = pokeDoc.to === reqUserId
-          ? { status: "pending_received", count: pokeDoc.count }
-          : { status: "pending_sent", count: pokeDoc.count };
-      } else if (pokeDoc.status === "dismissed" && isDismissCooldownActive(pokeDoc) && pokeDoc.from === reqUserId) {
-        user.pokeStatus = { status: "cooldown" };
+    if (reqUserId && !isSelf && user.isFriend) {
+      const pair = pokePairIds(reqUserId, userId);
+      const poke = await models.Poke.findOne(pair);
+      if (poke) {
+        if (poke.status === "pending" && !isPokeExpired(poke)) {
+          user.pokeStatus = poke.to === reqUserId
+            ? { status: "pending_received", count: poke.count }
+            : { status: "pending_sent", count: poke.count };
+        } else if (poke.status === "dismissed" && isDismissCooldownActive(poke) && poke.from === reqUserId) {
+          user.pokeStatus = { status: "cooldown" };
+        }
       }
     }
     user.pokesDisabled = (!isSelf && user.settings?.disablePokes) || false;
@@ -915,27 +875,48 @@ router.get("/:id/profile", async function (req, res) {
         if (user.love.type === "Married") {
           user.isMarried = true;
         } else if (user.love.type === "Lover") {
-          user.isMarried = loveRequestMarried != null;
+          user.isMarried =
+            (await models.LoveRequest.findOne({
+              userId: reqUserId,
+              targetId: userId,
+              type: "Married",
+            })) != null;
           if (!user.isMarried) {
             user.isLove = true;
           }
         }
       } else {
-        user.isLove = loveRequestLover != null;
+        user.isLove =
+          (await models.LoveRequest.findOne({
+            userId: reqUserId,
+            targetId: userId,
+            type: "Lover",
+          })) != null;
       }
     }
 
     // Add online status, last active time, and inGame status
-    user.status = status;
+    user.status = await redis.getUserStatus(userId);
     user.lastActive = user.lastActive;
     user.inGame = inGame;
 
     // Add vanity URL if exists
+    const vanityUrl = await models.VanityUrl.findOne({
+      userId: userId,
+    }).select("url -_id");
+
     if (vanityUrl) {
       user.vanityUrl = vanityUrl.url;
     }
 
     // Add family data if user belongs to a family
+    const inFamily = await models.InFamily.findOne({
+      user: userMongoId,
+    }).populate({
+      path: "family",
+      select: "id name avatar -_id",
+    });
+
     if (inFamily && inFamily.family) {
       user.family = {
         id: inFamily.family.id,
@@ -947,33 +928,38 @@ router.get("/:id/profile", async function (req, res) {
     }
 
     if (isSelf) {
+      const incomingPokes = await models.Poke.find({ to: userId, status: "pending" }).lean();
       user.incomingPokes = [];
-      const resolvedIncomingPokes = await Promise.all(
-        (incomingPokesRaw || []).map(async (poke) => {
-          if (isPokeExpired(poke)) return null;
-          const sender = await models.User.findOne({ id: poke.from, deleted: false })
-            .select("id name avatar settings -_id");
-          if (sender && !sender.settings?.disablePokes) {
-            return {
-              from: { id: sender.id, name: sender.name, avatar: sender.avatar },
-              count: poke.count,
-              updatedAt: poke.updatedAt,
-            };
-          }
-          return null;
-        })
-      );
-      user.incomingPokes = resolvedIncomingPokes.filter(Boolean);
+      for (const poke of incomingPokes) {
+        if (isPokeExpired(poke)) continue;
+        const sender = await models.User.findOne({ id: poke.from, deleted: false })
+          .select("id name avatar settings -_id");
+        if (sender && !sender.settings?.disablePokes) {
+          user.incomingPokes.push({
+            from: { id: sender.id, name: sender.name, avatar: sender.avatar },
+            count: poke.count,
+            updatedAt: poke.updatedAt,
+          });
+        }
+      }
     }
 
     // Fetch player stock info if they are IPOed
+    const playerStock = await models.PlayerStock.findOne({ userId, isIpoed: true }).lean().exec();
     if (playerStock) {
       const buyPrice = stockMarket.getBuyPrice(playerStock.shareSupply, 1).total;
       const sellPrice = stockMarket.getSellPrice(playerStock.shareSupply, 1).total;
       
+      const transactions = await models.StockTransaction.find({ subjectId: userId })
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .select("price shares type")
+        .lean()
+        .exec();
+      
       let supply = playerStock.shareSupply;
       const history = [];
-      for (const tx of stockTransactions) {
+      for (const tx of transactions) {
         history.push(stockMarket.calculatePrice(supply));
         if (tx.type === "buy") {
           supply = Math.max(1, supply - (tx.shares || 0));
@@ -983,7 +969,7 @@ router.get("/:id/profile", async function (req, res) {
       }
       history.push(stockMarket.calculatePrice(supply));
       history.reverse();
-  
+ 
       user.stockInfo = {
         isIpoed: true,
         shareSupply: playerStock.shareSupply,
@@ -991,9 +977,13 @@ router.get("/:id/profile", async function (req, res) {
         buyPrice,
         sellPrice,
         priceHistory: history,
-        sharesOwned: stockHolding ? stockHolding.sharesOwned : 0,
+        sharesOwned: 0,
         dividendsPaidOut: playerStock.dividendsPaidOut || 0
       };
+      if (reqUserId) {
+        const holding = await models.Shareholder.findOne({ subjectId: userId, holderId: reqUserId }).select("sharesOwned").lean().exec();
+        user.stockInfo.sharesOwned = holding ? holding.sharesOwned : 0;
+      }
     } else {
       user.stockInfo = null;
     }
