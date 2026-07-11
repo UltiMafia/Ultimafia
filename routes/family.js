@@ -43,7 +43,7 @@ router.get("/user/family", async function (req, res) {
 
     // Query family directly and populate leader properly
     const family = await models.Family.findById(familyId)
-      .select("id name avatar leader members background backgroundRepeatMode")
+      .select("id name avatar leader members background backgroundRepeatMode perks")
       .populate("leader", "_id");
 
     if (!family) {
@@ -66,6 +66,7 @@ router.get("/user/family", async function (req, res) {
         backgroundRepeatMode: family.backgroundRepeatMode || "checker",
         isLeader: isLeader,
         memberCount: memberCount,
+        memberLimit: getFamilyMemberLimit(family),
       },
     });
   } catch (e) {
