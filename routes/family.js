@@ -1007,13 +1007,13 @@ const FAMILY_PERKS = [
     key: "expandedRoster",
     name: "Expanded Roster",
     description: "Raises the family member limit from 20 to 25.",
-    cost: 1000,
+    cost: 100,
   },
   {
     key: "trophySpotlight",
     name: "Trophy Spotlight",
     description: "Adds a cosmetic trophy spotlight perk to the family profile.",
-    cost: 750,
+    cost: 75,
   },
 ];
 
