@@ -3,6 +3,7 @@ const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const models = require("../db/models");
 const logger = require("../modules/logging")(".");
+const stockMarket = require("../lib/StockMarket");
 const router = express.Router();
 const shortid = require("shortid");
 const bluebird = require("bluebird");
@@ -42,7 +43,7 @@ router.get("/user/family", async function (req, res) {
 
     // Query family directly and populate leader properly
     const family = await models.Family.findById(familyId)
-      .select("id name avatar leader members background backgroundRepeatMode")
+      .select("id name avatar leader members background backgroundRepeatMode perks")
       .populate("leader", "_id");
 
     if (!family) {
@@ -65,6 +66,7 @@ router.get("/user/family", async function (req, res) {
         backgroundRepeatMode: family.backgroundRepeatMode || "checker",
         isLeader: isLeader,
         memberCount: memberCount,
+        memberLimit: getFamilyMemberLimit(family),
       },
     });
   } catch (e) {
@@ -135,8 +137,11 @@ router.post("/create", async function (req, res) {
     const inFamily = new models.InFamily({
       user: user._id,
       family: family._id,
+      role: "leader",
     });
     await inFamily.save();
+
+
 
     res.send({ familyId: familyId });
   } catch (e) {
@@ -223,7 +228,8 @@ router.get("/:familyId/profile", async function (req, res) {
     var family = await models.Family.findOne({ id: familyId })
       .populate("founder", "id name avatar vanityUrl")
       .populate("leader", "id name avatar vanityUrl")
-      .populate("members", "id name avatar vanityUrl");
+      .populate("members", "id name avatar vanityUrl")
+      .select("id name avatar background backgroundRepeatMode applicationsOpen joinFee pendingJoinFees treasury perks bio founder leader members trophies createdAt");
 
     if (!family) {
       res.status(404);
@@ -253,6 +259,14 @@ router.get("/:familyId/profile", async function (req, res) {
     var leaderId = family.leader.id;
     var founderId = family.founder.id;
 
+    var inFamilies = await models.InFamily.find({ family: family._id }).lean().exec();
+    var roleMap = {};
+    for (const inFam of inFamilies) {
+      if (inFam.user) {
+        roleMap[inFam.user.toString()] = inFam.role || "member";
+      }
+    }
+
     // Get member info with leader/founder flags
     var members = (family.members || []).map((member) => ({
       id: member.id,
@@ -261,6 +275,7 @@ router.get("/:familyId/profile", async function (req, res) {
       vanityUrl: member.vanityUrl,
       isLeader: member.id === leaderId,
       isFounder: member.id === founderId,
+      role: member.id === leaderId ? "leader" : (roleMap[member._id.toString()] || "member"),
     }));
 
     // Get all trophies from all family members, sorted by createdAt
@@ -288,6 +303,8 @@ router.get("/:familyId/profile", async function (req, res) {
         allTrophies = [];
       }
     }
+    
+    var trophyCount = allTrophies.length;
 
     var trophies = (allTrophies || []).map((trophy) => ({
       id: trophy.id,
@@ -305,12 +322,41 @@ router.get("/:familyId/profile", async function (req, res) {
       createdAt: trophy.createdAt,
     }));
 
+    var canManageApplications = isLeader;
+    if (!canManageApplications && user) {
+      var inFam = await models.InFamily.findOne({
+        user: user._id,
+        family: family._id,
+      });
+      if (inFam && inFam.role === "officer") {
+        canManageApplications = true;
+      }
+    }
+
+    var userRole = null;
+    if (user) {
+      if (family.founder.id === user.id) userRole = "founder";
+      else if (family.leader.id === user.id) userRole = "leader";
+      else {
+        var matchedMember = members.find((m) => m.id === user.id);
+        if (matchedMember) userRole = matchedMember.role || "member";
+      }
+    }
+
+    var treasuryCoins = family.treasury || 0;
+
     res.send({
       id: family.id,
       name: family.name,
       avatar: family.avatar,
       background: family.background || false,
       backgroundRepeatMode: family.backgroundRepeatMode || "checker",
+      applicationsOpen: family.applicationsOpen,
+      joinFee: family.joinFee,
+      pendingJoinFees: family.pendingJoinFees || 0,
+      treasury: treasuryCoins,
+      perks: getFamilyPerks(family),
+      memberLimit: getFamilyMemberLimit(family),
       bio: family.bio,
       founder: {
         id: family.founder.id,
@@ -325,8 +371,12 @@ router.get("/:familyId/profile", async function (req, res) {
         vanityUrl: family.leader.vanityUrl,
       },
       members: members,
+      quests: buildFamilyQuests(family, trophyCount, treasuryCoins),
       trophies: trophies || [],
       isLeader: isLeader,
+      canManageApplications: canManageApplications,
+      userRole: userRole,
+      stockInfo: await buildFamilyStockInfo(familyId, userId),
     });
   } catch (e) {
     logger.error(e);
@@ -556,10 +606,11 @@ router.post("/:familyId/requestJoin", async function (req, res) {
       return;
     }
 
-    // Check if family is at member limit (20 members)
-    const currentMemberCount = family.members.length;
-    if (currentMemberCount >= 20) {
-      errors.conflict(res, "This family has reached the maximum of 20 members.");
+    // Check if family is at member limit
+    const memberLimit = getFamilyMemberLimit(family);
+    const currentMemberCount = (family.members || []).length;
+    if (currentMemberCount >= memberLimit) {
+      errors.conflict(res, `This family has reached the maximum of ${memberLimit} members.`);
       return;
     }
 
@@ -657,10 +708,11 @@ router.post("/:familyId/acceptJoin", async function (req, res) {
       return;
     }
 
-    // Check if family is at member limit (20 members)
-    const currentMemberCount = family.members.length;
-    if (currentMemberCount >= 20) {
-      errors.conflict(res, "This family has reached the maximum of 20 members.");
+    // Check if family is at member limit
+    const memberLimit = getFamilyMemberLimit(family);
+    const currentMemberCount = (family.members || []).length;
+    if (currentMemberCount >= memberLimit) {
+      errors.conflict(res, `This family has reached the maximum of ${memberLimit} members.`);
       return;
     }
 
@@ -947,4 +999,1266 @@ router.post("/:familyId/backgroundRepeatMode", async function (req, res) {
   }
 });
 
-module.exports = router;
+const BASE_FAMILY_MEMBER_LIMIT = 20;
+const EXPANDED_FAMILY_MEMBER_LIMIT = 25;
+const MAX_FAMILY_JOIN_FEE = 1000000;
+const FAMILY_PERKS = [
+  {
+    key: "expandedRoster",
+    name: "Expanded Roster",
+    description: "Raises the family member limit from 20 to 25.",
+    cost: 100,
+  },
+  {
+    key: "trophySpotlight",
+    name: "Trophy Spotlight",
+    description: "Adds a cosmetic trophy spotlight perk to the family profile.",
+    cost: 75,
+  },
+];
+
+function escapeRegex(value) {
+  return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function getFamilyMemberLimit(family) {
+  return family?.perks?.includes("expandedRoster")
+    ? EXPANDED_FAMILY_MEMBER_LIMIT
+    : BASE_FAMILY_MEMBER_LIMIT;
+}
+
+function normalizeFamilyJoinFee(value) {
+  const fee = Math.floor(Number(value || 0));
+  if (!Number.isFinite(fee) || fee < 0) return null;
+  if (fee > MAX_FAMILY_JOIN_FEE) return null;
+  return fee;
+}
+
+function getPendingJoinFees(family) {
+  return Math.max(0, Number(family?.pendingJoinFees || 0));
+}
+
+function getAvailableFamilyTreasury(family, treasuryCoins) {
+  return Math.max(0, Number(treasuryCoins || 0) - getPendingJoinFees(family));
+}
+
+function getMembershipRole(inFamily, family, user) {
+  if (!inFamily || !family || !user) return null;
+  const leaderId = family.leader?._id || family.leader;
+  if (leaderId?.toString() === user._id.toString()) return "leader";
+  return inFamily.role || "member";
+}
+
+function canManageFamilyApplications(role) {
+  return role === "leader" || role === "officer";
+}
+
+async function buildFamilyStockInfo(familyId, requestingUserId) {
+  const familyStock = await models.FamilyStock.findOne({ familyId, isIpoed: true })
+    .select("shareSupply dividendsPaidOut")
+    .lean()
+    .exec();
+
+  if (!familyStock) return null;
+
+  const buyPrice = stockMarket.getBuyPrice(familyStock.shareSupply, 1).total;
+  const sellPrice = stockMarket.getSellPrice(familyStock.shareSupply, 1).total;
+  const marketCap = familyStock.shareSupply * stockMarket.calculatePrice(familyStock.shareSupply);
+
+  // Build sparkline from last 10 transactions
+  const transactions = await models.FamilyStockTransaction.find({ familyId })
+    .sort("-createdAt")
+    .limit(10)
+    .select("price shares type")
+    .lean()
+    .exec();
+
+  let supply = familyStock.shareSupply;
+  const priceHistory = [];
+  for (const tx of transactions) {
+    priceHistory.push(stockMarket.calculatePrice(supply));
+    if (tx.type === "buy") {
+      supply = Math.max(1, supply - (tx.shares || 0));
+    } else if (tx.type === "sell") {
+      supply += tx.shares || 0;
+    }
+  }
+  priceHistory.push(stockMarket.calculatePrice(supply));
+  priceHistory.reverse();
+
+  let sharesOwned = 0;
+  if (requestingUserId) {
+    const holding = await models.FamilyShareholder.findOne({
+      familyId,
+      holderId: requestingUserId,
+    })
+      .select("sharesOwned")
+      .lean()
+      .exec();
+    sharesOwned = holding ? holding.sharesOwned : 0;
+  }
+
+  return {
+    isIpoed: true,
+    shareSupply: familyStock.shareSupply,
+    marketCap,
+    buyPrice,
+    sellPrice,
+    priceHistory,
+    sharesOwned,
+    dividendsPaidOut: familyStock.dividendsPaidOut || 0,
+  };
+}
+
+async function getFamilyMembership(family, user) {
+  if (!family || !user) return null;
+  return models.InFamily.findOne({
+    family: family._id,
+    user: user._id,
+  });
+}
+
+function buildFamilyQuests(family, trophyCount, treasuryCoins) {
+  const memberCount = family.members ? family.members.length : 0;
+  const memberLimit = getFamilyMemberLimit(family);
+  const treasury = Number(treasuryCoins || 0);
+  const perkCount = family.perks ? family.perks.length : 0;
+
+  return [
+    {
+      id: "firstFive",
+      name: "First Five",
+      description: "Reach 5 family members.",
+      current: Math.min(memberCount, 5),
+      target: 5,
+      completed: memberCount >= 5,
+    },
+    {
+      id: "fullHouse",
+      name: "Full House",
+      description: `Reach the current member limit of ${memberLimit}.`,
+      current: Math.min(memberCount, memberLimit),
+      target: memberLimit,
+      completed: memberCount >= memberLimit,
+    },
+    {
+      id: "trophyCase",
+      name: "Trophy Case",
+      description: "Collect 5 trophies across all family members.",
+      current: Math.min(trophyCount, 5),
+      target: 5,
+      completed: trophyCount >= 5,
+    },
+    {
+      id: "communityChest",
+      name: "Community Chest",
+      description: "Deposit 1,000 coins into the family treasury.",
+      current: Math.floor(Math.min(treasury, 1000)),
+      target: 1000,
+      completed: treasury >= 1000,
+    },
+    {
+      id: "perkCollector",
+      name: "Perk Collector",
+      description: "Buy all family perks.",
+      current: Math.min(perkCount, FAMILY_PERKS.length),
+      target: FAMILY_PERKS.length,
+      completed: perkCount >= FAMILY_PERKS.length,
+    },
+  ];
+}
+
+function getFamilyPerks(family) {
+  const owned = new Set(family?.perks || []);
+  return FAMILY_PERKS.map((perk) => ({
+    ...perk,
+    owned: owned.has(perk.key),
+  }));
+}
+
+router.get("/discover", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const search = String(req.query.search || "").trim();
+    const sort = String(req.query.sort || "members");
+    const openOnly = String(req.query.openOnly || "") === "true";
+    const query = {};
+    let viewerFamilyId = null;
+    let viewerCanSubmitApplication = false;
+    let pendingApplicationFamilyIds = new Set();
+
+    if (userId) {
+      const user = await models.User.findOne({ id: userId }).select("_id").lean();
+
+      if (user) {
+        viewerCanSubmitApplication = true;
+        const viewerFamily = await models.InFamily.findOne({
+          user: user._id,
+        })
+          .populate("family", "id")
+          .lean();
+
+        viewerFamilyId = viewerFamily?.family?.id || null;
+
+        const pendingApplications = await models.FamilyApplication.find({
+          applicantId: userId,
+          status: "pending",
+        })
+          .select("familyId -_id")
+          .lean();
+
+        pendingApplicationFamilyIds = new Set(
+          pendingApplications.map((application) => application.familyId)
+        );
+      }
+    }
+
+    if (search) {
+      query.name = { $regex: escapeRegex(search), $options: "i" };
+    }
+
+    if (openOnly) {
+      query.applicationsOpen = { $ne: false };
+    }
+
+    const families = await models.Family.find(query)
+      .select(
+        "id name avatar avatarUrl leader members treasury pendingJoinFees perks applicationsOpen joinFee createdAt bio"
+      )
+      .populate("leader", "id name avatar vanityUrl")
+      .populate("members", "id")
+      .lean();
+
+    const memberIds = [];
+    for (const family of families) {
+      for (const member of family.members || []) {
+        if (member?.id) memberIds.push(member.id);
+      }
+    }
+
+    const trophyCounts = memberIds.length
+      ? await models.Trophy.aggregate([
+          {
+            $match: {
+              ownerId: { $in: memberIds },
+            },
+          },
+          {
+            $group: {
+              _id: "$ownerId",
+              count: { $sum: 1 },
+            },
+          },
+        ])
+      : [];
+
+    const trophyCountByUser = new Map(
+      trophyCounts.map((entry) => [entry._id, entry.count])
+    );
+
+
+
+    const discoveredFamilies = families.map((family) => {
+      const members = family.members || [];
+      const trophyCount = members.reduce(
+        (total, member) => total + (trophyCountByUser.get(member.id) || 0),
+        0
+      );
+      const treasury = family.treasury || 0;
+      const perks = family.perks || [];
+      const memberLimit = getFamilyMemberLimit(family);
+      const applicationsOpen = family.applicationsOpen !== false;
+      const isFull = members.length >= memberLimit;
+      const hasPendingApplication = pendingApplicationFamilyIds.has(family.id);
+
+      return {
+        id: family.id,
+        name: family.name,
+        avatar: family.avatarUrl || family.avatar,
+        leader: family.leader
+          ? {
+              id: family.leader.id,
+              name: family.leader.name,
+              avatar: family.leader.avatar,
+              vanityUrl: family.leader.vanityUrl,
+            }
+          : null,
+        memberCount: members.length,
+        memberLimit,
+        applicationsOpen,
+        joinFee: Number(family.joinFee || 0),
+        treasury,
+        availableTreasury: getAvailableFamilyTreasury(family, treasury),
+        perkCount: perks.length,
+        trophyCount,
+        createdAt: family.createdAt,
+        bioPreview: String(family.bio || "").replace(/\s+/g, " ").slice(0, 160),
+        userIsMember: viewerFamilyId === family.id,
+        hasPendingApplication,
+        canRequestJoin:
+          viewerCanSubmitApplication &&
+          !viewerFamilyId &&
+          applicationsOpen &&
+          !isFull &&
+          !hasPendingApplication,
+      };
+    });
+
+    discoveredFamilies.sort((a, b) => {
+      if (sort === "newest") return Number(b.createdAt) - Number(a.createdAt);
+      if (sort === "members") return b.memberCount - a.memberCount;
+      if (sort === "treasury") return b.treasury - a.treasury;
+      if (sort === "open") {
+        return (
+          Number(b.applicationsOpen) - Number(a.applicationsOpen) ||
+          b.memberCount - a.memberCount
+        );
+      }
+
+      return b.memberCount - a.memberCount;
+    });
+
+    res.send({
+      families: discoveredFamilies,
+      total: discoveredFamilies.length,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error discovering families.");
+  }
+});
+
+router.post("/:familyId/applicationsOpen", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var { applicationsOpen } = req.body;
+
+    var user = await models.User.findOne({ id: userId });
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      res.status(404);
+      res.send("Family not found.");
+      return;
+    }
+
+    if (family.leader.toString() !== user._id.toString()) {
+      res.status(500);
+      res.send("Only the family leader can change application settings.");
+      return;
+    }
+
+    await models.Family.updateOne(
+      { id: familyId },
+      { $set: { applicationsOpen: Boolean(applicationsOpen) } }
+    );
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error updating application settings.");
+  }
+});
+
+router.post("/:familyId/joinFee", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var joinFee = normalizeFamilyJoinFee(req.body.joinFee);
+
+    if (joinFee === null) {
+      res.status(500);
+      res.send(`Join fee must be between 0 and ${MAX_FAMILY_JOIN_FEE} coins.`);
+      return;
+    }
+
+    var user = await models.User.findOne({ id: userId });
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      res.status(404);
+      res.send("Family not found.");
+      return;
+    }
+
+    if (family.leader.toString() !== user._id.toString()) {
+      res.status(500);
+      res.send("Only the family leader can change the join fee.");
+      return;
+    }
+
+    await models.Family.updateOne(
+      { id: familyId },
+      { $set: { joinFee: joinFee } }
+    );
+
+    res.send({ joinFee });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error updating join fee.");
+  }
+});
+
+router.post("/:familyId/apply", async function (req, res) {
+  let paidJoinFee = 0;
+  let paidUserObjectId = null;
+  let paidUserId = null;
+  let paidFamilyObjectId = null;
+  let familyJoinFeeAdded = false;
+  let paymentCommitted = false;
+
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var message = String(req.body.message || "").trim();
+
+    if (message.length > 500) {
+      res.status(500);
+      res.send("Application message must be 500 characters or less.");
+      return;
+    }
+
+    var user = await models.User.findOne({ id: userId });
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      res.status(404);
+      res.send("Family not found.");
+      return;
+    }
+
+    if (family.applicationsOpen === false) {
+      res.status(500);
+      res.send("This family is not accepting applications.");
+      return;
+    }
+
+    if ((family.members || []).length >= getFamilyMemberLimit(family)) {
+      res.status(500);
+      res.send("This family has reached its member limit.");
+      return;
+    }
+
+    var existingFamily = await models.InFamily.findOne({
+      user: user._id,
+    });
+
+    if (existingFamily) {
+      res.status(500);
+      res.send("You already belong to a family.");
+      return;
+    }
+
+    var existingApplication = await models.FamilyApplication.findOne({
+      familyId: familyId,
+      applicantId: userId,
+      status: "pending",
+    });
+
+    if (existingApplication) {
+      res.status(500);
+      res.send("You already have a pending application for this family.");
+      return;
+    }
+
+    var joinFee = Math.max(0, Math.floor(Number(family.joinFee || 0)));
+    var debit = null;
+
+    if (joinFee > 0) {
+      debit = await models.User.findOneAndUpdate(
+        { id: userId, coins: { $gte: joinFee } },
+        { $inc: { coins: -joinFee } },
+        { new: true }
+      )
+        .select("coins balanceDollar")
+        .lean();
+
+      if (!debit) {
+        res.status(500);
+        res.send(`This family requires a ${joinFee} coin join fee.`);
+        return;
+      }
+
+      paidJoinFee = joinFee;
+      paidUserObjectId = user._id;
+      paidUserId = userId;
+      paidFamilyObjectId = family._id;
+
+      await models.Family.updateOne(
+        { id: familyId },
+        { $inc: { treasury: joinFee } }
+      );
+      await models.Family.updateOne(
+        { id: familyId },
+        {
+          $inc: {
+            pendingJoinFees: joinFee,
+          },
+        }
+      );
+      familyJoinFeeAdded = true;
+    }
+
+    await new models.FamilyApplication({
+      familyId: familyId,
+      family: family._id,
+      applicantId: userId,
+      applicant: user._id,
+      message: message,
+      joinFee: joinFee,
+      createdAt: Date.now(),
+    }).save();
+
+    paymentCommitted = true;
+
+    if (joinFee > 0) {
+      try {
+        await new models.FamilyLedger({
+          familyId: familyId,
+          family: family._id,
+          userId: userId,
+          user: user._id,
+          type: "joinFee",
+          amount: joinFee,
+          description: "Join fee paid",
+          createdAt: Date.now(),
+        }).save();
+      } catch (ledgerError) {
+        logger.error("Error recording family join fee ledger:", ledgerError);
+      }
+
+      try {
+        await redis.cacheUserInfo(userId, true);
+      } catch (cacheError) {
+        logger.error("Error refreshing user cache after join fee:", cacheError);
+      }
+    }
+
+    res.send({
+      joinFee,
+      coins: debit ? Number(debit.coins || 0) : undefined,
+      balanceDollar: debit ? Number(debit.balanceDollar || 0) : undefined,
+    });
+  } catch (e) {
+    if (paidJoinFee > 0 && !paymentCommitted) {
+      try {
+        await models.User.updateOne(
+          { _id: paidUserObjectId },
+          { $inc: { coins: paidJoinFee } }
+        );
+        if (familyJoinFeeAdded) {
+          await models.Family.updateOne(
+            { _id: paidFamilyObjectId },
+            {
+              $inc: {
+                pendingJoinFees: -paidJoinFee,
+              },
+            }
+          );
+          await models.Family.updateOne(
+            { id: familyId },
+            {
+              $inc: {
+                treasury: -paidJoinFee,
+              },
+            }
+          );
+        }
+        await redis.cacheUserInfo(paidUserId, true);
+      } catch (rollbackError) {
+        logger.error("Error rolling back family join fee:", rollbackError);
+      }
+    }
+
+    logger.error(e);
+    res.status(500);
+    res.send("Error submitting family application.");
+  }
+});
+
+router.delete("/:familyId/applications/mine", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+
+    var user = await models.User.findOne({ id: userId });
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      res.status(404);
+      res.send("Family not found.");
+      return;
+    }
+
+    var application = await models.FamilyApplication.findOne({
+      familyId: familyId,
+      applicantId: userId,
+      status: "pending",
+    });
+
+    if (!application) {
+      res.status(404);
+      res.send("No pending application found.");
+      return;
+    }
+
+    var joinFee = Math.max(0, Math.floor(Number(application.joinFee || 0)));
+
+    if (joinFee > 0) {
+      await models.Family.updateOne(
+        { id: familyId },
+        {
+          $inc: {
+            treasury: -joinFee,
+          },
+        }
+      );
+      await models.Family.updateOne(
+        { id: familyId },
+        {
+          $inc: {
+            pendingJoinFees: -joinFee,
+          },
+        }
+      );
+
+      await models.User.updateOne(
+        { _id: user._id },
+        { $inc: { coins: joinFee } }
+      );
+
+      try {
+        await new models.FamilyLedger({
+          familyId: familyId,
+          family: family._id,
+          userId: userId,
+          user: user._id,
+          type: "joinFeeRefund",
+          amount: -joinFee,
+          description: "Join fee refunded (application cancelled)",
+          createdAt: Date.now(),
+        }).save();
+      } catch (ledgerError) {
+        logger.error("Error recording join fee refund ledger:", ledgerError);
+      }
+
+      try {
+        await redis.cacheUserInfo(userId, true);
+      } catch (cacheError) {
+        logger.error("Error refreshing user cache after join fee refund:", cacheError);
+      }
+    }
+
+    await models.FamilyApplication.updateOne(
+      { _id: application._id },
+      {
+        $set: {
+          status: "cancelled",
+          resolvedAt: Date.now(),
+          resolvedBy: userId,
+        },
+      }
+    );
+
+    var updatedUser = await models.User.findOne({ id: userId })
+      .select("coins balanceDollar")
+      .lean();
+
+    res.send({
+      joinFee,
+      coins: Number(updatedUser?.coins || 0),
+      balanceDollar: Number(updatedUser?.balanceDollar || 0),
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error cancelling application.");
+  }
+});
+
+router.get("/:familyId/applications", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+
+    var user = await models.User.findOne({ id: userId });
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      res.status(404);
+      res.send("Family not found.");
+      return;
+    }
+
+    var membership = await getFamilyMembership(family, user);
+    var role = getMembershipRole(membership, family, user);
+    if (!canManageFamilyApplications(role)) {
+      res.status(500);
+      res.send("Only family leaders and officers can view applications.");
+      return;
+    }
+
+    var applications = await models.FamilyApplication.find({
+      familyId: familyId,
+      status: "pending",
+    })
+      .populate("applicant", "id name avatar vanityUrl")
+      .sort("createdAt")
+      .lean();
+
+    res.send({
+      applications: applications
+        .filter((application) => application.applicant)
+        .map((application) => ({
+          id: application._id,
+          applicant: {
+            id: application.applicant.id,
+            name: application.applicant.name,
+            avatar: application.applicant.avatar,
+            vanityUrl: application.applicant.vanityUrl,
+          },
+          message: application.message || "",
+          joinFee: Number(application.joinFee || 0),
+          createdAt: application.createdAt,
+        })),
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error loading family applications.");
+  }
+});
+
+async function resolveFamilyApplication(req, res, status) {
+  var userId = await routeUtils.verifyLoggedIn(req);
+  var familyId = req.params.familyId;
+  var applicationId = req.params.applicationId;
+
+  var user = await models.User.findOne({ id: userId });
+  var family = await models.Family.findOne({ id: familyId });
+
+  if (!family) {
+    res.status(404);
+    res.send("Family not found.");
+    return;
+  }
+
+  var membership = await getFamilyMembership(family, user);
+  var role = getMembershipRole(membership, family, user);
+  if (!canManageFamilyApplications(role)) {
+    res.status(500);
+    res.send("Only family leaders and officers can manage applications.");
+    return;
+  }
+
+  var application = await models.FamilyApplication.findOne({
+    _id: applicationId,
+    familyId: familyId,
+    status: "pending",
+  }).populate("applicant", "id name");
+
+  if (!application || !application.applicant) {
+    res.status(404);
+    res.send("Application not found.");
+    return;
+  }
+
+  var joinFee = Math.max(0, Math.floor(Number(application.joinFee || 0)));
+
+  if (status === "accepted") {
+    if ((family.members || []).length >= getFamilyMemberLimit(family)) {
+      res.status(500);
+      res.send("This family has reached its member limit.");
+      return;
+    }
+
+    var existingFamily = await models.InFamily.findOne({
+      user: application.applicant._id,
+    });
+
+    if (existingFamily) {
+      res.status(500);
+      res.send("User already belongs to a family.");
+      return;
+    }
+
+    await new models.InFamily({
+      user: application.applicant._id,
+      family: family._id,
+      role: "member",
+    }).save();
+
+    await models.Family.updateOne(
+      { id: familyId },
+      {
+        $push: { members: application.applicant._id },
+        $inc: { pendingJoinFees: -joinFee },
+      }
+    );
+  } else if (joinFee > 0) {
+    // Credit user first — if this fails, family treasury is unchanged (safe)
+    await models.User.updateOne(
+      { _id: application.applicant._id },
+      { $inc: { coins: joinFee } }
+    );
+
+    // Now deduct from treasury; if this fails, user has extra coins but treasury is intact
+    // (preferred failure mode vs. losing applicant coins permanently)
+    await models.Family.updateOne(
+      { id: familyId },
+      {
+        $inc: {
+          treasury: -joinFee,
+          pendingJoinFees: -joinFee,
+        },
+      }
+    );
+
+    try {
+      await new models.FamilyLedger({
+        familyId: familyId,
+        family: family._id,
+        userId: application.applicant.id,
+        user: application.applicant._id,
+        type: "joinFeeRefund",
+        amount: -joinFee,
+        description: "Join fee refunded",
+        createdAt: Date.now(),
+      }).save();
+    } catch (ledgerError) {
+      logger.error("Error recording family join fee refund:", ledgerError);
+    }
+
+    try {
+      await redis.cacheUserInfo(application.applicant.id, true);
+    } catch (cacheError) {
+      logger.error("Error refreshing user cache after join fee refund:", cacheError);
+    }
+  }
+
+  await models.FamilyApplication.updateOne(
+    { _id: application._id },
+    {
+      $set: {
+        status: status,
+        resolvedAt: Date.now(),
+        resolvedBy: userId,
+      },
+    }
+  );
+
+  await routeUtils.createNotification(
+    {
+      content:
+        status === "accepted"
+          ? `Your application to join ${family.name} was accepted!`
+          : joinFee > 0
+            ? `Your application to join ${family.name} was rejected. Your ${joinFee} coin join fee was refunded.`
+            : `Your application to join ${family.name} was rejected.`,
+      icon: "fas fa-users",
+      link: `/user/family/${familyId}`,
+    },
+    [application.applicant.id]
+  );
+
+  res.sendStatus(200);
+}
+
+router.post("/:familyId/applications/:applicationId/accept", async function (req, res) {
+  try {
+    await resolveFamilyApplication(req, res, "accepted");
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error accepting family application.");
+  }
+});
+
+router.post("/:familyId/applications/:applicationId/reject", async function (req, res) {
+  try {
+    await resolveFamilyApplication(req, res, "rejected");
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error rejecting family application.");
+  }
+});
+
+router.post("/:familyId/member/:memberId/role", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var memberId = req.params.memberId;
+    var role = String(req.body.role || "");
+
+    if (role !== "member" && role !== "officer") {
+      res.status(500);
+      res.send("Invalid family role.");
+      return;
+    }
+
+    var user = await models.User.findOne({ id: userId });
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      res.status(404);
+      res.send("Family not found.");
+      return;
+    }
+
+    if (family.leader.toString() !== user._id.toString()) {
+      res.status(500);
+      res.send("Only the family leader can change member roles.");
+      return;
+    }
+
+    var member = await models.User.findOne({ id: memberId });
+    if (!member) {
+      res.status(404);
+      res.send("Member not found.");
+      return;
+    }
+
+    if (family.leader.toString() === member._id.toString()) {
+      res.status(500);
+      res.send("The family leader role is changed by transferring leadership.");
+      return;
+    }
+
+    var result = await models.InFamily.updateOne(
+      { user: member._id, family: family._id },
+      { $set: { role: role } }
+    );
+
+    if (!result.matchedCount) {
+      res.status(500);
+      res.send("User is not a member of this family.");
+      return;
+    }
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error updating family role.");
+  }
+});
+
+router.get("/:familyId/ledger", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+
+    var user = await models.User.findOne({ id: userId }).lean();
+    var family = await models.Family.findOne({ id: familyId }).lean();
+
+    if (!family) {
+      res.status(404);
+      res.send("Family not found.");
+      return;
+    }
+
+    var membership = await getFamilyMembership(family, user);
+    if (!membership) {
+      res.status(403);
+      res.send("Only family members can view the ledger.");
+      return;
+    }
+
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    const totalCount = await models.FamilyLedger.countDocuments({ familyId });
+    const maxPage = Math.ceil(totalCount / limit) || 1;
+
+    var ledger = await models.FamilyLedger.find({ familyId: familyId })
+      .populate("user", "id name avatar vanityUrl")
+      .sort("-createdAt")
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    res.send({
+      ledger: ledger.map((entry) => ({
+        id: entry._id,
+        type: entry.type,
+        amount: entry.amount,
+        description: entry.description,
+        createdAt: entry.createdAt,
+        user: entry.user
+          ? {
+              id: entry.user.id,
+              name: entry.user.name,
+              avatar: entry.user.avatar,
+              vanityUrl: entry.user.vanityUrl,
+            }
+          : null,
+      })),
+      maxPage,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error loading family ledger.");
+  }
+});
+
+router.post("/:familyId/treasury/deposit", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var amount = Math.floor(Number(req.body.amount || 0));
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      res.status(500);
+      res.send("Deposit amount must be a positive number.");
+      return;
+    }
+
+    var user = await models.User.findOne({ id: userId });
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      res.status(404);
+      res.send("Family not found.");
+      return;
+    }
+
+    var membership = await getFamilyMembership(family, user);
+    if (!membership) {
+      res.status(500);
+      res.send("Only family members can deposit coins.");
+      return;
+    }
+
+    var debit = await models.User.findOneAndUpdate(
+      { id: userId, coins: { $gte: amount } },
+      { $inc: { coins: -amount } },
+      { new: true }
+    )
+      .select("coins balanceDollar")
+      .lean();
+
+    if (!debit) {
+      res.status(500);
+      res.send("You do not have enough coins for this deposit.");
+      return;
+    }
+
+    // Credit family treasury. If this fails, roll back the user debit.
+    try {
+      await models.Family.updateOne(
+        { id: familyId },
+        { $inc: { treasury: amount } }
+      );
+    } catch (familyUpdateError) {
+      // Rollback: return coins to user
+      await models.User.updateOne({ id: userId }, { $inc: { coins: amount } });
+      await redis.cacheUserInfo(userId, true);
+      throw familyUpdateError;
+    }
+
+    // Ledger write is non-financial — failure here is acceptable
+    try {
+      await new models.FamilyLedger({
+        familyId: familyId,
+        family: family._id,
+        userId: userId,
+        user: user._id,
+        type: "deposit",
+        amount: amount,
+        description: `Deposited ${amount} coins`,
+        createdAt: Date.now(),
+      }).save();
+    } catch (ledgerError) {
+      logger.error("Error writing deposit ledger entry:", ledgerError);
+    }
+
+    await redis.cacheUserInfo(userId, true);
+
+    res.send({
+      coins: Number(debit.coins || 0),
+      balanceDollar: Number(debit.balanceDollar || 0),
+      treasury: Number(family.treasury || 0) + amount,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error depositing into family treasury.");
+  }
+});
+
+router.post("/:familyId/treasury/withdraw", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var amount = Math.floor(Number(req.body.amount || 0));
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      res.status(500);
+      res.send("Withdrawal amount must be a positive number.");
+      return;
+    }
+
+    var [user, family] = await Promise.all([
+      models.User.findOne({ id: userId }).lean(),
+      models.Family.findOne({ id: familyId }).lean(),
+    ]);
+
+    if (!family) {
+      res.status(404);
+      res.send("Family not found.");
+      return;
+    }
+
+    // family.leader and family.founder are ObjectIds — compare via .toString()
+    var isLeaderOrFounder =
+      family.leader.toString() === user._id.toString() ||
+      family.founder.toString() === user._id.toString();
+    if (!isLeaderOrFounder) {
+      res.status(403);
+      res.send("Only the family leader or founder can withdraw from the treasury.");
+      return;
+    }
+
+    // Atomically deduct from treasury, guarding against pendingJoinFees race condition
+    // by embedding the constraint directly in the MongoDB query condition.
+    const updatedFamily = await models.Family.findOneAndUpdate(
+      {
+        id: familyId,
+        $expr: {
+          $gte: [
+            { $subtract: ["$treasury", { $ifNull: ["$pendingJoinFees", 0] }] },
+            amount,
+          ],
+        },
+      },
+      { $inc: { treasury: -amount } },
+      { new: true }
+    );
+
+    if (!updatedFamily) {
+      res.status(500);
+      res.send("The family treasury does not have enough available coins.");
+      return;
+    }
+
+    // Credit user atomically and get updated balance in one query
+    const updatedUser = await models.User.findOneAndUpdate(
+      { id: userId },
+      { $inc: { coins: amount } },
+      { new: true }
+    ).select("coins balanceDollar").lean();
+
+    // Ledger write is non-financial — failure is acceptable
+    try {
+      await new models.FamilyLedger({
+        familyId: familyId,
+        family: updatedFamily._id,
+        userId: userId,
+        user: user._id,
+        type: "withdraw",
+        amount: amount,
+        description: `Withdrew ${amount} coins`,
+        createdAt: Date.now(),
+      }).save();
+    } catch (ledgerError) {
+      logger.error("Error writing withdrawal ledger entry:", ledgerError);
+    }
+
+    await redis.cacheUserInfo(userId, true);
+
+    res.send({
+      coins: Number(updatedUser.coins || 0),
+      balanceDollar: Number(updatedUser.balanceDollar || 0),
+      treasury: Number(updatedFamily.treasury || 0),
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error withdrawing from family treasury.");
+  }
+});
+
+router.post("/:familyId/perks/:perkKey/buy", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var perkKey = req.params.perkKey;
+    var perk = FAMILY_PERKS.find((item) => item.key === perkKey);
+
+    if (!perk) {
+      res.status(404);
+      res.send("Family perk not found.");
+      return;
+    }
+
+    var user = await models.User.findOne({ id: userId });
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      res.status(404);
+      res.send("Family not found.");
+      return;
+    }
+
+    var membership = await getFamilyMembership(family, user);
+    var role = getMembershipRole(membership, family, user);
+    if (!canManageFamilyApplications(role)) {
+      res.status(500);
+      res.send("Only family leaders and officers can buy perks.");
+      return;
+    }
+
+    if ((family.perks || []).includes(perk.key)) {
+      res.status(500);
+      res.send("This family already owns that perk.");
+      return;
+    }
+
+    var result = await models.Family.updateOne(
+      {
+        id: familyId,
+        perks: { $ne: perk.key },
+        $expr: {
+          $gte: [
+            { $subtract: ["$treasury", { $ifNull: ["$pendingJoinFees", 0] }] },
+            perk.cost,
+          ],
+        },
+      },
+      {
+        $inc: { treasury: -perk.cost },
+        $push: { perks: perk.key },
+      }
+    );
+
+    if (!result.modifiedCount) {
+      res.status(500);
+      res.send("The family treasury does not have enough coins.");
+      return;
+    }
+
+    await new models.FamilyLedger({
+      familyId: familyId,
+      family: family._id,
+      userId: userId,
+      user: user._id,
+      type: "perk",
+      amount: -perk.cost,
+      description: `Bought ${perk.name}`,
+      createdAt: Date.now(),
+    }).save();
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error buying family perk.");
+  }
+});module.exports = router;

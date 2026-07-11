@@ -1120,7 +1120,7 @@ export default function Profile() {
               </IconButton>
               {userFamily &&
                 userFamily.isLeader &&
-                userFamily.memberCount < 20 && (
+                userFamily.memberCount < (userFamily.memberLimit || 20) && (
                   <IconButton
                     aria-label="request to join family"
                     title={`Invite to ${userFamily.name}`}

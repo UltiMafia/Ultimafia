@@ -123,9 +123,10 @@ const FAMILY_TRADE_CONFIG = {
   getTxData: (userId, entityId, type, shares, price, fee) => ({
     userId, familyId: entityId, type, shares, price, fee,
   }),
-  feeField: "treasuryCoins",
+  feeField: "creatorFeesEarned",
   lockPrefix: "family",
   creditFeeToUser: false,
+  creditFeeToFamilyTreasury: true,
   cacheEntityUser: false,
   entityLabel: "family",
   notFoundBuyMsg: "This Family ETF has not been launched.",
@@ -186,11 +187,16 @@ function createBuyHandler(config) {
           return errors.conflict(res, "Price changed. Your coins have been refunded. Please try again.");
         }
 
-        // 5. Credit creator fee to entity's user wallet (player stocks only)
+        // 5. Credit creator fee to entity
         if (config.creditFeeToUser) {
           await models.User.updateOne(
             { id: entityId },
             { $inc: { coins: creatorFee } }
+          ).exec();
+        } else if (config.creditFeeToFamilyTreasury) {
+          await models.Family.updateOne(
+            { id: entityId },
+            { $inc: { treasury: creatorFee } }
           ).exec();
         }
 
@@ -334,11 +340,16 @@ function createSellHandler(config) {
           { $inc: { coins: total } }
         ).exec();
 
-        // 8. Credit creator fee to entity's user wallet (player stocks only)
+        // 8. Credit creator fee to entity
         if (config.creditFeeToUser) {
           await models.User.updateOne(
             { id: entityId },
             { $inc: { coins: creatorFee } }
+          ).exec();
+        } else if (config.creditFeeToFamilyTreasury) {
+          await models.Family.updateOne(
+            { id: entityId },
+            { $inc: { treasury: creatorFee } }
           ).exec();
         }
 
@@ -586,7 +597,7 @@ router.get("/transactions", async function (req, res) {
           .lean()
           .exec(),
         models.Family.find({ id: { $in: Array.from(familyIds) } })
-          .select("id name avatar background")
+          .select("id name avatar background treasury")
           .lean()
           .exec()
       ]);
@@ -826,7 +837,7 @@ router.get("/families", async function (req, res) {
 
     const [families, transactionsGrouped] = await Promise.all([
       models.Family.find({ id: { $in: familyIds } })
-        .select("id name avatar background")
+        .select("id name avatar background treasury")
         .lean()
         .exec(),
       models.FamilyStockTransaction.aggregate([
@@ -869,7 +880,7 @@ router.get("/families", async function (req, res) {
         marketCap,
         buyPrice: buyPrice.total,
         sellPrice: sellPrice.total,
-        treasuryCoins: stock.treasuryCoins,
+        treasuryCoins: f ? (f.treasury || 0) : 0,
         dividendsPaidOut: stock.dividendsPaidOut,
         priceHistory: historyMap[stock.familyId]
       };
@@ -929,7 +940,7 @@ router.get("/families/portfolio", async function (req, res) {
 
     const [stocks, families] = await Promise.all([
       models.FamilyStock.find({ familyId: { $in: familyIds } }).lean().exec(),
-      models.Family.find({ id: { $in: familyIds } }).select("id name avatar background").lean().exec()
+      models.Family.find({ id: { $in: familyIds } }).select("id name avatar background treasury").lean().exec()
     ]);
 
     const stockMap = {};
@@ -991,7 +1002,7 @@ router.get("/families/prices/:familyId", async function (req, res) {
       return errors.notFound(res, "This family has not launched an ETF or does not exist.");
     }
 
-    const family = await models.Family.findOne({ id: familyId }).select("name avatar background").lean().exec();
+    const family = await models.Family.findOne({ id: familyId }).select("name avatar background treasury").lean().exec();
     const buy1 = stockMarket.getBuyPrice(stock.shareSupply, 1);
     const sell1 = stockMarket.getSellPrice(stock.shareSupply, 1);
     const marketCap = stock.shareSupply * stockMarket.calculatePrice(stock.shareSupply);
@@ -1005,7 +1016,7 @@ router.get("/families/prices/:familyId", async function (req, res) {
       marketCap,
       buyPrice1: buy1.total,
       sellPrice1: sell1.total,
-      treasuryCoins: stock.treasuryCoins,
+      treasuryCoins: f ? (f.treasury || 0) : 0,
       dividendsPaidOut: stock.dividendsPaidOut
     });
   } catch (e) {

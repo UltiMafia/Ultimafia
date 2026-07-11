@@ -10,6 +10,10 @@ import {
   Button,
   IconButton,
   Tooltip,
+  Chip,
+  LinearProgress,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 
 import { UserContext, SiteInfoContext } from "Contexts";
@@ -23,6 +27,19 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import CustomMarkdown from "components/CustomMarkdown";
 import TrophyCase from "components/TrophyCase";
 import { capitalize } from "utils";
+import { 
+  FamilyTreasury, 
+  FamilyLedger, 
+  FamilyApplications, 
+  FamilyPerks, 
+  FamilyJoinFee, 
+  FamilyApply,
+  CoinAmount,
+  FamilyProgress,
+  FamilyStockCard,
+  panelStyle,
+  headingStyle,
+} from "./FamilyExtras";
 
 export default function Family() {
   const { familyId } = useParams();
@@ -32,31 +49,39 @@ export default function Family() {
   const [oldBio, setOldBio] = useState("");
   const [editingBio, setEditingBio] = useState(false);
   const [pendingInvite, setPendingInvite] = useState(null);
+  const [ledgerRefreshKey, setLedgerRefreshKey] = useState(0);
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [menuMember, setMenuMember] = useState(null);
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
 
+  function loadFamilyProfile() {
+    axios
+      .get(`/api/family/${familyId}/profile`)
+      .then((res) => {
+        setFamily(res.data);
+        setBio(res.data.bio || "");
+        setFamilyLoaded(true);
+        document.title = `${res.data.name} | UltiMafia`;
+      })
+      .catch((e) => {
+        errorAlert(e);
+        setFamilyLoaded(true);
+      });
+  }
+
+  function refreshFamilyTools() {
+    loadFamilyProfile();
+    setLedgerRefreshKey((k) => k + 1);
+  }
+
   useEffect(() => {
     if (familyId) {
       setFamilyLoaded(false);
-      axios
-        .get(`/api/family/${familyId}/profile`)
-        .then((res) => {
-          setFamily(res.data);
-          setBio(res.data.bio || "");
-          setFamilyLoaded(true);
-          document.title = `${res.data.name} | UltiMafia`;
-          // Debug: log trophies to console
-          if (res.data.trophies && res.data.trophies.length > 0) {
-            console.log("Family trophies:", res.data.trophies);
-          }
-        })
-        .catch((e) => {
-          errorAlert(e);
-          setFamilyLoaded(true);
-        });
+      loadFamilyProfile();
 
       // Check for pending invite
       if (user.loggedIn) {
@@ -208,35 +233,33 @@ export default function Family() {
   if (!familyLoaded) return <Loading small />;
   if (!family) return <Navigate to="/play" />;
 
-  const panelStyle = {
-    backgroundColor: "var(--scheme-color)",
-    padding: "16px",
-    borderRadius: "4px",
-  };
-
-  const headingStyle = {
-    fontSize: "1.25rem",
-    fontWeight: 600,
-    marginBottom: "8px",
-  };
+  const hasTrophySpotlight = family.perks?.some((p) => p.key === "trophySpotlight" && p.owned);
 
   const membersList = family.members.map((member) => (
     <Box
       key={member.id}
       sx={{
-        mb: 1,
+        py: 0.75,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
+        flexWrap: "wrap",
+        gap: 1,
+        "&:not(:last-child)": {
+          borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
+          pb: 1,
+        }
       }}
     >
-      <NameWithAvatar
-        id={member.id}
-        name={member.name}
-        avatar={member.avatar}
-        vanityUrl={member.vanityUrl}
-      />
-      <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+      <Box sx={{ display: "flex", alignItems: "center", minWidth: 0, flex: "1 1 auto" }}>
+        <NameWithAvatar
+          id={member.id}
+          name={member.name}
+          avatar={member.avatar}
+          vanityUrl={member.vanityUrl}
+        />
+      </Box>
+      <Box sx={{ display: "flex", gap: 0.75, alignItems: "center", flexShrink: 0 }}>
         {member.isLeader && (
           <i
             className="fas fa-crown"
@@ -251,16 +274,17 @@ export default function Family() {
             title="Founder"
           />
         )}
+        <Chip size="small" label={capitalize(member.role || "member")} variant="outlined" />
         {family.isLeader && user.loggedIn && member.id !== user.id && (
-          <Tooltip title="Remove member">
-            <IconButton
-              size="small"
-              onClick={() => onRemoveMember(member.id, member.name)}
-              sx={{ color: "error.main" }}
-            >
-              <i className="fas fa-trash" />
-            </IconButton>
-          </Tooltip>
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              setMenuAnchorEl(e.currentTarget);
+              setMenuMember(member);
+            }}
+          >
+            <i className="fas fa-ellipsis-v" style={{ fontSize: "14px" }} />
+          </IconButton>
         )}
       </Box>
     </Box>
@@ -268,6 +292,47 @@ export default function Family() {
 
   return (
     <>
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl)}
+        onClose={() => {
+          setMenuAnchorEl(null);
+          setMenuMember(null);
+        }}
+      >
+        {menuMember && (
+          <MenuItem
+            onClick={() => {
+              const action = menuMember.role === "officer" ? "demote" : "promote";
+              const newRole = menuMember.role === "officer" ? "member" : "officer";
+              if (window.confirm(`Are you sure you want to ${action} this member?`)) {
+                axios
+                  .post(`/api/family/${familyId}/member/${menuMember.id}/role`, { role: newRole })
+                  .then(() => {
+                    refreshFamilyTools();
+                    setMenuAnchorEl(null);
+                    setMenuMember(null);
+                  })
+                  .catch(errorAlert);
+              }
+            }}
+          >
+            {menuMember.role === "officer" ? "Demote to Member" : "Promote to Officer"}
+          </MenuItem>
+        )}
+        {menuMember && (
+          <MenuItem
+            onClick={() => {
+              onRemoveMember(menuMember.id, menuMember.name);
+              setMenuAnchorEl(null);
+              setMenuMember(null);
+            }}
+            sx={{ color: "error.main" }}
+          >
+            Remove Member
+          </MenuItem>
+        )}
+      </Menu>
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
           <Stack direction="column" spacing={1}>
@@ -291,7 +356,9 @@ export default function Family() {
                   />
                 )}
                 <Box>
-                  <Typography variant="h2">{family.name}</Typography>
+                  <Typography variant="h2" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    {family.name}
+                  </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Founded by{" "}
                     <NameWithAvatar
@@ -354,7 +421,15 @@ export default function Family() {
               </div>
             </Paper>
             {family.trophies && family.trophies.length > 0 && (
-              <Paper sx={panelStyle}>
+              <Paper 
+                sx={{
+                  ...panelStyle,
+                  ...(hasTrophySpotlight && {
+                    boxShadow: "0 0 25px 2px rgba(255, 215, 0, 0.4)",
+                    border: "1px solid rgba(255, 215, 0, 0.6)",
+                  })
+                }}
+              >
                 <TrophyCase
                   trophies={family.trophies}
                   headingStyle={headingStyle}
@@ -388,12 +463,12 @@ export default function Family() {
                       color="success"
                       onClick={onAcceptJoin}
                       disabled={
-                        family && family.members && family.members.length >= 20
+                        family && family.members && family.members.length >= (family.memberLimit || 20)
                       }
                       sx={{ flex: 1 }}
                       title={
-                        family && family.members && family.members.length >= 20
-                          ? "This family has reached the maximum of 20 members."
+                        family && family.members && family.members.length >= (family.memberLimit || 20)
+                          ? `This family has reached the maximum of ${family.memberLimit || 20} members.`
                           : ""
                       }
                     >
@@ -411,6 +486,7 @@ export default function Family() {
                 </Stack>
               </Paper>
             )}
+            
             <Paper sx={panelStyle}>
               <Typography variant="h3" sx={headingStyle}>
                 Members
@@ -419,6 +495,20 @@ export default function Family() {
                 {membersList}
               </Stack>
             </Paper>
+            
+            <FamilyStockCard
+              stockInfo={family.stockInfo}
+              family={family}
+              familyId={familyId}
+              refreshFamilyTools={refreshFamilyTools}
+            />
+            <FamilyProgress family={family} />
+            <FamilyApply family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
+            <FamilyApplications family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
+            <FamilyTreasury family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
+            <FamilyJoinFee family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
+            <FamilyPerks family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
+            <FamilyLedger familyId={familyId} refreshKey={ledgerRefreshKey} />
           </Stack>
         </Grid>
         {isPhoneDevice && (
