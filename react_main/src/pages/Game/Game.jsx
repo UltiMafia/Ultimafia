@@ -246,7 +246,10 @@ export default function Game() {
     if (finished) siteInfo.hideAllAlerts();
 
     if (socket.on) socket.send("leave");
-    else setLeave(true);
+
+    // Navigate immediately. Waiting only for the server's "left" event races
+    // with socket terminate() in playerLeave and often fails on iOS Safari.
+    setLeave(true);
 
     if (gameId === user.inGame) {
       user.setInGame(null);
@@ -1073,7 +1076,7 @@ export function useSocketListeners(listeners, socket) {
   }, [socket]);
 }
 
-export function TopBar() {
+export function TopBar({ forceShow = false } = {}) {
   const game = useContext(GameContext);
   const { singleState } = useContext(GameTypeContext);
 
@@ -1134,8 +1137,8 @@ export function TopBar() {
       });
   }
 
-  if (isPhoneDevice && game.selectedPanel !== "menu") {
-    // The top bar doubles as an info panel for mobile, shown in the Menu tab
+  if (isPhoneDevice && game.selectedPanel !== "info" && !forceShow) {
+    // The top bar doubles as an info panel for mobile
     return <></>;
   }
 
@@ -1396,6 +1399,8 @@ export function MobileLayout({
           display: selectedPanel === "menu" ? undefined : "none",
         }}
       >
+        {/* Games that hide the Info tab still show setup details on Menu */}
+        {hideInfoTab && <TopBar forceShow />}
         <MobileMenu />
       </Stack>
       <Paper elevation={3}>
