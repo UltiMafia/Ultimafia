@@ -78,15 +78,20 @@ async function backfillSkillRatings() {
 if (require.main === module) {
   const db = require("../db/db");
 
-  backfillSkillRatings()
-    .then(() => {
-      console.log("Backfill successful!");
-      process.exit(0);
-    })
-    .catch((err) => {
-      console.error("Backfill failed:", err);
-      process.exit(1);
-    });
+  db.promise.then(() => {
+    backfillSkillRatings()
+      .then(() => {
+        console.log("Backfill successful!");
+        process.exit(0);
+      })
+      .catch((err) => {
+        console.error("Backfill failed:", err);
+        process.exit(1);
+      });
+  }).catch((err) => {
+    console.error("Failed to connect to database:", err);
+    process.exit(1);
+  });
 }
 
 module.exports = backfillSkillRatings;
