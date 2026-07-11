@@ -1320,7 +1320,7 @@ router.get("/discover", async function (req, res) {
 
     res.send({
       families: discoveredFamilies,
-      total,
+      total: discoveredFamilies.length,
     });
   } catch (e) {
     logger.error(e);
