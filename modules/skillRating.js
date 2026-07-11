@@ -222,6 +222,9 @@ async function refundGameRatings(game) {
 
     const currentMu = user.skillRating?.mu ?? DEFAULT_MU;
     const newMu = currentMu - change.muDelta;
+    const currentSigma = user.skillRating?.sigma ?? DEFAULT_SIGMA;
+    // ensure sigmaDelta is handled safely if it is missing on older changes
+    const newSigma = currentSigma - (change.sigmaDelta || 0);
 
     bulkOps.push({
       updateOne: {
@@ -229,7 +232,8 @@ async function refundGameRatings(game) {
         update: {
           $set: {
             "skillRating.mu": newMu,
-            "skillRating.conservativeRank": newMu - 3.0 * (user.skillRating?.sigma ?? DEFAULT_SIGMA),
+            "skillRating.sigma": newSigma,
+            "skillRating.conservativeRank": newMu - 3.0 * newSigma,
           },
           $inc: {
             "skillRating.gamesPlayed": -1
