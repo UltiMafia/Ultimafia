@@ -657,7 +657,15 @@ module.exports = class Game {
   async playerLeave(player) {
     player.send("left");
     player.left = true;
-    player.user.disconnect();
+    // Delay disconnect so "left" can flush before the socket is torn down.
+    // Immediate terminate() races the client receive path (esp. iOS Safari).
+    setTimeout(() => {
+      try {
+        if (player.user) player.user.disconnect();
+      } catch (e) {
+        // Socket may already be closed by the client navigating away
+      }
+    }, 100);
 
     if (!this.started && this.players[player.id]) {
       this.cancelReadyCheck();

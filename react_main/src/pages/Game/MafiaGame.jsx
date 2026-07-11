@@ -589,7 +589,6 @@ export default function MafiaGame() {
             <LastWillEntry />
           </>
         }
-        hideInfoTab
       />
     </GameTypeContext.Provider>
   );
