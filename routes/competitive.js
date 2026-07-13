@@ -10,6 +10,7 @@ const routeUtils = require("./utils");
 const constants = require("../data/constants");
 const logger = require("../modules/logging")("(competitive)");
 const errors = require("../lib/errors");
+const gameRefund = require("../modules/gameRefund");
 
 const iso8601DateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -159,35 +160,24 @@ router.post("/refund", async function (req, res) {
 
     var gameId = String(req.body.gameId);
 
-    const game = await models.Game.findOne({ id: gameId }).lean();
+    const result = await gameRefund.refundGamesByPublicId(gameId);
 
-    if (!game) {
+    routeUtils.createModAction(userId, "Refund Ranked/Competitive Game", [
+      gameId,
+    ]);
+
+    res.send(gameRefund.formatRefundSummary(result));
+  } catch (e) {
+    if (e.status === 404) {
       res.status(404);
-      res.send("Game not found.");
+      res.send(e.message);
       return;
     }
-
-    const gameCompletions = await models.CompetitiveGameCompletion.find({ game: game._id });
-
-    console.log(`Refunding competitive completion for game ${gameId}`);
-    for (const gameCompletion of gameCompletions) {
-      console.log(`Refunding one gold heart to user ${gameCompletion.userId}`);
-      await models.User.updateOne(
-        { id: gameCompletion.userId },
-        { $inc: { goldHearts: 1 } }
-      );
-      await models.CompetitiveGameCompletion.updateOne(
-        { _id: gameCompletion._id },
-        { $set: { valid: false, } }
-      );
-      await redis.invalidateCachedUser(gameCompletion.userId);
+    if (e.status === 400) {
+      res.status(400);
+      res.send(e.message);
+      return;
     }
-
-    // Create mod action
-    routeUtils.createModAction(userId, "Refund Competitive Game", [gameId]);
-
-    res.sendStatus(200);
-  } catch (e) {
     logger.error(e);
     errors.serverError(res, "Error refunding game. Please try again.");
   }

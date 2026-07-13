@@ -3809,7 +3809,11 @@ module.exports = class Game {
   }
 
   async endPostgame() {
-    if (this._postgamePersisted && this._postgameCleanupDone) return;
+    // Synchronous lock: concurrent callers (postgame timer + all-players-left)
+    // must not both enter the persist path. The old gate only checked flags set
+    // after awaits, which allowed duplicate Game inserts for the same id.
+    if (this._postgameCleanupDone || this._endPostgameInProgress) return;
+    this._endPostgameInProgress = true;
 
     let kudosTarget = null;
 
@@ -3923,7 +3927,21 @@ module.exports = class Game {
         anonymousGame: this.anonymousGame,
         anonymousDeck: this.anonymousDeck,
       });
-      const gameDocument = await game.save();
+
+      let gameDocument;
+      try {
+        gameDocument = await game.save();
+      } catch (err) {
+        // Unique index on Game.id — another persist won the race.
+        if (err && (err.code === 11000 || err.code === 11001)) {
+          logger.warn(
+            `endPostgame: game ${this.id} already persisted (duplicate key); skipping side effects`
+          );
+          this._postgamePersisted = true;
+          return;
+        }
+        throw err;
+      }
 
       try {
         await skillRating.updateGameRatings(gameDocument);

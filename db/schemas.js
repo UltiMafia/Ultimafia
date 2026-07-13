@@ -326,7 +326,7 @@ var schemas = {
     deathMessage: { type: String, index: true, default: "" },
   }),
   Game: new mongoose.Schema({
-    id: { type: String, index: true },
+    id: { type: String, index: true, unique: true },
     type: String,
     lobby: { type: String, default: "Main" },
     lobbyName: { type: String, default: "" },

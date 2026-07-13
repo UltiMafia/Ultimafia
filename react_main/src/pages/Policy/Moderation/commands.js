@@ -1392,7 +1392,7 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Refund Competitive Game": {
+    "Refund Ranked/Competitive Game": {
       perm: "manageCompetitive",
       category: "Competitive Management",
       args: [
@@ -1406,7 +1406,10 @@ export function useModCommands(argValues, commandRan, setResults) {
         axios
           .post("/api/competitive/refund", argValues)
           .then((res) => {
-            siteInfo.showAlert("Game refunded.", "success");
+            siteInfo.showAlert(
+              typeof res.data === "string" ? res.data : "Game refunded.",
+              "success"
+            );
             commandRan();
           })
           .catch(errorAlert);
