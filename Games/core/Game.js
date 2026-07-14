@@ -3808,9 +3808,27 @@ module.exports = class Game {
     deprecationCheck();
   }
 
+  /**
+   * Single-flight entry: concurrent callers (postgame timer, all-players-left,
+   * ensurePostgameTimer recreation) share one run so ranked payouts / Game
+   * saves / skill ratings cannot be applied multiple times.
+   */
   async endPostgame() {
-    if (this._postgamePersisted && this._postgameCleanupDone) return;
+    if (this._postgameCleanupDone) return this._endPostgamePromise;
+    if (this._endPostgameStarted) return this._endPostgamePromise;
 
+    // Claim synchronously before any await / nested work so re-entrant
+    // callers cannot start a second persist path.
+    this._endPostgameStarted = true;
+    this.postgameOver = true;
+    this.clearTimers();
+    this.broadcast("finished");
+
+    this._endPostgamePromise = this._doEndPostgame();
+    return this._endPostgamePromise;
+  }
+
+  async _doEndPostgame() {
     let kudosTarget = null;
 
     try {
@@ -3844,272 +3862,308 @@ module.exports = class Game {
         this.recordSetupStats(setup);
 
         var history = this.history.getHistoryInfo(null, true);
-      var users = [];
-      var playersGone = Object.values(this.playersGone);
-      var allPlayers = this.players.concat(playersGone);
+        var users = [];
+        var playersGone = Object.values(this.playersGone);
+        var allPlayers = this.players.concat(playersGone);
 
-      // Filter to only include players who were assigned roles (i.e., were in the game when it started)
-      var players = allPlayers.filter((p) => this.originalRoles[p.id]);
+        // Filter to only include players who were assigned roles (i.e., were in the game when it started)
+        var players = allPlayers.filter((p) => this.originalRoles[p.id]);
 
-      let playerIdMap = {};
-      let playerAlignmentMap = {};
-      let playerRoleMap = {};
-      for (let player of players) {
-        const roleName = this.originalRoles[player.id].split(":")[0];
-        const alignment = this.getRoleAlignment(roleName);
+        let playerIdMap = {};
+        let playerAlignmentMap = {};
+        let playerRoleMap = {};
+        for (let player of players) {
+          const roleName = this.originalRoles[player.id].split(":")[0];
+          const alignment = this.getRoleAlignment(roleName);
 
-        let userId = player.userId || player.user.id;
-        let user = await models.User.findOne({ id: userId }).select("_id");
-        playerIdMap[userId] = player.id;
-        playerAlignmentMap[userId] = alignment;
-        playerRoleMap[userId] = roleName;
+          let userId = player.userId || player.user.id;
+          let user = await models.User.findOne({ id: userId }).select("_id");
+          playerIdMap[userId] = player.id;
+          playerAlignmentMap[userId] = alignment;
+          playerRoleMap[userId] = roleName;
 
-        users.push(user ? user._id : null);
-      }
-      let spectators = [];
-      let spectatorIdMap = {};
+          users.push(user ? user._id : null);
+        }
+        let spectators = [];
+        let spectatorIdMap = {};
 
-      for (let spec of this.spectatorsOld) {
-        let userId = spec.userId || spec.user.id;
-        let user = await models.User.findOne({ id: userId }).select("_id");
-        spectatorIdMap[userId] = spec.id;
-        spectators.push(user ? user._id : null);
-      }
-
-      var playerNames = players.map((p) => p.name);
-      var playerIds = players.map((p) => p.id);
-      var spectatorIds = this.spectatorsOld.map((p) => p.id);
-      var spectatorNames = this.spectatorsOld.map((p) => p.name);
-
-      // Only include players who left and had roles assigned
-      var playersLeft = playersGone.filter((p) => this.originalRoles[p.id]);
-
-      var game = new models.Game({
-        id: this.id,
-        type: this.type,
-        lobby: this.lobby,
-        lobbyName: this.lobbyName,
-        setup: setup._id,
-        users: users,
-        players: playerIds,
-        spectatorsUsers: spectators,
-        spectators: spectatorIds,
-        spectatorNames: spectatorNames,
-        left: playersLeft.map((p) => p.id),
-        names: playerNames,
-        winners: this.winners.players.map((p) => p.id),
-        winnersInfo: this.winners.getWinnersInfo(),
-        playerIdMap: JSON.stringify(playerIdMap),
-        playerAlignmentMap: JSON.stringify(playerAlignmentMap),
-        playerRoleMap: JSON.stringify(playerRoleMap),
-        spectatorIdMap: JSON.stringify(spectatorIdMap),
-        history: JSON.stringify(history),
-        startTime: this.startTime,
-        endTime: Date.now(),
-        ranked: this.ranked,
-        competitive: this.competitive,
-        private: this.private,
-        guests: this.guests,
-        spectating: this.spectating,
-        readyCheck: this.readyCheck,
-        noVeg: this.noVeg,
-        hadVeg: !!this.hadVegKill,
-        setupVersion:
-          this.setup.version != null ? this.setup.version : null,
-        setupStatsBackfilled: true,
-        kudosReceiver: kudosTarget ? kudosTarget.user.id : "",
-        stateLengths: this.stateLengths,
-        gameTypeOptions: JSON.stringify(this.getGameTypeOptions()),
-        anonymousGame: this.anonymousGame,
-        anonymousDeck: this.anonymousDeck,
-      });
-      const gameDocument = await game.save();
-
-      try {
-        await skillRating.updateGameRatings(gameDocument);
-      } catch (err) {
-        logger.error(`Failed to update skill ratings for game ${this.id}: ${err.message}`);
-      }
-
-      if (this.competitive) {
-        await this.recordCompetitiveCompletions(gameDocument._id);
-      }
-
-      const allParticipantIds = Array.from(
-        new Set([
-          ...this.players.filter((p) => !p.isBot).map((p) => p.userId || p.user.id),
-          ...Object.keys(this.playersGone || {}),
-        ])
-      );
-
-      for (let player of this.players) {
-        let coinsEarned = 0;
-        if (this.ranked && player.won) {
-          coinsEarned++;
+        for (let spec of this.spectatorsOld) {
+          let userId = spec.userId || spec.user.id;
+          let user = await models.User.findOne({ id: userId }).select("_id");
+          spectatorIdMap[userId] = spec.id;
+          spectators.push(user ? user._id : null);
         }
 
-        let pointsWon = 0;
-        const earnedFortune = this.getPointsEarnedForPlayer(player.id);
-        if (earnedFortune != null && !Number.isNaN(earnedFortune)) {
-          pointsWon = earnedFortune;
-        }
+        var playerNames = players.map((p) => p.name);
+        var playerIds = players.map((p) => p.id);
+        var spectatorIds = this.spectatorsOld.map((p) => p.id);
+        var spectatorNames = this.spectatorsOld.map((p) => p.name);
 
-        if (this.achievementsAllowed()) {
-          if (player.EarnedAchievements.length > 0) {
-            for (let x = 0; x < player.EarnedAchievements.length; x++) {
-              if (
-                !player.user.achievements.includes(player.EarnedAchievements[x])
-              ) {
-                player.user.achievements.push(player.EarnedAchievements[x]);
-                coinsEarned += this.getAchievementReward(
-                  player.EarnedAchievements[x]
-                );
-              }
-            }
-          }
-        } else {
-          player.EarnedAchievements = [];
-        }
+        // Only include players who left and had roles assigned
+        var playersLeft = playersGone.filter((p) => this.originalRoles[p.id]);
 
-        if (
-          this.hasIntegrity &&
-          !this.private &&
-          player.DailyTracker &&
-          player.DailyTracker.length >= 1
-        ) {
-          coinsEarned += player.DailyPayout;
-          if (
-            player.user.dailyChallenges &&
-            player.user.dailyChallenges.length <= 0
-          ) {
-            coinsEarned += 20;
-            player.DailyCompleted = 1;
-          } else {
-            player.DailyCompleted = 0;
-          }
-        }
-
-        const skipStatsSave = this.type === "Mafia" && this.hadVegKill;
-        let statIncrements = {};
-        if (!skipStatsSave) {
-          try {
-            statIncrements = this.buildStatsIncrements(player);
-          } catch (e) {
-            logger.warn(
-              `buildStatsIncrements failed for ${player.user.id} in game ${this.id}: ${e.message}`
-            );
-          }
-        }
-
-        const userSet = {
-          playedGame: true,
-          achievementCount: player.user.achievements.length,
-        };
-
-        const incOps = {
-          coins: coinsEarned,
-          kudos:
-            kudosTarget && kudosTarget.user.id == player.user.id ? 1 : 0,
-          points: pointsWon > 0 ? pointsWon : 0,
-          pointsNegative: pointsWon < 0 ? -pointsWon : 0,
-          ...statIncrements,
-        };
+        var game = new models.Game({
+          id: this.id,
+          type: this.type,
+          lobby: this.lobby,
+          lobbyName: this.lobbyName,
+          setup: setup._id,
+          users: users,
+          players: playerIds,
+          spectatorsUsers: spectators,
+          spectators: spectatorIds,
+          spectatorNames: spectatorNames,
+          left: playersLeft.map((p) => p.id),
+          names: playerNames,
+          winners: this.winners.players.map((p) => p.id),
+          winnersInfo: this.winners.getWinnersInfo(),
+          playerIdMap: JSON.stringify(playerIdMap),
+          playerAlignmentMap: JSON.stringify(playerAlignmentMap),
+          playerRoleMap: JSON.stringify(playerRoleMap),
+          spectatorIdMap: JSON.stringify(spectatorIdMap),
+          history: JSON.stringify(history),
+          startTime: this.startTime,
+          endTime: Date.now(),
+          ranked: this.ranked,
+          competitive: this.competitive,
+          private: this.private,
+          guests: this.guests,
+          spectating: this.spectating,
+          readyCheck: this.readyCheck,
+          noVeg: this.noVeg,
+          hadVeg: !!this.hadVegKill,
+          setupVersion:
+            this.setup.version != null ? this.setup.version : null,
+          setupStatsBackfilled: true,
+          kudosReceiver: kudosTarget ? kudosTarget.user.id : "",
+          stateLengths: this.stateLengths,
+          gameTypeOptions: JSON.stringify(this.getGameTypeOptions()),
+          anonymousGame: this.anonymousGame,
+          anonymousDeck: this.anonymousDeck,
+        });
+        const gameDocument = await game.save();
 
         try {
-          await models.User.updateOne(
-            { id: player.user.id },
-            {
-              $push: { games: game._id },
-              $addToSet: { achievements: { $each: player.EarnedAchievements } },
-              $set: userSet,
-              $inc: incOps,
-            }
-          ).exec();
-
-          if ((this.ranked || this.competitive) && player.won && coinsEarned > 0) {
-            if (this.shareholderSnapshots && this.shareholderSnapshots[player.user.id]) {
-              try {
-                await stockMarket.distributeDividends(player.user.id, coinsEarned, this.shareholderSnapshots[player.user.id], allParticipantIds);
-              } catch (err) {
-                logger.error(`Failed to distribute dividends for ${player.user.id} in game ${this.id}: ${err.message}`);
-              }
-            }
-
-            const familyId = this.playerToFamilyMap && this.playerToFamilyMap[player.user.id];
-            if (familyId && this.familyShareholderSnapshots && this.familyShareholderSnapshots[familyId]) {
-              try {
-                await stockMarket.distributeFamilyDividends(familyId, coinsEarned, this.familyShareholderSnapshots[familyId], allParticipantIds, player.user.id);
-              } catch (err) {
-                logger.error(`Failed to distribute family dividends for ${familyId} from player ${player.user.id} in game ${this.id}: ${err.message}`);
-              }
-            }
-          }
-        } catch (e) {
-          logger.warn(
-            `endPostgame user update failed for ${player.user.id} in game ${this.id}: ${e.message}`
+          await skillRating.updateGameRatings(gameDocument);
+        } catch (err) {
+          logger.error(
+            `Failed to update skill ratings for game ${this.id}: ${err.message}`
           );
         }
 
-        if (Object.keys(statIncrements).length > 0 && !player.isBot) {
-          Game.refreshUserWinRates(player.user.id);
+        if (this.competitive) {
+          await this.recordCompetitiveCompletions(gameDocument._id);
         }
 
-        if (!player.isBot) {
-          await syncRankedCompetitiveAccess(player.user.id);
-        }
-
-        if (player.DailyTracker && player.DailyTracker.length >= 1) {
-          await models.User.updateOne(
-            { id: player.user.id },
-            {
-              $set: {
-                dailyChallenges: player.user.dailyChallenges.map(
-                  (day) => `${day[0]}:${day[1]}:${day[2]}`
-                ),
-              },
-              $inc: {
-                dailyChallengesCompleted: player.DailyCompleted,
-              },
-            }
-          ).exec();
-        }
-
-        if (this.ranked && !player.isBot) {
-          let heartRefresh = await models.HeartRefresh.findOne({
-            userId: player.user.id,
-            type: "red",
-          }).select("_id");
-          if (!heartRefresh) {
-            heartRefresh = new models.HeartRefresh({
-              userId: player.user.id,
-              when: Date.now() + constants.redHeartRefreshIntervalMillis,
-              type: "red",
-            });
-            await heartRefresh.save();
-          }
-        }
-
-        let dailyRefresh = await models.DailyChallengeRefresh.findOne().select(
-          "_id"
+        const allParticipantIds = Array.from(
+          new Set([
+            ...this.players
+              .filter((p) => !p.isBot)
+              .map((p) => p.userId || p.user.id),
+            ...Object.keys(this.playersGone || {}),
+          ])
         );
-        if (!dailyRefresh) {
-          dailyRefresh = new models.DailyChallengeRefresh({
-            when: Date.now() + constants.dailyChallengesRefreshIntervalMillis,
-          });
-          await dailyRefresh.save();
-        }
 
-        if (!player.isBot) {
-          await redis.cacheUserInfo(player.user.id, true);
-        }
+        for (let player of this.players) {
+          let coinsEarned = 0;
+          if (this.ranked && player.won) {
+            coinsEarned++;
+          }
 
-        // if (this.ranked && player.user.referrer && player.user.rankedCount == constants.referralGames - 1) {
-        //     await models.User.updateOne(
-        //         { id: player.user.referrer },
-        //         { $inc: { coins: constants.referralCoins } }
-        //     );
-        // }
-      }
+          let pointsWon = 0;
+          const earnedFortune = this.getPointsEarnedForPlayer(player.id);
+          if (earnedFortune != null && !Number.isNaN(earnedFortune)) {
+            pointsWon = earnedFortune;
+          }
+
+          if (this.achievementsAllowed()) {
+            if (player.EarnedAchievements.length > 0) {
+              for (let x = 0; x < player.EarnedAchievements.length; x++) {
+                if (
+                  !player.user.achievements.includes(
+                    player.EarnedAchievements[x]
+                  )
+                ) {
+                  player.user.achievements.push(player.EarnedAchievements[x]);
+                  coinsEarned += this.getAchievementReward(
+                    player.EarnedAchievements[x]
+                  );
+                }
+              }
+            }
+          } else {
+            player.EarnedAchievements = [];
+          }
+
+          if (
+            this.hasIntegrity &&
+            !this.private &&
+            player.DailyTracker &&
+            player.DailyTracker.length >= 1
+          ) {
+            coinsEarned += player.DailyPayout;
+            if (
+              player.user.dailyChallenges &&
+              player.user.dailyChallenges.length <= 0
+            ) {
+              coinsEarned += 20;
+              player.DailyCompleted = 1;
+            } else {
+              player.DailyCompleted = 0;
+            }
+          }
+
+          const skipStatsSave = this.type === "Mafia" && this.hadVegKill;
+          let statIncrements = {};
+          if (!skipStatsSave) {
+            try {
+              statIncrements = this.buildStatsIncrements(player);
+            } catch (e) {
+              logger.warn(
+                `buildStatsIncrements failed for ${player.user.id} in game ${this.id}: ${e.message}`
+              );
+            }
+          }
+
+          const userSet = {
+            playedGame: true,
+            achievementCount: player.user.achievements.length,
+          };
+
+          const incOps = {
+            coins: coinsEarned,
+            kudos:
+              kudosTarget && kudosTarget.user.id == player.user.id ? 1 : 0,
+            points: pointsWon > 0 ? pointsWon : 0,
+            pointsNegative: pointsWon < 0 ? -pointsWon : 0,
+            ...statIncrements,
+          };
+
+          try {
+            await models.User.updateOne(
+              { id: player.user.id },
+              {
+                $push: { games: game._id },
+                $addToSet: {
+                  achievements: { $each: player.EarnedAchievements },
+                },
+                $set: userSet,
+                $inc: incOps,
+              }
+            ).exec();
+
+            if (
+              (this.ranked || this.competitive) &&
+              player.won &&
+              coinsEarned > 0
+            ) {
+              if (
+                this.shareholderSnapshots &&
+                this.shareholderSnapshots[player.user.id]
+              ) {
+                try {
+                  await stockMarket.distributeDividends(
+                    player.user.id,
+                    coinsEarned,
+                    this.shareholderSnapshots[player.user.id],
+                    allParticipantIds
+                  );
+                } catch (err) {
+                  logger.error(
+                    `Failed to distribute dividends for ${player.user.id} in game ${this.id}: ${err.message}`
+                  );
+                }
+              }
+
+              const familyId =
+                this.playerToFamilyMap &&
+                this.playerToFamilyMap[player.user.id];
+              if (
+                familyId &&
+                this.familyShareholderSnapshots &&
+                this.familyShareholderSnapshots[familyId]
+              ) {
+                try {
+                  await stockMarket.distributeFamilyDividends(
+                    familyId,
+                    coinsEarned,
+                    this.familyShareholderSnapshots[familyId],
+                    allParticipantIds,
+                    player.user.id
+                  );
+                } catch (err) {
+                  logger.error(
+                    `Failed to distribute family dividends for ${familyId} from player ${player.user.id} in game ${this.id}: ${err.message}`
+                  );
+                }
+              }
+            }
+          } catch (e) {
+            logger.warn(
+              `endPostgame user update failed for ${player.user.id} in game ${this.id}: ${e.message}`
+            );
+          }
+
+          if (Object.keys(statIncrements).length > 0 && !player.isBot) {
+            Game.refreshUserWinRates(player.user.id);
+          }
+
+          if (!player.isBot) {
+            await syncRankedCompetitiveAccess(player.user.id);
+          }
+
+          if (player.DailyTracker && player.DailyTracker.length >= 1) {
+            await models.User.updateOne(
+              { id: player.user.id },
+              {
+                $set: {
+                  dailyChallenges: player.user.dailyChallenges.map(
+                    (day) => `${day[0]}:${day[1]}:${day[2]}`
+                  ),
+                },
+                $inc: {
+                  dailyChallengesCompleted: player.DailyCompleted,
+                },
+              }
+            ).exec();
+          }
+
+          if (this.ranked && !player.isBot) {
+            let heartRefresh = await models.HeartRefresh.findOne({
+              userId: player.user.id,
+              type: "red",
+            }).select("_id");
+            if (!heartRefresh) {
+              heartRefresh = new models.HeartRefresh({
+                userId: player.user.id,
+                when: Date.now() + constants.redHeartRefreshIntervalMillis,
+                type: "red",
+              });
+              await heartRefresh.save();
+            }
+          }
+
+          let dailyRefresh =
+            await models.DailyChallengeRefresh.findOne().select("_id");
+          if (!dailyRefresh) {
+            dailyRefresh = new models.DailyChallengeRefresh({
+              when:
+                Date.now() + constants.dailyChallengesRefreshIntervalMillis,
+            });
+            await dailyRefresh.save();
+          }
+
+          if (!player.isBot) {
+            await redis.cacheUserInfo(player.user.id, true);
+          }
+
+          // if (this.ranked && player.user.referrer && player.user.rankedCount == constants.referralGames - 1) {
+          //     await models.User.updateOne(
+          //         { id: player.user.referrer },
+          //         { $inc: { coins: constants.referralCoins } }
+          //     );
+          // }
+        }
 
         this._postgamePersisted = true;
       }
