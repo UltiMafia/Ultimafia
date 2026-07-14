@@ -2418,6 +2418,21 @@ router.post("/refundGame", async (req, res) => {
         }
       }
 
+      // Invalidate competitive completions for this game document
+      if (game.competitive) {
+        try {
+          await models.CompetitiveGameCompletion.updateMany(
+            { game: game._id },
+            { $set: { valid: false } }
+          );
+        } catch (e) {
+          logger.error(
+            `Error invalidating competitive completions for game ${gameId} (_id ${game._id}):`,
+            e
+          );
+        }
+      }
+
       refundedCount++;
       lastPlayerCount = userIds.length;
       heartLabel = game.ranked ? "red" : "gold";
