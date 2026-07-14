@@ -308,8 +308,7 @@ const roleData = {
       tagsHidden: ["No Investigate"],
       description: [
         "You see self as Villager.",
-        "You appear as a random evil role to information roles.",
-        "You appear as a random evil role when condemned.",
+        "You appear as a random evil role in the setup to information roles, and when condemned.",
         "You appear as Miller when killed.",
       ],
       skins: [
