@@ -25,7 +25,7 @@ module.exports = class MakePlayerLearnOneOfTwoPlayersOnDeath extends Card {
           }
 
           this.player.queueAlert(
-            `:invest: You learn that one of ${alert[0].name} or ${alert[1].name} is Evil.`
+            `:invest: You learn that at least one of ${alert[0].name} and ${alert[1].name} is Evil.`
           );
         }
       },
