@@ -29,8 +29,6 @@ module.exports = class CommitSeppuku extends Card {
             });
             if (temp.dominates(this.actor)) {
               this.actor.kill("basic", this.actor);
-            } else {
-              return;
             }
 
             if (this.dominates()) {
