@@ -24,7 +24,7 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
           );
           if (alive.length <= 2) {
             this.actor.queueAlert(
-              ` You learn nothing... the other two survivors don't trust you with their laundry.`
+              `:invest: The other two survivors don't trust you with their laundry, so you learn nothing.`
             );
             return;
           }
@@ -36,7 +36,7 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
             this.game
           );
           info.processInfo();
-          var alert = `:invest: ${info.getInfoFormated()}.`;
+          var alert = `:invest: ${info.getInfoFormated()}`;
           this.actor.queueAlert(alert);
         },
       },
