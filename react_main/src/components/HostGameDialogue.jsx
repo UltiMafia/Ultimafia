@@ -148,9 +148,10 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
 
   var alertText = "";
 
-  if (!user.canPlayRanked && isRanked) {
-    // TODO use npm link so that the frontend can access constants.js and stop hardcoding this
-    alertText = `You must play 5 games before playing ranked.`;
+  if (user.perms && !user.perms.playRanked && isRanked) {
+    alertText = `You are unable to play ranked games. Please contact an admin if this is in error.`;
+  } else if (user.perms && !user.perms.playCompetitive && isCompetitive) {
+    alertText = `You are unable to play competitive games. Please contact an admin if this is in error.`;
   }
 
   return (

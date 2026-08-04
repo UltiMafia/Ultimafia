@@ -81,7 +81,7 @@ export function UserProvider({
   }
 
   user.gamesPlayed = user.gamesPlayed || 0;
-  user.canPlayRanked = user.gamesPlayed >= 5;
+  user.canPlayRanked = !!(user.perms && user.perms.playRanked);
 
   const autoContrastEnabled = user && user.settings && user.settings.minimumContrast !== undefined && user.settings.minimumContrast !== "none";
   const minimumContrast = !autoContrastEnabled ? 0 : Math.max(0, Number.parseFloat(user.settings.minimumContrast));

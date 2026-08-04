@@ -453,6 +453,8 @@ module.exports = {
   defaultPerms: [
     "signIn",
     "playGame",
+    "playRanked",
+    "playCompetitive",
     "createThread",
     "postReply",
     "vote",
