@@ -1,0 +1,235 @@
+﻿Rules
+Rules
+When you choose to spend your time on Ultimafia, you agree to uphold a level of sportsmanship. We define sportsmanship on Ultimafia as:
+* Being ethical and lawful: Follow the Ultimafia rules and do not partake in actions or activities that could jeopardise the website.
+* Playing fair: Using the tools provided in the game to win the game to the best of your ability.
+* Being respectful: Respecting your fellow players and their time, as well as the volunteer admins and their time.
+Admins will do their best to help any and all users enjoy the time they choose to spend on Ultimafia, and in order to facilitate that we ask that users follow the rules outlined on this page. Unsportsmanlike conduct may result in temporary or permanent banishment from games or Ultimafia.
+Follow site-wide rules at all times
+Breaking site-wide rules may result in harsher punishment than listed depending on the severity of the rule broken.
+Be accepting
+You are expected to contribute to an accepting environment. Do not discriminate against or disrespect other users based on group identity. The admin team’s mission statement intends to, "maintain[ing] a community free from prejudice or bias based on sex, age, gender identity, sexual orientation, skin color, ability, religion, nationality, or any other characteristic.”
+Including but not limited to:
+* Racism, homophobia, transphobia, misogyny, religious discrimination, xenophobia, ableism, or any other form of bigotry otherwise not listed. 
+* The use of slurs, derogatory language, or bigoted expressions, including instances where an individual belongs to the affected group or claims the language is being "reclaimed." 
+* bypassing slur filters.
+* denial or minimization of acts of genocide or systemic oppression of minority groups. 
+Breaking this rule will result in an Intolerance violation.
+Be respectful
+You are expected to communicate with your fellow users with understanding. Do not insult or attack fellow users meaningfully, regardless of intent or game state. 
+Including but not limited to:
+* Attacks on intelligence or ability.[a]
+* Targeted deliberate antagonisation. [b]
+* Conduct intended to intimidate or demean, even when ‘justified’.[c]
+* Continuing behaviour or conduct that has been clearly identified as upsetting. (i.e. “Stop clause”)
+* Creating accounts with the intent to defame or frame, including impersonation.
+Breaking this rule will result in a Personal Attacks & Harassment (PA) violation.
+Be civil
+You are expected to keep discussions, in-game and out, civilised. Do not intentionally provoke or escalate conflict between users, whether between yourself and another, or two separate parties. 
+Including but not limited to:
+* Engaging in trolling behavior, including concern trolling, political trolling, etc.
+* Spamming messages anywhere on the site, including reports.
+* Initiating or encouraging large-scale public arguments.
+* Disingenuously promoting drama or division within community spaces.
+* Deliberately joining multiple games with user(s) avoiding you.[d]
+* Repeatedly leaving and rejoining games, particularly when a match is about to begin
+Breaking this rule will result in an Instigation violation.
+Welcome new players
+You are expected to show patience and kindness towards new players. Do not discriminate against or mistreat users based solely on the fact that they are a new user.
+Including but not limited to:
+* Engaging in policy-based voting against new users without merit.
+* Falsely accusing new users of rule violations.
+* Promoting attitudes or practices that discourage community growth.
+Breaking this rule will result in a Hazing violation.
+Respect Privacy
+We do not expect users to have their personal information revealed if they don’t want it to be. Do not reveal the personal or identifying information of other users without their consent.
+Including but not limited to:
+* Real names.
+* Locations or addresses.
+* Ages.
+Breaking this rule will result in a Doxxing violation.
+Respect Admin decisions
+Admins have the final say in all decisions regarding rules and conduct. Do not circumvent these decisions by playing or posting on an alternate account when suspended.
+Breaking this rule will result in a Suspension Circumvention (SC) violation.
+Keep it PG13
+Do not post content inappropriate for users under the age of 18. You may not create, share, display, or distribute content otherwise considered 'Not Safe for Work'. 
+Including but is not limited to:
+* Graphic, written, or visual depictions of sexual activity or explicit acts
+* Descriptions or portrayals of illegal drug use and/or behavior that promotes substance abuse
+* Lewd, obscene, or sexually explicit language
+* Content intended to shock, disturb, or offend others (i.e. shock sites, gore, etc.)
+* Access to or promotion of pornographic websites
+* Descriptions or depictions of real violence or assault
+Breaking this rule will result in an Adult Content (AC) violation.
+Follow the law 
+Do not share, link to, or participate in illegal or potentially illegal activity. Moderation reserves the right to report suspected illegal activity to appropriate law enforcement authorities whenever possible and as required by law.
+Including but not limited to:
+* Inappropriate or unlawful interactions involving a minor.
+* The distribution, solicitation, or possession of CSAM.
+* Promotion or facilitation of terrorism or organized criminal activity.
+* Credible threats of violence or otherwise real world harm.
+Breaking this rule will result in an immediate and permanent site-wide ban.
+Play fair and with respect
+Play to win
+You are expected to play to win in ranked or competitive games. Do not intentionally play against your win condition.
+Including but not limited to:
+* Purposefully taking actions or making claims that hinder your win condition.
+* Drawing the game when there is still a path to victory.
+* Prioritising another player’s loss at the cost of your own win condition.
+Breaking this rule will result in a Gamethrowing (GT) violation.
+Stay engaged
+Read and participate meaningfully in ranked or competitive games, and do not AFK or “tab out”. If a user must step away, they are expected to notify other users and review the progress of the game upon returning to ensure vital information is not missed.
+Included but not limited to:
+* Diverting attention to unrelated activities.
+* Pretending to be or faking AFK.
+* Exclusively using gimmicks in place of participation.
+* Exclusively discussing unrelated topics.
+Breaking this rule will result in an Insufficient Participation (ISP) violation.
+Keep the game within the game
+Do not use tools or processes from outside of a ranked or competitive game to aid or influence yourself in winning the game. 
+Included but not limited to:
+* Posting on profiles, lobbies, forums, the Ultimafia Discord server during the game.
+* Clearly stating meta on your profile, whether followed or not.
+* Bribing or threatening a consequence unrelated to the game.
+* Making pregame pacts.
+* Accusing other players of rule breaking, or threatening to report them.
+* Pretending to cheat or break a rule.
+Breaking this rule will result in an Outside Game Influence (OGI) violation.
+Keep the game fun
+You are expected to play in good faith. Do not play with the purpose of antagonising other users. 
+Including but not limited to:
+* Intentionally and repeatedly disrupting gameplay.
+* Bad-faith gameplay (e.g., 'hip-firing' or gunshots based on no or minimal information)
+* Communication with the primary intent of provoking or upsetting other users.
+Breaking this rule will result in an Antagonisation violation.
+Commit to complete games you join
+You are not expected to prioritise the game over real life or emergencies, but do not join ranked or competitive games you know you cannot complete.
+Breaking this rule in a ranked game will result in a 5 minute suspension and an abandonment on your win rate.
+Breaking this rule in a competitive game will result in an 15 minute suspension and an abandonment on your win rate.
+Frequently breaking this rule will result in a Repeated Abandonment (RA) violation.
+Play it out until the end
+Do not abandon ranked or competitive games for any in-game reasons. If there are any bugs, exploits, or rule breaks, players are expected to play the game to completion and report the issues afterwards. 
+Breaking this rule will result in a Game-Related Abandonment (GRA) violation. Exceptions can very rarely be made under extreme circumstances at admin discretion i.e. extreme harassment.
+Report bugs and exploits
+If a bug or exploit is found, do not hide it from the admin team and do not abuse it in ranked or competitive games.
+Breaking this rule will result in a Bug Abuse (BA) violation.
+Do not cheat
+Cheating is defined as extreme cases of manipulation or conduct that provides an unfair competitive advantage or undermines the integrity of ranked and competitive games.
+Including and not limited to:
+* Using multiple accounts within the same game ('multiaccounting' or 'alt'ing').
+* Communicating with other participants through external means not within an in-progress game.
+* Taking screenshots or other methods of sharing in game information to prove alignment or gain strategic advantage.
+* Coordinating externally for specific outcomes, or playing with the intent of ensuring another user's victory via external coordination.
+Breaking this rule will result in a Cheating violation.
+First time join messages
+First time join messages
+When you join ranked games, you agree to uphold a level of sportsmanship. We define sportsmanship on Ultimafia as:
+* Playing fair: Using the tools provided in the game to win the game to the best of your ability.
+* Being respectful: Respecting your fellow players and their time.
+It’s recommended that you have some familiarity with mafia, the party game (also known as werewolf) before playing ranked. If you wish to learn more, information can be found in the Learn section of the website and unranked games can be played without stakes.
+
+
+When you join competitive games, you agree to uphold a level of sportsmanship. We define sportsmanship on Ultimafia as:
+* Playing fair: Using the tools provided in the game to win the game to the best of your ability.
+* Being respectful: Respecting your fellow players and their time.
+It’s recommended that you have some familiarity with Ultimafia specifically before playing competitive. If you are unsure of how mafia works on Ultimafia, consider starting with Ranked (red) games.
+
+
+Notes/scraps
+Notes/scraps
+When you join a Ranked or Competitive game, you agree to:
+- Finish games you start. Leaving after a game begins, or going AFK and deranking a game, is Game-Related Abandonment (GRA).
+- Stay engaged. Respond when addressed, contribute meaningfully, and avoid Insufficient Participation (ISP).
+- Play in good faith. Do not throw, grief, deliberately lose, or sabotage the experience for others.
+- Keep the game fair. No cheating, multiaccounting, outside coordination, Outside of Game Information (OGI), or intentional exploits.
+- Keep conflict constructive. Disagree with plays or reads without harassment, trash talk, personal attacks, or derailing the game.
+- Report responsibly. Do not use reports as threats, leverage, or mid-game tools to gain advantage. 
+
+
+Sportsmanship is an ethos that a sport or activity should be enjoyed for its own sake, with proper consideration for fairness, ethics, respect, and a sense of fellowship with competitors. 
+
+
+Fairness: Cheating, OGI, Exploits, antagonising, GRA, softly ISP.
+Ethics: Higher stakes, i.e. IC, AC, intolerance, OPI. softly lying about mechanics, ERB
+Respect: Antagonisation, PA, Intolerance, instigation, hazing, reporting frivolously
+Fellowship: Hazing
+
+
+ Antagonization
+* Antagonizing other users, intentionally disrupting gameplay, or engaging in conduct designed to provoke negative reactions. Gameplay must be conducted in good faith and with respect for other participants to not undermine proper sportsmanship.
+* Taking game actions primarily to incite frustration or disrupt said game (e.g., 'hip-firing' or shots based on no or minimal information available)
+* Communication with the primary intent of provoking or upsetting other users
+* Repeatedly posting the same message, flooding chat, or engaging in vote spam
+* Repeatedly leaving and rejoining games, particularly when a match is about to begin
+* Targeting a user based on personal grudges, prior disputes, or out-of-game conflicts rather than in-game strategy 
+Copied Mechanics (CP Mech)
+* Using a copy/paste or ctrl + v function to copy an in-game system message or night action to attempt to prove alignment (e.g cop report or cop meeting). This includes fake reports, fake copied meetings, and messages from spy/agent or similar roles. Other players in the game may not request details from system messages, night meetings or graphical mode to determine alignment. Whispers and Timestamps are NOT included in this rule. Typing out system messages in an attempt to prove yourself as real also is violated under this.  
+Encouraging Rule Breaking (ERB)
+* Encouraging other people to suicide, spam, cheat or otherwise break a rule. ERB expires when the rule encouraged to break would have expired.  
+Trolling
+* Antagonizing other players, disrupting gameplay through actions or communications, or otherwise playing to get negative reactions from other players. Hip-firing will be moderated as trolling going forward, however more egregious cases may be upgraded to Game Throwing on a case by case basis. This also includes repeatedly sending the same message and/or chat flooding. Includes vote spamming.
+
+
+Coercion
+* Threatening or blackmailing users with social consequences, especially those with off-site ramifications.
+
+
+1. 24 Hour Suspension
+2. Site Ban
+
+
+Bypassing Suspensions
+* Using an alt or creating a new account to bypass a suspension of any kind. Helping someone bypass by posting for them on the forums can also lead to this violation.
+
+
+1. 24 hour suspension
+2. Site Ban
+________________
+
+
+
+
+--Report Violations--
+ 
+8th Violation Ban
+* Accumulating 8 active violations across all accounts results in a ban. Once all violations expire, the ban is lifted.
+
+
+1. Lobby Ban
+
+
+
+
+Lobby ban
+* Used to signify lobby bans from Main Lobby. Thus, there are no infringements. Most likely issued upon reaching the limit of certain violations.
+
+
+1. Lobby Ban
+
+
+
+
+Note
+* This isn't a violation per se. It's here so that we can draw attention to reports against users in future. This has no infractions and doesn't count towards the 8 violation limit.
+
+
+1. Note
+ 
+
+
+Report Spam -
+* Wasting our time by spamming the report section, abusing the report function, linking photoshopped/altered images in a report in order to attempt to apply a violation onto a user, or continuously posting useless reports. Includes commenting in reports after being asked to stop by a moderator. Reports will be filed for report spam by the moderators. If a user reports someone for it, they may receive a report spam violation.
+
+
+1. 12 hour suspension
+2. Lobby Ban
+ 
+________________
+
+
+
+
+[a]This is technically just "insults or attacks" but specifically mentioning intelligence or ability because that's the most common
+[b]reworded this to basically be a "harassment without insults is still harassment" clause
+[c]This is basically the "don't brigade someone even if they're a dickhead" clause but i might have trimmed it too much
+[d]"Let people dodge you" rule that we can't enforce when the userbase is small, but theoretically want it in place if the userbase could handle it (comment it out?)

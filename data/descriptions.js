@@ -1,5 +1,5 @@
 /**
- * Learn page copy for game modes. Block shape matches rule descriptions in violations.js:
+ * Learn page copy for game modes. Block shape:
  * { type: "paragraph", content?: string } or { type: "paragraph", parts: [...] };
  * { type: "subheading", content: string };
  * { type: "list", items: Array<string | { strong: string, text: string }> }.
