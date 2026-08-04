@@ -114,6 +114,8 @@ var schemas = {
       hideJoinDate: { type: Boolean, default: false },
       hideDonorBadge: { type: Boolean, default: false },
       disablePokes: { type: Boolean, default: false },
+      hideRankedModal: { type: Boolean, default: false },
+      hideCompetitiveModal: { type: Boolean, default: false },
       deathMessage: String,
       vanityUrl: { type: String, default: "" },
       backgroundRepeatMode: { type: String, default: "repeat" },

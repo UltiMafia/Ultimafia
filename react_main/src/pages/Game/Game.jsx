@@ -43,6 +43,7 @@ import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
 import SiteLogo from "../../components/SiteLogo";
 import LeaveGameDialog from "../../components/LeaveGameDialog";
+import { SportsmanshipJoinModal } from "../../components/SportsmanshipJoinModal";
 import { useErrorAlert } from "../../components/Alerts";
 import {
   MaxGameMessageLength,
@@ -185,6 +186,11 @@ export default function Game() {
   const [lastWill, setLastWill] = useState("");
   const [settings, updateSettings] = useSettingsReducer();
   const [showFirstGameModal, setShowFirstGameModal] = useState(false);
+  const [sportsmanshipModal, setSportsmanshipModal] = useState({
+    open: false,
+    type: "ranked",
+  });
+  const sportsmanshipAcceptedRef = useRef(false);
   const [speechFilters, setSpeechFilters] = useState({
     from: "",
     contains: "",
@@ -557,7 +563,9 @@ export default function Game() {
         (socket.readyState == null || socket.readyState === 3) &&
         !leave &&
         !finished &&
-        !review
+        !review &&
+        user.loaded &&
+        !sportsmanshipModal.open
       ) {
         getConnectionInfo();
       }
@@ -865,12 +873,13 @@ export default function Game() {
         playAudio(audioName);
       }
     });
-  }, [connected]);
+  }, [connected, user.loaded, sportsmanshipModal.open]);
 
-  function getConnectionInfo() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const isSpectating = urlParams.get("spectate") === "true";
+  function settingIsTrue(value) {
+    return value === true || value === "true";
+  }
 
+  function connectToGame(isSpectating) {
     const url = `/api/game/${gameId}/connect${
       isSpectating ? "?spectate=true" : ""
     }`;
@@ -891,6 +900,76 @@ export default function Game() {
           errorAlert(e);
         }
       });
+  }
+
+  function getConnectionInfo() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isSpectating = urlParams.get("spectate") === "true";
+
+    if (isSpectating || sportsmanshipAcceptedRef.current) {
+      connectToGame(isSpectating);
+      return;
+    }
+
+    axios
+      .get(`/api/game/${gameId}/info`)
+      .then((res) => {
+        const game = res.data;
+        const ranked = !!game.settings?.ranked;
+        const competitive = !!game.settings?.competitive;
+        const alreadyInGame = user.inGame === gameId;
+        const isHost = !!(user.id && game.hostId === user.id);
+        const isOpenGame = game.status === "Open";
+
+        if (
+          isOpenGame &&
+          !alreadyInGame &&
+          !isHost &&
+          (ranked || competitive)
+        ) {
+          const type = competitive ? "competitive" : "ranked";
+          const hideSetting =
+            type === "competitive"
+              ? user.settings?.hideCompetitiveModal
+              : user.settings?.hideRankedModal;
+
+          if (!settingIsTrue(hideSetting)) {
+            setSportsmanshipModal({ open: true, type });
+            return;
+          }
+        }
+
+        connectToGame(isSpectating);
+      })
+      .catch(() => {
+        // Finished / missing games fall through to connect (review path)
+        connectToGame(isSpectating);
+      });
+  }
+
+  function onSportsmanshipAccept(doNotShowAgain) {
+    const type = sportsmanshipModal.type;
+    sportsmanshipAcceptedRef.current = true;
+    setSportsmanshipModal({ open: false, type });
+
+    if (doNotShowAgain) {
+      const prop =
+        type === "competitive"
+          ? "hideCompetitiveModal"
+          : "hideRankedModal";
+
+      axios
+        .post("/api/user/settings/update", { prop, value: true })
+        .then(() => {
+          user.updateSetting(prop, true);
+        })
+        .catch(() => {});
+    }
+  }
+
+  function onSportsmanshipCancel() {
+    setSportsmanshipModal({ open: false, type: sportsmanshipModal.type });
+    setLeave(true);
   }
 
   function onMessageQuote(message) {
@@ -922,7 +1001,13 @@ export default function Game() {
   else if (!loaded || stateViewing == null)
     return (
       <div className="game">
-        <Loading />
+        <SportsmanshipJoinModal
+          open={sportsmanshipModal.open}
+          type={sportsmanshipModal.type}
+          onAccept={onSportsmanshipAccept}
+          onCancel={onSportsmanshipCancel}
+        />
+        {!sportsmanshipModal.open && <Loading />}
       </div>
     );
   else {
