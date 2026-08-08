@@ -17,9 +17,6 @@ const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
 const fortunePoints = require("../modules/fortunePoints");
 const errors = require("../lib/errors");
-const {
-  syncRankedCompetitiveAccess,
-} = require("../modules/userEligibility");
 const skillRating = require("../modules/skillRating");
 const router = express.Router();
 
@@ -4063,92 +4060,6 @@ router.post("/reports/:id/rule", async (req, res) => {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not update rule. Please try again.");
-  }
-});
-
-router.get("/autoApproval", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-
-    if (!(await routeUtils.verifyPermission(res, userId, "adjustMinGames")))
-      return;
-
-    const enabled = await redis.getAutoApprovalEnabled();
-    res.json({ autoApprovalEnabled: enabled });
-  } catch (e) {
-    logger.error(e);
-    errors.serverError(res, "Could not get auto-approval status. Please refresh and try again.");
-  }
-});
-
-router.post("/autoApproval", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-
-    if (!(await routeUtils.verifyPermission(res, userId, "adjustMinGames")))
-      return;
-
-    const enabled = !(await redis.getAutoApprovalEnabled());
-    await redis.setAutoApprovalEnabled(enabled);
-
-    routeUtils.createModAction(userId, "Toggle Auto-Approval", [enabled]);
-
-    res.json({ autoApprovalEnabled: enabled });
-  } catch (e) {
-    logger.error(e);
-    errors.serverError(res, "Could not toggle auto-approval. Please try again.");
-  }
-});
-
-router.post("/syncCompetitiveApprovals", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-
-    if (!(await routeUtils.verifyPermission(res, userId, "adjustMinGames")))
-      return;
-
-    const minimumGames = await redis.getMinimumGamesForRanked();
-    const minimumPoints = constants.minimumPointsForCompetitive;
-    const usersToSync = await models.User.aggregate([
-      {
-        $match: {
-          deleted: false,
-          banned: { $ne: true },
-          flagged: { $ne: true },
-        },
-      },
-      {
-        $project: {
-          id: 1,
-          gamesPlayed: { $size: "$games" },
-        },
-      },
-      {
-        $match: {
-          gamesPlayed: { $gte: minimumGames },
-        },
-      },
-    ]);
-
-    let rankedGranted = 0;
-    let competitiveGranted = 0;
-    for (const user of usersToSync) {
-      const result = await syncRankedCompetitiveAccess(user.id, {
-        minimumGames,
-        minimumPoints,
-      });
-      if (result.rankedGranted) rankedGranted++;
-      if (result.competitiveGranted) competitiveGranted++;
-    }
-
-    routeUtils.createModAction(userId, "Sync Competitive Approvals", [
-      rankedGranted,
-      competitiveGranted,
-    ]);
-    res.json({ rankedGranted, competitiveGranted });
-  } catch (e) {
-    logger.error(e);
-    errors.serverError(res, "Could not sync competitive approvals. Please try again.");
   }
 });
 
