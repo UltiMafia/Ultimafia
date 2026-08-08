@@ -1011,45 +1011,6 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Toggle Auto-Approval": {
-      perm: "adjustMinGames",
-      category: "Site Management",
-      args: [],
-      run: function () {
-        axios
-          .post("/api/mod/autoApproval")
-          .then((res) => {
-            const status = res.data.autoApprovalEnabled ? "enabled" : "disabled";
-            siteInfo.showAlert(
-              `Legacy auto-approval flag is now ${status}. Ranked and Competitive access is granted when users meet the configured requirements.`,
-              "success"
-            );
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Sync Competitive Approvals": {
-      perm: "adjustMinGames",
-      category: "Site Management",
-      args: [],
-      run: function () {
-        axios
-          .post("/api/mod/syncCompetitiveApprovals")
-          .then((res) => {
-            const rankedCount = res.data.rankedGranted || 0;
-            const competitiveCount = res.data.competitiveGranted || 0;
-            siteInfo.showAlert(
-              rankedCount > 0 || competitiveCount > 0
-                ? `Granted Ranked Player to ${rankedCount} user(s) and Competitive Player to ${competitiveCount} user(s).`
-                : "No users needed restoration; all qualifying users already have the right access.",
-              "success"
-            );
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
     "Toggle Ranked Setup": {
       perm: "approveRanked",
       category: "Setup Management",

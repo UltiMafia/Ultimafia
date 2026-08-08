@@ -439,9 +439,6 @@ module.exports = {
   // Penalties reset in level after 3 days
   leavePenaltyDurationMillis: 259200000,
 
-  minimumGamesForRanked: 5,
-  minimumPointsForCompetitive: 150,
-
   defaultSkillRatingMu: 750,
   defaultSkillRatingSigma: 250,
 
@@ -555,7 +552,6 @@ module.exports = {
     editAnyDeck: true,
     createPoll: true,
     manageCompetitive: true,
-    adjustMinGames: true,
     awardTrophy: true,
     awardStamp: true,
     deleteStrategy: true,
