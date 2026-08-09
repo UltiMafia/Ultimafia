@@ -337,7 +337,7 @@ module.exports = {
   maxWordDeckDescriptionLength: 120,
   maxOwnedCustomEmotes: 10,
   maxOwnedCustomEmotesExtra: 10,
-  maxOwnedCustomStickers: 20,
+  maxOwnedCustomStickers: 5,
   // Placeholder limits for stickers — adjust as needed
   maxCustomStickerFileSizeBytes: 10 * 1024 * 1024, // 10 MB
   maxCustomStickerDimension: 512, // max width or height in pixels
