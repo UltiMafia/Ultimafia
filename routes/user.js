@@ -1970,6 +1970,22 @@ router.post("/settings/update", async function (req, res) {
       return;
     }
 
+    if (
+      prop === "nameFont" &&
+      !constants.nameFontOptions.includes(value)
+    ) {
+      errors.badRequest(res, "Invalid name font setting.");
+      return;
+    }
+
+    if (
+      prop === "animatedNameColor" &&
+      !constants.animatedNameColorOptions.includes(value)
+    ) {
+      errors.badRequest(res, "Invalid animated name color setting.");
+      return;
+    }
+
     if (prop === "hideDonorBadge") {
       if (!(await redis.userInDonorGroup(userId))) {
         errors.forbidden(res, "Only donors can change this setting.");
@@ -2023,6 +2039,74 @@ router.post("/settings/update", async function (req, res) {
     ) {
       errors.forbidden(res, "You must purchase text colors with coins from the Shop.");
       return;
+    }
+
+    if (prop === "nameFont" && !itemsOwned.nameFont) {
+      errors.forbidden(
+        res,
+        "You must purchase Custom Name Font with coins from the Shop."
+      );
+      return;
+    }
+
+    if (prop === "animatedNameColor") {
+      if (!itemsOwned.animatedNameColor) {
+        errors.forbidden(
+          res,
+          "You must purchase Animated Name Colors with coins from the Shop."
+        );
+        return;
+      }
+      if (value !== "none" && !itemsOwned.textColors) {
+        errors.forbidden(
+          res,
+          "You must purchase Name and Text Colors before using animated name colors."
+        );
+        return;
+      }
+      if (value === "tricolor" && !itemsOwned.tricolorAnimatedGradient) {
+        errors.forbidden(
+          res,
+          "You must purchase Tricolor Animated Gradient from the Shop."
+        );
+        return;
+      }
+    }
+
+    if (
+      prop === "nameGradientColorA" ||
+      prop === "nameGradientColorB"
+    ) {
+      if (!itemsOwned.animatedNameColor || !itemsOwned.textColors) {
+        errors.forbidden(
+          res,
+          "You must purchase Name and Text Colors and Animated Name Colors first."
+        );
+        return;
+      }
+      // Basic hex color validation (#RGB or #RRGGBB)
+      if (!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value)) {
+        errors.badRequest(res, "Invalid gradient color.");
+        return;
+      }
+    }
+
+    if (prop === "nameGradientColorC") {
+      if (
+        !itemsOwned.tricolorAnimatedGradient ||
+        !itemsOwned.animatedNameColor ||
+        !itemsOwned.textColors
+      ) {
+        errors.forbidden(
+          res,
+          "You must purchase Tricolor Animated Gradient first."
+        );
+        return;
+      }
+      if (!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value)) {
+        errors.badRequest(res, "Invalid gradient color.");
+        return;
+      }
     }
 
     if (prop === "deathMessage") {
@@ -2083,6 +2167,27 @@ router.post("/settings/update", async function (req, res) {
         errors.badRequest(res, "Invalid URL for media setting.");
         return;
       }
+    }
+
+    // Clearing name/text color restores system defaults (works in light + dark mode)
+    if (
+      (prop === "textColor" || prop === "nameColor") &&
+      (!value || value === "none" || value === "null" || value === "undefined")
+    ) {
+      const warnKey =
+        prop === "textColor" ? "settings.warnTextColor" : "settings.warnNameColor";
+      await models.User.updateOne(
+        { id: userId },
+        {
+          $unset: {
+            [`settings.${prop}`]: "",
+            [warnKey]: "",
+          },
+        }
+      );
+      await redis.cacheUserInfo(userId, true);
+      res.sendStatus(200);
+      return;
     }
 
     let unsetOperator = {};

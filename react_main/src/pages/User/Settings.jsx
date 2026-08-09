@@ -683,19 +683,124 @@ export default function Settings() {
       label: "Name Color",
       ref: "nameColor",
       type: "color",
-      default: "#68a9dc",
+      // Empty = no custom color (theme default). Reset clears to this.
+      default: "",
+      resetValue: "",
       disabled: (deps) => !deps.user.itemsOwned.textColors,
+      // Hide solid name color while gradient/tricolor modes are active
+      showIf: (deps, fields) => {
+        const anim = fields?.find((f) => f.ref === "animatedNameColor");
+        return anim?.value !== "gradient" && anim?.value !== "tricolor";
+      },
       extraInfo:
-        "Note: Colors must have good contrast in both light and dark themes (minimum 3:1 ratio). Choose colors that are readable on both white and dark backgrounds.",
+        "Leave default (use Reset) for no custom color. Custom colors must have good contrast in both light and dark themes (minimum 3:1 ratio).",
     },
     {
       label: "Text Color",
       ref: "textColor",
       type: "color",
-      default: "#FFF",
+      default: "",
+      resetValue: "",
       disabled: (deps) => !deps.user.itemsOwned.textColors,
       extraInfo:
-        "Note: Colors must have good contrast in both light and dark themes (minimum 3:1 ratio). Choose colors that are readable on both white and dark backgrounds.",
+        "Leave default (use Reset) for no custom color. Custom colors must have good contrast in both light and dark themes (minimum 3:1 ratio).",
+    },
+    {
+      label: "Name Font (player list only)",
+      ref: "nameFont",
+      type: "select",
+      disabled: (deps) => !deps.user.itemsOwned.nameFont,
+      extraInfo:
+        "In-game player list only — not chat. Buy Custom Name Font in the Shop.",
+      options: [
+        { label: "Default", value: "default" },
+        { label: "Slab (Roboto Slab)", value: "slab" },
+        { label: "Mono (Roboto Mono)", value: "mono" },
+        { label: "Autophobia", value: "autophobia" },
+        { label: "Spooky", value: "spooky" },
+        { label: "Nabla", value: "nabla" },
+      ],
+      value: "default",
+    },
+    {
+      label: "Animated Name Color (player list only)",
+      ref: "animatedNameColor",
+      type: "select",
+      disabled: (deps) =>
+        !deps.user.itemsOwned.animatedNameColor ||
+        !deps.user.itemsOwned.textColors,
+      showIf: (deps) =>
+        !!(
+          deps.user.itemsOwned.animatedNameColor &&
+          deps.user.itemsOwned.textColors
+        ),
+      // Options include Tricolor only if the tricolor shop item is owned
+      options: (deps) => {
+        const base = [
+          { label: "None", value: "none" },
+          { label: "Pulse", value: "pulse" },
+          { label: "Glow", value: "glow" },
+          { label: "Rainbow", value: "rainbow" },
+          { label: "Patriotic", value: "patriotic" },
+          { label: "Gradient (2 colors)", value: "gradient" },
+        ];
+        if (deps.user.itemsOwned.tricolorAnimatedGradient) {
+          base.push({ label: "Gradient (3 colors)", value: "tricolor" });
+        }
+        return base;
+      },
+      extraInfo:
+        "In-game player list only — not chat. Gradient/Tricolor use the color pickers below.",
+      value: "none",
+    },
+    {
+      label: "Gradient Color A",
+      ref: "nameGradientColorA",
+      type: "color",
+      default: "#ff0040",
+      showIf: (deps, fields) => {
+        if (
+          !deps.user.itemsOwned.animatedNameColor ||
+          !deps.user.itemsOwned.textColors
+        )
+          return false;
+        const anim = fields?.find((f) => f.ref === "animatedNameColor");
+        return anim?.value === "gradient" || anim?.value === "tricolor";
+      },
+      extraInfo: "First color of the animated name gradient (order: 1 → 2 → 3).",
+    },
+    {
+      label: "Gradient Color B",
+      ref: "nameGradientColorB",
+      type: "color",
+      default: "#00c2ff",
+      showIf: (deps, fields) => {
+        if (
+          !deps.user.itemsOwned.animatedNameColor ||
+          !deps.user.itemsOwned.textColors
+        )
+          return false;
+        const anim = fields?.find((f) => f.ref === "animatedNameColor");
+        return anim?.value === "gradient" || anim?.value === "tricolor";
+      },
+      extraInfo: "Second color of the animated name gradient.",
+    },
+    {
+      label: "Gradient Color C",
+      ref: "nameGradientColorC",
+      type: "color",
+      default: "#3dff6a",
+      showIf: (deps, fields) => {
+        if (
+          !deps.user.itemsOwned.tricolorAnimatedGradient ||
+          !deps.user.itemsOwned.animatedNameColor ||
+          !deps.user.itemsOwned.textColors
+        )
+          return false;
+        const anim = fields?.find((f) => f.ref === "animatedNameColor");
+        return anim?.value === "tricolor";
+      },
+      extraInfo: "Third color of the tricolor gradient (order: 1 → 2 → 3).",
     },
     {
       label: "Ignore Custom Text Color",

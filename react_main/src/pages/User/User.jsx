@@ -519,6 +519,11 @@ export function NameWithAvatar(props) {
   const subContent = props.subContent;
   const ripAvatar = props.ripAvatar;
   const nameColorSwatch = props.nameColorSwatch;
+  const nameFont = props.nameFont;
+  const animatedNameColor = props.animatedNameColor;
+  const nameGradientColorA = props.nameGradientColorA || "#ff0040";
+  const nameGradientColorB = props.nameGradientColorB || "#00c2ff";
+  const nameGradientColorC = props.nameGradientColorC || "#3dff6a";
 
   const game = useContext(GameContext);
   const user = useContext(UserContext);
@@ -526,6 +531,32 @@ export function NameWithAvatar(props) {
   const [isClicked, setIsClicked] = useState(false);
 
   const autoColor = user.autoContrastColor(color);
+  const nameFontClass =
+    nameFont && nameFont !== "default" ? `name-font-${nameFont}` : "";
+  const nameAnimClass =
+    animatedNameColor && animatedNameColor !== "none"
+      ? `name-anim-${animatedNameColor}`
+      : "";
+  // Rainbow/patriotic/gradient/tricolor use background-clip
+  const usesClipText =
+    animatedNameColor === "rainbow" ||
+    animatedNameColor === "patriotic" ||
+    animatedNameColor === "gradient" ||
+    animatedNameColor === "tricolor";
+  const useSolidNameColor = autoColor && !usesClipText;
+  const nameStyle = {
+    ...(useSolidNameColor ? { color: autoColor } : {}),
+    display: "inline",
+    ...(animatedNameColor === "gradient" || animatedNameColor === "tricolor"
+      ? {
+          ["--name-grad-a"]: nameGradientColorA,
+          ["--name-grad-b"]: nameGradientColorB,
+          ...(animatedNameColor === "tricolor"
+            ? { ["--name-grad-c"]: nameGradientColorC }
+            : {}),
+        }
+      : {}),
+  };
 
   const {
     popoverOpen: canOpenPopover,
@@ -586,8 +617,8 @@ export function NameWithAvatar(props) {
       )}
       <Stack direction="column">
         <div
-          className={`user-name ${props.dead ? "dead" : autoColor}`} 
-          style={{ ...(autoColor ? { color: autoColor } : {}), display: "inline" }}
+          className={`user-name ${props.dead ? "dead" : ""} ${nameFontClass} ${nameAnimClass}`.trim()}
+          style={nameStyle}
         >
           <Stack direction="row" spacing={0.5} alignItems="center">
             {nameColorSwatch && (
@@ -600,7 +631,11 @@ export function NameWithAvatar(props) {
                 aria-label="Name color"
               />
             )}
-            <Typography>
+            <Typography
+              component="span"
+              className="user-name-text"
+              sx={{ color: "inherit", fontFamily: "inherit" }}
+            >
               {name}
             </Typography>
             {groups && <Badges groups={groups} small={small} />}

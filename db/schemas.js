@@ -94,6 +94,14 @@ var schemas = {
       accessibleNameColors: { type: Boolean, default: false },
       nameColor: String,
       warnNameColor: String,
+      // Cosmetic name font for in-game player list (not site-wide, not chat body)
+      nameFont: { type: String, default: "default" },
+      // Animated name color style: none | pulse | glow | rainbow | gradient
+      animatedNameColor: { type: String, default: "none" },
+      // Two colors used when animatedNameColor === "gradient"
+      nameGradientColorA: { type: String, default: "#ff0040" },
+      nameGradientColorB: { type: String, default: "#00c2ff" },
+      nameGradientColorC: { type: String, default: "#3dff6a" },
       onlyFriendDMs: { type: Boolean, default: false },
       disablePg13Censor: { type: Boolean, default: false },
       disableAllCensors: { type: Boolean, default: false },
@@ -174,6 +182,9 @@ var schemas = {
       twoCharName: { type: Number, default: 0 },
       oneCharName: { type: Number, default: 0 },
       textColors: { type: Number, default: 0 },
+      nameFont: { type: Number, default: 0 },
+      animatedNameColor: { type: Number, default: 0 },
+      tricolorAnimatedGradient: { type: Number, default: 0 },
       deathMessageEnabled: { type: Number, default: 0 },
       deathMessageChange: { type: Number, default: 0 },
       anonymousDeck: { type: Number, default: 0 },

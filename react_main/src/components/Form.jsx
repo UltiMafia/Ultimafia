@@ -222,7 +222,10 @@ export default function Form({
             }
           }
         }
-      } else if (typeof showIf == "function") if (!showIf(deps)) return;
+      } else if (typeof showIf == "function") {
+        // Pass fields so visibility can depend on sibling values (e.g. select)
+        if (!showIf(deps, fields)) return;
+      }
 
       const value =
         typeof field.value == "function" ? field.value(deps) : field.value;
@@ -421,7 +424,11 @@ export default function Form({
               />
             </FormField>
           );
-        case "select":
+        case "select": {
+          const selectOptions =
+            typeof field.options === "function"
+              ? field.options(deps)
+              : field.options || [];
           return (
             <FormField
               field={field}
@@ -431,13 +438,17 @@ export default function Form({
             >
               <TextField
                 select
-                defaultValue={field.value || field.options[0].ref}
+                defaultValue={
+                  field.value ||
+                  (selectOptions[0] &&
+                    (selectOptions[0].value ?? selectOptions[0].ref))
+                }
                 disabled={disabled}
                 onChange={(e) => onFieldChange(e, field)}
                 helperText={field.extraInfo}
                 label={compact ? field.label : undefined}
               >
-                {field.options.map((option) => (
+                {selectOptions.map((option) => (
                   <MenuItem value={option.value} key={option.value}>
                     {option.label}
                   </MenuItem>
@@ -445,6 +456,7 @@ export default function Form({
               </TextField>
             </FormField>
           );
+        }
         case "range":
           return (
             <FormField
@@ -476,7 +488,18 @@ export default function Form({
               </Paper>
             </FormField>
           );
-        case "color":
+        case "color": {
+          // Empty / undefined means "use system default" (no custom color)
+          const resetValue =
+            field.resetValue !== undefined
+              ? field.resetValue
+              : field.default !== undefined
+              ? field.default
+              : "";
+          const hasCustomColor =
+            field.value != null &&
+            field.value !== "" &&
+            field.value !== resetValue;
           return (
             <FormField
               field={field}
@@ -485,27 +508,23 @@ export default function Form({
               key={field.ref}
               additionalButtons={
                 <>
-                  {!field.noReset &&
-                    field.value !== field.default &&
-                    field.value && (
-                      <Button
-                        variant="text"
-                        onClick={() =>
-                          onFieldChange(
-                            { target: { value: field.default } },
-                            field
-                          )
-                        }
-                      >
-                        Reset
-                      </Button>
-                    )}
+                  {!field.noReset && hasCustomColor && (
+                    <Button
+                      variant="text"
+                      onClick={() =>
+                        onFieldChange({ target: { value: resetValue } }, field)
+                      }
+                    >
+                      Reset
+                    </Button>
+                  )}
                 </>
               }
             >
               <CustomColorPicker
                 value={field.value}
                 default={field.default}
+                resetValue={resetValue}
                 alpha={field.alpha}
                 disabled={disabled}
                 onChange={(e) => onFieldChange(e, field)}
@@ -513,6 +532,7 @@ export default function Form({
               />
             </FormField>
           );
+        }
         case "date":
           if (field.value === "undefined") {
             field.value = undefined;
@@ -648,21 +668,48 @@ export default function Form({
 }
 
 function CustomColorPicker(props) {
-  const value = props.value || props.default;
+  // Empty string = no custom color (system default). Picker still needs a hex for UI.
+  const emptySentinel = "";
+  const displayFallback = props.default || "#888888";
+  const externalValue =
+    props.value != null && props.value !== ""
+      ? props.value
+      : displayFallback;
   const disabled = props.disabled;
 
-  const [color, setColor] = useState(value);
+  const [color, setColor] = useState(externalValue);
+  // Track last value we pushed to parent so Reset (empty) doesn't get overwritten by debounce
+  const lastPushedRef = useRef(props.value);
 
-  // This effect prevents API spam
+  // Sync from parent when Reset clears the value (or data loads)
+  useEffect(() => {
+    lastPushedRef.current = props.value;
+    if (props.value != null && props.value !== "") {
+      setColor(props.value);
+    } else {
+      setColor(displayFallback);
+    }
+  }, [props.value, displayFallback]);
+
+  // Debounce user picks to avoid API spam
   const timerRef = useRef(null);
   useEffect(() => {
-    if (color === value) return;
+    // If parent already has this color (or empty after reset), don't re-push
+    if (color === props.value) return;
+    if (
+      (props.value == null || props.value === emptySentinel) &&
+      color === displayFallback &&
+      lastPushedRef.current === emptySentinel
+    ) {
+      return;
+    }
 
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
 
     timerRef.current = setTimeout(() => {
+      lastPushedRef.current = color;
       props.onChange({ target: { value: color } });
       timerRef.current = null;
     }, 500);
@@ -676,11 +723,11 @@ function CustomColorPicker(props) {
 
   return (
     <MuiColorInput
-      value={color}
+      value={color || displayFallback}
       onChange={(val) => setColor(val)}
       format="hex"
       disabled={disabled}
-      fallbackValue="#ffffff"
+      fallbackValue={displayFallback}
     />
   );
 

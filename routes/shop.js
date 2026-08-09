@@ -231,6 +231,36 @@ const shopItems = [
     onBuy: async function (userId) {},
   },
   {
+    name: "Custom Name Font",
+    desc: "Custom font for your name on the in-game player list.",
+    key: "nameFont",
+    category: "profile",
+    price: 100,
+    limit: 1,
+    onBuy: async function (userId) {},
+  },
+  {
+    name: "Animated Name Colors",
+    desc: "Requires Name and Text Colors.",
+    key: "animatedNameColor",
+    category: "profile",
+    price: 100,
+    limit: 1,
+    disableOn: (user) => !user.itemsOwned.textColors,
+    onBuy: async function (userId) {},
+  },
+  {
+    name: "Tricolor Animated Gradient",
+    desc: "Requires Name and Text Colors and Animated Name Colors.",
+    key: "tricolorAnimatedGradient",
+    category: "profile",
+    price: 250,
+    limit: 1,
+    disableOn: (user) =>
+      !user.itemsOwned.textColors || !user.itemsOwned.animatedNameColor,
+    onBuy: async function (userId) {},
+  },
+  {
     name: "Profile Customization",
     desc: "Change the panel color and banner image on your profile",
     key: "customProfile",
@@ -494,17 +524,27 @@ router.get("/info", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var user = await models.User.findOne({ id: userId });
 
-    //let customDisable = item.disableOn && item.disableOn(user);
-
-    /*
+    // Serialize shop items for the client (drop functions; apply disable/limit flags)
     let shopItemsParsed = shopItems.map((item) => {
-      let limitReached =
-        item.limit != null && user.itemsOwned[item.key] >= item.limit;
-      item.disabled = item.disabled || limitReached || false;
-      return item;
-    });*/
+      const limitReached =
+        item.limit != null &&
+        user.itemsOwned &&
+        (user.itemsOwned[item.key] || 0) >= item.limit;
+      const customDisable =
+        typeof item.disableOn === "function" ? !!item.disableOn(user) : false;
+      return {
+        name: item.name,
+        desc: item.desc,
+        key: item.key,
+        category: item.category,
+        price: item.price,
+        limit: item.limit != null ? item.limit : null,
+        disabled: !!(item.disabled || limitReached || customDisable),
+        propagateItemUpdates: item.propagateItemUpdates || undefined,
+      };
+    });
 
-    res.send({ shopItems: shopItems, balance: user.coins });
+    res.send({ shopItems: shopItemsParsed, balance: user.coins });
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not load shop data. Please refresh and try again.");
@@ -534,6 +574,14 @@ router.post(
 
       if (item.limit != null && user.itemsOwned[item.key] >= item.limit) {
         errors.conflict(res, "You already own this.");
+        return;
+      }
+
+      if (typeof item.disableOn === "function" && item.disableOn(user)) {
+        errors.forbidden(
+          res,
+          "You do not meet the requirements to purchase this item."
+        );
         return;
       }
 

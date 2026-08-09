@@ -222,6 +222,166 @@ iframe {
   background-color: rgba(200, 0, 0, 0.8);
 }
 
+/* In-game player-list name cosmetics */
+.user-name .user-name-text {
+  color: inherit;
+  font-family: inherit;
+  font-weight: inherit;
+  display: inline-block;
+}
+
+.user-name.name-font-slab,
+.user-name.name-font-slab .user-name-text {
+  font-family: RobotoSlab, serif !important;
+}
+.user-name.name-font-mono,
+.user-name.name-font-mono .user-name-text {
+  font-family: RobotoMono, monospace !important;
+}
+.user-name.name-font-autophobia,
+.user-name.name-font-autophobia .user-name-text {
+  font-family: Autophobia, cursive !important;
+}
+.user-name.name-font-spooky,
+.user-name.name-font-spooky .user-name-text {
+  font-family: Spooky, cursive !important;
+}
+.user-name.name-font-nabla,
+.user-name.name-font-nabla .user-name-text {
+  font-family: Nabla, fantasy !important;
+}
+
+/* Pulse: animate the text node so it is clearly visible */
+.user-name.name-anim-pulse .user-name-text {
+  animation: name-color-pulse 1.1s ease-in-out infinite;
+  will-change: opacity, text-shadow, transform;
+}
+.user-name.name-anim-glow .user-name-text {
+  animation: name-color-glow 1.6s ease-in-out infinite;
+  will-change: text-shadow, filter;
+}
+
+/*
+ * Seamless looping gradients:
+ * background-size 200% + position 0%→100% shifts by exactly one element width.
+ * Each half of the gradient image (0–50% and 50–100%) is an identical period
+ * that starts and ends on the same color, so the wrap is continuous.
+ */
+.user-name.name-anim-rainbow .user-name-text,
+.user-name.name-anim-patriotic .user-name-text,
+.user-name.name-anim-gradient .user-name-text,
+.user-name.name-anim-tricolor .user-name-text {
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
+  animation: name-color-shift 3s linear infinite;
+  will-change: background-position;
+}
+
+.user-name.name-anim-rainbow .user-name-text {
+  /* Period 0–50% ends on #ff0040; period 50–100% is the same spectrum again */
+  background-image: linear-gradient(
+    90deg,
+    #ff0040 0%,
+    #ff7a00 8.33%,
+    #ffd000 16.66%,
+    #3dff6a 25%,
+    #00c2ff 33.33%,
+    #7a5cff 41.66%,
+    #ff0040 50%,
+    #ff7a00 58.33%,
+    #ffd000 66.66%,
+    #3dff6a 75%,
+    #00c2ff 83.33%,
+    #7a5cff 91.66%,
+    #ff0040 100%
+  );
+}
+
+.user-name.name-anim-patriotic .user-name-text {
+  /* Red → white → blue → red, duplicated for a seamless loop */
+  background-image: linear-gradient(
+    90deg,
+    #b22234 0%,
+    #ffffff 16.66%,
+    #3c3b6e 33.33%,
+    #b22234 50%,
+    #ffffff 66.66%,
+    #3c3b6e 83.33%,
+    #b22234 100%
+  );
+}
+
+.user-name.name-anim-gradient .user-name-text {
+  /* Period: A → B → A (0–50%), then A → B → A again (50–100%) */
+  background-image: linear-gradient(
+    90deg,
+    var(--name-grad-a, #ff0040) 0%,
+    var(--name-grad-b, #00c2ff) 25%,
+    var(--name-grad-a, #ff0040) 50%,
+    var(--name-grad-b, #00c2ff) 75%,
+    var(--name-grad-a, #ff0040) 100%
+  );
+}
+
+.user-name.name-anim-tricolor .user-name-text {
+  /* Period order 1→2→3→1 (0–50%), then the same period again (50–100%) for a seamless loop */
+  background-image: linear-gradient(
+    90deg,
+    var(--name-grad-a, #ff0040) 0%,
+    var(--name-grad-b, #00c2ff) 16.66%,
+    var(--name-grad-c, #3dff6a) 33.33%,
+    var(--name-grad-a, #ff0040) 50%,
+    var(--name-grad-b, #00c2ff) 66.66%,
+    var(--name-grad-c, #3dff6a) 83.33%,
+    var(--name-grad-a, #ff0040) 100%
+  );
+}
+
+@keyframes name-color-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    text-shadow: 0 0 0 transparent;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.04);
+    text-shadow: 0 0 10px currentColor;
+    filter: brightness(1.45);
+  }
+}
+
+@keyframes name-color-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 2px currentColor, 0 0 8px currentColor;
+    filter: brightness(1);
+  }
+  50% {
+    text-shadow:
+      0 0 4px currentColor,
+      0 0 16px currentColor,
+      0 0 28px currentColor;
+    filter: brightness(1.35);
+  }
+}
+
+/* 0% → 100% with size 200% = shift by one period (seamless) */
+@keyframes name-color-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
 .user-name.dark {
   filter: brightness(70%);
 }
