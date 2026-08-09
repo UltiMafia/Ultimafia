@@ -232,7 +232,7 @@ const shopItems = [
   },
   {
     name: "Custom Name Font",
-    desc: "Custom font for your name on the in-game player list.",
+    desc: "Custom font for your name in-game (player list and chat nameplates).",
     key: "nameFont",
     category: "profile",
     price: 100,

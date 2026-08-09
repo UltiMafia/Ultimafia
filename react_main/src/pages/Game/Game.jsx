@@ -2440,6 +2440,11 @@ function Message(props) {
                 nameColorSwatch={
                   accessibleNameColors && rawNameColor ? rawNameColor : undefined
                 }
+                nameFont={player.nameFont}
+                animatedNameColor={player.animatedNameColor}
+                nameGradientColorA={player.nameGradientColorA}
+                nameGradientColorB={player.nameGradientColorB}
+                nameGradientColorC={player.nameGradientColorC}
                 noLink
                 small={smallAvatar}
                 absoluteLeftAvatarPx={absoluteLeftAvatarPx}

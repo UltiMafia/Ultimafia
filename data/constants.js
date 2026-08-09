@@ -340,7 +340,7 @@ module.exports = {
   maxArchivedGamesMax: 10,
   maxDeckNameLength: 25, // maxSetupNameLength
   maxCustomEmoteNameLength: 25,
-  // In-game player-list name cosmetics (not chat body)
+  // In-game name cosmetics (player list + chat nameplates; not message body text)
   nameFontOptions: [
     "default",
     "slab",

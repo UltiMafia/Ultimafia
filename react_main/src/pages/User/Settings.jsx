@@ -711,7 +711,7 @@ export default function Settings() {
       type: "select",
       disabled: (deps) => !deps.user.itemsOwned.nameFont,
       extraInfo:
-        "In-game player list only — not chat. Buy Custom Name Font in the Shop.",
+        "Applies to your name on the player list and in chat nameplates (not message text). Buy Custom Name Font in the Shop.",
       options: [
         { label: "Default", value: "default" },
         { label: "Slab (Roboto Slab)", value: "slab" },
@@ -750,7 +750,7 @@ export default function Settings() {
         return base;
       },
       extraInfo:
-        "In-game player list only — not chat. Gradient/Tricolor use the color pickers below.",
+        "Applies to your name on the player list and in chat nameplates (not message text). Gradient/Tricolor use the color pickers below.",
       value: "none",
     },
     {
