@@ -668,22 +668,21 @@ export default function Form({
 }
 
 function CustomColorPicker(props) {
-  // Empty string = no custom color (system default). Picker still needs a hex for UI.
-  const emptySentinel = "";
+  // Empty string / null = no custom color. Picker still needs a hex for display only.
   const displayFallback = props.default || "#888888";
-  const externalValue =
-    props.value != null && props.value !== ""
-      ? props.value
-      : displayFallback;
   const disabled = props.disabled;
+  const hasStoredColor = props.value != null && props.value !== "";
 
-  const [color, setColor] = useState(externalValue);
-  // Track last value we pushed to parent so Reset (empty) doesn't get overwritten by debounce
-  const lastPushedRef = useRef(props.value);
+  const [color, setColor] = useState(
+    hasStoredColor ? props.value : displayFallback
+  );
+  // Only push after a real user pick (not mount/sync/reset/display-fallback)
+  const userEditedRef = useRef(false);
+  const timerRef = useRef(null);
 
-  // Sync from parent when Reset clears the value (or data loads)
+  // Sync from parent when settings load or Reset clears the value
   useEffect(() => {
-    lastPushedRef.current = props.value;
+    userEditedRef.current = false;
     if (props.value != null && props.value !== "") {
       setColor(props.value);
     } else {
@@ -691,25 +690,18 @@ function CustomColorPicker(props) {
     }
   }, [props.value, displayFallback]);
 
-  // Debounce user picks to avoid API spam
-  const timerRef = useRef(null);
+  // Debounce genuine user picks only — never auto-save on mount or disabled fields
   useEffect(() => {
-    // If parent already has this color (or empty after reset), don't re-push
+    if (!userEditedRef.current) return;
+    if (disabled) return;
     if (color === props.value) return;
-    if (
-      (props.value == null || props.value === emptySentinel) &&
-      color === displayFallback &&
-      lastPushedRef.current === emptySentinel
-    ) {
-      return;
-    }
 
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
 
     timerRef.current = setTimeout(() => {
-      lastPushedRef.current = color;
+      userEditedRef.current = false;
       props.onChange({ target: { value: color } });
       timerRef.current = null;
     }, 500);
@@ -719,12 +711,16 @@ function CustomColorPicker(props) {
         clearTimeout(timerRef.current);
       }
     };
-  }, [color]);
+  }, [color, disabled]);
 
   return (
     <MuiColorInput
       value={color || displayFallback}
-      onChange={(val) => setColor(val)}
+      onChange={(val) => {
+        if (disabled) return;
+        userEditedRef.current = true;
+        setColor(val);
+      }}
       format="hex"
       disabled={disabled}
       fallbackValue={displayFallback}
