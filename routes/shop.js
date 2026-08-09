@@ -342,6 +342,15 @@ const shopItems = [
     onBuy: async function (userId) {},
   },
   {
+    name: "Sticker Slot",
+    desc: "Unlock a custom sticker slot. Upload stickers (GIF/PNG/JPEG/WebP) in Settings → Game.",
+    key: "customStickers",
+    category: "decksEmotes",
+    price: 10,
+    limit: constants.maxOwnedCustomStickers,
+    onBuy: async function (userId) {},
+  },
+  {
     name: "Archived Games",
     desc: "Gain the ability to archive games and have them displayed on your profile!",
     key: "archivedGames",

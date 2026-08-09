@@ -179,16 +179,24 @@ async function cacheUserInfo(userId, reset) {
   if (!exists || reset) {
     const maxOwnedCustomEmotes =
       constants.maxOwnedCustomEmotes + constants.maxOwnedCustomEmotesExtra;
+    const maxOwnedCustomStickers = constants.maxOwnedCustomStickers;
 
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "_id id name avatar banner forumBanner profileBackground blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday pronouns achievements redHearts goldHearts points dailyChallengesCompleted dailyChallenges joined lastActive"
+        "_id id name avatar banner forumBanner profileBackground blockedUsers settings customEmotes customStickers itemsOwned nameChanged bdayChanged birthday pronouns achievements redHearts goldHearts points dailyChallengesCompleted dailyChallenges joined lastActive"
       )
-      .populate({
-        path: "customEmotes",
-        select: "id extension name -_id",
-        options: { limit: maxOwnedCustomEmotes },
-      });
+      .populate([
+        {
+          path: "customEmotes",
+          select: "id extension name -_id",
+          options: { limit: maxOwnedCustomEmotes },
+        },
+        {
+          path: "customStickers",
+          select: "id extension name -_id",
+          options: { limit: maxOwnedCustomStickers },
+        },
+      ]);
 
     if (!user) return false;
 
@@ -217,6 +225,7 @@ async function cacheUserInfo(userId, reset) {
 
     user = user.toJSON();
     utils.remapCustomEmotes(user, userId);
+    utils.remapCustomStickers(user, userId);
 
     // Fetch vanity URL
     const vanityUrl = await models.VanityUrl.findOne({

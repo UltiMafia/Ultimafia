@@ -16,6 +16,7 @@ import "react-mde/lib/styles/css/react-mde-suggestions.css";
 
 import "css/form.css";
 import "css/markdown.css";
+import "css/emotes.css";
 import { dateToHTMLString, formatBirthdayForInput } from "../utils";
 import {
   Autocomplete,
@@ -316,7 +317,7 @@ export default function Form({
             </FormField>
           );
         case "emoteUpload":
-          const yourEmotes = Object.keys(value).map((key) => (
+          const yourEmotes = Object.keys(value || {}).map((key) => (
             <Paper
               variant="outlined"
               key={key}
@@ -359,6 +360,60 @@ export default function Form({
                   <Typography variant="caption">Your Custom Emotes</Typography>
                   <Stack direction="column" spacing={1}>
                     {yourEmotes}
+                  </Stack>
+                </Stack>
+              </Stack>
+            </FormField>
+          );
+        case "stickerUpload":
+          const yourStickers = Object.keys(value || {}).map((key) => (
+            <Paper
+              variant="outlined"
+              key={key}
+              sx={{
+                p: 0.5,
+              }}
+            >
+              <Stack direction="row" spacing={1} alignItems="center">
+                <div
+                  className="sticker"
+                  title={key}
+                  style={{
+                    backgroundImage: `url('/${value[key].path}')`,
+                    "--sticker-size": "48px",
+                    width: 48,
+                    height: 48,
+                  }}
+                />
+                <Typography sx={{ flex: "1" }}>{key}</Typography>
+                <IconButton
+                  onClick={() =>
+                    field.onCustomStickerDelete(value[key].id, deps)
+                  }
+                >
+                  <i className="fas fa-trash" />
+                </IconButton>
+              </Stack>
+            </Paper>
+          ));
+          return (
+            <FormField
+              field={field}
+              deps={deps}
+              compact={compact}
+              key={field.ref}
+            >
+              <Stack direction="column" spacing={1}>
+                <StickerUpload
+                  id="sticker-upload"
+                  disabled={disabled}
+                  deps={deps}
+                  field={field}
+                />
+                <Stack direction="column">
+                  <Typography variant="caption">Your Custom Stickers</Typography>
+                  <Stack direction="column" spacing={1}>
+                    {yourStickers}
                   </Stack>
                 </Stack>
               </Stack>
@@ -887,6 +942,154 @@ class EmoteUpload extends React.Component {
             />
           </Stack>
         </Stack>
+        {preview}
+      </Stack>
+    );
+  }
+}
+
+class StickerUpload extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      id: this.props.id,
+      stickerText: "",
+      imageURI: null,
+      imageFilename: null,
+      imageMimeType: null,
+    };
+  }
+
+  buildPreview() {
+    if (this.state.imageURI !== null && this.state.stickerText) {
+      return (
+        <Stack direction="column">
+          <Typography variant="caption">Preview</Typography>
+          <Paper
+            variant="outlined"
+            sx={{
+              p: 0.5,
+            }}
+          >
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                alignItems: "center",
+              }}
+            >
+              <div
+                className="sticker"
+                title={this.state.stickerText}
+                style={{
+                  backgroundImage: `url('${this.state.imageURI}')`,
+                  "--sticker-size": "64px",
+                  width: 64,
+                  height: 64,
+                }}
+              />
+              <Typography>:{this.state.stickerText}:</Typography>
+              <Button
+                size="small"
+                sx={{
+                  alignSelf: "center",
+                  marginLeft: "auto !important",
+                }}
+                onClick={(e) => {
+                  this.setState({
+                    stickerText: "",
+                    imageURI: null,
+                    imageFilename: null,
+                    imageMimeType: null,
+                  });
+                  this.props.field.onCustomStickerUpload(
+                    this.state.stickerText,
+                    this.state.imageFilename,
+                    this.state.imageMimeType,
+                    this.state.imageURI,
+                    this.props.deps
+                  );
+                }}
+              >
+                Submit
+              </Button>
+            </Stack>
+          </Paper>
+        </Stack>
+      );
+    } else {
+      return <></>;
+    }
+  }
+
+  readURI(e) {
+    if (e.target.files && e.target.files[0]) {
+      let reader = new FileReader();
+      let imageFilename = e.target.files[0].name;
+      let imageMimeType = e.target.files[0].type;
+      reader.onload = function (e) {
+        this.setState({
+          imageURI: e.target.result,
+          imageFilename: imageFilename,
+          imageMimeType: imageMimeType,
+        });
+      }.bind(this);
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  }
+
+  handleChange(e) {
+    this.readURI(e);
+    if (this.props.onChange !== undefined) this.props.onChange(e);
+  }
+
+  updateStickerText(e) {
+    this.setState({ stickerText: e.target.value });
+  }
+
+  render() {
+    const preview = this.buildPreview();
+
+    return (
+      <Stack direction="column" spacing={1}>
+        <Stack direction="row" spacing={1}>
+          <TextField
+            placeholder="your sticker name here"
+            maxLength={25}
+            disabled={this.props.disabled}
+            onChange={this.updateStickerText.bind(this)}
+            sx={{
+              flex: "1",
+            }}
+          />
+          <Stack
+            direction="column"
+            sx={{
+              flex: "1",
+              minWidth: 0,
+            }}
+          >
+            <Button
+              component="label"
+              htmlFor={this.state.id}
+              sx={{
+                flex: "1",
+              }}
+            >
+              Upload
+            </Button>
+            <input
+              id={this.state.id}
+              style={{ visibility: "hidden", height: "0" }}
+              type="file"
+              accept="image/gif,image/png,image/jpeg,image/webp"
+              onChange={this.handleChange.bind(this)}
+            />
+          </Stack>
+        </Stack>
+        <Typography variant="caption" sx={{ opacity: 0.75 }}>
+          GIF, PNG, JPEG, or WebP. Max 10 MB and 512×512 px.
+        </Typography>
         {preview}
       </Stack>
     );

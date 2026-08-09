@@ -192,7 +192,8 @@ export function UserText(props) {
 
     // Any effects that inject elements need to be added after this point because the text property changes
     // throughout this useEffect function
-    if (props.emotify) text = emotify(text, props.customEmotes);
+    if (props.emotify)
+      text = emotify(text, props.customEmotes, props.customStickers);
 
     if (props.slangify)
       text = slangify({
@@ -205,7 +206,7 @@ export function UserText(props) {
     if (props.roleify) text = roleifySegments(text, siteInfo);
 
     setContent(text);
-  }, [props.text, props.terminologyEmoticons]);
+  }, [props.text, props.terminologyEmoticons, props.customEmotes, props.customStickers]);
 
   return content ?? "";
 }

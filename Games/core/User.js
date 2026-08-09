@@ -11,6 +11,7 @@ module.exports = class User {
     this.textColor = props.settings && props.settings.textColor;
     this.nameColor = props.settings && props.settings.nameColor;
     this.customEmotes = props.settings && props.settings.customEmotes;
+    this.customStickers = props.settings && props.settings.customStickers;
     this.birthday = dateOnly.normalizeBirthday(props.birthday);
     this.Protips = props.settings && props.settings.disableProTips;
     this.rankedCount = props.rankedCount;
