@@ -67,11 +67,13 @@ iframe {
   border-width: 0px;
 }
 
-.avatar .edit {
+.avatar .edit,
+.avatar .avatar-edit-overlay {
   display: none;
   flex-flow: row;
   align-items: center;
   justify-content: center;
+  gap: 6px;
 
   /*SANTA CHANGES: In December, comment the below lines*/
   width: 100%;
@@ -87,12 +89,36 @@ iframe {
   border-radius: inherit;
 
   background-color: black;
-  opacity: 0.45;
+  opacity: 0.55;
   cursor: pointer;
 }
 
-.avatar:hover .edit {
+.avatar:hover .edit,
+.avatar:hover .avatar-edit-overlay {
   display: flex;
+}
+
+.avatar .avatar-edit-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.95rem;
+}
+
+.avatar .avatar-edit-action:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.avatar .avatar-remove:hover {
+  background: rgba(220, 50, 50, 0.85);
 }
 
 .in-love {

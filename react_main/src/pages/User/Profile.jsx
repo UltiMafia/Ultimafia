@@ -473,6 +473,25 @@ export default function Profile() {
     }
   }
 
+  function onAvatarRemove() {
+    if (
+      !window.confirm(
+        "Remove your avatar and return to the default letter avatar?"
+      )
+    ) {
+      return;
+    }
+
+    axios
+      .post("/api/user/avatar/delete")
+      .then(() => {
+        setAvatar(false);
+        siteInfo.clearCache();
+        siteInfo.showAlert("Avatar removed", "success");
+      })
+      .catch(errorAlert);
+  }
+
   function onFriendUserClick() {
     if (isFriend || isFriendRequested) {
       var shouldUnfriend = window.confirm(
@@ -1270,6 +1289,7 @@ export default function Profile() {
               name={name}
               edit={isSelf}
               onUpload={onFileUpload}
+              onRemove={isSelf && avatar ? onAvatarRemove : undefined}
               border={`4px var(--scheme-color) solid`}
               isSquare={settings.avatarShape === "square"}
               onlineStatus={status}

@@ -2541,6 +2541,38 @@ router.post("/avatar", async function (req, res) {
   }
 });
 
+router.post("/avatar/delete", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+
+    await models.User.updateOne({ id: userId }, { $set: { avatar: false } });
+    await redis.cacheUserInfo(userId, true);
+
+    // Best-effort delete of uploaded file (default letter avatar used when avatar is false)
+    try {
+      const avatarPath = `${process.env.UPLOAD_PATH}/${userId}_avatar.webp`;
+      if (fs.existsSync(avatarPath)) {
+        fs.unlinkSync(avatarPath);
+      }
+    } catch (fileErr) {
+      logger.warn(fileErr);
+    }
+
+    models.SiteActivity.create({
+      id: shortid.generate(),
+      type: "avatarChange",
+      actorId: userId,
+      meta: { removed: true },
+      date: Date.now(),
+    }).catch(() => {});
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not remove avatar. Please try again.");
+  }
+});
+
 router.post("/profileBackground", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);

@@ -332,6 +332,7 @@ export function Avatar(props) {
   const imageUrl = props.imageUrl;
   const edit = props.edit;
   const onUpload = props.onUpload;
+  const onRemove = props.onRemove;
   const active = props.active;
   const dead = props.dead;
   const avatarId = props.avatarId;
@@ -452,14 +453,31 @@ export function Avatar(props) {
       }}
     >
       {edit && (
-        <AvatarUpload
-          className="edit"
-          name="avatar"
-          onFileUpload={onUpload}
-          isSquare={isSquare}
-        >
-          <i className="far fa-file-image" />
-        </AvatarUpload>
+        <div className="edit avatar-edit-overlay">
+          <AvatarUpload
+            className="avatar-edit-action"
+            name="avatar"
+            onFileUpload={onUpload}
+            isSquare={isSquare}
+          >
+            <i className="far fa-file-image" title="Upload avatar" />
+          </AvatarUpload>
+          {hasImage && onRemove && (
+            <button
+              type="button"
+              className="avatar-edit-action avatar-remove"
+              title="Remove avatar"
+              aria-label="Remove avatar"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onRemove();
+              }}
+            >
+              <i className="fas fa-trash" />
+            </button>
+          )}
+        </div>
       )}
 
       {onlineStatus !== null && (
