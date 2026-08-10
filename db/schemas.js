@@ -117,6 +117,8 @@ var schemas = {
       expHighDpiCorrection: { type: Boolean, default: false },
       roleSkins: String,
       autoplay: { type: Boolean, default: false },
+      // Viewer preference: never autoplay profile/family (or other) media embeds
+      disableMediaAutoplay: { type: Boolean, default: false },
       youtube: String,
       // Collapse profile media player to a compact bar while still playing
       collapseMedia: { type: Boolean, default: false },

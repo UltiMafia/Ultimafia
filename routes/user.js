@@ -1959,6 +1959,33 @@ router.post("/settings/update", async function (req, res) {
       return;
     }
 
+    // Boolean settings: store real booleans (String(true)==="true" was confusing loaders/UI)
+    const BOOLEAN_SETTINGS = new Set([
+      "onlyFriendDMs",
+      "disablePokes",
+      "disablePg13Censor",
+      "disableAllCensors",
+      "hideDeleted",
+      "disableProTips",
+      "disableSnowstorm",
+      "expHighDpiCorrection",
+      "autoplay",
+      "collapseMedia",
+      "disableMediaAutoplay",
+      "hideStatistics",
+      "hideKarma",
+      "hidePointsNegative",
+      "hideJoinDate",
+      "hideDonorBadge",
+      "hideRankedModal",
+      "hideCompetitiveModal",
+      "ignoreTextColor",
+      "accessibleNameColors",
+    ]);
+    if (BOOLEAN_SETTINGS.has(prop)) {
+      value = value === true || value === "true";
+    }
+
     if (prop === "siteColorScheme" && isRetroThemeForcedByCalendar()) {
       res.status(403);
       res.send("Site color scheme is locked on this date.");

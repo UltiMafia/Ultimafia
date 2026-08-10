@@ -24,6 +24,9 @@ const invidiousRegex =
 import { useTheme } from "@mui/material/styles";
 import { Popover } from "@mui/material";
 import { Box, IconButton, Stack, Typography } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import ImageViewer from "components/ImageViewer";
 import Miniprofile from "components/Miniprofile";
@@ -169,10 +172,36 @@ function ImageWithViewer({ imageUrl }) {
 
 export function MediaEmbed(props) {
   const mediaUrl = props.mediaUrl;
-  const autoplay = !!props.autoplay;
   const loop = !!props.loop;
-  const collapsed = !!props.collapsed;
+  // When collapsible, show expand/collapse control. `collapsed` is the initial state.
+  const collapsible = !!props.collapsible;
+  const [isCollapsed, setIsCollapsed] = useState(!!props.collapsed);
+  // Don't CSS-transition the initial collapsed state (start already closed).
+  const [allowAnimate, setAllowAnimate] = useState(false);
   const mediaRef = useRef();
+  const viewer = useContext(UserContext);
+  // Site setting: never autoplay media embeds for this viewer
+  const disableMediaAutoplay =
+    viewer?.settings?.disableMediaAutoplay === true ||
+    viewer?.settings?.disableMediaAutoplay === "true";
+  const autoplay = !!props.autoplay && !disableMediaAutoplay;
+
+  useEffect(() => {
+    setIsCollapsed(!!props.collapsed);
+  }, [props.collapsed]);
+
+  useEffect(() => {
+    // Enable transitions only after first paint so initial collapse is instant.
+    setAllowAnimate(false);
+    let id2 = 0;
+    const id1 = requestAnimationFrame(() => {
+      id2 = requestAnimationFrame(() => setAllowAnimate(true));
+    });
+    return () => {
+      cancelAnimationFrame(id1);
+      cancelAnimationFrame(id2);
+    };
+  }, [mediaUrl]);
 
   const mediaOptions = JSON.parse(
     window.localStorage.getItem("mediaOptions") || "{}"
@@ -284,11 +313,36 @@ export function MediaEmbed(props) {
       return null;
   }
 
+  if (!collapsible) {
+    return <div className="media-embed-wrap">{body}</div>;
+  }
+
   return (
     <div
-      className={`media-embed-wrap${collapsed ? " media-collapsed" : ""}`}
+      className={`media-embed-wrap media-collapsible${
+        isCollapsed ? " media-collapsed" : ""
+      }${allowAnimate ? " media-animate" : ""}`}
     >
-      {body}
+      <div className="media-embed-body" aria-hidden={isCollapsed}>
+        {body}
+      </div>
+      <IconButton
+        className="media-embed-toggle"
+        size="small"
+        onClick={() => setIsCollapsed((c) => !c)}
+        aria-expanded={!isCollapsed}
+        aria-label={isCollapsed ? "Expand media player" : "Collapse media player"}
+        title={isCollapsed ? "Expand media player" : "Collapse media player"}
+      >
+        {isCollapsed ? (
+          <Stack direction="row" alignItems="center" spacing={0.5}>
+            <MusicNoteIcon fontSize="small" />
+            <ExpandMoreIcon fontSize="small" />
+          </Stack>
+        ) : (
+          <ExpandLessIcon />
+        )}
+      </IconButton>
     </div>
   );
 }

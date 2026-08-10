@@ -371,9 +371,17 @@ export default function Profile() {
           setStatus(res.data.status || "offline");
           setLastActive(res.data.lastActive);
           setInGame(res.data.inGame);
-          setMediaUrl("");
-          setAutoplay(false);
-          setCollapseMedia(false);
+          // Set media once at final values so the player can mount already collapsed
+          // (avoids open→close animation when collapseMedia is enabled).
+          if (res.data.settings.youtube) {
+            setMediaUrl(res.data.settings.youtube);
+            setAutoplay(!!res.data.settings.autoplay);
+            setCollapseMedia(!!res.data.settings.collapseMedia);
+          } else {
+            setMediaUrl("");
+            setAutoplay(false);
+            setCollapseMedia(false);
+          }
           setSaved(res.data.saved);
           setLove(res.data.love);
           setCurrentUserLove(res.data.currentLove);
@@ -407,12 +415,6 @@ export default function Profile() {
           const isSelf = user.loggedIn && resolvedId === user.id;
           if (!isSelf && user.loggedIn) {
             loadUserFamily();
-          }
-
-          if (res.data.settings.youtube) {
-            setMediaUrl(res.data.settings.youtube);
-            setAutoplay(res.data.settings.autoplay);
-            setCollapseMedia(!!res.data.settings.collapseMedia);
           }
           document.title = `${res.data.name}'s Profile | UltiMafia`;
         })
@@ -1678,6 +1680,7 @@ export default function Profile() {
                 <MediaEmbed
                   mediaUrl={mediaUrl}
                   autoplay={autoplay}
+                  collapsible
                   collapsed={collapseMedia}
                 ></MediaEmbed>
               </div>

@@ -358,27 +358,13 @@ export default function Family() {
                   />
                 </div>
               )}
-              {family.hasMusicPlayer && family.mediaUrl && (
-                <Box sx={{ mb: 1.5, mt: family.banner ? 1.5 : 0 }}>
-                  <MediaEmbed
-                    mediaUrl={family.mediaUrl}
-                    autoplay={!!family.mediaAutoplay}
-                    collapsed={!!family.mediaCollapse}
-                  />
-                </Box>
-              )}
               <Stack
                 direction="row"
                 spacing={2}
                 alignItems="center"
                 sx={{
                   mb: 2,
-                  mt:
-                    family.hasMusicPlayer && family.mediaUrl
-                      ? 0
-                      : family.banner
-                        ? 1.5
-                        : 0,
+                  mt: family.banner ? 1.5 : 0,
                 }}
               >
                 {family.avatar && (
@@ -526,6 +512,17 @@ export default function Family() {
               </Paper>
             )}
             
+            {family.hasMusicPlayer && family.mediaUrl && (
+              <Paper sx={panelStyle}>
+                <MediaEmbed
+                  mediaUrl={family.mediaUrl}
+                  autoplay={!!family.mediaAutoplay}
+                  collapsible
+                  collapsed={!!family.mediaCollapse}
+                />
+              </Paper>
+            )}
+
             <Paper sx={panelStyle}>
               <Typography variant="h3" sx={headingStyle}>
                 Members

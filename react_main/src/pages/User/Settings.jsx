@@ -443,6 +443,13 @@ export default function Settings() {
       type: "boolean",
       extraInfo: "Turn off the snow effect during December (holiday season)",
     },
+    {
+      label: "Disable All Media Autoplay",
+      ref: "disableMediaAutoplay",
+      type: "boolean",
+      extraInfo:
+        "When enabled, profile and family media players will not autoplay for you, even if the owner turned autoplay on.",
+    },
   ]);
 
   const [profileFields, updateProfileFields] = useForm(
@@ -514,7 +521,7 @@ export default function Settings() {
         showIf: (deps) =>
           deps.user.settings.youtube != null && deps.user.settings.youtube !== "",
         extraInfo:
-          "Shrinks the profile media player to about one-third height while keeping playback and autoplay.",
+          "Starts the profile media player collapsed (arrow only). Click the arrow to expand or collapse; the player animates shut upward.",
       },
       {
         label: "Banner Format",

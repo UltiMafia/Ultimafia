@@ -416,7 +416,7 @@ export default function Form({
                 label={booleanLabel}
                 control={
                   <Checkbox
-                    defaultChecked={field.value || false}
+                    checked={!!field.value}
                     disabled={disabled}
                     onChange={(e) => onFieldChange(e, field)}
                   />
