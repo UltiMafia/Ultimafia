@@ -209,6 +209,21 @@ module.exports = class Player {
           return;
         }
 
+        // Same content twice in a row is OK; third consecutive identical paste is blocked.
+        if (
+          Spam.isRepeatedContentSpam(
+            speechPast,
+            message.content,
+            constants.msgDuplicateMaxConsecutive
+          )
+        ) {
+          sendSpeakCooldown(
+            message.meetingId,
+            constants.msgDuplicateCooldownMs
+          );
+          return;
+        }
+
         if (isRankedCompetitive()) {
           const typingCooldownMs = Spam.getTypingSpeedCooldownRemainingMs(
             speechPast,
@@ -236,7 +251,10 @@ module.exports = class Player {
           return;
         }
 
-        speechPast.push(Date.now());
+        speechPast.push({
+          at: Date.now(),
+          content: Spam.normalizeSpeakContent(message.content),
+        });
 
         var meeting = this.game.getMeeting(message.meetingId);
         if (!meeting) return;

@@ -356,6 +356,9 @@ module.exports = {
 
   msgSpamSumLimit: 15,
   msgSpamRateLimit: 10,
+  // Same line may be sent twice in a row; the 3rd consecutive identical paste is blocked.
+  msgDuplicateMaxConsecutive: 2,
+  msgDuplicateCooldownMs: 3 * 1000,
   voteSpamSumLimit: 15,
   voteSpamRateLimit: 10,
   rankedCompetitiveTypingWpm: 130,

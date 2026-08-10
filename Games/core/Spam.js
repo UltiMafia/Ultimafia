@@ -1,7 +1,19 @@
 module.exports = class Spam {
+  /** speechPast entries may be a timestamp number or { at, content }. */
+  static entryTime(entry) {
+    if (entry == null) return 0;
+    if (typeof entry === "number") return entry;
+    return entry.at || 0;
+  }
+
+  static entryContent(entry) {
+    if (entry == null || typeof entry === "number") return null;
+    return entry.content != null ? entry.content : null;
+  }
+
   static prunePast(past, now = Date.now()) {
     for (let i = past.length - 1; i >= 0; i--) {
-      if ((now - past[i]) / 1000 > 20) {
+      if ((now - this.entryTime(past[i])) / 1000 > 20) {
         past.splice(i, 1);
       }
     }
@@ -12,7 +24,7 @@ module.exports = class Spam {
 
     let sum = 0;
     for (let i in past) {
-      sum += 1 / ((now - past[i] + 1) / 1000);
+      sum += 1 / ((now - this.entryTime(past[i]) + 1) / 1000);
     }
 
     return {
@@ -40,7 +52,7 @@ module.exports = class Spam {
       let count = 0;
 
       for (let i in past) {
-        const elapsed = checkTime - past[i];
+        const elapsed = checkTime - this.entryTime(past[i]);
         if (elapsed <= maxCooldownMs) {
           count += 1;
           sum += 1 / ((elapsed + 1) / 1000);
@@ -58,7 +70,7 @@ module.exports = class Spam {
   static getFixedCooldownRemainingMs(past, cooldownMs, now = Date.now()) {
     if (!cooldownMs || past.length === 0) return 0;
 
-    const elapsed = now - past[past.length - 1];
+    const elapsed = now - this.entryTime(past[past.length - 1]);
     return Math.max(0, cooldownMs - elapsed);
   }
 
@@ -76,6 +88,47 @@ module.exports = class Spam {
     }
 
     return count;
+  }
+
+  /** Normalize for duplicate detection (trim + collapse whitespace). */
+  static normalizeSpeakContent(content) {
+    return String(content || "")
+      .trim()
+      .replace(/\s+/g, " ");
+  }
+
+  /**
+   * How many trailing speechPast entries match this content (consecutive).
+   * Uses entries still inside the prune window.
+   */
+  static getConsecutiveDuplicateCount(past, content, now = Date.now()) {
+    this.prunePast(past, now);
+    const norm = this.normalizeSpeakContent(content);
+    if (!norm) return 0;
+
+    let count = 0;
+    for (let i = past.length - 1; i >= 0; i--) {
+      const prev = this.entryContent(past[i]);
+      if (prev == null) break;
+      if (prev === norm) count += 1;
+      else break;
+    }
+    return count;
+  }
+
+  /**
+   * Block when the same content was already sent maxConsecutive times in a row.
+   * maxConsecutive = 2 → first and second OK, third blocked.
+   */
+  static isRepeatedContentSpam(
+    past,
+    content,
+    maxConsecutive = 2,
+    now = Date.now()
+  ) {
+    return (
+      this.getConsecutiveDuplicateCount(past, content, now) >= maxConsecutive
+    );
   }
 
   /**
@@ -125,7 +178,7 @@ module.exports = class Spam {
     );
     if (minIntervalMs <= 0) return 0;
 
-    const elapsed = now - past[past.length - 1];
+    const elapsed = now - this.entryTime(past[past.length - 1]);
     return Math.max(0, minIntervalMs - elapsed);
   }
 

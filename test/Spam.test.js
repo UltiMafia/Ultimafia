@@ -149,3 +149,55 @@ describe("Games/core/Spam typing speed (ranked/competitive)", function () {
     remaining.should.be.at.most(MAX_IV - 200);
   });
 });
+
+describe("Games/core/Spam repeated content", function () {
+  const max = 2;
+
+  it("allows the first and second identical paste", function () {
+    const now = 20_000_000;
+    const past = [];
+    const msg = "I am town claim cop";
+
+    Spam.isRepeatedContentSpam(past, msg, max, now).should.equal(false);
+    past.push({ at: now, content: Spam.normalizeSpeakContent(msg) });
+
+    Spam.isRepeatedContentSpam(past, msg, max, now + 100).should.equal(false);
+    past.push({ at: now + 100, content: Spam.normalizeSpeakContent(msg) });
+
+    // third consecutive identical is blocked
+    Spam.isRepeatedContentSpam(past, msg, max, now + 200).should.equal(true);
+  });
+
+  it("resets when content changes", function () {
+    const now = 21_000_000;
+    const past = [
+      { at: now, content: Spam.normalizeSpeakContent("aaa") },
+      { at: now + 50, content: Spam.normalizeSpeakContent("aaa") },
+      { at: now + 100, content: Spam.normalizeSpeakContent("bbb") },
+    ];
+    Spam.isRepeatedContentSpam(past, "aaa", max, now + 150).should.equal(false);
+    Spam.isRepeatedContentSpam(past, "bbb", max, now + 150).should.equal(false);
+  });
+
+  it("treats whitespace-normalized content as the same", function () {
+    const now = 22_000_000;
+    const past = [
+      { at: now, content: Spam.normalizeSpeakContent("hello   world") },
+      { at: now + 50, content: Spam.normalizeSpeakContent("hello world") },
+    ];
+    Spam.isRepeatedContentSpam(
+      past,
+      "  hello\tworld  ",
+      max,
+      now + 100
+    ).should.equal(true);
+  });
+
+  it("rate helpers still accept plain timestamp entries", function () {
+    const now = Date.now();
+    const past = [now - 1000, now - 500];
+    const info = Spam.getRateInfo(past, now);
+    info.count.should.equal(2);
+    Spam.rateLimit(past, 15, 10).should.equal(false);
+  });
+});

@@ -91,6 +91,22 @@ module.exports = class Spectator extends Player {
         }
 
         if (
+          Spam.isRepeatedContentSpam(
+            speechPast,
+            message.content,
+            constants.msgDuplicateMaxConsecutive
+          )
+        ) {
+          const sentAt = Date.now();
+          this.send("speakCooldown", {
+            meetingId: message.meetingId,
+            sentAt,
+            cooldownMs: constants.msgDuplicateCooldownMs,
+          });
+          return;
+        }
+
+        if (
           message.content[0] == "/" &&
           message.content.slice(0, 4) != "/me "
         ) {
@@ -98,7 +114,10 @@ module.exports = class Spectator extends Player {
           return;
         }
 
-        speechPast.push(Date.now());
+        speechPast.push({
+          at: Date.now(),
+          content: Spam.normalizeSpeakContent(message.content),
+        });
 
         var meeting = this.game.getMeeting(message.meetingId);
         if (!meeting) return;
