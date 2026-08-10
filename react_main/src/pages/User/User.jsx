@@ -24,6 +24,9 @@ const invidiousRegex =
 import { useTheme } from "@mui/material/styles";
 import { Popover } from "@mui/material";
 import { Box, IconButton, Stack, Typography } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import ImageViewer from "components/ImageViewer";
 import Miniprofile from "components/Miniprofile";
@@ -169,9 +172,36 @@ function ImageWithViewer({ imageUrl }) {
 
 export function MediaEmbed(props) {
   const mediaUrl = props.mediaUrl;
-  const autoplay = !!props.autoplay;
   const loop = !!props.loop;
+  // When collapsible, show expand/collapse control. `collapsed` is the initial state.
+  const collapsible = !!props.collapsible;
+  const [isCollapsed, setIsCollapsed] = useState(!!props.collapsed);
+  // Don't CSS-transition the initial collapsed state (start already closed).
+  const [allowAnimate, setAllowAnimate] = useState(false);
   const mediaRef = useRef();
+  const viewer = useContext(UserContext);
+  // Site setting: never autoplay media embeds for this viewer
+  const disableMediaAutoplay =
+    viewer?.settings?.disableMediaAutoplay === true ||
+    viewer?.settings?.disableMediaAutoplay === "true";
+  const autoplay = !!props.autoplay && !disableMediaAutoplay;
+
+  useEffect(() => {
+    setIsCollapsed(!!props.collapsed);
+  }, [props.collapsed]);
+
+  useEffect(() => {
+    // Enable transitions only after first paint so initial collapse is instant.
+    setAllowAnimate(false);
+    let id2 = 0;
+    const id1 = requestAnimationFrame(() => {
+      id2 = requestAnimationFrame(() => setAllowAnimate(true));
+    });
+    return () => {
+      cancelAnimationFrame(id1);
+      cancelAnimationFrame(id2);
+    };
+  }, [mediaUrl]);
 
   const mediaOptions = JSON.parse(
     window.localStorage.getItem("mediaOptions") || "{}"
@@ -234,11 +264,13 @@ export function MediaEmbed(props) {
     };
   }, [mediaRef]);
 
+  let body = null;
   switch (mediaType) {
     case "image":
-      return <ImageWithViewer imageUrl={mediaUrl} />;
+      body = <ImageWithViewer imageUrl={mediaUrl} />;
+      break;
     case "audio":
-      return (
+      body = (
         <audio
           ref={mediaRef}
           controls
@@ -247,8 +279,9 @@ export function MediaEmbed(props) {
           loop={loop}
         ></audio>
       );
+      break;
     case "video":
-      return (
+      body = (
         <div id="profile-video" className="video-responsive-generic">
           <video
             ref={mediaRef}
@@ -260,19 +293,58 @@ export function MediaEmbed(props) {
           ></video>
         </div>
       );
+      break;
     case "youtube":
-      return <YouTubeEmbed embedId={embedId} autoplay={autoplay} />;
+      body = <YouTubeEmbed embedId={embedId} autoplay={autoplay} />;
+      break;
     case "soundcloud":
-      return <SoundCloudEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+      body = <SoundCloudEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+      break;
     case "spotify":
-      return <SpotifyEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+      body = <SpotifyEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+      break;
     case "vimeo":
-      return <VimeoEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+      body = <VimeoEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+      break;
     case "invidious":
-      return <InvidiousEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+      body = <InvidiousEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+      break;
     default:
       return null;
   }
+
+  if (!collapsible) {
+    return <div className="media-embed-wrap">{body}</div>;
+  }
+
+  return (
+    <div
+      className={`media-embed-wrap media-collapsible${
+        isCollapsed ? " media-collapsed" : ""
+      }${allowAnimate ? " media-animate" : ""}`}
+    >
+      <div className="media-embed-body" aria-hidden={isCollapsed}>
+        {body}
+      </div>
+      <IconButton
+        className="media-embed-toggle"
+        size="small"
+        onClick={() => setIsCollapsed((c) => !c)}
+        aria-expanded={!isCollapsed}
+        aria-label={isCollapsed ? "Expand media player" : "Collapse media player"}
+        title={isCollapsed ? "Expand media player" : "Collapse media player"}
+      >
+        {isCollapsed ? (
+          <Stack direction="row" alignItems="center" spacing={0.5}>
+            <MusicNoteIcon fontSize="small" />
+            <ExpandMoreIcon fontSize="small" />
+          </Stack>
+        ) : (
+          <ExpandLessIcon />
+        )}
+      </IconButton>
+    </div>
+  );
 }
 export default function User(props) {
   const theme = useTheme();
@@ -332,6 +404,8 @@ export function Avatar(props) {
   const imageUrl = props.imageUrl;
   const edit = props.edit;
   const onUpload = props.onUpload;
+  const onRemove = props.onRemove;
+  const keepAnimation = props.keepAnimation;
   const active = props.active;
   const dead = props.dead;
   const avatarId = props.avatarId;
@@ -452,14 +526,32 @@ export function Avatar(props) {
       }}
     >
       {edit && (
-        <AvatarUpload
-          className="edit"
-          name="avatar"
-          onFileUpload={onUpload}
-          isSquare={isSquare}
-        >
-          <i className="far fa-file-image" />
-        </AvatarUpload>
+        <div className="edit avatar-edit-overlay">
+          <AvatarUpload
+            className="avatar-edit-action"
+            name="avatar"
+            onFileUpload={onUpload}
+            isSquare={isSquare}
+            keepAnimation={!!keepAnimation}
+          >
+            <i className="far fa-file-image" title="Upload avatar" />
+          </AvatarUpload>
+          {hasImage && onRemove && (
+            <button
+              type="button"
+              className="avatar-edit-action avatar-remove"
+              title="Remove avatar"
+              aria-label="Remove avatar"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onRemove();
+              }}
+            >
+              <i className="fas fa-trash" />
+            </button>
+          )}
+        </div>
       )}
 
       {onlineStatus !== null && (
@@ -519,6 +611,11 @@ export function NameWithAvatar(props) {
   const subContent = props.subContent;
   const ripAvatar = props.ripAvatar;
   const nameColorSwatch = props.nameColorSwatch;
+  const nameFont = props.nameFont;
+  const animatedNameColor = props.animatedNameColor;
+  const nameGradientColorA = props.nameGradientColorA || "#ff0040";
+  const nameGradientColorB = props.nameGradientColorB || "#00c2ff";
+  const nameGradientColorC = props.nameGradientColorC || "#3dff6a";
 
   const game = useContext(GameContext);
   const user = useContext(UserContext);
@@ -526,6 +623,32 @@ export function NameWithAvatar(props) {
   const [isClicked, setIsClicked] = useState(false);
 
   const autoColor = user.autoContrastColor(color);
+  const nameFontClass =
+    nameFont && nameFont !== "default" ? `name-font-${nameFont}` : "";
+  const nameAnimClass =
+    animatedNameColor && animatedNameColor !== "none"
+      ? `name-anim-${animatedNameColor}`
+      : "";
+  // Rainbow/patriotic/gradient/tricolor use background-clip
+  const usesClipText =
+    animatedNameColor === "rainbow" ||
+    animatedNameColor === "patriotic" ||
+    animatedNameColor === "gradient" ||
+    animatedNameColor === "tricolor";
+  const useSolidNameColor = autoColor && !usesClipText;
+  const nameStyle = {
+    ...(useSolidNameColor ? { color: autoColor } : {}),
+    display: "inline",
+    ...(animatedNameColor === "gradient" || animatedNameColor === "tricolor"
+      ? {
+          ["--name-grad-a"]: nameGradientColorA,
+          ["--name-grad-b"]: nameGradientColorB,
+          ...(animatedNameColor === "tricolor"
+            ? { ["--name-grad-c"]: nameGradientColorC }
+            : {}),
+        }
+      : {}),
+  };
 
   const {
     popoverOpen: canOpenPopover,
@@ -586,8 +709,8 @@ export function NameWithAvatar(props) {
       )}
       <Stack direction="column">
         <div
-          className={`user-name ${props.dead ? "dead" : autoColor}`} 
-          style={{ ...(autoColor ? { color: autoColor } : {}), display: "inline" }}
+          className={`user-name ${props.dead ? "dead" : ""} ${nameFontClass} ${nameAnimClass}`.trim()}
+          style={nameStyle}
         >
           <Stack direction="row" spacing={0.5} alignItems="center">
             {nameColorSwatch && (
@@ -600,7 +723,11 @@ export function NameWithAvatar(props) {
                 aria-label="Name color"
               />
             )}
-            <Typography>
+            <Typography
+              component="span"
+              className="user-name-text"
+              sx={{ color: "inherit", fontFamily: "inherit" }}
+            >
               {name}
             </Typography>
             {groups && <Badges groups={groups} small={small} />}

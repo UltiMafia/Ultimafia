@@ -10,6 +10,15 @@ module.exports = class User {
     this.dev = props.dev;
     this.textColor = props.settings && props.settings.textColor;
     this.nameColor = props.settings && props.settings.nameColor;
+    this.nameFont = props.settings && props.settings.nameFont;
+    this.animatedNameColor =
+      props.settings && props.settings.animatedNameColor;
+    this.nameGradientColorA =
+      props.settings && props.settings.nameGradientColorA;
+    this.nameGradientColorB =
+      props.settings && props.settings.nameGradientColorB;
+    this.nameGradientColorC =
+      props.settings && props.settings.nameGradientColorC;
     this.customEmotes = props.settings && props.settings.customEmotes;
     this.birthday = dateOnly.normalizeBirthday(props.birthday);
     this.Protips = props.settings && props.settings.disableProTips;

@@ -64,6 +64,8 @@ var schemas = {
     discordUsername: String,
     avatar: Boolean,
     banner: Boolean,
+    // File extension for profile banner (webp static, or gif/webp animated)
+    bannerExt: { type: String, default: "webp" },
     forumBanner: Boolean,
     profileBackground: Boolean,
     bio: {
@@ -94,6 +96,14 @@ var schemas = {
       accessibleNameColors: { type: Boolean, default: false },
       nameColor: String,
       warnNameColor: String,
+      // Cosmetic name font for in-game player list (not site-wide, not chat body)
+      nameFont: { type: String, default: "default" },
+      // Animated name color style: none | pulse | glow | rainbow | gradient
+      animatedNameColor: { type: String, default: "none" },
+      // Two colors used when animatedNameColor === "gradient"
+      nameGradientColorA: { type: String, default: "#ff0040" },
+      nameGradientColorB: { type: String, default: "#00c2ff" },
+      nameGradientColorC: { type: String, default: "#3dff6a" },
       onlyFriendDMs: { type: Boolean, default: false },
       disablePg13Censor: { type: Boolean, default: false },
       disableAllCensors: { type: Boolean, default: false },
@@ -107,7 +117,11 @@ var schemas = {
       expHighDpiCorrection: { type: Boolean, default: false },
       roleSkins: String,
       autoplay: { type: Boolean, default: false },
+      // Viewer preference: never autoplay profile/family (or other) media embeds
+      disableMediaAutoplay: { type: Boolean, default: false },
       youtube: String,
+      // Collapse profile media player to a compact bar while still playing
+      collapseMedia: { type: Boolean, default: false },
       hideStatistics: { type: Boolean, default: false },
       hideKarma: { type: Boolean, default: false },
       hidePointsNegative: { type: Boolean, default: true },
@@ -174,6 +188,11 @@ var schemas = {
       twoCharName: { type: Number, default: 0 },
       oneCharName: { type: Number, default: 0 },
       textColors: { type: Number, default: 0 },
+      nameFont: { type: Number, default: 0 },
+      animatedNameColor: { type: Number, default: 0 },
+      tricolorAnimatedGradient: { type: Number, default: 0 },
+      animatedBanner: { type: Number, default: 0 },
+      animatedAvatar: { type: Number, default: 0 },
       deathMessageEnabled: { type: Number, default: 0 },
       deathMessageChange: { type: Number, default: 0 },
       anonymousDeck: { type: Number, default: 0 },
@@ -871,6 +890,13 @@ var schemas = {
     id: { type: String, index: true, unique: true },
     name: { type: String, required: true, maxlength: 20 },
     avatar: { type: Boolean, default: false },
+    // Family page header banner (3:1, like profile banners)
+    banner: { type: Boolean, default: false },
+    bannerExt: { type: String, default: "webp" },
+    // Family music/media player (YouTube, Spotify, etc.) — requires familyMusicPlayer perk
+    mediaUrl: { type: String, default: "" },
+    mediaAutoplay: { type: Boolean, default: false },
+    mediaCollapse: { type: Boolean, default: false },
     background: { type: Boolean, default: false },
     backgroundRepeatMode: {
       type: String,

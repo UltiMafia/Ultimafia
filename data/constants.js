@@ -340,6 +340,29 @@ module.exports = {
   maxArchivedGamesMax: 10,
   maxDeckNameLength: 25, // maxSetupNameLength
   maxCustomEmoteNameLength: 25,
+  // In-game name cosmetics (player list + chat nameplates; not message body text)
+  nameFontOptions: [
+    "default",
+    "slab",
+    "mono",
+    "poppins",
+    "georgia",
+    "trebuchet",
+    "verdana",
+    "bettynoir",
+    "autophobia",
+    "spooky",
+    "nabla",
+  ],
+  animatedNameColorOptions: [
+    "none",
+    "pulse",
+    "glow",
+    "rainbow",
+    "patriotic",
+    "gradient",
+    "tricolor",
+  ],
   minDeckSize: 5, // minMafiaSetupTotal
   maxDeckSize: 50, // maxPlayers
   maxNameLengthInDeck: 20, // maxUserNameLength

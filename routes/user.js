@@ -399,7 +399,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive joined favoriteRoles roleIconCredits skillRating _id"
+        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner bannerExt setups games numFriends stats lastActive joined favoriteRoles roleIconCredits skillRating _id"
       )
       .populate({
         path: "setups",
@@ -1959,6 +1959,33 @@ router.post("/settings/update", async function (req, res) {
       return;
     }
 
+    // Boolean settings: store real booleans (String(true)==="true" was confusing loaders/UI)
+    const BOOLEAN_SETTINGS = new Set([
+      "onlyFriendDMs",
+      "disablePokes",
+      "disablePg13Censor",
+      "disableAllCensors",
+      "hideDeleted",
+      "disableProTips",
+      "disableSnowstorm",
+      "expHighDpiCorrection",
+      "autoplay",
+      "collapseMedia",
+      "disableMediaAutoplay",
+      "hideStatistics",
+      "hideKarma",
+      "hidePointsNegative",
+      "hideJoinDate",
+      "hideDonorBadge",
+      "hideRankedModal",
+      "hideCompetitiveModal",
+      "ignoreTextColor",
+      "accessibleNameColors",
+    ]);
+    if (BOOLEAN_SETTINGS.has(prop)) {
+      value = value === true || value === "true";
+    }
+
     if (prop === "siteColorScheme" && isRetroThemeForcedByCalendar()) {
       res.status(403);
       res.send("Site color scheme is locked on this date.");
@@ -1967,6 +1994,22 @@ router.post("/settings/update", async function (req, res) {
 
     if (prop === "fontFamily" && !["default", "system", "readable"].includes(value)) {
       errors.badRequest(res, "Invalid font family setting.");
+      return;
+    }
+
+    if (
+      prop === "nameFont" &&
+      !constants.nameFontOptions.includes(value)
+    ) {
+      errors.badRequest(res, "Invalid name font setting.");
+      return;
+    }
+
+    if (
+      prop === "animatedNameColor" &&
+      !constants.animatedNameColorOptions.includes(value)
+    ) {
+      errors.badRequest(res, "Invalid animated name color setting.");
       return;
     }
 
@@ -2023,6 +2066,74 @@ router.post("/settings/update", async function (req, res) {
     ) {
       errors.forbidden(res, "You must purchase text colors with coins from the Shop.");
       return;
+    }
+
+    if (prop === "nameFont" && !itemsOwned.nameFont) {
+      errors.forbidden(
+        res,
+        "You must purchase Custom Name Font with coins from the Shop."
+      );
+      return;
+    }
+
+    if (prop === "animatedNameColor") {
+      if (!itemsOwned.animatedNameColor) {
+        errors.forbidden(
+          res,
+          "You must purchase Animated Name Colors with coins from the Shop."
+        );
+        return;
+      }
+      if (value !== "none" && !itemsOwned.textColors) {
+        errors.forbidden(
+          res,
+          "You must purchase Name and Text Colors before using animated name colors."
+        );
+        return;
+      }
+      if (value === "tricolor" && !itemsOwned.tricolorAnimatedGradient) {
+        errors.forbidden(
+          res,
+          "You must purchase Tricolor Animated Gradient from the Shop."
+        );
+        return;
+      }
+    }
+
+    if (
+      prop === "nameGradientColorA" ||
+      prop === "nameGradientColorB"
+    ) {
+      if (!itemsOwned.animatedNameColor || !itemsOwned.textColors) {
+        errors.forbidden(
+          res,
+          "You must purchase Name and Text Colors and Animated Name Colors first."
+        );
+        return;
+      }
+      // Basic hex color validation (#RGB or #RRGGBB)
+      if (!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value)) {
+        errors.badRequest(res, "Invalid gradient color.");
+        return;
+      }
+    }
+
+    if (prop === "nameGradientColorC") {
+      if (
+        !itemsOwned.tricolorAnimatedGradient ||
+        !itemsOwned.animatedNameColor ||
+        !itemsOwned.textColors
+      ) {
+        errors.forbidden(
+          res,
+          "You must purchase Tricolor Animated Gradient first."
+        );
+        return;
+      }
+      if (!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value)) {
+        errors.badRequest(res, "Invalid gradient color.");
+        return;
+      }
     }
 
     if (prop === "deathMessage") {
@@ -2083,6 +2194,27 @@ router.post("/settings/update", async function (req, res) {
         errors.badRequest(res, "Invalid URL for media setting.");
         return;
       }
+    }
+
+    // Clearing name/text color restores system defaults (works in light + dark mode)
+    if (
+      (prop === "textColor" || prop === "nameColor") &&
+      (!value || value === "none" || value === "null" || value === "undefined")
+    ) {
+      const warnKey =
+        prop === "textColor" ? "settings.warnTextColor" : "settings.warnNameColor";
+      await models.User.updateOne(
+        { id: userId },
+        {
+          $unset: {
+            [`settings.${prop}`]: "",
+            [warnKey]: "",
+          },
+        }
+      );
+      await redis.cacheUserInfo(userId, true);
+      res.sendStatus(200);
+      return;
     }
 
     let unsetOperator = {};
@@ -2255,44 +2387,161 @@ router.post("/pronouns", async function (req, res) {
   }
 });
 
+function removeUserBannerFiles(userId) {
+  const uploadPath = process.env.UPLOAD_PATH;
+  for (const ext of ["webp", "gif", "png", "jpg", "jpeg"]) {
+    const p = `${uploadPath}/${userId}_banner.${ext}`;
+    try {
+      if (fs.existsSync(p)) fs.unlinkSync(p);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+}
+
 router.post("/banner", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var itemsOwned = await redis.getUserItemsOwned(userId);
 
-    if (!itemsOwned.customProfile) {
+    // Need Profile Customization and/or Animated Profile Banner
+    if (!itemsOwned.customProfile && !itemsOwned.animatedBanner) {
       errors.forbidden(
         res,
-        "You must purcahse profile customization with coins from the Shop."
+        "You must purchase Profile Customization or Animated Profile Banner from the Shop."
       );
       return;
     }
 
     var form = new formidable();
-    form.maxFileSize = 2 * 1024 * 1024;
+    // Allow large GIF/WebP uploads (up to 20 MB); animation only kept with add-on
+    form.maxFileSize = 20 * 1024 * 1024;
     form.maxFields = 1;
 
     var [fields, files] = await form.parseAsync(req);
+    const file =
+      files.image && (Array.isArray(files.image) ? files.image[0] : files.image);
+    // Optional chaining: missing upload must 400, not throw 500 on file.path
+    const filePath = file?.filepath || file?.path;
+    if (!filePath) {
+      errors.badRequest(res, "No image uploaded.");
+      return;
+    }
 
-    if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
-      fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
+    const uploadPath = process.env.UPLOAD_PATH;
+    if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath);
 
-    await sharp(files.image.path)
-      .webp({ quality: 100 })
-      .resize({
-        width: 900,
-        height: 300,
-        withoutEnlargement: true,
-        kernel: sharp.kernel.lanczos3,
-      })
-      .toFile(`${process.env.UPLOAD_PATH}/${userId}_banner.webp`);
-    await models.User.updateOne({ id: userId }, { $set: { banner: true } });
-    await redis.cacheUserInfo(userId, true);
+    const buffer = fs.readFileSync(filePath);
+    const mime = (file.type || file.mimetype || "").toLowerCase();
+    let metadata;
+    try {
+      metadata = await sharp(buffer, { animated: true }).metadata();
+    } catch (metaErr) {
+      errors.badRequest(res, "Could not read banner image.");
+      return;
+    }
 
-    res.sendStatus(200);
+    const pages = metadata.pages || 1;
+    const isAnimatedSource =
+      pages > 1 || mime === "image/gif" || metadata.format === "gif";
+
+    // Soft per-frame dimension check for animated sources
+    const frameW = metadata.width || 0;
+    const frameH = metadata.pageHeight || metadata.height || 0;
+    if (isAnimatedSource && (frameW > 1800 || frameH > 600)) {
+      errors.badRequest(
+        res,
+        "Banner frame dimensions must be at most 1800×600."
+      );
+      return;
+    }
+
+    let bannerExt = "webp";
+    // Only keep animation if the user owns the add-on
+    const keepAnimation = isAnimatedSource && !!itemsOwned.animatedBanner;
+
+    // Process into a temp file first so validation failures never delete the
+    // existing banner (e.g. animated PNG rejected after GIF/WebP check).
+    let tempPath = null;
+    try {
+      if (keepAnimation) {
+        // Preserve original GIF/WebP animation (up to 20 MB)
+        if (mime === "image/gif" || metadata.format === "gif") {
+          bannerExt = "gif";
+        } else if (mime === "image/webp" || metadata.format === "webp") {
+          bannerExt = "webp";
+        } else {
+          errors.badRequest(res, "Animated banners must be GIF or WebP.");
+          return;
+        }
+        tempPath = `${uploadPath}/${userId}_banner.${bannerExt}.tmp`;
+        fs.writeFileSync(tempPath, buffer);
+      } else {
+        // Static banner path: first frame only if source was animated GIF/WebP
+        if (!itemsOwned.customProfile && !itemsOwned.animatedBanner) {
+          errors.forbidden(
+            res,
+            "You must purchase Profile Customization for banners."
+          );
+          return;
+        }
+        // Users with only animatedBanner can still upload; without keepAnimation
+        // we freeze to a static webp so it never animates until they re-upload with add-on
+        // (or have customProfile for static uploads).
+        if (
+          !itemsOwned.customProfile &&
+          isAnimatedSource &&
+          !itemsOwned.animatedBanner
+        ) {
+          errors.forbidden(
+            res,
+            "You must purchase Profile Customization or Animated Profile Banner from the Shop."
+          );
+          return;
+        }
+
+        bannerExt = "webp";
+        tempPath = `${uploadPath}/${userId}_banner.webp.tmp`;
+        // pages: 1 / animated: false → first frame only for gifs
+        await sharp(buffer, { animated: false, pages: 1 })
+          .webp({ quality: 100 })
+          .resize({
+            width: 900,
+            height: 300,
+            withoutEnlargement: true,
+            kernel: sharp.kernel.lanczos3,
+          })
+          .toFile(tempPath);
+      }
+
+      // New banner is ready — replace existing files, then promote temp → final
+      const finalPath = `${uploadPath}/${userId}_banner.${bannerExt}`;
+      removeUserBannerFiles(userId);
+      fs.renameSync(tempPath, finalPath);
+      tempPath = null;
+
+      await models.User.updateOne(
+        { id: userId },
+        { $set: { banner: true, bannerExt } }
+      );
+      await redis.cacheUserInfo(userId, true);
+
+      res.sendStatus(200);
+    } finally {
+      if (tempPath) {
+        try {
+          if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+        } catch (cleanupErr) {
+          /* ignore */
+        }
+      }
+    }
   } catch (e) {
-    if (e.message.indexOf("maxFileSize exceeded") == 0)
-      errors.payloadTooLarge(res, "Image is too large, banner must be less than 1 MB");
+    if (e.message && e.message.indexOf("maxFileSize exceeded") == 0)
+      errors.payloadTooLarge(
+        res,
+        "Image is too large, banner must be less than 20 MB."
+      );
     else {
       logger.error(e);
       errors.serverError(res, "Could not upload banner image. Please try again.");
@@ -2304,10 +2553,12 @@ router.post("/banner/clear", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
 
-    var bannerPath = `${process.env.UPLOAD_PATH}/${userId}_banner.webp`;
-    if (fs.existsSync(bannerPath)) fs.unlinkSync(bannerPath);
+    removeUserBannerFiles(userId);
 
-    await models.User.updateOne({ id: userId }, { $set: { banner: false } });
+    await models.User.updateOne(
+      { id: userId },
+      { $set: { banner: false, bannerExt: "webp" } }
+    );
     await redis.cacheUserInfo(userId, true);
 
     res.sendStatus(200);
@@ -2395,44 +2646,173 @@ router.delete("/forumBanner", async function (req, res) {
   }
 });
 
+function removeUserAvatarFiles(userId) {
+  const uploadPath = process.env.UPLOAD_PATH;
+  for (const ext of ["webp", "gif", "png", "jpg", "jpeg"]) {
+    const p = `${uploadPath}/${userId}_avatar.${ext}`;
+    try {
+      if (fs.existsSync(p)) fs.unlinkSync(p);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+}
+
 router.post("/avatar", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
+    var itemsOwned = await redis.getUserItemsOwned(userId);
+
     var form = new formidable();
-    form.maxFileSize = 1024 * 1024;
+    // 25 MB only with Animated Profile Picture; static avatars stay 1 MB
+    form.maxFileSize = itemsOwned.animatedAvatar
+      ? 25 * 1024 * 1024
+      : 1 * 1024 * 1024;
     form.maxFields = 1;
 
     var [fields, files] = await form.parseAsync(req);
+    const file =
+      files.image && (Array.isArray(files.image) ? files.image[0] : files.image);
+    const filePath = file?.filepath || file?.path;
+    if (!filePath) {
+      errors.badRequest(res, "No image uploaded.");
+      return;
+    }
 
-    if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
-      fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
+    const uploadPath = process.env.UPLOAD_PATH;
+    if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath);
 
-    await sharp(files.image.path)
-      .webp({ quality: 100 })
-      .resize(100, 100, {
-        kernel: sharp.kernel.lanczos3,
-        fit: "cover",
-        position: "center",
-      })
-      .toFile(`${process.env.UPLOAD_PATH}/${userId}_avatar.webp`);
-    await models.User.updateOne({ id: userId }, { $set: { avatar: true } });
+    const buffer = fs.readFileSync(filePath);
+    const mime = (file.type || file.mimetype || "").toLowerCase();
+    let metadata;
+    try {
+      metadata = await sharp(buffer, { animated: true }).metadata();
+    } catch (metaErr) {
+      errors.badRequest(res, "Could not read avatar image.");
+      return;
+    }
+
+    const pages = metadata.pages || 1;
+    const isAnimatedSource =
+      pages > 1 || mime === "image/gif" || metadata.format === "gif";
+    // Only keep animation if the user owns the add-on
+    const keepAnimation = isAnimatedSource && !!itemsOwned.animatedAvatar;
+
+    // Soft per-frame dimension check for animated sources (before 100×100 resize)
+    const frameW = metadata.width || 0;
+    const frameH = metadata.pageHeight || metadata.height || 0;
+    if (isAnimatedSource && (frameW > 1024 || frameH > 1024)) {
+      errors.badRequest(
+        res,
+        "Avatar frame dimensions must be at most 1024×1024."
+      );
+      return;
+    }
+
+    // Always store as .webp so existing clients (/uploads/{id}_avatar.webp) work.
+    // Animated sources become animated WebP when keepAnimation is true.
+    let tempPath = null;
+    try {
+      tempPath = `${uploadPath}/${userId}_avatar.webp.tmp`;
+
+      if (keepAnimation) {
+        if (
+          !(
+            mime === "image/gif" ||
+            mime === "image/webp" ||
+            metadata.format === "gif" ||
+            metadata.format === "webp"
+          )
+        ) {
+          errors.badRequest(res, "Animated avatars must be GIF or WebP.");
+          return;
+        }
+        await sharp(buffer, { animated: true, limitInputPixels: false })
+          .resize(100, 100, {
+            kernel: sharp.kernel.lanczos3,
+            fit: "cover",
+            position: "center",
+          })
+          .webp({ quality: 90, effort: 4 })
+          .toFile(tempPath);
+      } else {
+        // Static path: first frame only if source was animated
+        await sharp(buffer, { animated: false, pages: 1 })
+          .webp({ quality: 100 })
+          .resize(100, 100, {
+            kernel: sharp.kernel.lanczos3,
+            fit: "cover",
+            position: "center",
+          })
+          .toFile(tempPath);
+      }
+
+      const finalPath = `${uploadPath}/${userId}_avatar.webp`;
+      removeUserAvatarFiles(userId);
+      fs.renameSync(tempPath, finalPath);
+      tempPath = null;
+
+      await models.User.updateOne({ id: userId }, { $set: { avatar: true } });
+      await redis.cacheUserInfo(userId, true);
+
+      models.SiteActivity.create({
+        id: shortid.generate(),
+        type: "avatarChange",
+        actorId: userId,
+        date: Date.now(),
+      }).catch(() => {});
+
+      res.sendStatus(200);
+    } finally {
+      if (tempPath) {
+        try {
+          if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+        } catch (cleanupErr) {
+          /* ignore */
+        }
+      }
+    }
+  } catch (e) {
+    if (e.message && e.message.indexOf("maxFileSize exceeded") == 0)
+      errors.payloadTooLarge(
+        res,
+        itemsOwned && itemsOwned.animatedAvatar
+          ? "Image is too large, animated avatar must be less than 25 MB."
+          : "Image is too large, avatar must be less than 1 MB."
+      );
+    else {
+      logger.error(e);
+      errors.serverError(res, "Could not upload avatar image. Please try again.");
+    }
+  }
+});
+
+router.post("/avatar/delete", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+
+    await models.User.updateOne({ id: userId }, { $set: { avatar: false } });
     await redis.cacheUserInfo(userId, true);
+
+    // Best-effort delete of uploaded files (default letter avatar when avatar is false)
+    try {
+      removeUserAvatarFiles(userId);
+    } catch (fileErr) {
+      logger.warn(fileErr);
+    }
 
     models.SiteActivity.create({
       id: shortid.generate(),
       type: "avatarChange",
       actorId: userId,
+      meta: { removed: true },
       date: Date.now(),
     }).catch(() => {});
 
     res.sendStatus(200);
   } catch (e) {
-    if (e.message.indexOf("maxFileSize exceeded") == 0)
-      errors.payloadTooLarge(res, "Image is too large, avatar must be less than 1 MB.");
-    else {
-      logger.error(e);
-      errors.serverError(res, "Could not upload avatar image. Please try again.");
-    }
+    logger.error(e);
+    errors.serverError(res, "Could not remove avatar. Please try again.");
   }
 });
 
