@@ -2394,14 +2394,15 @@ router.post("/banner", async function (req, res) {
     var [fields, files] = await form.parseAsync(req);
     const file =
       files.image && (Array.isArray(files.image) ? files.image[0] : files.image);
-    const filePath = file.path || file.filepath;
+    // Optional chaining: missing upload must 400, not throw 500 on file.path
+    const filePath = file?.filepath || file?.path;
     if (!filePath) {
       errors.badRequest(res, "No image uploaded.");
       return;
     }
 
-    if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
-      fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
+    const uploadPath = process.env.UPLOAD_PATH;
+    if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath);
 
     const buffer = fs.readFileSync(filePath);
     const mime = (file.type || file.mimetype || "").toLowerCase();
@@ -2432,62 +2433,82 @@ router.post("/banner", async function (req, res) {
     // Only keep animation if the user owns the add-on
     const keepAnimation = isAnimatedSource && !!itemsOwned.animatedBanner;
 
-    removeUserBannerFiles(userId);
-
-    if (keepAnimation) {
-      // Preserve original GIF/WebP animation (up to 20 MB)
-      if (mime === "image/gif" || metadata.format === "gif") {
-        bannerExt = "gif";
-      } else if (mime === "image/webp" || metadata.format === "webp") {
-        bannerExt = "webp";
+    // Process into a temp file first so validation failures never delete the
+    // existing banner (e.g. animated PNG rejected after GIF/WebP check).
+    let tempPath = null;
+    try {
+      if (keepAnimation) {
+        // Preserve original GIF/WebP animation (up to 20 MB)
+        if (mime === "image/gif" || metadata.format === "gif") {
+          bannerExt = "gif";
+        } else if (mime === "image/webp" || metadata.format === "webp") {
+          bannerExt = "webp";
+        } else {
+          errors.badRequest(res, "Animated banners must be GIF or WebP.");
+          return;
+        }
+        tempPath = `${uploadPath}/${userId}_banner.${bannerExt}.tmp`;
+        fs.writeFileSync(tempPath, buffer);
       } else {
-        errors.badRequest(res, "Animated banners must be GIF or WebP.");
-        return;
+        // Static banner path: first frame only if source was animated GIF/WebP
+        if (!itemsOwned.customProfile && !itemsOwned.animatedBanner) {
+          errors.forbidden(
+            res,
+            "You must purchase Profile Customization for banners."
+          );
+          return;
+        }
+        // Users with only animatedBanner can still upload; without keepAnimation
+        // we freeze to a static webp so it never animates until they re-upload with add-on
+        // (or have customProfile for static uploads).
+        if (
+          !itemsOwned.customProfile &&
+          isAnimatedSource &&
+          !itemsOwned.animatedBanner
+        ) {
+          errors.forbidden(
+            res,
+            "You must purchase Profile Customization or Animated Profile Banner from the Shop."
+          );
+          return;
+        }
+
+        bannerExt = "webp";
+        tempPath = `${uploadPath}/${userId}_banner.webp.tmp`;
+        // pages: 1 / animated: false → first frame only for gifs
+        await sharp(buffer, { animated: false, pages: 1 })
+          .webp({ quality: 100 })
+          .resize({
+            width: 900,
+            height: 300,
+            withoutEnlargement: true,
+            kernel: sharp.kernel.lanczos3,
+          })
+          .toFile(tempPath);
       }
-      fs.writeFileSync(
-        `${process.env.UPLOAD_PATH}/${userId}_banner.${bannerExt}`,
-        buffer
+
+      // New banner is ready — replace existing files, then promote temp → final
+      const finalPath = `${uploadPath}/${userId}_banner.${bannerExt}`;
+      removeUserBannerFiles(userId);
+      fs.renameSync(tempPath, finalPath);
+      tempPath = null;
+
+      await models.User.updateOne(
+        { id: userId },
+        { $set: { banner: true, bannerExt } }
       );
-    } else {
-      // Static banner path: first frame only if source was animated GIF/WebP
-      if (!itemsOwned.customProfile && !itemsOwned.animatedBanner) {
-        errors.forbidden(
-          res,
-          "You must purchase Profile Customization for banners."
-        );
-        return;
-      }
-      // Users with only animatedBanner can still upload; without keepAnimation
-      // we freeze to a static webp so it never animates until they re-upload with add-on
-      // (or have customProfile for static uploads).
-      if (!itemsOwned.customProfile && isAnimatedSource && !itemsOwned.animatedBanner) {
-        errors.forbidden(
-          res,
-          "You must purchase Profile Customization or Animated Profile Banner from the Shop."
-        );
-        return;
-      }
+      await redis.cacheUserInfo(userId, true);
 
-      bannerExt = "webp";
-      // pages: 1 / animated: false → first frame only for gifs
-      await sharp(buffer, { animated: false, pages: 1 })
-        .webp({ quality: 100 })
-        .resize({
-          width: 900,
-          height: 300,
-          withoutEnlargement: true,
-          kernel: sharp.kernel.lanczos3,
-        })
-        .toFile(`${process.env.UPLOAD_PATH}/${userId}_banner.webp`);
+      res.sendStatus(200);
+    } finally {
+      if (tempPath) {
+        try {
+          if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+        } catch (cleanupErr) {
+          /* ignore */
+        }
+      }
     }
-
-    await models.User.updateOne(
-      { id: userId },
-      { $set: { banner: true, bannerExt } }
-    );
-    await redis.cacheUserInfo(userId, true);
-
-    res.sendStatus(200);
   } catch (e) {
     if (e.message && e.message.indexOf("maxFileSize exceeded") == 0)
       errors.payloadTooLarge(
