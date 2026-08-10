@@ -64,6 +64,8 @@ var schemas = {
     discordUsername: String,
     avatar: Boolean,
     banner: Boolean,
+    // File extension for profile banner (webp static, or gif/webp animated)
+    bannerExt: { type: String, default: "webp" },
     forumBanner: Boolean,
     profileBackground: Boolean,
     bio: {
@@ -185,6 +187,7 @@ var schemas = {
       nameFont: { type: Number, default: 0 },
       animatedNameColor: { type: Number, default: 0 },
       tricolorAnimatedGradient: { type: Number, default: 0 },
+      animatedBanner: { type: Number, default: 0 },
       deathMessageEnabled: { type: Number, default: 0 },
       deathMessageChange: { type: Number, default: 0 },
       anonymousDeck: { type: Number, default: 0 },

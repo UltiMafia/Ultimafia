@@ -399,7 +399,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive joined favoriteRoles roleIconCredits skillRating _id"
+        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner bannerExt setups games numFriends stats lastActive joined favoriteRoles roleIconCredits skillRating _id"
       )
       .populate({
         path: "setups",
@@ -2360,44 +2360,138 @@ router.post("/pronouns", async function (req, res) {
   }
 });
 
+function removeUserBannerFiles(userId) {
+  const uploadPath = process.env.UPLOAD_PATH;
+  for (const ext of ["webp", "gif", "png", "jpg", "jpeg"]) {
+    const p = `${uploadPath}/${userId}_banner.${ext}`;
+    try {
+      if (fs.existsSync(p)) fs.unlinkSync(p);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+}
+
 router.post("/banner", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var itemsOwned = await redis.getUserItemsOwned(userId);
 
-    if (!itemsOwned.customProfile) {
+    // Allow upload if user has static profile customization and/or animated banner
+    if (!itemsOwned.customProfile && !itemsOwned.animatedBanner) {
       errors.forbidden(
         res,
-        "You must purcahse profile customization with coins from the Shop."
+        "You must purchase Profile Customization or Animated Profile Banner from the Shop."
       );
       return;
     }
 
     var form = new formidable();
-    form.maxFileSize = 2 * 1024 * 1024;
+    // Animated banners can be larger; static stays reasonable via processing
+    form.maxFileSize = 5 * 1024 * 1024;
     form.maxFields = 1;
 
     var [fields, files] = await form.parseAsync(req);
+    const file = files.image && (Array.isArray(files.image) ? files.image[0] : files.image);
+    const filePath = file.path || file.filepath;
+    if (!filePath) {
+      errors.badRequest(res, "No image uploaded.");
+      return;
+    }
 
     if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
       fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
 
-    await sharp(files.image.path)
-      .webp({ quality: 100 })
-      .resize({
-        width: 900,
-        height: 300,
-        withoutEnlargement: true,
-        kernel: sharp.kernel.lanczos3,
-      })
-      .toFile(`${process.env.UPLOAD_PATH}/${userId}_banner.webp`);
-    await models.User.updateOne({ id: userId }, { $set: { banner: true } });
+    const buffer = fs.readFileSync(filePath);
+    const mime = (file.type || file.mimetype || "").toLowerCase();
+    let metadata;
+    try {
+      metadata = await sharp(buffer, { animated: true }).metadata();
+    } catch (metaErr) {
+      errors.badRequest(res, "Could not read banner image.");
+      return;
+    }
+
+    const pages = metadata.pages || 1;
+    const isAnimated =
+      pages > 1 || mime === "image/gif" || (mime === "image/webp" && pages > 1);
+    // Treat multi-frame gif/webp as animated
+    const treatAsAnimated =
+      isAnimated || mime === "image/gif";
+
+    let bannerExt = "webp";
+
+    if (treatAsAnimated) {
+      if (!itemsOwned.animatedBanner) {
+        errors.forbidden(
+          res,
+          "You must purchase Animated Profile Banner to upload GIF or animated WebP banners."
+        );
+        return;
+      }
+      if (mime === "image/gif") {
+        bannerExt = "gif";
+      } else if (mime === "image/webp" || metadata.format === "webp") {
+        bannerExt = "webp";
+      } else {
+        errors.badRequest(
+          res,
+          "Animated banners must be GIF or WebP."
+        );
+        return;
+      }
+
+      // Soft dimension check (per-frame for gifs)
+      const w = metadata.width || 0;
+      const h = metadata.pageHeight || metadata.height || 0;
+      if (w > 1800 || h > 600) {
+        errors.badRequest(
+          res,
+          "Animated banner dimensions must be at most 1800×600."
+        );
+        return;
+      }
+
+      removeUserBannerFiles(userId);
+      // Preserve original bytes so animation is kept
+      fs.writeFileSync(
+        `${process.env.UPLOAD_PATH}/${userId}_banner.${bannerExt}`,
+        buffer
+      );
+    } else {
+      if (!itemsOwned.customProfile) {
+        errors.forbidden(
+          res,
+          "You must purchase Profile Customization for static banners."
+        );
+        return;
+      }
+      bannerExt = "webp";
+      removeUserBannerFiles(userId);
+      await sharp(buffer)
+        .webp({ quality: 100 })
+        .resize({
+          width: 900,
+          height: 300,
+          withoutEnlargement: true,
+          kernel: sharp.kernel.lanczos3,
+        })
+        .toFile(`${process.env.UPLOAD_PATH}/${userId}_banner.webp`);
+    }
+
+    await models.User.updateOne(
+      { id: userId },
+      { $set: { banner: true, bannerExt } }
+    );
     await redis.cacheUserInfo(userId, true);
 
     res.sendStatus(200);
   } catch (e) {
-    if (e.message.indexOf("maxFileSize exceeded") == 0)
-      errors.payloadTooLarge(res, "Image is too large, banner must be less than 1 MB");
+    if (e.message && e.message.indexOf("maxFileSize exceeded") == 0)
+      errors.payloadTooLarge(
+        res,
+        "Image is too large, banner must be less than 5 MB."
+      );
     else {
       logger.error(e);
       errors.serverError(res, "Could not upload banner image. Please try again.");
@@ -2409,10 +2503,12 @@ router.post("/banner/clear", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
 
-    var bannerPath = `${process.env.UPLOAD_PATH}/${userId}_banner.webp`;
-    if (fs.existsSync(bannerPath)) fs.unlinkSync(bannerPath);
+    removeUserBannerFiles(userId);
 
-    await models.User.updateOne({ id: userId }, { $set: { banner: false } });
+    await models.User.updateOne(
+      { id: userId },
+      { $set: { banner: false, bannerExt: "webp" } }
+    );
     await redis.cacheUserInfo(userId, true);
 
     res.sendStatus(200);

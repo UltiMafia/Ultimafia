@@ -270,6 +270,15 @@ const shopItems = [
     onBuy: async function (userId) {},
   },
   {
+    name: "Animated Profile Banner",
+    desc: "Upload GIF or animated WebP profile banners.",
+    key: "animatedBanner",
+    category: "profile",
+    price: 250,
+    limit: 1,
+    onBuy: async function (userId) {},
+  },
+  {
     name: "Name Change",
     desc: "Change your name once per purchase",
     key: "nameChange",
