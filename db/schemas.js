@@ -202,6 +202,9 @@ var schemas = {
       profileBackground: { type: Number, default: 0 },
       forumBanner: { type: Number, default: 0 },
       createFamily: { type: Number, default: 0 },
+      familyAnimatedAvatar: { type: Number, default: 0 },
+      familyBanner: { type: Number, default: 0 },
+      familyAnimatedBanner: { type: Number, default: 0 },
     },
     stats: {},
     winRate: { type: Number, default: 0 },
@@ -886,6 +889,9 @@ var schemas = {
     id: { type: String, index: true, unique: true },
     name: { type: String, required: true, maxlength: 20 },
     avatar: { type: Boolean, default: false },
+    // Family page header banner (3:1, like profile banners)
+    banner: { type: Boolean, default: false },
+    bannerExt: { type: String, default: "webp" },
     background: { type: Boolean, default: false },
     backgroundRepeatMode: {
       type: String,

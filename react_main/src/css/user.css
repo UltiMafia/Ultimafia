@@ -1253,3 +1253,23 @@ iframe {
     transform: rotate(-15deg) scale(1.15);
   }
 }
+
+
+/* Family page banner: 3:1 like profile, limited to family panel width */
+.family-profile-panel .family-banner {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 3 / 1;
+  height: auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--scheme-color-sec, #222);
+}
+.family-profile-panel .family-banner-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}

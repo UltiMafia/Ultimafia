@@ -30,6 +30,7 @@ import Form, { useForm, HiddenUpload, UserSearchSelect } from "components/Form";
 import { useErrorAlert } from "components/Alerts";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import AvatarUpload from "components/AvatarUpload";
+import BannerUpload from "components/BannerUpload";
 import { useCookieConsent } from "../../hooks/useCookieConsent";
 
 import "css/settings.css";
@@ -1157,6 +1158,7 @@ export default function Settings() {
                   <AvatarUpload
                     onFileUpload={onFamilyAvatarUpload}
                     name="familyAvatar"
+                    keepAnimation={!!user.itemsOwned?.familyAnimatedAvatar}
                   >
                     <Button variant="outlined" disabled={!!userFamily}>
                       Upload Avatar
@@ -1234,6 +1236,7 @@ export default function Settings() {
                     <AvatarUpload
                       onFileUpload={onFamilyAvatarUploadExisting}
                       name="familyAvatarExisting"
+                      keepAnimation={!!user.itemsOwned?.familyAnimatedAvatar}
                     >
                       <Button variant="outlined">Upload New Avatar</Button>
                     </AvatarUpload>
@@ -1244,6 +1247,63 @@ export default function Settings() {
                       >
                         Avatar uploaded
                       </Typography>
+                    )}
+                  </Stack>
+                </Box>
+
+                {/* Upload Family Banner */}
+                <Box>
+                  <Typography variant="h6" sx={{ mb: 1 }}>
+                    Family Banner
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ mb: 1, display: "block" }}
+                  >
+                    3:1 banner on the family page (same proportions as profile
+                    banners; scales to the page panel width).
+                    {user.itemsOwned?.familyAnimatedBanner
+                      ? " GIF/WebP can keep animation."
+                      : " Purchase Family Banner / Animated Family Banner in the Shop."}
+                  </Typography>
+                  <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+                    <BannerUpload
+                      name="familyBanner"
+                      onClick={() => {
+                        if (!user.itemsOwned?.familyBanner) {
+                          errorAlert(
+                            "You must purchase Family Banner from the Shop."
+                          );
+                          return false;
+                        }
+                        return true;
+                      }}
+                      onFileUpload={onFamilyBannerUpload}
+                      keepAnimation={!!user.itemsOwned?.familyAnimatedBanner}
+                    >
+                      <Button variant="outlined">
+                        {user.itemsOwned?.familyAnimatedBanner
+                          ? "Upload / Crop Banner"
+                          : "Upload Banner"}
+                      </Button>
+                    </BannerUpload>
+                    {userFamily.banner && (
+                      <>
+                        <Typography
+                          variant="caption"
+                          sx={{ color: "success.main" }}
+                        >
+                          Banner uploaded
+                        </Typography>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          size="small"
+                          onClick={onFamilyBannerRemove}
+                        >
+                          Remove
+                        </Button>
+                      </>
                     )}
                   </Stack>
                 </Box>
@@ -1818,7 +1878,11 @@ export default function Settings() {
         })
         .catch((e) => {
           if (e.response == null || e.response.status === 413)
-            errorAlert("File too large, must be less than 1 MB.");
+            errorAlert(
+              user.itemsOwned?.familyAnimatedAvatar
+                ? "File too large, animated family avatar must be less than 25 MB."
+                : "File too large, family avatar must be less than 1 MB."
+            );
           else errorAlert(e);
         });
     }
@@ -1837,10 +1901,53 @@ export default function Settings() {
         })
         .catch((e) => {
           if (e.response == null || e.response.status === 413)
-            errorAlert("File too large, must be less than 1 MB.");
+            errorAlert(
+              user.itemsOwned?.familyAnimatedAvatar
+                ? "File too large, animated family avatar must be less than 25 MB."
+                : "File too large, family avatar must be less than 1 MB."
+            );
           else errorAlert(e);
         });
     }
+  }
+
+  function onFamilyBannerUpload(files, type) {
+    if (!files.length || !userFamily?.id) return;
+    if (!user.itemsOwned?.familyBanner) {
+      errorAlert("You must purchase Family Banner from the Shop.");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("image", files[0]);
+    axios
+      .post(`/api/family/${userFamily.id}/banner`, formData)
+      .then(() => {
+        siteInfo.showAlert("Family banner uploaded", "success");
+        loadFamily();
+        siteInfo.clearCache();
+      })
+      .catch((e) => {
+        if (e.response == null || e.response.status === 413)
+          errorAlert(
+            user.itemsOwned?.familyAnimatedBanner
+              ? "File too large, animated family banner must be less than 20 MB."
+              : "File too large, family banner must be less than 5 MB."
+          );
+        else errorAlert(e);
+      });
+  }
+
+  function onFamilyBannerRemove() {
+    if (!userFamily?.id) return;
+    if (!window.confirm("Remove the family banner?")) return;
+    axios
+      .delete(`/api/family/${userFamily.id}/banner`)
+      .then(() => {
+        siteInfo.showAlert("Family banner removed", "success");
+        loadFamily();
+        siteInfo.clearCache();
+      })
+      .catch(errorAlert);
   }
 
   function onCreateFamily() {

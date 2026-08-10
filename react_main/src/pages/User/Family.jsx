@@ -336,12 +336,33 @@ export default function Family() {
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
           <Stack direction="column" spacing={1}>
-            <Paper sx={panelStyle}>
+            <Paper sx={panelStyle} className="family-profile-panel">
+              {family.banner && (
+                <div className="family-banner">
+                  <img
+                    className="family-banner-media"
+                    src={`/uploads/${family.id}_family_banner.${
+                      ["webp", "gif", "png", "jpg", "jpeg"].includes(
+                        family.bannerExt
+                      )
+                        ? family.bannerExt
+                        : "webp"
+                    }?t=${siteInfo.cacheVal}`}
+                    alt=""
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                </div>
+              )}
               <Stack
                 direction="row"
                 spacing={2}
                 alignItems="center"
-                sx={{ mb: 2 }}
+                sx={{ mb: 2, mt: family.banner ? 1.5 : 0 }}
               >
                 {family.avatar && (
                   <div
@@ -352,6 +373,7 @@ export default function Family() {
                       backgroundImage: `url(/uploads/${family.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
+                      flexShrink: 0,
                     }}
                   />
                 )}
