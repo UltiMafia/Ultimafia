@@ -118,6 +118,8 @@ var schemas = {
       roleSkins: String,
       autoplay: { type: Boolean, default: false },
       youtube: String,
+      // Collapse profile media player to a compact bar while still playing
+      collapseMedia: { type: Boolean, default: false },
       hideStatistics: { type: Boolean, default: false },
       hideKarma: { type: Boolean, default: false },
       hidePointsNegative: { type: Boolean, default: true },
@@ -889,6 +891,10 @@ var schemas = {
     // Family page header banner (3:1, like profile banners)
     banner: { type: Boolean, default: false },
     bannerExt: { type: String, default: "webp" },
+    // Family music/media player (YouTube, Spotify, etc.) — requires familyMusicPlayer perk
+    mediaUrl: { type: String, default: "" },
+    mediaAutoplay: { type: Boolean, default: false },
+    mediaCollapse: { type: Boolean, default: false },
     background: { type: Boolean, default: false },
     backgroundRepeatMode: {
       type: String,
