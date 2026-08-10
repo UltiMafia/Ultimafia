@@ -712,13 +712,34 @@ export default function Settings() {
       disabled: (deps) => !deps.user.itemsOwned.nameFont,
       extraInfo:
         "Applies to your name on the player list and in chat nameplates (not message text). Buy Custom Name Font in the Shop.",
+      // fontFamily on each option previews the real face in the dropdown
       options: [
         { label: "Default", value: "default" },
-        { label: "Slab (Roboto Slab)", value: "slab" },
-        { label: "Mono (Roboto Mono)", value: "mono" },
-        { label: "Autophobia", value: "autophobia" },
-        { label: "Spooky", value: "spooky" },
-        { label: "Nabla", value: "nabla" },
+        {
+          label: "Slab (Roboto Slab)",
+          value: "slab",
+          fontFamily: "RobotoSlab, serif",
+        },
+        {
+          label: "Mono (Roboto Mono)",
+          value: "mono",
+          fontFamily: "RobotoMono, monospace",
+        },
+        {
+          label: "Autophobia",
+          value: "autophobia",
+          fontFamily: "Autophobia, cursive",
+        },
+        {
+          label: "Spooky",
+          value: "spooky",
+          fontFamily: "Spooky, cursive",
+        },
+        {
+          label: "Nabla",
+          value: "nabla",
+          fontFamily: "Nabla, fantasy",
+        },
       ],
       value: "default",
     },

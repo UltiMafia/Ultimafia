@@ -447,9 +447,34 @@ export default function Form({
                 onChange={(e) => onFieldChange(e, field)}
                 helperText={field.extraInfo}
                 label={compact ? field.label : undefined}
+                SelectProps={{
+                  // Show selected option in its own font when option.fontFamily is set
+                  renderValue: (selected) => {
+                    const opt = selectOptions.find(
+                      (o) => o.value === selected || o.ref === selected
+                    );
+                    const label = opt?.label ?? selected;
+                    if (opt?.fontFamily) {
+                      return (
+                        <span style={{ fontFamily: opt.fontFamily }}>
+                          {label}
+                        </span>
+                      );
+                    }
+                    return label;
+                  },
+                }}
               >
                 {selectOptions.map((option) => (
-                  <MenuItem value={option.value} key={option.value}>
+                  <MenuItem
+                    value={option.value}
+                    key={option.value}
+                    sx={
+                      option.fontFamily
+                        ? { fontFamily: `${option.fontFamily} !important` }
+                        : undefined
+                    }
+                  >
                     {option.label}
                   </MenuItem>
                 ))}
