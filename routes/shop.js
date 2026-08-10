@@ -279,6 +279,15 @@ const shopItems = [
     onBuy: async function (userId) {},
   },
   {
+    name: "Animated Profile Picture",
+    desc: "Play GIF/WebP avatar animations (up to 5 MB). Without this, uploaded GIFs are shown as a static frame.",
+    key: "animatedAvatar",
+    category: "profile",
+    price: 250,
+    limit: 1,
+    onBuy: async function (userId) {},
+  },
+  {
     name: "Name Change",
     desc: "Change your name once per purchase",
     key: "nameChange",

@@ -188,6 +188,7 @@ var schemas = {
       animatedNameColor: { type: Number, default: 0 },
       tricolorAnimatedGradient: { type: Number, default: 0 },
       animatedBanner: { type: Number, default: 0 },
+      animatedAvatar: { type: Number, default: 0 },
       deathMessageEnabled: { type: Number, default: 0 },
       deathMessageChange: { type: Number, default: 0 },
       anonymousDeck: { type: Number, default: 0 },

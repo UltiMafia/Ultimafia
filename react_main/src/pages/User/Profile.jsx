@@ -485,7 +485,11 @@ export default function Profile() {
         })
         .catch((e) => {
           if (e.response == null || e.response.status === 413)
-            errorAlert("File too large, must be less than 1 MB.");
+            errorAlert(
+              type === "banner"
+                ? "File too large, banner must be less than 20 MB."
+                : "File too large, avatar must be less than 5 MB."
+            );
           else errorAlert(e);
         });
     }
@@ -1319,6 +1323,7 @@ export default function Profile() {
               onlineStatus={status}
               lastActive={lastActive}
               inGame={inGame}
+              keepAnimation={!!user.itemsOwned?.animatedAvatar}
             />
           )}
         </Box>

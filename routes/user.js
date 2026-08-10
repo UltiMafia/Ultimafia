@@ -2619,40 +2619,136 @@ router.delete("/forumBanner", async function (req, res) {
   }
 });
 
+function removeUserAvatarFiles(userId) {
+  const uploadPath = process.env.UPLOAD_PATH;
+  for (const ext of ["webp", "gif", "png", "jpg", "jpeg"]) {
+    const p = `${uploadPath}/${userId}_avatar.${ext}`;
+    try {
+      if (fs.existsSync(p)) fs.unlinkSync(p);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+}
+
 router.post("/avatar", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
+    var itemsOwned = await redis.getUserItemsOwned(userId);
+
     var form = new formidable();
-    form.maxFileSize = 1024 * 1024;
+    // Allow larger GIF/WebP uploads; animation only kept with Animated Profile Picture
+    form.maxFileSize = 5 * 1024 * 1024;
     form.maxFields = 1;
 
     var [fields, files] = await form.parseAsync(req);
+    const file =
+      files.image && (Array.isArray(files.image) ? files.image[0] : files.image);
+    const filePath = file?.filepath || file?.path;
+    if (!filePath) {
+      errors.badRequest(res, "No image uploaded.");
+      return;
+    }
 
-    if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
-      fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
+    const uploadPath = process.env.UPLOAD_PATH;
+    if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath);
 
-    await sharp(files.image.path)
-      .webp({ quality: 100 })
-      .resize(100, 100, {
-        kernel: sharp.kernel.lanczos3,
-        fit: "cover",
-        position: "center",
-      })
-      .toFile(`${process.env.UPLOAD_PATH}/${userId}_avatar.webp`);
-    await models.User.updateOne({ id: userId }, { $set: { avatar: true } });
-    await redis.cacheUserInfo(userId, true);
+    const buffer = fs.readFileSync(filePath);
+    const mime = (file.type || file.mimetype || "").toLowerCase();
+    let metadata;
+    try {
+      metadata = await sharp(buffer, { animated: true }).metadata();
+    } catch (metaErr) {
+      errors.badRequest(res, "Could not read avatar image.");
+      return;
+    }
 
-    models.SiteActivity.create({
-      id: shortid.generate(),
-      type: "avatarChange",
-      actorId: userId,
-      date: Date.now(),
-    }).catch(() => {});
+    const pages = metadata.pages || 1;
+    const isAnimatedSource =
+      pages > 1 || mime === "image/gif" || metadata.format === "gif";
+    // Only keep animation if the user owns the add-on
+    const keepAnimation = isAnimatedSource && !!itemsOwned.animatedAvatar;
 
-    res.sendStatus(200);
+    // Soft per-frame dimension check for animated sources (before 100×100 resize)
+    const frameW = metadata.width || 0;
+    const frameH = metadata.pageHeight || metadata.height || 0;
+    if (isAnimatedSource && (frameW > 1024 || frameH > 1024)) {
+      errors.badRequest(
+        res,
+        "Avatar frame dimensions must be at most 1024×1024."
+      );
+      return;
+    }
+
+    // Always store as .webp so existing clients (/uploads/{id}_avatar.webp) work.
+    // Animated sources become animated WebP when keepAnimation is true.
+    let tempPath = null;
+    try {
+      tempPath = `${uploadPath}/${userId}_avatar.webp.tmp`;
+
+      if (keepAnimation) {
+        if (
+          !(
+            mime === "image/gif" ||
+            mime === "image/webp" ||
+            metadata.format === "gif" ||
+            metadata.format === "webp"
+          )
+        ) {
+          errors.badRequest(res, "Animated avatars must be GIF or WebP.");
+          return;
+        }
+        await sharp(buffer, { animated: true, limitInputPixels: false })
+          .resize(100, 100, {
+            kernel: sharp.kernel.lanczos3,
+            fit: "cover",
+            position: "center",
+          })
+          .webp({ quality: 90, effort: 4 })
+          .toFile(tempPath);
+      } else {
+        // Static path: first frame only if source was animated
+        await sharp(buffer, { animated: false, pages: 1 })
+          .webp({ quality: 100 })
+          .resize(100, 100, {
+            kernel: sharp.kernel.lanczos3,
+            fit: "cover",
+            position: "center",
+          })
+          .toFile(tempPath);
+      }
+
+      const finalPath = `${uploadPath}/${userId}_avatar.webp`;
+      removeUserAvatarFiles(userId);
+      fs.renameSync(tempPath, finalPath);
+      tempPath = null;
+
+      await models.User.updateOne({ id: userId }, { $set: { avatar: true } });
+      await redis.cacheUserInfo(userId, true);
+
+      models.SiteActivity.create({
+        id: shortid.generate(),
+        type: "avatarChange",
+        actorId: userId,
+        date: Date.now(),
+      }).catch(() => {});
+
+      res.sendStatus(200);
+    } finally {
+      if (tempPath) {
+        try {
+          if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+        } catch (cleanupErr) {
+          /* ignore */
+        }
+      }
+    }
   } catch (e) {
-    if (e.message.indexOf("maxFileSize exceeded") == 0)
-      errors.payloadTooLarge(res, "Image is too large, avatar must be less than 1 MB.");
+    if (e.message && e.message.indexOf("maxFileSize exceeded") == 0)
+      errors.payloadTooLarge(
+        res,
+        "Image is too large, avatar must be less than 5 MB."
+      );
     else {
       logger.error(e);
       errors.serverError(res, "Could not upload avatar image. Please try again.");
@@ -2667,12 +2763,9 @@ router.post("/avatar/delete", async function (req, res) {
     await models.User.updateOne({ id: userId }, { $set: { avatar: false } });
     await redis.cacheUserInfo(userId, true);
 
-    // Best-effort delete of uploaded file (default letter avatar used when avatar is false)
+    // Best-effort delete of uploaded files (default letter avatar when avatar is false)
     try {
-      const avatarPath = `${process.env.UPLOAD_PATH}/${userId}_avatar.webp`;
-      if (fs.existsSync(avatarPath)) {
-        fs.unlinkSync(avatarPath);
-      }
+      removeUserAvatarFiles(userId);
     } catch (fileErr) {
       logger.warn(fileErr);
     }

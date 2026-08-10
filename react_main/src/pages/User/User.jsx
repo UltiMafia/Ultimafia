@@ -333,6 +333,7 @@ export function Avatar(props) {
   const edit = props.edit;
   const onUpload = props.onUpload;
   const onRemove = props.onRemove;
+  const keepAnimation = props.keepAnimation;
   const active = props.active;
   const dead = props.dead;
   const avatarId = props.avatarId;
@@ -459,6 +460,7 @@ export function Avatar(props) {
             name="avatar"
             onFileUpload={onUpload}
             isSquare={isSquare}
+            keepAnimation={!!keepAnimation}
           >
             <i className="far fa-file-image" title="Upload avatar" />
           </AvatarUpload>
