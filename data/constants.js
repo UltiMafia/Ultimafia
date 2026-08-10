@@ -360,6 +360,11 @@ module.exports = {
   voteSpamRateLimit: 10,
   rankedCompetitiveTypingWpm: 130,
   rankedCompetitiveAvgWordLength: 3.9914985005289525,
+  // Free non-whitespace chars after the last send (prep/paste is normal in game).
+  // Without this, a short line then a long paste looks like impossible WPM.
+  rankedCompetitiveTypingPasteGraceChars: 180,
+  // Never gate solely on typing speed for longer than this after the last send.
+  rankedCompetitiveTypingMaxIntervalMs: 2500,
   rankedCompetitiveQuoteCooldownMs: 2 * 1000,
 
   maxUserNameLength: 20,

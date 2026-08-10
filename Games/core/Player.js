@@ -214,7 +214,12 @@ module.exports = class Player {
             speechPast,
             message.content,
             constants.rankedCompetitiveTypingWpm,
-            constants.rankedCompetitiveAvgWordLength
+            constants.rankedCompetitiveAvgWordLength,
+            Date.now(),
+            {
+              pasteGraceChars: constants.rankedCompetitiveTypingPasteGraceChars,
+              maxIntervalMs: constants.rankedCompetitiveTypingMaxIntervalMs,
+            }
           );
 
           if (typingCooldownMs > 0) {

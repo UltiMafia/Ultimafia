@@ -78,9 +78,33 @@ module.exports = class Spam {
     return count;
   }
 
-  static getRankedCompetitiveMinIntervalMs(content, wpm, avgWordLength) {
+  /**
+   * Minimum time after the previous send before this content is allowed under
+   * the ranked/competitive typing gate.
+   *
+   * pasteGraceChars: non-ws chars that do not require typing time (prep/paste).
+   * maxIntervalMs: hard cap so a long line never demands 10–20s after a short one.
+   */
+  static getRankedCompetitiveMinIntervalMs(
+    content,
+    wpm,
+    avgWordLength,
+    options = {}
+  ) {
     const messageLen = this.getMessageCharCountExcludingWhitespace(content);
-    return ((messageLen / avgWordLength) / wpm) * 60 * 1000;
+    if (messageLen === 0 || !wpm || !avgWordLength) return 0;
+
+    const pasteGrace =
+      options.pasteGraceChars != null ? options.pasteGraceChars : 0;
+    const maxIntervalMs =
+      options.maxIntervalMs != null ? options.maxIntervalMs : Infinity;
+
+    // Only bill chars beyond the paste/prep grace toward the WPM clock.
+    const billableLen = Math.max(0, messageLen - pasteGrace);
+    if (billableLen === 0) return 0;
+
+    const rawMs = (billableLen / avgWordLength / wpm) * 60 * 1000;
+    return Math.min(rawMs, maxIntervalMs);
   }
 
   static getTypingSpeedCooldownRemainingMs(
@@ -88,17 +112,20 @@ module.exports = class Spam {
     content,
     wpm,
     avgWordLength,
-    now = Date.now()
+    now = Date.now(),
+    options = {}
   ) {
     if (past.length === 0) return 0;
 
     const minIntervalMs = this.getRankedCompetitiveMinIntervalMs(
       content,
       wpm,
-      avgWordLength
+      avgWordLength,
+      options
     );
-    const elapsed = now - past[past.length - 1];
+    if (minIntervalMs <= 0) return 0;
 
+    const elapsed = now - past[past.length - 1];
     return Math.max(0, minIntervalMs - elapsed);
   }
 
@@ -107,7 +134,8 @@ module.exports = class Spam {
     content,
     wpm,
     avgWordLength,
-    now = Date.now()
+    now = Date.now(),
+    options = {}
   ) {
     return (
       this.getTypingSpeedCooldownRemainingMs(
@@ -115,7 +143,8 @@ module.exports = class Spam {
         content,
         wpm,
         avgWordLength,
-        now
+        now,
+        options
       ) > 0
     );
   }
