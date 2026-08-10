@@ -201,3 +201,86 @@ describe("Games/core/Spam repeated content", function () {
     Spam.rateLimit(past, 15, 10).should.equal(false);
   });
 });
+
+describe("Games/core/Spam similar content", function () {
+  const max = 2;
+  const thr = 0.8;
+  const minLen = 12;
+
+  it("detects extended paste blocks as similar", function () {
+    const a = "vote Bob he is sus from n1 checks";
+    const b = "vote Bob he is sus from n1 checks also watch Alice";
+    Spam.isSimilarContent(a, b, thr, minLen).should.equal(true);
+  });
+
+  it("does not mark unrelated long lines as similar", function () {
+    const a = "I am claiming doctor and will protect the mayor tonight";
+    const b = "Jester is fake claiming cop and pushing wrong people";
+    Spam.isSimilarContent(a, b, thr, minLen).should.equal(false);
+  });
+
+  it("blocks third consecutive similar paste", function () {
+    const now = 30_000_000;
+    const base = "I checked Bob last night he is mafia please vote";
+    const past = [
+      { at: now, content: Spam.normalizeSpeakContent(base) },
+      {
+        at: now + 100,
+        content: Spam.normalizeSpeakContent(base + " him now"),
+      },
+    ];
+    const third = base + " with me";
+    Spam.isRepeatedSimilarContentSpam(
+      past,
+      third,
+      max,
+      thr,
+      minLen,
+      now + 200
+    ).should.equal(true);
+  });
+
+  it("allows two similar pastes", function () {
+    const now = 31_000_000;
+    const base = "I checked Bob last night he is mafia please vote";
+    const past = [{ at: now, content: Spam.normalizeSpeakContent(base) }];
+    Spam.isRepeatedSimilarContentSpam(
+      past,
+      base + " today",
+      max,
+      thr,
+      minLen,
+      now + 100
+    ).should.equal(false);
+  });
+
+  it("shouldCheckSimilarContent when sending quickly", function () {
+    const now = 32_000_000;
+    const past = [{ at: now - 500, content: "hello there friend" }];
+    Spam.shouldCheckSimilarContent(past, 0, now, 3500, 5000).should.equal(
+      true
+    );
+  });
+
+  it("shouldCheckSimilarContent when recently blocked even if slow", function () {
+    const now = 33_000_000;
+    const past = [{ at: now - 10_000, content: "hello there friend" }];
+    Spam.shouldCheckSimilarContent(past, now - 1000, now, 3500, 5000).should.equal(
+      true
+    );
+  });
+
+  it("should not check similar when slow and not recently blocked", function () {
+    const now = 34_000_000;
+    const past = [{ at: now - 10_000, content: "hello there friend" }];
+    Spam.shouldCheckSimilarContent(past, 0, now, 3500, 5000).should.equal(
+      false
+    );
+  });
+
+  it("skips similar match for very short strings", function () {
+    Spam.isSimilarContent("hi there!!", "hi there??", thr, minLen).should.equal(
+      false
+    );
+  });
+});

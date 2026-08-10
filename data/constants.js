@@ -359,6 +359,11 @@ module.exports = {
   // Same line may be sent twice in a row; the 3rd consecutive identical paste is blocked.
   msgDuplicateMaxConsecutive: 2,
   msgDuplicateCooldownMs: 3 * 1000,
+  // Near-duplicate (similar) paste spam — only when sending quickly or recently blocked.
+  msgSimilarThreshold: 0.8,
+  msgSimilarMinLength: 12,
+  msgSimilarQuickWindowMs: 3500,
+  msgSimilarAfterBlockWindowMs: 5000,
   voteSpamSumLimit: 15,
   voteSpamRateLimit: 10,
   rankedCompetitiveTypingWpm: 130,

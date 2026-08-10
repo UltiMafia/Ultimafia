@@ -131,6 +131,124 @@ module.exports = class Spam {
     );
   }
 
+  /** Dice coefficient on character bigrams (0–1). */
+  static diceCoefficient(a, b) {
+    if (!a || !b) return 0;
+    if (a === b) return 1;
+    if (a.length < 2 || b.length < 2) return 0;
+
+    const bigrams = new Map();
+    for (let i = 0; i < a.length - 1; i++) {
+      const bg = a.slice(i, i + 2);
+      bigrams.set(bg, (bigrams.get(bg) || 0) + 1);
+    }
+
+    let overlap = 0;
+    for (let i = 0; i < b.length - 1; i++) {
+      const bg = b.slice(i, i + 2);
+      const count = bigrams.get(bg) || 0;
+      if (count > 0) {
+        bigrams.set(bg, count - 1);
+        overlap += 1;
+      }
+    }
+
+    return (2 * overlap) / (a.length - 1 + (b.length - 1));
+  }
+
+  /**
+   * True if two messages look like the same paste with small edits / extensions.
+   * Also treats a substantial shared block (substring) as similar.
+   */
+  static isSimilarContent(
+    a,
+    b,
+    threshold = 0.8,
+    minLength = 12
+  ) {
+    const na = this.normalizeSpeakContent(a);
+    const nb = this.normalizeSpeakContent(b);
+    if (!na || !nb) return false;
+    if (na === nb) return true;
+    if (na.length < minLength || nb.length < minLength) return false;
+
+    const shorter = na.length <= nb.length ? na : nb;
+    const longer = na.length <= nb.length ? nb : na;
+
+    // Shared paste block: longer contains shorter (or large common chunk)
+    if (longer.includes(shorter) && shorter.length / longer.length >= 0.45) {
+      return true;
+    }
+
+    return this.diceCoefficient(na, nb) >= threshold;
+  }
+
+  /**
+   * Trailing consecutive past entries similar to `content`.
+   */
+  static getConsecutiveSimilarCount(
+    past,
+    content,
+    threshold = 0.8,
+    minLength = 12,
+    now = Date.now()
+  ) {
+    this.prunePast(past, now);
+    const norm = this.normalizeSpeakContent(content);
+    if (!norm || norm.length < minLength) return 0;
+
+    let count = 0;
+    for (let i = past.length - 1; i >= 0; i--) {
+      const prev = this.entryContent(past[i]);
+      if (prev == null) break;
+      if (this.isSimilarContent(prev, norm, threshold, minLength)) count += 1;
+      else break;
+    }
+    return count;
+  }
+
+  /**
+   * Near-duplicate paste spam: 3rd consecutive similar line blocked.
+   * Caller should only invoke when sending quickly or recently blocked.
+   */
+  static isRepeatedSimilarContentSpam(
+    past,
+    content,
+    maxConsecutive = 2,
+    threshold = 0.8,
+    minLength = 12,
+    now = Date.now()
+  ) {
+    return (
+      this.getConsecutiveSimilarCount(
+        past,
+        content,
+        threshold,
+        minLength,
+        now
+      ) >= maxConsecutive
+    );
+  }
+
+  /**
+   * Whether the similar-paste gate should run: rapid sends, or still inside
+   * the window after a prior duplicate/similar block.
+   */
+  static shouldCheckSimilarContent(
+    past,
+    lastBlockAt,
+    now = Date.now(),
+    quickWindowMs = 3500,
+    afterBlockWindowMs = 5000
+  ) {
+    if (lastBlockAt && now - lastBlockAt <= afterBlockWindowMs) {
+      return true;
+    }
+    if (past.length === 0) return false;
+    const lastAt = this.entryTime(past[past.length - 1]);
+    return lastAt > 0 && now - lastAt <= quickWindowMs;
+  }
+
   /**
    * Minimum time after the previous send before this content is allowed under
    * the ranked/competitive typing gate.
