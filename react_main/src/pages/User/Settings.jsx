@@ -780,18 +780,61 @@ export default function Settings() {
           deps.user.itemsOwned.animatedNameColor &&
           deps.user.itemsOwned.textColors
         ),
-      // Options include Tricolor only if the tricolor shop item is owned
-      options: (deps) => {
+      // Live previews via previewClass/previewStyle (Form select).
+      // Gradient (3 colors) only if tricolor shop item is owned.
+      // Gradient previews use A/B/C pickers (or defaults if not set yet).
+      options: (deps, fields) => {
+        const colorA =
+          fields?.find((f) => f.ref === "nameGradientColorA")?.value ||
+          "#ff0040";
+        const colorB =
+          fields?.find((f) => f.ref === "nameGradientColorB")?.value ||
+          "#00c2ff";
+        const colorC =
+          fields?.find((f) => f.ref === "nameGradientColorC")?.value ||
+          "#3dff6a";
+        const gradStyle = {
+          ["--name-grad-a"]: colorA,
+          ["--name-grad-b"]: colorB,
+          ["--name-grad-c"]: colorC,
+        };
+
         const base = [
           { label: "None", value: "none" },
-          { label: "Pulse", value: "pulse" },
-          { label: "Glow", value: "glow" },
-          { label: "Rainbow", value: "rainbow" },
-          { label: "Patriotic", value: "patriotic" },
-          { label: "Gradient (2 colors)", value: "gradient" },
+          {
+            label: "Pulse",
+            value: "pulse",
+            previewClass: "name-color-preview name-anim-pulse",
+          },
+          {
+            label: "Glow",
+            value: "glow",
+            previewClass: "name-color-preview name-anim-glow",
+          },
+          {
+            label: "Rainbow",
+            value: "rainbow",
+            previewClass: "name-color-preview name-anim-rainbow",
+          },
+          {
+            label: "Patriotic",
+            value: "patriotic",
+            previewClass: "name-color-preview name-anim-patriotic",
+          },
+          {
+            label: "Gradient (2 colors)",
+            value: "gradient",
+            previewClass: "name-color-preview name-anim-gradient",
+            previewStyle: gradStyle,
+          },
         ];
         if (deps.user.itemsOwned.tricolorAnimatedGradient) {
-          base.push({ label: "Gradient (3 colors)", value: "tricolor" });
+          base.push({
+            label: "Gradient (3 colors)",
+            value: "tricolor",
+            previewClass: "name-color-preview name-anim-tricolor",
+            previewStyle: gradStyle,
+          });
         }
         return base;
       },

@@ -335,12 +335,15 @@ iframe {
   font-family: Nabla, fantasy !important;
 }
 
-/* Pulse: animate the text node so it is clearly visible */
-.user-name.name-anim-pulse .user-name-text {
+/* Pulse: animate the text node so it is clearly visible.
+ * .name-color-preview is used in Settings dropdown option previews. */
+.user-name.name-anim-pulse .user-name-text,
+.name-color-preview.name-anim-pulse {
   animation: name-color-pulse 1.1s ease-in-out infinite;
   will-change: opacity, text-shadow, transform;
 }
-.user-name.name-anim-glow .user-name-text {
+.user-name.name-anim-glow .user-name-text,
+.name-color-preview.name-anim-glow {
   animation: name-color-glow 1.6s ease-in-out infinite;
   will-change: text-shadow, filter;
 }
@@ -350,11 +353,17 @@ iframe {
  * background-size 200% + position 0%→100% shifts by exactly one element width.
  * Each half of the gradient image (0–50% and 50–100%) is an identical period
  * that starts and ends on the same color, so the wrap is continuous.
+ * Also applied to .name-color-preview for Settings dropdown live previews.
  */
 .user-name.name-anim-rainbow .user-name-text,
 .user-name.name-anim-patriotic .user-name-text,
 .user-name.name-anim-gradient .user-name-text,
-.user-name.name-anim-tricolor .user-name-text {
+.user-name.name-anim-tricolor .user-name-text,
+.name-color-preview.name-anim-rainbow,
+.name-color-preview.name-anim-patriotic,
+.name-color-preview.name-anim-gradient,
+.name-color-preview.name-anim-tricolor {
+  display: inline-block;
   background-size: 200% 100%;
   background-repeat: no-repeat;
   -webkit-background-clip: text;
@@ -365,7 +374,8 @@ iframe {
   will-change: background-position;
 }
 
-.user-name.name-anim-rainbow .user-name-text {
+.user-name.name-anim-rainbow .user-name-text,
+.name-color-preview.name-anim-rainbow {
   /* Period 0–50% ends on #ff0040; period 50–100% is the same spectrum again */
   background-image: linear-gradient(
     90deg,
@@ -385,7 +395,8 @@ iframe {
   );
 }
 
-.user-name.name-anim-patriotic .user-name-text {
+.user-name.name-anim-patriotic .user-name-text,
+.name-color-preview.name-anim-patriotic {
   /* Red → white → blue → red, duplicated for a seamless loop */
   background-image: linear-gradient(
     90deg,
@@ -399,7 +410,8 @@ iframe {
   );
 }
 
-.user-name.name-anim-gradient .user-name-text {
+.user-name.name-anim-gradient .user-name-text,
+.name-color-preview.name-anim-gradient {
   /* Period: A → B → A (0–50%), then A → B → A again (50–100%) */
   background-image: linear-gradient(
     90deg,
@@ -411,7 +423,8 @@ iframe {
   );
 }
 
-.user-name.name-anim-tricolor .user-name-text {
+.user-name.name-anim-tricolor .user-name-text,
+.name-color-preview.name-anim-tricolor {
   /* Period order 1→2→3→1 (0–50%), then the same period again (50–100%) for a seamless loop */
   background-image: linear-gradient(
     90deg,

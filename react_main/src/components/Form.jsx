@@ -425,10 +425,34 @@ export default function Form({
             </FormField>
           );
         case "select": {
+          // options(deps, fields) so previews can read sibling values (e.g. gradient colors)
           const selectOptions =
             typeof field.options === "function"
-              ? field.options(deps)
+              ? field.options(deps, fields)
               : field.options || [];
+
+          const renderOptionLabel = (opt, fallback) => {
+            if (!opt) return fallback;
+            const label = opt.label ?? fallback;
+            // Live CSS preview (animated name colors, etc.)
+            if (opt.previewClass || opt.previewStyle) {
+              return (
+                <span className={opt.previewClass || undefined} style={opt.previewStyle}>
+                  {label}
+                </span>
+              );
+            }
+            // Font face preview
+            if (opt.fontFamily) {
+              return (
+                <span style={{ fontFamily: opt.fontFamily }}>
+                  {label}
+                </span>
+              );
+            }
+            return label;
+          };
+
           return (
             <FormField
               field={field}
@@ -448,20 +472,12 @@ export default function Form({
                 helperText={field.extraInfo}
                 label={compact ? field.label : undefined}
                 SelectProps={{
-                  // Show selected option in its own font when option.fontFamily is set
+                  // Show selected option with its font / animation preview
                   renderValue: (selected) => {
                     const opt = selectOptions.find(
                       (o) => o.value === selected || o.ref === selected
                     );
-                    const label = opt?.label ?? selected;
-                    if (opt?.fontFamily) {
-                      return (
-                        <span style={{ fontFamily: opt.fontFamily }}>
-                          {label}
-                        </span>
-                      );
-                    }
-                    return label;
+                    return renderOptionLabel(opt, selected);
                   },
                 }}
               >
@@ -475,7 +491,7 @@ export default function Form({
                         : undefined
                     }
                   >
-                    {option.label}
+                    {renderOptionLabel(option, option.label)}
                   </MenuItem>
                 ))}
               </TextField>
