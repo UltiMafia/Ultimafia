@@ -1158,7 +1158,7 @@ export default function Settings() {
                   <AvatarUpload
                     onFileUpload={onFamilyAvatarUpload}
                     name="familyAvatar"
-                    keepAnimation={!!user.itemsOwned?.familyAnimatedAvatar}
+                    keepAnimation={Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedAvatar")}
                   >
                     <Button variant="outlined" disabled={!!userFamily}>
                       Upload Avatar
@@ -1236,7 +1236,7 @@ export default function Settings() {
                     <AvatarUpload
                       onFileUpload={onFamilyAvatarUploadExisting}
                       name="familyAvatarExisting"
-                      keepAnimation={!!user.itemsOwned?.familyAnimatedAvatar}
+                      keepAnimation={Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedAvatar")}
                     >
                       <Button variant="outlined">Upload New Avatar</Button>
                     </AvatarUpload>
@@ -1262,7 +1262,7 @@ export default function Settings() {
                   >
                     3:1 banner on the family page (same proportions as profile
                     banners; scales to the page panel width).
-                    {user.itemsOwned?.familyAnimatedBanner
+                    {(Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedBanner"))
                       ? " GIF/WebP can keep animation."
                       : " Purchase Family Banner / Animated Family Banner in the Shop."}
                   </Typography>
@@ -1270,19 +1270,19 @@ export default function Settings() {
                     <BannerUpload
                       name="familyBanner"
                       onClick={() => {
-                        if (!user.itemsOwned?.familyBanner) {
+                        if (!(Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyBanner"))) {
                           errorAlert(
-                            "You must purchase Family Banner from the Shop."
+                            "Your family must buy the Family Banner perk first."
                           );
                           return false;
                         }
                         return true;
                       }}
                       onFileUpload={onFamilyBannerUpload}
-                      keepAnimation={!!user.itemsOwned?.familyAnimatedBanner}
+                      keepAnimation={!!(Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedBanner"))}
                     >
                       <Button variant="outlined">
-                        {user.itemsOwned?.familyAnimatedBanner
+                        {(Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedBanner"))
                           ? "Upload / Crop Banner"
                           : "Upload Banner"}
                       </Button>
@@ -1879,7 +1879,7 @@ export default function Settings() {
         .catch((e) => {
           if (e.response == null || e.response.status === 413)
             errorAlert(
-              user.itemsOwned?.familyAnimatedAvatar
+              (Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedAvatar"))
                 ? "File too large, animated family avatar must be less than 25 MB."
                 : "File too large, family avatar must be less than 1 MB."
             );
@@ -1902,7 +1902,7 @@ export default function Settings() {
         .catch((e) => {
           if (e.response == null || e.response.status === 413)
             errorAlert(
-              user.itemsOwned?.familyAnimatedAvatar
+              (Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedAvatar"))
                 ? "File too large, animated family avatar must be less than 25 MB."
                 : "File too large, family avatar must be less than 1 MB."
             );
@@ -1913,8 +1913,8 @@ export default function Settings() {
 
   function onFamilyBannerUpload(files, type) {
     if (!files.length || !userFamily?.id) return;
-    if (!user.itemsOwned?.familyBanner) {
-      errorAlert("You must purchase Family Banner from the Shop.");
+    if (!(Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyBanner"))) {
+      errorAlert("Your family must buy the Family Banner perk first.");
       return;
     }
     const formData = new FormData();
@@ -1929,7 +1929,7 @@ export default function Settings() {
       .catch((e) => {
         if (e.response == null || e.response.status === 413)
           errorAlert(
-            user.itemsOwned?.familyAnimatedBanner
+            (Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedBanner"))
               ? "File too large, animated family banner must be less than 20 MB."
               : "File too large, family banner must be less than 5 MB."
           );

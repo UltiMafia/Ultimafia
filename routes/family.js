@@ -69,6 +69,7 @@ router.get("/user/family", async function (req, res) {
         isLeader: isLeader,
         memberCount: memberCount,
         memberLimit: getFamilyMemberLimit(family),
+        perks: family.perks || [],
       },
     });
   } catch (e) {
@@ -205,7 +206,9 @@ router.post("/avatar", async function (req, res) {
       familyId = `pending_${userId}`;
     }
 
-    const canAnimate = !!user.itemsOwned.familyAnimatedAvatar;
+    // Animation is a family perk (treasury), not a personal shop item
+    const canAnimate =
+      isExistingFamily && familyOwnsPerk(inFamily.family, "familyAnimatedAvatar");
     var form = new formidable();
     form.maxFileSize = canAnimate ? 25 * 1024 * 1024 : 1 * 1024 * 1024;
     form.maxFields = 1;
@@ -336,15 +339,15 @@ router.post("/:familyId/banner", async function (req, res) {
       errors.forbidden(res, "Only the family leader can upload a banner.");
       return;
     }
-    if (!user.itemsOwned.familyBanner) {
+    if (!familyOwnsPerk(family, "familyBanner")) {
       errors.forbidden(
         res,
-        "You must purchase Family Banner from the Shop."
+        "Your family must buy the Family Banner perk first."
       );
       return;
     }
 
-    const canAnimate = !!user.itemsOwned.familyAnimatedBanner;
+    const canAnimate = familyOwnsPerk(family, "familyAnimatedBanner");
     var form = new formidable();
     form.maxFileSize = canAnimate ? 20 * 1024 * 1024 : 5 * 1024 * 1024;
     form.maxFields = 1;
@@ -1273,7 +1276,33 @@ const FAMILY_PERKS = [
     description: "Adds a cosmetic trophy spotlight perk to the family profile.",
     cost: 75,
   },
+  {
+    key: "familyAnimatedAvatar",
+    name: "Animated Family Avatar",
+    description:
+      "Play GIF/WebP animations on the family profile picture (up to 25 MB). Without this, GIFs freeze to a still frame.",
+    cost: 100,
+  },
+  {
+    key: "familyBanner",
+    name: "Family Banner",
+    description:
+      "Upload a 3:1 banner on the family page (same proportions as profile banners; scales to the family panel width).",
+    cost: 100,
+  },
+  {
+    key: "familyAnimatedBanner",
+    name: "Animated Family Banner",
+    description:
+      "Play GIF/WebP animations on the family banner (up to 20 MB). Requires Family Banner.",
+    cost: 100,
+    requires: "familyBanner",
+  },
 ];
+
+function familyOwnsPerk(family, key) {
+  return Array.isArray(family?.perks) && family.perks.includes(key);
+}
 
 function escapeRegex(value) {
   return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -2479,6 +2508,14 @@ router.post("/:familyId/perks/:perkKey/buy", async function (req, res) {
       return;
     }
 
+    if (perk.requires && !(family.perks || []).includes(perk.requires)) {
+      res.status(400);
+      res.send(
+        `This perk requires "${perk.requires}" to be owned by the family first.`
+      );
+      return;
+    }
+
     var result = await models.Family.updateOne(
       {
         id: familyId,
@@ -2519,4 +2556,7 @@ router.post("/:familyId/perks/:perkKey/buy", async function (req, res) {
     res.status(500);
     res.send("Error buying family perk.");
   }
-});module.exports = router;
+});
+
+module.exports = router;
+
