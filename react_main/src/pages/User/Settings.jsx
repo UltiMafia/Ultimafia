@@ -718,12 +718,37 @@ export default function Settings() {
         {
           label: "Slab (Roboto Slab)",
           value: "slab",
-          fontFamily: "RobotoSlab, serif",
+          fontFamily: "RobotoSlab, Georgia, serif",
         },
         {
           label: "Mono (Roboto Mono)",
           value: "mono",
-          fontFamily: "RobotoMono, monospace",
+          fontFamily: "RobotoMono, Consolas, monospace",
+        },
+        {
+          label: "Poppins",
+          value: "poppins",
+          fontFamily: "Poppins, 'Segoe UI', sans-serif",
+        },
+        {
+          label: "Georgia",
+          value: "georgia",
+          fontFamily: "Georgia, 'Times New Roman', serif",
+        },
+        {
+          label: "Trebuchet",
+          value: "trebuchet",
+          fontFamily: "'Trebuchet MS', 'Segoe UI', sans-serif",
+        },
+        {
+          label: "Verdana",
+          value: "verdana",
+          fontFamily: "Verdana, Geneva, sans-serif",
+        },
+        {
+          label: "Betty Noir",
+          value: "bettynoir",
+          fontFamily: "BettyNoir, Georgia, serif",
         },
         {
           label: "Autophobia",

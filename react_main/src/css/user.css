@@ -296,11 +296,31 @@ iframe {
 
 .user-name.name-font-slab,
 .user-name.name-font-slab .user-name-text {
-  font-family: RobotoSlab, serif !important;
+  font-family: RobotoSlab, Georgia, serif !important;
 }
 .user-name.name-font-mono,
 .user-name.name-font-mono .user-name-text {
-  font-family: RobotoMono, monospace !important;
+  font-family: RobotoMono, Consolas, monospace !important;
+}
+.user-name.name-font-poppins,
+.user-name.name-font-poppins .user-name-text {
+  font-family: Poppins, "Segoe UI", sans-serif !important;
+}
+.user-name.name-font-georgia,
+.user-name.name-font-georgia .user-name-text {
+  font-family: Georgia, "Times New Roman", serif !important;
+}
+.user-name.name-font-trebuchet,
+.user-name.name-font-trebuchet .user-name-text {
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif !important;
+}
+.user-name.name-font-verdana,
+.user-name.name-font-verdana .user-name-text {
+  font-family: Verdana, Geneva, sans-serif !important;
+}
+.user-name.name-font-bettynoir,
+.user-name.name-font-bettynoir .user-name-text {
+  font-family: BettyNoir, Georgia, serif !important;
 }
 .user-name.name-font-autophobia,
 .user-name.name-font-autophobia .user-name-text {
