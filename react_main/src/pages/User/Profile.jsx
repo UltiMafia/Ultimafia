@@ -1509,8 +1509,8 @@ export default function Profile() {
               className="far fa-file-image"
               title={
                 user.itemsOwned?.animatedBanner
-                  ? "Upload banner (static or GIF/WebP)"
-                  : "Upload banner"
+                  ? "Upload banner (GIF/WebP up to 20 MB will animate)"
+                  : "Upload banner (GIF/WebP saved as a static frame without Animated Banner)"
               }
             />
           </HiddenUpload>

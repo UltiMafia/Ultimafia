@@ -271,7 +271,7 @@ const shopItems = [
   },
   {
     name: "Animated Profile Banner",
-    desc: "Upload GIF or animated WebP profile banners.",
+    desc: "Play GIF/WebP banner animations (up to 20 MB). Without this, uploaded GIFs are shown as a static frame.",
     key: "animatedBanner",
     category: "profile",
     price: 250,

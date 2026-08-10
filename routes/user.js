@@ -2377,7 +2377,7 @@ router.post("/banner", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var itemsOwned = await redis.getUserItemsOwned(userId);
 
-    // Allow upload if user has static profile customization and/or animated banner
+    // Need Profile Customization and/or Animated Profile Banner
     if (!itemsOwned.customProfile && !itemsOwned.animatedBanner) {
       errors.forbidden(
         res,
@@ -2387,12 +2387,13 @@ router.post("/banner", async function (req, res) {
     }
 
     var form = new formidable();
-    // Animated banners can be larger; static stays reasonable via processing
-    form.maxFileSize = 5 * 1024 * 1024;
+    // Allow large GIF/WebP uploads (up to 20 MB); animation only kept with add-on
+    form.maxFileSize = 20 * 1024 * 1024;
     form.maxFields = 1;
 
     var [fields, files] = await form.parseAsync(req);
-    const file = files.image && (Array.isArray(files.image) ? files.image[0] : files.image);
+    const file =
+      files.image && (Array.isArray(files.image) ? files.image[0] : files.image);
     const filePath = file.path || file.filepath;
     if (!filePath) {
       errors.badRequest(res, "No image uploaded.");
@@ -2413,62 +2414,63 @@ router.post("/banner", async function (req, res) {
     }
 
     const pages = metadata.pages || 1;
-    const isAnimated =
-      pages > 1 || mime === "image/gif" || (mime === "image/webp" && pages > 1);
-    // Treat multi-frame gif/webp as animated
-    const treatAsAnimated =
-      isAnimated || mime === "image/gif";
+    const isAnimatedSource =
+      pages > 1 || mime === "image/gif" || metadata.format === "gif";
+
+    // Soft per-frame dimension check for animated sources
+    const frameW = metadata.width || 0;
+    const frameH = metadata.pageHeight || metadata.height || 0;
+    if (isAnimatedSource && (frameW > 1800 || frameH > 600)) {
+      errors.badRequest(
+        res,
+        "Banner frame dimensions must be at most 1800×600."
+      );
+      return;
+    }
 
     let bannerExt = "webp";
+    // Only keep animation if the user owns the add-on
+    const keepAnimation = isAnimatedSource && !!itemsOwned.animatedBanner;
 
-    if (treatAsAnimated) {
-      if (!itemsOwned.animatedBanner) {
-        errors.forbidden(
-          res,
-          "You must purchase Animated Profile Banner to upload GIF or animated WebP banners."
-        );
-        return;
-      }
-      if (mime === "image/gif") {
+    removeUserBannerFiles(userId);
+
+    if (keepAnimation) {
+      // Preserve original GIF/WebP animation (up to 20 MB)
+      if (mime === "image/gif" || metadata.format === "gif") {
         bannerExt = "gif";
       } else if (mime === "image/webp" || metadata.format === "webp") {
         bannerExt = "webp";
       } else {
-        errors.badRequest(
-          res,
-          "Animated banners must be GIF or WebP."
-        );
+        errors.badRequest(res, "Animated banners must be GIF or WebP.");
         return;
       }
-
-      // Soft dimension check (per-frame for gifs)
-      const w = metadata.width || 0;
-      const h = metadata.pageHeight || metadata.height || 0;
-      if (w > 1800 || h > 600) {
-        errors.badRequest(
-          res,
-          "Animated banner dimensions must be at most 1800×600."
-        );
-        return;
-      }
-
-      removeUserBannerFiles(userId);
-      // Preserve original bytes so animation is kept
       fs.writeFileSync(
         `${process.env.UPLOAD_PATH}/${userId}_banner.${bannerExt}`,
         buffer
       );
     } else {
-      if (!itemsOwned.customProfile) {
+      // Static banner path: first frame only if source was animated GIF/WebP
+      if (!itemsOwned.customProfile && !itemsOwned.animatedBanner) {
         errors.forbidden(
           res,
-          "You must purchase Profile Customization for static banners."
+          "You must purchase Profile Customization for banners."
         );
         return;
       }
+      // Users with only animatedBanner can still upload; without keepAnimation
+      // we freeze to a static webp so it never animates until they re-upload with add-on
+      // (or have customProfile for static uploads).
+      if (!itemsOwned.customProfile && isAnimatedSource && !itemsOwned.animatedBanner) {
+        errors.forbidden(
+          res,
+          "You must purchase Profile Customization or Animated Profile Banner from the Shop."
+        );
+        return;
+      }
+
       bannerExt = "webp";
-      removeUserBannerFiles(userId);
-      await sharp(buffer)
+      // pages: 1 / animated: false → first frame only for gifs
+      await sharp(buffer, { animated: false, pages: 1 })
         .webp({ quality: 100 })
         .resize({
           width: 900,
@@ -2490,7 +2492,7 @@ router.post("/banner", async function (req, res) {
     if (e.message && e.message.indexOf("maxFileSize exceeded") == 0)
       errors.payloadTooLarge(
         res,
-        "Image is too large, banner must be less than 5 MB."
+        "Image is too large, banner must be less than 20 MB."
       );
     else {
       logger.error(e);
