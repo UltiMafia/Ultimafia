@@ -280,7 +280,7 @@ const shopItems = [
   },
   {
     name: "Animated Profile Picture",
-    desc: "Play GIF/WebP avatar animations (up to 5 MB). Without this, uploaded GIFs are shown as a static frame.",
+    desc: "Play GIF/WebP avatar animations (up to 25 MB). Without this, uploaded GIFs are shown as a static frame.",
     key: "animatedAvatar",
     category: "profile",
     price: 250,

@@ -488,7 +488,9 @@ export default function Profile() {
             errorAlert(
               type === "banner"
                 ? "File too large, banner must be less than 20 MB."
-                : "File too large, avatar must be less than 5 MB."
+                : user.itemsOwned?.animatedAvatar
+                  ? "File too large, animated avatar must be less than 25 MB."
+                  : "File too large, avatar must be less than 1 MB."
             );
           else errorAlert(e);
         });

@@ -2637,8 +2637,10 @@ router.post("/avatar", async function (req, res) {
     var itemsOwned = await redis.getUserItemsOwned(userId);
 
     var form = new formidable();
-    // Allow larger GIF/WebP uploads; animation only kept with Animated Profile Picture
-    form.maxFileSize = 5 * 1024 * 1024;
+    // 25 MB only with Animated Profile Picture; static avatars stay 1 MB
+    form.maxFileSize = itemsOwned.animatedAvatar
+      ? 25 * 1024 * 1024
+      : 1 * 1024 * 1024;
     form.maxFields = 1;
 
     var [fields, files] = await form.parseAsync(req);
@@ -2747,7 +2749,9 @@ router.post("/avatar", async function (req, res) {
     if (e.message && e.message.indexOf("maxFileSize exceeded") == 0)
       errors.payloadTooLarge(
         res,
-        "Image is too large, avatar must be less than 5 MB."
+        itemsOwned && itemsOwned.animatedAvatar
+          ? "Image is too large, animated avatar must be less than 25 MB."
+          : "Image is too large, avatar must be less than 1 MB."
       );
     else {
       logger.error(e);
