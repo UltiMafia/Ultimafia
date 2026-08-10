@@ -137,7 +137,7 @@ export default function Changelog() {
         Changelog
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-        What&apos;s new on UltiMafia — features, game changes, site updates, and
+        What's new on UltiMafia: features, game changes, site updates, and
         fixes. Newest first.
       </Typography>
 

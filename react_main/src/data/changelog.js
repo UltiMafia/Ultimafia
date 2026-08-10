@@ -1,5 +1,5 @@
 /**
- * Site changelog — single source of truth for /policy/changelog
+ * Site changelog: single source of truth for /policy/changelog
  *
  * Agents: read docs/changelog/AGENT_TEMPLATE.md before editing this file.
  * Keep newest releases first. Use only CATEGORY keys defined below.

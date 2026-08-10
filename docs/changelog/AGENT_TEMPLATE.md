@@ -85,12 +85,12 @@ Append a new object at the **top** of the `CHANGELOG` array (newest first):
 
 ### Title style
 
-- `"Cosmetics update & ranked paste spam fixes"` — good
-- `"Merge pull request #2928"` — bad
+- `"Cosmetics update & ranked paste spam fixes"` (good)
+- `"Merge pull request #2928"` (bad)
 
 ### Id style
 
-- `"2026-08-10-cosmetics-spam"` — good
+- `"2026-08-10-cosmetics-spam"` (good)
 - Must be unique across the file
 
 ---
