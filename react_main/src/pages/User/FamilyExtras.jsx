@@ -13,6 +13,8 @@ import {
   FormControlLabel,
   Grid,
   useTheme,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
 import { NameWithAvatar } from "./User";
 import { SiteInfoContext, UserContext } from "Contexts";
@@ -320,10 +322,51 @@ export function FamilyPerks({ family, familyId, refreshFamilyTools }) {
         {(family.perks || []).map((perk) => (
           <Box key={perk.key}>
             <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
-              <Box>
+              <Box sx={{ minWidth: 0, pr: 1 }}>
                 <Typography variant="body2">{perk.name}</Typography>
-                <Typography variant="caption" color="text.secondary">
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  component="span"
+                  sx={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    gap: 0.25,
+                  }}
+                >
                   {perk.description}
+                  {perk.details ? (
+                    <Tooltip
+                      title={
+                        <Typography
+                          variant="caption"
+                          component="span"
+                          sx={{ display: "block", maxWidth: 280, lineHeight: 1.4 }}
+                        >
+                          {perk.details}
+                        </Typography>
+                      }
+                      arrow
+                      placement="top"
+                      enterTouchDelay={0}
+                    >
+                      <IconButton
+                        size="small"
+                        aria-label={`More info about ${perk.name}`}
+                        sx={{
+                          p: 0.25,
+                          color: "text.secondary",
+                        }}
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        <i
+                          className="fas fa-info-circle"
+                          style={{ fontSize: "0.9em" }}
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  ) : null}
                 </Typography>
               </Box>
               {perk.owned ? (

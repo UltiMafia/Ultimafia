@@ -1260,11 +1260,11 @@ export default function Settings() {
                     variant="caption"
                     sx={{ mb: 1, display: "block" }}
                   >
-                    3:1 banner on the family page (same proportions as profile
-                    banners; scales to the page panel width).
-                    {(Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedBanner"))
-                      ? " GIF/WebP can keep animation."
-                      : " Purchase Family Banner / Animated Family Banner in the Shop."}
+                    Banner for the family page
+                    {(Array.isArray(userFamily?.perks) &&
+                    userFamily.perks.includes("familyAnimatedBanner"))
+                      ? " (animation enabled)."
+                      : ". Buy under family Perks if needed."}
                   </Typography>
                   <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
                     <BannerUpload

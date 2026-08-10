@@ -1279,22 +1279,25 @@ const FAMILY_PERKS = [
   {
     key: "familyAnimatedAvatar",
     name: "Animated Family Avatar",
-    description:
-      "Play GIF/WebP animations on the family profile picture (up to 25 MB). Without this, GIFs freeze to a still frame.",
+    description: "Animated family profile photo.",
+    details:
+      "Lets the family keep an animated profile picture. Without this perk, animated uploads are saved as a still frame. Max 25 MB. The family leader uploads in Settings → Family.",
     cost: 100,
   },
   {
     key: "familyBanner",
     name: "Family Banner",
-    description:
-      "Upload a 3:1 banner on the family page (same proportions as profile banners; scales to the family panel width).",
+    description: "Custom banner on the family page.",
+    details:
+      "Adds a wide banner above your family name on the family page. Uses the same proportions as profile banners and scales to the family panel width. The leader uploads and crops it in Settings → Family.",
     cost: 100,
   },
   {
     key: "familyAnimatedBanner",
     name: "Animated Family Banner",
-    description:
-      "Play GIF/WebP animations on the family banner (up to 20 MB). Requires Family Banner.",
+    description: "Animated family banner.",
+    details:
+      "Lets the family banner stay animated. Requires the Family Banner perk first. Without this, animated banner uploads are frozen to a still frame. Max 20 MB.",
     cost: 100,
     requires: "familyBanner",
   },
