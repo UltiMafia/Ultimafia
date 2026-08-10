@@ -140,6 +140,8 @@ module.exports = class Player {
     var votePast = [];
     var lastQuoteMessageId = null;
     var lastQuoteTime = 0;
+    // Last time we blocked for identical/similar paste spam (for similar-check window)
+    var lastSpeakContentBlockAt = 0;
 
     const isRankedCompetitive = () =>
       this.game.started && (this.game.ranked || this.game.competitive);
@@ -209,12 +211,59 @@ module.exports = class Player {
           return;
         }
 
+        // Same content twice in a row is OK; third consecutive identical paste is blocked.
+        if (
+          Spam.isRepeatedContentSpam(
+            speechPast,
+            message.content,
+            constants.msgDuplicateMaxConsecutive
+          )
+        ) {
+          lastSpeakContentBlockAt = Date.now();
+          sendSpeakCooldown(
+            message.meetingId,
+            constants.msgDuplicateCooldownMs
+          );
+          return;
+        }
+
+        // Near-duplicates (same paste block with small edits) only when sending
+        // quickly, or still in the window after a recent content-spam block.
+        if (
+          Spam.shouldCheckSimilarContent(
+            speechPast,
+            lastSpeakContentBlockAt,
+            Date.now(),
+            constants.msgSimilarQuickWindowMs,
+            constants.msgSimilarAfterBlockWindowMs
+          ) &&
+          Spam.isRepeatedSimilarContentSpam(
+            speechPast,
+            message.content,
+            constants.msgDuplicateMaxConsecutive,
+            constants.msgSimilarThreshold,
+            constants.msgSimilarMinLength
+          )
+        ) {
+          lastSpeakContentBlockAt = Date.now();
+          sendSpeakCooldown(
+            message.meetingId,
+            constants.msgDuplicateCooldownMs
+          );
+          return;
+        }
+
         if (isRankedCompetitive()) {
           const typingCooldownMs = Spam.getTypingSpeedCooldownRemainingMs(
             speechPast,
             message.content,
             constants.rankedCompetitiveTypingWpm,
-            constants.rankedCompetitiveAvgWordLength
+            constants.rankedCompetitiveAvgWordLength,
+            Date.now(),
+            {
+              pasteGraceChars: constants.rankedCompetitiveTypingPasteGraceChars,
+              maxIntervalMs: constants.rankedCompetitiveTypingMaxIntervalMs,
+            }
           );
 
           if (typingCooldownMs > 0) {
@@ -231,7 +280,10 @@ module.exports = class Player {
           return;
         }
 
-        speechPast.push(Date.now());
+        speechPast.push({
+          at: Date.now(),
+          content: Spam.normalizeSpeakContent(message.content),
+        });
 
         var meeting = this.game.getMeeting(message.meetingId);
         if (!meeting) return;
