@@ -43,7 +43,7 @@ router.get("/user/family", async function (req, res) {
 
     // Query family directly and populate leader properly
     const family = await models.Family.findById(familyId)
-      .select("id name avatar banner bannerExt leader members background backgroundRepeatMode perks")
+      .select("id name avatar banner bannerExt mediaUrl mediaAutoplay mediaCollapse leader members background backgroundRepeatMode perks")
       .populate("leader", "_id");
 
     if (!family) {
@@ -64,6 +64,9 @@ router.get("/user/family", async function (req, res) {
         avatar: family.avatar,
         banner: family.banner || false,
         bannerExt: family.bannerExt || "webp",
+        mediaUrl: family.mediaUrl || "",
+        mediaAutoplay: !!family.mediaAutoplay,
+        mediaCollapse: !!family.mediaCollapse,
         background: family.background || false,
         backgroundRepeatMode: family.backgroundRepeatMode || "checker",
         isLeader: isLeader,
@@ -488,7 +491,7 @@ router.get("/:familyId/profile", async function (req, res) {
       .populate("founder", "id name avatar vanityUrl")
       .populate("leader", "id name avatar vanityUrl")
       .populate("members", "id name avatar vanityUrl")
-      .select("id name avatar banner bannerExt background backgroundRepeatMode applicationsOpen joinFee pendingJoinFees treasury perks bio founder leader members trophies createdAt");
+      .select("id name avatar banner bannerExt mediaUrl mediaAutoplay mediaCollapse background backgroundRepeatMode applicationsOpen joinFee pendingJoinFees treasury perks bio founder leader members trophies createdAt");
 
     if (!family) {
       res.status(404);
@@ -610,6 +613,10 @@ router.get("/:familyId/profile", async function (req, res) {
       avatar: family.avatar,
       banner: family.banner || false,
       bannerExt: family.bannerExt || "webp",
+      mediaUrl: family.mediaUrl || "",
+      mediaAutoplay: !!family.mediaAutoplay,
+      mediaCollapse: !!family.mediaCollapse,
+      hasMusicPlayer: familyOwnsPerk(family, "familyMusicPlayer"),
       background: family.background || false,
       backgroundRepeatMode: family.backgroundRepeatMode || "checker",
       applicationsOpen: family.applicationsOpen,
@@ -1300,6 +1307,14 @@ const FAMILY_PERKS = [
       "Lets the family banner stay animated. Requires the Family Banner perk first. Without this, animated banner uploads are frozen to a still frame. Max 20 MB.",
     cost: 100,
     requires: "familyBanner",
+  },
+  {
+    key: "familyMusicPlayer",
+    name: "Family Music Player",
+    description: "Music player on the family page.",
+    details:
+      "Adds a media player to the family page (YouTube, SoundCloud, Spotify, Vimeo, and direct audio/video links). The family leader sets the URL, autoplay, and collapse options in Settings → Family.",
+    cost: 100,
   },
 ];
 
@@ -2560,6 +2575,98 @@ router.post("/:familyId/perks/:perkKey/buy", async function (req, res) {
     res.send("Error buying family perk.");
   }
 });
+
+router.post("/:familyId/media", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var user = await models.User.findOne({ id: userId }).select("_id");
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      res.status(404);
+      res.send("Family not found.");
+      return;
+    }
+    if (family.leader.toString() !== user._id.toString()) {
+      errors.forbidden(res, "Only the family leader can set the music player.");
+      return;
+    }
+    if (!familyOwnsPerk(family, "familyMusicPlayer")) {
+      errors.forbidden(
+        res,
+        "Your family must buy the Family Music Player perk first."
+      );
+      return;
+    }
+
+    let value = String(req.body.link != null ? req.body.link : req.body.mediaUrl || "");
+    if (value.length > 200) {
+      errors.unprocessable(res, "URL is too long");
+      return;
+    }
+
+    // Mirror /api/user/youtube validation
+    const youtubeRegex =
+      /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
+    const soundcloudRegex =
+      /^https?:\/\/(www\.)?soundcloud\.com\/[^\/]+\/[^\/\?]+/;
+    const spotifyRegex =
+      /^https?:\/\/open\.spotify\.com\/(track|album|playlist|artist)\/[a-zA-Z0-9]+/;
+    const vimeoRegex = /^https?:\/\/(www\.)?vimeo\.com\/(\d+)/;
+    const invidiousRegex =
+      /^https?:\/\/(www\.)?(invidious\.io|yewtu\.be|invidious\.[a-z0-9.-]+)\/watch\?v=([a-zA-Z0-9_-]{11})/;
+    const directMediaMatches = value.match(
+      /^https?:\/\/.*?\.(ogg|mp3|mp4|webm)$/
+    );
+    const emptyMatches = value.match(/^$/g);
+    const matches = value.match(youtubeRegex);
+    const soundcloudMatches = value.match(soundcloudRegex);
+    const spotifyMatches = value.match(spotifyRegex);
+    const vimeoMatches = value.match(vimeoRegex);
+    const invidiousMatches = value.match(invidiousRegex);
+
+    if (matches && matches.length >= 7) {
+      const embedId = matches[7];
+      const embedIndex = value.indexOf(embedId);
+      value = value.substring(0, embedIndex + 11);
+    } else if (
+      !(
+        soundcloudMatches ||
+        spotifyMatches ||
+        vimeoMatches ||
+        invidiousMatches ||
+        directMediaMatches ||
+        emptyMatches
+      )
+    ) {
+      errors.badRequest(res, "Invalid media URL.");
+      return;
+    }
+
+    const update = { mediaUrl: value };
+    if (typeof req.body.autoplay === "boolean") {
+      update.mediaAutoplay = req.body.autoplay;
+    }
+    if (typeof req.body.collapse === "boolean") {
+      update.mediaCollapse = req.body.collapse;
+    }
+    // Also accept mediaAutoplay / mediaCollapse keys
+    if (typeof req.body.mediaAutoplay === "boolean") {
+      update.mediaAutoplay = req.body.mediaAutoplay;
+    }
+    if (typeof req.body.mediaCollapse === "boolean") {
+      update.mediaCollapse = req.body.mediaCollapse;
+    }
+
+    await models.Family.updateOne({ id: familyId }, { $set: update });
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not update family media. Please try again.");
+  }
+});
+
 
 module.exports = router;
 

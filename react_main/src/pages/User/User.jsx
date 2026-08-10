@@ -171,6 +171,7 @@ export function MediaEmbed(props) {
   const mediaUrl = props.mediaUrl;
   const autoplay = !!props.autoplay;
   const loop = !!props.loop;
+  const collapsed = !!props.collapsed;
   const mediaRef = useRef();
 
   const mediaOptions = JSON.parse(
@@ -234,11 +235,13 @@ export function MediaEmbed(props) {
     };
   }, [mediaRef]);
 
+  let body = null;
   switch (mediaType) {
     case "image":
-      return <ImageWithViewer imageUrl={mediaUrl} />;
+      body = <ImageWithViewer imageUrl={mediaUrl} />;
+      break;
     case "audio":
-      return (
+      body = (
         <audio
           ref={mediaRef}
           controls
@@ -247,8 +250,9 @@ export function MediaEmbed(props) {
           loop={loop}
         ></audio>
       );
+      break;
     case "video":
-      return (
+      body = (
         <div id="profile-video" className="video-responsive-generic">
           <video
             ref={mediaRef}
@@ -260,19 +264,33 @@ export function MediaEmbed(props) {
           ></video>
         </div>
       );
+      break;
     case "youtube":
-      return <YouTubeEmbed embedId={embedId} autoplay={autoplay} />;
+      body = <YouTubeEmbed embedId={embedId} autoplay={autoplay} />;
+      break;
     case "soundcloud":
-      return <SoundCloudEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+      body = <SoundCloudEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+      break;
     case "spotify":
-      return <SpotifyEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+      body = <SpotifyEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+      break;
     case "vimeo":
-      return <VimeoEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+      body = <VimeoEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+      break;
     case "invidious":
-      return <InvidiousEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+      body = <InvidiousEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+      break;
     default:
       return null;
   }
+
+  return (
+    <div
+      className={`media-embed-wrap${collapsed ? " media-collapsed" : ""}`}
+    >
+      {body}
+    </div>
+  );
 }
 export default function User(props) {
   const theme = useTheme();

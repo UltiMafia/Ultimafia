@@ -22,6 +22,7 @@ import {
   Tab,
   Checkbox,
   FormControlLabel,
+  Switch,
 } from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
 
@@ -214,6 +215,9 @@ export default function Settings() {
   const [loading, setLoading] = useState(false);
   const [familyName, setFamilyName] = useState("");
   const [familyAvatarUploaded, setFamilyAvatarUploaded] = useState(false);
+  const [familyMediaUrl, setFamilyMediaUrl] = useState("");
+  const [familyMediaAutoplay, setFamilyMediaAutoplay] = useState(false);
+  const [familyMediaCollapse, setFamilyMediaCollapse] = useState(false);
   const [userFamily, setUserFamily] = useState(null);
   const [familyLoaded, setFamilyLoaded] = useState(false);
   const [transferLeaderUserId, setTransferLeaderUserId] = useState("");
@@ -499,7 +503,18 @@ export default function Settings() {
         ref: "autoplay",
         type: "boolean",
         groupName: "Profile",
-        showIf: (deps) => deps.user.settings.youtube != null,
+        showIf: (deps) =>
+          deps.user.settings.youtube != null && deps.user.settings.youtube !== "",
+      },
+      {
+        label: "Collapse Media Player",
+        ref: "collapseMedia",
+        type: "boolean",
+        groupName: "Profile",
+        showIf: (deps) =>
+          deps.user.settings.youtube != null && deps.user.settings.youtube !== "",
+        extraInfo:
+          "Shrinks the profile media player to about one-third height while keeping playback and autoplay.",
       },
       {
         label: "Banner Format",
@@ -966,6 +981,9 @@ export default function Settings() {
       .then((res) => {
         if (res.data.family) {
           setUserFamily(res.data.family);
+          setFamilyMediaUrl(res.data.family.mediaUrl || "");
+          setFamilyMediaAutoplay(!!res.data.family.mediaAutoplay);
+          setFamilyMediaCollapse(!!res.data.family.mediaCollapse);
           setFamilyLoaded(true);
         } else {
           setUserFamily(null);
@@ -1306,6 +1324,70 @@ export default function Settings() {
                       </>
                     )}
                   </Stack>
+                </Box>
+
+                {/* Family Music Player */}
+                <Box>
+                  <Typography variant="h6" sx={{ mb: 1 }}>
+                    Family Music Player
+                  </Typography>
+                  {!(
+                    Array.isArray(userFamily?.perks) &&
+                    userFamily.perks.includes("familyMusicPlayer")
+                  ) ? (
+                    <Typography variant="caption" color="text.secondary">
+                      Buy the Family Music Player perk on the family page to
+                      enable this.
+                    </Typography>
+                  ) : (
+                    <Stack direction="column" spacing={1.5}>
+                      <Typography variant="caption" color="text.secondary">
+                        Same media types as profile (YouTube, SoundCloud,
+                        Spotify, Vimeo, direct files). Plays on the family page.
+                      </Typography>
+                      <TextField
+                        label="Media URL"
+                        value={familyMediaUrl}
+                        onChange={(e) => setFamilyMediaUrl(e.target.value)}
+                        fullWidth
+                        size="small"
+                        placeholder="https://..."
+                      />
+                      <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={familyMediaAutoplay}
+                              onChange={(e) =>
+                                setFamilyMediaAutoplay(e.target.checked)
+                              }
+                              size="small"
+                            />
+                          }
+                          label="Autoplay"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={familyMediaCollapse}
+                              onChange={(e) =>
+                                setFamilyMediaCollapse(e.target.checked)
+                              }
+                              size="small"
+                            />
+                          }
+                          label="Collapse player"
+                        />
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={onFamilyMediaSave}
+                        >
+                          Save media
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  )}
                 </Box>
 
                 {/* Upload Family Background */}
@@ -1935,6 +2017,30 @@ export default function Settings() {
           );
         else errorAlert(e);
       });
+  }
+
+  function onFamilyMediaSave() {
+    if (!userFamily?.id) return;
+    if (
+      !(
+        Array.isArray(userFamily?.perks) &&
+        userFamily.perks.includes("familyMusicPlayer")
+      )
+    ) {
+      errorAlert("Your family must buy the Family Music Player perk first.");
+      return;
+    }
+    axios
+      .post(`/api/family/${userFamily.id}/media`, {
+        link: familyMediaUrl,
+        autoplay: familyMediaAutoplay,
+        collapse: familyMediaCollapse,
+      })
+      .then(() => {
+        siteInfo.showAlert("Family media saved", "success");
+        loadFamily();
+      })
+      .catch(errorAlert);
   }
 
   function onFamilyBannerRemove() {

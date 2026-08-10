@@ -20,7 +20,7 @@ import { UserContext, SiteInfoContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { filterProfanity } from "components/Basic";
 import { TextEditor } from "components/Form";
-import { Avatar, NameWithAvatar } from "./User";
+import { Avatar, NameWithAvatar, MediaEmbed } from "./User";
 import Comments from "../Community/Comments";
 import { Loading } from "components/Loading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
@@ -358,11 +358,28 @@ export default function Family() {
                   />
                 </div>
               )}
+              {family.hasMusicPlayer && family.mediaUrl && (
+                <Box sx={{ mb: 1.5, mt: family.banner ? 1.5 : 0 }}>
+                  <MediaEmbed
+                    mediaUrl={family.mediaUrl}
+                    autoplay={!!family.mediaAutoplay}
+                    collapsed={!!family.mediaCollapse}
+                  />
+                </Box>
+              )}
               <Stack
                 direction="row"
                 spacing={2}
                 alignItems="center"
-                sx={{ mb: 2, mt: family.banner ? 1.5 : 0 }}
+                sx={{
+                  mb: 2,
+                  mt:
+                    family.hasMusicPlayer && family.mediaUrl
+                      ? 0
+                      : family.banner
+                        ? 1.5
+                        : 0,
+                }}
               >
                 {family.avatar && (
                   <div

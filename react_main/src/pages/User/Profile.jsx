@@ -214,6 +214,7 @@ export default function Profile() {
   const [statsBucket, setStatsBucket] = useState("ranked");
   const [mediaUrl, setMediaUrl] = useState("");
   const [autoplay, setAutoplay] = useState(false);
+  const [collapseMedia, setCollapseMedia] = useState(false);
   const [saved, setSaved] = useState(false);
   const [moderationDrawerOpen, setModerationDrawerOpen] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
@@ -372,6 +373,7 @@ export default function Profile() {
           setInGame(res.data.inGame);
           setMediaUrl("");
           setAutoplay(false);
+          setCollapseMedia(false);
           setSaved(res.data.saved);
           setLove(res.data.love);
           setCurrentUserLove(res.data.currentLove);
@@ -410,6 +412,7 @@ export default function Profile() {
           if (res.data.settings.youtube) {
             setMediaUrl(res.data.settings.youtube);
             setAutoplay(res.data.settings.autoplay);
+            setCollapseMedia(!!res.data.settings.collapseMedia);
           }
           document.title = `${res.data.name}'s Profile | UltiMafia`;
         })
@@ -1675,6 +1678,7 @@ export default function Profile() {
                 <MediaEmbed
                   mediaUrl={mediaUrl}
                   autoplay={autoplay}
+                  collapsed={collapseMedia}
                 ></MediaEmbed>
               </div>
             )}
