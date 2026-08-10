@@ -17,6 +17,7 @@ import {
   OnlineStatus,
 } from "./User";
 import { HiddenUpload, TextEditor } from "components/Form";
+import BannerUpload from "components/BannerUpload";
 import Setup from "components/Setup";
 import { Time, filterProfanity } from "components/Basic";
 import { useErrorAlert } from "components/Alerts";
@@ -1499,21 +1500,22 @@ export default function Profile() {
     <>
       {isSelf && (
         <div className="edit banner-edit-overlay">
-          <HiddenUpload
+          <BannerUpload
             className="banner-edit-action"
             name="banner"
             onClick={onEditBanner}
             onFileUpload={onFileUpload}
+            keepAnimation={!!user.itemsOwned?.animatedBanner}
           >
             <i
               className="far fa-file-image"
               title={
                 user.itemsOwned?.animatedBanner
-                  ? "Upload banner (GIF/WebP up to 20 MB will animate)"
-                  : "Upload banner (GIF/WebP saved as a static frame without Animated Banner)"
+                  ? "Upload / crop banner (GIF/WebP can keep animation)"
+                  : "Upload / crop banner"
               }
             />
-          </HiddenUpload>
+          </BannerUpload>
           {banner && (
             <button
               type="button"
