@@ -61,12 +61,9 @@ jobs:
       - name: Install Packages
         run: npm install
       - name: Unit Test
-        # Cap parallel workers + raise heap so mocha workers don't OOM mid-suite
-        # (heap ~4GB was observed under default --parallel on GHA).
-        run: npx mocha --recursive --parallel --jobs 2 --exit
+        run: npm run test
         env:
-          NODE_ENV: test
-          NODE_OPTIONS: --max-old-space-size=6144
+          NODE_ENV: development
           PORT: 3000
           UPLOAD_PATH: uploads
           BASE_URL: http://localhost:3001
@@ -83,7 +80,7 @@ jobs:
           MONGO_USER: admin
           MONGO_PW: password
           REDIS_DB: 0
-          # GHA service ports are on localhost; hostname "redis" can flake with EAI_AGAIN under parallel mocha
+          # Prefer localhost for GHA service port mapping (avoids EAI_AGAIN on hostname "redis")
           REDIS_URL: redis://127.0.0.1:6379
           FIREBASE_API_KEY: x
           FIREBASE_AUTH_DOMAIN: x
