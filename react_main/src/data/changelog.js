@@ -39,7 +39,7 @@ export const CHANGELOG = [
     id: "2026-08-11-death-sounds",
     date: "2026-08-11",
     title: "Purchasable custom death sounds",
-    prs: [],
+    prs: [2941],
     categories: {
       features: [
         "Custom death sounds: buy in the Shop, upload and trim a short clip played to the lobby when you die",
