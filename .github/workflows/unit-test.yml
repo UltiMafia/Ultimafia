@@ -61,10 +61,9 @@ jobs:
       - name: Install Packages
         run: npm install
       - name: Unit Test
-        run: npm run test
+        run: NODE_ENV=test npx mocha --recursive --parallel --jobs 2 --exit --node-option max-old-space-size=4096
         env:
           NODE_ENV: development
-          NODE_OPTIONS: --max-old-space-size=4096
           PORT: 3000
           UPLOAD_PATH: uploads
           BASE_URL: http://localhost:3001
@@ -81,7 +80,6 @@ jobs:
           MONGO_USER: admin
           MONGO_PW: password
           REDIS_DB: 0
-          # Host port map; avoid hostname DNS flakes (EAI_AGAIN redis)
           REDIS_URL: redis://127.0.0.1:6379
           FIREBASE_API_KEY: x
           FIREBASE_AUTH_DOMAIN: x
