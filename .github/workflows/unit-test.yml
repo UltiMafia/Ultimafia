@@ -61,10 +61,10 @@ jobs:
       - name: Install Packages
         run: npm install
       - name: Unit Test
-        # Serial mocha: --parallel was cascading uncaught worker errors into flaky failures
-        run: NODE_ENV=test npx mocha --recursive --exit
+        run: npm run test
         env:
           NODE_ENV: development
+          NODE_OPTIONS: --max-old-space-size=4096
           PORT: 3000
           UPLOAD_PATH: uploads
           BASE_URL: http://localhost:3001
@@ -100,4 +100,3 @@ jobs:
           REPORT_DISCORD_WEBHOOK: '[{"boards": ["boardShortId"], "hook": "discordWebhookUrl"}]'
           #optional - dev use only
           DEV_USERNAME: x
-          DISCORD_ERROR_HOOK: '{"hook": "a"}'
