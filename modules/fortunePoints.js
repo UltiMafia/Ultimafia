@@ -236,6 +236,7 @@ function computeSoloPayoutsForSetup(opts) {
   const alignmentWinRates =
     o.alignmentWinRates || alignmentRowsToWinRateMap(o.setupStats);
   const factions = o.factions || Object.keys(alignmentWinRates);
+  const isTwoFaction = factions.length === 2;
 
   const result = factions.map((faction) => {
     const observed = winRateFromAlignmentEntries(alignmentWinRates[faction]);
@@ -247,9 +248,13 @@ function computeSoloPayoutsForSetup(opts) {
       ? DEFAULT_MAJOR_WR
       : DEFAULT_INDEPENDENT_WR;
     const lowSampleSize = games < MIN_FORTUNE_GAMES;
-    const exact = lowSampleSize
+    let exact = lowSampleSize
       ? LOW_SAMPLE_PAYOUT
       : soloPayout(faction, winrate, K);
+    // Match computeFactionFortunePoints: solo display clamps in 2-faction setups.
+    if (isTwoFaction) {
+      exact = Math.max(TWO_FACTION_MIN, Math.min(TWO_FACTION_MAX, exact));
+    }
     return {
       faction,
       isMajor: isMajorFaction(faction),
