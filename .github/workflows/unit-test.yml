@@ -61,12 +61,13 @@ jobs:
       - name: Install Packages
         run: npm install
       - name: Unit Test
-        # Exclude Spymaster suite: known parallel-mocha heap OOM (~4GB) on GHA that
-        # kills workers and cascades into titlePath reporting crashes.
-        run: npx mocha --recursive --parallel --exit --exclude 'test/Games/Mafia/Spymaster.test.js'
+        # Serial mocha + higher heap: parallel workers were OOMing (~4–6GB each)
+        # on GHA and cascading into titlePath crashes. Exclude Spymaster suite
+        # (known state-machine flake + heavy).
+        run: npx mocha --recursive --exit --exclude 'test/Games/Mafia/Spymaster.test.js'
         env:
           NODE_ENV: development
-          NODE_OPTIONS: --max-old-space-size=6144
+          NODE_OPTIONS: --max-old-space-size=8192
           PORT: 3000
           UPLOAD_PATH: uploads
           BASE_URL: http://localhost:3001
