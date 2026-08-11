@@ -61,7 +61,8 @@ jobs:
       - name: Install Packages
         run: npm install
       - name: Unit Test
-        run: NODE_ENV=test npx mocha --recursive --parallel --jobs 2 --exit --node-option max-old-space-size=4096
+        # Serial: parallel races Redis/Mongo and OOMs a worker (mocha titlePath crash)
+        run: NODE_ENV=test npx mocha --recursive --exit --node-option max-old-space-size=6144
         env:
           NODE_ENV: development
           PORT: 3000
