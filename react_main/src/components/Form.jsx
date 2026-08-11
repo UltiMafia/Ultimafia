@@ -8,6 +8,7 @@ import { useOnOutsideClick } from "./Basic";
 import { useErrorAlert } from "./Alerts";
 import DeckPicker from "./DeckPicker";
 import WordDeckPicker from "./WordDeckPicker";
+import DeathSoundUpload from "./DeathSoundUpload";
 
 import "react-mde/lib/styles/css/react-mde.css";
 import "react-mde/lib/styles/css/react-mde-editor.css";
@@ -365,6 +366,38 @@ export default function Form({
                   </Stack>
                 </Stack>
               </Stack>
+            </FormField>
+          );
+        case "deathSoundUpload":
+          return (
+            <FormField
+              field={field}
+              deps={deps}
+              compact={compact}
+              key={field.ref}
+            >
+              <DeathSoundUpload
+                disabled={disabled}
+                hasDeathSound={!!deps?.user?.deathSound}
+                deathSoundUrl={
+                  deps?.user?.deathSound
+                    ? `/uploads/${deps.user.id}_deathSound.${
+                        deps.user.deathSoundExt || "ogg"
+                      }`
+                    : null
+                }
+                cacheVal={deps?.siteInfo?.cacheVal}
+                onUpload={async (file, durationSeconds) => {
+                  if (field.onDeathSoundUpload) {
+                    await field.onDeathSoundUpload(file, durationSeconds, deps);
+                  }
+                }}
+                onRemove={async () => {
+                  if (field.onDeathSoundRemove) {
+                    await field.onDeathSoundRemove(deps);
+                  }
+                }}
+              />
             </FormField>
           );
         case "number":

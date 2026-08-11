@@ -1324,6 +1324,35 @@ router.post("/clearUserContent", async (req, res) => {
         }
         break;
 
+      case "deathSound":
+        // Same effect as the user clicking Remove on their death sound
+        updateQuery = {
+          $set: {
+            deathSound: false,
+            deathSoundExt: "ogg",
+          },
+        };
+        modActionName = "Clear Death Sound";
+        {
+          const uploadPath = process.env.UPLOAD_PATH;
+          const exts =
+            constants.deathSoundAllowedExts || ["mp3", "ogg", "wav", "webm"];
+          for (const ext of exts) {
+            const deathSoundPath = `${uploadPath}/${userIdToClear}_deathSound.${ext}`;
+            if (fs.existsSync(deathSoundPath)) {
+              additionalOperations.push(
+                new Promise((resolve, reject) => {
+                  fs.unlink(deathSoundPath, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                  });
+                })
+              );
+            }
+          }
+        }
+        break;
+
       case "all":
         updateQuery = {
           $set: {
@@ -1333,6 +1362,8 @@ router.post("/clearUserContent", async (req, res) => {
             donorBio: "",
             customEmotes: [],
             profileBackground: false,
+            deathSound: false,
+            deathSoundExt: "ogg",
           },
         };
         modActionName = "Clear All User Content";
@@ -1347,6 +1378,24 @@ router.post("/clearUserContent", async (req, res) => {
               });
             })
           );
+        }
+        {
+          const uploadPathAll = process.env.UPLOAD_PATH;
+          const deathExts =
+            constants.deathSoundAllowedExts || ["mp3", "ogg", "wav", "webm"];
+          for (const ext of deathExts) {
+            const deathSoundPathAll = `${uploadPathAll}/${userIdToClear}_deathSound.${ext}`;
+            if (fs.existsSync(deathSoundPathAll)) {
+              additionalOperations.push(
+                new Promise((resolve, reject) => {
+                  fs.unlink(deathSoundPathAll, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                  });
+                })
+              );
+            }
+          }
         }
         additionalOperations.push(
           models.CustomEmote.updateMany(

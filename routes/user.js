@@ -1763,6 +1763,308 @@ router.post("/deathMessage", async function (req, res) {
   }
 });
 
+function removeUserDeathSoundFiles(userId) {
+  const uploadPath = process.env.UPLOAD_PATH;
+  if (!uploadPath) return;
+  for (const ext of constants.deathSoundAllowedExts) {
+    const p = `${uploadPath}/${userId}_deathSound.${ext}`;
+    try {
+      if (fs.existsSync(p)) fs.unlinkSync(p);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+}
+
+function deathSoundExtFromMime(mime, originalName) {
+  const m = (mime || "").toLowerCase();
+  if (m.includes("mpeg") || m === "audio/mp3") return "mp3";
+  if (m.includes("ogg") || m.includes("opus")) return "ogg";
+  if (m.includes("wav") || m.includes("wave")) return "wav";
+  if (m.includes("webm")) return "webm";
+  const name = String(originalName || "").toLowerCase();
+  const match = name.match(/\.([a-z0-9]+)$/);
+  if (match && constants.deathSoundAllowedExts.includes(match[1])) {
+    return match[1];
+  }
+  return null;
+}
+
+/**
+ * Best-effort duration (seconds) from raw audio bytes.
+ * Supports WAV (fmt+data), Ogg/WebM (crude granule/duration tags), MP3 (frame scan).
+ * Returns null when duration cannot be determined.
+ */
+function estimateAudioDurationSeconds(buffer, ext) {
+  if (!buffer || buffer.length < 16) return null;
+  try {
+    if (ext === "wav") {
+      // RIFF....WAVE
+      if (buffer.toString("ascii", 0, 4) !== "RIFF") return null;
+      let offset = 12;
+      let sampleRate = 0;
+      let byteRate = 0;
+      let dataSize = 0;
+      while (offset + 8 <= buffer.length) {
+        const chunkId = buffer.toString("ascii", offset, offset + 4);
+        const chunkSize = buffer.readUInt32LE(offset + 4);
+        if (chunkId === "fmt " && chunkSize >= 16) {
+          sampleRate = buffer.readUInt32LE(offset + 12);
+          byteRate = buffer.readUInt32LE(offset + 16);
+        } else if (chunkId === "data") {
+          dataSize = chunkSize;
+        }
+        offset += 8 + chunkSize + (chunkSize % 2);
+      }
+      if (byteRate > 0 && dataSize > 0) return dataSize / byteRate;
+      if (sampleRate > 0 && dataSize > 0) return dataSize / (sampleRate * 2);
+      return null;
+    }
+
+    if (ext === "mp3") {
+      // Skip ID3v2
+      let i = 0;
+      if (
+        buffer.length > 10 &&
+        buffer.toString("ascii", 0, 3) === "ID3"
+      ) {
+        const size =
+          ((buffer[6] & 0x7f) << 21) |
+          ((buffer[7] & 0x7f) << 14) |
+          ((buffer[8] & 0x7f) << 7) |
+          (buffer[9] & 0x7f);
+        i = 10 + size;
+      }
+      // Scan first MPEG frame for bitrate/sample-rate; estimate from file size
+      const bitrateTable = {
+        // MPEG1 Layer3
+        1: [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0],
+        // MPEG2/2.5 Layer3
+        2: [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160, 0],
+      };
+      const sampleRateTable = {
+        1: [44100, 48000, 32000],
+        2: [22050, 24000, 16000],
+        25: [11025, 12000, 8000],
+      };
+      while (i + 4 < buffer.length && i < 8192) {
+        if (buffer[i] === 0xff && (buffer[i + 1] & 0xe0) === 0xe0) {
+          const verBits = (buffer[i + 1] >> 3) & 0x3;
+          const layerBits = (buffer[i + 1] >> 1) & 0x3;
+          const bitrateIdx = (buffer[i + 2] >> 4) & 0xf;
+          const srIdx = (buffer[i + 2] >> 2) & 0x3;
+          if (layerBits !== 1 || bitrateIdx === 0 || bitrateIdx === 15 || srIdx === 3) {
+            i++;
+            continue;
+          }
+          let verKey = 1;
+          let srKey = 1;
+          if (verBits === 3) {
+            verKey = 1;
+            srKey = 1;
+          } else if (verBits === 2) {
+            verKey = 2;
+            srKey = 2;
+          } else if (verBits === 0) {
+            verKey = 2;
+            srKey = 25;
+          } else {
+            i++;
+            continue;
+          }
+          const bitrate = bitrateTable[verKey][bitrateIdx] * 1000;
+          const sampleRate = sampleRateTable[srKey][srIdx];
+          if (bitrate > 0 && sampleRate > 0) {
+            // Approximate duration from remaining payload
+            return ((buffer.length - i) * 8) / bitrate;
+          }
+        }
+        i++;
+      }
+      return null;
+    }
+
+    if (ext === "ogg") {
+      // Look for first OggS page with sample rate from Opus/Vorbis ident
+      // Fallback: crude estimate not available without demux; return null
+      return null;
+    }
+
+    if (ext === "webm") {
+      return null;
+    }
+  } catch (e) {
+    return null;
+  }
+  return null;
+}
+
+router.post("/deathSound", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const itemsOwned = await redis.getUserItemsOwned(userId);
+
+    if (!itemsOwned.deathSoundEnabled) {
+      errors.forbidden(
+        res,
+        "You must purchase Custom Death Sound from the Shop."
+      );
+      return;
+    }
+
+    const form = new formidable();
+    form.maxFileSize = constants.maxDeathSoundBytes;
+    form.maxFields = 5;
+
+    const [fields, files] = await form.parseAsync(req);
+    const file =
+      files.file && (Array.isArray(files.file) ? files.file[0] : files.file);
+    const filePath = file?.filepath || file?.path;
+    if (!filePath) {
+      errors.badRequest(res, "No audio file uploaded.");
+      return;
+    }
+
+    const mime = (file.type || file.mimetype || "").toLowerCase();
+    const originalName = file.name || file.originalFilename || "";
+    const ext = deathSoundExtFromMime(mime, originalName);
+    if (!ext || !constants.deathSoundAllowedExts.includes(ext)) {
+      errors.badRequest(
+        res,
+        "Death sound must be an mp3, ogg, or wav file (webm from the in-browser trimmer is also accepted)."
+      );
+      return;
+    }
+
+    const buffer = fs.readFileSync(filePath);
+    if (!buffer.length) {
+      errors.badRequest(res, "Uploaded file is empty.");
+      return;
+    }
+    if (buffer.length > constants.maxDeathSoundBytes) {
+      errors.payloadTooLarge(
+        res,
+        "Death sound must be less than 10 MB."
+      );
+      return;
+    }
+
+    // Client sends durationSeconds after trim; also estimate when possible
+    const clientDuration = parseFloat(
+      String(
+        (fields.durationSeconds &&
+          (Array.isArray(fields.durationSeconds)
+            ? fields.durationSeconds[0]
+            : fields.durationSeconds)) ||
+          ""
+      )
+    );
+    const estimated = estimateAudioDurationSeconds(buffer, ext);
+    const duration =
+      Number.isFinite(clientDuration) && clientDuration > 0
+        ? clientDuration
+        : estimated;
+
+    if (
+      duration != null &&
+      duration > constants.maxDeathSoundSeconds + 0.15
+    ) {
+      errors.badRequest(
+        res,
+        `Death sound must be at most ${constants.maxDeathSoundSeconds} seconds long.`
+      );
+      return;
+    }
+
+    // If we cannot measure duration and file is large, reject as a soft guard
+    // (client should always send a trimmed short clip after the editor dialog)
+    if (duration == null && buffer.length > 2 * 1024 * 1024) {
+      errors.badRequest(
+        res,
+        "Could not verify audio duration. Trim to 5 seconds in the editor, then upload again."
+      );
+      return;
+    }
+
+    const uploadPath = process.env.UPLOAD_PATH;
+    if (!uploadPath) {
+      errors.serverError(res, "Upload path is not configured.");
+      return;
+    }
+    if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath);
+
+    const tempPath = `${uploadPath}/${userId}_deathSound.${ext}.tmp`;
+    const finalPath = `${uploadPath}/${userId}_deathSound.${ext}`;
+    try {
+      fs.writeFileSync(tempPath, buffer);
+      removeUserDeathSoundFiles(userId);
+      fs.renameSync(tempPath, finalPath);
+
+      await models.User.updateOne(
+        { id: userId },
+        {
+          $set: {
+            deathSound: true,
+            deathSoundExt: ext,
+          },
+        }
+      ).exec();
+      await redis.cacheUserInfo(userId, true);
+
+      res.send({
+        success: true,
+        deathSound: true,
+        deathSoundExt: ext,
+        url: `/uploads/${userId}_deathSound.${ext}`,
+      });
+    } finally {
+      try {
+        if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+      } catch (cleanupErr) {
+        /* ignore */
+      }
+    }
+  } catch (e) {
+    if (e.message && e.message.indexOf("maxFileSize exceeded") === 0) {
+      errors.payloadTooLarge(res, "Death sound must be less than 10 MB.");
+      return;
+    }
+    logger.error(e);
+    errors.serverError(res, "Could not upload death sound. Please try again.");
+  }
+});
+
+router.delete("/deathSound", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const itemsOwned = await redis.getUserItemsOwned(userId);
+
+    if (!itemsOwned.deathSoundEnabled) {
+      errors.forbidden(
+        res,
+        "You must purchase Custom Death Sound from the Shop."
+      );
+      return;
+    }
+
+    removeUserDeathSoundFiles(userId);
+    await models.User.updateOne(
+      { id: userId },
+      {
+        $set: {
+          deathSound: false,
+          deathSoundExt: "ogg",
+        },
+      }
+    ).exec();
+    await redis.cacheUserInfo(userId, true);
+    res.send({ success: true, deathSound: false });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not remove death sound. Please try again.");
+  }
+});
+
 // Vanity URL routes moved to /api/vanityUrl
 
 router.post("/customEmote/create", async function (req, res) {
@@ -1981,6 +2283,7 @@ router.post("/settings/update", async function (req, res) {
       "hideCompetitiveModal",
       "ignoreTextColor",
       "accessibleNameColors",
+      "ignoreDeathSounds",
     ]);
     if (BOOLEAN_SETTINGS.has(prop)) {
       value = value === true || value === "true";
