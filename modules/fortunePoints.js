@@ -310,6 +310,19 @@ function computeSoloPayoutsForSetup(opts) {
     };
   });
 
+  // Two-faction setups clamp display/solo payouts into [50, 70] once samples
+  // are large enough (same rule as computeFactionFortunePoints for winners).
+  if (factions.length === 2) {
+    for (const row of result) {
+      if (row.lowSampleSize) continue;
+      row.soloPayoutExact = Math.max(
+        TWO_FACTION_MIN,
+        Math.min(TWO_FACTION_MAX, row.soloPayoutExact)
+      );
+      row.soloPayout = Math.round(row.soloPayoutExact);
+    }
+  }
+
   result.sort((a, b) => {
     if (a.isMajor !== b.isMajor) return a.isMajor ? -1 : 1;
     return a.faction.localeCompare(b.faction);
