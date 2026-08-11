@@ -8,10 +8,20 @@ const Random = require("./../lib/Random");
 const utils = require("../lib/Utils");
 const dateOnly = require("../lib/dateOnly");
 
-var client = redis.createClient({ url: "redis://redis:6379" });
+// Prefer REDIS_URL when set (CI maps the service to localhost; compose uses hostname "redis").
+const redisUrl = process.env.REDIS_URL || "redis://redis:6379";
+var client = redis.createClient({ url: redisUrl });
 
+// Do not throw from the error handler: under parallel mocha a transient DNS/connect
+// blip (EAI_AGAIN) would otherwise kill the worker and surface as titlePath crashes.
 client.on("error", (e) => {
-  throw e;
+  try {
+    // logging module may not be safe during early require; fail soft
+    const logger = require("./logging")("redis");
+    logger.error(e);
+  } catch (logErr) {
+    console.error("redis error:", e && e.message ? e.message : e);
+  }
 });
 client.select(process.env.REDIS_DB || 0);
 
