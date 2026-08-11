@@ -61,7 +61,7 @@ jobs:
       - name: Install Packages
         run: npm install
       - name: Unit Test
-        run: NODE_ENV=test npx mocha --recursive --parallel --jobs 1 --exit --node-option max-old-space-size=6144
+        run: NODE_ENV=test npx mocha --recursive --parallel --jobs 2 --exit --node-option max-old-space-size=4096
         env:
           NODE_ENV: development
           PORT: 3000
