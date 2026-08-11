@@ -220,3 +220,43 @@ export const CHANGELOG = [
 ];
 
 export default CHANGELOG;
+
+/** localStorage key: last changelog release id the user dismissed */
+export const CHANGELOG_SEEN_STORAGE_KEY = "ultimafia:changelog:lastSeenId";
+
+export function getLatestChangelogId() {
+  return CHANGELOG[0]?.id || null;
+}
+
+/**
+ * Releases the user has not dismissed yet.
+ * - Never visited: only the latest entry (no history dump)
+ * - Last seen is current latest: empty
+ * - Last seen is older id: all entries above that id
+ * - Unknown last-seen id (reset data): latest only
+ */
+export function getUnseenChangelogReleases(lastSeenId) {
+  if (!CHANGELOG.length) return [];
+  if (!lastSeenId) return [CHANGELOG[0]];
+  const idx = CHANGELOG.findIndex((r) => r.id === lastSeenId);
+  if (idx === 0) return [];
+  if (idx === -1) return [CHANGELOG[0]];
+  return CHANGELOG.slice(0, idx);
+}
+
+export function markChangelogSeen(releaseId) {
+  if (!releaseId) return;
+  try {
+    window.localStorage.setItem(CHANGELOG_SEEN_STORAGE_KEY, releaseId);
+  } catch {
+    // private mode / blocked storage
+  }
+}
+
+export function readChangelogSeenId() {
+  try {
+    return window.localStorage.getItem(CHANGELOG_SEEN_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}

@@ -39,6 +39,7 @@ import { CompetitiveRounds } from "./CompetitiveRounds";
 import { getRowStubColor } from "./gameRowColors.js";
 
 import { lobbies } from "../../../constants/lobbies";
+import ChangelogPopup from "components/ChangelogPopup";
 
 export default function LobbyBrowser() {
   const isPhoneDevice = useIsPhoneDevice();
@@ -270,7 +271,9 @@ export default function LobbyBrowser() {
   );
 
   return (
-    <Stack direction="column" spacing={1}>
+    <>
+      <ChangelogPopup enabled={user.loaded && user.loggedIn} />
+      <Stack direction="column" spacing={1}>
       {lobbyTabs}
       <Grid2 container rowSpacing={2} columnSpacing={2}>
         <Grid2 size={{ xs: 12, md: 8 }}>
@@ -313,5 +316,6 @@ export default function LobbyBrowser() {
         </Grid2>
       </Grid2>
     </Stack>
+    </>
   );
 }
