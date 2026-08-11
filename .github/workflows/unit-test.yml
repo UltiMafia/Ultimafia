@@ -61,7 +61,8 @@ jobs:
       - name: Install Packages
         run: npm install
       - name: Unit Test
-        run: npm run test
+        # Serial mocha: --parallel was cascading uncaught worker errors into flaky failures
+        run: NODE_ENV=test npx mocha --recursive --exit
         env:
           NODE_ENV: development
           PORT: 3000
