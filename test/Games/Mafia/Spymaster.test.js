@@ -79,21 +79,15 @@ function getRoles(game) {
   return roles;
 }
 
-function waitForResult(check, timeoutMs) {
-  timeoutMs = timeoutMs || 8000;
+function waitForResult(check) {
   return new Promise((resolve, reject) => {
-    const start = Date.now();
     var interval = setInterval(() => {
       try {
         if (check()) {
           clearInterval(interval);
           resolve();
-        } else if (Date.now() - start > timeoutMs) {
-          clearInterval(interval);
-          reject(new Error("waitForResult timed out after " + timeoutMs + "ms"));
         }
       } catch (e) {
-        clearInterval(interval);
         reject(e);
       }
     }, 100);
@@ -108,7 +102,7 @@ function waitForState(game, statePattern) {
 }
 
 describe("Games/Mafia/Spymaster", function () {
-  it.skip("activates ResistanceMode and suppresses Village and faction Kill meetings", async function () {
+  it("activates ResistanceMode and suppresses Village and faction Kill meetings", async function () {
     await db.promise;
     await redis.client.flushdbAsync();
 
@@ -130,7 +124,7 @@ describe("Games/Mafia/Spymaster", function () {
     noKill.shouldDisableMeeting("Mafia Action").should.be.false;
   });
 
-  it.skip("skips Team Approval and Mission without Spymaster", async function () {
+  it("skips Team Approval and Mission without Spymaster", async function () {
     await db.promise;
     await redis.client.flushdbAsync();
 
@@ -141,14 +135,23 @@ describe("Games/Mafia/Spymaster", function () {
     await waitForResult(() => game.started);
 
     game.ResistanceMode.should.not.be.true;
-    // Mission states are only registered when Spymaster (MissionGame) is present.
     game.shouldSkipState("Team Approval").should.be.true;
     game.shouldSkipState("Mission").should.be.true;
-    should.not.exist(game.states.find((s) => s.name === "Team Approval"));
-    should.not.exist(game.states.find((s) => s.name === "Mission"));
+
+    const teamApproval = game.states.find((s) => s.name === "Team Approval");
+    const mission = game.states.find((s) => s.name === "Mission");
+    teamApproval.skipChecks[0].call(game).should.be.true;
+    mission.skipChecks[0].call(game).should.be.true;
+
+    game.ResistanceMode = true;
+    teamApproval.skipChecks[0].call(game).should.be.false;
+    mission.skipChecks[0].call(game).should.be.false;
+
+    game.currentTeamFail = true;
+    mission.skipChecks[0].call(game).should.be.true;
   });
 
-  it.skip("skips Day and runs Team Approval after Dawn", async function () {
+  it("skips Day and runs Team Approval after Dawn", async function () {
     await db.promise;
     await redis.client.flushdbAsync();
 
@@ -162,7 +165,7 @@ describe("Games/Mafia/Spymaster", function () {
     game.getStateName().should.match(/Team Approval/);
   });
 
-  it.skip("gives the current leader Assemble Team at Night", async function () {
+  it("gives the current leader Assemble Team at Night", async function () {
     await db.promise;
     await redis.client.flushdbAsync();
 
@@ -179,7 +182,7 @@ describe("Games/Mafia/Spymaster", function () {
     }
   });
 
-  it.skip("records mission score on success and failure", async function () {
+  it("records mission score on success and failure", async function () {
     await db.promise;
     await redis.client.flushdbAsync();
 

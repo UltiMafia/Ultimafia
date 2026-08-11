@@ -50,11 +50,7 @@ describe("DrawIt Game class basics", () => {
 
   it("checkWinConditions returns [false] when rounds incomplete", () => {
     const game = makeBareGame();
-    // End detection uses drawingHistory.length vs roundAmt * turnOrder.length.
-    // Empty turnOrder would make totalTurns 0 and look "complete".
-    game.players = [{ name: "A", getScore: () => 0 }];
-    game.turnOrder = game.players;
-    game.drawingHistory = [];
+    game.players = [];
     const [done] = game.checkWinConditions();
     expect(done).to.equal(false);
   });

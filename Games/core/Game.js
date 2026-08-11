@@ -266,17 +266,9 @@ module.exports = class Game {
   }
 
   broadcast(eventName, data) {
-    for (let player of this.players) {
-      if (player && typeof player.send === "function") {
-        player.send(eventName, data);
-      }
-    }
+    for (let player of this.players) player.send(eventName, data);
 
-    for (let spectator of this.spectators || []) {
-      if (spectator && typeof spectator.send === "function") {
-        spectator.send(eventName, data);
-      }
-    }
+    for (let spectator of this.spectators) spectator.send(eventName, data);
   }
 
   sendAlert(message, recipients, extraStyle = {}, tags = []) {

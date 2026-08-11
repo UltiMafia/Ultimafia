@@ -61,8 +61,7 @@ jobs:
       - name: Install Packages
         run: npm install
       - name: Unit Test
-        # Serial: parallel races Redis/Mongo and OOMs a worker (mocha titlePath crash)
-        run: NODE_ENV=test npx mocha --recursive --exit --node-option max-old-space-size=6144
+        run: npm run test
         env:
           NODE_ENV: development
           PORT: 3000
@@ -81,7 +80,6 @@ jobs:
           MONGO_USER: admin
           MONGO_PW: password
           REDIS_DB: 0
-          REDIS_URL: redis://127.0.0.1:6379
           FIREBASE_API_KEY: x
           FIREBASE_AUTH_DOMAIN: x
           FIREBASE_PROJECT_ID: x
@@ -99,3 +97,4 @@ jobs:
           REPORT_DISCORD_WEBHOOK: '[{"boards": ["boardShortId"], "hook": "discordWebhookUrl"}]'
           #optional - dev use only
           DEV_USERNAME: x
+          DISCORD_ERROR_HOOK: '{"hook": "a"}'

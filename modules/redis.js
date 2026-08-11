@@ -8,9 +8,7 @@ const Random = require("./../lib/Random");
 const utils = require("../lib/Utils");
 const dateOnly = require("../lib/dateOnly");
 
-// Prefer REDIS_URL (CI maps redis service to 127.0.0.1). Docker keeps host "redis".
-const redisUrl = process.env.REDIS_URL || "redis://redis:6379";
-var client = redis.createClient({ url: redisUrl });
+var client = redis.createClient({ url: "redis://redis:6379" });
 
 client.on("error", (e) => {
   throw e;
