@@ -11,9 +11,6 @@ module.exports = class MissionGame extends Card {
       return;
     }
 
-    // Listeners are bound to Role (Role.js); capture card for methods on this class.
-    const card = this;
-
     this.listeners = {
       roleAssigned: function (player) {
         if (this.player !== player) {
@@ -49,7 +46,7 @@ module.exports = class MissionGame extends Card {
 
         this.game.leaderIndex = Random.randInt(0, this.game.players.length - 1);
 
-        card.registerMissionStates();
+        this.registerMissionStates();
 
         for (let p of this.game.players) {
           p.holdItem("NoVillageMeeting");
