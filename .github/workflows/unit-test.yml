@@ -80,6 +80,8 @@ jobs:
           MONGO_USER: admin
           MONGO_PW: password
           REDIS_DB: 0
+          # Host port map; avoid hostname DNS flakes (EAI_AGAIN redis)
+          REDIS_URL: redis://127.0.0.1:6379
           FIREBASE_API_KEY: x
           FIREBASE_AUTH_DOMAIN: x
           FIREBASE_PROJECT_ID: x

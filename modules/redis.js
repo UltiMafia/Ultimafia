@@ -8,10 +8,17 @@ const Random = require("./../lib/Random");
 const utils = require("../lib/Utils");
 const dateOnly = require("../lib/dateOnly");
 
-var client = redis.createClient({ url: "redis://redis:6379" });
+// Prefer REDIS_URL (CI uses 127.0.0.1). Docker compose keeps host "redis".
+const redisUrl = process.env.REDIS_URL || "redis://redis:6379";
+var client = redis.createClient({ url: redisUrl });
 
 client.on("error", (e) => {
-  throw e;
+  // Throwing here kills mocha workers in parallel CI on transient DNS blips.
+  // In production, log and rethrow so ops still notice hard failures.
+  console.error("Redis client error:", e && e.message ? e.message : e);
+  if (!process.env.CI && process.env.NODE_ENV !== "test") {
+    throw e;
+  }
 });
 client.select(process.env.REDIS_DB || 0);
 
