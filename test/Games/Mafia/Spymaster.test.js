@@ -79,15 +79,21 @@ function getRoles(game) {
   return roles;
 }
 
-function waitForResult(check) {
+function waitForResult(check, timeoutMs) {
+  timeoutMs = timeoutMs || 8000;
   return new Promise((resolve, reject) => {
+    const start = Date.now();
     var interval = setInterval(() => {
       try {
         if (check()) {
           clearInterval(interval);
           resolve();
+        } else if (Date.now() - start > timeoutMs) {
+          clearInterval(interval);
+          reject(new Error("waitForResult timed out after " + timeoutMs + "ms"));
         }
       } catch (e) {
+        clearInterval(interval);
         reject(e);
       }
     }, 100);
@@ -135,20 +141,11 @@ describe("Games/Mafia/Spymaster", function () {
     await waitForResult(() => game.started);
 
     game.ResistanceMode.should.not.be.true;
+    // Mission states are only registered when Spymaster (MissionGame) is present.
     game.shouldSkipState("Team Approval").should.be.true;
     game.shouldSkipState("Mission").should.be.true;
-
-    const teamApproval = game.states.find((s) => s.name === "Team Approval");
-    const mission = game.states.find((s) => s.name === "Mission");
-    teamApproval.skipChecks[0].call(game).should.be.true;
-    mission.skipChecks[0].call(game).should.be.true;
-
-    game.ResistanceMode = true;
-    teamApproval.skipChecks[0].call(game).should.be.false;
-    mission.skipChecks[0].call(game).should.be.false;
-
-    game.currentTeamFail = true;
-    mission.skipChecks[0].call(game).should.be.true;
+    should.not.exist(game.states.find((s) => s.name === "Team Approval"));
+    should.not.exist(game.states.find((s) => s.name === "Mission"));
   });
 
   it("skips Day and runs Team Approval after Dawn", async function () {
