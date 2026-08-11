@@ -61,9 +61,12 @@ jobs:
       - name: Install Packages
         run: npm install
       - name: Unit Test
-        run: npm run test
+        # Cap parallel workers + raise heap so mocha workers don't OOM mid-suite
+        # (heap ~4GB was observed under default --parallel on GHA).
+        run: npx mocha --recursive --parallel --jobs 2 --exit
         env:
-          NODE_ENV: development
+          NODE_ENV: test
+          NODE_OPTIONS: --max-old-space-size=6144
           PORT: 3000
           UPLOAD_PATH: uploads
           BASE_URL: http://localhost:3001

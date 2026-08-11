@@ -431,8 +431,10 @@ module.exports = class DrawItGame extends Game {
     // checkGameEnd) rather than currentRound. currentRound only ticks at
     // the start of a new round's Pick, which would be too late — the game
     // would otherwise spill into an extra Pick state and display N+1/N.
-    const totalTurns = this.roundAmt * this.turnOrder.length;
-    if (this.drawingHistory.length < totalTurns) {
+    const totalTurns = this.roundAmt * (this.turnOrder?.length || 0);
+    // No turn order yet (pregame / empty players) is never a finished game —
+    // totalTurns === 0 would otherwise treat drawingHistory.length < 0 as false.
+    if (!totalTurns || this.drawingHistory.length < totalTurns) {
       return [false, undefined];
     }
 
