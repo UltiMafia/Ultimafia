@@ -61,13 +61,9 @@ jobs:
       - name: Install Packages
         run: npm install
       - name: Unit Test
-        # Serial mocha + higher heap: parallel workers were OOMing (~4–6GB each)
-        # on GHA and cascading into titlePath crashes. Exclude Spymaster suite
-        # (known state-machine flake + heavy).
-        run: npx mocha --recursive --exit --exclude 'test/Games/Mafia/Spymaster.test.js'
+        run: npm run test
         env:
           NODE_ENV: development
-          NODE_OPTIONS: --max-old-space-size=8192
           PORT: 3000
           UPLOAD_PATH: uploads
           BASE_URL: http://localhost:3001
@@ -84,8 +80,6 @@ jobs:
           MONGO_USER: admin
           MONGO_PW: password
           REDIS_DB: 0
-          # Prefer localhost for GHA service port mapping (avoids EAI_AGAIN on hostname "redis")
-          REDIS_URL: redis://127.0.0.1:6379
           FIREBASE_API_KEY: x
           FIREBASE_AUTH_DOMAIN: x
           FIREBASE_PROJECT_ID: x
