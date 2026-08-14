@@ -283,7 +283,41 @@ function Overview({ roundInfo, seasonInfo }) {
                 <Typography variant="h3">Round {i + 1}</Typography>
                 {roundSetups.map((setupNumber) => {
                   const setup = seasonInfo.setups[setupNumber];
-                  return <Setup setup={setup} key={setup.id} />;
+                  // Only show play counts for the currently selected/viewed round
+                  const isViewedRound =
+                    roundInfo.round && i + 1 === roundInfo.round.number;
+                  const playCount = isViewedRound
+                    ? roundInfo.setupPlayCounts?.[setup.id] ?? 0
+                    : null;
+                  return (
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      key={setup.id}
+                      sx={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: "100%",
+                      }}
+                    >
+                      <Setup setup={setup} />
+                      {playCount !== null && (
+                        <Tooltip title="Completed games this round">
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{
+                              lineHeight: 1,
+                              whiteSpace: "nowrap",
+                              fontVariantNumeric: "tabular-nums",
+                            }}
+                          >
+                            {playCount}
+                          </Typography>
+                        </Tooltip>
+                      )}
+                    </Stack>
+                  );
                 })}
               </Stack>
             </Grid2>
