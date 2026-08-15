@@ -661,6 +661,9 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
     round: null,
     allowedSetups: [],
     gameCompletions: [],
+    // setupId -> number of completed competitive games this round
+    // (unique games only; excludes veg/broken/refunded/invalid)
+    setupPlayCounts: {},
     standings: [],
     users: {},
     nextEvent: null,
@@ -788,6 +791,20 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
   for (let gameCompletion of roundInfo.gameCompletions) {
     gameCompletion.game.status = "Finished";
   }
+
+  // Count completed games per setup for the selected round.
+  // gameCompletions is already unique-by-game and valid:true only, and
+  // CompetitiveGameCompletion is only written when a competitive game finishes
+  // without being demoted (veg/leave integrity break).
+  const setupPlayCounts = {};
+  for (const gameCompletion of roundInfo.gameCompletions) {
+    const setup = gameCompletion.game && gameCompletion.game.setup;
+    if (!setup) continue;
+    const setupId = setup.id || String(setup._id);
+    if (!setupId) continue;
+    setupPlayCounts[setupId] = (setupPlayCounts[setupId] || 0) + 1;
+  }
+  roundInfo.setupPlayCounts = setupPlayCounts;
 
   // Accumulate points by user ID
   for (const gameCompletion of roundInfo.gameCompletions) {
