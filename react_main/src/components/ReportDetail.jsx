@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
+  FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
@@ -28,7 +29,23 @@ import { NameWithAvatar } from "pages/User/User";
 import { UserContext, SiteInfoContext } from "../Contexts";
 import ReportTypology from "./ReportTypology";
 import { useViolations } from "../hooks/useViolations";
-import RapSheet from "./RapSheet";
+import RapSheet, { getViolationBaseName } from "./RapSheet";
+
+const MAX_OFFENSE_NUMBER = 10;
+
+function nextOffenseNumberForRule(reports, ruleName) {
+  if (!ruleName) return 1;
+  const activeCount = (reports || []).filter((entry) => {
+    const ticket = entry.violationTicket;
+    if (!ticket) return false;
+    if (ticket.status !== "active" && ticket.status !== "permanent") {
+      return false;
+    }
+    const ticketName = ticket.violationName || entry.finalRuling?.violationName;
+    return getViolationBaseName(ticketName) === ruleName;
+  }).length;
+  return Math.min(activeCount + 1, MAX_OFFENSE_NUMBER);
+}
 
 export default function ReportDetail({
   report: initialReport,
@@ -49,6 +66,58 @@ export default function ReportDetail({
   });
   const [handlingAppeal, setHandlingAppeal] = useState(false);
   const [appealNotes, setAppealNotes] = useState("");
+  const [reportedUserReports, setReportedUserReports] = useState([]);
+  const offenseOverrideRef = useRef(false);
+  const claimingAppealRef = useRef(false);
+
+  useEffect(() => {
+    if (!showCompleteDialog || !report?.reportedUserId) {
+      return;
+    }
+
+    let cancelled = false;
+    axios
+      .get(`/api/user/${report.reportedUserId}/reports`)
+      .then((res) => {
+        if (!cancelled) {
+          setReportedUserReports(res.data.reports || []);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setReportedUserReports([]);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [showCompleteDialog, report?.reportedUserId]);
+
+  useEffect(() => {
+    if (showCompleteDialog) {
+      offenseOverrideRef.current = false;
+    }
+  }, [showCompleteDialog]);
+
+  useEffect(() => {
+    claimingAppealRef.current = false;
+  }, [report?.id]);
+
+  useEffect(() => {
+    if (!finalRuling.rule || offenseOverrideRef.current) {
+      return;
+    }
+    const nextOffenseNumber = nextOffenseNumberForRule(
+      reportedUserReports,
+      finalRuling.rule
+    );
+    setFinalRuling((prev) =>
+      prev.offenseNumber === nextOffenseNumber
+        ? prev
+        : { ...prev, offenseNumber: nextOffenseNumber }
+    );
+  }, [reportedUserReports, finalRuling.rule]);
 
   // Update report state when initialReport changes
   useEffect(() => {
@@ -62,6 +131,10 @@ export default function ReportDetail({
   const errorAlert = useErrorAlert();
   const navigate = useNavigate();
   const { violationDefinitions, loading: violationsLoading } = useViolations();
+  const suggestedOffenseNumber = nextOffenseNumberForRule(
+    reportedUserReports,
+    finalRuling.rule
+  );
 
   const handleStatusChange = async (newStatus) => {
     try {
@@ -69,10 +142,25 @@ export default function ReportDetail({
         status: newStatus,
       });
       setStatus(newStatus);
-      setReport({ ...report, status: newStatus });
+      let nextAssignees = report.assignees || [];
+      if (newStatus === "in-progress" && user.id) {
+        const hasOtherAssignees = nextAssignees.some((id) => id !== user.id);
+        nextAssignees = hasOtherAssignees
+          ? [user.id]
+          : nextAssignees.includes(user.id)
+          ? nextAssignees
+          : [...nextAssignees, user.id];
+        setAssignees(nextAssignees);
+      }
+      setReport({
+        ...report,
+        status: newStatus,
+        assignees: nextAssignees,
+      });
       siteInfo.showAlert("Status updated successfully", "success");
       if (onUpdate) onUpdate();
     } catch (e) {
+      claimingAppealRef.current = false;
       errorAlert(e);
     }
   };
@@ -103,9 +191,11 @@ export default function ReportDetail({
     const isDismissed = finalRuling.banType === "dismiss";
     const isWarning = finalRuling.banType === "warning";
 
-    // Notes are required for all verdict types except dismissals
-    if (!isDismissed && !finalRuling.notes?.trim()) {
-      siteInfo.showAlert("Please enter notes for this verdict.", "error");
+    if (!finalRuling.notes?.trim()) {
+      siteInfo.showAlert(
+        "Please enter a decision summary for this verdict.",
+        "error"
+      );
       return;
     }
 
@@ -468,7 +558,17 @@ export default function ReportDetail({
                     <TextField
                       label="Review Notes (Optional)"
                       value={appealNotes}
-                      onChange={(e) => setAppealNotes(e.target.value)}
+                      onChange={(e) => {
+                        setAppealNotes(e.target.value);
+                        if (
+                          report.linkedAppealId &&
+                          status === "open" &&
+                          !claimingAppealRef.current
+                        ) {
+                          claimingAppealRef.current = true;
+                          handleStatusChange("in-progress");
+                        }
+                      }}
                       fullWidth
                       multiline
                       rows={2}
@@ -730,9 +830,18 @@ export default function ReportDetail({
                   <Select
                     value={finalRuling.rule}
                     label="Rule (Violation Type)"
-                    onChange={(e) =>
-                      setFinalRuling({ ...finalRuling, rule: e.target.value })
-                    }
+                    onChange={(e) => {
+                      const rule = e.target.value;
+                      offenseOverrideRef.current = false;
+                      setFinalRuling({
+                        ...finalRuling,
+                        rule,
+                        offenseNumber: nextOffenseNumberForRule(
+                          reportedUserReports,
+                          rule
+                        ),
+                      });
+                    }}
                     required
                     disabled={violationsLoading}
                   >
@@ -748,12 +857,13 @@ export default function ReportDetail({
                   <Select
                     value={finalRuling.offenseNumber}
                     label="Violation Rating"
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      offenseOverrideRef.current = true;
                       setFinalRuling({
                         ...finalRuling,
                         offenseNumber: parseInt(e.target.value),
-                      })
-                    }
+                      });
+                    }}
                     required
                   >
                     <MenuItem value={1}>1st Offense</MenuItem>
@@ -767,11 +877,32 @@ export default function ReportDetail({
                     <MenuItem value={9}>9th Offense</MenuItem>
                     <MenuItem value={10}>10th Offense</MenuItem>
                   </Select>
+                  {finalRuling.rule && (
+                    <FormHelperText>
+                      {finalRuling.offenseNumber === suggestedOffenseNumber
+                        ? suggestedOffenseNumber === 1
+                          ? "No active records of this rule; autofilled as 1st Offense. You can override."
+                          : `Autofilled from ${
+                              suggestedOffenseNumber - 1
+                            } active record(s) of this rule. You can override.`
+                        : `Suggested ${suggestedOffenseNumber}${
+                            suggestedOffenseNumber === 1
+                              ? "st"
+                              : suggestedOffenseNumber === 2
+                              ? "nd"
+                              : suggestedOffenseNumber === 3
+                              ? "rd"
+                              : "th"
+                          } Offense from ${
+                            suggestedOffenseNumber - 1
+                          } active record(s). Currently overridden.`}
+                    </FormHelperText>
+                  )}
                 </FormControl>
               </>
             )}
             <TextField
-              label="Notes"
+              label="Decision Summary"
               value={finalRuling.notes}
               onChange={(e) =>
                 setFinalRuling({ ...finalRuling, notes: e.target.value })
@@ -779,13 +910,13 @@ export default function ReportDetail({
               fullWidth
               multiline
               rows={3}
-              required={finalRuling.banType !== "dismiss"}
+              required
               placeholder={
                 finalRuling.banType === "dismiss"
-                  ? "Enter notes about why the report was dismissed... (optional)"
+                  ? "Summarize why the report was dismissed..."
                   : finalRuling.banType === "warning"
-                  ? "Enter notes about the warning..."
-                  : "Enter notes about the violation..."
+                  ? "Summarize the warning..."
+                  : "Summarize the decision..."
               }
             />
           </Stack>
