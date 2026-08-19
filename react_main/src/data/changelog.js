@@ -39,6 +39,7 @@ export const CHANGELOG = [
     id: "2026-08-19-graveyard-dead-name-color",
     date: "2026-08-19",
     title: "Dead names stay red in the graveyard",
+    prs: [2958],
     categories: {
       bugfixes: [
         "Graveyard names stay red when dead, even if you have an animated name color",
