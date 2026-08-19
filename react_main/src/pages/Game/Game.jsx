@@ -2478,9 +2478,7 @@ function Message(props) {
             )}
             {player && (
               <NameWithAvatar
-                dead={
-                  playerDead && props.stateViewing > 0 && !isGraveyardMessage
-                }
+                dead={playerDead && props.stateViewing > 0}
                 ripAvatar={isGraveyardMessage}
                 id={player.userId}
                 avatarId={avatarId}
@@ -3437,6 +3435,7 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
           avatarId={avatarId}
           name={player.name}
           avatar={player.avatar}
+          dead={className === "dead"}
           color={resolveDisplayNameColor({
             accessibleNameColors,
             ignoreTextColor: user.settings?.ignoreTextColor,
