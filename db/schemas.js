@@ -63,6 +63,9 @@ var schemas = {
     discordName: String,
     discordUsername: String,
     avatar: Boolean,
+    deathSound: Boolean,
+    // File extension for custom death sound (mp3, ogg, wav, webm)
+    deathSoundExt: { type: String, default: "ogg" },
     banner: Boolean,
     // File extension for profile banner (webp static, or gif/webp animated)
     bannerExt: { type: String, default: "webp" },
@@ -131,6 +134,8 @@ var schemas = {
       hideRankedModal: { type: Boolean, default: false },
       hideCompetitiveModal: { type: Boolean, default: false },
       deathMessage: String,
+      // Viewer preference: do not play other players' custom death sounds
+      ignoreDeathSounds: { type: Boolean, default: false },
       vanityUrl: { type: String, default: "" },
       backgroundRepeatMode: { type: String, default: "repeat" },
     },
@@ -195,6 +200,7 @@ var schemas = {
       animatedAvatar: { type: Number, default: 0 },
       deathMessageEnabled: { type: Number, default: 0 },
       deathMessageChange: { type: Number, default: 0 },
+      deathSoundEnabled: { type: Number, default: 0 },
       anonymousDeck: { type: Number, default: 0 },
       wordDeck: { type: Number, default: 0 },
       customEmotes: { type: Number, default: 0 },

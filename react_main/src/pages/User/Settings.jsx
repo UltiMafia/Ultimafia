@@ -32,6 +32,7 @@ import { useErrorAlert } from "components/Alerts";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import AvatarUpload from "components/AvatarUpload";
 import BannerUpload from "components/BannerUpload";
+// DeathSoundUpload is rendered via Form field type "deathSoundUpload"
 import { useCookieConsent } from "../../hooks/useCookieConsent";
 
 import "css/settings.css";
@@ -942,6 +943,23 @@ export default function Settings() {
       disabled: (deps) => !deps.user.itemsOwned.deathMessageEnabled,
     },
     {
+      label: "Custom Death Sound",
+      ref: "deathSound",
+      type: "deathSoundUpload",
+      onDeathSoundUpload: onDeathSoundUpload,
+      onDeathSoundRemove: onDeathSoundRemove,
+      disabled: (deps) => !deps.user.itemsOwned.deathSoundEnabled,
+      extraInfo:
+        "Played to everyone in the lobby when you die. Purchase Custom Death Sound in the Shop.",
+    },
+    {
+      label: "Ignore all Death Sounds",
+      ref: "ignoreDeathSounds",
+      type: "boolean",
+      extraInfo:
+        "When enabled, you will not hear custom death sounds from other players in games.",
+    },
+    {
       label: "Upload Custom Emote",
       ref: "customEmotes",
       type: "emoteUpload",
@@ -1723,6 +1741,50 @@ export default function Settings() {
         );
       })
       .catch(deps.errorAlert);
+  }
+
+  function onDeathSoundUpload(file, durationSeconds, deps) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("durationSeconds", String(durationSeconds || ""));
+
+    return axios
+      .post("/api/user/deathSound", formData)
+      .then((res) => {
+        const data = res.data || {};
+        deps.siteInfo.showAlert("Death sound uploaded", "success");
+        deps.user.set(
+          update(deps.user.state || deps.user, {
+            deathSound: { $set: true },
+            deathSoundExt: {
+              $set: data.deathSoundExt || "ogg",
+            },
+          })
+        );
+        if (deps.siteInfo.clearCache) deps.siteInfo.clearCache();
+      })
+      .catch((e) => {
+        deps.errorAlert(e);
+        throw e;
+      });
+  }
+
+  function onDeathSoundRemove(deps) {
+    return axios
+      .delete("/api/user/deathSound")
+      .then(() => {
+        deps.siteInfo.showAlert("Death sound removed", "success");
+        deps.user.set(
+          update(deps.user.state || deps.user, {
+            deathSound: { $set: false },
+          })
+        );
+        if (deps.siteInfo.clearCache) deps.siteInfo.clearCache();
+      })
+      .catch((e) => {
+        deps.errorAlert(e);
+        throw e;
+      });
   }
 
   function onVanityUrlSave(vanityUrl, deps) {
