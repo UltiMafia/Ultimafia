@@ -50,7 +50,17 @@ function winRateFromAlignmentEntries(entries) {
   if (!entries || !entries.length) return null;
   let wins = 0;
   let games = 0;
-  for (const [gameType, isFactionWin] of entries) {
+  for (const entry of entries) {
+    if (!Array.isArray(entry) || entry.length < 2) continue;
+    // Aggregated summary: ["__agg__", gameType, wins, games]
+    if (entry[0] === "__agg__") {
+      const gameType = entry[1];
+      if (!FORTUNE_GAME_TYPES.has(gameType)) continue;
+      wins += Number(entry[2]) || 0;
+      games += Number(entry[3]) || 0;
+      continue;
+    }
+    const [gameType, isFactionWin] = entry;
     if (!FORTUNE_GAME_TYPES.has(gameType)) continue;
     games++;
     if (isFactionWin === true) wins++;
@@ -62,7 +72,15 @@ function winRateFromAlignmentEntries(entries) {
 function countFortuneGames(entries) {
   if (!entries || !entries.length) return 0;
   let games = 0;
-  for (const [gameType] of entries) {
+  for (const entry of entries) {
+    if (!Array.isArray(entry) || entry.length < 1) continue;
+    if (entry[0] === "__agg__") {
+      const gameType = entry[1];
+      if (!FORTUNE_GAME_TYPES.has(gameType)) continue;
+      games += Number(entry[3]) || 0;
+      continue;
+    }
+    const [gameType] = entry;
     if (FORTUNE_GAME_TYPES.has(gameType)) games++;
   }
   return games;
@@ -188,13 +206,25 @@ function getMafiaFactionsFromSetup(setupRoles) {
 }
 
 /**
- * Build alignmentWinRates-shaped map from SetupVersion.setupStats.alignmentRows.
+ * Build alignmentWinRates-shaped map from SetupVersion.setupStats.
+ * Prefers fixed-size alignmentAgg (faction -> gameType -> {wins, games}).
+ * Falls back to legacy unbounded alignmentRows for unmigrated documents.
+ *
+ * When using aggregates, expands to a compact synthetic entry list is avoided
+ * for large N — instead we store a single summary triple per gameType:
+ *   [gameType, wins, games] with a marker shape detected by winRate helpers.
+ * For backcompat with code that expects [gameType, wonBool] pairs, we expand
+ * only when games is small; for large counts we use a special summary form
+ * handled by winRateFromAlignmentEntries / countFortuneGames.
+ *
  * @param {object} setupStats
- * @returns {object} map factionKey -> Array<[gameType, boolean]>
+ * @returns {object} map factionKey -> entries
  */
 function alignmentRowsToWinRateMap(setupStats) {
   const map = {};
   if (!setupStats) return map;
+
+  // Legacy per-game rows (unbounded; still present until compactSetupStatsRows migration)
   const rows = setupStats.alignmentRows;
   if (Array.isArray(rows)) {
     for (const row of rows) {
@@ -202,6 +232,24 @@ function alignmentRowsToWinRateMap(setupStats) {
       const [factionKey, gameType, isFactionWin] = row;
       if (!map[factionKey]) map[factionKey] = [];
       map[factionKey].push([gameType, isFactionWin]);
+    }
+  }
+
+  // Fixed-size aggregates (preferred going forward). During transition both may
+  // exist: rows hold pre-fix history, agg holds post-fix games — sum both.
+  const agg = setupStats.alignmentAgg;
+  if (agg && typeof agg === "object") {
+    for (const [factionKey, byType] of Object.entries(agg)) {
+      if (!byType || typeof byType !== "object") continue;
+      if (!map[factionKey]) map[factionKey] = [];
+      for (const [gameType, stats] of Object.entries(byType)) {
+        if (!stats || typeof stats !== "object") continue;
+        const games = Number(stats.games) || 0;
+        const wins = Number(stats.wins) || 0;
+        if (games <= 0 && wins <= 0) continue;
+        // Summary form: ["__agg__", gameType, wins, games]
+        map[factionKey].push(["__agg__", gameType, wins, games]);
+      }
     }
   }
   return map;

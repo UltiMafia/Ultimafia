@@ -318,11 +318,22 @@ var schemas = {
     alignmentPlays: {},
     alignmentWins: {},
     dayCountWins: {},
-    // Per-game stats (clean games only: no leavers, no veg). Rows are [factionOrRoleKey, gameType, wonBool] or [gameType, lengthMs].
+    // Per-game stats (clean games only: no leavers, no veg).
+    // Prefer fixed-size aggregates (alignmentAgg/roleAgg/lengthAgg) — competitive
+    // seasons used to $push unbounded *Rows arrays, loading multi-MB setupStats
+    // into memory on every game end (fortune) and setup page view.
+    // Legacy *Rows arrays may still exist until migrations/compactSetupStatsRows.js runs.
     setupStats: {
       alignmentWinRates: { type: mongoose.Schema.Types.Mixed, default: {} },
       roleWinRates: { type: mongoose.Schema.Types.Mixed, default: {} },
       gameLengths: { type: Array, default: [] },
+      // faction -> gameType -> { wins, games }
+      alignmentAgg: { type: mongoose.Schema.Types.Mixed, default: {} },
+      // roleKey -> gameType -> { wins, games }
+      roleAgg: { type: mongoose.Schema.Types.Mixed, default: {} },
+      // gameType -> { sumMs, count }
+      lengthAgg: { type: mongoose.Schema.Types.Mixed, default: {} },
+      // LEGACY unbounded per-game rows (no longer written; kept for backcompat reads)
       alignmentRows: { type: [mongoose.Schema.Types.Mixed], default: [] },
       roleRows: { type: [mongoose.Schema.Types.Mixed], default: [] },
       gameLengthRows: { type: [mongoose.Schema.Types.Mixed], default: [] },

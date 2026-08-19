@@ -323,6 +323,11 @@ export default function Profile() {
     setEditingPronouns(false);
     setUserFamily(null);
     setProfileFamily(null);
+    // Stop previous profile's player immediately; otherwise the iframe
+    // keeps playing user A's track on user B's page until the next fetch.
+    setMediaUrl("");
+    setAutoplay(false);
+    setCollapseMedia(false);
 
     if (userId) {
       setProfileLoaded(false);
@@ -330,8 +335,10 @@ export default function Profile() {
       setProfileTotalGames(0);
       setStockInfo(null);
 
+      const controller = new AbortController();
+
       axios
-        .get(`/api/user/${userId}/profile`)
+        .get(`/api/user/${userId}/profile`, { signal: controller.signal })
         .then((res) => {
           const resolvedId = res.data.id;
           setCanonicalUserId(resolvedId);
@@ -419,9 +426,18 @@ export default function Profile() {
           document.title = `${res.data.name}'s Profile | UltiMafia`;
         })
         .catch((e) => {
+          if (
+            e.code === "ERR_CANCELED" ||
+            e.name === "CanceledError" ||
+            e.name === "AbortError"
+          ) {
+            return;
+          }
           errorAlert(e);
           navigate("/play");
         });
+
+      return () => controller.abort();
     }
   }, [userId, profileRefetchKey]);
 
@@ -1678,6 +1694,7 @@ export default function Profile() {
             {mediaUrl && (
               <div className="box-panel" style={panelStyle}>
                 <MediaEmbed
+                  key={`${profileUserId}:${mediaUrl}`}
                   mediaUrl={mediaUrl}
                   autoplay={autoplay}
                   collapsible
