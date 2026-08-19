@@ -399,6 +399,15 @@ const shopItems = [
     onBuy: async function (userId) {},
   },
   {
+    name: "Sticker Slot",
+    desc: "Unlock a custom sticker slot. Upload stickers (GIF/PNG/JPEG/WebP) in Settings → Game.",
+    key: "customStickers",
+    category: "game",
+    price: 10,
+    limit: constants.maxOwnedCustomStickers,
+    onBuy: async function (userId) {},
+  },
+  {
     name: "Bonus Red Heart Capacity",
     desc: "Increases the amount of red hearts that you can hold.",
     key: "bonusRedHearts",

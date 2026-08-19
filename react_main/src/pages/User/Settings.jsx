@@ -969,6 +969,15 @@ export default function Settings() {
         deps.user.itemsOwned.customEmotes !== undefined &&
         deps.user.itemsOwned.customEmotes.length > 0,
     },
+    {
+      label: "Upload Custom Sticker",
+      ref: "customStickers",
+      type: "stickerUpload",
+      onCustomStickerUpload: onCustomStickerUpload,
+      onCustomStickerDelete: onCustomStickerDelete,
+      extraInfo:
+        "Buy sticker slots in the Shop (10 coins each). GIF/PNG/JPEG/WebP, max 10 MB, 512×512.",
+    },
   ]);
 
   useEffect(() => {
@@ -1857,6 +1866,37 @@ export default function Settings() {
       .post("/api/user/customEmote/delete", { id: id }, {})
       .then((res) => {
         deps.siteInfo.showAlert("Deleted custom emote", "success");
+      })
+      .catch(deps.errorAlert);
+  }
+
+  function onCustomStickerUpload(
+    stickerText,
+    imageFilename,
+    imageMimeType,
+    blob,
+    deps
+  ) {
+    const formData = new FormData();
+    const file = new File([blob], imageFilename);
+    formData.append("file", file);
+    formData.append("stickerText", stickerText);
+
+    axios
+      .post("/api/user/customSticker/create", formData, {})
+      .then((res) => {
+        deps.siteInfo.showAlert("Uploaded custom sticker", "success");
+        loadSettings();
+      })
+      .catch(deps.errorAlert);
+  }
+
+  function onCustomStickerDelete(id, deps) {
+    axios
+      .post("/api/user/customSticker/delete", { id: id }, {})
+      .then((res) => {
+        deps.siteInfo.showAlert("Deleted custom sticker", "success");
+        loadSettings();
       })
       .catch(deps.errorAlert);
   }

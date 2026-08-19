@@ -55,6 +55,7 @@ module.exports = class Quote extends Message {
       textColor: version.textColor,
       nameColor: version.nameColor,
       customEmotes: version.customEmotes,
+      customStickers: version.customStickers,
       alive: version.alive !== undefined ? version.alive : undefined,
     };
   }

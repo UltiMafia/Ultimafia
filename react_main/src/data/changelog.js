@@ -36,6 +36,30 @@ export const CHANGELOG_CATEGORIES = [
 /** @type {ChangelogRelease[]} */
 export const CHANGELOG = [
   {
+    id: "2026-08-19-custom-stickers",
+    date: "2026-08-19",
+    title: "Purchasable custom stickers",
+    prs: [2927],
+    categories: {
+      features: [
+        "Custom stickers for in-game chat: larger than emotes, with GIF/PNG/JPEG/WebP (animation preserved)",
+      ],
+      game: [
+        "Open the emote picker and use the Stickers tab to insert a sticker into chat",
+        "Works with Disguiser (follows the guised identity, like emotes); custom stickers do not appear in anonymous games",
+      ],
+      shop: [
+        "Sticker Slot (10 coins each, max 5): unlocks upload in Settings → Game",
+      ],
+      site: [
+        "Settings → Game: upload and manage stickers next to custom emotes (max 10 MB, 512×512)",
+      ],
+      community: [
+        "Moderation: Clear User Content can remove a player's custom stickers (same as custom emotes)",
+      ],
+    },
+  },
+  {
     id: "2026-08-11-death-sounds",
     date: "2026-08-11",
     title: "Purchasable custom death sounds",

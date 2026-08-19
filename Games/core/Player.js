@@ -80,6 +80,7 @@ module.exports = class Player {
       nameColor: this.user.nameColor,
       hasAvatar: this.user.avatar,
       customEmotes: this.user.customEmotes,
+      customStickers: this.user.customStickers,
     };
 
     this.id = shortid.generate();
@@ -91,6 +92,7 @@ module.exports = class Player {
     delete this.user.id;
     delete this.user.nameColor;
     delete this.user.customEmotes;
+    delete this.user.customStickers;
   }
 
   makeNotAnonymous() {
@@ -109,6 +111,7 @@ module.exports = class Player {
     this.user.textColor = p.textColor;
     this.user.nameColor = p.nameColor;
     this.user.customEmotes = p.customEmotes;
+    this.user.customStickers = p.customStickers;
     delete this.anonId;
   }
 
@@ -961,6 +964,7 @@ module.exports = class Player {
       nameGradientColorB: this.user.nameGradientColorB,
       nameGradientColorC: this.user.nameGradientColorC,
       customEmotes: this.user.customEmotes,
+      customStickers: this.user.customStickers,
       birthday: this.user.birthday,
       vanityUrl: this.user.vanityUrl,
       playerListPosition: this.game?.players?.indexOf(this),
@@ -2143,15 +2147,23 @@ module.exports = class Player {
 
     // Swap both customEmotes locations: user.customEmotes feeds
     // getPlayerInfo, and user.settings.customEmotes is read when quoted
-    // messages are rendered.
+    // messages are rendered. Same for customStickers.
     let tempEmotes = this.user.customEmotes;
     this.user.customEmotes = player.user.customEmotes;
     player.user.customEmotes = tempEmotes;
+
+    let tempStickers = this.user.customStickers;
+    this.user.customStickers = player.user.customStickers;
+    player.user.customStickers = tempStickers;
 
     if (this.user.settings && player.user.settings) {
       let tempSettingsEmotes = this.user.settings.customEmotes;
       this.user.settings.customEmotes = player.user.settings.customEmotes;
       player.user.settings.customEmotes = tempSettingsEmotes;
+
+      let tempSettingsStickers = this.user.settings.customStickers;
+      this.user.settings.customStickers = player.user.settings.customStickers;
+      player.user.settings.customStickers = tempSettingsStickers;
     }
 
     // Swap items and effects

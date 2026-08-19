@@ -1594,17 +1594,25 @@ router.get("/settings/data", async function (req, res) {
   try {
     const maxOwnedCustomEmotes =
       constants.maxOwnedCustomEmotes + constants.maxOwnedCustomEmotesExtra;
+    const maxOwnedCustomStickers = constants.maxOwnedCustomStickers;
 
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var user =
       userId &&
       (await models.User.findOne({ id: userId, deleted: false })
-        .select("name birthday pronouns settings customEmotes -_id")
-        .populate({
-          path: "customEmotes",
-          select: "id extension name -_id",
-          options: { limit: maxOwnedCustomEmotes },
-        }));
+        .select("name birthday pronouns settings customEmotes customStickers -_id")
+        .populate([
+          {
+            path: "customEmotes",
+            select: "id extension name -_id",
+            options: { limit: maxOwnedCustomEmotes },
+          },
+          {
+            path: "customStickers",
+            select: "id extension name -_id",
+            options: { limit: maxOwnedCustomStickers },
+          },
+        ]));
 
     if (user) {
       user = user.toJSON();
@@ -1615,6 +1623,7 @@ router.get("/settings/data", async function (req, res) {
       user.settings.pronouns = user.pronouns;
       user.settings.birthday = dateOnly.normalizeBirthday(user.birthday);
       utils.remapCustomEmotes(user, userId);
+      utils.remapCustomStickers(user, userId);
 
       // Fetch vanity URL
       const vanityUrl = await models.VanityUrl.findOne({
@@ -2137,6 +2146,17 @@ router.post("/customEmote/create", async function (req, res) {
       return;
     }
 
+    var existingCustomSticker = await models.CustomSticker.findOne({
+      creator: new ObjectID(user._id),
+      name: customEmote.name,
+      deleted: false,
+    }).select("-_id");
+    if (existingCustomSticker) {
+      res.status(400);
+      res.send(`You already have a custom sticker with that name.`);
+      return;
+    }
+
     customEmote.id = shortid.generate();
     customEmote.extension = "webp";
     customEmote.creator = req.session.user._id;
@@ -2245,6 +2265,219 @@ router.post("/customEmote/delete", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not delete custom emote. Please try again.");
+  }
+});
+
+const STICKER_MIME_TO_EXT = {
+  "image/gif": "gif",
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/webp": "webp",
+};
+
+router.post("/customSticker/create", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+
+    var user = await models.User.findOne({ id: userId, deleted: false }).select(
+      "itemsOwned customStickers customEmotes _id"
+    );
+    user = user.toJSON();
+
+    const ownedCustomStickers = user.itemsOwned.customStickers || 0;
+    if ((user.customStickers || []).length >= ownedCustomStickers) {
+      errors.forbidden(
+        res,
+        "You need to purchase more sticker slots from the shop."
+      );
+      return;
+    }
+
+    if ((user.customStickers || []).length >= constants.maxOwnedCustomStickers) {
+      errors.forbidden(
+        res,
+        `You can only have up to ${constants.maxOwnedCustomStickers} custom stickers linked to your account.`
+      );
+      return;
+    }
+
+    var form = new formidable();
+    form.maxFileSize = constants.maxCustomStickerFileSizeBytes;
+    form.maxFields = 1;
+
+    var [fields, files] = await form.parseAsync(req);
+
+    let customSticker = Object();
+    customSticker.name = String(fields.stickerText || fields.emoteText || "");
+
+    if (!customSticker.name || !customSticker.name.length) {
+      res.status(400);
+      res.send("You must give your custom sticker a name.");
+      return;
+    }
+
+    if (customSticker.name.match(/( |:)/)) {
+      res.status(400);
+      res.send("Custom sticker names may not have spaces or colons in them.");
+      return;
+    }
+
+    if (customSticker.name.length > constants.maxCustomStickerNameLength) {
+      res.status(400);
+      res.send("Sticker name is too long.");
+      return;
+    }
+
+    var existingCustomSticker = await models.CustomSticker.findOne({
+      creator: new ObjectID(user._id),
+      name: customSticker.name,
+      deleted: false,
+    }).select("-_id");
+    if (existingCustomSticker) {
+      res.status(400);
+      res.send(`You already have a custom sticker with that name.`);
+      return;
+    }
+
+    var existingCustomEmote = await models.CustomEmote.findOne({
+      creator: new ObjectID(user._id),
+      name: customSticker.name,
+      deleted: false,
+    }).select("-_id");
+    if (existingCustomEmote) {
+      res.status(400);
+      res.send(`You already have a custom emote with that name.`);
+      return;
+    }
+
+    customSticker.id = shortid.generate();
+    customSticker.creator = req.session.user._id;
+
+    if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
+      fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
+
+    const fileContents = fs.readFileSync(files.file.path).toString();
+    const matches = fileContents.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+
+    if (!matches || matches.length !== 3) {
+      res.status(400);
+      res.send("Invalid octet stream.");
+      return;
+    }
+
+    const mimeType = matches[1].toLowerCase();
+    const extension = STICKER_MIME_TO_EXT[mimeType];
+    if (!extension) {
+      res.status(400);
+      res.send("Stickers must be GIF, PNG, JPEG, or WebP.");
+      return;
+    }
+
+    const buffer = Buffer.from(matches[2], "base64");
+    if (buffer.length > constants.maxCustomStickerFileSizeBytes) {
+      res.status(400);
+      res.send(
+        `Sticker file is too large (max ${Math.floor(
+          constants.maxCustomStickerFileSizeBytes / (1024 * 1024)
+        )} MB).`
+      );
+      return;
+    }
+
+    // Dimension check only — no conversion for now (preserve original bytes / animation).
+    // For animated GIFs, sharp's animated metadata reports height as the stacked
+    // total of all frames; use pageHeight for the real per-frame size.
+    try {
+      const metadata = await sharp(buffer, { animated: true }).metadata();
+      const maxDim = constants.maxCustomStickerDimension;
+      const width = metadata.width || 0;
+      const height = metadata.pageHeight || metadata.height || 0;
+      if (width > maxDim || height > maxDim) {
+        res.status(400);
+        res.send(
+          `Sticker dimensions must be at most ${maxDim}×${maxDim} pixels (got ${width}×${height}).`
+        );
+        return;
+      }
+    } catch (metaErr) {
+      res.status(400);
+      res.send("Could not read sticker image. Please try another file.");
+      return;
+    }
+
+    customSticker.extension = extension;
+    const filepath = utils.getCustomStickerFilepath(
+      userId,
+      customSticker.id,
+      customSticker.extension
+    );
+    fs.writeFileSync(filepath, buffer);
+
+    customSticker = new models.CustomSticker(customSticker);
+    await customSticker.save();
+    await models.User.updateOne(
+      { id: userId },
+      { $push: { customStickers: customSticker._id } }
+    ).exec();
+
+    redis.invalidateCachedUser(userId);
+
+    res.send(customSticker);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(
+      res,
+      "Could not create custom sticker. Please try again."
+    );
+  }
+});
+
+router.post("/customSticker/delete", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    let customStickerId = String(req.body.id);
+
+    let customSticker = await models.CustomSticker.findOne({
+      id: customStickerId,
+      deleted: false,
+    })
+      .select("_id id extension name creator")
+      .populate([
+        {
+          path: "creator",
+          model: "User",
+          select: "id -_id",
+        },
+      ]);
+
+    if (!customSticker || customSticker.creator.id != userId) {
+      errors.forbidden(
+        res,
+        "You can only delete custom stickers you have created."
+      );
+      return;
+    }
+
+    await models.CustomSticker.updateOne(
+      { id: customStickerId },
+      { $set: { deleted: true } }
+    ).exec();
+    await models.User.updateOne(
+      { id: customSticker.creator.id },
+      { $pull: { customStickers: customSticker._id } }
+    ).exec();
+
+    redis.invalidateCachedUser(userId);
+
+    res.send(`Deleted custom sticker ${customSticker.name}`);
+    return;
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(
+      res,
+      "Could not delete custom sticker. Please try again."
+    );
   }
 });
 

@@ -176,6 +176,9 @@ var schemas = {
     customEmotes: [
       { type: mongoose.Schema.Types.ObjectId, ref: "CustomEmote" },
     ],
+    customStickers: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "CustomSticker" },
+    ],
     games: [{ type: mongoose.Schema.Types.ObjectId, ref: "Game" }],
     globalNotifs: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Notification" },
@@ -205,6 +208,7 @@ var schemas = {
       wordDeck: { type: Number, default: 0 },
       customEmotes: { type: Number, default: 0 },
       customEmotesExtra: { type: Number, default: 0 },
+      customStickers: { type: Number, default: 0 },
       archivedGames: { type: Number, default: 0 },
       archivedGamesMax: { type: Number, default: 0 },
       bonusRedHearts: { type: Number, default: 0 },
@@ -349,6 +353,13 @@ var schemas = {
   AnonymousDeck: anonymousDeck,
   WordDeck: wordDeck,
   CustomEmote: new mongoose.Schema({
+    id: { type: String, index: true },
+    name: { type: String, index: true },
+    creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
+    extension: String,
+    deleted: { type: Boolean, default: false },
+  }),
+  CustomSticker: new mongoose.Schema({
     id: { type: String, index: true },
     name: { type: String, index: true },
     creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },

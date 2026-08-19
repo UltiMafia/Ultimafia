@@ -520,6 +520,8 @@ export default function Game() {
               nameColor: data.users[i] && data.users[i].settings.nameColor,
               customEmotes:
                 data.users[i] && data.users[i].settings.customEmotes,
+              customStickers:
+                data.users[i] && data.users[i].settings.customStickers,
               nameFont: data.users[i] && data.users[i].settings.nameFont,
               animatedNameColor:
                 data.users[i] && data.users[i].settings.animatedNameColor,
@@ -543,6 +545,8 @@ export default function Game() {
               nameColor: data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.nameColor,
               customEmotes:
                 data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.customEmotes,
+              customStickers:
+                data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.customStickers,
               nameFont:
                 data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.nameFont,
               animatedNameColor:
@@ -2264,7 +2268,10 @@ function Message(props) {
       player = spectators[message.senderId];
     }
   }
-  var customEmotes = player ? player.customEmotes : null;
+  var customEmotes =
+    message.customEmotes || (player && player.customEmotes) || null;
+  var customStickers =
+    message.customStickers || (player && player.customStickers) || null;
 
   if (message.isQuote) {
     var state = history.states[message.fromState];
@@ -2289,6 +2296,7 @@ function Message(props) {
         quotedMessage.meetingName = meeting.name;
         quotedMessage.fromStateName = state.name;
         customEmotes = msg.customEmotes; // allow players to use other players' custom emotes if they quote them
+        customStickers = msg.customStickers;
         break;
       }
     }
@@ -2525,6 +2533,7 @@ function Message(props) {
                 players={players}
                 spectators={spectators}
                 customEmotes={customEmotes}
+                customStickers={customStickers}
                 filterProfanity
                 linkify
                 emotify
@@ -2550,6 +2559,7 @@ function Message(props) {
                   players={players}
                   spectators={spectators}
                   customEmotes={customEmotes}
+                  customStickers={customStickers}
                   filterProfanity
                   linkify
                   emotify
