@@ -36,6 +36,31 @@ export const CHANGELOG_CATEGORIES = [
 /** @type {ChangelogRelease[]} */
 export const CHANGELOG = [
   {
+    id: "2026-08-11-death-sounds",
+    date: "2026-08-19",
+    title: "Purchasable custom death sounds",
+    prs: [2941],
+    categories: {
+      features: [
+        "Custom death sounds: buy in the Shop, upload and trim a short clip played to the lobby when you die",
+      ],
+      game: [
+        "When you die, your death sound plays for everyone in the lobby; multiple deaths play one-by-one in random order",
+        "Ignore all Death Sounds setting and a dedicated Death Sound Volume slider in the in-game settings menu (local)",
+        "Works with Disguiser; custom death sounds do not play in anonymous games",
+      ],
+      shop: [
+        "Custom Death Sound (50 coins): unlocks mp3/ogg/wav upload with in-browser trim editor (up to 5 seconds)",
+      ],
+      site: [
+        "Settings → Game: death sound editor with volume, optional fade in/out, and preview before upload",
+      ],
+      community: [
+        "Moderation: Clear User Content can remove a player’s death sound",
+      ],
+    },
+  },
+  {
     id: "2026-08-10-cosmetics-spam",
     date: "2026-08-10",
     title: "Cosmetics update & ranked paste spam fixes",

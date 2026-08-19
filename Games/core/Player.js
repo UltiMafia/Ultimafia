@@ -927,6 +927,23 @@ module.exports = class Player {
     } else return this.user.swapped.player.setUser(user, true);
   }
 
+  /**
+   * URL for this player's custom death sound, or null if none / anonymous.
+   * Disguiser note: user objects are not swapped on guise, so the dying
+   * player slot's user is the identity that "looks dead" to the lobby
+   * (disguiser on first guise; most recent victim thereafter). That matches
+   * the intended death-sound behavior without extra tracking.
+   */
+  getDeathSoundUrl() {
+    if (this.game?.anonymousGame) return null;
+    if (!this.user?.deathSound) return null;
+    const userId = this.user.id;
+    if (!userId) return null;
+    const ext = this.user.deathSoundExt || "ogg";
+    if (!constants.deathSoundAllowedExts.includes(ext)) return null;
+    return `/uploads/${userId}_deathSound.${ext}`;
+  }
+
   getPlayerInfo(recipient) {
     if (recipient && recipient.id == null) recipient = null;
 

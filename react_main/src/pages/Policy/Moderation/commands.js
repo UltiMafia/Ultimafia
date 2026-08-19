@@ -606,6 +606,7 @@ export function useModCommands(argValues, commandRan, setResults) {
             { value: "avatar", label: "Avatar" },
             { value: "bio", label: "Bio" },
             { value: "customEmotes", label: "Custom Emotes" },
+            { value: "deathSound", label: "Death Sound" },
             { value: "name", label: "Name" },
             { value: "vanityUrl", label: "Vanity URL" },
             { value: "video", label: "Video" },
