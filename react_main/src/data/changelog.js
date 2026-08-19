@@ -54,6 +54,9 @@ export const CHANGELOG = [
       site: [
         "Settings → Game: upload and manage stickers next to custom emotes (max 10 MB, 512×512)",
       ],
+      community: [
+        "Moderation: Clear User Content can remove a player's custom stickers (same as custom emotes)",
+      ],
     },
   },
   {

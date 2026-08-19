@@ -1236,6 +1236,17 @@ router.post("/clearUserContent", async (req, res) => {
         );
         break;
 
+      case "customStickers":
+        updateQuery = { $set: { customStickers: [] } };
+        modActionName = "Clear Custom Stickers";
+        additionalOperations.push(
+          models.CustomSticker.updateMany(
+            { creator: user._id },
+            { $set: { deleted: true } }
+          ).exec()
+        );
+        break;
+
       case "name":
         // Get current user to record previous name
         const currentUserForClear = await models.User.findOne({
@@ -1361,6 +1372,7 @@ router.post("/clearUserContent", async (req, res) => {
             bio: "",
             donorBio: "",
             customEmotes: [],
+            customStickers: [],
             profileBackground: false,
             deathSound: false,
             deathSoundExt: "ogg",
@@ -1399,6 +1411,10 @@ router.post("/clearUserContent", async (req, res) => {
         }
         additionalOperations.push(
           models.CustomEmote.updateMany(
+            { creator: user._id },
+            { $set: { deleted: true } }
+          ).exec(),
+          models.CustomSticker.updateMany(
             { creator: user._id },
             { $set: { deleted: true } }
           ).exec(),
