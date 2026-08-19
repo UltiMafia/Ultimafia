@@ -453,6 +453,15 @@ async function getUserInfo(userId) {
   info.status = status;
   info.blockedUsers = JSON.parse(blockedUsers || "[]");
   info.settings = JSON.parse(settings || "{}");
+  // Stickers are remapped onto settings at cache time. Caches written before
+  // that feature lack the key; recache once so /api/user/info matches game join.
+  if (info.settings.customStickers === undefined) {
+    await cacheUserInfo(userId, true);
+    const refreshedSettings = await client.getAsync(
+      `user:${userId}:info:settings`
+    );
+    info.settings = JSON.parse(refreshedSettings || "{}");
+  }
   info.itemsOwned = JSON.parse(itemsOwned || "{}");
   info.groups = JSON.parse(groups || "[]");
   info.achievements = achievements;

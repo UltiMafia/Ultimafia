@@ -82,7 +82,7 @@ function StickerPanel({ stickers, onSelect }) {
   );
 }
 
-function EmotePicker({ onEmoteSelected, className = "" }) {
+function EmotePicker({ onEmoteSelected, className = "", players }) {
   const user = useContext(UserContext);
   const theme = useTheme();
   const [panel, setPanel] = useState("emotes"); // "emotes" | "stickers"
@@ -109,7 +109,19 @@ function EmotePicker({ onEmoteSelected, className = "" }) {
     };
   });
 
-  const customStickersMap = user.settings?.customStickers || {};
+  // In-game player maps are remapped from Mongo on join (same source as
+  // :shortcode: rendering). UserContext settings can be a stale Redis cache
+  // that predates stickers, which made the Stickers tab empty while colon
+  // insert still worked.
+  const selfPlayer =
+    players &&
+    Object.values(players).find(
+      (p) => p && user?.id && (p.userId === user.id || p.id === user.id)
+    );
+  const customStickersMap =
+    (selfPlayer && selfPlayer.customStickers) ||
+    user.settings?.customStickers ||
+    {};
   const stickers = Object.keys(customStickersMap).map((key) => ({
     shortcode: key,
     ...customStickersMap[key],
