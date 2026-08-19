@@ -308,6 +308,7 @@ function Header({ setShowAnnouncementTemporarily }) {
                 label: "Policy",
                 items: [
                   { text: "Rules", path: "/policy/rules" },
+                  { text: "Changelog", path: "/policy/changelog" },
                   { text: "Moderation", path: "/policy/moderation" },
                 ],
               },
@@ -393,6 +394,7 @@ function Header({ setShowAnnouncementTemporarily }) {
               label="Policy"
               items={[
                 { text: "Rules", path: "/policy/rules" },
+                { text: "Changelog", path: "/policy/changelog" },
                 { text: "Moderation", path: "/policy/moderation" },
               ]}
             />
@@ -573,6 +575,10 @@ function Footer() {
             to="/policy/privacy"
           >
             Privacy Policy
+          </MuiLink>
+          .{" "}
+          <MuiLink component={Link} to="/policy/changelog">
+            Changelog
           </MuiLink>
           .
         </Typography>

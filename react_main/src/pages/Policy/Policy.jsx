@@ -12,6 +12,7 @@ import CompetitiveManagement from "./Moderation/CompetitiveManagement";
 import StaffHandbook from "./Moderation/StaffHandbook";
 import FlaggedIntake from "./Moderation/FlaggedIntake";
 import Volunteer from "./Moderation/Volunteer";
+import Changelog from "./Changelog";
 
 function ReportsRedirect() {
   const location = useLocation();
@@ -29,6 +30,7 @@ export default function Policy() {
     <Paper sx={{ p: 2, textAlign: "justify" }}>
       <Routes>
         <Route path="rules" element={<Rules />} />
+        <Route path="changelog" element={<Changelog />} />
         <Route path="tos" element={<TermsOfService />} />
         <Route path="privacy" element={<PrivacyPolicy />} />
         <Route path="moderation" element={<Moderation />}>

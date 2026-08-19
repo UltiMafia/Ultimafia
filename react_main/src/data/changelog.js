@@ -37,7 +37,7 @@ export const CHANGELOG_CATEGORIES = [
 export const CHANGELOG = [
   {
     id: "2026-08-11-death-sounds",
-    date: "2026-08-11",
+    date: "2026-08-19",
     title: "Purchasable custom death sounds",
     prs: [2941],
     categories: {
@@ -47,6 +47,7 @@ export const CHANGELOG = [
       game: [
         "When you die, your death sound plays for everyone in the lobby; multiple deaths play one-by-one in random order",
         "Ignore all Death Sounds setting and a dedicated Death Sound Volume slider in the in-game settings menu (local)",
+        "Works with Disguiser; custom death sounds do not play in anonymous games",
       ],
       shop: [
         "Custom Death Sound (50 coins): unlocks mp3/ogg/wav upload with in-browser trim editor (up to 5 seconds)",
