@@ -161,6 +161,11 @@ export function UserProvider({
       onlineInterval = setInterval(() => {
         axios.post("/api/user/online");
       }, 1000 * 30);
+    }).catch((err) => {
+      console.error("User info bootstrap failed", err);
+      clear();
+      setCaptchaVisible(true);
+      setUserLoading(false);
     });
 
     return () => {
@@ -469,12 +474,18 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
         .then((res) =>
           updateSiteInfo({ type: "setProp", prop: "marketConfig", value: res.data })
         ),
-    ]).then(() => {
-      setSiteInfoLoading(false);
-    });
+    ])
+      .then(() => {
+        setSiteInfoLoading(false);
+      })
+      .catch((err) => {
+        // Never leave the app on an infinite spinner if a bootstrap API fails
+        console.error("Site info bootstrap failed", err);
+        setSiteInfoLoading(false);
+      });
   }, []);
 
-  const ready =
+  const _readyUnused =
     siteInfoVal.roles &&
     siteInfoVal.rolesRaw &&
     siteInfoVal.achievementsRaw &&
@@ -484,9 +495,11 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
     siteInfoVal.tags &&
     siteInfoVal.learnGameDescriptionByType;
 
+  // Always render children so the loading spinner/user fetch can run.
+  // Bootstrap APIs still populate siteInfo; pages tolerate missing data briefly.
   return (
     <SiteInfoContext.Provider value={siteInfoVal}>
-      {ready && children}
+      {children}
     </SiteInfoContext.Provider>
   );
 }

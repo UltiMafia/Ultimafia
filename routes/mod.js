@@ -1324,6 +1324,35 @@ router.post("/clearUserContent", async (req, res) => {
         }
         break;
 
+      case "deathSound":
+        // Same effect as the user clicking Remove on their death sound
+        updateQuery = {
+          $set: {
+            deathSound: false,
+            deathSoundExt: "ogg",
+          },
+        };
+        modActionName = "Clear Death Sound";
+        {
+          const uploadPath = process.env.UPLOAD_PATH;
+          const exts =
+            constants.deathSoundAllowedExts || ["mp3", "ogg", "wav", "webm"];
+          for (const ext of exts) {
+            const deathSoundPath = `${uploadPath}/${userIdToClear}_deathSound.${ext}`;
+            if (fs.existsSync(deathSoundPath)) {
+              additionalOperations.push(
+                new Promise((resolve, reject) => {
+                  fs.unlink(deathSoundPath, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                  });
+                })
+              );
+            }
+          }
+        }
+        break;
+
       case "all":
         updateQuery = {
           $set: {
@@ -1333,6 +1362,8 @@ router.post("/clearUserContent", async (req, res) => {
             donorBio: "",
             customEmotes: [],
             profileBackground: false,
+            deathSound: false,
+            deathSoundExt: "ogg",
           },
         };
         modActionName = "Clear All User Content";
@@ -1347,6 +1378,24 @@ router.post("/clearUserContent", async (req, res) => {
               });
             })
           );
+        }
+        {
+          const uploadPathAll = process.env.UPLOAD_PATH;
+          const deathExts =
+            constants.deathSoundAllowedExts || ["mp3", "ogg", "wav", "webm"];
+          for (const ext of deathExts) {
+            const deathSoundPathAll = `${uploadPathAll}/${userIdToClear}_deathSound.${ext}`;
+            if (fs.existsSync(deathSoundPathAll)) {
+              additionalOperations.push(
+                new Promise((resolve, reject) => {
+                  fs.unlink(deathSoundPathAll, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                  });
+                })
+              );
+            }
+          }
         }
         additionalOperations.push(
           models.CustomEmote.updateMany(
@@ -3011,6 +3060,36 @@ router.get("/reports/:id", async (req, res) => {
   }
 });
 
+function autoAssignReportToAdmin(report, userId, status) {
+  if (!Array.isArray(report.assignees)) {
+    report.assignees = [];
+  }
+  const previousAssignees = [...report.assignees];
+  const hasOtherAssignees = report.assignees.some((id) => id !== userId);
+
+  if (hasOtherAssignees) {
+    report.assignees = [userId];
+    report.history.push({
+      status: status,
+      changedBy: userId,
+      timestamp: Date.now(),
+      action: "assignment",
+      assigneesAdded: [userId],
+      assigneesRemoved: previousAssignees.filter((id) => id !== userId),
+    });
+  } else if (!report.assignees.includes(userId)) {
+    report.assignees.push(userId);
+    report.history.push({
+      status: status,
+      changedBy: userId,
+      timestamp: Date.now(),
+      action: "assignment",
+      assigneesAdded: [userId],
+      assigneesRemoved: [],
+    });
+  }
+}
+
 router.post("/reports/:id/assign", async (req, res) => {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
@@ -3153,32 +3232,7 @@ router.post("/reports/:id/status", async (req, res) => {
 
     // Auto-assign when changing to in-progress
     if (status === "in-progress") {
-      const previousAssignees = [...report.assignees];
-      const hasOtherAssignees = report.assignees.some((id) => id !== userId);
-      
-      if (hasOtherAssignees) {
-        // Reassign to current admin if assigned to different admin
-        report.assignees = [userId];
-        report.history.push({
-          status: status,
-          changedBy: userId,
-          timestamp: Date.now(),
-          action: "assignment",
-          assigneesAdded: [userId],
-          assigneesRemoved: previousAssignees.filter((id) => id !== userId),
-        });
-      } else if (!report.assignees.includes(userId)) {
-        // Add current admin if not already assigned
-        report.assignees.push(userId);
-        report.history.push({
-          status: status,
-          changedBy: userId,
-          timestamp: Date.now(),
-          action: "assignment",
-          assigneesAdded: [userId],
-          assigneesRemoved: [],
-        });
-      }
+      autoAssignReportToAdmin(report, userId, status);
     }
 
     report.history.push({
@@ -3260,7 +3314,7 @@ router.post("/reports/:id/complete", async (req, res) => {
       }
       // Notes are required for violations
       if (!finalRuling.notes || !finalRuling.notes.trim()) {
-        res.status(400).send("Notes are required for violations.");
+        res.status(400).send("Decision summary is required.");
         return;
       }
 
@@ -3494,9 +3548,8 @@ router.post("/reports/:id/complete", async (req, res) => {
         : null;
       report.linkedBanId = ban ? ban.id : null;
     } else if (warning) {
-      // When warning, save notes (required)
       if (!notes || !notes.trim()) {
-        res.status(400).send("Notes are required for warnings.");
+        res.status(400).send("Decision summary is required.");
         return;
       }
       report.finalRuling = {
@@ -3504,12 +3557,13 @@ router.post("/reports/:id/complete", async (req, res) => {
         notes: notes.trim(),
       };
     } else {
-      // When dismissed, save notes if provided (optional)
-      report.finalRuling = notes
-        ? {
-            notes: notes,
-          }
-        : null;
+      if (!notes || !notes.trim()) {
+        res.status(400).send("Decision summary is required.");
+        return;
+      }
+      report.finalRuling = {
+        notes: notes.trim(),
+      };
     }
 
     report.status = "complete";
@@ -3518,32 +3572,7 @@ router.post("/reports/:id/complete", async (req, res) => {
     report.updatedAt = Date.now();
 
     // Auto-assign completing admin (reassign if assigned to different admin)
-    const previousAssignees = [...report.assignees];
-    const hasOtherAssignees = report.assignees.some((id) => id !== userId);
-    
-    if (hasOtherAssignees) {
-      // Reassign to current admin if assigned to different admin
-      report.assignees = [userId];
-      report.history.push({
-        status: "complete",
-        changedBy: userId,
-        timestamp: Date.now(),
-        action: "assignment",
-        assigneesAdded: [userId],
-        assigneesRemoved: previousAssignees.filter((id) => id !== userId),
-      });
-    } else if (!report.assignees.includes(userId)) {
-      // Add current admin if not already assigned
-      report.assignees.push(userId);
-      report.history.push({
-        status: "complete",
-        changedBy: userId,
-        timestamp: Date.now(),
-        action: "assignment",
-        assigneesAdded: [userId],
-        assigneesRemoved: [],
-      });
-    }
+    autoAssignReportToAdmin(report, userId, "complete");
 
     report.history.push({
       status: "complete",
@@ -3880,6 +3909,7 @@ router.post("/appeals/:id/approve", async (req, res) => {
     });
 
     if (appealReport) {
+      autoAssignReportToAdmin(appealReport, userId, "complete");
       appealReport.status = "complete";
       appealReport.completedAt = Date.now();
       appealReport.completedBy = userId;
@@ -3955,6 +3985,7 @@ router.post("/appeals/:id/reject", async (req, res) => {
     });
 
     if (appealReport) {
+      autoAssignReportToAdmin(appealReport, userId, "complete");
       appealReport.status = "complete";
       appealReport.completedAt = Date.now();
       appealReport.completedBy = userId;

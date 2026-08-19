@@ -342,13 +342,25 @@ module.exports = class Game {
   }
 
   processDeathQueue() {
+    const deathSounds = [];
+
     for (let item of this.deathQueue) {
       this.recordDead(item.player, item.dead);
 
-      if (item.dead && !item.player.alive)
+      if (item.dead && !item.player.alive) {
         this.broadcast("death", item.player.id);
-      else if (!item.dead && item.player.alive)
+        const soundUrl = item.player.getDeathSoundUrl
+          ? item.player.getDeathSoundUrl()
+          : null;
+        if (soundUrl) deathSounds.push(soundUrl);
+      } else if (!item.dead && item.player.alive) {
         this.broadcast("revival", item.player.id);
+      }
+    }
+
+    // Multiple death sounds: play one-by-one in random order (client queues them)
+    if (deathSounds.length > 0) {
+      this.broadcast("deathSounds", Random.randomizeArray(deathSounds));
     }
 
     this.deathQueue.empty();
@@ -3612,20 +3624,6 @@ module.exports = class Game {
         factionToPlayers[factionName].push(playerId);
       }
 
-      const alignmentRows = [];
-      for (const f of Object.keys(factionToPlayers)) {
-        const anyWon = factionToPlayers[f].some((pid) => winners.has(pid));
-        alignmentRows.push([f, gameTypeTag, anyWon]);
-      }
-
-      const roleRows = [];
-      for (const playerId in finalRoleByPlayer) {
-        const { roleName, modifier } = finalRoleByPlayer[playerId];
-        const roleKey = modifier ? `${roleName}:${modifier}` : roleName;
-        const won = winners.has(playerId);
-        roleRows.push([roleKey, gameTypeTag, won]);
-      }
-
       var rolePlays = {};
       var alignmentPlays = {};
       var roleWins = {};
@@ -3673,19 +3671,47 @@ module.exports = class Game {
         increments[`dayCountWins.${this.dayCount}`] = 1;
       }
 
+      // Fixed-size aggregates instead of unbounded $push of per-game rows.
+      // Competitive seasons concentrate play on few setups; row arrays were
+      // loading multi-MB setupStats into memory every game end (fortune calc).
+      const sanitizeStatKey = (key) =>
+        String(key == null ? "" : key).replace(/[.$]/g, "_");
+
+      for (const f of Object.keys(factionToPlayers)) {
+        const anyWon = factionToPlayers[f].some((pid) => winners.has(pid));
+        const safeF = sanitizeStatKey(f);
+        const base = `setupStats.alignmentAgg.${safeF}.${gameTypeTag}`;
+        increments[`${base}.games`] = (increments[`${base}.games`] || 0) + 1;
+        if (anyWon) {
+          increments[`${base}.wins`] = (increments[`${base}.wins`] || 0) + 1;
+        }
+      }
+
+      for (const playerId in finalRoleByPlayer) {
+        const { roleName, modifier } = finalRoleByPlayer[playerId];
+        const roleKey = sanitizeStatKey(
+          modifier ? `${roleName}:${modifier}` : roleName
+        );
+        const won = winners.has(playerId);
+        const base = `setupStats.roleAgg.${roleKey}.${gameTypeTag}`;
+        increments[`${base}.games`] = (increments[`${base}.games`] || 0) + 1;
+        if (won) {
+          increments[`${base}.wins`] = (increments[`${base}.wins`] || 0) + 1;
+        }
+      }
+
+      const lengthBase = `setupStats.lengthAgg.${gameTypeTag}`;
+      increments[`${lengthBase}.count`] =
+        (increments[`${lengthBase}.count`] || 0) + 1;
+      increments[`${lengthBase}.sumMs`] =
+        (increments[`${lengthBase}.sumMs`] || 0) + lengthMs;
+
       await models.SetupVersion.updateOne(
         { _id: new ObjectID(setupVersion._id) },
         {
           $inc: {
             ...increments,
             played: 1,
-          },
-          $push: {
-            "setupStats.alignmentRows": { $each: alignmentRows },
-            "setupStats.roleRows": { $each: roleRows },
-            "setupStats.gameLengthRows": {
-              $each: [[gameTypeTag, lengthMs]],
-            },
           },
         }
       ).exec();
@@ -3803,6 +3829,16 @@ module.exports = class Game {
 
     for (let player of this.players)
       if (!player.left) player.user.disconnect();
+
+    // Drop EventEmitter listeners so role/card closures cannot retain the game
+    // after it is removed from the process-local `games` map (GC help).
+    try {
+      if (this.events && typeof this.events.removeAllListeners === "function") {
+        this.events.removeAllListeners();
+      }
+    } catch (e) {
+      /* ignore */
+    }
 
     delete games[this.id];
     deprecationCheck();

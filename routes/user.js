@@ -399,7 +399,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive joined favoriteRoles roleIconCredits skillRating _id"
+        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner bannerExt setups games numFriends stats lastActive joined favoriteRoles roleIconCredits skillRating _id"
       )
       .populate({
         path: "setups",
@@ -1772,6 +1772,308 @@ router.post("/deathMessage", async function (req, res) {
   }
 });
 
+function removeUserDeathSoundFiles(userId) {
+  const uploadPath = process.env.UPLOAD_PATH;
+  if (!uploadPath) return;
+  for (const ext of constants.deathSoundAllowedExts) {
+    const p = `${uploadPath}/${userId}_deathSound.${ext}`;
+    try {
+      if (fs.existsSync(p)) fs.unlinkSync(p);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+}
+
+function deathSoundExtFromMime(mime, originalName) {
+  const m = (mime || "").toLowerCase();
+  if (m.includes("mpeg") || m === "audio/mp3") return "mp3";
+  if (m.includes("ogg") || m.includes("opus")) return "ogg";
+  if (m.includes("wav") || m.includes("wave")) return "wav";
+  if (m.includes("webm")) return "webm";
+  const name = String(originalName || "").toLowerCase();
+  const match = name.match(/\.([a-z0-9]+)$/);
+  if (match && constants.deathSoundAllowedExts.includes(match[1])) {
+    return match[1];
+  }
+  return null;
+}
+
+/**
+ * Best-effort duration (seconds) from raw audio bytes.
+ * Supports WAV (fmt+data), Ogg/WebM (crude granule/duration tags), MP3 (frame scan).
+ * Returns null when duration cannot be determined.
+ */
+function estimateAudioDurationSeconds(buffer, ext) {
+  if (!buffer || buffer.length < 16) return null;
+  try {
+    if (ext === "wav") {
+      // RIFF....WAVE
+      if (buffer.toString("ascii", 0, 4) !== "RIFF") return null;
+      let offset = 12;
+      let sampleRate = 0;
+      let byteRate = 0;
+      let dataSize = 0;
+      while (offset + 8 <= buffer.length) {
+        const chunkId = buffer.toString("ascii", offset, offset + 4);
+        const chunkSize = buffer.readUInt32LE(offset + 4);
+        if (chunkId === "fmt " && chunkSize >= 16) {
+          sampleRate = buffer.readUInt32LE(offset + 12);
+          byteRate = buffer.readUInt32LE(offset + 16);
+        } else if (chunkId === "data") {
+          dataSize = chunkSize;
+        }
+        offset += 8 + chunkSize + (chunkSize % 2);
+      }
+      if (byteRate > 0 && dataSize > 0) return dataSize / byteRate;
+      if (sampleRate > 0 && dataSize > 0) return dataSize / (sampleRate * 2);
+      return null;
+    }
+
+    if (ext === "mp3") {
+      // Skip ID3v2
+      let i = 0;
+      if (
+        buffer.length > 10 &&
+        buffer.toString("ascii", 0, 3) === "ID3"
+      ) {
+        const size =
+          ((buffer[6] & 0x7f) << 21) |
+          ((buffer[7] & 0x7f) << 14) |
+          ((buffer[8] & 0x7f) << 7) |
+          (buffer[9] & 0x7f);
+        i = 10 + size;
+      }
+      // Scan first MPEG frame for bitrate/sample-rate; estimate from file size
+      const bitrateTable = {
+        // MPEG1 Layer3
+        1: [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0],
+        // MPEG2/2.5 Layer3
+        2: [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160, 0],
+      };
+      const sampleRateTable = {
+        1: [44100, 48000, 32000],
+        2: [22050, 24000, 16000],
+        25: [11025, 12000, 8000],
+      };
+      while (i + 4 < buffer.length && i < 8192) {
+        if (buffer[i] === 0xff && (buffer[i + 1] & 0xe0) === 0xe0) {
+          const verBits = (buffer[i + 1] >> 3) & 0x3;
+          const layerBits = (buffer[i + 1] >> 1) & 0x3;
+          const bitrateIdx = (buffer[i + 2] >> 4) & 0xf;
+          const srIdx = (buffer[i + 2] >> 2) & 0x3;
+          if (layerBits !== 1 || bitrateIdx === 0 || bitrateIdx === 15 || srIdx === 3) {
+            i++;
+            continue;
+          }
+          let verKey = 1;
+          let srKey = 1;
+          if (verBits === 3) {
+            verKey = 1;
+            srKey = 1;
+          } else if (verBits === 2) {
+            verKey = 2;
+            srKey = 2;
+          } else if (verBits === 0) {
+            verKey = 2;
+            srKey = 25;
+          } else {
+            i++;
+            continue;
+          }
+          const bitrate = bitrateTable[verKey][bitrateIdx] * 1000;
+          const sampleRate = sampleRateTable[srKey][srIdx];
+          if (bitrate > 0 && sampleRate > 0) {
+            // Approximate duration from remaining payload
+            return ((buffer.length - i) * 8) / bitrate;
+          }
+        }
+        i++;
+      }
+      return null;
+    }
+
+    if (ext === "ogg") {
+      // Look for first OggS page with sample rate from Opus/Vorbis ident
+      // Fallback: crude estimate not available without demux; return null
+      return null;
+    }
+
+    if (ext === "webm") {
+      return null;
+    }
+  } catch (e) {
+    return null;
+  }
+  return null;
+}
+
+router.post("/deathSound", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const itemsOwned = await redis.getUserItemsOwned(userId);
+
+    if (!itemsOwned.deathSoundEnabled) {
+      errors.forbidden(
+        res,
+        "You must purchase Custom Death Sound from the Shop."
+      );
+      return;
+    }
+
+    const form = new formidable();
+    form.maxFileSize = constants.maxDeathSoundBytes;
+    form.maxFields = 5;
+
+    const [fields, files] = await form.parseAsync(req);
+    const file =
+      files.file && (Array.isArray(files.file) ? files.file[0] : files.file);
+    const filePath = file?.filepath || file?.path;
+    if (!filePath) {
+      errors.badRequest(res, "No audio file uploaded.");
+      return;
+    }
+
+    const mime = (file.type || file.mimetype || "").toLowerCase();
+    const originalName = file.name || file.originalFilename || "";
+    const ext = deathSoundExtFromMime(mime, originalName);
+    if (!ext || !constants.deathSoundAllowedExts.includes(ext)) {
+      errors.badRequest(
+        res,
+        "Death sound must be an mp3, ogg, or wav file (webm from the in-browser trimmer is also accepted)."
+      );
+      return;
+    }
+
+    const buffer = fs.readFileSync(filePath);
+    if (!buffer.length) {
+      errors.badRequest(res, "Uploaded file is empty.");
+      return;
+    }
+    if (buffer.length > constants.maxDeathSoundBytes) {
+      errors.payloadTooLarge(
+        res,
+        "Death sound must be less than 10 MB."
+      );
+      return;
+    }
+
+    // Client sends durationSeconds after trim; also estimate when possible
+    const clientDuration = parseFloat(
+      String(
+        (fields.durationSeconds &&
+          (Array.isArray(fields.durationSeconds)
+            ? fields.durationSeconds[0]
+            : fields.durationSeconds)) ||
+          ""
+      )
+    );
+    const estimated = estimateAudioDurationSeconds(buffer, ext);
+    const duration =
+      Number.isFinite(clientDuration) && clientDuration > 0
+        ? clientDuration
+        : estimated;
+
+    if (
+      duration != null &&
+      duration > constants.maxDeathSoundSeconds + 0.15
+    ) {
+      errors.badRequest(
+        res,
+        `Death sound must be at most ${constants.maxDeathSoundSeconds} seconds long.`
+      );
+      return;
+    }
+
+    // If we cannot measure duration and file is large, reject as a soft guard
+    // (client should always send a trimmed short clip after the editor dialog)
+    if (duration == null && buffer.length > 2 * 1024 * 1024) {
+      errors.badRequest(
+        res,
+        "Could not verify audio duration. Trim to 5 seconds in the editor, then upload again."
+      );
+      return;
+    }
+
+    const uploadPath = process.env.UPLOAD_PATH;
+    if (!uploadPath) {
+      errors.serverError(res, "Upload path is not configured.");
+      return;
+    }
+    if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath);
+
+    const tempPath = `${uploadPath}/${userId}_deathSound.${ext}.tmp`;
+    const finalPath = `${uploadPath}/${userId}_deathSound.${ext}`;
+    try {
+      fs.writeFileSync(tempPath, buffer);
+      removeUserDeathSoundFiles(userId);
+      fs.renameSync(tempPath, finalPath);
+
+      await models.User.updateOne(
+        { id: userId },
+        {
+          $set: {
+            deathSound: true,
+            deathSoundExt: ext,
+          },
+        }
+      ).exec();
+      await redis.cacheUserInfo(userId, true);
+
+      res.send({
+        success: true,
+        deathSound: true,
+        deathSoundExt: ext,
+        url: `/uploads/${userId}_deathSound.${ext}`,
+      });
+    } finally {
+      try {
+        if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+      } catch (cleanupErr) {
+        /* ignore */
+      }
+    }
+  } catch (e) {
+    if (e.message && e.message.indexOf("maxFileSize exceeded") === 0) {
+      errors.payloadTooLarge(res, "Death sound must be less than 10 MB.");
+      return;
+    }
+    logger.error(e);
+    errors.serverError(res, "Could not upload death sound. Please try again.");
+  }
+});
+
+router.delete("/deathSound", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const itemsOwned = await redis.getUserItemsOwned(userId);
+
+    if (!itemsOwned.deathSoundEnabled) {
+      errors.forbidden(
+        res,
+        "You must purchase Custom Death Sound from the Shop."
+      );
+      return;
+    }
+
+    removeUserDeathSoundFiles(userId);
+    await models.User.updateOne(
+      { id: userId },
+      {
+        $set: {
+          deathSound: false,
+          deathSoundExt: "ogg",
+        },
+      }
+    ).exec();
+    await redis.cacheUserInfo(userId, true);
+    res.send({ success: true, deathSound: false });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not remove death sound. Please try again.");
+  }
+});
+
 // Vanity URL routes moved to /api/vanityUrl
 
 router.post("/customEmote/create", async function (req, res) {
@@ -2192,6 +2494,34 @@ router.post("/settings/update", async function (req, res) {
       return;
     }
 
+    // Boolean settings: store real booleans (String(true)==="true" was confusing loaders/UI)
+    const BOOLEAN_SETTINGS = new Set([
+      "onlyFriendDMs",
+      "disablePokes",
+      "disablePg13Censor",
+      "disableAllCensors",
+      "hideDeleted",
+      "disableProTips",
+      "disableSnowstorm",
+      "expHighDpiCorrection",
+      "autoplay",
+      "collapseMedia",
+      "disableMediaAutoplay",
+      "hideStatistics",
+      "hideKarma",
+      "hidePointsNegative",
+      "hideJoinDate",
+      "hideDonorBadge",
+      "hideRankedModal",
+      "hideCompetitiveModal",
+      "ignoreTextColor",
+      "accessibleNameColors",
+      "ignoreDeathSounds",
+    ]);
+    if (BOOLEAN_SETTINGS.has(prop)) {
+      value = value === true || value === "true";
+    }
+
     if (prop === "siteColorScheme" && isRetroThemeForcedByCalendar()) {
       res.status(403);
       res.send("Site color scheme is locked on this date.");
@@ -2200,6 +2530,22 @@ router.post("/settings/update", async function (req, res) {
 
     if (prop === "fontFamily" && !["default", "system", "readable"].includes(value)) {
       errors.badRequest(res, "Invalid font family setting.");
+      return;
+    }
+
+    if (
+      prop === "nameFont" &&
+      !constants.nameFontOptions.includes(value)
+    ) {
+      errors.badRequest(res, "Invalid name font setting.");
+      return;
+    }
+
+    if (
+      prop === "animatedNameColor" &&
+      !constants.animatedNameColorOptions.includes(value)
+    ) {
+      errors.badRequest(res, "Invalid animated name color setting.");
       return;
     }
 
@@ -2256,6 +2602,74 @@ router.post("/settings/update", async function (req, res) {
     ) {
       errors.forbidden(res, "You must purchase text colors with coins from the Shop.");
       return;
+    }
+
+    if (prop === "nameFont" && !itemsOwned.nameFont) {
+      errors.forbidden(
+        res,
+        "You must purchase Custom Name Font with coins from the Shop."
+      );
+      return;
+    }
+
+    if (prop === "animatedNameColor") {
+      if (!itemsOwned.animatedNameColor) {
+        errors.forbidden(
+          res,
+          "You must purchase Animated Name Colors with coins from the Shop."
+        );
+        return;
+      }
+      if (value !== "none" && !itemsOwned.textColors) {
+        errors.forbidden(
+          res,
+          "You must purchase Name and Text Colors before using animated name colors."
+        );
+        return;
+      }
+      if (value === "tricolor" && !itemsOwned.tricolorAnimatedGradient) {
+        errors.forbidden(
+          res,
+          "You must purchase Tricolor Animated Gradient from the Shop."
+        );
+        return;
+      }
+    }
+
+    if (
+      prop === "nameGradientColorA" ||
+      prop === "nameGradientColorB"
+    ) {
+      if (!itemsOwned.animatedNameColor || !itemsOwned.textColors) {
+        errors.forbidden(
+          res,
+          "You must purchase Name and Text Colors and Animated Name Colors first."
+        );
+        return;
+      }
+      // Basic hex color validation (#RGB or #RRGGBB)
+      if (!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value)) {
+        errors.badRequest(res, "Invalid gradient color.");
+        return;
+      }
+    }
+
+    if (prop === "nameGradientColorC") {
+      if (
+        !itemsOwned.tricolorAnimatedGradient ||
+        !itemsOwned.animatedNameColor ||
+        !itemsOwned.textColors
+      ) {
+        errors.forbidden(
+          res,
+          "You must purchase Tricolor Animated Gradient first."
+        );
+        return;
+      }
+      if (!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value)) {
+        errors.badRequest(res, "Invalid gradient color.");
+        return;
+      }
     }
 
     if (prop === "deathMessage") {
@@ -2316,6 +2730,27 @@ router.post("/settings/update", async function (req, res) {
         errors.badRequest(res, "Invalid URL for media setting.");
         return;
       }
+    }
+
+    // Clearing name/text color restores system defaults (works in light + dark mode)
+    if (
+      (prop === "textColor" || prop === "nameColor") &&
+      (!value || value === "none" || value === "null" || value === "undefined")
+    ) {
+      const warnKey =
+        prop === "textColor" ? "settings.warnTextColor" : "settings.warnNameColor";
+      await models.User.updateOne(
+        { id: userId },
+        {
+          $unset: {
+            [`settings.${prop}`]: "",
+            [warnKey]: "",
+          },
+        }
+      );
+      await redis.cacheUserInfo(userId, true);
+      res.sendStatus(200);
+      return;
     }
 
     let unsetOperator = {};
@@ -2488,44 +2923,161 @@ router.post("/pronouns", async function (req, res) {
   }
 });
 
+function removeUserBannerFiles(userId) {
+  const uploadPath = process.env.UPLOAD_PATH;
+  for (const ext of ["webp", "gif", "png", "jpg", "jpeg"]) {
+    const p = `${uploadPath}/${userId}_banner.${ext}`;
+    try {
+      if (fs.existsSync(p)) fs.unlinkSync(p);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+}
+
 router.post("/banner", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var itemsOwned = await redis.getUserItemsOwned(userId);
 
-    if (!itemsOwned.customProfile) {
+    // Need Profile Customization and/or Animated Profile Banner
+    if (!itemsOwned.customProfile && !itemsOwned.animatedBanner) {
       errors.forbidden(
         res,
-        "You must purcahse profile customization with coins from the Shop."
+        "You must purchase Profile Customization or Animated Profile Banner from the Shop."
       );
       return;
     }
 
     var form = new formidable();
-    form.maxFileSize = 2 * 1024 * 1024;
+    // Allow large GIF/WebP uploads (up to 20 MB); animation only kept with add-on
+    form.maxFileSize = 20 * 1024 * 1024;
     form.maxFields = 1;
 
     var [fields, files] = await form.parseAsync(req);
+    const file =
+      files.image && (Array.isArray(files.image) ? files.image[0] : files.image);
+    // Optional chaining: missing upload must 400, not throw 500 on file.path
+    const filePath = file?.filepath || file?.path;
+    if (!filePath) {
+      errors.badRequest(res, "No image uploaded.");
+      return;
+    }
 
-    if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
-      fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
+    const uploadPath = process.env.UPLOAD_PATH;
+    if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath);
 
-    await sharp(files.image.path)
-      .webp({ quality: 100 })
-      .resize({
-        width: 900,
-        height: 300,
-        withoutEnlargement: true,
-        kernel: sharp.kernel.lanczos3,
-      })
-      .toFile(`${process.env.UPLOAD_PATH}/${userId}_banner.webp`);
-    await models.User.updateOne({ id: userId }, { $set: { banner: true } });
-    await redis.cacheUserInfo(userId, true);
+    const buffer = fs.readFileSync(filePath);
+    const mime = (file.type || file.mimetype || "").toLowerCase();
+    let metadata;
+    try {
+      metadata = await sharp(buffer, { animated: true }).metadata();
+    } catch (metaErr) {
+      errors.badRequest(res, "Could not read banner image.");
+      return;
+    }
 
-    res.sendStatus(200);
+    const pages = metadata.pages || 1;
+    const isAnimatedSource =
+      pages > 1 || mime === "image/gif" || metadata.format === "gif";
+
+    // Soft per-frame dimension check for animated sources
+    const frameW = metadata.width || 0;
+    const frameH = metadata.pageHeight || metadata.height || 0;
+    if (isAnimatedSource && (frameW > 1800 || frameH > 600)) {
+      errors.badRequest(
+        res,
+        "Banner frame dimensions must be at most 1800×600."
+      );
+      return;
+    }
+
+    let bannerExt = "webp";
+    // Only keep animation if the user owns the add-on
+    const keepAnimation = isAnimatedSource && !!itemsOwned.animatedBanner;
+
+    // Process into a temp file first so validation failures never delete the
+    // existing banner (e.g. animated PNG rejected after GIF/WebP check).
+    let tempPath = null;
+    try {
+      if (keepAnimation) {
+        // Preserve original GIF/WebP animation (up to 20 MB)
+        if (mime === "image/gif" || metadata.format === "gif") {
+          bannerExt = "gif";
+        } else if (mime === "image/webp" || metadata.format === "webp") {
+          bannerExt = "webp";
+        } else {
+          errors.badRequest(res, "Animated banners must be GIF or WebP.");
+          return;
+        }
+        tempPath = `${uploadPath}/${userId}_banner.${bannerExt}.tmp`;
+        fs.writeFileSync(tempPath, buffer);
+      } else {
+        // Static banner path: first frame only if source was animated GIF/WebP
+        if (!itemsOwned.customProfile && !itemsOwned.animatedBanner) {
+          errors.forbidden(
+            res,
+            "You must purchase Profile Customization for banners."
+          );
+          return;
+        }
+        // Users with only animatedBanner can still upload; without keepAnimation
+        // we freeze to a static webp so it never animates until they re-upload with add-on
+        // (or have customProfile for static uploads).
+        if (
+          !itemsOwned.customProfile &&
+          isAnimatedSource &&
+          !itemsOwned.animatedBanner
+        ) {
+          errors.forbidden(
+            res,
+            "You must purchase Profile Customization or Animated Profile Banner from the Shop."
+          );
+          return;
+        }
+
+        bannerExt = "webp";
+        tempPath = `${uploadPath}/${userId}_banner.webp.tmp`;
+        // pages: 1 / animated: false → first frame only for gifs
+        await sharp(buffer, { animated: false, pages: 1 })
+          .webp({ quality: 100 })
+          .resize({
+            width: 900,
+            height: 300,
+            withoutEnlargement: true,
+            kernel: sharp.kernel.lanczos3,
+          })
+          .toFile(tempPath);
+      }
+
+      // New banner is ready — replace existing files, then promote temp → final
+      const finalPath = `${uploadPath}/${userId}_banner.${bannerExt}`;
+      removeUserBannerFiles(userId);
+      fs.renameSync(tempPath, finalPath);
+      tempPath = null;
+
+      await models.User.updateOne(
+        { id: userId },
+        { $set: { banner: true, bannerExt } }
+      );
+      await redis.cacheUserInfo(userId, true);
+
+      res.sendStatus(200);
+    } finally {
+      if (tempPath) {
+        try {
+          if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+        } catch (cleanupErr) {
+          /* ignore */
+        }
+      }
+    }
   } catch (e) {
-    if (e.message.indexOf("maxFileSize exceeded") == 0)
-      errors.payloadTooLarge(res, "Image is too large, banner must be less than 1 MB");
+    if (e.message && e.message.indexOf("maxFileSize exceeded") == 0)
+      errors.payloadTooLarge(
+        res,
+        "Image is too large, banner must be less than 20 MB."
+      );
     else {
       logger.error(e);
       errors.serverError(res, "Could not upload banner image. Please try again.");
@@ -2537,10 +3089,12 @@ router.post("/banner/clear", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
 
-    var bannerPath = `${process.env.UPLOAD_PATH}/${userId}_banner.webp`;
-    if (fs.existsSync(bannerPath)) fs.unlinkSync(bannerPath);
+    removeUserBannerFiles(userId);
 
-    await models.User.updateOne({ id: userId }, { $set: { banner: false } });
+    await models.User.updateOne(
+      { id: userId },
+      { $set: { banner: false, bannerExt: "webp" } }
+    );
     await redis.cacheUserInfo(userId, true);
 
     res.sendStatus(200);
@@ -2628,44 +3182,173 @@ router.delete("/forumBanner", async function (req, res) {
   }
 });
 
+function removeUserAvatarFiles(userId) {
+  const uploadPath = process.env.UPLOAD_PATH;
+  for (const ext of ["webp", "gif", "png", "jpg", "jpeg"]) {
+    const p = `${uploadPath}/${userId}_avatar.${ext}`;
+    try {
+      if (fs.existsSync(p)) fs.unlinkSync(p);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+}
+
 router.post("/avatar", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
+    var itemsOwned = await redis.getUserItemsOwned(userId);
+
     var form = new formidable();
-    form.maxFileSize = 1024 * 1024;
+    // 25 MB only with Animated Profile Picture; static avatars stay 1 MB
+    form.maxFileSize = itemsOwned.animatedAvatar
+      ? 25 * 1024 * 1024
+      : 1 * 1024 * 1024;
     form.maxFields = 1;
 
     var [fields, files] = await form.parseAsync(req);
+    const file =
+      files.image && (Array.isArray(files.image) ? files.image[0] : files.image);
+    const filePath = file?.filepath || file?.path;
+    if (!filePath) {
+      errors.badRequest(res, "No image uploaded.");
+      return;
+    }
 
-    if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
-      fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
+    const uploadPath = process.env.UPLOAD_PATH;
+    if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath);
 
-    await sharp(files.image.path)
-      .webp({ quality: 100 })
-      .resize(100, 100, {
-        kernel: sharp.kernel.lanczos3,
-        fit: "cover",
-        position: "center",
-      })
-      .toFile(`${process.env.UPLOAD_PATH}/${userId}_avatar.webp`);
-    await models.User.updateOne({ id: userId }, { $set: { avatar: true } });
+    const buffer = fs.readFileSync(filePath);
+    const mime = (file.type || file.mimetype || "").toLowerCase();
+    let metadata;
+    try {
+      metadata = await sharp(buffer, { animated: true }).metadata();
+    } catch (metaErr) {
+      errors.badRequest(res, "Could not read avatar image.");
+      return;
+    }
+
+    const pages = metadata.pages || 1;
+    const isAnimatedSource =
+      pages > 1 || mime === "image/gif" || metadata.format === "gif";
+    // Only keep animation if the user owns the add-on
+    const keepAnimation = isAnimatedSource && !!itemsOwned.animatedAvatar;
+
+    // Soft per-frame dimension check for animated sources (before 100×100 resize)
+    const frameW = metadata.width || 0;
+    const frameH = metadata.pageHeight || metadata.height || 0;
+    if (isAnimatedSource && (frameW > 1024 || frameH > 1024)) {
+      errors.badRequest(
+        res,
+        "Avatar frame dimensions must be at most 1024×1024."
+      );
+      return;
+    }
+
+    // Always store as .webp so existing clients (/uploads/{id}_avatar.webp) work.
+    // Animated sources become animated WebP when keepAnimation is true.
+    let tempPath = null;
+    try {
+      tempPath = `${uploadPath}/${userId}_avatar.webp.tmp`;
+
+      if (keepAnimation) {
+        if (
+          !(
+            mime === "image/gif" ||
+            mime === "image/webp" ||
+            metadata.format === "gif" ||
+            metadata.format === "webp"
+          )
+        ) {
+          errors.badRequest(res, "Animated avatars must be GIF or WebP.");
+          return;
+        }
+        await sharp(buffer, { animated: true, limitInputPixels: false })
+          .resize(100, 100, {
+            kernel: sharp.kernel.lanczos3,
+            fit: "cover",
+            position: "center",
+          })
+          .webp({ quality: 90, effort: 4 })
+          .toFile(tempPath);
+      } else {
+        // Static path: first frame only if source was animated
+        await sharp(buffer, { animated: false, pages: 1 })
+          .webp({ quality: 100 })
+          .resize(100, 100, {
+            kernel: sharp.kernel.lanczos3,
+            fit: "cover",
+            position: "center",
+          })
+          .toFile(tempPath);
+      }
+
+      const finalPath = `${uploadPath}/${userId}_avatar.webp`;
+      removeUserAvatarFiles(userId);
+      fs.renameSync(tempPath, finalPath);
+      tempPath = null;
+
+      await models.User.updateOne({ id: userId }, { $set: { avatar: true } });
+      await redis.cacheUserInfo(userId, true);
+
+      models.SiteActivity.create({
+        id: shortid.generate(),
+        type: "avatarChange",
+        actorId: userId,
+        date: Date.now(),
+      }).catch(() => {});
+
+      res.sendStatus(200);
+    } finally {
+      if (tempPath) {
+        try {
+          if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+        } catch (cleanupErr) {
+          /* ignore */
+        }
+      }
+    }
+  } catch (e) {
+    if (e.message && e.message.indexOf("maxFileSize exceeded") == 0)
+      errors.payloadTooLarge(
+        res,
+        itemsOwned && itemsOwned.animatedAvatar
+          ? "Image is too large, animated avatar must be less than 25 MB."
+          : "Image is too large, avatar must be less than 1 MB."
+      );
+    else {
+      logger.error(e);
+      errors.serverError(res, "Could not upload avatar image. Please try again.");
+    }
+  }
+});
+
+router.post("/avatar/delete", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+
+    await models.User.updateOne({ id: userId }, { $set: { avatar: false } });
     await redis.cacheUserInfo(userId, true);
+
+    // Best-effort delete of uploaded files (default letter avatar when avatar is false)
+    try {
+      removeUserAvatarFiles(userId);
+    } catch (fileErr) {
+      logger.warn(fileErr);
+    }
 
     models.SiteActivity.create({
       id: shortid.generate(),
       type: "avatarChange",
       actorId: userId,
+      meta: { removed: true },
       date: Date.now(),
     }).catch(() => {});
 
     res.sendStatus(200);
   } catch (e) {
-    if (e.message.indexOf("maxFileSize exceeded") == 0)
-      errors.payloadTooLarge(res, "Image is too large, avatar must be less than 1 MB.");
-    else {
-      logger.error(e);
-      errors.serverError(res, "Could not upload avatar image. Please try again.");
-    }
+    logger.error(e);
+    errors.serverError(res, "Could not remove avatar. Please try again.");
   }
 });
 

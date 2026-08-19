@@ -63,7 +63,12 @@ var schemas = {
     discordName: String,
     discordUsername: String,
     avatar: Boolean,
+    deathSound: Boolean,
+    // File extension for custom death sound (mp3, ogg, wav, webm)
+    deathSoundExt: { type: String, default: "ogg" },
     banner: Boolean,
+    // File extension for profile banner (webp static, or gif/webp animated)
+    bannerExt: { type: String, default: "webp" },
     forumBanner: Boolean,
     profileBackground: Boolean,
     bio: {
@@ -94,6 +99,14 @@ var schemas = {
       accessibleNameColors: { type: Boolean, default: false },
       nameColor: String,
       warnNameColor: String,
+      // Cosmetic name font for in-game player list (not site-wide, not chat body)
+      nameFont: { type: String, default: "default" },
+      // Animated name color style: none | pulse | glow | rainbow | gradient
+      animatedNameColor: { type: String, default: "none" },
+      // Two colors used when animatedNameColor === "gradient"
+      nameGradientColorA: { type: String, default: "#ff0040" },
+      nameGradientColorB: { type: String, default: "#00c2ff" },
+      nameGradientColorC: { type: String, default: "#3dff6a" },
       onlyFriendDMs: { type: Boolean, default: false },
       disablePg13Censor: { type: Boolean, default: false },
       disableAllCensors: { type: Boolean, default: false },
@@ -107,7 +120,11 @@ var schemas = {
       expHighDpiCorrection: { type: Boolean, default: false },
       roleSkins: String,
       autoplay: { type: Boolean, default: false },
+      // Viewer preference: never autoplay profile/family (or other) media embeds
+      disableMediaAutoplay: { type: Boolean, default: false },
       youtube: String,
+      // Collapse profile media player to a compact bar while still playing
+      collapseMedia: { type: Boolean, default: false },
       hideStatistics: { type: Boolean, default: false },
       hideKarma: { type: Boolean, default: false },
       hidePointsNegative: { type: Boolean, default: true },
@@ -117,6 +134,8 @@ var schemas = {
       hideRankedModal: { type: Boolean, default: false },
       hideCompetitiveModal: { type: Boolean, default: false },
       deathMessage: String,
+      // Viewer preference: do not play other players' custom death sounds
+      ignoreDeathSounds: { type: Boolean, default: false },
       vanityUrl: { type: String, default: "" },
       backgroundRepeatMode: { type: String, default: "repeat" },
     },
@@ -177,8 +196,14 @@ var schemas = {
       twoCharName: { type: Number, default: 0 },
       oneCharName: { type: Number, default: 0 },
       textColors: { type: Number, default: 0 },
+      nameFont: { type: Number, default: 0 },
+      animatedNameColor: { type: Number, default: 0 },
+      tricolorAnimatedGradient: { type: Number, default: 0 },
+      animatedBanner: { type: Number, default: 0 },
+      animatedAvatar: { type: Number, default: 0 },
       deathMessageEnabled: { type: Number, default: 0 },
       deathMessageChange: { type: Number, default: 0 },
+      deathSoundEnabled: { type: Number, default: 0 },
       anonymousDeck: { type: Number, default: 0 },
       wordDeck: { type: Number, default: 0 },
       customEmotes: { type: Number, default: 0 },
@@ -303,11 +328,22 @@ var schemas = {
     alignmentPlays: {},
     alignmentWins: {},
     dayCountWins: {},
-    // Per-game stats (clean games only: no leavers, no veg). Rows are [factionOrRoleKey, gameType, wonBool] or [gameType, lengthMs].
+    // Per-game stats (clean games only: no leavers, no veg).
+    // Prefer fixed-size aggregates (alignmentAgg/roleAgg/lengthAgg) — competitive
+    // seasons used to $push unbounded *Rows arrays, loading multi-MB setupStats
+    // into memory on every game end (fortune) and setup page view.
+    // Legacy *Rows arrays may still exist until migrations/compactSetupStatsRows.js runs.
     setupStats: {
       alignmentWinRates: { type: mongoose.Schema.Types.Mixed, default: {} },
       roleWinRates: { type: mongoose.Schema.Types.Mixed, default: {} },
       gameLengths: { type: Array, default: [] },
+      // faction -> gameType -> { wins, games }
+      alignmentAgg: { type: mongoose.Schema.Types.Mixed, default: {} },
+      // roleKey -> gameType -> { wins, games }
+      roleAgg: { type: mongoose.Schema.Types.Mixed, default: {} },
+      // gameType -> { sumMs, count }
+      lengthAgg: { type: mongoose.Schema.Types.Mixed, default: {} },
+      // LEGACY unbounded per-game rows (no longer written; kept for backcompat reads)
       alignmentRows: { type: [mongoose.Schema.Types.Mixed], default: [] },
       roleRows: { type: [mongoose.Schema.Types.Mixed], default: [] },
       gameLengthRows: { type: [mongoose.Schema.Types.Mixed], default: [] },
@@ -882,6 +918,13 @@ var schemas = {
     id: { type: String, index: true, unique: true },
     name: { type: String, required: true, maxlength: 20 },
     avatar: { type: Boolean, default: false },
+    // Family page header banner (3:1, like profile banners)
+    banner: { type: Boolean, default: false },
+    bannerExt: { type: String, default: "webp" },
+    // Family music/media player (YouTube, Spotify, etc.) — requires familyMusicPlayer perk
+    mediaUrl: { type: String, default: "" },
+    mediaAutoplay: { type: Boolean, default: false },
+    mediaCollapse: { type: Boolean, default: false },
     background: { type: Boolean, default: false },
     backgroundRepeatMode: {
       type: String,

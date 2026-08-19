@@ -183,7 +183,7 @@ async function cacheUserInfo(userId, reset) {
 
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "_id id name avatar banner forumBanner profileBackground blockedUsers settings customEmotes customStickers itemsOwned nameChanged bdayChanged birthday pronouns achievements redHearts goldHearts points dailyChallengesCompleted dailyChallenges joined lastActive"
+        "_id id name avatar deathSound deathSoundExt banner forumBanner profileBackground blockedUsers settings customEmotes customStickers itemsOwned nameChanged bdayChanged birthday pronouns achievements redHearts goldHearts points dailyChallengesCompleted dailyChallenges joined lastActive"
       )
       .populate([
         {
@@ -235,6 +235,14 @@ async function cacheUserInfo(userId, reset) {
     await client.setAsync(`user:${userId}:info:id`, userId);
     await client.setAsync(`user:${userId}:info:name`, user.name);
     await client.setAsync(`user:${userId}:info:avatar`, user.avatar || false);
+    await client.setAsync(
+      `user:${userId}:info:deathSound`,
+      user.deathSound || false
+    );
+    await client.setAsync(
+      `user:${userId}:info:deathSoundExt`,
+      user.deathSoundExt || "ogg"
+    );
     await client.setAsync(
       `user:${userId}:info:forumBanner`,
       user.forumBanner || false
@@ -299,6 +307,8 @@ async function cacheUserInfo(userId, reset) {
   client.expire(`user:${userId}:info:id`, 3600);
   client.expire(`user:${userId}:info:name`, 3600);
   client.expire(`user:${userId}:info:avatar`, 3600);
+  client.expire(`user:${userId}:info:deathSound`, 3600);
+  client.expire(`user:${userId}:info:deathSoundExt`, 3600);
   client.expire(`user:${userId}:info:forumBanner`, 3600);
   client.expire(`user:${userId}:info:profileBackground`, 3600);
   client.expire(`user:${userId}:info:vanityUrl`, 3600);
@@ -327,6 +337,8 @@ async function deleteUserInfo(userId) {
   await client.delAsync(`user:${userId}:info:id`);
   await client.delAsync(`user:${userId}:info:name`);
   await client.delAsync(`user:${userId}:info:avatar`);
+  await client.delAsync(`user:${userId}:info:deathSound`);
+  await client.delAsync(`user:${userId}:info:deathSoundExt`);
   await client.delAsync(`user:${userId}:info:forumBanner`);
   await client.delAsync(`user:${userId}:info:profileBackground`);
   await client.delAsync(`user:${userId}:info:vanityUrl`);
@@ -360,6 +372,8 @@ async function getUserInfo(userId) {
       `user:${userId}:info:id`,
       `user:${userId}:info:name`,
       `user:${userId}:info:avatar`,
+      `user:${userId}:info:deathSound`,
+      `user:${userId}:info:deathSoundExt`,
       `user:${userId}:info:forumBanner`,
       `user:${userId}:info:profileBackground`,
       `user:${userId}:info:nameChanged`,
@@ -389,6 +403,8 @@ async function getUserInfo(userId) {
     id,
     name,
     avatar,
+    deathSound,
+    deathSoundExt,
     forumBanner,
     profileBackground,
     nameChanged,
@@ -417,6 +433,8 @@ async function getUserInfo(userId) {
   info.id = id;
   info.name = name;
   info.avatar = avatar === "true";
+  info.deathSound = deathSound === "true";
+  info.deathSoundExt = deathSoundExt || "ogg";
   info.forumBanner = forumBanner === "true";
   info.profileBackground = profileBackground === "true";
   info.nameChanged = nameChanged === "true";
@@ -670,6 +688,9 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
     round: null,
     allowedSetups: [],
     gameCompletions: [],
+    // setupId -> number of completed competitive games this round
+    // (unique games only; excludes veg/broken/refunded/invalid)
+    setupPlayCounts: {},
     standings: [],
     users: {},
     nextEvent: null,
@@ -797,6 +818,20 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
   for (let gameCompletion of roundInfo.gameCompletions) {
     gameCompletion.game.status = "Finished";
   }
+
+  // Count completed games per setup for the selected round.
+  // gameCompletions is already unique-by-game and valid:true only, and
+  // CompetitiveGameCompletion is only written when a competitive game finishes
+  // without being demoted (veg/leave integrity break).
+  const setupPlayCounts = {};
+  for (const gameCompletion of roundInfo.gameCompletions) {
+    const setup = gameCompletion.game && gameCompletion.game.setup;
+    if (!setup) continue;
+    const setupId = setup.id || String(setup._id);
+    if (!setupId) continue;
+    setupPlayCounts[setupId] = (setupPlayCounts[setupId] || 0) + 1;
+  }
+  roundInfo.setupPlayCounts = setupPlayCounts;
 
   // Accumulate points by user ID
   for (const gameCompletion of roundInfo.gameCompletions) {

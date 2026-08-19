@@ -79,9 +79,9 @@ const RULES_SECTIONS = [
     ],
     bulletsIntro: "Including but not limited to:",
     bullets: [
-      "Attacks on intelligence or ability.[a]",
-      "Targeted deliberate antagonisation. [b]",
-      "Conduct intended to intimidate or demean, even when ‘justified’.[c]",
+      "Attacks on intelligence or ability.",
+      "Targeted deliberate antagonisation.",
+      "Conduct intended to intimidate or demean, even when ‘justified’.",
       "Continuing behaviour or conduct that has been clearly identified as upsetting. (i.e. “Stop clause”)",
       "Creating accounts with the intent to defame or frame, including impersonation.",
     ],
@@ -195,7 +195,7 @@ const RULES_SECTIONS = [
     ],
     bulletsIntro: "Including but not limited to:",
     bullets: [
-      "Purposefully taking actions or making claims that hinder your win condition.",
+      "Taking actions or making claims to purposefully hinder your win condition.",
       "Drawing the game when there is still a path to victory.",
       "Prioritising another player’s loss at the cost of your own win condition.",
     ],
@@ -476,7 +476,7 @@ export default function Rules() {
         UltiMafia Rules of Conduct
       </Typography>
       <Typography variant="body2" color="text.secondary" paragraph>
-        Last Updated: June 2, 2026
+        Last Updated: August 15, 2026
       </Typography>
 
       <Tabs value={selectedTab} onChange={handleTabChange}>

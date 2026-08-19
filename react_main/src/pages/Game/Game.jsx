@@ -208,6 +208,8 @@ export default function Game() {
   const playersRef = useRef();
   const selfRef = useRef();
   const noLeaveRef = useRef();
+  const ignoreDeathSoundsRef = useRef(!!user?.settings?.ignoreDeathSounds);
+  const deathSoundVolumeRef = useRef(1);
 
   const { playAudio, loadAudioFiles, stopAudio, stopAudios } = useAudio(settings);
   const siteInfo = useContext(SiteInfoContext);
@@ -435,6 +437,17 @@ export default function Game() {
   }, [finished]);
 
   useEffect(() => {
+    ignoreDeathSoundsRef.current = !!user?.settings?.ignoreDeathSounds;
+  }, [user?.settings?.ignoreDeathSounds]);
+
+  useEffect(() => {
+    const v = Number(settings?.deathSoundVolume);
+    deathSoundVolumeRef.current = Number.isFinite(v)
+      ? Math.max(0, Math.min(1, v))
+      : 1;
+  }, [settings?.deathSoundVolume]);
+
+  useEffect(() => {
     updateSettings({ type: "load" });
 
     if (!review) {
@@ -509,6 +522,15 @@ export default function Game() {
                 data.users[i] && data.users[i].settings.customEmotes,
               customStickers:
                 data.users[i] && data.users[i].settings.customStickers,
+              nameFont: data.users[i] && data.users[i].settings.nameFont,
+              animatedNameColor:
+                data.users[i] && data.users[i].settings.animatedNameColor,
+              nameGradientColorA:
+                data.users[i] && data.users[i].settings.nameGradientColorA,
+              nameGradientColorB:
+                data.users[i] && data.users[i].settings.nameGradientColorB,
+              nameGradientColorC:
+                data.users[i] && data.users[i].settings.nameGradientColorC,
               left: data.left.indexOf(data.players[i]) !== -1,
             };
           }
@@ -525,6 +547,20 @@ export default function Game() {
                 data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.customEmotes,
               customStickers:
                 data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.customStickers,
+              nameFont:
+                data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.nameFont,
+              animatedNameColor:
+                data.spectatorsUsers[i] &&
+                data.spectatorsUsers[i].settings.animatedNameColor,
+              nameGradientColorA:
+                data.spectatorsUsers[i] &&
+                data.spectatorsUsers[i].settings.nameGradientColorA,
+              nameGradientColorB:
+                data.spectatorsUsers[i] &&
+                data.spectatorsUsers[i].settings.nameGradientColorB,
+              nameGradientColorC:
+                data.spectatorsUsers[i] &&
+                data.spectatorsUsers[i].settings.nameGradientColorC,
               left: data.left.indexOf(data.spectators[i]) !== -1,
             };
           }
@@ -714,6 +750,41 @@ export default function Game() {
         type: "death",
         playerId,
       });
+    });
+
+    // Custom death sounds: server sends URLs already shuffled; play one-by-one
+    socket.on("deathSounds", (urls) => {
+      if (!Array.isArray(urls) || urls.length === 0) return;
+      // User preference: skip all custom death sounds (ref stays current mid-game)
+      if (ignoreDeathSoundsRef.current) return;
+
+      let chain = Promise.resolve();
+      for (const url of urls) {
+        if (typeof url !== "string" || !url.length) continue;
+        chain = chain.then(
+          () =>
+            new Promise((resolve) => {
+              try {
+                const audio = new Audio(url);
+                // Dedicated local slider (gameSettings.deathSoundVolume)
+                audio.volume = deathSoundVolumeRef.current;
+                const done = () => resolve();
+                audio.addEventListener("ended", done, { once: true });
+                audio.addEventListener("error", done, { once: true });
+                // Cap hang if metadata is bad (sounds are max 5s)
+                const timeout = setTimeout(done, 6000);
+                audio.addEventListener(
+                  "ended",
+                  () => clearTimeout(timeout),
+                  { once: true }
+                );
+                audio.play().catch(done);
+              } catch {
+                resolve();
+              }
+            })
+        );
+      }
     });
 
     socket.on("revival", (playerId) => {
@@ -2425,6 +2496,11 @@ function Message(props) {
                 nameColorSwatch={
                   accessibleNameColors && rawNameColor ? rawNameColor : undefined
                 }
+                nameFont={player.nameFont}
+                animatedNameColor={player.animatedNameColor}
+                nameGradientColorA={player.nameGradientColorA}
+                nameGradientColorB={player.nameGradientColorB}
+                nameGradientColorC={player.nameGradientColorC}
                 noLink
                 small={smallAvatar}
                 absoluteLeftAvatarPx={absoluteLeftAvatarPx}
@@ -3373,6 +3449,11 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
               ? player.nameColor
               : undefined
           }
+          nameFont={player.nameFont}
+          animatedNameColor={player.animatedNameColor}
+          nameGradientColorA={player.nameGradientColorA}
+          nameGradientColorB={player.nameGradientColorB}
+          nameGradientColorC={player.nameGradientColorC}
           active={activity.speaking[player.id]}
           noLink={stateViewing >= 0 && game.options.anonymousGame}
           includeMiniprofile
@@ -5177,6 +5258,15 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
       value: settings.sfxVolume,
     },
     {
+      label: "Death Sound Volume",
+      ref: "deathSoundVolume",
+      type: "range",
+      min: 0,
+      max: 1,
+      step: 0.1,
+      value: settings.deathSoundVolume,
+    },
+    {
       label: "Music Volume",
       ref: "musicVolume",
       type: "range",
@@ -6105,6 +6195,7 @@ export function useSettingsReducer() {
     votingLog: true,
     timestamps: true,
     sfxVolume: 1,
+    deathSoundVolume: 1,
     musicVolume: 1,
     pregameMusicVolume: 1,
     importantVolume: 1,
@@ -6159,10 +6250,16 @@ export function useSettingsReducer() {
         copy.importantVolume,
         defaultSettings.importantVolume
       );
+      // Dedicated death-sound channel (defaults to full volume if unset/cleared)
+      const derivedDeathSound = clampVolume(
+        copy.deathSoundVolume,
+        defaultSettings.deathSoundVolume
+      );
 
       for (const key of Object.keys(normalized)) {
         if (
           key === "sfxVolume" ||
+          key === "deathSoundVolume" ||
           key === "musicVolume" ||
           key === "pregameMusicVolume" ||
           key === "importantVolume"
@@ -6175,6 +6272,7 @@ export function useSettingsReducer() {
       }
 
       normalized.sfxVolume = derivedSfx;
+      normalized.deathSoundVolume = derivedDeathSound;
       normalized.musicVolume = derivedMusic;
       normalized.pregameMusicVolume = derivedPregameMusic;
       normalized.importantVolume = derivedUrgent;
