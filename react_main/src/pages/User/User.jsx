@@ -625,17 +625,19 @@ export function NameWithAvatar(props) {
   const autoColor = user.autoContrastColor(color);
   const nameFontClass =
     nameFont && nameFont !== "default" ? `name-font-${nameFont}` : "";
+  // Dead names stay red; skip cosmetics that would override .user-name.dead
   const nameAnimClass =
-    animatedNameColor && animatedNameColor !== "none"
+    !dead && animatedNameColor && animatedNameColor !== "none"
       ? `name-anim-${animatedNameColor}`
       : "";
   // Rainbow/patriotic/gradient/tricolor use background-clip
   const usesClipText =
-    animatedNameColor === "rainbow" ||
-    animatedNameColor === "patriotic" ||
-    animatedNameColor === "gradient" ||
-    animatedNameColor === "tricolor";
-  const useSolidNameColor = autoColor && !usesClipText;
+    !dead &&
+    (animatedNameColor === "rainbow" ||
+      animatedNameColor === "patriotic" ||
+      animatedNameColor === "gradient" ||
+      animatedNameColor === "tricolor");
+  const useSolidNameColor = !dead && autoColor && !usesClipText;
   const nameStyle = {
     ...(useSolidNameColor ? { color: autoColor } : {}),
     display: "inline",
@@ -713,7 +715,7 @@ export function NameWithAvatar(props) {
           style={nameStyle}
         >
           <Stack direction="row" spacing={0.5} alignItems="center">
-            {nameColorSwatch && (
+            {nameColorSwatch && !dead && (
               <span
                 className={`name-color-swatch ${
                   small ? "name-color-swatch-small" : "name-color-swatch-regular"

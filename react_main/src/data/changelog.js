@@ -36,16 +36,16 @@ export const CHANGELOG_CATEGORIES = [
 /** @type {ChangelogRelease[]} */
 export const CHANGELOG = [
   {
-    id: "2026-08-19-comp-refund-gold-hearts",
+    id: "2026-08-19-graveyard-dead-name-color",
     date: "2026-08-19",
-    title: "Competitive refunds keep remaining gold hearts",
-    prs: [2959],
+    title: "Dead names stay red in the graveyard",
+    prs: [2958],
     categories: {
       bugfixes: [
-        "Refunding a competitive game returns the spent gold heart instead of setting gold hearts to 0",
+        "Graveyard names stay red when dead, even if you have an animated name color",
       ],
-      community: [
-        "Mod Refund Game no longer wipes a player's leftover gold hearts for that competitive round",
+      game: [
+        "Animated name colors no longer show on dead names in the graveyard player list or graveyard chat",
       ],
     },
   },
