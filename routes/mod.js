@@ -2230,6 +2230,7 @@ router.post("/refundGame", async (req, res) => {
     let skippedCount = 0;
     let lastPlayerCount = 0;
     let heartLabel = "red";
+    const goldHeartsRefundedUsers = new Set();
 
     for (const game of games) {
       if (!game.endTime) {
@@ -2444,8 +2445,10 @@ router.post("/refundGame", async (req, res) => {
             updateOps.$set.redHearts = redHeartCapacity;
           }
 
-          if (game.competitive) {
-            updateOps.$set.goldHearts = constants.initialGoldHeartCapacity;
+          // Restore the 1 gold heart charged at start, without wiping leftovers.
+          if (game.competitive && !goldHeartsRefundedUsers.has(userIdToRefund)) {
+            incOps.goldHearts = 1;
+            goldHeartsRefundedUsers.add(userIdToRefund);
           }
 
           // Revert fortune/misfortune points

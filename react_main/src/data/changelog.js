@@ -36,6 +36,19 @@ export const CHANGELOG_CATEGORIES = [
 /** @type {ChangelogRelease[]} */
 export const CHANGELOG = [
   {
+    id: "2026-08-19-comp-refund-gold-hearts",
+    date: "2026-08-19",
+    title: "Competitive refunds keep remaining gold hearts",
+    categories: {
+      bugfixes: [
+        "Refunding a competitive game returns the spent gold heart instead of setting gold hearts to 0",
+      ],
+      community: [
+        "Mod Refund Game no longer wipes a player's leftover gold hearts for that competitive round",
+      ],
+    },
+  },
+  {
     id: "2026-08-19-custom-stickers",
     date: "2026-08-19",
     title: "Purchasable custom stickers",
