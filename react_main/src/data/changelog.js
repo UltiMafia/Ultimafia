@@ -39,6 +39,7 @@ export const CHANGELOG = [
     id: "2026-08-19-comp-refund-gold-hearts",
     date: "2026-08-19",
     title: "Competitive refunds keep remaining gold hearts",
+    prs: [2959],
     categories: {
       bugfixes: [
         "Refunding a competitive game returns the spent gold heart instead of setting gold hearts to 0",
