@@ -76,7 +76,7 @@ export default function Newspaper(props) {
                   />
                 </div>
               )}
-              <div className="newspaper-paragraph">{emotify(winMessage)}</div>
+              <div className="newspaper-paragraph">{emotify(winMessage, null, null, { system: true })}</div>
             </div>
           </div>
         );
@@ -168,7 +168,7 @@ export default function Newspaper(props) {
               className="newspaper-paragraph win-message-text"
               style={{ flex: "1", minWidth: 0 }}
             >
-              {emotify(winMessage)}
+              {emotify(winMessage, null, null, { system: true })}
             </div>
           </div>
         </div>
@@ -202,7 +202,7 @@ export default function Newspaper(props) {
           />
         </div>
 
-        <div className="newspaper-paragraph">{emotify(death.deathMessage)}</div>
+        <div className="newspaper-paragraph">{emotify(death.deathMessage, null, null, { system: true })}</div>
       </div>
       {death.revealMessage && (
         <div className="newspaper-paragraph">
@@ -215,7 +215,7 @@ export default function Newspaper(props) {
       )}
 
       {death.lastWill && (
-        <div className="newspaper-paragraph">{emotify(death.lastWill)}</div>
+        <div className="newspaper-paragraph">{emotify(death.lastWill, null, null, { system: true })}</div>
       )}
     </div>
   ));
@@ -237,19 +237,19 @@ export default function Newspaper(props) {
 // --- Helper Functions ---
 
 const ALIGNMENT_TEXT_MAP = {
-  Village: "Village 💙",
-  Mafia: "Mafia 🔪",
-  Cult: "Cult 🦑",
-  Independent: "Independent ✨",
-  Event: "Event ⚡",
-  Resistance: "Resistance ✊",
-  Spies: "Spies 🕵️",
-  Town: "Village 💙",
-  Host: "Host 🎤",
-  Liberals: "Liberals 🇺🇸",
-  Fascists: "Fascists 🛠️",
-  Liars: "Liars 🤥",
-  Army: "Army ⚔️",
+  Village: "Village \ud83d\udc99",
+  Mafia: "Mafia \ud83d\udd2a",
+  Cult: "Cult \ud83e\udd91",
+  Independent: "Independent \u2728",
+  Event: "Event \u26a1",
+  Resistance: "Resistance \u270a",
+  Spies: "Spies \ud83d\udd75\ufe0f",
+  Town: "Village \ud83d\udc99",
+  Host: "Host \ud83c\udfa4",
+  Liberals: "Liberals \ud83c\uddfa\ud83c\uddf8",
+  Fascists: "Fascists \ud83e\ude9a",
+  Liars: "Liars \ud83e\udd25",
+  Army: "Army \u2694\ufe0f",
 };
 
 function RoleNamePopover({ roleName, gameType }) {

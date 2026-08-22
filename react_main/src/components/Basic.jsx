@@ -194,7 +194,12 @@ export function UserText(props) {
     // Any effects that inject elements need to be added after this point because the text property changes
     // throughout this useEffect function
     if (props.emotify)
-      text = emotify(text, props.customEmotes, props.customStickers);
+      text = emotify(
+        text,
+        props.systemMessage ? null : props.customEmotes,
+        props.systemMessage ? null : props.customStickers,
+        props.systemMessage ? { system: true } : undefined
+      );
 
     if (props.slangify)
       text = slangify({
@@ -207,7 +212,7 @@ export function UserText(props) {
     if (props.roleify) text = roleifySegments(text, siteInfo);
 
     setContent(text);
-  }, [props.text, props.terminologyEmoticons, props.customEmotes, props.customStickers]);
+  }, [props.text, props.terminologyEmoticons, props.customEmotes, props.customStickers, props.systemMessage]);
 
   return content ?? "";
 }
@@ -456,4 +461,4 @@ export function useOnOutsideClick(refs, action) {
 }
 
 export const youtubeRegex =
-  /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
+  /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=([^#\&\?]{11}).*/;
