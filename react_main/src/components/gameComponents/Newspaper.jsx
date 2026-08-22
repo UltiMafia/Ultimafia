@@ -247,7 +247,7 @@ const ALIGNMENT_TEXT_MAP = {
   Town: "Village 💙",
   Host: "Host 🎤",
   Liberals: "Liberals 🇺🇸",
-  Fascists: "Fascists \uD83D\uDEE0\uFE0F",
+  Fascists: "Fascists 🛠️",
   Liars: "Liars 🤥",
   Army: "Army ⚔️",
 };
