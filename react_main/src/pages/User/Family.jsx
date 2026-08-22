@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 
 import { UserContext, SiteInfoContext } from "Contexts";
+import { FamilyAvatarImage } from "utils/avatarUrl";
 import { useErrorAlert } from "components/Alerts";
 import { filterProfanity } from "components/Basic";
 import { TextEditor } from "components/Form";
@@ -381,16 +382,10 @@ export default function Family() {
                 }}
               >
                 {family.avatar && (
-                  <div
-                    style={{
-                      width: "100px",
-                      height: "100px",
-                      borderRadius: "50%",
-                      backgroundImage: `url(/uploads/${family.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      flexShrink: 0,
-                    }}
+                  <FamilyAvatarImage
+                    id={family.id}
+                    size={100}
+                    cacheVal={siteInfo.cacheVal}
                   />
                 )}
                 <Box>

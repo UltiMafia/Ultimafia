@@ -31,6 +31,7 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import ImageViewer from "components/ImageViewer";
 import Miniprofile from "components/Miniprofile";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
+import { useAvatarImageUrl } from "utils/avatarUrl";
 
 import santaDir from "images/holiday/santahat.png";
 
@@ -419,6 +420,17 @@ export function Avatar(props) {
   const inGame = props.inGame;
 
   const siteInfo = useContext(SiteInfoContext);
+  const isDeckAvatar =
+    !!deckProfile ||
+    (typeof hasImage === "string" && hasImage.includes("decks"));
+  const userFileId =
+    hasImage && !imageUrl && id && !isDeckAvatar && (!avatarId || id === avatarId)
+      ? id
+      : null;
+  const userFileUrl = useAvatarImageUrl(userFileId, {
+    cacheVal: siteInfo.cacheVal,
+    skipFreeze: !!edit,
+  });
   const style = {};
   const colors = [
     "#fff59d",
@@ -458,14 +470,14 @@ export function Avatar(props) {
 
   if (hasImage && !imageUrl && id && avatarId) {
     if (id === avatarId) {
-      if (!deckProfile) {
-        style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
-      } else {
+      if (!deckProfile && userFileUrl) {
+        style.backgroundImage = `url(${userFileUrl})`;
+      } else if (deckProfile) {
         style.backgroundImage = `url(/uploads/decks/${avatarId}.webp?t=${siteInfo.cacheVal})`;
       }
     }
-  } else if (hasImage && !imageUrl && id) {
-    style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
+  } else if (hasImage && !imageUrl && id && userFileUrl) {
+    style.backgroundImage = `url(${userFileUrl})`;
   } else if (hasImage && imageUrl) {
     style.backgroundImage = `url(${imageUrl})`;
   } else if (name) {

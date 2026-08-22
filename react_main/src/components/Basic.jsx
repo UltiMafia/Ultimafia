@@ -9,6 +9,7 @@ import { Slang } from "./Slang";
 import { Typography } from "@mui/material";
 import { SiteInfoContext } from "../Contexts";
 import { InlineRoleMention } from "./Roles";
+import { useAvatarImageUrl } from "utils/avatarUrl";
 
 export function ItemList(props) {
   const itemRows = props.items.map(props.map);
@@ -358,7 +359,7 @@ export function iconUsername(text, players) {
 
             words[j] = (
               <InlineAvatar
-              url={`url(/uploads/${matchedPlayer.userId}_avatar.webp)`}
+              userId={matchedPlayer.userId}
               username={matchedPlayer.name}
               />
             );
@@ -388,8 +389,14 @@ export function iconUsername(text, players) {
 }
 
 function InlineAvatar(props) {
+  const siteInfo = useContext(SiteInfoContext);
+  const frozenSrc = useAvatarImageUrl(props.userId, {
+    cacheVal: siteInfo?.cacheVal,
+  });
   let style = {};
-  if (props.url) {
+  if (props.userId && frozenSrc) {
+    style.backgroundImage = `url(${frozenSrc})`;
+  } else if (props.url) {
     style.backgroundImage = props.url;
   } else {
     // Same as the list in react_main/src/pages/User/User.jsx

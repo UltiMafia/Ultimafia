@@ -1,6 +1,7 @@
 import React, { useContext, useMemo, useState } from "react";
 import { GameContext } from "../../Contexts";
 import { SiteInfoContext } from "Contexts";
+import { useAvatarImageUrl } from "utils/avatarUrl";
 
 const PAGE_SIZE = 3;
 
@@ -19,10 +20,10 @@ function PokerCardImg({ card, highlighted }) {
 
 function HandHistoryEntry({ entry, players, cacheVal }) {
   const winnerPlayer = players?.[entry.winnerId];
-  const avatarUrl =
-    winnerPlayer?.avatar && entry.winnerId
-      ? `/uploads/${entry.winnerId}_avatar.webp?t=${cacheVal}`
-      : null;
+  const avatarUrl = useAvatarImageUrl(
+    winnerPlayer?.avatar && entry.winnerId ? entry.winnerId : null,
+    { cacheVal }
+  );
   const initial = entry.winnerName
     ? entry.winnerName.charAt(0).toUpperCase()
     : "?";

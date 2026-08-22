@@ -29,6 +29,7 @@ import { useColorScheme } from "@mui/material/styles";
 import { UserContext, SiteInfoContext } from "Contexts";
 import Form, { useForm, HiddenUpload, UserSearchSelect } from "components/Form";
 import { useErrorAlert } from "components/Alerts";
+import { FamilyAvatarImage } from "utils/avatarUrl";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import AvatarUpload from "components/AvatarUpload";
 import BannerUpload from "components/BannerUpload";
@@ -450,6 +451,13 @@ export default function Settings() {
       type: "boolean",
       extraInfo:
         "When enabled, profile and family media players will not autoplay for you, even if the owner turned autoplay on.",
+    },
+    {
+      label: "Disable Animated Avatars",
+      ref: "disableAnimatedAvatars",
+      type: "boolean",
+      extraInfo:
+        "When enabled, other users' GIF/WebP avatars are shown as a still first frame.",
     },
   ]);
 
@@ -1248,16 +1256,10 @@ export default function Settings() {
                 <Stack direction="row" spacing={2} alignItems="center">
                   <Typography>You are the leader of </Typography>
                   {userFamily.avatar && (
-                    <div
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "50%",
-                        backgroundImage: `url(/uploads/${userFamily.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        flexShrink: 0,
-                      }}
+                    <FamilyAvatarImage
+                      id={userFamily.id}
+                      size={40}
+                      cacheVal={siteInfo.cacheVal}
                     />
                   )}
                   <Link
@@ -1550,16 +1552,10 @@ export default function Settings() {
                 <Stack direction="row" spacing={2} alignItems="center">
                   <Typography>You are a member of </Typography>
                   {userFamily.avatar && (
-                    <div
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "50%",
-                        backgroundImage: `url(/uploads/${userFamily.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        flexShrink: 0,
-                      }}
+                    <FamilyAvatarImage
+                      id={userFamily.id}
+                      size={40}
+                      cacheVal={siteInfo.cacheVal}
                     />
                   )}
                   <Link

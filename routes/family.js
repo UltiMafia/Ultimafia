@@ -13,6 +13,7 @@ const formidable = bluebird.promisifyAll(require("formidable"), {
 const sharp = require("sharp");
 const fs = require("fs");
 const errors = require("../lib/errors");
+const utils = require("../lib/Utils");
 
 router.get("/user/family", async function (req, res) {
   try {
@@ -118,6 +119,7 @@ router.post("/create", async function (req, res) {
 
     // Check if user has a pending avatar upload
     const pendingAvatarPath = `${process.env.UPLOAD_PATH}/pending_${userId}_family_avatar.webp`;
+    const pendingStaticPath = `${process.env.UPLOAD_PATH}/pending_${userId}_family_avatar_static.webp`;
     let hasAvatar = false;
 
     if (fs.existsSync(pendingAvatarPath)) {
@@ -125,6 +127,12 @@ router.post("/create", async function (req, res) {
       const familyAvatarPath = `${process.env.UPLOAD_PATH}/${familyId}_family_avatar.webp`;
       fs.renameSync(pendingAvatarPath, familyAvatarPath);
       hasAvatar = true;
+      if (fs.existsSync(pendingStaticPath)) {
+        fs.renameSync(
+          pendingStaticPath,
+          `${process.env.UPLOAD_PATH}/${familyId}_family_avatar_static.webp`
+        );
+      }
     }
 
     const family = new models.Family({
@@ -157,15 +165,10 @@ router.post("/create", async function (req, res) {
 });
 
 function removeFamilyAvatarFiles(familyId) {
-  const uploadPath = process.env.UPLOAD_PATH;
-  for (const ext of ["webp", "gif", "png", "jpg", "jpeg"]) {
-    const p = `${uploadPath}/${familyId}_family_avatar.${ext}`;
-    try {
-      if (fs.existsSync(p)) fs.unlinkSync(p);
-    } catch (e) {
-      /* ignore */
-    }
-  }
+  utils.removeAvatarVariantFiles(
+    process.env.UPLOAD_PATH,
+    `${familyId}_family_avatar`
+  );
 }
 
 function removeFamilyBannerFiles(familyId) {
@@ -288,9 +291,19 @@ router.post("/avatar", async function (req, res) {
       }
 
       const finalPath = `${uploadPath}/${familyId}_family_avatar.webp`;
+      const staticPath = `${uploadPath}/${familyId}_family_avatar_static.webp`;
       removeFamilyAvatarFiles(familyId);
       fs.renameSync(tempPath, finalPath);
       tempPath = null;
+      try {
+        if (keepAnimation) {
+          await utils.writeStaticAvatarFrame(buffer, staticPath);
+        } else {
+          fs.copyFileSync(finalPath, staticPath);
+        }
+      } catch (staticErr) {
+        logger.warn(staticErr);
+      }
 
       if (isExistingFamily) {
         await models.Family.updateOne(
@@ -836,10 +849,7 @@ router.delete("/:familyId", async function (req, res) {
     await models.FamilyJoinRequest.deleteMany({ family: family._id });
 
     // Delete the family avatar if it exists
-    const avatarPath = `${process.env.UPLOAD_PATH}/${familyId}_family_avatar.webp`;
-    if (fs.existsSync(avatarPath)) {
-      fs.unlinkSync(avatarPath);
-    }
+    removeFamilyAvatarFiles(familyId);
 
     // Delete the family
     await models.Family.deleteOne({ id: familyId });

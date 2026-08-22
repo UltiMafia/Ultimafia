@@ -2507,6 +2507,7 @@ router.post("/settings/update", async function (req, res) {
       "autoplay",
       "collapseMedia",
       "disableMediaAutoplay",
+      "disableAnimatedAvatars",
       "hideStatistics",
       "hideKarma",
       "hidePointsNegative",
@@ -3183,15 +3184,7 @@ router.delete("/forumBanner", async function (req, res) {
 });
 
 function removeUserAvatarFiles(userId) {
-  const uploadPath = process.env.UPLOAD_PATH;
-  for (const ext of ["webp", "gif", "png", "jpg", "jpeg"]) {
-    const p = `${uploadPath}/${userId}_avatar.${ext}`;
-    try {
-      if (fs.existsSync(p)) fs.unlinkSync(p);
-    } catch (e) {
-      /* ignore */
-    }
-  }
+  utils.removeAvatarVariantFiles(process.env.UPLOAD_PATH, `${userId}_avatar`);
 }
 
 router.post("/avatar", async function (req, res) {
@@ -3284,9 +3277,19 @@ router.post("/avatar", async function (req, res) {
       }
 
       const finalPath = `${uploadPath}/${userId}_avatar.webp`;
+      const staticPath = `${uploadPath}/${userId}_avatar_static.webp`;
       removeUserAvatarFiles(userId);
       fs.renameSync(tempPath, finalPath);
       tempPath = null;
+      try {
+        if (keepAnimation) {
+          await utils.writeStaticAvatarFrame(buffer, staticPath);
+        } else {
+          fs.copyFileSync(finalPath, staticPath);
+        }
+      } catch (staticErr) {
+        logger.warn(staticErr);
+      }
 
       await models.User.updateOne({ id: userId }, { $set: { avatar: true } });
       await redis.cacheUserInfo(userId, true);

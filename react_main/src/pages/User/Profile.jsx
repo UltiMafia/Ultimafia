@@ -16,6 +16,7 @@ import {
   NameWithAvatar,
   OnlineStatus,
 } from "./User";
+import { FamilyAvatarImage } from "utils/avatarUrl";
 import { HiddenUpload, TextEditor } from "components/Form";
 import BannerUpload from "components/BannerUpload";
 import Setup from "components/Setup";
@@ -1488,16 +1489,10 @@ export default function Profile() {
             >
               <Typography variant="italicRelation">Member of</Typography>
               {profileFamily.avatar && (
-                <div
-                  style={{
-                    width: isPhoneDevice ? "40px" : "60px",
-                    height: isPhoneDevice ? "40px" : "60px",
-                    borderRadius: "50%",
-                    backgroundImage: `url(/uploads/${profileFamily.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    flexShrink: 0,
-                  }}
+                <FamilyAvatarImage
+                  id={profileFamily.id}
+                  size={isPhoneDevice ? 40 : 60}
+                  cacheVal={siteInfo.cacheVal}
                 />
               )}
               <Typography>{profileFamily.name}</Typography>
