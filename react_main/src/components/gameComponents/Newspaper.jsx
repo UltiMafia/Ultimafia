@@ -16,8 +16,8 @@ export default function Newspaper(props) {
   const deaths = props.deaths || [];
   const dayCount = props.dayCount || 0;
   const isAlignmentReveal = props.isAlignmentReveal || false;
-  const isWin = props.isWin || false;
-  const wins = props.wins || [];
+  const isWin = props.isWin || false; // Flag for win newspapers
+  const wins = props.wins || []; // Array of win groups with their data
 
   const gameDate = new Date(timestamp + dayCount * 24 * 60 * 60 * 1000);
   gameDate.setFullYear(gameDate.getFullYear() - 100);
