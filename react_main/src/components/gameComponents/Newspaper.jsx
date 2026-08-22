@@ -19,13 +19,35 @@ export default function Newspaper(props) {
   const isWin = props.isWin || false; // Flag for win newspapers
   const wins = props.wins || []; // Array of win groups with their data
 
+  // Example props.deaths input data:
+  /* [{
+        id: "l-jKFhbq6",
+        name: "nearbear",
+        avatar: true,
+        avatarId: "l-jKFhbq6",
+        deathMessage: "nearbear :zzz: died :zzz: while :zzz: testing :zzz: this :zzz: new :zzz: feature",
+        revealMessage: "nearbear's role is Prankster:Insane/Telepathic",
+        lastWill: ":will: nearbear did not leave a will."
+    }, {
+        id: "asdfasdf",
+        name: "TheGameGuy",
+        avatar: false,
+        avatarId: "asdfasdf",
+        deathMessage: "n1 TheGameGuy if you are jealous that he is better than you at EpicMafia. You can make up a fake excuse if you want to.",
+        revealMessage: "TheGameGuy's role is Cop:Insane",
+        lastWill: ":will: As read from TheGameGuy's last will: I knew you guys were jealous."
+    }] */
+
+  // Subtract 100 years from the game's start time to get MAFIA time
   const gameDate = new Date(timestamp + dayCount * 24 * 60 * 60 * 1000);
   gameDate.setFullYear(gameDate.getFullYear() - 100);
 
+  // Match chat Timestamp format (minutes:seconds)
   const minutes = String(gameDate.getMinutes()).padStart(2, "0");
   const seconds = String(gameDate.getSeconds()).padStart(2, "0");
   const newspaperDateLine = `${gameDate.toDateString()}, ${minutes}:${seconds}`;
 
+  // Handle win newspapers (Mafia games)
   if (isWin && wins.length > 0) {
     const winEntries = wins.map((win, index) => {
       const groupName = win.group;
@@ -34,6 +56,7 @@ export default function Newspaper(props) {
       const plural = groupName[groupName.length - 1] === "s";
       const winTitle = `${groupName} Win${plural ? "" : "s"}!`;
 
+      // For single player wins, use the same avatar size and positioning as death newspapers (100px)
       if (players.length === 1) {
         return (
           <div className="obituary win-entry" key={groupName || index}>
@@ -59,31 +82,38 @@ export default function Newspaper(props) {
         );
       }
 
+      // Calculate dynamic avatar size based on number of players
+      // Grid is 2 columns, with 8px gap, max width ~176px
+      // Formula: (gridWidth - gap) / 2 = max cell size per column
       const gridGap = 8;
+      const maxGridWidth = 176;
       const numColumns = 2;
 
+      // Calculate cell size and avatar size based on number of players
+      // More players = smaller avatars to prevent overlap
       let cellSize;
       let avatarSize;
-      let avatarSizeProp = null;
+      let avatarSizeProp = null; // large, mediumlarge, or small
 
       if (players.length <= 2) {
-        cellSize = 84;
-        avatarSize = 80;
-        avatarSizeProp = "large";
+        cellSize = 84; // Larger cells for fewer players
+        avatarSize = 80; // Slightly smaller than cell for padding
+        avatarSizeProp = "large"; // 100px default, will be constrained
       } else if (players.length <= 4) {
-        cellSize = 80;
-        avatarSize = 75;
-        avatarSizeProp = "large";
+        cellSize = 80; // Standard size for 3-4 players
+        avatarSize = 75; // Slightly smaller than cell for padding
+        avatarSizeProp = "large"; // 100px default, will be constrained
       } else if (players.length <= 6) {
-        cellSize = 72;
+        cellSize = 72; // Smaller for 5-6 players
         avatarSize = 60;
-        avatarSizeProp = "mediumlarge";
+        avatarSizeProp = "mediumlarge"; // 60px matches perfectly
       } else {
-        cellSize = 64;
+        cellSize = 64; // Smallest for 7+ players
         avatarSize = 50;
-        avatarSizeProp = "mediumlarge";
+        avatarSizeProp = "mediumlarge"; // 60px, will be constrained
       }
 
+      // Calculate actual grid width based on cell size
       const gridWidth = numColumns * cellSize + gridGap;
 
       return (
@@ -154,6 +184,7 @@ export default function Newspaper(props) {
     );
   }
 
+  // Handle death/obituary newspapers (original behavior)
   const obituaries = deaths.map((death) => (
     <div className="obituary" key={death.id}>
       <div className="obituary-header">
@@ -203,6 +234,8 @@ export default function Newspaper(props) {
   );
 }
 
+// --- Helper Functions ---
+
 const ALIGNMENT_TEXT_MAP = {
   Village: "Village 💙",
   Mafia: "Mafia 🔪",
@@ -214,7 +247,7 @@ const ALIGNMENT_TEXT_MAP = {
   Town: "Village 💙",
   Host: "Host 🎤",
   Liberals: "Liberals 🇺🇸",
-  Fascists: "Fascists 🛠️",
+  Fascists: "Fascists 🪚",
   Liars: "Liars 🤥",
   Army: "Army ⚔️",
 };
@@ -248,6 +281,7 @@ function RoleNamePopover({ roleName, gameType }) {
     );
   }
 
+  // Determine role skin
   let roleSkin = null;
   if (user.settings && typeof user.settings.roleSkins == "string") {
     const userRoleSkins = user.settings.roleSkins.split(",");
