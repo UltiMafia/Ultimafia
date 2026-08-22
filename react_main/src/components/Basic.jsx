@@ -461,4 +461,4 @@ export function useOnOutsideClick(refs, action) {
 }
 
 export const youtubeRegex =
-  /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=([^#\&\?]{11}).*/;
+  /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
