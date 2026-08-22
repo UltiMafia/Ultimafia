@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { NameWithAvatar, Avatar } from "./User";
+import { FamilyAvatarImage } from "utils/avatarUrl";
 import { useNow } from "../../hooks/useNow";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import {
@@ -62,16 +63,10 @@ export default function UserNavSection({
 
   // Create family avatar icon if family exists and has avatar
   const familyIcon = userFamily?.avatar ? (
-    <div
-      style={{
-        width: "20px",
-        height: "20px",
-        borderRadius: "50%",
-        backgroundImage: `url(/uploads/${userFamily.id}_family_avatar.webp?t=${cacheVal})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        flexShrink: 0,
-      }}
+    <FamilyAvatarImage
+      id={userFamily.id}
+      size={20}
+      cacheVal={cacheVal}
     />
   ) : null;
 

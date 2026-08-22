@@ -122,6 +122,8 @@ var schemas = {
       autoplay: { type: Boolean, default: false },
       // Viewer preference: never autoplay profile/family (or other) media embeds
       disableMediaAutoplay: { type: Boolean, default: false },
+      // Viewer preference: show other users' GIF/WebP avatars as a still first frame
+      disableAnimatedAvatars: { type: Boolean, default: false },
       youtube: String,
       // Collapse profile media player to a compact bar while still playing
       collapseMedia: { type: Boolean, default: false },

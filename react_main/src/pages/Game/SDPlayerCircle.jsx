@@ -1,6 +1,29 @@
 import React, { useState, useContext } from "react";
 import { SiteInfoContext } from "Contexts";
 import { RoleCount } from "components/Roles";
+import { useAvatarImageUrl } from "utils/avatarUrl";
+
+function SdPlayerAvatar({ player, cacheVal }) {
+  const avatarUrl = useAvatarImageUrl(
+    player.avatar && player.userId ? player.userId : null,
+    { cacheVal }
+  );
+  if (avatarUrl) {
+    return (
+      <img
+        src={avatarUrl}
+        alt={player.name}
+        style={{
+          width: "100%",
+          height: "100%",
+          borderRadius: "50%",
+          objectFit: "cover",
+        }}
+      />
+    );
+  }
+  return player.name ? player.name.charAt(0).toUpperCase() : "👤";
+}
 
 const CONFIRM_DIALOG_TEXT = {
   "Nominate Chancellor": (name) => `Nominate ${name} as Chancellor?`,
@@ -97,12 +120,9 @@ export function PlayerCircle({
           const isEligible = eligibleTargets.has(player.id);
           const isSelf = player.id === selfId;
 
-          const avatarUrl = player.avatar && player.userId
-            ? `/uploads/${player.userId}_avatar.webp?t=${siteInfo.cacheVal}`
-            : null;
-          const avatarContent = avatarUrl
-            ? <img src={avatarUrl} alt={player.name} style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
-            : (player.name ? player.name.charAt(0).toUpperCase() : "👤");
+          const avatarContent = (
+            <SdPlayerAvatar player={player} cacheVal={siteInfo.cacheVal} />
+          );
 
           let placard = null;
           if (isPresidentialNominee) {

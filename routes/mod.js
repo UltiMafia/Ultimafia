@@ -1490,6 +1490,10 @@ router.post("/clearFamilyContent", async (req, res) => {
     if (fs.existsSync(avatarPath)) {
       fs.unlinkSync(avatarPath);
     }
+    const avatarStaticPath = `${process.env.UPLOAD_PATH}/${familyId}_family_avatar_static.webp`;
+    if (fs.existsSync(avatarStaticPath)) {
+      fs.unlinkSync(avatarStaticPath);
+    }
 
     // Delete background file if it exists
     const backgroundPath = `${process.env.UPLOAD_PATH}/${familyId}_familyBackground.webp`;
