@@ -114,6 +114,7 @@ module.exports = class Message {
               ? version.sender.user.nameColor
               : "";
           version.customEmotes = [];
+          version.customStickers = [];
         } else {
           version.textColor =
             version.sender.user.settings.textColor !== undefined
@@ -126,6 +127,10 @@ module.exports = class Message {
           version.customEmotes =
             version.sender.user.settings.customEmotes !== undefined
               ? version.sender.user.settings.customEmotes
+              : [];
+          version.customStickers =
+            version.sender.user.settings.customStickers !== undefined
+              ? version.sender.user.settings.customStickers
               : [];
         }
       }
@@ -146,6 +151,7 @@ module.exports = class Message {
       textColor: version.textColor || "",
       nameColor: version.nameColor || "",
       customEmotes: version.customEmotes || [],
+      customStickers: version.customStickers || [],
       alive: version.alive !== undefined ? version.alive : undefined,
       extraStyle: version.extraStyle,
       tags: version.tags,

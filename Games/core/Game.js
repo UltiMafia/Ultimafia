@@ -342,13 +342,25 @@ module.exports = class Game {
   }
 
   processDeathQueue() {
+    const deathSounds = [];
+
     for (let item of this.deathQueue) {
       this.recordDead(item.player, item.dead);
 
-      if (item.dead && !item.player.alive)
+      if (item.dead && !item.player.alive) {
         this.broadcast("death", item.player.id);
-      else if (!item.dead && item.player.alive)
+        const soundUrl = item.player.getDeathSoundUrl
+          ? item.player.getDeathSoundUrl()
+          : null;
+        if (soundUrl) deathSounds.push(soundUrl);
+      } else if (!item.dead && item.player.alive) {
         this.broadcast("revival", item.player.id);
+      }
+    }
+
+    // Multiple death sounds: play one-by-one in random order (client queues them)
+    if (deathSounds.length > 0) {
+      this.broadcast("deathSounds", Random.randomizeArray(deathSounds));
     }
 
     this.deathQueue.empty();

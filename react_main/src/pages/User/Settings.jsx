@@ -29,9 +29,11 @@ import { useColorScheme } from "@mui/material/styles";
 import { UserContext, SiteInfoContext } from "Contexts";
 import Form, { useForm, HiddenUpload, UserSearchSelect } from "components/Form";
 import { useErrorAlert } from "components/Alerts";
+import { FamilyAvatarImage } from "utils/avatarUrl";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import AvatarUpload from "components/AvatarUpload";
 import BannerUpload from "components/BannerUpload";
+// DeathSoundUpload is rendered via Form field type "deathSoundUpload"
 import { useCookieConsent } from "../../hooks/useCookieConsent";
 
 import "css/settings.css";
@@ -449,6 +451,13 @@ export default function Settings() {
       type: "boolean",
       extraInfo:
         "When enabled, profile and family media players will not autoplay for you, even if the owner turned autoplay on.",
+    },
+    {
+      label: "Disable Animated Avatars",
+      ref: "disableAnimatedAvatars",
+      type: "boolean",
+      extraInfo:
+        "When enabled, other users' GIF/WebP avatars are shown as a still first frame.",
     },
   ]);
 
@@ -942,6 +951,23 @@ export default function Settings() {
       disabled: (deps) => !deps.user.itemsOwned.deathMessageEnabled,
     },
     {
+      label: "Custom Death Sound",
+      ref: "deathSound",
+      type: "deathSoundUpload",
+      onDeathSoundUpload: onDeathSoundUpload,
+      onDeathSoundRemove: onDeathSoundRemove,
+      disabled: (deps) => !deps.user.itemsOwned.deathSoundEnabled,
+      extraInfo:
+        "Played to everyone in the lobby when you die. Purchase Custom Death Sound in the Shop.",
+    },
+    {
+      label: "Ignore all Death Sounds",
+      ref: "ignoreDeathSounds",
+      type: "boolean",
+      extraInfo:
+        "When enabled, you will not hear custom death sounds from other players in games.",
+    },
+    {
       label: "Upload Custom Emote",
       ref: "customEmotes",
       type: "emoteUpload",
@@ -950,6 +976,15 @@ export default function Settings() {
       disabled: (deps) =>
         deps.user.itemsOwned.customEmotes !== undefined &&
         deps.user.itemsOwned.customEmotes.length > 0,
+    },
+    {
+      label: "Upload Custom Sticker",
+      ref: "customStickers",
+      type: "stickerUpload",
+      onCustomStickerUpload: onCustomStickerUpload,
+      onCustomStickerDelete: onCustomStickerDelete,
+      extraInfo:
+        "Buy sticker slots in the Shop (10 coins each). GIF/PNG/JPEG/WebP, max 10 MB, 512×512.",
     },
   ]);
 
@@ -1221,16 +1256,10 @@ export default function Settings() {
                 <Stack direction="row" spacing={2} alignItems="center">
                   <Typography>You are the leader of </Typography>
                   {userFamily.avatar && (
-                    <div
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "50%",
-                        backgroundImage: `url(/uploads/${userFamily.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        flexShrink: 0,
-                      }}
+                    <FamilyAvatarImage
+                      id={userFamily.id}
+                      size={40}
+                      cacheVal={siteInfo.cacheVal}
                     />
                   )}
                   <Link
@@ -1523,16 +1552,10 @@ export default function Settings() {
                 <Stack direction="row" spacing={2} alignItems="center">
                   <Typography>You are a member of </Typography>
                   {userFamily.avatar && (
-                    <div
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "50%",
-                        backgroundImage: `url(/uploads/${userFamily.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        flexShrink: 0,
-                      }}
+                    <FamilyAvatarImage
+                      id={userFamily.id}
+                      size={40}
+                      cacheVal={siteInfo.cacheVal}
                     />
                   )}
                   <Link
@@ -1725,6 +1748,50 @@ export default function Settings() {
       .catch(deps.errorAlert);
   }
 
+  function onDeathSoundUpload(file, durationSeconds, deps) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("durationSeconds", String(durationSeconds || ""));
+
+    return axios
+      .post("/api/user/deathSound", formData)
+      .then((res) => {
+        const data = res.data || {};
+        deps.siteInfo.showAlert("Death sound uploaded", "success");
+        deps.user.set(
+          update(deps.user.state || deps.user, {
+            deathSound: { $set: true },
+            deathSoundExt: {
+              $set: data.deathSoundExt || "ogg",
+            },
+          })
+        );
+        if (deps.siteInfo.clearCache) deps.siteInfo.clearCache();
+      })
+      .catch((e) => {
+        deps.errorAlert(e);
+        throw e;
+      });
+  }
+
+  function onDeathSoundRemove(deps) {
+    return axios
+      .delete("/api/user/deathSound")
+      .then(() => {
+        deps.siteInfo.showAlert("Death sound removed", "success");
+        deps.user.set(
+          update(deps.user.state || deps.user, {
+            deathSound: { $set: false },
+          })
+        );
+        if (deps.siteInfo.clearCache) deps.siteInfo.clearCache();
+      })
+      .catch((e) => {
+        deps.errorAlert(e);
+        throw e;
+      });
+  }
+
   function onVanityUrlSave(vanityUrl, deps) {
     axios
       .post("/api/vanityUrl", { vanityUrl })
@@ -1795,6 +1862,37 @@ export default function Settings() {
       .post("/api/user/customEmote/delete", { id: id }, {})
       .then((res) => {
         deps.siteInfo.showAlert("Deleted custom emote", "success");
+      })
+      .catch(deps.errorAlert);
+  }
+
+  function onCustomStickerUpload(
+    stickerText,
+    imageFilename,
+    imageMimeType,
+    blob,
+    deps
+  ) {
+    const formData = new FormData();
+    const file = new File([blob], imageFilename);
+    formData.append("file", file);
+    formData.append("stickerText", stickerText);
+
+    axios
+      .post("/api/user/customSticker/create", formData, {})
+      .then((res) => {
+        deps.siteInfo.showAlert("Uploaded custom sticker", "success");
+        loadSettings();
+      })
+      .catch(deps.errorAlert);
+  }
+
+  function onCustomStickerDelete(id, deps) {
+    axios
+      .post("/api/user/customSticker/delete", { id: id }, {})
+      .then((res) => {
+        deps.siteInfo.showAlert("Deleted custom sticker", "success");
+        loadSettings();
       })
       .catch(deps.errorAlert);
   }

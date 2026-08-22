@@ -3,6 +3,7 @@ import * as d3 from "d3";
 import { useSocketListeners } from "./Game";
 import { SiteInfoContext } from "../../Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { useAvatarUrlMap } from "utils/avatarUrl";
 import foodImage from "../../images/minigames/battlesnakes_food.png";
 
 const SWIPE_THRESHOLD_PX = 30;
@@ -35,6 +36,12 @@ export default function SnakeGameDisplay({ player, players, gameSocket, extraInf
   const [dpadCollapsed, setDpadCollapsed] = useState(false);
   const [wrapView, setWrapView] = useState(false);
   const touchStartRef = useRef(null);
+  const snakeUserIds = Object.values(players || {})
+    .map((p) => (p && p.avatar && p.userId ? p.userId : null))
+    .filter(Boolean);
+  const avatarUrls = useAvatarUrlMap(snakeUserIds, {
+    cacheVal: siteInfo?.cacheVal,
+  });
 
   const wallsTransparent = gameState?.ifWallsAreTransparent !== false;
   // Camera-follow mode: always on for mobile, opt-in toggle for desktop.
@@ -325,9 +332,7 @@ export default function SnakeGameDisplay({ player, players, gameSocket, extraInf
           y: snake.segments[0].y,
           id,
           name: p && p.name ? p.name : `Player ${idx + 1}`,
-          avatarUrl: hasAvatar
-            ? `/uploads/${p.userId}_avatar.webp${siteInfo ? `?t=${siteInfo.cacheVal}` : ""}`
-            : null,
+          avatarUrl: hasAvatar ? avatarUrls[p.userId] : null,
         });
       }
     });
@@ -351,7 +356,7 @@ export default function SnakeGameDisplay({ player, players, gameSocket, extraInf
           .style("pointer-events", "none");
       });
     });
-  }, [gameState, cellSize, playerId, players, isPhoneDevice, followView, wallsTransparent]);
+  }, [gameState, cellSize, playerId, players, isPhoneDevice, followView, wallsTransparent, avatarUrls]);
 
   useEffect(() => {
     if (!playerId) return;

@@ -79,9 +79,9 @@ const RULES_SECTIONS = [
     ],
     bulletsIntro: "Including but not limited to:",
     bullets: [
-      "Attacks on intelligence or ability.[a]",
-      "Targeted deliberate antagonisation. [b]",
-      "Conduct intended to intimidate or demean, even when ‘justified’.[c]",
+      "Attacks on intelligence or ability.",
+      "Targeted deliberate antagonisation.",
+      "Conduct intended to intimidate or demean, even when ‘justified’.",
       "Continuing behaviour or conduct that has been clearly identified as upsetting. (i.e. “Stop clause”)",
       "Creating accounts with the intent to defame or frame, including impersonation.",
     ],
@@ -195,7 +195,7 @@ const RULES_SECTIONS = [
     ],
     bulletsIntro: "Including but not limited to:",
     bullets: [
-      "Purposefully taking actions or making claims that hinder your win condition.",
+      "Taking actions or making claims to purposefully hinder your win condition.",
       "Drawing the game when there is still a path to victory.",
       "Prioritising another player’s loss at the cost of your own win condition.",
     ],
@@ -306,6 +306,44 @@ const RULES_SECTIONS = [
   },
 ];
 
+function ViolationName({ children }) {
+  return (
+    <Box
+      component="span"
+      sx={{ fontWeight: "bold", color: "primary.main" }}
+    >
+      {children}
+    </Box>
+  );
+}
+
+/** Embolden the associated violation name/abbreviation without changing wording. */
+function highlightAssociatedViolation(text) {
+  const violationMatch = text.match(/^(.*?\ban? )(.+?)( violation\b.*)$/s);
+  if (violationMatch) {
+    return (
+      <>
+        {violationMatch[1]}
+        <ViolationName>{violationMatch[2]}</ViolationName>
+        {violationMatch[3]}
+      </>
+    );
+  }
+  const banMatch = text.match(
+    /^(.*?)(immediate and permanent site-wide ban)(.*)$/s
+  );
+  if (banMatch) {
+    return (
+      <>
+        {banMatch[1]}
+        <ViolationName>{banMatch[2]}</ViolationName>
+        {banMatch[3]}
+      </>
+    );
+  }
+  return text;
+}
+
 function OffenseLengthsTable({ offenses }) {
   const penalties = [
     ...offenses,
@@ -411,7 +449,7 @@ function RulesContent({ violationMap }) {
             </Typography>
             {section.paragraphs?.map((p, i) => (
               <Typography key={i} variant="body1" paragraph>
-                {p}
+                {highlightAssociatedViolation(p)}
               </Typography>
             ))}
             {section.bulletsIntro && (
@@ -422,7 +460,7 @@ function RulesContent({ violationMap }) {
             {section.bullets && <BulletList items={section.bullets} />}
             {section.closing?.map((p, i) => (
               <Typography key={`close-${i}`} variant="body1" paragraph sx={{ mt: 1 }}>
-                {p}
+                {highlightAssociatedViolation(p)}
               </Typography>
             ))}
             {violation?.offenses && (
@@ -476,7 +514,7 @@ export default function Rules() {
         UltiMafia Rules of Conduct
       </Typography>
       <Typography variant="body2" color="text.secondary" paragraph>
-        Last Updated: June 2, 2026
+        Last Updated: August 22, 2026
       </Typography>
 
       <Tabs value={selectedTab} onChange={handleTabChange}>
@@ -556,6 +594,27 @@ export default function Rules() {
           user is currently on the account when joining a pregame, and the
           involved users may not chat on-site or off-site when the account is
           in a game.
+        </Typography>
+
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{ textDecoration: "underline", mt: 2 }}
+        >
+          Human Users Required
+        </Typography>
+        <Typography variant="body1" paragraph>
+          UltiMafia is for human players. Accounts must be operated by a human
+          being. Accounts that are run, controlled, or automated by large
+          language models (LLMs), chatbots, or other AI agents are not
+          permitted to play games or post on-site, including in-game chat,
+          forums, comments, and other community spaces.
+        </Typography>
+        <Typography variant="body1" paragraph>
+          Using an LLM or similar tool to operate an account, generate in-game
+          or on-site posts, or otherwise play or participate in place of a
+          human is prohibited. Human users remain responsible for all activity
+          on their accounts.
         </Typography>
       </TabPanel>
     </>

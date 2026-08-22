@@ -63,6 +63,9 @@ var schemas = {
     discordName: String,
     discordUsername: String,
     avatar: Boolean,
+    deathSound: Boolean,
+    // File extension for custom death sound (mp3, ogg, wav, webm)
+    deathSoundExt: { type: String, default: "ogg" },
     banner: Boolean,
     // File extension for profile banner (webp static, or gif/webp animated)
     bannerExt: { type: String, default: "webp" },
@@ -119,6 +122,8 @@ var schemas = {
       autoplay: { type: Boolean, default: false },
       // Viewer preference: never autoplay profile/family (or other) media embeds
       disableMediaAutoplay: { type: Boolean, default: false },
+      // Viewer preference: show other users' GIF/WebP avatars as a still first frame
+      disableAnimatedAvatars: { type: Boolean, default: false },
       youtube: String,
       // Collapse profile media player to a compact bar while still playing
       collapseMedia: { type: Boolean, default: false },
@@ -131,6 +136,8 @@ var schemas = {
       hideRankedModal: { type: Boolean, default: false },
       hideCompetitiveModal: { type: Boolean, default: false },
       deathMessage: String,
+      // Viewer preference: do not play other players' custom death sounds
+      ignoreDeathSounds: { type: Boolean, default: false },
       vanityUrl: { type: String, default: "" },
       backgroundRepeatMode: { type: String, default: "repeat" },
     },
@@ -171,6 +178,9 @@ var schemas = {
     customEmotes: [
       { type: mongoose.Schema.Types.ObjectId, ref: "CustomEmote" },
     ],
+    customStickers: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "CustomSticker" },
+    ],
     games: [{ type: mongoose.Schema.Types.ObjectId, ref: "Game" }],
     globalNotifs: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Notification" },
@@ -195,10 +205,12 @@ var schemas = {
       animatedAvatar: { type: Number, default: 0 },
       deathMessageEnabled: { type: Number, default: 0 },
       deathMessageChange: { type: Number, default: 0 },
+      deathSoundEnabled: { type: Number, default: 0 },
       anonymousDeck: { type: Number, default: 0 },
       wordDeck: { type: Number, default: 0 },
       customEmotes: { type: Number, default: 0 },
       customEmotesExtra: { type: Number, default: 0 },
+      customStickers: { type: Number, default: 0 },
       archivedGames: { type: Number, default: 0 },
       archivedGamesMax: { type: Number, default: 0 },
       bonusRedHearts: { type: Number, default: 0 },
@@ -343,6 +355,13 @@ var schemas = {
   AnonymousDeck: anonymousDeck,
   WordDeck: wordDeck,
   CustomEmote: new mongoose.Schema({
+    id: { type: String, index: true },
+    name: { type: String, index: true },
+    creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
+    extension: String,
+    deleted: { type: Boolean, default: false },
+  }),
+  CustomSticker: new mongoose.Schema({
     id: { type: String, index: true },
     name: { type: String, index: true },
     creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },

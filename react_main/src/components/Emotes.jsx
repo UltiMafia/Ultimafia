@@ -32,12 +32,27 @@ export function CustomEmote(props) {
   );
 }
 
-export function emotify(text, customEmotes) {
+export function CustomSticker(props) {
+  const sticker = props.sticker;
+
+  return (
+    <div
+      className="sticker"
+      title={sticker.name}
+      style={{
+        backgroundImage: `url('/${sticker.path}')`,
+      }}
+    />
+  );
+}
+
+export function emotify(text, customEmotes, customStickers) {
   if (text == null) return;
 
   if (!Array.isArray(text)) text = [text];
 
   let emoteOnlyText = true;
+  let stickerOnlyText = true;
   for (let i in text) {
     let segment = text[i];
 
@@ -48,14 +63,20 @@ export function emotify(text, customEmotes) {
     for (let j in words) {
       let word = words[j].toLowerCase();
 
-      // Checking if Emote dictionary contains the word. Custom emotes have precedence
-      if (customEmotes && customEmotes[word]) {
+      // Stickers take precedence, then custom emotes, then site emotes
+      if (customStickers && customStickers[word]) {
+        words[j] = <CustomSticker sticker={customStickers[word]} />;
+        emoteOnlyText = false;
+      } else if (customEmotes && customEmotes[word]) {
         words[j] = <CustomEmote emote={customEmotes[word]} />;
+        stickerOnlyText = false;
       } else if (Emotes[word] && typeof Emotes[word] != "function") {
         words[j] = <Emote emote={word} />;
+        stickerOnlyText = false;
       } else {
         if (word !== "") {
           emoteOnlyText = false;
+          stickerOnlyText = false;
         }
         if (j < words.length - 1) {
           // do NOT append an extra ' ' space in the last word (which wasn't there in the first place)
@@ -69,8 +90,26 @@ export function emotify(text, customEmotes) {
 
   text = text.flat();
 
-  // if the entire text is only emotes, make them larger
-  if (emoteOnlyText) {
+  // if the entire text is only stickers, make them larger
+  if (stickerOnlyText) {
+    text = text.map((segment, i) =>
+      React.isValidElement(segment) ? (
+        <span
+          key={i}
+          style={{
+            "--sticker-size": "128px",
+            display: "inline-block",
+            verticalAlign: "middle",
+          }}
+        >
+          {segment}
+        </span>
+      ) : (
+        segment
+      )
+    );
+  } else if (emoteOnlyText) {
+    // if the entire text is only emotes, make them larger
     text = text.map((segment, i) =>
       React.isValidElement(segment) ? (
         <span key={i} style={{

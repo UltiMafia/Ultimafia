@@ -2,6 +2,7 @@ import React, { useContext, useMemo } from "react";
 import { GameContext } from "../../Contexts";
 import { SiteInfoContext } from "Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { useAvatarImageUrl } from "utils/avatarUrl";
 
 function PokerChipStack({ chips }) {
   const tooltip = `${chips} chips`;
@@ -161,10 +162,10 @@ function PokerSeat({
   const topPct = 50 + radius * sin + topBoost;
 
   const livePlayer = players?.[seat.playerId];
-  const avatarUrl =
-    livePlayer?.avatar && seat.userId
-      ? `/uploads/${seat.userId}_avatar.webp?t=${cacheVal}`
-      : null;
+  const avatarUrl = useAvatarImageUrl(
+    livePlayer?.avatar && seat.userId ? seat.userId : null,
+    { cacheVal }
+  );
 
   const initial = seat.playerName
     ? seat.playerName.charAt(0).toUpperCase()

@@ -326,9 +326,18 @@
   -moz-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
-.game .user-name.dead {
+.game .user-name.dead,
+.game .user-name.dead .user-name-text {
+  animation: none !important;
+  background-image: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: #bd4c4c !important;
   color: #bd4c4c !important;
   opacity: 1;
+  text-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
 }
 
 .game .message .content a {
