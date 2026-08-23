@@ -137,6 +137,13 @@ export function useAvatarUrlMap(ids, { cacheVal, family = false } = {}) {
   }, [listKey, freeze, frozenIds, family, cacheVal]);
 }
 
+export function AvatarPhoto({ src, alt = "" }) {
+  if (!src) return null;
+  return (
+    <img className="avatar-img" src={src} alt={alt} draggable={false} />
+  );
+}
+
 export function FamilyAvatarImage({
   id,
   size = 40,
@@ -153,11 +160,12 @@ export function FamilyAvatarImage({
         height: size,
         borderRadius: "50%",
         flexShrink: 0,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        ...(src ? { backgroundImage: `url(${src})` } : {}),
+        overflow: "hidden",
+        position: "relative",
         ...extraStyle,
       }}
-    />
+    >
+      <AvatarPhoto src={src} />
+    </div>
   );
 }

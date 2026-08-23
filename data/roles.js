@@ -1311,7 +1311,7 @@ const roleData = {
       ],
       description: [
         "Each night, you can choose to visit one player and if they didn't visit anybody, have them learn 3 players, at least one of whom is Evil.",
-        "You cannot choose to visit the same player consecutively.",
+        "You cannot choose to visit the same player consecutively (unless roleblocked).",
       ],
       nightOrder: [
         ["Sing Carol", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10],

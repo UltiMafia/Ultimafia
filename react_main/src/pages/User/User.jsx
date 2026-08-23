@@ -31,7 +31,7 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import ImageViewer from "components/ImageViewer";
 import Miniprofile from "components/Miniprofile";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
-import { useAvatarImageUrl } from "utils/avatarUrl";
+import { useAvatarImageUrl, AvatarPhoto } from "utils/avatarUrl";
 
 import santaDir from "images/holiday/santahat.png";
 
@@ -468,18 +468,19 @@ export function Avatar(props) {
     style.transform = "translateX(5px) translateY(5px)";
   }
 
+  let photoSrc = null;
   if (hasImage && !imageUrl && id && avatarId) {
     if (id === avatarId) {
       if (!deckProfile && userFileUrl) {
-        style.backgroundImage = `url(${userFileUrl})`;
+        photoSrc = userFileUrl;
       } else if (deckProfile) {
-        style.backgroundImage = `url(/uploads/decks/${avatarId}.webp?t=${siteInfo.cacheVal})`;
+        photoSrc = `/uploads/decks/${avatarId}.webp?t=${siteInfo.cacheVal}`;
       }
     }
   } else if (hasImage && !imageUrl && id && userFileUrl) {
-    style.backgroundImage = `url(${userFileUrl})`;
+    photoSrc = userFileUrl;
   } else if (hasImage && imageUrl) {
-    style.backgroundImage = `url(${imageUrl})`;
+    photoSrc = imageUrl;
   } else if (name) {
     var rand = 0;
 
@@ -495,9 +496,12 @@ export function Avatar(props) {
   }
   if (typeof hasImage == "string") {
     if (hasImage.includes("decks")) {
-      style.backgroundImage = `url(/uploads${hasImage}?t=${siteInfo.cacheVal})`;
+      photoSrc = `/uploads${hasImage}?t=${siteInfo.cacheVal}`;
       style.backgroundColor = "#00000000";
     }
+  }
+  if (photoSrc) {
+    style.backgroundImage = "none";
   }
 
   // Santa hat: Only show during December (turns off on January 1)
@@ -537,6 +541,7 @@ export function Avatar(props) {
         border: border,
       }}
     >
+      <AvatarPhoto src={photoSrc} />
       {edit && (
         <div className="edit avatar-edit-overlay">
           <AvatarUpload

@@ -9,7 +9,7 @@ import { Slang } from "./Slang";
 import { Typography } from "@mui/material";
 import { SiteInfoContext } from "../Contexts";
 import { InlineRoleMention } from "./Roles";
-import { useAvatarImageUrl } from "utils/avatarUrl";
+import { useAvatarImageUrl, AvatarPhoto } from "utils/avatarUrl";
 
 export function ItemList(props) {
   const itemRows = props.items.map(props.map);
@@ -359,8 +359,9 @@ export function iconUsername(text, players) {
 
             words[j] = (
               <InlineAvatar
-              userId={matchedPlayer.userId}
-              username={matchedPlayer.name}
+                key={matchedPlayer.userId || matchedPlayer.name}
+                userId={matchedPlayer.userId}
+                username={matchedPlayer.name}
               />
             );
           } else {
@@ -390,15 +391,20 @@ export function iconUsername(text, players) {
 
 function InlineAvatar(props) {
   const siteInfo = useContext(SiteInfoContext);
-  const frozenSrc = useAvatarImageUrl(props.userId, {
+  const photoSrc = useAvatarImageUrl(props.userId, {
     cacheVal: siteInfo?.cacheVal,
   });
-  let style = {};
-  if (props.userId && frozenSrc) {
-    style.backgroundImage = `url(${frozenSrc})`;
+  let style = {
+    position: "relative",
+  };
+  let src = photoSrc;
+  if (props.userId && photoSrc) {
+    style.backgroundImage = "none";
   } else if (props.url) {
+    src = null;
     style.backgroundImage = props.url;
   } else {
+    src = null;
     // Same as the list in react_main/src/pages/User/User.jsx
     const colors = [
       "#fff59d",
@@ -430,6 +436,7 @@ function InlineAvatar(props) {
       title={props.username}
       style={style}
     >
+      <AvatarPhoto src={src} />
       &#8203;
     </div>
   );
