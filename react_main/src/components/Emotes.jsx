@@ -46,8 +46,13 @@ export function CustomSticker(props) {
   );
 }
 
-export function emotify(text, customEmotes, customStickers) {
+export function emotify(text, customEmotes, customStickers, options) {
   if (text == null) return;
+
+  const isSystem = Boolean(options && options.system);
+  // System/game text never uses player stickers or custom emotes.
+  const stickers = isSystem ? null : customStickers;
+  const emotes = isSystem ? null : customEmotes;
 
   if (!Array.isArray(text)) text = [text];
 
@@ -63,15 +68,15 @@ export function emotify(text, customEmotes, customStickers) {
     for (let j in words) {
       let word = words[j].toLowerCase();
 
-      // Stickers take precedence, then custom emotes, then site emotes
-      if (customStickers && customStickers[word]) {
-        words[j] = <CustomSticker sticker={customStickers[word]} />;
-        emoteOnlyText = false;
-      } else if (customEmotes && customEmotes[word]) {
-        words[j] = <CustomEmote emote={customEmotes[word]} />;
-        stickerOnlyText = false;
-      } else if (Emotes[word] && typeof Emotes[word] != "function") {
+      // Site/system emotes win so user stickers cannot steal :gun: etc.
+      if (Emotes[word] && typeof Emotes[word] != "function") {
         words[j] = <Emote emote={word} />;
+        stickerOnlyText = false;
+      } else if (stickers && stickers[word]) {
+        words[j] = <CustomSticker sticker={stickers[word]} />;
+        emoteOnlyText = false;
+      } else if (emotes && emotes[word]) {
+        words[j] = <CustomEmote emote={emotes[word]} />;
         stickerOnlyText = false;
       } else {
         if (word !== "") {
