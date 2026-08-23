@@ -27,7 +27,11 @@ module.exports = class Meteor extends Event {
     if (this.game.MeteorLanded) {
       return;
     }
-    if (this.game.players.some((p) => p.hasEffect && p.hasEffect("Meteor"))) {
+    if (
+      this.game.players.filter(
+        (p) => p && p.hasEffect && p.hasEffect("Meteor")
+      ).length > 0
+    ) {
       return;
     }
 
