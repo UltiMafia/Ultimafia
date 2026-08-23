@@ -6,7 +6,7 @@ const cryptoPayments = require("../modules/cryptoPayments");
 
 const router = express.Router();
 const lastCheckByInvoice = new Map();
-const CHECK_COOLDOWN_MS = 15 * 1000;
+const CHECK_COOLDOWN_MS = 5 * 60 * 1000;
 
 function clientError(res, err) {
   const status = err.status || 500;

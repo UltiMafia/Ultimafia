@@ -126,6 +126,7 @@ export default function CryptoDonate() {
   const [invoice, setInvoice] = useState(null);
   const [creating, setCreating] = useState(false);
   const [nowTick, setNowTick] = useState(Date.now());
+  const [checkCooldownUntil, setCheckCooldownUntil] = useState(0);
 
   const enabledAssets = useMemo(
     () => (options?.assets || []).filter((row) => row.enabled),
@@ -178,9 +179,17 @@ export default function CryptoDonate() {
     return () => clearInterval(interval);
   }, [invoice]);
 
+  const checkCooldownMs = Math.max(0, checkCooldownUntil - nowTick);
+  const checkCooldownLabel =
+    checkCooldownMs > 0
+      ? `Check now (${Math.ceil(checkCooldownMs / 1000)}s)`
+      : "Check now";
+
   const refreshInvoice = useCallback(async () => {
     if (!invoice?.id) return;
+    if (Date.now() < checkCooldownUntil) return;
     try {
+      setCheckCooldownUntil(Date.now() + 5 * 60 * 1000);
       const res = await axios.post(`/api/crypto/invoice/${invoice.id}/check`);
       setInvoice(res.data);
       if (res.data?.status === "completed" && res.data.coins) {
@@ -192,13 +201,26 @@ export default function CryptoDonate() {
     } catch (e) {
       errorAlert(e);
     }
-  }, [invoice?.id, errorAlert, siteInfo]);
+  }, [invoice?.id, checkCooldownUntil, errorAlert, siteInfo]);
 
   useEffect(() => {
     if (!invoice || invoice.status !== "pending") return undefined;
-    const interval = setInterval(refreshInvoice, 5000);
+    const interval = setInterval(async () => {
+      try {
+        const res = await axios.get(`/api/crypto/invoice/${invoice.id}`);
+        setInvoice(res.data);
+        if (res.data?.status === "completed" && res.data.coins) {
+          siteInfo.showAlert(
+            `Received ${res.data.coins} coins from your crypto payment.`,
+            "success"
+          );
+        }
+      } catch (e) {
+        // Status poll only; ignore transient errors.
+      }
+    }, 15000);
     return () => clearInterval(interval);
-  }, [invoice, refreshInvoice]);
+  }, [invoice?.id, invoice?.status]);
 
   async function createInvoice() {
     if (!parsedUsd) {
@@ -384,8 +406,12 @@ export default function CryptoDonate() {
               </Typography>
             )}
             {invoice.status === "pending" && (
-              <Button size="small" onClick={refreshInvoice}>
-                Check now
+              <Button
+                size="small"
+                onClick={refreshInvoice}
+                disabled={checkCooldownMs > 0}
+              >
+                {checkCooldownLabel}
               </Button>
             )}
             {invoice.status !== "pending" && (

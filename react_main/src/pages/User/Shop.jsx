@@ -519,7 +519,24 @@ export default function Shop(props) {
       )}
 
       {activeTab === "manage" && (
-        <Grid2 container spacing={1} sx={{ pt: 1 }}>
+        <Stack spacing={2} sx={{ pt: 1 }}>
+          <Paper sx={{ p: 2 }}>
+            <Stack spacing={1}>
+              <Typography variant="body2">
+                All funds are used for running UM. No salaries are paid, and no
+                payouts are received by any members. All funds go to operations.
+              </Typography>
+              <Typography variant="body2">
+                Bitcoin transactions must be confirmed on-chain and may take
+                10-15 minutes to appear.
+              </Typography>
+              <Typography variant="body2">
+                If you have any issues receiving your coins through any of
+                these methods, reach out to @golbolco on Discord.
+              </Typography>
+            </Stack>
+          </Paper>
+          <Grid2 container spacing={1}>
           <Grid2
             size={{
               xs: 12,
@@ -590,7 +607,8 @@ export default function Shop(props) {
               </Stack>
             </Paper>
           </Grid2>
-        </Grid2>
+          </Grid2>
+        </Stack>
       )}
 
       {activeTab === "transfer" && (
