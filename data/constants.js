@@ -337,6 +337,14 @@ module.exports = {
   maxWordDeckDescriptionLength: 120,
   maxOwnedCustomEmotes: 10,
   maxOwnedCustomEmotesExtra: 10,
+  maxOwnedCustomStickers: 5,
+  maxCustomStickerFileSizeBytes: 10 * 1024 * 1024, // 10 MB
+  maxCustomStickerDimension: 512, // max width or height in pixels
+  maxCustomStickerNameLength: 25,
+  // Custom death sound: max final duration; source upload may be larger then trimmed client-side
+  maxDeathSoundSeconds: 5,
+  maxDeathSoundBytes: 10 * 1024 * 1024,
+  deathSoundAllowedExts: ["mp3", "ogg", "wav", "webm"],
   maxArchivedGamesMax: 10,
   maxDeckNameLength: 25, // maxSetupNameLength
   maxCustomEmoteNameLength: 25,

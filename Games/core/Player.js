@@ -80,6 +80,7 @@ module.exports = class Player {
       nameColor: this.user.nameColor,
       hasAvatar: this.user.avatar,
       customEmotes: this.user.customEmotes,
+      customStickers: this.user.customStickers,
     };
 
     this.id = shortid.generate();
@@ -91,6 +92,7 @@ module.exports = class Player {
     delete this.user.id;
     delete this.user.nameColor;
     delete this.user.customEmotes;
+    delete this.user.customStickers;
   }
 
   makeNotAnonymous() {
@@ -109,6 +111,7 @@ module.exports = class Player {
     this.user.textColor = p.textColor;
     this.user.nameColor = p.nameColor;
     this.user.customEmotes = p.customEmotes;
+    this.user.customStickers = p.customStickers;
     delete this.anonId;
   }
 
@@ -927,6 +930,23 @@ module.exports = class Player {
     } else return this.user.swapped.player.setUser(user, true);
   }
 
+  /**
+   * URL for this player's custom death sound, or null if none / anonymous.
+   * Disguiser note: user objects are not swapped on guise, so the dying
+   * player slot's user is the identity that "looks dead" to the lobby
+   * (disguiser on first guise; most recent victim thereafter). That matches
+   * the intended death-sound behavior without extra tracking.
+   */
+  getDeathSoundUrl() {
+    if (this.game?.anonymousGame) return null;
+    if (!this.user?.deathSound) return null;
+    const userId = this.user.id;
+    if (!userId) return null;
+    const ext = this.user.deathSoundExt || "ogg";
+    if (!constants.deathSoundAllowedExts.includes(ext)) return null;
+    return `/uploads/${userId}_deathSound.${ext}`;
+  }
+
   getPlayerInfo(recipient) {
     if (recipient && recipient.id == null) recipient = null;
 
@@ -944,6 +964,7 @@ module.exports = class Player {
       nameGradientColorB: this.user.nameGradientColorB,
       nameGradientColorC: this.user.nameGradientColorC,
       customEmotes: this.user.customEmotes,
+      customStickers: this.user.customStickers,
       birthday: this.user.birthday,
       vanityUrl: this.user.vanityUrl,
       playerListPosition: this.game?.players?.indexOf(this),
@@ -2126,15 +2147,23 @@ module.exports = class Player {
 
     // Swap both customEmotes locations: user.customEmotes feeds
     // getPlayerInfo, and user.settings.customEmotes is read when quoted
-    // messages are rendered.
+    // messages are rendered. Same for customStickers.
     let tempEmotes = this.user.customEmotes;
     this.user.customEmotes = player.user.customEmotes;
     player.user.customEmotes = tempEmotes;
+
+    let tempStickers = this.user.customStickers;
+    this.user.customStickers = player.user.customStickers;
+    player.user.customStickers = tempStickers;
 
     if (this.user.settings && player.user.settings) {
       let tempSettingsEmotes = this.user.settings.customEmotes;
       this.user.settings.customEmotes = player.user.settings.customEmotes;
       player.user.settings.customEmotes = tempSettingsEmotes;
+
+      let tempSettingsStickers = this.user.settings.customStickers;
+      this.user.settings.customStickers = player.user.settings.customStickers;
+      player.user.settings.customStickers = tempSettingsStickers;
     }
 
     // Swap items and effects

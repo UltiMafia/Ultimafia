@@ -76,7 +76,7 @@ export default function Newspaper(props) {
                   />
                 </div>
               )}
-              <div className="newspaper-paragraph">{emotify(winMessage)}</div>
+              <div className="newspaper-paragraph">{emotify(winMessage, null, null, { system: true })}</div>
             </div>
           </div>
         );
@@ -168,7 +168,7 @@ export default function Newspaper(props) {
               className="newspaper-paragraph win-message-text"
               style={{ flex: "1", minWidth: 0 }}
             >
-              {emotify(winMessage)}
+              {emotify(winMessage, null, null, { system: true })}
             </div>
           </div>
         </div>
@@ -202,7 +202,7 @@ export default function Newspaper(props) {
           />
         </div>
 
-        <div className="newspaper-paragraph">{emotify(death.deathMessage)}</div>
+        <div className="newspaper-paragraph">{emotify(death.deathMessage, null, null, { system: true })}</div>
       </div>
       {death.revealMessage && (
         <div className="newspaper-paragraph">
@@ -215,7 +215,7 @@ export default function Newspaper(props) {
       )}
 
       {death.lastWill && (
-        <div className="newspaper-paragraph">{emotify(death.lastWill)}</div>
+        <div className="newspaper-paragraph">{emotify(death.lastWill, null, null, { system: true })}</div>
       )}
     </div>
   ));

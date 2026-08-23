@@ -1594,17 +1594,25 @@ router.get("/settings/data", async function (req, res) {
   try {
     const maxOwnedCustomEmotes =
       constants.maxOwnedCustomEmotes + constants.maxOwnedCustomEmotesExtra;
+    const maxOwnedCustomStickers = constants.maxOwnedCustomStickers;
 
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var user =
       userId &&
       (await models.User.findOne({ id: userId, deleted: false })
-        .select("name birthday pronouns settings customEmotes -_id")
-        .populate({
-          path: "customEmotes",
-          select: "id extension name -_id",
-          options: { limit: maxOwnedCustomEmotes },
-        }));
+        .select("name birthday pronouns settings customEmotes customStickers -_id")
+        .populate([
+          {
+            path: "customEmotes",
+            select: "id extension name -_id",
+            options: { limit: maxOwnedCustomEmotes },
+          },
+          {
+            path: "customStickers",
+            select: "id extension name -_id",
+            options: { limit: maxOwnedCustomStickers },
+          },
+        ]));
 
     if (user) {
       user = user.toJSON();
@@ -1615,6 +1623,7 @@ router.get("/settings/data", async function (req, res) {
       user.settings.pronouns = user.pronouns;
       user.settings.birthday = dateOnly.normalizeBirthday(user.birthday);
       utils.remapCustomEmotes(user, userId);
+      utils.remapCustomStickers(user, userId);
 
       // Fetch vanity URL
       const vanityUrl = await models.VanityUrl.findOne({
@@ -1763,6 +1772,308 @@ router.post("/deathMessage", async function (req, res) {
   }
 });
 
+function removeUserDeathSoundFiles(userId) {
+  const uploadPath = process.env.UPLOAD_PATH;
+  if (!uploadPath) return;
+  for (const ext of constants.deathSoundAllowedExts) {
+    const p = `${uploadPath}/${userId}_deathSound.${ext}`;
+    try {
+      if (fs.existsSync(p)) fs.unlinkSync(p);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+}
+
+function deathSoundExtFromMime(mime, originalName) {
+  const m = (mime || "").toLowerCase();
+  if (m.includes("mpeg") || m === "audio/mp3") return "mp3";
+  if (m.includes("ogg") || m.includes("opus")) return "ogg";
+  if (m.includes("wav") || m.includes("wave")) return "wav";
+  if (m.includes("webm")) return "webm";
+  const name = String(originalName || "").toLowerCase();
+  const match = name.match(/\.([a-z0-9]+)$/);
+  if (match && constants.deathSoundAllowedExts.includes(match[1])) {
+    return match[1];
+  }
+  return null;
+}
+
+/**
+ * Best-effort duration (seconds) from raw audio bytes.
+ * Supports WAV (fmt+data), Ogg/WebM (crude granule/duration tags), MP3 (frame scan).
+ * Returns null when duration cannot be determined.
+ */
+function estimateAudioDurationSeconds(buffer, ext) {
+  if (!buffer || buffer.length < 16) return null;
+  try {
+    if (ext === "wav") {
+      // RIFF....WAVE
+      if (buffer.toString("ascii", 0, 4) !== "RIFF") return null;
+      let offset = 12;
+      let sampleRate = 0;
+      let byteRate = 0;
+      let dataSize = 0;
+      while (offset + 8 <= buffer.length) {
+        const chunkId = buffer.toString("ascii", offset, offset + 4);
+        const chunkSize = buffer.readUInt32LE(offset + 4);
+        if (chunkId === "fmt " && chunkSize >= 16) {
+          sampleRate = buffer.readUInt32LE(offset + 12);
+          byteRate = buffer.readUInt32LE(offset + 16);
+        } else if (chunkId === "data") {
+          dataSize = chunkSize;
+        }
+        offset += 8 + chunkSize + (chunkSize % 2);
+      }
+      if (byteRate > 0 && dataSize > 0) return dataSize / byteRate;
+      if (sampleRate > 0 && dataSize > 0) return dataSize / (sampleRate * 2);
+      return null;
+    }
+
+    if (ext === "mp3") {
+      // Skip ID3v2
+      let i = 0;
+      if (
+        buffer.length > 10 &&
+        buffer.toString("ascii", 0, 3) === "ID3"
+      ) {
+        const size =
+          ((buffer[6] & 0x7f) << 21) |
+          ((buffer[7] & 0x7f) << 14) |
+          ((buffer[8] & 0x7f) << 7) |
+          (buffer[9] & 0x7f);
+        i = 10 + size;
+      }
+      // Scan first MPEG frame for bitrate/sample-rate; estimate from file size
+      const bitrateTable = {
+        // MPEG1 Layer3
+        1: [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0],
+        // MPEG2/2.5 Layer3
+        2: [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160, 0],
+      };
+      const sampleRateTable = {
+        1: [44100, 48000, 32000],
+        2: [22050, 24000, 16000],
+        25: [11025, 12000, 8000],
+      };
+      while (i + 4 < buffer.length && i < 8192) {
+        if (buffer[i] === 0xff && (buffer[i + 1] & 0xe0) === 0xe0) {
+          const verBits = (buffer[i + 1] >> 3) & 0x3;
+          const layerBits = (buffer[i + 1] >> 1) & 0x3;
+          const bitrateIdx = (buffer[i + 2] >> 4) & 0xf;
+          const srIdx = (buffer[i + 2] >> 2) & 0x3;
+          if (layerBits !== 1 || bitrateIdx === 0 || bitrateIdx === 15 || srIdx === 3) {
+            i++;
+            continue;
+          }
+          let verKey = 1;
+          let srKey = 1;
+          if (verBits === 3) {
+            verKey = 1;
+            srKey = 1;
+          } else if (verBits === 2) {
+            verKey = 2;
+            srKey = 2;
+          } else if (verBits === 0) {
+            verKey = 2;
+            srKey = 25;
+          } else {
+            i++;
+            continue;
+          }
+          const bitrate = bitrateTable[verKey][bitrateIdx] * 1000;
+          const sampleRate = sampleRateTable[srKey][srIdx];
+          if (bitrate > 0 && sampleRate > 0) {
+            // Approximate duration from remaining payload
+            return ((buffer.length - i) * 8) / bitrate;
+          }
+        }
+        i++;
+      }
+      return null;
+    }
+
+    if (ext === "ogg") {
+      // Look for first OggS page with sample rate from Opus/Vorbis ident
+      // Fallback: crude estimate not available without demux; return null
+      return null;
+    }
+
+    if (ext === "webm") {
+      return null;
+    }
+  } catch (e) {
+    return null;
+  }
+  return null;
+}
+
+router.post("/deathSound", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const itemsOwned = await redis.getUserItemsOwned(userId);
+
+    if (!itemsOwned.deathSoundEnabled) {
+      errors.forbidden(
+        res,
+        "You must purchase Custom Death Sound from the Shop."
+      );
+      return;
+    }
+
+    const form = new formidable();
+    form.maxFileSize = constants.maxDeathSoundBytes;
+    form.maxFields = 5;
+
+    const [fields, files] = await form.parseAsync(req);
+    const file =
+      files.file && (Array.isArray(files.file) ? files.file[0] : files.file);
+    const filePath = file?.filepath || file?.path;
+    if (!filePath) {
+      errors.badRequest(res, "No audio file uploaded.");
+      return;
+    }
+
+    const mime = (file.type || file.mimetype || "").toLowerCase();
+    const originalName = file.name || file.originalFilename || "";
+    const ext = deathSoundExtFromMime(mime, originalName);
+    if (!ext || !constants.deathSoundAllowedExts.includes(ext)) {
+      errors.badRequest(
+        res,
+        "Death sound must be an mp3, ogg, or wav file (webm from the in-browser trimmer is also accepted)."
+      );
+      return;
+    }
+
+    const buffer = fs.readFileSync(filePath);
+    if (!buffer.length) {
+      errors.badRequest(res, "Uploaded file is empty.");
+      return;
+    }
+    if (buffer.length > constants.maxDeathSoundBytes) {
+      errors.payloadTooLarge(
+        res,
+        "Death sound must be less than 10 MB."
+      );
+      return;
+    }
+
+    // Client sends durationSeconds after trim; also estimate when possible
+    const clientDuration = parseFloat(
+      String(
+        (fields.durationSeconds &&
+          (Array.isArray(fields.durationSeconds)
+            ? fields.durationSeconds[0]
+            : fields.durationSeconds)) ||
+          ""
+      )
+    );
+    const estimated = estimateAudioDurationSeconds(buffer, ext);
+    const duration =
+      Number.isFinite(clientDuration) && clientDuration > 0
+        ? clientDuration
+        : estimated;
+
+    if (
+      duration != null &&
+      duration > constants.maxDeathSoundSeconds + 0.15
+    ) {
+      errors.badRequest(
+        res,
+        `Death sound must be at most ${constants.maxDeathSoundSeconds} seconds long.`
+      );
+      return;
+    }
+
+    // If we cannot measure duration and file is large, reject as a soft guard
+    // (client should always send a trimmed short clip after the editor dialog)
+    if (duration == null && buffer.length > 2 * 1024 * 1024) {
+      errors.badRequest(
+        res,
+        "Could not verify audio duration. Trim to 5 seconds in the editor, then upload again."
+      );
+      return;
+    }
+
+    const uploadPath = process.env.UPLOAD_PATH;
+    if (!uploadPath) {
+      errors.serverError(res, "Upload path is not configured.");
+      return;
+    }
+    if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath);
+
+    const tempPath = `${uploadPath}/${userId}_deathSound.${ext}.tmp`;
+    const finalPath = `${uploadPath}/${userId}_deathSound.${ext}`;
+    try {
+      fs.writeFileSync(tempPath, buffer);
+      removeUserDeathSoundFiles(userId);
+      fs.renameSync(tempPath, finalPath);
+
+      await models.User.updateOne(
+        { id: userId },
+        {
+          $set: {
+            deathSound: true,
+            deathSoundExt: ext,
+          },
+        }
+      ).exec();
+      await redis.cacheUserInfo(userId, true);
+
+      res.send({
+        success: true,
+        deathSound: true,
+        deathSoundExt: ext,
+        url: `/uploads/${userId}_deathSound.${ext}`,
+      });
+    } finally {
+      try {
+        if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+      } catch (cleanupErr) {
+        /* ignore */
+      }
+    }
+  } catch (e) {
+    if (e.message && e.message.indexOf("maxFileSize exceeded") === 0) {
+      errors.payloadTooLarge(res, "Death sound must be less than 10 MB.");
+      return;
+    }
+    logger.error(e);
+    errors.serverError(res, "Could not upload death sound. Please try again.");
+  }
+});
+
+router.delete("/deathSound", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const itemsOwned = await redis.getUserItemsOwned(userId);
+
+    if (!itemsOwned.deathSoundEnabled) {
+      errors.forbidden(
+        res,
+        "You must purchase Custom Death Sound from the Shop."
+      );
+      return;
+    }
+
+    removeUserDeathSoundFiles(userId);
+    await models.User.updateOne(
+      { id: userId },
+      {
+        $set: {
+          deathSound: false,
+          deathSoundExt: "ogg",
+        },
+      }
+    ).exec();
+    await redis.cacheUserInfo(userId, true);
+    res.send({ success: true, deathSound: false });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not remove death sound. Please try again.");
+  }
+});
+
 // Vanity URL routes moved to /api/vanityUrl
 
 router.post("/customEmote/create", async function (req, res) {
@@ -1832,6 +2143,17 @@ router.post("/customEmote/create", async function (req, res) {
     if (existingCustomEmote) {
       res.status(400);
       res.send(`You already have a custom emote with that name.`);
+      return;
+    }
+
+    var existingCustomSticker = await models.CustomSticker.findOne({
+      creator: new ObjectID(user._id),
+      name: customEmote.name,
+      deleted: false,
+    }).select("-_id");
+    if (existingCustomSticker) {
+      res.status(400);
+      res.send(`You already have a custom sticker with that name.`);
       return;
     }
 
@@ -1946,6 +2268,219 @@ router.post("/customEmote/delete", async function (req, res) {
   }
 });
 
+const STICKER_MIME_TO_EXT = {
+  "image/gif": "gif",
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/webp": "webp",
+};
+
+router.post("/customSticker/create", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+
+    var user = await models.User.findOne({ id: userId, deleted: false }).select(
+      "itemsOwned customStickers customEmotes _id"
+    );
+    user = user.toJSON();
+
+    const ownedCustomStickers = user.itemsOwned.customStickers || 0;
+    if ((user.customStickers || []).length >= ownedCustomStickers) {
+      errors.forbidden(
+        res,
+        "You need to purchase more sticker slots from the shop."
+      );
+      return;
+    }
+
+    if ((user.customStickers || []).length >= constants.maxOwnedCustomStickers) {
+      errors.forbidden(
+        res,
+        `You can only have up to ${constants.maxOwnedCustomStickers} custom stickers linked to your account.`
+      );
+      return;
+    }
+
+    var form = new formidable();
+    form.maxFileSize = constants.maxCustomStickerFileSizeBytes;
+    form.maxFields = 1;
+
+    var [fields, files] = await form.parseAsync(req);
+
+    let customSticker = Object();
+    customSticker.name = String(fields.stickerText || fields.emoteText || "");
+
+    if (!customSticker.name || !customSticker.name.length) {
+      res.status(400);
+      res.send("You must give your custom sticker a name.");
+      return;
+    }
+
+    if (customSticker.name.match(/( |:)/)) {
+      res.status(400);
+      res.send("Custom sticker names may not have spaces or colons in them.");
+      return;
+    }
+
+    if (customSticker.name.length > constants.maxCustomStickerNameLength) {
+      res.status(400);
+      res.send("Sticker name is too long.");
+      return;
+    }
+
+    var existingCustomSticker = await models.CustomSticker.findOne({
+      creator: new ObjectID(user._id),
+      name: customSticker.name,
+      deleted: false,
+    }).select("-_id");
+    if (existingCustomSticker) {
+      res.status(400);
+      res.send(`You already have a custom sticker with that name.`);
+      return;
+    }
+
+    var existingCustomEmote = await models.CustomEmote.findOne({
+      creator: new ObjectID(user._id),
+      name: customSticker.name,
+      deleted: false,
+    }).select("-_id");
+    if (existingCustomEmote) {
+      res.status(400);
+      res.send(`You already have a custom emote with that name.`);
+      return;
+    }
+
+    customSticker.id = shortid.generate();
+    customSticker.creator = req.session.user._id;
+
+    if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
+      fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
+
+    const fileContents = fs.readFileSync(files.file.path).toString();
+    const matches = fileContents.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+
+    if (!matches || matches.length !== 3) {
+      res.status(400);
+      res.send("Invalid octet stream.");
+      return;
+    }
+
+    const mimeType = matches[1].toLowerCase();
+    const extension = STICKER_MIME_TO_EXT[mimeType];
+    if (!extension) {
+      res.status(400);
+      res.send("Stickers must be GIF, PNG, JPEG, or WebP.");
+      return;
+    }
+
+    const buffer = Buffer.from(matches[2], "base64");
+    if (buffer.length > constants.maxCustomStickerFileSizeBytes) {
+      res.status(400);
+      res.send(
+        `Sticker file is too large (max ${Math.floor(
+          constants.maxCustomStickerFileSizeBytes / (1024 * 1024)
+        )} MB).`
+      );
+      return;
+    }
+
+    // Dimension check only — no conversion for now (preserve original bytes / animation).
+    // For animated GIFs, sharp's animated metadata reports height as the stacked
+    // total of all frames; use pageHeight for the real per-frame size.
+    try {
+      const metadata = await sharp(buffer, { animated: true }).metadata();
+      const maxDim = constants.maxCustomStickerDimension;
+      const width = metadata.width || 0;
+      const height = metadata.pageHeight || metadata.height || 0;
+      if (width > maxDim || height > maxDim) {
+        res.status(400);
+        res.send(
+          `Sticker dimensions must be at most ${maxDim}×${maxDim} pixels (got ${width}×${height}).`
+        );
+        return;
+      }
+    } catch (metaErr) {
+      res.status(400);
+      res.send("Could not read sticker image. Please try another file.");
+      return;
+    }
+
+    customSticker.extension = extension;
+    const filepath = utils.getCustomStickerFilepath(
+      userId,
+      customSticker.id,
+      customSticker.extension
+    );
+    fs.writeFileSync(filepath, buffer);
+
+    customSticker = new models.CustomSticker(customSticker);
+    await customSticker.save();
+    await models.User.updateOne(
+      { id: userId },
+      { $push: { customStickers: customSticker._id } }
+    ).exec();
+
+    redis.invalidateCachedUser(userId);
+
+    res.send(customSticker);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(
+      res,
+      "Could not create custom sticker. Please try again."
+    );
+  }
+});
+
+router.post("/customSticker/delete", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    let customStickerId = String(req.body.id);
+
+    let customSticker = await models.CustomSticker.findOne({
+      id: customStickerId,
+      deleted: false,
+    })
+      .select("_id id extension name creator")
+      .populate([
+        {
+          path: "creator",
+          model: "User",
+          select: "id -_id",
+        },
+      ]);
+
+    if (!customSticker || customSticker.creator.id != userId) {
+      errors.forbidden(
+        res,
+        "You can only delete custom stickers you have created."
+      );
+      return;
+    }
+
+    await models.CustomSticker.updateOne(
+      { id: customStickerId },
+      { $set: { deleted: true } }
+    ).exec();
+    await models.User.updateOne(
+      { id: customSticker.creator.id },
+      { $pull: { customStickers: customSticker._id } }
+    ).exec();
+
+    redis.invalidateCachedUser(userId);
+
+    res.send(`Deleted custom sticker ${customSticker.name}`);
+    return;
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(
+      res,
+      "Could not delete custom sticker. Please try again."
+    );
+  }
+});
+
 router.post("/settings/update", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -1972,6 +2507,7 @@ router.post("/settings/update", async function (req, res) {
       "autoplay",
       "collapseMedia",
       "disableMediaAutoplay",
+      "disableAnimatedAvatars",
       "hideStatistics",
       "hideKarma",
       "hidePointsNegative",
@@ -1981,6 +2517,7 @@ router.post("/settings/update", async function (req, res) {
       "hideCompetitiveModal",
       "ignoreTextColor",
       "accessibleNameColors",
+      "ignoreDeathSounds",
     ]);
     if (BOOLEAN_SETTINGS.has(prop)) {
       value = value === true || value === "true";
@@ -2647,15 +3184,7 @@ router.delete("/forumBanner", async function (req, res) {
 });
 
 function removeUserAvatarFiles(userId) {
-  const uploadPath = process.env.UPLOAD_PATH;
-  for (const ext of ["webp", "gif", "png", "jpg", "jpeg"]) {
-    const p = `${uploadPath}/${userId}_avatar.${ext}`;
-    try {
-      if (fs.existsSync(p)) fs.unlinkSync(p);
-    } catch (e) {
-      /* ignore */
-    }
-  }
+  utils.removeAvatarVariantFiles(process.env.UPLOAD_PATH, `${userId}_avatar`);
 }
 
 router.post("/avatar", async function (req, res) {
@@ -2748,9 +3277,19 @@ router.post("/avatar", async function (req, res) {
       }
 
       const finalPath = `${uploadPath}/${userId}_avatar.webp`;
+      const staticPath = `${uploadPath}/${userId}_avatar_static.webp`;
       removeUserAvatarFiles(userId);
       fs.renameSync(tempPath, finalPath);
       tempPath = null;
+      try {
+        if (keepAnimation) {
+          await utils.writeStaticAvatarFrame(buffer, staticPath);
+        } else {
+          fs.copyFileSync(finalPath, staticPath);
+        }
+      } catch (staticErr) {
+        logger.warn(staticErr);
+      }
 
       await models.User.updateOne({ id: userId }, { $set: { avatar: true } });
       await redis.cacheUserInfo(userId, true);

@@ -7,6 +7,10 @@ module.exports = class Meteor extends Effect {
 
     this.listeners = {
       death: function (player, killer, deathType, instant) {
+        if (this.game.MeteorLanded) {
+          return;
+        }
+
         const warningPhase = this.game.meteorWarningPhase || "Day";
 
         if (warningPhase === "Day" && deathType !== "condemn") {
@@ -16,6 +20,10 @@ module.exports = class Meteor extends Effect {
         this.remove();
       },
       afterActions: function () {
+        if (this.game.MeteorLanded) {
+          return;
+        }
+
         const stateName = this.game.getStateName();
         const warningPhase = this.game.meteorWarningPhase || "Day";
 
@@ -23,18 +31,24 @@ module.exports = class Meteor extends Effect {
           return;
         }
 
+        this.game.MeteorLanded = true;
         this.game.queueAlert("A giant meteor obliterates the town!");
 
+        // Non-instant: instant kill calls checkAllMeetingsReady -> gotoNextState
+        // mid-loop, which can end the game before remaining players are killed
+        // and drop their obituaries (bots look like they never died).
         for (let player of [...this.game.alivePlayers()]) {
-          player.kill("basic", null, true);
+          player.kill("basic", null, false);
         }
-        this.game.MeteorLanded = true;
-        this.remove();
 
-        var [finished, winners] = this.game.checkWinConditions();
-        if (!finished || winners.groupAmt() <= 0) {
-          winners.addGroup("No one");
+        var [, winners] = this.game.checkWinConditions();
+        for (let group of Object.keys(winners.groups)) {
+          if (group !== "No one") {
+            winners.removeGroup(group);
+          }
         }
+        winners.addGroup("No one");
+        this.remove();
         this.game.endGame(winners);
       },
       handleWinBlockers: function (winners) {

@@ -31,6 +31,7 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import ImageViewer from "components/ImageViewer";
 import Miniprofile from "components/Miniprofile";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
+import { useAvatarImageUrl, AvatarPhoto } from "utils/avatarUrl";
 
 import santaDir from "images/holiday/santahat.png";
 
@@ -419,6 +420,17 @@ export function Avatar(props) {
   const inGame = props.inGame;
 
   const siteInfo = useContext(SiteInfoContext);
+  const isDeckAvatar =
+    !!deckProfile ||
+    (typeof hasImage === "string" && hasImage.includes("decks"));
+  const userFileId =
+    hasImage && !imageUrl && id && !isDeckAvatar && (!avatarId || id === avatarId)
+      ? id
+      : null;
+  const userFileUrl = useAvatarImageUrl(userFileId, {
+    cacheVal: siteInfo.cacheVal,
+    skipFreeze: !!edit,
+  });
   const style = {};
   const colors = [
     "#fff59d",
@@ -456,18 +468,19 @@ export function Avatar(props) {
     style.transform = "translateX(5px) translateY(5px)";
   }
 
+  let photoSrc = null;
   if (hasImage && !imageUrl && id && avatarId) {
     if (id === avatarId) {
-      if (!deckProfile) {
-        style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
-      } else {
-        style.backgroundImage = `url(/uploads/decks/${avatarId}.webp?t=${siteInfo.cacheVal})`;
+      if (!deckProfile && userFileUrl) {
+        photoSrc = userFileUrl;
+      } else if (deckProfile) {
+        photoSrc = `/uploads/decks/${avatarId}.webp?t=${siteInfo.cacheVal}`;
       }
     }
-  } else if (hasImage && !imageUrl && id) {
-    style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
+  } else if (hasImage && !imageUrl && id && userFileUrl) {
+    photoSrc = userFileUrl;
   } else if (hasImage && imageUrl) {
-    style.backgroundImage = `url(${imageUrl})`;
+    photoSrc = imageUrl;
   } else if (name) {
     var rand = 0;
 
@@ -483,9 +496,12 @@ export function Avatar(props) {
   }
   if (typeof hasImage == "string") {
     if (hasImage.includes("decks")) {
-      style.backgroundImage = `url(/uploads${hasImage}?t=${siteInfo.cacheVal})`;
+      photoSrc = `/uploads${hasImage}?t=${siteInfo.cacheVal}`;
       style.backgroundColor = "#00000000";
     }
+  }
+  if (photoSrc) {
+    style.backgroundImage = "none";
   }
 
   // Santa hat: Only show during December (turns off on January 1)
@@ -525,6 +541,7 @@ export function Avatar(props) {
         border: border,
       }}
     >
+      <AvatarPhoto src={photoSrc} />
       {edit && (
         <div className="edit avatar-edit-overlay">
           <AvatarUpload
@@ -625,17 +642,19 @@ export function NameWithAvatar(props) {
   const autoColor = user.autoContrastColor(color);
   const nameFontClass =
     nameFont && nameFont !== "default" ? `name-font-${nameFont}` : "";
+  // Dead names stay red; skip cosmetics that would override .user-name.dead
   const nameAnimClass =
-    animatedNameColor && animatedNameColor !== "none"
+    !dead && animatedNameColor && animatedNameColor !== "none"
       ? `name-anim-${animatedNameColor}`
       : "";
   // Rainbow/patriotic/gradient/tricolor use background-clip
   const usesClipText =
-    animatedNameColor === "rainbow" ||
-    animatedNameColor === "patriotic" ||
-    animatedNameColor === "gradient" ||
-    animatedNameColor === "tricolor";
-  const useSolidNameColor = autoColor && !usesClipText;
+    !dead &&
+    (animatedNameColor === "rainbow" ||
+      animatedNameColor === "patriotic" ||
+      animatedNameColor === "gradient" ||
+      animatedNameColor === "tricolor");
+  const useSolidNameColor = !dead && autoColor && !usesClipText;
   const nameStyle = {
     ...(useSolidNameColor ? { color: autoColor } : {}),
     display: "inline",
@@ -713,7 +732,7 @@ export function NameWithAvatar(props) {
           style={nameStyle}
         >
           <Stack direction="row" spacing={0.5} alignItems="center">
-            {nameColorSwatch && (
+            {nameColorSwatch && !dead && (
               <span
                 className={`name-color-swatch ${
                   small ? "name-color-swatch-small" : "name-color-swatch-regular"

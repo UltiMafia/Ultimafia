@@ -354,6 +354,15 @@ const shopItems = [
     onBuy: async function (userId) {},
   },
   {
+    name: "Custom Death Sound",
+    desc: "Upload a death sound (mp3/ogg/wav, up to 10 MB source). Trim to 5 seconds in the editor; played to everyone in the lobby when you die. Re-uploads replace the previous file.",
+    key: "deathSoundEnabled",
+    category: "game",
+    price: 50,
+    limit: 1,
+    onBuy: async function (userId) {},
+  },
+  {
     name: "Anonymous Deck",
     desc: "Create name decks for anonymous games.",
     key: "anonymousDeck",
@@ -387,6 +396,15 @@ const shopItems = [
     category: "game",
     price: 25,
     limit: constants.maxOwnedCustomEmotesExtra,
+    onBuy: async function (userId) {},
+  },
+  {
+    name: "Sticker Slot",
+    desc: "Unlock a custom sticker slot. Upload stickers (GIF/PNG/JPEG/WebP) in Settings → Game.",
+    key: "customStickers",
+    category: "game",
+    price: 10,
+    limit: constants.maxOwnedCustomStickers,
     onBuy: async function (userId) {},
   },
   {

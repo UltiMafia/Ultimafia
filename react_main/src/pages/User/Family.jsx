@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 
 import { UserContext, SiteInfoContext } from "Contexts";
+import { FamilyAvatarImage } from "utils/avatarUrl";
 import { useErrorAlert } from "components/Alerts";
 import { filterProfanity } from "components/Basic";
 import { TextEditor } from "components/Form";
@@ -58,9 +59,9 @@ export default function Family() {
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
 
-  function loadFamilyProfile() {
+  function loadFamilyProfile(signal) {
     axios
-      .get(`/api/family/${familyId}/profile`)
+      .get(`/api/family/${familyId}/profile`, signal ? { signal } : undefined)
       .then((res) => {
         setFamily(res.data);
         setBio(res.data.bio || "");
@@ -68,6 +69,13 @@ export default function Family() {
         document.title = `${res.data.name} | UltiMafia`;
       })
       .catch((e) => {
+        if (
+          e.code === "ERR_CANCELED" ||
+          e.name === "CanceledError" ||
+          e.name === "AbortError"
+        ) {
+          return;
+        }
         errorAlert(e);
         setFamilyLoaded(true);
       });
@@ -81,12 +89,16 @@ export default function Family() {
   useEffect(() => {
     if (familyId) {
       setFamilyLoaded(false);
-      loadFamilyProfile();
+      setFamily(null);
+      const controller = new AbortController();
+      loadFamilyProfile(controller.signal);
 
       // Check for pending invite
       if (user.loggedIn) {
         axios
-          .get(`/api/family/${familyId}/pendingInvite`)
+          .get(`/api/family/${familyId}/pendingInvite`, {
+            signal: controller.signal,
+          })
           .then((res) => {
             if (res.data.hasPendingInvite) {
               setPendingInvite(res.data.family);
@@ -96,6 +108,8 @@ export default function Family() {
             // Ignore errors
           });
       }
+
+      return () => controller.abort();
     }
   }, [familyId]);
 
@@ -368,16 +382,10 @@ export default function Family() {
                 }}
               >
                 {family.avatar && (
-                  <div
-                    style={{
-                      width: "100px",
-                      height: "100px",
-                      borderRadius: "50%",
-                      backgroundImage: `url(/uploads/${family.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      flexShrink: 0,
-                    }}
+                  <FamilyAvatarImage
+                    id={family.id}
+                    size={100}
+                    cacheVal={siteInfo.cacheVal}
                   />
                 )}
                 <Box>
@@ -515,6 +523,7 @@ export default function Family() {
             {family.hasMusicPlayer && family.mediaUrl && (
               <Paper sx={panelStyle}>
                 <MediaEmbed
+                  key={`${familyId}:${family.mediaUrl}`}
                   mediaUrl={family.mediaUrl}
                   autoplay={!!family.mediaAutoplay}
                   collapsible

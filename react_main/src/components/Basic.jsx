@@ -9,6 +9,7 @@ import { Slang } from "./Slang";
 import { Typography } from "@mui/material";
 import { SiteInfoContext } from "../Contexts";
 import { InlineRoleMention } from "./Roles";
+import { useAvatarImageUrl, AvatarPhoto } from "utils/avatarUrl";
 
 export function ItemList(props) {
   const itemRows = props.items.map(props.map);
@@ -192,7 +193,13 @@ export function UserText(props) {
 
     // Any effects that inject elements need to be added after this point because the text property changes
     // throughout this useEffect function
-    if (props.emotify) text = emotify(text, props.customEmotes);
+    if (props.emotify)
+      text = emotify(
+        text,
+        props.systemMessage ? null : props.customEmotes,
+        props.systemMessage ? null : props.customStickers,
+        props.systemMessage ? { system: true } : undefined
+      );
 
     if (props.slangify)
       text = slangify({
@@ -205,7 +212,7 @@ export function UserText(props) {
     if (props.roleify) text = roleifySegments(text, siteInfo);
 
     setContent(text);
-  }, [props.text, props.terminologyEmoticons]);
+  }, [props.text, props.terminologyEmoticons, props.customEmotes, props.customStickers, props.systemMessage]);
 
   return content ?? "";
 }
@@ -357,8 +364,9 @@ export function iconUsername(text, players) {
 
             words[j] = (
               <InlineAvatar
-              url={`url(/uploads/${matchedPlayer.userId}_avatar.webp)`}
-              username={matchedPlayer.name}
+                key={matchedPlayer.userId || matchedPlayer.name}
+                userId={matchedPlayer.userId}
+                username={matchedPlayer.name}
               />
             );
           } else {
@@ -387,10 +395,21 @@ export function iconUsername(text, players) {
 }
 
 function InlineAvatar(props) {
-  let style = {};
-  if (props.url) {
+  const siteInfo = useContext(SiteInfoContext);
+  const photoSrc = useAvatarImageUrl(props.userId, {
+    cacheVal: siteInfo?.cacheVal,
+  });
+  let style = {
+    position: "relative",
+  };
+  let src = photoSrc;
+  if (props.userId && photoSrc) {
+    style.backgroundImage = "none";
+  } else if (props.url) {
+    src = null;
     style.backgroundImage = props.url;
   } else {
+    src = null;
     // Same as the list in react_main/src/pages/User/User.jsx
     const colors = [
       "#fff59d",
@@ -422,6 +441,7 @@ function InlineAvatar(props) {
       title={props.username}
       style={style}
     >
+      <AvatarPhoto src={src} />
       &#8203;
     </div>
   );

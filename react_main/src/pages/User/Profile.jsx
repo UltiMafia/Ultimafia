@@ -16,6 +16,7 @@ import {
   NameWithAvatar,
   OnlineStatus,
 } from "./User";
+import { FamilyAvatarImage } from "utils/avatarUrl";
 import { HiddenUpload, TextEditor } from "components/Form";
 import BannerUpload from "components/BannerUpload";
 import Setup from "components/Setup";
@@ -323,6 +324,11 @@ export default function Profile() {
     setEditingPronouns(false);
     setUserFamily(null);
     setProfileFamily(null);
+    // Stop previous profile's player immediately; otherwise the iframe
+    // keeps playing user A's track on user B's page until the next fetch.
+    setMediaUrl("");
+    setAutoplay(false);
+    setCollapseMedia(false);
 
     if (userId) {
       setProfileLoaded(false);
@@ -330,8 +336,10 @@ export default function Profile() {
       setProfileTotalGames(0);
       setStockInfo(null);
 
+      const controller = new AbortController();
+
       axios
-        .get(`/api/user/${userId}/profile`)
+        .get(`/api/user/${userId}/profile`, { signal: controller.signal })
         .then((res) => {
           const resolvedId = res.data.id;
           setCanonicalUserId(resolvedId);
@@ -419,9 +427,18 @@ export default function Profile() {
           document.title = `${res.data.name}'s Profile | UltiMafia`;
         })
         .catch((e) => {
+          if (
+            e.code === "ERR_CANCELED" ||
+            e.name === "CanceledError" ||
+            e.name === "AbortError"
+          ) {
+            return;
+          }
           errorAlert(e);
           navigate("/play");
         });
+
+      return () => controller.abort();
     }
   }, [userId, profileRefetchKey]);
 
@@ -1472,16 +1489,10 @@ export default function Profile() {
             >
               <Typography variant="italicRelation">Member of</Typography>
               {profileFamily.avatar && (
-                <div
-                  style={{
-                    width: isPhoneDevice ? "40px" : "60px",
-                    height: isPhoneDevice ? "40px" : "60px",
-                    borderRadius: "50%",
-                    backgroundImage: `url(/uploads/${profileFamily.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    flexShrink: 0,
-                  }}
+                <FamilyAvatarImage
+                  id={profileFamily.id}
+                  size={isPhoneDevice ? 40 : 60}
+                  cacheVal={siteInfo.cacheVal}
                 />
               )}
               <Typography>{profileFamily.name}</Typography>
@@ -1678,6 +1689,7 @@ export default function Profile() {
             {mediaUrl && (
               <div className="box-panel" style={panelStyle}>
                 <MediaEmbed
+                  key={`${profileUserId}:${mediaUrl}`}
                   mediaUrl={mediaUrl}
                   autoplay={autoplay}
                   collapsible
