@@ -32,16 +32,15 @@ module.exports = class Timebomb extends Item {
           }
 
           this.clearTimers();
+          // drop() nulls this.holder (inventory fix #2885); keep the victim.
+          const holder = this.holder;
           this.drop();
-          if (!this.holder.alive) {
+          if (!holder || !holder.alive) {
             return;
           }
 
-          // reveal role of anarchist
-          if (
-            this.holder == this.killer &&
-            this.holder.role.name == "Anarchist"
-          ) {
+          // Exploding on the Anarchist reveals them. No kill, no point, no win.
+          if (holder == this.killer && holder.role.name == "Anarchist") {
             let action = new Action({
               actor: this.killer,
               item: this,
@@ -63,8 +62,8 @@ module.exports = class Timebomb extends Item {
 
           let action = new Action({
             actor: this.killer,
-            target: this.holder,
-            game: this.holder.game,
+            target: holder,
+            game: holder.game,
             labels: ["kill", "bomb"],
             run: function () {
               if (this.dominates()) this.target.kill("bomb", this.actor, true);
@@ -76,7 +75,7 @@ module.exports = class Timebomb extends Item {
 
         let toDetonateSound = toDetonate - 1800;
         this.soundTimer = setTimeout(() => {
-          if (!this.holder.alive) {
+          if (!this.holder || !this.holder.alive) {
             return;
           }
           this.game.broadcast("explosion");
@@ -146,7 +145,7 @@ module.exports = class Timebomb extends Item {
     }
 
     this.tickInterval = setInterval(() => {
-      if (this.game.finished || !this.holder?.alive) {
+      if (this.game.finished || !this.holder || !this.holder.alive) {
         this.stopBombTick();
         return;
       }

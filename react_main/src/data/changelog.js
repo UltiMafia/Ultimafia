@@ -36,18 +36,16 @@ export const CHANGELOG_CATEGORIES = [
 /** @type {ChangelogRelease[]} */
 export const CHANGELOG = [
   {
-    id: "2026-08-23-meteor-stalemate",
-    date: "2026-08-23",
-    title: "Meteor stalemate: nobody wins, burden flips after a kill",
-    prs: [2974],
+    id: "2026-08-22-anarchist-timebomb",
+    date: "2026-08-22",
+    title: "Anarchist timebomb kills and reveals again",
+    prs: [2973],
     categories: {
       bugfixes: [
-        "When a meteor lands, nobody wins and every living player dies (including bots, listed in the newspaper)",
-        "After Mafia kills, meteor resets; if Town then no-lynches, meteor warns on Day. After a lynch, it warns on Night if Mafia/Cult can still kill",
-        "The obliterate alert only posts once",
+        "Anarchist Timebombs explode on the holder again: they kill other players, and reveal the Anarchist if it blows up on them",
       ],
       game: [
-        "Stalemate Force Must Act and Meteor are the defaults for new Mafia setups",
+        "A Timebomb exploding on the Anarchist does not kill them, does not award a point, and does not win the game",
       ],
     },
   },
