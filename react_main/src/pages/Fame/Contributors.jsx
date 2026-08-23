@@ -248,6 +248,7 @@ export default function Contributors(props) {
               ) : (
                 contributor.bio && (
                   <Typography
+                    component="div"
                     variant="body2"
                     sx={{
                       textAlign: "justify",

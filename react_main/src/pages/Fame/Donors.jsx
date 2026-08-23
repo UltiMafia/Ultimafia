@@ -286,6 +286,7 @@ export default function Donors(props) {
               ) : (
                 donor.bio && (
                   <Typography
+                    component="div"
                     variant="body2"
                     sx={{
                       textAlign: "justify",
