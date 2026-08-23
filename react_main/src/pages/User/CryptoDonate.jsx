@@ -114,6 +114,124 @@ function CopyRow({ label, value }) {
   );
 }
 
+function InvoiceCard({ invoice, nowTick, onUpdated, onRemoved }) {
+  const siteInfo = useContext(SiteInfoContext);
+  const errorAlert = useErrorAlert();
+  const [checkCooldownUntil, setCheckCooldownUntil] = useState(0);
+  const [busy, setBusy] = useState(false);
+
+  const checkCooldownMs = Math.max(0, checkCooldownUntil - nowTick);
+  const checkCooldownLabel =
+    checkCooldownMs > 0
+      ? `Check now (${Math.ceil(checkCooldownMs / 1000)}s)`
+      : "Check now";
+
+  async function checkNow() {
+    if (!invoice?.id || Date.now() < checkCooldownUntil) return;
+    try {
+      setCheckCooldownUntil(Date.now() + 5 * 60 * 1000);
+      const res = await axios.post(`/api/crypto/invoice/${invoice.id}/check`);
+      if (res.data?.status === "completed" && res.data.coins) {
+        siteInfo.showAlert(
+          `Received ${res.data.coins} coins from your crypto payment.`,
+          "success"
+        );
+        onRemoved(invoice.id);
+        return;
+      }
+      if (res.data?.status === "pending") {
+        onUpdated(res.data);
+      } else {
+        onRemoved(invoice.id);
+      }
+    } catch (e) {
+      errorAlert(e);
+    }
+  }
+
+  async function cancelInvoice() {
+    if (!invoice?.id) return;
+    if (!window.confirm("Cancel this invoice? You can still contact staff if you already sent payment.")) {
+      return;
+    }
+    setBusy(true);
+    try {
+      await axios.post(`/api/crypto/invoice/${invoice.id}/cancel`);
+      siteInfo.showAlert("Invoice cancelled.", "success");
+      onRemoved(invoice.id);
+    } catch (e) {
+      errorAlert(e);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Box
+      sx={{
+        mt: 1,
+        p: 1.5,
+        border: "1px solid",
+        borderColor: "divider",
+        borderRadius: 1,
+      }}
+    >
+      <Stack spacing={1}>
+        <Typography variant="subtitle2">
+          Status: {invoice.status}
+          {invoice.status === "pending"
+            ? ` · ${formatRemaining(invoice.expiresAt, nowTick)} left`
+            : ""}
+        </Typography>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <CoinIcon src={TOKEN_ICONS[invoice.asset]} alt={invoice.asset} />
+          <CoinIcon
+            src={NETWORKS.find((row) => row.id === invoice.chain)?.icon}
+            alt={invoice.chainLabel}
+          />
+          <Typography variant="body2">
+            Send exactly {invoice.expectedAmount} {invoice.asset} on{" "}
+            {invoice.chainLabel}. {invoice.coins} coins after confirmation.
+          </Typography>
+        </Stack>
+        <CopyRow label="Deposit address" value={invoice.depositAddress} />
+        {invoice.mint ? (
+          <CopyRow
+            label={
+              invoice.chain === "ethereum" ? "Token contract" : "Token mint"
+            }
+            value={invoice.mint}
+          />
+        ) : null}
+        <CopyRow
+          label="Exact amount"
+          value={`${invoice.expectedAmount} ${invoice.asset}`}
+        />
+        {invoice.payUri ? (
+          <CopyRow label="Payment URI" value={invoice.payUri} />
+        ) : null}
+        <Stack direction="row" spacing={1}>
+          <Button
+            size="small"
+            onClick={checkNow}
+            disabled={checkCooldownMs > 0 || busy}
+          >
+            {checkCooldownLabel}
+          </Button>
+          <Button
+            size="small"
+            color="error"
+            onClick={cancelInvoice}
+            disabled={busy}
+          >
+            Cancel invoice
+          </Button>
+        </Stack>
+      </Stack>
+    </Box>
+  );
+}
+
 export default function CryptoDonate() {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -123,10 +241,9 @@ export default function CryptoDonate() {
   const [usdAmount, setUsdAmount] = useState("5");
   const [network, setNetwork] = useState("");
   const [token, setToken] = useState("");
-  const [invoice, setInvoice] = useState(null);
+  const [pendingInvoices, setPendingInvoices] = useState([]);
   const [creating, setCreating] = useState(false);
   const [nowTick, setNowTick] = useState(Date.now());
-  const [checkCooldownUntil, setCheckCooldownUntil] = useState(0);
 
   const enabledAssets = useMemo(
     () => (options?.assets || []).filter((row) => row.enabled),
@@ -149,7 +266,13 @@ export default function CryptoDonate() {
   const parsedUsd = parseUsdAmount(usdAmount);
   const coinsPreview = (parsedUsd || 0) * coinsPerUsd;
   const selectedToken = tokensForNetwork.find((row) => row.asset === token);
-  const invoiceLocked = Boolean(invoice && invoice.status === "pending");
+
+  const loadMine = useCallback(() => {
+    axios
+      .get("/api/crypto/mine")
+      .then((res) => setPendingInvoices(res.data?.invoices || []))
+      .catch(errorAlert);
+  }, [errorAlert]);
 
   useEffect(() => {
     if (!user.loaded || !user.loggedIn) return;
@@ -164,7 +287,8 @@ export default function CryptoDonate() {
         }
       })
       .catch(errorAlert);
-  }, [user.loaded, user.loggedIn]);
+    loadMine();
+  }, [user.loaded, user.loggedIn, errorAlert, loadMine]);
 
   useEffect(() => {
     if (!network || !tokensForNetwork.length) return;
@@ -174,53 +298,21 @@ export default function CryptoDonate() {
   }, [network, tokensForNetwork, token]);
 
   useEffect(() => {
-    if (!invoice || invoice.status !== "pending") return undefined;
+    if (!pendingInvoices.length) return undefined;
     const interval = setInterval(() => setNowTick(Date.now()), 1000);
     return () => clearInterval(interval);
-  }, [invoice]);
-
-  const checkCooldownMs = Math.max(0, checkCooldownUntil - nowTick);
-  const checkCooldownLabel =
-    checkCooldownMs > 0
-      ? `Check now (${Math.ceil(checkCooldownMs / 1000)}s)`
-      : "Check now";
-
-  const refreshInvoice = useCallback(async () => {
-    if (!invoice?.id) return;
-    if (Date.now() < checkCooldownUntil) return;
-    try {
-      setCheckCooldownUntil(Date.now() + 5 * 60 * 1000);
-      const res = await axios.post(`/api/crypto/invoice/${invoice.id}/check`);
-      setInvoice(res.data);
-      if (res.data?.status === "completed" && res.data.coins) {
-        siteInfo.showAlert(
-          `Received ${res.data.coins} coins from your crypto payment.`,
-          "success"
-        );
-      }
-    } catch (e) {
-      errorAlert(e);
-    }
-  }, [invoice?.id, checkCooldownUntil, errorAlert, siteInfo]);
+  }, [pendingInvoices.length]);
 
   useEffect(() => {
-    if (!invoice || invoice.status !== "pending") return undefined;
-    const interval = setInterval(async () => {
-      try {
-        const res = await axios.get(`/api/crypto/invoice/${invoice.id}`);
-        setInvoice(res.data);
-        if (res.data?.status === "completed" && res.data.coins) {
-          siteInfo.showAlert(
-            `Received ${res.data.coins} coins from your crypto payment.`,
-            "success"
-          );
-        }
-      } catch (e) {
-        // Status poll only; ignore transient errors.
-      }
+    if (!pendingInvoices.length) return undefined;
+    const interval = setInterval(() => {
+      axios
+        .get("/api/crypto/mine")
+        .then((res) => setPendingInvoices(res.data?.invoices || []))
+        .catch(() => {});
     }, 15000);
     return () => clearInterval(interval);
-  }, [invoice?.id, invoice?.status]);
+  }, [pendingInvoices.length]);
 
   async function createInvoice() {
     if (!parsedUsd) {
@@ -238,12 +330,25 @@ export default function CryptoDonate() {
         chain: selectedToken.chain,
         asset: selectedToken.asset,
       });
-      setInvoice(res.data);
+      setPendingInvoices((prev) => [
+        res.data,
+        ...prev.filter((row) => row.id !== res.data.id),
+      ]);
     } catch (e) {
       errorAlert(e);
     } finally {
       setCreating(false);
     }
+  }
+
+  function updatePending(next) {
+    setPendingInvoices((prev) =>
+      prev.map((row) => (row.id === next.id ? next : row))
+    );
+  }
+
+  function removePending(id) {
+    setPendingInvoices((prev) => prev.filter((row) => row.id !== id));
   }
 
   if (!options) {
@@ -267,8 +372,8 @@ export default function CryptoDonate() {
     <Stack spacing={1}>
       <Typography variant="body2">
         1 USD = {coinsPerUsd} coins. Send the exact invoice amount (includes a
-        tiny unique dust so we can match your payment). Invoices expire in 30
-        minutes.
+        tiny unique dust so we can match your payment). Unpaid invoices are
+        cancelled after 30 minutes.
       </Typography>
       <TextField
         label="USD Amount"
@@ -276,14 +381,12 @@ export default function CryptoDonate() {
         value={usdAmount}
         onChange={(e) => setUsdAmount(e.target.value)}
         helperText="Whole USD amounts only."
-        disabled={invoiceLocked}
       />
       <TextField
         select
         label="Network"
         value={network}
         onChange={(e) => setNetwork(e.target.value)}
-        disabled={invoiceLocked}
         SelectProps={{
           renderValue: (value) => {
             const row = NETWORKS.find((item) => item.id === value);
@@ -303,7 +406,7 @@ export default function CryptoDonate() {
         label="Token"
         value={token}
         onChange={(e) => setToken(e.target.value)}
-        disabled={invoiceLocked || !tokensForNetwork.length}
+        disabled={!tokensForNetwork.length}
         helperText={
           network === "bitcoin"
             ? "Bitcoin payments use BTC."
@@ -311,10 +414,7 @@ export default function CryptoDonate() {
         }
         SelectProps={{
           renderValue: (value) => (
-            <OptionLabel
-              icon={TOKEN_ICONS[value]}
-              label={value}
-            />
+            <OptionLabel icon={TOKEN_ICONS[value]} label={value} />
           ),
         }}
       >
@@ -338,90 +438,20 @@ export default function CryptoDonate() {
         {creating ? "Creating invoice..." : "Create crypto invoice"}
       </Button>
 
-      {invoice && (
-        <Box
-          sx={{
-            mt: 1,
-            p: 1.5,
-            border: "1px solid",
-            borderColor: "divider",
-            borderRadius: 1,
-          }}
-        >
-          <Stack spacing={1}>
-            <Typography variant="subtitle2">
-              Status: {invoice.status}
-              {invoice.status === "pending"
-                ? ` · ${formatRemaining(invoice.expiresAt, nowTick)} left`
-                : ""}
-            </Typography>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <CoinIcon src={TOKEN_ICONS[invoice.asset]} alt={invoice.asset} />
-              <CoinIcon
-                src={
-                  NETWORKS.find((row) => row.id === invoice.chain)?.icon
-                }
-                alt={invoice.chainLabel}
-              />
-              <Typography variant="body2">
-                Send exactly {invoice.expectedAmount} {invoice.asset} on{" "}
-                {invoice.chainLabel}.
-              </Typography>
-            </Stack>
-            <CopyRow label="Deposit address" value={invoice.depositAddress} />
-            {invoice.mint ? (
-              <CopyRow
-                label={
-                  invoice.chain === "ethereum" ? "Token contract" : "Token mint"
-                }
-                value={invoice.mint}
-              />
-            ) : null}
-            <CopyRow
-              label="Exact amount"
-              value={`${invoice.expectedAmount} ${invoice.asset}`}
-            />
-            {invoice.payUri ? (
-              <CopyRow label="Payment URI" value={invoice.payUri} />
-            ) : null}
-            {invoice.explorerUrl ? (
-              <Typography
-                variant="body2"
-                component="a"
-                href={invoice.explorerUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View transaction
-              </Typography>
-            ) : null}
-            {invoice.status === "completed" && (
-              <Typography variant="body2">
-                Credited {invoice.coins} coins.
-              </Typography>
-            )}
-            {invoice.status === "expired" && (
-              <Typography variant="body2" color="error">
-                This invoice expired. Create a new one if you still want to pay.
-              </Typography>
-            )}
-            {invoice.status === "pending" && (
-              <Button
-                size="small"
-                onClick={refreshInvoice}
-                disabled={checkCooldownMs > 0}
-              >
-                {checkCooldownLabel}
-              </Button>
-            )}
-            {invoice.status !== "pending" && (
-              <Button size="small" onClick={() => setInvoice(null)}>
-                New invoice
-              </Button>
-            )}
-          </Stack>
-        </Box>
+      {pendingInvoices.length > 0 && (
+        <Typography variant="subtitle2" sx={{ pt: 1 }}>
+          Your unpaid invoices
+        </Typography>
       )}
+      {pendingInvoices.map((row) => (
+        <InvoiceCard
+          key={row.id}
+          invoice={row}
+          nowTick={nowTick}
+          onUpdated={updatePending}
+          onRemoved={removePending}
+        />
+      ))}
     </Stack>
   );
 }

@@ -113,6 +113,34 @@ router.post("/invoice", async function (req, res) {
   }
 });
 
+router.get("/mine", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const invoices = await cryptoPayments.listMyPendingInvoices(userId);
+    return res.send({ invoices });
+  } catch (e) {
+    if (e.message === "Not logged in") {
+      return res.status(401).send("Not logged in");
+    }
+    logger.error(e);
+    errors.serverError(res, "Could not load invoices.");
+  }
+});
+
+router.post("/invoice/:id/cancel", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const invoiceId = String(req.params.id || "").trim();
+    const invoice = await cryptoPayments.cancelInvoiceByUser(invoiceId, userId);
+    return res.send(invoice);
+  } catch (e) {
+    if (e.message === "Not logged in") {
+      return res.status(401).send("Not logged in");
+    }
+    return clientError(res, e);
+  }
+});
+
 router.get("/invoice/:id", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);

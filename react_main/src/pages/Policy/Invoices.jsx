@@ -20,7 +20,8 @@ import {
 import { UserContext, SiteInfoContext } from "../../Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { Loading } from "components/Loading";
-import { NameWithAvatar } from "pages/User/User";
+import { Avatar } from "pages/User/User";
+import { avatarUrl } from "utils/avatarUrl";
 
 function userIsOwner(user) {
   return (user?.groups || []).some((g) => g && g.name === "Owner");
@@ -39,6 +40,36 @@ function formatWhen(value) {
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return "-";
   return d.toLocaleString();
+}
+
+function InvoiceUserCell({ userId, userName }) {
+  const siteInfo = useContext(SiteInfoContext);
+  const [imgFailed, setImgFailed] = useState(false);
+  const src = avatarUrl(userId, { cacheVal: siteInfo?.cacheVal });
+
+  return (
+    <Stack direction="row" spacing={1} alignItems="center">
+      {userId && src && !imgFailed ? (
+        <Box
+          component="img"
+          src={src}
+          alt=""
+          onError={() => setImgFailed(true)}
+          sx={{
+            width: 28,
+            height: 28,
+            borderRadius: "50%",
+            objectFit: "cover",
+            flexShrink: 0,
+            bgcolor: "action.hover",
+          }}
+        />
+      ) : (
+        <Avatar small name={userName} />
+      )}
+      <Typography variant="body2">{userName}</Typography>
+    </Stack>
+  );
 }
 
 export default function Invoices() {
@@ -156,11 +187,9 @@ export default function Invoices() {
                 <TableRow key={row.id}>
                   <TableCell>{formatWhen(row.createdAt)}</TableCell>
                   <TableCell>
-                    <NameWithAvatar
-                      small
-                      id={row.userId}
-                      name={row.userName}
-                      avatar={row.userAvatar}
+                    <InvoiceUserCell
+                      userId={row.userId}
+                      userName={row.userName}
                     />
                   </TableCell>
                   <TableCell>{row.chainLabel || row.chain}</TableCell>
@@ -178,27 +207,31 @@ export default function Invoices() {
                     />
                   </TableCell>
                   <TableCell>
-                    {row.canReview ? (
+                    {row.canApprove || row.canReject ? (
                       <Stack direction="row" spacing={1}>
-                        <Button
-                          size="small"
-                          variant="contained"
-                          disabled={busyId === row.id}
-                          onClick={() => review(row.id, "approve")}
-                        >
-                          Approve
-                        </Button>
-                        <Button
-                          size="small"
-                          color="error"
-                          disabled={busyId === row.id}
-                          onClick={() => review(row.id, "reject")}
-                        >
-                          Reject
-                        </Button>
+                        {row.canApprove && (
+                          <Button
+                            size="small"
+                            variant="contained"
+                            disabled={busyId === row.id}
+                            onClick={() => review(row.id, "approve")}
+                          >
+                            Approve
+                          </Button>
+                        )}
+                        {row.canReject && (
+                          <Button
+                            size="small"
+                            color="error"
+                            disabled={busyId === row.id}
+                            onClick={() => review(row.id, "reject")}
+                          >
+                            Reject
+                          </Button>
+                        )}
                       </Stack>
                     ) : (
-                      "—"
+                      "-"
                     )}
                   </TableCell>
                 </TableRow>
