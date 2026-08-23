@@ -39,6 +39,7 @@ export const CHANGELOG = [
     id: "2026-08-23-meteor-stalemate",
     date: "2026-08-23",
     title: "Meteor stalemate: nobody wins, burden flips after a kill",
+    prs: [2974],
     categories: {
       bugfixes: [
         "When a meteor lands, nobody wins and every living player dies (including bots, listed in the newspaper)",
