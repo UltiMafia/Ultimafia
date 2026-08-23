@@ -36,6 +36,17 @@ export const CHANGELOG_CATEGORIES = [
 /** @type {ChangelogRelease[]} */
 export const CHANGELOG = [
   {
+    id: "2026-08-23-caroler-description",
+    date: "2026-08-23",
+    title: "Caroler visit restriction clarified",
+    prs: [2976],
+    categories: {
+      game: [
+        "Caroler description now notes you cannot visit the same player two nights in a row unless roleblocked",
+      ],
+    },
+  },
+  {
     id: "2026-08-19-graveyard-dead-name-color",
     date: "2026-08-19",
     title: "Dead names stay red in the graveyard",
