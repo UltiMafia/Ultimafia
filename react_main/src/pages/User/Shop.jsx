@@ -30,6 +30,7 @@ import {
 import { Loading } from "../../components/Loading";
 
 import coin from "images/umcoin.png";
+import CryptoDonate from "./CryptoDonate";
 
 const SHOP_CATEGORIES = [
   { key: "game", label: "Game" },
@@ -69,6 +70,7 @@ export default function Shop(props) {
   const [payPalClientId, setPayPalClientId] = useState("");
   const [payPalScriptReady, setPayPalScriptReady] = useState(false);
   const [payPalLoading, setPayPalLoading] = useState(false);
+  const [payPalConfigError, setPayPalConfigError] = useState("");
   const [purchaseUsd, setPurchaseUsd] = useState("5");
   const payPalButtonsRef = useRef(null);
   const payPalButtonsInstanceRef = useRef(null);
@@ -112,8 +114,8 @@ export default function Shop(props) {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const tab = params.get("tab");
-    if (tab === "manage") {
-      setActiveTab("manage");
+    if (tab === "manage" || tab === "transfer") {
+      setActiveTab(tab);
     }
   }, [location.search]);
 
@@ -123,10 +125,16 @@ export default function Shop(props) {
       .get("/api/shop/paypal-client-id")
       .then((res) => {
         if (res.data?.clientId) {
+          setPayPalConfigError("");
           setPayPalClientId(res.data.clientId);
+        } else {
+          setPayPalConfigError("PayPal is not configured.");
         }
       })
-      .catch(errorAlert);
+      .catch((e) => {
+        setPayPalConfigError("PayPal is not configured.");
+        errorAlert(e);
+      });
   }, [user.loaded, user.loggedIn]);
 
   useEffect(() => {
@@ -174,10 +182,24 @@ export default function Shop(props) {
     payPalButtonsRef.current.innerHTML = "";
 
     const buttons = window.paypal.Buttons({
-      createOrder: () =>
-        axios
-          .post("/api/shop/paypal/create-order", { amountUsd: usdAmount })
-          .then((res) => res.data.orderID),
+      createOrder: async () => {
+        try {
+          const res = await axios.post("/api/shop/paypal/create-order", {
+            amountUsd: usdAmount,
+          });
+          if (!res.data?.orderID) {
+            throw new Error("PayPal did not return an order ID.");
+          }
+          return res.data.orderID;
+        } catch (e) {
+          const msg =
+            (typeof e?.response?.data === "string" && e.response.data) ||
+            e?.message ||
+            "PayPal checkout failed.";
+          siteInfo.showAlert(msg, "error");
+          throw e;
+        }
+      },
       onApprove: (data) => {
         setPayPalLoading(true);
         return axios
@@ -433,7 +455,8 @@ export default function Shop(props) {
         }}
       >
         <Tab value="shop" label="Shop" />
-        <Tab value="manage" label="Manage Coins" />
+        <Tab value="manage" label="Donate" />
+        <Tab value="transfer" label="Transfer Coins" />
       </Tabs>
 
       {activeTab === "shop" && (
@@ -496,7 +519,7 @@ export default function Shop(props) {
       )}
 
       {activeTab === "manage" && (
-        <Grid2 container spacing={1}>
+        <Grid2 container spacing={1} sx={{ pt: 1 }}>
           <Grid2
             size={{
               xs: 12,
@@ -505,32 +528,7 @@ export default function Shop(props) {
           >
             <Paper sx={{ p: 2, height: "100%" }}>
               <Stack spacing={1}>
-                <Typography variant="h3">Transfer coins</Typography>
-                <TextField
-                  label="Recipient Username"
-                  value={recipient}
-                  onChange={(e) => setRecipient(e.target.value)}
-                />
-                <TextField
-                  label="Amount to Transfer"
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                />
-                <Button onClick={handleTransferCoins}>Transfer</Button>
-              </Stack>
-            </Paper>
-          </Grid2>
-
-          <Grid2
-            size={{
-              xs: 12,
-              md: 6,
-            }}
-          >
-            <Paper sx={{ p: 2, height: "100%" }}>
-              <Stack spacing={1}>
-                <Typography variant="h3">Donate</Typography>
+                <Typography variant="h3">Cash</Typography>
                 <Typography variant="body2">1 USD = 5 coins.</Typography>
                 <TextField
                   label="USD Amount"
@@ -544,8 +542,11 @@ export default function Shop(props) {
                   {(parseUsdAmount(purchaseUsd) || 0) * 5}
                 </Typography>
                 {!payPalClientId && (
-                  <Typography variant="body2" color="textSecondary">
-                    Loading PayPal configuration...
+                  <Typography
+                    variant="body2"
+                    color={payPalConfigError ? "error" : "textSecondary"}
+                  >
+                    {payPalConfigError || "Loading PayPal configuration..."}
                   </Typography>
                 )}
                 {payPalClientId && !payPalScriptReady && (
@@ -573,6 +574,43 @@ export default function Shop(props) {
                     Finalizing payment...
                   </Typography>
                 )}
+              </Stack>
+            </Paper>
+          </Grid2>
+          <Grid2
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
+            <Paper sx={{ p: 2, height: "100%" }}>
+              <Stack spacing={1}>
+                <Typography variant="h3">Crypto</Typography>
+                <CryptoDonate />
+              </Stack>
+            </Paper>
+          </Grid2>
+        </Grid2>
+      )}
+
+      {activeTab === "transfer" && (
+        <Grid2 container spacing={1} sx={{ pt: 1 }}>
+          <Grid2 size={{ xs: 12, md: 6 }}>
+            <Paper sx={{ p: 2, height: "100%" }}>
+              <Stack spacing={1}>
+                <Typography variant="h3">Transfer coins</Typography>
+                <TextField
+                  label="Recipient Username"
+                  value={recipient}
+                  onChange={(e) => setRecipient(e.target.value)}
+                />
+                <TextField
+                  label="Amount to Transfer"
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+                <Button onClick={handleTransferCoins}>Transfer</Button>
               </Stack>
             </Paper>
           </Grid2>
