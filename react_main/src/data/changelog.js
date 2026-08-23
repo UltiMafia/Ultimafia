@@ -267,7 +267,7 @@ export const CHANGELOG = [
   },
   {
     id: "2026-06-23-mod-hearts-stats",
-    date: "2026-08-23",
+    date: "2026-06-23",
     title: "Mod hearts & stats fortification",
     prs: [2859, 2858],
     categories: {
