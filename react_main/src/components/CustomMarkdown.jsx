@@ -334,8 +334,11 @@ export default function CustomMarkdown(props) {
         },
         p(properties) {
           const { node, ...rest } = properties;
+          // div, not p: MediaEmbed and {center} render block divs.
+          // <p><div> is invalid HTML; Safari/Chrome repair it and React
+          // puts it back, which flashes p tags and can lock the donor page.
           return (
-            <p {...rest}>
+            <div {...rest} style={{ margin: "1em 0", ...(rest.style || {}) }}>
               {roleifyMarkdown(
                 emotify(
                   mentionify(
@@ -345,7 +348,7 @@ export default function CustomMarkdown(props) {
                 ),
                 siteInfo
               )}
-            </p>
+            </div>
           );
         },
       }}
