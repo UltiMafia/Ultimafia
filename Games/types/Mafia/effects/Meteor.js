@@ -34,8 +34,11 @@ module.exports = class Meteor extends Effect {
         this.game.MeteorLanded = true;
         this.game.queueAlert("A giant meteor obliterates the town!");
 
+        // Non-instant: instant kill calls checkAllMeetingsReady -> gotoNextState
+        // mid-loop, which can end the game before remaining players are killed
+        // and drop their obituaries (bots look like they never died).
         for (let player of [...this.game.alivePlayers()]) {
-          player.kill("basic", null, true);
+          player.kill("basic", null, false);
         }
 
         var [, winners] = this.game.checkWinConditions();
