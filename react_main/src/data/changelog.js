@@ -42,7 +42,7 @@ export const CHANGELOG = [
     categories: {
       bugfixes: [
         "When a meteor lands, nobody wins (Village can no longer take the game after a total wipe)",
-        "Meteor warns on Night if Mafia/Cult can still kill, otherwise on Day so Village can condemn",
+        "After Mafia kills, meteor resets; if Town then no-lynches, meteor warns on Day. After a lynch, it warns on Night if Mafia/Cult can still kill",
       ],
       game: [
         "Stalemate Force Must Act and Meteor are the defaults for new Mafia setups",

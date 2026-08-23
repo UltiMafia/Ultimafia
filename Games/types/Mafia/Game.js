@@ -102,6 +102,7 @@ module.exports = class MafiaGame extends Game {
     this.statesSinceLastDeath = 0;
     this.resetLastDeath = false;
     this.meteorWarningPhase = null;
+    this.lastStalemateDeathKind = null;
     this.extensions = 0;
     this.extensionVotes = 0;
     this.hasBeenDay = false;
@@ -502,20 +503,19 @@ module.exports = class MafiaGame extends Game {
   }
 
   isMustCondemn() {
-    var mustCondemn = super.isMustCondemn();
-    mustCondemn |=
-      this.statesSinceLastDeath >= this.noDeathLimit &&
-      this.getStateName() != "Dusk" &&
-      this.getStateName() != "Dawn" &&
-      this.ForceMustAct == true;
-    return mustCondemn;
+    // Town is not forced to lynch on stalemate; meteor is the penalty.
+    return super.isMustCondemn();
   }
 
   shouldCountDeathForStalemate(killType) {
-    if (killType === "condemn") return true;
-
+    const isCondemn = killType === "condemn";
     const stateName = this.getStateName();
-    return stateName === "Night" || stateName === "Dawn";
+    const counts =
+      isCondemn || stateName === "Night" || stateName === "Dawn";
+    if (counts) {
+      this.lastStalemateDeathKind = isCondemn ? "condemn" : "night";
+    }
+    return counts;
   }
 
   hasLivingNightKillers() {
@@ -526,6 +526,22 @@ module.exports = class MafiaGame extends Game {
         MAFIA_FACTIONS.includes(p.faction) || CULT_FACTIONS.includes(p.faction)
       );
     });
+  }
+
+  getMeteorActingPhase() {
+    if (this.lastStalemateDeathKind === "night") {
+      return "Day";
+    }
+    if (this.lastStalemateDeathKind === "condemn") {
+      return this.hasLivingNightKillers() ? "Night" : "Day";
+    }
+    if (
+      this.getGameSetting("Must Condemn") &&
+      this.getGameSetting("Day Start")
+    ) {
+      return "Day";
+    }
+    return this.hasLivingNightKillers() ? "Night" : "Day";
   }
 
   inactivityCheck() {
@@ -543,8 +559,7 @@ module.exports = class MafiaGame extends Game {
         this.statesSinceLastDeath >= this.noDeathLimit - 1 &&
         !this.meteorWarningPhase
       ) {
-        // Night killers get a night to NK. If none are alive, Village gets a day to condemn.
-        const actingPhase = this.hasLivingNightKillers() ? "Night" : "Day";
+        const actingPhase = this.getMeteorActingPhase();
         if (stateName === actingPhase) {
           this.meteorWarningPhase = actingPhase;
           let event = this.createGameEvent(this.GameEndEvent);
