@@ -7,6 +7,10 @@ module.exports = class Meteor extends Effect {
 
     this.listeners = {
       death: function (player, killer, deathType, instant) {
+        if (this.game.MeteorLanded) {
+          return;
+        }
+
         const warningPhase = this.game.meteorWarningPhase || "Day";
 
         if (warningPhase === "Day" && deathType !== "condemn") {
@@ -24,17 +28,20 @@ module.exports = class Meteor extends Effect {
         }
 
         this.game.queueAlert("A giant meteor obliterates the town!");
+        this.game.MeteorLanded = true;
 
         for (let player of [...this.game.alivePlayers()]) {
           player.kill("basic", null, true);
         }
-        this.game.MeteorLanded = true;
-        this.remove();
 
-        var [finished, winners] = this.game.checkWinConditions();
-        if (!finished || winners.groupAmt() <= 0) {
-          winners.addGroup("No one");
+        var [, winners] = this.game.checkWinConditions();
+        for (let group of Object.keys(winners.groups)) {
+          if (group !== "No one") {
+            winners.removeGroup(group);
+          }
         }
+        winners.addGroup("No one");
+        this.remove();
         this.game.endGame(winners);
       },
       handleWinBlockers: function (winners) {

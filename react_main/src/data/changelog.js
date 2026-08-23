@@ -36,6 +36,20 @@ export const CHANGELOG_CATEGORIES = [
 /** @type {ChangelogRelease[]} */
 export const CHANGELOG = [
   {
+    id: "2026-08-22-meteor-no-one",
+    date: "2026-08-22",
+    title: "Meteor wipe is a draw, and the acting side gets a turn",
+    categories: {
+      bugfixes: [
+        "When a meteor lands, nobody wins (Village can no longer take the game after a total wipe)",
+        "Meteor warns on Night if Mafia/Cult can still kill, otherwise on Day so Village can condemn",
+      ],
+      game: [
+        "Stalemate Force Must Act and Meteor are the defaults for new Mafia setups",
+      ],
+    },
+  },
+  {
     id: "2026-08-19-graveyard-dead-name-color",
     date: "2026-08-19",
     title: "Dead names stay red in the graveyard",

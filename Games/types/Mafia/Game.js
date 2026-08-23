@@ -10,6 +10,10 @@ const stateEventMessages = require("./templates/stateEvents");
 const roleData = require("../../../data/roles");
 const rolePriority = require("./const/RolePriority");
 const modifierData = require("../../../data/modifiers");
+const {
+  MAFIA_FACTIONS,
+  CULT_FACTIONS,
+} = require("./const/FactionList");
 
 module.exports = class MafiaGame extends Game {
   constructor(options) {
@@ -514,6 +518,16 @@ module.exports = class MafiaGame extends Game {
     return stateName === "Night" || stateName === "Dawn";
   }
 
+  hasLivingNightKillers() {
+    return this.alivePlayers().some((p) => {
+      if (!p.role) return false;
+      if (this.getRoleAlignment(p.role.name) === "Independent") return false;
+      return (
+        MAFIA_FACTIONS.includes(p.faction) || CULT_FACTIONS.includes(p.faction)
+      );
+    });
+  }
+
   inactivityCheck() {
     var stateName = this.getStateName();
 
@@ -525,14 +539,14 @@ module.exports = class MafiaGame extends Game {
           this.queueAlert("No one has died for a while, you must act.");
         }
       }
-      if (this.statesSinceLastDeath >= this.noDeathLimit - 1) {
-        const warnOnDay =
-          this.getGameSetting("Day Start") && stateName == "Day";
-        const warnOnNight =
-          !this.getGameSetting("Day Start") && stateName == "Night";
-
-        if (warnOnDay || warnOnNight) {
-          this.meteorWarningPhase = warnOnDay ? "Day" : "Night";
+      if (
+        this.statesSinceLastDeath >= this.noDeathLimit - 1 &&
+        !this.meteorWarningPhase
+      ) {
+        // Night killers get a night to NK. If none are alive, Village gets a day to condemn.
+        const actingPhase = this.hasLivingNightKillers() ? "Night" : "Day";
+        if (stateName === actingPhase) {
+          this.meteorWarningPhase = actingPhase;
           let event = this.createGameEvent(this.GameEndEvent);
           event.doEvent();
           event = null;
@@ -605,6 +619,12 @@ module.exports = class MafiaGame extends Game {
     var winQueue = new Queue();
     var winners = new Winners(this);
     var aliveCount = this.alivePlayers().length;
+
+    if (this.MeteorLanded == true) {
+      winners.addGroup("No one");
+      winners.determinePlayers();
+      return [true, winners];
+    }
 
     for (let player of this.players) {
       let alignment = player.role.winCount || player.role.alignment;
