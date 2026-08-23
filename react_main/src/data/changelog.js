@@ -36,13 +36,18 @@ export const CHANGELOG_CATEGORIES = [
 /** @type {ChangelogRelease[]} */
 export const CHANGELOG = [
   {
-    id: "2026-08-23-chef-chat-clear",
+    id: "2026-08-23-meteor-stalemate",
     date: "2026-08-23",
-    title: "Chef chat box clears after sending",
-    prs: [2975],
+    title: "Meteor stalemate: nobody wins, burden flips after a kill",
+    prs: [2974],
     categories: {
       bugfixes: [
-        "Sending a message in Chef banquet chat, and other anonymous meetings, now clears the chat box",
+        "When a meteor lands, nobody wins and every living player dies (including bots, listed in the newspaper)",
+        "After Mafia kills, meteor resets; if Town then no-lynches, meteor warns on Day. After a lynch, it warns on Night if Mafia/Cult can still kill",
+        "The obliterate alert only posts once",
+      ],
+      game: [
+        "Stalemate Force Must Act and Meteor are the defaults for new Mafia setups",
       ],
     },
   },

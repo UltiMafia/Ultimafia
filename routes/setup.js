@@ -1007,7 +1007,10 @@ router.post("/create", async function (req, res) {
     //setup.PublicShare = Boolean(setup.PublicShare);
     setup.EventsPerNight = Number(setup.EventsPerNight || 0);
     setup.noDeathLimit = Number(setup.noDeathLimit || 6);
-    setup.ForceMustAct = Boolean(setup.ForceMustAct);
+    setup.ForceMustAct =
+      setup.ForceMustAct === undefined || setup.ForceMustAct === null
+        ? true
+        : Boolean(setup.ForceMustAct);
     setup.GameEndEvent = String(setup.GameEndEvent || "Meteor");
     //setup.AllExcessRoles = Boolean(setup.AllExcessRoles);
     //setup.HostileVsMafia = Boolean(setup.HostileVsMafia);

@@ -1,7 +1,5 @@
 const Event = require("../Event");
-const Action = require("../Action");
 const Random = require("../../../../lib/Random");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../const/Priority");
 
 module.exports = class Meteor extends Event {
   constructor(modifiers, game) {
@@ -26,7 +24,21 @@ module.exports = class Meteor extends Event {
 
   doEvent() {
     super.doEvent();
+    if (this.game.MeteorLanded) {
+      return;
+    }
+    if (
+      this.game.players.filter(
+        (p) => p && p.hasEffect && p.hasEffect("Meteor")
+      ).length > 0
+    ) {
+      return;
+    }
+
     let victim = Random.randArrayVal(this.game.alivePlayers());
+    if (!victim) {
+      return;
+    }
 
     if (!this.game.meteorWarningPhase) {
       this.game.meteorWarningPhase = "Day";
@@ -34,20 +46,12 @@ module.exports = class Meteor extends Event {
 
     const alertMessage = this.getStalemateWarningMessage();
 
-    this.action = new Action({
-      actor: victim,
-      target: victim,
-      game: this.game,
-      priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-      labels: ["hidden", "absolute"],
-      run: function () {
-        if (this.game.SilentEvents != false) {
-          this.game.queueAlert(alertMessage);
-        }
+    if (this.game.SilentEvents != false) {
+      this.game.queueAlert(alertMessage);
+    }
 
-        this.actor.giveEffect("Meteor", Infinity);
-      },
-    });
-    this.game.instantAction(this.action);
+    // Give the effect directly. instantAction would checkGameEnd and can
+    // award Village before the meteor is allowed to land.
+    victim.giveEffect("Meteor", Infinity);
   }
 };

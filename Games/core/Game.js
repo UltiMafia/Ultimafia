@@ -317,13 +317,13 @@ module.exports = class Game {
       delete this.obituaryQueue[playerId];
 
       const player = this.getPlayer(playerId);
+      if (!player || player.alive) {
+        continue;
+      }
 
       obituary.id = player.id;
       obituary.playerInfo = player.getPlayerInfo();
-
-      if (!player.alive) {
-        obituaries.push(obituary);
-      }
+      obituaries.push(obituary);
     }
 
     const obituariesMessage = {

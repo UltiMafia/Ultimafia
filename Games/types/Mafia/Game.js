@@ -10,6 +10,10 @@ const stateEventMessages = require("./templates/stateEvents");
 const roleData = require("../../../data/roles");
 const rolePriority = require("./const/RolePriority");
 const modifierData = require("../../../data/modifiers");
+const {
+  MAFIA_FACTIONS,
+  CULT_FACTIONS,
+} = require("./const/FactionList");
 
 module.exports = class MafiaGame extends Game {
   constructor(options) {
@@ -98,6 +102,7 @@ module.exports = class MafiaGame extends Game {
     this.statesSinceLastDeath = 0;
     this.resetLastDeath = false;
     this.meteorWarningPhase = null;
+    this.lastStalemateDeathKind = null;
     this.extensions = 0;
     this.extensionVotes = 0;
     this.hasBeenDay = false;
@@ -498,20 +503,45 @@ module.exports = class MafiaGame extends Game {
   }
 
   isMustCondemn() {
-    var mustCondemn = super.isMustCondemn();
-    mustCondemn |=
-      this.statesSinceLastDeath >= this.noDeathLimit &&
-      this.getStateName() != "Dusk" &&
-      this.getStateName() != "Dawn" &&
-      this.ForceMustAct == true;
-    return mustCondemn;
+    // Town is not forced to lynch on stalemate; meteor is the penalty.
+    return super.isMustCondemn();
   }
 
   shouldCountDeathForStalemate(killType) {
-    if (killType === "condemn") return true;
-
+    const isCondemn = killType === "condemn";
     const stateName = this.getStateName();
-    return stateName === "Night" || stateName === "Dawn";
+    const counts =
+      isCondemn || stateName === "Night" || stateName === "Dawn";
+    if (counts) {
+      this.lastStalemateDeathKind = isCondemn ? "condemn" : "night";
+    }
+    return counts;
+  }
+
+  hasLivingNightKillers() {
+    return this.alivePlayers().some((p) => {
+      if (!p.role) return false;
+      if (this.getRoleAlignment(p.role.name) === "Independent") return false;
+      return (
+        MAFIA_FACTIONS.includes(p.faction) || CULT_FACTIONS.includes(p.faction)
+      );
+    });
+  }
+
+  getMeteorActingPhase() {
+    if (this.lastStalemateDeathKind === "night") {
+      return "Day";
+    }
+    if (this.lastStalemateDeathKind === "condemn") {
+      return this.hasLivingNightKillers() ? "Night" : "Day";
+    }
+    if (
+      this.getGameSetting("Must Condemn") &&
+      this.getGameSetting("Day Start")
+    ) {
+      return "Day";
+    }
+    return this.hasLivingNightKillers() ? "Night" : "Day";
   }
 
   inactivityCheck() {
@@ -525,14 +555,13 @@ module.exports = class MafiaGame extends Game {
           this.queueAlert("No one has died for a while, you must act.");
         }
       }
-      if (this.statesSinceLastDeath >= this.noDeathLimit - 1) {
-        const warnOnDay =
-          this.getGameSetting("Day Start") && stateName == "Day";
-        const warnOnNight =
-          !this.getGameSetting("Day Start") && stateName == "Night";
-
-        if (warnOnDay || warnOnNight) {
-          this.meteorWarningPhase = warnOnDay ? "Day" : "Night";
+      if (
+        this.statesSinceLastDeath >= this.noDeathLimit - 1 &&
+        !this.meteorWarningPhase
+      ) {
+        const actingPhase = this.getMeteorActingPhase();
+        if (stateName === actingPhase) {
+          this.meteorWarningPhase = actingPhase;
           let event = this.createGameEvent(this.GameEndEvent);
           event.doEvent();
           event = null;
@@ -605,6 +634,12 @@ module.exports = class MafiaGame extends Game {
     var winQueue = new Queue();
     var winners = new Winners(this);
     var aliveCount = this.alivePlayers().length;
+
+    if (this.MeteorLanded == true) {
+      winners.addGroup("No one");
+      winners.determinePlayers();
+      return [true, winners];
+    }
 
     for (let player of this.players) {
       let alignment = player.role.winCount || player.role.alignment;
