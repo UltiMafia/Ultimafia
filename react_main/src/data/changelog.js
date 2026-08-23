@@ -36,13 +36,14 @@ export const CHANGELOG_CATEGORIES = [
 /** @type {ChangelogRelease[]} */
 export const CHANGELOG = [
   {
-    id: "2026-08-22-meteor-no-one",
-    date: "2026-08-22",
-    title: "Meteor wipe is a draw, and the acting side gets a turn",
+    id: "2026-08-23-meteor-stalemate",
+    date: "2026-08-23",
+    title: "Meteor stalemate: nobody wins, burden flips after a kill",
     categories: {
       bugfixes: [
-        "When a meteor lands, nobody wins (Village can no longer take the game after a total wipe)",
+        "When a meteor lands, nobody wins and every living player dies (including bots, listed in the newspaper)",
         "After Mafia kills, meteor resets; if Town then no-lynches, meteor warns on Day. After a lynch, it warns on Night if Mafia/Cult can still kill",
+        "The obliterate alert only posts once",
       ],
       game: [
         "Stalemate Force Must Act and Meteor are the defaults for new Mafia setups",
