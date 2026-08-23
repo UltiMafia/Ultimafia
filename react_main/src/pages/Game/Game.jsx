@@ -2983,7 +2983,8 @@ function SpeechInput(props) {
         } else {
           pendingSpeechRef.current = {
             content: speechInput,
-            anonymous: Boolean(abilityName),
+            anonymous:
+              Boolean(abilityName) || Boolean(meetings[selTab]?.anonymous),
           };
         }
 
