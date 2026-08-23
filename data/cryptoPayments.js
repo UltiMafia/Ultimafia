@@ -18,16 +18,19 @@ const CHAINS = {
     id: "solana",
     label: "Solana",
     explorerTx: "https://solscan.io/tx/",
+    defaultDepositAddress: "CazgBa82qhMe5thSj4hABGLfF8a6ts3He5ptpjJi4RB4",
   },
   ethereum: {
     id: "ethereum",
     label: "Ethereum",
     explorerTx: "https://etherscan.io/tx/",
+    defaultDepositAddress: "0x244dc418e138379362448f0ec6772bb046984113",
   },
   bitcoin: {
     id: "bitcoin",
     label: "Bitcoin",
     explorerTx: "https://mempool.space/tx/",
+    defaultDepositAddress: "bc1qtfenj04pnm7hytu0evxvxzsj3pkn7sa8gf9w28",
   },
 };
 

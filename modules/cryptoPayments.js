@@ -30,6 +30,12 @@ function isPlaceholder(value) {
   return PLACEHOLDER_VALUES.has(trimmed);
 }
 
+function envOrDefault(name, fallback = "") {
+  const value = envString(name);
+  if (isPlaceholder(value)) return fallback;
+  return value;
+}
+
 function getAlchemyConfig() {
   const apiKey = envString("ALCHEMY_API_KEY");
   const solanaUrl =
@@ -48,9 +54,18 @@ function getAlchemyConfig() {
       ? ""
       : `https://bitcoin-mainnet.g.alchemy.com/v2/${apiKey}`);
 
-  const solanaAddress = envString("SOLANA_DEPOSIT_ADDRESS");
-  const ethAddress = envString("ETH_DEPOSIT_ADDRESS");
-  const btcAddress = envString("BITCOIN_DEPOSIT_ADDRESS");
+  const solanaAddress = envOrDefault(
+    "SOLANA_DEPOSIT_ADDRESS",
+    catalog.CHAINS.solana.defaultDepositAddress
+  );
+  const ethAddress = envOrDefault(
+    "ETH_DEPOSIT_ADDRESS",
+    catalog.CHAINS.ethereum.defaultDepositAddress
+  );
+  const btcAddress = envOrDefault(
+    "BITCOIN_DEPOSIT_ADDRESS",
+    catalog.CHAINS.bitcoin.defaultDepositAddress
+  );
 
   const solanaMints = {
     USDC: envString("SOLANA_USDC_MINT", catalog.ASSETS.USDC.defaultMints.solana),
