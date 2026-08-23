@@ -4,6 +4,7 @@
 
 .avatar {
   flex-shrink: 0;
+  position: relative;
 
   box-sizing: border-box;
 
@@ -13,6 +14,16 @@
   background-image: url("/src/images/avatar.webp");
   background-size: 100%;
   background-color: var(--scheme-color);
+}
+
+img.avatar-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  pointer-events: none;
 }
 
 /*SANTA CHANGES: In December, uncomment the below lines*/
