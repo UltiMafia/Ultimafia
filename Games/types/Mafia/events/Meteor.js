@@ -24,6 +24,13 @@ module.exports = class Meteor extends Event {
 
   doEvent() {
     super.doEvent();
+    if (this.game.MeteorLanded) {
+      return;
+    }
+    if (this.game.players.some((p) => p.hasEffect && p.hasEffect("Meteor"))) {
+      return;
+    }
+
     let victim = Random.randArrayVal(this.game.alivePlayers());
     if (!victim) {
       return;

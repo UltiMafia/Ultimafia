@@ -20,6 +20,10 @@ module.exports = class Meteor extends Effect {
         this.remove();
       },
       afterActions: function () {
+        if (this.game.MeteorLanded) {
+          return;
+        }
+
         const stateName = this.game.getStateName();
         const warningPhase = this.game.meteorWarningPhase || "Day";
 
@@ -27,8 +31,8 @@ module.exports = class Meteor extends Effect {
           return;
         }
 
-        this.game.queueAlert("A giant meteor obliterates the town!");
         this.game.MeteorLanded = true;
+        this.game.queueAlert("A giant meteor obliterates the town!");
 
         for (let player of [...this.game.alivePlayers()]) {
           player.kill("basic", null, true);
