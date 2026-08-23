@@ -36,20 +36,6 @@ export const CHANGELOG_CATEGORIES = [
 /** @type {ChangelogRelease[]} */
 export const CHANGELOG = [
   {
-    id: "2026-08-22-anarchist-timebomb",
-    date: "2026-08-22",
-    title: "Anarchist timebomb kills and reveals again",
-    prs: [2973],
-    categories: {
-      bugfixes: [
-        "Anarchist Timebombs explode on the holder again: they kill other players, and reveal the Anarchist if it blows up on them",
-      ],
-      game: [
-        "A Timebomb exploding on the Anarchist does not kill them, does not award a point, and does not win the game",
-      ],
-    },
-  },
-  {
     id: "2026-08-19-graveyard-dead-name-color",
     date: "2026-08-19",
     title: "Dead names stay red in the graveyard",
@@ -281,7 +267,7 @@ export const CHANGELOG = [
   },
   {
     id: "2026-06-23-mod-hearts-stats",
-    date: "2026-06-23",
+    date: "2026-08-23",
     title: "Mod hearts & stats fortification",
     prs: [2859, 2858],
     categories: {
