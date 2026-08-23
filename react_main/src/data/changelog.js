@@ -39,6 +39,7 @@ export const CHANGELOG = [
     id: "2026-08-22-anarchist-timebomb",
     date: "2026-08-22",
     title: "Anarchist timebomb kills and reveals again",
+    prs: [2973],
     categories: {
       bugfixes: [
         "Anarchist Timebombs explode on the holder again: they kill other players, and reveal the Anarchist if it blows up on them",
