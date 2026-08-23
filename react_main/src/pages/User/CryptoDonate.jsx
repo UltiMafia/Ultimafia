@@ -8,6 +8,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { QRCodeSVG } from "qrcode.react";
 import { SiteInfoContext, UserContext } from "../../Contexts";
 import { useErrorAlert } from "../../components/Alerts";
 
@@ -209,6 +210,32 @@ function InvoiceCard({ invoice, nowTick, onUpdated, onRemoved }) {
         />
         {invoice.payUri ? (
           <CopyRow label="Payment URI" value={invoice.payUri} />
+        ) : null}
+        {invoice.payUri ? (
+          <Box
+            sx={{
+              alignSelf: "flex-start",
+              bgcolor: "#ffffff",
+              p: 1.5,
+              borderRadius: 1,
+            }}
+          >
+            <QRCodeSVG
+              value={invoice.payUri}
+              size={192}
+              level="M"
+              includeMargin
+              bgColor="#ffffff"
+              fgColor="#000000"
+            />
+            <Typography
+              variant="caption"
+              display="block"
+              sx={{ mt: 1, color: "#333333", textAlign: "center" }}
+            >
+              Scan with a mobile wallet
+            </Typography>
+          </Box>
         ) : null}
         <Stack direction="row" spacing={1}>
           <Button
