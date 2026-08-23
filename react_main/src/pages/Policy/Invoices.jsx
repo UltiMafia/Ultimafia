@@ -2,7 +2,6 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import axios from "axios";
 import {
-  Box,
   Button,
   Chip,
   MenuItem,
@@ -20,8 +19,7 @@ import {
 import { UserContext, SiteInfoContext } from "../../Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { Loading } from "components/Loading";
-import { Avatar } from "pages/User/User";
-import { avatarUrl } from "utils/avatarUrl";
+import { NameWithAvatar } from "pages/User/User";
 
 function userIsOwner(user) {
   return (user?.groups || []).some((g) => g && g.name === "Owner");
@@ -42,49 +40,18 @@ function formatWhen(value) {
   return d.toLocaleString();
 }
 
-function InvoiceUserCell({ userId, userName }) {
-  const siteInfo = useContext(SiteInfoContext);
-  const [imgFailed, setImgFailed] = useState(false);
-  const src = avatarUrl(userId, { cacheVal: siteInfo?.cacheVal });
-
-  return (
-    <Stack direction="row" spacing={1} alignItems="center">
-      {userId && src && !imgFailed ? (
-        <Box
-          component="img"
-          src={src}
-          alt=""
-          onError={() => setImgFailed(true)}
-          sx={{
-            width: 28,
-            height: 28,
-            borderRadius: "50%",
-            objectFit: "cover",
-            flexShrink: 0,
-            bgcolor: "action.hover",
-          }}
-        />
-      ) : (
-        <Avatar small name={userName} />
-      )}
-      <Typography variant="body2">{userName}</Typography>
-    </Stack>
-  );
-}
-
 export default function Invoices() {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
 
-  const [status, setStatus] = useState("unpaid");
+  const [status, setStatus] = useState("all");
   const [page, setPage] = useState(1);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState("");
 
   const load = useCallback(() => {
-    setLoading(true);
     axios
       .get("/api/crypto/admin/invoices", { params: { status, page } })
       .then((res) => setData(res.data))
@@ -97,10 +64,9 @@ export default function Invoices() {
   }, []);
 
   useEffect(() => {
-    if (user.loaded && user.loggedIn && userIsOwner(user)) {
-      load();
-    }
-  }, [user.loaded, user.loggedIn, user.groups, load]);
+    if (!user.loaded || !user.loggedIn || !userIsOwner(user)) return;
+    load();
+  }, [user.loaded, user.loggedIn, load]);
 
   async function review(invoiceId, action) {
     const verb = action === "approve" ? "approve and credit" : "reject";
@@ -148,8 +114,8 @@ export default function Invoices() {
         }}
         sx={{ maxWidth: 240 }}
       >
-        <MenuItem value="unpaid">Unpaid</MenuItem>
         <MenuItem value="all">All</MenuItem>
+        <MenuItem value="unpaid">Unpaid</MenuItem>
         <MenuItem value="pending">Pending</MenuItem>
         <MenuItem value="expired">Expired</MenuItem>
         <MenuItem value="completed">Completed</MenuItem>
@@ -187,9 +153,11 @@ export default function Invoices() {
                 <TableRow key={row.id}>
                   <TableCell>{formatWhen(row.createdAt)}</TableCell>
                   <TableCell>
-                    <InvoiceUserCell
-                      userId={row.userId}
-                      userName={row.userName}
+                    <NameWithAvatar
+                      small
+                      id={row.userId}
+                      name={row.userName}
+                      avatar={Boolean(row.userAvatar)}
                     />
                   </TableCell>
                   <TableCell>{row.chainLabel || row.chain}</TableCell>
@@ -262,11 +230,6 @@ export default function Invoices() {
           </Button>
         </Stack>
       )}
-      {loading && data ? (
-        <Box>
-          <Loading />
-        </Box>
-      ) : null}
     </Stack>
   );
 }

@@ -716,6 +716,7 @@ async function listInvoicesForOwner({ status, page = 1, limit = 50 }) {
       const user = userMap[row.userId] || {};
       return {
         ...toPublicInvoice(row),
+        userId: row.userId,
         userName: user.name || row.userId,
         userAvatar: Boolean(user.avatar),
         canApprove: APPROVE_STATUSES.includes(row.status),
