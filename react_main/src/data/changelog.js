@@ -36,6 +36,20 @@ export const CHANGELOG_CATEGORIES = [
 /** @type {ChangelogRelease[]} */
 export const CHANGELOG = [
   {
+    id: "2026-08-22-system-chat-stickers",
+    date: "2026-08-22",
+    title: "Gun alerts no longer turn into blank sticker holes",
+    prs: [2971],
+    categories: {
+      bugfixes: [
+        "Unrevealed gun shots no longer leave a blank hole in system chat when a player has custom stickers",
+      ],
+      game: [
+        "Game/system chat uses site emotes like :gun: and ignores player stickers",
+      ],
+    },
+  },
+  {
     id: "2026-08-19-graveyard-dead-name-color",
     date: "2026-08-19",
     title: "Dead names stay red in the graveyard",

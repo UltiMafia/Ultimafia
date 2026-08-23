@@ -2532,6 +2532,7 @@ function Message(props) {
                 spectators={spectators}
                 customEmotes={customEmotes}
                 customStickers={customStickers}
+                systemMessage={isServerMessage}
                 filterProfanity
                 linkify
                 emotify
