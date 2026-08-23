@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import {
   Box,
@@ -115,11 +115,17 @@ function CopyRow({ label, value }) {
   );
 }
 
-function InvoiceCard({ invoice, nowTick, onUpdated, onRemoved }) {
+function InvoiceCard({ invoice, onUpdated, onRemoved }) {
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
   const [checkCooldownUntil, setCheckCooldownUntil] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [nowTick, setNowTick] = useState(Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => setNowTick(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const checkCooldownMs = Math.max(0, checkCooldownUntil - nowTick);
   const checkCooldownLabel =
@@ -270,7 +276,7 @@ export default function CryptoDonate() {
   const [token, setToken] = useState("");
   const [pendingInvoices, setPendingInvoices] = useState([]);
   const [creating, setCreating] = useState(false);
-  const [nowTick, setNowTick] = useState(Date.now());
+  const didInitSelection = useRef(false);
 
   const enabledAssets = useMemo(
     () => (options?.assets || []).filter((row) => row.enabled),
@@ -294,28 +300,41 @@ export default function CryptoDonate() {
   const coinsPreview = (parsedUsd || 0) * coinsPerUsd;
   const selectedToken = tokensForNetwork.find((row) => row.asset === token);
 
-  const loadMine = useCallback(() => {
-    axios
-      .get("/api/crypto/mine")
-      .then((res) => setPendingInvoices(res.data?.invoices || []))
-      .catch(errorAlert);
-  }, [errorAlert]);
-
   useEffect(() => {
-    if (!user.loaded || !user.loggedIn) return;
+    if (!user.loaded || !user.loggedIn) return undefined;
+    let cancelled = false;
+
     axios
       .get("/api/crypto/options")
       .then((res) => {
+        if (cancelled) return;
+        const assets = (res.data?.assets || []).filter((row) => row.enabled);
         setOptions(res.data);
-        const first = (res.data?.assets || []).find((row) => row.enabled);
-        if (first) {
-          setNetwork(first.chain);
-          setToken(first.asset);
+        if (!didInitSelection.current && assets.length) {
+          didInitSelection.current = true;
+          setNetwork(assets[0].chain);
+          setToken(assets[0].asset);
         }
       })
-      .catch(errorAlert);
-    loadMine();
-  }, [user.loaded, user.loggedIn, errorAlert, loadMine]);
+      .catch((e) => {
+        if (!cancelled) errorAlert(e);
+      });
+
+    axios
+      .get("/api/crypto/mine")
+      .then((res) => {
+        if (cancelled) return;
+        setPendingInvoices(res.data?.invoices || []);
+      })
+      .catch((e) => {
+        if (!cancelled) errorAlert(e);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- errorAlert identity changes every render
+  }, [user.loaded, user.loggedIn]);
 
   useEffect(() => {
     if (!network || !tokensForNetwork.length) return;
@@ -323,12 +342,6 @@ export default function CryptoDonate() {
       setToken(tokensForNetwork[0].asset);
     }
   }, [network, tokensForNetwork, token]);
-
-  useEffect(() => {
-    if (!pendingInvoices.length) return undefined;
-    const interval = setInterval(() => setNowTick(Date.now()), 1000);
-    return () => clearInterval(interval);
-  }, [pendingInvoices.length]);
 
   useEffect(() => {
     if (!pendingInvoices.length) return undefined;
@@ -474,7 +487,6 @@ export default function CryptoDonate() {
         <InvoiceCard
           key={row.id}
           invoice={row}
-          nowTick={nowTick}
           onUpdated={updatePending}
           onRemoved={removePending}
         />

@@ -57,7 +57,8 @@ export default function Invoices() {
       .then((res) => setData(res.data))
       .catch(errorAlert)
       .finally(() => setLoading(false));
-  }, [status, page, errorAlert]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- errorAlert identity changes every render
+  }, [status, page]);
 
   useEffect(() => {
     document.title = "Invoices | UltiMafia";
