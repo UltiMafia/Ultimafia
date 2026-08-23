@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useCallback, useContext, useRef } from "react";
 import { SiteInfoContext } from "../Contexts";
 import { Alert, Portal, Stack } from "@mui/material";
 
@@ -56,8 +56,10 @@ export function AlertList() {
 
 export function useErrorAlert() {
   const siteInfo = useContext(SiteInfoContext);
+  const siteInfoRef = useRef(siteInfo);
+  siteInfoRef.current = siteInfo;
 
-  return (e) => {
+  return useCallback((e) => {
     var message;
 
     if (e && e.response) message = e.response.data;
@@ -67,6 +69,6 @@ export function useErrorAlert() {
 
     if (message.length > 200) message = "Connection error";
 
-    siteInfo.showAlert(message, "error");
-  };
+    siteInfoRef.current.showAlert(message, "error");
+  }, []);
 }

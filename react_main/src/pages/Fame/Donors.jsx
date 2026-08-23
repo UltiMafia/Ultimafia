@@ -50,6 +50,7 @@ export default function Donors(props) {
   useEffect(() => {
     document.title = "Donors | UltiMafia";
     fetchDonors();
+    // fetchDonors must stay stable. An unstable identity re-GETs /api/site/donors in a loop.
   }, [fetchDonors]);
 
   function openAddPopover(event) {
