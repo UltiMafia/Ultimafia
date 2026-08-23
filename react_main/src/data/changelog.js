@@ -36,6 +36,17 @@ export const CHANGELOG_CATEGORIES = [
 /** @type {ChangelogRelease[]} */
 export const CHANGELOG = [
   {
+    id: "2026-08-23-chef-chat-clear",
+    date: "2026-08-23",
+    title: "Chef chat box clears after sending",
+    prs: [2975],
+    categories: {
+      bugfixes: [
+        "Sending a message in Chef banquet chat, and other anonymous meetings, now clears the chat box",
+      ],
+    },
+  },
+  {
     id: "2026-08-19-graveyard-dead-name-color",
     date: "2026-08-19",
     title: "Dead names stay red in the graveyard",
