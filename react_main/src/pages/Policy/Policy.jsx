@@ -12,6 +12,7 @@ import CompetitiveManagement from "./Moderation/CompetitiveManagement";
 import StaffHandbook from "./Moderation/StaffHandbook";
 import FlaggedIntake from "./Moderation/FlaggedIntake";
 import Volunteer from "./Moderation/Volunteer";
+import Invoices from "./Invoices";
 
 function ReportsRedirect() {
   const location = useLocation();
@@ -31,6 +32,7 @@ export default function Policy() {
         <Route path="rules" element={<Rules />} />
         <Route path="tos" element={<TermsOfService />} />
         <Route path="privacy" element={<PrivacyPolicy />} />
+        <Route path="invoices" element={<Invoices />} />
         <Route path="moderation" element={<Moderation />}>
           <Route index element={<ModerationLog />} />
           <Route

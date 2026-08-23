@@ -1620,7 +1620,7 @@ schemas.CryptoInvoice = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "completed", "expired", "failed"],
+    enum: ["pending", "completed", "expired", "failed", "rejected"],
     default: "pending",
     index: true,
   },
@@ -1634,6 +1634,14 @@ schemas.CryptoInvoice = new mongoose.Schema({
     index: true,
   },
   completedAt: {
+    type: Date,
+    default: null,
+  },
+  reviewedBy: {
+    type: String,
+    default: "",
+  },
+  reviewedAt: {
     type: Date,
     default: null,
   },

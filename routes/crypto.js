@@ -18,6 +18,66 @@ function clientError(res, err) {
   return res.status(status).send(err.message);
 }
 
+
+async function verifyOwner(req, res) {
+  const userId = await routeUtils.verifyLoggedIn(req);
+  const isOwner = await cryptoPayments.userIsOwner(userId);
+  if (!isOwner) {
+    errors.forbidden(res, "Owner only.");
+    return null;
+  }
+  return userId;
+}
+
+router.get("/admin/invoices", async function (req, res) {
+  try {
+    const userId = await verifyOwner(req, res);
+    if (!userId) return;
+    const status = String(req.query.status || "unpaid");
+    const page = Number(req.query.page || 1);
+    const result = await cryptoPayments.listInvoicesForOwner({
+      status: status === "all" ? "" : status,
+      page,
+    });
+    return res.send(result);
+  } catch (e) {
+    if (e.message === "Not logged in") {
+      return res.status(401).send("Not logged in");
+    }
+    return clientError(res, e);
+  }
+});
+
+router.post("/admin/invoices/:id/approve", async function (req, res) {
+  try {
+    const userId = await verifyOwner(req, res);
+    if (!userId) return;
+    const invoiceId = String(req.params.id || "").trim();
+    const invoice = await cryptoPayments.approveInvoiceByOwner(invoiceId, userId);
+    return res.send(invoice);
+  } catch (e) {
+    if (e.message === "Not logged in") {
+      return res.status(401).send("Not logged in");
+    }
+    return clientError(res, e);
+  }
+});
+
+router.post("/admin/invoices/:id/reject", async function (req, res) {
+  try {
+    const userId = await verifyOwner(req, res);
+    if (!userId) return;
+    const invoiceId = String(req.params.id || "").trim();
+    const invoice = await cryptoPayments.rejectInvoiceByOwner(invoiceId, userId);
+    return res.send(invoice);
+  } catch (e) {
+    if (e.message === "Not logged in") {
+      return res.status(401).send("Not logged in");
+    }
+    return clientError(res, e);
+  }
+});
+
 router.get("/options", async function (req, res) {
   try {
     await routeUtils.verifyLoggedIn(req);

@@ -644,6 +644,152 @@ async function pollPendingInvoices() {
   }
 }
 
+const UNPAID_STATUSES = ["pending", "expired", "failed"];
+
+async function userIsOwner(userId) {
+  const userDoc = await models.User.findOne({ id: userId, deleted: false })
+    .select("_id")
+    .lean()
+    .exec();
+  if (!userDoc) return false;
+  const ownerGroup = await models.Group.findOne({ name: /^Owner$/i })
+    .select("_id")
+    .lean()
+    .exec();
+  if (!ownerGroup) return false;
+  const inGroup = await models.InGroup.findOne({
+    user: userDoc._id,
+    group: ownerGroup._id,
+  })
+    .select("_id")
+    .lean()
+    .exec();
+  return Boolean(inGroup);
+}
+
+async function listInvoicesForOwner({ status, page = 1, limit = 50 }) {
+  const query = {};
+  if (status === "unpaid") {
+    query.status = { $in: UNPAID_STATUSES };
+  } else if (status) {
+    query.status = status;
+  }
+
+  const skip = Math.max(0, (Number(page) || 1) - 1) * limit;
+  const [rows, total] = await Promise.all([
+    models.CryptoInvoice.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean()
+      .exec(),
+    models.CryptoInvoice.countDocuments(query),
+  ]);
+
+  const userIds = [...new Set(rows.map((row) => row.userId).filter(Boolean))];
+  const users = await models.User.find({ id: { $in: userIds } })
+    .select("id name avatar")
+    .lean()
+    .exec();
+  const userMap = {};
+  for (const u of users) userMap[u.id] = u;
+
+  return {
+    total,
+    page: Number(page) || 1,
+    pageSize: limit,
+    invoices: rows.map((row) => {
+      const user = userMap[row.userId] || {};
+      return {
+        ...toPublicInvoice(row),
+        userName: user.name || row.userId,
+        userAvatar: Boolean(user.avatar),
+        canReview: UNPAID_STATUSES.includes(row.status),
+        reviewedBy: row.reviewedBy || "",
+        reviewedAt: row.reviewedAt || null,
+      };
+    }),
+  };
+}
+
+async function approveInvoiceByOwner(invoiceId, ownerUserId) {
+  const doc = await models.CryptoInvoice.findOne({ invoiceId }).exec();
+  if (!doc) {
+    throw Object.assign(new Error("Invoice not found."), { status: 404 });
+  }
+  if (doc.status === "completed") {
+    throw Object.assign(new Error("Invoice is already completed."), {
+      status: 409,
+    });
+  }
+  if (!UNPAID_STATUSES.includes(doc.status)) {
+    throw Object.assign(new Error("Only unpaid invoices can be approved."), {
+      status: 400,
+    });
+  }
+
+  const claimed = await models.CryptoInvoice.updateOne(
+    { _id: doc._id, status: { $in: UNPAID_STATUSES } },
+    {
+      $set: {
+        status: "completed",
+        txSignature: `manual:${invoiceId}`,
+        completedAt: new Date(),
+        reviewedBy: ownerUserId,
+        reviewedAt: new Date(),
+      },
+    }
+  ).exec();
+  const updatedCount =
+    claimed.modifiedCount ?? claimed.nModified ?? claimed.matchedCount ?? 0;
+  if (!updatedCount) {
+    throw Object.assign(new Error("Invoice could not be approved."), {
+      status: 409,
+    });
+  }
+
+  await models.User.updateOne(
+    { id: doc.userId },
+    { $inc: { coins: doc.coins } }
+  ).exec();
+  await redis.cacheUserInfo(doc.userId, true);
+  await ensureDonorStatus(doc.userId);
+  const fresh = await models.CryptoInvoice.findOne({ invoiceId }).lean().exec();
+  return toPublicInvoice(fresh);
+}
+
+async function rejectInvoiceByOwner(invoiceId, ownerUserId) {
+  const doc = await models.CryptoInvoice.findOne({ invoiceId }).exec();
+  if (!doc) {
+    throw Object.assign(new Error("Invoice not found."), { status: 404 });
+  }
+  if (!UNPAID_STATUSES.includes(doc.status)) {
+    throw Object.assign(new Error("Only unpaid invoices can be rejected."), {
+      status: 400,
+    });
+  }
+
+  const claimed = await models.CryptoInvoice.updateOne(
+    { _id: doc._id, status: { $in: UNPAID_STATUSES } },
+    {
+      $set: {
+        status: "rejected",
+        reviewedBy: ownerUserId,
+        reviewedAt: new Date(),
+      },
+    }
+  ).exec();
+  const updatedCount =
+    claimed.modifiedCount ?? claimed.nModified ?? claimed.matchedCount ?? 0;
+  if (!updatedCount) {
+    throw Object.assign(new Error("Invoice could not be rejected."), {
+      status: 409,
+    });
+  }
+  const fresh = await models.CryptoInvoice.findOne({ invoiceId }).lean().exec();
+  return toPublicInvoice(fresh);
+}
+
 module.exports = {
   catalog,
   getPublicOptions,
@@ -654,4 +800,8 @@ module.exports = {
   expireInvoice,
   toPublicInvoice,
   pollPendingInvoices,
+  userIsOwner,
+  listInvoicesForOwner,
+  approveInvoiceByOwner,
+  rejectInvoiceByOwner,
 };
