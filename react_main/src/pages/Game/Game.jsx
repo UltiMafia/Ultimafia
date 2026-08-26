@@ -1669,6 +1669,9 @@ function getDefaultSpeechMeetingId(speechMeetings) {
 
 export function TextMeetingLayout() {
   const game = useContext(GameContext);
+  // Computed once for the whole list and handed to each Message, rather than
+  // each Message registering its own matchMedia listener.
+  const isPhoneDevice = useIsPhoneDevice();
   const { singleState } = useContext(GameTypeContext);
   const { isolationEnabled, isolatedPlayers, isSpectator } = game;
   const { history, players, stateViewing, updateHistory, settings, filters, spectators } =
@@ -1841,6 +1844,7 @@ export function TextMeetingLayout() {
       return (
         <Message
           message={message}
+          isPhoneDevice={isPhoneDevice}
           review={game.review}
           history={history}
           players={players}
@@ -2186,15 +2190,22 @@ function getContentClasses(message) {
     then you may need to update the memo dependencies!
 */
 function Message(props) {
-  const isPhoneDevice = useIsPhoneDevice();
+  // Taken from props, not useIsPhoneDevice(): MUI's useMediaQuery registers a
+  // matchMedia listener per call, and this component is rendered once per
+  // message, so a long game re-registers thousands of them per render pass.
+  const isPhoneDevice = props.isPhoneDevice;
   const user = useContext(UserContext);
   const theme = useTheme();
   const [isHovering, setIsHovering] = useState(false);
   const accessibleNameColors = user.settings?.accessibleNameColors;
 
   // Mobile only - users pin message by long pressing them
+  const onPinMessage = props.onPinMessage;
+  const messageObj = props.message;
   const messageLongPress = useLongPress(
-    () => props.onPinMessage(props.message),
+    // Stable identity: useLongPress keys its effect on the callback, so a fresh
+    // arrow here re-runs that effect for every message on every render pass.
+    useCallback(() => onPinMessage(messageObj), [onPinMessage, messageObj]),
     600
   );
 
