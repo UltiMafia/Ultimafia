@@ -98,12 +98,26 @@ export default class AudioManager {
     return this.volumes.sfx;
   }
 
-  /** Create the element for a track if it does not exist yet. */
-  private ensureElement(track: LoadedTrack): HTMLAudioElement | null {
+  /** True for short one-shot effects, false for the long music tracks. */
+  private static isSfx(channel: AudioChannel): boolean {
+    return channel !== "music" && channel !== "pregameMusic";
+  }
+
+  /**
+   * Create the element for a track if it does not exist yet.
+   *
+   * `buffer` asks the browser to fetch ahead, which is what makes a sound audible
+   * the instant it is played rather than once the fetch lands.
+   */
+  private ensureElement(
+    track: LoadedTrack,
+    buffer: boolean = false
+  ): HTMLAudioElement | null {
     if (track.el) return track.el;
 
     try {
       const el = new Audio(`/audio/${track.fileName}.mp3`);
+      el.preload = buffer ? "auto" : "metadata";
       el.loop = track.loop;
       el.volume = track.volume * this.sliderFor(track.channel);
       track.el = el;
@@ -149,7 +163,7 @@ export default class AudioManager {
         existing.overrides = overrides;
         existing.channel = resolvedChannel;
       } else {
-        this.tracks[fileName] = {
+        const track: LoadedTrack = {
           el: null,
           fileName,
           loop,
@@ -157,6 +171,21 @@ export default class AudioManager {
           overrides,
           channel: resolvedChannel,
         };
+        this.tracks[fileName] = track;
+
+        // Sound effects are built and buffered up front; music is left until it
+        // is first played.
+        //
+        // The split is by weight, not by principle: all 26 effect files together
+        // are 1.5MB, while the 62 music tracks are 82MB. Handing the platform the
+        // music up front is what stalled iOS, and effects are cheap enough that
+        // there is no reason to make them lazy -- doing so made short cues
+        // inaudible, because a sound that is stopped shortly after it starts (the
+        // ready-check alarm, which ends as soon as everyone readies) was still
+        // fetching when the stop arrived and never made a sound at all.
+        if (AudioManager.isSfx(resolvedChannel)) {
+          this.ensureElement(track, true);
+        }
       }
     }
   }
@@ -179,7 +208,7 @@ export default class AudioManager {
       }
     }
 
-    const el = this.ensureElement(track);
+    const el = this.ensureElement(track, true);
     if (!el) return;
 
     // Assigning currentTime forces a seek, which on iOS can block on a track
