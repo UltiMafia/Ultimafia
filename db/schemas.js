@@ -1533,6 +1533,9 @@ schemas.FamilyStock = new mongoose.Schema({
   isIpoed: { type: Boolean, default: false },
   shareSupply: { type: Number, default: 0 },
   treasuryCoins: { type: Number, default: 0 },
+  // Trade fees routed to the family treasury. Without this path declared here,
+  // Mongoose strict mode silently drops the $inc and the stat never accrues.
+  creatorFeesEarned: { type: Number, default: 0 },
   dividendsPaidOut: { type: Number, default: 0 },
 });
 

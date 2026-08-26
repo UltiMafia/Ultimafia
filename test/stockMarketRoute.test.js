@@ -56,18 +56,18 @@ describe("routes/stockMarket - /transactions", function () {
       handler = layer.route.stack[0].handle;
     }
 
-    originalStockTxCount = models.StockTransaction.estimatedDocumentCount;
+    originalStockTxCount = models.StockTransaction.countDocuments;
     originalStockTxFind = models.StockTransaction.find;
-    originalFamilyStockTxCount = models.FamilyStockTransaction.estimatedDocumentCount;
+    originalFamilyStockTxCount = models.FamilyStockTransaction.countDocuments;
     originalFamilyStockTxFind = models.FamilyStockTransaction.find;
     originalUserFind = models.User.find;
     originalFamilyFind = models.Family.find;
   });
 
   after(function () {
-    models.StockTransaction.estimatedDocumentCount = originalStockTxCount;
+    models.StockTransaction.countDocuments = originalStockTxCount;
     models.StockTransaction.find = originalStockTxFind;
-    models.FamilyStockTransaction.estimatedDocumentCount = originalFamilyStockTxCount;
+    models.FamilyStockTransaction.countDocuments = originalFamilyStockTxCount;
     models.FamilyStockTransaction.find = originalFamilyStockTxFind;
     models.User.find = originalUserFind;
     models.Family.find = originalFamilyFind;
@@ -78,7 +78,9 @@ describe("routes/stockMarket - /transactions", function () {
   });
 
   it("handles player stock transactions list with pagination", async function () {
-    models.StockTransaction.estimatedDocumentCount = () => {
+    models.StockTransaction.countDocuments = (filter) => {
+      // Unfiltered listing still passes a filter object, just an empty one.
+      Object.keys(filter).should.have.lengthOf(0);
       return {
         exec: async () => 100
       };
@@ -151,7 +153,7 @@ describe("routes/stockMarket - /transactions", function () {
   });
 
   it("handles family stock transactions list with pagination", async function () {
-    models.FamilyStockTransaction.estimatedDocumentCount = () => {
+    models.FamilyStockTransaction.countDocuments = () => {
       return {
         exec: async () => 50
       };
@@ -311,6 +313,5 @@ describe("routes/stockMarket - /transactions", function () {
 
     res.body.total.should.equal(5);
     res.body.transactions.should.have.lengthOf(1);
-    delete models.StockTransaction.countDocuments;
   });
 });
