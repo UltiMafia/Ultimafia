@@ -26,7 +26,6 @@ const SWEEP_INTERVAL = 30 * 60 * 1000;
 const subscriptions = new Map();
 
 let vapidConfigured = false;
-let warnedUnconfigured = false;
 
 const vapidPublicKey = process.env.VAPID_PUBLIC_KEY || "";
 const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || "";
@@ -98,16 +97,21 @@ function isEnabled() {
   return Object.values(TRANSPORTS).some((t) => t.isConfigured());
 }
 
-function getPublicKey() {
-  return vapidConfigured ? vapidPublicKey : "";
+// Reported at startup rather than on first use: when push is unconfigured the
+// client never gets as far as subscribing (it checks /api/site/push-config
+// first), so anything logged from the request path would never be reached --
+// which is exactly the case an operator needs told about.
+if (isEnabled()) {
+  logger.info("Push notifications enabled (web push).");
+} else {
+  logger.info(
+    "Push notifications are DISABLED: VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY are unset. " +
+      "Players will not be offered notifications. See docs/setup-prod-instructions.md."
+  );
 }
 
-function warnIfUnconfigured() {
-  if (isEnabled() || warnedUnconfigured) return;
-  warnedUnconfigured = true;
-  logger.info(
-    "Push notifications are disabled: set VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY to enable them."
-  );
+function getPublicKey() {
+  return vapidConfigured ? vapidPublicKey : "";
 }
 
 /**
@@ -127,8 +131,6 @@ function normalizeSubscription(raw) {
 }
 
 function register(userId, raw) {
-  warnIfUnconfigured();
-
   if (!userId) return false;
 
   const target = normalizeSubscription(raw);

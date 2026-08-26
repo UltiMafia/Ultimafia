@@ -7,6 +7,7 @@ import {
   canRequestPush,
   getPermission,
   isIos,
+  isPushEnabledOnServer,
   isPushSupported,
   isStandalone,
   subscribeToPush,
@@ -51,7 +52,22 @@ export default function PushNotificationPrompt({ socket }) {
   const [permission, setPermission] = useState(() =>
     isPushSupported() ? getPermission() : "denied"
   );
+  // null until the server has been asked. A deployment with no VAPID keys cannot
+  // deliver anything, so offering to subscribe would give players a button that
+  // silently does nothing.
+  const [serverEnabled, setServerEnabled] = useState(null);
   const sentEndpointRef = useRef(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    isPushEnabledOnServer().then((enabled) => {
+      if (!cancelled) setServerEnabled(enabled);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const sendSubscription = useCallback(async () => {
     if (!socket || !socket.send) return false;
@@ -72,6 +88,7 @@ export default function PushNotificationPrompt({ socket }) {
   // -- so register with the server silently. No gesture is needed once permission
   // exists, and this is what makes rejoining a lobby not ask again.
   useEffect(() => {
+    if (serverEnabled !== true) return;
     if (!canRequestPush()) return;
     if (permission !== "granted") return;
 
@@ -85,7 +102,7 @@ export default function PushNotificationPrompt({ socket }) {
     return () => {
       cancelled = true;
     };
-  }, [permission, sendSubscription]);
+  }, [serverEnabled, permission, sendSubscription]);
 
   async function onEnableClick() {
     // Must stay inside the click handler: Safari (and Firefox) only honour
@@ -110,6 +127,7 @@ export default function PushNotificationPrompt({ socket }) {
     setHidden(true);
   }
 
+  if (serverEnabled !== true) return null;
   if (hidden || !isPushSupported()) return null;
   if (permission === "denied") return null;
 

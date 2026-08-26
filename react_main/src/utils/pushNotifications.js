@@ -67,6 +67,16 @@ export function getPermission() {
   return window.Notification.permission;
 }
 
+/**
+ * Whether the server can actually deliver a push. False when it has no VAPID
+ * keys configured, in which case the UI must not offer notifications at all --
+ * otherwise the button is dead on arrival.
+ */
+export async function isPushEnabledOnServer() {
+  const config = await getPushConfig();
+  return Boolean(config.enabled && config.publicKey);
+}
+
 async function getPushConfig() {
   if (!configPromise) {
     configPromise = axios
