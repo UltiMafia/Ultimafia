@@ -16,18 +16,25 @@ alias d="docker compose -f docker-compose-core.yml -f docker-compose-dev.yml"
 # From here
 ```
 
-The [EZ setup guide](/docs/setup-EZ-guide.md) is the best guide if you are a new contributor. If you have any questions or concerns please feel free to ask in our [Discord server](https://discord.gg/C5WMFpYRHQ).
+**New contributors:**
+
+- **Local setup (your computer, no Codespaces):** [Local Setup Guide](/docs/setup-local-guide.md)
+- **GitHub Codespaces:** [EZ setup guide](/docs/setup-EZ-guide.md)
+
+If you have any questions or concerns please feel free to ask in our [Discord server](https://discord.gg/C5WMFpYRHQ).
 
 ### Prerequisites
 
 Before building your developer environment locally, you will need the following set up:
 
-- NVM (should be provided with your Github Codespace)
+- Git, Node.js 22.17.0, and Docker Desktop (see the [Local Setup Guide](/docs/setup-local-guide.md))
 - Firebase
 
 ### Install and Build
 
-For the easiest set up, use the `totalsetup.sh` script in the root project directory:
+For a full walkthrough aimed at beginners, use the [Local Setup Guide](/docs/setup-local-guide.md).
+
+For an automated script (Mac/Linux / Codespaces), use the `totalsetup.sh` script in the root project directory:
 
 ```bash
 $ bash totalsetup.sh
@@ -78,7 +85,19 @@ $ bash cleanup.sh
 
 ### Running and Stopping
 
-If you ran `totalsetup.sh`, the project will automatically run. Otherwise, you can run `npm start` from the root project directory. To stop, simply run `npm stop`. The site will be accessible at http://127.0.0.1:80 (localhost).
+Prefer Docker Compose as described in the [Local Setup Guide](/docs/setup-local-guide.md):
+
+```bash
+docker compose -f docker-compose-core.yml -f docker-compose-dev.yml up -d
+```
+
+The site will be accessible at **http://localhost:3001**. Use `localhost` (not `127.0.0.1`) so Firebase Auth works. First-time login: **http://localhost:3001/auth/login**.
+
+If you ran `totalsetup.sh`, the project may already be running. To stop Compose:
+
+```bash
+docker compose -f docker-compose-core.yml -f docker-compose-dev.yml down
+```
 
 ### Troubleshooting
 
@@ -88,10 +107,12 @@ If you are able to briefly see a loading graphic when attempting to enter the si
 
 To fix this:
 
-1. Go to http://127.0.0.1:80/auth/login
+1. Go to http://localhost:3001/auth/login
 2. Sign-up with a new account. If you have already created an account in the past for your local build, you may use the same one to login instead.
 
 Once you log in, you should be redirected to the lobby page and the site should function properly.
+
+More local troubleshooting is in the [Local Setup Guide](/docs/setup-local-guide.md#troubleshooting).
 
 ## Contributing
 

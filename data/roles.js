@@ -308,8 +308,7 @@ const roleData = {
       tagsHidden: ["No Investigate"],
       description: [
         "You see self as Villager.",
-        "You appear as a random evil role to information roles.",
-        "You appear as a random evil role when condemned.",
+        "You appear as a random evil role in the setup to information roles, and when condemned.",
         "You appear as Miller when killed.",
       ],
       skins: [
@@ -1312,7 +1311,7 @@ const roleData = {
       ],
       description: [
         "Each night, you can choose to visit one player and if they didn't visit anybody, have them learn 3 players, at least one of whom is Evil.",
-        "You cannot choose to visit the same player consecutively.",
+        "You cannot choose to visit the same player consecutively (unless roleblocked).",
       ],
       nightOrder: [
         ["Sing Carol", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10],

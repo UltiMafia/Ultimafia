@@ -30,16 +30,42 @@ import { useErrorAlert } from "components/Alerts";
 import { Loading } from "components/Loading";
 import { NameWithAvatar } from "../User/User";
 import { CoinAmount } from "../User/FamilyExtras";
+import { FamilyAvatarImage } from "utils/avatarUrl";
 
 function FamilyAvatar({ family }) {
   const siteInfo = useContext(SiteInfoContext);
-  const avatarUrl =
-    typeof family.avatar === "string"
-      ? family.avatar
-      : family.avatar
-        ? `/uploads/${family.id}_family_avatar.webp?t=${siteInfo.cacheVal}`
-        : "";
-
+  if (typeof family.avatar === "string") {
+    return (
+      <Box
+        sx={{
+          width: 64,
+          height: 64,
+          borderRadius: "50%",
+          backgroundColor: "background.default",
+          backgroundImage: `url(${family.avatar})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          border: "1px solid",
+          borderColor: "divider",
+          flexShrink: 0,
+        }}
+      />
+    );
+  }
+  if (family.avatar) {
+    return (
+      <FamilyAvatarImage
+        id={family.id}
+        size={64}
+        cacheVal={siteInfo.cacheVal}
+        extraStyle={{
+          backgroundColor: "var(--scheme-color, #222)",
+          border: "1px solid",
+          borderColor: "var(--mui-palette-divider, rgba(255,255,255,0.12))",
+        }}
+      />
+    );
+  }
   return (
     <Box
       sx={{
@@ -47,9 +73,6 @@ function FamilyAvatar({ family }) {
         height: 64,
         borderRadius: "50%",
         backgroundColor: "background.default",
-        backgroundImage: avatarUrl ? `url(${avatarUrl})` : undefined,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
         border: "1px solid",
         borderColor: "divider",
         display: "flex",
@@ -58,14 +81,12 @@ function FamilyAvatar({ family }) {
         flexShrink: 0,
       }}
     >
-      {!avatarUrl && (
-        <Box
-          component="i"
-          className="fas fa-users"
-          aria-hidden="true"
-          sx={{ color: "text.secondary", fontSize: 24 }}
-        />
-      )}
+      <Box
+        component="i"
+        className="fas fa-users"
+        aria-hidden="true"
+        sx={{ color: "text.secondary", fontSize: 24 }}
+      />
     </Box>
   );
 }

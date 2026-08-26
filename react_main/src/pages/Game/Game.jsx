@@ -43,6 +43,7 @@ import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
 import SiteLogo from "../../components/SiteLogo";
 import LeaveGameDialog from "../../components/LeaveGameDialog";
+import { SportsmanshipJoinModal } from "../../components/SportsmanshipJoinModal";
 import { useErrorAlert } from "../../components/Alerts";
 import {
   MaxGameMessageLength,
@@ -185,6 +186,11 @@ export default function Game() {
   const [lastWill, setLastWill] = useState("");
   const [settings, updateSettings] = useSettingsReducer();
   const [showFirstGameModal, setShowFirstGameModal] = useState(false);
+  const [sportsmanshipModal, setSportsmanshipModal] = useState({
+    open: false,
+    type: "ranked",
+  });
+  const sportsmanshipAcceptedRef = useRef(false);
   const [speechFilters, setSpeechFilters] = useState({
     from: "",
     contains: "",
@@ -202,6 +208,8 @@ export default function Game() {
   const playersRef = useRef();
   const selfRef = useRef();
   const noLeaveRef = useRef();
+  const ignoreDeathSoundsRef = useRef(!!user?.settings?.ignoreDeathSounds);
+  const deathSoundVolumeRef = useRef(1);
 
   const { playAudio, loadAudioFiles, stopAudio, stopAudios } = useAudio(settings);
   const siteInfo = useContext(SiteInfoContext);
@@ -429,6 +437,17 @@ export default function Game() {
   }, [finished]);
 
   useEffect(() => {
+    ignoreDeathSoundsRef.current = !!user?.settings?.ignoreDeathSounds;
+  }, [user?.settings?.ignoreDeathSounds]);
+
+  useEffect(() => {
+    const v = Number(settings?.deathSoundVolume);
+    deathSoundVolumeRef.current = Number.isFinite(v)
+      ? Math.max(0, Math.min(1, v))
+      : 1;
+  }, [settings?.deathSoundVolume]);
+
+  useEffect(() => {
     updateSettings({ type: "load" });
 
     if (!review) {
@@ -501,6 +520,17 @@ export default function Game() {
               nameColor: data.users[i] && data.users[i].settings.nameColor,
               customEmotes:
                 data.users[i] && data.users[i].settings.customEmotes,
+              customStickers:
+                data.users[i] && data.users[i].settings.customStickers,
+              nameFont: data.users[i] && data.users[i].settings.nameFont,
+              animatedNameColor:
+                data.users[i] && data.users[i].settings.animatedNameColor,
+              nameGradientColorA:
+                data.users[i] && data.users[i].settings.nameGradientColorA,
+              nameGradientColorB:
+                data.users[i] && data.users[i].settings.nameGradientColorB,
+              nameGradientColorC:
+                data.users[i] && data.users[i].settings.nameGradientColorC,
               left: data.left.indexOf(data.players[i]) !== -1,
             };
           }
@@ -515,6 +545,22 @@ export default function Game() {
               nameColor: data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.nameColor,
               customEmotes:
                 data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.customEmotes,
+              customStickers:
+                data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.customStickers,
+              nameFont:
+                data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.nameFont,
+              animatedNameColor:
+                data.spectatorsUsers[i] &&
+                data.spectatorsUsers[i].settings.animatedNameColor,
+              nameGradientColorA:
+                data.spectatorsUsers[i] &&
+                data.spectatorsUsers[i].settings.nameGradientColorA,
+              nameGradientColorB:
+                data.spectatorsUsers[i] &&
+                data.spectatorsUsers[i].settings.nameGradientColorB,
+              nameGradientColorC:
+                data.spectatorsUsers[i] &&
+                data.spectatorsUsers[i].settings.nameGradientColorC,
               left: data.left.indexOf(data.spectators[i]) !== -1,
             };
           }
@@ -557,7 +603,9 @@ export default function Game() {
         (socket.readyState == null || socket.readyState === 3) &&
         !leave &&
         !finished &&
-        !review
+        !review &&
+        user.loaded &&
+        !sportsmanshipModal.open
       ) {
         getConnectionInfo();
       }
@@ -702,6 +750,41 @@ export default function Game() {
         type: "death",
         playerId,
       });
+    });
+
+    // Custom death sounds: server sends URLs already shuffled; play one-by-one
+    socket.on("deathSounds", (urls) => {
+      if (!Array.isArray(urls) || urls.length === 0) return;
+      // User preference: skip all custom death sounds (ref stays current mid-game)
+      if (ignoreDeathSoundsRef.current) return;
+
+      let chain = Promise.resolve();
+      for (const url of urls) {
+        if (typeof url !== "string" || !url.length) continue;
+        chain = chain.then(
+          () =>
+            new Promise((resolve) => {
+              try {
+                const audio = new Audio(url);
+                // Dedicated local slider (gameSettings.deathSoundVolume)
+                audio.volume = deathSoundVolumeRef.current;
+                const done = () => resolve();
+                audio.addEventListener("ended", done, { once: true });
+                audio.addEventListener("error", done, { once: true });
+                // Cap hang if metadata is bad (sounds are max 5s)
+                const timeout = setTimeout(done, 6000);
+                audio.addEventListener(
+                  "ended",
+                  () => clearTimeout(timeout),
+                  { once: true }
+                );
+                audio.play().catch(done);
+              } catch {
+                resolve();
+              }
+            })
+        );
+      }
     });
 
     socket.on("revival", (playerId) => {
@@ -865,12 +948,13 @@ export default function Game() {
         playAudio(audioName);
       }
     });
-  }, [connected]);
+  }, [connected, user.loaded, sportsmanshipModal.open]);
 
-  function getConnectionInfo() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const isSpectating = urlParams.get("spectate") === "true";
+  function settingIsTrue(value) {
+    return value === true || value === "true";
+  }
 
+  function connectToGame(isSpectating) {
     const url = `/api/game/${gameId}/connect${
       isSpectating ? "?spectate=true" : ""
     }`;
@@ -891,6 +975,76 @@ export default function Game() {
           errorAlert(e);
         }
       });
+  }
+
+  function getConnectionInfo() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isSpectating = urlParams.get("spectate") === "true";
+
+    if (isSpectating || sportsmanshipAcceptedRef.current) {
+      connectToGame(isSpectating);
+      return;
+    }
+
+    axios
+      .get(`/api/game/${gameId}/info`)
+      .then((res) => {
+        const game = res.data;
+        const ranked = !!game.settings?.ranked;
+        const competitive = !!game.settings?.competitive;
+        const alreadyInGame = user.inGame === gameId;
+        const isHost = !!(user.id && game.hostId === user.id);
+        const isOpenGame = game.status === "Open";
+
+        if (
+          isOpenGame &&
+          !alreadyInGame &&
+          !isHost &&
+          (ranked || competitive)
+        ) {
+          const type = competitive ? "competitive" : "ranked";
+          const hideSetting =
+            type === "competitive"
+              ? user.settings?.hideCompetitiveModal
+              : user.settings?.hideRankedModal;
+
+          if (!settingIsTrue(hideSetting)) {
+            setSportsmanshipModal({ open: true, type });
+            return;
+          }
+        }
+
+        connectToGame(isSpectating);
+      })
+      .catch(() => {
+        // Finished / missing games fall through to connect (review path)
+        connectToGame(isSpectating);
+      });
+  }
+
+  function onSportsmanshipAccept(doNotShowAgain) {
+    const type = sportsmanshipModal.type;
+    sportsmanshipAcceptedRef.current = true;
+    setSportsmanshipModal({ open: false, type });
+
+    if (doNotShowAgain) {
+      const prop =
+        type === "competitive"
+          ? "hideCompetitiveModal"
+          : "hideRankedModal";
+
+      axios
+        .post("/api/user/settings/update", { prop, value: true })
+        .then(() => {
+          user.updateSetting(prop, true);
+        })
+        .catch(() => {});
+    }
+  }
+
+  function onSportsmanshipCancel() {
+    setSportsmanshipModal({ open: false, type: sportsmanshipModal.type });
+    setLeave(true);
   }
 
   function onMessageQuote(message) {
@@ -922,7 +1076,13 @@ export default function Game() {
   else if (!loaded || stateViewing == null)
     return (
       <div className="game">
-        <Loading />
+        <SportsmanshipJoinModal
+          open={sportsmanshipModal.open}
+          type={sportsmanshipModal.type}
+          onAccept={onSportsmanshipAccept}
+          onCancel={onSportsmanshipCancel}
+        />
+        {!sportsmanshipModal.open && <Loading />}
       </div>
     );
   else {
@@ -2108,7 +2268,10 @@ function Message(props) {
       player = spectators[message.senderId];
     }
   }
-  var customEmotes = player ? player.customEmotes : null;
+  var customEmotes =
+    message.customEmotes || (player && player.customEmotes) || null;
+  var customStickers =
+    message.customStickers || (player && player.customStickers) || null;
 
   if (message.isQuote) {
     var state = history.states[message.fromState];
@@ -2133,6 +2296,7 @@ function Message(props) {
         quotedMessage.meetingName = meeting.name;
         quotedMessage.fromStateName = state.name;
         customEmotes = msg.customEmotes; // allow players to use other players' custom emotes if they quote them
+        customStickers = msg.customStickers;
         break;
       }
     }
@@ -2314,9 +2478,7 @@ function Message(props) {
             )}
             {player && (
               <NameWithAvatar
-                dead={
-                  playerDead && props.stateViewing > 0 && !isGraveyardMessage
-                }
+                dead={playerDead && props.stateViewing > 0}
                 ripAvatar={isGraveyardMessage}
                 id={player.userId}
                 avatarId={avatarId}
@@ -2332,6 +2494,11 @@ function Message(props) {
                 nameColorSwatch={
                   accessibleNameColors && rawNameColor ? rawNameColor : undefined
                 }
+                nameFont={player.nameFont}
+                animatedNameColor={player.animatedNameColor}
+                nameGradientColorA={player.nameGradientColorA}
+                nameGradientColorB={player.nameGradientColorB}
+                nameGradientColorC={player.nameGradientColorC}
                 noLink
                 small={smallAvatar}
                 absoluteLeftAvatarPx={absoluteLeftAvatarPx}
@@ -2364,6 +2531,8 @@ function Message(props) {
                 players={players}
                 spectators={spectators}
                 customEmotes={customEmotes}
+                customStickers={customStickers}
+                systemMessage={isServerMessage}
                 filterProfanity
                 linkify
                 emotify
@@ -2389,6 +2558,7 @@ function Message(props) {
                   players={players}
                   spectators={spectators}
                   customEmotes={customEmotes}
+                  customStickers={customStickers}
                   filterProfanity
                   linkify
                   emotify
@@ -2814,7 +2984,8 @@ function SpeechInput(props) {
         } else {
           pendingSpeechRef.current = {
             content: speechInput,
-            anonymous: Boolean(abilityName),
+            anonymous:
+              Boolean(abilityName) || Boolean(meetings[selTab]?.anonymous),
           };
         }
 
@@ -3266,6 +3437,7 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
           avatarId={avatarId}
           name={player.name}
           avatar={player.avatar}
+          dead={className === "dead"}
           color={resolveDisplayNameColor({
             accessibleNameColors,
             ignoreTextColor: user.settings?.ignoreTextColor,
@@ -3278,6 +3450,11 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
               ? player.nameColor
               : undefined
           }
+          nameFont={player.nameFont}
+          animatedNameColor={player.animatedNameColor}
+          nameGradientColorA={player.nameGradientColorA}
+          nameGradientColorB={player.nameGradientColorB}
+          nameGradientColorC={player.nameGradientColorC}
           active={activity.speaking[player.id]}
           noLink={stateViewing >= 0 && game.options.anonymousGame}
           includeMiniprofile
@@ -5082,6 +5259,15 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
       value: settings.sfxVolume,
     },
     {
+      label: "Death Sound Volume",
+      ref: "deathSoundVolume",
+      type: "range",
+      min: 0,
+      max: 1,
+      step: 0.1,
+      value: settings.deathSoundVolume,
+    },
+    {
       label: "Music Volume",
       ref: "musicVolume",
       type: "range",
@@ -6010,6 +6196,7 @@ export function useSettingsReducer() {
     votingLog: true,
     timestamps: true,
     sfxVolume: 1,
+    deathSoundVolume: 1,
     musicVolume: 1,
     pregameMusicVolume: 1,
     importantVolume: 1,
@@ -6064,10 +6251,16 @@ export function useSettingsReducer() {
         copy.importantVolume,
         defaultSettings.importantVolume
       );
+      // Dedicated death-sound channel (defaults to full volume if unset/cleared)
+      const derivedDeathSound = clampVolume(
+        copy.deathSoundVolume,
+        defaultSettings.deathSoundVolume
+      );
 
       for (const key of Object.keys(normalized)) {
         if (
           key === "sfxVolume" ||
+          key === "deathSoundVolume" ||
           key === "musicVolume" ||
           key === "pregameMusicVolume" ||
           key === "importantVolume"
@@ -6080,6 +6273,7 @@ export function useSettingsReducer() {
       }
 
       normalized.sfxVolume = derivedSfx;
+      normalized.deathSoundVolume = derivedDeathSound;
       normalized.musicVolume = derivedMusic;
       normalized.pregameMusicVolume = derivedPregameMusic;
       normalized.importantVolume = derivedUrgent;

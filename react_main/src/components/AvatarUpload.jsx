@@ -27,6 +27,14 @@ export default function AvatarUpload(props) {
   const canvasRef = useRef();
   const imageRef = useRef();
 
+  const keepAnimation = !!props.keepAnimation;
+
+  const isAnimatableFile = (file) => {
+    if (!file) return false;
+    const t = (file.type || "").toLowerCase();
+    return t === "image/gif" || t === "image/webp";
+  };
+
   const handleOpenUpload = () => {
     let shouldOpen = true;
     if (props.onClick) {
@@ -44,6 +52,9 @@ export default function AvatarUpload(props) {
   const handleCloseCrop = () => {
     setCropDialogOpen(false);
     setSelectedFile(null);
+    if (imageUrl) {
+      URL.revokeObjectURL(imageUrl);
+    }
     setImageUrl(null);
     setZoom(1);
     setPosition({ x: 0, y: 0 });
@@ -153,6 +164,15 @@ export default function AvatarUpload(props) {
     }, "image/png");
   };
 
+  const submitOriginalAnimated = () => {
+    if (!selectedFile) return;
+    props.onFileUpload([selectedFile], props.name || "avatar");
+    handleCloseCrop();
+  };
+
+  const showKeepAnimation =
+    keepAnimation && selectedFile && isAnimatableFile(selectedFile);
+
   useEffect(() => {
     if (imageUrl && cropDialogOpen) {
       const img = new Image();
@@ -226,6 +246,12 @@ export default function AvatarUpload(props) {
               gap: 2,
             }}
           >
+            <Typography variant="body2" color="text.secondary" textAlign="center">
+              Choose an image, then pan and zoom to frame your avatar.
+              {keepAnimation
+                ? " GIF/WebP can keep animation if you skip crop."
+                : " GIF/WebP will be saved as a still frame."}
+            </Typography>
             <Button variant="contained" onClick={handleBrowseClick}>
               Browse Files
             </Button>
@@ -346,12 +372,26 @@ export default function AvatarUpload(props) {
             </Box>
           </Box>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ flexWrap: "wrap", gap: 1 }}>
           <Button onClick={handleCloseCrop}>Cancel</Button>
+          {showKeepAnimation && (
+            <Button onClick={submitOriginalAnimated} variant="outlined">
+              Keep animation (no crop)
+            </Button>
+          )}
           <Button onClick={handleSubmit} variant="contained">
-            Submit
+            Apply crop
           </Button>
         </DialogActions>
+        {showKeepAnimation && (
+          <Box sx={{ px: 3, pb: 2 }}>
+            <Typography variant="caption" color="text.secondary">
+              Cropping exports a still frame. Use &quot;Keep animation&quot; to
+              upload the original GIF/WebP (resized to 100×100, animation
+              preserved as WebP).
+            </Typography>
+          </Box>
+        )}
       </Dialog>
 
       <canvas ref={canvasRef} style={{ display: "none" }} />

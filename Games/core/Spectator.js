@@ -22,6 +22,7 @@ module.exports = class Spectator extends Player {
   socketListeners() {
     const socket = this.socket;
     var speechPast = [];
+    var lastSpeakContentBlockAt = 0;
 
     socket.on("leave", () => {
       try {
@@ -91,6 +92,49 @@ module.exports = class Spectator extends Player {
         }
 
         if (
+          Spam.isRepeatedContentSpam(
+            speechPast,
+            message.content,
+            constants.msgDuplicateMaxConsecutive
+          )
+        ) {
+          lastSpeakContentBlockAt = Date.now();
+          const sentAt = Date.now();
+          this.send("speakCooldown", {
+            meetingId: message.meetingId,
+            sentAt,
+            cooldownMs: constants.msgDuplicateCooldownMs,
+          });
+          return;
+        }
+
+        if (
+          Spam.shouldCheckSimilarContent(
+            speechPast,
+            lastSpeakContentBlockAt,
+            Date.now(),
+            constants.msgSimilarQuickWindowMs,
+            constants.msgSimilarAfterBlockWindowMs
+          ) &&
+          Spam.isRepeatedSimilarContentSpam(
+            speechPast,
+            message.content,
+            constants.msgDuplicateMaxConsecutive,
+            constants.msgSimilarThreshold,
+            constants.msgSimilarMinLength
+          )
+        ) {
+          lastSpeakContentBlockAt = Date.now();
+          const sentAt = Date.now();
+          this.send("speakCooldown", {
+            meetingId: message.meetingId,
+            sentAt,
+            cooldownMs: constants.msgDuplicateCooldownMs,
+          });
+          return;
+        }
+
+        if (
           message.content[0] == "/" &&
           message.content.slice(0, 4) != "/me "
         ) {
@@ -98,7 +142,10 @@ module.exports = class Spectator extends Player {
           return;
         }
 
-        speechPast.push(Date.now());
+        speechPast.push({
+          at: Date.now(),
+          content: Spam.normalizeSpeakContent(message.content),
+        });
 
         var meeting = this.game.getMeeting(message.meetingId);
         if (!meeting) return;

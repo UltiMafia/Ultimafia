@@ -42,6 +42,11 @@ export default function Newspaper(props) {
   const gameDate = new Date(timestamp + dayCount * 24 * 60 * 60 * 1000);
   gameDate.setFullYear(gameDate.getFullYear() - 100);
 
+  // Match chat Timestamp format (minutes:seconds)
+  const minutes = String(gameDate.getMinutes()).padStart(2, "0");
+  const seconds = String(gameDate.getSeconds()).padStart(2, "0");
+  const newspaperDateLine = `${gameDate.toDateString()}, ${minutes}:${seconds}`;
+
   // Handle win newspapers (Mafia games)
   if (isWin && wins.length > 0) {
     const winEntries = wins.map((win, index) => {
@@ -71,7 +76,7 @@ export default function Newspaper(props) {
                   />
                 </div>
               )}
-              <div className="newspaper-paragraph">{emotify(winMessage)}</div>
+              <div className="newspaper-paragraph">{emotify(winMessage, null, null, { system: true })}</div>
             </div>
           </div>
         );
@@ -163,7 +168,7 @@ export default function Newspaper(props) {
               className="newspaper-paragraph win-message-text"
               style={{ flex: "1", minWidth: 0 }}
             >
-              {emotify(winMessage)}
+              {emotify(winMessage, null, null, { system: true })}
             </div>
           </div>
         </div>
@@ -173,7 +178,7 @@ export default function Newspaper(props) {
     return (
       <div className="newspaper">
         <div className="newspaper-title">{title}</div>
-        <div className="newspaper-subheader">{gameDate.toDateString()}</div>
+        <div className="newspaper-subheader">{newspaperDateLine}</div>
         {winEntries}
       </div>
     );
@@ -197,7 +202,7 @@ export default function Newspaper(props) {
           />
         </div>
 
-        <div className="newspaper-paragraph">{emotify(death.deathMessage)}</div>
+        <div className="newspaper-paragraph">{emotify(death.deathMessage, null, null, { system: true })}</div>
       </div>
       {death.revealMessage && (
         <div className="newspaper-paragraph">
@@ -210,7 +215,7 @@ export default function Newspaper(props) {
       )}
 
       {death.lastWill && (
-        <div className="newspaper-paragraph">{emotify(death.lastWill)}</div>
+        <div className="newspaper-paragraph">{emotify(death.lastWill, null, null, { system: true })}</div>
       )}
     </div>
   ));
@@ -218,7 +223,7 @@ export default function Newspaper(props) {
   return (
     <div className="newspaper">
       <div className="newspaper-title">{title}</div>
-      <div className="newspaper-subheader">{gameDate.toDateString()}</div>
+      <div className="newspaper-subheader">{newspaperDateLine}</div>
 
       {obituaries.length > 0 ? (
         obituaries

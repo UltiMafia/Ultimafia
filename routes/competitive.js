@@ -7,7 +7,6 @@ const redis = require("../modules/redis");
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const routeUtils = require("./utils");
-const constants = require("../data/constants");
 const logger = require("../modules/logging")("(competitive)");
 const errors = require("../lib/errors");
 
@@ -147,49 +146,6 @@ router.post("/pause", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Error toggling pause for season. Please try again.");
-  }
-});
-
-router.post("/refund", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-
-    if (!(await routeUtils.verifyPermission(res, userId, "manageCompetitive")))
-      return;
-
-    var gameId = String(req.body.gameId);
-
-    const game = await models.Game.findOne({ id: gameId }).lean();
-
-    if (!game) {
-      res.status(404);
-      res.send("Game not found.");
-      return;
-    }
-
-    const gameCompletions = await models.CompetitiveGameCompletion.find({ game: game._id });
-
-    console.log(`Refunding competitive completion for game ${gameId}`);
-    for (const gameCompletion of gameCompletions) {
-      console.log(`Refunding one gold heart to user ${gameCompletion.userId}`);
-      await models.User.updateOne(
-        { id: gameCompletion.userId },
-        { $inc: { goldHearts: 1 } }
-      );
-      await models.CompetitiveGameCompletion.updateOne(
-        { _id: gameCompletion._id },
-        { $set: { valid: false, } }
-      );
-      await redis.invalidateCachedUser(gameCompletion.userId);
-    }
-
-    // Create mod action
-    routeUtils.createModAction(userId, "Refund Competitive Game", [gameId]);
-
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    errors.serverError(res, "Error refunding game. Please try again.");
   }
 });
 
@@ -558,29 +514,11 @@ router.get("/current", async function (req, res) {
       return;
     }
 
-    // Fetch round settings for all rounds (filter out round 0 if it exists)
-    const rounds = await models.CompetitiveRound.find({
-      season: currentSeason.number,
-      number: { $gt: 0 },
-    })
-      .select("number minimumPoints")
-      .sort({ number: 1 })
-      .lean();
-
-    // Build roundSettings object keyed by round number (1-indexed)
-    const roundSettings = {};
-    for (const round of rounds) {
-      roundSettings[round.number] = {
-        minimumPoints: round.minimumPoints ?? constants.minimumPointsForCompetitive,
-      };
-    }
-
     res.json({
       seasonNumber: currentSeason.number,
       setups: currentSeason.setups,
       setupOrder: currentSeason.setupOrder,
       numRounds: currentSeason.numRounds,
-      roundSettings: roundSettings,
     });
   } catch (e) {
     logger.error(e);
@@ -793,83 +731,6 @@ router.post("/updateSetupOrder", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Error updating setup order. Please try again.");
-  }
-});
-
-// Update round settings (minimumPoints) for the current season
-router.post("/updateRoundSettings", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-
-    if (!(await routeUtils.verifyPermission(res, userId, "manageCompetitive")))
-      return;
-
-    const roundSettings = req.body.roundSettings;
-
-    if (!roundSettings || typeof roundSettings !== "object") {
-      res.status(400);
-      res.send("roundSettings must be an object.");
-      return;
-    }
-
-    const currentSeason = await models.CompetitiveSeason.findOne({
-      completed: false,
-    })
-      .sort({ number: -1 })
-      .select("number numRounds")
-      .lean();
-
-    if (!currentSeason) {
-      res.status(404);
-      res.send("No season in progress.");
-      return;
-    }
-
-    // Get existing rounds for this season
-    const existingRounds = await models.CompetitiveRound.find({
-      season: currentSeason.number,
-    })
-      .select("number")
-      .lean();
-    const existingRoundNumbers = new Set(existingRounds.map((r) => r.number));
-
-    // Validate and update each round's settings
-    for (const [roundNumberStr, settings] of Object.entries(roundSettings)) {
-      const roundNumber = Number.parseInt(roundNumberStr);
-
-      if (isNaN(roundNumber) || roundNumber < 1 || roundNumber > currentSeason.numRounds) {
-        res.status(400);
-        res.send(`Invalid round number: ${roundNumberStr}`);
-        return;
-      }
-
-      // Skip rounds that haven't been created yet
-      if (!existingRoundNumbers.has(roundNumber)) {
-        continue;
-      }
-
-      if (settings.minimumPoints !== undefined) {
-        const minPoints = Number.parseInt(settings.minimumPoints);
-        if (isNaN(minPoints) || minPoints < 0) {
-          res.status(400);
-          res.send(`Invalid minimumPoints for round ${roundNumber}: must be a non-negative number.`);
-          return;
-        }
-
-        // Update the round document
-        await models.CompetitiveRound.updateOne(
-          { season: currentSeason.number, number: roundNumber },
-          { $set: { minimumPoints: minPoints } }
-        );
-      }
-    }
-
-    routeUtils.createModAction(userId, "Update Competitive Round Settings", []);
-
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    errors.serverError(res, "Error updating round settings. Please try again.");
   }
 });
 

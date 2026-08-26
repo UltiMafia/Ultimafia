@@ -13,6 +13,7 @@ const formidable = bluebird.promisifyAll(require("formidable"), {
 const sharp = require("sharp");
 const fs = require("fs");
 const errors = require("../lib/errors");
+const utils = require("../lib/Utils");
 
 router.get("/user/family", async function (req, res) {
   try {
@@ -43,7 +44,7 @@ router.get("/user/family", async function (req, res) {
 
     // Query family directly and populate leader properly
     const family = await models.Family.findById(familyId)
-      .select("id name avatar leader members background backgroundRepeatMode perks")
+      .select("id name avatar banner bannerExt mediaUrl mediaAutoplay mediaCollapse leader members background backgroundRepeatMode perks")
       .populate("leader", "_id");
 
     if (!family) {
@@ -62,11 +63,17 @@ router.get("/user/family", async function (req, res) {
         id: family.id,
         name: family.name,
         avatar: family.avatar,
+        banner: family.banner || false,
+        bannerExt: family.bannerExt || "webp",
+        mediaUrl: family.mediaUrl || "",
+        mediaAutoplay: !!family.mediaAutoplay,
+        mediaCollapse: !!family.mediaCollapse,
         background: family.background || false,
         backgroundRepeatMode: family.backgroundRepeatMode || "checker",
         isLeader: isLeader,
         memberCount: memberCount,
         memberLimit: getFamilyMemberLimit(family),
+        perks: family.perks || [],
       },
     });
   } catch (e) {
@@ -112,6 +119,7 @@ router.post("/create", async function (req, res) {
 
     // Check if user has a pending avatar upload
     const pendingAvatarPath = `${process.env.UPLOAD_PATH}/pending_${userId}_family_avatar.webp`;
+    const pendingStaticPath = `${process.env.UPLOAD_PATH}/pending_${userId}_family_avatar_static.webp`;
     let hasAvatar = false;
 
     if (fs.existsSync(pendingAvatarPath)) {
@@ -119,6 +127,12 @@ router.post("/create", async function (req, res) {
       const familyAvatarPath = `${process.env.UPLOAD_PATH}/${familyId}_family_avatar.webp`;
       fs.renameSync(pendingAvatarPath, familyAvatarPath);
       hasAvatar = true;
+      if (fs.existsSync(pendingStaticPath)) {
+        fs.renameSync(
+          pendingStaticPath,
+          `${process.env.UPLOAD_PATH}/${familyId}_family_avatar_static.webp`
+        );
+      }
     }
 
     const family = new models.Family({
@@ -150,18 +164,35 @@ router.post("/create", async function (req, res) {
   }
 });
 
+function removeFamilyAvatarFiles(familyId) {
+  utils.removeAvatarVariantFiles(
+    process.env.UPLOAD_PATH,
+    `${familyId}_family_avatar`
+  );
+}
+
+function removeFamilyBannerFiles(familyId) {
+  const uploadPath = process.env.UPLOAD_PATH;
+  for (const ext of ["webp", "gif", "png", "jpg", "jpeg"]) {
+    const p = `${uploadPath}/${familyId}_family_banner.${ext}`;
+    try {
+      if (fs.existsSync(p)) fs.unlinkSync(p);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+}
+
 router.post("/avatar", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var user = await models.User.findOne({ id: userId }).select("itemsOwned");
 
-    // Check if user has purchased createFamily
     if (!user.itemsOwned.createFamily) {
       errors.forbidden(res, "You must purchase 'Create Family' from the Shop.");
       return;
     }
 
-    // Check if user already has a family
     const inFamily = await models.InFamily.findOne({
       user: user._id,
     }).populate("family");
@@ -170,7 +201,6 @@ router.post("/avatar", async function (req, res) {
     let isExistingFamily = false;
 
     if (inFamily && inFamily.family) {
-      // User has an existing family, check if they're the leader
       const family = inFamily.family;
       if (family.leader.toString() !== user._id.toString()) {
         errors.forbidden(res, "Only the family leader can upload an avatar.");
@@ -179,44 +209,289 @@ router.post("/avatar", async function (req, res) {
       familyId = family.id;
       isExistingFamily = true;
     } else {
-      // User doesn't have a family yet, store avatar temporarily with user ID
       familyId = `pending_${userId}`;
     }
 
+    // Animation is a family perk (treasury), not a personal shop item
+    const canAnimate =
+      isExistingFamily && familyOwnsPerk(inFamily.family, "familyAnimatedAvatar");
     var form = new formidable();
-    form.maxFileSize = 1024 * 1024;
+    form.maxFileSize = canAnimate ? 25 * 1024 * 1024 : 1 * 1024 * 1024;
     form.maxFields = 1;
 
     var [fields, files] = await form.parseAsync(req);
-
-    if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
-      fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
-
-    await sharp(files.image.path)
-      .webp({ quality: 100 })
-      .resize(100, 100, {
-        kernel: sharp.kernel.lanczos3,
-        fit: "cover",
-        position: "center",
-      })
-      .toFile(`${process.env.UPLOAD_PATH}/${familyId}_family_avatar.webp`);
-
-    // If it's an existing family, update the database
-    if (isExistingFamily) {
-      await models.Family.updateOne(
-        { id: familyId },
-        { $set: { avatar: true } }
-      );
+    const file =
+      files.image && (Array.isArray(files.image) ? files.image[0] : files.image);
+    const filePath = file?.filepath || file?.path;
+    if (!filePath) {
+      errors.badRequest(res, "No image uploaded.");
+      return;
     }
 
-    res.sendStatus(200);
+    const uploadPath = process.env.UPLOAD_PATH;
+    if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath);
+
+    const buffer = fs.readFileSync(filePath);
+    const mime = (file.type || file.mimetype || "").toLowerCase();
+    let metadata;
+    try {
+      metadata = await sharp(buffer, { animated: true }).metadata();
+    } catch (metaErr) {
+      errors.badRequest(res, "Could not read avatar image.");
+      return;
+    }
+
+    const pages = metadata.pages || 1;
+    const isAnimatedSource =
+      pages > 1 || mime === "image/gif" || metadata.format === "gif";
+    const keepAnimation = isAnimatedSource && canAnimate && isExistingFamily;
+
+    const frameW = metadata.width || 0;
+    const frameH = metadata.pageHeight || metadata.height || 0;
+    if (isAnimatedSource && (frameW > 1024 || frameH > 1024)) {
+      errors.badRequest(
+        res,
+        "Avatar frame dimensions must be at most 1024×1024."
+      );
+      return;
+    }
+
+    let tempPath = null;
+    try {
+      tempPath = `${uploadPath}/${familyId}_family_avatar.webp.tmp`;
+      if (keepAnimation) {
+        if (
+          !(
+            mime === "image/gif" ||
+            mime === "image/webp" ||
+            metadata.format === "gif" ||
+            metadata.format === "webp"
+          )
+        ) {
+          errors.badRequest(res, "Animated family avatars must be GIF or WebP.");
+          return;
+        }
+        await sharp(buffer, { animated: true, limitInputPixels: false })
+          .resize(100, 100, {
+            kernel: sharp.kernel.lanczos3,
+            fit: "cover",
+            position: "center",
+          })
+          .webp({ quality: 90, effort: 4 })
+          .toFile(tempPath);
+      } else {
+        await sharp(buffer, { animated: false, pages: 1 })
+          .webp({ quality: 100 })
+          .resize(100, 100, {
+            kernel: sharp.kernel.lanczos3,
+            fit: "cover",
+            position: "center",
+          })
+          .toFile(tempPath);
+      }
+
+      const finalPath = `${uploadPath}/${familyId}_family_avatar.webp`;
+      const staticPath = `${uploadPath}/${familyId}_family_avatar_static.webp`;
+      removeFamilyAvatarFiles(familyId);
+      fs.renameSync(tempPath, finalPath);
+      tempPath = null;
+      try {
+        if (keepAnimation) {
+          await utils.writeStaticAvatarFrame(buffer, staticPath);
+        } else {
+          fs.copyFileSync(finalPath, staticPath);
+        }
+      } catch (staticErr) {
+        logger.warn(staticErr);
+      }
+
+      if (isExistingFamily) {
+        await models.Family.updateOne(
+          { id: familyId },
+          { $set: { avatar: true } }
+        );
+      }
+
+      res.sendStatus(200);
+    } finally {
+      if (tempPath) {
+        try {
+          if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+        } catch (e) {
+          /* ignore */
+        }
+      }
+    }
   } catch (e) {
     if (e.message && e.message.indexOf("maxFileSize exceeded") === 0) {
-      errors.payloadTooLarge(res, "Image is too large, avatar must be less than 1 MB.");
+      errors.payloadTooLarge(
+        res,
+        "Image is too large for family avatar."
+      );
     } else {
       logger.error(e);
       errors.serverError(res, "Could not upload family avatar image. Please try again.");
     }
+  }
+});
+
+/**
+ * Family page banner (3:1, same proportions as profile banners, 900×300 export).
+ * Display is CSS-limited to the family panel width.
+ */
+router.post("/:familyId/banner", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var user = await models.User.findOne({ id: userId }).select("itemsOwned _id");
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      res.status(404);
+      res.send("Family not found.");
+      return;
+    }
+    if (family.leader.toString() !== user._id.toString()) {
+      errors.forbidden(res, "Only the family leader can upload a banner.");
+      return;
+    }
+    if (!familyOwnsPerk(family, "familyBanner")) {
+      errors.forbidden(
+        res,
+        "Your family must buy the Family Banner perk first."
+      );
+      return;
+    }
+
+    const canAnimate = familyOwnsPerk(family, "familyAnimatedBanner");
+    var form = new formidable();
+    form.maxFileSize = canAnimate ? 20 * 1024 * 1024 : 5 * 1024 * 1024;
+    form.maxFields = 1;
+
+    var [fields, files] = await form.parseAsync(req);
+    const file =
+      files.image && (Array.isArray(files.image) ? files.image[0] : files.image);
+    const filePath = file?.filepath || file?.path;
+    if (!filePath) {
+      errors.badRequest(res, "No image uploaded.");
+      return;
+    }
+
+    const uploadPath = process.env.UPLOAD_PATH;
+    if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath);
+
+    const buffer = fs.readFileSync(filePath);
+    const mime = (file.type || file.mimetype || "").toLowerCase();
+    let metadata;
+    try {
+      metadata = await sharp(buffer, { animated: true }).metadata();
+    } catch (metaErr) {
+      errors.badRequest(res, "Could not read banner image.");
+      return;
+    }
+
+    const pages = metadata.pages || 1;
+    const isAnimatedSource =
+      pages > 1 || mime === "image/gif" || metadata.format === "gif";
+    const keepAnimation = isAnimatedSource && canAnimate;
+
+    const frameW = metadata.width || 0;
+    const frameH = metadata.pageHeight || metadata.height || 0;
+    if (isAnimatedSource && (frameW > 1800 || frameH > 600)) {
+      errors.badRequest(
+        res,
+        "Banner frame dimensions must be at most 1800×600."
+      );
+      return;
+    }
+
+    let bannerExt = "webp";
+    let tempPath = null;
+    try {
+      if (keepAnimation) {
+        if (mime === "image/gif" || metadata.format === "gif") {
+          bannerExt = "gif";
+        } else if (mime === "image/webp" || metadata.format === "webp") {
+          bannerExt = "webp";
+        } else {
+          errors.badRequest(res, "Animated family banners must be GIF or WebP.");
+          return;
+        }
+        tempPath = `${uploadPath}/${familyId}_family_banner.${bannerExt}.tmp`;
+        fs.writeFileSync(tempPath, buffer);
+      } else {
+        bannerExt = "webp";
+        tempPath = `${uploadPath}/${familyId}_family_banner.webp.tmp`;
+        // Match profile banner export size (900×300, 3:1); CSS scales to panel width
+        await sharp(buffer, { animated: false, pages: 1 })
+          .webp({ quality: 100 })
+          .resize({
+            width: 900,
+            height: 300,
+            withoutEnlargement: true,
+            kernel: sharp.kernel.lanczos3,
+            fit: "cover",
+            position: "center",
+          })
+          .toFile(tempPath);
+      }
+
+      const finalPath = `${uploadPath}/${familyId}_family_banner.${bannerExt}`;
+      removeFamilyBannerFiles(familyId);
+      fs.renameSync(tempPath, finalPath);
+      tempPath = null;
+
+      await models.Family.updateOne(
+        { id: familyId },
+        { $set: { banner: true, bannerExt } }
+      );
+
+      res.sendStatus(200);
+    } finally {
+      if (tempPath) {
+        try {
+          if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+        } catch (e) {
+          /* ignore */
+        }
+      }
+    }
+  } catch (e) {
+    if (e.message && e.message.indexOf("maxFileSize exceeded") === 0) {
+      errors.payloadTooLarge(res, "Image is too large for family banner.");
+    } else {
+      logger.error(e);
+      errors.serverError(res, "Could not upload family banner. Please try again.");
+    }
+  }
+});
+
+router.delete("/:familyId/banner", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var user = await models.User.findOne({ id: userId }).select("_id");
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      res.status(404);
+      res.send("Family not found.");
+      return;
+    }
+    if (family.leader.toString() !== user._id.toString()) {
+      errors.forbidden(res, "Only the family leader can remove the banner.");
+      return;
+    }
+
+    removeFamilyBannerFiles(familyId);
+    await models.Family.updateOne(
+      { id: familyId },
+      { $set: { banner: false, bannerExt: "webp" } }
+    );
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not remove family banner. Please try again.");
   }
 });
 
@@ -229,7 +504,7 @@ router.get("/:familyId/profile", async function (req, res) {
       .populate("founder", "id name avatar vanityUrl")
       .populate("leader", "id name avatar vanityUrl")
       .populate("members", "id name avatar vanityUrl")
-      .select("id name avatar background backgroundRepeatMode applicationsOpen joinFee pendingJoinFees treasury perks bio founder leader members trophies createdAt");
+      .select("id name avatar banner bannerExt mediaUrl mediaAutoplay mediaCollapse background backgroundRepeatMode applicationsOpen joinFee pendingJoinFees treasury perks bio founder leader members trophies createdAt");
 
     if (!family) {
       res.status(404);
@@ -349,6 +624,12 @@ router.get("/:familyId/profile", async function (req, res) {
       id: family.id,
       name: family.name,
       avatar: family.avatar,
+      banner: family.banner || false,
+      bannerExt: family.bannerExt || "webp",
+      mediaUrl: family.mediaUrl || "",
+      mediaAutoplay: !!family.mediaAutoplay,
+      mediaCollapse: !!family.mediaCollapse,
+      hasMusicPlayer: familyOwnsPerk(family, "familyMusicPlayer"),
       background: family.background || false,
       backgroundRepeatMode: family.backgroundRepeatMode || "checker",
       applicationsOpen: family.applicationsOpen,
@@ -568,10 +849,7 @@ router.delete("/:familyId", async function (req, res) {
     await models.FamilyJoinRequest.deleteMany({ family: family._id });
 
     // Delete the family avatar if it exists
-    const avatarPath = `${process.env.UPLOAD_PATH}/${familyId}_family_avatar.webp`;
-    if (fs.existsSync(avatarPath)) {
-      fs.unlinkSync(avatarPath);
-    }
+    removeFamilyAvatarFiles(familyId);
 
     // Delete the family
     await models.Family.deleteOne({ id: familyId });
@@ -1015,7 +1293,44 @@ const FAMILY_PERKS = [
     description: "Adds a cosmetic trophy spotlight perk to the family profile.",
     cost: 75,
   },
+  {
+    key: "familyAnimatedAvatar",
+    name: "Animated Family Avatar",
+    description: "Animated family profile photo.",
+    details:
+      "Lets the family keep an animated profile picture. Without this perk, animated uploads are saved as a still frame. Max 25 MB. The family leader uploads in Settings → Family.",
+    cost: 100,
+  },
+  {
+    key: "familyBanner",
+    name: "Family Banner",
+    description: "Custom banner on the family page.",
+    details:
+      "Adds a wide banner above your family name on the family page. Uses the same proportions as profile banners and scales to the family panel width. The leader uploads and crops it in Settings → Family.",
+    cost: 100,
+  },
+  {
+    key: "familyAnimatedBanner",
+    name: "Animated Family Banner",
+    description: "Animated family banner.",
+    details:
+      "Lets the family banner stay animated. Requires the Family Banner perk first. Without this, animated banner uploads are frozen to a still frame. Max 20 MB.",
+    cost: 100,
+    requires: "familyBanner",
+  },
+  {
+    key: "familyMusicPlayer",
+    name: "Family Music Player",
+    description: "Music player on the family page.",
+    details:
+      "Adds a media player to the family page (YouTube, SoundCloud, Spotify, Vimeo, and direct audio/video links). The family leader sets the URL, autoplay, and collapse options in Settings → Family.",
+    cost: 100,
+  },
 ];
+
+function familyOwnsPerk(family, key) {
+  return Array.isArray(family?.perks) && family.perks.includes(key);
+}
 
 function escapeRegex(value) {
   return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -2221,6 +2536,14 @@ router.post("/:familyId/perks/:perkKey/buy", async function (req, res) {
       return;
     }
 
+    if (perk.requires && !(family.perks || []).includes(perk.requires)) {
+      res.status(400);
+      res.send(
+        `This perk requires "${perk.requires}" to be owned by the family first.`
+      );
+      return;
+    }
+
     var result = await models.Family.updateOne(
       {
         id: familyId,
@@ -2261,4 +2584,99 @@ router.post("/:familyId/perks/:perkKey/buy", async function (req, res) {
     res.status(500);
     res.send("Error buying family perk.");
   }
-});module.exports = router;
+});
+
+router.post("/:familyId/media", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = req.params.familyId;
+    var user = await models.User.findOne({ id: userId }).select("_id");
+    var family = await models.Family.findOne({ id: familyId });
+
+    if (!family) {
+      res.status(404);
+      res.send("Family not found.");
+      return;
+    }
+    if (family.leader.toString() !== user._id.toString()) {
+      errors.forbidden(res, "Only the family leader can set the music player.");
+      return;
+    }
+    if (!familyOwnsPerk(family, "familyMusicPlayer")) {
+      errors.forbidden(
+        res,
+        "Your family must buy the Family Music Player perk first."
+      );
+      return;
+    }
+
+    let value = String(req.body.link != null ? req.body.link : req.body.mediaUrl || "");
+    if (value.length > 200) {
+      errors.unprocessable(res, "URL is too long");
+      return;
+    }
+
+    // Mirror /api/user/youtube validation
+    const youtubeRegex =
+      /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
+    const soundcloudRegex =
+      /^https?:\/\/(www\.)?soundcloud\.com\/[^\/]+\/[^\/\?]+/;
+    const spotifyRegex =
+      /^https?:\/\/open\.spotify\.com\/(track|album|playlist|artist)\/[a-zA-Z0-9]+/;
+    const vimeoRegex = /^https?:\/\/(www\.)?vimeo\.com\/(\d+)/;
+    const invidiousRegex =
+      /^https?:\/\/(www\.)?(invidious\.io|yewtu\.be|invidious\.[a-z0-9.-]+)\/watch\?v=([a-zA-Z0-9_-]{11})/;
+    const directMediaMatches = value.match(
+      /^https?:\/\/.*?\.(ogg|mp3|mp4|webm)$/
+    );
+    const emptyMatches = value.match(/^$/g);
+    const matches = value.match(youtubeRegex);
+    const soundcloudMatches = value.match(soundcloudRegex);
+    const spotifyMatches = value.match(spotifyRegex);
+    const vimeoMatches = value.match(vimeoRegex);
+    const invidiousMatches = value.match(invidiousRegex);
+
+    if (matches && matches.length >= 7) {
+      const embedId = matches[7];
+      const embedIndex = value.indexOf(embedId);
+      value = value.substring(0, embedIndex + 11);
+    } else if (
+      !(
+        soundcloudMatches ||
+        spotifyMatches ||
+        vimeoMatches ||
+        invidiousMatches ||
+        directMediaMatches ||
+        emptyMatches
+      )
+    ) {
+      errors.badRequest(res, "Invalid media URL.");
+      return;
+    }
+
+    const update = { mediaUrl: value };
+    if (typeof req.body.autoplay === "boolean") {
+      update.mediaAutoplay = req.body.autoplay;
+    }
+    if (typeof req.body.collapse === "boolean") {
+      update.mediaCollapse = req.body.collapse;
+    }
+    // Also accept mediaAutoplay / mediaCollapse keys
+    if (typeof req.body.mediaAutoplay === "boolean") {
+      update.mediaAutoplay = req.body.mediaAutoplay;
+    }
+    if (typeof req.body.mediaCollapse === "boolean") {
+      update.mediaCollapse = req.body.mediaCollapse;
+    }
+
+    await models.Family.updateOne({ id: familyId }, { $set: update });
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not update family media. Please try again.");
+  }
+});
+
+
+module.exports = router;
+

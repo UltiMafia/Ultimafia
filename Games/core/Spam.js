@@ -1,7 +1,19 @@
 module.exports = class Spam {
+  /** speechPast entries may be a timestamp number or { at, content }. */
+  static entryTime(entry) {
+    if (entry == null) return 0;
+    if (typeof entry === "number") return entry;
+    return entry.at || 0;
+  }
+
+  static entryContent(entry) {
+    if (entry == null || typeof entry === "number") return null;
+    return entry.content != null ? entry.content : null;
+  }
+
   static prunePast(past, now = Date.now()) {
     for (let i = past.length - 1; i >= 0; i--) {
-      if ((now - past[i]) / 1000 > 20) {
+      if ((now - this.entryTime(past[i])) / 1000 > 20) {
         past.splice(i, 1);
       }
     }
@@ -12,7 +24,7 @@ module.exports = class Spam {
 
     let sum = 0;
     for (let i in past) {
-      sum += 1 / ((now - past[i] + 1) / 1000);
+      sum += 1 / ((now - this.entryTime(past[i]) + 1) / 1000);
     }
 
     return {
@@ -40,7 +52,7 @@ module.exports = class Spam {
       let count = 0;
 
       for (let i in past) {
-        const elapsed = checkTime - past[i];
+        const elapsed = checkTime - this.entryTime(past[i]);
         if (elapsed <= maxCooldownMs) {
           count += 1;
           sum += 1 / ((elapsed + 1) / 1000);
@@ -58,7 +70,7 @@ module.exports = class Spam {
   static getFixedCooldownRemainingMs(past, cooldownMs, now = Date.now()) {
     if (!cooldownMs || past.length === 0) return 0;
 
-    const elapsed = now - past[past.length - 1];
+    const elapsed = now - this.entryTime(past[past.length - 1]);
     return Math.max(0, cooldownMs - elapsed);
   }
 
@@ -78,9 +90,192 @@ module.exports = class Spam {
     return count;
   }
 
-  static getRankedCompetitiveMinIntervalMs(content, wpm, avgWordLength) {
+  /** Normalize for duplicate detection (trim + collapse whitespace). */
+  static normalizeSpeakContent(content) {
+    return String(content || "")
+      .trim()
+      .replace(/\s+/g, " ");
+  }
+
+  /**
+   * How many trailing speechPast entries match this content (consecutive).
+   * Uses entries still inside the prune window.
+   */
+  static getConsecutiveDuplicateCount(past, content, now = Date.now()) {
+    this.prunePast(past, now);
+    const norm = this.normalizeSpeakContent(content);
+    if (!norm) return 0;
+
+    let count = 0;
+    for (let i = past.length - 1; i >= 0; i--) {
+      const prev = this.entryContent(past[i]);
+      if (prev == null) break;
+      if (prev === norm) count += 1;
+      else break;
+    }
+    return count;
+  }
+
+  /**
+   * Block when the same content was already sent maxConsecutive times in a row.
+   * maxConsecutive = 2 → first and second OK, third blocked.
+   */
+  static isRepeatedContentSpam(
+    past,
+    content,
+    maxConsecutive = 2,
+    now = Date.now()
+  ) {
+    return (
+      this.getConsecutiveDuplicateCount(past, content, now) >= maxConsecutive
+    );
+  }
+
+  /** Dice coefficient on character bigrams (0–1). */
+  static diceCoefficient(a, b) {
+    if (!a || !b) return 0;
+    if (a === b) return 1;
+    if (a.length < 2 || b.length < 2) return 0;
+
+    const bigrams = new Map();
+    for (let i = 0; i < a.length - 1; i++) {
+      const bg = a.slice(i, i + 2);
+      bigrams.set(bg, (bigrams.get(bg) || 0) + 1);
+    }
+
+    let overlap = 0;
+    for (let i = 0; i < b.length - 1; i++) {
+      const bg = b.slice(i, i + 2);
+      const count = bigrams.get(bg) || 0;
+      if (count > 0) {
+        bigrams.set(bg, count - 1);
+        overlap += 1;
+      }
+    }
+
+    return (2 * overlap) / (a.length - 1 + (b.length - 1));
+  }
+
+  /**
+   * True if two messages look like the same paste with small edits / extensions.
+   * Also treats a substantial shared block (substring) as similar.
+   */
+  static isSimilarContent(
+    a,
+    b,
+    threshold = 0.8,
+    minLength = 12
+  ) {
+    const na = this.normalizeSpeakContent(a);
+    const nb = this.normalizeSpeakContent(b);
+    if (!na || !nb) return false;
+    if (na === nb) return true;
+    if (na.length < minLength || nb.length < minLength) return false;
+
+    const shorter = na.length <= nb.length ? na : nb;
+    const longer = na.length <= nb.length ? nb : na;
+
+    // Shared paste block: longer contains shorter (or large common chunk)
+    if (longer.includes(shorter) && shorter.length / longer.length >= 0.45) {
+      return true;
+    }
+
+    return this.diceCoefficient(na, nb) >= threshold;
+  }
+
+  /**
+   * Trailing consecutive past entries similar to `content`.
+   */
+  static getConsecutiveSimilarCount(
+    past,
+    content,
+    threshold = 0.8,
+    minLength = 12,
+    now = Date.now()
+  ) {
+    this.prunePast(past, now);
+    const norm = this.normalizeSpeakContent(content);
+    if (!norm || norm.length < minLength) return 0;
+
+    let count = 0;
+    for (let i = past.length - 1; i >= 0; i--) {
+      const prev = this.entryContent(past[i]);
+      if (prev == null) break;
+      if (this.isSimilarContent(prev, norm, threshold, minLength)) count += 1;
+      else break;
+    }
+    return count;
+  }
+
+  /**
+   * Near-duplicate paste spam: 3rd consecutive similar line blocked.
+   * Caller should only invoke when sending quickly or recently blocked.
+   */
+  static isRepeatedSimilarContentSpam(
+    past,
+    content,
+    maxConsecutive = 2,
+    threshold = 0.8,
+    minLength = 12,
+    now = Date.now()
+  ) {
+    return (
+      this.getConsecutiveSimilarCount(
+        past,
+        content,
+        threshold,
+        minLength,
+        now
+      ) >= maxConsecutive
+    );
+  }
+
+  /**
+   * Whether the similar-paste gate should run: rapid sends, or still inside
+   * the window after a prior duplicate/similar block.
+   */
+  static shouldCheckSimilarContent(
+    past,
+    lastBlockAt,
+    now = Date.now(),
+    quickWindowMs = 3500,
+    afterBlockWindowMs = 5000
+  ) {
+    if (lastBlockAt && now - lastBlockAt <= afterBlockWindowMs) {
+      return true;
+    }
+    if (past.length === 0) return false;
+    const lastAt = this.entryTime(past[past.length - 1]);
+    return lastAt > 0 && now - lastAt <= quickWindowMs;
+  }
+
+  /**
+   * Minimum time after the previous send before this content is allowed under
+   * the ranked/competitive typing gate.
+   *
+   * pasteGraceChars: non-ws chars that do not require typing time (prep/paste).
+   * maxIntervalMs: hard cap so a long line never demands 10–20s after a short one.
+   */
+  static getRankedCompetitiveMinIntervalMs(
+    content,
+    wpm,
+    avgWordLength,
+    options = {}
+  ) {
     const messageLen = this.getMessageCharCountExcludingWhitespace(content);
-    return ((messageLen / avgWordLength) / wpm) * 60 * 1000;
+    if (messageLen === 0 || !wpm || !avgWordLength) return 0;
+
+    const pasteGrace =
+      options.pasteGraceChars != null ? options.pasteGraceChars : 0;
+    const maxIntervalMs =
+      options.maxIntervalMs != null ? options.maxIntervalMs : Infinity;
+
+    // Only bill chars beyond the paste/prep grace toward the WPM clock.
+    const billableLen = Math.max(0, messageLen - pasteGrace);
+    if (billableLen === 0) return 0;
+
+    const rawMs = (billableLen / avgWordLength / wpm) * 60 * 1000;
+    return Math.min(rawMs, maxIntervalMs);
   }
 
   static getTypingSpeedCooldownRemainingMs(
@@ -88,17 +283,20 @@ module.exports = class Spam {
     content,
     wpm,
     avgWordLength,
-    now = Date.now()
+    now = Date.now(),
+    options = {}
   ) {
     if (past.length === 0) return 0;
 
     const minIntervalMs = this.getRankedCompetitiveMinIntervalMs(
       content,
       wpm,
-      avgWordLength
+      avgWordLength,
+      options
     );
-    const elapsed = now - past[past.length - 1];
+    if (minIntervalMs <= 0) return 0;
 
+    const elapsed = now - this.entryTime(past[past.length - 1]);
     return Math.max(0, minIntervalMs - elapsed);
   }
 
@@ -107,7 +305,8 @@ module.exports = class Spam {
     content,
     wpm,
     avgWordLength,
-    now = Date.now()
+    now = Date.now(),
+    options = {}
   ) {
     return (
       this.getTypingSpeedCooldownRemainingMs(
@@ -115,7 +314,8 @@ module.exports = class Spam {
         content,
         wpm,
         avgWordLength,
-        now
+        now,
+        options
       ) > 0
     );
   }

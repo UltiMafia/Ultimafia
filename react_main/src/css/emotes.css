@@ -1,5 +1,6 @@
 :root {
   --emote-size: 21px;
+  --sticker-size: 96px;
 }
 
 .emote {
@@ -11,6 +12,24 @@
 
   width: var(--emote-size);
   height: var(--emote-size);
+
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.sticker {
+  position: relative;
+  z-index: 1;
+
+  display: inline-block;
+  line-height: 1;
+  vertical-align: middle;
+
+  width: var(--sticker-size);
+  height: var(--sticker-size);
+  max-width: 128px;
+  max-height: 128px;
 
   background-size: contain;
   background-repeat: no-repeat;

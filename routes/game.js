@@ -6,9 +6,6 @@ const utils = require("../lib/Utils");
 const redis = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
-const {
-  syncRankedCompetitiveAccess,
-} = require("../modules/userEligibility");
 const router = express.Router();
 const axios = require("axios");
 const errors = require("../lib/errors");
@@ -54,12 +51,8 @@ async function enrichReviewUser(user) {
   };
 }
 
-async function userCanPlayCompetitive(userId, minimumPoints = constants.minimumPointsForCompetitive) {
+async function userCanPlayCompetitive(userId) {
   const user = await redis.getUserInfo(userId);
-
-  if (!user || user.points < minimumPoints) {
-    return `You cannot play competitive games until you've earned ${minimumPoints} fortune.`;
-  }
 
   if (!user || user.goldHearts <= 0) {
     return "You cannot play competitive games because your Gold Hearts are depleted.";
@@ -341,25 +334,7 @@ router.get("/:id/connect", async function (req, res) {
     if (!userInThisGame) {
       // Ranked checks
       if (userId && game.settings.ranked && !isSpectating) {
-        await syncRankedCompetitiveAccess(userId);
         const user = await redis.getUserInfo(userId);
-        const hasPlayRanked = await routeUtils.verifyPermission(
-          userId,
-          "playRanked"
-        );
-        const minGamesForRanked = await redis.getMinimumGamesForRanked();
-
-        // Approved ranked players bypass min-games check (e.g. returning users after long inactivity)
-        if (
-          !hasPlayRanked &&
-          (!user || user.gamesPlayed < minGamesForRanked)
-        ) {
-          res.status(400);
-          res.send(
-            `You cannot play ranked games until you've played ${minGamesForRanked} games.`
-          );
-          return;
-        }
 
         if (!user || user.redHearts <= 0) {
           res.status(400);
@@ -372,10 +347,7 @@ router.get("/:id/connect", async function (req, res) {
 
       // Competitive checks
       if (userId && game.settings.competitive && !isSpectating) {
-        const roundInfo = await redis.getCompRoundInfo();
-        const minimumPoints = roundInfo?.round?.minimumPoints ?? constants.minimumPointsForCompetitive;
-        await syncRankedCompetitiveAccess(userId, { minimumPoints });
-        const failureReason = await userCanPlayCompetitive(userId, minimumPoints);
+        const failureReason = await userCanPlayCompetitive(userId);
         if (failureReason) {
           res.status(400);
           res.send(failureReason);
@@ -603,7 +575,6 @@ router.get("/:id/info", async function (req, res) {
       delete game.gameTypeOptions;
     } else {
       delete game.port;
-      delete game.status;
     }
 
     res.send(game);
@@ -783,13 +754,6 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    if (req.body.ranked || req.body.competitive) {
-      await syncRankedCompetitiveAccess(userId, {
-        minimumPoints:
-          roundInfo?.round?.minimumPoints ?? constants.minimumPointsForCompetitive,
-      });
-    }
-
     if (
       req.body.ranked &&
       !(await routeUtils.verifyPermission(userId, "playRanked"))
@@ -814,24 +778,6 @@ router.post("/host", async function (req, res) {
 
     const user = await redis.getUserInfo(userId);
     if (req.body.ranked) {
-      const hasPlayRanked = await routeUtils.verifyPermission(
-        userId,
-        "playRanked"
-      );
-      const minGamesForRanked = await redis.getMinimumGamesForRanked();
-      // Approved ranked players bypass min-games check (e.g. returning users after migrations)
-      if (
-        !hasPlayRanked &&
-        user &&
-        user.gamesPlayed < minGamesForRanked
-      ) {
-        res.status(400);
-        res.send(
-          `You cannot play ranked games until you've played ${minGamesForRanked} games.`
-        );
-        return;
-      }
-
       if (user && user.redHearts <= 0) {
         res.status(400);
         res.send(
@@ -842,8 +788,7 @@ router.post("/host", async function (req, res) {
     }
 
     if (userId && req.body.competitive) {
-      const minimumPoints = roundInfo?.round?.minimumPoints ?? constants.minimumPointsForCompetitive;
-      const failureReason = await userCanPlayCompetitive(userId, minimumPoints);
+      const failureReason = await userCanPlayCompetitive(userId);
       if (failureReason) {
         res.status(400);
         res.send(failureReason);

@@ -39,6 +39,7 @@ import { useErrorAlert } from "../../components/Alerts";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { UserContext, SiteInfoContext } from "../../Contexts";
 import { Avatar } from "../User/User";
+import { FamilyAvatarImage } from "utils/avatarUrl";
 import { resolveDisplayNameColor } from "../../utils/accessibleNameColors";
 import { Loading } from "../../components/Loading";
 import TradeDialog from "../../components/TradeDialog";
@@ -52,16 +53,11 @@ function StockAvatar({ targetType, id, name, avatar, siteInfo }) {
 
   if (avatar) {
     return (
-      <Box
-        sx={{
-          width: 40,
-          height: 40,
-          borderRadius: "50%",
-          backgroundImage: `url(/uploads/${id}_family_avatar.webp?t=${siteInfo?.cacheVal})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          border: "1px solid rgba(255, 255, 255, 0.12)",
-        }}
+      <FamilyAvatarImage
+        id={id}
+        size={40}
+        cacheVal={siteInfo?.cacheVal}
+        extraStyle={{ border: "1px solid rgba(255, 255, 255, 0.12)" }}
       />
     );
   }

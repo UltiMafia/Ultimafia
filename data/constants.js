@@ -337,9 +337,40 @@ module.exports = {
   maxWordDeckDescriptionLength: 120,
   maxOwnedCustomEmotes: 10,
   maxOwnedCustomEmotesExtra: 10,
+  maxOwnedCustomStickers: 5,
+  maxCustomStickerFileSizeBytes: 10 * 1024 * 1024, // 10 MB
+  maxCustomStickerDimension: 512, // max width or height in pixels
+  maxCustomStickerNameLength: 25,
+  // Custom death sound: max final duration; source upload may be larger then trimmed client-side
+  maxDeathSoundSeconds: 5,
+  maxDeathSoundBytes: 10 * 1024 * 1024,
+  deathSoundAllowedExts: ["mp3", "ogg", "wav", "webm"],
   maxArchivedGamesMax: 10,
   maxDeckNameLength: 25, // maxSetupNameLength
   maxCustomEmoteNameLength: 25,
+  // In-game name cosmetics (player list + chat nameplates; not message body text)
+  nameFontOptions: [
+    "default",
+    "slab",
+    "mono",
+    "poppins",
+    "georgia",
+    "trebuchet",
+    "verdana",
+    "bettynoir",
+    "autophobia",
+    "spooky",
+    "nabla",
+  ],
+  animatedNameColorOptions: [
+    "none",
+    "pulse",
+    "glow",
+    "rainbow",
+    "patriotic",
+    "gradient",
+    "tricolor",
+  ],
   minDeckSize: 5, // minMafiaSetupTotal
   maxDeckSize: 50, // maxPlayers
   maxNameLengthInDeck: 20, // maxUserNameLength
@@ -356,10 +387,23 @@ module.exports = {
 
   msgSpamSumLimit: 15,
   msgSpamRateLimit: 10,
+  // Same line may be sent twice in a row; the 3rd consecutive identical paste is blocked.
+  msgDuplicateMaxConsecutive: 2,
+  msgDuplicateCooldownMs: 3 * 1000,
+  // Near-duplicate (similar) paste spam — only when sending quickly or recently blocked.
+  msgSimilarThreshold: 0.8,
+  msgSimilarMinLength: 12,
+  msgSimilarQuickWindowMs: 3500,
+  msgSimilarAfterBlockWindowMs: 5000,
   voteSpamSumLimit: 15,
   voteSpamRateLimit: 10,
   rankedCompetitiveTypingWpm: 130,
   rankedCompetitiveAvgWordLength: 3.9914985005289525,
+  // Free non-whitespace chars after the last send (prep/paste is normal in game).
+  // Without this, a short line then a long paste looks like impossible WPM.
+  rankedCompetitiveTypingPasteGraceChars: 180,
+  // Never gate solely on typing speed for longer than this after the last send.
+  rankedCompetitiveTypingMaxIntervalMs: 2500,
   rankedCompetitiveQuoteCooldownMs: 2 * 1000,
 
   maxUserNameLength: 20,
@@ -439,9 +483,6 @@ module.exports = {
   // Penalties reset in level after 3 days
   leavePenaltyDurationMillis: 259200000,
 
-  minimumGamesForRanked: 5,
-  minimumPointsForCompetitive: 150,
-
   defaultSkillRatingMu: 750,
   defaultSkillRatingSigma: 250,
 
@@ -453,6 +494,8 @@ module.exports = {
   defaultPerms: [
     "signIn",
     "playGame",
+    "playRanked",
+    "playCompetitive",
     "createThread",
     "postReply",
     "vote",
@@ -553,7 +596,6 @@ module.exports = {
     editAnyDeck: true,
     createPoll: true,
     manageCompetitive: true,
-    adjustMinGames: true,
     awardTrophy: true,
     awardStamp: true,
     deleteStrategy: true,

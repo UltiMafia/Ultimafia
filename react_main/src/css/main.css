@@ -638,6 +638,18 @@ input:focus:not(:focus-visible) {
   src: url("/src/fonts/RobotoMono-VariableFont_wght.ttf");
 }
 
+@font-face {
+  font-family: Poppins;
+  src: url("/src/fonts/poppins_extrabold.ttf");
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: BettyNoir;
+  src: url("/src/fonts/bettynoir.ttf");
+}
+
 @keyframes glowing {
   0% {
     background-position: 0 0;

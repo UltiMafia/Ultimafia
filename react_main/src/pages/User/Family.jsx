@@ -17,10 +17,11 @@ import {
 } from "@mui/material";
 
 import { UserContext, SiteInfoContext } from "Contexts";
+import { FamilyAvatarImage } from "utils/avatarUrl";
 import { useErrorAlert } from "components/Alerts";
 import { filterProfanity } from "components/Basic";
 import { TextEditor } from "components/Form";
-import { Avatar, NameWithAvatar } from "./User";
+import { Avatar, NameWithAvatar, MediaEmbed } from "./User";
 import Comments from "../Community/Comments";
 import { Loading } from "components/Loading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
@@ -58,9 +59,9 @@ export default function Family() {
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
 
-  function loadFamilyProfile() {
+  function loadFamilyProfile(signal) {
     axios
-      .get(`/api/family/${familyId}/profile`)
+      .get(`/api/family/${familyId}/profile`, signal ? { signal } : undefined)
       .then((res) => {
         setFamily(res.data);
         setBio(res.data.bio || "");
@@ -68,6 +69,13 @@ export default function Family() {
         document.title = `${res.data.name} | UltiMafia`;
       })
       .catch((e) => {
+        if (
+          e.code === "ERR_CANCELED" ||
+          e.name === "CanceledError" ||
+          e.name === "AbortError"
+        ) {
+          return;
+        }
         errorAlert(e);
         setFamilyLoaded(true);
       });
@@ -81,12 +89,16 @@ export default function Family() {
   useEffect(() => {
     if (familyId) {
       setFamilyLoaded(false);
-      loadFamilyProfile();
+      setFamily(null);
+      const controller = new AbortController();
+      loadFamilyProfile(controller.signal);
 
       // Check for pending invite
       if (user.loggedIn) {
         axios
-          .get(`/api/family/${familyId}/pendingInvite`)
+          .get(`/api/family/${familyId}/pendingInvite`, {
+            signal: controller.signal,
+          })
           .then((res) => {
             if (res.data.hasPendingInvite) {
               setPendingInvite(res.data.family);
@@ -96,6 +108,8 @@ export default function Family() {
             // Ignore errors
           });
       }
+
+      return () => controller.abort();
     }
   }, [familyId]);
 
@@ -336,23 +350,42 @@ export default function Family() {
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
           <Stack direction="column" spacing={1}>
-            <Paper sx={panelStyle}>
+            <Paper sx={panelStyle} className="family-profile-panel">
+              {family.banner && (
+                <div className="family-banner">
+                  <img
+                    className="family-banner-media"
+                    src={`/uploads/${family.id}_family_banner.${
+                      ["webp", "gif", "png", "jpg", "jpeg"].includes(
+                        family.bannerExt
+                      )
+                        ? family.bannerExt
+                        : "webp"
+                    }?t=${siteInfo.cacheVal}`}
+                    alt=""
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                </div>
+              )}
               <Stack
                 direction="row"
                 spacing={2}
                 alignItems="center"
-                sx={{ mb: 2 }}
+                sx={{
+                  mb: 2,
+                  mt: family.banner ? 1.5 : 0,
+                }}
               >
                 {family.avatar && (
-                  <div
-                    style={{
-                      width: "100px",
-                      height: "100px",
-                      borderRadius: "50%",
-                      backgroundImage: `url(/uploads/${family.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
+                  <FamilyAvatarImage
+                    id={family.id}
+                    size={100}
+                    cacheVal={siteInfo.cacheVal}
                   />
                 )}
                 <Box>
@@ -487,6 +520,18 @@ export default function Family() {
               </Paper>
             )}
             
+            {family.hasMusicPlayer && family.mediaUrl && (
+              <Paper sx={panelStyle}>
+                <MediaEmbed
+                  key={`${familyId}:${family.mediaUrl}`}
+                  mediaUrl={family.mediaUrl}
+                  autoplay={!!family.mediaAutoplay}
+                  collapsible
+                  collapsed={!!family.mediaCollapse}
+                />
+              </Paper>
+            )}
+
             <Paper sx={panelStyle}>
               <Typography variant="h3" sx={headingStyle}>
                 Members

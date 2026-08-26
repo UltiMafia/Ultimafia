@@ -606,6 +606,8 @@ export function useModCommands(argValues, commandRan, setResults) {
             { value: "avatar", label: "Avatar" },
             { value: "bio", label: "Bio" },
             { value: "customEmotes", label: "Custom Emotes" },
+            { value: "customStickers", label: "Custom Stickers" },
+            { value: "deathSound", label: "Death Sound" },
             { value: "name", label: "Name" },
             { value: "vanityUrl", label: "Vanity URL" },
             { value: "video", label: "Video" },
@@ -1011,45 +1013,6 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Toggle Auto-Approval": {
-      perm: "adjustMinGames",
-      category: "Site Management",
-      args: [],
-      run: function () {
-        axios
-          .post("/api/mod/autoApproval")
-          .then((res) => {
-            const status = res.data.autoApprovalEnabled ? "enabled" : "disabled";
-            siteInfo.showAlert(
-              `Legacy auto-approval flag is now ${status}. Ranked and Competitive access is granted when users meet the configured requirements.`,
-              "success"
-            );
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Sync Competitive Approvals": {
-      perm: "adjustMinGames",
-      category: "Site Management",
-      args: [],
-      run: function () {
-        axios
-          .post("/api/mod/syncCompetitiveApprovals")
-          .then((res) => {
-            const rankedCount = res.data.rankedGranted || 0;
-            const competitiveCount = res.data.competitiveGranted || 0;
-            siteInfo.showAlert(
-              rankedCount > 0 || competitiveCount > 0
-                ? `Granted Ranked Player to ${rankedCount} user(s) and Competitive Player to ${competitiveCount} user(s).`
-                : "No users needed restoration; all qualifying users already have the right access.",
-              "success"
-            );
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
     "Toggle Ranked Setup": {
       perm: "approveRanked",
       category: "Setup Management",
@@ -1392,26 +1355,6 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Refund Competitive Game": {
-      perm: "manageCompetitive",
-      category: "Competitive Management",
-      args: [
-        {
-          label: "Game ID",
-          name: "gameId",
-          type: "text",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/competitive/refund", argValues)
-          .then((res) => {
-            siteInfo.showAlert("Game refunded.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
     "Disqualify User": {
       perm: "manageCompetitive",
       category: "Competitive Management",
@@ -1569,6 +1512,29 @@ export function useModCommands(argValues, commandRan, setResults) {
           .post("/api/mod/clearFamilyContent", argValues)
           .then(() => {
             siteInfo.showAlert("Family content cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Refund Game": {
+      perm: "refundGame",
+      category: "Game Management",
+      args: [
+        {
+          label: "Game ID",
+          name: "gameId",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/refundGame", argValues)
+          .then((res) => {
+            siteInfo.showAlert(
+              typeof res.data === "string" ? res.data : "Game refunded.",
+              "success"
+            );
             commandRan();
           })
           .catch(errorAlert);

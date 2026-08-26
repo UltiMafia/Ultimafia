@@ -386,6 +386,89 @@ function filterStatRows(rows, filter) {
   return rows.filter((r) => r && r[1] === filter);
 }
 
+/** Aggregate fixed-size setupStats.*Agg maps into UI winrate rows. */
+function aggregateWinAgg(agg, filter) {
+  const byKey = {};
+  if (!agg || typeof agg !== "object") return [];
+  for (const [key, byType] of Object.entries(agg)) {
+    if (!byType || typeof byType !== "object") continue;
+    for (const [gameType, stats] of Object.entries(byType)) {
+      if (filter !== "all" && gameType !== filter) continue;
+      if (!stats || typeof stats !== "object") continue;
+      if (!byKey[key]) byKey[key] = { wins: 0, total: 0 };
+      byKey[key].total += Number(stats.games) || 0;
+      byKey[key].wins += Number(stats.wins) || 0;
+    }
+  }
+  return Object.keys(byKey)
+    .map((key) => ({
+      key,
+      winRate: byKey[key].total ? byKey[key].wins / byKey[key].total : 0,
+      totalGames: byKey[key].total,
+    }))
+    .sort((a, b) => b.winRate - a.winRate || a.key.localeCompare(b.key));
+}
+
+function averageLengthAgg(lengthAgg, filter) {
+  if (!lengthAgg || typeof lengthAgg !== "object") return null;
+  let sum = 0;
+  let n = 0;
+  for (const [gameType, stats] of Object.entries(lengthAgg)) {
+    if (filter !== "all" && gameType !== filter) continue;
+    if (!stats || typeof stats !== "object") continue;
+    sum += Number(stats.sumMs) || 0;
+    n += Number(stats.count) || 0;
+  }
+  if (!n) return null;
+  return sum / n;
+}
+
+function mergeWinrateLists(a, b) {
+  const byKey = {};
+  for (const list of [a || [], b || []]) {
+    for (const row of list) {
+      if (!row || row.key == null) continue;
+      if (!byKey[row.key]) byKey[row.key] = { wins: 0, total: 0 };
+      const total = Number(row.totalGames) || 0;
+      const winRate = Number(row.winRate) || 0;
+      byKey[row.key].total += total;
+      byKey[row.key].wins += winRate * total;
+    }
+  }
+  return Object.keys(byKey)
+    .map((key) => ({
+      key,
+      winRate: byKey[key].total ? byKey[key].wins / byKey[key].total : 0,
+      totalGames: byKey[key].total,
+    }))
+    .sort((x, y) => y.winRate - x.winRate || x.key.localeCompare(y.key));
+}
+
+function mergeAverageLength(avgAgg, avgRows, lengthAgg, lengthRows, filter) {
+  // Prefer computing from raw sources so both windows contribute by weight.
+  let sum = 0;
+  let n = 0;
+  if (lengthAgg && typeof lengthAgg === "object") {
+    for (const [gameType, stats] of Object.entries(lengthAgg)) {
+      if (filter !== "all" && gameType !== filter) continue;
+      if (!stats || typeof stats !== "object") continue;
+      sum += Number(stats.sumMs) || 0;
+      n += Number(stats.count) || 0;
+    }
+  }
+  if (Array.isArray(lengthRows)) {
+    for (const row of lengthRows) {
+      if (!Array.isArray(row) || row.length < 2) continue;
+      if (filter !== "all" && row[0] !== filter) continue;
+      sum += Number(row[1]) || 0;
+      n += 1;
+    }
+  }
+  if (n > 0) return sum / n;
+  if (avgAgg != null) return avgAgg;
+  return avgRows;
+}
+
 function aggregateWinRows(rows, filter) {
   const filtered = filterStatRows(rows, filter);
   const byKey = {};
@@ -431,20 +514,38 @@ function calculateStatsWithGranular(setupVersion, gameType) {
   const alignmentRows = ss.alignmentRows || [];
   const roleRows = ss.roleRows || [];
   const lengthRows = ss.gameLengthRows || [];
+  const alignmentAgg = ss.alignmentAgg || {};
+  const roleAgg = ss.roleAgg || {};
+  const lengthAgg = ss.lengthAgg || {};
   const totalVegs = ss.totalVegs != null ? ss.totalVegs : 0;
+  // Prefer fixed-size aggregates (new); fall back to legacy unbounded rows.
+  const hasAgg =
+    Object.keys(alignmentAgg).length > 0 || Object.keys(roleAgg).length > 0;
   // lengthRows is metadata, not win/loss data — excluding it lets legacy
   // setups (alignmentRows empty, lengthRows populated) fall back to the pie.
   const hasGranular =
-    alignmentRows.length > 0 ||
-    roleRows.length > 0;
+    hasAgg || alignmentRows.length > 0 || roleRows.length > 0;
 
   const filters = ["all", "unranked", "ranked", "competitive"];
   const granular = {};
   for (const f of filters) {
+    // Merge agg + legacy rows during transition (sum games/wins by key).
     granular[f] = {
-      alignment: aggregateWinRows(alignmentRows, f),
-      role: aggregateWinRows(roleRows, f),
-      averageLengthMs: averageLengthRows(lengthRows, f),
+      alignment: mergeWinrateLists(
+        aggregateWinAgg(alignmentAgg, f),
+        aggregateWinRows(alignmentRows, f)
+      ),
+      role: mergeWinrateLists(
+        aggregateWinAgg(roleAgg, f),
+        aggregateWinRows(roleRows, f)
+      ),
+      averageLengthMs: mergeAverageLength(
+        averageLengthAgg(lengthAgg, f),
+        averageLengthRows(lengthRows, f),
+        lengthAgg,
+        lengthRows,
+        f
+      ),
       totalVegs,
     };
   }
@@ -906,7 +1007,10 @@ router.post("/create", async function (req, res) {
     //setup.PublicShare = Boolean(setup.PublicShare);
     setup.EventsPerNight = Number(setup.EventsPerNight || 0);
     setup.noDeathLimit = Number(setup.noDeathLimit || 6);
-    setup.ForceMustAct = Boolean(setup.ForceMustAct);
+    setup.ForceMustAct =
+      setup.ForceMustAct === undefined || setup.ForceMustAct === null
+        ? true
+        : Boolean(setup.ForceMustAct);
     setup.GameEndEvent = String(setup.GameEndEvent || "Meteor");
     //setup.AllExcessRoles = Boolean(setup.AllExcessRoles);
     //setup.HostileVsMafia = Boolean(setup.HostileVsMafia);

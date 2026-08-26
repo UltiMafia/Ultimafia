@@ -47,7 +47,6 @@ export default function LobbyBrowser() {
   const [openGamesCounts, setOpenGamesCounts] = useState({});
   const [refreshButtonIsSpinning, setRefreshButtonIsSpinning] = useState(false);
   const refreshTimeoutRef = useRef(null);
-  const [hasOneOpenUrankedGame, setHasOneOpenUrankedGame] = useState(false);
   const [hasOneOpenGame, setHasOneOpenGame] = useState(false);
   const [listType, setListType] = useState("All");
   const [page, setPage] = useState(1);
@@ -64,9 +63,7 @@ export default function LobbyBrowser() {
     params.get("lobby") || localStorage.getItem("lobby") || defaultLobbyName
   );
 
-  const glowingHostButton = user.canPlayRanked
-    ? !hasOneOpenGame
-    : !hasOneOpenUrankedGame;
+  const glowingHostButton = !hasOneOpenGame;
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -91,7 +88,6 @@ export default function LobbyBrowser() {
 
   useEffect(() => {
     setHasOneOpenGame(false);
-    setHasOneOpenUrankedGame(false);
     getGameList(listType, page);
     getOpenGameCounts();
   }, [lobbyName]);
@@ -102,7 +98,6 @@ export default function LobbyBrowser() {
 
       setOpenGamesCounts(data?.counts || {});
       setHasOneOpenGame(Boolean(data?.hasOpen));
-      setHasOneOpenUrankedGame(Boolean(data?.hasOpenUnranked));
     });
   }, []);
 

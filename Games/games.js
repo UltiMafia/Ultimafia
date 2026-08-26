@@ -101,19 +101,25 @@ var deprecated = false;
             const maxOwnedCustomEmotes =
               constants.maxOwnedCustomEmotes +
               constants.maxOwnedCustomEmotesExtra;
+            const maxOwnedCustomStickers = constants.maxOwnedCustomStickers;
 
             user = await models.User.findOne({
               id: userId,
               deleted: false,
             })
               .select(
-                "id name avatar settings customEmotes dev itemsOwned rankedCount competitiveCount stats achievements playedGame birthday referrer dailyChallenges dailyChallengesCompleted"
+                "id name avatar deathSound deathSoundExt settings customEmotes customStickers dev itemsOwned rankedCount competitiveCount stats achievements playedGame birthday referrer dailyChallenges dailyChallengesCompleted"
               )
               .populate([
                 {
                   path: "customEmotes",
                   select: "id extension name -_id",
                   options: { limit: maxOwnedCustomEmotes },
+                },
+                {
+                  path: "customStickers",
+                  select: "id extension name -_id",
+                  options: { limit: maxOwnedCustomStickers },
                 },
               ]);
 
@@ -132,6 +138,7 @@ var deprecated = false;
             user.socket = socket;
             user.settings = user.settings || {};
             utils.remapCustomEmotes(user, userId);
+            utils.remapCustomStickers(user, userId);
 
             // Load vanity URL
             const vanityUrl = await models.VanityUrl.findOne({

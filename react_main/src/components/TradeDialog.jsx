@@ -18,6 +18,7 @@ import {
 import { UserContext, SiteInfoContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { Avatar } from "pages/User/User"; // Reuse existing custom Avatar component
+import { FamilyAvatarImage } from "utils/avatarUrl";
 import { Icon } from "@iconify/react";
 
 export default function TradeDialog({ open, onClose, stock, initialType = "buy", onSuccess }) {
@@ -120,6 +121,14 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
           {stock.targetType === "player" ? (
             <Avatar id={stock.id} name={stock.name} hasImage={stock.avatar} size={40} />
           ) : (
+            stock.avatar ? (
+              <FamilyAvatarImage
+                id={stock.id}
+                size={40}
+                cacheVal={siteInfo?.cacheVal}
+                extraStyle={{ border: "1px solid rgba(255, 255, 255, 0.12)" }}
+              />
+            ) : (
             <Box
               sx={{
                 width: 40,
@@ -129,17 +138,12 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                ...(stock.avatar ? {
-                  backgroundImage: `url(/uploads/${stock.id}_family_avatar.webp?t=${siteInfo?.cacheVal})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                } : {
-                  backgroundColor: "rgba(255, 255, 255, 0.05)",
-                }),
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
               }}
             >
-              {!stock.avatar && <Icon icon="lucide:users" style={{ fontSize: "20px" }} />}
+              <Icon icon="lucide:users" style={{ fontSize: "20px" }} />
             </Box>
+            )
           )}
           <Box>
             <Typography sx={{ fontWeight: "bold", fontSize: "0.875rem", lineHeight: 1.2 }}>

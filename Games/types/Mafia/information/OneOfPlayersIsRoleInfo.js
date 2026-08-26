@@ -89,10 +89,10 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
   getInfoFormated() {
     super.getInfoRaw();
     if (this.mainInfo == "None") {
-      return `You couldn't find anyone to do the laundry of!`;
+      return `You couldn't find any laundry to do!`;
     }
     this.target = Random.randomizeArray(this.target);
-    return `You did ${this.target[0].name} and ${this.target[1].name} laundry... one of them wears the clothes of a ${this.mainInfo}!`;
+    return `Last night's laundry contained ${this.mainInfo} clothes, which belonged to ${this.target[0].name} or ${this.target[1].name}!`;
     //return `You Learn that your Target's Role is ${this.mainInfo}`
   }
 

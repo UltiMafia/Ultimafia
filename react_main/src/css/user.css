@@ -4,6 +4,7 @@
 
 .avatar {
   flex-shrink: 0;
+  position: relative;
 
   box-sizing: border-box;
 
@@ -13,6 +14,16 @@
   background-image: url("/src/images/avatar.webp");
   background-size: 100%;
   background-color: var(--scheme-color);
+}
+
+img.avatar-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  pointer-events: none;
 }
 
 /*SANTA CHANGES: In December, uncomment the below lines*/
@@ -67,11 +78,13 @@ iframe {
   border-width: 0px;
 }
 
-.avatar .edit {
+.avatar .edit,
+.avatar .avatar-edit-overlay {
   display: none;
   flex-flow: row;
   align-items: center;
   justify-content: center;
+  gap: 6px;
 
   /*SANTA CHANGES: In December, comment the below lines*/
   width: 100%;
@@ -87,12 +100,36 @@ iframe {
   border-radius: inherit;
 
   background-color: black;
-  opacity: 0.45;
+  opacity: 0.55;
   cursor: pointer;
 }
 
-.avatar:hover .edit {
+.avatar:hover .edit,
+.avatar:hover .avatar-edit-overlay {
   display: flex;
+}
+
+.avatar .avatar-edit-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.95rem;
+}
+
+.avatar .avatar-edit-action:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.avatar .avatar-remove:hover {
+  background: rgba(220, 50, 50, 0.85);
 }
 
 .in-love {
@@ -175,34 +212,72 @@ iframe {
 .profile .banner {
   aspect-ratio: 3;
   height: auto;
+  position: relative;
+  overflow: hidden;
 }
 
-.profile .banner .edit {
+.profile .banner .banner-media {
+  pointer-events: none;
+  z-index: 0;
+}
+
+.profile .banner .edit,
+.profile .banner .banner-edit-overlay {
   display: none;
   flex-flow: row;
   align-items: center;
   justify-content: center;
-  position: relative;
+  gap: 10px;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
 
   width: 100%;
   height: 100%;
 
   background-color: black;
-  opacity: 0.45;
+  opacity: 0.5;
   cursor: pointer;
 }
 
-.profile .banner:hover .edit {
+.profile .banner:hover .edit,
+.profile .banner:hover .banner-edit-overlay {
   display: flex;
 }
 
-.profile .banner.no-banner .edit {
+.profile .banner.no-banner .edit,
+.profile .banner.no-banner .banner-edit-overlay {
   display: flex;
   opacity: 0.15;
+  position: relative;
 }
 
-.profile .banner.no-banner:hover .edit {
+.profile .banner.no-banner:hover .edit,
+.profile .banner.no-banner:hover .banner-edit-overlay {
   opacity: 0.45;
+}
+
+.profile .banner .banner-edit-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  cursor: pointer;
+  padding: 0;
+  font-size: 1.1rem;
+}
+
+.profile .banner .banner-edit-action:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.profile .banner .banner-remove:hover {
+  background: rgba(220, 50, 50, 0.9);
 }
 
 .profile .banner .clear-banner {
@@ -220,6 +295,199 @@ iframe {
 
 .profile .banner .clear-banner:hover {
   background-color: rgba(200, 0, 0, 0.8);
+}
+
+/* In-game player-list name cosmetics */
+.user-name .user-name-text {
+  color: inherit;
+  font-family: inherit;
+  font-weight: inherit;
+  display: inline-block;
+}
+
+.user-name.name-font-slab,
+.user-name.name-font-slab .user-name-text {
+  font-family: RobotoSlab, Georgia, serif !important;
+}
+.user-name.name-font-mono,
+.user-name.name-font-mono .user-name-text {
+  font-family: RobotoMono, Consolas, monospace !important;
+}
+.user-name.name-font-poppins,
+.user-name.name-font-poppins .user-name-text {
+  font-family: Poppins, "Segoe UI", sans-serif !important;
+}
+.user-name.name-font-georgia,
+.user-name.name-font-georgia .user-name-text {
+  font-family: Georgia, "Times New Roman", serif !important;
+}
+.user-name.name-font-trebuchet,
+.user-name.name-font-trebuchet .user-name-text {
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif !important;
+}
+.user-name.name-font-verdana,
+.user-name.name-font-verdana .user-name-text {
+  font-family: Verdana, Geneva, sans-serif !important;
+}
+.user-name.name-font-bettynoir,
+.user-name.name-font-bettynoir .user-name-text {
+  font-family: BettyNoir, Georgia, serif !important;
+}
+.user-name.name-font-autophobia,
+.user-name.name-font-autophobia .user-name-text {
+  font-family: Autophobia, cursive !important;
+}
+.user-name.name-font-spooky,
+.user-name.name-font-spooky .user-name-text {
+  font-family: Spooky, cursive !important;
+}
+.user-name.name-font-nabla,
+.user-name.name-font-nabla .user-name-text {
+  font-family: Nabla, fantasy !important;
+}
+
+/* Pulse: animate the text node so it is clearly visible.
+ * .name-color-preview is used in Settings dropdown option previews. */
+.user-name.name-anim-pulse .user-name-text,
+.name-color-preview.name-anim-pulse {
+  animation: name-color-pulse 1.1s ease-in-out infinite;
+  will-change: opacity, text-shadow, transform;
+}
+.user-name.name-anim-glow .user-name-text,
+.name-color-preview.name-anim-glow {
+  animation: name-color-glow 1.6s ease-in-out infinite;
+  will-change: text-shadow, filter;
+}
+
+/*
+ * Seamless looping gradients:
+ * background-size 200% + position 0%→100% shifts by exactly one element width.
+ * Each half of the gradient image (0–50% and 50–100%) is an identical period
+ * that starts and ends on the same color, so the wrap is continuous.
+ * Also applied to .name-color-preview for Settings dropdown live previews.
+ */
+.user-name.name-anim-rainbow .user-name-text,
+.user-name.name-anim-patriotic .user-name-text,
+.user-name.name-anim-gradient .user-name-text,
+.user-name.name-anim-tricolor .user-name-text,
+.name-color-preview.name-anim-rainbow,
+.name-color-preview.name-anim-patriotic,
+.name-color-preview.name-anim-gradient,
+.name-color-preview.name-anim-tricolor {
+  display: inline-block;
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
+  animation: name-color-shift 3s linear infinite;
+  will-change: background-position;
+}
+
+.user-name.name-anim-rainbow .user-name-text,
+.name-color-preview.name-anim-rainbow {
+  /* Period 0–50% ends on #ff0040; period 50–100% is the same spectrum again */
+  background-image: linear-gradient(
+    90deg,
+    #ff0040 0%,
+    #ff7a00 8.33%,
+    #ffd000 16.66%,
+    #3dff6a 25%,
+    #00c2ff 33.33%,
+    #7a5cff 41.66%,
+    #ff0040 50%,
+    #ff7a00 58.33%,
+    #ffd000 66.66%,
+    #3dff6a 75%,
+    #00c2ff 83.33%,
+    #7a5cff 91.66%,
+    #ff0040 100%
+  );
+}
+
+.user-name.name-anim-patriotic .user-name-text,
+.name-color-preview.name-anim-patriotic {
+  /* Red → white → blue → red, duplicated for a seamless loop */
+  background-image: linear-gradient(
+    90deg,
+    #b22234 0%,
+    #ffffff 16.66%,
+    #3c3b6e 33.33%,
+    #b22234 50%,
+    #ffffff 66.66%,
+    #3c3b6e 83.33%,
+    #b22234 100%
+  );
+}
+
+.user-name.name-anim-gradient .user-name-text,
+.name-color-preview.name-anim-gradient {
+  /* Period: A → B → A (0–50%), then A → B → A again (50–100%) */
+  background-image: linear-gradient(
+    90deg,
+    var(--name-grad-a, #ff0040) 0%,
+    var(--name-grad-b, #00c2ff) 25%,
+    var(--name-grad-a, #ff0040) 50%,
+    var(--name-grad-b, #00c2ff) 75%,
+    var(--name-grad-a, #ff0040) 100%
+  );
+}
+
+.user-name.name-anim-tricolor .user-name-text,
+.name-color-preview.name-anim-tricolor {
+  /* Period order 1→2→3→1 (0–50%), then the same period again (50–100%) for a seamless loop */
+  background-image: linear-gradient(
+    90deg,
+    var(--name-grad-a, #ff0040) 0%,
+    var(--name-grad-b, #00c2ff) 16.66%,
+    var(--name-grad-c, #3dff6a) 33.33%,
+    var(--name-grad-a, #ff0040) 50%,
+    var(--name-grad-b, #00c2ff) 66.66%,
+    var(--name-grad-c, #3dff6a) 83.33%,
+    var(--name-grad-a, #ff0040) 100%
+  );
+}
+
+@keyframes name-color-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    text-shadow: 0 0 0 transparent;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.04);
+    text-shadow: 0 0 10px currentColor;
+    filter: brightness(1.45);
+  }
+}
+
+@keyframes name-color-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 2px currentColor, 0 0 8px currentColor;
+    filter: brightness(1);
+  }
+  50% {
+    text-shadow:
+      0 0 4px currentColor,
+      0 0 16px currentColor,
+      0 0 28px currentColor;
+    filter: brightness(1.35);
+  }
+}
+
+/* 0% → 100% with size 200% = shift by one period (seamless) */
+@keyframes name-color-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
 }
 
 .user-name.dark {
@@ -995,4 +1263,62 @@ iframe {
   100% {
     transform: rotate(-15deg) scale(1.15);
   }
+}
+
+
+/* Family page banner: 3:1 like profile, limited to family panel width */
+.family-profile-panel .family-banner {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 3 / 1;
+  height: auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--scheme-color-sec, #222);
+}
+.family-profile-panel .family-banner-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+
+/* Collapsible media player: animates shut upward; collapsed = toggle only */
+.media-embed-wrap.media-collapsible {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.media-embed-wrap.media-collapsible .media-embed-body {
+  overflow: hidden;
+  max-height: 28rem; /* room for 16:9 embeds in sidebar */
+  opacity: 1;
+}
+/* Transitions only after mount — avoids collapse anim when starting collapsed */
+.media-embed-wrap.media-collapsible.media-animate .media-embed-body {
+  transition:
+    max-height 0.35s ease,
+    opacity 0.25s ease,
+    margin 0.35s ease;
+}
+.media-embed-wrap.media-collapsible.media-collapsed .media-embed-body {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  pointer-events: none;
+}
+.media-embed-wrap.media-collapsible .media-embed-toggle {
+  align-self: center;
+  margin-top: 2px;
+  border-radius: 999px;
+}
+.media-embed-wrap.media-collapsible.media-collapsed .media-embed-toggle {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.media-embed-wrap.media-collapsible.media-collapsed .media-embed-toggle {
+  margin-top: 0;
 }

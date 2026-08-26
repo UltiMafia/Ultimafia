@@ -28,31 +28,320 @@ const headerCellSx = {
   fontWeight: "bold",
 };
 
-function RuleDescription({ description }) {
-  if (!description) return null;
-  if (typeof description === "string") {
-    return <Typography variant="body1">{description}</Typography>;
-  }
-  if (!Array.isArray(description)) return null;
+/**
+ * Rules text from docs/SPORTSMANSHIP.txt (Rules section only).
+ * Content must stay AS-IS — do not rewrite wording.
+ * violationId maps to data/violations.js for offense length tables.
+ */
+const RULES_SECTIONS = [
+  {
+    type: "intro",
+    paragraphs: [
+      "When you choose to spend your time on Ultimafia, you agree to uphold a level of sportsmanship. We define sportsmanship on Ultimafia as:",
+    ],
+    bullets: [
+      "Being ethical and lawful: Follow the Ultimafia rules and do not partake in actions or activities that could jeopardise the website.",
+      "Playing fair: Using the tools provided in the game to win the game to the best of your ability.",
+      "Being respectful: Respecting your fellow players and their time, as well as the volunteer admins and their time.",
+    ],
+    afterBullets: [
+      "Admins will do their best to help any and all users enjoy the time they choose to spend on Ultimafia, and in order to facilitate that we ask that users follow the rules outlined on this page. Unsportsmanlike conduct may result in temporary or permanent banishment from games or Ultimafia.",
+    ],
+  },
+  {
+    type: "rule",
+    title: "Follow site-wide rules at all times",
+    paragraphs: [
+      "Breaking site-wide rules may result in harsher punishment than listed depending on the severity of the rule broken.",
+    ],
+  },
+  {
+    type: "rule",
+    title: "Be accepting",
+    paragraphs: [
+      'You are expected to contribute to an accepting environment. Do not discriminate against or disrespect other users based on group identity. The admin team’s mission statement intends to, "maintain[ing] a community free from prejudice or bias based on sex, age, gender identity, sexual orientation, skin color, ability, religion, nationality, or any other characteristic.”',
+    ],
+    bulletsIntro: "Including but not limited to:",
+    bullets: [
+      "Racism, homophobia, transphobia, misogyny, religious discrimination, xenophobia, ableism, or any other form of bigotry otherwise not listed. ",
+      'The use of slurs, derogatory language, or bigoted expressions, including instances where an individual belongs to the affected group or claims the language is being "reclaimed." ',
+      "bypassing slur filters.",
+      "denial or minimization of acts of genocide or systemic oppression of minority groups. ",
+    ],
+    closing: ["Breaking this rule will result in an Intolerance violation."],
+    violationId: "intolerance",
+  },
+  {
+    type: "rule",
+    title: "Be respectful",
+    paragraphs: [
+      "You are expected to communicate with your fellow users with understanding. Do not insult or attack fellow users meaningfully, regardless of intent or game state. ",
+    ],
+    bulletsIntro: "Including but not limited to:",
+    bullets: [
+      "Attacks on intelligence or ability.",
+      "Targeted deliberate antagonisation.",
+      "Conduct intended to intimidate or demean, even when ‘justified’.",
+      "Continuing behaviour or conduct that has been clearly identified as upsetting. (i.e. “Stop clause”)",
+      "Creating accounts with the intent to defame or frame, including impersonation.",
+    ],
+    closing: [
+      "Breaking this rule will result in a Personal Attacks & Harassment (PA) violation.",
+    ],
+    violationId: "personal-attacks-harassment",
+  },
+  {
+    type: "rule",
+    title: "Be civil",
+    paragraphs: [
+      "You are expected to keep discussions, in-game and out, civilised. Do not intentionally provoke or escalate conflict between users, whether between yourself and another, or two separate parties. ",
+    ],
+    bulletsIntro: "Including but not limited to:",
+    bullets: [
+      "Engaging in trolling behavior, including concern trolling, political trolling, etc.",
+      "Spamming messages anywhere on the site, including reports.",
+      "Initiating or encouraging large-scale public arguments.",
+      "Disingenuously promoting drama or division within community spaces.",
+      "Deliberately joining multiple games with user(s) avoiding you.[d]",
+      "Repeatedly leaving and rejoining games, particularly when a match is about to begin",
+    ],
+    closing: ["Breaking this rule will result in an Instigation violation."],
+    violationId: "instigation",
+  },
+  {
+    type: "rule",
+    title: "Welcome new players",
+    paragraphs: [
+      "You are expected to show patience and kindness towards new players. Do not discriminate against or mistreat users based solely on the fact that they are a new user.",
+    ],
+    bulletsIntro: "Including but not limited to:",
+    bullets: [
+      "Engaging in policy-based voting against new users without merit.",
+      "Falsely accusing new users of rule violations.",
+      "Promoting attitudes or practices that discourage community growth.",
+    ],
+    closing: ["Breaking this rule will result in a Hazing violation."],
+    violationId: "hazing",
+  },
+  {
+    type: "rule",
+    title: "Respect Privacy",
+    paragraphs: [
+      "We do not expect users to have their personal information revealed if they don’t want it to be. Do not reveal the personal or identifying information of other users without their consent.",
+    ],
+    bulletsIntro: "Including but not limited to:",
+    bullets: ["Real names.", "Locations or addresses.", "Ages."],
+    closing: ["Breaking this rule will result in a Doxxing violation."],
+    violationId: "outing-personal-information",
+  },
+  // Suspension Circumvention (SC) — commented out for now
+  // {
+  //   type: "rule",
+  //   title: "Respect Admin decisions",
+  //   paragraphs: [
+  //     "Admins have the final say in all decisions regarding rules and conduct. Do not circumvent these decisions by playing or posting on an alternate account when suspended.",
+  //   ],
+  //   closing: [
+  //     "Breaking this rule will result in a Suspension Circumvention (SC) violation.",
+  //   ],
+  // },
+  {
+    type: "rule",
+    title: "Keep it PG13",
+    paragraphs: [
+      "Do not post content inappropriate for users under the age of 18. You may not create, share, display, or distribute content otherwise considered 'Not Safe for Work'. ",
+    ],
+    bulletsIntro: "Including but is not limited to:",
+    bullets: [
+      "Graphic, written, or visual depictions of sexual activity or explicit acts",
+      "Descriptions or portrayals of illegal drug use and/or behavior that promotes substance abuse",
+      "Lewd, obscene, or sexually explicit language",
+      "Content intended to shock, disturb, or offend others (i.e. shock sites, gore, etc.)",
+      "Access to or promotion of pornographic websites",
+      "Descriptions or depictions of real violence or assault",
+    ],
+    closing: [
+      "Breaking this rule will result in an Adult Content (AC) violation.",
+    ],
+    violationId: "adult-content",
+  },
+  {
+    type: "rule",
+    title: "Follow the law ",
+    paragraphs: [
+      "Do not share, link to, or participate in illegal or potentially illegal activity. Moderation reserves the right to report suspected illegal activity to appropriate law enforcement authorities whenever possible and as required by law.",
+    ],
+    bulletsIntro: "Including but not limited to:",
+    bullets: [
+      "Inappropriate or unlawful interactions involving a minor.",
+      "The distribution, solicitation, or possession of CSAM.",
+      "Promotion or facilitation of terrorism or organized criminal activity.",
+      "Credible threats of violence or otherwise real world harm.",
+    ],
+    closing: [
+      "Breaking this rule will result in an immediate and permanent site-wide ban.",
+    ],
+    violationId: "illegal-content-activity",
+  },
+  {
+    type: "section",
+    title: "Play fair and with respect",
+  },
+  {
+    type: "rule",
+    title: "Play to win",
+    paragraphs: [
+      "You are expected to play to win in ranked or competitive games. Do not intentionally play against your win condition.",
+    ],
+    bulletsIntro: "Including but not limited to:",
+    bullets: [
+      "Taking actions or making claims to purposefully hinder your win condition.",
+      "Drawing the game when there is still a path to victory.",
+      "Prioritising another player’s loss at the cost of your own win condition.",
+    ],
+    closing: [
+      "Breaking this rule will result in a Gamethrowing (GT) violation.",
+    ],
+    violationId: "game-throwing",
+  },
+  {
+    type: "rule",
+    title: "Stay engaged",
+    paragraphs: [
+      "Read and participate meaningfully in ranked or competitive games, and do not AFK or “tab out”. If a user must step away, they are expected to notify other users and review the progress of the game upon returning to ensure vital information is not missed.",
+    ],
+    bulletsIntro: "Included but not limited to:",
+    bullets: [
+      "Diverting attention to unrelated activities.",
+      "Pretending to be or faking AFK.",
+      "Exclusively using gimmicks in place of participation.",
+      "Exclusively discussing unrelated topics.",
+    ],
+    closing: [
+      "Breaking this rule will result in an Insufficient Participation (ISP) violation.",
+    ],
+    violationId: "insufficient-participation",
+  },
+  {
+    type: "rule",
+    title: "Keep the game within the game",
+    paragraphs: [
+      "Do not use tools or processes from outside of a ranked or competitive game to aid or influence yourself in winning the game. ",
+    ],
+    bulletsIntro: "Included but not limited to:",
+    bullets: [
+      "Posting on profiles, lobbies, forums, the Ultimafia Discord server during the game.",
+      "Clearly stating meta on your profile, whether followed or not.",
+      "Bribing or threatening a consequence unrelated to the game.",
+      "Making pregame pacts.",
+      "Accusing other players of rule breaking, or threatening to report them.",
+      "Pretending to cheat or break a rule.",
+    ],
+    closing: [
+      "Breaking this rule will result in an Outside Game Influence (OGI) violation.",
+    ],
+    violationId: "outside-game-information",
+  },
+  {
+    type: "rule",
+    title: "Keep the game fun",
+    paragraphs: [
+      "You are expected to play in good faith. Do not play with the purpose of antagonising other users. ",
+    ],
+    bulletsIntro: "Including but not limited to:",
+    bullets: [
+      "Intentionally and repeatedly disrupting gameplay.",
+      "Bad-faith gameplay (e.g., 'hip-firing' or gunshots based on no or minimal information)",
+      "Communication with the primary intent of provoking or upsetting other users.",
+    ],
+    closing: [
+      "Breaking this rule will result in an Antagonisation violation.",
+    ],
+    violationId: "antagonization",
+  },
+  // Repeated Abandonment (RA) — commented out for now
+  // {
+  //   type: "rule",
+  //   title: "Commit to complete games you join",
+  //   paragraphs: [
+  //     "You are not expected to prioritise the game over real life or emergencies, but do not join ranked or competitive games you know you cannot complete.",
+  //     "Breaking this rule in a ranked game will result in a 5 minute suspension and an abandonment on your win rate.",
+  //     "Breaking this rule in a competitive game will result in an 15 minute suspension and an abandonment on your win rate.",
+  //     "Frequently breaking this rule will result in a Repeated Abandonment (RA) violation.",
+  //   ],
+  // },
+  {
+    type: "rule",
+    title: "Play it out until the end",
+    paragraphs: [
+      "Do not abandon ranked or competitive games for any in-game reasons. If there are any bugs, exploits, or rule breaks, players are expected to play the game to completion and report the issues afterwards. ",
+      "Breaking this rule will result in a Game-Related Abandonment (GRA) violation. Exceptions can very rarely be made under extreme circumstances at admin discretion i.e. extreme harassment.",
+    ],
+    violationId: "game-related-abandonment",
+  },
+  {
+    type: "rule",
+    title: "Report bugs and exploits",
+    paragraphs: [
+      "If a bug or exploit is found, do not hide it from the admin team and do not abuse it in ranked or competitive games.",
+      "Breaking this rule will result in a Bug Abuse (BA) violation.",
+    ],
+    violationId: "exploits",
+  },
+  {
+    type: "rule",
+    title: "Do not cheat",
+    paragraphs: [
+      "Cheating is defined as extreme cases of manipulation or conduct that provides an unfair competitive advantage or undermines the integrity of ranked and competitive games.",
+    ],
+    bulletsIntro: "Including and not limited to:",
+    bullets: [
+      "Using multiple accounts within the same game ('multiaccounting' or 'alt'ing').",
+      "Communicating with other participants through external means not within an in-progress game.",
+      "Taking screenshots or other methods of sharing in game information to prove alignment or gain strategic advantage.",
+      "Coordinating externally for specific outcomes, or playing with the intent of ensuring another user's victory via external coordination.",
+    ],
+    closing: ["Breaking this rule will result in a Cheating violation."],
+    violationId: "cheating",
+  },
+];
+
+function ViolationName({ children }) {
   return (
-    <>
-      {description.map((block, i) =>
-        block.type === "paragraph" ? (
-          <Typography key={i} variant="body1" paragraph>
-            {block.content}
-          </Typography>
-        ) : block.type === "list" ? (
-          <List key={i} dense disablePadding sx={{ listStyleType: "disc", pl: 2, "& .MuiListItem-root": { display: "list-item" } }}>
-            {block.items.map((item, j) => (
-              <ListItem key={j} disablePadding sx={{ py: 0.25 }}>
-                <ListItemText primary={item} primaryTypographyProps={{ variant: "body1" }} />
-              </ListItem>
-            ))}
-          </List>
-        ) : null
-      )}
-    </>
+    <Box
+      component="span"
+      sx={{ fontWeight: "bold", color: "primary.main" }}
+    >
+      {children}
+    </Box>
   );
+}
+
+/** Embolden the associated violation name/abbreviation without changing wording. */
+function highlightAssociatedViolation(text) {
+  const violationMatch = text.match(/^(.*?\ban? )(.+?)( violation\b.*)$/s);
+  if (violationMatch) {
+    return (
+      <>
+        {violationMatch[1]}
+        <ViolationName>{violationMatch[2]}</ViolationName>
+        {violationMatch[3]}
+      </>
+    );
+  }
+  const banMatch = text.match(
+    /^(.*?)(immediate and permanent site-wide ban)(.*)$/s
+  );
+  if (banMatch) {
+    return (
+      <>
+        {banMatch[1]}
+        <ViolationName>{banMatch[2]}</ViolationName>
+        {banMatch[3]}
+      </>
+    );
+  }
+  return text;
 }
 
 function OffenseLengthsTable({ offenses }) {
@@ -87,19 +376,100 @@ function OffenseLengthsTable({ offenses }) {
   );
 }
 
-function RuleSection({ rule }) {
+function BulletList({ items }) {
   return (
-    <Box sx={{ mb: 3 }}>
-      <Typography
-        variant="h4"
-        gutterBottom
-        sx={{ textDecoration: "underline" }}
-      >
-        {rule.name}
-      </Typography>
-      <RuleDescription description={rule.description} />
-      <OffenseLengthsTable offenses={rule.offenses} />
-    </Box>
+    <List
+      dense
+      disablePadding
+      sx={{
+        listStyleType: "disc",
+        pl: 2,
+        "& .MuiListItem-root": { display: "list-item" },
+      }}
+    >
+      {items.map((item, j) => (
+        <ListItem key={j} disablePadding sx={{ py: 0.25 }}>
+          <ListItemText
+            primary={item}
+            primaryTypographyProps={{ variant: "body1" }}
+          />
+        </ListItem>
+      ))}
+    </List>
+  );
+}
+
+function RulesContent({ violationMap }) {
+  return (
+    <>
+      {RULES_SECTIONS.map((section, index) => {
+        if (section.type === "intro") {
+          return (
+            <Box key={index} sx={{ mb: 3 }}>
+              {section.paragraphs.map((p, i) => (
+                <Typography key={i} variant="body1" paragraph>
+                  {p}
+                </Typography>
+              ))}
+              {section.bullets && <BulletList items={section.bullets} />}
+              {section.afterBullets?.map((p, i) => (
+                <Typography key={`after-${i}`} variant="body1" paragraph sx={{ mt: 2 }}>
+                  {p}
+                </Typography>
+              ))}
+            </Box>
+          );
+        }
+
+        if (section.type === "section") {
+          return (
+            <Typography
+              key={index}
+              variant="h3"
+              gutterBottom
+              sx={{ mt: 4, mb: 2 }}
+            >
+              {section.title}
+            </Typography>
+          );
+        }
+
+        const violation = section.violationId
+          ? violationMap[section.violationId]
+          : null;
+
+        return (
+          <Box key={index} sx={{ mb: 3 }}>
+            <Typography
+              variant="h4"
+              gutterBottom
+              sx={{ textDecoration: "underline" }}
+            >
+              {section.title}
+            </Typography>
+            {section.paragraphs?.map((p, i) => (
+              <Typography key={i} variant="body1" paragraph>
+                {highlightAssociatedViolation(p)}
+              </Typography>
+            ))}
+            {section.bulletsIntro && (
+              <Typography variant="body1" paragraph>
+                {section.bulletsIntro}
+              </Typography>
+            )}
+            {section.bullets && <BulletList items={section.bullets} />}
+            {section.closing?.map((p, i) => (
+              <Typography key={`close-${i}`} variant="body1" paragraph sx={{ mt: 1 }}>
+                {highlightAssociatedViolation(p)}
+              </Typography>
+            ))}
+            {violation?.offenses && (
+              <OffenseLengthsTable offenses={violation.offenses} />
+            )}
+          </Box>
+        );
+      })}
+    </>
   );
 }
 
@@ -125,9 +495,6 @@ export default function Rules() {
     document.title = "Rules | UltiMafia";
   }, []);
 
-  const communityRules = violationDefinitions.filter((r) => r.category === "Community");
-  const gameRules = violationDefinitions.filter((r) => r.category === "Game");
-
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
@@ -136,63 +503,31 @@ export default function Rules() {
     return null;
   }
 
+  const violationMap = violationDefinitions.reduce((acc, violation) => {
+    acc[violation.id] = violation;
+    return acc;
+  }, {});
+
   return (
     <>
       <Typography variant="h2" gutterBottom>
         UltiMafia Rules of Conduct
       </Typography>
       <Typography variant="body2" color="text.secondary" paragraph>
-        Last Updated: June 2, 2026
+        Last Updated: August 22, 2026
       </Typography>
 
       <Tabs value={selectedTab} onChange={handleTabChange}>
-        <Tab label="Community Violations" />
-        <Tab label="Game-Related Violations" />
+        <Tab label="Rules" />
         <Tab label="Filing an Appeal" />
         <Tab label="Other Policies" />
       </Tabs>
 
       <TabPanel value={selectedTab} index={0}>
-        <Typography variant="h3" gutterBottom>
-          Community Violations
-        </Typography>
-        <Typography variant="body1" paragraph>
-          These are violations relating to personal and community conduct.
-          Receiving any of these violations will lead to bans from the
-          entirety of the site (including games, forums, chat, and the Discord
-          server).
-        </Typography>
-        <Typography variant="body1" paragraph>
-          After serving the ban length for an offense, the violation will
-          remain on one's record for three months starting from the day that
-          the ban was first issued.
-        </Typography>
-        {communityRules.map((rule) => (
-          <RuleSection key={rule.name} rule={rule} />
-        ))}
+        <RulesContent violationMap={violationMap} />
       </TabPanel>
 
       <TabPanel value={selectedTab} index={1}>
-        <Typography variant="h3" gutterBottom>
-          Game-Related Violations
-        </Typography>
-        <Typography variant="body1" paragraph>
-          These violations will only earn you bans from ranked and competitive
-          games; you will be able to access other games and the rest of the
-          site. With the exception of cheating, all game-related violations are
-          preceded by one warning.
-        </Typography>
-        <Typography variant="body1" paragraph>
-          After serving the ban length for an offense, the violation will
-          remain on one's record for three months starting from the day that
-          the ban was first issued.
-        </Typography>
-        {gameRules.map((rule) => (
-          <RuleSection key={rule.name} rule={rule} />
-        ))}
-      </TabPanel>
-
-      <TabPanel value={selectedTab} index={2}>
         <Typography variant="h3" gutterBottom>
           Filing an Appeal
         </Typography>
@@ -219,7 +554,7 @@ export default function Rules() {
         </Typography>
       </TabPanel>
 
-      <TabPanel value={selectedTab} index={3}>
+      <TabPanel value={selectedTab} index={2}>
         <Typography variant="h3" gutterBottom>
           Other Policies
         </Typography>
@@ -259,6 +594,27 @@ export default function Rules() {
           user is currently on the account when joining a pregame, and the
           involved users may not chat on-site or off-site when the account is
           in a game.
+        </Typography>
+
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{ textDecoration: "underline", mt: 2 }}
+        >
+          Human Users Required
+        </Typography>
+        <Typography variant="body1" paragraph>
+          UltiMafia is for human players. Accounts must be operated by a human
+          being. Accounts that are run, controlled, or automated by large
+          language models (LLMs), chatbots, or other AI agents are not
+          permitted to play games or post on-site, including in-game chat,
+          forums, comments, and other community spaces.
+        </Typography>
+        <Typography variant="body1" paragraph>
+          Using an LLM or similar tool to operate an account, generate in-game
+          or on-site posts, or otherwise play or participate in place of a
+          human is prohibited. Human users remain responsible for all activity
+          on their accounts.
         </Typography>
       </TabPanel>
     </>

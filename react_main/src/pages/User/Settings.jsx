@@ -22,14 +22,18 @@ import {
   Tab,
   Checkbox,
   FormControlLabel,
+  Switch,
 } from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import Form, { useForm, HiddenUpload, UserSearchSelect } from "components/Form";
 import { useErrorAlert } from "components/Alerts";
+import { FamilyAvatarImage } from "utils/avatarUrl";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import AvatarUpload from "components/AvatarUpload";
+import BannerUpload from "components/BannerUpload";
+// DeathSoundUpload is rendered via Form field type "deathSoundUpload"
 import { useCookieConsent } from "../../hooks/useCookieConsent";
 
 import "css/settings.css";
@@ -213,6 +217,9 @@ export default function Settings() {
   const [loading, setLoading] = useState(false);
   const [familyName, setFamilyName] = useState("");
   const [familyAvatarUploaded, setFamilyAvatarUploaded] = useState(false);
+  const [familyMediaUrl, setFamilyMediaUrl] = useState("");
+  const [familyMediaAutoplay, setFamilyMediaAutoplay] = useState(false);
+  const [familyMediaCollapse, setFamilyMediaCollapse] = useState(false);
   const [userFamily, setUserFamily] = useState(null);
   const [familyLoaded, setFamilyLoaded] = useState(false);
   const [transferLeaderUserId, setTransferLeaderUserId] = useState("");
@@ -438,6 +445,20 @@ export default function Settings() {
       type: "boolean",
       extraInfo: "Turn off the snow effect during December (holiday season)",
     },
+    {
+      label: "Disable All Media Autoplay",
+      ref: "disableMediaAutoplay",
+      type: "boolean",
+      extraInfo:
+        "When enabled, profile and family media players will not autoplay for you, even if the owner turned autoplay on.",
+    },
+    {
+      label: "Disable Animated Avatars",
+      ref: "disableAnimatedAvatars",
+      type: "boolean",
+      extraInfo:
+        "When enabled, other users' GIF/WebP avatars are shown as a still first frame.",
+    },
   ]);
 
   const [profileFields, updateProfileFields] = useForm(
@@ -498,7 +519,18 @@ export default function Settings() {
         ref: "autoplay",
         type: "boolean",
         groupName: "Profile",
-        showIf: (deps) => deps.user.settings.youtube != null,
+        showIf: (deps) =>
+          deps.user.settings.youtube != null && deps.user.settings.youtube !== "",
+      },
+      {
+        label: "Collapse Media Player",
+        ref: "collapseMedia",
+        type: "boolean",
+        groupName: "Profile",
+        showIf: (deps) =>
+          deps.user.settings.youtube != null && deps.user.settings.youtube !== "",
+        extraInfo:
+          "Starts the profile media player collapsed (arrow only). Click the arrow to expand or collapse; the player animates shut upward.",
       },
       {
         label: "Banner Format",
@@ -683,19 +715,213 @@ export default function Settings() {
       label: "Name Color",
       ref: "nameColor",
       type: "color",
-      default: "#68a9dc",
+      // Empty = no custom color (theme default). Reset clears to this.
+      default: "",
+      resetValue: "",
       disabled: (deps) => !deps.user.itemsOwned.textColors,
+      // Hide solid name color while gradient/tricolor modes are active
+      showIf: (deps, fields) => {
+        const anim = fields?.find((f) => f.ref === "animatedNameColor");
+        return anim?.value !== "gradient" && anim?.value !== "tricolor";
+      },
       extraInfo:
-        "Note: Colors must have good contrast in both light and dark themes (minimum 3:1 ratio). Choose colors that are readable on both white and dark backgrounds.",
+        "Leave default (use Reset) for no custom color. Custom colors must have good contrast in both light and dark themes (minimum 3:1 ratio).",
     },
     {
       label: "Text Color",
       ref: "textColor",
       type: "color",
-      default: "#FFF",
+      default: "",
+      resetValue: "",
       disabled: (deps) => !deps.user.itemsOwned.textColors,
       extraInfo:
-        "Note: Colors must have good contrast in both light and dark themes (minimum 3:1 ratio). Choose colors that are readable on both white and dark backgrounds.",
+        "Leave default (use Reset) for no custom color. Custom colors must have good contrast in both light and dark themes (minimum 3:1 ratio).",
+    },
+    {
+      label: "Name Font (player list only)",
+      ref: "nameFont",
+      type: "select",
+      disabled: (deps) => !deps.user.itemsOwned.nameFont,
+      extraInfo:
+        "Applies to your name on the player list and in chat nameplates (not message text). Buy Custom Name Font in the Shop.",
+      // fontFamily on each option previews the real face in the dropdown
+      options: [
+        { label: "Default", value: "default" },
+        {
+          label: "Slab (Roboto Slab)",
+          value: "slab",
+          fontFamily: "RobotoSlab, Georgia, serif",
+        },
+        {
+          label: "Mono (Roboto Mono)",
+          value: "mono",
+          fontFamily: "RobotoMono, Consolas, monospace",
+        },
+        {
+          label: "Poppins",
+          value: "poppins",
+          fontFamily: "Poppins, 'Segoe UI', sans-serif",
+        },
+        {
+          label: "Georgia",
+          value: "georgia",
+          fontFamily: "Georgia, 'Times New Roman', serif",
+        },
+        {
+          label: "Trebuchet",
+          value: "trebuchet",
+          fontFamily: "'Trebuchet MS', 'Segoe UI', sans-serif",
+        },
+        {
+          label: "Verdana",
+          value: "verdana",
+          fontFamily: "Verdana, Geneva, sans-serif",
+        },
+        {
+          label: "Betty Noir",
+          value: "bettynoir",
+          fontFamily: "BettyNoir, Georgia, serif",
+        },
+        {
+          label: "Autophobia",
+          value: "autophobia",
+          fontFamily: "Autophobia, cursive",
+        },
+        {
+          label: "Spooky",
+          value: "spooky",
+          fontFamily: "Spooky, cursive",
+        },
+        {
+          label: "Nabla",
+          value: "nabla",
+          fontFamily: "Nabla, fantasy",
+        },
+      ],
+      value: "default",
+    },
+    {
+      label: "Animated Name Color (player list only)",
+      ref: "animatedNameColor",
+      type: "select",
+      disabled: (deps) =>
+        !deps.user.itemsOwned.animatedNameColor ||
+        !deps.user.itemsOwned.textColors,
+      showIf: (deps) =>
+        !!(
+          deps.user.itemsOwned.animatedNameColor &&
+          deps.user.itemsOwned.textColors
+        ),
+      // Live previews via previewClass/previewStyle (Form select).
+      // Gradient (3 colors) only if tricolor shop item is owned.
+      // Gradient previews use A/B/C pickers (or defaults if not set yet).
+      options: (deps, fields) => {
+        const colorA =
+          fields?.find((f) => f.ref === "nameGradientColorA")?.value ||
+          "#ff0040";
+        const colorB =
+          fields?.find((f) => f.ref === "nameGradientColorB")?.value ||
+          "#00c2ff";
+        const colorC =
+          fields?.find((f) => f.ref === "nameGradientColorC")?.value ||
+          "#3dff6a";
+        const gradStyle = {
+          ["--name-grad-a"]: colorA,
+          ["--name-grad-b"]: colorB,
+          ["--name-grad-c"]: colorC,
+        };
+
+        const base = [
+          { label: "None", value: "none" },
+          {
+            label: "Pulse",
+            value: "pulse",
+            previewClass: "name-color-preview name-anim-pulse",
+          },
+          {
+            label: "Glow",
+            value: "glow",
+            previewClass: "name-color-preview name-anim-glow",
+          },
+          {
+            label: "Rainbow",
+            value: "rainbow",
+            previewClass: "name-color-preview name-anim-rainbow",
+          },
+          {
+            label: "Patriotic",
+            value: "patriotic",
+            previewClass: "name-color-preview name-anim-patriotic",
+          },
+          {
+            label: "Gradient (2 colors)",
+            value: "gradient",
+            previewClass: "name-color-preview name-anim-gradient",
+            previewStyle: gradStyle,
+          },
+        ];
+        if (deps.user.itemsOwned.tricolorAnimatedGradient) {
+          base.push({
+            label: "Gradient (3 colors)",
+            value: "tricolor",
+            previewClass: "name-color-preview name-anim-tricolor",
+            previewStyle: gradStyle,
+          });
+        }
+        return base;
+      },
+      extraInfo:
+        "Applies to your name on the player list and in chat nameplates (not message text). Gradient/Tricolor use the color pickers below.",
+      value: "none",
+    },
+    {
+      label: "Gradient Color A",
+      ref: "nameGradientColorA",
+      type: "color",
+      default: "#ff0040",
+      showIf: (deps, fields) => {
+        if (
+          !deps.user.itemsOwned.animatedNameColor ||
+          !deps.user.itemsOwned.textColors
+        )
+          return false;
+        const anim = fields?.find((f) => f.ref === "animatedNameColor");
+        return anim?.value === "gradient" || anim?.value === "tricolor";
+      },
+      extraInfo: "First color of the animated name gradient (order: 1 → 2 → 3).",
+    },
+    {
+      label: "Gradient Color B",
+      ref: "nameGradientColorB",
+      type: "color",
+      default: "#00c2ff",
+      showIf: (deps, fields) => {
+        if (
+          !deps.user.itemsOwned.animatedNameColor ||
+          !deps.user.itemsOwned.textColors
+        )
+          return false;
+        const anim = fields?.find((f) => f.ref === "animatedNameColor");
+        return anim?.value === "gradient" || anim?.value === "tricolor";
+      },
+      extraInfo: "Second color of the animated name gradient.",
+    },
+    {
+      label: "Gradient Color C",
+      ref: "nameGradientColorC",
+      type: "color",
+      default: "#3dff6a",
+      showIf: (deps, fields) => {
+        if (
+          !deps.user.itemsOwned.tricolorAnimatedGradient ||
+          !deps.user.itemsOwned.animatedNameColor ||
+          !deps.user.itemsOwned.textColors
+        )
+          return false;
+        const anim = fields?.find((f) => f.ref === "animatedNameColor");
+        return anim?.value === "tricolor";
+      },
+      extraInfo: "Third color of the tricolor gradient (order: 1 → 2 → 3).",
     },
     {
       label: "Ignore Custom Text Color",
@@ -725,6 +951,23 @@ export default function Settings() {
       disabled: (deps) => !deps.user.itemsOwned.deathMessageEnabled,
     },
     {
+      label: "Custom Death Sound",
+      ref: "deathSound",
+      type: "deathSoundUpload",
+      onDeathSoundUpload: onDeathSoundUpload,
+      onDeathSoundRemove: onDeathSoundRemove,
+      disabled: (deps) => !deps.user.itemsOwned.deathSoundEnabled,
+      extraInfo:
+        "Played to everyone in the lobby when you die. Purchase Custom Death Sound in the Shop.",
+    },
+    {
+      label: "Ignore all Death Sounds",
+      ref: "ignoreDeathSounds",
+      type: "boolean",
+      extraInfo:
+        "When enabled, you will not hear custom death sounds from other players in games.",
+    },
+    {
       label: "Upload Custom Emote",
       ref: "customEmotes",
       type: "emoteUpload",
@@ -733,6 +976,15 @@ export default function Settings() {
       disabled: (deps) =>
         deps.user.itemsOwned.customEmotes !== undefined &&
         deps.user.itemsOwned.customEmotes.length > 0,
+    },
+    {
+      label: "Upload Custom Sticker",
+      ref: "customStickers",
+      type: "stickerUpload",
+      onCustomStickerUpload: onCustomStickerUpload,
+      onCustomStickerDelete: onCustomStickerDelete,
+      extraInfo:
+        "Buy sticker slots in the Shop (10 coins each). GIF/PNG/JPEG/WebP, max 10 MB, 512×512.",
     },
   ]);
 
@@ -771,6 +1023,9 @@ export default function Settings() {
       .then((res) => {
         if (res.data.family) {
           setUserFamily(res.data.family);
+          setFamilyMediaUrl(res.data.family.mediaUrl || "");
+          setFamilyMediaAutoplay(!!res.data.family.mediaAutoplay);
+          setFamilyMediaCollapse(!!res.data.family.mediaCollapse);
           setFamilyLoaded(true);
         } else {
           setUserFamily(null);
@@ -963,6 +1218,7 @@ export default function Settings() {
                   <AvatarUpload
                     onFileUpload={onFamilyAvatarUpload}
                     name="familyAvatar"
+                    keepAnimation={Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedAvatar")}
                   >
                     <Button variant="outlined" disabled={!!userFamily}>
                       Upload Avatar
@@ -1000,16 +1256,10 @@ export default function Settings() {
                 <Stack direction="row" spacing={2} alignItems="center">
                   <Typography>You are the leader of </Typography>
                   {userFamily.avatar && (
-                    <div
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "50%",
-                        backgroundImage: `url(/uploads/${userFamily.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        flexShrink: 0,
-                      }}
+                    <FamilyAvatarImage
+                      id={userFamily.id}
+                      size={40}
+                      cacheVal={siteInfo.cacheVal}
                     />
                   )}
                   <Link
@@ -1040,6 +1290,7 @@ export default function Settings() {
                     <AvatarUpload
                       onFileUpload={onFamilyAvatarUploadExisting}
                       name="familyAvatarExisting"
+                      keepAnimation={Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedAvatar")}
                     >
                       <Button variant="outlined">Upload New Avatar</Button>
                     </AvatarUpload>
@@ -1052,6 +1303,127 @@ export default function Settings() {
                       </Typography>
                     )}
                   </Stack>
+                </Box>
+
+                {/* Upload Family Banner */}
+                <Box>
+                  <Typography variant="h6" sx={{ mb: 1 }}>
+                    Family Banner
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ mb: 1, display: "block" }}
+                  >
+                    Banner for the family page
+                    {(Array.isArray(userFamily?.perks) &&
+                    userFamily.perks.includes("familyAnimatedBanner"))
+                      ? " (animation enabled)."
+                      : ". Buy under family Perks if needed."}
+                  </Typography>
+                  <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+                    <BannerUpload
+                      name="familyBanner"
+                      onClick={() => {
+                        if (!(Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyBanner"))) {
+                          errorAlert(
+                            "Your family must buy the Family Banner perk first."
+                          );
+                          return false;
+                        }
+                        return true;
+                      }}
+                      onFileUpload={onFamilyBannerUpload}
+                      keepAnimation={!!(Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedBanner"))}
+                    >
+                      <Button variant="outlined">
+                        {(Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedBanner"))
+                          ? "Upload / Crop Banner"
+                          : "Upload Banner"}
+                      </Button>
+                    </BannerUpload>
+                    {userFamily.banner && (
+                      <>
+                        <Typography
+                          variant="caption"
+                          sx={{ color: "success.main" }}
+                        >
+                          Banner uploaded
+                        </Typography>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          size="small"
+                          onClick={onFamilyBannerRemove}
+                        >
+                          Remove
+                        </Button>
+                      </>
+                    )}
+                  </Stack>
+                </Box>
+
+                {/* Family Music Player */}
+                <Box>
+                  <Typography variant="h6" sx={{ mb: 1 }}>
+                    Family Music Player
+                  </Typography>
+                  {!(
+                    Array.isArray(userFamily?.perks) &&
+                    userFamily.perks.includes("familyMusicPlayer")
+                  ) ? (
+                    <Typography variant="caption" color="text.secondary">
+                      Buy the Family Music Player perk on the family page to
+                      enable this.
+                    </Typography>
+                  ) : (
+                    <Stack direction="column" spacing={1.5}>
+                      <Typography variant="caption" color="text.secondary">
+                        Same media types as profile (YouTube, SoundCloud,
+                        Spotify, Vimeo, direct files). Plays on the family page.
+                      </Typography>
+                      <TextField
+                        label="Media URL"
+                        value={familyMediaUrl}
+                        onChange={(e) => setFamilyMediaUrl(e.target.value)}
+                        fullWidth
+                        size="small"
+                        placeholder="https://..."
+                      />
+                      <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={familyMediaAutoplay}
+                              onChange={(e) =>
+                                setFamilyMediaAutoplay(e.target.checked)
+                              }
+                              size="small"
+                            />
+                          }
+                          label="Autoplay"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={familyMediaCollapse}
+                              onChange={(e) =>
+                                setFamilyMediaCollapse(e.target.checked)
+                              }
+                              size="small"
+                            />
+                          }
+                          label="Collapse player"
+                        />
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={onFamilyMediaSave}
+                        >
+                          Save media
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  )}
                 </Box>
 
                 {/* Upload Family Background */}
@@ -1180,16 +1552,10 @@ export default function Settings() {
                 <Stack direction="row" spacing={2} alignItems="center">
                   <Typography>You are a member of </Typography>
                   {userFamily.avatar && (
-                    <div
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "50%",
-                        backgroundImage: `url(/uploads/${userFamily.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        flexShrink: 0,
-                      }}
+                    <FamilyAvatarImage
+                      id={userFamily.id}
+                      size={40}
+                      cacheVal={siteInfo.cacheVal}
                     />
                   )}
                   <Link
@@ -1382,6 +1748,50 @@ export default function Settings() {
       .catch(deps.errorAlert);
   }
 
+  function onDeathSoundUpload(file, durationSeconds, deps) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("durationSeconds", String(durationSeconds || ""));
+
+    return axios
+      .post("/api/user/deathSound", formData)
+      .then((res) => {
+        const data = res.data || {};
+        deps.siteInfo.showAlert("Death sound uploaded", "success");
+        deps.user.set(
+          update(deps.user.state || deps.user, {
+            deathSound: { $set: true },
+            deathSoundExt: {
+              $set: data.deathSoundExt || "ogg",
+            },
+          })
+        );
+        if (deps.siteInfo.clearCache) deps.siteInfo.clearCache();
+      })
+      .catch((e) => {
+        deps.errorAlert(e);
+        throw e;
+      });
+  }
+
+  function onDeathSoundRemove(deps) {
+    return axios
+      .delete("/api/user/deathSound")
+      .then(() => {
+        deps.siteInfo.showAlert("Death sound removed", "success");
+        deps.user.set(
+          update(deps.user.state || deps.user, {
+            deathSound: { $set: false },
+          })
+        );
+        if (deps.siteInfo.clearCache) deps.siteInfo.clearCache();
+      })
+      .catch((e) => {
+        deps.errorAlert(e);
+        throw e;
+      });
+  }
+
   function onVanityUrlSave(vanityUrl, deps) {
     axios
       .post("/api/vanityUrl", { vanityUrl })
@@ -1452,6 +1862,37 @@ export default function Settings() {
       .post("/api/user/customEmote/delete", { id: id }, {})
       .then((res) => {
         deps.siteInfo.showAlert("Deleted custom emote", "success");
+      })
+      .catch(deps.errorAlert);
+  }
+
+  function onCustomStickerUpload(
+    stickerText,
+    imageFilename,
+    imageMimeType,
+    blob,
+    deps
+  ) {
+    const formData = new FormData();
+    const file = new File([blob], imageFilename);
+    formData.append("file", file);
+    formData.append("stickerText", stickerText);
+
+    axios
+      .post("/api/user/customSticker/create", formData, {})
+      .then((res) => {
+        deps.siteInfo.showAlert("Uploaded custom sticker", "success");
+        loadSettings();
+      })
+      .catch(deps.errorAlert);
+  }
+
+  function onCustomStickerDelete(id, deps) {
+    axios
+      .post("/api/user/customSticker/delete", { id: id }, {})
+      .then((res) => {
+        deps.siteInfo.showAlert("Deleted custom sticker", "success");
+        loadSettings();
       })
       .catch(deps.errorAlert);
   }
@@ -1624,7 +2065,11 @@ export default function Settings() {
         })
         .catch((e) => {
           if (e.response == null || e.response.status === 413)
-            errorAlert("File too large, must be less than 1 MB.");
+            errorAlert(
+              (Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedAvatar"))
+                ? "File too large, animated family avatar must be less than 25 MB."
+                : "File too large, family avatar must be less than 1 MB."
+            );
           else errorAlert(e);
         });
     }
@@ -1643,10 +2088,77 @@ export default function Settings() {
         })
         .catch((e) => {
           if (e.response == null || e.response.status === 413)
-            errorAlert("File too large, must be less than 1 MB.");
+            errorAlert(
+              (Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedAvatar"))
+                ? "File too large, animated family avatar must be less than 25 MB."
+                : "File too large, family avatar must be less than 1 MB."
+            );
           else errorAlert(e);
         });
     }
+  }
+
+  function onFamilyBannerUpload(files, type) {
+    if (!files.length || !userFamily?.id) return;
+    if (!(Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyBanner"))) {
+      errorAlert("Your family must buy the Family Banner perk first.");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("image", files[0]);
+    axios
+      .post(`/api/family/${userFamily.id}/banner`, formData)
+      .then(() => {
+        siteInfo.showAlert("Family banner uploaded", "success");
+        loadFamily();
+        siteInfo.clearCache();
+      })
+      .catch((e) => {
+        if (e.response == null || e.response.status === 413)
+          errorAlert(
+            (Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedBanner"))
+              ? "File too large, animated family banner must be less than 20 MB."
+              : "File too large, family banner must be less than 5 MB."
+          );
+        else errorAlert(e);
+      });
+  }
+
+  function onFamilyMediaSave() {
+    if (!userFamily?.id) return;
+    if (
+      !(
+        Array.isArray(userFamily?.perks) &&
+        userFamily.perks.includes("familyMusicPlayer")
+      )
+    ) {
+      errorAlert("Your family must buy the Family Music Player perk first.");
+      return;
+    }
+    axios
+      .post(`/api/family/${userFamily.id}/media`, {
+        link: familyMediaUrl,
+        autoplay: familyMediaAutoplay,
+        collapse: familyMediaCollapse,
+      })
+      .then(() => {
+        siteInfo.showAlert("Family media saved", "success");
+        loadFamily();
+      })
+      .catch(errorAlert);
+  }
+
+  function onFamilyBannerRemove() {
+    if (!userFamily?.id) return;
+    if (!window.confirm("Remove the family banner?")) return;
+    axios
+      .delete(`/api/family/${userFamily.id}/banner`)
+      .then(() => {
+        siteInfo.showAlert("Family banner removed", "success");
+        loadFamily();
+        siteInfo.clearCache();
+      })
+      .catch(errorAlert);
   }
 
   function onCreateFamily() {

@@ -4,6 +4,8 @@ import {
   Box,
   Button,
   Stack,
+  Tab,
+  Tabs,
   Typography,
   Dialog,
   DialogActions,
@@ -43,8 +45,7 @@ function getVerdictIcon(violationName) {
   if (!violationName) {
     return VERDICT_ICONS["No Violation"];
   }
-  // Remove offense suffix if present (e.g., " (1st Offense)")
-  const baseName = violationName.replace(/\s*\(\d+(st|nd|rd|th)\s+Offense\)\s*$/, "");
+  const baseName = getViolationBaseName(violationName);
   return VERDICT_ICONS[baseName] || VERDICT_ICONS[violationName] || VERDICT_ICONS["No Violation"];
 }
 
@@ -67,11 +68,78 @@ function DigitsCount({ digits }) {
 }
 
 
+export function getViolationBaseName(violationName) {
+  if (!violationName) return "";
+  return violationName.replace(/\s*\(\d+(st|nd|rd|th)\s+Offense\)\s*$/, "").trim();
+}
+
 function extractOffenseNumber(violationName) {
   if (!violationName) return null;
   // Match patterns like "(1st Offense)", "(2nd Offense)", etc.
   const match = violationName.match(/\((\d+)(st|nd|rd|th)\s+Offense\)/);
   return match ? parseInt(match[1]) : null;
+}
+
+function isWarningReport(report) {
+  return report.finalRuling?.warning === true;
+}
+
+function isDismissedReport(report) {
+  return (
+    (!report.finalRuling || !report.finalRuling.violationName) &&
+    !isWarningReport(report)
+  );
+}
+
+function isActiveViolation(report) {
+  if (isWarningReport(report) || isDismissedReport(report)) {
+    return false;
+  }
+  const status = report.violationTicket?.status;
+  return status === "active" || status === "permanent";
+}
+
+function VerdictIcon({ report, onClick }) {
+  const isWarning = isWarningReport(report);
+  const isDismissed = isDismissedReport(report);
+  const violationName = isWarning
+    ? "Warning"
+    : isDismissed
+    ? "No Violation"
+    : report.finalRuling?.violationName || "Violation";
+
+  const verdictIcon = getVerdictIcon(violationName);
+  const offenseNumber = extractOffenseNumber(report.finalRuling?.violationName);
+  const degreeDigits = offenseNumber ? String(offenseNumber).split("") : [];
+
+  return (
+    <Box
+      className="verdict-item"
+      onClick={onClick}
+      sx={{
+        position: "relative",
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        "&:hover": { opacity: 0.8 },
+      }}
+    >
+      <img
+        src={verdictIcon}
+        alt={violationName}
+        className="verdict-icon"
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "contain",
+        }}
+      />
+      {degreeDigits.length > 0 && <DigitsCount digits={degreeDigits} />}
+    </Box>
+  );
 }
 
 function VerdictDialog({
@@ -87,9 +155,8 @@ function VerdictDialog({
 }) {
   if (!report) return null;
 
-  const isWarning = report.finalRuling?.warning === true;
-  const isDismissed =
-    (!report.finalRuling || !report.finalRuling.violationName) && !isWarning;
+  const isWarning = isWarningReport(report);
+  const isDismissed = isDismissedReport(report);
   const completedDate = report.completedAt ? new Date(report.completedAt) : null;
 
   // Extract offense number from violationName (format: "Rule Name (1st Offense)")
@@ -278,8 +345,7 @@ function VerdictDialog({
             </Box>
           )}
 
-          {showRestrictedInfo &&
-            !isDismissed &&
+          {!isDismissed &&
             report.violationTicket && (
               <Box>
                 <Typography variant="caption" color="textSecondary">
@@ -328,6 +394,7 @@ export default function RapSheet({ userId }) {
   const [selectedReport, setSelectedReport] = useState(null);
   const [showVerdictDialog, setShowVerdictDialog] = useState(false);
   const [selectedVerdictReport, setSelectedVerdictReport] = useState(null);
+  const [selectedTab, setSelectedTab] = useState(0);
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
@@ -371,6 +438,10 @@ export default function RapSheet({ userId }) {
   const panelStyle = { marginBottom: "16px" };
   const headingStyle = { marginBottom: "8px" };
 
+  const activeReports = reports.filter(isActiveViolation);
+  const inactiveReports = reports.filter((report) => !isActiveViolation(report));
+  const tabReports = selectedTab === 0 ? activeReports : inactiveReports;
+
   const handleVerdictClick = (report) => {
     setSelectedVerdictReport(report);
     setShowVerdictDialog(true);
@@ -384,52 +455,38 @@ export default function RapSheet({ userId }) {
 
   return (
     <>
-      <CasePanel title="Rap Sheet" panelStyle={panelStyle} headingStyle={headingStyle}>
-      {reports.map((report) => {
-        const isWarning = report.finalRuling?.warning === true;
-        const isDismissed =
-          (!report.finalRuling || !report.finalRuling.violationName) && !isWarning;
-        const violationName = isWarning
-          ? "Warning"
-          : isDismissed
-          ? "No Violation"
-          : report.finalRuling?.violationName || "Violation";
-
-        const verdictIcon = getVerdictIcon(violationName);
-        const offenseNumber = extractOffenseNumber(report.finalRuling?.violationName);
-        const degreeDigits = offenseNumber ? String(offenseNumber).split("") : [];
-
-        return (
-          <Box
-            key={report.id}
-            className="verdict-item"
-            onClick={() => handleVerdictClick(report)}
-            sx={{
-              position: "relative",
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              "&:hover": { opacity: 0.8 },
-            }}
-          >
-            <img
-              src={verdictIcon}
-              alt={violationName}
-              className="verdict-icon"
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
-              }}
+      <div className="box-panel" style={panelStyle}>
+        <Typography variant="h3" style={headingStyle}>
+          Rap Sheet
+        </Typography>
+        <Tabs
+          value={selectedTab}
+          onChange={(event, newValue) => setSelectedTab(newValue)}
+          sx={{ mb: 1 }}
+        >
+          <Tab label={`Active (${activeReports.length})`} />
+          <Tab label={`Inactive (${inactiveReports.length})`} />
+        </Tabs>
+        <CasePanel
+          wrapInPanel={false}
+          showHeading={false}
+          emptyMessage={
+            <Typography variant="body2" color="text.secondary">
+              {selectedTab === 0
+                ? "No active violations."
+                : "No inactive or expired violations."}
+            </Typography>
+          }
+        >
+          {tabReports.map((report) => (
+            <VerdictIcon
+              key={report.id}
+              report={report}
+              onClick={() => handleVerdictClick(report)}
             />
-            {degreeDigits.length > 0 && <DigitsCount digits={degreeDigits} />}
-          </Box>
-        );
-      })}
-      </CasePanel>
+          ))}
+        </CasePanel>
+      </div>
       {showVerdictDialog && selectedVerdictReport && (
         <VerdictDialog
           open={showVerdictDialog}

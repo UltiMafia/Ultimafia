@@ -32,10 +32,10 @@ import { Loading } from "../../components/Loading";
 import coin from "images/umcoin.png";
 
 const SHOP_CATEGORIES = [
-  { key: "profile", label: "Profile" },
-  { key: "decksEmotes", label: "Decks & Emotes" },
   { key: "game", label: "Game" },
+  { key: "profile", label: "Profile" },
   { key: "site", label: "Site" },
+  { key: "decksEmotes", label: "Decks" },
 ];
 
 function parseGameId(input) {

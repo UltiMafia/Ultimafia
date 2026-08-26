@@ -126,6 +126,7 @@ export default function CreateMafiaSetup() {
       label: "Game End Event",
       ref: "GameEndEvent",
       type: "select",
+      value: "Meteor",
       groupName: "Stalemate Prevention",
       options: [
         {

@@ -17,9 +17,6 @@ const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
 const fortunePoints = require("../modules/fortunePoints");
 const errors = require("../lib/errors");
-const {
-  syncRankedCompetitiveAccess,
-} = require("../modules/userEligibility");
 const skillRating = require("../modules/skillRating");
 const router = express.Router();
 
@@ -1239,6 +1236,17 @@ router.post("/clearUserContent", async (req, res) => {
         );
         break;
 
+      case "customStickers":
+        updateQuery = { $set: { customStickers: [] } };
+        modActionName = "Clear Custom Stickers";
+        additionalOperations.push(
+          models.CustomSticker.updateMany(
+            { creator: user._id },
+            { $set: { deleted: true } }
+          ).exec()
+        );
+        break;
+
       case "name":
         // Get current user to record previous name
         const currentUserForClear = await models.User.findOne({
@@ -1327,6 +1335,35 @@ router.post("/clearUserContent", async (req, res) => {
         }
         break;
 
+      case "deathSound":
+        // Same effect as the user clicking Remove on their death sound
+        updateQuery = {
+          $set: {
+            deathSound: false,
+            deathSoundExt: "ogg",
+          },
+        };
+        modActionName = "Clear Death Sound";
+        {
+          const uploadPath = process.env.UPLOAD_PATH;
+          const exts =
+            constants.deathSoundAllowedExts || ["mp3", "ogg", "wav", "webm"];
+          for (const ext of exts) {
+            const deathSoundPath = `${uploadPath}/${userIdToClear}_deathSound.${ext}`;
+            if (fs.existsSync(deathSoundPath)) {
+              additionalOperations.push(
+                new Promise((resolve, reject) => {
+                  fs.unlink(deathSoundPath, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                  });
+                })
+              );
+            }
+          }
+        }
+        break;
+
       case "all":
         updateQuery = {
           $set: {
@@ -1335,7 +1372,10 @@ router.post("/clearUserContent", async (req, res) => {
             bio: "",
             donorBio: "",
             customEmotes: [],
+            customStickers: [],
             profileBackground: false,
+            deathSound: false,
+            deathSoundExt: "ogg",
           },
         };
         modActionName = "Clear All User Content";
@@ -1351,8 +1391,30 @@ router.post("/clearUserContent", async (req, res) => {
             })
           );
         }
+        {
+          const uploadPathAll = process.env.UPLOAD_PATH;
+          const deathExts =
+            constants.deathSoundAllowedExts || ["mp3", "ogg", "wav", "webm"];
+          for (const ext of deathExts) {
+            const deathSoundPathAll = `${uploadPathAll}/${userIdToClear}_deathSound.${ext}`;
+            if (fs.existsSync(deathSoundPathAll)) {
+              additionalOperations.push(
+                new Promise((resolve, reject) => {
+                  fs.unlink(deathSoundPathAll, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                  });
+                })
+              );
+            }
+          }
+        }
         additionalOperations.push(
           models.CustomEmote.updateMany(
+            { creator: user._id },
+            { $set: { deleted: true } }
+          ).exec(),
+          models.CustomSticker.updateMany(
             { creator: user._id },
             { $set: { deleted: true } }
           ).exec(),
@@ -1427,6 +1489,10 @@ router.post("/clearFamilyContent", async (req, res) => {
     const avatarPath = `${process.env.UPLOAD_PATH}/${familyId}_family_avatar.webp`;
     if (fs.existsSync(avatarPath)) {
       fs.unlinkSync(avatarPath);
+    }
+    const avatarStaticPath = `${process.env.UPLOAD_PATH}/${familyId}_family_avatar_static.webp`;
+    if (fs.existsSync(avatarStaticPath)) {
+      fs.unlinkSync(avatarStaticPath);
     }
 
     // Delete background file if it exists
@@ -2073,116 +2139,16 @@ router.post("/refundGame", async (req, res) => {
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    // Fetch the game from the database
-    var game = await models.Game.findOne({ id: gameId })
-      .populate("users")
-      .exec();
+    // Fetch all game documents with this id (duplicates share the string id)
+    var games = await models.Game.find({ id: gameId }).populate("users").exec();
 
-    if (!game) {
+    if (!games.length) {
       res.status(404);
       res.send("Game not found.");
       return;
     }
 
-    if (!game.endTime) {
-      res.status(400);
-      res.send("Cannot refund a game that hasn't ended.");
-      return;
-    }
-
-    if (!game.ranked && !game.competitive) {
-      res.status(400);
-      res.send("Cannot refund a game that was not ranked or competitive.");
-      return;
-    }
-
-    // Refund skill ratings if applicable
-    try {
-      await skillRating.refundGameRatings(game);
-    } catch (e) {
-      logger.error(`Error refunding skill ratings for game ${gameId}:`, e);
-    }
-
-    // Parse player maps
-    const playerIdMap = JSON.parse(game.playerIdMap || "{}");
-    const playerAlignmentMap = JSON.parse(game.playerAlignmentMap || "{}");
-
-    // Get all user IDs from the game
-    const userIds = Object.keys(playerIdMap);
-
-    if (userIds.length === 0) {
-      res.status(400);
-      res.send("No players found in this game.");
-      return;
-    }
-
-    let precomputedFortune = null;
-    if (game.history && game.setup) {
-      try {
-        const history = JSON.parse(game.history);
-        const originalRoles = history.originalRoles || {};
-        const memberFactionsByPlayerId = {};
-        for (let uid in playerIdMap) {
-          const pid = playerIdMap[uid];
-          if (!originalRoles[pid]) continue;
-          const roleName = originalRoles[pid].split(":")[0];
-          const alignment = playerAlignmentMap[uid] || "";
-          const alignmentIsFaction =
-            alignment === "Village" ||
-            alignment === "Mafia" ||
-            alignment === "Cult";
-          let factionName = alignmentIsFaction ? alignment : roleName;
-          if (factionName === "Traitor") {
-            factionName = "Mafia";
-          }
-          memberFactionsByPlayerId[pid] = factionName;
-        }
-        const factionNames = [
-          ...new Set(Object.values(memberFactionsByPlayerId)),
-        ].sort();
-        const winnerPids = new Set(
-          (game.winners || []).map((p) => String(p))
-        );
-        const winningFactions = [
-          ...new Set(
-            Object.entries(memberFactionsByPlayerId)
-              .filter(([pid]) => winnerPids.has(String(pid)))
-              .map(([, faction]) => faction)
-          ),
-        ];
-        const setupDoc = await models.Setup.findOne({ _id: game.setup })
-          .select("version")
-          .lean();
-        const sv =
-          setupDoc &&
-          (await models.SetupVersion.findOne({
-            setup: game.setup,
-            version: setupDoc.version || 0,
-          })
-            .select("setupStats")
-            .lean());
-        const alignmentWinRates = fortunePoints.alignmentRowsToWinRateMap(
-          sv && sv.setupStats
-        );
-        const { pointsWonByFactions, pointsLostByFactions } =
-          fortunePoints.computeFactionFortunePoints({
-            factionNames,
-            winningFactions,
-            alignmentWinRates,
-            K: constants.fortunePointsNominalK,
-          });
-        precomputedFortune = {
-          memberFactionsByPlayerId,
-          pointsWonByFactions,
-          pointsLostByFactions,
-        };
-      } catch (e) {
-        logger.error(`Error precomputing fortune for refund game ${gameId}:`, e);
-      }
-    }
-
     // Load game-specific data for calculations
-    const dbStats = require("../db/stats");
     const gameAchievements = require("../data/Achievements");
 
     // Helper function to get achievement reward
@@ -2264,150 +2230,303 @@ router.post("/refundGame", async (req, res) => {
       return stats;
     }
 
-    // Process each player
-    for (let userIdToRefund of userIds) {
+    let refundedCount = 0;
+    let skippedCount = 0;
+    let lastPlayerCount = 0;
+    let heartLabel = "red";
+    const goldHeartsRefundedUsers = new Set();
+
+    for (const game of games) {
+      if (!game.endTime) {
+        logger.warn(
+          `Skipping refund for game ${gameId} (_id ${game._id}): not ended`
+        );
+        skippedCount++;
+        continue;
+      }
+
+      if (!game.ranked && !game.competitive) {
+        logger.warn(
+          `Skipping refund for game ${gameId} (_id ${game._id}): not ranked or competitive`
+        );
+        skippedCount++;
+        continue;
+      }
+
+      // Refund skill ratings if applicable
       try {
-        const playerId = playerIdMap[userIdToRefund];
-        const alignment = playerAlignmentMap[userIdToRefund];
+        await skillRating.refundGameRatings(game);
+      } catch (e) {
+        logger.error(
+          `Error refunding skill ratings for game ${gameId} (_id ${game._id}):`,
+          e
+        );
+      }
 
-        // Fetch user data
-        var user = await models.User.findOne({ id: userIdToRefund }).exec();
+      // Parse player maps
+      const playerIdMap = JSON.parse(game.playerIdMap || "{}");
+      const playerAlignmentMap = JSON.parse(game.playerAlignmentMap || "{}");
 
-        if (!user) continue;
+      // Get all user IDs from the game
+      const userIds = Object.keys(playerIdMap);
 
-        // Determine if player won
-        const won =
-          game.winners.includes(playerId) ||
-          (game.winnersInfo &&
-            game.winnersInfo.players &&
-            game.winnersInfo.players.includes(playerId));
+      if (userIds.length === 0) {
+        logger.warn(
+          `Skipping refund for game ${gameId} (_id ${game._id}): no players`
+        );
+        skippedCount++;
+        continue;
+      }
 
-        // Determine if player abandoned
-        const abandoned = game.left && game.left.includes(playerId);
-
-        // Determine if player got kudos
-        const gotKudos = game.kudosReceiver === playerId;
-
-        // Calculate coins to revert
-        let coinsToRevert = 0;
-
-        // Revert win coins (only for ranked games)
-        if (game.ranked && won) {
-          coinsToRevert += 1;
-        }
-
-        // Calculate fortune/misfortune to revert
-        // We need to recalculate the same way the game did
-        let pointsToRevert = 0;
-        let pointsNegativeToRevert = 0;
-
-        if (precomputedFortune) {
-          const playerFaction =
-            precomputedFortune.memberFactionsByPlayerId[playerId];
-          if (playerFaction) {
-            const maxEarnedPoints = constants.fortunePointsNominalK * 20;
-            let pointsEarned = won
-              ? precomputedFortune.pointsWonByFactions[playerFaction]
-              : precomputedFortune.pointsLostByFactions[playerFaction];
-
-            if (pointsEarned > maxEarnedPoints) {
-              pointsEarned = maxEarnedPoints;
+      let precomputedFortune = null;
+      if (game.history && game.setup) {
+        try {
+          const history = JSON.parse(game.history);
+          const originalRoles = history.originalRoles || {};
+          const memberFactionsByPlayerId = {};
+          for (let uid in playerIdMap) {
+            const pid = playerIdMap[uid];
+            if (!originalRoles[pid]) continue;
+            const roleName = originalRoles[pid].split(":")[0];
+            const alignment = playerAlignmentMap[uid] || "";
+            const alignmentIsFaction =
+              alignment === "Village" ||
+              alignment === "Mafia" ||
+              alignment === "Cult";
+            let factionName = alignmentIsFaction ? alignment : roleName;
+            if (factionName === "Traitor") {
+              factionName = "Mafia";
             }
+            memberFactionsByPlayerId[pid] = factionName;
+          }
+          const factionNames = [
+            ...new Set(Object.values(memberFactionsByPlayerId)),
+          ].sort();
+          const winnerPids = new Set(
+            (game.winners || []).map((p) => String(p))
+          );
+          const winningFactions = [
+            ...new Set(
+              Object.entries(memberFactionsByPlayerId)
+                .filter(([pid]) => winnerPids.has(String(pid)))
+                .map(([, faction]) => faction)
+            ),
+          ];
+          const setupDoc = await models.Setup.findOne({ _id: game.setup })
+            .select("version")
+            .lean();
+          const sv =
+            setupDoc &&
+            (await models.SetupVersion.findOne({
+              setup: game.setup,
+              version: setupDoc.version || 0,
+            })
+              .select("setupStats")
+              .lean());
+          const alignmentWinRates = fortunePoints.alignmentRowsToWinRateMap(
+            sv && sv.setupStats
+          );
+          const { pointsWonByFactions, pointsLostByFactions } =
+            fortunePoints.computeFactionFortunePoints({
+              factionNames,
+              winningFactions,
+              alignmentWinRates,
+              K: constants.fortunePointsNominalK,
+            });
+          precomputedFortune = {
+            memberFactionsByPlayerId,
+            pointsWonByFactions,
+            pointsLostByFactions,
+          };
+        } catch (e) {
+          logger.error(
+            `Error precomputing fortune for refund game ${gameId} (_id ${game._id}):`,
+            e
+          );
+        }
+      }
 
-            if (won) {
-              pointsToRevert = pointsEarned;
-            } else {
-              pointsNegativeToRevert = pointsEarned;
+      // Process each player
+      for (let userIdToRefund of userIds) {
+        try {
+          const playerId = playerIdMap[userIdToRefund];
+          const alignment = playerAlignmentMap[userIdToRefund];
+
+          // Fetch user data
+          var user = await models.User.findOne({ id: userIdToRefund }).exec();
+
+          if (!user) continue;
+
+          // Determine if player won
+          const won =
+            game.winners.includes(playerId) ||
+            (game.winnersInfo &&
+              game.winnersInfo.players &&
+              game.winnersInfo.players.includes(playerId));
+
+          // Determine if player abandoned
+          const abandoned = game.left && game.left.includes(playerId);
+
+          // Determine if player got kudos
+          const gotKudos = game.kudosReceiver === playerId;
+
+          // Calculate coins to revert
+          let coinsToRevert = 0;
+
+          // Revert win coins (only for ranked games)
+          if (game.ranked && won) {
+            coinsToRevert += 1;
+          }
+
+          // Calculate fortune/misfortune to revert
+          // We need to recalculate the same way the game did
+          let pointsToRevert = 0;
+          let pointsNegativeToRevert = 0;
+
+          if (precomputedFortune) {
+            const playerFaction =
+              precomputedFortune.memberFactionsByPlayerId[playerId];
+            if (playerFaction) {
+              const maxEarnedPoints = constants.fortunePointsNominalK * 20;
+              let pointsEarned = won
+                ? precomputedFortune.pointsWonByFactions[playerFaction]
+                : precomputedFortune.pointsLostByFactions[playerFaction];
+
+              if (pointsEarned > maxEarnedPoints) {
+                pointsEarned = maxEarnedPoints;
+              }
+
+              if (won) {
+                pointsToRevert = pointsEarned;
+              } else {
+                pointsNegativeToRevert = pointsEarned;
+              }
             }
           }
+
+          // Extract role from history for stats reversion
+          const roleFromHistory = null; // Simplified - would need more complex parsing
+
+          const setupId = game.setup ? String(game.setup) : null;
+
+          // Update user stats (for ranked/competitive games only)
+          user.stats = revertStats(
+            user.stats,
+            game.type,
+            setupId,
+            roleFromHistory,
+            alignment,
+            won,
+            abandoned
+          );
+
+          // Build update operations
+          const updateOps = {
+            $pull: { games: game._id },
+            $set: {
+              stats: user.stats,
+            },
+          };
+
+          const incOps = {};
+
+          // Revert kudos
+          if (gotKudos) {
+            incOps.kudos = -1;
+          }
+
+          // Revert coins
+          if (coinsToRevert > 0) {
+            incOps.coins = -coinsToRevert;
+          }
+
+          // Revert hearts
+          if (game.ranked) {
+            var itemsOwned = await redis.getUserItemsOwned(userIdToRefund);
+            const redHeartCapacity =
+              constants.initialRedHeartCapacity +
+              (itemsOwned?.bonusRedHearts || 0);
+            updateOps.$set.redHearts = redHeartCapacity;
+          }
+
+          // Restore the 1 gold heart charged at start, without wiping leftovers.
+          if (game.competitive && !goldHeartsRefundedUsers.has(userIdToRefund)) {
+            incOps.goldHearts = 1;
+            goldHeartsRefundedUsers.add(userIdToRefund);
+          }
+
+          // Revert fortune/misfortune points
+          if (pointsToRevert > 0) {
+            incOps.points = -pointsToRevert;
+          }
+          if (pointsNegativeToRevert > 0) {
+            incOps.pointsNegative = -pointsNegativeToRevert;
+          }
+
+          if (Object.keys(incOps).length > 0) {
+            updateOps.$inc = incOps;
+          }
+
+          // Calculate new win rate
+          const newWinRate =
+            (user.stats[game.type]?.all?.wins?.count || 0) /
+            (user.stats[game.type]?.all?.wins?.total || 1);
+          updateOps.$set.winRate = newWinRate;
+
+          // Apply the update
+          await models.User.updateOne({ id: userIdToRefund }, updateOps).exec();
+
+          // Clear user cache
+          await redis.cacheUserInfo(userIdToRefund, true);
+        } catch (e) {
+          logger.error(
+            `Error refunding game ${gameId} (_id ${game._id}) for user ${userIdToRefund}:`,
+            e
+          );
+          // Continue processing other users
         }
-
-        // Extract role from history for stats reversion
-        const roleFromHistory = null; // Simplified - would need more complex parsing
-
-        const setupId = game.setup ? String(game.setup) : null;
-
-        // Update user stats (for ranked/competitive games only)
-        user.stats = revertStats(
-          user.stats,
-          game.type,
-          setupId,
-          roleFromHistory,
-          alignment,
-          won,
-          abandoned
-        );
-
-        // Build update operations
-        const updateOps = {
-          $pull: { games: game._id },
-          $set: {
-            stats: user.stats,
-          },
-        };
-
-        const incOps = {};
-
-        // Revert kudos
-        if (gotKudos) {
-          incOps.kudos = -1;
-        }
-
-        // Revert coins
-        if (coinsToRevert > 0) {
-          incOps.coins = -coinsToRevert;
-        }
-
-        // Revert hearts
-        if (game.ranked) {
-          var itemsOwned = await redis.getUserItemsOwned(userIdToRefund);
-          const redHeartCapacity =
-            constants.initialRedHeartCapacity +
-            (itemsOwned?.bonusRedHearts || 0);
-          updateOps.$set.redHearts = redHeartCapacity;
-        }
-
-        if (game.competitive) {
-          updateOps.$set.goldHearts = constants.initialGoldHeartCapacity;
-        }
-
-        // Revert fortune/misfortune points
-        if (pointsToRevert > 0) {
-          incOps.points = -pointsToRevert;
-        }
-        if (pointsNegativeToRevert > 0) {
-          incOps.pointsNegative = -pointsNegativeToRevert;
-        }
-
-        if (Object.keys(incOps).length > 0) {
-          updateOps.$inc = incOps;
-        }
-
-        // Calculate new win rate
-        const newWinRate =
-          (user.stats[game.type]?.all?.wins?.count || 0) /
-          (user.stats[game.type]?.all?.wins?.total || 1);
-        updateOps.$set.winRate = newWinRate;
-
-        // Apply the update
-        await models.User.updateOne({ id: userIdToRefund }, updateOps).exec();
-
-        // Clear user cache
-        await redis.cacheUserInfo(userIdToRefund, true);
-      } catch (e) {
-        logger.error(`Error refunding game for user ${userIdToRefund}:`, e);
-        // Continue processing other users
       }
+      // Invalidate competitive completions for this game document
+      if (game.competitive) {
+        try {
+          await models.CompetitiveGameCompletion.updateMany(
+            { game: game._id },
+            { $set: { valid: false } }
+          );
+        } catch (e) {
+          logger.error(
+            `Error invalidating competitive completions for game ${gameId} (_id ${game._id}):`,
+            e
+          );
+        }
+      }
+
+      refundedCount++;
+      lastPlayerCount = userIds.length;
+      heartLabel = game.ranked ? "red" : "gold";
+    }
+
+    if (refundedCount === 0) {
+      res.status(400);
+      res.send(
+        `No refundable ranked/competitive game documents found for id ${gameId}` +
+          (skippedCount ? ` (${skippedCount} skipped).` : ".")
+      );
+      return;
     }
 
     // Log the mod action
-    await routeUtils.createModAction(userId, "Refund Game", [gameId]);
+    await routeUtils.createModAction(userId, "Refund Game", [
+      gameId,
+      String(refundedCount),
+    ]);
 
     res.send(
-      `Successfully refunded game for ${userIds.length} player(s). ` +
-        `Reverted: win/loss/abandonment statistics, kudos, coins from wins, ${
-          game.ranked ? "red" : "gold"
-        } hearts, skill ratings, and fortune/misfortune points.`
+      `Successfully refunded ${refundedCount} game document(s) for id ${gameId}` +
+        (games.length > 1 ? ` (${games.length} matches found)` : "") +
+        ` covering ${lastPlayerCount} player(s)` +
+        (skippedCount ? `; skipped ${skippedCount}` : "") +
+        `. Reverted: win/loss/abandonment statistics, kudos, coins from wins, ${heartLabel} hearts, skill ratings, and fortune/misfortune points.`
     );
   } catch (e) {
     logger.error(e);
@@ -2964,6 +3083,36 @@ router.get("/reports/:id", async (req, res) => {
   }
 });
 
+function autoAssignReportToAdmin(report, userId, status) {
+  if (!Array.isArray(report.assignees)) {
+    report.assignees = [];
+  }
+  const previousAssignees = [...report.assignees];
+  const hasOtherAssignees = report.assignees.some((id) => id !== userId);
+
+  if (hasOtherAssignees) {
+    report.assignees = [userId];
+    report.history.push({
+      status: status,
+      changedBy: userId,
+      timestamp: Date.now(),
+      action: "assignment",
+      assigneesAdded: [userId],
+      assigneesRemoved: previousAssignees.filter((id) => id !== userId),
+    });
+  } else if (!report.assignees.includes(userId)) {
+    report.assignees.push(userId);
+    report.history.push({
+      status: status,
+      changedBy: userId,
+      timestamp: Date.now(),
+      action: "assignment",
+      assigneesAdded: [userId],
+      assigneesRemoved: [],
+    });
+  }
+}
+
 router.post("/reports/:id/assign", async (req, res) => {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
@@ -3106,32 +3255,7 @@ router.post("/reports/:id/status", async (req, res) => {
 
     // Auto-assign when changing to in-progress
     if (status === "in-progress") {
-      const previousAssignees = [...report.assignees];
-      const hasOtherAssignees = report.assignees.some((id) => id !== userId);
-      
-      if (hasOtherAssignees) {
-        // Reassign to current admin if assigned to different admin
-        report.assignees = [userId];
-        report.history.push({
-          status: status,
-          changedBy: userId,
-          timestamp: Date.now(),
-          action: "assignment",
-          assigneesAdded: [userId],
-          assigneesRemoved: previousAssignees.filter((id) => id !== userId),
-        });
-      } else if (!report.assignees.includes(userId)) {
-        // Add current admin if not already assigned
-        report.assignees.push(userId);
-        report.history.push({
-          status: status,
-          changedBy: userId,
-          timestamp: Date.now(),
-          action: "assignment",
-          assigneesAdded: [userId],
-          assigneesRemoved: [],
-        });
-      }
+      autoAssignReportToAdmin(report, userId, status);
     }
 
     report.history.push({
@@ -3213,7 +3337,7 @@ router.post("/reports/:id/complete", async (req, res) => {
       }
       // Notes are required for violations
       if (!finalRuling.notes || !finalRuling.notes.trim()) {
-        res.status(400).send("Notes are required for violations.");
+        res.status(400).send("Decision summary is required.");
         return;
       }
 
@@ -3447,9 +3571,8 @@ router.post("/reports/:id/complete", async (req, res) => {
         : null;
       report.linkedBanId = ban ? ban.id : null;
     } else if (warning) {
-      // When warning, save notes (required)
       if (!notes || !notes.trim()) {
-        res.status(400).send("Notes are required for warnings.");
+        res.status(400).send("Decision summary is required.");
         return;
       }
       report.finalRuling = {
@@ -3457,12 +3580,13 @@ router.post("/reports/:id/complete", async (req, res) => {
         notes: notes.trim(),
       };
     } else {
-      // When dismissed, save notes if provided (optional)
-      report.finalRuling = notes
-        ? {
-            notes: notes,
-          }
-        : null;
+      if (!notes || !notes.trim()) {
+        res.status(400).send("Decision summary is required.");
+        return;
+      }
+      report.finalRuling = {
+        notes: notes.trim(),
+      };
     }
 
     report.status = "complete";
@@ -3471,32 +3595,7 @@ router.post("/reports/:id/complete", async (req, res) => {
     report.updatedAt = Date.now();
 
     // Auto-assign completing admin (reassign if assigned to different admin)
-    const previousAssignees = [...report.assignees];
-    const hasOtherAssignees = report.assignees.some((id) => id !== userId);
-    
-    if (hasOtherAssignees) {
-      // Reassign to current admin if assigned to different admin
-      report.assignees = [userId];
-      report.history.push({
-        status: "complete",
-        changedBy: userId,
-        timestamp: Date.now(),
-        action: "assignment",
-        assigneesAdded: [userId],
-        assigneesRemoved: previousAssignees.filter((id) => id !== userId),
-      });
-    } else if (!report.assignees.includes(userId)) {
-      // Add current admin if not already assigned
-      report.assignees.push(userId);
-      report.history.push({
-        status: "complete",
-        changedBy: userId,
-        timestamp: Date.now(),
-        action: "assignment",
-        assigneesAdded: [userId],
-        assigneesRemoved: [],
-      });
-    }
+    autoAssignReportToAdmin(report, userId, "complete");
 
     report.history.push({
       status: "complete",
@@ -3833,6 +3932,7 @@ router.post("/appeals/:id/approve", async (req, res) => {
     });
 
     if (appealReport) {
+      autoAssignReportToAdmin(appealReport, userId, "complete");
       appealReport.status = "complete";
       appealReport.completedAt = Date.now();
       appealReport.completedBy = userId;
@@ -3908,6 +4008,7 @@ router.post("/appeals/:id/reject", async (req, res) => {
     });
 
     if (appealReport) {
+      autoAssignReportToAdmin(appealReport, userId, "complete");
       appealReport.status = "complete";
       appealReport.completedAt = Date.now();
       appealReport.completedBy = userId;
@@ -4013,92 +4114,6 @@ router.post("/reports/:id/rule", async (req, res) => {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not update rule. Please try again.");
-  }
-});
-
-router.get("/autoApproval", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-
-    if (!(await routeUtils.verifyPermission(res, userId, "adjustMinGames")))
-      return;
-
-    const enabled = await redis.getAutoApprovalEnabled();
-    res.json({ autoApprovalEnabled: enabled });
-  } catch (e) {
-    logger.error(e);
-    errors.serverError(res, "Could not get auto-approval status. Please refresh and try again.");
-  }
-});
-
-router.post("/autoApproval", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-
-    if (!(await routeUtils.verifyPermission(res, userId, "adjustMinGames")))
-      return;
-
-    const enabled = !(await redis.getAutoApprovalEnabled());
-    await redis.setAutoApprovalEnabled(enabled);
-
-    routeUtils.createModAction(userId, "Toggle Auto-Approval", [enabled]);
-
-    res.json({ autoApprovalEnabled: enabled });
-  } catch (e) {
-    logger.error(e);
-    errors.serverError(res, "Could not toggle auto-approval. Please try again.");
-  }
-});
-
-router.post("/syncCompetitiveApprovals", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-
-    if (!(await routeUtils.verifyPermission(res, userId, "adjustMinGames")))
-      return;
-
-    const minimumGames = await redis.getMinimumGamesForRanked();
-    const minimumPoints = constants.minimumPointsForCompetitive;
-    const usersToSync = await models.User.aggregate([
-      {
-        $match: {
-          deleted: false,
-          banned: { $ne: true },
-          flagged: { $ne: true },
-        },
-      },
-      {
-        $project: {
-          id: 1,
-          gamesPlayed: { $size: "$games" },
-        },
-      },
-      {
-        $match: {
-          gamesPlayed: { $gte: minimumGames },
-        },
-      },
-    ]);
-
-    let rankedGranted = 0;
-    let competitiveGranted = 0;
-    for (const user of usersToSync) {
-      const result = await syncRankedCompetitiveAccess(user.id, {
-        minimumGames,
-        minimumPoints,
-      });
-      if (result.rankedGranted) rankedGranted++;
-      if (result.competitiveGranted) competitiveGranted++;
-    }
-
-    routeUtils.createModAction(userId, "Sync Competitive Approvals", [
-      rankedGranted,
-      competitiveGranted,
-    ]);
-    res.json({ rankedGranted, competitiveGranted });
-  } catch (e) {
-    logger.error(e);
-    errors.serverError(res, "Could not sync competitive approvals. Please try again.");
   }
 });
 

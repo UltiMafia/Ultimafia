@@ -16,7 +16,9 @@ import {
   NameWithAvatar,
   OnlineStatus,
 } from "./User";
+import { FamilyAvatarImage } from "utils/avatarUrl";
 import { HiddenUpload, TextEditor } from "components/Form";
+import BannerUpload from "components/BannerUpload";
 import Setup from "components/Setup";
 import { Time, filterProfanity } from "components/Basic";
 import { useErrorAlert } from "components/Alerts";
@@ -159,6 +161,7 @@ export default function Profile() {
   const [name, setName] = useState();
   const [avatar, setAvatar] = useState();
   const [banner, setBanner] = useState();
+  const [bannerExt, setBannerExt] = useState("webp");
   const [profileBackground, setProfileBackground] = useState(false);
   const [skillRating, setSkillRating] = useState(null);
   const [bio, setBio] = useState("");
@@ -212,6 +215,7 @@ export default function Profile() {
   const [statsBucket, setStatsBucket] = useState("ranked");
   const [mediaUrl, setMediaUrl] = useState("");
   const [autoplay, setAutoplay] = useState(false);
+  const [collapseMedia, setCollapseMedia] = useState(false);
   const [saved, setSaved] = useState(false);
   const [moderationDrawerOpen, setModerationDrawerOpen] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
@@ -320,6 +324,11 @@ export default function Profile() {
     setEditingPronouns(false);
     setUserFamily(null);
     setProfileFamily(null);
+    // Stop previous profile's player immediately; otherwise the iframe
+    // keeps playing user A's track on user B's page until the next fetch.
+    setMediaUrl("");
+    setAutoplay(false);
+    setCollapseMedia(false);
 
     if (userId) {
       setProfileLoaded(false);
@@ -327,8 +336,10 @@ export default function Profile() {
       setProfileTotalGames(0);
       setStockInfo(null);
 
+      const controller = new AbortController();
+
       axios
-        .get(`/api/user/${userId}/profile`)
+        .get(`/api/user/${userId}/profile`, { signal: controller.signal })
         .then((res) => {
           const resolvedId = res.data.id;
           setCanonicalUserId(resolvedId);
@@ -337,6 +348,7 @@ export default function Profile() {
           setName(res.data.name);
           setAvatar(res.data.avatar);
           setBanner(res.data.banner);
+          setBannerExt(res.data.bannerExt || "webp");
           setProfileBackground(res.data.profileBackground || false);
           setBio(filterProfanity(res.data.bio, user.settings, "\\*") || "");
           setPronouns(
@@ -367,8 +379,17 @@ export default function Profile() {
           setStatus(res.data.status || "offline");
           setLastActive(res.data.lastActive);
           setInGame(res.data.inGame);
-          setMediaUrl("");
-          setAutoplay(false);
+          // Set media once at final values so the player can mount already collapsed
+          // (avoids open→close animation when collapseMedia is enabled).
+          if (res.data.settings.youtube) {
+            setMediaUrl(res.data.settings.youtube);
+            setAutoplay(!!res.data.settings.autoplay);
+            setCollapseMedia(!!res.data.settings.collapseMedia);
+          } else {
+            setMediaUrl("");
+            setAutoplay(false);
+            setCollapseMedia(false);
+          }
           setSaved(res.data.saved);
           setLove(res.data.love);
           setCurrentUserLove(res.data.currentLove);
@@ -403,26 +424,33 @@ export default function Profile() {
           if (!isSelf && user.loggedIn) {
             loadUserFamily();
           }
-
-          if (res.data.settings.youtube) {
-            setMediaUrl(res.data.settings.youtube);
-            setAutoplay(res.data.settings.autoplay);
-          }
           document.title = `${res.data.name}'s Profile | UltiMafia`;
         })
         .catch((e) => {
+          if (
+            e.code === "ERR_CANCELED" ||
+            e.name === "CanceledError" ||
+            e.name === "AbortError"
+          ) {
+            return;
+          }
           errorAlert(e);
           navigate("/play");
         });
+
+      return () => controller.abort();
     }
   }, [userId, profileRefetchKey]);
 
   const refetchProfile = () => setProfileRefetchKey((k) => k + 1);
 
   function onEditBanner(files, type) {
-    if (!user.itemsOwned.customProfile) {
+    if (
+      !user.itemsOwned.customProfile &&
+      !user.itemsOwned.animatedBanner
+    ) {
       errorAlert(
-        "You must purchase profile customization with coins from the Shop."
+        "You must purchase Profile Customization or Animated Profile Banner from the Shop."
       );
       return false;
     }
@@ -432,11 +460,21 @@ export default function Profile() {
 
   function onClearBanner(e) {
     e.stopPropagation();
+    e.preventDefault();
+    if (
+      !window.confirm(
+        "Remove your profile banner?"
+      )
+    ) {
+      return;
+    }
     axios
       .post("/api/user/banner/clear")
       .then(() => {
         setBanner(false);
+        setBannerExt("webp");
         siteInfo.clearCache();
+        siteInfo.showAlert("Banner removed", "success");
       })
       .catch((e) => {
         errorAlert(e);
@@ -461,16 +499,43 @@ export default function Profile() {
               break;
             case "banner":
               setBanner(true);
+              // Extension comes back via profile refetch; optimistically keep cache bust
+              refetchProfile();
               siteInfo.clearCache();
               break;
           }
         })
         .catch((e) => {
           if (e.response == null || e.response.status === 413)
-            errorAlert("File too large, must be less than 1 MB.");
+            errorAlert(
+              type === "banner"
+                ? "File too large, banner must be less than 20 MB."
+                : user.itemsOwned?.animatedAvatar
+                  ? "File too large, animated avatar must be less than 25 MB."
+                  : "File too large, avatar must be less than 1 MB."
+            );
           else errorAlert(e);
         });
     }
+  }
+
+  function onAvatarRemove() {
+    if (
+      !window.confirm(
+        "Remove your avatar and return to the default letter avatar?"
+      )
+    ) {
+      return;
+    }
+
+    axios
+      .post("/api/user/avatar/delete")
+      .then(() => {
+        setAvatar(false);
+        siteInfo.clearCache();
+        siteInfo.showAlert("Avatar removed", "success");
+      })
+      .catch(errorAlert);
   }
 
   function onFriendUserClick() {
@@ -956,15 +1021,21 @@ export default function Profile() {
     panelTextStyle.color = headingStyle.color;
   }
 
-  if (banner) {
-    bannerStyle.backgroundImage = `url(/uploads/${profileUserId}_banner.webp?t=${siteInfo.cacheVal})`;
-  }
+  const bannerExtSafe = ["webp", "gif", "png", "jpg", "jpeg"].includes(bannerExt)
+    ? bannerExt
+    : "webp";
+  const bannerUrl = banner
+    ? `/uploads/${profileUserId}_banner.${bannerExtSafe}?t=${siteInfo.cacheVal}`
+    : null;
 
+  // Prefer <img> for all banners so GIF/animated WebP play reliably
   if (settings.bannerFormat === "stretch") {
     bannerStyle.backgroundSize = "100% 100%";
   } else {
     bannerStyle.backgroundSize = "contain";
   }
+  bannerStyle.position = "relative";
+  bannerStyle.overflow = "hidden";
 
   var ratings = [];
   var totalGames = 0;
@@ -1279,11 +1350,13 @@ export default function Profile() {
               name={name}
               edit={isSelf}
               onUpload={onFileUpload}
+              onRemove={isSelf && avatar ? onAvatarRemove : undefined}
               border={`4px var(--scheme-color) solid`}
               isSquare={settings.avatarShape === "square"}
               onlineStatus={status}
               lastActive={lastActive}
               inGame={inGame}
+              keepAnimation={!!user.itemsOwned?.animatedAvatar}
             />
           )}
         </Box>
@@ -1425,16 +1498,10 @@ export default function Profile() {
             >
               <Typography variant="italicRelation">Member of</Typography>
               {profileFamily.avatar && (
-                <div
-                  style={{
-                    width: isPhoneDevice ? "40px" : "60px",
-                    height: isPhoneDevice ? "40px" : "60px",
-                    borderRadius: "50%",
-                    backgroundImage: `url(/uploads/${profileFamily.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    flexShrink: 0,
-                  }}
+                <FamilyAvatarImage
+                  id={profileFamily.id}
+                  size={isPhoneDevice ? 40 : 60}
+                  cacheVal={siteInfo.cacheVal}
                 />
               )}
               <Typography>{profileFamily.name}</Typography>
@@ -1464,19 +1531,35 @@ export default function Profile() {
   const bannerUpload = (
     <>
       {isSelf && (
-        <HiddenUpload
-          className="edit"
-          name="banner"
-          onClick={onEditBanner}
-          onFileUpload={onFileUpload}
-        >
-          <i className="far fa-file-image" />
+        <div className="edit banner-edit-overlay">
+          <BannerUpload
+            className="banner-edit-action"
+            name="banner"
+            onClick={onEditBanner}
+            onFileUpload={onFileUpload}
+            keepAnimation={!!user.itemsOwned?.animatedBanner}
+          >
+            <i
+              className="far fa-file-image"
+              title={
+                user.itemsOwned?.animatedBanner
+                  ? "Upload / crop banner (GIF/WebP can keep animation)"
+                  : "Upload / crop banner"
+              }
+            />
+          </BannerUpload>
           {banner && (
-            <span className="clear-banner" onClick={onClearBanner}>
-              <i className="fas fa-times" /> Clear
-            </span>
+            <button
+              type="button"
+              className="banner-edit-action banner-remove"
+              title="Remove banner"
+              aria-label="Remove banner"
+              onClick={onClearBanner}
+            >
+              <i className="fas fa-trash" />
+            </button>
           )}
-        </HiddenUpload>
+        </div>
       )}
     </>
   );
@@ -1525,6 +1608,22 @@ export default function Profile() {
               <div className="content" style={{ gap: "8px" }}>
                 {banner && (
                   <div className="banner" style={bannerStyle}>
+                    <img
+                      className="banner-media"
+                      src={bannerUrl}
+                      alt=""
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit:
+                          settings.bannerFormat === "stretch"
+                            ? "fill"
+                            : "contain",
+                        display: "block",
+                        position: "absolute",
+                        inset: 0,
+                      }}
+                    />
                     {bannerUpload}
                   </div>
                 )}
@@ -1599,8 +1698,11 @@ export default function Profile() {
             {mediaUrl && (
               <div className="box-panel" style={panelStyle}>
                 <MediaEmbed
+                  key={`${profileUserId}:${mediaUrl}`}
                   mediaUrl={mediaUrl}
                   autoplay={autoplay}
+                  collapsible
+                  collapsed={collapseMedia}
                 ></MediaEmbed>
               </div>
             )}
