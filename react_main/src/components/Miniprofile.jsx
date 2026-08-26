@@ -178,7 +178,10 @@ function Miniprofile(props) {
         prefilledArgs={reportPrefilledArgs}
       />
       {!hasDefaultPronouns && <div className="pronouns">({pronouns})</div>}
-      {user.skillRating && !user.settings?.hideStatistics && (
+      {/* Gate on `tier`, not on the object: an unrated player still gets a
+          skillRating payload, but it carries only the progress counter -- reading
+          mu/sigma off it would render "(CR: NaN)". */}
+      {user.skillRating?.tier && !user.settings?.hideStatistics && (
         <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mt: 1, mb: 1, justifyContent: "center" }}>
           {TIER_ICONS[user.skillRating.tier] && (
             <img

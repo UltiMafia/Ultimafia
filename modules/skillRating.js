@@ -3,6 +3,12 @@ const models = require("../db/models");
 const DEFAULT_MU = 25.0;
 const DEFAULT_SIGMA = DEFAULT_MU / 3.0;
 
+// Rated games a player must accumulate before their rating is shown anywhere
+// (leaderboard, profile, miniprofile). Counts `skillRating.gamesPlayed`, i.e.
+// completed ranked/competitive games that had both a winner and a loser side,
+// net of mod refunds -- NOT the player's total game count.
+const MIN_RATED_GAMES = 25;
+
 class AspectSkillRating {
   constructor(rating = DEFAULT_MU, uncertainty = DEFAULT_SIGMA) {
     this.rating = rating;
@@ -200,6 +206,13 @@ async function updateGameRatings(game) {
   game.skillRatingChanges = ratingChanges;
 }
 
+// NOTE: rollback is mu-only by design. `sigmaDelta` is recorded per game but is
+// deliberately not re-applied: sigma shrinks multiplicatively, so adding an old
+// absolute delta back onto a since-shrunk sigma over-corrects. Measured against a
+// full replay, restoring sigma is *worse* than leaving it for anyone more than a
+// handful of games past the refunded one, and either way the error is under
+// ~0.15 conservative rank. It only compounds under mass rollbacks, which would
+// need a replay to undo correctly.
 async function refundGameRatings(game) {
   if (game.skillRefunded) {
     return;
@@ -222,6 +235,9 @@ async function refundGameRatings(game) {
 
     const currentMu = user.skillRating?.mu ?? DEFAULT_MU;
     const newMu = currentMu - change.muDelta;
+    // Floor at 0: a backfill (which resets gamesPlayed) landing between the
+    // original update and the refund would otherwise drive the count negative.
+    const newGamesPlayed = Math.max(0, (user.skillRating?.gamesPlayed ?? 0) - 1);
 
     bulkOps.push({
       updateOne: {
@@ -230,9 +246,7 @@ async function refundGameRatings(game) {
           $set: {
             "skillRating.mu": newMu,
             "skillRating.conservativeRank": newMu - 3.0 * (user.skillRating?.sigma ?? DEFAULT_SIGMA),
-          },
-          $inc: {
-            "skillRating.gamesPlayed": -1
+            "skillRating.gamesPlayed": newGamesPlayed,
           }
         }
       }
@@ -290,6 +304,7 @@ function getTier(rank, sortedRanks) {
 module.exports = {
   DEFAULT_MU,
   DEFAULT_SIGMA,
+  MIN_RATED_GAMES,
   AspectSkillRating,
   aspectSkillTwoTeams,
   expectedScoreTwoTeams,

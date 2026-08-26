@@ -33,6 +33,7 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { NameWithAvatar } from "pages/User/User";
 
 import { TIER_ICONS } from "utils/skillRating";
+import { MIN_RATED_GAMES } from "Constants";
 
 const CATEGORY_OPTIONS = [
   { value: "skillRating", label: "Skill Rating" },
@@ -87,7 +88,8 @@ function renderDesktopCells(user, category) {
           />
         </Box>,
         <Typography variant="body2">{user.kudos}</Typography>,
-        <Typography variant="body2">{user.karma}</Typography>,
+        // karma is null when the player has hidden it
+        <Typography variant="body2">{user.karma ?? "\u2014"}</Typography>,
         <Typography variant="body2">{user.achievementsCount}</Typography>,
         <Typography variant="body2">{`${user.scrapbookCompletion}%`}</Typography>,
       ];
@@ -231,7 +233,7 @@ const StandingsTable = React.memo(function StandingsTable({
   );
 });
 
-function SkillRatingAboutContent() {
+function SkillRatingAboutContent({ minRatedGames = MIN_RATED_GAMES }) {
   return (
     <>
       <Typography variant="body2" sx={{ mb: 1 }}>
@@ -249,7 +251,7 @@ function SkillRatingAboutContent() {
         <strong>Conservative Rank:</strong> Standings are sorted by your conservative rank, calculated as <code>μ - 3 × σ</code>. This represents a statistical lower bound, guaranteeing your true skill is at least this high with 99% confidence. This ensures that new players with high uncertainty must play more games to earn a high position on the leaderboard.
       </Typography>
       <Typography variant="body2" sx={{ mb: 1 }}>
-        <strong>Percentile Tiers:</strong> Active players with at least one match are placed into competitive tiers based on their conservative rank percentiles:
+        <strong>Percentile Tiers:</strong> Players with at least {minRatedGames} rated matches are placed into competitive tiers based on their conservative rank percentiles:
       </Typography>
       <Box component="ul" sx={{ pl: 0, mt: 0, mb: 1, listStyle: 'none', '& li': { display: 'flex', alignItems: 'center', mb: 0.5, gap: 1 } }}>
         <li>
@@ -278,7 +280,10 @@ function SkillRatingAboutContent() {
         </li>
       </Box>
       <Typography variant="body2">
-        Only completed ranked or competitive matches are counted.
+        Only completed ranked or competitive matches are counted, and a match only
+        counts once it has both a winning and a losing side. Players below {minRatedGames}{" "}
+        rated matches are shown as Unranked and are left off the standings, as are
+        players who have hidden their statistics.
       </Typography>
     </>
   );
@@ -608,7 +613,7 @@ export default function HallOfFame() {
       >
         <DialogTitle>About the Skill Rating System</DialogTitle>
         <DialogContent>
-          <SkillRatingAboutContent />
+          <SkillRatingAboutContent minRatedGames={data?.filters?.minRatedGames} />
         </DialogContent>
       </Dialog>
     </Stack>
