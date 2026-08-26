@@ -119,6 +119,8 @@ import RoleRevealModal from "components/gameComponents/RoleRevealModal";
 import ChangeSetupDialog from "components/gameComponents/ChangeSetupDialog";
 import UrgencyOverlay from "./components/UrgencyOverlay";
 import ReadyCheckDialog from "./components/ReadyCheck";
+import PushNotificationPrompt from "./components/PushNotificationPrompt";
+import { releaseSubscription } from "utils/pushNotifications";
 import RoleMarkerToggle from "./components/RoleMarkerToggle";
 
 const emoteMap = {
@@ -252,6 +254,14 @@ export default function Game() {
 
   function leaveGame() {
     if (finished) siteInfo.hideAllAlerts();
+
+    // Drop the server-side push target, but leave the browser subscription in
+    // place: keeping it means rejoining a lobby later re-registers silently
+    // instead of prompting for permission again.
+    const pushEndpoint = releaseSubscription();
+    if (pushEndpoint && socket.on) {
+      socket.send("pushUnsubscribe", { endpoint: pushEndpoint });
+    }
 
     if (socket.on) socket.send("leave");
 
@@ -1184,6 +1194,9 @@ export default function Game() {
           </Box>
         </Stack>
         <UrgencyOverlay hidden={!isUrgent} />
+        {!review && history.currentState == -1 && (
+          <PushNotificationPrompt socket={socket} />
+        )}
         <ReadyCheckDialog
           open={readyCheckInfo.active && !readyCheckInfo.readyPlayers[self]}
           endTime={readyCheckInfo.endTime}

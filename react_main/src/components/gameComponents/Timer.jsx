@@ -2,6 +2,7 @@ import { useContext, useEffect, useReducer, useState } from "react";
 import ChangeHead from "components/gameComponents/ChangeHead";
 import { GameContext } from "Contexts";
 import { Box } from "@mui/material";
+import { hasActivePushSubscription } from "utils/pushNotifications";
 
 function formatTimerTime(time) {
   if (time > 0) time = Math.round(time / 1000);
@@ -102,11 +103,15 @@ export function Timer(props) {
           timer: info,
         });
 
+        // The server pushes this same event to subscribed players, and the
+        // service worker will show it. Firing the in-page one too would notify
+        // them twice, so the page defers when a push subscription is active.
         if (
           info.name === "pregameCountdown" &&
           window.Notification &&
           window.Notification.permission === "granted" &&
-          !document.hasFocus()
+          !document.hasFocus() &&
+          !hasActivePushSubscription()
         ) {
           new Notification("Your game is starting!");
         }

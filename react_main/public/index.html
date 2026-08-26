@@ -69,6 +69,29 @@
 
     <link rel="icon" href="<%= assetPrefix %>/images/favicon.webp" />
     <link rel="canonical" href="https://ultimafia.com/" />
+
+    <!--
+      PWA. `scope` in the manifest is what keeps the app in standalone mode when
+      navigating from the lobby into /game/<id>; without a manifest iOS treats the
+      saved page as a bookmark and hands any navigation back to Safari, which is
+      why the browser chrome reappeared.
+
+      The apple-* tags are not redundant with the manifest: iOS before 17.4 does
+      not read `display` from it and still needs apple-mobile-web-app-capable.
+      Status bar is `black` rather than `black-translucent` on purpose --
+      translucent draws page content under the clock, which would need
+      viewport-fit=cover and safe-area padding throughout the app.
+    -->
+    <link rel="manifest" href="<%= assetPrefix %>/manifest.json" />
+    <meta name="theme-color" content="#121212" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="UltiMafia" />
+    <link
+      rel="apple-touch-icon"
+      href="<%= assetPrefix %>/images/apple-touch-icon.png"
+    />
     <meta
       name="viewport"
       content="width=device-width, shrink-to-fit=no, initial-scale=1.0"

@@ -13,6 +13,7 @@ const { removeSpaces } = require("./core/Utils");
 const publisher = redis.client.duplicate();
 const axios = require("axios");
 const gameContext = require("../modules/gameContext");
+const pushNotifications = require("../modules/pushNotifications");
 
 const serverId = Number(process.env.NODE_APP_INSTANCE) || 0;
 const port = Number(process.env.GAME_PORT || "3010") + serverId;
@@ -205,6 +206,31 @@ var deprecated = false;
             }
 
             game.userJoin(user, isBot);
+          } catch (e) {
+            logger.error(e);
+          }
+        });
+
+        // Push subscription for the "game is starting" notification. It rides the
+        // game socket rather than an HTTP route because the notification is sent
+        // from this process, so the subscription may as well live here -- no
+        // cross-process lookup, nothing to persist.
+        socket.on("pushSubscribe", (subscription) => {
+          try {
+            if (!user || !user.id || user.guestId) return;
+
+            const accepted = pushNotifications.register(user.id, subscription);
+            socket.send("pushSubscribeResult", { accepted });
+          } catch (e) {
+            logger.error(e);
+          }
+        });
+
+        socket.on("pushUnsubscribe", (info) => {
+          try {
+            if (!user || !user.id) return;
+
+            pushNotifications.unregister(user.id, info && info.endpoint);
           } catch (e) {
             logger.error(e);
           }
