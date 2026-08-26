@@ -462,7 +462,6 @@ export default function Game() {
 
     if (!review) {
       loadAudioFiles(coreAudioConfig);
-      requestNotificationAccess();
 
       function onKeydown() {
         var speechInput = document.getElementById("speechInput");
@@ -6374,8 +6373,3 @@ export function useActivity() {
   return [activity, updateActivity];
 }
 
-async function requestNotificationAccess() {
-  if (!window.Notification) return;
-
-  await Notification.requestPermission();
-}
