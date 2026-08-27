@@ -1146,6 +1146,7 @@ export default function Game() {
 
     return (
       <GameContext.Provider value={gameContext}>
+        <IsPhoneDeviceContext.Provider value={isPhoneDevice}>
         <ChangeHeadPing title={pingInfo?.msg} timestamp={pingInfo?.timestamp} />
         <Stack
           direction="column"
@@ -1223,6 +1224,7 @@ export default function Game() {
             setChangeSetupDialogOpen(false);
           }}
         />
+        </IsPhoneDeviceContext.Provider>
       </GameContext.Provider>
     );
   }
@@ -1669,9 +1671,6 @@ function getDefaultSpeechMeetingId(speechMeetings) {
 
 export function TextMeetingLayout() {
   const game = useContext(GameContext);
-  // Computed once for the whole list and handed to each Message, rather than
-  // each Message registering its own matchMedia listener.
-  const isPhoneDevice = useIsPhoneDevice();
   const { singleState } = useContext(GameTypeContext);
   const { isolationEnabled, isolatedPlayers, isSpectator } = game;
   const { history, players, stateViewing, updateHistory, settings, filters, spectators } =
@@ -1844,7 +1843,6 @@ export function TextMeetingLayout() {
       return (
         <Message
           message={message}
-          isPhoneDevice={isPhoneDevice}
           review={game.review}
           history={history}
           players={players}
@@ -2189,11 +2187,19 @@ function getContentClasses(message) {
 /* CAUTION: This is rendered with useMemo in TextMeetingLayout, if you want to add something new to messages
     then you may need to update the memo dependencies!
 */
+/**
+ * Phone-vs-desktop for the message list.
+ *
+ * Message must not call useIsPhoneDevice() itself -- MUI's useMediaQuery
+ * registers a matchMedia listener per call, and Message renders once per
+ * message. Threading it as a prop was the first attempt and it silently broke
+ * PinnedMessages, because nothing makes a render site supply it. A context is
+ * read the same way from anywhere, so a new render site cannot forget.
+ */
+const IsPhoneDeviceContext = createContext(false);
+
 function Message(props) {
-  // Taken from props, not useIsPhoneDevice(): MUI's useMediaQuery registers a
-  // matchMedia listener per call, and this component is rendered once per
-  // message, so a long game re-registers thousands of them per render pass.
-  const isPhoneDevice = props.isPhoneDevice;
+  const isPhoneDevice = useContext(IsPhoneDeviceContext);
   const user = useContext(UserContext);
   const theme = useTheme();
   const [isHovering, setIsHovering] = useState(false);
@@ -5609,9 +5615,6 @@ export function SpeechFilter() {
 
 export function PinnedMessages() {
   const game = useContext(GameContext);
-  // Message takes this as a prop rather than calling useIsPhoneDevice() itself,
-  // so every render site has to supply it. Once per list, not once per message.
-  const isPhoneDevice = useIsPhoneDevice();
 
   if (game.stateViewing < 0) return <></>;
 
@@ -5634,7 +5637,6 @@ export function PinnedMessages() {
     return (
       <Message
         message={message}
-        isPhoneDevice={isPhoneDevice}
         review={game.review}
         history={game.history}
         players={game.players}

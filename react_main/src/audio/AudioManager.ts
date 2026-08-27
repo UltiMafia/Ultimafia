@@ -23,16 +23,28 @@ export interface AudioEntry {
   volume?: number;
   overrides?: boolean;
   channel?: AudioChannel;
+  /**
+   * Build and buffer this track at load time instead of on first play.
+   *
+   * Defaults to true for every channel except music, which is where the weight
+   * is -- all 26 effect files together are 1.5MB against 82MB of music. Set it
+   * explicitly for anything that does not fit that shape: a short cue filed
+   * under music/ needs `preload: true` or it will be inaudible when something
+   * stops it shortly after it starts, and a heavy effect outside music/ wants
+   * `preload: false` so it is not handed to the platform up front.
+   */
+  preload?: boolean;
 }
 
 export interface LoadedTrack {
-  /** Null until the track is first played. */
+  /** Null until the track is created -- at load time if preloaded, else on first play. */
   el: HTMLAudioElement | null;
   fileName: string;
   loop: boolean;
   volume: number;
   overrides: boolean;
   channel: AudioChannel;
+  preload: boolean;
 }
 
 interface ChannelVolumes {
@@ -98,8 +110,8 @@ export default class AudioManager {
     return this.volumes.sfx;
   }
 
-  /** True for short one-shot effects, false for the long music tracks. */
-  private static isSfx(channel: AudioChannel): boolean {
+  /** Default preload policy: everything except the long music tracks. */
+  private static defaultPreload(channel: AudioChannel): boolean {
     return channel !== "music" && channel !== "pregameMusic";
   }
 
@@ -145,11 +157,14 @@ export default class AudioManager {
         volume = 1,
         overrides = false,
         channel,
+        preload,
       } = entry;
 
       if (!fileName) continue;
 
       const resolvedChannel = channel || AudioManager.inferChannel(fileName);
+      const resolvedPreload =
+        preload ?? AudioManager.defaultPreload(resolvedChannel);
       const existing = this.tracks[fileName];
 
       if (existing) {
@@ -162,12 +177,13 @@ export default class AudioManager {
         existing.volume = volume;
         existing.overrides = overrides;
         existing.channel = resolvedChannel;
+        existing.preload = resolvedPreload;
 
         // The track may have been disposed since it was last loaded, leaving the
-        // record without its element. Rebuild it, or the effect stays silent
-        // until something plays it -- which is the lazy behaviour this preload
+        // record without its element. Rebuild it, or the track stays silent
+        // until something plays it -- which is the lazy behaviour preloading
         // exists to avoid.
-        if (AudioManager.isSfx(resolvedChannel) && !existing.el) {
+        if (resolvedPreload && !existing.el) {
           this.ensureElement(existing, true);
         }
       } else {
@@ -178,6 +194,7 @@ export default class AudioManager {
           volume,
           overrides,
           channel: resolvedChannel,
+          preload: resolvedPreload,
         };
         this.tracks[fileName] = track;
 
@@ -191,7 +208,7 @@ export default class AudioManager {
         // inaudible, because a sound that is stopped shortly after it starts (the
         // ready-check alarm, which ends as soon as everyone readies) was still
         // fetching when the stop arrived and never made a sound at all.
-        if (AudioManager.isSfx(resolvedChannel)) {
+        if (resolvedPreload) {
           this.ensureElement(track, true);
         }
       }
@@ -263,7 +280,7 @@ export default class AudioManager {
 
       try {
         track.el.pause();
-        track.el.src = "";
+        track.el.removeAttribute("src");
         track.el.load();
       } catch (e) {
         // Element may already be torn down by the browser.
