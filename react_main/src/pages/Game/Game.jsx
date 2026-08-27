@@ -5609,6 +5609,9 @@ export function SpeechFilter() {
 
 export function PinnedMessages() {
   const game = useContext(GameContext);
+  // Message takes this as a prop rather than calling useIsPhoneDevice() itself,
+  // so every render site has to supply it. Once per list, not once per message.
+  const isPhoneDevice = useIsPhoneDevice();
 
   if (game.stateViewing < 0) return <></>;
 
@@ -5631,6 +5634,7 @@ export function PinnedMessages() {
     return (
       <Message
         message={message}
+        isPhoneDevice={isPhoneDevice}
         review={game.review}
         history={game.history}
         players={game.players}

@@ -162,6 +162,14 @@ export default class AudioManager {
         existing.volume = volume;
         existing.overrides = overrides;
         existing.channel = resolvedChannel;
+
+        // The track may have been disposed since it was last loaded, leaving the
+        // record without its element. Rebuild it, or the effect stays silent
+        // until something plays it -- which is the lazy behaviour this preload
+        // exists to avoid.
+        if (AudioManager.isSfx(resolvedChannel) && !existing.el) {
+          this.ensureElement(existing, true);
+        }
       } else {
         const track: LoadedTrack = {
           el: null,
@@ -262,6 +270,10 @@ export default class AudioManager {
       }
       track.el = null;
     }
+
+    // Reset to the constructed state. Keeping the records around would leave the
+    // manager in a state a later load() has to repair rather than simply build.
+    this.tracks = {};
   }
 
   // ---------------------------------------------------------------------------
