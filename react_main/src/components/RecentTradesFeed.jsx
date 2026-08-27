@@ -14,7 +14,7 @@ import {
 import { UserContext, SiteInfoContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { StampItem } from "components/Scrapbook";
-import { NameWithAvatar } from "pages/User/User";
+import { NameWithAvatar } from "pages/User/UserWidgets";
 
 function StickerPlaceholder({ size = 32, onClick }) {
   return (

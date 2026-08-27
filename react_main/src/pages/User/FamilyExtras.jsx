@@ -16,7 +16,7 @@ import {
   Tooltip,
   IconButton,
 } from "@mui/material";
-import { NameWithAvatar } from "./User";
+import { NameWithAvatar } from "./UserWidgets";
 import { SiteInfoContext, UserContext } from "Contexts";
 import { Icon } from "@iconify/react";
 import Sparkline from "components/Sparkline";

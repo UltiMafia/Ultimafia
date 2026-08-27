@@ -25,7 +25,7 @@ import {
 import { useErrorAlert } from "./Alerts";
 import { UserSearchSelect } from "./Form";
 import { Time } from "./Basic";
-import { NameWithAvatar } from "pages/User/User";
+import { NameWithAvatar } from "pages/User/UserWidgets";
 import { UserContext, SiteInfoContext } from "../Contexts";
 import ReportTypology from "./ReportTypology";
 import { useViolations } from "../hooks/useViolations";

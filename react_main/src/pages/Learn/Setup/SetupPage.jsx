@@ -51,7 +51,7 @@ import { UserContext, SiteInfoContext } from "Contexts";
 import Comments from "pages/Community/Comments";
 import vegIcon from "images/emotes/veg.webp";
 import { SetupStrategiesSection } from "components/Strategies";
-import { NameWithAvatar } from "pages/User/User";
+import { NameWithAvatar } from "pages/User/UserWidgets";
 import { TextEditor } from "components/Form";
 import CustomMarkdown from "components/CustomMarkdown";
 import { Loading } from "components/Loading";

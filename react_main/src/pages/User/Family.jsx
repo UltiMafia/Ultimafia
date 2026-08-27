@@ -21,7 +21,7 @@ import { FamilyAvatarImage } from "utils/avatarUrl";
 import { useErrorAlert } from "components/Alerts";
 import { filterProfanity } from "components/Basic";
 import { TextEditor } from "components/Form";
-import { Avatar, NameWithAvatar, MediaEmbed } from "./User";
+import { Avatar, NameWithAvatar, MediaEmbed } from "./UserWidgets";
 import Comments from "../Community/Comments";
 import { Loading } from "components/Loading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";

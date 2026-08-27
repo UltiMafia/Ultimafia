@@ -13,7 +13,7 @@ import {
   GameTypeContext,
 } from "./Game";
 import { GameContext } from "../../Contexts";
-import { Avatar } from "../User/User";
+import { Avatar } from "../User/UserWidgets";
 import { SideMenu } from "./Game";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 

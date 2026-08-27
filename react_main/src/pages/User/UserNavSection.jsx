@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { NameWithAvatar, Avatar } from "./User";
+import { NameWithAvatar, Avatar } from "./UserWidgets";
 import { FamilyAvatarImage } from "utils/avatarUrl";
 import { useNow } from "../../hooks/useNow";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";

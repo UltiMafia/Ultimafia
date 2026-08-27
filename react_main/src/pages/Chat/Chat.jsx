@@ -31,7 +31,7 @@ import { useTheme } from "@mui/material/styles";
 
 import { ClientSocket as Socket } from "../../Socket";
 import { useErrorAlert } from "../../components/Alerts";
-import { NameWithAvatar, StatusIcon } from "../User/User";
+import { NameWithAvatar, StatusIcon } from "../User/UserWidgets";
 import { UserContext } from "../../Contexts";
 import { MaxChatMessageLength } from "../../Constants";
 import { Time, UserText, useOnOutsideClick } from "../../components/Basic";

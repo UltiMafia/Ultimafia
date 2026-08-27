@@ -30,7 +30,7 @@ import { PageNav } from "components/Nav";
 import TrophyCase from "components/TrophyCase";
 import { UserContext } from "Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
-import { NameWithAvatar } from "pages/User/User";
+import { NameWithAvatar } from "pages/User/UserWidgets";
 
 import { TIER_ICONS } from "utils/skillRating";
 

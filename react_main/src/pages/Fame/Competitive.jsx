@@ -19,7 +19,7 @@ import {
   Button,
   TextField,
 } from "@mui/material";
-import { NameWithAvatar, Avatar } from "../User/User";
+import { NameWithAvatar, Avatar } from "../User/UserWidgets";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import Setup from "components/Setup";
 import { Loading } from "components/Loading";

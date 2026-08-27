@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState, useContext } from "react";
+import React, { useEffect, useMemo, useReducer, useState, useContext } from "react";
 import { setCaptchaVisible } from "./utils";
 import update from "immutability-helper";
 import MuiLink from "@mui/material/Link";
@@ -25,7 +25,6 @@ export function UserProvider({
   const [inGame, setInGame] = useState(null);
   const [dpiCorrection, setDpiCorrection] = useState(undefined);
   const [iconFilter, setIconFilter] = useState({});
-  const [contrastLookup, setContrastLookup] = useState(null);
   const [user, setUser] = useState({
     loggedIn: false,
     loaded: false,
@@ -86,9 +85,13 @@ export function UserProvider({
   const autoContrastEnabled = user && user.settings && user.settings.minimumContrast !== undefined && user.settings.minimumContrast !== "none";
   const minimumContrast = !autoContrastEnabled ? 0 : Math.max(0, Number.parseFloat(user.settings.minimumContrast));
 
-  useEffect(() => {
-    setContrastLookup(generateContrastLookup(theme.palette.background.paper, minimumContrast));
-  }, [theme.palette.background.paper, minimumContrast]);
+  // Building the lookup is lazy now, so it can be derived during render instead
+  // of via an effect. That drops a render pass and means the very first paint
+  // already has the adjusted colors rather than flashing unadjusted ones.
+  const contrastLookup = useMemo(
+    () => generateContrastLookup(theme.palette.background.paper, minimumContrast),
+    [theme.palette.background.paper, minimumContrast]
+  );
 
   function _autoContrastColor(color) {
     if (minimumContrast == 0) {

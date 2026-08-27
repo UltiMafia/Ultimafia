@@ -22,7 +22,7 @@ import {
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
-import { Avatar } from "../User/User";
+import { Avatar } from "../User/UserWidgets";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/game.css";

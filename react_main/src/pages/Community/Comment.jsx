@@ -9,7 +9,7 @@ import CustomMarkdown from "components/CustomMarkdown";
 import { VoteWidget } from "components/VoteWidget";
 import { EmoteReactions } from "components/EmoteReactions";
 import "css/emote-reactions.css";
-import { NameWithAvatar } from "../User/User";
+import { NameWithAvatar } from "../User/UserWidgets";
 
 import { Box, Divider, Grid, IconButton, Paper, Stack } from "@mui/material";
 import { useTheme } from "@mui/material/styles";

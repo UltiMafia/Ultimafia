@@ -14,7 +14,7 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { useErrorAlert } from "../../components/Alerts";
 import { UserContext, SiteInfoContext } from "../../Contexts";
-import { Avatar } from "../User/User";
+import { Avatar } from "../User/UserWidgets";
 import { TextEditor } from "../../components/Form";
 import CustomMarkdown from "../../components/CustomMarkdown";
 

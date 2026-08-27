@@ -105,17 +105,26 @@ router.get("/info", async function (req, res) {
       return;
     }
 
+    // These four are independent of each other, so issue them together rather
+    // than as four sequential round trips — this endpoint gates the client's
+    // first render, so its latency lands directly on page load time.
+    const [inGame, userPerms, isDonor, userDb] = await Promise.all([
+      redis.inGame(user.id),
+      redis.getUserPermissions(userId),
+      redis.userInDonorGroup(userId),
+      // Coin balance comes straight from the database to guarantee consistency
+      // with the shop.
+      models.User.findOne({ id: userId }).select("coins").lean(),
+    ]);
+
+    const perms = userPerms || {};
     user.csrf = req.session.user.csrf;
-    user.inGame = await redis.inGame(user.id);
-    user.perms = (await redis.getUserPermissions(userId)) || {};
-    user.rank = String(user.perms.rank || 0);
-    user.perms = user.perms.perms || {};
-    user.isDonor = await redis.userInDonorGroup(userId);
-    
-    // Fetch coin balance directly from database to guarantee consistency with the shop
-    const userDb = await models.User.findOne({ id: userId }).select("coins").lean();
+    user.inGame = inGame;
+    user.rank = String(perms.rank || 0);
+    user.perms = perms.perms || {};
+    user.isDonor = isDonor;
     user.coins = userDb ? userDb.coins : 0;
-    
+
     delete user.status;
 
     res.send(user);

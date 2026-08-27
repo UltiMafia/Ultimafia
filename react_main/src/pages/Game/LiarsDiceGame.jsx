@@ -11,7 +11,7 @@ import {
   MobileLayout,
   GameTypeContext,
 } from "./Game";
-import { Avatar } from "../User/User";
+import { Avatar } from "../User/UserWidgets";
 import { GameContext } from "../../Contexts";
 import { liarsDiceAudioConfig } from "../../audio/audioConfigs";
 

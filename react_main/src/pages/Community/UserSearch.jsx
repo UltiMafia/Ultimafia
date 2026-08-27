@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useErrorAlert } from "../../components/Alerts";
-import { NameWithAvatar, StatusIcon } from "../User/User";
+import { NameWithAvatar, StatusIcon } from "../User/UserWidgets";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { Time } from "../../components/Basic";
 import {

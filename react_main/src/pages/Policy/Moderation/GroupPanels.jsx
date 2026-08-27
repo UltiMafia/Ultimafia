@@ -12,7 +12,7 @@ import {
 import { useErrorAlert } from "components/Alerts";
 import { UserSearchSelect } from "components/Form";
 import { SiteInfoContext } from "Contexts";
-import { Badge, NameWithAvatar, StatusIcon } from "pages/User/User";
+import { Badge, NameWithAvatar, StatusIcon } from "pages/User/UserWidgets";
 import { Loading } from "components/Loading";
 
 export function GroupPanels({ user }) {
