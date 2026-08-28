@@ -160,7 +160,23 @@
     </script>
 
     <link rel="stylesheet" href="/css/fontawesome.min.css" />
-    <script src="https://www.google.com/recaptcha/api.js?render=%REACT_APP_RECAPTCHA_KEY%"></script>
+    <!--
+      reCAPTCHA is currently disabled: verifyRecaptcha() in src/utils.jsx returns
+      before it ever touches window.grecaptcha, so nothing consumed this script.
+      It was still loading parser-blocking on every page (~189ms network + ~96ms
+      of main-thread eval) with an invalid site key, because the placeholder it
+      used was Create React App syntax (percent-delimited) and stopped being
+      substituted when this project moved to rsbuild, which uses EJS delimiters
+      like the assetPrefix references above.
+
+      To re-enable, all three of these are needed:
+        1. drop the early "return;" in verifyRecaptcha (src/utils.jsx)
+        2. restore the script tag, writing the key with EJS delimiters rather
+           than percent signs, and register it via html.templateParameters in
+           rsbuild.config.ts from loadEnv().rawPublicVars.REACT_APP_RECAPTCHA_KEY
+        3. make verifyRecaptcha tolerate window.grecaptcha being absent if the
+           tag is restored with async
+    -->
   </head>
 
   <body>

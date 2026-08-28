@@ -71,31 +71,40 @@ export default function Setup(props) {
     !useRoleGroups &&
     props.setup.roles.length > 1;
 
-  // Prevent overflow
+  // Prevent overflow.
+  //
+  // This measures synchronously before paint, and a profile renders one Setup
+  // per game in the history list, so it is worth keeping cheap. offsetLeft /
+  // offsetWidth read the same layout information as getBoundingClientRect()
+  // without allocating a DOMRect per call, and all reads below happen with no
+  // interleaved writes so they resolve against a single layout pass.
   useLayoutEffect(() => {
-    if (!iconContainerRef.current.lastChild) {
+    const container = iconContainerRef.current;
+    if (!container || !container.lastChild) {
       return;
     }
 
-    const rContainer = iconContainerRef.current.getBoundingClientRect();
-    const rLastChild =
-      iconContainerRef.current.lastChild.getBoundingClientRect();
+    // Offsets are relative to the same offsetParent, so they are directly
+    // comparable and no absolute positioning is needed.
+    const containerRightOffset = container.offsetLeft + container.offsetWidth;
+    const lastChild = container.lastChild;
+    const lastChildRightOffset = lastChild.offsetLeft + lastChild.offsetWidth;
 
-    const containerRightOffset = rContainer.x + rContainer.width;
-    const lastChildRightOffset = rLastChild.x + rLastChild.width;
-
-    if (lastChildRightOffset > containerRightOffset) {
-      // If true, then component is overflowing. Determine the last child that fits and prune the rest.
-      var numFittingIcons = 0;
-      for (let child of iconContainerRef.current.children) {
-        const rChild = child.getBoundingClientRect();
-        const childRightOffset = rChild.x + rChild.width;
-        if (childRightOffset <= containerRightOffset) {
-          numFittingIcons++;
-        }
-      }
-      setMaxIconsPerRow(numFittingIcons);
+    if (lastChildRightOffset <= containerRightOffset) {
+      return; // Not overflowing — nothing to prune.
     }
+
+    // Children are laid out left to right, so the first one that overflows ends
+    // the run; no need to measure the remainder.
+    let numFittingIcons = 0;
+    for (const child of container.children) {
+      if (child.offsetLeft + child.offsetWidth > containerRightOffset) break;
+      numFittingIcons++;
+    }
+
+    // Skip the state update (and the extra render plus layout pass it forces)
+    // when the answer has not changed.
+    setMaxIconsPerRow((prev) => (prev === numFittingIcons ? prev : numFittingIcons));
   }, [iconContainerRef]);
 
   // Extract events from all setup types

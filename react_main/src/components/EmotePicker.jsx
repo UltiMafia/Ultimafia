@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import EmojiPicker from "emoji-picker-react";
+import React, { useContext, useState, Suspense, lazy } from "react";
+
 import {
   Box,
   Button,
@@ -18,6 +18,10 @@ import { usePopoverOpen } from "hooks/usePopoverOpen";
 import "css/emotes.css";
 
 import happy from "images/emotes/happy.webp";
+
+// emoji-picker-react is large and only ever renders inside the popover below,
+// so keep it out of the chunk every page with a comment box has to download.
+const EmojiPicker = lazy(() => import("emoji-picker-react"));
 
 function StickerPanel({ stickers, onSelect }) {
   if (!stickers.length) {
@@ -222,6 +226,7 @@ function EmotePicker({ onEmoteSelected, className = "", players }) {
           {panel === "stickers" ? (
             <StickerPanel stickers={stickers} onSelect={selectSticker} />
           ) : (
+            <Suspense fallback={null}>
             <EmojiPicker
               width="100%"
               height="80vh"
@@ -240,6 +245,7 @@ function EmotePicker({ onEmoteSelected, className = "", players }) {
                 "--epr-search-border-color": "var(--mui-palette-divider)",
               }}
             />
+            </Suspense>
           )}
         </Box>
       </Popover>
