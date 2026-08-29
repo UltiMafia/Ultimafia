@@ -20,6 +20,9 @@ import {
   IconButton,
   List,
   ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
   MenuItem,
   Paper,
   Select,
@@ -27,6 +30,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useTheme } from "@mui/material/styles";
 
 import { ClientSocket as Socket } from "../../Socket";
@@ -670,44 +674,62 @@ function Message(props) {
   const message = props.message;
   const socket = props.socket;
 
-  const [showContextMenu, setShowContextMenu] = useState(false);
-  const [clickCoords, setClickCoords] = useState({});
+  const [menuPosition, setMenuPosition] = useState(null);
 
-  const messageRef = useRef();
-  const contextMenuRef = useRef();
+  const longPressTimerRef = useRef();
+  const touchStartRef = useRef();
   const user = useContext(UserContext);
   const isSelf = message.sender.id === user.id;
+  const canDelete = isSelf || user.perms.deleteChatMessage;
   const age = Date.now() - message.date;
   const showTimestamp = age > 1000 * 60;
 
-  useOnOutsideClick(messageRef, () => setShowContextMenu(false));
-
   useEffect(() => {
-    if (!contextMenuRef.current) return;
+    return () => clearTimeout(longPressTimerRef.current);
+  }, []);
 
-    const messageRect = messageRef.current.getBoundingClientRect();
+  function openDeleteMenu(x, y) {
+    if (!canDelete) return;
+    setMenuPosition({ top: y, left: x });
+  }
 
-    contextMenuRef.current.style.top = clickCoords.y - messageRect.top + "px";
+  function onContextMenu(e) {
+    if (!canDelete) return;
+    e.preventDefault();
+    openDeleteMenu(e.clientX, e.clientY);
+  }
 
-    if (!isSelf)
-      contextMenuRef.current.style.left =
-        clickCoords.x - messageRect.left + "px";
-    else
-      contextMenuRef.current.style.right =
-        messageRect.right - clickCoords.x + "px";
+  function onTouchStart(e) {
+    if (!canDelete || e.touches.length !== 1) return;
 
-    contextMenuRef.current.style.visibility = "visible";
-  }, [clickCoords]);
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    clearTimeout(longPressTimerRef.current);
+    longPressTimerRef.current = setTimeout(() => {
+      openDeleteMenu(touch.clientX, touch.clientY);
+    }, 550);
+  }
 
-  function onMessageClick(e) {
-    if (e.type === "contextmenu") {
-      e.preventDefault();
-      setShowContextMenu(true);
-      setClickCoords({ x: e.clientX, y: e.clientY });
+  function onTouchMove(e) {
+    const start = touchStartRef.current;
+    const touch = e.touches[0];
+    if (!start || !touch) return;
+
+    if (
+      Math.abs(touch.clientX - start.x) > 10 ||
+      Math.abs(touch.clientY - start.y) > 10
+    ) {
+      clearTimeout(longPressTimerRef.current);
     }
   }
 
+  function cancelLongPress() {
+    clearTimeout(longPressTimerRef.current);
+    touchStartRef.current = null;
+  }
+
   function onDeleteClick() {
+    setMenuPosition(null);
     socket.send("deleteMessage", message.id);
   }
 
@@ -735,6 +757,11 @@ function Message(props) {
   return (
     <Box
       className={`message ${isSelf ? "self" : ""}`}
+      onContextMenu={onContextMenu}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={cancelLongPress}
+      onTouchCancel={cancelLongPress}
       sx={{
         display: "flex",
         alignItems: "center",
@@ -772,8 +799,6 @@ function Message(props) {
           variant="body2"
           component="span"
           className="content"
-          onContextMenu={onMessageClick}
-          ref={messageRef}
           sx={{
             flexGrow: 1,
             minWidth: 0,
@@ -804,14 +829,20 @@ function Message(props) {
           </Typography>
         )}
       </Stack>
-      {showContextMenu &&
-        (user.id === message.sender.id || user.perms.deleteChatMessage) && (
-          <div className="context" ref={contextMenuRef}>
-            <div className="item" onClick={onDeleteClick}>
-              Delete
-            </div>
-          </div>
-        )}
+      <Menu
+        open={Boolean(menuPosition)}
+        onClose={() => setMenuPosition(null)}
+        anchorReference="anchorPosition"
+        anchorPosition={menuPosition}
+        slotProps={{ paper: { sx: { minWidth: 150, borderRadius: 2 } } }}
+      >
+        <MenuItem onClick={onDeleteClick} sx={{ color: "error.main", py: 1.25 }}>
+          <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
+            <DeleteOutlineIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="Delete message" />
+        </MenuItem>
+      </Menu>
     </Box>
   );
 }

@@ -258,25 +258,6 @@
   color: #598dff;
 }
 
-.chat-wrapper .message .context {
-  position: absolute;
-  padding: 5px 0px;
-
-  background-color: var(--scheme-color-background);
-  visibility: hidden;
-  z-index: 20;
-}
-
-.chat-wrapper .message .context .item {
-  padding: 5px 10px;
-
-  cursor: pointer;
-}
-
-.chat-wrapper .message .context .item:hover {
-  opacity: 0.8;
-}
-
 .chat-wrapper .channel-input-wrapper {
   display: flex;
   flex-flow: row nowrap;
