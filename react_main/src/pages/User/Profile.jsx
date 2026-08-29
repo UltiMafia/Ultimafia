@@ -23,7 +23,7 @@ import Setup from "components/Setup";
 import { Time, filterProfanity } from "components/Basic";
 import { useErrorAlert } from "components/Alerts";
 import { getPageNavFilterArg, PageNav } from "components/Nav";
-import { RatingThresholds, RequiredTotalForStats } from "Constants";
+import { RatingThresholds, RequiredTotalForStats, MIN_RATED_GAMES } from "Constants";
 import { capitalize } from "utils";
 import {
   getTotalGames,
@@ -1002,6 +1002,11 @@ export default function Profile() {
     zIndex: 1,
   };
   const headingStyle = {};
+  // Body text that sits directly on the panel rather than on a Paper surface.
+  // MUI's text.primary/text.secondary are resolved against the theme background,
+  // not against a custom profile backgroundColor, so text drawn straight onto the
+  // panel needs the same treatment the headings already get.
+  const panelTextStyle = {};
   const bannerStyle = {};
 
   if (settings.backgroundColor) {
@@ -1013,6 +1018,7 @@ export default function Profile() {
     } else {
       headingStyle.color = "#fff";
     }
+    panelTextStyle.color = headingStyle.color;
   }
 
   const bannerExtSafe = ["webp", "gif", "png", "jpg", "jpeg"].includes(bannerExt)
@@ -1034,6 +1040,9 @@ export default function Profile() {
   var ratings = [];
   var totalGames = 0;
   var hasAnyStats = false;
+
+  const ratedGames = skillRating?.gamesPlayed ?? 0;
+  const ratedGamesRequired = skillRating?.required ?? MIN_RATED_GAMES;
 
   if (stats && stats["Mafia"] && stats["Mafia"].all) {
     hasAnyStats = getTotalGames(stats["Mafia"].all) >= RequiredTotalForStats;
@@ -1920,14 +1929,14 @@ export default function Profile() {
                   {totalGames < RequiredTotalForStats ? (
                     <Typography
                       variant="body2"
-                      sx={{ textAlign: "center", opacity: 0.5, py: 2 }}
+                      sx={{ textAlign: "center", opacity: 0.5, py: 2, ...panelTextStyle }}
                     >
                       No data yet.
                     </Typography>
                   ) : (
                     <>
                       <Stack spacing={2} sx={{ px: 1, py: 1 }}>
-                        <Paper variant="outlined" sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderRadius: 2, backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : '#ffffff' }}>
+                        <Paper variant="outlined" sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderRadius: 2, backgroundColor: "background.paper" }}>
                           <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: "text.secondary" }}>
                             Win/Loss Distribution
                           </Typography>
@@ -1943,7 +1952,7 @@ export default function Profile() {
                           </Typography>
                         </Paper>
 
-                        {statsBucket === "ranked" && skillRating ? (
+                        {statsBucket === "ranked" && skillRating?.tier ? (
                           <Paper
                             variant="outlined"
                             sx={{
@@ -1951,7 +1960,7 @@ export default function Profile() {
                               display: "flex",
                               alignItems: "center",
                               gap: 1,
-                              backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : '#ffffff',
+                              backgroundColor: "background.paper",
                               borderColor: "divider",
                               borderRadius: 2
                             }}
@@ -2024,9 +2033,15 @@ export default function Profile() {
                             </Stack>
                           </Paper>
                         ) : statsBucket === "ranked" ? (
-                          <Paper variant="outlined" sx={{ p: 2, display: "flex", justifyContent: "center", alignItems: "center", borderRadius: 2, backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.02)' : '#ffffff' }}>
+                          <Paper variant="outlined" sx={{ p: 2, display: "flex", justifyContent: "center", alignItems: "center", borderRadius: 2, backgroundColor: "background.paper" }}>
                             <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic", textAlign: "center", p: 1 }}>
-                              No rated games played yet. Play ranked or competitive games to establish a skill rating.
+                              {/* Counts rated games from the rating system itself, not the
+                                  profile's total game count -- the two differ, and for players
+                                  from before the rating system they differ by thousands. */}
+                              {ratedGames > 0
+                                ? `Not enough rated games played (${ratedGames}/${ratedGamesRequired}). Play at least ${ratedGamesRequired} ranked or competitive games to establish a skill rating.`
+                                : `No rated games played yet. Play at least ${ratedGamesRequired} ranked or competitive games to establish a skill rating.`
+                              }
                             </Typography>
                           </Paper>
                         ) : null}

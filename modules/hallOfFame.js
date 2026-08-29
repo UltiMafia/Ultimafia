@@ -6,7 +6,7 @@ const {
   getTotalObtainableStamps,
 } = require("../shared/scrapbook");
 const skillRating = require("./skillRating");
-const { DEFAULT_MU, DEFAULT_SIGMA } = skillRating;
+const { DEFAULT_MU, DEFAULT_SIGMA, MIN_RATED_GAMES } = skillRating;
 
 const TOTAL_OBTAINABLE_STAMPS = getTotalObtainableStamps(roleData);
 
@@ -32,7 +32,21 @@ const SUPPORTED_SORT_KEYS = [
   "scrapbookCompletion",
   "scrapbookCount",
   "skillRating",
+  "skillMu",
+  "skillSigma",
+  "skillGamesPlayed",
+  "skillTier",
 ];
+
+// Ordinal used to sort the Tier column; unranked/redacted rows fall to the bottom.
+const TIER_ORDER = {
+  Master: 6,
+  Diamond: 5,
+  Platinum: 4,
+  Gold: 3,
+  Silver: 2,
+  Bronze: 1,
+};
 
 const TROPHY_TYPE_WEIGHTS = {
   crown: 3,
@@ -104,8 +118,8 @@ function getTrophyWeight(type) {
 }
 
 function compareValues(a, b, key, sortDirection = "desc") {
-  const aValue = a[key] ?? 0;
-  const bValue = b[key] ?? 0;
+  const aValue = key === "skillTier" ? TIER_ORDER[a[key]] ?? 0 : a[key] ?? 0;
+  const bValue = key === "skillTier" ? TIER_ORDER[b[key]] ?? 0 : b[key] ?? 0;
   if (bValue !== aValue) {
     const directionMultiplier = sortDirection === "asc" ? 1 : -1;
     return (aValue - bValue) * directionMultiplier;
@@ -246,7 +260,7 @@ async function buildRows() {
 
   const activeRanks = [];
   for (const user of users) {
-    if (user.skillRating && user.skillRating.gamesPlayed > 0) {
+    if (user.skillRating && user.skillRating.gamesPlayed >= MIN_RATED_GAMES) {
       const mu = user.skillRating.mu ?? DEFAULT_MU;
       const sigma = user.skillRating.sigma ?? DEFAULT_SIGMA;
       activeRanks.push(mu - 3.0 * sigma);
@@ -268,7 +282,8 @@ async function buildRows() {
     const sigma = user.skillRating?.sigma ?? DEFAULT_SIGMA;
     const gamesPlayed = user.skillRating?.gamesPlayed ?? 0;
     const conservativeRank = mu - 3.0 * sigma;
-    const tier = gamesPlayed > 0 ? skillRating.getTier(conservativeRank, activeRanks) : "Unranked";
+    const isRated = gamesPlayed >= MIN_RATED_GAMES;
+    const tier = isRated ? skillRating.getTier(conservativeRank, activeRanks) : "Unranked";
 
     return {
       userId: user.id,
@@ -295,9 +310,11 @@ async function buildRows() {
         hideStatistics: Boolean(user.settings?.hideStatistics),
         hideKarma: Boolean(user.settings?.hideKarma),
       },
-      skillRating: roundMetric(conservativeRank, 4),
-      skillMu: roundMetric(mu, 4),
-      skillSigma: roundMetric(sigma, 4),
+      // null rather than 0: 0 is a legitimate conservative rank (a default-rated
+      // player sits at exactly 25 - 3 * (25/3)), so it cannot double as "no rating".
+      skillRating: isRated ? roundMetric(conservativeRank, 4) : null,
+      skillMu: isRated ? roundMetric(mu, 4) : null,
+      skillSigma: isRated ? roundMetric(sigma, 4) : null,
       skillTier: tier,
       skillGamesPlayed: gamesPlayed,
     };
@@ -309,12 +326,23 @@ async function buildRows() {
   };
 }
 
-function applyCategoryRules(rows, category) {
-  if (category === "skillRating") {
-    return rows.filter((row) => row.skillGamesPlayed > 0);
+function applyCategoryRules(rows, category, minGames) {
+  let filtered = rows;
+
+  if (CATEGORY_DEFINITIONS[category].minGamesRequired) {
+    filtered = filtered.filter((row) => row.totalGames >= minGames);
   }
 
-  return rows;
+  if (category === "skillRating") {
+    // A player who hides their statistics is opting out of having their rating
+    // displayed, so they are not listed on the rating leaderboard at all. Other
+    // categories keep the row and redact the hidden fields in buildResponseRows.
+    filtered = filtered.filter(
+      (row) => row.skillGamesPlayed >= MIN_RATED_GAMES && !row.privacy.hideStatistics
+    );
+  }
+
+  return filtered;
 }
 
 function assignRanks(rows, category, sortBy, sortDirection) {
@@ -328,32 +356,41 @@ function assignRanks(rows, category, sortBy, sortDirection) {
 }
 
 function buildResponseRows(rows) {
-  return rows.map((row) => ({
-    userId: row.userId,
-    username: row.username,
-    avatar: row.avatar,
-    vanityUrl: row.vanityUrl,
-    rank: row.rank,
-    trophies: row.trophies,
-    trophyScore: row.trophyScore,
-    wins: row.wins,
-    losses: row.losses,
-    totalGames: row.totalGames,
-    winRate: row.winRate,
-    kudos: row.kudos,
-    karma: row.karma,
-    fortune: row.fortune,
-    prestige: row.prestige,
-    achievementsCount: row.achievementsCount,
-    achievementScore: row.achievementScore,
-    scrapbookCount: row.scrapbookCount,
-    scrapbookCompletion: row.scrapbookCompletion,
-    skillRating: row.skillRating,
-    skillMu: row.skillMu,
-    skillSigma: row.skillSigma,
-    skillTier: row.skillTier,
-    skillGamesPlayed: row.skillGamesPlayed,
-  }));
+  return rows.map((row) => {
+    // `privacy` was previously computed and then dropped, so hideStatistics /
+    // hideKarma had no effect on the leaderboard at all. Ranks are still assigned
+    // from the true values; only the displayed figures are withheld.
+    const hideStats = row.privacy.hideStatistics;
+    const hideKarma = row.privacy.hideKarma;
+
+    return {
+      userId: row.userId,
+      username: row.username,
+      avatar: row.avatar,
+      vanityUrl: row.vanityUrl,
+      rank: row.rank,
+      trophies: row.trophies,
+      trophyScore: row.trophyScore,
+      wins: hideStats ? null : row.wins,
+      losses: hideStats ? null : row.losses,
+      totalGames: hideStats ? null : row.totalGames,
+      winRate: hideStats ? null : row.winRate,
+      kudos: row.kudos,
+      karma: hideKarma ? null : row.karma,
+      fortune: row.fortune,
+      prestige: row.prestige,
+      achievementsCount: row.achievementsCount,
+      achievementScore: row.achievementScore,
+      scrapbookCount: row.scrapbookCount,
+      scrapbookCompletion: row.scrapbookCompletion,
+      skillRating: hideStats ? null : row.skillRating,
+      skillMu: hideStats ? null : row.skillMu,
+      skillSigma: hideStats ? null : row.skillSigma,
+      skillTier: hideStats ? null : row.skillTier,
+      skillGamesPlayed: hideStats ? null : row.skillGamesPlayed,
+      privacy: { hideStatistics: hideStats, hideKarma },
+    };
+  });
 }
 
 async function getLeaderboard({
@@ -385,6 +422,9 @@ async function getLeaderboard({
 
   const cacheKey = [
     "hof",
+    // Bump when the shape or filtering of a row changes, so a deploy does not
+    // serve pre-change pages out of the 5 minute cache.
+    "v2",
     category,
     timeRange,
     safeMinGames,
@@ -405,7 +445,7 @@ async function getLeaderboard({
   }
 
   const { rows, scrapbookTotal } = await buildRows();
-  const filteredRows = applyCategoryRules(rows, category);
+  const filteredRows = applyCategoryRules(rows, category, safeMinGames);
   const rankedRows = assignRanks(filteredRows, category, safeSortBy, safeSortDirection);
   const total = rankedRows.length;
   const pages = Math.max(Math.ceil(total / safePageSize), 1);
@@ -429,6 +469,7 @@ async function getLeaderboard({
     filters: {
       timeRange,
       minGames: safeMinGames,
+      minRatedGames: MIN_RATED_GAMES,
     },
     sort: {
       sortBy: safeSortBy,
