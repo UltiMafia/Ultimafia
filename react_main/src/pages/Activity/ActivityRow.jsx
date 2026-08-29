@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Box, Stack, Tooltip, Typography } from "@mui/material";
 
-import { NameWithAvatar } from "pages/User/User";
+import { NameWithAvatar } from "pages/User/UserWidgets";
 
 const TYPE_VERBS = {
   comment: "commented on",

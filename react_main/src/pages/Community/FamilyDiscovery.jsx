@@ -28,7 +28,7 @@ import {
 import { SiteInfoContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { Loading } from "components/Loading";
-import { NameWithAvatar } from "../User/User";
+import { NameWithAvatar } from "../User/UserWidgets";
 import { CoinAmount } from "../User/FamilyExtras";
 import { FamilyAvatarImage } from "utils/avatarUrl";
 

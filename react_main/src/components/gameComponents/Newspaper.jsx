@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Divider, Popover, Stack, Typography } from "@mui/material";
 
 import { emotify } from "../Emotes";
-import { Avatar } from "../../pages/User/User";
+import { Avatar } from "../../pages/User/UserWidgets";
 import { GameContext, SiteInfoContext, UserContext } from "Contexts";
 import { usePopoverOpen } from "../../hooks/usePopoverOpen";
 import { PopoverContent } from "../Popover";

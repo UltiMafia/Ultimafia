@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, Suspense, lazy } from "react";
 import { Button, Stack } from "@mui/material";
-import { Auth } from "./Auth";
+
+// Auth pulls in firebase/auth — only load it when the dialog is actually opened.
+const Auth = lazy(() =>
+  import("./Auth").then((m) => ({ default: m.Auth }))
+);
 
 export const GuestAuthButtons = () => {
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
@@ -42,12 +46,16 @@ export const GuestAuthButtons = () => {
           Register
         </Button>
       </Stack>
-      <Auth
-        open={authDialogOpen}
-        onClose={() => setAuthDialogOpen(false)}
-        defaultTab={authDialogMode}
-        asDialog={true}
-      />
+      {authDialogOpen && (
+        <Suspense fallback={null}>
+          <Auth
+            open={authDialogOpen}
+            onClose={() => setAuthDialogOpen(false)}
+            defaultTab={authDialogMode}
+            asDialog={true}
+          />
+        </Suspense>
+      )}
     </>
   );
 };

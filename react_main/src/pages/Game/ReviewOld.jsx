@@ -4,7 +4,7 @@ import axios from "axios";
 
 import { useErrorAlert } from "../../components/Alerts";
 import { SubNav } from "../../components/Nav";
-import { NameWithAvatar } from "../User/User";
+import { NameWithAvatar } from "../User/UserWidgets";
 import Setup from "../../components/Setup";
 import { RoleCount } from "../../components/Roles";
 import { Time } from "../../components/Basic";

@@ -13,7 +13,7 @@ import {
   DialogTitle,
   Divider,
 } from "@mui/material";
-import { NameWithAvatar } from "pages/User/User";
+import { NameWithAvatar } from "pages/User/UserWidgets";
 import { UserContext, SiteInfoContext } from "../Contexts";
 import { useErrorAlert } from "./Alerts";
 import AppealDialog from "./AppealDialog";

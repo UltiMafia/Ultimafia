@@ -17,7 +17,7 @@ import {
   getLoveTitle,
   NameWithAvatar,
   OnlineStatus,
-} from "./User";
+} from "./UserWidgets";
 import { FamilyAvatarImage } from "utils/avatarUrl";
 import { HiddenUpload, TextEditor } from "components/Form";
 import BannerUpload from "components/BannerUpload";
@@ -77,13 +77,26 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
-export const KUDOS_ICON = require(`images/kudos.png`);
-export const KARMA_ICON = require(`images/karma.png`);
-export const POINTS_ICON = require(`images/points.png`);
-export const POINTS_NEGATIVE_ICON = require(`images/pointsNegative.png`);
-export const PRESTIGE_ICON = require(`images/prestige.png`);
-export const ACHIEVEMENTS_ICON = require(`images/achievements.png`);
-export const DAILY_ICON = require(`images/dailyChallenges.png`);
+import {
+  KUDOS_ICON,
+  KARMA_ICON,
+  POINTS_ICON,
+  POINTS_NEGATIVE_ICON,
+  PRESTIGE_ICON,
+  ACHIEVEMENTS_ICON,
+  DAILY_ICON,
+} from "./profileIcons";
+
+// Re-exported for backwards compatibility with existing import sites.
+export {
+  KUDOS_ICON,
+  KARMA_ICON,
+  POINTS_ICON,
+  POINTS_NEGATIVE_ICON,
+  PRESTIGE_ICON,
+  ACHIEVEMENTS_ICON,
+  DAILY_ICON,
+};
 
 import { TIER_ICONS, getConservativeRank } from "utils/skillRating";
 

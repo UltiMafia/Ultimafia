@@ -4,9 +4,9 @@ import axios from "axios";
 import { Box, Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 
-import { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "pages/User/Profile";
+import { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "pages/User/profileIcons";
 import { PieChart } from "pages/User/PieChart";
-import { Avatar } from "pages/User/User";
+import { Avatar } from "pages/User/UserWidgets";
 
 import { TIER_ICONS, getConservativeRank } from "utils/skillRating";
 import { UserContext, SiteInfoContext } from "Contexts";

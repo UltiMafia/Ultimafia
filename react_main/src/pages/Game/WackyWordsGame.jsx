@@ -14,7 +14,7 @@ import {
   SideMenu,
 } from "./Game";
 import { GameContext } from "../../Contexts";
-import { Avatar } from "../User/User";
+import { Avatar } from "../User/UserWidgets";
 
 import "css/gameAcrotopia.css";
 

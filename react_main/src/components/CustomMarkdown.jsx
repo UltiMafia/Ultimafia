@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
 import { emotify } from "components/Emotes";
-import { MediaEmbed } from "pages/User/User";
+import { MediaEmbed } from "pages/User/UserWidgets";
 import { SiteInfoContext } from "../Contexts";
 import { InlineRoleMention } from "./Roles";
 

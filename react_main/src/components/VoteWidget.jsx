@@ -4,7 +4,7 @@ import update from "immutability-helper";
 
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
-import { NameWithAvatar } from "pages/User/User";
+import { NameWithAvatar } from "pages/User/UserWidgets";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 
 import {
