@@ -41,10 +41,25 @@ async function acquireTradeLock(key) {
   };
 }
 
+/** Escapes regex metacharacters so user input cannot alter the pattern. */
+function escapeRegex(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function isPositiveInteger(val) {
   const num = Number(val);
   return Number.isInteger(num) && num > 0;
 }
+
+/**
+ * Share counts drive an O(n) walk up the bonding curve, so they must be bounded
+ * before any pricing happens — not just checked for affordability afterwards.
+ */
+function isValidShareCount(val) {
+  return isPositiveInteger(val) && Number(val) <= stockMarket.MAX_SHARES_PER_TRADE;
+}
+
+const INVALID_SHARES_MSG = `Shares must be a positive integer no greater than ${stockMarket.MAX_SHARES_PER_TRADE}.`;
 
 /** Returns true if a MongoDB updateOne/findOneAndUpdate actually modified a document. */
 function wasModified(result) {
@@ -146,8 +161,8 @@ function createBuyHandler(config) {
       const entityId = req.body[config.requestIdField];
       const sharesToBuy = Number(req.body.shares);
 
-      if (!entityId || !isPositiveInteger(sharesToBuy)) {
-        return errors.badRequest(res, "Invalid buy data. Shares must be a positive integer.");
+      if (!entityId || !isValidShareCount(sharesToBuy)) {
+        return errors.badRequest(res, `Invalid buy data. ${INVALID_SHARES_MSG}`);
       }
 
       const releaseLock = await acquireTradeLock(`${config.lockPrefix}:${entityId}`);
@@ -258,8 +273,8 @@ function createSellHandler(config) {
       const entityId = req.body[config.requestIdField];
       const sharesToSell = Number(req.body.shares);
 
-      if (!entityId || !isPositiveInteger(sharesToSell)) {
-        return errors.badRequest(res, "Invalid sell data. Shares must be a positive integer.");
+      if (!entityId || !isValidShareCount(sharesToSell)) {
+        return errors.badRequest(res, `Invalid sell data. ${INVALID_SHARES_MSG}`);
       }
 
       const releaseLock = await acquireTradeLock(`${config.lockPrefix}:${entityId}`);
@@ -470,7 +485,7 @@ router.get("/transactions", async function (req, res) {
       }
 
       if (search) {
-        const matchingUsers = await models.User.find({ name: { $regex: search, $options: "i" } })
+        const matchingUsers = await models.User.find({ name: { $regex: escapeRegex(search), $options: "i" } })
           .select("id")
           .lean()
           .exec();
@@ -486,9 +501,9 @@ router.get("/transactions", async function (req, res) {
         ];
       }
 
-      const totalPromise = Object.keys(queryFilter).length > 0
-        ? models.StockTransaction.countDocuments(queryFilter).exec()
-        : models.StockTransaction.estimatedDocumentCount().exec();
+      // Always countDocuments: estimatedDocumentCount ignores the filter and can
+      // disagree with the rows actually returned, breaking the pager.
+      const totalPromise = models.StockTransaction.countDocuments(queryFilter).exec();
 
       const [total, txs] = await Promise.all([
         totalPromise,
@@ -548,8 +563,8 @@ router.get("/transactions", async function (req, res) {
 
       if (search) {
         const [matchingUsers, matchingFamilies] = await Promise.all([
-          models.User.find({ name: { $regex: search, $options: "i" } }).select("id").lean().exec(),
-          models.Family.find({ name: { $regex: search, $options: "i" } }).select("id").lean().exec()
+          models.User.find({ name: { $regex: escapeRegex(search), $options: "i" } }).select("id").lean().exec(),
+          models.Family.find({ name: { $regex: escapeRegex(search), $options: "i" } }).select("id").lean().exec()
         ]);
 
         const matchingUserIds = matchingUsers.map(u => u.id);
@@ -570,9 +585,7 @@ router.get("/transactions", async function (req, res) {
         queryFilter.$or = orConditions;
       }
 
-      const totalPromise = Object.keys(queryFilter).length > 0
-        ? models.FamilyStockTransaction.countDocuments(queryFilter).exec()
-        : models.FamilyStockTransaction.estimatedDocumentCount().exec();
+      const totalPromise = models.FamilyStockTransaction.countDocuments(queryFilter).exec();
 
       const [total, txs] = await Promise.all([
         totalPromise,
@@ -1016,7 +1029,7 @@ router.get("/families/prices/:familyId", async function (req, res) {
       marketCap,
       buyPrice1: buy1.total,
       sellPrice1: sell1.total,
-      treasuryCoins: f ? (f.treasury || 0) : 0,
+      treasuryCoins: family ? (family.treasury || 0) : 0,
       dividendsPaidOut: stock.dividendsPaidOut
     });
   } catch (e) {
