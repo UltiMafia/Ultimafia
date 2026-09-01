@@ -4,7 +4,7 @@ import axios from "axios";
 
 import { useErrorAlert } from "../../../components/Alerts";
 import { getPageNavFilterArg, PageNav } from "../../../components/Nav";
-import { NameWithAvatar } from "../../User/User";
+import { NameWithAvatar } from "../../User/UserWidgets";
 import { Modal } from "../../../components/Modal";
 import { VoteWidget } from "components/VoteWidget";
 import { ViewsAndReplies } from "./Forums";

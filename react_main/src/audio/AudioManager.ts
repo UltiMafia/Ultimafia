@@ -3,6 +3,16 @@
  *
  * Manages loading, playing, pausing and per-channel volume for all in-game
  * audio.
+ *
+ * Elements are created on first play, not at load time. `load()` used to
+ * construct an HTMLAudioElement and call `.load()` for every entry it was given,
+ * which for Mafia is 66 of them in one go. That costs almost no JavaScript --
+ * both calls return immediately -- but it hands 66 media resources to the
+ * platform at once, and iOS keeps a low ceiling on how many it will carry.
+ * Measured on an iPhone 16, the resulting stall blocked painting for anywhere
+ * between 2 and 88 seconds after React had already committed the DOM, so the
+ * page sat there showing stale pixels. Creating them on demand takes a typical
+ * Mafia game from 66 elements down to the handful it actually plays.
  */
 
 export type AudioChannel = "sfx" | "music" | "pregameMusic" | "important";
@@ -13,17 +23,50 @@ export interface AudioEntry {
   volume?: number;
   overrides?: boolean;
   channel?: AudioChannel;
+  /**
+   * Build and buffer this track at load time instead of on first play.
+   *
+   * Defaults to true for every channel except music, which is where the weight
+   * is -- all 26 effect files together are 1.5MB against 82MB of music. Set it
+   * explicitly for anything that does not fit that shape: a short cue filed
+   * under music/ needs `preload: true` or it will be inaudible when something
+   * stops it shortly after it starts, and a heavy effect outside music/ wants
+   * `preload: false` so it is not handed to the platform up front.
+   */
+  preload?: boolean;
 }
 
 export interface LoadedTrack {
-  el: HTMLAudioElement;
+  /** Null until the track is created -- at load time if preloaded, else on first play. */
+  el: HTMLAudioElement | null;
+  fileName: string;
+  loop: boolean;
   volume: number;
   overrides: boolean;
   channel: AudioChannel;
+  preload: boolean;
+}
+
+interface ChannelVolumes {
+  sfx: number;
+  music: number;
+  pregameMusic: number;
+  important: number;
 }
 
 export default class AudioManager {
   tracks: Record<string, LoadedTrack> = {};
+
+  /**
+   * Last volumes applied via syncVolume, so an element created later can be set
+   * up correctly without waiting for the next sync.
+   */
+  private volumes: ChannelVolumes = {
+    sfx: 1,
+    music: 1,
+    pregameMusic: 1,
+    important: 1,
+  };
 
   constructor() {
     // Without this, iOS Safari treats every HTMLAudioElement as exclusive
@@ -60,15 +103,49 @@ export default class AudioManager {
     return parsed;
   }
 
+  private sliderFor(channel: AudioChannel): number {
+    if (channel === "music") return this.volumes.music;
+    if (channel === "pregameMusic") return this.volumes.pregameMusic;
+    if (channel === "important") return this.volumes.important;
+    return this.volumes.sfx;
+  }
+
+  /** Default preload policy: everything except the long music tracks. */
+  private static defaultPreload(channel: AudioChannel): boolean {
+    return channel !== "music" && channel !== "pregameMusic";
+  }
+
+  /**
+   * Create the element for a track if it does not exist yet.
+   *
+   * `buffer` asks the browser to fetch ahead, which is what makes a sound audible
+   * the instant it is played rather than once the fetch lands.
+   */
+  private ensureElement(
+    track: LoadedTrack,
+    buffer: boolean = false
+  ): HTMLAudioElement | null {
+    if (track.el) return track.el;
+
+    try {
+      const el = new Audio(`/audio/${track.fileName}.mp3`);
+      el.preload = buffer ? "auto" : "metadata";
+      el.loop = track.loop;
+      el.volume = track.volume * this.sliderFor(track.channel);
+      track.el = el;
+      return el;
+    } catch (e) {
+      return null;
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Loading
   // ---------------------------------------------------------------------------
 
   /**
-   * Load (or reload) a set of audio entries.
-   *
-   * If the file was already loaded its element is reused (paused first so loop
-   * changes apply).
+   * Register (or re-register) a set of audio entries. This only records their
+   * configuration; the element itself is built on first play.
    */
   load(entries: AudioEntry[]): void {
     if (!Array.isArray(entries) || entries.length === 0) return;
@@ -80,28 +157,60 @@ export default class AudioManager {
         volume = 1,
         overrides = false,
         channel,
+        preload,
       } = entry;
 
       if (!fileName) continue;
 
+      const resolvedChannel = channel || AudioManager.inferChannel(fileName);
+      const resolvedPreload =
+        preload ?? AudioManager.defaultPreload(resolvedChannel);
       const existing = this.tracks[fileName];
-      if (!existing) {
-        const el = new Audio(`/audio/${fileName}.mp3`);
-        el.load();
-        el.loop = loop;
-        this.tracks[fileName] = {
-          el,
-          volume,
-          overrides,
-          channel: channel || AudioManager.inferChannel(fileName),
-        };
-      } else {
+
+      if (existing) {
         // Pause before changing loop to make sure the change applies.
-        existing.el.pause();
-        existing.el.loop = loop;
+        if (existing.el) {
+          existing.el.pause();
+          existing.el.loop = loop;
+        }
+        existing.loop = loop;
         existing.volume = volume;
         existing.overrides = overrides;
-        existing.channel = channel || AudioManager.inferChannel(fileName);
+        existing.channel = resolvedChannel;
+        existing.preload = resolvedPreload;
+
+        // The track may have been disposed since it was last loaded, leaving the
+        // record without its element. Rebuild it, or the track stays silent
+        // until something plays it -- which is the lazy behaviour preloading
+        // exists to avoid.
+        if (resolvedPreload && !existing.el) {
+          this.ensureElement(existing, true);
+        }
+      } else {
+        const track: LoadedTrack = {
+          el: null,
+          fileName,
+          loop,
+          volume,
+          overrides,
+          channel: resolvedChannel,
+          preload: resolvedPreload,
+        };
+        this.tracks[fileName] = track;
+
+        // Sound effects are built and buffered up front; music is left until it
+        // is first played.
+        //
+        // The split is by weight, not by principle: all 26 effect files together
+        // are 1.5MB, while the 62 music tracks are 82MB. Handing the platform the
+        // music up front is what stalled iOS, and effects are cheap enough that
+        // there is no reason to make them lazy -- doing so made short cues
+        // inaudible, because a sound that is stopped shortly after it starts (the
+        // ready-check alarm, which ends as soon as everyone readies) was still
+        // fetching when the stop arrived and never made a sound at all.
+        if (resolvedPreload) {
+          this.ensureElement(track, true);
+        }
       }
     }
   }
@@ -116,16 +225,22 @@ export default class AudioManager {
     if (!track) return;
 
     // If this file is marked as overriding, pause all other override tracks.
+    // Only ones that exist can be playing.
     if (track.overrides) {
       for (const name in this.tracks) {
-        if (this.tracks[name].overrides) {
-          this.tracks[name].el.pause();
-        }
+        const other = this.tracks[name];
+        if (other.overrides && other.el) other.el.pause();
       }
     }
 
-    track.el.currentTime = 0;
-    track.el.play().catch(() => {});
+    const el = this.ensureElement(track, true);
+    if (!el) return;
+
+    // Assigning currentTime forces a seek, which on iOS can block on a track
+    // that is not buffered. A freshly created element is already at zero.
+    if (el.currentTime > 0) el.currentTime = 0;
+
+    el.play().catch(() => {});
   }
 
   /**
@@ -135,11 +250,12 @@ export default class AudioManager {
   stop(audioName?: string): void {
     if (audioName != null) {
       const track = this.tracks[audioName];
-      if (track) track.el.pause();
+      if (track && track.el) track.el.pause();
     } else {
       for (const name in this.tracks) {
-        if (this.tracks[name].channel === "important") continue;
-        this.tracks[name].el.pause();
+        const track = this.tracks[name];
+        if (track.channel === "important") continue;
+        if (track.el) track.el.pause();
       }
     }
   }
@@ -149,8 +265,32 @@ export default class AudioManager {
     if (!Array.isArray(audioNames)) return;
     for (const name of audioNames) {
       const track = this.tracks[name];
-      if (track) track.el.pause();
+      if (track && track.el) track.el.pause();
     }
+  }
+
+  /**
+   * Release every element. Without this the elements outlive the game they were
+   * created for, since nothing else drops the references.
+   */
+  dispose(): void {
+    for (const name in this.tracks) {
+      const track = this.tracks[name];
+      if (!track.el) continue;
+
+      try {
+        track.el.pause();
+        track.el.removeAttribute("src");
+        track.el.load();
+      } catch (e) {
+        // Element may already be torn down by the browser.
+      }
+      track.el = null;
+    }
+
+    // Reset to the constructed state. Keeping the records around would leave the
+    // manager in a state a later load() has to repair rather than simply build.
+    this.tracks = {};
   }
 
   // ---------------------------------------------------------------------------
@@ -167,23 +307,17 @@ export default class AudioManager {
     pregameMusicVolume: number,
     importantVolume: number
   ): void {
-    const _sfxVolume = AudioManager.clamp(sfxVolume);
-    const _musicVolume = AudioManager.clamp(musicVolume);
-    const _pregameMusicVolume = AudioManager.clamp(pregameMusicVolume);
-    const _importantVolume = AudioManager.clamp(importantVolume);
+    this.volumes = {
+      sfx: AudioManager.clamp(sfxVolume),
+      music: AudioManager.clamp(musicVolume),
+      pregameMusic: AudioManager.clamp(pregameMusicVolume),
+      important: AudioManager.clamp(importantVolume),
+    };
 
     for (const name in this.tracks) {
       const { el, volume, channel } = this.tracks[name];
-
-      const slider =
-        channel === "music"
-          ? _musicVolume
-          : channel === "pregameMusic"
-            ? _pregameMusicVolume
-            : channel === "important"
-              ? _importantVolume
-              : _sfxVolume;
-      el.volume = volume * slider;
+      if (!el) continue;
+      el.volume = volume * this.sliderFor(channel);
     }
   }
 

@@ -2,9 +2,14 @@ import React, { useContext, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
 import { emotify } from "components/Emotes";
-import { MediaEmbed } from "pages/User/User";
+import { MediaEmbed } from "pages/User/UserWidgets";
 import { SiteInfoContext } from "../Contexts";
 import { InlineRoleMention } from "./Roles";
+
+// The component that renders markdown owns the stylesheet for it. It was
+// previously imported only by Form.jsx, so after the route-level code splitting
+// it was not guaranteed to be loaded on every page that renders markdown.
+import "css/markdown.css";
 
 // Spoiler component that hides content until clicked
 function Spoiler({ children }) {
@@ -333,12 +338,20 @@ export default function CustomMarkdown(props) {
           return <MediaEmbed mediaUrl={properties.src} />;
         },
         p(properties) {
-          const { node, ...rest } = properties;
+          const { node, className, ...rest } = properties;
           // div, not p: MediaEmbed and {center} render block divs.
           // <p><div> is invalid HTML; Safari/Chrome repair it and React
           // puts it back, which flashes p tags and can lock the donor page.
+          //
+          // Carries md-paragraph so the .md-content paragraph rules still apply.
+          // Switching the tag silently dropped them, and the `margin: 1em 0`
+          // that replaced them was not equivalent: the stylesheet asks for no
+          // top margin, 15px below, and none at all on the last paragraph.
           return (
-            <div {...rest} style={{ margin: "1em 0", ...(rest.style || {}) }}>
+            <div
+              {...rest}
+              className={["md-paragraph", className].filter(Boolean).join(" ")}
+            >
               {roleifyMarkdown(
                 emotify(
                   mentionify(

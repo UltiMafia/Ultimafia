@@ -26,7 +26,7 @@ import {
 import { useErrorAlert } from "components/Alerts";
 import { PageNav } from "components/Nav";
 import { Time } from "components/Basic";
-import { NameWithAvatar } from "pages/User/User";
+import { NameWithAvatar } from "pages/User/UserWidgets";
 import { UserContext, SiteInfoContext } from "../../Contexts";
 import { Loading } from "components/Loading";
 import ReportDetail from "components/ReportDetail";

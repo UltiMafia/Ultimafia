@@ -18,6 +18,15 @@ export default defineConfig({
     distPath: {
       root: "build",
     },
+    // roles.css alone references ~780 role/modifier images. At rsbuild's
+    // default 4KB threshold they were all base64-inlined into the
+    // render-blocking index.css, which made it 906KB (87% data: URIs).
+    // Emit them as separate files instead so the browser only fetches the
+    // ones a page actually uses, and can cache them independently.
+    dataUriLimit: {
+      image: 0,
+      media: 0,
+    },
     sourceMap: {
       js: isProduction ? "source-map" : "eval-source-map",
     },

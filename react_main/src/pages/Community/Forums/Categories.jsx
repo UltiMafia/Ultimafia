@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-import { NameWithAvatar } from "../../User/User";
+import { NameWithAvatar } from "../../User/UserWidgets";
 import { Time } from "../../../components/Basic";
 import { useErrorAlert } from "../../../components/Alerts";
 import { ViewsAndReplies } from "./Forums";

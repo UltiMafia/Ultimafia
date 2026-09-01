@@ -21,7 +21,7 @@ const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
 const stockMarket = require("../lib/StockMarket");
 const skillRatingModule = require("../modules/skillRating");
-const { DEFAULT_MU, DEFAULT_SIGMA } = skillRatingModule;
+const { DEFAULT_MU, DEFAULT_SIGMA, MIN_RATED_GAMES } = skillRatingModule;
 const router = express.Router();
 
 /** Keep in sync with `isRetroThemeForcedByCalendar` in react_main/src/utils/holidayThemes.js */
@@ -105,17 +105,26 @@ router.get("/info", async function (req, res) {
       return;
     }
 
+    // These four are independent of each other, so issue them together rather
+    // than as four sequential round trips — this endpoint gates the client's
+    // first render, so its latency lands directly on page load time.
+    const [inGame, userPerms, isDonor, userDb] = await Promise.all([
+      redis.inGame(user.id),
+      redis.getUserPermissions(userId),
+      redis.userInDonorGroup(userId),
+      // Coin balance comes straight from the database to guarantee consistency
+      // with the shop.
+      models.User.findOne({ id: userId }).select("coins").lean(),
+    ]);
+
+    const perms = userPerms || {};
     user.csrf = req.session.user.csrf;
-    user.inGame = await redis.inGame(user.id);
-    user.perms = (await redis.getUserPermissions(userId)) || {};
-    user.rank = String(user.perms.rank || 0);
-    user.perms = user.perms.perms || {};
-    user.isDonor = await redis.userInDonorGroup(userId);
-    
-    // Fetch coin balance directly from database to guarantee consistency with the shop
-    const userDb = await models.User.findOne({ id: userId }).select("coins").lean();
+    user.inGame = inGame;
+    user.rank = String(perms.rank || 0);
+    user.perms = perms.perms || {};
+    user.isDonor = isDonor;
     user.coins = userDb ? userDb.coins : 0;
-    
+
     delete user.status;
 
     res.send(user);
@@ -439,43 +448,59 @@ router.get("/:id/profile", async function (req, res) {
       };
     }
 
-    if (!user.settings?.hideStatistics) {
-      if (user.skillRating.gamesPlayed > 0) {
-        const userMu = user.skillRating.mu ?? DEFAULT_MU;
-        const userSigma = user.skillRating.sigma ?? DEFAULT_SIGMA;
-        const userRankScore = user.skillRating.conservativeRank ?? (userMu - 3.0 * userSigma);
+    const ratedGames = user.skillRating.gamesPlayed ?? 0;
 
-        const [totalRatedCount, higherRankCount, lowerRankCount] = await Promise.all([
-          models.User.countDocuments({
-            "skillRating.gamesPlayed": { $gt: 0 },
-            deleted: { $ne: true }
-          }),
-          models.User.countDocuments({
-            "skillRating.gamesPlayed": { $gt: 0 },
-            deleted: { $ne: true },
-            "skillRating.conservativeRank": { $gt: userRankScore }
-          }),
-          models.User.countDocuments({
-            "skillRating.gamesPlayed": { $gt: 0 },
-            deleted: { $ne: true },
-            "skillRating.conservativeRank": { $lt: userRankScore }
-          })
-        ]);
+    if (user.settings?.hideStatistics) {
+      // Previously this whole block was skipped for hidden-statistics users, so
+      // their raw mu/sigma/conservativeRank shipped to every client regardless.
+      delete user.skillRating;
+    } else if (ratedGames >= MIN_RATED_GAMES) {
+      const userMu = user.skillRating.mu ?? DEFAULT_MU;
+      const userSigma = user.skillRating.sigma ?? DEFAULT_SIGMA;
+      const userRankScore = user.skillRating.conservativeRank ?? (userMu - 3.0 * userSigma);
 
-        user.skillRating.rank = higherRankCount + 1;
+      // Population must match modules/hallOfFame.js buildRows, or the tier shown
+      // here disagrees with the tier shown on the leaderboard for the same player.
+      const ratedPopulation = {
+        "skillRating.gamesPlayed": { $gte: MIN_RATED_GAMES },
+        deleted: { $ne: true },
+        playedGame: true,
+      };
 
-        const percentile = totalRatedCount > 1 ? (lowerRankCount / (totalRatedCount - 1)) * 100 : 100;
-        
-        if (percentile >= 98) user.skillRating.tier = "Master";
-        else if (percentile >= 90) user.skillRating.tier = "Diamond";
-        else if (percentile >= 75) user.skillRating.tier = "Platinum";
-        else if (percentile >= 50) user.skillRating.tier = "Gold";
-        else if (percentile >= 20) user.skillRating.tier = "Silver";
-        else user.skillRating.tier = "Bronze";
-      } else {
-        user.skillRating.tier = "Unrated";
-        user.skillRating.rank = null;
-      }
+      const [totalRatedCount, higherRankCount, lowerRankCount] = await Promise.all([
+        models.User.countDocuments(ratedPopulation),
+        models.User.countDocuments({
+          ...ratedPopulation,
+          "skillRating.conservativeRank": { $gt: userRankScore }
+        }),
+        models.User.countDocuments({
+          ...ratedPopulation,
+          "skillRating.conservativeRank": { $lt: userRankScore }
+        })
+      ]);
+
+      user.skillRating.rank = higherRankCount + 1;
+      user.skillRating.required = MIN_RATED_GAMES;
+
+      const percentile = totalRatedCount > 1 ? (lowerRankCount / (totalRatedCount - 1)) * 100 : 100;
+
+      if (percentile >= 98) user.skillRating.tier = "Master";
+      else if (percentile >= 90) user.skillRating.tier = "Diamond";
+      else if (percentile >= 75) user.skillRating.tier = "Platinum";
+      else if (percentile >= 50) user.skillRating.tier = "Gold";
+      else if (percentile >= 20) user.skillRating.tier = "Silver";
+      else user.skillRating.tier = "Bronze";
+    } else {
+      // Not rated yet: send the progress counter and nothing else. The client must
+      // not substitute the profile's total game count here -- that counts every
+      // game ever played, including unranked and pre-rating-system games, so a
+      // veteran can sit at thousands of games with zero rated ones.
+      user.skillRating = {
+        gamesPlayed: ratedGames,
+        required: MIN_RATED_GAMES,
+        tier: null,
+        rank: null,
+      };
     }
 
     user.groups = (await redis.getBasicUserInfo(userId)).groups;

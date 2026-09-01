@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useMemo } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 
 import { GameStates } from "Constants";
@@ -11,12 +11,12 @@ import {
   getAlignmentColor,
 } from "components/Setup";
 import { useErrorAlert } from "components/Alerts";
-import { NameWithAvatar } from "pages/User/User";
+import { NameWithAvatar } from "pages/User/UserWidgets";
 
 import { Box, Divider, Link, Popover, Stack, Typography } from "@mui/material";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { GameSettingCount } from "./Roles";
-import { KUDOS_ICON } from "pages/User/Profile";
+import { KUDOS_ICON } from "pages/User/profileIcons";
 
 export function PopoverContent({ title, content, page = null, icon = <></>, subTitle = <></> }) {
   let wrappedTitle = (
@@ -74,12 +74,19 @@ export const InfoPopover = function ({
   icon,
   subTitle,
 }) {
+  // No hooks below this point, so the early return is safe.
+  //
+  // This used to call useMemo *after* the return, which changed the hook count
+  // whenever `content` flipped between null and non-null -- React rejects that
+  // with "rendered fewer hooks than expected". Its dependency list also left out
+  // popoverOpen, anchorEl and content, so it could hand back an element built
+  // from stale props. Dropping the memo fixes both; it was not saving anything
+  // worth the risk.
   if (content === null) {
     return <></>;
   }
 
-  return useMemo(
-    () => (
+  return (
       <Popover
         open={showPopover !== false && popoverOpen}
         sx={{ pointerEvents: openByClick ? "auto" : "none" }}
@@ -105,8 +112,6 @@ export const InfoPopover = function ({
       >
         <PopoverContent page={page} title={title} content={content} icon={icon} subTitle={subTitle} />
       </Popover>
-    ),
-    [openByClick, showPopover, Boolean(content !== null)]
   );
 };
 

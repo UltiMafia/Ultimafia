@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Navigate, useParams, useNavigate } from "react-router-dom";
-import { NameWithAvatar } from "../../User/User";
+import { NameWithAvatar } from "../../User/UserWidgets";
 import {
   Box,
   Button,

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 
 import { emotify } from "./Emotes";
 import { filterProfanitySegment } from "../lib/profanity";
-import { MediaEmbed } from "../pages/User/User";
+import { MediaEmbed } from "../pages/User/UserWidgets";
 import { slangList } from "../constants/slangList";
 import { getSlangKey } from "../lib/slangMatch";
 import { Slang } from "./Slang";

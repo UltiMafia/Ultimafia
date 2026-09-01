@@ -12,7 +12,7 @@ import {
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { getPageNavFilterArg, PageNav } from "components/Nav";
-import { NameWithAvatar } from "pages/User/User";
+import { NameWithAvatar } from "pages/User/UserWidgets";
 import LobbySidebarPanel from "pages/Play/LobbyBrowser/LobbySidebarPanel";
 
 function VoterAvatars({ optionIndex, poll }) {

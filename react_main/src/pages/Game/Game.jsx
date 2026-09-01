@@ -36,7 +36,7 @@ import ChessGame from "./ChessGame";
 import { GameContext, SiteInfoContext, UserContext } from "Contexts";
 import Dropdown from "../../components/Dropdown";
 import Setup from "../../components/Setup";
-import { NameWithAvatar } from "../User/User";
+import { NameWithAvatar } from "../User/UserWidgets";
 import { ClientSocket as Socket } from "../../Socket";
 import { RoleCount } from "../../components/Roles";
 import Form, { useForm } from "../../components/Form";
@@ -1146,6 +1146,7 @@ export default function Game() {
 
     return (
       <GameContext.Provider value={gameContext}>
+        <IsPhoneDeviceContext.Provider value={isPhoneDevice}>
         <ChangeHeadPing title={pingInfo?.msg} timestamp={pingInfo?.timestamp} />
         <Stack
           direction="column"
@@ -1223,6 +1224,7 @@ export default function Game() {
             setChangeSetupDialogOpen(false);
           }}
         />
+        </IsPhoneDeviceContext.Provider>
       </GameContext.Provider>
     );
   }
@@ -2185,16 +2187,31 @@ function getContentClasses(message) {
 /* CAUTION: This is rendered with useMemo in TextMeetingLayout, if you want to add something new to messages
     then you may need to update the memo dependencies!
 */
+/**
+ * Phone-vs-desktop for the message list.
+ *
+ * Message must not call useIsPhoneDevice() itself -- MUI's useMediaQuery
+ * registers a matchMedia listener per call, and Message renders once per
+ * message. Threading it as a prop was the first attempt and it silently broke
+ * PinnedMessages, because nothing makes a render site supply it. A context is
+ * read the same way from anywhere, so a new render site cannot forget.
+ */
+const IsPhoneDeviceContext = createContext(false);
+
 function Message(props) {
-  const isPhoneDevice = useIsPhoneDevice();
+  const isPhoneDevice = useContext(IsPhoneDeviceContext);
   const user = useContext(UserContext);
   const theme = useTheme();
   const [isHovering, setIsHovering] = useState(false);
   const accessibleNameColors = user.settings?.accessibleNameColors;
 
   // Mobile only - users pin message by long pressing them
+  const onPinMessage = props.onPinMessage;
+  const messageObj = props.message;
   const messageLongPress = useLongPress(
-    () => props.onPinMessage(props.message),
+    // Stable identity: useLongPress keys its effect on the callback, so a fresh
+    // arrow here re-runs that effect for every message on every render pass.
+    useCallback(() => onPinMessage(messageObj), [onPinMessage, messageObj]),
     600
   );
 

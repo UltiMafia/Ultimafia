@@ -35,6 +35,15 @@ export function useAudio(settings: AudioSettings): UseAudioReturn {
 
   const manager = managerRef.current;
 
+  // Release every element when the game page unmounts. Nothing else drops these
+  // references, so without it a session accumulates the elements of every game
+  // played in it.
+  useEffect(() => {
+    return () => {
+      manager.dispose();
+    };
+  }, [manager]);
+
   // --- Volume sync --------------------------------------------------------
   // Re-apply channel volumes whenever the sliders change or after new files
   // are loaded (tracked via a counter so we don't depend on a changing ref).

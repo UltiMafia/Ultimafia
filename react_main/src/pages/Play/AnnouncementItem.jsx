@@ -1,4 +1,4 @@
-// import { NameWithAvatar } from "../User/User";
+// import { NameWithAvatar } from "../User/UserWidgets";
 // import { Time, UserText } from "../../components/Basic";
 // import React from "react";
 // import { Card, ThemeProvider } from "@mui/material";

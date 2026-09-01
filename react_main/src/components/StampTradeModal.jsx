@@ -16,7 +16,7 @@ import {
 import { SiteInfoContext, UserContext } from "Contexts";
 import { StampItem } from "components/Scrapbook";
 import { useErrorAlert } from "components/Alerts";
-import { NameWithAvatar } from "pages/User/User";
+import { NameWithAvatar } from "pages/User/UserWidgets";
 
 export default function StampTradeModal({
   open,

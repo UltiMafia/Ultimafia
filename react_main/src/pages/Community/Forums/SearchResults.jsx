@@ -14,7 +14,7 @@ import axios from "axios";
 
 import { useErrorAlert } from "../../../components/Alerts";
 import { Time } from "../../../components/Basic";
-import { NameWithAvatar } from "../../User/User";
+import { NameWithAvatar } from "../../User/UserWidgets";
 import { UserContext } from "../../../Contexts";
 import { Loading } from "../../../components/Loading";
 import CustomMarkdown from "../../../components/CustomMarkdown";

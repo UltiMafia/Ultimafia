@@ -11,7 +11,7 @@ import {
 import { useErrorAlert } from "components/Alerts";
 import { getPageNavFilterArg, PageNav } from "components/Nav";
 import { Time } from "components/Basic";
-import { NameWithAvatar } from "pages/User/User";
+import { NameWithAvatar } from "pages/User/UserWidgets";
 
 import { COMMAND_COLOR, useModCommands } from "./commands";
 

@@ -16,7 +16,7 @@ import { ThreadPoll } from "components/Poll";
 import { VoteWidget } from "components/VoteWidget";
 import { EmoteReactions } from "components/EmoteReactions";
 import "css/emote-reactions.css";
-import { NameWithAvatar } from "../../User/User";
+import { NameWithAvatar } from "../../User/UserWidgets";
 
 function formatForumDate(timestamp) {
   if (!timestamp) return null;

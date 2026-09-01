@@ -38,7 +38,7 @@ import { Icon } from "@iconify/react";
 import { useErrorAlert } from "../../components/Alerts";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { UserContext, SiteInfoContext } from "../../Contexts";
-import { Avatar } from "../User/User";
+import { Avatar } from "../User/UserWidgets";
 import { FamilyAvatarImage } from "utils/avatarUrl";
 import { resolveDisplayNameColor } from "../../utils/accessibleNameColors";
 import { Loading } from "../../components/Loading";

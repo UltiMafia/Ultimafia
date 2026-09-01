@@ -13,7 +13,7 @@ import {
 
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
-import { NameWithAvatar } from "pages/User/User";
+import { NameWithAvatar } from "pages/User/UserWidgets";
 import { Time } from "components/Basic";
 import { PageNav } from "components/Nav";
 import { Loading } from "components/Loading";

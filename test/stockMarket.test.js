@@ -39,14 +39,25 @@ describe("lib/StockMarket", function () {
     it("calculates buy price and 1.5% / 1% fees", function () {
       // Current supply = 9, buy 1 share.
       // 10th share base price: calculatePrice(10) = 1
-      // Creator fee: 1.5% of 1 is 0.015, rounded to 0.02.
+      // Creator fee: 1.5% of 1 is 0.015, which toFixed(2) renders as 0.01.
       // System fee: 1% of 1 is 0.01.
-      // total = 1 + 0.02 + 0.01 = 1.03
+      // total = 1 + 0.01 + 0.01 = 1.02
       const result = stockMarket.getBuyPrice(9, 1);
       result.price.should.equal(1);
       result.creatorFee.should.equal(0.01);
       result.systemFee.should.equal(0.01);
       result.total.should.equal(1.02);
+    });
+
+    it("throws rather than walking the curve for an out-of-range share count", function () {
+      // An unbounded count from a request body would block the event loop:
+      // the pricing walk is O(shares).
+      (function () {
+        stockMarket.getBuyPrice(1, stockMarket.MAX_SHARES_PER_TRADE + 1);
+      }).should.throw(RangeError);
+
+      // The cap itself is still priced normally.
+      stockMarket.getBuyPrice(1, stockMarket.MAX_SHARES_PER_TRADE).total.should.be.above(0);
     });
 
     it("calculates buy price for multiple shares", function () {
@@ -101,9 +112,30 @@ describe("lib/StockMarket", function () {
     let originalFamilyShareholderBulkWrite;
     let originalUpdateOne;
     let originalFamilyUpdateOne;
+    let originalShareholderFind;
+    let originalFamilyShareholderFind;
     let bulkWriteCalls = [];
     let updateOneCalls = [];
     let familyUpdateOneCalls = [];
+
+    // Current on-chain holdings the mocked find() will report, as
+    // holderId -> sharesOwned. Defaults to matching the snapshot exactly.
+    let currentHoldings = {};
+
+    function mockFind() {
+      return function (filter) {
+        const ids = (filter.holderId && filter.holderId.$in) || [];
+        const rows = ids
+          .filter((id) => currentHoldings[id] !== undefined)
+          .map((id) => ({ holderId: id, sharesOwned: currentHoldings[id] }));
+        const chain = {
+          select: () => chain,
+          lean: () => chain,
+          exec: async () => rows,
+        };
+        return chain;
+      };
+    }
 
     before(function () {
       originalBulkWrite = models.User.bulkWrite;
@@ -111,6 +143,11 @@ describe("lib/StockMarket", function () {
       originalFamilyShareholderBulkWrite = models.FamilyShareholder.bulkWrite;
       originalUpdateOne = models.PlayerStock.updateOne;
       originalFamilyUpdateOne = models.FamilyStock.updateOne;
+      originalShareholderFind = models.Shareholder.find;
+      originalFamilyShareholderFind = models.FamilyShareholder.find;
+
+      models.Shareholder.find = mockFind();
+      models.FamilyShareholder.find = mockFind();
 
       models.User.bulkWrite = async function (ops) {
         bulkWriteCalls.push(ops);
@@ -142,13 +179,23 @@ describe("lib/StockMarket", function () {
       models.FamilyShareholder.bulkWrite = originalFamilyShareholderBulkWrite;
       models.PlayerStock.updateOne = originalUpdateOne;
       models.FamilyStock.updateOne = originalFamilyUpdateOne;
+      models.Shareholder.find = originalShareholderFind;
+      models.FamilyShareholder.find = originalFamilyShareholderFind;
     });
 
     beforeEach(function () {
       bulkWriteCalls = [];
       updateOneCalls = [];
       familyUpdateOneCalls = [];
+      currentHoldings = {};
     });
+
+    /** Marks every snapshot holder as still holding the same amount. */
+    function stillHolding(snapshot) {
+      for (const h of snapshot.holders) {
+        currentHoldings[h.holderId] = h.sharesOwned;
+      }
+    }
 
     describe("distributeDividends", function () {
       it("returns empty array and does not hit DB if no snapshot or zero supply", async function () {
@@ -168,6 +215,7 @@ describe("lib/StockMarket", function () {
             { holderId: "h2", sharesOwned: 4 }
           ]
         };
+        stillHolding(snapshot);
 
         // coinsEarned = 20. Dividend pool = 20 * 0.5 = 10.
         // h1 (6/10 shares) -> gets 6 coins
@@ -199,6 +247,7 @@ describe("lib/StockMarket", function () {
             { holderId: "subject1", sharesOwned: 4 }
           ]
         };
+        stillHolding(snapshot);
 
         // coinsEarned = 20. Dividend pool = 20 * 0.5 = 10.
         // Participants are ["h1", "subject1"].
@@ -218,6 +267,72 @@ describe("lib/StockMarket", function () {
         updateOneCalls.length.should.equal(1);
         updateOneCalls[0].filter.userId.should.equal("subject1");
         updateOneCalls[0].update.$inc.dividendsPaidOut.should.equal(4);
+      });
+
+      it("pays nothing to a holder who sold out after the snapshot was taken", async function () {
+        const snapshot = {
+          shareSupply: 10,
+          holders: [
+            { holderId: "h1", sharesOwned: 6 },
+            { holderId: "h2", sharesOwned: 4 }
+          ]
+        };
+        // h1 dumped the whole position mid-game; h2 held.
+        currentHoldings = { h1: 0, h2: 4 };
+
+        const res = await stockMarket.distributeDividends("subject1", 20, snapshot);
+
+        res.length.should.equal(1);
+        res[0].holderId.should.equal("h2");
+        res[0].payout.should.equal(4);
+
+        // h1's 6 coins are simply not minted — the pool shrinks, it does not
+        // get redistributed to the remaining holders.
+        updateOneCalls[0].update.$inc.dividendsPaidOut.should.equal(4);
+      });
+
+      it("pays on the reduced amount when a holder partially sold", async function () {
+        const snapshot = {
+          shareSupply: 10,
+          holders: [{ holderId: "h1", sharesOwned: 6 }]
+        };
+        currentHoldings = { h1: 2 };
+
+        // Pool is 10; h1 is paid on 2/10, not the snapshot's 6/10.
+        const res = await stockMarket.distributeDividends("subject1", 20, snapshot);
+
+        res.length.should.equal(1);
+        res[0].sharesOwned.should.equal(2);
+        res[0].payout.should.equal(2);
+      });
+
+      it("caps at the snapshot when a holder bought more during the game", async function () {
+        const snapshot = {
+          shareSupply: 10,
+          holders: [{ holderId: "h1", sharesOwned: 6 }]
+        };
+        // Buying in mid-game must not increase the payout — this is the half
+        // that stops a spectator front-running a win they can already see.
+        currentHoldings = { h1: 10 };
+
+        const res = await stockMarket.distributeDividends("subject1", 20, snapshot);
+
+        res.length.should.equal(1);
+        res[0].sharesOwned.should.equal(6);
+        res[0].payout.should.equal(6);
+      });
+
+      it("pays nothing when the holder has no shareholder record at payout time", async function () {
+        const snapshot = {
+          shareSupply: 10,
+          holders: [{ holderId: "h1", sharesOwned: 6 }]
+        };
+        currentHoldings = {}; // record absent entirely
+
+        const res = await stockMarket.distributeDividends("subject1", 20, snapshot);
+
+        res.length.should.equal(0);
+        bulkWriteCalls.length.should.equal(0);
       });
     });
 
@@ -239,6 +354,7 @@ describe("lib/StockMarket", function () {
             { holderId: "h2", sharesOwned: 4 }
           ]
         };
+        stillHolding(snapshot);
 
         // coinsEarned = 40. Dividend pool = 40 * 0.25 = 10.
         // h1 (6/10 shares) -> gets 6 coins
@@ -270,6 +386,7 @@ describe("lib/StockMarket", function () {
             { holderId: "winner1", sharesOwned: 4 }
           ]
         };
+        stillHolding(snapshot);
 
         // coinsEarned = 40. Dividend pool = 40 * 0.25 = 10.
         // Participants are ["h1", "winner1"], but winnerId is "winner1".
@@ -288,6 +405,23 @@ describe("lib/StockMarket", function () {
         familyUpdateOneCalls.length.should.equal(1);
         familyUpdateOneCalls[0].filter.familyId.should.equal("familyA");
         familyUpdateOneCalls[0].update.$inc.dividendsPaidOut.should.equal(4);
+      });
+
+      it("pays nothing to a family holder who sold out after the snapshot", async function () {
+        const snapshot = {
+          shareSupply: 10,
+          holders: [
+            { holderId: "h1", sharesOwned: 6 },
+            { holderId: "h2", sharesOwned: 4 }
+          ]
+        };
+        currentHoldings = { h1: 0, h2: 4 };
+
+        const res = await stockMarket.distributeFamilyDividends("familyA", 40, snapshot);
+
+        res.length.should.equal(1);
+        res[0].holderId.should.equal("h2");
+        res[0].payout.should.equal(4);
       });
     });
   });

@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { UserContext, SiteInfoContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
-import { Avatar } from "pages/User/User"; // Reuse existing custom Avatar component
+import { Avatar } from "pages/User/UserWidgets"; // Reuse existing custom Avatar component
 import { FamilyAvatarImage } from "utils/avatarUrl";
 import { Icon } from "@iconify/react";
 

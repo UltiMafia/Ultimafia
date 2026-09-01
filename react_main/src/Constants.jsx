@@ -104,6 +104,11 @@ export function getModifiedRoleBadgeClass(modifierCount) {
 
 export const RequiredTotalForStats = 1;
 
+// Fallback for the rated-games threshold. The server is authoritative and sends
+// it as `skillRating.required` on the profile and `filters.minRatedGames` on the
+// Hall of Fame; keep this in sync with MIN_RATED_GAMES in modules/skillRating.js.
+export const MIN_RATED_GAMES = 25;
+
 export const MaxGameMessageLength = 240;
 export const MaxTextInputLength = 100;
 export const MaxWillLength = 100;
