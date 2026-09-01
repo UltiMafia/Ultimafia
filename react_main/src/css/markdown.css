@@ -42,13 +42,19 @@
   color: var(--scheme-color-text);
 }
 
-.md-content p {
+/* CustomMarkdown renders paragraphs as div.md-paragraph rather than <p>, because
+   a paragraph may contain block content (media embeds, {center}) and <p><div> is
+   invalid HTML that browsers silently repair. Both selectors are kept so the
+   rules survive either representation. */
+.md-content p,
+.md-content .md-paragraph {
   margin: 0px 0px 15px 0px;
 
   white-space: pre-wrap;
 }
 
-.md-content p:last-child {
+.md-content p:last-child,
+.md-content .md-paragraph:last-child {
   margin-bottom: 0px;
 }
 
