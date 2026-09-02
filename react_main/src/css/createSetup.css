@@ -8,6 +8,10 @@
 }
 
 .setup-wizard {
+  width: 100%;
+  max-width: 1040px;
+  margin-inline: auto;
+  min-width: 0;
   scroll-margin-top: 72px;
 }
 
