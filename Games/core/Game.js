@@ -16,6 +16,7 @@ const { games, deprecationCheck } = require("../games");
 const events = require("events");
 const models = require("../../db/models");
 const redis = require("../../modules/redis");
+const pushNotifications = require("../../modules/pushNotifications");
 const roleData = require("../../data/roles");
 const gameAchievements = require("../../data/Achievements");
 const dailyChallengesData = require("../../data/DailyChallenge");
@@ -667,6 +668,14 @@ module.exports = class Game {
   }
 
   async playerLeave(player) {
+    // The subscription only exists to cover the pregame wait, so it goes as soon
+    // as the player does. Note this is driven by leaving, not by the socket
+    // closing: a player who backgrounds or closes their browser stays in the
+    // lobby, and covering exactly that case is the point of the push.
+    if (player.user && player.user.id) {
+      pushNotifications.unregisterUser(player.user.id);
+    }
+
     player.send("left");
     player.left = true;
     // Delay disconnect so "left" can flush before the socket is torn down.
@@ -1056,9 +1065,38 @@ module.exports = class Game {
     }
   }
 
+  /**
+   * Out-of-band nudge for players who are not looking at the page. Fire-and-forget:
+   * a push failing must never hold up or break a game state transition.
+   */
+  pushToPlayers(payload) {
+    try {
+      const userIds = this.players
+        .filter((player) => player.user && !player.isBot && !player.user.guestId)
+        .map((player) => player.user.id);
+
+      if (userIds.length === 0) return;
+
+      pushNotifications
+        .notifyUsers(userIds, {
+          ...payload,
+          url: `${process.env.BASE_URL || ""}/game/${this.id}`,
+          tag: `game-${this.id}`,
+        })
+        .catch((e) => logger.error(e));
+    } catch (e) {
+      logger.error(e);
+    }
+  }
+
   startReadyCheck() {
     this.isReadyCheckActive = true;
     this.readyPlayers = {};
+
+    this.pushToPlayers({
+      title: "Your game is ready!",
+      body: "Ready up now or you will be kicked for inactivity.",
+    });
 
     this.broadcast("readyCheck init", {
         endTime: Date.now() + this.readyCountdownLength,
@@ -1126,6 +1164,15 @@ module.exports = class Game {
   startPregameCountdown() {
     this.clearTimer("pregameCountdown");
     this.broadcast("readyCheck success", {}); 
+
+    // With a ready check the players have just tapped "ready", so they are already
+    // looking at the page and startReadyCheck did the nudging.
+    if (!this.readyCheck) {
+      this.pushToPlayers({
+        title: "Your game is starting!",
+        body: `${this.setup?.name || "Your game"} is about to begin.`,
+      });
+    }
     
     this.createTimer("pregameCountdown", this.pregameCountdownLength, () =>
       this.start()
@@ -1133,6 +1180,13 @@ module.exports = class Game {
   }
 
   async start() {
+    // The pregame wait is over; nothing else pushes.
+    for (let player of this.players) {
+      if (player.user && player.user.id) {
+        pushNotifications.unregisterUser(player.user.id);
+      }
+    }
+
     // Set game in progress in redis db
     redis.setGameStatus(this.id, "In Progress");
 

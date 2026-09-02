@@ -3,6 +3,7 @@ const logger = require("../modules/logging")(".");
 const router = express.Router();
 const models = require("../db/models");
 const { violationDefinitions } = require("../data/violations");
+const pushNotifications = require("../modules/pushNotifications");
 
 router.get("/contributors", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
@@ -136,6 +137,24 @@ router.get("/violations", function (req, res) {
   } catch (e) {
     logger.error(e);
     res.send([]);
+  }
+});
+
+// Public config the client needs before it can subscribe to push. The VAPID
+// public key is public by definition -- it is what the browser encrypts to -- so
+// serving it needs no auth. Returning `enabled: false` when the server has no
+// VAPID keys lets the client skip the whole flow rather than failing at subscribe
+// time, which is what happens in a dev environment with no keys configured.
+router.get("/push-config", function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    res.send({
+      enabled: pushNotifications.isEnabled(),
+      publicKey: pushNotifications.getPublicKey(),
+    });
+  } catch (e) {
+    logger.error(e);
+    res.send({ enabled: false, publicKey: "" });
   }
 });
 

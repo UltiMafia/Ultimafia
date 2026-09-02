@@ -67,7 +67,38 @@ DISCORD_ERROR_HOOK=<your discord error webhook>
 DISCORD_GAME_HOOK=<your discord game webhook>
 DISCORD_CLIENT_ID=<your discord client id>
 DISCORD_CLIENT_SECRET=<your discord client secret>
+
+VAPID_PUBLIC_KEY=<see "Push notifications" below>
+VAPID_PRIVATE_KEY=<see "Push notifications" below>
+VAPID_SUBJECT=mailto:<an address you monitor>
 ```
+
+#### Push notifications
+
+Players waiting in pregame can opt in to a notification when their game fills,
+delivered even with the browser closed. This needs a VAPID key pair. Generate one
+**once** and keep it:
+
+```
+node -e "console.log(require('web-push').generateVAPIDKeys())"
+```
+
+Put the pair in `./.env` as `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY`, and set
+`VAPID_SUBJECT` to a `mailto:` or `https:` URL identifying you (push services use
+it to make contact about abuse or delivery problems). It defaults to `BASE_URL`.
+
+Treat the private key like any other secret: it is per-deployment and must not be
+committed.
+
+**Do not regenerate these on an existing deployment.** Browsers encrypt their
+subscriptions to the public key they were given, so replacing the pair
+invalidates every existing subscription at once -- push services reject the
+mismatch and every player has to opt in again.
+
+Leaving them unset is supported: the server reports push as disabled, no
+notification UI is shown to players, and everything else works normally. The
+server logs which state it is in at startup, so check there first if
+notifications are not appearing.
 
 2. `./react_main/.env:`
 
