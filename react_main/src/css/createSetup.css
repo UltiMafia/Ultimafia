@@ -7,6 +7,40 @@
   cursor: pointer;
 }
 
+.setup-wizard {
+  scroll-margin-top: 72px;
+}
+
+.setup-wizard .setup-catalog > .MuiStack-root > .MuiPaper-root {
+  max-height: 38vh;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+
+.setup-wizard .setup-catalog .MuiTabs-root {
+  min-width: 0;
+}
+
+.setup-step-navigation {
+  position: sticky;
+  bottom: 8px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+@media (max-width: 700px) {
+  .setup-step-navigation {
+    flex-wrap: wrap;
+  }
+
+  .setup-step-navigation .MuiButton-root {
+    font-size: 12px;
+  }
+}
+
 @media (max-width: 700px) {
   .play .create-setup .top-link {
     font-size: 13px !important;

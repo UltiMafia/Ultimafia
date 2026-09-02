@@ -88,7 +88,7 @@ export function CellSearch({
     <Stack direction="column" spacing={1}>
       <Stack direction={isPhoneDevice ? "column-reverse" : "row"} spacing={1}>
         {hasTabs && (
-          <Tabs value={tabValue ?? ""} onChange={(_, value) => onTabChange?.(value)}>
+          <Tabs variant="scrollable" scrollButtons="auto" value={tabValue ?? ""} onChange={(_, value) => onTabChange?.(value)}>
             {tabButtons}
           </Tabs>
         )}
