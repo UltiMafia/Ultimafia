@@ -761,19 +761,22 @@ router.get("/:id/profile", async function (req, res) {
         .select("userId user")
         .populate("user", "id name avatar");
 
-      // Add vanity URLs to friend requests
-      user.friendRequests = await Promise.all(
-        friendRequests.map(async (req) => {
-          const vanityUrl = await models.VanityUrl.findOne({
-            userId: req.user.id,
-          }).select("url -_id");
+      // Add vanity URLs to friend requests — one indexed $in lookup rather than
+      // one query per request.
+      const requestVanityUrls = await models.VanityUrl.find({
+        userId: { $in: friendRequests.map((req) => req.user.id) },
+      })
+        .select("url userId -_id")
+        .lean();
 
-          return {
-            ...req.user.toJSON(),
-            vanityUrl: vanityUrl?.url,
-          };
-        })
+      const requestVanityUrlByUserId = new Map(
+        requestVanityUrls.map((vanityUrl) => [vanityUrl.userId, vanityUrl.url])
       );
+
+      user.friendRequests = friendRequests.map((req) => ({
+        ...req.user.toJSON(),
+        vanityUrl: requestVanityUrlByUserId.get(req.user.id),
+      }));
     } else user.friendRequests = [];
 
     for (let game of user.games)
@@ -1175,27 +1178,25 @@ router.get("/:id/friends", async function (req, res) {
       ["friend", "id name avatar -_id"]
     );
 
-    friends = await Promise.all(
-      friends.map(async (friend) => {
-        friend = friend.toJSON();
+    friends = friends.map((friend) => friend.toJSON());
 
-        // Get vanity URL for friend
-        const vanityUrlObj = await models.VanityUrl.findOne({
-          userId: friend.friendId,
-        }).select("url -_id");
+    // One query for every friend's vanity URL rather than one query per friend.
+    // The userId index already exists, so this is a single indexed $in lookup.
+    const vanityUrls = await models.VanityUrl.find({
+      userId: { $in: friends.map((friend) => friend.friendId) },
+    })
+      .select("url userId -_id")
+      .lean();
 
-        let vanityUrl = null;
-        if (vanityUrlObj) {
-          vanityUrl = vanityUrlObj.url;
-        }
-
-        return {
-          ...friend.friend,
-          lastActive: friend.lastActive,
-          vanityUrl: vanityUrl,
-        };
-      })
+    const vanityUrlByUserId = new Map(
+      vanityUrls.map((vanityUrl) => [vanityUrl.userId, vanityUrl.url])
     );
+
+    friends = friends.map((friend) => ({
+      ...friend.friend,
+      lastActive: friend.lastActive,
+      vanityUrl: vanityUrlByUserId.get(friend.friendId) ?? null,
+    }));
 
     res.send(friends);
   } catch (e) {

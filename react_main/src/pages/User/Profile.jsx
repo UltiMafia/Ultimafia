@@ -1,6 +1,6 @@
 // React 17 does not batch state updates outside its own event handlers.
 import { unstable_batchedUpdates } from "react-dom";
-import React, { useState, useEffect, useContext, useRef, useMemo } from "react";
+import React, { useState, useEffect, useContext, useRef, useMemo, Suspense, lazy } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
@@ -39,8 +39,6 @@ import Comments from "../Community/Comments";
 import "css/user.css";
 import { Modal } from "components/Modal";
 import CustomMarkdown from "components/CustomMarkdown";
-import ModerationSideDrawer from "components/ModerationSideDrawer";
-import ReportDialog from "../../components/ReportDialog";
 import RapSheet from "../../components/RapSheet";
 import TrophyCase from "components/TrophyCase";
 import { AchievementPanel } from "components/Achievements";
@@ -50,7 +48,6 @@ import Sparkline from "components/Sparkline";
 import PendingTradeConfirmations from "components/PendingTradeConfirmations";
 import CasePanel from "components/CasePanel";
 import { RoleCount } from "components/Roles";
-import { PieChart } from "./PieChart";
 import AdminVisuals from "./AdminVisuals";
 import { Loading } from "components/Loading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
@@ -101,6 +98,17 @@ export {
 import { TIER_ICONS, getConservativeRank } from "utils/skillRating";
 
 
+
+
+// Each of these renders only behind a flag, but importing them statically put
+// their whole dependency tree in the chunk every profile view downloads:
+// ModerationSideDrawer drags in the Moderation page (commands.js alone is 40KB)
+// and RapSheet, and PieChart drags in d3.
+const ModerationSideDrawer = lazy(() => import("components/ModerationSideDrawer"));
+const ReportDialog = lazy(() => import("../../components/ReportDialog"));
+const PieChart = lazy(() =>
+  import("./PieChart").then((m) => ({ default: m.PieChart }))
+);
 
 function FavoritedRolesPanel({
   favoriteRoles = [],
@@ -1265,11 +1273,15 @@ export default function Profile() {
               >
                 <i className="fas fa-flag" />
               </IconButton>
-              <ReportDialog
-                open={reportDialogOpen}
-                onClose={() => setReportDialogOpen(false)}
-                prefilledArgs={{ userId: profileUserId, userName: name }}
-              />
+              {reportDialogOpen && (
+                <Suspense fallback={null}>
+                  <ReportDialog
+                    open={reportDialogOpen}
+                    onClose={() => setReportDialogOpen(false)}
+                    prefilledArgs={{ userId: profileUserId, userName: name }}
+                  />
+                </Suspense>
+              )}
               {isFriend && !pokesDisabled && !user.settings?.disablePokes && (
                 <>
                   {pokeStatus.status === "none" && (
@@ -1610,11 +1622,15 @@ export default function Profile() {
           setShow={setShowStatsModal}
         />
       )}
-      <ModerationSideDrawer
-        open={moderationDrawerOpen}
-        setOpen={setModerationDrawerOpen}
-        prefilledArgs={{ userId: profileUserId }}
-      />
+      {moderationDrawerOpen && (
+        <Suspense fallback={null}>
+          <ModerationSideDrawer
+            open={moderationDrawerOpen}
+            setOpen={setModerationDrawerOpen}
+            prefilledArgs={{ userId: profileUserId }}
+          />
+        </Suspense>
+      )}
       <Grid container rowSpacing={1} columnSpacing={1} className="profile">
         <Grid item xs={12}>
           <Stack
@@ -1964,11 +1980,13 @@ export default function Profile() {
                             Win/Loss Distribution
                           </Typography>
                           <Box sx={{ my: 1, display: "flex", justifyContent: "center" }}>
-                            <PieChart
-                              wins={getWins(mafiaStats)}
-                              losses={getLosses(mafiaStats)}
-                              abandons={getAbandons(mafiaStats)}
-                            />
+                            <Suspense fallback={null}>
+                              <PieChart
+                                wins={getWins(mafiaStats)}
+                                losses={getLosses(mafiaStats)}
+                                abandons={getAbandons(mafiaStats)}
+                              />
+                            </Suspense>
                           </Box>
                           <Typography variant="body2" sx={{ mt: 1, fontWeight: "bold" }}>
                             Wins: {Math.round((getWins(mafiaStats) / totalGames) * 100)}% ({getWins(mafiaStats)}W / {getLosses(mafiaStats)}L)
