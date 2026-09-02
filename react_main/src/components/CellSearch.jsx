@@ -99,7 +99,7 @@ export function CellSearch({
       {!useTagAutocomplete && extraToolbarContent}
       <Divider direction="horizontal" sx={{ mb: 1 }} />
       <Paper sx={{ p: 1 }}>
-        <Grid2 container spacing={1} columns={gridColumns}>
+        <Grid2 className="cell-search-grid" container spacing={1} columns={gridColumns}>
           {items.map((item) => {
             const key = getItemKey(item);
             const name = getItemName(item);

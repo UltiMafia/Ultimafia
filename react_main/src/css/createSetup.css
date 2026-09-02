@@ -19,6 +19,48 @@
 
 .setup-wizard .setup-catalog .MuiTabs-root {
   min-width: 0;
+  max-width: 100%;
+}
+
+.setup-wizard .setup-catalog > .MuiStack-root > .MuiStack-root {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.setup-wizard .cell-search-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 8px;
+}
+
+.setup-wizard .cell-search-grid > * {
+  width: auto;
+  min-width: 0;
+}
+
+.setup-wizard .role-cell {
+  height: auto;
+  min-height: 64px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+
+.setup-wizard .role-cell > .MuiStack-root {
+  min-width: 0;
+}
+
+.setup-wizard .role-cell .MuiButton-root {
+  align-self: center;
+  flex-shrink: 0;
+  height: 36px;
+}
+
+.setup-wizard .role-cell .MuiTypography-root {
+  min-width: 0;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  hyphens: none;
 }
 
 .setup-step-navigation {
