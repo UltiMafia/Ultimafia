@@ -25,9 +25,31 @@ export default function ReadyCheckDialog({ open, endTime, onReady, onLeave }) {
       setTimeLeft(remaining);
       if (remaining <= 0) clearInterval(interval);
     }, 100);
-    
+
     return () => clearInterval(interval);
   }, [open, endTime]);
+
+  // Enter confirms Ready. Capture so Game.jsx's global "focus the chat
+  // input" listener does not steal the key. Leave Game still works if
+  // that button is focused (Tab + Enter).
+  useEffect(() => {
+    if (!open) return;
+
+    function onKeyDown(e) {
+      if (e.key !== "Enter" && e.key !== "NumpadEnter") return;
+      if (e.repeat || e.altKey || e.ctrlKey || e.metaKey || e.isComposing) return;
+      if (e.target instanceof HTMLElement && e.target.closest("[data-ready-check-leave]")) {
+        return;
+      }
+
+      e.preventDefault();
+      e.stopPropagation();
+      onReady();
+    }
+
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
+  }, [open, onReady]);
 
   if (!open) return null;
 
@@ -48,10 +70,21 @@ export default function ReadyCheckDialog({ open, endTime, onReady, onLeave }) {
         </Stack>
       </DialogContent>
       <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
-        <Button onClick={onLeave} color="error" variant="outlined">
+        <Button
+          onClick={onLeave}
+          color="error"
+          variant="outlined"
+          data-ready-check-leave
+        >
           Leave Game
         </Button>
-        <Button onClick={onReady} color="success" variant="contained" size="large">
+        <Button
+          onClick={onReady}
+          color="success"
+          variant="contained"
+          size="large"
+          autoFocus
+        >
           I am Ready
         </Button>
       </DialogActions>
