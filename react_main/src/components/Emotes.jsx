@@ -67,15 +67,19 @@ export function emotify(text, customEmotes, customStickers, options) {
 
     for (let j in words) {
       let word = words[j].toLowerCase();
+      const hasSticker =
+        stickers && Object.prototype.hasOwnProperty.call(stickers, word);
+      const hasEmote =
+        emotes && Object.prototype.hasOwnProperty.call(emotes, word);
 
       // Site/system emotes win so user stickers cannot steal :gun: etc.
       if (Emotes[word] && typeof Emotes[word] != "function") {
         words[j] = <Emote emote={word} />;
         stickerOnlyText = false;
-      } else if (stickers && stickers[word]) {
+      } else if (hasSticker) {
         words[j] = <CustomSticker sticker={stickers[word]} />;
         emoteOnlyText = false;
-      } else if (emotes && emotes[word]) {
+      } else if (hasEmote) {
         words[j] = <CustomEmote emote={emotes[word]} />;
         stickerOnlyText = false;
       } else {
