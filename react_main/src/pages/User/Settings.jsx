@@ -778,6 +778,11 @@ export default function Settings() {
           fontFamily: "Verdana, Geneva, sans-serif",
         },
         {
+          label: "Comic Sans",
+          value: "comic",
+          fontFamily: '"Comic Sans MS", "Comic Sans", "Chalkboard SE", cursive',
+        },
+        {
           label: "Betty Noir",
           value: "bettynoir",
           fontFamily: "BettyNoir, Georgia, serif",

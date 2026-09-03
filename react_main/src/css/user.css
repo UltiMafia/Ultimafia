@@ -329,6 +329,10 @@ iframe {
 .user-name.name-font-verdana .user-name-text {
   font-family: Verdana, Geneva, sans-serif !important;
 }
+.user-name.name-font-comic,
+.user-name.name-font-comic .user-name-text {
+  font-family: "Comic Sans MS", "Comic Sans", "Chalkboard SE", cursive !important;
+}
 .user-name.name-font-bettynoir,
 .user-name.name-font-bettynoir .user-name-text {
   font-family: BettyNoir, Georgia, serif !important;
