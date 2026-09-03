@@ -162,6 +162,7 @@ export default function FlaggedIntake() {
                 id={flaggedUser.id}
                 name={flaggedUser.name}
                 avatar={flaggedUser.avatar}
+                avatarVersion={flaggedUser.avatarVersion}
               />
             </Box>
             <Stack direction="column" spacing={0.5}>

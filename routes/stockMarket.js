@@ -408,7 +408,7 @@ router.get("/", async function (req, res) {
     const userIds = stocks.map(s => s.userId);
     const [users, transactionsGrouped] = await Promise.all([
       models.User.find({ id: { $in: userIds } })
-        .select("id name avatar settings.nameColor settings.vanityUrl")
+        .select("id name avatar avatarVersion settings.nameColor settings.vanityUrl")
         .lean()
         .exec(),
       models.StockTransaction.aggregate([
@@ -446,6 +446,7 @@ router.get("/", async function (req, res) {
         userId: stock.userId,
         username: u.name,
         avatar: u.avatar,
+        avatarVersion: u.avatarVersion || 0,
         vanityUrl: u.settings?.vanityUrl || "",
         nameColor: u.settings?.nameColor || "",
         shareSupply: stock.shareSupply,
@@ -522,7 +523,7 @@ router.get("/transactions", async function (req, res) {
       }
 
       const users = await models.User.find({ id: { $in: Array.from(userIds) } })
-        .select("id name avatar settings.nameColor settings.vanityUrl")
+        .select("id name avatar avatarVersion settings.nameColor settings.vanityUrl")
         .lean()
         .exec();
 
@@ -539,11 +540,13 @@ router.get("/transactions", async function (req, res) {
           userId: tx.userId,
           buyerName: buyer.name,
           buyerAvatar: buyer.avatar,
+          buyerAvatarVersion: buyer.avatarVersion || 0,
           buyerNameColor: buyer.settings?.nameColor || "",
           buyerVanityUrl: buyer.settings?.vanityUrl || "",
           subjectId: tx.subjectId,
           subjectName: subject.name,
           subjectAvatar: subject.avatar,
+          subjectAvatarVersion: subject.avatarVersion || 0,
           subjectNameColor: subject.settings?.nameColor || "",
           subjectVanityUrl: subject.settings?.vanityUrl || "",
           type: tx.type,
@@ -606,11 +609,11 @@ router.get("/transactions", async function (req, res) {
 
       const [users, families] = await Promise.all([
         models.User.find({ id: { $in: Array.from(userIds) } })
-          .select("id name avatar settings.nameColor settings.vanityUrl")
+          .select("id name avatar avatarVersion settings.nameColor settings.vanityUrl")
           .lean()
           .exec(),
         models.Family.find({ id: { $in: Array.from(familyIds) } })
-          .select("id name avatar background treasury")
+          .select("id name avatar avatarVersion background treasury")
           .lean()
           .exec()
       ]);
@@ -633,11 +636,13 @@ router.get("/transactions", async function (req, res) {
           userId: tx.userId,
           buyerName: buyer.name,
           buyerAvatar: buyer.avatar,
+          buyerAvatarVersion: buyer.avatarVersion || 0,
           buyerNameColor: buyer.settings?.nameColor || "",
           buyerVanityUrl: buyer.settings?.vanityUrl || "",
           familyId: tx.familyId,
           familyName: family.name,
           familyAvatar: family.avatar,
+          familyAvatarVersion: family.avatarVersion || 0,
           familyBackground: family.background || false,
           type: tx.type,
           shares: tx.shares,
@@ -670,7 +675,7 @@ router.get("/portfolio", async function (req, res) {
     const [stocks, users] = await Promise.all([
       models.PlayerStock.find({ userId: { $in: subjectIds } }).lean().exec(),
       models.User.find({ id: { $in: subjectIds } })
-        .select("id name avatar settings.nameColor settings.vanityUrl")
+        .select("id name avatar avatarVersion settings.nameColor settings.vanityUrl")
         .lean()
         .exec()
     ]);
@@ -700,6 +705,7 @@ router.get("/portfolio", async function (req, res) {
         subjectId,
         username: u.name,
         avatar: u.avatar,
+        avatarVersion: u.avatarVersion || 0,
         vanityUrl: u.settings?.vanityUrl || "",
         nameColor: u.settings?.nameColor || "",
         sharesOwned: h.sharesOwned,
@@ -850,7 +856,7 @@ router.get("/families", async function (req, res) {
 
     const [families, transactionsGrouped] = await Promise.all([
       models.Family.find({ id: { $in: familyIds } })
-        .select("id name avatar background treasury")
+        .select("id name avatar avatarVersion background treasury")
         .lean()
         .exec(),
       models.FamilyStockTransaction.aggregate([
@@ -888,6 +894,7 @@ router.get("/families", async function (req, res) {
         familyId: stock.familyId,
         familyName: f.name,
         avatar: f.avatar,
+        avatarVersion: f.avatarVersion || 0,
         background: f.background,
         shareSupply: stock.shareSupply,
         marketCap,
@@ -921,7 +928,7 @@ router.get("/families/eligible", async function (req, res) {
     const families = await models.Family.find({
       $or: [{ leader: userObj._id }, { founder: userObj._id }]
     })
-      .select("id name avatar")
+      .select("id name avatar avatarVersion")
       .lean()
       .exec();
 
@@ -953,7 +960,7 @@ router.get("/families/portfolio", async function (req, res) {
 
     const [stocks, families] = await Promise.all([
       models.FamilyStock.find({ familyId: { $in: familyIds } }).lean().exec(),
-      models.Family.find({ id: { $in: familyIds } }).select("id name avatar background treasury").lean().exec()
+      models.Family.find({ id: { $in: familyIds } }).select("id name avatar avatarVersion background treasury").lean().exec()
     ]);
 
     const stockMap = {};
@@ -981,6 +988,7 @@ router.get("/families/portfolio", async function (req, res) {
         familyId: h.familyId,
         familyName: f.name,
         avatar: f.avatar,
+        avatarVersion: f.avatarVersion || 0,
         background: f.background,
         sharesOwned: h.sharesOwned,
         liquidValue,
@@ -1015,7 +1023,7 @@ router.get("/families/prices/:familyId", async function (req, res) {
       return errors.notFound(res, "This family has not launched an ETF or does not exist.");
     }
 
-    const family = await models.Family.findOne({ id: familyId }).select("name avatar background treasury").lean().exec();
+    const family = await models.Family.findOne({ id: familyId }).select("name avatar avatarVersion background treasury").lean().exec();
     const buy1 = stockMarket.getBuyPrice(stock.shareSupply, 1);
     const sell1 = stockMarket.getSellPrice(stock.shareSupply, 1);
     const marketCap = stock.shareSupply * stockMarket.calculatePrice(stock.shareSupply);
@@ -1024,6 +1032,7 @@ router.get("/families/prices/:familyId", async function (req, res) {
       familyId: stock.familyId,
       familyName: family ? family.name : "Unknown",
       avatar: family?.avatar,
+      avatarVersion: family?.avatarVersion || 0,
       background: family?.background,
       shareSupply: stock.shareSupply,
       marketCap,

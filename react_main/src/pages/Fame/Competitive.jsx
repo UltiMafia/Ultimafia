@@ -145,6 +145,7 @@ function Overview({ roundInfo, seasonInfo }) {
                         id={user.id}
                         name={user.name}
                         avatar={user.avatar}
+                        avatarVersion={user.avatarVersion}
                       />
                     </Box>
                     <Typography
@@ -229,6 +230,7 @@ function Overview({ roundInfo, seasonInfo }) {
                         id={user.id}
                         name={user.name}
                         avatar={user.avatar}
+                        avatarVersion={user.avatarVersion}
                       />
                     </Box>
                     <Typography
@@ -439,6 +441,7 @@ function GameHistory({ roundInfo, canManageCompetitive, reloadRoundInfo }) {
                             id={userId}
                             name={user.name}
                             avatar={user.avatar}
+                            avatarVersion={user.avatarVersion}
                           />
                           <Typography sx={{ marginLeft: "auto !important" }}>
                             {Math.trunc(pointsEarnedByPlayer.points)}
@@ -717,6 +720,7 @@ export default function Competitive() {
                 id={user.id}
                 hasImage={user.avatar}
                 name={user.name}
+                avatarVersion={user.avatarVersion}
                 isSquare
               />
               <Stack direction="column" spacing={0}>

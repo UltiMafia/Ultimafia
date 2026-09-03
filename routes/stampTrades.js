@@ -95,21 +95,33 @@ async function stampHasCrossFieldConflict(stampId, ownTradeDocId) {
 
 async function populateTradeForDisplay(trade) {
   const initiator = await models.User.findById(trade.initiator).select(
-    "id name avatar"
+    "id name avatar avatarVersion"
   );
   const recipient = trade.recipient
-    ? await models.User.findById(trade.recipient).select("id name avatar")
+    ? await models.User.findById(trade.recipient).select(
+        "id name avatar avatarVersion"
+      )
     : null;
   return {
     id: trade.id,
     status: trade.status,
     initiator: initiator
-      ? { id: initiator.id, name: initiator.name, avatar: initiator.avatar }
+      ? {
+          id: initiator.id,
+          name: initiator.name,
+          avatar: initiator.avatar,
+          avatarVersion: initiator.avatarVersion || 0,
+        }
       : null,
     initiatorGameType: trade.initiatorGameType,
     initiatorRole: trade.initiatorRole,
     recipient: recipient
-      ? { id: recipient.id, name: recipient.name, avatar: recipient.avatar }
+      ? {
+          id: recipient.id,
+          name: recipient.name,
+          avatar: recipient.avatar,
+          avatarVersion: recipient.avatarVersion || 0,
+        }
       : null,
     recipientGameType: trade.recipientGameType,
     recipientRole: trade.recipientRole,

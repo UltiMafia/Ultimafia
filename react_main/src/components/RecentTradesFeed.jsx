@@ -164,6 +164,7 @@ export default function RecentTradesFeed() {
                         id={t.initiator?.id}
                         name={t.initiator?.name}
                         avatar={t.initiator?.avatar}
+                        avatarVersion={t.initiator?.avatarVersion}
                         small
                       />
                     </Box>
@@ -221,6 +222,7 @@ export default function RecentTradesFeed() {
                         id={t.initiator?.id}
                         name={t.initiator?.name}
                         avatar={t.initiator?.avatar}
+                        avatarVersion={t.initiator?.avatarVersion}
                         small
                       />
                     </Box>
@@ -259,6 +261,7 @@ export default function RecentTradesFeed() {
                         id={t.recipient?.id}
                         name={t.recipient?.name}
                         avatar={t.recipient?.avatar}
+                        avatarVersion={t.recipient?.avatarVersion}
                         small
                       />
                     </Box>
@@ -278,6 +281,7 @@ export default function RecentTradesFeed() {
               id={respondingTo?.initiator?.id}
               name={respondingTo?.initiator?.name}
               avatar={respondingTo?.initiator?.avatar}
+              avatarVersion={respondingTo?.initiator?.avatarVersion}
               small
             />
             <Typography variant="body1">'s</Typography>

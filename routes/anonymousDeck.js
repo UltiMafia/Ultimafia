@@ -486,7 +486,7 @@ router.get("/featured", async function (req, res) {
         .skip(start)
         .limit(pageSize)
         .select("id name profiles creator coverPhoto voteCount")
-        .populate("creator", "id name avatar -_id")
+        .populate("creator", "id name avatar avatarVersion -_id")
         .lean();
       decks = await attachDeckPreviews(decks);
       decks = await attachUserVotes(decks, userId);

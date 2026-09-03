@@ -271,6 +271,7 @@ export function FamilyApplications({ familyId, family, refreshFamilyTools }) {
               id={application.applicant.id}
               name={application.applicant.name}
               avatar={application.applicant.avatar}
+              avatarVersion={application.applicant.avatarVersion}
               vanityUrl={application.applicant.vanityUrl}
             />
             {application.message && (
@@ -619,6 +620,7 @@ export function FamilyStockCard({ stockInfo, family, familyId, refreshFamilyTool
                 id: familyId,
                 name: family.name,
                 avatar: family.avatar,
+                avatarVersion: family.avatarVersion,
                 shareSupply: stockInfo.shareSupply,
                 sharesOwned: stockInfo.sharesOwned,
               }

@@ -39,8 +39,14 @@ export default function SnakeGameDisplay({ player, players, gameSocket, extraInf
   const snakeUserIds = Object.values(players || {})
     .map((p) => (p && p.avatar && p.userId ? p.userId : null))
     .filter(Boolean);
+  const snakeVersions = {};
+  Object.values(players || {}).forEach((p) => {
+    if (p && p.userId && p.avatarVersion)
+      snakeVersions[p.userId] = p.avatarVersion;
+  });
   const avatarUrls = useAvatarUrlMap(snakeUserIds, {
     cacheVal: siteInfo?.cacheVal,
+    versions: snakeVersions,
   });
 
   const wallsTransparent = gameState?.ifWallsAreTransparent !== false;

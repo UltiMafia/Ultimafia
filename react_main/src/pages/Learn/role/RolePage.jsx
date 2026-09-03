@@ -386,6 +386,7 @@ export function RoleThings() {
           id={artist.user?.id}
           name={artist.user?.name}
           avatar={artist.user?.avatar}
+          avatarVersion={artist.user?.avatarVersion}
         />
       </Box>
     ));

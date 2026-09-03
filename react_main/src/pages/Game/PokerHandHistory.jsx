@@ -22,7 +22,7 @@ function HandHistoryEntry({ entry, players, cacheVal }) {
   const winnerPlayer = players?.[entry.winnerId];
   const avatarUrl = useAvatarImageUrl(
     winnerPlayer?.avatar && entry.winnerId ? entry.winnerId : null,
-    { cacheVal }
+    { cacheVal, avatarVersion: winnerPlayer?.avatarVersion }
   );
   const initial = entry.winnerName
     ? entry.winnerName.charAt(0).toUpperCase()

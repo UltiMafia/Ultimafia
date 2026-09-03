@@ -445,6 +445,7 @@ function AcrotopiaResponses({ responseHistory, players }) {
                     small
                     id={author.userId}
                     hasImage={author.avatar}
+                    avatarVersion={author.avatarVersion}
                     name={author.name}
                   />
                 )}

@@ -96,6 +96,7 @@ export function GroupPanels({ user }) {
             id={member.id}
             name={member.name}
             avatar={member.avatar}
+            avatarVersion={member.avatarVersion}
           />
           <StatusIcon status={member.status} />
           {canManageGroup && (

@@ -100,6 +100,7 @@ export function RecentForumReplies() {
                   hasImage={item.user?.avatar}
                   id={item.user?.id}
                   name={item.user?.name}
+                  avatarVersion={item.user?.avatarVersion}
                 />
                 <Box
                   sx={{
@@ -151,6 +152,7 @@ export function RecentForumReplies() {
                   hasImage={item.user?.avatar}
                   id={item.user?.id}
                   name={item.user?.name}
+                  avatarVersion={item.user?.avatarVersion}
                 />
                 <Box
                   sx={{

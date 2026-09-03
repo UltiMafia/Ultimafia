@@ -679,6 +679,7 @@ export function SetupPage() {
                   id={setup.creator.id}
                   name={setup.creator.name}
                   avatar={setup.creator.avatar}
+                  avatarVersion={setup.creator.avatarVersion}
                 />
                 {canArchive && !setup.creator.name && (
                   <Button

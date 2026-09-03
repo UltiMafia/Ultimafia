@@ -171,6 +171,7 @@ export function VoteWidget(props) {
               name={e.voter.name}
               vanityUrl={e.voter.vanityUrl}
               avatar={e.voter.avatar}
+              avatarVersion={e.voter.avatarVersion}
             />
           ))}
           {upvoters.length === 0 && (
@@ -184,6 +185,7 @@ export function VoteWidget(props) {
               name={e.voter.name}
               vanityUrl={e.voter.vanityUrl}
               avatar={e.voter.avatar}
+              avatarVersion={e.voter.avatarVersion}
             />
           ))}
           {downvoters.length === 0 && (

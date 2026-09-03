@@ -57,12 +57,13 @@ export function useDisableAnimatedAvatars() {
  */
 export function useAvatarImageUrl(
   id,
-  { cacheVal, family = false, skipFreeze = false } = {}
+  { cacheVal, family = false, skipFreeze = false, avatarVersion } = {}
 ) {
   const freeze = useDisableAnimatedAvatars() && !skipFreeze;
-  const live = avatarUrl(id, { family, freeze: false, cacheVal });
-  const frozen = avatarUrl(id, { family, freeze: true, cacheVal });
-  const cacheKey = probeCacheKey(id, family, cacheVal);
+  const bust = avatarVersion || cacheVal;
+  const live = avatarUrl(id, { family, freeze: false, cacheVal: bust });
+  const frozen = avatarUrl(id, { family, freeze: true, cacheVal: bust });
+  const cacheKey = probeCacheKey(id, family, bust);
   const [useFrozen, setUseFrozen] = useState(
     () => freeze && staticExistsCache.get(cacheKey) === true
   );
@@ -82,21 +83,30 @@ export function useAvatarImageUrl(
       return;
     }
     let cancelled = false;
-    probeStaticAvatar(id, { family, cacheVal }).then((exists) => {
+    probeStaticAvatar(id, { family, cacheVal: bust }).then((exists) => {
       if (!cancelled) setUseFrozen(!!exists);
     });
     return () => {
       cancelled = true;
     };
-  }, [id, family, freeze, cacheVal, cacheKey]);
+  }, [id, family, freeze, bust, cacheKey]);
 
   if (!id) return "";
   return freeze && useFrozen ? frozen : live;
 }
 
-export function useAvatarUrlMap(ids, { cacheVal, family = false } = {}) {
+function bustValue(versions, cacheVal, id) {
+  return (versions && versions[id]) || cacheVal;
+}
+
+export function useAvatarUrlMap(
+  ids,
+  { cacheVal, family = false, versions } = {}
+) {
   const freeze = useDisableAnimatedAvatars();
   const listKey = (ids || []).filter(Boolean).join(",");
+  // Stabilized so a freshly built versions object does not retrigger probes
+  const versionsKey = JSON.stringify(versions || null);
   const [frozenIds, setFrozenIds] = useState(() => new Set());
 
   useEffect(() => {
@@ -108,7 +118,10 @@ export function useAvatarUrlMap(ids, { cacheVal, family = false } = {}) {
     let cancelled = false;
     Promise.all(
       list.map((id) =>
-        probeStaticAvatar(id, { family, cacheVal }).then((ok) => [id, ok])
+        probeStaticAvatar(id, {
+          family,
+          cacheVal: bustValue(versions, cacheVal, id),
+        }).then((ok) => [id, ok])
       )
     ).then((results) => {
       if (cancelled) return;
@@ -121,7 +134,10 @@ export function useAvatarUrlMap(ids, { cacheVal, family = false } = {}) {
     return () => {
       cancelled = true;
     };
-  }, [listKey, freeze, family, cacheVal]);
+    // `versions` is deliberately omitted: versionsKey captures its content,
+    // and including the object itself would retrigger probes every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listKey, freeze, family, cacheVal, versionsKey]);
 
   return useMemo(() => {
     const map = {};
@@ -130,11 +146,13 @@ export function useAvatarUrlMap(ids, { cacheVal, family = false } = {}) {
       map[id] = avatarUrl(id, {
         family,
         freeze: freeze && frozenIds.has(id),
-        cacheVal,
+        cacheVal: bustValue(versions, cacheVal, id),
       });
     }
     return map;
-  }, [listKey, freeze, frozenIds, family, cacheVal]);
+    // Same rationale as the effect above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listKey, freeze, frozenIds, family, cacheVal, versionsKey]);
 }
 
 export function AvatarPhoto({ src, alt = "" }) {
@@ -148,10 +166,11 @@ export function FamilyAvatarImage({
   id,
   size = 40,
   cacheVal,
+  avatarVersion,
   extraStyle,
   className,
 }) {
-  const src = useAvatarImageUrl(id, { family: true, cacheVal });
+  const src = useAvatarImageUrl(id, { family: true, cacheVal, avatarVersion });
   return (
     <div
       className={className}

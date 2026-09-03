@@ -286,6 +286,7 @@ export default function SearchResults(props) {
                         name={result.author.name}
                         vanityUrl={result.author.vanityUrl}
                         avatar={result.author.avatar}
+                        avatarVersion={result.author.avatarVersion}
                       />
 
                       <Typography variant="caption" color="text.secondary">

@@ -179,6 +179,7 @@ function LiarsDiceBoard({ history, stateViewing, self }) {
             userId={player.userId}
             playerName={player.playerName}
             avatar={player.avatar}
+            avatarVersion={player.avatarVersion}
             diceValues={player.rolledDice}
             previousRolls={player.previousRolls}
             isCurrentPlayer={player.playerId === self}
@@ -579,6 +580,7 @@ function LiarsDicePlayerRow({
   userId,
   playerName,
   avatar,
+  avatarVersion,
   diceValues,
   previousRolls,
   isCurrentPlayer,
@@ -593,7 +595,12 @@ function LiarsDicePlayerRow({
         className="ld-player-avatar"
         onClick={() => window.open(`/user/${userId}`, "_blank")}
       >
-        <Avatar id={userId} name={playerName} hasImage={avatar} />
+        <Avatar
+          id={userId}
+          name={playerName}
+          hasImage={avatar}
+          avatarVersion={avatarVersion}
+        />
         <div
           className={`ld-player-name-small ${
             isCurrentPlayer ? "current-player" : ""

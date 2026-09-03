@@ -44,7 +44,7 @@ router.get("/user/family", async function (req, res) {
 
     // Query family directly and populate leader properly
     const family = await models.Family.findById(familyId)
-      .select("id name avatar banner bannerExt mediaUrl mediaAutoplay mediaCollapse leader members background backgroundRepeatMode perks")
+      .select("id name avatar avatarVersion banner bannerExt mediaUrl mediaAutoplay mediaCollapse leader members background backgroundRepeatMode perks")
       .populate("leader", "_id");
 
     if (!family) {
@@ -63,6 +63,7 @@ router.get("/user/family", async function (req, res) {
         id: family.id,
         name: family.name,
         avatar: family.avatar,
+        avatarVersion: family.avatarVersion || 0,
         banner: family.banner || false,
         bannerExt: family.bannerExt || "webp",
         mediaUrl: family.mediaUrl || "",
@@ -142,6 +143,7 @@ router.post("/create", async function (req, res) {
       leader: user._id,
       members: [user._id],
       avatar: hasAvatar,
+      avatarVersion: hasAvatar ? Date.now() : 0,
       createdAt: Date.now(),
     });
 
@@ -308,7 +310,7 @@ router.post("/avatar", async function (req, res) {
       if (isExistingFamily) {
         await models.Family.updateOne(
           { id: familyId },
-          { $set: { avatar: true } }
+          { $set: { avatar: true, avatarVersion: Date.now() } }
         );
       }
 
@@ -501,10 +503,10 @@ router.get("/:familyId/profile", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req, true);
 
     var family = await models.Family.findOne({ id: familyId })
-      .populate("founder", "id name avatar vanityUrl")
-      .populate("leader", "id name avatar vanityUrl")
-      .populate("members", "id name avatar vanityUrl")
-      .select("id name avatar banner bannerExt mediaUrl mediaAutoplay mediaCollapse background backgroundRepeatMode applicationsOpen joinFee pendingJoinFees treasury perks bio founder leader members trophies createdAt");
+      .populate("founder", "id name avatar avatarVersion vanityUrl")
+      .populate("leader", "id name avatar avatarVersion vanityUrl")
+      .populate("members", "id name avatar avatarVersion vanityUrl")
+      .select("id name avatar avatarVersion banner bannerExt mediaUrl mediaAutoplay mediaCollapse background backgroundRepeatMode applicationsOpen joinFee pendingJoinFees treasury perks bio founder leader members trophies createdAt");
 
     if (!family) {
       res.status(404);
@@ -547,6 +549,7 @@ router.get("/:familyId/profile", async function (req, res) {
       id: member.id,
       name: member.name,
       avatar: member.avatar,
+      avatarVersion: member.avatarVersion || 0,
       vanityUrl: member.vanityUrl,
       isLeader: member.id === leaderId,
       isFounder: member.id === founderId,
@@ -569,7 +572,7 @@ router.get("/:familyId/profile", async function (req, res) {
           ownerId: { $in: memberIds },
           revoked: { $ne: true },
         })
-          .populate("owner", "id name avatar vanityUrl")
+          .populate("owner", "id name avatar avatarVersion vanityUrl")
           .select("id name ownerId owner type createdAt -_id")
           .sort("-createdAt")
           .lean();
@@ -591,6 +594,7 @@ router.get("/:familyId/profile", async function (req, res) {
             id: trophy.owner.id,
             name: trophy.owner.name,
             avatar: trophy.owner.avatar,
+            avatarVersion: trophy.owner.avatarVersion || 0,
             vanityUrl: trophy.owner.vanityUrl,
           }
         : null,
@@ -624,6 +628,7 @@ router.get("/:familyId/profile", async function (req, res) {
       id: family.id,
       name: family.name,
       avatar: family.avatar,
+      avatarVersion: family.avatarVersion || 0,
       banner: family.banner || false,
       bannerExt: family.bannerExt || "webp",
       mediaUrl: family.mediaUrl || "",
@@ -643,12 +648,14 @@ router.get("/:familyId/profile", async function (req, res) {
         id: family.founder.id,
         name: family.founder.name,
         avatar: family.founder.avatar,
+        avatarVersion: family.founder.avatarVersion || 0,
         vanityUrl: family.founder.vanityUrl,
       },
       leader: {
         id: family.leader.id,
         name: family.leader.name,
         avatar: family.leader.avatar,
+        avatarVersion: family.leader.avatarVersion || 0,
         vanityUrl: family.leader.vanityUrl,
       },
       members: members,
@@ -1120,8 +1127,8 @@ router.get("/:familyId/pendingInvite", async function (req, res) {
       familyId: familyId,
       requesterId: userId,
     })
-      .populate("family", "id name avatar")
-      .populate("requester", "id name avatar");
+      .populate("family", "id name avatar avatarVersion")
+      .populate("requester", "id name avatar avatarVersion");
 
     if (!joinRequest) {
       res.send({ hasPendingInvite: false });
@@ -1134,6 +1141,7 @@ router.get("/:familyId/pendingInvite", async function (req, res) {
         id: joinRequest.family.id,
         name: joinRequest.family.name,
         avatar: joinRequest.family.avatar,
+        avatarVersion: joinRequest.family.avatarVersion || 0,
       },
     });
   } catch (e) {
@@ -1538,9 +1546,9 @@ router.get("/discover", async function (req, res) {
 
     const families = await models.Family.find(query)
       .select(
-        "id name avatar avatarUrl leader members treasury pendingJoinFees perks applicationsOpen joinFee createdAt bio"
+        "id name avatar avatarVersion avatarUrl leader members treasury pendingJoinFees perks applicationsOpen joinFee createdAt bio"
       )
-      .populate("leader", "id name avatar vanityUrl")
+      .populate("leader", "id name avatar avatarVersion vanityUrl")
       .populate("members", "id")
       .lean();
 
@@ -1590,11 +1598,13 @@ router.get("/discover", async function (req, res) {
         id: family.id,
         name: family.name,
         avatar: family.avatarUrl || family.avatar,
+        avatarVersion: family.avatarVersion || 0,
         leader: family.leader
           ? {
               id: family.leader.id,
               name: family.leader.name,
               avatar: family.leader.avatar,
+              avatarVersion: family.leader.avatarVersion || 0,
               vanityUrl: family.leader.vanityUrl,
             }
           : null,
@@ -2021,7 +2031,7 @@ router.get("/:familyId/applications", async function (req, res) {
       familyId: familyId,
       status: "pending",
     })
-      .populate("applicant", "id name avatar vanityUrl")
+      .populate("applicant", "id name avatar avatarVersion vanityUrl")
       .sort("createdAt")
       .lean();
 
@@ -2034,6 +2044,7 @@ router.get("/:familyId/applications", async function (req, res) {
             id: application.applicant.id,
             name: application.applicant.name,
             avatar: application.applicant.avatar,
+            avatarVersion: application.applicant.avatarVersion || 0,
             vanityUrl: application.applicant.vanityUrl,
           },
           message: application.message || "",
@@ -2292,7 +2303,7 @@ router.get("/:familyId/ledger", async function (req, res) {
     const maxPage = Math.ceil(totalCount / limit) || 1;
 
     var ledger = await models.FamilyLedger.find({ familyId: familyId })
-      .populate("user", "id name avatar vanityUrl")
+      .populate("user", "id name avatar avatarVersion vanityUrl")
       .sort("-createdAt")
       .skip(skip)
       .limit(limit)
@@ -2310,6 +2321,7 @@ router.get("/:familyId/ledger", async function (req, res) {
               id: entry.user.id,
               name: entry.user.name,
               avatar: entry.user.avatar,
+              avatarVersion: entry.user.avatarVersion || 0,
               vanityUrl: entry.user.vanityUrl,
             }
           : null,

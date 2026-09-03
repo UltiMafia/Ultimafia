@@ -164,7 +164,7 @@ function PokerSeat({
   const livePlayer = players?.[seat.playerId];
   const avatarUrl = useAvatarImageUrl(
     livePlayer?.avatar && seat.userId ? seat.userId : null,
-    { cacheVal }
+    { cacheVal, avatarVersion: livePlayer?.avatarVersion }
   );
 
   const initial = seat.playerName

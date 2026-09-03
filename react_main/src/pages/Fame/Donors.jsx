@@ -213,6 +213,7 @@ export default function Donors(props) {
                     large
                     hasImage={donor.avatar}
                     id={donor.id}
+                    avatarVersion={donor.avatarVersion}
                     name={donor.name}
                   />
                 </Box>

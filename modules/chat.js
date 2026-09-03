@@ -64,7 +64,7 @@ const channelMembers = {};
               .select("name public memberIds members -_id")
               .populate(
                 "members",
-                "id name avatar settings.nameColor settings.textColor -_id"
+                "id name avatar avatarVersion settings.nameColor settings.textColor -_id"
               );
 
             if (!channel) return;
@@ -325,7 +325,7 @@ const channelMembers = {};
               name: new RegExp(query, "i"),
               deleted: false,
             })
-              .select("id name avatar -_id")
+              .select("id name avatar avatarVersion -_id")
               .limit(constants.chatUserSearchAmt)
               .sort("name");
             users = users.map((user) => user.toJSON());

@@ -248,6 +248,7 @@ router.get("/searchName", async function (req, res) {
           id: 1,
           name: 1,
           avatar: 1,
+          avatarVersion: 1,
           _prefixMatch: 1,
           _nameLength: 1,
           _id: 0,
@@ -274,6 +275,7 @@ router.get("/searchName", async function (req, res) {
       id: u.id,
       name: u.name,
       avatar: u.avatar,
+      avatarVersion: u.avatarVersion || 0,
       status: u.status,
     }));
 
@@ -307,7 +309,7 @@ router.get("/newest", async function (req, res) {
       "joined",
       last,
       first,
-      "id name avatar joined -_id",
+      "id name avatar avatarVersion joined -_id",
       constants.newestUsersPageSize
     );
 
@@ -334,7 +336,7 @@ router.get("/flagged", async function (req, res) {
       "joined",
       last,
       first,
-      "id name avatar joined -_id",
+      "id name avatar avatarVersion joined -_id",
       constants.newestUsersPageSize
     );
 
@@ -408,7 +410,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner bannerExt setups games numFriends stats lastActive joined favoriteRoles roleIconCredits skillRating _id"
+        "id name avatar avatarVersion profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner bannerExt setups games numFriends stats lastActive joined favoriteRoles roleIconCredits skillRating _id"
       )
       .populate({
         path: "setups",
@@ -690,7 +692,7 @@ router.get("/:id/profile", async function (req, res) {
         const otherUserId = isInitiator ? t.recipientId : t.initiatorId;
         const otherUser = await models.User.findOne({
           id: otherUserId,
-        }).select("id name avatar");
+        }).select("id name avatar avatarVersion");
         // Whose turn is it?
         // PENDING_RESPONSE: recipient needs to respond.
         // PENDING_CONFIRMATION: depends on whether auto-responded.
@@ -712,6 +714,7 @@ router.get("/:id/profile", async function (req, res) {
                 id: otherUser.id,
                 name: otherUser.name,
                 avatar: otherUser.avatar,
+                avatarVersion: otherUser.avatarVersion || 0,
               }
             : null,
           isInitiator,
@@ -737,7 +740,7 @@ router.get("/:id/profile", async function (req, res) {
       ownerId: userId,
       revoked: { $ne: true },
     })
-      .populate("owner", "id name avatar vanityUrl")
+      .populate("owner", "id name avatar avatarVersion vanityUrl")
       .select("id name ownerId owner type createdAt -_id")
       .sort("-createdAt")
       .lean();
@@ -751,6 +754,7 @@ router.get("/:id/profile", async function (req, res) {
             id: trophy.owner.id,
             name: trophy.owner.name,
             avatar: trophy.owner.avatar,
+            avatarVersion: trophy.owner.avatarVersion || 0,
             vanityUrl: trophy.owner.vanityUrl,
           }
         : null,
@@ -759,7 +763,7 @@ router.get("/:id/profile", async function (req, res) {
     if (isSelf) {
       var friendRequests = await models.FriendRequest.find({ targetId: userId })
         .select("userId user")
-        .populate("user", "id name avatar");
+        .populate("user", "id name avatar avatarVersion");
 
       // Add vanity URLs to friend requests — one indexed $in lookup rather than
       // one query per request.
@@ -824,7 +828,7 @@ router.get("/:id/profile", async function (req, res) {
       .select("loveId type")
       .populate({
         path: "love",
-        select: "id name avatar -_id",
+        select: "id name avatar avatarVersion -_id",
       });
 
     if (user.love !== null) {
@@ -947,7 +951,7 @@ router.get("/:id/profile", async function (req, res) {
       user: userMongoId,
     }).populate({
       path: "family",
-      select: "id name avatar -_id",
+      select: "id name avatar avatarVersion -_id",
     });
 
     if (inFamily && inFamily.family) {
@@ -955,6 +959,7 @@ router.get("/:id/profile", async function (req, res) {
         id: inFamily.family.id,
         name: inFamily.family.name,
         avatar: inFamily.family.avatar,
+        avatarVersion: inFamily.family.avatarVersion || 0,
       };
     } else {
       user.family = null;
@@ -966,10 +971,15 @@ router.get("/:id/profile", async function (req, res) {
       for (const poke of incomingPokes) {
         if (isPokeExpired(poke)) continue;
         const sender = await models.User.findOne({ id: poke.from, deleted: false })
-          .select("id name avatar settings -_id");
+          .select("id name avatar avatarVersion settings -_id");
         if (sender && !sender.settings?.disablePokes) {
           user.incomingPokes.push({
-            from: { id: sender.id, name: sender.name, avatar: sender.avatar },
+            from: {
+              id: sender.id,
+              name: sender.name,
+              avatar: sender.avatar,
+              avatarVersion: sender.avatarVersion || 0,
+            },
             count: poke.count,
             updatedAt: poke.updatedAt,
           });
@@ -1129,7 +1139,7 @@ router.get("/:id/love", async function (req, res) {
       .select("loveId type")
       .populate({
         path: "love",
-        select: "id name avatar -_id",
+        select: "id name avatar avatarVersion -_id",
       });
 
     if (love) {
@@ -1175,7 +1185,7 @@ router.get("/:id/friends", async function (req, res) {
       first,
       "friendId friend lastActive -_id",
       constants.friendsPerPage,
-      ["friend", "id name avatar -_id"]
+      ["friend", "id name avatar avatarVersion -_id"]
     );
 
     friends = friends.map((friend) => friend.toJSON());
@@ -1438,6 +1448,7 @@ router.get("/:id/reports", async function (req, res) {
         if (reportedUserInfo) {
           report.reportedUserName = reportedUserInfo.name;
           report.reportedUserAvatar = reportedUserInfo.avatar;
+          report.reportedUserAvatarVersion = reportedUserInfo.avatarVersion || 0;
         }
 
         const reporterInfo = await getBasicUserInfo(report.reporterId);
@@ -1484,6 +1495,7 @@ router.get("/:id/info", async function (req, res) {
       res.send({
         name: "[not found]",
         avatar: false,
+        avatarVersion: 0,
       });
       return;
     }
@@ -1495,6 +1507,7 @@ router.get("/:id/info", async function (req, res) {
       res.send({
         name: "[not found]",
         avatar: false,
+        avatarVersion: 0,
       });
       return;
     }
@@ -3317,7 +3330,10 @@ router.post("/avatar", async function (req, res) {
         logger.warn(staticErr);
       }
 
-      await models.User.updateOne({ id: userId }, { $set: { avatar: true } });
+      await models.User.updateOne(
+        { id: userId },
+        { $set: { avatar: true, avatarVersion: Date.now() } }
+      );
       await redis.cacheUserInfo(userId, true);
 
       models.SiteActivity.create({
@@ -3356,7 +3372,10 @@ router.post("/avatar/delete", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
 
-    await models.User.updateOne({ id: userId }, { $set: { avatar: false } });
+    await models.User.updateOne(
+      { id: userId },
+      { $set: { avatar: false, avatarVersion: Date.now() } }
+    );
     await redis.cacheUserInfo(userId, true);
 
     // Best-effort delete of uploaded files (default letter avatar when avatar is false)
@@ -3842,7 +3861,7 @@ router.post("/love", async function (req, res) {
         love = love.toJSON();
 
         var userLove = await models.User.findOne({ id: love.loveId }).select(
-          "id name avatar -_id"
+          "id name avatar avatarVersion -_id"
         );
 
         userLove = userLove.toJSON();

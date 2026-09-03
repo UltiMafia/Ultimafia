@@ -70,6 +70,7 @@ export default function Newspaper(props) {
                     id={players[0].id}
                     hasImage={players[0].avatar}
                     avatarId={players[0].avatarId}
+                    avatarVersion={players[0].avatarVersion}
                     name={players[0].name}
                     large
                     isSquare
@@ -152,6 +153,7 @@ export default function Newspaper(props) {
                       id={player.id}
                       hasImage={player.avatar}
                       avatarId={player.avatarId}
+                      avatarVersion={player.avatarVersion}
                       name={player.name}
                       isSquare
                       mediumlarge={avatarSizeProp === "mediumlarge"}
@@ -196,6 +198,7 @@ export default function Newspaper(props) {
             id={death.id}
             hasImage={death.avatar}
             avatarId={death.avatarId}
+            avatarVersion={death.avatarVersion}
             name={death.name}
             large
             isSquare

@@ -55,6 +55,7 @@ router.get("/", async function (req, res) {
           id: "",
           name: "[deleted]",
           avatar: false,
+          avatarVersion: 0,
           groups: [],
           settings: {},
         };

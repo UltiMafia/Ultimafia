@@ -865,6 +865,7 @@ module.exports = class Game {
       userId: player.user.id,
       name: player.name,
       avatar: player.user.avatar,
+      avatarVersion: player.user.avatarVersion,
       emojis: player.user.emojis,
       textColor: player.user.textColor,
       nameColor: player.user.nameColor,

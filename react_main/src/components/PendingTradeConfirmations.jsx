@@ -275,6 +275,7 @@ export default function PendingTradeConfirmations({
                       id={t.other.id}
                       name={t.other.name}
                       avatar={t.other.avatar}
+                      avatarVersion={t.other.avatarVersion}
                       small
                     />
                   ) : (

@@ -67,6 +67,7 @@ export const Comment = (props) => {
                   id={comment.author.id}
                   name={comment.author.name}
                   avatar={comment.author.avatar}
+                  avatarVersion={comment.author.avatarVersion}
                   groups={comment.author.groups}
                   vanityUrl={comment.author.vanityUrl}
                   color={theme.palette.text.primary}

@@ -525,6 +525,9 @@ export default function Game() {
               name: data.names[i],
               userId: data.users[i] ? data.users[i].id : "",
               avatar: data.users[i] ? data.users[i].avatar : false,
+              avatarVersion: data.users[i]
+                ? data.users[i].avatarVersion
+                : 0,
               textColor: data.users[i] && data.users[i].settings.textColor,
               nameColor: data.users[i] && data.users[i].settings.nameColor,
               customEmotes:
@@ -550,6 +553,9 @@ export default function Game() {
               name: data.spectatorNames[i],
               userId: data.spectatorsUsers[i] ? data.spectatorsUsers[i].id : "",
               avatar: data.spectatorsUsers[i] ? data.spectatorsUsers[i].avatar : false,
+              avatarVersion: data.spectatorsUsers[i]
+                ? data.spectatorsUsers[i].avatarVersion
+                : 0,
               textColor: data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.textColor,
               nameColor: data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.nameColor,
               customEmotes:
@@ -2513,6 +2519,7 @@ function Message(props) {
                 avatarId={avatarId}
                 name={player.name}
                 avatar={player.avatar}
+                avatarVersion={player.avatarVersion}
                 color={resolveDisplayNameColor({
                   accessibleNameColors,
                   ignoreTextColor: user.settings?.ignoreTextColor,
@@ -2670,6 +2677,7 @@ function WinnersMessage(props) {
           id: player.userId || player.id,
           name: player.name,
           avatar: player.avatar !== undefined ? player.avatar : true,
+          avatarVersion: player.avatarVersion || 0,
           avatarId:
             player.anonId === undefined
               ? player.userId || player.id
@@ -2704,6 +2712,7 @@ function WinnersMessage(props) {
           id: player.userId || player.id,
           name: player.name,
           avatar: player.avatar,
+          avatarVersion: player.avatarVersion || 0,
           avatarId:
             player.anonId === undefined
               ? player.userId || player.id
@@ -3466,6 +3475,7 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
           avatarId={avatarId}
           name={player.name}
           avatar={player.avatar}
+          avatarVersion={player.avatarVersion}
           dead={className === "dead"}
           color={resolveDisplayNameColor({
             accessibleNameColors,

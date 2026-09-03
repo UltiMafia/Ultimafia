@@ -15,7 +15,7 @@ router.get("/contributors", async function (req, res) {
       contributorTypes: { $exists: true },
       deleted: false,
     }).select(
-      "id name avatar vanityUrl contributorTypes contributorBio lastActive -_id"
+      "id name avatar avatarVersion vanityUrl contributorTypes contributorBio lastActive -_id"
     );
 
     // Filter to only include users with non-empty contributorTypes array
@@ -36,6 +36,7 @@ router.get("/contributors", async function (req, res) {
         id: userObj.id,
         name: userObj.name,
         avatar: userObj.avatar,
+        avatarVersion: userObj.avatarVersion || 0,
         vanityUrl: userObj.vanityUrl,
         types: userObj.contributorTypes || [],
         bio: userObj.contributorBio || "",
@@ -55,7 +56,7 @@ router.get("/contributors/art", async function (req, res) {
     const users = await models.User.find({
       deleted: false,
       "roleIconCredits.0": { $exists: true },
-    }).select("id name avatar roleIconCredits -_id");
+    }).select("id name avatar avatarVersion roleIconCredits -_id");
 
     const artContributors = users.map((u) => {
       const json = u.toJSON();
@@ -90,7 +91,7 @@ router.get("/donors", async function (req, res) {
     }).populate({
       path: "user",
       match: { deleted: false },
-      select: "id name avatar lastActive donorBio -_id",
+      select: "id name avatar avatarVersion lastActive donorBio -_id",
     });
 
     const users = inDonorGroup
@@ -118,6 +119,7 @@ router.get("/donors", async function (req, res) {
         id: j.id,
         name: j.name,
         avatar: j.avatar,
+        avatarVersion: j.avatarVersion || 0,
         vanityUrl: vanityByUserId[j.id] || "",
         bio: j.donorBio || "",
       };

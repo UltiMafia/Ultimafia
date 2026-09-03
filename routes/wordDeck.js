@@ -157,7 +157,7 @@ router.post("/delete", async function (req, res) {
       .populate({
         path: "creator",
         model: "User",
-        select: "id name avatar -_id",
+        select: "id name avatar avatarVersion -_id",
       });
 
     if (!deck) {
@@ -400,7 +400,7 @@ router.get("/featured", async function (req, res) {
         .skip(start)
         .limit(pageSize)
         .select("id name description words creator coverPhoto voteCount isDefault")
-        .populate("creator", "id name avatar -_id")
+        .populate("creator", "id name avatar avatarVersion -_id")
         .lean();
       decks = attachWordPreviews(decks);
       decks = await attachUserVotes(decks, userId);
@@ -524,7 +524,7 @@ router.get("/yours", async function (req, res) {
     }
 
     let user = await models.User.findOne({ id: userId, deleted: false })
-      .select("wordDecks name avatar id")
+      .select("wordDecks name avatar avatarVersion id")
       .populate({
         path: "wordDecks",
         select:
@@ -534,7 +534,7 @@ router.get("/yours", async function (req, res) {
           {
             path: "creator",
             model: "User",
-            select: "id name avatar -_id",
+            select: "id name avatar avatarVersion -_id",
           },
         ],
       })
@@ -597,7 +597,7 @@ router.get("/:id", async function (req, res) {
       .populate({
         path: "creator",
         model: "User",
-        select: "id name avatar -_id",
+        select: "id name avatar avatarVersion -_id",
       });
 
     if (deck) {

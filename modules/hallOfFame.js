@@ -245,7 +245,7 @@ async function buildRows() {
     playedGame: true,
   })
     .select(
-      "id name avatar stats winRate kudos karma points championshipPoints achievementCount achievements settings skillRating"
+      "id name avatar avatarVersion stats winRate kudos karma points championshipPoints achievementCount achievements settings skillRating"
     )
     .lean();
 
@@ -289,6 +289,7 @@ async function buildRows() {
       userId: user.id,
       username: user.name,
       avatar: Boolean(user.avatar),
+      avatarVersion: user.avatarVersion || 0,
       vanityUrl: vanityUrlMap[user.id] || "",
       trophies: trophyData.trophies,
       trophyScore: trophyData.trophyScore,
@@ -367,6 +368,7 @@ function buildResponseRows(rows) {
       userId: row.userId,
       username: row.username,
       avatar: row.avatar,
+      avatarVersion: row.avatarVersion,
       vanityUrl: row.vanityUrl,
       rank: row.rank,
       trophies: row.trophies,

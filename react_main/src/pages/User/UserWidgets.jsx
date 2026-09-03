@@ -381,6 +381,7 @@ export function Avatar(props) {
   const id = props.id;
   const name = props.name;
   const hasImage = props.hasImage;
+  const avatarVersion = props.avatarVersion;
   const imageUrl = props.imageUrl;
   const edit = props.edit;
   const onUpload = props.onUpload;
@@ -409,6 +410,7 @@ export function Avatar(props) {
   const userFileUrl = useAvatarImageUrl(userFileId, {
     cacheVal: siteInfo.cacheVal,
     skipFreeze: !!edit,
+    avatarVersion,
   });
   const style = {};
   const colors = [
@@ -590,6 +592,7 @@ export function NameWithAvatar(props) {
   const id = props.id;
   const name = props.name || "[deleted]";
   const avatar = props.avatar;
+  const avatarVersion = props.avatarVersion;
   const noLink = props.name ? props.noLink : true;
   const color = props.color;
   const newTab = props.newTab;
@@ -695,6 +698,7 @@ export function NameWithAvatar(props) {
           hasImage={avatar}
           id={id}
           avatarId={avatarId}
+          avatarVersion={avatarVersion}
           name={name}
           small={small}
           large={large}

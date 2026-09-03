@@ -206,6 +206,7 @@ function VerdictDialog({
                   id={report.reportedUserId}
                   name={report.reportedUserName}
                   avatar={report.reportedUserAvatar}
+                  avatarVersion={report.reportedUserAvatarVersion}
                 />
               </Box>
             </Box>

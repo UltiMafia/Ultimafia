@@ -270,6 +270,7 @@ export default function Family() {
           id={member.id}
           name={member.name}
           avatar={member.avatar}
+          avatarVersion={member.avatarVersion}
           vanityUrl={member.vanityUrl}
         />
       </Box>
@@ -384,6 +385,7 @@ export default function Family() {
                 {family.avatar && (
                   <FamilyAvatarImage
                     id={family.id}
+                    avatarVersion={family.avatarVersion}
                     size={100}
                     cacheVal={siteInfo.cacheVal}
                   />
@@ -398,6 +400,7 @@ export default function Family() {
                       id={family.founder.id}
                       name={family.founder.name}
                       avatar={family.founder.avatar}
+                      avatarVersion={family.founder.avatarVersion}
                       vanityUrl={family.founder.vanityUrl}
                     />
                   </Typography>

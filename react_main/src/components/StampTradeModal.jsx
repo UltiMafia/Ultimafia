@@ -188,6 +188,7 @@ export default function StampTradeModal({
                       id={t.initiator?.id}
                       name={t.initiator?.name}
                       avatar={t.initiator?.avatar}
+                      avatarVersion={t.initiator?.avatarVersion}
                       noLink
                       small
                     />
@@ -241,6 +242,7 @@ export default function StampTradeModal({
                         id={f.id}
                         name={f.name}
                         avatar={f.avatar}
+                        avatarVersion={f.avatarVersion}
                         noLink
                         small
                       />

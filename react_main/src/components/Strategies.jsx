@@ -351,6 +351,7 @@ function StrategiesBase({
                   <NameWithAvatar
                     small
                     id={strategy.author.id}
+                    avatarVersion={strategy.author.avatarVersion}
                     name=" "
                     avatar={strategy.author.avatar}
                     groups={strategy.author.groups}

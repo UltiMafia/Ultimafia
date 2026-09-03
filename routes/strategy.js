@@ -28,6 +28,7 @@ function formatAuthor(authorDoc) {
     id: authorDoc.id,
     name: authorDoc.name,
     avatar: authorDoc.avatar,
+    avatarVersion: authorDoc.avatarVersion || 0,
     groups: authorDoc.groups,
     vanityUrl: authorDoc.vanityUrl,
     deleted: Boolean(authorDoc.deleted),
@@ -65,7 +66,7 @@ async function getStrategyWithAuthor(strategyId) {
   if (!strategyId) return null;
   return models.Strategy.findOne({ id: strategyId })
     .select(strategyProjection)
-    .populate("author", "id name avatar groups vanityUrl deleted")
+    .populate("author", "id name avatar avatarVersion groups vanityUrl deleted")
     .lean();
 }
 
@@ -115,7 +116,7 @@ router.get("/", async function (req, res) {
 
     const strategies = await models.Strategy.find(strategyFilter)
       .select(strategyProjection)
-      .populate("author", "id name avatar groups vanityUrl deleted")
+      .populate("author", "id name avatar avatarVersion groups vanityUrl deleted")
       .sort({ deleted: 1, voteCount: -1, updatedAt: -1, createdAt: -1 })
       .lean();
 

@@ -183,6 +183,7 @@ export default function Profile() {
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [name, setName] = useState();
   const [avatar, setAvatar] = useState();
+  const [avatarVersion, setAvatarVersion] = useState(0);
   const [banner, setBanner] = useState();
   const [bannerExt, setBannerExt] = useState("webp");
   const [profileBackground, setProfileBackground] = useState(false);
@@ -377,6 +378,7 @@ export default function Profile() {
           setProfileTotalGames(res.data.totalGames ?? 0);
           setName(res.data.name);
           setAvatar(res.data.avatar);
+          setAvatarVersion(res.data.avatarVersion || 0);
           setBanner(res.data.banner);
           setBannerExt(res.data.bannerExt || "webp");
           setProfileBackground(res.data.profileBackground || false);
@@ -1163,6 +1165,7 @@ export default function Profile() {
         id={user.id}
         name={user.name}
         avatar={user.avatar}
+        avatarVersion={user.avatarVersion}
         vanityUrl={user.vanityUrl}
       />
       <div className="btns">
@@ -1179,6 +1182,7 @@ export default function Profile() {
           id={friend.id}
           name={friend.name}
           avatar={friend.avatar}
+          avatarVersion={friend.avatarVersion}
           vanityUrl={friend.vanityUrl}
         />
         {showDelete && (
@@ -1494,7 +1498,7 @@ export default function Profile() {
               <Typography variant="italicRelation">
                 {getLoveTitle(love.type)}
               </Typography>
-              <Avatar hasImage={love.avatar} id={love.id} name={love.name} mediumlarge={!isPhoneDevice} />
+              <Avatar hasImage={love.avatar} id={love.id} name={love.name} avatarVersion={love.avatarVersion} mediumlarge={!isPhoneDevice} />
               <Typography>{love.name}</Typography>
             </Stack>
           </Stack>
@@ -1535,6 +1539,7 @@ export default function Profile() {
               {profileFamily.avatar && (
                 <FamilyAvatarImage
                   id={profileFamily.id}
+                  avatarVersion={profileFamily.avatarVersion}
                   size={isPhoneDevice ? 40 : 60}
                   cacheVal={siteInfo.cacheVal}
                 />
@@ -1609,6 +1614,7 @@ export default function Profile() {
           id: profileUserId,
           name: name,
           avatar: avatar,
+          avatarVersion: avatarVersion,
           shareSupply: stockInfo.shareSupply,
           sharesOwned: stockInfo.sharesOwned
         } : null}
@@ -2182,6 +2188,7 @@ export default function Profile() {
                           id={poke.from.id}
                           name={poke.from.name}
                           avatar={poke.from.avatar}
+                          avatarVersion={poke.from.avatarVersion}
                         />
                         {poke.count >= 1000000 ? (
                           <span className="poke-streak-badge trophy" title="1,000,000 pokes!">

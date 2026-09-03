@@ -134,6 +134,7 @@ function Miniprofile(props) {
                 hasImage={avatar}
                 id={id}
                 avatarId={avatarId}
+                avatarVersion={user.avatarVersion}
                 name={name}
               />
               <div

@@ -6,7 +6,7 @@ import { useAvatarImageUrl } from "utils/avatarUrl";
 function SdPlayerAvatar({ player, cacheVal }) {
   const avatarUrl = useAvatarImageUrl(
     player.avatar && player.userId ? player.userId : null,
-    { cacheVal }
+    { cacheVal, avatarVersion: player?.avatarVersion }
   );
   if (avatarUrl) {
     return (

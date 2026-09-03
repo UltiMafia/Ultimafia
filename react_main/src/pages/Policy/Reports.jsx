@@ -299,6 +299,7 @@ export default function Reports({ basePath = "/policy" }) {
                       id={report.reportedUserId}
                       name={report.reportedUserName || report.reportedUserId}
                       avatar={report.reportedUserAvatar}
+                      avatarVersion={report.reportedUserAvatarVersion}
                     />
                   </TableCell>
                   <TableCell>
@@ -310,6 +311,7 @@ export default function Reports({ basePath = "/policy" }) {
                             id={r.id}
                             name={r.name || r.id}
                             avatar={r.avatar}
+                            avatarVersion={r.avatarVersion}
                             size="small"
                           />
                         ))}
@@ -324,6 +326,7 @@ export default function Reports({ basePath = "/policy" }) {
                         id={report.reporterId}
                         name={report.reporterName || report.reporterId}
                         avatar={report.reporterAvatar}
+                        avatarVersion={report.reporterAvatarVersion}
                       />
                     )}
                   </TableCell>
@@ -352,6 +355,7 @@ export default function Reports({ basePath = "/policy" }) {
                                 id={assigneeId}
                                 name={assigneeName}
                                 avatar={assigneeAvatar}
+                                avatarVersion={assignee.avatarVersion}
                                 size="small"
                               />
                             );

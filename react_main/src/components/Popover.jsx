@@ -265,6 +265,7 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
         id={setup.creator.id}
         name={setup.creator.name}
         avatar={setup.creator.avatar}
+        avatarVersion={setup.creator.avatarVersion}
       />
     );
     result.push(<InfoRow title="Created By" content={name} key="createdBy" />);
@@ -595,6 +596,7 @@ export function parseDeckPopover(deck) {
         id={deck.creator.id}
         name={deck.creator.name}
         avatar={deck.creator.avatar}
+        avatarVersion={deck.creator.avatarVersion}
       />
     );
     result.push(<InfoRow title="Created By" content={name} key="createdBy" />);
@@ -624,6 +626,7 @@ export function parseDeckPopover(deck) {
             name={profile.name}
             avatar={profile.avatar !== undefined}
             avatarId={profile.id}
+            avatarVersion={profile.avatarVersion}
           />
         );
       })}
@@ -700,6 +703,7 @@ export function parseGamePopover(game) {
         id: player.id,
         name: player.name,
         avatar: player.avatar,
+        avatarVersion: player.avatarVersion,
       };
     } else {
       // Guest

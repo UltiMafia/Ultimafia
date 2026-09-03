@@ -64,6 +64,7 @@ export default function UserNavSection({
   const familyIcon = userFamily?.avatar ? (
     <FamilyAvatarImage
       id={userFamily.id}
+      avatarVersion={userFamily.avatarVersion}
       size={20}
       cacheVal={cacheVal}
     />
@@ -160,7 +161,7 @@ export default function UserNavSection({
       <NavDropdown
         items={userMenuItems}
         triggerAriaLabel="User menu"
-        customTrigger={<Avatar id={user.id} name={user.name} hasImage={user.avatar} />}
+        customTrigger={<Avatar id={user.id} name={user.name} hasImage={user.avatar} avatarVersion={user.avatarVersion} />}
       />
     </Stack>
   );

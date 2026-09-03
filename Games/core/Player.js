@@ -956,6 +956,7 @@ module.exports = class Player {
       name: this.name,
       userId: this.user.id,
       avatar: this.user.avatar,
+      avatarVersion: this.user.avatarVersion,
       textColor: this.user.textColor,
       nameColor: this.user.nameColor,
       nameFont: this.user.nameFont,

@@ -31,7 +31,7 @@ router.get("/groups", async function (req, res) {
     for (let group of visibleGroups) {
       group.members = await models.InGroup.find({ group: group._id })
         .select("user")
-        .populate("user", "id name avatar -_id");
+        .populate("user", "id name avatar avatarVersion -_id");
       group.members = group.members
         .map((member) => member.toJSON().user)
         .filter((member) => member !== null);
@@ -1216,7 +1216,7 @@ router.post("/clearUserContent", async (req, res) => {
 
     switch (contentType) {
       case "avatar":
-        updateQuery = { $set: { avatar: false } };
+        updateQuery = { $set: { avatar: false, avatarVersion: Date.now() } };
         modActionName = "Clear Avatar";
         break;
 
@@ -1369,6 +1369,7 @@ router.post("/clearUserContent", async (req, res) => {
           $set: {
             name: routeUtils.nameGen().slice(0, constants.maxUserNameLength),
             avatar: false,
+            avatarVersion: Date.now(),
             bio: "",
             donorBio: "",
             customEmotes: [],
@@ -1509,6 +1510,7 @@ router.post("/clearFamilyContent", async (req, res) => {
           name: defaultName,
           bio: "",
           avatar: false,
+          avatarVersion: Date.now(),
           background: false,
         },
       }
@@ -1655,6 +1657,7 @@ router.post("/restoreDeletedUser", async (req, res) => {
       userDoc.email.push(rawEmail.toLowerCase());
     }
     userDoc.avatar = false;
+    userDoc.avatarVersion = Date.now();
     userDoc.banner = false;
     userDoc.settings = userDoc.settings || {};
     userDoc.permissions = userDoc.permissions || [];
@@ -2607,7 +2610,7 @@ router.get("/actions", async function (req, res) {
       first,
       "id modId mod name args reason date -_id",
       constants.modActionPageSize,
-      ["mod", "id name avatar -_id"]
+      ["mod", "id name avatar avatarVersion -_id"]
     );
 
     res.send(actions);
@@ -2631,7 +2634,7 @@ router.get("/announcements", async function (req, res) {
       first,
       "id modId mod content date -_id",
       5,
-      ["mod", "id name avatar -_id"]
+      ["mod", "id name avatar avatarVersion -_id"]
     );
 
     res.send(announcements);
@@ -2894,6 +2897,7 @@ router.get("/reports", async (req, res) => {
             id: r.userId,
             name: info?.name || r.userId,
             avatar: info?.avatar || false,
+            avatarVersion: info?.avatarVersion || 0,
           });
         }
         // Backwards compat: first reporter as reporterId/reporterName/reporterAvatar
@@ -2901,11 +2905,13 @@ router.get("/reports", async (req, res) => {
           report.reporterId = report.reporterInfo[0].id;
           report.reporterName = report.reporterInfo[0].name;
           report.reporterAvatar = report.reporterInfo[0].avatar;
+          report.reporterAvatarVersion = report.reporterInfo[0].avatarVersion || 0;
         } else if (report.reporterId) {
           const reporterInfo = await getBasicUserInfo(report.reporterId);
           if (reporterInfo) {
             report.reporterName = reporterInfo.name;
             report.reporterAvatar = reporterInfo.avatar;
+            report.reporterAvatarVersion = reporterInfo.avatarVersion || 0;
           }
         }
 
@@ -2914,6 +2920,7 @@ router.get("/reports", async (req, res) => {
         if (reportedUserInfo) {
           report.reportedUserName = reportedUserInfo.name;
           report.reportedUserAvatar = reportedUserInfo.avatar;
+          report.reportedUserAvatarVersion = reportedUserInfo.avatarVersion || 0;
         }
 
         // Get assignee info
@@ -2926,12 +2933,14 @@ router.get("/reports", async (req, res) => {
                 id: assigneeId,
                 name: assigneeInfo.name,
                 avatar: assigneeInfo.avatar,
+                avatarVersion: assigneeInfo.avatarVersion || 0,
               });
             } else {
               report.assigneeInfo.push({
                 id: assigneeId,
                 name: assigneeId,
                 avatar: false,
+                avatarVersion: 0,
               });
             }
           }
@@ -3027,6 +3036,7 @@ router.get("/reports/:id", async (req, res) => {
           id: r.userId,
           name: info?.name || r.userId,
           avatar: info?.avatar || false,
+          avatarVersion: info?.avatarVersion || 0,
           rule: r.rule,
           description: r.description,
           submittedAt: r.submittedAt,
@@ -3037,11 +3047,13 @@ router.get("/reports/:id", async (req, res) => {
         report.reporterId = report.reporterInfo[0].id;
         report.reporterName = report.reporterInfo[0].name;
         report.reporterAvatar = report.reporterInfo[0].avatar;
+        report.reporterAvatarVersion = report.reporterInfo[0].avatarVersion || 0;
       } else if (report.reporterId) {
         const reporterInfo = await getBasicUserInfo(report.reporterId);
         if (reporterInfo) {
           report.reporterName = reporterInfo.name;
           report.reporterAvatar = reporterInfo.avatar;
+          report.reporterAvatarVersion = reporterInfo.avatarVersion || 0;
         }
       }
 
@@ -3050,6 +3062,7 @@ router.get("/reports/:id", async (req, res) => {
       if (reportedUserInfo) {
         report.reportedUserName = reportedUserInfo.name;
         report.reportedUserAvatar = reportedUserInfo.avatar;
+        report.reportedUserAvatarVersion = reportedUserInfo.avatarVersion || 0;
       }
 
       // Get assignee info
@@ -3062,12 +3075,14 @@ router.get("/reports/:id", async (req, res) => {
               id: assigneeId,
               name: assigneeInfo.name,
               avatar: assigneeInfo.avatar,
+              avatarVersion: assigneeInfo.avatarVersion || 0,
             });
           } else {
             report.assigneeInfo.push({
               id: assigneeId,
               name: assigneeId,
               avatar: false,
+              avatarVersion: 0,
             });
           }
         }

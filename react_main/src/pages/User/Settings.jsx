@@ -1258,6 +1258,7 @@ export default function Settings() {
                   {userFamily.avatar && (
                     <FamilyAvatarImage
                       id={userFamily.id}
+                      avatarVersion={userFamily.avatarVersion}
                       size={40}
                       cacheVal={siteInfo.cacheVal}
                     />
@@ -1554,6 +1555,7 @@ export default function Settings() {
                   {userFamily.avatar && (
                     <FamilyAvatarImage
                       id={userFamily.id}
+                      avatarVersion={userFamily.avatarVersion}
                       size={40}
                       cacheVal={siteInfo.cacheVal}
                     />

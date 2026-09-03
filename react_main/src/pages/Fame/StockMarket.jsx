@@ -46,15 +46,16 @@ import TradeDialog from "../../components/TradeDialog";
 import Sparkline from "../../components/Sparkline";
 
 // Custom Avatar component that handles both Player and Family ETF avatars
-function StockAvatar({ targetType, id, name, avatar, siteInfo }) {
+function StockAvatar({ targetType, id, name, avatar, avatarVersion, siteInfo }) {
   if (targetType === "player") {
-    return <Avatar hasImage={avatar} id={id} name={name} />;
+    return <Avatar hasImage={avatar} id={id} name={name} avatarVersion={avatarVersion} />;
   }
 
   if (avatar) {
     return (
       <FamilyAvatarImage
         id={id}
+        avatarVersion={avatarVersion}
         size={40}
         cacheVal={siteInfo?.cacheVal}
         extraStyle={{ border: "1px solid rgba(255, 255, 255, 0.12)" }}
@@ -638,6 +639,7 @@ export default function StockMarket() {
                             id={marketMode === "player" ? stock.userId : stock.familyId}
                             name={name}
                             avatar={stock.avatar}
+                            avatarVersion={stock.avatarVersion}
                             siteInfo={siteInfo}
                           />
                           <Box>
@@ -780,6 +782,7 @@ export default function StockMarket() {
                               id={key}
                               name={name}
                               avatar={stock.avatar}
+                              avatarVersion={stock.avatarVersion}
                               siteInfo={siteInfo}
                             />
                             {marketMode === "player" ? (
@@ -897,7 +900,7 @@ export default function StockMarket() {
                       <Card key={holding.subjectId} variant="outlined" sx={{ backgroundColor: theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(0, 0, 0, 0.2)" }}>
                         <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
                           <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
-                            <StockAvatar targetType="player" id={holding.subjectId} name={holding.username} avatar={holding.avatar} siteInfo={siteInfo} />
+                            <StockAvatar targetType="player" id={holding.subjectId} name={holding.username} avatar={holding.avatar} avatarVersion={holding.avatarVersion} siteInfo={siteInfo} />
                             <Typography
                               component="a"
                               href={holding.vanityUrl ? `/user/${holding.vanityUrl}` : `/user/${holding.subjectId}`}
@@ -963,7 +966,7 @@ export default function StockMarket() {
                       <Card key={holding.familyId} variant="outlined" sx={{ backgroundColor: theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(0, 0, 0, 0.2)" }}>
                         <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
                           <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
-                            <StockAvatar targetType="family" id={holding.familyId} name={holding.familyName} avatar={holding.avatar} siteInfo={siteInfo} />
+                            <StockAvatar targetType="family" id={holding.familyId} name={holding.familyName} avatar={holding.avatar} avatarVersion={holding.avatarVersion} siteInfo={siteInfo} />
                             <Typography
                               component="a"
                               href={`/user/family/${holding.familyId}`}
@@ -1061,6 +1064,7 @@ export default function StockMarket() {
                               id={holding.subjectId}
                               name={holding.username}
                               avatar={holding.avatar}
+                              avatarVersion={holding.avatarVersion}
                               siteInfo={siteInfo}
                             />
                              <Typography
@@ -1147,6 +1151,7 @@ export default function StockMarket() {
                               id={holding.familyId}
                               name={holding.familyName}
                               avatar={holding.avatar}
+                              avatarVersion={holding.avatarVersion}
                               siteInfo={siteInfo}
                             />
                             <Typography
@@ -1414,6 +1419,7 @@ export default function StockMarket() {
                               id={targetId}
                               name={targetName}
                               avatar={targetAvatar}
+                              avatarVersion={marketMode === "player" ? tx.subjectAvatarVersion : tx.familyAvatarVersion}
                               siteInfo={siteInfo}
                             />
                             <Box>
@@ -1557,6 +1563,7 @@ export default function StockMarket() {
                               <Avatar
                                 hasImage={tx.buyerAvatar}
                                 id={tx.userId}
+                                avatarVersion={tx.buyerAvatarVersion}
                                 name={tx.buyerName}
                               />
                               <Typography
@@ -1594,6 +1601,7 @@ export default function StockMarket() {
                                 id={targetId}
                                 name={targetName}
                                 avatar={targetAvatar}
+                                avatarVersion={marketMode === "player" ? tx.subjectAvatarVersion : tx.familyAvatarVersion}
                                 siteInfo={siteInfo}
                               />
                               {marketMode === "player" ? (
@@ -1669,6 +1677,7 @@ export default function StockMarket() {
           id: selectedStock.targetType === "player" ? selectedStock.userId : selectedStock.familyId,
           name: selectedStock.targetType === "player" ? selectedStock.username : selectedStock.familyName,
           avatar: selectedStock.avatar,
+          avatarVersion: selectedStock.avatarVersion,
           shareSupply: selectedStock.shareSupply,
           sharesOwned: ownedSharesCount
         } : null}

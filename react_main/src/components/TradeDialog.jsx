@@ -119,11 +119,12 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
       <DialogTitle sx={{ fontWeight: "bold", borderBottom: 1, borderColor: "divider", pb: 2 }}>
         <Stack direction="row" spacing={1.5} alignItems="center">
           {stock.targetType === "player" ? (
-            <Avatar id={stock.id} name={stock.name} hasImage={stock.avatar} size={40} />
+            <Avatar id={stock.id} name={stock.name} hasImage={stock.avatar} avatarVersion={stock.avatarVersion} size={40} />
           ) : (
             stock.avatar ? (
               <FamilyAvatarImage
                 id={stock.id}
+                avatarVersion={stock.avatarVersion}
                 size={40}
                 cacheVal={siteInfo?.cacheVal}
                 extraStyle={{ border: "1px solid rgba(255, 255, 255, 0.12)" }}

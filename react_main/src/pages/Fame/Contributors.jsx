@@ -171,6 +171,7 @@ export default function Contributors(props) {
                     large
                     hasImage={contributor.avatar}
                     id={contributor.id}
+                    avatarVersion={contributor.avatarVersion}
                     name={contributor.name}
                   />
                 </Box>

@@ -787,6 +787,7 @@ function Message(props) {
           id={message.sender.id}
           name={message.sender.name}
           avatar={message.sender.avatar}
+          avatarVersion={message.sender.avatarVersion}
           color={nameColorOverride || ""}
           nameColorSwatch={
             accessibleNameColors && rawNameColor ? rawNameColor : undefined
@@ -889,6 +890,7 @@ function ChannelName(props) {
                 id={m.id}
                 name={m.name}
                 avatar={m.avatar}
+                avatarVersion={m.avatarVersion}
                 vanityUrl={m.vanityUrl}
                 key={m.id}
               />
@@ -905,6 +907,7 @@ function ChannelName(props) {
             id={channel.id}
             name={channel.name}
             avatar={channel.avatar}
+            avatarVersion={channel.avatarVersion}
             vanityUrl={channel.vanityUrl}
           />
           <StatusIcon status={channel.status} />

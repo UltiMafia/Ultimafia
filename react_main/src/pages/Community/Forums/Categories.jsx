@@ -53,6 +53,7 @@ export default function Categories(props) {
             id={thread.author.id}
             name={thread.author.name}
             avatar={thread.author.avatar}
+            avatarVersion={thread.author.avatarVersion}
             vanityUrl={thread.author.vanityUrl}
           />
           <div className="thread-counts">
@@ -78,6 +79,7 @@ export default function Categories(props) {
             id={reply.author.id}
             name={reply.author.name}
             avatar={reply.author.avatar}
+            avatarVersion={reply.author.avatarVersion}
             vanityUrl={reply.author.vanityUrl}
           />
           <div className="reply-age">

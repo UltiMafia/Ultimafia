@@ -90,7 +90,7 @@ router.get("/categories", async function (req, res) {
             match: { deleted: false },
             populate: {
               path: "author",
-              select: "id name avatar -_id",
+              select: "id name avatar avatarVersion -_id",
             },
           },
           {
@@ -99,7 +99,7 @@ router.get("/categories", async function (req, res) {
             populate: [
               {
                 path: "author",
-                select: "id name avatar -_id",
+                select: "id name avatar avatarVersion -_id",
               },
               {
                 path: "thread",
@@ -166,7 +166,7 @@ router.get("/board/:id", async function (req, res) {
         select: "id author postDate -_id",
         populate: {
           path: "author",
-          select: "id name avatar -_id",
+          select: "id name avatar avatarVersion -_id",
         },
       }
     );
@@ -184,7 +184,7 @@ router.get("/board/:id", async function (req, res) {
         select: "id author postDate -_id",
         populate: {
           path: "author",
-          select: "id name avatar -_id",
+          select: "id name avatar avatarVersion -_id",
         },
       })
       .sort("-bumpDate");
@@ -298,6 +298,7 @@ router.get("/thread/:id", async function (req, res) {
           id: "",
           name: "[deleted]",
           avatar: false,
+          avatarVersion: 0,
           groups: [],
           settings: {},
         };
@@ -316,6 +317,7 @@ router.get("/thread/:id", async function (req, res) {
         id: "",
         name: "[deleted]",
         avatar: false,
+        avatarVersion: 0,
         groups: [],
         settings: {},
       };
@@ -1817,7 +1819,7 @@ router.get("/search", async function (req, res) {
       .select(
         "id author title content postDate bumpDate replyCount voteCount viewCount board -_id"
       )
-      .populate("author", "id name avatar -_id")
+      .populate("author", "id name avatar avatarVersion -_id")
       .populate("board", "id name -_id")
       .sort("-bumpDate")
       .skip(skip)
@@ -1826,7 +1828,7 @@ router.get("/search", async function (req, res) {
     // Get replies
     var replies = await models.ForumReply.find(replyFilter)
       .select("id author thread content postDate voteCount -_id")
-      .populate("author", "id name avatar -_id")
+      .populate("author", "id name avatar avatarVersion -_id")
       .populate({
         path: "thread",
         select: "id title board -_id",

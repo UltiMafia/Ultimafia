@@ -37,7 +37,7 @@ router.get("/", async function (req, res) {
       deleted: false,
     })
       .select("id roleId title imagePath author createdAt")
-      .populate("author", "id name avatar vanityUrl")
+      .populate("author", "id name avatar avatarVersion vanityUrl")
       .sort("-createdAt")
       .lean();
 
@@ -52,6 +52,7 @@ router.get("/", async function (req, res) {
             id: doc.author.id,
             name: doc.author.name,
             avatar: doc.author.avatar,
+            avatarVersion: doc.author.avatarVersion || 0,
             vanityUrl: doc.author.vanityUrl,
           }
         : null,
@@ -143,7 +144,7 @@ router.post("/", async function (req, res) {
     const authorDoc = await models.User.findOne({
       _id: req.session.user._id,
     })
-      .select("id name avatar vanityUrl")
+      .select("id name avatar avatarVersion vanityUrl")
       .lean();
 
     const item = {
@@ -157,6 +158,7 @@ router.post("/", async function (req, res) {
             id: authorDoc.id,
             name: authorDoc.name,
             avatar: authorDoc.avatar,
+            avatarVersion: authorDoc.avatarVersion || 0,
             vanityUrl: authorDoc.vanityUrl,
           }
         : null,

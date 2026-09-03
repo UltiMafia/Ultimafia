@@ -96,6 +96,7 @@ export default function Board(props) {
           id={reply.author.id}
           name={reply.author.name}
           avatar={reply.author.avatar}
+          avatarVersion={reply.author.avatarVersion}
           vanityUrl={reply.author.vanityUrl}
         />
         <Link
@@ -134,6 +135,7 @@ export default function Board(props) {
             small
             id={thread.author.id}
             avatar={thread.author.avatar}
+            avatarVersion={thread.author.avatarVersion}
             name={thread.author.name}
             groups={thread.author.groups}
             vanityUrl={thread.author.vanityUrl}

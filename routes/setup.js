@@ -266,7 +266,7 @@ router.get("/search", async function (req, res) {
       .select(
         "id gameType name roles closed useRoleGroups roleGroupSizes gameSettings count total featured ranked competitive -_id"
       )
-      .populate("creator", "id name avatar tag -_id");
+      .populate("creator", "id name avatar avatarVersion tag -_id");
     var count = await models.Setup.countDocuments(search);
 
     await markFavSetups(userId, setups);
@@ -577,7 +577,7 @@ router.get("/:id/lineage", async function (req, res) {
     if (setup.copiedFrom) {
       const parent = await models.Setup.findOne({ id: setup.copiedFrom })
         .select("-__v -hash -count")
-        .populate("creator", "id name avatar -_id")
+        .populate("creator", "id name avatar avatarVersion -_id")
         .lean();
       if (parent) {
         parent.roles = parent.roles && JSON.parse(parent.roles);
@@ -587,7 +587,7 @@ router.get("/:id/lineage", async function (req, res) {
 
     const children = await models.Setup.find({ copiedFrom: setupId })
       .select("-__v -hash -count")
-      .populate("creator", "id name avatar -_id")
+      .populate("creator", "id name avatar avatarVersion -_id")
       .sort({ copiedAt: -1 })
       .lean();
 
@@ -608,7 +608,7 @@ router.get("/:id", async function (req, res) {
   try {
     var setup = await models.Setup.findOne({ id: req.params.id })
       .select("-__v -hash")
-      .populate("creator", "id name avatar tag -_id");
+      .populate("creator", "id name avatar avatarVersion tag -_id");
 
     if (setup) {
       setup = setup.toJSON();

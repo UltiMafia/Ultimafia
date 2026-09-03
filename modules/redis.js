@@ -183,7 +183,7 @@ async function cacheUserInfo(userId, reset) {
 
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "_id id name avatar deathSound deathSoundExt banner forumBanner profileBackground blockedUsers settings customEmotes customStickers itemsOwned nameChanged bdayChanged birthday pronouns achievements redHearts goldHearts points dailyChallengesCompleted dailyChallenges joined lastActive"
+        "_id id name avatar avatarVersion deathSound deathSoundExt banner forumBanner profileBackground blockedUsers settings customEmotes customStickers itemsOwned nameChanged bdayChanged birthday pronouns achievements redHearts goldHearts points dailyChallengesCompleted dailyChallenges joined lastActive"
       )
       .populate([
         {
@@ -235,6 +235,10 @@ async function cacheUserInfo(userId, reset) {
     await client.setAsync(`user:${userId}:info:id`, userId);
     await client.setAsync(`user:${userId}:info:name`, user.name);
     await client.setAsync(`user:${userId}:info:avatar`, user.avatar || false);
+    await client.setAsync(
+      `user:${userId}:info:avatarVersion`,
+      user.avatarVersion || 0
+    );
     await client.setAsync(
       `user:${userId}:info:deathSound`,
       user.deathSound || false
@@ -307,6 +311,7 @@ async function cacheUserInfo(userId, reset) {
   client.expire(`user:${userId}:info:id`, 3600);
   client.expire(`user:${userId}:info:name`, 3600);
   client.expire(`user:${userId}:info:avatar`, 3600);
+  client.expire(`user:${userId}:info:avatarVersion`, 3600);
   client.expire(`user:${userId}:info:deathSound`, 3600);
   client.expire(`user:${userId}:info:deathSoundExt`, 3600);
   client.expire(`user:${userId}:info:forumBanner`, 3600);
@@ -337,6 +342,7 @@ async function deleteUserInfo(userId) {
   await client.delAsync(`user:${userId}:info:id`);
   await client.delAsync(`user:${userId}:info:name`);
   await client.delAsync(`user:${userId}:info:avatar`);
+  await client.delAsync(`user:${userId}:info:avatarVersion`);
   await client.delAsync(`user:${userId}:info:deathSound`);
   await client.delAsync(`user:${userId}:info:deathSoundExt`);
   await client.delAsync(`user:${userId}:info:forumBanner`);
@@ -372,6 +378,7 @@ async function getUserInfo(userId) {
       `user:${userId}:info:id`,
       `user:${userId}:info:name`,
       `user:${userId}:info:avatar`,
+      `user:${userId}:info:avatarVersion`,
       `user:${userId}:info:deathSound`,
       `user:${userId}:info:deathSoundExt`,
       `user:${userId}:info:forumBanner`,
@@ -403,6 +410,7 @@ async function getUserInfo(userId) {
     id,
     name,
     avatar,
+    avatarVersion,
     deathSound,
     deathSoundExt,
     forumBanner,
@@ -433,6 +441,7 @@ async function getUserInfo(userId) {
   info.id = id;
   info.name = name;
   info.avatar = avatar === "true";
+  info.avatarVersion = Number(avatarVersion || 0);
   info.deathSound = deathSound === "true";
   info.deathSoundExt = deathSoundExt || "ogg";
   info.forumBanner = forumBanner === "true";
@@ -496,6 +505,7 @@ async function getBasicUserInfo(userId, delTemplate) {
       id: userId,
       name: "[deleted]",
       avatar: false,
+      avatarVersion: 0,
       status: "offline",
       groups: [],
       settings: {},
@@ -506,6 +516,9 @@ async function getBasicUserInfo(userId, delTemplate) {
   info.id = await client.getAsync(`user:${userId}:info:id`);
   info.name = await client.getAsync(`user:${userId}:info:name`);
   info.avatar = (await client.getAsync(`user:${userId}:info:avatar`)) == "true";
+  info.avatarVersion = Number(
+    (await client.getAsync(`user:${userId}:info:avatarVersion`)) || 0
+  );
   info.forumBanner =
     (await client.getAsync(`user:${userId}:info:forumBanner`)) == "true";
   info.joined = Number((await client.getAsync(`user:${userId}:info:joined`)) || 0);
@@ -605,7 +618,7 @@ async function getLeaderBoardStat(field) {
     // Query the top 100 users for a given field
     const leadingUsers = await models.User.find({ deleted: false })
       .select(
-        "id name avatar kudos karma championshipPoints achievementCount winRate dailyChallengesCompleted _id"
+        "id name avatar avatarVersion kudos karma championshipPoints achievementCount winRate dailyChallengesCompleted _id"
       )
       .sort(sortBy)
       .limit(100);
@@ -668,7 +681,7 @@ async function getFeaturedSetup(featuredCategory) {
         .select(
           "id gameType name roles closed useRoleGroups roleGroupSizes count total featured -_id"
         )
-        .populate("creator", "id name avatar tag -_id");
+        .populate("creator", "id name avatar avatarVersion tag -_id");
 
       const hoursSinceEpoch = Math.floor(Date.now() / (1000 * 60 * 60));
       const index = hoursSinceEpoch % setups.length;
@@ -1060,6 +1073,7 @@ async function getGameInfo(gameId, idsOnly) {
           name: "[Guest]",
           id: "",
           avatar: false,
+          avatarVersion: 0,
         });
       }
     }
@@ -1076,6 +1090,7 @@ async function getGameInfo(gameId, idsOnly) {
           name: "[Guest]",
           id: "",
           avatar: false,
+          avatarVersion: 0,
         });
       }
     }

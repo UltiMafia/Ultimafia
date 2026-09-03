@@ -137,6 +137,7 @@ export default function ActivityRow({ item, last }) {
             id={item.actorId}
             name={item.actorName}
             avatar={item.actorAvatar}
+            avatarVersion={item.actorAvatarVersion}
           />
         ) : (
           <Typography

@@ -407,6 +407,7 @@ function JottoHistoryPanel({
             <Avatar
               id={player.userId}
               name={player.name}
+              avatarVersion={player.avatarVersion}
               hasImage={player.avatar}
               small
             />

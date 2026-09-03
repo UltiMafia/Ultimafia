@@ -74,6 +74,7 @@ describe("modules/hallOfFame - rated-games barrier", function () {
       id,
       name: id,
       avatar: false,
+      avatarVersion: 5,
       deleted: false,
       playedGame: true,
       settings,
@@ -147,6 +148,22 @@ describe("modules/hallOfFame - rated-games barrier", function () {
     should.equal(tooFew.skillMu, null);
     should.equal(tooFew.skillSigma, null);
     tooFew.skillTier.should.equal("Unranked");
+  });
+
+  it("carries avatarVersion through to board rows", async function () {
+    useUsers([mockUser("rated", MIN_RATED_GAMES)]);
+
+    const result = await board();
+
+    result.users[0].avatarVersion.should.equal(5);
+  });
+
+  it("defaults avatarVersion to 0 when absent", async function () {
+    useUsers([{ ...mockUser("legacy", MIN_RATED_GAMES), avatarVersion: undefined }]);
+
+    const result = await board();
+
+    result.users[0].avatarVersion.should.equal(0);
   });
 
   it("leaves players who hide their statistics off the rating leaderboard", async function () {

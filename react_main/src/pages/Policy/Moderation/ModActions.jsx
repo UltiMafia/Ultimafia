@@ -144,6 +144,7 @@ export function ModActions(props) {
             id={action.mod?.id || action.modId}
             name={action.mod?.name || `[not found: ${action.modId}]`}
             avatar={action.mod?.avatar || false}
+            avatarVersion={action.mod?.avatarVersion}
           />
           <Typography
             variant="caption"
@@ -282,6 +283,7 @@ function ModActionArg({ label, arg }) {
           id={userInfo.id}
           name={userInfo.name}
           avatar={userInfo.avatar}
+          avatarVersion={userInfo.avatarVersion}
           small
         />
       </Box>

@@ -296,6 +296,7 @@ export default function ReportDetail({
                           id={r.id}
                           name={r.name || r.id}
                           avatar={r.avatar}
+                          avatarVersion={r.avatarVersion}
                         />
                         {(r.rule || r.description) && (
                           <Box sx={{ mt: 1, pl: 0 }}>
@@ -335,6 +336,7 @@ export default function ReportDetail({
                       id={report.reporterId}
                       name={report.reporterName || report.reporterId}
                       avatar={report.reporterAvatar}
+                      avatarVersion={report.reporterAvatarVersion}
                     />
                   </>
                 )}
@@ -347,6 +349,7 @@ export default function ReportDetail({
                   id={report.reportedUserId}
                   name={report.reportedUserName || report.reportedUserId}
                   avatar={report.reportedUserAvatar}
+                  avatarVersion={report.reportedUserAvatarVersion}
                 />
               </Box>
               <RapSheet userId={report.reportedUserId} />
@@ -709,6 +712,7 @@ export default function ReportDetail({
                       id={assigneeId}
                       name={assigneeName}
                       avatar={assigneeAvatar}
+                      avatarVersion={assignee.avatarVersion}
                     />
                   );
                 })}

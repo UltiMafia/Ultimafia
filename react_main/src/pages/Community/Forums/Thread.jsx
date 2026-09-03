@@ -754,6 +754,7 @@ function onAddTag(targetUserId) {
                       id={entry.user.id}
                       name={entry.user.name}
                       avatar={entry.user.avatar}
+                      avatarVersion={entry.user.avatarVersion}
                       vanityUrl={entry.user.vanityUrl}
                     />
                     <div className="roster-tags">
@@ -941,6 +942,7 @@ function onAddTag(targetUserId) {
                         id={signer.id}
                         name=" "
                         avatar={signer.avatar}
+                        avatarVersion={signer.avatarVersion}
                         vanityUrl={signer.vanityUrl}
                       />
                     </div>
@@ -1210,6 +1212,7 @@ function Post(props) {
                   id={postInfo.author.id}
                   name={postInfo.author.name}
                   avatar={postInfo.author.avatar}
+                  avatarVersion={postInfo.author.avatarVersion}
                   groups={postInfo.author.groups}
                   vanityUrl={postInfo.author.vanityUrl}
                   includeMiniprofile

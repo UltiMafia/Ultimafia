@@ -430,7 +430,7 @@ router.get("/:id/review/data", async function (req, res) {
       .populate("setup", "-_id")
       .populate([{
         path: "users",
-        select: "id avatar tag settings customEmotes -_id",
+        select: "id avatar avatarVersion tag settings customEmotes -_id",
         populate: [
           {
             path: "customEmotes",
@@ -441,7 +441,7 @@ router.get("/:id/review/data", async function (req, res) {
       },
     {
         path: "spectatorsUsers",
-        select: "id avatar tag settings customEmotes -_id",
+        select: "id avatar avatarVersion tag settings customEmotes -_id",
         populate: [
           {
             path: "customEmotes",
@@ -538,7 +538,7 @@ router.get("/:id/info", async function (req, res) {
         .select(
           "type users spectatorsUsers players spectators left stateLengths lobbyName ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions winners winnersInfo kudosReceiver playerIdMap playerAlignmentMap skillRatingChanges -_id"
         )
-        .populate("users", "id name avatar -_id");
+        .populate("users", "id name avatar avatarVersion -_id");
 
       if (!game) {
         errors.notFound(res, "Game not found");

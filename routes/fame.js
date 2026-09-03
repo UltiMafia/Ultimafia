@@ -25,7 +25,7 @@ router.get("/leaderboard", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     let users = await models.User.find({ deleted: false })
-      .select("id name avatar kudos karma achievements -_id")
+      .select("id name avatar avatarVersion kudos karma achievements -_id")
       .sort({ kudos: -1, karma: -1, achievements: -1 })
       .limit(20);
 

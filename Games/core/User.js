@@ -7,6 +7,7 @@ module.exports = class User {
     this.socket = props.socket;
     this.name = props.name;
     this.avatar = props.avatar;
+    this.avatarVersion = props.avatarVersion || 0;
     this.deathSound = props.deathSound;
     this.deathSoundExt = props.deathSoundExt || "ogg";
     this.dev = props.dev;

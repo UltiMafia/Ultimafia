@@ -56,6 +56,7 @@ function FamilyAvatar({ family }) {
     return (
       <FamilyAvatarImage
         id={family.id}
+        avatarVersion={family.avatarVersion}
         size={64}
         cacheVal={siteInfo.cacheVal}
         extraStyle={{
@@ -131,6 +132,7 @@ function FamilyCard({ family }) {
                   id={family.leader.id}
                   name={family.leader.name}
                   avatar={family.leader.avatar}
+                  avatarVersion={family.leader.avatarVersion}
                   vanityUrl={family.leader.vanityUrl}
                 />
               </Typography>

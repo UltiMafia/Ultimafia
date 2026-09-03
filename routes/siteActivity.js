@@ -854,6 +854,7 @@ router.get("/feed", async function (req, res) {
         ...r,
         actorName: info?.name || null,
         actorAvatar: info?.avatar ?? false,
+        actorAvatarVersion: info?.avatarVersion || 0,
         actorVanityUrl: info?.vanityUrl || null,
       };
     });

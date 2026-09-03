@@ -398,6 +398,7 @@ function InlineAvatar(props) {
   const siteInfo = useContext(SiteInfoContext);
   const photoSrc = useAvatarImageUrl(props.userId, {
     cacheVal: siteInfo?.cacheVal,
+    avatarVersion: props.avatarVersion,
   });
   let style = {
     position: "relative",

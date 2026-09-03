@@ -59,6 +59,7 @@ export default function UserSearch(props) {
             id={user.id}
             name={user.name}
             avatar={user.avatar}
+            avatarVersion={user.avatarVersion}
             vanityUrl={user.vanityUrl}
           />
           <Box sx={{ width: "8px" }} />
@@ -163,6 +164,7 @@ function NewestUsers(props) {
           id={user.id}
           name={user.name}
           avatar={user.avatar}
+          avatarVersion={user.avatarVersion}
           vanityUrl={user.vanityUrl}
         />
         <Typography variant="caption" sx={{ marginTop: "4px" }}>

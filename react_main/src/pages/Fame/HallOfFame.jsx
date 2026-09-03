@@ -213,6 +213,7 @@ const StandingsTable = React.memo(function StandingsTable({
                 id={user.userId}
                 name={user.username}
                 avatar={user.avatar}
+                avatarVersion={user.avatarVersion}
                 vanityUrl={user.vanityUrl}
               />
             </Box>

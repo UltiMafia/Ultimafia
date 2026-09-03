@@ -67,6 +67,7 @@ export default function Review() {
             id={player.id}
             name={game.names[i]}
             avatar={player.avatar}
+            avatarVersion={player.avatarVersion}
           />
         </div>
       );

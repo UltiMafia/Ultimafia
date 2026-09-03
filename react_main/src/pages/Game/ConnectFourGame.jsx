@@ -279,6 +279,7 @@ function PlayerAvatar(props) {
         id={player.userId}
         avatarId={avatarId}
         hasImage={player.avatar}
+        avatarVersion={player.avatarVersion}
         name={player.name}
         mediumlarge
         ConnectFour

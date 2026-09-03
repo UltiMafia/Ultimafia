@@ -202,6 +202,7 @@ export function EmoteReactions(props) {
                   name={reactor.name}
                   vanityUrl={reactor.vanityUrl}
                   avatar={reactor.avatar}
+                  avatarVersion={reactor.avatarVersion}
                 />
               ))
             ) : (

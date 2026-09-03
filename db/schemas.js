@@ -63,6 +63,8 @@ var schemas = {
     discordName: String,
     discordUsername: String,
     avatar: Boolean,
+    // Timestamp of last avatar change; used for per-avatar cache busting
+    avatarVersion: { type: Number, default: 0 },
     deathSound: Boolean,
     // File extension for custom death sound (mp3, ogg, wav, webm)
     deathSoundExt: { type: String, default: "ogg" },
@@ -920,6 +922,8 @@ var schemas = {
     id: { type: String, index: true, unique: true },
     name: { type: String, required: true, maxlength: 20 },
     avatar: { type: Boolean, default: false },
+    // Timestamp of last avatar change; used for per-avatar cache busting
+    avatarVersion: { type: Number, default: 0 },
     // Family page header banner (3:1, like profile banners)
     banner: { type: Boolean, default: false },
     bannerExt: { type: String, default: "webp" },

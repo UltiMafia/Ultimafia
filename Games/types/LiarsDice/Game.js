@@ -971,6 +971,7 @@ module.exports = class LiarsDiceGame extends Game {
           userId: player.user.id,
           playerName: player.name,
           avatar: player.user.avatar,
+          avatarVersion: player.user.avatarVersion,
           rolledDice: player.rolledDice,
           previousRolls: player.previousRolls,
         });
