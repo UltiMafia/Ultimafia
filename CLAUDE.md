@@ -1,10 +1,10 @@
 # Ultimafia
 
-Web-based chat mafia game platform (ultimafia.com). Node.js backend with React frontend, real-time gameplay via Socket.io.
+Web-based chat mafia game platform (ultimafia.com). Node.js backend with React frontend, real-time gameplay over WebSockets.
 
 ## Tech Stack
 
-- **Backend:** Node.js 22.17.0, Express, Socket.io, PM2 (3 processes: games, www, chat)
+- **Backend:** Node.js 22.17.0, Express, PM2 (3 processes: games, www, chat)
 - **Frontend:** React 17, Rsbuild, Material-UI, D3.js (in `react_main/`)
 - **Database:** MongoDB 8.0 (Mongoose ODM), Redis 8.0 (sessions, game state, pub/sub)
 - **Auth:** Firebase Auth + Passport.js (Discord, Google, Twitch, Steam)
@@ -132,4 +132,4 @@ Frontend `react_main/.env` — see `docs/client_env` for template. Key vars:
 - **Main branch:** master
 - **Branch naming:** `add-<role-name>` for roles, descriptive names for features
 - **Commit prefixes:** feat, fix, chore, doc
-- **PRs:** Target master branch, require review before merge, always use empty description (`--body ""`)
+- **PRs:** Target master branch, require review before merge
