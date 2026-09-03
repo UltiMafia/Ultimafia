@@ -458,6 +458,10 @@
   background-image: url("/src/images/roles/village/blacksmith-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Bulletproof {
+  background-image: url("/src/images/roles/village/bulletproof-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Hunter {
   background-image: url("/src/images/roles/village/hunter-vivid.png");
 }

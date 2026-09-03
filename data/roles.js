@@ -539,6 +539,16 @@ const roleData = {
       ],
       nightOrder: [["Give Armor", PRIORITY_ITEM_GIVER_EARLY]],
     },
+    Bulletproof: {
+      alignment: "Village",
+      category: "Basic",
+      tags: ["Protective", "Items", "Armor", "Basic"],
+      description: [
+        "You start with Armor.",
+        "You appear as Bulletproof to yourself and to information roles.",
+        armorDef,
+      ],
+    },
     Chandler: {
       alignment: "Village",
       category: "Gifting",
