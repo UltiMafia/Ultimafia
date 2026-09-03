@@ -7,6 +7,7 @@ export const NAME_FONT_STACKS = {
   georgia: "Georgia, 'Times New Roman', serif",
   trebuchet: "'Trebuchet MS', 'Segoe UI', sans-serif",
   verdana: "Verdana, Geneva, sans-serif",
+  comic: '"Comic Sans MS", "Comic Sans", "Chalkboard SE", cursive',
   bettynoir: "BettyNoir, Georgia, serif",
   autophobia: "Autophobia, cursive",
   spooky: "Spooky, cursive",

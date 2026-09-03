@@ -357,6 +357,7 @@ module.exports = {
     "georgia",
     "trebuchet",
     "verdana",
+    "comic",
     "bettynoir",
     "autophobia",
     "spooky",
