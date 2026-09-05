@@ -309,6 +309,7 @@ function Header({ setShowAnnouncementTemporarily }) {
                 items: [
                   { text: "Rules", path: "/policy/rules" },
                   { text: "Moderation", path: "/policy/moderation" },
+                  { text: "Invoices", path: "/policy/invoices", hide: !(user.groups || []).some((g) => g && g.name === "Owner") },
                 ],
               },
               {
@@ -394,6 +395,7 @@ function Header({ setShowAnnouncementTemporarily }) {
               items={[
                 { text: "Rules", path: "/policy/rules" },
                 { text: "Moderation", path: "/policy/moderation" },
+                { text: "Invoices", path: "/policy/invoices", hide: !(user.groups || []).some((g) => g && g.name === "Owner") },
               ]}
             />
               <NavDropdown

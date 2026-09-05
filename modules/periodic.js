@@ -321,6 +321,13 @@ module.exports = function () {
       },
       interval: 1000 * 10,
     },
+    cryptoInvoicePoll: {
+      run: async function () {
+        const cryptoPayments = require("./cryptoPayments");
+        await cryptoPayments.pollPendingInvoices();
+      },
+      interval: 1000 * 60,
+    },
     competitivePeriodic: {
       run: async function () {
         await competitive.progressCompetitive();

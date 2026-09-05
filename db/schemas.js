@@ -1559,4 +1559,102 @@ schemas.FamilyStockTransaction = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now, index: true },
 });
 
+schemas.CryptoInvoice = new mongoose.Schema({
+  invoiceId: {
+    type: String,
+    required: true,
+    unique: true,
+    index: true,
+  },
+  userId: {
+    type: String,
+    required: true,
+    index: true,
+  },
+  chain: {
+    type: String,
+    required: true,
+    enum: ["solana", "ethereum", "bitcoin"],
+    index: true,
+  },
+  asset: {
+    type: String,
+    required: true,
+    enum: ["USDC", "USDT", "USD1", "BTC"],
+    index: true,
+  },
+  usd: {
+    type: Number,
+    required: true,
+  },
+  coins: {
+    type: Number,
+    required: true,
+  },
+  depositAddress: {
+    type: String,
+    required: true,
+  },
+  mint: {
+    type: String,
+    default: "",
+  },
+  expectedAmount: {
+    type: String,
+    required: true,
+  },
+  expectedAmountRaw: {
+    type: String,
+    required: true,
+    index: true,
+  },
+  decimals: {
+    type: Number,
+    required: true,
+  },
+  payUri: {
+    type: String,
+    default: "",
+  },
+  txSignature: {
+    type: String,
+    index: true,
+    sparse: true,
+  },
+  status: {
+    type: String,
+    enum: ["pending", "completed", "expired", "failed", "rejected"],
+    default: "pending",
+    index: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  expiresAt: {
+    type: Date,
+    required: true,
+    index: true,
+  },
+  completedAt: {
+    type: Date,
+    default: null,
+  },
+  reviewedBy: {
+    type: String,
+    default: "",
+  },
+  reviewedAt: {
+    type: Date,
+    default: null,
+  },
+});
+schemas.CryptoInvoice.index({
+  chain: 1,
+  asset: 1,
+  expectedAmountRaw: 1,
+  status: 1,
+});
+schemas.CryptoInvoice.index({ txSignature: 1 }, { unique: true, sparse: true });
+
 module.exports = schemas;

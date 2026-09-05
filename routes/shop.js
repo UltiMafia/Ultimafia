@@ -46,12 +46,14 @@ function getPayPalCredentials() {
   return {
     environment,
     apiBase: getPayPalApiBase(),
-    clientId:
-      process.env[`${prefix}_CLIENT_ID`] || process.env.PAYPAL_CLIENT_ID || "",
-    clientSecret:
+    clientId: String(
+      process.env[`${prefix}_CLIENT_ID`] || process.env.PAYPAL_CLIENT_ID || ""
+    ).trim(),
+    clientSecret: String(
       process.env[`${prefix}_CLIENT_SECRET`] ||
-      process.env.PAYPAL_CLIENT_SECRET ||
-      "",
+        process.env.PAYPAL_CLIENT_SECRET ||
+        ""
+    ).trim(),
   };
 }
 
@@ -753,12 +755,12 @@ router.post(
 router.get("/paypal-client-id", async function (req, res) {
   try {
     await routeUtils.verifyLoggedIn(req);
-    const { clientId, clientSecret } = getPayPalCredentials();
+    const { clientId, clientSecret, environment } = getPayPalCredentials();
 
     if (!clientId || !clientSecret) {
       return res.status(500).send("PayPal is not configured.");
     }
-    return res.send({ clientId });
+    return res.send({ clientId, environment });
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not load PayPal configuration. Please refresh and try again.");
@@ -829,15 +831,17 @@ router.post("/paypal/create-order", async function (req, res) {
     const paypalStatus = e?.response?.status;
     const paypalData = e?.response?.data;
     const { apiBase, environment } = getPayPalCredentials();
-    logger.error({
-      message: "PayPal create-order failed",
-      phase,
-      environment,
-      apiBase,
-      status: paypalStatus,
-      paypalDebugId: e?.response?.headers?.["paypal-debug-id"],
-      data: paypalData || e?.message || e,
-    });
+    logger.error(
+      "PayPal create-order failed " +
+        JSON.stringify({
+          phase,
+          environment,
+          apiBase,
+          status: paypalStatus,
+          paypalDebugId: e?.response?.headers?.["paypal-debug-id"] || null,
+          data: paypalData || e?.message || String(e),
+        })
+    );
 
     if (e.message?.startsWith("PayPal credentials are missing")) {
       return res.status(500).send("PayPal server configuration is incomplete.");
