@@ -88,7 +88,7 @@ export function CellSearch({
     <Stack direction="column" spacing={1}>
       <Stack direction={isPhoneDevice ? "column-reverse" : "row"} spacing={1}>
         {hasTabs && (
-          <Tabs value={tabValue ?? ""} onChange={(_, value) => onTabChange?.(value)}>
+          <Tabs variant="scrollable" scrollButtons="auto" value={tabValue ?? ""} onChange={(_, value) => onTabChange?.(value)}>
             {tabButtons}
           </Tabs>
         )}
@@ -99,7 +99,7 @@ export function CellSearch({
       {!useTagAutocomplete && extraToolbarContent}
       <Divider direction="horizontal" sx={{ mb: 1 }} />
       <Paper sx={{ p: 1 }}>
-        <Grid2 container spacing={1} columns={gridColumns}>
+        <Grid2 className="cell-search-grid" container spacing={1} columns={gridColumns}>
           {items.map((item) => {
             const key = getItemKey(item);
             const name = getItemName(item);

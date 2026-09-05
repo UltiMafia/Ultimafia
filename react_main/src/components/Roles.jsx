@@ -1384,7 +1384,7 @@ export function GameSettingSearch(props) {
       </Stack>
       <Divider direction="horizontal" sx={{ mb: 1 }} />
       <Paper sx={{ p: 1 }}>
-        <Grid2 container spacing={1} columns={{ xs: 2, sm: 6, md: 8 }}>
+        <Grid2 className="cell-search-grid" container spacing={1} columns={{ xs: 2, sm: 6, md: 8 }}>
           {roleCells}
         </Grid2>
       </Paper>
