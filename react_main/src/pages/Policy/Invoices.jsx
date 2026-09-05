@@ -19,7 +19,7 @@ import {
 import { UserContext, SiteInfoContext } from "../../Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { Loading } from "components/Loading";
-import { NameWithAvatar } from "pages/User/User";
+import { NameWithAvatar } from "pages/User/UserWidgets";
 
 function userIsOwner(user) {
   return (user?.groups || []).some((g) => g && g.name === "Owner");
