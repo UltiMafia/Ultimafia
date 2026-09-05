@@ -858,6 +858,10 @@
   background-image: url("/src/images/roles/village/demolitionist-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Bomb {
+  background-image: url("/src/images/roles/village/bomb-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Psychic {
   background-image: url("/src/images/roles/village/psychic-vivid.png");
 }
