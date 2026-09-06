@@ -28,7 +28,7 @@ module.exports = class ConvertToChosenRoleOnDeath extends Card {
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
             let targetPlayer = this.role.data.targetPlayer;
-            if (targetPlayer) {
+            if (targetPlayer && this.target && this.target !== "None") {
               if (this.dominates(targetPlayer)) {
                 this.role.giveEffect(
                   targetPlayer,
