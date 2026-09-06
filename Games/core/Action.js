@@ -2,7 +2,7 @@ const models = require("../../db/models");
 
 module.exports = class Action {
   constructor(options) {
-    this.actors = options.actors ?? [];
+    this.actors = [...(options.actors ?? [])];
     if (this.actors.length === 0 && options.actor) {
       this.actors = [options.actor];
     }
@@ -118,6 +118,7 @@ module.exports = class Action {
 
     if (this.actors.length == 0) {
       this.do = () => {};
+      this.run = () => {};
       this.actors = [];
       delete this.target;
     }
