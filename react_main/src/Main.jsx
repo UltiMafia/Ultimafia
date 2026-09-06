@@ -17,6 +17,7 @@ import { AlertList, useErrorAlert } from "./components/Alerts";
 import { Nav } from "./components/Nav";
 import UserNavSection from "./pages/User/UserNavSection";
 import CookieBanner from "./components/CookieBanner";
+import LeaveGameDialog from "./components/LeaveGameDialog";
 import NavDropdown from "./components/NavDropdown";
 import { Loading } from "./components/Loading";
 import "css/main.css";
@@ -428,8 +429,14 @@ function Header({ setShowAnnouncementTemporarily }) {
 function InGameWarning() {
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
+  const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+
+  useEffect(() => {
+    setLeaveDialogOpen(false);
+  }, [user.inGame]);
 
   function onGameLeave() {
+    setLeaveDialogOpen(false);
     axios
       .post("/api/game/leave")
       .then(() => {
@@ -439,36 +446,44 @@ function InGameWarning() {
   }
 
   return (
-    <Snackbar
-      open={user.inGame !== null}
-      sx={{ maxWidth: "calc(100vw - 16px)" }}
-    >
-      <Alert
-        severity="warning"
-        variant="outlined"
-        sx={{
-          width: "100%",
-          backgroundColor: "background.paper",
-        }}
-        slotProps={{
-          message: {
-            sx: {
-              flex: "1",
-            },
-          },
-        }}
+    <>
+      <Snackbar
+        open={user.inGame !== null}
+        sx={{ maxWidth: "calc(100vw - 16px)" }}
       >
-        <AlertTitle>You are in a game in progress.</AlertTitle>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Button href={`/game/${user.inGame}`} size="small" sx={{ flex: "1" }}>
-            Return
-          </Button>
-          <Button onClick={() => onGameLeave()} size="small" sx={{ flex: "1" }}>
-            Leave
-          </Button>
-        </Stack>
-      </Alert>
-    </Snackbar>
+        <Alert
+          severity="warning"
+          variant="outlined"
+          sx={{
+            width: "100%",
+            backgroundColor: "background.paper",
+          }}
+          slotProps={{
+            message: {
+              sx: {
+                flex: "1",
+              },
+            },
+          }}
+        >
+          <AlertTitle>You are in a game in progress.</AlertTitle>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Button href={`/game/${user.inGame}`} size="small" sx={{ flex: "1" }}>
+              Return
+            </Button>
+            <Button onClick={() => setLeaveDialogOpen(true)} size="small" sx={{ flex: "1" }}>
+              Leave
+            </Button>
+          </Stack>
+        </Alert>
+      </Snackbar>
+      <LeaveGameDialog
+        open={leaveDialogOpen && user.inGame !== null}
+        onClose={() => setLeaveDialogOpen(false)}
+        onConfirm={onGameLeave}
+        warningMessage="Leaving while your participation is still required may result in a penalty."
+      />
+    </>
   );
 }
 

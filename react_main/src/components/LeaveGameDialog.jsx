@@ -23,6 +23,7 @@ export default function LeaveGameDialog({
   isParticipationRequired = false,
   lockSeconds = DEFAULT_LOCK_SECONDS,
   isPenaltyEnforced = true,
+  warningMessage = null,
 }) {
   const [alertOpen, setAlertOpen] = useState(false);
   const [lockRemaining, setLockRemaining] = useState(
@@ -103,14 +104,14 @@ export default function LeaveGameDialog({
           <Typography variant="body2">
             Are you sure you want to leave?
           </Typography>
-          {isParticipationRequired && (
+          {(isParticipationRequired || warningMessage) && (
             <Typography
               variant="body2"
               sx={{ color: "error.main", fontWeight: 700, mt: 1 }}
             >
-              {isPenaltyEnforced
+              {warningMessage || (isPenaltyEnforced
                 ? "YOU WILL BE PENALISED FOR LEAVING"
-                : "Your participation is still required"}
+                : "Your participation is still required")}
             </Typography>
           )}
         </DialogContent>
