@@ -73,19 +73,27 @@ module.exports = class Action {
   }
 
   async docSave(userId, saverId) {
-    var existingDocSave = await models.DocSave.findOne({
-      $or: [
-        { $and: [{ userId: userId }, { saverId: saverId }] },
-        { $and: [{ userId: saverId }, { saverId: userId }] },
-      ],
-    });
-    if (!existingDocSave) {
-      var docSave = new models.DocSave({
-        userId: userId,
-        saverId: saverId,
-      });
+    if (this.game?.isTest || process.env.NODE_ENV === "test") return;
+    if (!userId || !saverId) return;
 
-      await docSave.save();
+    try {
+      var existingDocSave = await models.DocSave.findOne({
+        $or: [
+          { $and: [{ userId: userId }, { saverId: saverId }] },
+          { $and: [{ userId: saverId }, { saverId: userId }] },
+        ],
+      });
+      if (!existingDocSave) {
+        var docSave = new models.DocSave({
+          userId: userId,
+          saverId: saverId,
+        });
+
+        await docSave.save();
+      }
+    } catch (err) {
+      if (this.game?.isTest) return;
+      console.error("docSave failed:", err);
     }
   }
 
