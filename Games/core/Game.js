@@ -1987,23 +1987,21 @@ module.exports = class Game {
   }
 
   getRoleAlignment(role) {
-    return roleData[this.type][role.split(":")[0]].alignment;
+    if (!role) return null;
+    const baseRole = role.split(":")[0];
+    return roleData[this.type]?.[baseRole]?.alignment || null;
   }
 
   getSpecialInteractions(role) {
-    if (roleData[this.type][role.split(":")[0]].SpecialInteractions) {
-      return roleData[this.type][role.split(":")[0]].SpecialInteractions;
-    } else {
-      return null;
-    }
+    if (!role) return null;
+    const baseRole = role.split(":")[0];
+    return roleData[this.type]?.[baseRole]?.SpecialInteractions || null;
   }
 
   getAddOtherRoles(role) {
-    if (roleData[this.type][role.split(":")[0]].RolesMadeBy) {
-      return roleData[this.type][role.split(":")[0]].RolesMadeBy;
-    } else {
-      return null;
-    }
+    if (!role) return null;
+    const baseRole = role.split(":")[0];
+    return roleData[this.type]?.[baseRole]?.RolesMadeBy || null;
   }
 
   getRoleTags(role) {
