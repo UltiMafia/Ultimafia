@@ -225,6 +225,7 @@ module.exports = class MagusGame extends Card {
         this.player.role.MagusExtraKillTarget = shuffledPlayers[1];
         if (this.game.getStateName() == "Night") {
           var action = new Action({
+            game: this.game,
             priority: PRIORITY_KILL_DEFAULT,
             labels: ["kill"],
             actor: this.player,
@@ -247,6 +248,7 @@ module.exports = class MagusGame extends Card {
           });
           this.game.queueAction(action);
           action = new Action({
+            game: this.game,
             priority: PRIORITY_KILL_DEFAULT + 1,
             labels: ["kill"],
             actor: this.player,
