@@ -13,6 +13,7 @@ logs/
 
 # Build files.
 react_main/build/
+react_main/build-chat-perf/
 build_public/
 
 # Dev files.

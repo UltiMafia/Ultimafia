@@ -1,0 +1,8 @@
+html, body, #root { height: 100%; margin: 0; }
+.chat-perf { height: 100dvh; display: flex; flex-direction: column; color: #eee; background: #181a1b; }
+.perf-controls { padding: 10px; flex: none; font: 14px system-ui, sans-serif; }
+.perf-buttons { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.perf-controls button, .perf-controls select { font: inherit; padding: 6px; }
+.perf-controls output, .perf-controls small { display: block; margin-top: 6px; }
+.chat-perf .perf-game { flex: 1; min-height: 0; height: auto; background-image: none; }
+.chat-perf .speech-wrapper { min-height: 0; }

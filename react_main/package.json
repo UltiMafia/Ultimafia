@@ -48,6 +48,7 @@
     }
   },
   "scripts": {
+    "perf:chat": "rsbuild build --config rsbuild.chat-perf.config.ts && rsbuild preview --config rsbuild.chat-perf.config.ts",
     "start": "rsbuild dev",
     "build": "rsbuild build",
     "preview": "rsbuild preview",

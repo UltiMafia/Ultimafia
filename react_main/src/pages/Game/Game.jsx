@@ -378,11 +378,11 @@ export default function Game() {
     }
   }, []);
 
-  function isMessagePinned(message) {
+  const isMessagePinned = useCallback((message) => {
     return message && message.id in persistentGameData.pinnedMessages;
-  }
+  }, [persistentGameData.pinnedMessages]);
 
-  function onPinMessage(message) {
+  const onPinMessage = useCallback((message) => {
     if (isMessagePinned(message)) {
       updatePersistentGameData({
         type: "removePinnedMessage",
@@ -394,7 +394,7 @@ export default function Game() {
         message: message,
       });
     }
-  }
+  }, [isMessagePinned]);
 
   const togglePlayerIsolation = (playerId) => {
     const newIsolatedPlayers = new Set(isolatedPlayers);
@@ -1030,7 +1030,8 @@ export default function Game() {
     setLeave(true);
   }
 
-  function onMessageQuote(message) {
+  const quoteMeetingId = history.states[history.currentState]?.selTab;
+  const onMessageQuote = useCallback((message) => {
     if (
       !review &&
       message.senderId !== "server" &&
@@ -1039,13 +1040,13 @@ export default function Game() {
     ) {
       socket.send("quote", {
         messageId: message.id,
-        toMeetingId: history.states[history.currentState].selTab,
+        toMeetingId: quoteMeetingId,
         fromMeetingId: message.meetingId,
         fromState: message.fromState ? message.fromState : stateViewing,
         messageContent: message.content,
       });
     }
-  }
+  }, [review, socket, quoteMeetingId, stateViewing]);
 
   function getSetupGameSetting(gameSetting) {
     if (setup && setup.gameSettings && gameSetting in setup.gameSettings) {
@@ -1655,6 +1656,8 @@ function getDefaultSpeechMeetingId(speechMeetings) {
   return meeting?.id;
 }
 
+const EMPTY_CHAT_STATE = { meetings: {}, alerts: [], obituaries: {} };
+
 export function TextMeetingLayout() {
   const game = useContext(GameContext);
   const { singleState } = useContext(GameTypeContext);
@@ -1663,9 +1666,9 @@ export function TextMeetingLayout() {
     game;
 
   const stateInfo = history.states[stateViewing];
-  const meetings = stateInfo ? stateInfo.meetings : {};
-  const alerts = stateInfo ? stateInfo.alerts : [];
-  const obituaries = stateInfo ? stateInfo.obituaries : {};
+  const meetings = stateInfo ? stateInfo.meetings : EMPTY_CHAT_STATE.meetings;
+  const alerts = stateInfo ? stateInfo.alerts : EMPTY_CHAT_STATE.alerts;
+  const obituaries = stateInfo ? stateInfo.obituaries : EMPTY_CHAT_STATE.obituaries;
   const winners = stateInfo ? stateInfo.winners : null;
   const selTab = stateInfo && stateInfo.selTab;
 
@@ -1685,8 +1688,6 @@ export function TextMeetingLayout() {
     });
     setAutoScroll(true);
   }
-
-  useEffect(() => doAutoScroll());
 
   useEffect(() => {
     if (stateViewing == null || !speechMeetings.length) return;
@@ -1845,16 +1846,36 @@ export function TextMeetingLayout() {
       );
     });
   }, [
-    /* MEMO DEPENDENCIES: These variables can affect the messages that are rendered in the game.
-       This is a performance improvement for preventing unnecessary re-renders caused by GameWrapper.
-    */
-    stateInfo,
+    history,
+    meetings,
+    alerts,
+    obituaries,
+    winners,
+    selTab,
+    stateViewing,
+    singleState,
+    players,
+    spectators,
     settings,
     filters,
     isolationEnabled,
     isolatedPlayers,
-    game.pinnedMessages,
+    game.review,
+    game.onMessageQuote,
+    game.onPinMessage,
+    game.isMessagePinned,
   ]);
+
+  // Typing and unrelated game updates must not repeatedly measure the entire
+  // transcript. Cancel pending work when the user scrolls away or changes tabs.
+  useEffect(() => {
+    const container = speechDisplayRef.current;
+    if (!autoScroll || !container) return;
+    const frame = requestAnimationFrame(() => {
+      container.scrollTo(0, container.scrollHeight);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [messages, autoScroll]);
 
   const activeMeeting = selTab ? meetings[selTab] : null;
 
@@ -2182,9 +2203,25 @@ function getContentClasses(message) {
  * PinnedMessages, because nothing makes a render site supply it. A context is
  * read the same way from anywhere, so a new render site cannot forget.
  */
-const IsPhoneDeviceContext = createContext(false);
+export const IsPhoneDeviceContext = createContext(false);
 
 function Message(props) {
+  const { history, isMessagePinned, ...rowProps } = props;
+  const { message, stateViewing } = props;
+  // History changes on every append. Only quotes and summary rows need it;
+  // ordinary rows depend on the meeting's name, not its growing message array.
+  return (
+    <MessageRow
+      {...rowProps}
+      pinned={isMessagePinned(message)}
+      meetingName={history.states[stateViewing]?.meetings?.[message.meetingId]?.name}
+      quoteState={message.isQuote ? history.states[message.fromState] : undefined}
+      history={message.obituaries || message.winners ? history : undefined}
+    />
+  );
+}
+
+const MessageRow = React.memo(function MessageRow(props) {
   const isPhoneDevice = useContext(IsPhoneDeviceContext);
   const user = useContext(UserContext);
   const theme = useTheme();
@@ -2237,7 +2274,7 @@ function Message(props) {
     (chainToPrevious || isServerMessage) && !isRightAligned && !denseMessages;
   const showThumbtack =
     !props.review && !message.isQuote && isHovering && props.stateViewing >= 0;
-  const thumbtackFaClass = props.isMessagePinned(message)
+  const thumbtackFaClass = props.pinned
     ? "fas fa-thumbtack"
     : "fas fa-thumbtack fa-rotate-270";
 
@@ -2277,7 +2314,7 @@ function Message(props) {
     message.customStickers || (player && player.customStickers) || null;
 
   if (message.isQuote) {
-    var state = history.states[message.fromState];
+    var state = props.quoteState;
 
     if (!state) return <></>;
 
@@ -2335,13 +2372,7 @@ function Message(props) {
     messageStyle.justifyContent = "flex-end";
   }
 
-  const stateMeetings = history.states[props.stateViewing].meetings;
-  const stateMeetingDefined =
-    stateMeetings !== undefined &&
-    stateMeetings[message.meetingId] !== undefined;
-  const isGraveyardMessage =
-    stateMeetingDefined &&
-    stateMeetings[message.meetingId].name === "Graveyard";
+  const isGraveyardMessage = props.meetingName === "Graveyard";
 
   const playerDead =
     props.stateViewing >= 0 &&
@@ -2357,8 +2388,7 @@ function Message(props) {
     if (playerDead) {
       contentClass += "dead ";
     } else if (
-      stateMeetingDefined &&
-      stateMeetings[message.meetingId].name === "Party!"
+      props.meetingName === "Party!"
     ) {
       contentClass += "party ";
     } else if (
@@ -2383,27 +2413,28 @@ function Message(props) {
   }
 
   let avatarId;
+  let nameColor = message.nameColor;
+  let textColor = message.textColor;
 
   if (player !== undefined) {
-    if (Object.keys(message.textColor ?? {}).length === 2) {
-      message.textColor = message.textColor["darkTheme"];
+    if (Object.keys(textColor ?? {}).length === 2) {
+      textColor = textColor["darkTheme"];
     }
 
     avatarId = player.anonId === undefined ? player.userId : player.anonId;
     if (player.anonId !== undefined) {
-      // message.textColor = (player.textColor !== undefined && player.textColor !== "") ? player.textColor : "";
-      message.nameColor = "";
+      nameColor = "";
     }
 
-    if (Object.keys(message.nameColor ?? {}).length === 2) {
-      message.nameColor = message.nameColor["darkTheme"];
+    if (Object.keys(nameColor ?? {}).length === 2) {
+      nameColor = nameColor["darkTheme"];
     }
   }
 
   const rawNameColor =
-    message.nameColor && message.nameColor !== "" ? message.nameColor : null;
+    nameColor && nameColor !== "" ? nameColor : null;
   const rawTextColor =
-    message.textColor && message.textColor !== "" ? message.textColor : null;
+    textColor && textColor !== "" ? textColor : null;
 
   let contentStyle = {};
   const resolvedTextColor = resolveDisplayTextColor({
@@ -2590,7 +2621,7 @@ function Message(props) {
       )}
     </div>
   );
-}
+});
 
 function WinnersMessage(props) {
   const game = useContext(GameContext);
@@ -5700,7 +5731,7 @@ export function Notes() {
   );
 }
 
-function useHistoryReducer() {
+export function useHistoryReducer() {
   return useReducer(
     (history, action) => {
       switch (action.type) {
