@@ -192,6 +192,9 @@ module.exports = class Gun extends Item {
   }
 
   isTargetValid(player) {
+    if (!player || !this.holder || typeof player.getFaction !== "function") {
+      return false;
+    }
     if (this.modifiers.includes("Loyal")) {
       if (player.getFaction() != this.holder.getFaction()) {
         return false;
