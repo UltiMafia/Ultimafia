@@ -14,6 +14,7 @@ interface UseAudioReturn {
   loadAudioFiles: (entries: AudioEntry[]) => void;
   stopAudio: (audioName?: string) => void;
   stopAudios: (audioNames: string[]) => void;
+  playDeathSounds: (urls: string[], volume: () => number) => Promise<void>;
 }
 
 /**
@@ -35,9 +36,7 @@ export function useAudio(settings: AudioSettings): UseAudioReturn {
 
   const manager = managerRef.current;
 
-  // Release every element when the game page unmounts. Nothing else drops these
-  // references, so without it a session accumulates the elements of every game
-  // played in it.
+  // Stop sources, cancel pending playback and release buffers on unmount.
   useEffect(() => {
     return () => {
       manager.dispose();
@@ -113,5 +112,10 @@ export function useAudio(settings: AudioSettings): UseAudioReturn {
     [manager]
   );
 
-  return { playAudio, loadAudioFiles, stopAudio, stopAudios };
+  const playDeathSounds = useCallback(
+    (urls: string[], volume: () => number) => manager.playUrls(urls, volume),
+    [manager]
+  );
+
+  return { playAudio, loadAudioFiles, stopAudio, stopAudios, playDeathSounds };
 }

@@ -213,7 +213,7 @@ export default function Game() {
   const ignoreDeathSoundsRef = useRef(!!user?.settings?.ignoreDeathSounds);
   const deathSoundVolumeRef = useRef(1);
 
-  const { playAudio, loadAudioFiles, stopAudio, stopAudios } = useAudio(settings);
+  const { playAudio, loadAudioFiles, stopAudio, stopAudios, playDeathSounds } = useAudio(settings);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
@@ -767,33 +767,7 @@ export default function Game() {
       // User preference: skip all custom death sounds (ref stays current mid-game)
       if (ignoreDeathSoundsRef.current) return;
 
-      let chain = Promise.resolve();
-      for (const url of urls) {
-        if (typeof url !== "string" || !url.length) continue;
-        chain = chain.then(
-          () =>
-            new Promise((resolve) => {
-              try {
-                const audio = new Audio(url);
-                // Dedicated local slider (gameSettings.deathSoundVolume)
-                audio.volume = deathSoundVolumeRef.current;
-                const done = () => resolve();
-                audio.addEventListener("ended", done, { once: true });
-                audio.addEventListener("error", done, { once: true });
-                // Cap hang if metadata is bad (sounds are max 5s)
-                const timeout = setTimeout(done, 6000);
-                audio.addEventListener(
-                  "ended",
-                  () => clearTimeout(timeout),
-                  { once: true }
-                );
-                audio.play().catch(done);
-              } catch {
-                resolve();
-              }
-            })
-        );
-      }
+      void playDeathSounds(urls, () => deathSoundVolumeRef.current);
     });
 
     socket.on("revival", (playerId) => {
@@ -6389,4 +6363,3 @@ export function useActivity() {
 
   return [activity, updateActivity];
 }
-

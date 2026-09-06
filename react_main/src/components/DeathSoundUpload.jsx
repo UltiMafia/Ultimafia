@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import WebAudioSound from "../audio/WebAudioSound";
 import {
   Alert,
   Box,
@@ -276,7 +277,7 @@ export default function DeathSoundUpload({
       if (objectUrl) URL.revokeObjectURL(objectUrl);
       if (previewRef.current) {
         try {
-          previewRef.current.pause();
+          previewRef.current.dispose();
         } catch {
           /* ignore */
         }
@@ -338,8 +339,7 @@ export default function DeathSoundUpload({
   const stopPreview = () => {
     if (previewRef.current) {
       try {
-        previewRef.current.pause();
-        previewRef.current.src = "";
+        previewRef.current.dispose();
       } catch {
         /* ignore */
       }
@@ -587,17 +587,8 @@ export default function DeathSoundUpload({
         setError("Select a non-empty trim range.");
         return;
       }
-      const blob = audioBufferToWavBlob(processed);
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
+      const audio = new WebAudioSound(processed);
       previewRef.current = audio;
-      audio.addEventListener(
-        "ended",
-        () => {
-          URL.revokeObjectURL(url);
-        },
-        { once: true }
-      );
       await audio.play();
     } catch (err) {
       setError(err.message || "Preview failed.");
@@ -691,7 +682,7 @@ export default function DeathSoundUpload({
             onClick={async () => {
               try {
                 stopPreview();
-                const audio = new Audio(existingUrl);
+                const audio = new WebAudioSound(existingUrl, false);
                 previewRef.current = audio;
                 await audio.play();
               } catch {
