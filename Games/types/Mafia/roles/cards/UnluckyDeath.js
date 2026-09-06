@@ -109,18 +109,14 @@ module.exports = class UnluckyDeath extends Card {
         let players = this.game.alivePlayers();
         if (players.length == 3) {
           if (Random.randInt(0, 150) <= this.player.role.data.deathChance) {
-            if (this.dominates(this.actor)) {
-              this.actor.kill("basic", this.actor);
-            }
+            this.player.kill("basic", this.player);
           }
         }
       },
       death: function (player, killer, killType, instant) {
         let players = this.game.alivePlayers();
         if (Random.randInt(0, 500) <= this.player.role.data.deathChance) {
-          if (this.dominates(this.actor)) {
-            this.actor.kill("basic", this.actor);
-          }
+          this.player.kill("basic", this.player);
         }
       },
     };
