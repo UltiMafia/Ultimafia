@@ -615,7 +615,9 @@ module.exports = class MafiaPlayer extends Player {
 
   getNeighbors() {
     let alive = this.game.alivePlayers();
+    if (alive.length <= 1) return [];
     let index = alive.indexOf(this);
+    if (index === -1) return [];
 
     const leftIdx = (index - 1 + alive.length) % alive.length;
     const rightIdx = (index + 1) % alive.length;
