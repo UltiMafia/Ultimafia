@@ -564,7 +564,7 @@ module.exports = class MafiaPlayer extends Player {
 
   isEvil(absolute, fair) {
     if (this.isFairMisReg() && absolute != true) {
-      let temp = this.game.createInformation("AlignmentInfo", this, this);
+      let temp = this.game.createInformation("AlignmentInfo", this, this.game, this);
       return temp.isAppearanceEvil(this, "investigate");
     }
     if (
@@ -588,7 +588,7 @@ module.exports = class MafiaPlayer extends Player {
 
   getFaction(absolute, fair) {
     if (this.isFairMisReg() && absolute != true) {
-      let temp = this.game.createInformation("AlignmentInfo", this, this);
+      let temp = this.game.createInformation("AlignmentInfo", this, this.game, this);
       return temp.mainInfo;
     }
     return this.faction;
