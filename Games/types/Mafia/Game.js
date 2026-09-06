@@ -796,7 +796,18 @@ module.exports = class MafiaGame extends Game {
       this.ExtraStates = [];
     }
     if (this.HaveHostingState == true) {
-      return true;
+      let hasHost = false;
+      for (let p of this.players) {
+        if (p.role && p.role.name === "Host") {
+          hasHost = true;
+          break;
+        }
+      }
+      if (!hasHost) {
+        this.HaveHostingState = false;
+      } else {
+        return true;
+      }
     }
     if (this.HaveTreasureChestState == true) {
       this.events.emit("extraStateCheck", "Treasure Chest");

@@ -2447,6 +2447,11 @@ module.exports = class Game {
         for (let skipCheck of skipChecks)
           shouldSkip = shouldSkip && skipCheck();
       } else shouldSkip = false;
+
+      if (skipped >= this.states.length) {
+        shouldSkip = false;
+        break;
+      }
     } while (shouldSkip);
 
     return [nextStateIndex, skipped];
