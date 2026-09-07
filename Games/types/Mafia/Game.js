@@ -286,6 +286,10 @@ module.exports = class MafiaGame extends Game {
         // Core selects the next state before resolving votes. Re-evaluate
         // Mission's skip check now that the approval result is available.
         [index, skipped] = this.getNextStateIndex();
+        if (index === null) {
+          this.endForNoPlayableState();
+          return;
+        }
       }
 
       if (previousState.match(/Mission/) && this.currentMissionHistory?.team?.length) {

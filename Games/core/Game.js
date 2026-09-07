@@ -2159,6 +2159,10 @@ module.exports = class Game {
 
     // Check if states will be skipped
     var [index, skipped] = this.getNextStateIndex();
+    if (index === null) {
+      this.endForNoPlayableState();
+      return;
+    }
 
     // Do actions
     if (!stateInfo.delayActions || skipped > 0) this.processActionQueue();
@@ -2170,6 +2174,7 @@ module.exports = class Game {
 
     // Set next state
     this.incrementState(index, skipped);
+    if (this.finished) return;
     this.stateEvents = {};
     stateInfo = this.getStateInfo();
 
@@ -2412,17 +2417,28 @@ module.exports = class Game {
       player.addStateExtraInfoToHistory(extraInfo, state);
   }
 
-  incrementState(index, skipped) {
-    this.currentState++;
+  endForNoPlayableState() {
+    this.queueAlert(
+      "The game ended without a winner because no playable phase remains."
+    );
+    this.immediateEnd();
+  }
 
+  incrementState(index, skipped) {
     if (index === undefined || skipped === undefined) {
       [index, skipped] = this.getNextStateIndex();
     }
+    if (index === null) {
+      this.endForNoPlayableState();
+      return;
+    }
+    this.currentState++;
     this.stateIndexRecord.push(index);
     return skipped;
   }
 
   getNextStateIndex() {
+    if (this.states.length <= 2) return [null, 0];
     var lastStateIndex =
       this.stateIndexRecord[this.stateIndexRecord.length - 1];
     var skipped = -1;
@@ -2446,9 +2462,9 @@ module.exports = class Game {
           shouldSkip = shouldSkip && skipCheck();
       } else shouldSkip = false;
 
-      if (skipped >= this.states.length) {
-        shouldSkip = false;
-        break;
+      // Postgame and Pregame (indices 0 and 1) are not playable phases.
+      if (shouldSkip && skipped >= this.states.length - 3) {
+        return [null, skipped];
       }
     } while (shouldSkip);
 

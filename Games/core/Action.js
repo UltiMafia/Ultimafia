@@ -59,7 +59,7 @@ module.exports = class Action {
       let immuneToLabel = immunity >= this.power;
       if (immuneToLabel) {
         immune = true;
-        if (player.docImmunity && player.docImmunity.length > 0) {
+        if (emitEvent && player.docImmunity && player.docImmunity.length > 0) {
           for (let i = 0; i < player.docImmunity.length; i++) {
             this.docSave(player.user.id, player.docImmunity[i].saver);
           }

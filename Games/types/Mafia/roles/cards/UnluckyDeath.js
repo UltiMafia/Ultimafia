@@ -1,7 +1,22 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
+
+function killIfVulnerable(player) {
+  if (!player.alive) return;
+  const action = new Action({
+    actor: player,
+    target: player,
+    game: player.game,
+    labels: ["kill"],
+    run() {
+      if (this.dominates()) this.target.kill("basic", this.actor);
+    },
+  });
+  action.do();
+}
 
 module.exports = class UnluckyDeath extends Card {
   constructor(role) {
@@ -109,14 +124,14 @@ module.exports = class UnluckyDeath extends Card {
         let players = this.game.alivePlayers();
         if (players.length == 3) {
           if (Random.randInt(0, 150) <= this.player.role.data.deathChance) {
-            this.player.kill("basic", this.player);
+            killIfVulnerable(this.player);
           }
         }
       },
       death: function (player, killer, killType, instant) {
         let players = this.game.alivePlayers();
         if (Random.randInt(0, 500) <= this.player.role.data.deathChance) {
-          this.player.kill("basic", this.player);
+          killIfVulnerable(this.player);
         }
       },
     };

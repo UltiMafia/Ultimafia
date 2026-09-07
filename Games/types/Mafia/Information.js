@@ -105,8 +105,10 @@ module.exports = class MafiaInformation {
       if (!action.hasLabels(["kill"])) continue;
       let target = action.target;
       let toCheck = Array.isArray(target) ? target : [target];
-      if (toCheck[0] instanceof Player && action.dominates()) {
-        visits.push(...toCheck);
+      for (const player of toCheck) {
+        if (player instanceof Player && action.dominates(player, false)) {
+          visits.push(player);
+        }
       }
     }
     return visits;
