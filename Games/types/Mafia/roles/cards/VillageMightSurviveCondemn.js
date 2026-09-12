@@ -27,7 +27,9 @@ module.exports = class VillageMightSurviveCondemn extends Card {
 
           let shuffledPlayers = Random.randomizeArray(villagePlayers);
 
-          shuffledPlayers[0].giveEffect("Condemn Immune", 5, 1);
+          if (shuffledPlayers.length > 0) {
+            shuffledPlayers[0].giveEffect("Condemn Immune", 5, 1);
+          }
         },
       },
     ];

@@ -28,7 +28,7 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
               `${this.actor.name} the ${this.role.name} has selected ${this.target.name}. If ${this.target.name} is Village Aligned they will die tonight.`
             );
 
-            if (!this.hasAbility(["Kill", "WhenDead"])) {
+            if (!this.role.hasAbility(["Kill", "WhenDead"])) {
               return;
             }
             //this.hasChoosen = true;
@@ -67,6 +67,7 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
 
         var action = new Action({
           actor: this.player,
+          target: this.SelectedPlayer,
           game: this.player.game,
           priority: PRIORITY_KILL_DEFAULT,
           role: this,
@@ -74,7 +75,7 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
           run: function () {
             if (!this.role.SelectedPlayer) return;
             if (this.role.SelectedPlayer.getFaction() != "Village") return;
-            if (this.dominates(this.target)) {
+            if (this.dominates(this.role.SelectedPlayer)) {
               this.role.SelectedPlayer.kill("basic", this.actor);
             }
           },

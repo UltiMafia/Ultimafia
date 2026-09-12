@@ -33,7 +33,7 @@ module.exports = class TwoGoodOneEvilInfo extends Information {
         this.mainInfo = "No Evil Players Exist";
         return;
       }
-      if (goodPlayers.length <= 0) {
+      if (goodPlayers.length <= 1) {
         this.mainInfo = "Not Enough Good Players Exist";
         return;
       }
@@ -58,10 +58,17 @@ module.exports = class TwoGoodOneEvilInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    if (this.mainInfo == "No Evil Players Exist") {
+    if (typeof this.mainInfo === "string") {
       return `You Learn that ${this.mainInfo}`;
-    } else if (this.mainInfo == "Not Enough Good Players Exist") {
-      return `You Learn that ${this.mainInfo}`;
+    }
+    if (
+      !Array.isArray(this.mainInfo) ||
+      this.mainInfo.length < 3 ||
+      !this.mainInfo[0] ||
+      !this.mainInfo[1] ||
+      !this.mainInfo[2]
+    ) {
+      return "You learn that not enough players exist.";
     }
     return `While conducting your symphony, you hear a sour note... exactly one of ${this.mainInfo[0].name}, ${this.mainInfo[1].name}, or ${this.mainInfo[2].name} is Evil.`;
   }
