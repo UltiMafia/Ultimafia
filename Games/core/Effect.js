@@ -48,8 +48,10 @@ module.exports = class Effect {
 
     this.source = null;
 
-    for (let eventName in this.listeners)
-      this.player.events.removeListener(eventName, this.listeners[eventName]);
+    for (let eventName in this.listeners) {
+      this.game?.events?.removeListener(eventName, this.listeners[eventName]);
+      this.player?.events?.removeListener(eventName, this.listeners[eventName]);
+    }
   }
 
   shouldDisableMeeting(name, options) {

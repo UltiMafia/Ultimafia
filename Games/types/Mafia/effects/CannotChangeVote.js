@@ -19,14 +19,22 @@ module.exports = class CannotChangeVote extends Effect {
 
         this.cannotUpdateVote();
       },
+      meetingsMade: function () {
+        if (!this.targetMeeting) {
+          this.initMeeting();
+        }
+      },
     };
   }
 
   apply(player) {
     super.apply(player);
+    this.initMeeting();
+  }
 
+  initMeeting() {
     this.targetMeeting = this.player.getMeetingByName(this.meetingName);
-    if (!this.targetMeeting) {
+    if (!this.targetMeeting || !this.targetMeeting.members[this.player.id]) {
       return;
     }
 
@@ -36,10 +44,29 @@ module.exports = class CannotChangeVote extends Effect {
     // has voted, cannot update vote
     if (this.targetMeeting.votes[this.player.id]) {
       this.cannotUpdateVote();
+    } else {
+      this.player.sendMeeting(this.targetMeeting);
     }
   }
 
   cannotUpdateVote() {
-    this.targetMeeting.members[this.player.id].canUpdateVote = false;
+    if (!this.targetMeeting) {
+      this.targetMeeting = this.player.getMeetingByName(this.meetingName);
+    }
+    if (this.targetMeeting && this.targetMeeting.members[this.player.id]) {
+      this.targetMeeting.members[this.player.id].canUpdateVote = false;
+      this.player.sendMeeting(this.targetMeeting);
+    }
+  }
+
+  remove() {
+    if (this.targetMeeting && this.targetMeeting.members[this.player.id]) {
+      if (!this.targetMeeting.noUnvote) {
+        this.targetMeeting.members[this.player.id].canUnvote = true;
+      }
+      this.targetMeeting.members[this.player.id].canUpdateVote = true;
+      this.player.sendMeeting(this.targetMeeting);
+    }
+    super.remove();
   }
 };
