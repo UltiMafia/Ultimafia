@@ -249,7 +249,11 @@ export default function Family() {
 
   const hasTrophySpotlight = family.perks?.some((p) => p.key === "trophySpotlight" && p.owned);
 
-  const membersList = family.members.map((member) => (
+  const rankOrder = { leader: 0, officer: 1, member: 2 };
+  const sortedMembers = [...family.members].sort(
+    (a, b) => (rankOrder[a.role] ?? 2) - (rankOrder[b.role] ?? 2)
+  );
+  const membersList = sortedMembers.map((member) => (
     <Box
       key={member.id}
       sx={{
