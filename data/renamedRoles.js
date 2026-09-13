@@ -37,7 +37,6 @@ module.exports = {
     "Culture Exchange": "Cultural Exchange",
     // deprecated roles
     Veteran: "Villager",
-    Bomb: "Villager",
     "Village Idiot": "Villager",
     "Lazy Cop": "Cop",
     Checker: "Visitor",

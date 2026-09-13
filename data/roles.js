@@ -593,6 +593,15 @@ const roleData = {
       ],
       nightOrder: [["Give Bomb", PRIORITY_ITEM_GIVER_EARLY]],
     },
+    Bomb: {
+      alignment: "Village",
+      category: "Basic",
+      tags: ["Items", "Bomb", "Killing", "Kill Interaction", "Basic"],
+      description: [
+        "You start with a Bomb that cannot be stolen.",
+        bombDef,
+      ],
+    },
     Falconer: {
       alignment: "Village",
       category: "Gifting",
