@@ -307,9 +307,11 @@ const roleData = {
       tags: ["Unaware", "Basic", "Deception"],
       tagsHidden: ["No Investigate"],
       description: [
-        "You see self as Villager.",
-        "You appear as a random evil role in the setup to information roles, and when condemned.",
-        "You appear as Miller when killed.",
+        "You see yourself as Villager.",
+        "When investigated by a Cop, you appear sided with the Mafia.",
+        "When investigated by a Detective, you appear as Mafioso.",
+        "When condemned, you appear as Mafioso.",
+        "You appear as Miller when killed at night.",
       ],
       skins: [
         {
