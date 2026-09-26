@@ -38,7 +38,7 @@ module.exports = class Mourned extends Item {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (this.holder.alive) return;
+        if (!this.holder || this.holder.alive) return;
 
         if (stateInfo.name.match(/Night/)) {
           this.holder.queueAlert(`A mourner asks you: ${this.question}`);

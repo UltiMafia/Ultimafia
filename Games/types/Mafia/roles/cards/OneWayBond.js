@@ -14,6 +14,7 @@ module.exports = class OneWayBond extends Card {
           priority: PRIORITY_EFFECT_GIVER_EARLY,
           role: this.role,
           run: function () {
+            if (!this.actor || !this.target || typeof this.target !== "object" || !this.target.name) return;
             if (this.role.name == "Yandere") {
               this.role.giveEffect(this.actor, "Lovesick", this.target);
             }
