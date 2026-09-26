@@ -185,7 +185,8 @@ export default function CreateSetup(props) {
         case "setUseRoleGroups":
           newRoleData.useRoleGroups = action.useRoleGroups;
 
-          if (!action.useRoleGroups) {
+          // Open multi-setups keep their role sets without using role groups.
+          if (newRoleData.closed && !action.useRoleGroups) {
             if (newRoleData.roles.length > 1) {
               newRoleData = update(newRoleData, {
                 roles: { $splice: [[1, newRoleData.roles.length - 1]] },
