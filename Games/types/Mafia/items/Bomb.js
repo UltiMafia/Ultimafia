@@ -2,11 +2,15 @@ const Item = require("../Item");
 const Action = require("../Action");
 
 module.exports = class Bomb extends Item {
-  constructor(lifespan) {
+  constructor(lifespanOrOptions) {
     super("Bomb");
 
-    //this.cannotBeStolen = true;
-    this.lifespan = lifespan || Infinity;
+    const options =
+      lifespanOrOptions && typeof lifespanOrOptions === "object"
+        ? lifespanOrOptions
+        : { lifespan: lifespanOrOptions };
+    this.lifespan = options.lifespan || Infinity;
+    this.cannotBeStolen = options.cannotBeStolen === true;
     this.listeners = {
       death: function (player, killer, deathType, instant) {
         if (
