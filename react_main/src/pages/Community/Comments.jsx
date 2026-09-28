@@ -111,6 +111,7 @@ export default function Comments(props) {
     <Comment
       fullWidth={props?.fullWidth}
       location={comment.location || (isMulti ? undefined : location)}
+      canModerateLocation={props.canModerateLocation}
       comment={comment}
       comments={comments}
       setComments={setComments}

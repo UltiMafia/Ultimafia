@@ -143,6 +143,23 @@ router.post("/", async function (req, res) {
   }
 });
 
+
+async function isFamilyWallLeader(userId, location) {
+  if (!location || typeof location !== "string") return false;
+  if (!location.startsWith("family/")) return false;
+
+  var familyId = location.slice("family/".length);
+  if (!familyId || familyId.includes("/")) return false;
+
+  var user = await models.User.findOne({ id: userId }).select("_id");
+  if (!user) return false;
+
+  var family = await models.Family.findOne({ id: familyId }).select("leader");
+  if (!family || !family.leader) return false;
+
+  return family.leader.toString() === user._id.toString();
+}
+
 router.post("/delete", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
@@ -162,8 +179,11 @@ router.post("/delete", async function (req, res) {
       return;
     }
 
+    var isFamilyLeader = await isFamilyWallLeader(userId, comment.location);
     let isNotOwnPost =
-      comment.author.id != userId && comment.location != userId;
+      comment.author.id != userId &&
+      comment.location != userId &&
+      !isFamilyLeader;
     if (isNotOwnPost || !(await routeUtils.verifyPermission(userId, perm1)))
       if (!(await routeUtils.verifyPermission(res, userId, perm2))) return;
 

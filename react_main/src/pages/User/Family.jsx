@@ -481,7 +481,7 @@ export default function Family() {
                   px: 2,
                 }}
               >
-                <Comments fullWidth location={`family/${familyId}`} />
+                <Comments fullWidth location={`family/${familyId}`} canModerateLocation={!!family.isLeader} />
               </Box>
             )}
           </Stack>
@@ -562,7 +562,7 @@ export default function Family() {
         </Grid>
         {isPhoneDevice && (
           <Grid item xs={12} sx={{ mt: 1 }}>
-            <Comments fullWidth location={`family/${familyId}`} />
+            <Comments fullWidth location={`family/${familyId}`} canModerateLocation={!!family.isLeader} />
           </Grid>
         )}
       </Grid>
