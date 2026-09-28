@@ -90,7 +90,8 @@ export const Comment = (props) => {
                     (user.perms.deleteAnyPost ||
                       (user.perms.deleteOwnPost &&
                         comment.author.id === user.id) ||
-                      location === user.id) && (
+                      location === user.id ||
+                      props.canModerateLocation) && (
                       <IconButton onClick={onDeleteClick}>
                         <i className="fas fa-trash" />
                       </IconButton>
