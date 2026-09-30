@@ -6024,35 +6024,6 @@ const roleData = {
         Steeled: ["This Event gives a Knife. " + knifeDef],
       },
     },
-    Moonshine: {
-      alignment: "Event",
-      tags: ["Event", "Items"],
-      description: [
-        "If this Event occurs, one random player will be given Whiskey.",
-        whiskeyDef,
-      ],
-      nightOrder: [["Give Whiskey", PRIORITY_ITEM_GIVER_DEFAULT]],
-    },
-    "Ominous Warning": {
-      alignment: "Event",
-      tags: ["Event", "Items"],
-      description: [
-        "If this Event occurs, one random player will be given a Knife.",
-        knifeDef,
-        bleedingDef,
-      ],
-      nightOrder: [["Give Knife", PRIORITY_ITEM_GIVER_DEFAULT]],
-    },
-    Vaccination: {
-      alignment: "Event",
-      tags: ["Event", "Items"],
-      description: [
-        "If this Event occurs, one random player will be given a Syringe.",
-        needleDef,
-      ],
-      nightOrder: [["Give Syringe", PRIORITY_ITEM_GIVER_DEFAULT]],
-      graveyardParticipation: "all",
-    },
     "Haunted House": {
       alignment: "Event",
       tags: ["Event", "Items"],
