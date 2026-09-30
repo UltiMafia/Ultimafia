@@ -5,7 +5,19 @@ const models = require("../db/models");
 const logger = require("../modules/logging")(".");
 
 /**
- * Migration: rename a role in Mafia setups (edit OLD_ROLE / NEW_ROLE below).
+ * Migration: fold retired Mafia events into Airdrop.
+ *
+ * Each setup role key is "Name" or "Name:Mod1/Mod2". Replacements run once per
+ * key, so a Moonshine that becomes Airdrop is not then given Armed.
+ *
+ *   Airdrop            -> Airdrop:Armed   (Armed is added if missing; other modifiers stay)
+ *   Moonshine          -> Airdrop         (modifiers unchanged)
+ *   Ominous Warning    -> Airdrop:Steeled (Steeled is added if missing)
+ *   Vaccination        -> Airdrop:Macabre (Macabre is added if missing)
+ *
+ * When a modifier is added, the modifier list is sorted alphabetically so
+ * "Airdrop:Banished" becomes "Airdrop:Armed/Banished". Counts for keys that
+ * land on the same string are added together.
  *
  * How to run
  * ----------
@@ -43,37 +55,75 @@ function mongoConnectOptions() {
   };
 }
 
-const OLD_ROLE = "Ripper";
-const NEW_ROLE = "Supervillain";
+const EVENT_REPLACEMENTS = {
+  Airdrop: { name: "Airdrop", addModifier: "Armed" },
+  Moonshine: { name: "Airdrop" },
+  "Ominous Warning": { name: "Airdrop", addModifier: "Steeled" },
+  Vaccination: { name: "Airdrop", addModifier: "Macabre" },
+};
 
-function replaceRipperInRoleset(roleset) {
+function splitRoleKey(key) {
+  const colonIdx = key.indexOf(":");
+  if (colonIdx === -1) {
+    return { name: key, mods: [] };
+  }
+  const name = key.slice(0, colonIdx);
+  const modPart = key.slice(colonIdx + 1);
+  return { name, mods: modPart ? modPart.split("/") : [] };
+}
+
+function joinRoleKey(name, mods) {
+  if (!mods.length) return name;
+  return `${name}:${mods.join("/")}`;
+}
+
+function replaceEventsInRoleKey(key) {
+  const { name, mods } = splitRoleKey(key);
+  const replacement = EVENT_REPLACEMENTS[name];
+  if (!replacement) {
+    return { newKey: key, changed: false };
+  }
+
+  let newMods = mods;
+  if (replacement.addModifier && !mods.includes(replacement.addModifier)) {
+    newMods = mods.concat(replacement.addModifier).sort((a, b) => a.localeCompare(b));
+  }
+
+  const newKey = joinRoleKey(replacement.name, newMods);
+  return { newKey, changed: newKey !== key };
+}
+
+function replaceEventsInRoleset(roleset) {
   const newRoleset = {};
   let changed = false;
+  const keyChanges = [];
   for (const key of Object.keys(roleset)) {
     const count = roleset[key];
-    let newKey = key;
-    if (key === OLD_ROLE) {
-      newKey = NEW_ROLE;
+    const { newKey, changed: keyChanged } = replaceEventsInRoleKey(key);
+    if (keyChanged) {
       changed = true;
-    } else if (key.startsWith(OLD_ROLE + ":")) {
-      newKey = NEW_ROLE + key.slice(OLD_ROLE.length);
-      changed = true;
+      const change = `${key} -> ${newKey}`;
+      if (!keyChanges.includes(change)) keyChanges.push(change);
     }
     newRoleset[newKey] = (newRoleset[newKey] || 0) + count;
   }
-  return { newRoleset, changed };
+  return { newRoleset, changed, keyChanges };
 }
 
-function replaceRipperInRoles(rolesJson) {
+function replaceEventsInRoles(rolesJson) {
   const roles = JSON.parse(rolesJson);
   let anyChanged = false;
   const newRoles = [];
+  const changes = [];
   for (const roleset of roles) {
-    const { newRoleset, changed } = replaceRipperInRoleset(roleset);
+    const { newRoleset, changed, keyChanges } = replaceEventsInRoleset(roleset);
     newRoles.push(newRoleset);
     if (changed) anyChanged = true;
+    for (const change of keyChanges) {
+      if (!changes.includes(change)) changes.push(change);
+    }
   }
-  return { newRoles: JSON.stringify(newRoles), changed: anyChanged };
+  return { newRoles: JSON.stringify(newRoles), changed: anyChanged, changes };
 }
 
 function computeHash(doc, newRolesString) {
@@ -99,14 +149,14 @@ async function migrate() {
     let updated = 0;
 
     for (const setup of setups) {
-      const { newRoles, changed } = replaceRipperInRoles(setup.roles);
+      const { newRoles, changed, changes } = replaceEventsInRoles(setup.roles);
 
       if (!changed) continue;
 
       const newHash = computeHash(setup, newRoles);
 
       logger.info(
-        `Setup ${setup.id} (${setup.name || "unnamed"}): replacing ${OLD_ROLE} with ${NEW_ROLE}`
+        `Setup ${setup.id} (${setup.name || "unnamed"}): ${changes.join("; ")}`
       );
 
       if (!DRY_RUN) {
@@ -130,4 +180,11 @@ async function migrate() {
   }
 }
 
-migrate();
+if (require.main === module) {
+  migrate();
+}
+
+module.exports = {
+  replaceEventsInRoleKey,
+  replaceEventsInRoles,
+};
