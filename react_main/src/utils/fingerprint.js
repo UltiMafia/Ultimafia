@@ -63,8 +63,13 @@ async function collectFingerprint() {
   try {
     return await Promise.race([ (async () => {
       const webgl = await webglFingerprint();
-      // A high-entropy stable print is required for stable-only matches to be meaningful. Physical dimensions can shift with zoom, scaling, or monitors and break continuity; drop or quantise them if needed.
-      const stable = { platform: navigator.platform, hardwareConcurrency: navigator.hardwareConcurrency, fonts: FONT_LIST.filter(fontExists), canvas: canvasFingerprint(), webgl, physicalWidth: window.screen.width * window.devicePixelRatio, physicalHeight: window.screen.height * window.devicePixelRatio, navigatorKeyCount: Reflect.ownKeys(Object.getPrototypeOf(navigator)).length };
+      // A high-entropy stable print is required for stable-only matches to be meaningful, so the durable device signals (fonts, canvas, webgl, screen) all live here.
+      // Screen size is read WITHOUT devicePixelRatio and sorted descending. screen.width/height are device-independent CSS pixels at the OS scale, which page zoom never
+      // touches, whereas devicePixelRatio folds page zoom in on top of the OS scale -- multiplying by it would let a Ctrl+/- zoom break the stable match. Sorting keeps a
+      // rotated phone or tablet reporting a single identity. The residual instability is a resolution / OS-scaling / monitor change, which is rare and degrades a block to
+      // the restrict tier rather than silently missing. devicePixelRatio is deliberately kept out of BOTH prints so zoom cannot downgrade an exact match either.
+      const screenSize = [Math.max(window.screen.width, window.screen.height), Math.min(window.screen.width, window.screen.height)];
+      const stable = { platform: navigator.platform, hardwareConcurrency: navigator.hardwareConcurrency, fonts: FONT_LIST.filter(fontExists), canvas: canvasFingerprint(), webgl, screenSize, navigatorKeyCount: Reflect.ownKeys(Object.getPrototypeOf(navigator)).length };
       const unstable = { userAgent: navigator.userAgent, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, timezoneOffset: new Date().getTimezoneOffset(), language: navigator.language, languages: navigator.languages };
       return { platform: "web", stable: "v2:" + await sha256(JSON.stringify(stable)), unstable: "v2:" + await sha256(JSON.stringify(unstable)) };
     })(), new Promise((resolve) => { timer = setTimeout(() => resolve(null), 3000); }) ]);
