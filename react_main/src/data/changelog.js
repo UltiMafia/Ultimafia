@@ -36,6 +36,16 @@ export const CHANGELOG_CATEGORIES = [
 /** @type {ChangelogRelease[]} */
 export const CHANGELOG = [
   {
+    id: "2026-09-30-custom-sticker-slots",
+    date: "2026-09-30",
+    title: "More custom sticker slots",
+    categories: {
+      shop: [
+        "Sticker Slot purchases now support up to 10 custom stickers per account (10 coins each)",
+      ],
+    },
+  },
+  {
     id: "2026-08-22-anarchist-timebomb",
     date: "2026-08-22",
     title: "Anarchist timebomb kills and reveals again",
