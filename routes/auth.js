@@ -120,7 +120,8 @@ router.post("/", async function (req, res) {
       );
     } else if (e.banEvasion) {
       res.status(403);
-      res.send(JSON.stringify({ banEvasion: true }));
+      // Deliberately method-agnostic: never tell the client which signal matched.
+      res.send(JSON.stringify({ signupBlocked: true }));
     } else if (e.deleted) {
       res.status(403);
       res.send(
@@ -437,9 +438,10 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint) {
         );
         await routeUtils.createNotification(
           {
-            content: fingerprintRestricted
-              ? "Your account was restricted because this device matches a banned account. Please contact a moderator."
-              : `Your IP address has been flagged as suspicious. Please message an admin or moderator in the chat panel to gain full access to the site. A list of moderators can be found by clicking on this message.`,
+            // Deliberately vague: a restricted user is never told which signal matched, even when the
+            // real cause was the device fingerprint. The true reason goes to the staff-only Discord alert
+            // below via flagReason.
+            content: `Your IP address has been flagged as suspicious. Please message an admin or moderator in the chat panel to gain full access to the site. A list of moderators can be found by clicking on this message.`,
             icon: "flag",
             link: "/policy/moderation",
           },

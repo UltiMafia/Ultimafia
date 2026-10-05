@@ -76,8 +76,8 @@ export const Welcome = () => {
                   setIsLoading(false);
                   return;
                 }
-                if (data.banEvasion) {
-                  snackbarHook.popBanEvasion();
+                if (data.signupBlocked) {
+                  snackbarHook.popSignupBlocked();
                   setIsLoading(false);
                   return;
                 }

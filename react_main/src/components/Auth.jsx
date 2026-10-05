@@ -178,8 +178,8 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
               setLoading(false);
               return;
             }
-            if (data.banEvasion) {
-              snackbarHook.popBanEvasion();
+            if (data.signupBlocked) {
+              snackbarHook.popSignupBlocked();
               setLoading(false);
               return;
             }
@@ -263,8 +263,8 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
               setLoading(false);
               return;
             }
-            if (data.banEvasion) {
-              snackbarHook.popBanEvasion();
+            if (data.signupBlocked) {
+              snackbarHook.popSignupBlocked();
               setLoading(false);
               return;
             }

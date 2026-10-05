@@ -44,9 +44,9 @@ export const useSnackbar = () => {
       "error"
     );
   };
-  const popBanEvasion = () => {
+  const popSignupBlocked = () => {
     popSnackbar(
-      "You cannot create an account on this device, as it is associated with a banned account.",
+      "We could not create an account for you. If you believe this is a mistake, please contact a moderator.",
       "error"
     );
   };
@@ -82,7 +82,7 @@ export const useSnackbar = () => {
     popLoginFailed,
     popSiteBanned,
     popUserDeleted,
-    popBanEvasion,
+    popSignupBlocked,
     SnackbarWrapped,
   };
 };
