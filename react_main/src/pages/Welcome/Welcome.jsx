@@ -69,6 +69,11 @@ export const Welcome = () => {
                   setIsLoading(false);
                   return;
                 }
+                if (data.emailAliasInUse) {
+                  snackbarHook.popSnackbar("An account already exists for this email address. Please log in with the original address instead of using a + alias.", "warning");
+                  setIsLoading(false);
+                  return;
+                }
               } catch (parseErr) {
                 // Not a site-ban error, continue with regular error handling
               }

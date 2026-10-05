@@ -16,6 +16,7 @@ const router = express.Router();
 const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
 const errors = require("../lib/errors");
+const { findAliasAccount } = require("../modules/emailAlias");
 
 let callbackUrl;
 
@@ -123,6 +124,9 @@ router.post("/", async function (req, res) {
           deleted: true,
         })
       );
+    } else if (e.emailAliasInUse) {
+      res.status(403);
+      res.send(JSON.stringify({ emailAliasInUse: true }));
     } else {
       logger.error(e);
       res.status(403);
@@ -312,6 +316,9 @@ async function authSuccess(req, uid, email, discordProfile) {
       }).select("_id");
 
       if (bannedSameIP.length > 0) return;
+
+      var aliasAccount = await findAliasAccount(email);
+      if (aliasAccount) throw { emailAliasInUse: true };
 
       var emailDomain = email.split("@")[1] || "";
 
