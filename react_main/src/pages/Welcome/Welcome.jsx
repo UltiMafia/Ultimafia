@@ -16,6 +16,7 @@ import {
   inMemoryPersistence,
 } from "firebase/auth";
 import axios from "axios";
+import { collectFingerprint } from "../../utils/fingerprint";
 import { useSnackbar } from "hooks/useSnackbar";
 import { Loading } from "../../components/Loading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
@@ -44,8 +45,9 @@ export const Welcome = () => {
       if (result && result.user) {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const idToken = await auth.currentUser.getIdToken(true);
+        const fingerprint = await collectFingerprint();
         axios
-          .post("/api/auth", { idToken })
+          .post("/api/auth", { idToken, fingerprint })
           .then(() => {
             window.location.reload();
           })
@@ -71,6 +73,11 @@ export const Welcome = () => {
                 }
                 if (data.emailAliasInUse) {
                   snackbarHook.popSnackbar("An account already exists for this email address. Please log in with the original address instead of using a + alias.", "warning");
+                  setIsLoading(false);
+                  return;
+                }
+                if (data.banEvasion) {
+                  snackbarHook.popBanEvasion();
                   setIsLoading(false);
                   return;
                 }
