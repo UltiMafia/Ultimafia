@@ -21,6 +21,7 @@ cmds.txt
 tmp/
 testing/
 dumps/
+mafia-fuzz-failures/
 
 # Data.
 uploads/

@@ -2,7 +2,7 @@ const models = require("../../db/models");
 
 module.exports = class Action {
   constructor(options) {
-    this.actors = options.actors ?? [];
+    this.actors = [...(options.actors ?? [])];
     if (this.actors.length === 0 && options.actor) {
       this.actors = [options.actor];
     }
@@ -42,6 +42,7 @@ module.exports = class Action {
    */
   dominates(player, emitEvent = true) {
     player = player || this.target;
+    if (!player) return false;
     // will be true if immune to any label
     let immune = false;
 
@@ -58,7 +59,7 @@ module.exports = class Action {
       let immuneToLabel = immunity >= this.power;
       if (immuneToLabel) {
         immune = true;
-        if (player.docImmunity && player.docImmunity.length > 0) {
+        if (emitEvent && player.docImmunity && player.docImmunity.length > 0) {
           for (let i = 0; i < player.docImmunity.length; i++) {
             this.docSave(player.user.id, player.docImmunity[i].saver);
           }
@@ -72,19 +73,27 @@ module.exports = class Action {
   }
 
   async docSave(userId, saverId) {
-    var existingDocSave = await models.DocSave.findOne({
-      $or: [
-        { $and: [{ userId: userId }, { saverId: saverId }] },
-        { $and: [{ userId: saverId }, { saverId: userId }] },
-      ],
-    });
-    if (!existingDocSave) {
-      var docSave = new models.DocSave({
-        userId: userId,
-        saverId: saverId,
-      });
+    if (this.game?.isTest || process.env.NODE_ENV === "test") return;
+    if (!userId || !saverId) return;
 
-      await docSave.save();
+    try {
+      var existingDocSave = await models.DocSave.findOne({
+        $or: [
+          { $and: [{ userId: userId }, { saverId: saverId }] },
+          { $and: [{ userId: saverId }, { saverId: userId }] },
+        ],
+      });
+      if (!existingDocSave) {
+        var docSave = new models.DocSave({
+          userId: userId,
+          saverId: saverId,
+        });
+
+        await docSave.save();
+      }
+    } catch (err) {
+      if (this.game?.isTest) return;
+      console.error("docSave failed:", err);
     }
   }
 
@@ -117,6 +126,7 @@ module.exports = class Action {
 
     if (this.actors.length == 0) {
       this.do = () => {};
+      this.run = () => {};
       this.actors = [];
       delete this.target;
     }

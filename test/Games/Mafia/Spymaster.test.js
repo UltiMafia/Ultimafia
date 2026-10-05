@@ -189,9 +189,11 @@ describe("Games/Mafia/Spymaster", function () {
     const game = await makeGame(spymasterSetup({ teamFailLimit: 1 }));
     await waitForResult(() => game.started);
 
+    game.recordMissionTeam(["Player 1", "Player 2"]);
     game.recordMissionFails(0);
     game.missionRecord.score.rebels.should.equal(1);
 
+    game.recordMissionTeam(["Player 1", "Player 2"]);
     game.recordMissionFails(1);
     game.missionRecord.score.spies.should.equal(1);
   });

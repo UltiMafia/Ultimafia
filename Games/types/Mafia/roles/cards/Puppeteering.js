@@ -42,7 +42,7 @@ module.exports = class Puppeteering extends Card {
     };
 
     function isControlled(player) {
-      return this.role.data.controlledPlayers.includes(player);
+      return (role.data.controlledPlayers && role.data.controlledPlayers.includes(player)) || false;
     }
   }
 };

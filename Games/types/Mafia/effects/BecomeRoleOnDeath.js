@@ -25,7 +25,8 @@ module.exports = class BecomeRoleOnDeath extends Effect {
           effect: this,
           run: function () {
             if (this.dominates()) {
-              let roleName = this.effect.role.split(":")[0];
+              let roleName = this.effect.role ? this.effect.role.split(":")[0] : null;
+              if (!roleName || roleName === "None") return;
               let modifiers = this.effect.role.split(":")[1];
               if (!modifiers || modifiers.length <= 0) {
                 this.target.setRole(
