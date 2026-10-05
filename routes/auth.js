@@ -12,6 +12,7 @@ const {
   syncRankedCompetitiveAccess,
 } = require("../modules/userEligibility");
 const { sendFlaggedUserDiscordAlert } = require("./report");
+const { normalizeFingerprint, checkFingerprintBan } = require("../modules/fingerprintBan");
 const router = express.Router();
 const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
@@ -39,7 +40,7 @@ passport.use(
       try {
         if (profile) {
           if (profile.email) {
-            await authSuccess(req, null, profile.email, profile);
+            await authSuccess(req, null, profile.email, profile, null);
             // Verify that authSuccess actually created a session
             if (req.session.user) {
               done(null, profile);
@@ -95,7 +96,7 @@ router.post("/", async function (req, res) {
     var verified = userData.email_verified;
 
     if (verified) {
-      await authSuccess(req, userData.uid, userData.email);
+      await authSuccess(req, userData.uid, userData.email, null, req.body.fingerprint);
       // Check if authSuccess actually created a session
       if (req.session.user) {
         res.sendStatus(200);
@@ -117,6 +118,10 @@ router.post("/", async function (req, res) {
           banExpires: e.banExpires,
         })
       );
+    } else if (e.banEvasion) {
+      res.status(403);
+      // Deliberately method-agnostic: never tell the client which signal matched.
+      res.send(JSON.stringify({ signupBlocked: true }));
     } else if (e.deleted) {
       res.status(403);
       res.send(
@@ -279,7 +284,7 @@ router.post("/resendVerification", async function (req, res) {
   }
 });
 
-async function authSuccess(req, uid, email, discordProfile) {
+async function authSuccess(req, uid, email, discordProfile, fingerprint) {
   try {
     /* *** Scenarios ***
             - Signed in
@@ -320,6 +325,10 @@ async function authSuccess(req, uid, email, discordProfile) {
       var aliasAccount = await findAliasAccount(email);
       if (aliasAccount) throw { emailAliasInUse: true };
 
+      var fingerprintMatch = normalizeFingerprint(fingerprint);
+      var fingerprintBan = fingerprintMatch ? await checkFingerprintBan(fingerprintMatch) : null;
+      if (fingerprintBan === "block") throw { banEvasion: true };
+
       var emailDomain = email.split("@")[1] || "";
 
       if (allowedEmailDomans.indexOf(emailDomain) == -1) return;
@@ -344,6 +353,7 @@ async function authSuccess(req, uid, email, discordProfile) {
         joined: Date.now(),
         lastActive: Date.now(),
         ip: [ip],
+        fingerprints: fingerprintMatch ? [fingerprintMatch] : [],
         discordId: discordProfile?.id,
         discordUsername: discordProfile?.username,
         discordName: discordProfile?.global_name,
@@ -376,12 +386,17 @@ async function authSuccess(req, uid, email, discordProfile) {
         );
       }
 
+      var fingerprintRestricted = fingerprintBan === "restrict";
+      var suspicious = fingerprintRestricted;
+      var flagReason = fingerprintRestricted ? "Device fingerprint matches a banned user" : null;
       var flaggedSameIP = await models.User.find({
         ip: ip,
         flagged: true,
       }).select("_id");
-      var suspicious = flaggedSameIP.length > 0;
-      var flagReason = suspicious ? "Shared IP with flagged user" : null;
+      if (!suspicious) {
+        suspicious = flaggedSameIP.length > 0;
+        if (suspicious) flagReason = "Shared IP with flagged user";
+      }
 
       if (!suspicious) {
         var flaggedSameEmail = await models.User.find({
@@ -423,6 +438,9 @@ async function authSuccess(req, uid, email, discordProfile) {
         );
         await routeUtils.createNotification(
           {
+            // Deliberately vague: a restricted user is never told which signal matched, even when the
+            // real cause was the device fingerprint. The true reason goes to the staff-only Discord alert
+            // below via flagReason.
             content: `Your IP address has been flagged as suspicious. Please message an admin or moderator in the chat panel to gain full access to the site. A list of moderators can be found by clicking on this message.`,
             icon: "flag",
             link: "/policy/moderation",
@@ -491,6 +509,9 @@ async function authSuccess(req, uid, email, discordProfile) {
       }
 
       await models.User.updateOne({ id: id }, { $addToSet: { ip: ip } });
+      if (fingerprintMatch) {
+        await models.User.updateOne({ id: id }, { $addToSet: { fingerprints: fingerprintMatch } });
+      }
 
       // Link Discord profile if logging in with Discord.
       if (discordProfile && !user.discordId) {

@@ -53,6 +53,10 @@ var schemas = {
     ],
     ip: [{ type: String, index: true }],
     email: [{ type: String, index: true }],
+    // One per (platform, stable, unstable); platform allows future clients their own print format. _id:false lets $addToSet de-duplicate by triple.
+    fingerprints: [
+      { _id: false, platform: { type: String, index: true }, stable: { type: String, index: true }, unstable: { type: String, index: true } },
+    ],
     birthday: String,
     pronouns: {
       type: String,
