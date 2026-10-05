@@ -171,11 +171,6 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
               setLoading(false);
               return;
             }
-            if (data.emailAliasInUse) {
-              snackbarHook.popSnackbar("An account already exists for this email address. Please log in with the original address instead of using a + alias.", "warning");
-              setLoading(false);
-              return;
-            }
           } catch (parseErr) {
             // Not a site-ban error, continue with regular error handling
           }
@@ -247,11 +242,6 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
             }
             if (data.deleted) {
               snackbarHook.popUserDeleted();
-              setLoading(false);
-              return;
-            }
-            if (data.emailAliasInUse) {
-              snackbarHook.popSnackbar("An account already exists for this email address. Please log in with the original address instead of using a + alias.", "warning");
               setLoading(false);
               return;
             }
