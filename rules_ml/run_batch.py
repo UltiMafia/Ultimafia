@@ -38,6 +38,7 @@ def main():
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--batch", type=int, default=4)
     ap.add_argument("--attempts", type=int, default=12)
+    ap.add_argument("--model", default="jev-latest")
     args = ap.parse_args()
 
     key = L.load_api_key()
@@ -67,7 +68,7 @@ def main():
         for attempt in range(args.attempts):
             try:
                 st = L.build_batch_state(items)
-                resp = L.systemone(st, qs, key)
+                resp = L.systemone(st, qs, key, model=args.model)
                 return chunk, resp, None
             except Exception as e:
                 msg = str(e)

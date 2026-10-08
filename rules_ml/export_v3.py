@@ -91,7 +91,9 @@ SANITY = [("Z dumbtell", 0), ("that awkward pause feels like a dumbtell", 0),
           ("good job", 0), ("well played", 0), ("nice one", 0), ("who would like retrained", 0),
           ("vote Bob he is mafia", 0), ("im suing", 1), ("you are a moron", 1),
           ("i can report you and u can get reported for ogi", 1), ("shut the fuck up", 1),
-          ("u gt btw", 1), ("yes link a game so i can report u >:3", 1)]
+          ("u gt btw", 1), ("yes link a game so i can report u >:3", 1),
+          ("you're gamethrowing", 1), ("you are gamethrowing", 1),
+          ("you're throwing this game", 1), ("stop gamethrowing", 1)]
 
 
 def main():
@@ -104,12 +106,17 @@ def main():
     te_rand = isrand[te]
     print("rows=%d positives=%d (%.2f%%)  test=%d" % (len(rows), y.sum(), 100.0 * y.mean(), len(te)))
 
+    # Stopword configs are deliberately EXCLUDED from selection. Dropping
+    # you/your/re/are removes the second-person attack framing, and rare but
+    # decisive tokens fall below min_df: the stopword model scored
+    # "you're gamethrowing" at 0.176 with ZERO features hit, i.e. it never saw
+    # the message. min_df=1 is included so such tokens survive.
     CONFIGS = [
-        ("shipped: min_df=2 C=4", dict(min_df=2), 4.0, False),
-        ("stop+max_df C=1", dict(min_df=2, max_df=0.4, stop_words="english"), 1.0, True),
-        ("stop+max_df C=2", dict(min_df=2, max_df=0.4, stop_words="english"), 2.0, True),
-        ("stop+max_df C=0.5", dict(min_df=2, max_df=0.4, stop_words="english"), 0.5, True),
-        ("stop+max_df.3 C=1", dict(min_df=3, max_df=0.3, stop_words="english"), 1.0, True),
+        ("nsw min_df=2 C=4", dict(min_df=2), 4.0, False),
+        ("nsw min_df=1 C=4", dict(min_df=1), 4.0, False),
+        ("nsw min_df=2 C=1", dict(min_df=2), 1.0, False),
+        ("nsw min_df=1 C=1", dict(min_df=1), 1.0, False),
+        ("nsw min_df=1 C=0.3", dict(min_df=1), 0.3, False),
     ]
     best = None
     for name, kw, C, uses_stop in CONFIGS:

@@ -41,39 +41,30 @@ CATEGORIES = [
      "genocide or systemic oppression.",
      "Bigotry, slurs or group-based disrespect"),
     ("personal_attacks_harassment",
-     "Be respectful. A meaningful insult or attack on another user, regardless of intent or game "
-     "state: attacks on intelligence or ability; targeted deliberate antagonisation; conduct meant to "
-     "intimidate or demean even when 'justified'; continuing conduct already flagged as upsetting "
-     "('stop clause'); impersonation or accounts made to defame/frame.",
-     "Insulting, harassing or demeaning another user"),
-    ("instigation",
-     "Be civil. Intentionally provoking or escalating conflict: trolling (concern/political), "
-     "spamming messages, starting or encouraging a large public argument, disingenuously promoting "
-     "drama or division.",
-     "Trolling, spamming or starting a public argument"),
+     "Be respectful. A DIRECT insult aimed at another PERSON counts, and it counts even in a single "
+     "message - flag it. The test is WHO is attacked, not how mild the wording is.\n"
+     "     VIOLATES: 'you're fucking stupid', 'you are a moron', 'moron', 'idiot', 'YOU'RE DUMB', "
+     "'are you stupid?', 'FUCK U', 'I hate you', 'dumbass', 'you are trash', 'loser', 'stfu' or "
+     "'shut the fuck up' when aimed at a named person ('Cart STFU').\n"
+     "     DOES NOT VIOLATE: insulting a PLAY, a decision or the situation ('that's dumb', 'that was "
+     "so dumb', 'this is stupid', 'ur reads are so trash'); an UNTARGETED 'SHUT UP' asking town to "
+     "quiet down; ordinary banter or swearing at nobody in particular.\n"
+     "     A PATTERN of harassment across several games is a moderator matter, but that is not a "
+     "reason to withhold a flag from a clear direct insult in one message.",
+     "Directly insulting another player (the person, not the play)"),
     ("hazing",
      "Welcome new players. Mistreating someone because they are new: policy-based voting against new "
      "users without merit, falsely accusing new users of rule violations, discouraging growth.",
      "Mistreating players because they are new"),
     ("doxxing",
-     "Respect Privacy. Revealing another user's personal or identifying information without consent: "
-     "real names, locations or addresses, ages.",
-     "Revealing someone's personal information"),
-    ("adult_content",
-     "Keep it PG13. Content inappropriate for under-18s: graphic sexual description, promotion of "
-     "illegal drug use or substance abuse, lewd or sexually explicit language, content meant to shock "
-     "or offend (gore, shock sites), links to pornography, depiction of real violence or assault.",
-     "Sexual, lewd or PG13-breaking content"),
-    ("illegal",
-     "Follow the law. Illegal or potentially illegal activity: unlawful interaction involving a "
-     "minor, CSAM, promotion of terrorism or organised crime, credible threats of real-world violence "
-     "or harm.",
-     "Illegal activity or credible real-world threats"),
-    ("insufficient_participation",
-     "Stay engaged. Failing to participate meaningfully in a ranked/competitive game: diverting to "
-     "unrelated activities, faking AFK, using only gimmicks instead of participating, discussing only "
-     "unrelated topics.",
-     "Not participating, or faking AFK"),
+     "Respect Privacy. Revealing ANOTHER user's personal or identifying information without their "
+     "consent.\n"
+     "     VIOLATES: stating or hinting at where another player lives ('bob lives in ohio'), their "
+     "real name ('bobs real name is michael'), their age ('bob is 14'), their socials, or claiming "
+     "to know these ('i know where you live', 'i know bob's address lol').\n"
+     "     NOT a violation: talking about your OWN location or personal details ('im in LA now'). "
+     "The violation is exposing someone ELSE's private information.",
+     "Revealing another person's private information"),
     ("outside_game_influence",
      "Keep the game within the game (OGI). Do not use tools or processes from OUTSIDE the "
      "ranked/competitive game to gain an advantage.\n"
@@ -123,18 +114,6 @@ CATEGORIES = [
      "Report bugs and exploits. Using or abusing a bug or exploit in a ranked/competitive game, or "
      "hiding one from the admins.",
      "Using or hiding a bug or exploit"),
-    ("cheating",
-     "Do not cheat. Extreme manipulation for unfair advantage. Multi-accounting ('alting') means "
-     "playing in the SAME game with two or more accounts. Also: communicating with participants by "
-     "external means during a game, sharing in-game information (e.g. screenshots) to prove "
-     "alignment, coordinating externally for a particular outcome.\n"
-     "     NOT cheating: saying that an account is your alt, or discussing alts, when that account "
-     "is not playing in the same game.",
-     "Multi-accounting in the same game, or external coordination"),
-    ("abetting",
-     "Abetting. Encouraging or facilitating another user to break the game rules, e.g. urging "
-     "someone to abandon the game ('sue'), spam, or cheat.",
-     "Urging someone else to break a rule"),
 ]
 
 CATEGORY_IDS = [c[0] for c in CATEGORIES]
@@ -174,6 +153,12 @@ def rules_block():
         "- omgus: a standard mafia term for a retaliatory vote.",
         "- policy / PL: voting someone out for a claimed rule violation rather than for reads.",
         "- hip-firing: shooting on no or minimal information (an Antagonisation concern, not OGI).",
+        "- report: on this site 'report' almost always means a COP or other power role's night RESULT",
+        "  ('what's your report?', 'per report', 'report them'). That is ordinary game talk and is NOT",
+        "  a threat. Only a genuine threat to report a player to the moderators - or using that as",
+        "  leverage against them - is an OGI violation.",
+        "- alt: talk about whether an account is someone's alt is almost always in jest and is NOT a",
+        "  violation.",
         "",
         "HOW TO JUDGE",
         "- If the target message breaks none of these categories, it is not a violation.",
@@ -184,7 +169,9 @@ def rules_block():
         "- Ordinary game talk is NOT a violation: accusing someone of being mafia, arguing about",
         "  votes, discussing strategy or strategy guides, banter, sarcasm, or stating an opinion",
         "  about how well someone plays.",
-        "- If a reasonable moderator would not act on the message, do not flag it.",
+        "- This assessment only warns the sender BEFORE they send, and never decides moderation.",
+        "  Prefer catching a likely violation over avoiding a borderline flag: a false alarm costs",
+        "  the sender nothing, a missed violation costs the community.",
         "- EXCLUDED RULE: 'Play to win' / gamethrowing (intentionally acting against your own win",
         "  condition) is deliberately NOT judged, because a player's intentions cannot be inferred",
         "  reliably. Ignore it - except that accusing another player of gamethrowing is itself an",
