@@ -1,13 +1,15 @@
 # Large generated artifacts. All of these are reproducible from the scripts in
 # this directory given mafia.db and EXPERIENTIAL_LABS_API_KEY; they are not
 # committed because they are multi-megabyte machine-generated corpora.
-decisions.jsonl
-decisions_v2.jsonl
-decisions_supp.jsonl
-decisions_all.jsonl
+decisions*.jsonl
 sample.jsonl
 supplement.jsonl
+targeted.jsonl
+gap.jsonl
+praise.jsonl
+game.jsonl
 val_preds.json
+*.swp
 
 __pycache__/
 *.pyc

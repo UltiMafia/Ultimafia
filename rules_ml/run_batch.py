@@ -49,7 +49,7 @@ def main():
     groups = []
     for s in range(0, len(sample), args.batch):
         chunk = list(range(s, min(s + args.batch, len(sample))))
-        if any(i not in done for i in chunk):
+        if any(sample[i].get("idx", i) not in done for i in chunk):
             groups.append(chunk)
     print("total=%d done=%d batches=%d batch=%d workers=%d"
           % (len(sample), len(done), len(groups), args.batch, args.workers), flush=True)
@@ -84,7 +84,7 @@ def main():
 
     def row_for(i, ans, resp):
         r = sample[i]
-        return {"idx": i, "source": r.get("source"), "game_id": r.get("game_id"),
+        return {"idx": r.get("idx", i), "source": r.get("source"), "game_id": r.get("game_id"),
                 "sender": r.get("sender"), "target": r.get("target"),
                 "context": r.get("context"), "state": r.get("state"),
                 "game_type": r.get("game_type"), "ranked": r.get("ranked"),
@@ -105,7 +105,7 @@ def main():
                         fout.write(json.dumps({**{k: r.get(k) for k in
                                                   ("game_id", "sender", "target", "context", "state",
                                                    "game_type", "ranked", "competitive", "source")},
-                                               "idx": i, "error": err[:300]}) + "\n")
+                                               "idx": r.get("idx", i), "error": err[:300]}) + "\n")
                     n_err += len(chunk)
                 else:
                     answers = L.parse_answers(resp, len(chunk))

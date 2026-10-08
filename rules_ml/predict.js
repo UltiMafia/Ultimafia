@@ -14,15 +14,13 @@ const path = require('path');
 
 const WORD_RE = /[\p{L}\p{N}_]{2,}/gu;
 
-function tokWord(text, minN, maxN) {
-  const toks = text.toLowerCase().match(WORD_RE) || [];
+function tokWord(text, minN, maxN, stop) {
+  let toks = text.toLowerCase().match(WORD_RE) || [];
+  if (stop && stop.size) toks = toks.filter((t) => !stop.has(t));
+  if (maxN === 1) return toks;
   const out = [];
-  for (let n = minN; n <= maxN; n++) {
-    if (n === 1) {
-      for (const t of toks) out.push(t);
-    } else {
-      for (let i = 0; i + n <= toks.length; i++) out.push(toks.slice(i, i + n).join(' '));
-    }
+  for (let n = minN; n < Math.min(maxN + 1, toks.length + 1); n++) {
+    for (let i = 0; i + n <= toks.length; i++) out.push(toks.slice(i, i + n).join(' '));
   }
   return out;
 }
@@ -62,9 +60,11 @@ function buildText(target, context, model) {
 function vectorize(text, model) {
   const coef = model.coef;
   const vec = new Float64Array(coef.length);
+  if (!model._stop) model._stop = new Set(model.stop_words || []);
+  const stop = model._stop;
   for (const a of model.analyzers) {
     const toks = a.kind === 'word'
-      ? tokWord(text, a.ngram_range[0], a.ngram_range[1])
+      ? tokWord(text, a.ngram_range[0], a.ngram_range[1], stop)
       : tokCharWb(text, a.ngram_range[0], a.ngram_range[1]);
     const counts = new Map();
     for (const t of toks) counts.set(t, (counts.get(t) || 0) + 1);
