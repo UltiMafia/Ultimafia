@@ -17,6 +17,14 @@ finetune_out/
 finetune_onnx/
 finetune2_out/model.onnx
 finetune2_out/model.safetensors
+finetune_cls_out/model.onnx
+finetune_cls_out/model.safetensors
+finetune_cls2_out/
+finetune_cls3_out/model.onnx
+finetune_cls3_out/model.safetensors
+
+# harness deps
+harness/node_modules/
 
 __pycache__/
 *.pyc

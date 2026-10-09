@@ -34,15 +34,11 @@ def load_api_key(path=ENV_PATH):
 
 # (id, rules-text body, short gloss used as choice criteria)
 CATEGORIES = [
-    ("intolerance",
-     "Be accepting. Bigotry or group-based disrespect: racism, homophobia, transphobia, misogyny, "
-     "religious discrimination, xenophobia, ableism; slurs or derogatory/bigoted language (even "
-     "'reclaimed', or used by a member of the group); bypassing slur filters; denying or minimising "
-     "genocide or systemic oppression.",
-     "Bigotry, slurs or group-based disrespect"),
     ("personal_attacks_harassment",
-     "Be respectful. A DIRECT insult aimed at another PERSON counts, and it counts even in a single "
-     "message - flag it.\n"
+     "Be respectful and accepting. ABUSE: a direct insult aimed at a PERSON, or bigotry aimed at a "
+     "GROUP. Either counts, even in a single message - flag it.\n"
+     "     PERSON-DIRECTED. A DIRECT insult aimed at another PERSON counts, and it counts even in a "
+     "single message - flag it.\n"
      "     THE TEST: find the OBJECT of the insult. A violation requires a PERSON as that object - a "
      "named player, 'you'/'u'/'ur', or a group of players. If the object is a play, a read, a vote, "
      "the situation, the speaker themselves, or nothing at all, it is NOT a violation no matter how "
@@ -60,9 +56,14 @@ CATEGORIES = [
      "       - an UNTARGETED 'SHUT UP' asking town to quiet down, or ordinary banter.\n"
      "     Same vocabulary, different object: 'you're fucking terrible' VIOLATES, 'that vote is fucking "
      "terrible' does NOT; 'you are a moron' VIOLATES, 'that was a moronic play' does NOT.\n"
+     "     GROUP-DIRECTED (same category). Bigotry or group-based disrespect: racism, homophobia, "
+     "transphobia, misogyny, religious discrimination, xenophobia, ableism; slurs or derogatory or "
+     "bigoted language, including 'reclaimed' use or use by a member of the group; bypassing the "
+     "slur filter; denying or minimising genocide or systemic oppression. This is RARE on this site "
+     "because the site filters slurs - do not go looking for it, but classify it here when present.\n"
      "     A PATTERN of harassment across several games is a moderator matter, but that is not a "
      "reason to withhold a flag from a clear direct insult in one message.",
-     "Directly insulting another player (the person, not the play)"),
+     "Abuse: insulting a person, or bigotry aimed at a group"),
     ("hazing",
      "Welcome new players. Mistreating someone because they are new: policy-based voting against new "
      "users without merit, falsely accusing new users of rule violations, discouraging growth.",
@@ -91,6 +92,11 @@ CATEGORIES = [
      "PROVE your meta or read. The problem is the outside evidence itself: it makes the claim into "
      "something the other player cannot deny. Merely asserting meta, without such evidence, is fine.\n"
      "     - Pretending to cheat or to break a rule.\n"
+     "     - Announcing, threatening, or urging a LEAVE ('suing'/'suiciding') from a ranked or "
+     "competitive game for an IN-GAME reason - losing, disliking your role, being wronged, disliking "
+     "how the game is going ('im suing', 'sue me', 'just leave'). Urging another player to do this "
+     "counts too. Classify ALL of these here: actually leaving a game is an ACTION, not a chat "
+     "message, so a message can only ever THREATEN or announce it, and that threat is OGI.\n"
      "     DOES NOT VIOLATE - all of the following are ALLOWED:\n"
      "     - Referring to things from outside the current game in general, including a previous game "
      "you both played in ('after you said something last night').\n"
@@ -103,24 +109,17 @@ CATEGORIES = [
      "influence; the violation is the act of communicating through outside channels during the game "
      "to influence it, not mentioning their content.\n"
      "     - Saying that something is not reportable or arguing about what the rules do or do not "
-     "allow.",
+     "allow.\n"
+     "     - Defending yourself about leaving, or discussing the rule: 'you can't report me for GT', "
+     "'I would never sue'. Leaving for a GENUINE real-life emergency is not a violation either.\n"
+     "     - Saying you have lost motivation, that you will 'stop trying', or that you are playing "
+     "badly. Those are gamethrowing, which is deliberately not judged at all.",
      "Using outside-game info as leverage to win (OGI)"),
     ("antagonization",
      "Keep the game fun. Bad-faith play meant to antagonise: intentionally and repeatedly disrupting "
      "gameplay, bad-faith gameplay such as 'hip-firing' (shooting on no or minimal information), or "
      "communication whose primary intent is to provoke or upset another user.",
      "Bad-faith play intended to antagonise"),
-    ("game_related_abandonment",
-     "Play it out until the end (GRA). Announcing or carrying out LEAVING ('suing'/'suiciding') a "
-     "ranked or competitive game for an IN-GAME reason: losing, disliking your role, being wronged, "
-     "or disliking how the game is going. Urging another player to do this is also a violation "
-     "(abetting).\n"
-     "     NOT a violation: a player defending themselves or discussing the rules - e.g. 'you can't "
-     "report me for GT', 'I would never sue'; nor leaving for a genuine real-life emergency.\n"
-     "     Also NOT abandonment: saying you have lost motivation, that you will 'stop trying', or "
-     "that you are playing badly. Those are gamethrowing, which is not judged here at all. GRA is "
-     "only about actually quitting the game.",
-     "Abandoning the game for in-game reasons (suing)"),
     ("exploits",
      "Report bugs and exploits. Using or abusing a bug or exploit in a ranked/competitive game, or "
      "hiding one from the admins.",
@@ -167,7 +166,7 @@ def rules_block():
         "  stupid?', \"don't say 'you're an idiot'\" contain an insult word but do not insult anyone,",
         "  because the insult is being DENIED, QUESTIONED or QUOTED rather than made.",
         "- Identity words in negation or jest: 'he's not gay lol', 'are u gay or a gamer' are not",
-        "  intolerance. The bar for intolerance is bigotry or group-based disrespect that is actually",
+        "  abuse. The bar for the group-directed part of that category is bigotry or group-based disrespect that is actually",
         "  directed at a group - not every appearance of a word like 'gay' in casual banter.",
         "- hc: 'hard claim' (e.g. 'hc cop' means the speaker claims cop).",
         "- cc: 'counterclaim'. A claim by another player that counters a claim already made - e.g.",
