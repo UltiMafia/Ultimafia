@@ -953,18 +953,18 @@ export default function Settings() {
       type: "boolean",
     },
     {
+      label: "Ignore Custom Name Font",
+      ref: "ignoreNameFonts",
+      type: "boolean",
+      extraInfo:
+        "When enabled, all usernames use the default font. Name colors and animations are unchanged.",
+    },
+    {
       label: "Accessible Name Colors",
       ref: "accessibleNameColors",
       type: "boolean",
       extraInfo:
         "Shows each player's custom name color in a circle beside their name. Names and message text use black or white for readability based on your theme.",
-    },
-    {
-      label: "Disable special name fonts",
-      ref: "ignoreNameFonts",
-      type: "boolean",
-      extraInfo:
-        "When enabled, all usernames use the default font. Name colors and animations are unchanged.",
     },
     {
       label: "Disable Protips",
