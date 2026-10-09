@@ -3569,6 +3569,11 @@ router.post("/name", async function (req, res) {
       return;
     }
 
+    if (routeUtils.isReservedUsername(name)) {
+      errors.conflict(res, "There is already a user with this name.");
+      return;
+    }
+
     var ownedItems = await redis.getUserItemsOwned(userId);
 
     if (ownedItems.nameChange < 1) {

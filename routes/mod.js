@@ -2543,6 +2543,11 @@ router.post("/changeName", async (req, res) => {
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
+    if (routeUtils.isReservedUsername(name)) {
+      errors.conflict(res, "There is already a user with this name.");
+      return;
+    }
+
     // Get current user to record previous name
     const currentUser = await models.User.findOne({
       id: userIdToChange,
