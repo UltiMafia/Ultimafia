@@ -119,4 +119,28 @@ async function getRehostSource(rehostId, userId) {
   return null;
 }
 
-module.exports = { CARRIED_FIELDS, buildRehostBody, getRehostSource };
+/**
+ * The part of a setup the client needs to draw it (name + role icons) in the
+ * rehost invite. Same fields the lobby list sends for a setup.
+ */
+function setupSummary(setup) {
+  if (!setup) return null;
+
+  const pick = ({ id, name, gameType, roles, closed, unique, uniqueWithoutModifier, count, total, useRoleGroups, roleGroupSizes }) => ({
+    id,
+    name,
+    gameType,
+    roles,
+    closed,
+    unique,
+    uniqueWithoutModifier,
+    count,
+    total,
+    useRoleGroups,
+    roleGroupSizes,
+  });
+
+  return pick(typeof setup.toJSON === "function" ? setup.toJSON() : setup);
+}
+
+module.exports = { CARRIED_FIELDS, buildRehostBody, getRehostSource, setupSummary };

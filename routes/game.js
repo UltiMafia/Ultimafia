@@ -957,7 +957,11 @@ router.post("/host", async function (req, res) {
       if (rehostSource) {
         // Invite everyone still in the old game's postgame to the new lobby
         gameLoadBalancer
-          .notifyRehost(rehostId, gameId, { hostId: userId, hostName: user.name })
+          .notifyRehost(rehostId, gameId, {
+            hostId: userId,
+            hostName: user.name,
+            setup: rehost.setupSummary(setup),
+          })
           .catch((e) => logger.error(e));
       }
 

@@ -206,10 +206,14 @@ export default function Game() {
   const [roleRevealData, setRoleRevealData] = useState(null);
   const [hostId, setHostId] = useState(null);
   const [changeSetupDialogOpen, setChangeSetupDialogOpen] = useState(false);
-  // Set when a participant rehosts this finished game: { gameId, hostName }
+  // Set when a participant rehosts this finished game:
+  // { gameId, hostId, hostName, setup }
   const [rehostInvite, setRehostInvite] = useState(null);
+  // How many action lists are showing the invite (see RehostInvite).
+  const [rehostInviteSlots, setRehostInviteSlots] = useState(0);
 
   const playersRef = useRef();
+  const rehostInviteSeenRef = useRef(false);
   const selfRef = useRef();
   const noLeaveRef = useRef();
   const ignoreDeathSoundsRef = useRef(!!user?.settings?.ignoreDeathSounds);
@@ -221,6 +225,8 @@ export default function Game() {
   const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
   const [selectedPanel, setSelectedPanel] = useState("chat");
+  const isPhoneDeviceRef = useRef(false);
+  isPhoneDeviceRef.current = isPhoneDevice;
 
   const isParticipant = !isSpectator && !review;
   const currentStateObject = history.states[history.currentState];
@@ -673,7 +679,13 @@ export default function Game() {
     socket.on("finished", () => setFinished(true));
 
     socket.on("rehosted", (info) => {
-      if (info && info.gameId) setRehostInvite(info);
+      if (!info || !info.gameId) return;
+
+      // On phones the invite lives in the Actions tab; open it the first time.
+      if (!rehostInviteSeenRef.current && isPhoneDeviceRef.current)
+        setSelectedPanel("actions");
+      rehostInviteSeenRef.current = true;
+      setRehostInvite(info);
     });
 
     socket.on("state", (state) => {
@@ -1137,6 +1149,9 @@ export default function Game() {
       stopAudio: stopAudio,
       stopAudios: stopAudios,
       noLeaveRef,
+      rehostInvite: rehostInvite,
+      onJoinRehostClick: onJoinRehostClick,
+      setRehostInviteSlots: setRehostInviteSlots,
       dev: dev,
       hostId: hostId,
       changeSetupDialogOpen: changeSetupDialogOpen,
@@ -1188,13 +1203,7 @@ export default function Game() {
             {gameType === "Chess" && <ChessGame />}
           </Box>
         </Stack>
-        {rehostInvite && !review && (
-          <RehostInvite
-            invite={rehostInvite}
-            onJoin={onJoinRehostClick}
-            onDismiss={() => setRehostInvite(null)}
-          />
-        )}
+        {rehostInviteSlots === 0 && <RehostInvite floating />}
         <UrgencyOverlay hidden={!isUrgent} />
         {!review && history.currentState == -1 && (
           <PushNotificationPrompt socket={socket} />
@@ -1244,8 +1253,78 @@ export default function Game() {
   }
 }
 
-function RehostInvite({ invite, onJoin, onDismiss }) {
-  const by = invite.hostName ? `${invite.hostName} rehosted` : "This game was rehosted";
+/**
+ * "Rehosted: <setup>" button shown to everyone left in the postgame lobby when
+ * someone rehosts. Clicking anywhere on it leaves this game and joins the new
+ * one. It sits under the postgame actions (the kudos vote); game layouts
+ * without a main action list get it pinned to the top of the page instead.
+ */
+function RehostInvite({ floating = false }) {
+  const game = useContext(GameContext);
+  const invite = game.rehostInvite;
+  const setup = (invite && invite.setup) || game.setup;
+  const { setRehostInviteSlots } = game;
+
+  useEffect(() => {
+    if (floating || !setRehostInviteSlots) return;
+
+    setRehostInviteSlots((n) => n + 1);
+    return () => setRehostInviteSlots((n) => n - 1);
+  }, [floating, setRehostInviteSlots]);
+
+  if (!invite || game.review) return null;
+
+  function onClick(e) {
+    // The setup card has its own popovers; the whole invite is one button.
+    e.preventDefault();
+    e.stopPropagation();
+    game.onJoinRehostClick();
+  }
+
+  const button = (
+    <Box
+      role="button"
+      tabIndex={0}
+      data-testid="rehost-invite"
+      aria-label={`Rehosted: ${setup ? setup.name : "new game"}. Join new game`}
+      title={
+        invite.hostName
+          ? `Rehosted by ${invite.hostName}. Click to join.`
+          : "Click to join."
+      }
+      onClickCapture={onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") onClick(e);
+      }}
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 1,
+        p: 1,
+        mt: floating ? 0 : 1,
+        minWidth: 0,
+        cursor: "pointer",
+        border: 2,
+        borderColor: "primary.main",
+        borderRadius: 1,
+        bgcolor: floating ? "background.paper" : undefined,
+        "&:hover, &:focus-visible": { bgcolor: "action.hover", outline: "none" },
+        "& .setup": { pointerEvents: "none" },
+      }}
+    >
+      <Typography
+        variant="subtitle2"
+        sx={{ fontWeight: 700, flexShrink: 0, color: "primary.main" }}
+      >
+        Rehosted:
+      </Typography>
+      <Box sx={{ flex: 1, minWidth: 0 }}>
+        {setup && <Setup setup={setup} disablePopover />}
+      </Box>
+    </Box>
+  );
+
+  if (!floating) return button;
 
   return (
     <Box
@@ -1255,26 +1334,12 @@ function RehostInvite({ invite, onJoin, onDismiss }) {
         left: "50%",
         transform: "translateX(-50%)",
         zIndex: (theme) => theme.zIndex.snackbar,
-        maxWidth: "calc(100vw - 32px)",
+        width: "min(420px, calc(100vw - 32px))",
+        boxShadow: 6,
+        borderRadius: 1,
       }}
     >
-      <Alert
-        severity="info"
-        variant="filled"
-        data-testid="rehost-invite"
-        action={
-          <>
-            <Button color="inherit" variant="outlined" size="small" onClick={onJoin}>
-              Join new game
-            </Button>
-            <IconButton color="inherit" size="small" aria-label="Dismiss" onClick={onDismiss}>
-              <i className="fas fa-times" />
-            </IconButton>
-          </>
-        }
-      >
-        {by} with the same settings.
-      </Alert>
+      {button}
     </Box>
   );
 }
@@ -3915,7 +3980,12 @@ export function ActionList({
       title={
         <UnresolvedActionCount>{title || "Actions"}</UnresolvedActionCount>
       }
-      content={<div className="action-list">{actionElements}</div>}
+      content={
+        <div className="action-list">
+          {actionElements}
+          {!meetingFilter && <RehostInvite />}
+        </div>
+      }
     />
   );
 }

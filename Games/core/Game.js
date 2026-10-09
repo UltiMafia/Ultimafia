@@ -995,10 +995,10 @@ module.exports = class Game {
    * players and spectators, except the person who rehosted it. Kept on the game
    * so a reconnecting client still gets the invite.
    */
-  announceRehost({ gameId, hostId = null, hostName = null } = {}) {
+  announceRehost({ gameId, hostId = null, hostName = null, setup = null } = {}) {
     if (!this.finished || !gameId || gameId === this.id) return false;
 
-    this.rehostInfo = { gameId, hostId, hostName };
+    this.rehostInfo = { gameId, hostId, hostName, setup };
 
     for (let player of this.players) {
       if (player.left || this.isRehoster(player)) continue;

@@ -330,6 +330,7 @@ var deprecated = false;
               gameId: String(data.newGameId),
               hostId: data.hostId ? String(data.hostId) : null,
               hostName: data.hostName ? String(data.hostName) : null,
+              setup: data.setup && typeof data.setup == "object" ? data.setup : null,
             });
           } catch (e) {
             logger.error(e);

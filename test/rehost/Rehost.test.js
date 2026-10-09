@@ -15,6 +15,14 @@ function received(user, eventName) {
 }
 
 describe("Rehost: carry lobby settings over", function () {
+  describe("setupSummary", function () {
+    it("keeps only what the client needs to draw the setup", function () {
+      const summary = rehost.setupSummary({ id: "s", name: "N", gameType: "Mafia", roles: [{ "Villager:": 1 }], closed: false, count: { Village: 1 }, total: 1, creator: "x", hash: "y", _id: "z" });
+      expect(summary).to.deep.equal({ id: "s", name: "N", gameType: "Mafia", roles: [{ "Villager:": 1 }], closed: false, unique: undefined, uniqueWithoutModifier: undefined, count: { Village: 1 }, total: 1, useRoleGroups: undefined, roleGroupSizes: undefined });
+      expect(rehost.setupSummary(null)).to.equal(null);
+    });
+  });
+
   describe("buildRehostBody", function () {
     it("maps every stored lobby setting to the /host body", function () {
       const body = rehost.buildRehostBody({
@@ -201,8 +209,9 @@ describe("Rehost: carry lobby settings over", function () {
       expect(game.announceRehost({ gameId: "newGame", hostId: "host", hostName: "Host" })).to.equal(false); // not finished yet
       game.finished = true;
 
-      expect(game.announceRehost({ gameId: "newGame", hostId: "host", hostName: "Host" })).to.equal(true);
-      expect(received(users.p1, "rehosted")).to.deep.equal([{ gameId: "newGame", hostId: "host", hostName: "Host" }]);
+      const setup = { id: "s1", name: "Some Setup", gameType: "Mafia", roles: [{ "Villager:": 2 }], total: 2 };
+      expect(game.announceRehost({ gameId: "newGame", hostId: "host", hostName: "Host", setup })).to.equal(true);
+      expect(received(users.p1, "rehosted")).to.deep.equal([{ gameId: "newGame", hostId: "host", hostName: "Host", setup }]);
       expect(received(users.p2, "rehosted")).to.have.lengthOf(1);
       expect(received(users.host, "rehosted")).to.have.lengthOf(0);
       expect(received(users.p3, "rehosted")).to.have.lengthOf(0); // already left
@@ -343,7 +352,13 @@ describe("Rehost: carry lobby settings over", function () {
       expect(s.anonymousDeck.map((d) => d.id)).to.deep.equal(["rehost-deck"]);
       expect(s.scheduled).to.not.be.ok;
       await new Promise((r) => setImmediate(r));
-      expect(notified).to.deep.equal([["rehost-old2", "newGame1", { hostId: "rehost-host", hostName: "RehostHost" }]]);
+      expect(notified).to.have.lengthOf(1);
+      const [oldId, newId, info] = notified[0];
+      expect([oldId, newId, info.hostId, info.hostName]).to.deep.equal(["rehost-old2", "newGame1", "rehost-host", "RehostHost"]);
+      // the new game's setup, trimmed to what the client needs to draw it
+      expect(info.setup).to.include({ id: "rehost-setup", name: "R", gameType: "Mafia", total: 3 });
+      expect(info.setup.roles).to.deep.equal([{ "Villager:": 2, "Mafioso:": 1 }]);
+      expect(info.setup).to.not.have.property("creator");
     });
 
     it("someone who wasn't in the game gets the old behaviour (body only, no invite)", async function () {

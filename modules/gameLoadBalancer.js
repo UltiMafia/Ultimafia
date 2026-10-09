@@ -166,7 +166,7 @@ async function cancelGame(userId, gameId) {
 
 // Tell the game server holding `oldGameId` (still in postgame) that it was
 // rehosted, so it can invite the players left in it. Fire-and-forget.
-async function notifyRehost(oldGameId, newGameId, { hostId, hostName } = {}) {
+async function notifyRehost(oldGameId, newGameId, { hostId, hostName, setup } = {}) {
   const port = await redis.getGamePort(oldGameId);
   if (!port || !servers[port]) return false;
 
@@ -176,6 +176,7 @@ async function notifyRehost(oldGameId, newGameId, { hostId, hostName } = {}) {
     newGameId,
     hostId,
     hostName,
+    setup: setup || null,
   });
   return true;
 }
