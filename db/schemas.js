@@ -253,6 +253,8 @@ var schemas = {
     deleted: { type: Boolean, default: false },
     banned: { type: Boolean, default: false },
     flagged: { type: Boolean, default: false },
+    // Login is refused for these users. SetupArchivistBot is the only one.
+    systemAccount: { type: Boolean, default: false },
   }),
   Session: new mongoose.Schema({
     expires: Date,
@@ -312,6 +314,29 @@ var schemas = {
       ranked: { type: Boolean, default: false },
       competitive: { type: Boolean, default: false },
       played: { type: Number, index: true },
+      // Missing or false means the setup is public. Archived setups stay in
+      // the database and keep their _id.
+      archived: { type: Boolean, default: false, index: true },
+      archivedAt: Number,
+      archivedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      archivedReason: {
+        type: String,
+        enum: ["stale", "ownerDeleted", "manual"],
+      },
+      originalCreator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      ownershipHistory: [
+        {
+          from: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+          to: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+          at: Number,
+          by: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+          reason: String,
+        },
+      ],
+      lastPlayedAt: { type: Number, index: true },
       rolePlays: {},
       roleWins: {},
       factionRatings: factionRatings,

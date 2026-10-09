@@ -326,6 +326,11 @@ module.exports = {
   maxPlayers: 50,
   maxSpectators: 100,
   maxOwnedSetups: 500,
+  // Fixed id for the seeded system user that holds archived setups.
+  // migrations/seedSetupArchivistBot.js creates the user with this id.
+  // Longer than a generated shortid so it cannot collide with one.
+  SETUP_ARCHIVIST_BOT_ID: "setup-archivist-bot",
+  SETUP_ARCHIVIST_BOT_NAME: "SetupArchivistBot",
   maxFavSetups: 500,
   maxFavRoles: 100,
   maxOwnedAnonymousDecks: 10,
