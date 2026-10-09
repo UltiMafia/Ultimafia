@@ -130,6 +130,70 @@ describe("Games/SpectateJoin", function () {
     heardBySpec[0].data.content.should.equal("hello from spec");
   });
 
+  it("sends each typing action once to players and spectators", async function () {
+    const Meeting = require("../../Games/core/Meeting");
+    const game = await openGame.call(this, { total: 3 });
+    const host = makeUser(game.hostId, "host");
+    const watcher = makeUser(null, "spec");
+
+    await game.userJoin(host);
+    await game.userJoin(watcher, { spectate: true });
+
+    const player = game.players.array()[0];
+    host.socket.flushMessages();
+    watcher.socket.flushMessages();
+
+    game.pregame.typing(player.id, true);
+
+    const started = events(host.socket, "typing");
+    const startedSpec = events(watcher.socket, "typing");
+    started.should.have.lengthOf(1);
+    startedSpec.should.have.lengthOf(1);
+    started[0].data.should.deep.equal({
+      playerId: player.id,
+      meetingId: game.pregame.id,
+    });
+    startedSpec[0].data.should.deep.equal(started[0].data);
+
+    host.socket.flushMessages();
+    watcher.socket.flushMessages();
+    game.pregame.typing(player.id, false);
+
+    events(host.socket, "typing").should.deep.equal([
+      { eventName: "typing", data: { playerId: player.id, meetingId: null } },
+    ]);
+    events(watcher.socket, "typing").should.deep.equal([
+      { eventName: "typing", data: { playerId: player.id, meetingId: null } },
+    ]);
+
+    // In-game spectators are not Village members. They still get the one
+    // town-visible typing event from the spectator broadcast.
+    host.socket.flushMessages();
+    watcher.socket.flushMessages();
+    Meeting.prototype.typing.call(
+      {
+        id: "village-meet",
+        name: "Village",
+        speech: true,
+        anonymous: false,
+        members: {
+          [player.id]: { player, canTalk: true },
+        },
+        game,
+      },
+      player.id,
+      true
+    );
+
+    events(host.socket, "typing").should.have.lengthOf(1);
+    events(watcher.socket, "typing").should.deep.equal([
+      {
+        eventName: "typing",
+        data: { playerId: player.id, meetingId: "village-meet" },
+      },
+    ]);
+  });
+
   it("does not treat spectate string false as spectate intent", async function () {
     const game = await openGame.call(this);
     const user = makeUser(game.hostId, "host");
