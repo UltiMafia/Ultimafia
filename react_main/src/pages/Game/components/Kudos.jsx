@@ -144,7 +144,6 @@ function Portrait({ player, selected, locked, isSelf, disabled, awarded, onClick
         "&:hover": disabled
           ? {}
           : { backgroundColor: "rgba(255,255,255,0.08)" },
-        "&.Mui-disabled": { pointerEvents: "auto" },
         position: "relative",
       }}
     >
@@ -207,10 +206,19 @@ function Portrait({ player, selected, locked, isSelf, disabled, awarded, onClick
       <Tooltip
         title="You Cannot Kudo Yourself!"
         arrow
+        placement="top"
+        slotProps={{ tooltip: { sx: { fontSize: 13 } } }}
         enterTouchDelay={0}
         leaveTouchDelay={2500}
       >
-        <span>{content}</span>
+        <Box
+          component="span"
+          data-testid="kudos-self"
+          tabIndex={0}
+          sx={{ display: "inline-flex", cursor: "not-allowed" }}
+        >
+          {content}
+        </Box>
       </Tooltip>
     );
   return content;
@@ -382,7 +390,8 @@ export function KudosOverlay() {
         maxHeight: isPhoneDevice ? "calc(100% - 96px)" : "calc(100vh - 180px)",
         display: "flex",
         flexDirection: "column",
-        backgroundColor: "rgba(20, 20, 22, 0.86)",
+        backgroundColor: "rgba(20, 20, 22, 0.88)",
+        backdropFilter: "blur(2px)",
         border: "1px solid",
         borderColor: "primary.main",
         borderRadius: 2,

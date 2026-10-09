@@ -673,8 +673,9 @@ export default function Game() {
 
     socket.on("kudos", (data) => {
       setKudos(data);
-      // Open the kudos overlay once, a moment after the game-over screen.
-      if (!kudosAutoOpenRef.current && data && !data.finalized) {
+      // Open the kudos overlay once for voters, a moment after the
+      // game-over screen.
+      if (!kudosAutoOpenRef.current && data && data.canVote && !data.finalized) {
         kudosAutoOpenRef.current = true;
         const key = `kudosOverlayShown:${gameId}`;
         let shown = false;
@@ -3502,37 +3503,64 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
             </>
           )
         )}
-        <NameWithAvatar
-          id={player.userId}
-          avatarId={avatarId}
-          name={player.name}
-          avatar={player.avatar}
-          dead={className === "dead"}
-          color={resolveDisplayNameColor({
-            accessibleNameColors,
-            ignoreTextColor: user.settings?.ignoreTextColor,
-            rawNameColor: player.nameColor,
-            autoContrastColor: user.autoContrastColor.bind(user),
-            theme,
-          })}
-          nameColorSwatch={
-            accessibleNameColors && player.nameColor
-              ? player.nameColor
-              : undefined
-          }
-          nameFont={player.nameFont}
-          animatedNameColor={player.animatedNameColor}
-          nameGradientColorA={player.nameGradientColorA}
-          nameGradientColorB={player.nameGradientColorB}
-          nameGradientColorC={player.nameGradientColorC}
-          active={activity.speaking[player.id]}
-          noLink={stateViewing >= 0 && game.options.anonymousGame}
-          includeMiniprofile
-          newTab
-        />
-        {(player.kudos || kudosIds.includes(player.id)) && (
-          <KudosIcon size={18} sx={{ ml: 0.5 }} />
-        )}
+        {(() => {
+          const nameWithAvatar = (
+            <NameWithAvatar
+              id={player.userId}
+              avatarId={avatarId}
+              name={player.name}
+              avatar={player.avatar}
+              dead={className === "dead"}
+              color={resolveDisplayNameColor({
+                accessibleNameColors,
+                ignoreTextColor: user.settings?.ignoreTextColor,
+                rawNameColor: player.nameColor,
+                autoContrastColor: user.autoContrastColor.bind(user),
+                theme,
+              })}
+              nameColorSwatch={
+                accessibleNameColors && player.nameColor
+                  ? player.nameColor
+                  : undefined
+              }
+              nameFont={player.nameFont}
+              animatedNameColor={player.animatedNameColor}
+              nameGradientColorA={player.nameGradientColorA}
+              nameGradientColorB={player.nameGradientColorB}
+              nameGradientColorC={player.nameGradientColorC}
+              active={activity.speaking[player.id]}
+              noLink={stateViewing >= 0 && game.options.anonymousGame}
+              includeMiniprofile
+              newTab
+            />
+          );
+          if (!player.kudos && !kudosIds.includes(player.id))
+            return nameWithAvatar;
+          // Kudos badge on the avatar's bottom-right corner.
+          return (
+            <Box
+              sx={{
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                flexGrow: 1,
+                minWidth: 0,
+              }}
+            >
+              {nameWithAvatar}
+              <KudosIcon
+                size={18}
+                sx={{
+                  position: "absolute",
+                  left: 26,
+                  bottom: -2,
+                  borderRadius: "50%",
+                  backgroundColor: "background.paper",
+                }}
+              />
+            </Box>
+          );
+        })()}
         {selTab && showBubbles && visibleTyping[player.id] === selTab && (
           <ReactLoading
             className={`typing-icon ${stateViewing != -1 ? "has-role" : ""}`}
