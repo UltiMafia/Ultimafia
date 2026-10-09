@@ -147,6 +147,21 @@ export function KudosPanel() {
           ? `Kudos (${left} to vote)`
           : "Kudos results"}
       </Button>
+      {kudos.testMode && (
+        <Typography
+          variant="caption"
+          data-testid="kudos-panel-testmode"
+          sx={{
+            display: "block",
+            textAlign: "center",
+            color: "#ffd600",
+            mt: 0.5,
+          }}
+        >
+          <i className="fas fa-flask" style={{ marginRight: 4 }} />
+          Test mode: kudos won't be saved
+        </Typography>
+      )}
       <Box data-testid="kudos-awarded" sx={{ mt: 0.75 }}>
         {awarded.length === 0 ? (
           <Typography
@@ -377,6 +392,18 @@ function KudosTile({
   );
 }
 
+// Width a team group needs to show all its tiles on one line.
+const TILE_W = { desktop: 108, mobile: 92 };
+const TILE_GAP = { desktop: 8, mobile: 6 };
+const GROUP_PAD = 16; // horizontal padding + border of a group card
+// Teams this big always get a line to themselves.
+const BIG_TEAM = 4;
+
+export function kudosGroupWidth(count, mobile) {
+  const k = mobile ? "mobile" : "desktop";
+  return count * TILE_W[k] + Math.max(0, count - 1) * TILE_GAP[k] + GROUP_PAD;
+}
+
 function KudosLineupRow({ row, kudos, phase, readOnly, mobile, onVote }) {
   const game = useContext(GameContext);
   const { players, self, history, gameType, setup } = game;
@@ -409,20 +436,34 @@ function KudosLineupRow({ row, kudos, phase, readOnly, mobile, onVote }) {
       data-row={row.key}
       data-locked={locked ? "1" : "0"}
       data-phase={phase || "open"}
+      data-size={row.candidates.length}
       sx={{
         position: "relative",
+        height: "100%",
+        boxSizing: "border-box",
         px: 1,
         pt: 0.5,
         pb: 0.75,
+        borderRadius: 1.5,
+        border: "1px solid rgba(255,255,255,0.07)",
+        borderTop: `2px solid ${color}55`,
+        backgroundColor: "rgba(255,255,255,0.02)",
+        display: "flex",
+        flexDirection: "column",
         opacity: phase === "fading" ? 0 : 1,
         transition: `opacity ${FADE_MS}ms ease`,
-        "& + &": { borderTop: "1px solid rgba(255,255,255,0.07)" },
       }}
     >
       <Stack
         direction="row"
-        spacing={0.75}
-        sx={{ alignItems: "center", mb: 0.5, minHeight: 18 }}
+        sx={{
+          alignItems: "center",
+          columnGap: 0.75,
+          rowGap: 0.25,
+          flexWrap: "wrap",
+          mb: 0.5,
+          minHeight: 18,
+        }}
       >
         <Box
           sx={{
@@ -447,7 +488,16 @@ function KudosLineupRow({ row, kudos, phase, readOnly, mobile, onVote }) {
           <Typography
             variant="caption"
             data-testid="kudos-row-awarded"
-            sx={{ color: "primary.main", fontWeight: 600 }}
+            sx={{
+              color: "primary.main",
+              fontWeight: 600,
+              lineHeight: 1.3,
+              minWidth: 0,
+              maxWidth: "100%",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
           >
             {awarded
               .map((id) => (players[id] ? players[id].name : "?"))
@@ -470,7 +520,9 @@ function KudosLineupRow({ row, kudos, phase, readOnly, mobile, onVote }) {
       <Box
         data-testid="kudos-lineup"
         sx={{
+          flex: "1 0 auto",
           display: "flex",
+          alignItems: "flex-start",
           gap: mobile ? 0.75 : 1,
           overflowX: "auto",
           overflowY: "hidden",
@@ -510,12 +562,14 @@ function KudosLineupRow({ row, kudos, phase, readOnly, mobile, onVote }) {
         disabled={!canVote}
         aria-pressed={myVote === KUDOS_NO_ONE}
         onClick={() => onVote(row.key, KUDOS_NO_ONE)}
-        startIcon={<i className="fas fa-ban" style={{ fontSize: 12 }} />}
+        startIcon={<i className="fas fa-ban" style={{ fontSize: 11 }} />}
         sx={{
-          mt: 0.5,
+          mt: 0.25,
           py: 0,
-          minHeight: 26,
-          fontSize: 13,
+          minHeight: 22,
+          lineHeight: "20px",
+          fontSize: 12,
+          "& .MuiButton-startIcon": { mr: 0.5 },
           fontWeight: 600,
           textTransform: "none",
           color: myVote === KUDOS_NO_ONE ? "primary.main" : "text.secondary",
@@ -732,24 +786,79 @@ export function KudosDock({ onResize }) {
           <i className="fas fa-chevron-down" style={{ fontSize: 14 }} />
         </IconButton>
       </Stack>
-      <Box sx={{ overflowY: "auto", minHeight: 0 }}>
-        {visibleRows.map((row) => (
-          <Collapse
-            key={row.key}
-            in={readOnly || phases[row.key] !== "fading"}
-            timeout={FADE_MS}
-            appear={false}
+      {kudos.testMode && (
+        <Stack
+          data-testid="kudos-testmode"
+          direction="row"
+          spacing={0.75}
+          sx={{
+            alignItems: "center",
+            mx: 1,
+            mb: 0.5,
+            px: 1,
+            py: 0.25,
+            borderRadius: 1,
+            border: "1px dashed rgba(255,214,0,0.55)",
+            backgroundColor: "rgba(255,214,0,0.08)",
+            color: "#ffd600",
+          }}
+        >
+          <i className="fas fa-flask" style={{ fontSize: 12 }} />
+          <Typography
+            variant="caption"
+            sx={{ fontWeight: 600, lineHeight: 1.4 }}
           >
-            <KudosLineupRow
-              row={row}
-              kudos={kudos}
-              phase={readOnly ? null : phases[row.key]}
-              readOnly={readOnly}
-              mobile={mobile}
-              onVote={onVote}
-            />
-          </Collapse>
-        ))}
+            Test mode: kudos won't be saved (bots in game)
+          </Typography>
+        </Stack>
+      )}
+      <Box
+        data-testid="kudos-groups"
+        sx={{
+          overflowY: "auto",
+          minHeight: 0,
+          px: 1,
+          pb: 1,
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "stretch",
+          gap: 0.75,
+        }}
+      >
+        {visibleRows.map((row) => {
+          const n = row.candidates.length;
+          const natural = kudosGroupWidth(n, mobile);
+          // Big teams take a whole line (and scroll/swipe inside it); small
+          // teams share a line when they fit side by side, and grow to fill it.
+          const flex = n >= BIG_TEAM ? "1 1 100%" : `1 1 ${natural}px`;
+          return (
+            <Collapse
+              key={row.key}
+              in={readOnly || phases[row.key] !== "fading"}
+              timeout={FADE_MS}
+              appear={false}
+              data-testid="kudos-group"
+              data-row={row.key}
+              sx={{
+                flex,
+                minWidth: 0,
+                maxWidth: "100%",
+                "& .MuiCollapse-wrapper, & .MuiCollapse-wrapperInner": {
+                  height: "100%",
+                },
+              }}
+            >
+              <KudosLineupRow
+                row={row}
+                kudos={kudos}
+                phase={readOnly ? null : phases[row.key]}
+                readOnly={readOnly}
+                mobile={mobile}
+                onVote={onVote}
+              />
+            </Collapse>
+          );
+        })}
       </Box>
     </Box>
   );

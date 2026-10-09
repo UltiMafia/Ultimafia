@@ -73,9 +73,24 @@ function guaranteedRowWinners({ counts, noOne }, remaining) {
   });
 }
 
+// Bot test mode: what a bot votes in one row. Most bots back the row's
+// "favorite" (picked once per row so awards actually happen), some pick
+// someone else, some pick No one. Never themselves.
+function pickBotVote(candidates, botId, favorite, rand = Math.random) {
+  const others = candidates.filter((id) => id !== botId);
+  if (others.length === 0) return NO_ONE;
+  const r = rand();
+  if (favorite && favorite !== botId && others.includes(favorite) && r < 0.65)
+    return favorite;
+  if (r < 0.85) return others[Math.floor(rand() * others.length)];
+  return NO_ONE;
+}
+
 class KudosVote {
-  // candidates: [{ id, alignment }]; voters: [playerId]
-  constructor({ candidates, voters }) {
+  // candidates: [{ id, alignment }]; voters: [playerId]. testMode marks a
+  // game with bots in it: everything works, but nothing gets saved.
+  constructor({ candidates, voters, testMode = false }) {
+    this.testMode = !!testMode;
     this.rows = [];
     const byRow = {};
     for (const c of candidates) {
@@ -183,6 +198,7 @@ class KudosVote {
       ),
       canVote: this.canVote(viewerId),
       finalized: this.finalized,
+      testMode: this.testMode,
     };
   }
 }
@@ -196,4 +212,5 @@ module.exports = {
   rowWinners,
   guaranteedRowWinners,
   KudosVote,
+  pickBotVote,
 };

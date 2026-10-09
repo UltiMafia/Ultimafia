@@ -29,7 +29,7 @@ const renamedRoleMapping = require("../../data/renamedRoles");
 const renamedModifierMapping = require("../../data/renamedModifiers");
 const routeUtils = require("../../routes/utils");
 const PostgameMeeting = require("./PostgameMeeting");
-const { KudosVote, isWinLossResult } = require("./Kudos");
+const { KudosVote, isWinLossResult, pickBotVote } = require("./Kudos");
 const dbStats = require("../../db/stats");
 const VegKickMeeting = require("./VegKickMeeting");
 const mongo = require("mongodb");
@@ -3082,8 +3082,23 @@ module.exports = class Game {
   }
 
   isKudosEligible() {
-    return this.ranked || this.competitive;
+    return this.ranked || this.competitive || this.hasDevBots();
     //return true;
+  }
+
+  // Any bot (a dev's "?bot" test player, or a guest) ever seated in this game.
+  // Kudos in such a game are a test run and are never saved.
+  hasBotPlayers() {
+    return this.players.filter((p) => p && p.isBot).length > 0;
+  }
+
+  // Bots added by a dev (the Test button / "?bot"); guests don't count. These
+  // turn kudos on as a test mode in any game that ends in a real win/loss.
+  hasDevBots() {
+    return (
+      this.players.filter((p) => p && p.isBot && p.user && p.user.dev).length >
+      0
+    );
   }
 
   // Opens postgame kudos voting for ranked/competitive games that ended in a
@@ -3112,12 +3127,71 @@ module.exports = class Game {
     }
     if (candidates.length == 0) return;
 
+    // In a bot game (test mode) bots vote too; nothing is saved.
+    const testMode = this.hasBotPlayers();
     const voters = this.players
-      .filter((p) => !p.left && !p.isBot)
+      .filter((p) => !p.left && (testMode || !p.isBot))
       .map((p) => p.id);
 
-    this.kudosVote = new KudosVote({ candidates, voters });
+    this.kudosVote = new KudosVote({ candidates, voters, testMode });
     this.broadcastKudos();
+    if (testMode) this.scheduleBotKudosVotes();
+  }
+
+  // Test mode: each dev bot casts one vote per row after a short random delay
+  // (a bot tab can still vote by hand before then). See pickBotVote.
+  scheduleBotKudosVotes(minDelay = 3000, maxDelay = 12000) {
+    const vote = this.kudosVote;
+    if (!vote || !vote.testMode) return;
+    const favorites = {};
+    for (const row of vote.rows)
+      favorites[row.key] =
+        row.candidates[Math.floor(Math.random() * row.candidates.length)];
+    this.botKudosTimers = this.botKudosTimers || [];
+    for (const player of this.players) {
+      if (player.left || !player.isBot || !player.user || !player.user.dev)
+        continue;
+      if (!vote.voters.has(player.id)) continue;
+      for (const row of vote.rows) {
+        const delay = minDelay + Math.random() * (maxDelay - minDelay);
+        this.botKudosTimers.push(
+          setTimeout(() => {
+            try {
+              if (this.kudosVote !== vote || player.left) return;
+              const mine = vote.ballots[player.id];
+              if (mine && row.key in mine) return; // voted by hand already
+              this.castKudosVote(
+                player,
+                row.key,
+                pickBotVote(row.candidates, player.id, favorites[row.key])
+              );
+            } catch (e) {
+              logger.warn(`bot kudos vote failed for game ${this.id}: ${e.message}`);
+            }
+          }, delay)
+        );
+      }
+    }
+  }
+
+  // Bot kudos timers live outside this.timers so a state change can't cancel
+  // them; they stop with the postgame.
+  clearBotKudosTimers() {
+    if (!this.botKudosTimers) return;
+    this.botKudosTimers.forEach(clearTimeout);
+    this.botKudosTimers = [];
+  }
+
+  // User ids to save as kudos receivers when the postgame closes. Bot games
+  // (test mode) save nothing: no kudosReceivers, no user kudos increments.
+  kudosReceiverUserIds() {
+    if (!this.kudosVote || this.kudosVote.testMode || this.hasBotPlayers())
+      return [];
+    return this.kudosVote
+      .awardedIds()
+      .map((id) => this.players[id])
+      .filter((p) => p && p.user && !p.isBot)
+      .map((p) => p.user.id);
   }
 
   getKudosAlignment(player) {
@@ -4010,6 +4084,7 @@ module.exports = class Game {
     this._endPostgameStarted = true;
     this.postgameOver = true;
     this.clearTimers();
+    this.clearBotKudosTimers();
     this.broadcast("finished");
 
     this._endPostgamePromise = this._doEndPostgame();
@@ -4024,11 +4099,7 @@ module.exports = class Game {
         if (this.kudosVote) {
           try {
             this.evaluateKudos(true);
-            kudosUserIds = this.kudosVote
-              .awardedIds()
-              .map((id) => this.players[id])
-              .filter((p) => p && p.user)
-              .map((p) => p.user.id);
+            kudosUserIds = this.kudosReceiverUserIds();
           } catch (e) {
             logger.warn(
               `endPostgame kudos failed for game ${this.id}: ${e.message}`

@@ -1,10 +1,18 @@
 const chai = require("chai");
 const should = chai.should();
 const Game = require("../../Games/core/Game");
+const ArrayHash = require("../../Games/core/ArrayHash");
 const { NO_ONE } = require("../../Games/core/Kudos");
 
 // Drives the Game kudos methods on a stub game (no sockets / db).
-function stubGame({ ranked = true, groups = ["Village"], winnerIds, meteor } = {}) {
+function stubGame({
+  ranked = true,
+  groups = ["Village"],
+  winnerIds,
+  meteor,
+  bots = [],
+  devBots = true,
+} = {}) {
   const sent = {};
   const alerts = [];
   const mk = (id, alignment) => ({
@@ -26,8 +34,14 @@ function stubGame({ ranked = true, groups = ["Village"], winnerIds, meteor } = {
     mk("t3", "Village"),
     mk("m1", "Mafia"),
   ];
-  const players = list.slice();
-  for (const p of list) players[p.id] = p;
+  for (const p of list)
+    if (bots.includes(p.id)) {
+      p.isBot = true;
+      p.user = { id: `bot-${p.id}`, dev: devBots };
+    }
+  // Same container the real game uses (keyed by id, no array methods).
+  const players = new ArrayHash();
+  for (const p of list) players.push(p);
   const game = Object.create(Game.prototype);
   Object.assign(game, {
     id: "g",
@@ -70,17 +84,17 @@ describe("Game kudos integration", function () {
     s = stubGame();
     s.game.startKudosVote();
     should.exist(s.game.kudosVote);
-    last(s.sent, "t1").rows.map((r) => r.label).should.deep.equal([
-      "Town",
-      "Mafia",
-    ]);
+    last(s.sent, "t1")
+      .rows.map((r) => r.label)
+      .should.deep.equal(["Town", "Mafia"]);
   });
 
   it("rejects self votes with the alert and keeps the row open", function () {
     const { game, sent } = stubGame();
     game.startKudosVote();
     game.castKudosVote(game.players.t1, "Village", "t1");
-    sent.t1.some(([e, m]) => e === "alert" && m === "You Cannot Kudo Yourself!")
+    sent.t1
+      .some(([e, m]) => e === "alert" && m === "You Cannot Kudo Yourself!")
       .should.equal(true);
     last(sent, "t1").myVotes.should.deep.equal({});
   });
@@ -117,5 +131,89 @@ describe("Game kudos integration", function () {
     game.castKudosVote(players.t1, "Village", NO_ONE);
     game.castKudosVote(players.t1, "Village", "t2");
     last(sent, "t1").myVotes.should.deep.equal({ Village: NO_ONE });
+  });
+
+  describe("bot test mode", function () {
+    it("opens kudos in an unranked game with a dev bot, flagged as test mode", function () {
+      const { game, sent } = stubGame({ ranked: false, bots: ["t3"] });
+      game.scheduleBotKudosVotes = () => {};
+      game.startKudosVote();
+      should.exist(game.kudosVote);
+      last(sent, "t1").testMode.should.equal(true);
+      // Bots vote and can be voted for.
+      game.kudosVote.voters.has("t3").should.equal(true);
+      last(sent, "t3").canVote.should.equal(true);
+    });
+
+    it("does not open kudos in an unranked game with only guests", function () {
+      const s = stubGame({ ranked: false, bots: ["t3"], devBots: false });
+      s.game.startKudosVote();
+      should.not.exist(s.game.kudosVote);
+    });
+
+    it("counts bot votes and can award a bot", function () {
+      const { game, alerts, sent, players } = stubGame({ bots: ["t2", "m1"] });
+      game.scheduleBotKudosVotes = () => {};
+      game.startKudosVote();
+      game.castKudosVote(players.m1, "Village", "t2");
+      game.castKudosVote(players.t1, "Village", "t2");
+      game.castKudosVote(players.t3, "Village", "t2");
+      alerts.should.deep.equal(["T2 has received kudos!"]);
+      last(sent, "t1").awarded.Village.should.deep.equal(["t2"]);
+      game.castKudosVote(players.t2, "Mafia", "m1");
+      game.castKudosVote(players.t1, "Mafia", "m1");
+      game.evaluateKudos(true);
+      game.kudosVote.awardedIds().should.deep.equal(["t2", "m1"]);
+    });
+
+    it("persists nothing in a game with any bot", function () {
+      const { game, players } = stubGame({ bots: ["t3"] });
+      game.scheduleBotKudosVotes = () => {};
+      game.startKudosVote();
+      game.castKudosVote(players.t1, "Mafia", "m1");
+      game.castKudosVote(players.t2, "Mafia", "m1");
+      game.castKudosVote(players.t3, "Mafia", "m1");
+      game.evaluateKudos(true);
+      game.kudosVote.awardedIds().should.deep.equal(["m1"]);
+      game.kudosReceiverUserIds().should.deep.equal([]);
+      // Even a bot that left before the end keeps the game a test game.
+      players.t3.left = true;
+      game.kudosReceiverUserIds().should.deep.equal([]);
+    });
+
+    it("persists receivers' user ids in a game without bots", function () {
+      const { game, players } = stubGame();
+      game.startKudosVote();
+      game.castKudosVote(players.t1, "Mafia", "m1");
+      game.castKudosVote(players.t2, "Mafia", "m1");
+      game.castKudosVote(players.t3, "Mafia", "m1");
+      game.evaluateKudos(true);
+      game.kudosVote.testMode.should.equal(false);
+      game.kudosReceiverUserIds().should.deep.equal(["u-m1"]);
+    });
+
+    it("bots auto-vote once per row after a delay, never for themselves", function (done) {
+      const { game, players } = stubGame({ bots: ["t2", "m1"] });
+      game.scheduleBotKudosVotes = Game.prototype.scheduleBotKudosVotes;
+      const realStart = game.scheduleBotKudosVotes;
+      game.scheduleBotKudosVotes = function () {
+        return realStart.call(this, 5, 20);
+      };
+      game.startKudosVote();
+      setTimeout(() => {
+        const ballots = game.kudosVote.ballots;
+        Object.keys(ballots).sort().should.deep.equal(["m1", "t2"]);
+        for (const bot of ["m1", "t2"]) {
+          Object.keys(ballots[bot])
+            .sort()
+            .should.deep.equal(["Mafia", "Village"]);
+          Object.values(ballots[bot]).should.not.include(bot);
+        }
+        should.not.exist(ballots.t1);
+        game.clearBotKudosTimers();
+        game.botKudosTimers.should.deep.equal([]);
+        done();
+      }, 80);
+    });
   });
 });

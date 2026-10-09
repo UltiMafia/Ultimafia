@@ -79,13 +79,19 @@ describe("Kudos", function () {
   describe("early (guaranteed) awards", function () {
     it("waits while remaining votes could still overtake or tie", function () {
       // Bob 2, Al 0, No one 0, 2 voters left: they could put Al or No one on 2.
-      guaranteedRowWinners({ counts: { bob: 2, al: 0 }, noOne: 0 }, 2).should
-        .deep.equal([]);
-      guaranteedRowWinners({ counts: { bob: 3, al: 0 }, noOne: 0 }, 3).should
-        .deep.equal([]); // 3-3 tie still possible
+      guaranteedRowWinners(
+        { counts: { bob: 2, al: 0 }, noOne: 0 },
+        2
+      ).should.deep.equal([]);
+      guaranteedRowWinners(
+        { counts: { bob: 3, al: 0 }, noOne: 0 },
+        3
+      ).should.deep.equal([]); // 3-3 tie still possible
       // 3 vs at most 0 + 2 -> safe.
-      guaranteedRowWinners({ counts: { bob: 3, al: 0 }, noOne: 0 }, 2).should
-        .deep.equal(["bob"]);
+      guaranteedRowWinners(
+        { counts: { bob: 3, al: 0 }, noOne: 0 },
+        2
+      ).should.deep.equal(["bob"]);
     });
 
     it("can't settle a possible tie early, but settles a certain one", function () {
@@ -121,11 +127,15 @@ describe("Kudos", function () {
     it("a tie with No one doesn't block an early award", function () {
       // Bob 3, No one 1, Al 0, 2 left: No one can reach 3 (tie favors Bob),
       // Al can reach 2.
-      guaranteedRowWinners({ counts: { bob: 3, al: 0 }, noOne: 1 }, 2).should
-        .deep.equal(["bob"]);
+      guaranteedRowWinners(
+        { counts: { bob: 3, al: 0 }, noOne: 1 },
+        2
+      ).should.deep.equal(["bob"]);
       // ...but No one overtaking is still possible here.
-      guaranteedRowWinners({ counts: { bob: 3, al: 0 }, noOne: 2 }, 2).should
-        .deep.equal([]);
+      guaranteedRowWinners(
+        { counts: { bob: 3, al: 0 }, noOne: 2 },
+        2
+      ).should.deep.equal([]);
     });
   });
 
@@ -178,7 +188,10 @@ describe("Kudos", function () {
     });
 
     it("lets players vote in every row, including their own alignment", function () {
-      const v = makeVote(["t1", "t2", "m1", "m2"], { m1: "Mafia", m2: "Mafia" });
+      const v = makeVote(["t1", "t2", "m1", "m2"], {
+        m1: "Mafia",
+        m2: "Mafia",
+      });
       should.not.exist(v.castVote("t1", "Village", "t2"));
       should.not.exist(v.castVote("t1", "Mafia", "m1"));
       v.castVote("t1", "Mafia", "t2").should.match(/Invalid/);
@@ -208,12 +221,9 @@ describe("Kudos", function () {
         m1: "Mafia",
         h1: "Hostile",
       });
-      v.rows.map((r) => r.label).should.deep.equal([
-        "Town",
-        "Mafia",
-        "Cult",
-        "Independent",
-      ]);
+      v.rows
+        .map((r) => r.label)
+        .should.deep.equal(["Town", "Mafia", "Cult", "Independent"]);
       v.getRow("Independent").candidates.should.deep.equal(["i1", "h1"]);
     });
 
@@ -228,23 +238,30 @@ describe("Kudos", function () {
       const s = v.stateFor("c");
       s.myVotes.should.deep.equal({});
       JSON.stringify(s).should.not.match(/count|noOne|ballot/i);
-      Object.keys(s).sort().should.deep.equal([
-        "awarded",
-        "canVote",
-        "finalized",
-        "myVotes",
-        "rows",
-      ]);
+      Object.keys(s)
+        .sort()
+        .should.deep.equal([
+          "awarded",
+          "canVote",
+          "finalized",
+          "myVotes",
+          "rows",
+          "testMode",
+        ]);
     });
   });
 
   describe("eligibility", function () {
     it("needs a real win/loss", function () {
-      isWinLossResult({ winnerGroups: ["Village"], winnerPlayerIds: ["a"] })
-        .should.equal(true);
+      isWinLossResult({
+        winnerGroups: ["Village"],
+        winnerPlayerIds: ["a"],
+      }).should.equal(true);
       // stalemate / everyone left
-      isWinLossResult({ winnerGroups: ["No one"], winnerPlayerIds: [] })
-        .should.equal(false);
+      isWinLossResult({
+        winnerGroups: ["No one"],
+        winnerPlayerIds: [],
+      }).should.equal(false);
       // meteor
       isWinLossResult({
         winnerGroups: ["No one"],
@@ -256,6 +273,22 @@ describe("Kudos", function () {
         winnerPlayerIds: ["a"],
         meteor: true,
       }).should.equal(false);
+    });
+  });
+
+  describe("pickBotVote", function () {
+    const { pickBotVote } = require("../../Games/core/Kudos");
+    it("never picks the bot itself and falls back to No one", function () {
+      for (let i = 0; i < 200; i++)
+        pickBotVote(["a", "b", "c"], "a", "a").should.not.equal("a");
+      pickBotVote(["a"], "a", "a").should.equal(NO_ONE);
+    });
+    it("backs the favorite, picks others, or No one", function () {
+      pickBotVote(["a", "b", "c"], "a", "b", () => 0.1).should.equal("b");
+      pickBotVote(["a", "b", "c"], "a", "b", () => 0.9).should.equal(NO_ONE);
+      ["b", "c"].should.include(
+        pickBotVote(["a", "b", "c"], "a", "b", () => 0.7)
+      );
     });
   });
 });
