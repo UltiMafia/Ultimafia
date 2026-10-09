@@ -1258,9 +1258,9 @@ export default function Game() {
 }
 
 /**
- * Shown to everyone left in the postgame lobby when someone rehosts: a
- * "Rehosted:" card with the new game's setup, and a "Leave & Join New Game"
- * button under it that leaves this game and joins the new one.
+ * Shown to everyone left in the postgame lobby when someone rehosts: the new
+ * game's setup card, and a "Leave & Join New Game" button under it that leaves
+ * this game and joins the new one.
  *
  * It is rendered inline in exactly one place per layout. Candidates register
  * with a priority and the best one wins:
@@ -1303,17 +1303,11 @@ function RehostInvite({ priority = 0 }) {
       data-testid="rehost-invite"
       sx={{ p: 1, mt: 1, minWidth: 0, border: 2, borderColor: "primary.main", borderRadius: 1 }}
     >
-      <Stack direction="row" sx={{ alignItems: "center", gap: 1, minWidth: 0 }}>
-        <Typography
-          variant="subtitle2"
-          sx={{ fontWeight: 700, flexShrink: 0, color: "primary.main" }}
-        >
-          Rehosted:
-        </Typography>
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          {setup && <Setup setup={setup} />}
+      {setup && (
+        <Box sx={{ minWidth: 0 }}>
+          <Setup setup={setup} />
         </Box>
-      </Stack>
+      )}
       <Button
         variant="contained"
         color="primary"
