@@ -516,13 +516,10 @@ function useUnreadNotifications() {
 
   function getNotifs() {
     axios
-      .get("/api/notifs")
+      .get("/api/notifs/unreadCount")
       .then((res) => {
-        var nextRestart = res.data[0];
-        var notifs = res.data.slice(1);
-
-        setNextRestart(nextRestart);
-        setUnreadCount(notifs.length);
+        setNextRestart(res.data.nextRestart);
+        setUnreadCount(res.data.count);
       })
       .catch(() => {});
   }
