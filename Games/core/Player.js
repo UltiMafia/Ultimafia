@@ -216,6 +216,7 @@ module.exports = class Player {
 
         // Same content twice in a row is OK; third consecutive identical paste is blocked.
         if (
+          this.game.started &&
           Spam.isRepeatedContentSpam(
             speechPast,
             message.content,
@@ -233,6 +234,7 @@ module.exports = class Player {
         // Near-duplicates (same paste block with small edits) only when sending
         // quickly, or still in the window after a recent content-spam block.
         if (
+          this.game.started &&
           Spam.shouldCheckSimilarContent(
             speechPast,
             lastSpeakContentBlockAt,
