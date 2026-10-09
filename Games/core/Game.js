@@ -7,6 +7,9 @@ const Queue = require("./Queue");
 const PregameMeeting = require("./PregameMeeting");
 const SpectatorMeeting = require("./SpectatorMeeting");
 const Timer = require("./Timer");
+const {
+  readyCheckFields,
+} = require("../../react_main/src/utils/timerSyncMath");
 const Random = require("../../lib/Random");
 const Utils = require("./Utils");
 const ArrayHash = require("./ArrayHash");
@@ -1016,14 +1019,11 @@ module.exports = class Game {
     if (player.user.dev && !player.isBot) player.send("dev");
 
     if (this.isReadyCheckActive) {
-        player.send("readyCheck init", {
-            endTime: Date.now() + this.getTimeLeft("pregameCountdown"),
-            readyPlayers: Object.keys(this.readyPlayers)
-        });
+      const endTime = Date.now() + this.getTimeLeft("pregameCountdown");
+      player.send("readyCheck init", this.readyCheckInitPayload(endTime));
     }
 
-    this.sendTimersToPlayer(player);
-    this.syncPlayerTimers(player);
+    this.resendTimers(player);
   }
 
   sendPlayerJoin(newPlayer) {
@@ -1089,6 +1089,14 @@ module.exports = class Game {
     }
   }
 
+  readyCheckInitPayload(endTime) {
+    return readyCheckFields(
+      endTime,
+      Date.now(),
+      Object.keys(this.readyPlayers || {})
+    );
+  }
+
   startReadyCheck() {
     this.isReadyCheckActive = true;
     this.readyPlayers = {};
@@ -1098,10 +1106,8 @@ module.exports = class Game {
       body: "Ready up now or you will be kicked for inactivity.",
     });
 
-    this.broadcast("readyCheck init", {
-        endTime: Date.now() + this.readyCountdownLength,
-        readyPlayers: []
-    });
+    const endTime = Date.now() + this.readyCountdownLength;
+    this.broadcast("readyCheck init", this.readyCheckInitPayload(endTime));
 
     this.createTimer("pregameCountdown", this.readyCountdownLength, () =>
       this.failReadyCheck()
@@ -2520,6 +2526,13 @@ module.exports = class Game {
   syncPlayerTimers(player) {
     for (let timerName in this.timers)
       this.timers[timerName].syncClient(player);
+  }
+
+  // timerInfo first, then relative time. Reconnect (sendAllGameInfo) and
+  // getTimerInfo both use this so a client never has to render from time alone.
+  resendTimers(player) {
+    this.sendTimersToPlayer(player);
+    this.syncPlayerTimers(player);
   }
 
   sendTimersToPlayer(player) {

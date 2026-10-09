@@ -900,7 +900,12 @@ export default function Game() {
     socket.on("readyCheck init", (data) => {
       const readyMap = {};
       if (data.readyPlayers) data.readyPlayers.forEach((id) => (readyMap[id] = true));
-      setReadyCheckInfo({ active: true, readyPlayers: readyMap, endTime: data.endTime });
+      setReadyCheckInfo({
+        active: true,
+        readyPlayers: readyMap,
+        endTime: data.endTime,
+        timeLeft: data.timeLeft,
+      });
       playAudio("urgent");
       setPingInfo({
         msg: `⚠ Ready Check!`,
@@ -1175,6 +1180,7 @@ export default function Game() {
         <ReadyCheckDialog
           open={readyCheckInfo.active && !readyCheckInfo.readyPlayers[self]}
           endTime={readyCheckInfo.endTime}
+          timeLeft={readyCheckInfo.timeLeft}
           onReady={onReadyCheckVerify}
           onLeave={leaveGame}
         />
