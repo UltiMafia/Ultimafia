@@ -12,7 +12,7 @@ const http = require('http');
 const fs = require('fs');
 
 const JSON_PATH = process.env.GAME_VIEW ||
-  '//wsl.localhost/Ubuntu/home/tt/Documents/Ultimafia/rules_ml/game_view.json';
+  '//wsl.localhost/Ubuntu/home/tt/Documents/Ultimafia/rules_ml/game_views.json';
 const PORT = Number(process.env.PORT || 8901);
 
 const PAGE = `<!DOCTYPE html>
@@ -44,6 +44,9 @@ input[type=range]{width:260px;vertical-align:middle}
 <div class="top"><div class="wrap" style="padding-bottom:0">
   <h1 id="title">loading…</h1>
   <div class="sub" id="meta"></div>
+  <div class="ctl">
+    <label>game <select id="game" style="max-width:520px;font:13px system-ui"></select></label>
+  </div>
   <div class="ctl">
     <label>flag at p &ge; <span class="big" id="thv">0.50</span></label>
     <input type="range" id="th" min="0.05" max="0.95" step="0.05" value="0.50">
@@ -88,17 +91,28 @@ function render(){
   }
 }
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function selectGame(g){
+  DATA=g;
+  $('title').textContent='game '+g.game_id+'  ('+g.game_type+(g.ranked?', ranked':'')+')';
+  $('meta').textContent=g.player_count+' players · '+g.message_count+' messages · '
+    +g.labelled_violations+' of its messages are labelled violations in the corpus';
+  $('ntot').textContent=g.message_count;
+  render();
+}
 fetch('/data').then(function(r){return r.json();}).then(function(j){
   if(j.error){ $('title').textContent='error: '+j.error; return; }
-  DATA=j;
-  $('title').textContent='game '+j.game_id+'  ('+j.game_type+(j.ranked?', ranked':'')+')';
-  $('meta').textContent=j.player_count+' players · '+j.message_count+' messages';
-  $('ntot').textContent=j.message_count;
+  var games=j.games||[];
+  if(!games.length){ $('title').textContent='no games in the view file'; return; }
+  $('game').innerHTML=games.map(function(g,i){
+    return '<option value="'+i+'">'+g.game_id+' — '+g.game_type+', '+g.message_count
+      +' msgs, '+g.labelled_violations+' labelled vio</option>';
+  }).join('');
+  $('game').onchange=function(){ selectGame(games[Number(this.value)]); };
   var h=[]; for(var i=0;i<20;i++) h.push('<i></i>');
   $('hist').innerHTML=h.join('');
   $('th').addEventListener('input',function(){ TH=Number(this.value); $('thv').textContent=TH.toFixed(2); render(); });
   $('onlyflag').addEventListener('change',render);
-  render();
+  selectGame(games[0]);
 });
 </script></body></html>`;
 

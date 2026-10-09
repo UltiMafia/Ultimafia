@@ -131,15 +131,17 @@ eval_server.js  :8900   the hand-check reviewer
 verified to match HuggingFace to 4 decimal places — a silent mismatch there would corrupt
 every number downstream.
 
-**`gameview.js`** renders one full game with flags marked and a threshold slider, for tuning
-sensitivity. It scores with the **int8 model**, deliberately: it reads
-`game_view.json`, produced by
+**`gameview.js`** renders a whole game with flags marked and a threshold slider, for tuning
+sensitivity, with a dropdown to switch between several pre-scored games. It scores with the
+**int8 model**, deliberately: it reads `game_views.json`, produced by
 
 ```
-score_game.py <game_id>   -> game_view.json
+score_games.py                     -> game_views.json    (a spread: the most toxic games
+                                                          that stay readable, plus clean ones)
+score_games.py <id> <id> ...       -> game_views.json    (specific games instead)
 ```
 
-Game ids come straight from `games.id`; run it for a different game and reload.
+Game ids come straight from `games.id`. Re-run it after adding games and reload the page.
 
 ## 6. Evaluation
 

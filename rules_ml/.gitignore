@@ -6,7 +6,7 @@
 !eval_set.jsonl
 
 # generated viewer payload
-game_view.json
+game_view*.json
 
 # Model intermediates. The runnable artifact (finetune_cls3_out/model.int8.onnx,
 # 23 MB) IS committed; these are the 91 MB fp32 files it is quantised from.
