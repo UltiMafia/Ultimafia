@@ -112,108 +112,39 @@ export function KudosIcon({ size = 16, title = "Received kudos", sx }) {
   );
 }
 
-// Toggle button + awarded names, shown at the top of the Actions panel in
-// postgame. Replaces the old "Vote to give kudos" meeting.
+// "Kudos Awarded:" list at the top of the (main) Actions panel. Renders
+// nothing until at least one kudo is awarded (live guaranteed or final).
 export function KudosPanel() {
   const game = useContext(GameContext);
-  const { kudos, kudosOpen, setKudosOpen, players } = game;
-  if (!kudos) return null;
-
+  const { kudos, players } = game;
   const awarded = kudosAwardedIds(kudos);
-  const left = kudosRowsLeftToVote(kudos);
+  if (awarded.length === 0) return null;
 
   return (
     <Box
       data-testid="kudos-panel"
       sx={{ px: 1, pt: 1, pb: 0.5, width: "100%", boxSizing: "border-box" }}
     >
-      <Button
-        data-testid="kudos-toggle"
-        fullWidth
-        variant={kudosOpen ? "outlined" : "contained"}
-        aria-pressed={!!kudosOpen}
-        onClick={() => setKudosOpen(!kudosOpen)}
-        startIcon={
-          <Box component="img" src={KUDOS_ICON} alt="" sx={{ width: 20 }} />
-        }
-        endIcon={
-          <i className={`fas fa-chevron-${kudosOpen ? "up" : "down"}`} />
-        }
-        sx={{ fontWeight: 700 }}
+      <Typography
+        data-testid="kudos-awarded-title"
+        sx={{ fontWeight: 700, fontSize: 14, mb: 0.5 }}
       >
-        {kudosOpen
-          ? "Hide kudos"
-          : left > 0
-          ? `Kudos (${left} to vote)`
-          : "Kudos results"}
-      </Button>
-      {kudos.testMode && (
-        <Typography
-          variant="caption"
-          data-testid="kudos-panel-testmode"
-          sx={{
-            display: "block",
-            textAlign: "center",
-            color: "#ffd600",
-            mt: 0.5,
-          }}
-        >
-          <i className="fas fa-flask" style={{ marginRight: 4 }} />
-          Test mode: kudos and coins won't be saved
-        </Typography>
-      )}
-      {kudos.canVote && !kudos.finalized && (
-        <Typography
-          variant="caption"
-          data-testid="kudos-help"
-          sx={{
-            display: "block",
-            textAlign: "center",
-            color: "text.secondary",
-            mt: 0.5,
-          }}
-        >
-          Earn a coin for each row you vote in that gives someone kudos. Leaving
-          counts as No one in rows you haven't voted in.
-        </Typography>
-      )}
-      <Box data-testid="kudos-awarded" sx={{ mt: 0.75 }}>
-        {awarded.length === 0 ? (
-          <Typography
-            variant="caption"
-            sx={{
-              color: "text.secondary",
-              display: "block",
-              textAlign: "center",
-            }}
+        Kudos Awarded:
+      </Typography>
+      <Stack data-testid="kudos-awarded" spacing={0.25}>
+        {awarded.map((id) => (
+          <Stack
+            key={id}
+            direction="row"
+            spacing={0.75}
+            data-testid="kudos-awarded-name"
+            sx={{ alignItems: "center", minWidth: 0 }}
           >
-            {kudos.finalized
-              ? "No kudos were awarded."
-              : "No kudos awarded yet."}
-          </Typography>
-        ) : (
-          <Stack spacing={0.25}>
-            {awarded.map((id) => (
-              <Stack
-                key={id}
-                direction="row"
-                spacing={0.75}
-                data-testid="kudos-awarded-name"
-                sx={{ alignItems: "center", minWidth: 0 }}
-              >
-                <KudosIcon size={16} title="Kudos" />
-                <KudosPlayer player={players[id]} small noLink={false} />
-                <Typography
-                  variant="caption"
-                  sx={{ color: "text.secondary", flexShrink: 0 }}
-                >
-                  received kudos
-                </Typography>
-              </Stack>
-            ))}
+            <KudosIcon size={16} title="Kudos" />
+            <KudosPlayer player={players[id]} small noLink={false} />
           </Stack>
-        )}
-      </Box>
+        ))}
+      </Stack>
     </Box>
   );
 }
@@ -419,12 +350,12 @@ export function kudosGroupWidth(count, mobile) {
   return count * TILE_W[k] + Math.max(0, count - 1) * TILE_GAP[k] + GROUP_PAD;
 }
 
-function KudosLineupRow({ row, kudos, phase, readOnly, mobile, onVote }) {
+function KudosLineupRow({ row, kudos, phase, mobile, onVote }) {
   const game = useContext(GameContext);
   const { players, self, history, gameType, setup } = game;
   const myVote = kudos.myVotes ? kudos.myVotes[row.key] : undefined;
   const locked = myVote !== undefined;
-  const canVote = !readOnly && kudos.canVote && !kudos.finalized && !locked;
+  const canVote = kudos.canVote && !kudos.finalized && !locked;
   const awarded = (kudos.awarded && kudos.awarded[row.key]) || [];
   const color = ROW_COLORS[row.key] || "#d3d3d3";
   const roles =
@@ -442,8 +373,6 @@ function KudosLineupRow({ row, kudos, phase, readOnly, mobile, onVote }) {
         {phase === "confirm" ? "Kudos locked in" : "Voted"}
       </>
     );
-  else if (readOnly)
-    status = kudos.canVote && !kudos.finalized ? "Not voted" : null;
 
   return (
     <Box
@@ -627,11 +556,12 @@ function KudosLineupRow({ row, kudos, phase, readOnly, mobile, onVote }) {
 
 // Kudos voting docked in the chat column, between the messages and the chat
 // input. One lineup per team; a row locks, confirms and fades away once you
-// vote in it, and the dock goes away when every row is voted. Reopened from
-// the Actions panel it shows a read-only view of the results.
+// vote in it, and the dock goes away when every row is voted (or voting
+// ends). The chevron minimizes/expands it in place. Results live in the
+// Actions panel's "Kudos Awarded:" list.
 export function KudosDock({ onResize }) {
   const game = useContext(GameContext);
-  const { kudos, kudosOpen, setKudosOpen, socket } = game;
+  const { kudos, socket } = game;
   const mobile = useMobileKudos();
   const boxRef = useRef(null);
   const onResizeRef = useRef(onResize);
@@ -639,9 +569,14 @@ export function KudosDock({ onResize }) {
   const [phases, setPhases] = useState({}); // row -> confirm | fading | gone
   const seenRef = useRef(null);
   const timersRef = useRef([]);
-  const finishedRef = useRef(false);
+  const [collapsed, setCollapsed] = useState(false);
 
-  const open = !!(kudos && kudosOpen);
+  const rows = (kudos && kudos.rows) || [];
+  const voting = !!kudos && kudos.canVote && !kudos.finalized;
+  const allGone =
+    rows.length > 0 && rows.every((r) => phases[r.key] === "gone");
+  const visible = voting && rows.length > 0 && !allGone;
+  const open = visible && !collapsed;
   // The chat column grows with its content, so size the dock from the space
   // the column has without it: measure with the dock collapsed, then cap it so
   // the chat keeps at least MIN_CHAT px (rows scroll inside the dock).
@@ -696,28 +631,15 @@ export function KudosDock({ onResize }) {
           () => setPhases((p) => ({ ...p, [key]: "fading" })),
           CONFIRM_MS
         ),
-        setTimeout(() => {
-          finishedRef.current = true;
-          setPhases((p) => ({ ...p, [key]: "gone" }));
-        }, CONFIRM_MS + FADE_MS)
+        setTimeout(
+          () => setPhases((p) => ({ ...p, [key]: "gone" })),
+          CONFIRM_MS + FADE_MS
+        )
       );
     }
   }, [kudos && voteKey]);
 
   useEffect(() => () => timersRef.current.forEach(clearTimeout), []);
-
-  const rows = (kudos && kudos.rows) || [];
-  const voting = !!kudos && kudos.canVote && !kudos.finalized;
-  const allGone = rows.every((r) => phases[r.key] === "gone");
-  const readOnly = !voting || allGone;
-
-  // The last row just faded out: put the dock away.
-  useEffect(() => {
-    if (finishedRef.current && allGone) {
-      finishedRef.current = false;
-      setKudosOpen(false);
-    }
-  }, [allGone]);
 
   useEffect(() => {
     const el = boxRef.current;
@@ -729,28 +651,26 @@ export function KudosDock({ onResize }) {
     return () => ro.disconnect();
   });
 
-  if (!kudos || !kudosOpen || rows.length === 0) return null;
+  if (!visible) return null;
 
   function onVote(rowKey, target) {
     if (!socket || !socket.send) return;
     socket.send("kudosVote", { row: rowKey, target });
   }
 
-  const visibleRows = readOnly
-    ? rows
-    : rows.filter((r) => phases[r.key] !== "gone");
-  const left = kudosRowsLeftToVote(kudos);
+  const visibleRows = rows.filter((r) => phases[r.key] !== "gone");
 
   return (
     <Box
       ref={boxRef}
       data-testid="kudos-dock"
-      data-mode={readOnly ? "results" : "voting"}
+      data-mode="voting"
+      data-collapsed={collapsed ? "1" : "0"}
       role="region"
       aria-label="Kudos"
       sx={{
         flex: "0 0 auto",
-        maxHeight: measuring || maxH == null ? 0 : maxH,
+        maxHeight: collapsed ? "none" : measuring || maxH == null ? 0 : maxH,
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
@@ -765,43 +685,38 @@ export function KudosDock({ onResize }) {
       <Stack
         direction="row"
         spacing={1}
-        sx={{ alignItems: "center", px: 1.25, pt: 0.75, pb: 0.25 }}
+        data-testid="kudos-dock-header"
+        onClick={() => collapsed && setCollapsed(false)}
+        sx={{
+          alignItems: "center",
+          px: 1.25,
+          pt: 0.75,
+          pb: collapsed ? 0.75 : 0.25,
+          cursor: collapsed ? "pointer" : "default",
+        }}
       >
         <Box component="img" src={KUDOS_ICON} alt="" sx={{ width: 20 }} />
         <Typography sx={{ fontWeight: 700, fontSize: 15 }}>
-          {readOnly ? "Kudos results" : "Give Kudos"}
-        </Typography>
-        <Typography
-          variant="caption"
-          sx={{
-            color: "text.secondary",
-            minWidth: 0,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {readOnly
-            ? kudos.finalized
-              ? "Voting is over."
-              : kudos.canVote
-              ? "Your votes are in."
-              : "Only players in this game can vote."
-            : mobile
-            ? "Tap an avatar. Votes are secret."
-            : `Click an avatar to give kudos. Votes are secret and lock in. ${left} to go.`}
+          Give Kudos
         </Typography>
         <IconButton
-          data-testid="kudos-close"
-          aria-label="Hide kudos"
+          data-testid="kudos-collapse"
+          aria-label={collapsed ? "Expand kudos" : "Minimize kudos"}
+          aria-expanded={!collapsed}
           size="small"
-          onClick={() => setKudosOpen(false)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setCollapsed(!collapsed);
+          }}
           sx={{ ml: "auto !important", color: "text.secondary" }}
         >
-          <i className="fas fa-chevron-down" style={{ fontSize: 14 }} />
+          <i
+            className={`fas fa-chevron-${collapsed ? "up" : "down"}`}
+            style={{ fontSize: 14 }}
+          />
         </IconButton>
       </Stack>
-      {kudos.testMode && (
+      {!collapsed && kudos.testMode && (
         <Stack
           data-testid="kudos-testmode"
           direction="row"
@@ -823,7 +738,7 @@ export function KudosDock({ onResize }) {
             variant="caption"
             sx={{ fontWeight: 600, lineHeight: 1.4 }}
           >
-            Test mode: kudos and coins won't be saved (bots in game)
+            Test mode: kudos won't be saved
           </Typography>
         </Stack>
       )}
@@ -834,7 +749,7 @@ export function KudosDock({ onResize }) {
           minHeight: 0,
           px: 1,
           pb: 1,
-          display: "flex",
+          display: collapsed ? "none" : "flex",
           flexWrap: "wrap",
           alignItems: "stretch",
           gap: 0.75,
@@ -849,7 +764,7 @@ export function KudosDock({ onResize }) {
           return (
             <Collapse
               key={row.key}
-              in={readOnly || phases[row.key] !== "fading"}
+              in={phases[row.key] !== "fading"}
               timeout={FADE_MS}
               appear={false}
               data-testid="kudos-group"
@@ -866,8 +781,7 @@ export function KudosDock({ onResize }) {
               <KudosLineupRow
                 row={row}
                 kudos={kudos}
-                phase={readOnly ? null : phases[row.key]}
-                readOnly={readOnly}
+                phase={phases[row.key]}
                 mobile={mobile}
                 onVote={onVote}
               />

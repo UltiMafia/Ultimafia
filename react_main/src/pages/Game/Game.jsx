@@ -128,7 +128,6 @@ import {
   KudosPanel,
   KudosIcon,
   kudosAwardedIds,
-  kudosRowsLeftToVote,
 } from "./components/Kudos";
 
 const emoteMap = {
@@ -215,8 +214,6 @@ export default function Game() {
   const [hostId, setHostId] = useState(null);
   const [changeSetupDialogOpen, setChangeSetupDialogOpen] = useState(false);
   const [kudos, setKudos] = useState(null);
-  const [kudosOpen, setKudosOpen] = useState(false);
-  const kudosAutoOpenRef = useRef(false);
 
   const playersRef = useRef();
   const selfRef = useRef();
@@ -237,7 +234,7 @@ export default function Game() {
     currentStateObject ? currentStateObject.meetings : {}
   ).filter(
     (meeting) => !meeting.playerHasVoted && meeting.voting && meeting.canVote
-  ).length + (kudosRowsLeftToVote(kudos) > 0 ? 1 : 0);
+  ).length;
 
   const [readyCheckInfo, setReadyCheckInfo] = useState({
     active: false,
@@ -672,21 +669,7 @@ export default function Game() {
 
     socket.on("finished", () => setFinished(true));
 
-    socket.on("kudos", (data) => {
-      setKudos(data);
-      // Open the kudos overlay once for voters, a moment after the
-      // game-over screen.
-      if (!kudosAutoOpenRef.current && data && data.canVote && !data.finalized) {
-        kudosAutoOpenRef.current = true;
-        const key = `kudosOverlayShown:${gameId}`;
-        let shown = false;
-        try {
-          shown = !!window.sessionStorage.getItem(key);
-          window.sessionStorage.setItem(key, "1");
-        } catch (e) {}
-        if (!shown) setTimeout(() => setKudosOpen(true), 250);
-      }
-    });
+    socket.on("kudos", (data) => setKudos(data));
 
     socket.on("state", (state) => {
       updateHistory({ type: "addState", state: state });
@@ -1157,8 +1140,6 @@ export default function Game() {
       setSpectators: setSpectators,
       readyCheckInfo: readyCheckInfo,
       kudos: review ? null : kudos,
-      kudosOpen: kudosOpen,
-      setKudosOpen: setKudosOpen,
     };
 
     const isUrgent = voteKickUrgency || (readyCheckInfo.active && !readyCheckInfo.readyPlayers[self]);
@@ -3867,8 +3848,9 @@ export function ActionList({
     }
   }
 
-  // Postgame kudos toggle lives at the top of the (main) Actions panel.
-  const showKudos = !bare && !!game.kudos;
+  // "Kudos Awarded:" list at the top of the (main) Actions panel, shown only
+  // once someone has been awarded kudos.
+  const showKudos = !bare && kudosAwardedIds(game.kudos).length > 0;
 
   if (
     hideIfEmpty &&
