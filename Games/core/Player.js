@@ -179,6 +179,14 @@ module.exports = class Player {
         }
     });
 
+    socket.on("getTimerInfo", () => {
+      try {
+        this.game.resendTimers(this);
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
     socket.on("speak", (message) => {
       try {
         if (typeof message != "object") return;

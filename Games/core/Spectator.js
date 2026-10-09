@@ -32,6 +32,14 @@ module.exports = class Spectator extends Player {
       }
     });
 
+    socket.on("getTimerInfo", () => {
+      try {
+        this.game.resendTimers(this);
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
     socket.on("disconnected", () => {
       try {
         var index = this.game.spectators.indexOf(this);
