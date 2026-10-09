@@ -3,16 +3,13 @@ import ChangeHead from "components/gameComponents/ChangeHead";
 import { GameContext } from "Contexts";
 import { Box } from "@mui/material";
 import { hasActivePushSubscription } from "utils/pushNotifications";
-
-function formatTimerTime(time) {
-  if (time > 0) time = Math.round(time / 1000);
-  else time = 0;
-
-  const minutes = String(Math.floor(time / 60)).padStart(2, "0");
-  const seconds = String(time % 60).padStart(2, "0");
-
-  return `${minutes}:${seconds}`;
-}
+import {
+  canApplyTimerTime,
+  formatSyncedTimer,
+  formatTimerTime,
+  timerRemainingMs,
+  timerTimeAction,
+} from "utils/timerSync";
 
 function useTimersReducer() {
   return useReducer((timers, action) => {
@@ -31,10 +28,11 @@ function useTimersReducer() {
         delete newTimers[action.name];
         break;
       case "update":
-        if (!(action.name in newTimers)) {
-          newTimers[action.name] = {
-            time: 0,
-          };
+        if (
+          !canApplyTimerTime(newTimers[action.name]) ||
+          !Number.isFinite(action.time)
+        ) {
+          break;
         }
         newTimers[action.name].time = action.time;
         newTimers[action.name].lastSyncTime = action.time;
@@ -43,7 +41,7 @@ function useTimersReducer() {
       case "updateAll":
         for (let timerName in newTimers) {
           const t = newTimers[timerName];
-          if (t.lastSyncTimestamp != null) {
+          if (t.lastSyncTimestamp != null && canApplyTimerTime(t)) {
             const elapsed = Date.now() - t.lastSyncTimestamp;
             t.time = t.lastSyncTime + elapsed;
           }
@@ -54,9 +52,12 @@ function useTimersReducer() {
           newTimers["secondary"] ||
           newTimers["main"];
 
-        if (!timer) break;
+        if (!timer || !canApplyTimerTime(timer)) break;
 
-        const intTime = Math.round((timer.delay - timer.time) / 1000);
+        const remaining = timerRemainingMs(timer);
+        if (remaining == null) break;
+
+        const intTime = Math.round(remaining / 1000);
         if (intTime !== timer?.lastTickTime) {
           if (intTime < 16 && intTime > 0) action.playAudio("tick");
         }
@@ -93,64 +94,118 @@ export function Timer(props) {
       });
     }, 200);
 
-    if (socket && socket.on) {
-      socket.on("timerInfo", (info) => {
-        if (info?.name === "vegKick") {
-          playAudio("vegPing");
-        }
-        updateTimers({
-          type: "create",
-          timer: info,
-        });
+    if (!socket || !socket.on) {
+      return () => {
+        clearInterval(timerInterval);
+      };
+    }
 
-        // The server pushes this same event to subscribed players, and the
-        // service worker will show it. Firing the in-page one too would notify
-        // them twice, so the page defers when a push subscription is active.
-        if (
-          info.name === "pregameCountdown" &&
-          window.Notification &&
-          window.Notification.permission === "granted" &&
-          !document.hasFocus() &&
-          !hasActivePushSubscription()
-        ) {
-          new Notification("Your game is starting!");
-        }
+    const knownDelay = {};
+    const lastInfoRequest = {};
+
+    function requestTimerInfo(name) {
+      const now = Date.now();
+      const previous = lastInfoRequest[name] || 0;
+      if (now - previous < 1000) return;
+
+      lastInfoRequest[name] = now;
+      if (socket.send) socket.send("getTimerInfo");
+    }
+
+    function onTimerInfo(info) {
+      if (
+        info &&
+        typeof info.name === "string" &&
+        Number.isFinite(info.delay)
+      ) {
+        knownDelay[info.name] = info.delay;
+      }
+
+      if (info?.name === "vegKick") {
+        playAudio("vegPing");
+      }
+      updateTimers({
+        type: "create",
+        timer: info,
       });
 
-      socket.on("clearTimer", (name) => {
-        updateTimers({
-          type: "clear",
-          name,
-        });
-      });
+      // The server pushes this same event to subscribed players, and the
+      // service worker will show it. Firing the in-page one too would notify
+      // them twice, so the page defers when a push subscription is active.
+      if (
+        info.name === "pregameCountdown" &&
+        window.Notification &&
+        window.Notification.permission === "granted" &&
+        !document.hasFocus() &&
+        !hasActivePushSubscription()
+      ) {
+        new Notification("Your game is starting!");
+      }
+    }
 
-      socket.on("time", (info) => {
-        updateTimers({
-          type: "update",
-          name: info.name,
-          time: info.time,
-        });
-      });
-
-      socket.on("start", () => setStarted(true));
-
-      socket.on("isStarted", (isStarted) => setStarted(isStarted));
-
-      socket.on("winners", ({ groups }) => {
-        const newGroups = groups.map((group) => {
-          if (group === "Village") return "⛪ Village";
-          if (group === "Mafia") return "🔪 Mafia";
-          return group;
-        });
-        setWinners(`${newGroups.join("/")} won!`);
+    function onClearTimer(name) {
+      delete knownDelay[name];
+      updateTimers({
+        type: "clear",
+        name,
       });
     }
 
-    // cleanup
+    function onTime(info) {
+      const name = info && info.name;
+      const decision = timerTimeAction(
+        { delay: knownDelay[name] },
+        info && info.time
+      );
+
+      if (!decision.apply) {
+        if (decision.requestInfo && name) requestTimerInfo(name);
+        return;
+      }
+
+      updateTimers({
+        type: "update",
+        name,
+        time: decision.time,
+      });
+    }
+
+    function onStart() {
+      setStarted(true);
+    }
+
+    function onIsStarted(isStarted) {
+      setStarted(isStarted);
+    }
+
+    function onWinners({ groups }) {
+      const newGroups = groups.map((group) => {
+        if (group === "Village") return "⛪ Village";
+        if (group === "Mafia") return "🔪 Mafia";
+        return group;
+      });
+      setWinners(`${newGroups.join("/")} won!`);
+    }
+
+    const timerInfoListener = socket.on("timerInfo", onTimerInfo);
+    const clearTimerListener = socket.on("clearTimer", onClearTimer);
+    const timeListener = socket.on("time", onTime);
+    const startListener = socket.on("start", onStart);
+    const isStartedListener = socket.on("isStarted", onIsStarted);
+    const winnersListener = socket.on("winners", onWinners);
+
     return () => {
       clearInterval(timerInterval);
+      if (!socket.off) return;
+
+      socket.off("timerInfo", timerInfoListener);
+      socket.off("clearTimer", clearTimerListener);
+      socket.off("time", timeListener);
+      socket.off("start", startListener);
+      socket.off("isStarted", isStartedListener);
+      socket.off("winners", winnersListener);
     };
-  }, []);
+  }, [socket]);
 
   const numPlayers = Object.values(game.players).filter((p) => !p?.left).length;
 
@@ -162,7 +217,7 @@ export function Timer(props) {
   const currentState = game.history?.states[game.history?.currentState]?.name;
   const isFinished = currentState === "Postgame";
 
-  const mainTimer = formatTimerTime(timers?.main?.delay - timers?.main?.time);
+  const mainTimer = formatSyncedTimer(timers && timers.main) || "--:--";
   const ChangeHeadInProgress = (
     <ChangeHead title={`🔪 ${mainTimer} - ${currentState}`} />
   );
@@ -188,25 +243,23 @@ export function Timer(props) {
   else timerName = "main";
 
   const timer = timers[timerName];
+  const remaining = timerRemainingMs(timer);
 
   let timerContent;
-  if (!timer || game.review) {
+  if (!timer || remaining == null || game.review) {
     timerContent = "--:--";
-  }
-  else {
-    let time = timer.delay - timer.time;
+  } else {
+    let time = remaining;
 
     if (timers["secondary"]) {
       // show main timer if needed
-      const mainTimer = timers["main"];
-      if (mainTimer) {
-        var mainTime = mainTimer.delay - mainTimer.time;
-        time = Math.min(time, mainTime);
+      const mainLeft = timerRemainingMs(timers["main"]);
+      if (mainLeft != null) {
+        time = Math.min(time, mainLeft);
       }
     }
 
-    time = formatTimerTime(time);
-    timerContent = time;
+    timerContent = formatTimerTime(time);
   }
 
   const isSecondary = timerName === "secondary";

@@ -301,6 +301,9 @@ describe("setup archive host and last played", function () {
       isKudosEligible() {
         return false;
       },
+      countsForRankings() {
+        return true;
+      },
       setup: { id: "setup1", version: 1 },
       recordSetupStats: async () => {},
       history: {

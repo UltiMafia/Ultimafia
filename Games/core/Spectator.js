@@ -32,6 +32,14 @@ module.exports = class Spectator extends Player {
       }
     });
 
+    socket.on("getTimerInfo", () => {
+      try {
+        this.game.resendTimers(this);
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
     socket.on("disconnected", () => {
       try {
         var index = this.game.spectators.indexOf(this);
@@ -92,6 +100,7 @@ module.exports = class Spectator extends Player {
         }
 
         if (
+          this.game.started &&
           Spam.isRepeatedContentSpam(
             speechPast,
             message.content,
@@ -109,6 +118,7 @@ module.exports = class Spectator extends Player {
         }
 
         if (
+          this.game.started &&
           Spam.shouldCheckSimilarContent(
             speechPast,
             lastSpeakContentBlockAt,
@@ -265,6 +275,13 @@ module.exports = class Spectator extends Player {
     this.send("unvote", {
       voterId: info.voter.id,
       meetingId: info.meeting.id,
+    });
+  }
+
+  seeTyping(info) {
+    this.send("typing", {
+      playerId: info.playerId,
+      meetingId: info.meetingId,
     });
   }
 };

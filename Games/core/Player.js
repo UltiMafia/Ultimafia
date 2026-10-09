@@ -18,8 +18,19 @@ const itemData = require("../../data/items");
 const modifierData = require("../../data/modifiers");
 const commandData = require("../../data/commands");
 const axios = require("axios");
+const { isGuestPlayer, isTestBotPlayer } = require("./botPlayers");
 
 module.exports = class Player {
+  // isBot: no real account (a guest or a dev test bot). isGuest: joined
+  // while logged out. isTestBot: a dev's Test-button / "?bot" player.
+  get isGuest() {
+    return isGuestPlayer(this);
+  }
+
+  get isTestBot() {
+    return isTestBotPlayer(this);
+  }
+
   constructor(user, game, isBot) {
     this.id = shortid.generate();
     user.settings = user.settings ?? {};
@@ -168,6 +179,14 @@ module.exports = class Player {
         }
     });
 
+    socket.on("getTimerInfo", () => {
+      try {
+        this.game.resendTimers(this);
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
     socket.on("speak", (message) => {
       try {
         if (typeof message != "object") return;
@@ -216,6 +235,7 @@ module.exports = class Player {
 
         // Same content twice in a row is OK; third consecutive identical paste is blocked.
         if (
+          this.game.started &&
           Spam.isRepeatedContentSpam(
             speechPast,
             message.content,
@@ -233,6 +253,7 @@ module.exports = class Player {
         // Near-duplicates (same paste block with small edits) only when sending
         // quickly, or still in the window after a recent content-spam block.
         if (
+          this.game.started &&
           Spam.shouldCheckSimilarContent(
             speechPast,
             lastSpeakContentBlockAt,
@@ -474,6 +495,31 @@ module.exports = class Player {
       } catch (e) {
         logger.error(e);
         // this.handleError(e);
+      }
+    });
+
+    socket.on("kudosVote", (info) => {
+      try {
+        if (typeof info != "object" || !info) return;
+
+        const rowKey = String(info.row);
+        const target = String(info.target);
+        if (!Utils.validProp(rowKey) || !Utils.validProp(target)) return;
+
+        this.game.castKudosVote(this, rowKey, target);
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
+    // Closing the tab in postgame without coming back counts as leaving for
+    // kudos (a reload reconnects with a new socket within the grace time).
+    socket.on("disconnected", () => {
+      try {
+        if (this.socket !== socket) return; // replaced by a reconnect
+        this.game.scheduleKudosDisconnect(this, socket);
+      } catch (e) {
+        logger.error(e);
       }
     });
 
@@ -967,6 +1013,8 @@ module.exports = class Player {
       customStickers: this.user.customStickers,
       birthday: this.user.birthday,
       vanityUrl: this.user.vanityUrl,
+      // Anonymous players show their deck avatar, never their own shape.
+      avatarShape: this.anonId === undefined ? this.user.avatarShape : "circle",
       playerListPosition: this.game?.players?.indexOf(this),
     };
 
@@ -1109,7 +1157,15 @@ module.exports = class Player {
         }
       } //End For Loop
     }
-    if (this.game.hasIntegrity && this.DailyTracker.length <= 0) {
+    // No daily challenge progress in a game with a test bot in it.
+    const dailyAllowed =
+      typeof this.game.dailyChallengesAllowed != "function" ||
+      this.game.dailyChallengesAllowed();
+    if (
+      dailyAllowed &&
+      this.game.hasIntegrity &&
+      this.DailyTracker.length <= 0
+    ) {
       let tempDailyChallenge = this.user.dailyChallenges.map((d) => d[0]);
       for (let Challenge of Object.entries(DailyChallengeData).filter(
         (DailyChallenge) => tempDailyChallenge.includes(DailyChallenge[1].ID)
