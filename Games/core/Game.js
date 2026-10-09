@@ -2148,6 +2148,14 @@ module.exports = class Game {
   }
 
   gotoNextState() {
+    // Once the game has finished there is no next state. Advancing again would
+    // clear the postgame timer and finish the postgame meeting, leaving the
+    // game stuck in postgame until everyone leaves. This happens when the day
+    // vote that ends the game also re-runs checkAllMeetingsReady (it calls
+    // gotoNextState from its Day branch, then again from its generic loop,
+    // which now sees only the always-ready postgame meeting).
+    if (this.finished) return;
+
     var stateInfo = this.getStateInfo();
 
     // Clear current timers
