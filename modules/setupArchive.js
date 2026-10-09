@@ -6,6 +6,8 @@ const redis = require("./redis");
 const logger = require("./logging")(".");
 
 const SETUP_ARCHIVIST_BOT_ID = constants.SETUP_ARCHIVIST_BOT_ID;
+// Pre-#2766 archive account. Its remaining setups are curated and public.
+const LEGACY_SETUP_ARCHIVIST_ID = "uBqs8KaDx";
 
 // Fixed windows so the stale thresholds do not depend on calendar length.
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -675,11 +677,12 @@ async function planStaleArchive(now) {
     .select(
       "id name played featured ranked competitive favorites lastPlayedAt updatedAt createdAt creator archived"
     )
-    .populate("creator", "id deleted")
+    .populate("creator", "id deleted systemAccount")
     .lean();
 
   const matched = [];
   const exempt = {
+    archivistOwned: [],
     featured: [],
     ranked: [],
     competitive: [],
@@ -690,6 +693,17 @@ async function planStaleArchive(now) {
 
   for (const setup of candidates || []) {
     if (!setup || setup.archived === true) continue;
+    // Never sweep setups held by SetupArchivist, SetupArchivistBot or any
+    // other system account.
+    const creator = setup.creator || {};
+    if (
+      creator.systemAccount ||
+      creator.id === LEGACY_SETUP_ARCHIVIST_ID ||
+      creator.id === SETUP_ARCHIVIST_BOT_ID
+    ) {
+      exempt.archivistOwned.push(setup.id);
+      continue;
+    }
     if (setup.featured) {
       exempt.featured.push(setup.id);
       continue;

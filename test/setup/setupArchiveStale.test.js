@@ -52,6 +52,7 @@ const live = "507f1f77bcf86cd799439003";
 const deleted = "507f1f77bcf86cd799439004";
 const bot = "507f1f77bcf86cd799439005";
 const group = "507f1f77bcf86cd799439006";
+const legacyArchivist = "507f1f77bcf86cd799439008";
 
 let users;
 let setups;
@@ -204,6 +205,7 @@ function reset() {
     { _id: admin, id: "admin1", deleted: false, setups: [] },
     { _id: live, id: "live1", deleted: false, setups: [] },
     { _id: deleted, id: "deleted1", deleted: true, setups: ["507f1f77bcf86cd799439114"] },
+    { _id: legacyArchivist, id: "uBqs8KaDx", deleted: false, setups: [] },
     {
       _id: bot,
       id: constants.SETUP_ARCHIVIST_BOT_ID,
@@ -264,6 +266,16 @@ function reset() {
     }),
     setupDoc("s-deleted", "507f1f77bcf86cd799439114", {
       creator: deleted,
+      played: 0,
+      lastPlayedAt: ancient,
+    }),
+    setupDoc("s-curated", "507f1f77bcf86cd799439115", {
+      creator: legacyArchivist,
+      played: 0,
+      lastPlayedAt: ancient,
+    }),
+    setupDoc("s-bot-public", "507f1f77bcf86cd799439116", {
+      creator: bot,
       played: 0,
       lastPlayedAt: ancient,
     }),
@@ -387,6 +399,9 @@ describe("POST /api/setup/archiveStale", function () {
     res.body.exempt.ranked.should.deep.equal(["s-ranked"]);
     res.body.exempt.competitive.should.deep.equal(["s-competitive"]);
     res.body.exempt.noActivity.should.deep.equal(["s-notime"]);
+    sorted(res.body.exempt.archivistOwned).should.deep.equal(
+      sorted(["s-curated", "s-bot-public"])
+    );
     const fav = res.body.matched.find((row) => row.id === "s-fav");
     fav.favorites.should.equal(8);
     fav.transfer.should.equal(false);
@@ -448,7 +463,7 @@ describe("POST /api/setup/archiveStale", function () {
       .find((user) => user.id === constants.SETUP_ARCHIVIST_BOT_ID)
       .setups.map(String)
       .should.deep.equal(["507f1f77bcf86cd799439114"]);
-    setups.should.have.lengthOf(13);
+    setups.should.have.lengthOf(15);
 
     modActions.should.have.lengthOf(1);
     modActions[0].name.should.equal("Archive Stale Setups");
@@ -456,6 +471,19 @@ describe("POST /api/setup/archiveStale", function () {
     sorted(modActions[0].args).should.deep.equal(
       sorted(["s-low-stale", "s-year-stale", "s-29", "s-fav", "s-deleted"])
     );
+  });
+
+  it("never sweeps curated SetupArchivist or system account setups", async function () {
+    const res = await call({ confirm: true });
+    (res.statusCode || 200).should.equal(200);
+    const curated = setups.find((doc) => doc.id === "s-curated");
+    const botOwned = setups.find((doc) => doc.id === "s-bot-public");
+    should.not.exist(curated.archived);
+    String(curated.creator).should.equal(legacyArchivist);
+    curated.ownershipHistory.should.have.lengthOf(0);
+    should.not.exist(botOwned.archived);
+    String(botOwned.creator).should.equal(bot);
+    setups.find((doc) => doc.id === "s-low-stale").archived.should.equal(true);
   });
 
   it("rejects an admin who is not in the Owner group", async function () {
