@@ -112,8 +112,25 @@ router.get("/id", async function (req, res) {
     var setup = await models.Setup.findOne({
       id: String(req.query.query),
     }).select(
-      "id gameType name roles closed useRoleGroups roleGroupSizes gameSettings count total -_id"
+      "id gameType name roles closed useRoleGroups roleGroupSizes gameSettings count total archived creator -_id"
     );
+
+    if (setup && !(await setupArchive.canViewArchived(userId, setup))) {
+      setup = null;
+    }
+
+    if (setup) {
+      const plain = setup.toJSON();
+      delete plain.creator;
+      delete plain.archived;
+      delete plain._id;
+      // markFavSetups calls toJSON only for favorites. A plain object needs it.
+      plain.toJSON = function () {
+        return this;
+      };
+      setup = plain;
+    }
+
     var setups = setup ? [setup] : [];
 
     await markFavSetups(userId, setups);
@@ -259,6 +276,12 @@ router.get("/search", async function (req, res) {
           break;
       }
     }
+
+    const archivedFilter = await setupArchive.archivedListFilter(
+      userId,
+      setupArchive.showArchivedRequested(req.query.showArchived)
+    );
+    setupArchive.applyArchivedFilter(search, archivedFilter);
 
     var setups = await models.Setup.find(search)
       .sort(sort)
@@ -565,10 +588,17 @@ router.get("/:id/lineage", async function (req, res) {
   try {
     const setupId = req.params.id;
     const setup = await models.Setup.findOne({ id: setupId })
-      .select("id copiedFrom copiedAt")
+      .select("id copiedFrom copiedAt archived creator")
+      .populate("creator", "id")
       .lean();
 
     if (!setup) {
+      res.status(404).send("Setup not found.");
+      return;
+    }
+
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    if (!(await setupArchive.canViewArchived(userId, setup))) {
       res.status(404).send("Setup not found.");
       return;
     }
@@ -580,7 +610,7 @@ router.get("/:id/lineage", async function (req, res) {
         .select("-__v -hash -count")
         .populate("creator", "id name avatar -_id")
         .lean();
-      if (parent) {
+      if (parent && (await setupArchive.canViewArchived(userId, parent))) {
         parent.roles = parent.roles && JSON.parse(parent.roles);
         result.copiedFrom = { setup: parent, copiedAt: setup.copiedAt };
       }
@@ -593,6 +623,7 @@ router.get("/:id/lineage", async function (req, res) {
       .lean();
 
     for (const child of children) {
+      if (!(await setupArchive.canViewArchived(userId, child))) continue;
       if (child.roles) child.roles = JSON.parse(child.roles);
       result.copiedTo.push({ setup: child, copiedAt: child.copiedAt });
     }
@@ -612,9 +643,17 @@ router.get("/:id", async function (req, res) {
       .populate("creator", "id name avatar tag -_id");
 
     if (setup) {
+      var userId = await routeUtils.verifyLoggedIn(req, true);
+      if (!(await setupArchive.canViewArchived(userId, setup))) {
+        errors.notFound(
+          res,
+          "That setup does not exist. It may have been removed."
+        );
+        return;
+      }
+
       setup = setup.toJSON();
       setup.voteCount = setup.voteCount ?? 0;
-      var userId = await routeUtils.verifyLoggedIn(req, true);
       if (userId) {
         var voteDoc = await models.ForumVote.findOne({
           voter: userId,
@@ -674,6 +713,15 @@ router.get("/:id/version/:setupVersionNum", async function (req, res) {
     );
 
     if (setup) {
+      var userId = await routeUtils.verifyLoggedIn(req, true);
+      if (!(await setupArchive.canViewArchived(userId, setup))) {
+        errors.notFound(
+          res,
+          "That setup does not exist. It may have been removed."
+        );
+        return;
+      }
+
       setup = setup.toJSON();
 
       let setupVersion = await models.SetupVersion.findOne({

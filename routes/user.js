@@ -528,6 +528,7 @@ router.get("/:id/profile", async function (req, res) {
 
     const totalSetups = await models.Setup.countDocuments({
       creator: userMongoId,
+      archived: { $ne: true },
     });
     user.maxSetupsPage =
       Math.max(
@@ -1220,6 +1221,13 @@ router.get("/:id/setups", async function (req, res) {
 
     const pageSize = constants.userSetupsPerPage || 5;
     const requestedPage = Number(req.query.page) || 1;
+    const viewerId = await routeUtils.verifyLoggedIn(req, true);
+    const showArchived = setupArchive.showArchivedRequested(
+      req.query.showArchived
+    );
+    const includeArchived =
+      showArchived &&
+      (viewerId === userId || (await setupArchive.isAdminPlus(viewerId)));
 
     const userDoc = await models.User.findOne({
       id: userId,
@@ -1232,12 +1240,25 @@ router.get("/:id/setups", async function (req, res) {
       return;
     }
 
-    const total = userDoc.setups?.length || 0;
+    // Page from the visible ids so an archived setup does not take a slot.
+    let orderedIds = userDoc.setups || [];
+    if (!includeArchived && orderedIds.length > 0) {
+      const archivedDocs = await models.Setup.find({
+        _id: { $in: orderedIds },
+        archived: true,
+      })
+        .select("_id")
+        .lean();
+      const hidden = new Set(archivedDocs.map((doc) => String(doc._id)));
+      orderedIds = orderedIds.filter((id) => !hidden.has(String(id)));
+    }
+
+    const total = orderedIds.length;
     const maxPage = Math.max(Math.ceil(total / pageSize), 1);
     const sanitizedPage = Math.min(Math.max(requestedPage, 1), maxPage);
     const startIdx = (sanitizedPage - 1) * pageSize;
     const endIdx = startIdx + pageSize;
-    const subsetIds = (userDoc.setups || []).slice(startIdx, endIdx);
+    const subsetIds = orderedIds.slice(startIdx, endIdx);
 
     let setups = [];
 

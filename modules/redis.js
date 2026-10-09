@@ -646,12 +646,15 @@ async function getFeaturedSetup(featuredCategory) {
 
         // ranked: true should prevent stale classic setups from being searched
         ranked: true,
+        archived: { $ne: true },
       }).select(
         "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
       );
     } else {
       let filter = {
         featured: true,
+        archived: { $ne: true },
+        creator: { $exists: true },
       };
 
       // I would ideally like to incorporate setup tags into this one day so that tags can help separate featured setups for different lobbies
