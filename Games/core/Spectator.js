@@ -104,6 +104,7 @@ module.exports = class Spectator extends Player {
         }
 
         if (
+          this.game.started &&
           Spam.isRepeatedContentSpam(
             speechPast,
             message.content,
@@ -121,6 +122,7 @@ module.exports = class Spectator extends Player {
         }
 
         if (
+          this.game.started &&
           Spam.shouldCheckSimilarContent(
             speechPast,
             lastSpeakContentBlockAt,
@@ -286,6 +288,13 @@ module.exports = class Spectator extends Player {
     this.send("unvote", {
       voterId: info.voter.id,
       meetingId: info.meeting.id,
+    });
+  }
+
+  seeTyping(info) {
+    this.send("typing", {
+      playerId: info.playerId,
+      meetingId: info.meetingId,
     });
   }
 };

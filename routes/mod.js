@@ -2368,7 +2368,9 @@ router.post("/refundGame", async (req, res) => {
           const abandoned = game.left && game.left.includes(playerId);
 
           // Determine if player got kudos
-          const gotKudos = game.kudosReceiver === playerId;
+          const gotKudos =
+            game.kudosReceiver === playerId ||
+            (game.kudosReceivers || []).includes(userIdToRefund);
 
           // Calculate coins to revert
           let coinsToRevert = 0;

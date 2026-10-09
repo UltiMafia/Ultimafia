@@ -606,6 +606,7 @@ export function NameWithAvatar(props) {
   const isSquare = props.isSquare;
   const subContent = props.subContent;
   const ripAvatar = props.ripAvatar;
+  const hideAvatar = props.hideAvatar;
   const nameColorSwatch = props.nameColorSwatch;
   const nameFont = props.nameFont;
   const animatedNameColor = props.animatedNameColor;
@@ -684,7 +685,7 @@ export function NameWithAvatar(props) {
         alignItems: "center",
       }}
     >
-      {ripAvatar ? (
+      {hideAvatar ? null : ripAvatar ? (
         <RipAvatarIcon
           small={small}
           large={large}
