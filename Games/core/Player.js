@@ -477,6 +477,20 @@ module.exports = class Player {
       }
     });
 
+    socket.on("kudosVote", (info) => {
+      try {
+        if (typeof info != "object" || !info) return;
+
+        const rowKey = String(info.row);
+        const target = String(info.target);
+        if (!Utils.validProp(rowKey) || !Utils.validProp(target)) return;
+
+        this.game.castKudosVote(this, rowKey, target);
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
     socket.on("lastWill", (will) => {
       try {
         if (!this.game.isLastWills()) return;

@@ -122,6 +122,13 @@ import ReadyCheckDialog from "./components/ReadyCheck";
 import PushNotificationPrompt from "./components/PushNotificationPrompt";
 import { releaseSubscription } from "utils/pushNotifications";
 import RoleMarkerToggle from "./components/RoleMarkerToggle";
+import {
+  KudosOverlay,
+  KudosPanel,
+  KudosIcon,
+  kudosAwardedIds,
+  kudosRowsLeftToVote,
+} from "./components/Kudos";
 
 const emoteMap = {
   dice1: dice1,
@@ -206,6 +213,9 @@ export default function Game() {
   const [roleRevealData, setRoleRevealData] = useState(null);
   const [hostId, setHostId] = useState(null);
   const [changeSetupDialogOpen, setChangeSetupDialogOpen] = useState(false);
+  const [kudos, setKudos] = useState(null);
+  const [kudosOpen, setKudosOpen] = useState(false);
+  const kudosAutoOpenRef = useRef(false);
 
   const playersRef = useRef();
   const selfRef = useRef();
@@ -226,7 +236,7 @@ export default function Game() {
     currentStateObject ? currentStateObject.meetings : {}
   ).filter(
     (meeting) => !meeting.playerHasVoted && meeting.voting && meeting.canVote
-  ).length;
+  ).length + (kudosRowsLeftToVote(kudos) > 0 ? 1 : 0);
 
   const [readyCheckInfo, setReadyCheckInfo] = useState({
     active: false,
@@ -518,6 +528,9 @@ export default function Game() {
 
           var players = {};
           var spectators = {};
+          const kudosUserIds = (data.kudosReceivers || []).concat(
+            data.kudosReceiver ? [data.kudosReceiver] : []
+          );
 
           for (let i in data.players) {
             players[data.players[i]] = {
@@ -541,6 +554,8 @@ export default function Game() {
               nameGradientColorC:
                 data.users[i] && data.users[i].settings.nameGradientColorC,
               left: data.left.indexOf(data.players[i]) !== -1,
+              kudos:
+                !!data.users[i] && kudosUserIds.includes(data.users[i].id),
             };
           }
 
@@ -655,6 +670,21 @@ export default function Game() {
     });
 
     socket.on("finished", () => setFinished(true));
+
+    socket.on("kudos", (data) => {
+      setKudos(data);
+      // Open the kudos overlay once, a moment after the game-over screen.
+      if (!kudosAutoOpenRef.current && data && !data.finalized) {
+        kudosAutoOpenRef.current = true;
+        const key = `kudosOverlayShown:${gameId}`;
+        let shown = false;
+        try {
+          shown = !!window.sessionStorage.getItem(key);
+          window.sessionStorage.setItem(key, "1");
+        } catch (e) {}
+        if (!shown) setTimeout(() => setKudosOpen(true), 250);
+      }
+    });
 
     socket.on("state", (state) => {
       updateHistory({ type: "addState", state: state });
@@ -1123,7 +1153,10 @@ export default function Game() {
       setChangeSetupDialogOpen: setChangeSetupDialogOpen,
       spectators: spectators,
       setSpectators: setSpectators,
-      readyCheckInfo: readyCheckInfo
+      readyCheckInfo: readyCheckInfo,
+      kudos: review ? null : kudos,
+      kudosOpen: kudosOpen,
+      setKudosOpen: setKudosOpen,
     };
 
     const isUrgent = voteKickUrgency || (readyCheckInfo.active && !readyCheckInfo.readyPlayers[self]);
@@ -1169,6 +1202,7 @@ export default function Game() {
           </Box>
         </Stack>
         <UrgencyOverlay hidden={!isUrgent} />
+        {!review && <KudosOverlay />}
         {!review && history.currentState == -1 && (
           <PushNotificationPrompt socket={socket} />
         )}
@@ -3256,8 +3290,10 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
     isolationEnabled,
     togglePlayerIsolation,
     isolatedPlayers,
-    readyCheckInfo
+    readyCheckInfo,
+    kudos,
   } = game;
+  const kudosIds = kudosAwardedIds(kudos);
 
   const prevStateRef = useRef(history?.currentState);
 
@@ -3494,6 +3530,9 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
           includeMiniprofile
           newTab
         />
+        {(player.kudos || kudosIds.includes(player.id)) && (
+          <KudosIcon size={18} sx={{ ml: 0.5 }} />
+        )}
         {selTab && showBubbles && visibleTyping[player.id] === selTab && (
           <ReactLoading
             className={`typing-icon ${stateViewing != -1 ? "has-role" : ""}`}
@@ -3824,7 +3863,14 @@ export function ActionList({
     }
   }
 
-  if (hideIfEmpty && (!regularActionDescriptors || regularActionDescriptors.length === 0)) {
+  // Postgame kudos toggle lives at the top of the (main) Actions panel.
+  const showKudos = !bare && !!game.kudos;
+
+  if (
+    hideIfEmpty &&
+    !showKudos &&
+    (!regularActionDescriptors || regularActionDescriptors.length === 0)
+  ) {
     return null;
   }
 
@@ -3846,7 +3892,12 @@ export function ActionList({
       title={
         <UnresolvedActionCount>{title || "Actions"}</UnresolvedActionCount>
       }
-      content={<div className="action-list">{actionElements}</div>}
+      content={
+        <div className="action-list">
+          {showKudos && <KudosPanel />}
+          {actionElements}
+        </div>
+      }
     />
   );
 }

@@ -8,14 +8,7 @@ module.exports = class PostgameMeeting extends Meeting {
     this.speech = true;
     this.speakDead = true;
     this.noVeg = true;
-    this.displayVoteCounter = true;
-    this.noOneDisplayName = "No Confidence";
-
-    if (game.isKudosEligible()) {
-      this.voting = true;
-      this.randomizeTieResults = true;
-      this.actionName = "Vote to give kudos";
-      this.targets = { include: ["all"], exclude: ["self"] };
-    }
+    // Kudos are voted on in the postgame kudos overlay (see Kudos.js), not
+    // through this meeting.
   }
 };

@@ -29,6 +29,7 @@ const renamedRoleMapping = require("../../data/renamedRoles");
 const renamedModifierMapping = require("../../data/renamedModifiers");
 const routeUtils = require("../../routes/utils");
 const PostgameMeeting = require("./PostgameMeeting");
+const { KudosVote, isWinLossResult } = require("./Kudos");
 const dbStats = require("../../db/stats");
 const VegKickMeeting = require("./VegKickMeeting");
 const mongo = require("mongodb");
@@ -678,6 +679,15 @@ module.exports = class Game {
 
     player.send("left");
     player.left = true;
+
+    if (this.kudosVote && this.finished && !this.postgameOver) {
+      try {
+        this.kudosVote.removeVoter(player.id);
+        this.evaluateKudos(false);
+      } catch (e) {
+        logger.warn(`kudos leave failed for game ${this.id}: ${e.message}`);
+      }
+    }
     // Delay disconnect so "left" can flush before the socket is torn down.
     // Immediate terminate() races the client receive path (esp. iOS Safari).
     setTimeout(() => {
@@ -1014,6 +1024,8 @@ module.exports = class Game {
     if (!player.user.playedGame && !player.isBot) player.send("firstGame");
 
     if (player.user.dev && !player.isBot) player.send("dev");
+
+    if (this.kudosVote) player.send("kudos", this.kudosVote.stateFor(player.id));
 
     if (this.isReadyCheckActive) {
         player.send("readyCheck init", {
@@ -2676,8 +2688,8 @@ module.exports = class Game {
       }
 
       // during kicks, we need to exclude the votekick and noveg meetings.
-      // In postgame (currentState === -2), always require the kudos vote to be ready
-      // so the noVeg exclusion does not cause the vote to freeze after one voter.
+      // In postgame (currentState === -2), always require every meeting to be ready
+      // so the noVeg exclusion does not cause a vote to freeze after one voter.
       if (
         !meeting.ready &&
         (extraConditionDuringKicks || this.currentState === -2)
@@ -3074,6 +3086,88 @@ module.exports = class Game {
     //return true;
   }
 
+  // Opens postgame kudos voting for ranked/competitive games that ended in a
+  // real win/loss. Safe to call more than once.
+  startKudosVote() {
+    if (this.kudosVote !== undefined) return;
+    this.kudosVote = null;
+
+    if (!this.isKudosEligible() || !this.winners) return;
+    const info = this.winners.getWinnersInfo();
+    if (
+      !isWinLossResult({
+        winnerGroups: info.groups,
+        winnerPlayerIds: info.players,
+        meteor: this.MeteorLanded,
+      })
+    )
+      return;
+
+    // Players still in the game when it ended can receive kudos; everyone
+    // who is still in the lobby (and isn't a bot) can vote.
+    const candidates = [];
+    for (let player of this.players) {
+      if (player.left || !this.originalRoles[player.id]) continue;
+      candidates.push({ id: player.id, alignment: this.getKudosAlignment(player) });
+    }
+    if (candidates.length == 0) return;
+
+    const voters = this.players
+      .filter((p) => !p.left && !p.isBot)
+      .map((p) => p.id);
+
+    this.kudosVote = new KudosVote({ candidates, voters });
+    this.broadcastKudos();
+  }
+
+  getKudosAlignment(player) {
+    try {
+      if (player.role && player.role.alignment) return player.role.alignment;
+      return this.getRoleAlignment(this.originalRoles[player.id]);
+    } catch (e) {
+      return "Independent";
+    }
+  }
+
+  broadcastKudos() {
+    if (!this.kudosVote) return;
+    for (let player of this.players)
+      if (!player.left) player.send("kudos", this.kudosVote.stateFor(player.id));
+    for (let spectator of this.spectators)
+      spectator.send("kudos", this.kudosVote.stateFor(spectator.id));
+  }
+
+  castKudosVote(player, rowKey, target) {
+    if (!this.kudosVote || !this.finished || this.postgameOver) return;
+
+    const error = this.kudosVote.castVote(player.id, rowKey, target);
+    if (error) player.sendAlert(error);
+    else this.evaluateKudos(false);
+
+    player.send("kudos", this.kudosVote.stateFor(player.id));
+  }
+
+  // Awards anyone who is now guaranteed kudos (or, with `final`, settles
+  // every row on the votes cast so far).
+  evaluateKudos(final) {
+    if (!this.kudosVote) return [];
+    const fresh = this.kudosVote.evaluate(final);
+
+    for (let playerId of fresh) {
+      const player = this.players[playerId];
+      if (!player) continue;
+      this.sendAlert(
+        `${player.name} has received kudos!`,
+        undefined,
+        undefined,
+        ["info"]
+      );
+    }
+
+    if (fresh.length > 0 || final) this.broadcastKudos();
+    return fresh;
+  }
+
   achievementsAllowed() {
     return this.ranked || this.competitive;
     //return true;
@@ -3341,6 +3435,8 @@ module.exports = class Game {
       for (let player of this.players)
         if (!player.left) player.sendMeeting(this.postgame);
 
+      this.startKudosVote();
+
       this.createTimer("postgame", this.postgameLength, () =>
         this.endPostgame()
       );
@@ -3367,6 +3463,8 @@ module.exports = class Game {
 
         for (let player of this.players)
           if (!player.left) player.sendMeeting(this.postgame);
+
+        this.startKudosVote();
       }
 
       this.createTimer("postgame", this.postgameLength, () =>
@@ -3919,25 +4017,18 @@ module.exports = class Game {
   }
 
   async _doEndPostgame() {
-    let kudosTarget = null;
+    let kudosUserIds = [];
 
     try {
       if (!this._postgamePersisted) {
-        if (this.isKudosEligible() && this.postgame) {
+        if (this.kudosVote) {
           try {
-            this.postgame.finish(true);
-            if (
-              this.postgame.finalTarget &&
-              this.postgame.finalTarget !== "*"
-            ) {
-              kudosTarget = this.postgame.finalTarget;
-              this.sendAlert(
-                `${kudosTarget.name} has received kudos!`,
-                undefined,
-                undefined,
-                ["info"]
-              );
-            }
+            this.evaluateKudos(true);
+            kudosUserIds = this.kudosVote
+              .awardedIds()
+              .map((id) => this.players[id])
+              .filter((p) => p && p.user)
+              .map((p) => p.user.id);
           } catch (e) {
             logger.warn(
               `endPostgame kudos failed for game ${this.id}: ${e.message}`
@@ -4025,7 +4116,8 @@ module.exports = class Game {
           setupVersion:
             this.setup.version != null ? this.setup.version : null,
           setupStatsBackfilled: true,
-          kudosReceiver: kudosTarget ? kudosTarget.user.id : "",
+          kudosReceiver: kudosUserIds[0] || "",
+          kudosReceivers: kudosUserIds,
           stateLengths: this.stateLengths,
           gameTypeOptions: JSON.stringify(this.getGameTypeOptions()),
           anonymousGame: this.anonymousGame,
@@ -4122,8 +4214,7 @@ module.exports = class Game {
 
           const incOps = {
             coins: coinsEarned,
-            kudos:
-              kudosTarget && kudosTarget.user.id == player.user.id ? 1 : 0,
+            kudos: kudosUserIds.includes(player.user.id) ? 1 : 0,
             points: pointsWon > 0 ? pointsWon : 0,
             pointsNegative: pointsWon < 0 ? -pointsWon : 0,
             ...statIncrements,

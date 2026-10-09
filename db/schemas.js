@@ -421,7 +421,9 @@ var schemas = {
     stateLengths: { type: Map, of: Number },
     gameTypeOptions: String,
     broken: Boolean,
+    // First kudos receiver (kept for older readers); see kudosReceivers.
     kudosReceiver: { type: String, default: "" },
+    kudosReceivers: { type: [String], default: undefined },
     anonymousGame: Boolean,
     // This is a mongoose subdocument. It won't change if the anonyonous deck that the game was started with changes.
     anonymousDeck: [anonymousDeck],
