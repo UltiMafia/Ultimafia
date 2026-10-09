@@ -42,6 +42,7 @@ import {
   getAlignmentColor,
   FullRoleList,
   SetupManipulationButtons,
+  isArchivistSetup,
 } from "components/Setup";
 import SetupDisplay from "components/Setup";
 import GameIcon from "components/GameIcon";
@@ -140,6 +141,53 @@ function avgLengthColor(ms) {
   if (minutes < 10) return "#4caf50";
   if (minutes < 30) return "#ff9800";
   return "#e45050";
+}
+
+const RESTORE_HARD_BLOCKERS = new Set([
+  "targetMissing",
+  "targetDeleted",
+  "targetBanned",
+  "targetSystem",
+  "missingSelection",
+  "fromUserMissing",
+  "cap",
+]);
+
+function restoreBlockerText(item) {
+  if (!item) return "Restore cannot proceed.";
+  if (item.code === "cap") {
+    return `Over the setup cap (owned ${item.owned}, adding ${item.adding}, max ${item.max}).`;
+  }
+  if (item.code === "targetMissing") return "That user does not exist.";
+  if (item.code === "fromUserMissing") return "The source user does not exist.";
+  if (item.code === "targetDeleted") return "That account is deleted.";
+  if (item.code === "targetBanned") return "That account is banned.";
+  if (item.code === "targetSystem") return "That account cannot own setups.";
+  if (item.code === "missingSelection") return "Provide setup ids or a from user id.";
+  if (item.code === "setupMissing") return `Setup not found: ${item.id}`;
+  return item.code || "Restore cannot proceed.";
+}
+
+function formatRestorePreview(data) {
+  const lines = [];
+  lines.push(`Target: ${data.toUserId || "(none)"}`);
+  const setups = data.setups || [];
+  if (!setups.length) lines.push("No setups matched.");
+  setups.forEach((row) => {
+    const reason = row.reason ? ` (${row.reason})` : "";
+    lines.push(`${row.status || "?"}: ${row.name || row.id}${reason}`);
+  });
+  const counts = data.counts || {};
+  lines.push(
+    `Linked: ${counts.guides || 0} guides, ${counts.games || 0} games, ${counts.favorites || 0} favorites, ${counts.votes || 0} votes.`
+  );
+  const blockers = data.blockers || [];
+  if (blockers.length) {
+    lines.push(
+      "Blockers: " + blockers.map((item) => restoreBlockerText(item)).join(" ")
+    );
+  }
+  return lines.join("\n");
 }
 
 export function SetupPage() {
@@ -283,6 +331,10 @@ export function SetupPage() {
 
   let commentLocation = `setup/${setupId}`;
   const isSetupCreator = user.loggedIn && setup?.creator && user.id === setup.creator.id;
+  const botOwned = isArchivistSetup(setup);
+  const canManageArchived = !!user.perms?.manageArchivedSetups;
+  const canEditDescription = botOwned ? canManageArchived : isSetupCreator;
+  const canRestore = !!user.perms?.restoreSetup;
 
   function onSaveDescription() {
     axios
@@ -300,7 +352,7 @@ export function SetupPage() {
   }
 
   function onDescriptionClick() {
-    if (isSetupCreator && !editingDescription) {
+    if (canEditDescription && !editingDescription) {
       setOldDescription(description);
       setEditingDescription(true);
     }
@@ -368,6 +420,55 @@ export function SetupPage() {
           prev ? { ...prev, competitive: !prev.competitive } : prev
         );
         siteInfo.showAlert("Competitive status toggled.", "success");
+      })
+      .catch(errorAlert);
+  }
+
+  function onRestoreSetup() {
+    if (!canRestore) return;
+    const toUserId = window.prompt("Restore this setup to which user id?");
+    if (!toUserId || !String(toUserId).trim()) return;
+    const target = String(toUserId).trim();
+    axios
+      .post("/api/setup/restore", {
+        toUserId: target,
+        setupIds: [setupId],
+        dryRun: true,
+      })
+      .then((res) => {
+        const preview = res.data || {};
+        const text = formatRestorePreview(preview);
+        const blocked = (preview.blockers || []).some((item) =>
+          RESTORE_HARD_BLOCKERS.has(item && item.code)
+        );
+        const actionable = (preview.setups || []).some(
+          (row) =>
+            row && (row.status === "restore" || row.status === "already")
+        );
+        if (blocked || !actionable) {
+          window.alert(text);
+          return;
+        }
+        if (!window.confirm(`${text}\n\nRestore this setup to that account?`)) {
+          return;
+        }
+        axios
+          .post("/api/setup/restore", {
+            toUserId: target,
+            setupIds: [setupId],
+          })
+          .then((done) => {
+            const restored = ((done.data && done.data.restored) || []).filter(
+              (row) => row && !row.skipped
+            );
+            if (!restored.length) {
+              siteInfo.showAlert("No setups were restored.", "warning");
+              return;
+            }
+            siteInfo.showAlert("Setup restored.", "success");
+            navigate(0);
+          })
+          .catch(errorAlert);
       })
       .catch(errorAlert);
   }
@@ -566,6 +667,23 @@ export function SetupPage() {
         maxWidth: "100%",
       }}
     >
+      {setup.archived === true ? (
+        <Box
+          sx={{
+            px: 1.5,
+            py: 0.75,
+            borderRadius: 1,
+            fontWeight: 700,
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+            fontSize: "0.8rem",
+            backgroundColor: "rgba(0,0,0,0.72)",
+            color: "#fff",
+          }}
+        >
+          Archived
+        </Box>
+      ) : null}
       <Card
         variant="outlined"
         sx={{
@@ -819,13 +937,13 @@ export function SetupPage() {
               <div className="box-panel">
                 <div className="heading">Description</div>
                 <div
-                  className={`content${isSetupCreator && !editingDescription ? " edit" : ""}`}
+                  className={`content${canEditDescription && !editingDescription ? " edit" : ""}`}
                   onClick={onDescriptionClick}
-                  style={{ cursor: isSetupCreator && !editingDescription ? "pointer" : undefined }}
+                  style={{ cursor: canEditDescription && !editingDescription ? "pointer" : undefined }}
                 >
                   {!editingDescription ? (
                     <div className="md-content">
-                      <CustomMarkdown>{description || (isSetupCreator ? "Click to edit description (e.g. theme, tips, notes)." : "No description.")}</CustomMarkdown>
+                      <CustomMarkdown>{description || (canEditDescription ? "Click to edit description (e.g. theme, tips, notes)." : "No description.")}</CustomMarkdown>
                     </div>
                   ) : (
                     <>
@@ -859,13 +977,24 @@ export function SetupPage() {
                 <div className="box-panel">
                   <div className="heading">Actions</div>
                   <div className="content">
-                    <SetupManipulationButtons
-                      setup={setup}
-                      onFav={onFavSetup}
-                      onEdit={onEditSetup}
-                      onCopy={onCopySetup}
-                      onDel={onDelSetup}
-                    />
+                    <Stack direction="column" alignItems="flex-start" spacing={1}>
+                      <SetupManipulationButtons
+                        setup={setup}
+                        onFav={onFavSetup}
+                        onEdit={onEditSetup}
+                        onCopy={onCopySetup}
+                        onDel={onDelSetup}
+                      />
+                      {canRestore ? (
+                        <Button
+                          size="small"
+                          onClick={onRestoreSetup}
+                          sx={{ textTransform: "none" }}
+                        >
+                          Restore to account…
+                        </Button>
+                      ) : null}
+                    </Stack>
                   </div>
                 </div>
               )}

@@ -415,7 +415,7 @@ router.get("/:id/profile", async function (req, res) {
       .populate({
         path: "setups",
         select:
-          "id gameType name closed useRoleGroups roleGroupSizes count roles total -_id",
+          "id gameType name closed useRoleGroups roleGroupSizes count roles total archived -_id",
         options: {
           limit: constants.userSetupsPerPage,
         },
@@ -441,6 +441,14 @@ router.get("/:id/profile", async function (req, res) {
     }
 
     user = user.toJSON();
+
+    // The first page is populated before paging. Drop archived rows here so
+    // they stay hidden until /setups?showArchived=true.
+    if (Array.isArray(user.setups)) {
+      user.setups = user.setups.filter(
+        (setup) => !setup || setup.archived !== true
+      );
+    }
 
     if (!user.skillRating) {
       user.skillRating = {
@@ -1268,7 +1276,7 @@ router.get("/:id/setups", async function (req, res) {
         _id: { $in: subsetIds },
       })
         .select(
-          "id gameType name closed useRoleGroups roleGroupSizes count roles total"
+          "id gameType name closed useRoleGroups roleGroupSizes count roles total archived"
         )
         .lean();
 

@@ -292,7 +292,7 @@ router.get("/search", async function (req, res) {
       .skip(start)
       .limit(pageSize)
       .select(
-        "id gameType name roles closed useRoleGroups roleGroupSizes gameSettings count total featured ranked competitive -_id"
+        "id gameType name roles closed useRoleGroups roleGroupSizes gameSettings count total featured ranked competitive archived -_id"
       )
       .populate("creator", "id name avatar tag -_id");
     var count = await models.Setup.countDocuments(search);
