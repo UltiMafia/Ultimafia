@@ -438,7 +438,14 @@ var schemas = {
       },
     ],
     skillRefunded: { type: Boolean, default: false },
-  }),
+  })
+    // Profile game counts and the paged game history filter on users and
+    // sort by endTime; without this both were full collection scans.
+    .index({ users: 1, endTime: -1 })
+    // Setup page "played" count (setup + endTime).
+    .index({ setup: 1, endTime: -1 })
+    // Site activity / recent-games windows filter on startTime.
+    .index({ startTime: -1 }),
   ArchivedGame: new mongoose.Schema({
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -733,7 +740,9 @@ var schemas = {
     icon: String,
     link: String,
     read: { type: Boolean, default: false, index: true },
-  }),
+  })
+    // Unread-notification query polled by every open tab.
+    .index({ user: 1, isChat: 1, read: 1 }),
   Friend: new mongoose.Schema(
     {
       userId: { type: String, index: true },
