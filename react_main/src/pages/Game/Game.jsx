@@ -209,8 +209,10 @@ export default function Game() {
   // Set when a participant rehosts this finished game:
   // { gameId, hostId, hostName, setup }
   const [rehostInvite, setRehostInvite] = useState(null);
-  // How many action lists are showing the invite (see RehostInvite).
-  const [rehostInviteSlots, setRehostInviteSlots] = useState(0);
+  // Places that can show the invite (see RehostInvite).
+  const [rehostInviteSlots, setRehostInviteSlots] = useState([]);
+  const rehostInviteSlotsRef = useRef([]);
+  rehostInviteSlotsRef.current = rehostInviteSlots;
 
   const playersRef = useRef();
   const rehostInviteSeenRef = useRef(false);
@@ -681,9 +683,11 @@ export default function Game() {
     socket.on("rehosted", (info) => {
       if (!info || !info.gameId) return;
 
-      // On phones the invite lives in the Actions tab; open it the first time.
-      if (!rehostInviteSeenRef.current && isPhoneDeviceRef.current)
-        setSelectedPanel("actions");
+      // On phones, open the tab that shows the invite the first time.
+      if (!rehostInviteSeenRef.current && isPhoneDeviceRef.current) {
+        const inActions = rehostInviteSlotsRef.current.some((s) => s.priority === 0);
+        setSelectedPanel(inActions ? "actions" : "players");
+      }
       rehostInviteSeenRef.current = true;
       setRehostInvite(info);
     });
@@ -1151,6 +1155,7 @@ export default function Game() {
       noLeaveRef,
       rehostInvite: rehostInvite,
       onJoinRehostClick: onJoinRehostClick,
+      rehostInviteSlots: rehostInviteSlots,
       setRehostInviteSlots: setRehostInviteSlots,
       dev: dev,
       hostId: hostId,
@@ -1203,7 +1208,6 @@ export default function Game() {
             {gameType === "Chess" && <ChessGame />}
           </Box>
         </Stack>
-        {rehostInviteSlots === 0 && <RehostInvite floating />}
         <UrgencyOverlay hidden={!isUrgent} />
         {!review && history.currentState == -1 && (
           <PushNotificationPrompt socket={socket} />
@@ -1254,95 +1258,84 @@ export default function Game() {
 }
 
 /**
- * "Rehosted: <setup>" button shown to everyone left in the postgame lobby when
- * someone rehosts. Clicking anywhere on it leaves this game and joins the new
- * one. It sits under the postgame actions (the kudos vote); game layouts
- * without a main action list get it pinned to the top of the page instead.
+ * Shown to everyone left in the postgame lobby when someone rehosts: a
+ * "Rehosted:" card with the new game's setup, and a "Leave & Join New Game"
+ * button under it that leaves this game and joins the new one.
+ *
+ * It is rendered inline in exactly one place per layout. Candidates register
+ * with a priority and the best one wins:
+ *   0 - the main action list (Mafia etc.: right under the kudos vote)
+ *   1 - a filtered action list (games whose action list only holds kicks)
+ *   2 - the bottom of the player list (games without an action list)
  */
-function RehostInvite({ floating = false }) {
+function RehostInvite({ priority = 0 }) {
   const game = useContext(GameContext);
   const invite = game.rehostInvite;
   const setup = (invite && invite.setup) || game.setup;
-  const { setRehostInviteSlots } = game;
+  const { rehostInviteSlots, setRehostInviteSlots } = game;
+  const slotId = useRef(null);
+
+  if (slotId.current === null) slotId.current = ++rehostInviteSlotCounter;
 
   useEffect(() => {
-    if (floating || !setRehostInviteSlots) return;
+    if (!setRehostInviteSlots) return;
 
-    setRehostInviteSlots((n) => n + 1);
-    return () => setRehostInviteSlots((n) => n - 1);
-  }, [floating, setRehostInviteSlots]);
+    const slot = { id: slotId.current, priority };
+    setRehostInviteSlots((slots) => [...slots, slot]);
+    return () =>
+      setRehostInviteSlots((slots) => slots.filter((s) => s.id !== slot.id));
+  }, [priority, setRehostInviteSlots]);
 
   if (!invite || game.review) return null;
 
-  function onClick(e) {
-    // The setup card has its own popovers; the whole invite is one button.
-    e.preventDefault();
-    e.stopPropagation();
-    game.onJoinRehostClick();
-  }
-
-  const button = (
-    <Box
-      role="button"
-      tabIndex={0}
-      data-testid="rehost-invite"
-      aria-label={`Rehosted: ${setup ? setup.name : "new game"}. Join new game`}
-      title={
-        invite.hostName
-          ? `Rehosted by ${invite.hostName}. Click to join.`
-          : "Click to join."
-      }
-      onClickCapture={onClick}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") onClick(e);
-      }}
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 1,
-        p: 1,
-        mt: floating ? 0 : 1,
-        minWidth: 0,
-        cursor: "pointer",
-        border: 2,
-        borderColor: "primary.main",
-        borderRadius: 1,
-        bgcolor: floating ? "background.paper" : undefined,
-        "&:hover, &:focus-visible": { bgcolor: "action.hover", outline: "none" },
-        "& .setup": { pointerEvents: "none" },
-      }}
-    >
-      <Typography
-        variant="subtitle2"
-        sx={{ fontWeight: 700, flexShrink: 0, color: "primary.main" }}
-      >
-        Rehosted:
-      </Typography>
-      <Box sx={{ flex: 1, minWidth: 0 }}>
-        {setup && <Setup setup={setup} disablePopover />}
-      </Box>
-    </Box>
+  const best = (rehostInviteSlots || []).reduce(
+    (a, b) =>
+      !a || b.priority < a.priority || (b.priority === a.priority && b.id < a.id)
+        ? b
+        : a,
+    null
   );
-
-  if (!floating) return button;
+  if (!best || best.id !== slotId.current) return null;
 
   return (
-    <Box
-      sx={{
-        position: "fixed",
-        top: 72,
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: (theme) => theme.zIndex.snackbar,
-        width: "min(420px, calc(100vw - 32px))",
-        boxShadow: 6,
-        borderRadius: 1,
-      }}
+    <Stack
+      spacing={1}
+      data-testid="rehost-invite"
+      sx={{ p: 1, mt: 1, minWidth: 0, border: 2, borderColor: "primary.main", borderRadius: 1 }}
     >
-      {button}
-    </Box>
+      <Stack direction="row" sx={{ alignItems: "center", gap: 1, minWidth: 0 }}>
+        <Typography
+          variant="subtitle2"
+          sx={{ fontWeight: 700, flexShrink: 0, color: "primary.main" }}
+        >
+          Rehosted:
+        </Typography>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          {setup && <Setup setup={setup} />}
+        </Box>
+      </Stack>
+      <Button
+        variant="contained"
+        color="primary"
+        size="large"
+        fullWidth
+        data-testid="rehost-join"
+        onClick={game.onJoinRehostClick}
+        startIcon={<i className="fas fa-sign-in-alt" />}
+        sx={{ minHeight: 48, fontWeight: 700 }}
+      >
+        Leave & Join New Game
+      </Button>
+      {invite.hostName && (
+        <Typography variant="caption" sx={{ opacity: 0.7, textAlign: "center" }}>
+          Rehosted by {invite.hostName}
+        </Typography>
+      )}
+    </Stack>
   );
 }
+
+let rehostInviteSlotCounter = 0;
 
 export function useSocketListeners(listeners, socket) {
   useEffect(() => {
@@ -3742,6 +3735,7 @@ export function PlayerList(props) {
             renderMarker={renderMarker}
             renderRowEnd={renderRowEnd}
           />
+          <RehostInvite priority={2} />
         </div>
       }
     />
@@ -3959,7 +3953,8 @@ export function ActionList({
   }
 
   if (hideIfEmpty && (!regularActionDescriptors || regularActionDescriptors.length === 0)) {
-    return null;
+    // Kick-only lists still host the rehost invite in games without a main list
+    return bare ? null : <RehostInvite priority={1} />;
   }
 
   const actionElements = (regularActionDescriptors || []).map(
@@ -3983,7 +3978,7 @@ export function ActionList({
       content={
         <div className="action-list">
           {actionElements}
-          {!meetingFilter && <RehostInvite />}
+          <RehostInvite priority={meetingFilter ? 1 : 0} />
         </div>
       }
     />
