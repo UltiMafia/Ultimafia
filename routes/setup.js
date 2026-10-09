@@ -25,6 +25,10 @@ function canModifySetup(setup) {
   return !setup.ranked && !setup.competitive;
 }
 
+function requestFlag(value) {
+  return value === true || value === "true" || value === "1";
+}
+
 function markFavSetups(userId, setups) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -959,6 +963,94 @@ router.post("/archive", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not archive setup. Please try again.");
+  }
+});
+
+function sendRestoreBlocker(res, blockers) {
+  const cap = (blockers || []).find((item) => item.code === "cap");
+  if (cap) {
+    errors.conflict(
+      res,
+      `Target has ${cap.owned} setups and this restore adds ${cap.adding}, over the ${cap.max} limit.`
+    );
+    return;
+  }
+
+  const code = blockers[0] && blockers[0].code;
+  if (code === "targetMissing" || code === "fromUserMissing") {
+    errors.notFound(res, "That user does not exist.");
+    return;
+  }
+  if (code === "targetDeleted") {
+    errors.conflict(res, "That account is deleted.");
+    return;
+  }
+  if (code === "targetBanned") {
+    errors.conflict(res, "That account is banned.");
+    return;
+  }
+  if (code === "targetSystem") {
+    errors.conflict(res, "That account cannot own setups.");
+    return;
+  }
+  if (code === "missingSelection") {
+    errors.badRequest(res, "Provide setupIds or fromUserId.");
+    return;
+  }
+  errors.conflict(res, "Restore cannot proceed.");
+}
+
+router.post("/restore", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(userId, "restoreSetup"))) {
+      errors.forbidden(res, "You do not have the required permissions.");
+      return;
+    }
+
+    const query = req.query || {};
+    const body = req.body || {};
+    const dryRun = requestFlag(query.dryRun) || requestFlag(body.dryRun);
+    const unarchive = !(body.unarchive === false || body.unarchive === "false");
+    const reassignGuides = requestFlag(body.reassignGuides);
+
+    const loaded = await setupArchive.loadRestoreRequest(body);
+    const plan = await setupArchive.planRestore(loaded, {
+      unarchive,
+      reassignGuides,
+    });
+
+    if (dryRun) {
+      res.send(Object.assign({ dryRun: true }, plan.public));
+      return;
+    }
+
+    if (plan.hardBlockers.length) {
+      sendRestoreBlocker(res, plan.hardBlockers);
+      return;
+    }
+
+    const { restored } = await setupArchive.applyRestore(plan, userId, {
+      unarchive,
+      reassignGuides,
+    });
+    const restoredIds = (restored || [])
+      .filter((row) => row && !row.skipped)
+      .map((row) => row.id);
+
+    if (restoredIds.length) {
+      await setupArchive.clearSetupListCaches();
+      await routeUtils.createModAction(userId, "Restore Setups", [
+        `to:${loaded.toUserId}`,
+        `from:${loaded.fromUserId || "setupIds"}`,
+        ...restoredIds,
+      ]);
+    }
+
+    res.send(Object.assign({ dryRun: false, restored }, plan.public));
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not restore setups. Please try again.");
   }
 });
 

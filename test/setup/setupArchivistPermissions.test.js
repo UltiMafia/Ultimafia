@@ -117,6 +117,7 @@ const PATHS = [
   "clearName",
   "clearDescription",
   "host",
+  "restore",
 ];
 
 function chain(value) {
@@ -195,6 +196,8 @@ function decide(path, role, kind) {
       return perms.has("clearSetupName") ? "allow" : "deny";
     case "host":
       return isCreator || role === "admin" ? "allow" : "deny";
+    case "restore":
+      return perms.has("restoreSetup") ? "allow" : "deny";
     default:
       return "deny";
   }
@@ -213,7 +216,9 @@ function setupRecord(kind, path) {
     ranked: false,
     competitive: false,
     featured: false,
-    archived: path === "host",
+    archived: path === "host" || path === "restore",
+    archivedReason: path === "restore" ? "ownerDeleted" : undefined,
+    originalCreator: path === "restore" ? creatorOid : undefined,
     creator: bot
       ? {
           _id: botOid,
@@ -223,7 +228,7 @@ function setupRecord(kind, path) {
       : {
           _id: creatorOid,
           id: "regular1",
-          deleted: path === "archive",
+          deleted: path === "archive" || path === "restore",
         },
   };
   doc.toJSON = function () {
@@ -258,6 +263,7 @@ describe("SetupArchivistBot permissions", function () {
     clearName: handlerFor(modRouter, "post", "/clearSetupName"),
     clearDescription: handlerFor(modRouter, "post", "/clearSetupDescription"),
     host: handlerFor(gameRouter, "post", "/host"),
+    restore: handlerFor(setupRouter, "post", "/restore"),
     search: handlerFor(userRouter, "get", "/searchName"),
   };
   const originals = {};
@@ -268,8 +274,14 @@ describe("SetupArchivistBot permissions", function () {
     originals.userAggregate = models.User.aggregate;
     originals.userUpdate = models.User.updateOne;
     originals.setupFind = models.Setup.findOne;
+    originals.setupFindMany = models.Setup.find;
     originals.setupUpdate = models.Setup.updateOne;
     originals.setupUpdateMany = models.Setup.updateMany;
+    originals.strategyCount = models.Strategy.countDocuments;
+    originals.strategyUpdate = models.Strategy.updateMany;
+    originals.gameCount = models.Game.countDocuments;
+    originals.userCount = models.User.countDocuments;
+    originals.voteCount = models.ForumVote.countDocuments;
     originals.version = models.SetupVersion;
     originals.leave = models.LeavePenalty.findOne;
     originals.verify = routeUtils.verifyLoggedIn;
@@ -290,8 +302,14 @@ describe("SetupArchivistBot permissions", function () {
     models.User.aggregate = originals.userAggregate;
     models.User.updateOne = originals.userUpdate;
     models.Setup.findOne = originals.setupFind;
+    models.Setup.find = originals.setupFindMany;
     models.Setup.updateOne = originals.setupUpdate;
     models.Setup.updateMany = originals.setupUpdateMany;
+    models.Strategy.countDocuments = originals.strategyCount;
+    models.Strategy.updateMany = originals.strategyUpdate;
+    models.Game.countDocuments = originals.gameCount;
+    models.User.countDocuments = originals.userCount;
+    models.ForumVote.countDocuments = originals.voteCount;
     models.SetupVersion = originals.version;
     models.LeavePenalty.findOne = originals.leave;
     routeUtils.verifyLoggedIn = originals.verify;
@@ -329,13 +347,29 @@ describe("SetupArchivistBot permissions", function () {
       if (query && query.id === constants.SETUP_ARCHIVIST_BOT_ID) {
         return chain({ _id: botOid, id: constants.SETUP_ARCHIVIST_BOT_ID });
       }
+      if (query && query.id === "target1") {
+        return chain({
+          _id: "507f1f77bcf86cd799439015",
+          id: "target1",
+          deleted: false,
+          banned: false,
+          systemAccount: false,
+          setups: [],
+        });
+      }
       if (query && query.id === actorId) {
         return chain(editorDoc(actorId, opts && opts.full));
       }
       return chain(null);
     };
     models.User.updateOne = () => chain({});
+    models.User.countDocuments = async () => 0;
     models.Setup.findOne = () => chain(setupRecord(kind, path));
+    models.Setup.find = () => chain([setupRecord(kind, path)]);
+    models.Strategy.countDocuments = async () => 0;
+    models.Strategy.updateMany = () => chain({});
+    models.Game.countDocuments = async () => 0;
+    models.ForumVote.countDocuments = async () => 0;
     models.Setup.updateOne = (query, update) => {
       updates.push({ query, update });
       return chain({});
@@ -390,6 +424,13 @@ describe("SetupArchivistBot permissions", function () {
     if (path === "delete" || path === "archive") {
       return { body: { id: "setup1" }, session: {} };
     }
+    if (path === "restore") {
+      return {
+        body: { toUserId: "target1", setupIds: ["setup1"] },
+        query: {},
+        session: {},
+      };
+    }
     if (path === "host") {
       return {
         body: {
@@ -430,6 +471,7 @@ describe("SetupArchivistBot permissions", function () {
     should.exist(handlers.edit);
     should.exist(handlers.host);
     should.exist(handlers.clearName);
+    should.exist(handlers.restore);
   });
 
   for (const path of PATHS) {

@@ -1,6 +1,8 @@
+const mongoose = require("mongoose");
 const models = require("../db/models");
 const constants = require("../data/constants");
 const routeUtils = require("../routes/utils");
+const redis = require("./redis");
 const logger = require("./logging")(".");
 
 const SETUP_ARCHIVIST_BOT_ID = constants.SETUP_ARCHIVIST_BOT_ID;
@@ -317,6 +319,419 @@ async function resolveUserRef(by) {
   return user ? user._id : null;
 }
 
+const FEATURED_SETUP_CACHE_KEYS = [
+  "game:featuredSetup:classic",
+  "game:featuredSetup:main",
+  "game:featuredSetup:minigames",
+];
+
+function originalCreatorId(setup) {
+  const value = setup && setup.originalCreator;
+  if (!value) return null;
+  if (typeof value === "object" && value._id) return value._id;
+  return value;
+}
+
+function creatorInfo(setup) {
+  const creator = setup && setup.creator;
+  if (!creator) return { id: null, oid: null, deleted: false, bot: false };
+  if (typeof creator === "object" && (creator.id || creator._id)) {
+    const id = typeof creator.id === "string" ? creator.id : null;
+    return {
+      id,
+      oid: creator._id || null,
+      deleted: !!creator.deleted,
+      bot: id === SETUP_ARCHIVIST_BOT_ID || !!creator.systemAccount,
+    };
+  }
+  return { id: null, oid: creator, deleted: false, bot: false };
+}
+
+// ownerDeleted archives, setups still on a deleted user, and bot-owned
+// setups that recorded an originalCreator (including a stale transfer).
+function classifyForRestore(setup, target) {
+  if (!setup) return { status: "skip", reason: "missing" };
+
+  const info = creatorInfo(setup);
+  const targetOid = target && target._id;
+  const ownedByTarget =
+    (info.oid && targetOid && String(info.oid) === String(targetOid)) ||
+    (info.id && target && info.id === target.id);
+  if (ownedByTarget) return { status: "already", reason: "alreadyTarget" };
+
+  const liveOwner = info.oid && !info.deleted && !info.bot;
+  if (liveOwner) return { status: "skip", reason: "liveOwner" };
+
+  // A stale transfer is bot-owned, archived, and still remembers who owned it.
+  // #2706 rows have no originalCreator; archivedReason ownerDeleted covers them.
+  const fromDeletedAccount =
+    info.bot && !!originalCreatorId(setup) && setup.archived === true;
+  if (
+    setup.archivedReason === "ownerDeleted" ||
+    info.deleted ||
+    fromDeletedAccount
+  ) {
+    return { status: "restore" };
+  }
+  return { status: "skip", reason: "ineligible" };
+}
+
+async function loadRestoreRequest(body) {
+  const source = body || {};
+  const toUserId = source.toUserId ? String(source.toUserId) : "";
+  const fromUserId = source.fromUserId ? String(source.fromUserId) : "";
+  const setupIds = Array.isArray(source.setupIds)
+    ? source.setupIds.map((id) => String(id)).filter(Boolean)
+    : [];
+  const blockers = [];
+
+  if (!toUserId) blockers.push({ code: "targetMissing" });
+
+  const target = toUserId
+    ? await models.User.findOne({ id: toUserId })
+        .select("_id id deleted banned setups systemAccount")
+        .lean()
+    : null;
+  if (toUserId && !target) blockers.push({ code: "targetMissing" });
+  else if (target && target.deleted) blockers.push({ code: "targetDeleted" });
+  else if (target && target.banned) blockers.push({ code: "targetBanned" });
+  else if (target && target.systemAccount) blockers.push({ code: "targetSystem" });
+
+  let setups = [];
+  if (setupIds.length) {
+    const found = await models.Setup.find({ id: { $in: setupIds } })
+      .select(
+        "_id id name creator originalCreator archived archivedReason played favorites voteCount upVotes downVotes"
+      )
+      .populate("creator", "_id id deleted systemAccount")
+      .populate("originalCreator", "_id id")
+      .lean();
+    const byId = new Map((found || []).map((setup) => [setup.id, setup]));
+    for (const id of setupIds) {
+      if (!byId.has(id)) blockers.push({ code: "setupMissing", id });
+    }
+    setups = setupIds.map((id) => byId.get(id)).filter(Boolean);
+  } else if (fromUserId) {
+    const fromUser = await models.User.findOne({ id: fromUserId })
+      .select("_id id")
+      .lean();
+    if (!fromUser) {
+      blockers.push({ code: "fromUserMissing" });
+    } else {
+      setups = await models.Setup.find({
+        $or: [{ originalCreator: fromUser._id }, { creator: fromUser._id }],
+      })
+        .select(
+          "_id id name creator originalCreator archived archivedReason played favorites voteCount upVotes downVotes"
+        )
+        .populate("creator", "_id id deleted systemAccount")
+        .populate("originalCreator", "_id id")
+        .lean();
+    }
+  } else if (toUserId) {
+    blockers.push({ code: "missingSelection" });
+  }
+
+  return { target, setups: setups || [], blockers, toUserId, fromUserId, setupIds };
+}
+
+function addingCount(target, setups) {
+  const owned = new Set((target.setups || []).map((id) => String(id)));
+  let adding = 0;
+  for (const setup of setups) {
+    if (!owned.has(String(setup._id))) adding += 1;
+  }
+  return { owned: (target.setups || []).length, adding };
+}
+
+async function linkedCounts(setups) {
+  if (!setups.length) return { guides: 0, games: 0, favorites: 0, votes: 0 };
+  const ids = setups.map((setup) => setup._id);
+  const publicIds = setups.map((setup) => setup.id);
+  const [guides, games, favorites, votes] = await Promise.all([
+    models.Strategy.countDocuments({ setup: { $in: ids } }),
+    models.Game.countDocuments({ setup: { $in: ids } }),
+    models.User.countDocuments({ favSetups: { $in: ids } }),
+    models.ForumVote.countDocuments({ item: { $in: publicIds } }),
+  ]);
+  return { guides, games, favorites, votes };
+}
+
+const HARD_BLOCKERS = new Set([
+  "targetMissing",
+  "targetDeleted",
+  "targetBanned",
+  "targetSystem",
+  "missingSelection",
+  "fromUserMissing",
+  "cap",
+]);
+
+async function planRestore(loaded, opts) {
+  const blockers = (loaded.blockers || []).slice();
+  const rows = [];
+  const restoring = [];
+  const targetOk = loaded.target && !blockers.some((item) => HARD_BLOCKERS.has(item.code));
+
+  if (targetOk) {
+    for (const setup of loaded.setups) {
+      const row = classifyForRestore(setup, loaded.target);
+      rows.push({
+        id: setup.id,
+        name: setup.name,
+        status: row.status,
+        reason: row.reason || null,
+      });
+      if (row.status === "restore") restoring.push(setup);
+      if (
+        row.status === "already" &&
+        opts.unarchive !== false &&
+        setup.archived
+      ) {
+        restoring.push(setup);
+      }
+    }
+    const cap = addingCount(
+      loaded.target,
+      restoring.filter((setup) => classifyForRestore(setup, loaded.target).status === "restore")
+    );
+    if (cap.owned + cap.adding > constants.maxOwnedSetups) {
+      blockers.push({
+        code: "cap",
+        owned: cap.owned,
+        adding: cap.adding,
+        max: constants.maxOwnedSetups,
+      });
+    }
+  }
+
+  const hardBlockers = blockers.filter((item) => HARD_BLOCKERS.has(item.code));
+  // Counts stay visible on a dry run even when a hard blocker refuses the write.
+  const counts = await linkedCounts(restoring);
+
+  return {
+    hardBlockers,
+    restoring: hardBlockers.length ? [] : restoring,
+    target: loaded.target,
+    public: {
+      toUserId: loaded.toUserId,
+      fromUserId: loaded.fromUserId || null,
+      unarchive: opts.unarchive !== false,
+      reassignGuides: opts.reassignGuides === true,
+      setups: rows,
+      skipped: rows.filter((row) => row.status === "skip"),
+      counts,
+      blockers,
+    },
+  };
+}
+
+async function withOptionalTransaction(work) {
+  const conn = mongoose.connection;
+  if (!conn || conn.readyState !== 1 || !conn.db) return work(null);
+
+  let replica = false;
+  try {
+    const hello = await conn.db.admin().command({ hello: 1 });
+    replica = !!(hello && (hello.setName || hello.msg === "isdbgrid"));
+  } catch (e) {
+    replica = false;
+  }
+  if (!replica) return work(null);
+
+  let session;
+  try {
+    session = await mongoose.startSession();
+    let result;
+    await session.withTransaction(async () => {
+      result = await work(session);
+    });
+    return result;
+  } catch (e) {
+    logger.error(e);
+    throw e;
+  } finally {
+    if (session) await session.endSession();
+  }
+}
+
+async function applyOneRestore(setup, target, by, opts, session) {
+  const fromId = creatorObjectId(setup);
+  const targetId = target._id;
+  const already = fromId && String(fromId) === String(targetId);
+  const writeOpts = session ? { session } : undefined;
+
+  if (!already) {
+    if (fromId) {
+      await models.User.updateOne(
+        { _id: fromId },
+        { $pull: { setups: setup._id } },
+        writeOpts
+      ).exec();
+    }
+    await models.User.updateOne(
+      { _id: targetId },
+      { $addToSet: { setups: setup._id } },
+      writeOpts
+    ).exec();
+
+    const byRef = await resolveUserRef(by);
+    const entry = {
+      from: fromId,
+      to: targetId,
+      at: Date.now(),
+      reason: "restore",
+    };
+    if (byRef) entry.by = byRef;
+
+    await models.Setup.updateOne(
+      { _id: setup._id },
+      { $set: { creator: targetId }, $push: { ownershipHistory: entry } },
+      writeOpts
+    ).exec();
+  }
+
+  if (opts.unarchive !== false && setup.archived) {
+    await models.Setup.updateOne(
+      { _id: setup._id },
+      {
+        $set: { archived: false },
+        $unset: { archivedAt: "", archivedBy: "", archivedReason: "" },
+      },
+      writeOpts
+    ).exec();
+  }
+
+  if (opts.reassignGuides === true) {
+    const authorId = originalCreatorId(setup);
+    if (authorId) {
+      await models.Strategy.updateMany(
+        { setup: setup._id, author: authorId },
+        { $set: { author: targetId } },
+        writeOpts
+      ).exec();
+    }
+  }
+
+  return { id: setup.id, already: !!already };
+}
+
+async function applyRestore(plan, by, opts) {
+  const restored = [];
+  await withOptionalTransaction(async (session) => {
+    for (const setup of plan.restoring) {
+      if (!(await canManageSetup(by, setup, "restore"))) {
+        restored.push({ id: setup.id, skipped: "forbidden" });
+        continue;
+      }
+      restored.push(await applyOneRestore(setup, plan.target, by, opts, session));
+    }
+  });
+  return { restored };
+}
+
+async function clearSetupListCaches() {
+  if (!redis.client || typeof redis.client.delAsync !== "function") return;
+  for (const key of FEATURED_SETUP_CACHE_KEYS) {
+    try {
+      await redis.client.delAsync(key);
+    } catch (e) {
+      logger.error(e);
+    }
+  }
+}
+
+async function isSiteOwner(userId) {
+  if (!userId) return false;
+  const user = await models.User.findOne({ id: userId, deleted: false })
+    .select("_id")
+    .lean();
+  if (!user) return false;
+  const group = await models.Group.findOne({ name: /^Owner$/i })
+    .select("_id")
+    .lean();
+  if (!group) return false;
+  const membership = await models.InGroup.findOne({
+    user: user._id,
+    group: group._id,
+  })
+    .select("_id")
+    .lean();
+  return Boolean(membership);
+}
+
+function hasActivityStamp(setup) {
+  return [setup.lastPlayedAt, setup.updatedAt, setup.createdAt].some(
+    (value) => value !== undefined && value !== null && value !== ""
+  );
+}
+
+async function planStaleArchive(now) {
+  const at = now == null ? Date.now() : now;
+  const candidates = await models.Setup.find({
+    archived: { $ne: true },
+    creator: { $exists: true },
+  })
+    .select(
+      "id name played featured ranked competitive favorites lastPlayedAt updatedAt createdAt creator archived"
+    )
+    .populate("creator", "id deleted")
+    .lean();
+
+  const matched = [];
+  const exempt = {
+    featured: [],
+    ranked: [],
+    competitive: [],
+    played: [],
+    recent: [],
+    noActivity: [],
+  };
+
+  for (const setup of candidates || []) {
+    if (!setup || setup.archived === true) continue;
+    if (setup.featured) {
+      exempt.featured.push(setup.id);
+      continue;
+    }
+    if (setup.ranked) {
+      exempt.ranked.push(setup.id);
+      continue;
+    }
+    if (setup.competitive) {
+      exempt.competitive.push(setup.id);
+      continue;
+    }
+    const playedNum = Number(setup.played);
+    const played = Number.isFinite(playedNum) ? playedNum : 0;
+    if (played >= 30) {
+      exempt.played.push(setup.id);
+      continue;
+    }
+    if (isStale(setup, at)) {
+      const creatorDeleted = !!(setup.creator && setup.creator.deleted);
+      matched.push({
+        id: setup.id,
+        name: setup.name,
+        played,
+        favorites: setup.favorites || 0,
+        creatorDeleted,
+        transfer: creatorDeleted,
+      });
+      continue;
+    }
+    if (!hasActivityStamp(setup)) exempt.noActivity.push(setup.id);
+    else exempt.recent.push(setup.id);
+  }
+
+  return {
+    matched,
+    exempt,
+    count: matched.length,
+    transfers: matched.filter((row) => row.transfer).map((row) => row.id),
+  };
+}
+
 module.exports = {
   SETUP_ARCHIVIST_BOT_ID,
   SIX_MONTHS_MS,
@@ -333,4 +748,11 @@ module.exports = {
   archivedListFilter,
   applyArchivedFilter,
   isAdminPlus,
+  loadRestoreRequest,
+  planRestore,
+  applyRestore,
+  classifyForRestore,
+  clearSetupListCaches,
+  isSiteOwner,
+  planStaleArchive,
 };
