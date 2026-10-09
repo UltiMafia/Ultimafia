@@ -1,13 +1,14 @@
 const Card = require("../../Card");
 const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 const { addArticle } = require("../../../../core/Utils");
+const { attachConversionPhase } = require("../../const/ConversionPhases");
 module.exports = class ConvertToChosenRole extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
       "Select Player": {
-        states: ["Night"],
+        states: ["Night (Converting)"],
         flags: ["voting"],
         targets: { include: ["alive", "self"] },
         action: {
@@ -19,7 +20,7 @@ module.exports = class ConvertToChosenRole extends Card {
         },
       },
       "Convert To": {
-        states: ["Night"],
+        states: ["Night (Converting)"],
         flags: ["voting"],
         inputType: "AllRoles",
         //targets: { targetOptions },
@@ -48,6 +49,7 @@ module.exports = class ConvertToChosenRole extends Card {
                 }
               }
 
+              const wasDemon = this.game.isDemonPlayer(targetPlayer);
               if (
                 this.game.getRoleAlignment(this.target) != "Independent" &&
                 targetPlayer.role.alignment != "Independent"
@@ -61,6 +63,11 @@ module.exports = class ConvertToChosenRole extends Card {
                     false,
                     "No Change"
                   );
+                  this.game.noteMigoNewDemon(
+                    this.actor,
+                    targetPlayer,
+                    wasDemon
+                  );
                 }
               } else if (
                 this.game.getRoleAlignment(this.target) == "Independent" &&
@@ -68,6 +75,11 @@ module.exports = class ConvertToChosenRole extends Card {
               ) {
                 if (this.dominates(targetPlayer)) {
                   targetPlayer.setRole(`${this.target}`);
+                  this.game.noteMigoNewDemon(
+                    this.actor,
+                    targetPlayer,
+                    wasDemon
+                  );
                 }
               }
               delete this.role.data.targetPlayer;
@@ -76,5 +88,6 @@ module.exports = class ConvertToChosenRole extends Card {
         },
       },
     };
+    attachConversionPhase(this, "Night (Converting)");
   }
 };

@@ -62,6 +62,7 @@ module.exports = class MafiaAction extends Action {
 
   blockActions(target, label, exclude) {
     target = target || this.target;
+    if (target) target.nightRoleblocked = true;
 
     for (let action of this.game.actions[0]) {
       if (label && !action.hasLabel(label)) {
