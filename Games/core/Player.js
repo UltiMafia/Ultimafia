@@ -981,6 +981,8 @@ module.exports = class Player {
       customStickers: this.user.customStickers,
       birthday: this.user.birthday,
       vanityUrl: this.user.vanityUrl,
+      // Anonymous players show their deck avatar, never their own shape.
+      avatarShape: this.anonId === undefined ? this.user.avatarShape : "circle",
       playerListPosition: this.game?.players?.indexOf(this),
     };
 

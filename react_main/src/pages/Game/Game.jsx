@@ -122,6 +122,7 @@ import ReadyCheckDialog from "./components/ReadyCheck";
 import PushNotificationPrompt from "./components/PushNotificationPrompt";
 import { releaseSubscription } from "utils/pushNotifications";
 import RoleMarkerToggle from "./components/RoleMarkerToggle";
+import { playerNameWithAvatarProps } from "./playerDisplay";
 import {
   KudosOverlay,
   KudosPanel,
@@ -3459,11 +3460,6 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
       }
     }
 
-    let avatarId;
-    if (player !== undefined) {
-      avatarId = player.anonId === undefined ? player.userId : player.anonId;
-    }
-
     const readyCheck = readyCheckInfo?.active;
     const isReady = readyCheck && readyCheckInfo.readyPlayers[player.id];
 
@@ -3506,28 +3502,8 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
         {(() => {
           const nameWithAvatar = (
             <NameWithAvatar
-              id={player.userId}
-              avatarId={avatarId}
-              name={player.name}
-              avatar={player.avatar}
+              {...playerNameWithAvatarProps(player, { user, theme })}
               dead={className === "dead"}
-              color={resolveDisplayNameColor({
-                accessibleNameColors,
-                ignoreTextColor: user.settings?.ignoreTextColor,
-                rawNameColor: player.nameColor,
-                autoContrastColor: user.autoContrastColor.bind(user),
-                theme,
-              })}
-              nameColorSwatch={
-                accessibleNameColors && player.nameColor
-                  ? player.nameColor
-                  : undefined
-              }
-              nameFont={player.nameFont}
-              animatedNameColor={player.animatedNameColor}
-              nameGradientColorA={player.nameGradientColorA}
-              nameGradientColorB={player.nameGradientColorB}
-              nameGradientColorC={player.nameGradientColorC}
               active={activity.speaking[player.id]}
               noLink={stateViewing >= 0 && game.options.anonymousGame}
               includeMiniprofile
