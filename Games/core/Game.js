@@ -31,6 +31,7 @@ const routeUtils = require("../../routes/utils");
 const PostgameMeeting = require("./PostgameMeeting");
 const { KudosVote, isWinLossResult, pickBotVote } = require("./Kudos");
 const dbStats = require("../../db/stats");
+const { isTestBotPlayer } = require("./botPlayers");
 const VegKickMeeting = require("./VegKickMeeting");
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
@@ -80,6 +81,9 @@ module.exports = class Game {
     this.anonymousDeck = options.settings.anonymousDeck;
     this.heartsChargedAtStart = false;
     this.heartsRefundedOnIntegrityBreak = false;
+    // Who was charged at start, and who has had that heart given back.
+    this.heartsCharged = null; // { userIds, red, gold }
+    this.heartsRefundedUserIds = new Set();
     this.readyCountdownLength =
       options.settings.readyCountdownLength != null
         ? options.settings.readyCountdownLength
@@ -147,7 +151,8 @@ module.exports = class Game {
     /** @type {Record<string, string>} playerId -> starting faction key for stats/payouts */
     this.startingFactions = {};
     this.hadVegKill = false;
-    // Sticky: set once any bot is seated, even if it later leaves.
+    // Sticky: set once a dev test bot is seated, even if it later leaves.
+    // Guests don't count.
     this.hadBots = false;
 
     this.numHostInGame = 0;
@@ -528,7 +533,11 @@ module.exports = class Game {
           this.getTimeLeft("pregameWait") / 1000 / 60
         );
         this.players.push(player);
-        if (player.isBot) this.hadBots = true;
+        if (isTestBotPlayer(player)) {
+          this.hadBots = true;
+          // A bot game is free; give back hearts already charged.
+          await this.refundHeartsForBotGame();
+        }
 
         // If the original host is rejoining, restore their host status
         if (
@@ -838,6 +847,10 @@ module.exports = class Game {
       if (excludedPlayer && player.id === excludedPlayer.id) continue;
 
       const userId = player.userId || player.user.id;
+      if (this.heartsRefundedUserIds) {
+        if (this.heartsRefundedUserIds.has(userId)) continue;
+        this.heartsRefundedUserIds.add(userId);
+      }
       await models.User.updateOne(
         { id: userId },
         {
@@ -846,6 +859,48 @@ module.exports = class Game {
             goldHearts: wasCompetitive ? 1 : 0,
           },
         }
+      ).exec();
+      await redis.cacheUserInfo(userId, true);
+    }
+  }
+
+  // Ranked costs a red heart and competitive a gold one, charged at start.
+  // Games with a test bot in them are free.
+  async chargeHeartsAtStart() {
+    if (!this.ranked && !this.competitive) return;
+    if (this.hasTestBots()) return;
+    const charged = {
+      userIds: [],
+      red: this.ranked ? 1 : 0,
+      gold: this.competitive ? 1 : 0,
+    };
+    for (let player of this.players) {
+      if (player.isBot) continue;
+      const userId = player.userId || player.user.id;
+      await models.User.updateOne(
+        { id: userId },
+        { $inc: { redHearts: -charged.red, goldHearts: -charged.gold } }
+      ).exec();
+      await redis.cacheUserInfo(userId, true);
+      charged.userIds.push(userId);
+    }
+    this.heartsCharged = charged;
+    this.heartsChargedAtStart = true;
+  }
+
+  // Bot games don't cost hearts. Hearts are charged at start, so if a test
+  // bot turns up after that (or the start charge ran anyway), give every
+  // charged player their heart back, leavers included. Safe to call often.
+  async refundHeartsForBotGame() {
+    if (!this.heartsChargedAtStart || !this.heartsCharged) return;
+    if (!this.hasTestBots()) return;
+    const { userIds, red, gold } = this.heartsCharged;
+    for (const userId of userIds) {
+      if (this.heartsRefundedUserIds.has(userId)) continue;
+      this.heartsRefundedUserIds.add(userId);
+      await models.User.updateOne(
+        { id: userId },
+        { $inc: { redHearts: red, goldHearts: gold } }
       ).exec();
       await redis.cacheUserInfo(userId, true);
     }
@@ -1211,22 +1266,7 @@ module.exports = class Game {
 
     // Charge hearts at game start so players cannot queue extra games before deduction.
     if (this.ranked || this.competitive) {
-      for (let player of this.players) {
-        if (!player.isBot) {
-          const userId = player.userId || player.user.id;
-          await models.User.updateOne(
-            { id: userId },
-            {
-              $inc: {
-                redHearts: this.ranked ? -1 : 0,
-                goldHearts: this.competitive ? -1 : 0,
-              },
-            }
-          ).exec();
-          await redis.cacheUserInfo(userId, true);
-        }
-      }
-      this.heartsChargedAtStart = true;
+      await this.chargeHeartsAtStart();
 
       // Capture stock/shareholders snapshot for dividends
       this.shareholderSnapshots = {};
@@ -3093,32 +3133,30 @@ module.exports = class Game {
   }
 
   isKudosEligible() {
-    return this.ranked || this.competitive || this.hasDevBots();
+    return this.ranked || this.competitive || this.hasTestBots();
     //return true;
   }
 
-  // Any bot (a dev's "?bot" test player, or a guest) ever seated in this game.
-  // Kudos in such a game are a test run and are never saved.
-  hasBotPlayers() {
+  // A dev test bot (the Test button / "?bot") was ever seated in this game.
+  // Guests don't count. Such a game is a test run: kudos are on in test mode
+  // and never saved, and nothing that counts is recorded.
+  hasTestBots() {
     return (
-      !!this.hadBots || this.players.filter((p) => p && p.isBot).length > 0
+      !!this.hadBots ||
+      this.players.filter((p) => isTestBotPlayer(p)).length > 0
     );
   }
 
-  // A game with a bot in it must not change any player's score: no skill
-  // rating, no fortune/points, no competitive scoring, no setup/role win
-  // stats, no player win/loss stats, and no ranked-only rewards.
+  // A game with a test bot in it must not change any player's score: no
+  // skill rating, no fortune/points, no competitive scoring, no setup/role
+  // win stats, no player win/loss stats, no ranked-only rewards, no hearts.
   countsForRankings() {
-    return !this.hasBotPlayers();
+    return !this.hasTestBots();
   }
 
-  // Bots added by a dev (the Test button / "?bot"); guests don't count. These
-  // turn kudos on as a test mode in any game that ends in a real win/loss.
-  hasDevBots() {
-    return (
-      this.players.filter((p) => p && p.isBot && p.user && p.user.dev).length >
-      0
-    );
+  // Daily challenges don't pay or advance in a bot game.
+  dailyChallengesAllowed() {
+    return !this.hasTestBots();
   }
 
   // Opens postgame kudos voting for ranked/competitive games that ended in a
@@ -3148,9 +3186,10 @@ module.exports = class Game {
     if (candidates.length == 0) return;
 
     // In a bot game (test mode) bots vote too; nothing is saved.
-    const testMode = this.hasBotPlayers();
+    // Guests never vote (no account), test bots only in test mode.
+    const testMode = this.hasTestBots();
     const voters = this.players
-      .filter((p) => !p.left && (testMode || !p.isBot))
+      .filter((p) => !p.left && (!p.isBot || (testMode && isTestBotPlayer(p))))
       .map((p) => p.id);
 
     this.kudosVote = new KudosVote({ candidates, voters, testMode });
@@ -3169,8 +3208,7 @@ module.exports = class Game {
         row.candidates[Math.floor(Math.random() * row.candidates.length)];
     this.botKudosTimers = this.botKudosTimers || [];
     for (const player of this.players) {
-      if (player.left || !player.isBot || !player.user || !player.user.dev)
-        continue;
+      if (player.left || !isTestBotPlayer(player)) continue;
       if (!vote.voters.has(player.id)) continue;
       for (const row of vote.rows) {
         const delay = minDelay + Math.random() * (maxDelay - minDelay);
@@ -3205,7 +3243,7 @@ module.exports = class Game {
   // User ids to save as kudos receivers when the postgame closes. Bot games
   // (test mode) save nothing: no kudosReceivers, no user kudos increments.
   kudosReceiverUserIds() {
-    if (!this.kudosVote || this.kudosVote.testMode || this.hasBotPlayers())
+    if (!this.kudosVote || this.kudosVote.testMode || this.hasTestBots())
       return [];
     return this.kudosVote
       .awardedIds()
@@ -3493,6 +3531,7 @@ module.exports = class Game {
       }
 
       for (let player of this.players) {
+        if (!this.dailyChallengesAllowed()) break;
         if (player.CompletedDailyChallenges.length > 0) {
           for (let x = 0; x < player.CompletedDailyChallenges.length; x++) {
             //this.getDailyChallenge(player.CompletedDailyChallenges[x]);
@@ -4135,6 +4174,7 @@ module.exports = class Game {
 
         const countsForRankings = this.countsForRankings();
         if (countsForRankings) this.recordSetupStats(setup);
+        else await this.refundHeartsForBotGame();
 
         var history = this.history.getHistoryInfo(null, true);
         var users = [];
@@ -4276,7 +4316,9 @@ module.exports = class Game {
             player.EarnedAchievements = [];
           }
 
+          const dailyAllowed = this.dailyChallengesAllowed();
           if (
+            dailyAllowed &&
             this.hasIntegrity &&
             !this.private &&
             player.DailyTracker &&
@@ -4394,7 +4436,11 @@ module.exports = class Game {
             await syncRankedCompetitiveAccess(player.user.id);
           }
 
-          if (player.DailyTracker && player.DailyTracker.length >= 1) {
+          if (
+            dailyAllowed &&
+            player.DailyTracker &&
+            player.DailyTracker.length >= 1
+          ) {
             await models.User.updateOne(
               { id: player.user.id },
               {
@@ -4410,7 +4456,8 @@ module.exports = class Game {
             ).exec();
           }
 
-          if (this.ranked && !player.isBot) {
+          // A bot game cost no heart, so it doesn't start a refill timer.
+          if (this.ranked && !player.isBot && countsForRankings) {
             let heartRefresh = await models.HeartRefresh.findOne({
               userId: player.user.id,
               type: "red",

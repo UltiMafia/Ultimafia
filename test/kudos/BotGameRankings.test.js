@@ -7,11 +7,18 @@ const redis = require("../../modules/redis");
 const skillRating = require("../../modules/skillRating");
 const stockMarket = require("../../lib/StockMarket");
 
-// A game with a bot in it must not change anyone's score. These tests drive
+// A game with a dev test bot in it must not change anyone's score, cost
+// hearts or pay daily challenges. Guests are not bots. These tests drive
 // the real Game methods on a stub game, with the db/redis calls swapped for
 // recorders, so no database is needed.
 
-function stubGame({ ranked = true, competitive = false, bot = false } = {}) {
+function stubGame({
+  ranked = true,
+  competitive = false,
+  bot = false,
+  guest = false,
+  daily = false,
+} = {}) {
   const mk = (id, won) => ({
     id,
     name: id.toUpperCase(),
@@ -24,6 +31,18 @@ function stubGame({ ranked = true, competitive = false, bot = false } = {}) {
   if (bot) {
     list[2].isBot = true;
     list[2].user = { id: "bot-m1", dev: true, achievements: [] };
+  }
+  if (guest) {
+    // Guests join with isBot set too (no account), plus a guestId.
+    const p = bot ? list[1] : list[2];
+    p.isBot = true;
+    p.user = { id: `guest-${p.id}`, guestId: "g1", achievements: [] };
+  }
+  if (daily) {
+    // t1 finished a daily challenge worth 10 (and it was their last one).
+    list[0].DailyTracker = [{}];
+    list[0].DailyPayout = 10;
+    list[0].DailyCompleted = 1;
   }
   const players = new ArrayHash();
   for (const p of list) players.push(p);
@@ -38,6 +57,10 @@ function stubGame({ ranked = true, competitive = false, bot = false } = {}) {
     private: false,
     hasIntegrity: true,
     hadVegKill: false,
+    hadBots: false,
+    heartsChargedAtStart: false,
+    heartsCharged: null,
+    heartsRefundedUserIds: new Set(),
     players,
     playersGone: {},
     spectatorsOld: [],
@@ -63,7 +86,7 @@ function stubGame({ ranked = true, competitive = false, bot = false } = {}) {
     },
     async finalizePostgameCleanup() {},
   });
-  return { game, calls };
+  return { game, calls, players };
 }
 
 describe("Bot games don't affect rankings", function () {
@@ -71,12 +94,21 @@ describe("Bot games don't affect rankings", function () {
   let rec;
 
   beforeEach(function () {
-    rec = { games: [], userUpdates: [], ratings: 0, dividends: 0 };
-    const query = (v) => ({
-      lean: async () => v,
-      exec: async () => v,
-      then: (ok, bad) => Promise.resolve(v).then(ok, bad),
-    });
+    rec = {
+      games: [],
+      userUpdates: [],
+      ratings: 0,
+      dividends: 0,
+      heartRefreshes: 0,
+    };
+    function query(v) {
+      return {
+        lean: async () => v,
+        populate: () => query(v),
+        exec: async () => v,
+        then: (ok, bad) => Promise.resolve(v).then(ok, bad),
+      };
+    }
     const chain = (v) => ({ select: () => query(v), exec: async () => v });
     saved.models = { ...models };
     saved.cacheUserInfo = redis.cacheUserInfo;
@@ -103,7 +135,10 @@ describe("Bot games don't affect rankings", function () {
     };
     models.HeartRefresh = class {
       static findOne() {
-        return chain({ _id: "x" });
+        return chain(null); // no refill timer running yet
+      }
+      async save() {
+        rec.heartRefreshes++;
       }
     };
     models.DailyChallengeRefresh = class {
@@ -112,6 +147,8 @@ describe("Bot games don't affect rankings", function () {
       }
     };
     redis.cacheUserInfo = async () => {};
+    saved.refreshUserWinRates = Game.refreshUserWinRates;
+    Game.refreshUserWinRates = async () => {};
     skillRating.updateGameRatings = async () => {
       rec.ratings++;
     };
@@ -123,6 +160,7 @@ describe("Bot games don't affect rankings", function () {
   afterEach(function () {
     Object.assign(models, saved.models);
     redis.cacheUserInfo = saved.cacheUserInfo;
+    Game.refreshUserWinRates = saved.refreshUserWinRates;
     skillRating.updateGameRatings = saved.updateGameRatings;
     stockMarket.distributeDividends = saved.distributeDividends;
   });
@@ -203,6 +241,7 @@ describe("Bot games don't affect rankings", function () {
   it("skill rating never moves for a saved game marked hadBots", async function () {
     skillRating.updateGameRatings = saved.updateGameRatings;
     models.User = {
+      ...models.User,
       find: () => {
         throw new Error("should not load users for a bot game");
       },
@@ -213,5 +252,92 @@ describe("Bot games don't affect rankings", function () {
       playerIdMap: JSON.stringify({ a: "p1", b: "p2" }),
       winners: ["p1"],
     });
+  });
+
+  const hearts = (id) =>
+    rec.userUpdates
+      .filter((u) => u.id === id && u.$inc && "redHearts" in u.$inc)
+      .reduce(
+        (sum, u) => ({
+          red: sum.red + u.$inc.redHearts,
+          gold: sum.gold + u.$inc.goldHearts,
+        }),
+        { red: 0, gold: 0 }
+      );
+
+  it("charges a red heart at start, but not in a bot game", async function () {
+    const clean = stubGame().game;
+    await clean.chargeHeartsAtStart();
+    hearts("u-t1").should.deep.equal({ red: -1, gold: 0 });
+    hearts("u-m1").should.deep.equal({ red: -1, gold: 0 });
+
+    rec.userUpdates = [];
+    const botGame = stubGame({ bot: true }).game;
+    await botGame.chargeHeartsAtStart();
+    rec.userUpdates.should.have.length(0);
+    botGame.heartsChargedAtStart.should.equal(false);
+  });
+
+  it("refunds hearts once if a bot shows up after the start charge", async function () {
+    const { game, players } = stubGame({ competitive: true });
+    await game.chargeHeartsAtStart();
+    // t2 leaves and is refunded by the integrity break; m1 is the leaver.
+    game.heartsRefundedUserIds.add("u-t2");
+    players.m1.left = true;
+
+    rec.userUpdates = [];
+    await game.refundHeartsForBotGame(); // no bot yet: nothing
+    rec.userUpdates.should.have.length(0);
+
+    game.hadBots = true;
+    await game.refundHeartsForBotGame();
+    await game.refundHeartsForBotGame(); // only once
+    hearts("u-t1").should.deep.equal({ red: 1, gold: 1 });
+    hearts("u-m1").should.deep.equal({ red: 1, gold: 1 }); // leaver too
+    hearts("u-t2").should.deep.equal({ red: 0, gold: 0 }); // already back
+  });
+
+  it("a ranked game starts the heart refill timer, a bot game doesn't", async function () {
+    await stubGame().game._doEndPostgame();
+    rec.heartRefreshes.should.equal(3);
+
+    rec.heartRefreshes = 0;
+    await stubGame({ bot: true }).game._doEndPostgame();
+    rec.heartRefreshes.should.equal(0);
+  });
+
+  it("pays and saves daily challenges, but not in a bot game", async function () {
+    const daily = (u) =>
+      rec.userUpdates.filter(
+        (x) => x.id === u && x.$set && "dailyChallenges" in x.$set
+      ).length;
+
+    await stubGame({ ranked: false, daily: true }).game._doEndPostgame();
+    incFor("u-t1").$inc.coins.should.equal(10 + 20);
+    daily("u-t1").should.equal(1);
+
+    rec.userUpdates = [];
+    const { game } = stubGame({ ranked: false, daily: true, bot: true });
+    game.dailyChallengesAllowed().should.equal(false);
+    await game._doEndPostgame();
+    incFor("u-t1").$inc.coins.should.equal(0);
+    daily("u-t1").should.equal(0);
+  });
+
+  it("an unranked game with a guest is not a bot game and records stats", async function () {
+    const { game, calls } = stubGame({ ranked: false, guest: true });
+    game.hasTestBots().should.equal(false);
+    game.countsForRankings().should.equal(true);
+    game.dailyChallengesAllowed().should.equal(true);
+    await game._doEndPostgame();
+    calls.setupStats.should.equal(1);
+    rec.games[0].hadBots.should.equal(false);
+    incFor("u-t1").$inc["stats.Mafia.all.wins.count"].should.equal(1);
+  });
+
+  it("a game with a guest and a bot is a bot game", function () {
+    const { game } = stubGame({ guest: true, bot: true });
+    game.hasTestBots().should.equal(true);
+    game.countsForRankings().should.equal(false);
   });
 });

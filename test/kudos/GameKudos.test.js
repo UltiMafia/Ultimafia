@@ -12,6 +12,7 @@ function stubGame({
   meteor,
   bots = [],
   devBots = true,
+  guests = [],
 } = {}) {
   const sent = {};
   const alerts = [];
@@ -37,7 +38,16 @@ function stubGame({
   for (const p of list)
     if (bots.includes(p.id)) {
       p.isBot = true;
-      p.user = { id: `bot-${p.id}`, dev: devBots };
+      // devBots: false seats these as guests instead.
+      p.user = devBots
+        ? { id: `bot-${p.id}`, dev: true }
+        : { id: `guest-${p.id}`, guestId: `g-${p.id}` };
+    }
+  // Guests join with isBot set too (no account) plus a guestId.
+  for (const p of list)
+    if (guests.includes(p.id)) {
+      p.isBot = true;
+      p.user = { id: `guest-${p.id}`, guestId: `g-${p.id}` };
     }
   // Same container the real game uses (keyed by id, no array methods).
   const players = new ArrayHash();
@@ -149,6 +159,30 @@ describe("Game kudos integration", function () {
       const s = stubGame({ ranked: false, bots: ["t3"], devBots: false });
       s.game.startKudosVote();
       should.not.exist(s.game.kudosVote);
+    });
+
+    it("a guest is not a bot: no test mode, guest doesn't vote", function () {
+      const { game, players } = stubGame({ guests: ["t3"] });
+      game.hasTestBots().should.equal(false);
+      game.countsForRankings().should.equal(true);
+      game.startKudosVote();
+      should.exist(game.kudosVote);
+      game.kudosVote.testMode.should.equal(false);
+      game.kudosVote.voters.has("t3").should.equal(false);
+      game.castKudosVote(players.t1, "Mafia", "m1");
+      game.castKudosVote(players.t2, "Mafia", "m1");
+      game.evaluateKudos(true);
+      game.kudosReceiverUserIds().should.deep.equal(["u-m1"]);
+    });
+
+    it("a guest plus a bot is test mode because of the bot", function () {
+      const { game } = stubGame({ guests: ["t2"], bots: ["t3"] });
+      game.scheduleBotKudosVotes = () => {};
+      game.hasTestBots().should.equal(true);
+      game.startKudosVote();
+      game.kudosVote.testMode.should.equal(true);
+      game.kudosVote.voters.has("t3").should.equal(true);
+      game.kudosVote.voters.has("t2").should.equal(false);
     });
 
     it("counts bot votes and can award a bot", function () {
