@@ -114,7 +114,10 @@ http.createServer((req, res) => {
       return res.end(d);
     } catch (e) {
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ error: 'could not read ' + JSON_PATH + ': ' + String(e.message) }));
+      return res.end(JSON.stringify({ error:
+        'no game view at ' + JSON_PATH + ' — generate it with:  python score_game.py <game_id>  '
+        + '(this file is generated and gitignored, so it does not survive a repo cleanup)  ['
+        + String(e.message) + ']' }));
     }
   }
   res.writeHead(404); res.end('nope');
