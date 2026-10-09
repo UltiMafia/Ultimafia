@@ -201,6 +201,7 @@ export function SetupPage() {
   const { setupId } = useParams();
 
   const [setup, setSetup] = useState();
+  const [loadError, setLoadError] = useState(null);
   const [gameType, setGameType] = useState("");
   const [currentVersionNum, setCurrentVersionNum] = useState(0);
   const [selectedVersionNum, setSelectedVersionNum] = useState(0);
@@ -229,7 +230,14 @@ export function SetupPage() {
 
   const colorInfo = {
     ranked: setup ? setup.ranked : false,
-    lobby: gameType === "Mafia" ? (setup.closed ? "Sandbox" : "Main") : "Games",
+    // setup is still null while the request is in flight. Reading
+    // setup.closed there throws and the page renders blank.
+    lobby:
+      setup && gameType === "Mafia"
+        ? setup.closed
+          ? "Sandbox"
+          : "Main"
+        : "Games",
   };
   const setupHeadingIconColor = getRowStubColor(colorInfo);
   // Intentionally do not pass competitive — the comp state is expressed via
@@ -244,39 +252,70 @@ export function SetupPage() {
   const headerTextShadow = isLightMode ? "none" : "0 1px 3px rgba(0,0,0,0.75)";
 
   useEffect(() => {
-    if (setupId) {
-      axios
-        .get(`/api/setup/${setupId}`, { headers: { includeStats: true } })
-        .then((res) => {
-          let setup = res.data;
-          setup.roles = JSON.parse(setup.roles);
-          setSetup(res.data);
-          setGameType(setup.gameType);
-          setCurrentVersionNum(setup.version);
-          setSelectedVersionNum(setup.version);
-          setVersionTimestamp(setup.setupVersion.timestamp);
-          setVersionGamesPlayed(setup.setupVersion.played);
-          setDescription(setup.description ?? "");
+    if (!setupId) return undefined;
 
-          document.title = `${res.data.name} | UltiMafia`;
+    let cancelled = false;
+    // Drop the previous setup before the new request resolves. A hidden
+    // archive and a missing id both come back as the same not-found error;
+    // leaving the old setup up would show the wrong game.
+    setSetup(undefined);
+    setGameType("");
+    setLoadError(null);
 
-          if (setup.gameType === "Mafia") {
-            setStatsBundle(setup.stats || null);
-            setPieData(
-              getBasicPieStats(
-                setup.stats?.alignmentWinrate,
-                setup.stats?.roleWinrate,
-                siteInfo?.rolesRaw?.Mafia
-              )
-            );
+    axios
+      .get(`/api/setup/${setupId}`, { headers: { includeStats: true } })
+      .then((res) => {
+        if (cancelled) return;
+        const loaded = res.data;
+        if (!loaded || typeof loaded !== "object" || !loaded.id) {
+          const message =
+            typeof loaded === "string" && loaded
+              ? loaded
+              : "That setup does not exist. It may have been removed.";
+          setLoadError(message);
+          return;
+        }
+        loaded.roles = JSON.parse(loaded.roles);
+        setSetup(loaded);
+        setGameType(loaded.gameType);
+        setCurrentVersionNum(loaded.version);
+        setSelectedVersionNum(loaded.version);
+        setVersionTimestamp(loaded.setupVersion && loaded.setupVersion.timestamp);
+        setVersionGamesPlayed(loaded.setupVersion && loaded.setupVersion.played);
+        setDescription(loaded.description ?? "");
 
-            const changelog = setup.setupVersion.changelog;
-            if (changelog) {
-              setDiff(JSON.parse(changelog));
-            }
+        document.title = `${loaded.name} | UltiMafia`;
+
+        if (loaded.gameType === "Mafia") {
+          setStatsBundle(loaded.stats || null);
+          setPieData(
+            getBasicPieStats(
+              loaded.stats?.alignmentWinrate,
+              loaded.stats?.roleWinrate,
+              siteInfo?.rolesRaw?.Mafia
+            )
+          );
+
+          const changelog = loaded.setupVersion && loaded.setupVersion.changelog;
+          if (changelog) {
+            setDiff(JSON.parse(changelog));
           }
-        });
-    }
+        }
+      })
+      .catch((e) => {
+        if (cancelled) return;
+        const data = e && e.response && e.response.data;
+        const message =
+          typeof data === "string" && data
+            ? data
+            : "That setup does not exist. It may have been removed.";
+        setLoadError(message);
+        errorAlert(e);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [setupId]);
 
   useEffect(() => {
@@ -326,6 +365,16 @@ export function SetupPage() {
 
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
   if (!setupId) return <Navigate to="/learn/games" replace />;
+
+  // Same copy the setup API returns for a missing id. A hidden archive
+  // (bot-owned, or archived and not yours) uses that response too.
+  if (loadError) {
+    return (
+      <Typography color="error" sx={{ p: 2 }}>
+        {loadError}
+      </Typography>
+    );
+  }
 
   if (!setup || !user.loaded) return <Loading small />;
 

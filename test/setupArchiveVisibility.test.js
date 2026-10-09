@@ -228,6 +228,121 @@ describe("setup archive visibility", function () {
     res.body.should.equal(removedMessage);
   });
 
+  it("returns the same not-found response for a missing id and a hidden archive", async function () {
+    const versionHandler = handlerFor(
+      setupRouter,
+      "get",
+      "/:id/version/:setupVersionNum"
+    );
+    const lineageHandler = handlerFor(setupRouter, "get", "/:id/lineage");
+    should.exist(versionHandler);
+    should.exist(lineageHandler);
+
+    const lineageNotFound = "Setup not found.";
+
+    async function responseFor(handler, params) {
+      const res = makeMockRes();
+      await handler({ params, session: {}, get() {} }, res);
+      return { status: res.statusCode, body: res.body };
+    }
+
+    async function allResponses() {
+      const page = await responseFor(pageHandler, { id: "setup1" });
+      const version = await responseFor(versionHandler, {
+        id: "setup1",
+        setupVersionNum: "0",
+      });
+      const lineage = await responseFor(lineageHandler, { id: "setup1" });
+      return { page, version, lineage };
+    }
+
+    routeUtils.verifyLoggedIn = async () => "stranger1";
+    routeUtils.verifyPermission = async () => false;
+
+    stubDirect(null);
+    const missing = await allResponses();
+
+    stubDirect(archivedDoc("someone-else"));
+    const hidden = await allResponses();
+
+    stubDirect(archivedDoc(constants.SETUP_ARCHIVIST_BOT_ID));
+    const botOwned = await allResponses();
+
+    missing.page.should.deep.equal({ status: 404, body: removedMessage });
+    missing.version.should.deep.equal({ status: 404, body: removedMessage });
+    missing.lineage.should.deep.equal({ status: 404, body: lineageNotFound });
+    hidden.should.deep.equal(missing);
+    botOwned.should.deep.equal(missing);
+  });
+
+  it("still serves an archived setup, its version, and its lineage to the creator and an admin", async function () {
+    const versionHandler = handlerFor(
+      setupRouter,
+      "get",
+      "/:id/version/:setupVersionNum"
+    );
+    const lineageHandler = handlerFor(setupRouter, "get", "/:id/lineage");
+
+    function versionDoc() {
+      const doc = { timestamp: 1, changelog: null, played: 2 };
+      doc.toJSON = function () {
+        const copy = Object.assign({}, this);
+        delete copy.toJSON;
+        return copy;
+      };
+      return doc;
+    }
+
+    async function asViewer(userId, admin, doc) {
+      routeUtils.verifyLoggedIn = async () => userId;
+      routeUtils.verifyPermission = async () => Boolean(admin);
+      models.Setup.findOne = () => queryChain(doc);
+      models.Setup.find = () => queryChain([]);
+      models.SetupVersion.findOne = () => queryChain(versionDoc());
+      models.ForumVote.findOne = () => queryChain(null);
+      models.Game.countDocuments = async () => 0;
+
+      const page = makeMockRes();
+      await pageHandler(
+        { params: { id: "setup1" }, session: {}, get() {} },
+        page
+      );
+      const version = makeMockRes();
+      await versionHandler(
+        {
+          params: { id: "setup1", setupVersionNum: "0" },
+          session: {},
+          get() {},
+        },
+        version
+      );
+      const lineage = makeMockRes();
+      await lineageHandler(
+        { params: { id: "setup1" }, session: {}, get() {} },
+        lineage
+      );
+      return { page, version, lineage };
+    }
+
+    const creator = await asViewer("creator1", false, archivedDoc("creator1"));
+    creator.page.body.id.should.equal("setup1");
+    (creator.page.statusCode == null).should.equal(true);
+    creator.version.body.played.should.equal(2);
+    (creator.version.statusCode == null).should.equal(true);
+    should.equal(creator.lineage.body.copiedFrom, null);
+    creator.lineage.body.copiedTo.should.deep.equal([]);
+    (creator.lineage.statusCode == null).should.equal(true);
+
+    const admin = await asViewer(
+      "admin1",
+      true,
+      archivedDoc(constants.SETUP_ARCHIVIST_BOT_ID)
+    );
+    admin.page.body.id.should.equal("setup1");
+    admin.version.body.played.should.equal(2);
+    admin.lineage.body.copiedTo.should.deep.equal([]);
+  });
+
   it("returns an empty lookup for a stranger and the setup for its creator", async function () {
     models.Setup.findOne = () => queryChain(archivedDoc("creator1"));
     redis.getFavSetupsHashtable = async () => ({});
