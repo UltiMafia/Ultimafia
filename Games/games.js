@@ -205,7 +205,10 @@ var deprecated = false;
               }
             }
 
-            game.userJoin(user, isBot);
+            game.userJoin(user, {
+              isBot: isBot,
+              spectate: info.spectate === true || info.spectate === "true",
+            });
           } catch (e) {
             logger.error(e);
           }
