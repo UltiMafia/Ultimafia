@@ -277,4 +277,11 @@ module.exports = class Spectator extends Player {
       meetingId: info.meeting.id,
     });
   }
+
+  seeTyping(info) {
+    this.send("typing", {
+      playerId: info.playerId,
+      meetingId: info.meetingId,
+    });
+  }
 };
