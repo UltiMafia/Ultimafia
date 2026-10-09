@@ -8,7 +8,7 @@ module.exports = class BlockedIfKilled extends Card {
 
     this.passiveActions = [
       {
-        ability: ["Modifier"],
+        ability: ["Modifier", "IgnoresDelirium"],
         state: "Night",
         actor: role.player,
         game: role.player.game,
