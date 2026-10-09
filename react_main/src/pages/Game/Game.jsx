@@ -124,7 +124,7 @@ import { releaseSubscription } from "utils/pushNotifications";
 import RoleMarkerToggle from "./components/RoleMarkerToggle";
 import { playerNameWithAvatarProps } from "./playerDisplay";
 import {
-  KudosOverlay,
+  KudosDock,
   KudosPanel,
   KudosIcon,
   kudosAwardedIds,
@@ -1204,7 +1204,6 @@ export default function Game() {
           </Box>
         </Stack>
         <UrgencyOverlay hidden={!isUrgent} />
-        {!review && <KudosOverlay />}
         {!review && history.currentState == -1 && (
           <PushNotificationPrompt socket={socket} />
         )}
@@ -1982,6 +1981,7 @@ export function TextMeetingLayout() {
         >
           {messages}
         </div>
+        <KudosDock onResize={doAutoScroll} />
         {canSpeak && (
           <SpeechInput
             meetings={meetings}
