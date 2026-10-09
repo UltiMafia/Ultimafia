@@ -19,6 +19,7 @@ const dbStats = require("../db/stats");
 const { colorHasGoodContrastForBothThemes } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
+const setupArchive = require("../modules/setupArchive");
 const stockMarket = require("../lib/StockMarket");
 const skillRatingModule = require("../modules/skillRating");
 const { DEFAULT_MU, DEFAULT_SIGMA, MIN_RATED_GAMES } = skillRatingModule;
@@ -4126,6 +4127,17 @@ router.post("/delete", async function (req, res) {
         },
       }
     ).exec();
+
+    // Hiding setups must not block account deletion. A later backfill
+    // retries anything this hook fails to move.
+    try {
+      await setupArchive.archiveOwnedSetupsForDeletedUser(userId);
+    } catch (archiveErr) {
+      logger.error(
+        `Failed to archive setups for deleted user ${userId}`,
+        archiveErr
+      );
+    }
 
     await redis.setUserOffline(userId);
     await redis.deleteUserInfo(userId);

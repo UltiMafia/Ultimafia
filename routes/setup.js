@@ -19,6 +19,7 @@ const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const Diff = require("diff");
 const errors = require("../lib/errors");
+const setupArchive = require("../modules/setupArchive");
 
 function canModifySetup(setup) {
   return !setup.ranked && !setup.competitive;
@@ -852,8 +853,6 @@ router.post("/delete", async function (req, res) {
   }
 });
 
-const ARCHIVE_SETUP_OWNER_ID = "uBqs8KaDx";
-
 router.post("/archive", async function (req, res) {
   try {
     const setupId = String(req.body.id);
@@ -862,7 +861,7 @@ router.post("/archive", async function (req, res) {
       return;
 
     const setup = await models.Setup.findOne({ id: setupId })
-      .select("_id creator")
+      .select("_id id creator originalCreator")
       .populate("creator", "_id id deleted");
 
     if (!setup) {
@@ -875,26 +874,20 @@ router.post("/archive", async function (req, res) {
       return;
     }
 
-    const archiveUser = await models.User.findOne({
-      id: ARCHIVE_SETUP_OWNER_ID,
-    }).select("_id");
-    if (!archiveUser) {
-      errors.notFound(res, "Archive user not found.");
-      return;
+    try {
+      await setupArchive.transferToArchiveAccount(
+        setup,
+        userId,
+        "ownerDeleted"
+      );
+      await setupArchive.archiveSetups([setup.id], "ownerDeleted", userId);
+    } catch (e) {
+      if (e && e.code === "ARCHIVIST_MISSING") {
+        errors.notFound(res, "Archive user not found.");
+        return;
+      }
+      throw e;
     }
-
-    await models.User.updateOne(
-      { _id: setup.creator._id },
-      { $pull: { setups: setup._id } }
-    ).exec();
-    await models.User.updateOne(
-      { _id: archiveUser._id },
-      { $addToSet: { setups: setup._id } }
-    ).exec();
-    await models.Setup.updateOne(
-      { id: setupId },
-      { $set: { creator: archiveUser._id } }
-    ).exec();
 
     routeUtils.createModAction(userId, "Archive Setup", [setupId]);
 
