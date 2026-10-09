@@ -92,6 +92,7 @@ module.exports = class Spectator extends Player {
         }
 
         if (
+          this.game.started &&
           Spam.isRepeatedContentSpam(
             speechPast,
             message.content,
@@ -109,6 +110,7 @@ module.exports = class Spectator extends Player {
         }
 
         if (
+          this.game.started &&
           Spam.shouldCheckSimilarContent(
             speechPast,
             lastSpeakContentBlockAt,
