@@ -49,7 +49,21 @@ const should = chai.should();
 const constants = require("../../data/constants");
 const models = require("../../db/models");
 const routeUtils = require("../../routes/utils");
+const redis = require("../../modules/redis");
 const setupRouter = require("../../routes/setup");
+
+// Other suite files may have loaded redis first. Record deletes on that client.
+let previousDel;
+let wrappedDel = false;
+if (redis.client && redis.client !== mockRedisClient) {
+  wrappedDel = true;
+  previousDel = redis.client.delAsync;
+  redis.client.delAsync = async function (key) {
+    deletedKeys.push(key);
+    if (typeof previousDel === "function") return previousDel.apply(this, arguments);
+    return 1;
+  };
+}
 
 const bot = "507f1f77bcf86cd799439012";
 const deleted = "507f1f77bcf86cd799439021";
@@ -554,6 +568,10 @@ describe("POST /api/setup/restore", function () {
     routeUtils.verifyLoggedIn = originals.verify;
     routeUtils.verifyPermission = originals.perm;
     routeUtils.createModAction = originals.modAction;
+    if (wrappedDel && redis.client) {
+      if (typeof previousDel === "function") redis.client.delAsync = previousDel;
+      else delete redis.client.delAsync;
+    }
   });
 
   beforeEach(function () {
