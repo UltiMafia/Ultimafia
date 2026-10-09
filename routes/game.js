@@ -5,6 +5,7 @@ const routeUtils = require("./utils");
 const utils = require("../lib/Utils");
 const redis = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
+const rehost = require("../modules/rehost");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 const axios = require("axios");
@@ -596,10 +597,23 @@ router.post("/host", async function (req, res) {
       return;
     }
 
+    var rehostId = req.body.rehost && String(req.body.rehost);
+    var rehostSource = null;
+
+    if (rehostId) {
+      // Carry over the old lobby's settings (ready check, anonymous deck,
+      // private, timers...). They still go through every check below.
+      rehostSource = await rehost.getRehostSource(rehostId, userId);
+
+      if (rehostSource && rehostSource.gameType === String(req.body.gameType)) {
+        Object.assign(req.body, rehostSource.body);
+        delete req.body.scheduled;
+      } else rehostSource = null;
+    }
+
     var gameType = String(req.body.gameType);
     var lobby = String(req.body.lobby);
     var lobbyName = req.body.lobbyName ? String(req.body.lobbyName) : null;
-    var rehostId = req.body.rehost && String(req.body.rehost);
     var scheduled = Number(req.body.scheduled);
 
     const now = Date.now();
@@ -939,6 +953,14 @@ router.post("/host", async function (req, res) {
 
       res.send(gameId);
       redis.unsetCreatingGame(userId);
+
+      if (rehostSource) {
+        // Invite everyone still in the old game's postgame to the new lobby
+        gameLoadBalancer
+          .notifyRehost(rehostId, gameId, { hostId: userId, hostName: user.name })
+          .catch((e) => logger.error(e));
+      }
+
       let ping;
       if (gameType !== "Mafia") {
         ping = "<@&1118235252784111666>\n";

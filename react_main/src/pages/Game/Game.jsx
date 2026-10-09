@@ -206,6 +206,8 @@ export default function Game() {
   const [roleRevealData, setRoleRevealData] = useState(null);
   const [hostId, setHostId] = useState(null);
   const [changeSetupDialogOpen, setChangeSetupDialogOpen] = useState(false);
+  // Set when a participant rehosts this finished game: { gameId, hostName }
+  const [rehostInvite, setRehostInvite] = useState(null);
 
   const playersRef = useRef();
   const selfRef = useRef();
@@ -237,6 +239,20 @@ export default function Game() {
   function onReadyCheckVerify() {
     socket.send("readyCheck verify");
     stopAudio("urgent");
+  }
+
+  function onJoinRehostClick() {
+    if (!rehostInvite) return;
+
+    // Same leave-then-navigate dance as the Rehost button: leave this
+    // postgame lobby first so the new game accepts the join.
+    noLeaveRef.current = true;
+    if (socket.on) socket.send("leave");
+
+    setTimeout(() => {
+      window.location.href =
+        window.location.origin + `/game/${rehostInvite.gameId}`;
+    }, 500);
   }
 
   function onLeaveGameClick() {
@@ -655,6 +671,10 @@ export default function Game() {
     });
 
     socket.on("finished", () => setFinished(true));
+
+    socket.on("rehosted", (info) => {
+      if (info && info.gameId) setRehostInvite(info);
+    });
 
     socket.on("state", (state) => {
       updateHistory({ type: "addState", state: state });
@@ -1168,6 +1188,13 @@ export default function Game() {
             {gameType === "Chess" && <ChessGame />}
           </Box>
         </Stack>
+        {rehostInvite && !review && (
+          <RehostInvite
+            invite={rehostInvite}
+            onJoin={onJoinRehostClick}
+            onDismiss={() => setRehostInvite(null)}
+          />
+        )}
         <UrgencyOverlay hidden={!isUrgent} />
         {!review && history.currentState == -1 && (
           <PushNotificationPrompt socket={socket} />
@@ -1217,6 +1244,41 @@ export default function Game() {
   }
 }
 
+function RehostInvite({ invite, onJoin, onDismiss }) {
+  const by = invite.hostName ? `${invite.hostName} rehosted` : "This game was rehosted";
+
+  return (
+    <Box
+      sx={{
+        position: "fixed",
+        top: 72,
+        left: "50%",
+        transform: "translateX(-50%)",
+        zIndex: (theme) => theme.zIndex.snackbar,
+        maxWidth: "calc(100vw - 32px)",
+      }}
+    >
+      <Alert
+        severity="info"
+        variant="filled"
+        data-testid="rehost-invite"
+        action={
+          <>
+            <Button color="inherit" variant="outlined" size="small" onClick={onJoin}>
+              Join new game
+            </Button>
+            <IconButton color="inherit" size="small" aria-label="Dismiss" onClick={onDismiss}>
+              <i className="fas fa-times" />
+            </IconButton>
+          </>
+        }
+      >
+        {by} with the same settings.
+      </Alert>
+    </Box>
+  );
+}
+
 export function useSocketListeners(listeners, socket) {
   useEffect(() => {
     if (!socket.on) return;
@@ -1257,11 +1319,18 @@ export function TopBar({ forceShow = false } = {}) {
           gameType: game.gameType,
           setup: game.setup.id,
           lobby: game.options.lobby,
+          lobbyName: game.options.lobbyName,
           private: game.options.private,
           spectating: game.options.spectating,
           guests: game.options.guests,
           ranked: game.options.ranked,
           competitive: game.options.competitive,
+          readyCheck: game.options.readyCheck,
+          noVeg: game.options.noVeg,
+          anonymousGame: game.options.anonymousGame,
+          anonymousDeckId: (game.options.anonymousDeck || [])
+            .map((deck) => deck.id)
+            .join(","),
           stateLengths: stateLengths,
           ...game.options.gameTypeOptions,
         })
