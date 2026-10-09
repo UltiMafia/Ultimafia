@@ -228,6 +228,7 @@ router.get("/searchName", async function (req, res) {
         $match: {
           name: new RegExp(query, "i"),
           deleted: false,
+          systemAccount: { $ne: true },
         },
       },
       {

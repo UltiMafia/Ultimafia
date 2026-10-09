@@ -879,6 +879,7 @@ router.post("/host", async function (req, res) {
       return;
     }
 
+    var setupDoc = setup;
     setup = setup.toJSON();
     delete setup._id;
     delete setup.creator;
@@ -931,6 +932,11 @@ router.post("/host", async function (req, res) {
     lobbyName = lobbyName.substring(0, 50);
 
     if (wasArchived) {
+      if (!(await setupArchive.canManageSetup(userId, setupDoc, "unarchive"))) {
+        errors.forbidden(res, "You do not have the required permissions.");
+        redis.unsetCreatingGame(userId);
+        return;
+      }
       await setupArchive.unarchiveSetup(setup, userId);
     }
 

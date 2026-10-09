@@ -761,13 +761,18 @@ router.post("/feature", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var setupId = String(req.body.setupId);
 
-    if (!(await routeUtils.verifyPermission(res, userId, "featureSetup")))
-      return;
-
-    var setup = await models.Setup.findOne({ id: setupId });
+    var setup = await models.Setup.findOne({ id: setupId }).populate(
+      "creator",
+      "id"
+    );
 
     if (!setup) {
       errors.notFound(res, "That setup does not exist. It may have been removed.");
+      return;
+    }
+
+    if (!(await setupArchive.canManageSetup(userId, setup, "feature"))) {
+      errors.forbidden(res, "You do not have the required permissions.");
       return;
     }
 
@@ -787,13 +792,18 @@ router.post("/ranked", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var setupId = String(req.body.setupId);
 
-    if (!(await routeUtils.verifyPermission(res, userId, "approveRanked")))
-      return;
-
-    var setup = await models.Setup.findOne({ id: setupId });
+    var setup = await models.Setup.findOne({ id: setupId }).populate(
+      "creator",
+      "id"
+    );
 
     if (!setup) {
       errors.notFound(res, "That setup does not exist. It may have been removed.");
+      return;
+    }
+
+    if (!(await setupArchive.canManageSetup(userId, setup, "ranked"))) {
+      errors.forbidden(res, "You do not have the required permissions.");
       return;
     }
 
@@ -815,13 +825,18 @@ router.post("/competitive", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var setupId = String(req.body.setupId);
 
-    if (!(await routeUtils.verifyPermission(res, userId, "approveCompetitive")))
-      return;
-
-    var setup = await models.Setup.findOne({ id: setupId });
+    var setup = await models.Setup.findOne({ id: setupId }).populate(
+      "creator",
+      "id"
+    );
 
     if (!setup) {
       errors.notFound(res, "That setup does not exist. It may have been removed.");
+      return;
+    }
+
+    if (!(await setupArchive.canManageSetup(userId, setup, "competitive"))) {
+      errors.forbidden(res, "You do not have the required permissions.");
       return;
     }
 
@@ -873,10 +888,7 @@ router.post("/delete", async function (req, res) {
     }
 
     let isSetupOwner = userId == setup.creator.id.toString();
-    if (
-      !isSetupOwner &&
-      !(await routeUtils.verifyPermission(res, userId, "deleteSetup"))
-    ) {
+    if (!(await setupArchive.canManageSetup(userId, setup, "delete"))) {
       errors.forbidden(res, "You are not the owner of this setup.");
       return;
     }
@@ -905,8 +917,6 @@ router.post("/archive", async function (req, res) {
   try {
     const setupId = String(req.body.id);
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "archiveSetup")))
-      return;
 
     const setup = await models.Setup.findOne({ id: setupId })
       .select("_id id creator originalCreator")
@@ -917,7 +927,13 @@ router.post("/archive", async function (req, res) {
       return;
     }
 
-    if (!setup.creator || !setup.creator.deleted) {
+    if (!(await setupArchive.canManageSetup(userId, setup, "archive"))) {
+      errors.forbidden(res, "You do not have the required permissions.");
+      return;
+    }
+
+    const botOwned = await setupArchive.isBotOwned(setup);
+    if (!botOwned && (!setup.creator || !setup.creator.deleted)) {
       errors.conflict(res, "Setup owner is not deleted.");
       return;
     }
@@ -959,7 +975,7 @@ router.post("/description", async function (req, res) {
       res.status(404).send("Setup not found.");
       return;
     }
-    if (setup.creator.id !== userId) {
+    if (!(await setupArchive.canManageSetup(userId, setup, "description"))) {
       res.status(403).send("Only the setup creator can edit the description.");
       return;
     }
@@ -985,14 +1001,7 @@ router.post("/create", async function (req, res) {
     );
     user = user.toJSON();
 
-    if (user.setups.length >= constants.maxOwnedSetups) {
-      errors.conflict(
-        res,
-        "You can only have up to 100 created setups linked to your account."
-      );
-      return;
-    }
-
+    let editingBotOwned = false;
     if (req.body.editing) {
       var setup = await models.Setup.findOne({ id: String(req.body.id) })
         .select("creator ranked competitive")
@@ -1004,13 +1013,21 @@ router.post("/create", async function (req, res) {
         return;
       }
 
-      if (
-        (!setup || (setup.creator && setup.creator.id != userId)) &&
-        !(await routeUtils.verifyPermission(res, userId, "editAnySetup"))
-      ) {
+      if (!(await setupArchive.canManageSetup(userId, setup, "edit"))) {
         errors.forbidden(res, "You can only edit setups you have created.");
         return;
       }
+
+      editingBotOwned = await setupArchive.isBotOwned(setup);
+    }
+
+    // Editing a bot-owned setup does not count against the editor's cap.
+    if (!editingBotOwned && user.setups.length >= constants.maxOwnedSetups) {
+      errors.conflict(
+        res,
+        "You can only have up to 100 created setups linked to your account."
+      );
+      return;
     }
 
     var setup = Object(req.body);
@@ -1180,6 +1197,15 @@ router.post("/create", async function (req, res) {
 
     var setupId = null;
     if (req.body.editing) {
+      delete obj.creator;
+      delete obj.originalCreator;
+      delete obj.ownershipHistory;
+      delete obj.archived;
+      delete obj.archivedAt;
+      delete obj.archivedBy;
+      delete obj.archivedReason;
+      delete obj._id;
+      delete obj.id;
       await models.Setup.updateOne({ id: setup.id }, { $set: obj }).exec();
       await models.Setup.updateOne(
         { id: setup.id },

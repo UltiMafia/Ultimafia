@@ -599,6 +599,9 @@ module.exports = {
     playCompetitive: true,
     viewVotes: true,
     editAnySetup: true,
+    // Bot-owned (SetupArchivistBot) setups. Owner has * so this is included.
+    manageArchivedSetups: true,
+    restoreSetup: true,
     editAnyDeck: true,
     createPoll: true,
     manageCompetitive: true,
@@ -665,6 +668,8 @@ module.exports = {
         "playRanked",
         "playCompetitive",
         "editAnySetup",
+        "manageArchivedSetups",
+        "restoreSetup",
         "editAnyDeck",
         "createPoll",
         "manageCompetitive",

@@ -63,6 +63,54 @@ async function isAdminPlus(userId) {
   );
 }
 
+// Bot-owned setups are manageable only with manageArchivedSetups.
+// Every other setup keeps the action's existing owner / perm rules.
+async function canManageSetup(userId, setup, action) {
+  if (!userId) return false;
+
+  const creatorId = setup ? await creatorPublicId(setup) : null;
+  if (creatorId === SETUP_ARCHIVIST_BOT_ID) {
+    return routeUtils.verifyPermission(userId, "manageArchivedSetups");
+  }
+
+  const isOwner = !!(creatorId && creatorId === userId);
+
+  switch (action) {
+    case "edit":
+      if (!setup) return routeUtils.verifyPermission(userId, "editAnySetup");
+      if (!creatorId || isOwner) return true;
+      return routeUtils.verifyPermission(userId, "editAnySetup");
+    case "description":
+      return isOwner;
+    case "delete":
+      if (isOwner) return true;
+      return routeUtils.verifyPermission(userId, "deleteSetup");
+    case "unarchive":
+      if (isOwner) return true;
+      return isAdminPlus(userId);
+    case "restore":
+      return routeUtils.verifyPermission(userId, "restoreSetup");
+    case "feature":
+      return routeUtils.verifyPermission(userId, "featureSetup");
+    case "ranked":
+      return routeUtils.verifyPermission(userId, "approveRanked");
+    case "competitive":
+      return routeUtils.verifyPermission(userId, "approveCompetitive");
+    case "archive":
+      return routeUtils.verifyPermission(userId, "archiveSetup");
+    case "clearName":
+    case "clearDescription":
+      return routeUtils.verifyPermission(userId, "clearSetupName");
+    default:
+      return false;
+  }
+}
+
+async function isBotOwned(setup) {
+  if (!setup) return false;
+  return (await creatorPublicId(setup)) === SETUP_ARCHIVIST_BOT_ID;
+}
+
 // Creator of a normal archived setup, or Admin+ . Bot-owned setups are Admin+ only.
 async function canViewArchived(user, setup) {
   if (!setup || setup.archived !== true) return true;
@@ -169,7 +217,7 @@ async function unarchiveSetup(setup, by) {
 }
 
 // Moves the existing setup document. Never inserts a new setup.
-async function transferToArchiveAccount(setup, by, reason) {
+async function transferToArchiveAccount(setup, by, reason, opts) {
   if (!setup || !setup._id) {
     throw new Error("Setup is missing an _id");
   }
@@ -199,7 +247,10 @@ async function transferToArchiveAccount(setup, by, reason) {
   if (byRef) entry.by = byRef;
 
   const set = { creator: bot._id };
-  if (!setup.originalCreator) set.originalCreator = fromId;
+  // #2706 rows have no known original creator. Leave the field unset.
+  if (!setup.originalCreator && !(opts && opts.leaveOriginalCreatorNull)) {
+    set.originalCreator = fromId;
+  }
 
   await models.Setup.updateOne({ _id: setup._id }, {
     $set: set,
@@ -275,6 +326,8 @@ module.exports = {
   unarchiveSetup,
   transferToArchiveAccount,
   canViewArchived,
+  canManageSetup,
+  isBotOwned,
   archiveOwnedSetupsForDeletedUser,
   showArchivedRequested,
   archivedListFilter,

@@ -149,6 +149,7 @@ describe("setup archive host and last played", function () {
       const perm = firstIsUser ? args[1] : args[2];
       const rank = firstIsUser ? args[2] : args[3];
       if (perm === "playGame") return true;
+      if (perm === "manageArchivedSetups") return admin;
       if (rank != null) return admin;
       return false;
     };
