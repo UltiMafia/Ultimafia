@@ -1,31 +1,22 @@
-# Large generated artifacts. All of these are reproducible from the scripts in
-# this directory given mafia.db and EXPERIENTIAL_LABS_API_KEY; they are not
-# committed because they are multi-megabyte machine-generated corpora.
-decisions*.jsonl
-sample.jsonl
-supplement.jsonl
-targeted.jsonl
-gap.jsonl
-praise.jsonl
-game.jsonl
-val_preds.json
-*.swp
+# Generated corpora. Reproducible from the scripts here given mafia.db and
+# EXPERIENTIAL_LABS_API_KEY, but they cost API budget to regenerate, so they are
+# never committed. NOTE: a broad glob on purpose - listing specific filenames let
+# play_new.jsonl, ogi_new.jsonl, *_subset.jsonl and friends leak into the PR once.
+*.jsonl
+!eval_set.jsonl
 
-# Model intermediates: 91 MB each and reproducible by running finetune2.py.
-# The runnable artifact (finetune2_out/model.int8.onnx, 23 MB) IS committed.
-finetune_out/
-finetune_onnx/
-finetune2_out/model.onnx
-finetune2_out/model.safetensors
-finetune_cls_out/model.onnx
-finetune_cls_out/model.safetensors
-finetune_cls2_out/
+# generated viewer payload
+game_view.json
+
+# Model intermediates. The runnable artifact (finetune_cls3_out/model.int8.onnx,
+# 23 MB) IS committed; these are the 91 MB fp32 files it is quantised from.
 finetune_cls3_out/model.onnx
 finetune_cls3_out/model.safetensors
 
-# harness deps
+# harness dependencies
 harness/node_modules/
 
 __pycache__/
 *.pyc
 *.log
+*.swp

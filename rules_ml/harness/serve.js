@@ -13,13 +13,11 @@ const WSL_DIR = process.env.MODEL_DIR ||
 const PORT = Number(process.env.PORT || 8899);
 
 const { loadModel, vectorize, buildText } = require(path.join(WSL_DIR, 'predict.js'));
-const tf = require('./tf.js');
 const cls = require('./cls.js');
 
 // id, file (relative to WSL_DIR, null for the onnx model), label
 const MODELS = [
   ['cls', null, 'MiniLM-L6 int8 - 4-class: WHICH rule'],
-  ['tf', null, 'MiniLM-L6 int8 (transformer)'],
   ['v3', 'model.json', 'word(1,2)+logreg (linear)'],
   ['char', 'model_char.json', 'char_wb(2,5) linear'],
   ['v1', 'model_prev.json', 'v1 word (old)'],
@@ -82,20 +80,6 @@ async function scoreOne(text, id) {
     } catch (e) {
       return { id, probability: 0, logit: null, intercept: null, features: 0,
                model: '4-class (failed: ' + String(e).slice(0, 60) + ')',
-               modelFile: '', stopwords: 0, topPositive: [], topNegative: [] };
-    }
-  }
-  if (id === 'tf') {
-    try {
-      const r = await tf.score(text);
-      return {
-        id, probability: r.prob, logit: null, intercept: null, features: r.tokens,
-        model: 'MiniLM-L6 int8 (transformer)', modelFile: 'finetune2_out/model.int8.onnx',
-        stopwords: 0, topPositive: [], topNegative: [],
-      };
-    } catch (e) {
-      return { id, probability: 0, logit: null, intercept: null, features: 0,
-               model: 'transformer (failed: ' + String(e).slice(0, 60) + ')',
                modelFile: '', stopwords: 0, topPositive: [], topNegative: [] };
     }
   }
