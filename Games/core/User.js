@@ -43,6 +43,14 @@ module.exports = class User {
     this.settings = props.settings;
     this.isTest = props.isTest;
     this.vanityUrl = props.vanityUrl;
+    // Square avatars are a shop item; only honor the setting if it's owned.
+    this.avatarShape =
+      props.settings &&
+      props.settings.avatarShape === "square" &&
+      props.itemsOwned &&
+      props.itemsOwned.avatarShape
+        ? "square"
+        : "circle";
   }
 
   send(eventName, data) {

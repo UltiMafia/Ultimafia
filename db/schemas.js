@@ -421,12 +421,16 @@ var schemas = {
     stateLengths: { type: Map, of: Number },
     gameTypeOptions: String,
     broken: Boolean,
+    // First kudos receiver (kept for older readers); see kudosReceivers.
     kudosReceiver: { type: String, default: "" },
+    kudosReceivers: { type: [String], default: undefined },
     anonymousGame: Boolean,
     // This is a mongoose subdocument. It won't change if the anonyonous deck that the game was started with changes.
     anonymousDeck: [anonymousDeck],
     /** True if any in-game veg kill occurred (stats excluded when true). */
     hadVeg: { type: Boolean, default: false },
+    /** True if a bot was ever seated; the game changed no ratings or stats. */
+    hadBots: { type: Boolean, default: false },
     /** Setup version manifest at game end (for backfill / audits). */
     setupVersion: { type: Number, default: null },
     setupStatsBackfilled: { type: Boolean, default: false },
