@@ -28,7 +28,8 @@ model, via the Experiential Labs gateway). Six categories:
 `personal_attacks_harassment` · `hazing` · `doxxing` · `outside_game_influence` ·
 `antagonization` · `exploits`
 
-The parts that matter, all of which came from site-owner feedback rather than guesswork:
+The parts that matter, all of which came from developer feedback on real disagreements
+rather than guesswork:
 
 - **The targeting test (personal attacks).** Find the *object* of the insult. A violation
   requires a **person** as that object. Same vocabulary, different object:
@@ -152,6 +153,12 @@ eval_server.js                        hand-check reviewer: your call pre-filled 
                                       model's, one keystroke to accept or override
 eval_done.json                        the recorded human judgements - irreplaceable
 eval_report.py / eval_rescore.py      metrics against those judgements
+eval_final.py                         the final numbers: shipped int8, fitted/clean split,
+                                      stratum-weighted, with the trivial baselines
+eval_skipped.json                     rows skipped in the reviewer - a separate file on
+                                      purpose, so eval_done.json keeps its shape and no
+                                      metrics script needs special-casing
+roc.py                                ROC + precision/recall-vs-threshold plot
 eval_int8.py                          the shipped int8 artifact on the test split
 threshold_analysis.py                 precision/recall at each threshold
 binary_vs_cls.py                      dedicated binary head vs the 4-class head's binary view
@@ -162,17 +169,43 @@ validate_tgt2.py                      rubric sanity check before spending API bu
 
 **Why a hand-checked set exists.** Earlier rounds optimised against a small list of cases
 chosen by the author, and improved those cases while the aggregate drifted down — fitting the
-test. The hand-check set measures against judgments made by the site owner on real messages
-instead. 216 of 400 rows are judged; **the remaining 184 are untouched** and are the clean
-validation.
+test. The hand-check set measures against judgments made by one of the site's developers on
+real messages instead. **All 400 rows are judged** (399 recorded; index 342 was missed by the
+reviewer UI). Rows 0–121 were used to write the targeting rule, so they are reported
+separately; **rows 122–399 are the clean validation**.
 
 ### What it currently says
 
-Against those judgments: **precision 0.620, agreement 78.7%** (up from 0.515 / 66.7% before
-the targeting fix), at a recall cost of 0.873 → 0.677. Agreement by confidence is the
-uncomfortable part — 88% where the model is confident a message is *fine*, but only **64%
-where it is confident of a violation**, and 63% where it is uncertain. **The model's
-probability does not track how hard the case actually is.**
+Scored with the **shipped int8 model**, on the 277 clean rows (rows 0–121 excluded — they are
+the hard cases that prompted the targeting fix, so pooling would flatter or punish the model
+depending on which way the split happened to fall; they score 75.4% at 0.40 against the clean
+81.2%):
+
+| threshold | precision | recall | F1 | agreement |
+|-----------|-----------|--------|-----|-----------|
+| 0.35 | 0.645 | 0.766 | 0.700 | 79.4% |
+| **0.40** | **0.681** | **0.766** | **0.721** | **81.2%** |
+| 0.50 | 0.710 | 0.721 | 0.716 | 81.9% |
+| 0.70 | 0.772 | 0.651 | 0.706 | 83.4% |
+
+With the trivial baselines on the same rows, since a percentage means nothing without them:
+
+```
+always say OK         -> 71.1% agreement   (the majority-class share)
+always say VIOLATION  -> precision 0.196, recall 1.000
+```
+
+So the model is **+10 points of agreement over never flagging anything**, at precision ~0.68
+and recall ~0.77 at the 0.40 operating point. That is the honest size of the effect.
+
+**What the model is and isn't confident about.** 97% agreement where it is confident a message
+is *fine* — "the model says this is fine" is a trustworthy signal, and that is the half that
+matters for a flag-on-send tool. But among the messages it flags, confidence separates its
+errors not at all: **73%** where it is confident of a violation, **71%** in the uncertain
+band. An earlier version of this file claimed the probability "does not track how hard the
+case actually is"; that was too broad. It tracks *negatives* very well and tracks *nothing*
+among violations — which is why the remaining false positives cannot be removed by moving the
+threshold.
 
 ## 7. Known limitations
 
