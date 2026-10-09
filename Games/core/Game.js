@@ -7,6 +7,9 @@ const Queue = require("./Queue");
 const PregameMeeting = require("./PregameMeeting");
 const SpectatorMeeting = require("./SpectatorMeeting");
 const Timer = require("./Timer");
+const {
+  readyCheckFields,
+} = require("../../react_main/src/utils/timerSyncMath");
 const Random = require("../../lib/Random");
 const Utils = require("./Utils");
 const ArrayHash = require("./ArrayHash");
@@ -29,7 +32,10 @@ const renamedRoleMapping = require("../../data/renamedRoles");
 const renamedModifierMapping = require("../../data/renamedModifiers");
 const routeUtils = require("../../routes/utils");
 const PostgameMeeting = require("./PostgameMeeting");
+const { KudosVote, isWinLossResult, pickBotVote } = require("./Kudos");
 const dbStats = require("../../db/stats");
+const { isTestBotPlayer } = require("./botPlayers");
+const KUDOS_DISCONNECT_GRACE_MS = 20000;
 const VegKickMeeting = require("./VegKickMeeting");
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
@@ -79,6 +85,9 @@ module.exports = class Game {
     this.anonymousDeck = options.settings.anonymousDeck;
     this.heartsChargedAtStart = false;
     this.heartsRefundedOnIntegrityBreak = false;
+    // Who was charged at start, and who has had that heart given back.
+    this.heartsCharged = null; // { userIds, red, gold }
+    this.heartsRefundedUserIds = new Set();
     this.readyCountdownLength =
       options.settings.readyCountdownLength != null
         ? options.settings.readyCountdownLength
@@ -146,6 +155,9 @@ module.exports = class Game {
     /** @type {Record<string, string>} playerId -> starting faction key for stats/payouts */
     this.startingFactions = {};
     this.hadVegKill = false;
+    // Sticky: set once a dev test bot is seated, even if it later leaves.
+    // Guests don't count.
+    this.hadBots = false;
 
     this.numHostInGame = 0;
     this.originalHostId = options.hostId; // Track the original host for reassignment
@@ -525,6 +537,11 @@ module.exports = class Game {
           this.getTimeLeft("pregameWait") / 1000 / 60
         );
         this.players.push(player);
+        if (isTestBotPlayer(player)) {
+          this.hadBots = true;
+          // A bot game is free; give back hearts already charged.
+          await this.refundHeartsForBotGame();
+        }
 
         // If the original host is rejoining, restore their host status
         if (
@@ -678,6 +695,8 @@ module.exports = class Game {
 
     player.send("left");
     player.left = true;
+
+    this.kudosVoterLeft(player);
     // Delay disconnect so "left" can flush before the socket is torn down.
     // Immediate terminate() races the client receive path (esp. iOS Safari).
     setTimeout(() => {
@@ -825,6 +844,10 @@ module.exports = class Game {
       if (excludedPlayer && player.id === excludedPlayer.id) continue;
 
       const userId = player.userId || player.user.id;
+      if (this.heartsRefundedUserIds) {
+        if (this.heartsRefundedUserIds.has(userId)) continue;
+        this.heartsRefundedUserIds.add(userId);
+      }
       await models.User.updateOne(
         { id: userId },
         {
@@ -833,6 +856,48 @@ module.exports = class Game {
             goldHearts: wasCompetitive ? 1 : 0,
           },
         }
+      ).exec();
+      await redis.cacheUserInfo(userId, true);
+    }
+  }
+
+  // Ranked costs a red heart and competitive a gold one, charged at start.
+  // Games with a test bot in them are free.
+  async chargeHeartsAtStart() {
+    if (!this.ranked && !this.competitive) return;
+    if (this.hasTestBots()) return;
+    const charged = {
+      userIds: [],
+      red: this.ranked ? 1 : 0,
+      gold: this.competitive ? 1 : 0,
+    };
+    for (let player of this.players) {
+      if (player.isBot) continue;
+      const userId = player.userId || player.user.id;
+      await models.User.updateOne(
+        { id: userId },
+        { $inc: { redHearts: -charged.red, goldHearts: -charged.gold } }
+      ).exec();
+      await redis.cacheUserInfo(userId, true);
+      charged.userIds.push(userId);
+    }
+    this.heartsCharged = charged;
+    this.heartsChargedAtStart = true;
+  }
+
+  // Bot games don't cost hearts. Hearts are charged at start, so if a test
+  // bot turns up after that (or the start charge ran anyway), give every
+  // charged player their heart back, leavers included. Safe to call often.
+  async refundHeartsForBotGame() {
+    if (!this.heartsChargedAtStart || !this.heartsCharged) return;
+    if (!this.hasTestBots()) return;
+    const { userIds, red, gold } = this.heartsCharged;
+    for (const userId of userIds) {
+      if (this.heartsRefundedUserIds.has(userId)) continue;
+      this.heartsRefundedUserIds.add(userId);
+      await models.User.updateOne(
+        { id: userId },
+        { $inc: { redHearts: red, goldHearts: gold } }
       ).exec();
       await redis.cacheUserInfo(userId, true);
     }
@@ -1053,15 +1118,15 @@ module.exports = class Game {
 
     if (player.user.dev && !player.isBot) player.send("dev");
 
+    if (this.kudosVote)
+      player.send("kudos", this.kudosVote.stateFor(player.id));
+
     if (this.isReadyCheckActive) {
-        player.send("readyCheck init", {
-            endTime: Date.now() + this.getTimeLeft("pregameCountdown"),
-            readyPlayers: Object.keys(this.readyPlayers)
-        });
+      const endTime = Date.now() + this.getTimeLeft("pregameCountdown");
+      player.send("readyCheck init", this.readyCheckInitPayload(endTime));
     }
 
-    this.sendTimersToPlayer(player);
-    this.syncPlayerTimers(player);
+    this.resendTimers(player);
   }
 
   sendPlayerJoin(newPlayer) {
@@ -1127,6 +1192,14 @@ module.exports = class Game {
     }
   }
 
+  readyCheckInitPayload(endTime) {
+    return readyCheckFields(
+      endTime,
+      Date.now(),
+      Object.keys(this.readyPlayers || {})
+    );
+  }
+
   startReadyCheck() {
     this.isReadyCheckActive = true;
     this.readyPlayers = {};
@@ -1136,10 +1209,8 @@ module.exports = class Game {
       body: "Ready up now or you will be kicked for inactivity.",
     });
 
-    this.broadcast("readyCheck init", {
-        endTime: Date.now() + this.readyCountdownLength,
-        readyPlayers: []
-    });
+    const endTime = Date.now() + this.readyCountdownLength;
+    this.broadcast("readyCheck init", this.readyCheckInitPayload(endTime));
 
     this.createTimer("pregameCountdown", this.readyCountdownLength, () =>
       this.failReadyCheck()
@@ -1234,22 +1305,7 @@ module.exports = class Game {
 
     // Charge hearts at game start so players cannot queue extra games before deduction.
     if (this.ranked || this.competitive) {
-      for (let player of this.players) {
-        if (!player.isBot) {
-          const userId = player.userId || player.user.id;
-          await models.User.updateOne(
-            { id: userId },
-            {
-              $inc: {
-                redHearts: this.ranked ? -1 : 0,
-                goldHearts: this.competitive ? -1 : 0,
-              },
-            }
-          ).exec();
-          await redis.cacheUserInfo(userId, true);
-        }
-      }
-      this.heartsChargedAtStart = true;
+      await this.chargeHeartsAtStart();
 
       // Capture stock/shareholders snapshot for dividends
       this.shareholderSnapshots = {};
@@ -2174,6 +2230,14 @@ module.exports = class Game {
   }
 
   gotoNextState() {
+    // Once the game has finished there is no next state. Advancing again would
+    // clear the postgame timer and finish the postgame meeting, leaving the
+    // game stuck in postgame until everyone leaves. This happens when the day
+    // vote that ends the game also re-runs checkAllMeetingsReady (it calls
+    // gotoNextState from its Day branch, then again from its generic loop,
+    // which now sees only the always-ready postgame meeting).
+    if (this.finished) return;
+
     var stateInfo = this.getStateInfo();
 
     // Clear current timers
@@ -2560,6 +2624,13 @@ module.exports = class Game {
       this.timers[timerName].syncClient(player);
   }
 
+  // timerInfo first, then relative time. Reconnect (sendAllGameInfo) and
+  // getTimerInfo both use this so a client never has to render from time alone.
+  resendTimers(player) {
+    this.sendTimersToPlayer(player);
+    this.syncPlayerTimers(player);
+  }
+
   sendTimersToPlayer(player) {
     for (let timerName in this.timers)
       if (this.timers[timerName].clients.indexOf(player) != -1)
@@ -2714,8 +2785,8 @@ module.exports = class Game {
       }
 
       // during kicks, we need to exclude the votekick and noveg meetings.
-      // In postgame (currentState === -2), always require the kudos vote to be ready
-      // so the noVeg exclusion does not cause the vote to freeze after one voter.
+      // In postgame (currentState === -2), always require every meeting to be ready
+      // so the noVeg exclusion does not cause a vote to freeze after one voter.
       if (
         !meeting.ready &&
         (extraConditionDuringKicks || this.currentState === -2)
@@ -2778,6 +2849,10 @@ module.exports = class Game {
 
   spectatorsSeeUnvote(info) {
     for (let spectator of this.spectators) spectator.seeUnvote(info);
+  }
+
+  spectatorsSeeTyping(info) {
+    for (let spectator of this.spectators) spectator.seeTyping(info);
   }
 
   queueAction(action, instant) {
@@ -3108,12 +3183,237 @@ module.exports = class Game {
   }
 
   isKudosEligible() {
-    return this.ranked || this.competitive;
+    return this.ranked || this.competitive || this.hasTestBots();
     //return true;
   }
 
+  // A dev test bot (the Test button / "?bot") was ever seated in this game.
+  // Guests don't count. Such a game is a test run: kudos are on in test mode
+  // and never saved, and nothing that counts is recorded.
+  hasTestBots() {
+    return (
+      !!this.hadBots ||
+      this.players.filter((p) => isTestBotPlayer(p)).length > 0
+    );
+  }
+
+  // A game with a test bot in it must not change any player's score: no
+  // skill rating, no fortune/points, no competitive scoring, no setup/role
+  // win stats, no player win/loss stats, no ranked-only rewards, no hearts.
+  countsForRankings() {
+    return !this.hasTestBots();
+  }
+
+  // Daily challenges don't pay or advance in a bot game.
+  dailyChallengesAllowed() {
+    return !this.hasTestBots();
+  }
+
+  // Opens postgame kudos voting for ranked/competitive games that ended in a
+  // real win/loss. Safe to call more than once.
+  startKudosVote() {
+    if (this.kudosVote !== undefined) return;
+    this.kudosVote = null;
+
+    if (!this.isKudosEligible() || !this.winners) return;
+    const info = this.winners.getWinnersInfo();
+    if (
+      !isWinLossResult({
+        winnerGroups: info.groups,
+        winnerPlayerIds: info.players,
+        meteor: this.MeteorLanded,
+      })
+    )
+      return;
+
+    // Players still in the game when it ended can receive kudos; everyone
+    // who is still in the lobby (and isn't a bot) can vote.
+    const candidates = [];
+    for (let player of this.players) {
+      if (player.left || !this.originalRoles[player.id]) continue;
+      candidates.push({
+        id: player.id,
+        alignment: this.getKudosAlignment(player),
+      });
+    }
+    if (candidates.length == 0) return;
+
+    // In a bot game (test mode) bots vote too; nothing is saved.
+    // Guests never vote (no account), test bots only in test mode.
+    const testMode = this.hasTestBots();
+    const voters = this.players
+      .filter((p) => !p.left && (!p.isBot || (testMode && isTestBotPlayer(p))))
+      .map((p) => p.id);
+
+    this.kudosVote = new KudosVote({ candidates, voters, testMode });
+    this.broadcastKudos();
+    if (testMode) this.scheduleBotKudosVotes();
+  }
+
+  // Test mode: each dev bot casts one vote per row after a short random delay
+  // (a bot tab can still vote by hand before then). See pickBotVote.
+  scheduleBotKudosVotes(minDelay = 3000, maxDelay = 12000) {
+    const vote = this.kudosVote;
+    if (!vote || !vote.testMode) return;
+    const favorites = {};
+    for (const row of vote.rows)
+      favorites[row.key] =
+        row.candidates[Math.floor(Math.random() * row.candidates.length)];
+    this.botKudosTimers = this.botKudosTimers || [];
+    for (const player of this.players) {
+      if (player.left || !isTestBotPlayer(player)) continue;
+      if (!vote.voters.has(player.id)) continue;
+      for (const row of vote.rows) {
+        const delay = minDelay + Math.random() * (maxDelay - minDelay);
+        this.botKudosTimers.push(
+          setTimeout(() => {
+            try {
+              if (this.kudosVote !== vote || player.left) return;
+              const mine = vote.ballots[player.id];
+              if (mine && row.key in mine) return; // voted by hand already
+              this.castKudosVote(
+                player,
+                row.key,
+                pickBotVote(row.candidates, player.id, favorites[row.key])
+              );
+            } catch (e) {
+              logger.warn(
+                `bot kudos vote failed for game ${this.id}: ${e.message}`
+              );
+            }
+          }, delay)
+        );
+      }
+    }
+  }
+
+  // A voter who leaves the postgame gets "No one" in every row they haven't
+  // voted in (see KudosVote.removeVoter), which can settle rows early.
+  kudosVoterLeft(player) {
+    if (!this.kudosVote || !this.finished || this.postgameOver) return;
+    try {
+      if (!this.kudosVote.voters.has(player.id)) return;
+      this.kudosVote.removeVoter(player.id);
+      this.evaluateKudos(false);
+      this.broadcastKudos();
+    } catch (e) {
+      logger.warn(`kudos leave failed for game ${this.id}: ${e.message}`);
+    }
+  }
+
+  // A voter whose socket closed in postgame and who hasn't reconnected
+  // after the grace time has left, as far as kudos go.
+  scheduleKudosDisconnect(player, socket, graceMs = KUDOS_DISCONNECT_GRACE_MS) {
+    if (!this.kudosVote || !this.finished || this.postgameOver) return;
+    if (!this.kudosVote.voters.has(player.id)) return;
+    this.botKudosTimers = this.botKudosTimers || [];
+    this.botKudosTimers.push(
+      setTimeout(() => {
+        if (player.socket === socket) this.kudosVoterLeft(player);
+      }, graceMs)
+    );
+  }
+
+  // Kudos timers (bot votes, disconnect grace) live outside this.timers so a
+  // state change can't cancel them; they stop with the postgame.
+  clearBotKudosTimers() {
+    if (!this.botKudosTimers) return;
+    this.botKudosTimers.forEach(clearTimeout);
+    this.botKudosTimers = [];
+  }
+
+  // Coins for kudos voting (see KudosVote.voterCoins), by player id, after
+  // the final settlement. Bot games (test mode) pay nothing.
+  kudosVoterCoins() {
+    if (!this.kudosVote || !this.kudosVote.finalized) return {};
+    if (this.kudosVote.testMode || this.hasTestBots()) return {};
+    return this.kudosVote.voterCoins();
+  }
+
+  // Tells each voter still here what voting earned them (or would have, in
+  // test mode).
+  alertKudosVoterCoins() {
+    if (!this.kudosVote || !this.kudosVote.finalized) return;
+    const test = this.kudosVote.testMode || this.hasTestBots();
+    const coins = this.kudosVote.voterCoins();
+    for (const playerId in coins) {
+      const player = this.players[playerId];
+      if (!player || player.left || player.isBot) continue;
+      const n = coins[playerId];
+      const what = `${n} coin${n === 1 ? "" : "s"} for kudos voting`;
+      player.sendAlert(
+        test
+          ? `Test mode: you would have earned ${what}.`
+          : `You earned ${what}!`
+      );
+    }
+  }
+
+  // User ids to save as kudos receivers when the postgame closes. Bot games
+  // (test mode) save nothing: no kudosReceivers, no user kudos increments.
+  kudosReceiverUserIds() {
+    if (!this.kudosVote || this.kudosVote.testMode || this.hasTestBots())
+      return [];
+    return this.kudosVote
+      .awardedIds()
+      .map((id) => this.players[id])
+      .filter((p) => p && p.user && !p.isBot)
+      .map((p) => p.user.id);
+  }
+
+  getKudosAlignment(player) {
+    try {
+      if (player.role && player.role.alignment) return player.role.alignment;
+      return this.getRoleAlignment(this.originalRoles[player.id]);
+    } catch (e) {
+      return "Independent";
+    }
+  }
+
+  broadcastKudos() {
+    if (!this.kudosVote) return;
+    for (let player of this.players)
+      if (!player.left)
+        player.send("kudos", this.kudosVote.stateFor(player.id));
+    for (let spectator of this.spectators)
+      spectator.send("kudos", this.kudosVote.stateFor(spectator.id));
+  }
+
+  castKudosVote(player, rowKey, target) {
+    if (!this.kudosVote || !this.finished || this.postgameOver) return;
+
+    const error = this.kudosVote.castVote(player.id, rowKey, target);
+    if (error) player.sendAlert(error);
+    else this.evaluateKudos(false);
+
+    player.send("kudos", this.kudosVote.stateFor(player.id));
+  }
+
+  // Awards anyone who is now guaranteed kudos (or, with `final`, settles
+  // every row on the votes cast so far).
+  evaluateKudos(final) {
+    if (!this.kudosVote) return [];
+    const fresh = this.kudosVote.evaluate(final);
+
+    for (let playerId of fresh) {
+      const player = this.players[playerId];
+      if (!player) continue;
+      this.sendAlert(
+        `${player.name} has received kudos!`,
+        undefined,
+        undefined,
+        ["info"]
+      );
+    }
+
+    if (fresh.length > 0 || final) this.broadcastKudos();
+    return fresh;
+  }
+
   achievementsAllowed() {
-    return this.ranked || this.competitive;
+    // Achievements are only earned in ranked/competitive games, and a game
+    // with a bot in it doesn't count.
+    return (this.ranked || this.competitive) && this.countsForRankings();
     //return true;
   }
 
@@ -3341,6 +3641,7 @@ module.exports = class Game {
       }
 
       for (let player of this.players) {
+        if (!this.dailyChallengesAllowed()) break;
         if (player.CompletedDailyChallenges.length > 0) {
           for (let x = 0; x < player.CompletedDailyChallenges.length; x++) {
             //this.getDailyChallenge(player.CompletedDailyChallenges[x]);
@@ -3358,7 +3659,7 @@ module.exports = class Game {
         }
       }
 
-      if (this.ranked || this.competitive) {
+      if ((this.ranked || this.competitive) && this.countsForRankings()) {
         await this.adjustSkillRatings();
       }
 
@@ -3378,6 +3679,8 @@ module.exports = class Game {
 
       for (let player of this.players)
         if (!player.left) player.sendMeeting(this.postgame);
+
+      this.startKudosVote();
 
       this.createTimer("postgame", this.postgameLength, () =>
         this.endPostgame()
@@ -3405,6 +3708,8 @@ module.exports = class Game {
 
         for (let player of this.players)
           if (!player.left) player.sendMeeting(this.postgame);
+
+        this.startKudosVote();
       }
 
       this.createTimer("postgame", this.postgameLength, () =>
@@ -3950,6 +4255,7 @@ module.exports = class Game {
     this._endPostgameStarted = true;
     this.postgameOver = true;
     this.clearTimers();
+    this.clearBotKudosTimers();
     this.broadcast("finished");
 
     this._endPostgamePromise = this._doEndPostgame();
@@ -3957,25 +4263,17 @@ module.exports = class Game {
   }
 
   async _doEndPostgame() {
-    let kudosTarget = null;
+    let kudosUserIds = [];
+    let kudosCoins = {};
 
     try {
       if (!this._postgamePersisted) {
-        if (this.isKudosEligible() && this.postgame) {
+        if (this.kudosVote) {
           try {
-            this.postgame.finish(true);
-            if (
-              this.postgame.finalTarget &&
-              this.postgame.finalTarget !== "*"
-            ) {
-              kudosTarget = this.postgame.finalTarget;
-              this.sendAlert(
-                `${kudosTarget.name} has received kudos!`,
-                undefined,
-                undefined,
-                ["info"]
-              );
-            }
+            this.evaluateKudos(true);
+            kudosUserIds = this.kudosReceiverUserIds();
+            kudosCoins = this.kudosVoterCoins();
+            this.alertKudosVoterCoins();
           } catch (e) {
             logger.warn(
               `endPostgame kudos failed for game ${this.id}: ${e.message}`
@@ -3987,7 +4285,9 @@ module.exports = class Game {
           "id version rolePlays roleWins played"
         );
 
-        this.recordSetupStats(setup);
+        const countsForRankings = this.countsForRankings();
+        if (countsForRankings) this.recordSetupStats(setup);
+        else await this.refundHeartsForBotGame();
 
         var history = this.history.getHistoryInfo(null, true);
         var users = [];
@@ -4060,10 +4360,12 @@ module.exports = class Game {
           readyCheck: this.readyCheck,
           noVeg: this.noVeg,
           hadVeg: !!this.hadVegKill,
+          hadBots: !countsForRankings,
           setupVersion:
             this.setup.version != null ? this.setup.version : null,
           setupStatsBackfilled: true,
-          kudosReceiver: kudosTarget ? kudosTarget.user.id : "",
+          kudosReceiver: kudosUserIds[0] || "",
+          kudosReceivers: kudosUserIds,
           stateLengths: this.stateLengths,
           gameTypeOptions: JSON.stringify(this.getGameTypeOptions()),
           anonymousGame: this.anonymousGame,
@@ -4071,15 +4373,17 @@ module.exports = class Game {
         });
         const gameDocument = await game.save();
 
-        try {
-          await skillRating.updateGameRatings(gameDocument);
-        } catch (err) {
-          logger.error(
-            `Failed to update skill ratings for game ${this.id}: ${err.message}`
-          );
+        if (countsForRankings) {
+          try {
+            await skillRating.updateGameRatings(gameDocument);
+          } catch (err) {
+            logger.error(
+              `Failed to update skill ratings for game ${this.id}: ${err.message}`
+            );
+          }
         }
 
-        if (this.competitive) {
+        if (this.competitive && countsForRankings) {
           await this.recordCompetitiveCompletions(gameDocument._id);
         }
 
@@ -4094,12 +4398,14 @@ module.exports = class Game {
 
         for (let player of this.players) {
           let coinsEarned = 0;
-          if (this.ranked && player.won) {
+          if (this.ranked && player.won && countsForRankings) {
             coinsEarned++;
           }
 
           let pointsWon = 0;
-          const earnedFortune = this.getPointsEarnedForPlayer(player.id);
+          const earnedFortune = countsForRankings
+            ? this.getPointsEarnedForPlayer(player.id)
+            : null;
           if (earnedFortune != null && !Number.isNaN(earnedFortune)) {
             pointsWon = earnedFortune;
           }
@@ -4123,7 +4429,9 @@ module.exports = class Game {
             player.EarnedAchievements = [];
           }
 
+          const dailyAllowed = this.dailyChallengesAllowed();
           if (
+            dailyAllowed &&
             this.hasIntegrity &&
             !this.private &&
             player.DailyTracker &&
@@ -4141,7 +4449,8 @@ module.exports = class Game {
             }
           }
 
-          const skipStatsSave = this.type === "Mafia" && this.hadVegKill;
+          const skipStatsSave =
+            (this.type === "Mafia" && this.hadVegKill) || !countsForRankings;
           let statIncrements = {};
           if (!skipStatsSave) {
             try {
@@ -4158,10 +4467,14 @@ module.exports = class Game {
             achievementCount: player.user.achievements.length,
           };
 
+          // Kudos voting coins are paid on top; they don't count toward
+          // stock dividends, which follow game rewards.
+          const kudosVoteCoins =
+            !player.isBot && kudosCoins[player.id] ? kudosCoins[player.id] : 0;
+
           const incOps = {
-            coins: coinsEarned,
-            kudos:
-              kudosTarget && kudosTarget.user.id == player.user.id ? 1 : 0,
+            coins: coinsEarned + kudosVoteCoins,
+            kudos: kudosUserIds.includes(player.user.id) ? 1 : 0,
             points: pointsWon > 0 ? pointsWon : 0,
             pointsNegative: pointsWon < 0 ? -pointsWon : 0,
             ...statIncrements,
@@ -4182,6 +4495,7 @@ module.exports = class Game {
 
             if (
               (this.ranked || this.competitive) &&
+              countsForRankings &&
               player.won &&
               coinsEarned > 0
             ) {
@@ -4240,7 +4554,11 @@ module.exports = class Game {
             await syncRankedCompetitiveAccess(player.user.id);
           }
 
-          if (player.DailyTracker && player.DailyTracker.length >= 1) {
+          if (
+            dailyAllowed &&
+            player.DailyTracker &&
+            player.DailyTracker.length >= 1
+          ) {
             await models.User.updateOne(
               { id: player.user.id },
               {
@@ -4256,7 +4574,8 @@ module.exports = class Game {
             ).exec();
           }
 
-          if (this.ranked && !player.isBot) {
+          // A bot game cost no heart, so it doesn't start a refill timer.
+          if (this.ranked && !player.isBot && countsForRankings) {
             let heartRefresh = await models.HeartRefresh.findOne({
               userId: player.user.id,
               type: "red",

@@ -122,6 +122,13 @@ import ReadyCheckDialog from "./components/ReadyCheck";
 import PushNotificationPrompt from "./components/PushNotificationPrompt";
 import { releaseSubscription } from "utils/pushNotifications";
 import RoleMarkerToggle from "./components/RoleMarkerToggle";
+import { playerNameWithAvatarProps } from "./playerDisplay";
+import {
+  KudosDock,
+  KudosPanel,
+  KudosIcon,
+  kudosAwardedIds,
+} from "./components/Kudos";
 
 const emoteMap = {
   dice1: dice1,
@@ -206,6 +213,7 @@ export default function Game() {
   const [roleRevealData, setRoleRevealData] = useState(null);
   const [hostId, setHostId] = useState(null);
   const [changeSetupDialogOpen, setChangeSetupDialogOpen] = useState(false);
+  const [kudos, setKudos] = useState(null);
   // Set when a participant rehosts this finished game:
   // { gameId, hostId, hostName, setup }
   const [rehostInvite, setRehostInvite] = useState(null);
@@ -542,6 +550,9 @@ export default function Game() {
 
           var players = {};
           var spectators = {};
+          const kudosUserIds = (data.kudosReceivers || []).concat(
+            data.kudosReceiver ? [data.kudosReceiver] : []
+          );
 
           for (let i in data.players) {
             players[data.players[i]] = {
@@ -565,6 +576,8 @@ export default function Game() {
               nameGradientColorC:
                 data.users[i] && data.users[i].settings.nameGradientColorC,
               left: data.left.indexOf(data.players[i]) !== -1,
+              kudos:
+                !!data.users[i] && kudosUserIds.includes(data.users[i].id),
             };
           }
 
@@ -679,6 +692,8 @@ export default function Game() {
     });
 
     socket.on("finished", () => setFinished(true));
+
+    socket.on("kudos", (data) => setKudos(data));
 
     socket.on("rehosted", (info) => {
       if (!info || !info.gameId) return;
@@ -936,7 +951,12 @@ export default function Game() {
     socket.on("readyCheck init", (data) => {
       const readyMap = {};
       if (data.readyPlayers) data.readyPlayers.forEach((id) => (readyMap[id] = true));
-      setReadyCheckInfo({ active: true, readyPlayers: readyMap, endTime: data.endTime });
+      setReadyCheckInfo({
+        active: true,
+        readyPlayers: readyMap,
+        endTime: data.endTime,
+        timeLeft: data.timeLeft,
+      });
       playAudio("urgent");
       setPingInfo({
         msg: `⚠ Ready Check!`,
@@ -1163,7 +1183,8 @@ export default function Game() {
       setChangeSetupDialogOpen: setChangeSetupDialogOpen,
       spectators: spectators,
       setSpectators: setSpectators,
-      readyCheckInfo: readyCheckInfo
+      readyCheckInfo: readyCheckInfo,
+      kudos: review ? null : kudos,
     };
 
     const isUrgent = voteKickUrgency || (readyCheckInfo.active && !readyCheckInfo.readyPlayers[self]);
@@ -1215,6 +1236,7 @@ export default function Game() {
         <ReadyCheckDialog
           open={readyCheckInfo.active && !readyCheckInfo.readyPlayers[self]}
           endTime={readyCheckInfo.endTime}
+          timeLeft={readyCheckInfo.timeLeft}
           onReady={onReadyCheckVerify}
           onLeave={leaveGame}
         />
@@ -2067,6 +2089,7 @@ export function TextMeetingLayout() {
         >
           {messages}
         </div>
+        <KudosDock onResize={doAutoScroll} />
         {canSpeak && (
           <SpeechInput
             meetings={meetings}
@@ -3377,8 +3400,10 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
     isolationEnabled,
     togglePlayerIsolation,
     isolatedPlayers,
-    readyCheckInfo
+    readyCheckInfo,
+    kudos,
   } = game;
+  const kudosIds = kudosAwardedIds(kudos);
 
   const prevStateRef = useRef(history?.currentState);
 
@@ -3543,11 +3568,6 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
       }
     }
 
-    let avatarId;
-    if (player !== undefined) {
-      avatarId = player.anonId === undefined ? player.userId : player.anonId;
-    }
-
     const readyCheck = readyCheckInfo?.active;
     const isReady = readyCheck && readyCheckInfo.readyPlayers[player.id];
 
@@ -3587,34 +3607,44 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
             </>
           )
         )}
-        <NameWithAvatar
-          id={player.userId}
-          avatarId={avatarId}
-          name={player.name}
-          avatar={player.avatar}
-          dead={className === "dead"}
-          color={resolveDisplayNameColor({
-            accessibleNameColors,
-            ignoreTextColor: user.settings?.ignoreTextColor,
-            rawNameColor: player.nameColor,
-            autoContrastColor: user.autoContrastColor.bind(user),
-            theme,
-          })}
-          nameColorSwatch={
-            accessibleNameColors && player.nameColor
-              ? player.nameColor
-              : undefined
-          }
-          nameFont={player.nameFont}
-          animatedNameColor={player.animatedNameColor}
-          nameGradientColorA={player.nameGradientColorA}
-          nameGradientColorB={player.nameGradientColorB}
-          nameGradientColorC={player.nameGradientColorC}
-          active={activity.speaking[player.id]}
-          noLink={stateViewing >= 0 && game.options.anonymousGame}
-          includeMiniprofile
-          newTab
-        />
+        {(() => {
+          const nameWithAvatar = (
+            <NameWithAvatar
+              {...playerNameWithAvatarProps(player, { user, theme })}
+              dead={className === "dead"}
+              active={activity.speaking[player.id]}
+              noLink={stateViewing >= 0 && game.options.anonymousGame}
+              includeMiniprofile
+              newTab
+            />
+          );
+          if (!player.kudos && !kudosIds.includes(player.id))
+            return nameWithAvatar;
+          // Kudos badge on the avatar's bottom-right corner.
+          return (
+            <Box
+              sx={{
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                flexGrow: 1,
+                minWidth: 0,
+              }}
+            >
+              {nameWithAvatar}
+              <KudosIcon
+                size={18}
+                sx={{
+                  position: "absolute",
+                  left: 26,
+                  bottom: -2,
+                  borderRadius: "50%",
+                  backgroundColor: "background.paper",
+                }}
+              />
+            </Box>
+          );
+        })()}
         {selTab && showBubbles && visibleTyping[player.id] === selTab && (
           <ReactLoading
             className={`typing-icon ${stateViewing != -1 ? "has-role" : ""}`}
@@ -3946,7 +3976,15 @@ export function ActionList({
     }
   }
 
-  if (hideIfEmpty && (!regularActionDescriptors || regularActionDescriptors.length === 0)) {
+  // "Kudos Awarded:" list at the top of the (main) Actions panel, shown only
+  // once someone has been awarded kudos.
+  const showKudos = !bare && kudosAwardedIds(game.kudos).length > 0;
+
+  if (
+    hideIfEmpty &&
+    !showKudos &&
+    (!regularActionDescriptors || regularActionDescriptors.length === 0)
+  ) {
     // Kick-only lists still host the rehost invite in games without a main list
     return bare ? null : <RehostInvite priority={1} />;
   }
@@ -3971,6 +4009,7 @@ export function ActionList({
       }
       content={
         <div className="action-list">
+          {showKudos && <KudosPanel />}
           {actionElements}
           <RehostInvite priority={meetingFilter ? 1 : 0} />
         </div>
