@@ -1153,7 +1153,10 @@ router.post("/create", async function (req, res) {
     };
 
     const hash = oHash(obj);
-    const existingSetup = await models.Setup.findOne({ hash });
+    const existingSetup = await models.Setup.findOne({
+      hash,
+      archived: { $ne: true },
+    });
 
     if (
       existingSetup &&
