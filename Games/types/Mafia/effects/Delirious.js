@@ -21,7 +21,6 @@ module.exports = class Delirious extends Effect {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        this.game.queueAlert("State thing");
         var action = new Action({
           actor: this.effecter,
           target: this.player,
