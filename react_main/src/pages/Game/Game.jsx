@@ -1247,33 +1247,7 @@ export default function Game() {
         {!review && history.currentState == -1 && (
           <PushNotificationPrompt socket={socket} />
         )}
-        {!review && history.currentState == -1 && isSpectator && (
-          <Box sx={{ display: "flex", justifyContent: "center", p: 1 }}>
-            <Button
-              variant="contained"
-              onClick={() => {
-                if (socket.on) socket.send("takeSeat");
-              }}
-            >
-              Join open seat
-            </Button>
-          </Box>
-        )}
-        {!review &&
-          history.currentState == -1 &&
-          !isSpectator &&
-          settingIsTrue(options.spectating) && (
-            <Box sx={{ display: "flex", justifyContent: "center", p: 1 }}>
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  window.location.assign(`/game/${gameId}?spectate=true`);
-                }}
-              >
-                Spectate
-              </Button>
-            </Box>
-          )}
+        {!isPhoneDevice && <PregameSeatActions />}
         <ReadyCheckDialog
           open={readyCheckInfo.active && !readyCheckInfo.readyPlayers[self]}
           endTime={readyCheckInfo.endTime}
@@ -1761,8 +1735,68 @@ function getDefaultSpeechMeetingId(speechMeetings) {
 
 const EMPTY_CHAT_STATE = { meetings: {}, alerts: [], obituaries: {} };
 
+function settingIsTrueValue(value) {
+  return value === true || value === "true";
+}
+
+// Desktop renders this under the chat. On a phone that spot is below the
+// viewport, under the bottom nav, so the compact variant sits in the chat.
+function PregameSeatActions({ compact = false }) {
+  const { review, history, isSpectator, socket, options, gameId } =
+    useContext(GameContext);
+
+  if (review || !history || history.currentState != -1) return null;
+
+  const showJoin = !!isSpectator;
+  const showSpectate =
+    !isSpectator && settingIsTrueValue(options && options.spectating);
+  if (!showJoin && !showSpectate) return null;
+
+  return (
+    <Box
+      sx={
+        compact
+          ? {
+              display: "flex",
+              flexShrink: 0,
+              width: "100%",
+              boxSizing: "border-box",
+              px: 1.25,
+              py: 0.5,
+            }
+          : { display: "flex", justifyContent: "center", p: 1 }
+      }
+    >
+      {showJoin ? (
+        <Button
+          variant="contained"
+          fullWidth={compact}
+          size={compact ? "small" : "medium"}
+          onClick={() => {
+            if (socket && socket.on) socket.send("takeSeat");
+          }}
+        >
+          Join open seat
+        </Button>
+      ) : (
+        <Button
+          variant="outlined"
+          fullWidth={compact}
+          size={compact ? "small" : "medium"}
+          onClick={() => {
+            window.location.assign(`/game/${gameId}?spectate=true`);
+          }}
+        >
+          Spectate
+        </Button>
+      )}
+    </Box>
+  );
+}
+
 export function TextMeetingLayout() {
   const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
   const { singleState } = useContext(GameTypeContext);
   const { isolationEnabled, isolatedPlayers, isSpectator } = game;
   const { history, players, stateViewing, updateHistory, settings, filters, spectators } =
@@ -2049,6 +2083,7 @@ export function TextMeetingLayout() {
         >
           {messages}
         </div>
+        {isPhoneDevice && <PregameSeatActions compact />}
         {canSpeak && (
           <SpeechInput
             meetings={meetings}
