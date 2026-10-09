@@ -94,6 +94,21 @@ function ErrorFallbackNoMain({ error, resetErrorBoundary }) {
   return <ErrorBox error={error} resetErrorBoundary={resetErrorBoundary} />;
 }
 
+// Route components must be created once, at module scope. Calling lazy()
+// inside Main gave every route a new component type on each Main render, so
+// any Main state change (e.g. crossing the md breakpoint on resize/rotation,
+// theme change) unmounted and remounted the whole page: its API calls re-ran
+// and the game page reconnected its socket.
+const Game = lazyWithRetry(() => import("pages/Game/Game"));
+const Play = lazyWithRetry(() => import("pages/Play/Play"));
+const Community = lazyWithRetry(() => import("pages/Community/Community"));
+const Fame = lazyWithRetry(() => import("pages/Fame/Fame"));
+const Learn = lazyWithRetry(() => import("pages/Learn/Learn"));
+const Policy = lazyWithRetry(() => import("pages/Policy/Policy"));
+const SiteActivity = lazyWithRetry(() => import("pages/Activity/Activity"));
+const User = lazyWithRetry(() => import("pages/User/User"));
+const Welcome = lazyWithRetry(() => import("pages/Welcome/Welcome"));
+
 function Main(props) {
   const errorContent = props.errorContent;
 
@@ -110,16 +125,6 @@ function Main(props) {
   useEffect(() => {
     clearChunkReloadFlag();
   }, []);
-
-  const Game = lazyWithRetry(() => import("pages/Game/Game"));
-  const Play = lazyWithRetry(() => import("pages/Play/Play"));
-  const Community = lazyWithRetry(() => import("pages/Community/Community"));
-  const Fame = lazyWithRetry(() => import("pages/Fame/Fame"));
-  const Learn = lazyWithRetry(() => import("pages/Learn/Learn"));
-  const Policy = lazyWithRetry(() => import("pages/Policy/Policy"));
-  const SiteActivity = lazyWithRetry(() => import("pages/Activity/Activity"));
-  const User = lazyWithRetry(() => import("pages/User/User"));
-  const Welcome = lazyWithRetry(() => import("pages/Welcome/Welcome"));
 
   const siteContent = (
     <Stack sx={{
