@@ -1054,6 +1054,68 @@ router.post("/restore", async function (req, res) {
   }
 });
 
+router.post("/archiveStale", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await setupArchive.isSiteOwner(userId))) {
+      errors.forbidden(res, "Only the site owner can archive stale setups.");
+      return;
+    }
+
+    const query = req.query || {};
+    const body = req.body || {};
+    const dryRun = requestFlag(query.dryRun) || requestFlag(body.dryRun);
+    const confirm = body.confirm === true || body.confirm === "true";
+    const plan = await setupArchive.planStaleArchive();
+
+    if (dryRun || !confirm) {
+      res.send({
+        dryRun: true,
+        confirmRequired: !confirm,
+        matched: plan.matched,
+        exempt: plan.exempt,
+        count: plan.count,
+        transfers: plan.transfers,
+      });
+      return;
+    }
+
+    const ids = plan.matched.map((row) => row.id);
+    if (plan.transfers.length) {
+      const docs = await models.Setup.find({ id: { $in: plan.transfers } })
+        .select("_id id creator originalCreator")
+        .populate("creator", "_id id deleted");
+      for (const setup of docs) {
+        if (!setup || !setup.creator || !setup.creator.deleted) continue;
+        try {
+          await setupArchive.transferToArchiveAccount(setup, userId, "stale");
+        } catch (e) {
+          if (e && e.code === "ARCHIVIST_MISSING") {
+            errors.notFound(res, "Archive user not found.");
+            return;
+          }
+          logger.error(e);
+        }
+      }
+    }
+
+    await setupArchive.archiveSetups(ids, "stale", userId);
+    await routeUtils.createModAction(userId, "Archive Stale Setups", ids);
+    res.send({
+      dryRun: false,
+      archived: ids,
+      transfers: plan.transfers,
+      count: ids.length,
+    });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(
+      res,
+      "Could not archive stale setups. Please try again."
+    );
+  }
+});
+
 router.post("/description", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
