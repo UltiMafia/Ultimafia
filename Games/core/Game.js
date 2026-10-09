@@ -2742,6 +2742,10 @@ module.exports = class Game {
     for (let spectator of this.spectators) spectator.seeUnvote(info);
   }
 
+  spectatorsSeeTyping(info) {
+    for (let spectator of this.spectators) spectator.seeTyping(info);
+  }
+
   queueAction(action, instant) {
     var delay = action.delay;
 
