@@ -42,13 +42,24 @@ CATEGORIES = [
      "Bigotry, slurs or group-based disrespect"),
     ("personal_attacks_harassment",
      "Be respectful. A DIRECT insult aimed at another PERSON counts, and it counts even in a single "
-     "message - flag it. The test is WHO is attacked, not how mild the wording is.\n"
-     "     VIOLATES: 'you're fucking stupid', 'you are a moron', 'moron', 'idiot', 'YOU'RE DUMB', "
-     "'are you stupid?', 'FUCK U', 'I hate you', 'dumbass', 'you are trash', 'loser', 'stfu' or "
-     "'shut the fuck up' when aimed at a named person ('Cart STFU').\n"
-     "     DOES NOT VIOLATE: insulting a PLAY, a decision or the situation ('that's dumb', 'that was "
-     "so dumb', 'this is stupid', 'ur reads are so trash'); an UNTARGETED 'SHUT UP' asking town to "
-     "quiet down; ordinary banter or swearing at nobody in particular.\n"
+     "message - flag it.\n"
+     "     THE TEST: find the OBJECT of the insult. A violation requires a PERSON as that object - a "
+     "named player, 'you'/'u'/'ur', or a group of players. If the object is a play, a read, a vote, "
+     "the situation, the speaker themselves, or nothing at all, it is NOT a violation no matter how "
+     "strong the language.\n"
+     "     VIOLATES: 'you're fucking stupid', 'you are a moron', 'YOU'RE DUMB', 'are you stupid?', "
+     "'FUCK U', 'I hate you', 'dumbass', 'you are trash', 'loser', 'stfu' or 'shut the fuck up' when "
+     "aimed at a named person ('Cart STFU').\n"
+     "     DOES NOT VIOLATE - profanity or an insult word with a NON-PERSON object:\n"
+     "       - object is the PLAY: 'that vote is fucking terrible', 'that was a dumb vote', 'ur reads "
+     "are trash', 'this is stupid', 'that's dumb'.\n"
+     "       - object is the SITUATION or nothing: 'the fucking train is late', 'this fucking traffic', "
+     "'they installed the new shit', 'i have done many stupid things today'.\n"
+     "       - ordinary chat that merely CONTAINS such a word: 'u got a fucking cc', 'never ask for ot "
+     "line don't be a noob', 'hooker read me as blacksmith so they're not noob'.\n"
+     "       - an UNTARGETED 'SHUT UP' asking town to quiet down, or ordinary banter.\n"
+     "     Same vocabulary, different object: 'you're fucking terrible' VIOLATES, 'that vote is fucking "
+     "terrible' does NOT; 'you are a moron' VIOLATES, 'that was a moronic play' does NOT.\n"
      "     A PATTERN of harassment across several games is a moderator matter, but that is not a "
      "reason to withhold a flag from a clear direct insult in one message.",
      "Directly insulting another player (the person, not the play)"),
@@ -139,11 +150,34 @@ def rules_block():
         "use of them as a violation is a FALSE POSITIVE:",
         "- dumbtell: acting dumb on purpose to avoid suspicion. A technical, strategic term - NOT",
         "  an insult and not a personal attack.",
-        "- gt / gamethrow: gamethrowing (see the exclusion above). Merely using the abbreviation, or",
-        "  discussing it in the abstract, is not a violation. ACCUSING or telling another player that",
-        "  they are gamethrowing - including terse forms like 'u gt', 'he gt', 'ur gt' - IS an Outside",
-        "  Game Influence violation, exactly like accusing them of any other rule break.",
+        "- gt / gamethrow / gting: gamethrowing (see the exclusion above). Merely using the",
+        "  abbreviation, or discussing it in the abstract, is not a violation. ACCUSING or telling",
+        "  another player that they are gamethrowing - including terse forms like 'u gt', 'he gt',",
+        "  'ur gt', 'you're gting', 'ur gting', 'stop gting' - IS an Outside Game Influence violation,",
+        "  exactly like accusing them of any other rule break. The terse forms are NOT too short to",
+        "  count: 'you're gting' IS a complete accusation and DOES violate. The general caution against",
+        "  flagging on vocabulary alone does NOT apply here, because the accusation IS the violation.",
+        "  This is one of the most COMMON violations on the site - do not be shy about it.",
+        "- NAMES containing rule words: players use handles like 'Gamethrower11', 'NoobSlayer',",
+        "  'DumbtellDan'. A NAME that merely contains a rule-related word is NOT an accusation -",
+        "  'gamethrower why you driving a bus over me lmao' addresses a PLAYER CALLED Gamethrower,",
+        "  it does not accuse anyone of gamethrowing. Check whether the word is capitalised or refers",
+        "  to how someone is addressed before treating it as a rule reference.",
+        "- Negated or quoted insults are NOT insults: 'i didn't call you an idiot', 'who called you",
+        "  stupid?', \"don't say 'you're an idiot'\" contain an insult word but do not insult anyone,",
+        "  because the insult is being DENIED, QUESTIONED or QUOTED rather than made.",
+        "- Identity words in negation or jest: 'he's not gay lol', 'are u gay or a gamer' are not",
+        "  intolerance. The bar for intolerance is bigotry or group-based disrespect that is actually",
+        "  directed at a group - not every appearance of a word like 'gay' in casual banter.",
         "- hc: 'hard claim' (e.g. 'hc cop' means the speaker claims cop).",
+        "- cc: 'counterclaim'. A claim by another player that counters a claim already made - e.g.",
+        "  'u got a fucking cc' means 'you have a counterclaim'. A game term, NOT an insult; the",
+        "  profanity is not aimed at any person.",
+        "- ot: 'on time'/'one more time' style game-chat shorthand ('never ask for ot line'). Ordinary",
+        "  game talk, not an insult.",
+        "- noob: an ordinary site word for an inexperienced player. Criticising someone's PLAY as",
+        "  'noob'-level is NOT a personal attack ('hooker read me as blacksmith so they're not noob').",
+        "  Only an insult directed AT a person ('you are such a noob') can be a personal attack.",
         "- fos: 'finger of suspicion' - a light read, not a serious accusation.",
         "- bw: a light, tentative read expressed in chat.",
         "- carol: a role/mechanic reference.",
@@ -164,14 +198,21 @@ def rules_block():
         "- If the target message breaks none of these categories, it is not a violation.",
         "- Pick the single most applicable category when there is a violation.",
         "- DO NOT OVER-FLAG. Do not flag a message merely because it contains a rule-related word",
-        "  ('report', 'GT', 'suicide', 'sue', 'alt', 'meta', 'cheat'). The message itself must",
+        "  ('report', 'GT', 'suicide', 'sue', 'alt', 'meta', 'cheat'), and do NOT flag it merely",
+        "  because it contains PROFANITY or a mild insult ('fucking', 'shit', 'stupid', 'dumb',",
+        "  'noob', 'idiot', 'gay', 'trash'). These are extremely common in ordinary chat, in banter,",
+        "  and in criticism of PLAY; their presence alone is never enough. For a personal attack the",
+        "  message must actually aim the insult at a person. The message itself must",
         "  actually break the rule.",
         "- Ordinary game talk is NOT a violation: accusing someone of being mafia, arguing about",
         "  votes, discussing strategy or strategy guides, banter, sarcasm, or stating an opinion",
         "  about how well someone plays.",
         "- This assessment only warns the sender BEFORE they send, and never decides moderation.",
         "  Prefer catching a likely violation over avoiding a borderline flag: a false alarm costs",
-        "  the sender nothing, a missed violation costs the community.",
+        "  the sender nothing, a missed violation costs the community. BUT 'borderline' means",
+        "  borderline on the SUBSTANCE of a rule (is this really an accusation of gamethrowing? is",
+        "  this really aimed at a person?). It does NOT mean borderline on vocabulary. A message that",
+        "  clearly does not target a person is not borderline, and that bias does not apply to it.",
         "- EXCLUDED RULE: 'Play to win' / gamethrowing (intentionally acting against your own win",
         "  condition) is deliberately NOT judged, because a player's intentions cannot be inferred",
         "  reliably. Ignore it - except that accusing another player of gamethrowing is itself an",

@@ -11,6 +11,13 @@ game.jsonl
 val_preds.json
 *.swp
 
+# Model intermediates: 91 MB each and reproducible by running finetune2.py.
+# The runnable artifact (finetune2_out/model.int8.onnx, 23 MB) IS committed.
+finetune_out/
+finetune_onnx/
+finetune2_out/model.onnx
+finetune2_out/model.safetensors
+
 __pycache__/
 *.pyc
 *.log
