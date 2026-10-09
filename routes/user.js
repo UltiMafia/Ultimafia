@@ -2543,6 +2543,7 @@ router.post("/settings/update", async function (req, res) {
       "hideCompetitiveModal",
       "ignoreTextColor",
       "accessibleNameColors",
+      "ignoreNameFonts",
       "ignoreDeathSounds",
     ]);
     if (BOOLEAN_SETTINGS.has(prop)) {
@@ -2600,6 +2601,20 @@ router.post("/settings/update", async function (req, res) {
     if (prop == "avatarShape" && !itemsOwned.avatarShape) {
       errors.forbidden(res, "You must purchase Square with coins from the Shop.");
       return;
+    }
+
+    if (prop == "gameAvatarShape") {
+      if (value !== "circle" && value !== "square") {
+        errors.badRequest(res, "Invalid in-game avatar shape.");
+        return;
+      }
+      if (!itemsOwned.avatarShape) {
+        errors.forbidden(
+          res,
+          "You must purchase Square with coins from the Shop."
+        );
+        return;
+      }
     }
 
     if (prop == "customPrimaryColor" && !itemsOwned.customPrimaryColor) {

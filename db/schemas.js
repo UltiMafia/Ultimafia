@@ -95,12 +95,16 @@ var schemas = {
       backgroundColor: String,
       bannerFormat: String,
       avatarShape: { type: String, default: "circle" },
+      // In-game avatar shape, independent of the profile avatarShape.
+      gameAvatarShape: { type: String, default: "circle" },
       iconFilter: { type: String, default: "none" },
       customPrimaryColor: { type: String, default: "none" },
       textColor: String,
       warnTextColor: String,
       ignoreTextColor: { type: Boolean, default: false },
       accessibleNameColors: { type: Boolean, default: false },
+      // Viewer preference: render every username in the default font.
+      ignoreNameFonts: { type: Boolean, default: false },
       nameColor: String,
       warnNameColor: String,
       // Cosmetic name font for in-game player list (not site-wide, not chat body)

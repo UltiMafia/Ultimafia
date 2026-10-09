@@ -619,8 +619,12 @@ export function NameWithAvatar(props) {
   const [isClicked, setIsClicked] = useState(false);
 
   const autoColor = user.autoContrastColor(color);
+  // Viewer setting: drop special name fonts. Colors and animations stay.
+  const ignoreNameFonts = user.settings && user.settings.ignoreNameFonts;
   const nameFontClass =
-    nameFont && nameFont !== "default" ? `name-font-${nameFont}` : "";
+    !ignoreNameFonts && nameFont && nameFont !== "default"
+      ? `name-font-${nameFont}`
+      : "";
   // Dead names stay red; skip cosmetics that would override .user-name.dead
   const nameAnimClass =
     !dead && animatedNameColor && animatedNameColor !== "none"

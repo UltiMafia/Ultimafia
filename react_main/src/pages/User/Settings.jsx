@@ -929,6 +929,25 @@ export default function Settings() {
       extraInfo: "Third color of the tricolor gradient (order: 1 → 2 → 3).",
     },
     {
+      label: "In-game Avatar Shape",
+      ref: "gameAvatarShape",
+      type: "select",
+      value: "circle",
+      options: [
+        {
+          label: "Circle",
+          value: "circle",
+        },
+        {
+          label: "Square",
+          value: "square",
+        },
+      ],
+      disabled: (deps) => !deps.user.itemsOwned.avatarShape,
+      extraInfo:
+        "Shape of your avatar in the player list, chat, lobby, and spectator lists. Your profile avatar shape is separate.",
+    },
+    {
       label: "Ignore Custom Text Color",
       ref: "ignoreTextColor",
       type: "boolean",
@@ -939,6 +958,13 @@ export default function Settings() {
       type: "boolean",
       extraInfo:
         "Shows each player's custom name color in a circle beside their name. Names and message text use black or white for readability based on your theme.",
+    },
+    {
+      label: "Disable special name fonts",
+      ref: "ignoreNameFonts",
+      type: "boolean",
+      extraInfo:
+        "When enabled, all usernames use the default font. Name colors and animations are unchanged.",
     },
     {
       label: "Disable Protips",
