@@ -429,6 +429,8 @@ var schemas = {
     anonymousDeck: [anonymousDeck],
     /** True if any in-game veg kill occurred (stats excluded when true). */
     hadVeg: { type: Boolean, default: false },
+    /** True if a bot was ever seated; the game changed no ratings or stats. */
+    hadBots: { type: Boolean, default: false },
     /** Setup version manifest at game end (for backfill / audits). */
     setupVersion: { type: Number, default: null },
     setupStatsBackfilled: { type: Boolean, default: false },

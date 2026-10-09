@@ -147,6 +147,8 @@ module.exports = class Game {
     /** @type {Record<string, string>} playerId -> starting faction key for stats/payouts */
     this.startingFactions = {};
     this.hadVegKill = false;
+    // Sticky: set once any bot is seated, even if it later leaves.
+    this.hadBots = false;
 
     this.numHostInGame = 0;
     this.originalHostId = options.hostId; // Track the original host for reassignment
@@ -526,6 +528,7 @@ module.exports = class Game {
           this.getTimeLeft("pregameWait") / 1000 / 60
         );
         this.players.push(player);
+        if (player.isBot) this.hadBots = true;
 
         // If the original host is rejoining, restore their host status
         if (
@@ -3097,7 +3100,16 @@ module.exports = class Game {
   // Any bot (a dev's "?bot" test player, or a guest) ever seated in this game.
   // Kudos in such a game are a test run and are never saved.
   hasBotPlayers() {
-    return this.players.filter((p) => p && p.isBot).length > 0;
+    return (
+      !!this.hadBots || this.players.filter((p) => p && p.isBot).length > 0
+    );
+  }
+
+  // A game with a bot in it must not change any player's score: no skill
+  // rating, no fortune/points, no competitive scoring, no setup/role win
+  // stats, no player win/loss stats, and no ranked-only rewards.
+  countsForRankings() {
+    return !this.hasBotPlayers();
   }
 
   // Bots added by a dev (the Test button / "?bot"); guests don't count. These
@@ -3251,7 +3263,9 @@ module.exports = class Game {
   }
 
   achievementsAllowed() {
-    return this.ranked || this.competitive;
+    // Achievements are only earned in ranked/competitive games, and a game
+    // with a bot in it doesn't count.
+    return (this.ranked || this.competitive) && this.countsForRankings();
     //return true;
   }
 
@@ -3496,7 +3510,7 @@ module.exports = class Game {
         }
       }
 
-      if (this.ranked || this.competitive) {
+      if ((this.ranked || this.competitive) && this.countsForRankings()) {
         await this.adjustSkillRatings();
       }
 
@@ -4119,7 +4133,8 @@ module.exports = class Game {
           "id version rolePlays roleWins played"
         );
 
-        this.recordSetupStats(setup);
+        const countsForRankings = this.countsForRankings();
+        if (countsForRankings) this.recordSetupStats(setup);
 
         var history = this.history.getHistoryInfo(null, true);
         var users = [];
@@ -4192,6 +4207,7 @@ module.exports = class Game {
           readyCheck: this.readyCheck,
           noVeg: this.noVeg,
           hadVeg: !!this.hadVegKill,
+          hadBots: !countsForRankings,
           setupVersion:
             this.setup.version != null ? this.setup.version : null,
           setupStatsBackfilled: true,
@@ -4204,15 +4220,17 @@ module.exports = class Game {
         });
         const gameDocument = await game.save();
 
-        try {
-          await skillRating.updateGameRatings(gameDocument);
-        } catch (err) {
-          logger.error(
-            `Failed to update skill ratings for game ${this.id}: ${err.message}`
-          );
+        if (countsForRankings) {
+          try {
+            await skillRating.updateGameRatings(gameDocument);
+          } catch (err) {
+            logger.error(
+              `Failed to update skill ratings for game ${this.id}: ${err.message}`
+            );
+          }
         }
 
-        if (this.competitive) {
+        if (this.competitive && countsForRankings) {
           await this.recordCompetitiveCompletions(gameDocument._id);
         }
 
@@ -4227,12 +4245,14 @@ module.exports = class Game {
 
         for (let player of this.players) {
           let coinsEarned = 0;
-          if (this.ranked && player.won) {
+          if (this.ranked && player.won && countsForRankings) {
             coinsEarned++;
           }
 
           let pointsWon = 0;
-          const earnedFortune = this.getPointsEarnedForPlayer(player.id);
+          const earnedFortune = countsForRankings
+            ? this.getPointsEarnedForPlayer(player.id)
+            : null;
           if (earnedFortune != null && !Number.isNaN(earnedFortune)) {
             pointsWon = earnedFortune;
           }
@@ -4274,7 +4294,8 @@ module.exports = class Game {
             }
           }
 
-          const skipStatsSave = this.type === "Mafia" && this.hadVegKill;
+          const skipStatsSave =
+            (this.type === "Mafia" && this.hadVegKill) || !countsForRankings;
           let statIncrements = {};
           if (!skipStatsSave) {
             try {
@@ -4314,6 +4335,7 @@ module.exports = class Game {
 
             if (
               (this.ranked || this.competitive) &&
+              countsForRankings &&
               player.won &&
               coinsEarned > 0
             ) {
