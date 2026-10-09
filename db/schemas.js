@@ -1497,6 +1497,10 @@ schemas.PayPalShopOrder = new mongoose.Schema({
   },
 });
 
+// Setup archive queries: stale sweep and restore-by-original-creator.
+schemas.Setup.index({ archived: 1, played: 1, lastPlayedAt: 1 });
+schemas.Setup.index({ originalCreator: 1 });
+
 // Compound indexes for Poke schema
 schemas.Poke.index({ userA: 1, userB: 1 }, { unique: true });
 schemas.Poke.index({ to: 1, status: 1 });
