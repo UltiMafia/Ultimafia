@@ -11,6 +11,8 @@ const path = require('path');
 const DIR = '//wsl.localhost/Ubuntu/home/tt/Documents/Ultimafia/rules_ml';
 const SET = DIR + '/eval_set.jsonl';
 const DONE = DIR + '/eval_done.json';
+const SKIP = DIR + '/eval_skipped.json';   // separate file: keeps eval_done.json's format
+                                           // unchanged, so no metrics script needs editing
 const PORT = Number(process.env.PORT || 8900);
 
 function loadSet() {
@@ -21,6 +23,12 @@ function loadDone() {
 }
 function saveDone(d) {
   fs.writeFileSync(DONE, JSON.stringify(d, null, 0));   // rewritten every keystroke
+}
+function loadSkip() {
+  try { return JSON.parse(fs.readFileSync(SKIP, 'utf8')); } catch (e) { return []; }
+}
+function saveSkip(d) {
+  fs.writeFileSync(SKIP, JSON.stringify(d, null, 0));
 }
 
 const PAGE = `<!DOCTYPE html>
@@ -63,11 +71,11 @@ button.gh{background:transparent;color:var(--fg);border:1px solid var(--line)}
 </div>
 </div>
 <script>
-var SET=[], DONE=[], i=0;
+var SET=[], DONE=[], SKIP=[], i=0;
 var $=function(id){return document.getElementById(id);};
 function modelCall(r){ return r.model_p>=0.5 ? 'flag' : 'ok'; }
-function doneIdx(){ return DONE.map(function(d){return d.i;}); }
-function firstUndone(){ var d=doneIdx(); for(var k=0;k<SET.length;k++){ if(d.indexOf(k)<0) return k; } return SET.length; }
+function seenIdx(){ return DONE.map(function(d){return d.i;}).concat(SKIP.map(function(d){return d.i;})); }
+function firstUndone(){ var d=seenIdx(); for(var k=0;k<SET.length;k++){ if(d.indexOf(k)<0) return k; } return SET.length; }
 function render(){
   if(i>=SET.length){ $('msg').textContent='All done - '+DONE.length+' judged.'; $('ctx').textContent=''; $('prog').textContent=''; return; }
   var r=SET[i];
@@ -77,10 +85,11 @@ function render(){
   $('mc').textContent=mc.toUpperCase();
   $('mc').className='badge '+(mc==='flag'?'b-flag':'b-ok');
   $('mp').textContent='p = '+r.model_p.toFixed(3);
-  $('bar').style.width=(100*DONE.length/SET.length)+'%';
-  $('prog').textContent=DONE.length+' / '+SET.length+' judged';
+  $('bar').style.width=(100*(DONE.length+SKIP.length)/SET.length)+'%';
+  $('prog').textContent=DONE.length+' judged, '+SKIP.length+' skipped / '+SET.length+' total';
   var agree=DONE.filter(function(d){return d.human===d.model;}).length;
-  $('stats').textContent=DONE.length?('you agreed with the model on '+agree+' of '+DONE.length+' ('+Math.round(100*agree/Math.max(DONE.length,1))+'%)'):'none yet';
+  $('stats').textContent=DONE.length?('you agreed with the model on '+agree+' of '+DONE.length+' ('+Math.round(100*agree/Math.max(DONE.length,1))+'%)'
+    +(SKIP.length?('  ·  '+SKIP.length+' skipped as too ambiguous to call'):'')):'none yet';
 }
 function record(human){
   if(i>=SET.length) return;
@@ -90,8 +99,27 @@ function record(human){
   fetch('/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(DONE)});
   i++; render();
 }
-function undo(){ if(!DONE.length) return; var last=DONE.pop(); i=last.i; fetch('/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(DONE)}); render(); }
-function skip(){ i++; render(); }
+function undo(){
+  var dLast = DONE.length ? DONE[DONE.length-1].i : -1;
+  var sLast = SKIP.length ? SKIP[SKIP.length-1].i : -1;
+  if (dLast < 0 && sLast < 0) return;
+  if (dLast >= sLast) {
+    i = DONE.pop().i;
+    fetch('/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(DONE)});
+  } else {
+    i = SKIP.pop().i;
+    fetch('/skip',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(SKIP)});
+  }
+  render();
+}
+function skip(){
+  if(i>=SET.length) return;
+  var r=SET[i], mc=modelCall(r);
+  SKIP=SKIP.filter(function(d){return d.i!==i;});
+  SKIP.push({i:i, game_id:r.game_id, message:r.message, model_p:r.model_p, model:mc, human:'skip', clef:r.clef});
+  fetch('/skip',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(SKIP)});
+  i++; render();
+}
 document.addEventListener('keydown',function(e){
   var k=e.key.toLowerCase();
   if(k==='enter'){ record(modelCall(SET[i])); }
@@ -106,7 +134,7 @@ $('bflag').onclick=function(){record('flag');};
 $('bok').onclick=function(){record('ok');};
 $('bskip').onclick=skip;
 fetch('/set').then(function(r){return r.json();}).then(function(j){
-  SET=j.set; DONE=j.done; i=firstUndone(); render();
+  SET=j.set; DONE=j.done; SKIP=j.skipped||[]; i=firstUndone(); render();
 });
 </script></body></html>`;
 
@@ -117,14 +145,17 @@ const server = http.createServer((req, res) => {
   }
   if (req.method === 'GET' && req.url === '/set') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    return res.end(JSON.stringify({ set: loadSet(), done: loadDone() }));
+    return res.end(JSON.stringify({ set: loadSet(), done: loadDone(), skipped: loadSkip() }));
   }
-  if (req.method === 'POST' && req.url === '/save') {
+  if (req.method === 'POST' && (req.url === '/save' || req.url === '/skip')) {
     let b = '';
     req.on('data', (c) => { b += c; if (b.length > 5e6) req.destroy(); });
     req.on('end', () => {
-      try { saveDone(JSON.parse(b || '[]')); res.writeHead(200); res.end('{"ok":true}'); }
-      catch (e) { res.writeHead(400); res.end(JSON.stringify({ error: String(e.message) })); }
+      try {
+        const arr = JSON.parse(b || '[]');
+        if (req.url === '/skip') saveSkip(arr); else saveDone(arr);
+        res.writeHead(200); res.end('{"ok":true}');
+      } catch (e) { res.writeHead(400); res.end(JSON.stringify({ error: String(e.message) })); }
     });
     return;
   }
