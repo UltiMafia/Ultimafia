@@ -502,6 +502,17 @@ module.exports = class Player {
       }
     });
 
+    // Closing the tab in postgame without coming back counts as leaving for
+    // kudos (a reload reconnects with a new socket within the grace time).
+    socket.on("disconnected", () => {
+      try {
+        if (this.socket !== socket) return; // replaced by a reconnect
+        this.game.scheduleKudosDisconnect(this, socket);
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
     socket.on("lastWill", (will) => {
       try {
         if (!this.game.isLastWills()) return;

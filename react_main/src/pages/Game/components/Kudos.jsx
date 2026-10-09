@@ -159,7 +159,22 @@ export function KudosPanel() {
           }}
         >
           <i className="fas fa-flask" style={{ marginRight: 4 }} />
-          Test mode: kudos won't be saved
+          Test mode: kudos and coins won't be saved
+        </Typography>
+      )}
+      {kudos.canVote && !kudos.finalized && (
+        <Typography
+          variant="caption"
+          data-testid="kudos-help"
+          sx={{
+            display: "block",
+            textAlign: "center",
+            color: "text.secondary",
+            mt: 0.5,
+          }}
+        >
+          Earn a coin for each row you vote in that gives someone kudos. Leaving
+          counts as No one in rows you haven't voted in.
         </Typography>
       )}
       <Box data-testid="kudos-awarded" sx={{ mt: 0.75 }}>
@@ -808,7 +823,7 @@ export function KudosDock({ onResize }) {
             variant="caption"
             sx={{ fontWeight: 600, lineHeight: 1.4 }}
           >
-            Test mode: kudos won't be saved (bots in game)
+            Test mode: kudos and coins won't be saved (bots in game)
           </Typography>
         </Stack>
       )}

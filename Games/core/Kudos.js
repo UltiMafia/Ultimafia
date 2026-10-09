@@ -103,6 +103,7 @@ class KudosVote {
     }
     this.voters = new Set(voters);
     this.ballots = {}; // voterId -> { rowKey: target }
+    this.autoNoOne = {}; // voterId -> [rowKey] No one votes cast on leaving
     this.awarded = {}; // rowKey -> [playerId]
     this.finalized = false;
   }
@@ -130,10 +131,40 @@ class KudosVote {
     return null;
   }
 
-  // A voter who leaves just stops being able to vote. Their cast votes stay;
-  // rows they never voted in don't count them (non-voters aren't quorum).
+  // A voter who leaves before voting ends gets a "No one" vote in every row
+  // they haven't voted in; votes they already cast stay. Those No one votes
+  // count like any other, but never earn a coin.
   removeVoter(voterId) {
+    if (!this.voters.has(voterId)) return;
+    if (!this.finalized) {
+      const mine = (this.ballots[voterId] = this.ballots[voterId] || {});
+      const auto = [];
+      for (const row of this.rows) {
+        if (row.key in mine) continue;
+        mine[row.key] = NO_ONE;
+        auto.push(row.key);
+      }
+      if (auto.length > 0) this.autoNoOne[voterId] = auto;
+    }
     this.voters.delete(voterId);
+  }
+
+  // Coins for voting, once voting is settled: +1 per row a voter voted in
+  // (a player or No one) if that row awarded kudos to anyone. Votes cast for
+  // a leaver are skipped. voterId -> coins (only voters with coins).
+  voterCoins() {
+    const coins = {};
+    if (!this.finalized) return coins;
+    for (const voterId in this.ballots) {
+      const auto = this.autoNoOne[voterId] || [];
+      let n = 0;
+      for (const rowKey in this.ballots[voterId]) {
+        if (auto.includes(rowKey)) continue;
+        if ((this.awarded[rowKey] || []).length > 0) n++;
+      }
+      if (n > 0) coins[voterId] = n;
+    }
+    return coins;
   }
 
   tally(rowKey) {

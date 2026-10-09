@@ -6,6 +6,7 @@ const models = require("../../db/models");
 const redis = require("../../modules/redis");
 const skillRating = require("../../modules/skillRating");
 const stockMarket = require("../../lib/StockMarket");
+const { KudosVote } = require("../../Games/core/Kudos");
 
 // A game with a dev test bot in it must not change anyone's score, cost
 // hearts or pay daily challenges. Guests are not bots. These tests drive
@@ -26,6 +27,8 @@ function stubGame({
     user: { id: `u-${id}`, achievements: [], dailyChallenges: [] },
     EarnedAchievements: ["Mafia1"],
     left: false,
+    send() {},
+    sendAlert() {},
   });
   const list = [mk("t1", true), mk("t2", true), mk("m1", false)];
   if (bot) {
@@ -85,6 +88,8 @@ function stubGame({
       calls.competitive++;
     },
     async finalizePostgameCleanup() {},
+    sendAlert() {},
+    spectators: [],
   });
   return { game, calls, players };
 }
@@ -152,7 +157,8 @@ describe("Bot games don't affect rankings", function () {
     skillRating.updateGameRatings = async () => {
       rec.ratings++;
     };
-    stockMarket.distributeDividends = async () => {
+    stockMarket.distributeDividends = async (userId, coins) => {
+      rec.dividendCoins = (rec.dividendCoins || []).concat([[userId, coins]]);
       rec.dividends++;
     };
   });
@@ -339,5 +345,42 @@ describe("Bot games don't affect rankings", function () {
     const { game } = stubGame({ guest: true, bot: true });
     game.hasTestBots().should.equal(true);
     game.countsForRankings().should.equal(false);
+  });
+
+  it("adds kudos voting coins in a normal game, outside dividends", async function () {
+    const { game } = stubGame();
+    game.shareholderSnapshots = { "u-t1": { holders: [] } };
+    game.kudosVote = new KudosVote({
+      candidates: ["t1", "t2", "m1"].map((id) => ({
+        id,
+        alignment: "Village",
+      })),
+      voters: ["t1", "t2", "m1"],
+    });
+    game.kudosVote.castVote("t1", "Village", "t2");
+    game.kudosVote.castVote("m1", "Village", "t2");
+    await game._doEndPostgame();
+    incFor("u-t1").$inc.coins.should.equal(1 + 5 + 1); // win + achievement + kudos vote
+    incFor("u-m1").$inc.coins.should.equal(5 + 1);
+    incFor("u-t2").$inc.coins.should.equal(1 + 5); // received, didn't vote
+    incFor("u-t2").$inc.kudos.should.equal(1);
+    rec.dividendCoins.should.deep.equal([["u-t1", 6]]);
+  });
+
+  it("pays no kudos voting coins in a bot game", async function () {
+    const { game } = stubGame({ bot: true });
+    game.kudosVote = new KudosVote({
+      candidates: ["t1", "t2", "m1"].map((id) => ({
+        id,
+        alignment: "Village",
+      })),
+      voters: ["t1", "t2", "m1"],
+      testMode: true,
+    });
+    game.kudosVote.castVote("t1", "Village", "t2");
+    game.kudosVote.castVote("m1", "Village", "t2");
+    await game._doEndPostgame();
+    incFor("u-t1").$inc.coins.should.equal(0);
+    incFor("u-t1").$inc.kudos.should.equal(0);
   });
 });

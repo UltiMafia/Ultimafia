@@ -32,6 +32,7 @@ const PostgameMeeting = require("./PostgameMeeting");
 const { KudosVote, isWinLossResult, pickBotVote } = require("./Kudos");
 const dbStats = require("../../db/stats");
 const { isTestBotPlayer } = require("./botPlayers");
+const KUDOS_DISCONNECT_GRACE_MS = 20000;
 const VegKickMeeting = require("./VegKickMeeting");
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
@@ -692,14 +693,7 @@ module.exports = class Game {
     player.send("left");
     player.left = true;
 
-    if (this.kudosVote && this.finished && !this.postgameOver) {
-      try {
-        this.kudosVote.removeVoter(player.id);
-        this.evaluateKudos(false);
-      } catch (e) {
-        logger.warn(`kudos leave failed for game ${this.id}: ${e.message}`);
-      }
-    }
+    this.kudosVoterLeft(player);
     // Delay disconnect so "left" can flush before the socket is torn down.
     // Immediate terminate() races the client receive path (esp. iOS Safari).
     setTimeout(() => {
@@ -1083,7 +1077,8 @@ module.exports = class Game {
 
     if (player.user.dev && !player.isBot) player.send("dev");
 
-    if (this.kudosVote) player.send("kudos", this.kudosVote.stateFor(player.id));
+    if (this.kudosVote)
+      player.send("kudos", this.kudosVote.stateFor(player.id));
 
     if (this.isReadyCheckActive) {
         player.send("readyCheck init", {
@@ -3181,7 +3176,10 @@ module.exports = class Game {
     const candidates = [];
     for (let player of this.players) {
       if (player.left || !this.originalRoles[player.id]) continue;
-      candidates.push({ id: player.id, alignment: this.getKudosAlignment(player) });
+      candidates.push({
+        id: player.id,
+        alignment: this.getKudosAlignment(player),
+      });
     }
     if (candidates.length == 0) return;
 
@@ -3224,7 +3222,9 @@ module.exports = class Game {
                 pickBotVote(row.candidates, player.id, favorites[row.key])
               );
             } catch (e) {
-              logger.warn(`bot kudos vote failed for game ${this.id}: ${e.message}`);
+              logger.warn(
+                `bot kudos vote failed for game ${this.id}: ${e.message}`
+              );
             }
           }, delay)
         );
@@ -3232,12 +3232,66 @@ module.exports = class Game {
     }
   }
 
-  // Bot kudos timers live outside this.timers so a state change can't cancel
-  // them; they stop with the postgame.
+  // A voter who leaves the postgame gets "No one" in every row they haven't
+  // voted in (see KudosVote.removeVoter), which can settle rows early.
+  kudosVoterLeft(player) {
+    if (!this.kudosVote || !this.finished || this.postgameOver) return;
+    try {
+      if (!this.kudosVote.voters.has(player.id)) return;
+      this.kudosVote.removeVoter(player.id);
+      this.evaluateKudos(false);
+      this.broadcastKudos();
+    } catch (e) {
+      logger.warn(`kudos leave failed for game ${this.id}: ${e.message}`);
+    }
+  }
+
+  // A voter whose socket closed in postgame and who hasn't reconnected
+  // after the grace time has left, as far as kudos go.
+  scheduleKudosDisconnect(player, socket, graceMs = KUDOS_DISCONNECT_GRACE_MS) {
+    if (!this.kudosVote || !this.finished || this.postgameOver) return;
+    if (!this.kudosVote.voters.has(player.id)) return;
+    this.botKudosTimers = this.botKudosTimers || [];
+    this.botKudosTimers.push(
+      setTimeout(() => {
+        if (player.socket === socket) this.kudosVoterLeft(player);
+      }, graceMs)
+    );
+  }
+
+  // Kudos timers (bot votes, disconnect grace) live outside this.timers so a
+  // state change can't cancel them; they stop with the postgame.
   clearBotKudosTimers() {
     if (!this.botKudosTimers) return;
     this.botKudosTimers.forEach(clearTimeout);
     this.botKudosTimers = [];
+  }
+
+  // Coins for kudos voting (see KudosVote.voterCoins), by player id, after
+  // the final settlement. Bot games (test mode) pay nothing.
+  kudosVoterCoins() {
+    if (!this.kudosVote || !this.kudosVote.finalized) return {};
+    if (this.kudosVote.testMode || this.hasTestBots()) return {};
+    return this.kudosVote.voterCoins();
+  }
+
+  // Tells each voter still here what voting earned them (or would have, in
+  // test mode).
+  alertKudosVoterCoins() {
+    if (!this.kudosVote || !this.kudosVote.finalized) return;
+    const test = this.kudosVote.testMode || this.hasTestBots();
+    const coins = this.kudosVote.voterCoins();
+    for (const playerId in coins) {
+      const player = this.players[playerId];
+      if (!player || player.left || player.isBot) continue;
+      const n = coins[playerId];
+      const what = `${n} coin${n === 1 ? "" : "s"} for kudos voting`;
+      player.sendAlert(
+        test
+          ? `Test mode: you would have earned ${what}.`
+          : `You earned ${what}!`
+      );
+    }
   }
 
   // User ids to save as kudos receivers when the postgame closes. Bot games
@@ -3264,7 +3318,8 @@ module.exports = class Game {
   broadcastKudos() {
     if (!this.kudosVote) return;
     for (let player of this.players)
-      if (!player.left) player.send("kudos", this.kudosVote.stateFor(player.id));
+      if (!player.left)
+        player.send("kudos", this.kudosVote.stateFor(player.id));
     for (let spectator of this.spectators)
       spectator.send("kudos", this.kudosVote.stateFor(spectator.id));
   }
@@ -4154,6 +4209,7 @@ module.exports = class Game {
 
   async _doEndPostgame() {
     let kudosUserIds = [];
+    let kudosCoins = {};
 
     try {
       if (!this._postgamePersisted) {
@@ -4161,6 +4217,8 @@ module.exports = class Game {
           try {
             this.evaluateKudos(true);
             kudosUserIds = this.kudosReceiverUserIds();
+            kudosCoins = this.kudosVoterCoins();
+            this.alertKudosVoterCoins();
           } catch (e) {
             logger.warn(
               `endPostgame kudos failed for game ${this.id}: ${e.message}`
@@ -4354,8 +4412,13 @@ module.exports = class Game {
             achievementCount: player.user.achievements.length,
           };
 
+          // Kudos voting coins are paid on top; they don't count toward
+          // stock dividends, which follow game rewards.
+          const kudosVoteCoins =
+            !player.isBot && kudosCoins[player.id] ? kudosCoins[player.id] : 0;
+
           const incOps = {
-            coins: coinsEarned,
+            coins: coinsEarned + kudosVoteCoins,
             kudos: kudosUserIds.includes(player.user.id) ? 1 : 0,
             points: pointsWon > 0 ? pointsWon : 0,
             pointsNegative: pointsWon < 0 ? -pointsWon : 0,

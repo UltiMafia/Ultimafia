@@ -140,16 +140,64 @@ describe("Kudos", function () {
   });
 
   describe("leavers and finalizing", function () {
-    it("treats leavers as non-voters (no automatic No one vote)", function () {
+    it("gives a leaver No one in every row they haven't voted in", function () {
+      const v = makeVote(["t1", "t2", "m1", "m2"], {
+        m1: "Mafia",
+        m2: "Mafia",
+      });
+      v.castVote("t1", "Village", "t2");
+      v.removeVoter("t1");
+      v.ballots.t1.should.deep.equal({ Village: "t2", Mafia: NO_ONE });
+      v.tally("Village").noOne.should.equal(0);
+      v.tally("Mafia").noOne.should.equal(1);
+      v.voters.has("t1").should.equal(false);
+      v.removeVoter("t1"); // twice is a no-op
+      v.tally("Mafia").noOne.should.equal(1);
+    });
+
+    it("a leaver's No one vote can settle a row early", function () {
+      const v = makeVote(["a", "b", "c", "d"]);
+      v.castVote("a", "Village", "b");
+      v.castVote("c", "Village", "b");
+      v.evaluate().should.deep.equal([]); // 2 vs 0, b and d still to vote
+      v.removeVoter("d");
+      v.remaining("Village").should.equal(1);
+      v.evaluate().should.deep.equal(["b"]); // 2 vs 1 No one + 1 left
+    });
+
+    it("Bob with 2 votes still wins a tie with a leaver's and another No one", function () {
+      const v = makeVote(["a", "b", "c", "d", "e"]);
+      v.castVote("a", "Village", "b");
+      v.castVote("c", "Village", "b");
+      v.castVote("e", "Village", NO_ONE);
+      v.removeVoter("d");
+      v.tally("Village").noOne.should.equal(2);
+      v.evaluate(true).should.deep.equal(["b"]); // b abstains
+    });
+
+    it("Bob with 2 votes loses to 3 No one votes from leavers", function () {
       const v = makeVote(["a", "b", "c", "d", "e", "f"]);
       v.castVote("a", "Village", "b");
       v.castVote("c", "Village", "b");
-      v.evaluate().should.deep.equal([]); // 2 vs 0 + 4 remaining
       v.removeVoter("d");
       v.removeVoter("e");
-      v.evaluate().should.deep.equal([]); // 2 vs 0 + 2 (b, f)
       v.removeVoter("f");
-      v.evaluate().should.deep.equal(["b"]); // 2 vs 0 + 1
+      v.evaluate().should.deep.equal([]);
+      v.evaluate(true).should.deep.equal([]);
+    });
+
+    it("doesn't add No one votes once voting is settled", function () {
+      const v = makeVote(["a", "b", "c"]);
+      v.evaluate(true);
+      v.removeVoter("a");
+      should.not.exist(v.ballots.a);
+    });
+
+    it("still counts players who stay and never vote as abstentions", function () {
+      const v = makeVote(["a", "b", "c", "d"]);
+      v.castVote("a", "Village", "b");
+      v.castVote("c", "Village", "b");
+      v.evaluate(true).should.deep.equal(["b"]);
       v.tally("Village").noOne.should.equal(0);
     });
 
@@ -169,6 +217,53 @@ describe("Kudos", function () {
       v.evaluate(true).should.deep.equal(["b"]);
       v.finalized.should.equal(true);
       v.castVote("d", "Village", NO_ONE).should.be.a("string");
+    });
+  });
+
+  describe("voter coins", function () {
+    it("pays 1 per voted row that awarded kudos, to actual voters only", function () {
+      const v = makeVote(["t1", "t2", "t3", "m1", "m2"], {
+        m1: "Mafia",
+        m2: "Mafia",
+      });
+      // Town row: t2 gets kudos. Mafia row: nobody does.
+      v.castVote("t1", "Village", "t2");
+      v.castVote("t3", "Village", "t2");
+      v.castVote("m1", "Village", NO_ONE);
+      v.castVote("t1", "Mafia", "m1");
+      v.castVote("t3", "Mafia", NO_ONE);
+      v.voterCoins().should.deep.equal({}); // not settled yet
+      // m2 leaves: auto No one in both rows earns nothing.
+      v.removeVoter("m2");
+      v.evaluate(true);
+      v.awarded.Village.should.deep.equal(["t2"]);
+      v.awarded.Mafia.should.deep.equal([]);
+      v.voterCoins().should.deep.equal({ t1: 1, t3: 1, m1: 1 });
+    });
+
+    it("pays per row: three awarding rows are three coins", function () {
+      const v = makeVote(["t1", "t2", "t3", "m1", "m2", "c1", "c2"], {
+        m1: "Mafia",
+        m2: "Mafia",
+        c1: "Cult",
+        c2: "Cult",
+      });
+      for (const voter of ["t3", "t1"]) {
+        v.castVote(voter, "Village", "t2");
+        v.castVote(voter, "Mafia", "m1");
+        v.castVote(voter, "Cult", "c1");
+      }
+      v.evaluate(true);
+      v.voterCoins().should.deep.equal({ t1: 3, t3: 3 });
+    });
+
+    it("keeps coins for real votes cast before leaving", function () {
+      const v = makeVote(["a", "b", "c", "d"], { d: "Mafia" });
+      v.castVote("a", "Village", "b");
+      v.castVote("c", "Village", "b");
+      v.removeVoter("a"); // a's Mafia row becomes an unpaid No one
+      v.evaluate(true);
+      v.voterCoins().should.deep.equal({ a: 1, c: 1 });
     });
   });
 
