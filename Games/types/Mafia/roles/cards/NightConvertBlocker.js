@@ -7,8 +7,11 @@ module.exports = class NightConvertBlocker extends Card {
 
     this.meetings = {
       Psychoanalyze: {
-        states: ["Night"],
+        states: ["Night (Becoming)", "Night (Swapping)", "Night (Converting)", "Night"],
         flags: ["voting"],
+        shouldMeet: function () {
+          return this.game.getStateName() == this.game.firstActiveNightPhase();
+        },
         action: {
           labels: ["convert blocker"],
           priority: PRIORITY_NIGHT_SAVER - 1,

@@ -9,6 +9,7 @@ const {
 module.exports = class MafiaAction extends Action {
   constructor(options) {
     super(options);
+    this.ability = options.ability;
   }
 
   heal(power, target) {
@@ -61,6 +62,7 @@ module.exports = class MafiaAction extends Action {
 
   blockActions(target, label, exclude) {
     target = target || this.target;
+    if (target) target.nightRoleblocked = true;
 
     for (let action of this.game.actions[0]) {
       if (label && !action.hasLabel(label)) {
@@ -84,6 +86,9 @@ module.exports = class MafiaAction extends Action {
     }
     this.game.events.emit("AbilityToggle", target);
     for (let action of this.game.actions[0]) {
+      if (action.ability && action.ability.includes("IgnoresDelirium")) {
+        continue;
+      }
       if (action.hasLabel("investigate")) {
         hasInvestigate = true;
         continue;

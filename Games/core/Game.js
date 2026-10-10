@@ -2016,7 +2016,15 @@ module.exports = class Game {
       if (this.getGameSetting("Day Start")) {
         start = "Day";
       } else {
+        // Conversion phases sit immediately before Night. Starting at Night
+        // would skip them on the first night; empty phases still skip themselves.
         start = "Night";
+        for (let state of this.states) {
+          if (state.name == "Night (Becoming)") {
+            start = "Night (Becoming)";
+            break;
+          }
+        }
       }
     }
     if (this.HaveHostingState == true) {
@@ -2736,6 +2744,10 @@ module.exports = class Game {
           }
         }
         this.gotoNextState();
+        // The state has already changed. The loop below would inspect the new
+        // state's meetings and, when nobody has one, skip that state. A
+        // conversion night with no living actor must still run its clock.
+        return;
       }
     }
 
