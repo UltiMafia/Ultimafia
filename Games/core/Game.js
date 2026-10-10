@@ -4373,6 +4373,19 @@ module.exports = class Game {
         });
         const gameDocument = await game.save();
 
+        try {
+          if (setup && setup._id) {
+            await models.Setup.updateOne(
+              { _id: setup._id },
+              { $set: { lastPlayedAt: Date.now() } }
+            ).exec();
+          }
+        } catch (err) {
+          logger.error(
+            `Failed to set lastPlayedAt for game ${this.id}: ${err.message}`
+          );
+        }
+
         if (countsForRankings) {
           try {
             await skillRating.updateGameRatings(gameDocument);

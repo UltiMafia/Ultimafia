@@ -19,9 +19,14 @@ const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const Diff = require("diff");
 const errors = require("../lib/errors");
+const setupArchive = require("../modules/setupArchive");
 
 function canModifySetup(setup) {
   return !setup.ranked && !setup.competitive;
+}
+
+function requestFlag(value) {
+  return value === true || value === "true" || value === "1";
 }
 
 function markFavSetups(userId, setups) {
@@ -111,8 +116,25 @@ router.get("/id", async function (req, res) {
     var setup = await models.Setup.findOne({
       id: String(req.query.query),
     }).select(
-      "id gameType name roles closed useRoleGroups roleGroupSizes gameSettings count total -_id"
+      "id gameType name roles closed useRoleGroups roleGroupSizes gameSettings count total archived creator -_id"
     );
+
+    if (setup && !(await setupArchive.canViewArchived(userId, setup))) {
+      setup = null;
+    }
+
+    if (setup) {
+      const plain = setup.toJSON();
+      delete plain.creator;
+      delete plain.archived;
+      delete plain._id;
+      // markFavSetups calls toJSON only for favorites. A plain object needs it.
+      plain.toJSON = function () {
+        return this;
+      };
+      setup = plain;
+    }
+
     var setups = setup ? [setup] : [];
 
     await markFavSetups(userId, setups);
@@ -259,12 +281,18 @@ router.get("/search", async function (req, res) {
       }
     }
 
+    const archivedFilter = await setupArchive.archivedListFilter(
+      userId,
+      setupArchive.showArchivedRequested(req.query.showArchived)
+    );
+    setupArchive.applyArchivedFilter(search, archivedFilter);
+
     var setups = await models.Setup.find(search)
       .sort(sort)
       .skip(start)
       .limit(pageSize)
       .select(
-        "id gameType name roles closed useRoleGroups roleGroupSizes gameSettings count total featured ranked competitive -_id"
+        "id gameType name roles closed useRoleGroups roleGroupSizes gameSettings count total featured ranked competitive archived -_id"
       )
       .populate("creator", "id name avatar tag -_id");
     var count = await models.Setup.countDocuments(search);
@@ -564,10 +592,17 @@ router.get("/:id/lineage", async function (req, res) {
   try {
     const setupId = req.params.id;
     const setup = await models.Setup.findOne({ id: setupId })
-      .select("id copiedFrom copiedAt")
+      .select("id copiedFrom copiedAt archived creator")
+      .populate("creator", "id")
       .lean();
 
     if (!setup) {
+      res.status(404).send("Setup not found.");
+      return;
+    }
+
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    if (!(await setupArchive.canViewArchived(userId, setup))) {
       res.status(404).send("Setup not found.");
       return;
     }
@@ -579,7 +614,7 @@ router.get("/:id/lineage", async function (req, res) {
         .select("-__v -hash -count")
         .populate("creator", "id name avatar -_id")
         .lean();
-      if (parent) {
+      if (parent && (await setupArchive.canViewArchived(userId, parent))) {
         parent.roles = parent.roles && JSON.parse(parent.roles);
         result.copiedFrom = { setup: parent, copiedAt: setup.copiedAt };
       }
@@ -592,6 +627,7 @@ router.get("/:id/lineage", async function (req, res) {
       .lean();
 
     for (const child of children) {
+      if (!(await setupArchive.canViewArchived(userId, child))) continue;
       if (child.roles) child.roles = JSON.parse(child.roles);
       result.copiedTo.push({ setup: child, copiedAt: child.copiedAt });
     }
@@ -611,9 +647,17 @@ router.get("/:id", async function (req, res) {
       .populate("creator", "id name avatar tag -_id");
 
     if (setup) {
+      var userId = await routeUtils.verifyLoggedIn(req, true);
+      if (!(await setupArchive.canViewArchived(userId, setup))) {
+        errors.notFound(
+          res,
+          "That setup does not exist. It may have been removed."
+        );
+        return;
+      }
+
       setup = setup.toJSON();
       setup.voteCount = setup.voteCount ?? 0;
-      var userId = await routeUtils.verifyLoggedIn(req, true);
       if (userId) {
         var voteDoc = await models.ForumVote.findOne({
           voter: userId,
@@ -673,6 +717,15 @@ router.get("/:id/version/:setupVersionNum", async function (req, res) {
     );
 
     if (setup) {
+      var userId = await routeUtils.verifyLoggedIn(req, true);
+      if (!(await setupArchive.canViewArchived(userId, setup))) {
+        errors.notFound(
+          res,
+          "That setup does not exist. It may have been removed."
+        );
+        return;
+      }
+
       setup = setup.toJSON();
 
       let setupVersion = await models.SetupVersion.findOne({
@@ -712,13 +765,18 @@ router.post("/feature", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var setupId = String(req.body.setupId);
 
-    if (!(await routeUtils.verifyPermission(res, userId, "featureSetup")))
-      return;
-
-    var setup = await models.Setup.findOne({ id: setupId });
+    var setup = await models.Setup.findOne({ id: setupId }).populate(
+      "creator",
+      "id"
+    );
 
     if (!setup) {
       errors.notFound(res, "That setup does not exist. It may have been removed.");
+      return;
+    }
+
+    if (!(await setupArchive.canManageSetup(userId, setup, "feature"))) {
+      errors.forbidden(res, "You do not have the required permissions.");
       return;
     }
 
@@ -738,13 +796,18 @@ router.post("/ranked", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var setupId = String(req.body.setupId);
 
-    if (!(await routeUtils.verifyPermission(res, userId, "approveRanked")))
-      return;
-
-    var setup = await models.Setup.findOne({ id: setupId });
+    var setup = await models.Setup.findOne({ id: setupId }).populate(
+      "creator",
+      "id"
+    );
 
     if (!setup) {
       errors.notFound(res, "That setup does not exist. It may have been removed.");
+      return;
+    }
+
+    if (!(await setupArchive.canManageSetup(userId, setup, "ranked"))) {
+      errors.forbidden(res, "You do not have the required permissions.");
       return;
     }
 
@@ -766,13 +829,18 @@ router.post("/competitive", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var setupId = String(req.body.setupId);
 
-    if (!(await routeUtils.verifyPermission(res, userId, "approveCompetitive")))
-      return;
-
-    var setup = await models.Setup.findOne({ id: setupId });
+    var setup = await models.Setup.findOne({ id: setupId }).populate(
+      "creator",
+      "id"
+    );
 
     if (!setup) {
       errors.notFound(res, "That setup does not exist. It may have been removed.");
+      return;
+    }
+
+    if (!(await setupArchive.canManageSetup(userId, setup, "competitive"))) {
+      errors.forbidden(res, "You do not have the required permissions.");
       return;
     }
 
@@ -824,10 +892,7 @@ router.post("/delete", async function (req, res) {
     }
 
     let isSetupOwner = userId == setup.creator.id.toString();
-    if (
-      !isSetupOwner &&
-      !(await routeUtils.verifyPermission(res, userId, "deleteSetup"))
-    ) {
+    if (!(await setupArchive.canManageSetup(userId, setup, "delete"))) {
       errors.forbidden(res, "You are not the owner of this setup.");
       return;
     }
@@ -852,17 +917,13 @@ router.post("/delete", async function (req, res) {
   }
 });
 
-const ARCHIVE_SETUP_OWNER_ID = "uBqs8KaDx";
-
 router.post("/archive", async function (req, res) {
   try {
     const setupId = String(req.body.id);
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "archiveSetup")))
-      return;
 
     const setup = await models.Setup.findOne({ id: setupId })
-      .select("_id creator")
+      .select("_id id creator originalCreator")
       .populate("creator", "_id id deleted");
 
     if (!setup) {
@@ -870,31 +931,31 @@ router.post("/archive", async function (req, res) {
       return;
     }
 
-    if (!setup.creator || !setup.creator.deleted) {
+    if (!(await setupArchive.canManageSetup(userId, setup, "archive"))) {
+      errors.forbidden(res, "You do not have the required permissions.");
+      return;
+    }
+
+    const botOwned = await setupArchive.isBotOwned(setup);
+    if (!botOwned && (!setup.creator || !setup.creator.deleted)) {
       errors.conflict(res, "Setup owner is not deleted.");
       return;
     }
 
-    const archiveUser = await models.User.findOne({
-      id: ARCHIVE_SETUP_OWNER_ID,
-    }).select("_id");
-    if (!archiveUser) {
-      errors.notFound(res, "Archive user not found.");
-      return;
+    try {
+      await setupArchive.transferToArchiveAccount(
+        setup,
+        userId,
+        "ownerDeleted"
+      );
+      await setupArchive.archiveSetups([setup.id], "ownerDeleted", userId);
+    } catch (e) {
+      if (e && e.code === "ARCHIVIST_MISSING") {
+        errors.notFound(res, "Archive user not found.");
+        return;
+      }
+      throw e;
     }
-
-    await models.User.updateOne(
-      { _id: setup.creator._id },
-      { $pull: { setups: setup._id } }
-    ).exec();
-    await models.User.updateOne(
-      { _id: archiveUser._id },
-      { $addToSet: { setups: setup._id } }
-    ).exec();
-    await models.Setup.updateOne(
-      { id: setupId },
-      { $set: { creator: archiveUser._id } }
-    ).exec();
 
     routeUtils.createModAction(userId, "Archive Setup", [setupId]);
 
@@ -902,6 +963,156 @@ router.post("/archive", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not archive setup. Please try again.");
+  }
+});
+
+function sendRestoreBlocker(res, blockers) {
+  const cap = (blockers || []).find((item) => item.code === "cap");
+  if (cap) {
+    errors.conflict(
+      res,
+      `Target has ${cap.owned} setups and this restore adds ${cap.adding}, over the ${cap.max} limit.`
+    );
+    return;
+  }
+
+  const code = blockers[0] && blockers[0].code;
+  if (code === "targetMissing" || code === "fromUserMissing") {
+    errors.notFound(res, "That user does not exist.");
+    return;
+  }
+  if (code === "targetDeleted") {
+    errors.conflict(res, "That account is deleted.");
+    return;
+  }
+  if (code === "targetBanned") {
+    errors.conflict(res, "That account is banned.");
+    return;
+  }
+  if (code === "targetSystem") {
+    errors.conflict(res, "That account cannot own setups.");
+    return;
+  }
+  if (code === "missingSelection") {
+    errors.badRequest(res, "Provide setupIds or fromUserId.");
+    return;
+  }
+  errors.conflict(res, "Restore cannot proceed.");
+}
+
+router.post("/restore", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(userId, "restoreSetup"))) {
+      errors.forbidden(res, "You do not have the required permissions.");
+      return;
+    }
+
+    const query = req.query || {};
+    const body = req.body || {};
+    const dryRun = requestFlag(query.dryRun) || requestFlag(body.dryRun);
+    const unarchive = !(body.unarchive === false || body.unarchive === "false");
+    const reassignGuides = requestFlag(body.reassignGuides);
+
+    const loaded = await setupArchive.loadRestoreRequest(body);
+    const plan = await setupArchive.planRestore(loaded, {
+      unarchive,
+      reassignGuides,
+    });
+
+    if (dryRun) {
+      res.send(Object.assign({ dryRun: true }, plan.public));
+      return;
+    }
+
+    if (plan.hardBlockers.length) {
+      sendRestoreBlocker(res, plan.hardBlockers);
+      return;
+    }
+
+    const { restored } = await setupArchive.applyRestore(plan, userId, {
+      unarchive,
+      reassignGuides,
+    });
+    const restoredIds = (restored || [])
+      .filter((row) => row && !row.skipped)
+      .map((row) => row.id);
+
+    if (restoredIds.length) {
+      await setupArchive.clearSetupListCaches();
+      await routeUtils.createModAction(userId, "Restore Setups", [
+        `to:${loaded.toUserId}`,
+        `from:${loaded.fromUserId || "setupIds"}`,
+        ...restoredIds,
+      ]);
+    }
+
+    res.send(Object.assign({ dryRun: false, restored }, plan.public));
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not restore setups. Please try again.");
+  }
+});
+
+router.post("/archiveStale", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await setupArchive.isSiteOwner(userId))) {
+      errors.forbidden(res, "Only the site owner can archive stale setups.");
+      return;
+    }
+
+    const query = req.query || {};
+    const body = req.body || {};
+    const dryRun = requestFlag(query.dryRun) || requestFlag(body.dryRun);
+    const confirm = body.confirm === true || body.confirm === "true";
+    const plan = await setupArchive.planStaleArchive();
+
+    if (dryRun || !confirm) {
+      res.send({
+        dryRun: true,
+        confirmRequired: !confirm,
+        matched: plan.matched,
+        exempt: plan.exempt,
+        count: plan.count,
+        transfers: plan.transfers,
+      });
+      return;
+    }
+
+    const ids = plan.matched.map((row) => row.id);
+    if (plan.transfers.length) {
+      const docs = await models.Setup.find({ id: { $in: plan.transfers } })
+        .select("_id id creator originalCreator")
+        .populate("creator", "_id id deleted");
+      for (const setup of docs) {
+        if (!setup || !setup.creator || !setup.creator.deleted) continue;
+        try {
+          await setupArchive.transferToArchiveAccount(setup, userId, "stale");
+        } catch (e) {
+          if (e && e.code === "ARCHIVIST_MISSING") {
+            errors.notFound(res, "Archive user not found.");
+            return;
+          }
+          logger.error(e);
+        }
+      }
+    }
+
+    await setupArchive.archiveSetups(ids, "stale", userId);
+    await routeUtils.createModAction(userId, "Archive Stale Setups", ids);
+    res.send({
+      dryRun: false,
+      archived: ids,
+      transfers: plan.transfers,
+      count: ids.length,
+    });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(
+      res,
+      "Could not archive stale setups. Please try again."
+    );
   }
 });
 
@@ -918,7 +1129,7 @@ router.post("/description", async function (req, res) {
       res.status(404).send("Setup not found.");
       return;
     }
-    if (setup.creator.id !== userId) {
+    if (!(await setupArchive.canManageSetup(userId, setup, "description"))) {
       res.status(403).send("Only the setup creator can edit the description.");
       return;
     }
@@ -944,14 +1155,7 @@ router.post("/create", async function (req, res) {
     );
     user = user.toJSON();
 
-    if (user.setups.length >= constants.maxOwnedSetups) {
-      errors.conflict(
-        res,
-        "You can only have up to 100 created setups linked to your account."
-      );
-      return;
-    }
-
+    let editingBotOwned = false;
     if (req.body.editing) {
       var setup = await models.Setup.findOne({ id: String(req.body.id) })
         .select("creator ranked competitive")
@@ -963,13 +1167,21 @@ router.post("/create", async function (req, res) {
         return;
       }
 
-      if (
-        (!setup || (setup.creator && setup.creator.id != userId)) &&
-        !(await routeUtils.verifyPermission(res, userId, "editAnySetup"))
-      ) {
+      if (!(await setupArchive.canManageSetup(userId, setup, "edit"))) {
         errors.forbidden(res, "You can only edit setups you have created.");
         return;
       }
+
+      editingBotOwned = await setupArchive.isBotOwned(setup);
+    }
+
+    // Editing a bot-owned setup does not count against the editor's cap.
+    if (!editingBotOwned && user.setups.length >= constants.maxOwnedSetups) {
+      errors.conflict(
+        res,
+        "You can only have up to 100 created setups linked to your account."
+      );
+      return;
     }
 
     var setup = Object(req.body);
@@ -1112,7 +1324,10 @@ router.post("/create", async function (req, res) {
     };
 
     const hash = oHash(obj);
-    const existingSetup = await models.Setup.findOne({ hash });
+    const existingSetup = await models.Setup.findOne({
+      hash,
+      archived: { $ne: true },
+    });
 
     if (
       existingSetup &&
@@ -1136,6 +1351,15 @@ router.post("/create", async function (req, res) {
 
     var setupId = null;
     if (req.body.editing) {
+      delete obj.creator;
+      delete obj.originalCreator;
+      delete obj.ownershipHistory;
+      delete obj.archived;
+      delete obj.archivedAt;
+      delete obj.archivedBy;
+      delete obj.archivedReason;
+      delete obj._id;
+      delete obj.id;
       await models.Setup.updateOne({ id: setup.id }, { $set: obj }).exec();
       await models.Setup.updateOne(
         { id: setup.id },

@@ -10,6 +10,7 @@ const logger = require("../modules/logging")(".");
 const router = express.Router();
 const axios = require("axios");
 const errors = require("../lib/errors");
+const setupArchive = require("../modules/setupArchive");
 
 function alignPopulatedUsersWithSeats(seatIds, idMapJson, populatedUsers) {
   if (!seatIds?.length) return [];
@@ -675,12 +676,15 @@ router.post("/host", async function (req, res) {
 
     var setup = await models.Setup.findOne({
       id: String(req.body.setup),
-    }).select("-_id -__v -creator -hash");
+    }).select("-__v -hash");
 
-    if (!setup) {
+    // Same message as a missing setup so an archived setup is not revealed.
+    if (!setup || !(await setupArchive.canViewArchived(userId, setup))) {
       errors.notFound(res, "Setup not found");
       return;
     }
+
+    var wasArchived = setup.archived === true;
 
     if (setup.gameType != gameType) {
       errors.badRequest(res, "Invalid setup for this game");
@@ -889,7 +893,16 @@ router.post("/host", async function (req, res) {
       return;
     }
 
+    var setupDoc = setup;
     setup = setup.toJSON();
+    delete setup._id;
+    delete setup.creator;
+    delete setup.archived;
+    delete setup.archivedAt;
+    delete setup.archivedBy;
+    delete setup.archivedReason;
+    delete setup.originalCreator;
+    delete setup.ownershipHistory;
     setup.roles = JSON.parse(setup.roles);
 
     if (await redis.getSetCreatingGame(userId)) {
@@ -931,6 +944,15 @@ router.post("/host", async function (req, res) {
       lobbyName = `${user.name}'s lobby`;
     }
     lobbyName = lobbyName.substring(0, 50);
+
+    if (wasArchived) {
+      if (!(await setupArchive.canManageSetup(userId, setupDoc, "unarchive"))) {
+        errors.forbidden(res, "You do not have the required permissions.");
+        redis.unsetCreatingGame(userId);
+        return;
+      }
+      await setupArchive.unarchiveSetup(setup, userId);
+    }
 
     try {
       var gameId = await gameLoadBalancer.createGame(userId, gameType, {

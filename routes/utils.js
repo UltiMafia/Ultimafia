@@ -22,9 +22,47 @@ function getUserId(req) {
   return req.session.user && req.session.user.id;
 }
 
+const systemAccountCache = new Map();
+const SYSTEM_ACCOUNT_CACHE_MS = 60 * 1000;
+
+async function sessionIsSystemAccount(userId) {
+  if (!userId) return false;
+  if (userId === constants.SETUP_ARCHIVIST_BOT_ID) return true;
+
+  const now = Date.now();
+  const cached = systemAccountCache.get(userId);
+  if (cached && now - cached.at < SYSTEM_ACCOUNT_CACHE_MS) return cached.value;
+
+  const user = await models.User.findOne({ id: userId })
+    .select("systemAccount")
+    .lean();
+  const value = !!(user && user.systemAccount);
+  systemAccountCache.set(userId, { value, at: now });
+  if (systemAccountCache.size > 5000) {
+    const oldest = systemAccountCache.keys().next().value;
+    systemAccountCache.delete(oldest);
+  }
+  return value;
+}
+
 async function verifyLoggedIn(req, ignoreError) {
-  if (req.session.user && req.session.user.id) return req.session.user.id;
-  else if (!ignoreError) throw new Error("Not logged in");
+  const userId = req.session.user && req.session.user.id;
+  if (userId) {
+    if (await sessionIsSystemAccount(userId)) {
+      if (!ignoreError) throw new Error("Not logged in");
+      return;
+    }
+    return userId;
+  } else if (!ignoreError) throw new Error("Not logged in");
+}
+
+function isReservedUsername(name) {
+  return (
+    String(name || "")
+      .trim()
+      .toLowerCase() ===
+    String(constants.SETUP_ARCHIVIST_BOT_NAME).toLowerCase()
+  );
 }
 
 async function verifyPermissions(...args) {
@@ -424,6 +462,7 @@ module.exports = {
   getIP,
   getUserId,
   verifyLoggedIn,
+  isReservedUsername,
   verifyPermissions,
   verifyPermission,
   scoreGame,

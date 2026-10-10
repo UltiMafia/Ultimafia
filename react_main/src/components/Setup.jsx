@@ -23,6 +23,13 @@ import { useTheme } from "@mui/material/styles";
 
 import "css/setup.css";
 import "css/roles.css";
+
+// Public id of SetupArchivistBot. Bot-owned setups are not the viewer's.
+export const SETUP_ARCHIVIST_BOT_ID = "setup-archivist-bot";
+
+export function isArchivistSetup(setup) {
+  return setup?.creator?.id === SETUP_ARCHIVIST_BOT_ID;
+}
 import { usePopover, InfoPopover } from "components/Popover";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { PopoverContent } from "./Popover";
@@ -354,9 +361,18 @@ export default function Setup(props) {
               overflowX: "hidden",
             }}
           >
-            <Typography variant="body2" className="setup-name">
-              {setupName}
-            </Typography>
+            <Stack direction="row" alignItems="flex-start" spacing={0.5}>
+              <Typography
+                variant="body2"
+                className="setup-name"
+                sx={{ minWidth: 0, flex: "1 1 auto" }}
+              >
+                {setupName}
+              </Typography>
+              {props.setup.archived === true ? (
+                <span className="setup-archived-badge">Archived</span>
+              ) : null}
+            </Stack>
             <Stack
               direction="row"
               ref={iconContainerRef}
@@ -872,8 +888,13 @@ export function SetupManipulationButtons(props) {
 
   const isOwner = props.setup.creator?.id === user.id;
   const hasEditAnySetupPerm = user.perms?.editAnySetup;
+  const canManageArchived = !!user.perms?.manageArchivedSetups;
+  const botOwned = isArchivistSetup(props.setup);
   const isRanked = props.setup.ranked || props.setup.competitive;
-  const canEditThisSetup = (isOwner || hasEditAnySetupPerm) && !isRanked;
+  const canEditThisSetup = botOwned
+    ? canManageArchived && !isRanked
+    : (isOwner || hasEditAnySetupPerm) && !isRanked;
+  const canDeleteThisSetup = botOwned ? canManageArchived : isOwner;
   const favIconFormat = props.setup.favorite ? "fas" : "far";
 
   const disabledStyle = {
@@ -882,9 +903,15 @@ export function SetupManipulationButtons(props) {
   };
 
   const editStyle = !canEditThisSetup ? disabledStyle : undefined;
-  const deleteStyle = !isOwner ? disabledStyle : undefined;
+  const deleteStyle = !canDeleteThisSetup ? disabledStyle : undefined;
 
   const rankedMsg = "Ranked setups cannot be edited";
+  const archiveMsg = "Only an admin can change an archived setup";
+  const editDeniedMsg = isRanked
+    ? rankedMsg
+    : botOwned && !canManageArchived
+    ? archiveMsg
+    : null;
 
   const editButton = (
     <IconButton
@@ -906,7 +933,7 @@ export function SetupManipulationButtons(props) {
   const deleteButton = (
     <IconButton
       aria-label="delete"
-      disabled={!isOwner}
+      disabled={!canDeleteThisSetup}
       size={iconSize}
       sx={deleteStyle}
       onClick={() => props.onDel(props.setup)}
@@ -924,8 +951,8 @@ export function SetupManipulationButtons(props) {
       >
         <i className={`setup-btn fav-setup fa-star ${favIconFormat}`} />
       </IconButton>
-      {isRanked ? (
-        <Tooltip title={rankedMsg}><span>{editButton}</span></Tooltip>
+      {editDeniedMsg ? (
+        <Tooltip title={editDeniedMsg}><span>{editButton}</span></Tooltip>
       ) : editButton}
       <IconButton
         aria-label="copy"
