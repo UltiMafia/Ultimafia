@@ -1,118 +1,144 @@
 # Ultimafia rule-violation classifier (`rules_ml/`)
 
 A small, CPU-only classifier that decides whether an in-game chat message breaks Ultimafia's
-rules. Built by (1) prompt-engineering a Jev (TypeSafe, via Experiential Labs) typed-decision
-classifier, (2) labelling a sample of the game archive with it, and (3) distilling those labels
-into a TF-IDF + logistic-regression model that runs in plain JavaScript with no dependencies.
+rules of conduct.
 
-**Not for moderation.** The intended use is to flag a message as it is sent and ask the author
-to reconsider. Nothing here bans anyone.
+**Not for moderation.** The intended use is to flag a message *as it is sent* and ask the author
+to reconsider sending it. Nothing here bans anyone, and no output of this model should be shown
+to a moderator as an accusation.
+
+**If you are integrating this, read "Integrating it" below and stop there.** Everything after it
+is background.
 
 ---
 
-## Pipeline
+## Integrating it
 
-| step | script | output |
-|---|---|---|
-| sample the archive | `build_sample.py`, `build_supplement.py` | `sample.jsonl` (5,000), `supplement.jsonl` (207) |
-| judge with Jev | `run_batch.py`, `run_supp.py`, `wait_and_validate3.py` | `decisions_v2.jsonl`, `decisions_supp.jsonl` |
-| combine | `combine.py` | `decisions_all.jsonl` (5,207) |
-| review | `analyze_v2.py`, `check_v2.py`, `final_check.py` | console report |
-| train + export | `export_final2.py` | `model.json`, `model_char.json` |
-| verify export | `dump_val2.py`, `validate_js.js` | console report |
-| prompt definition | `jev_lib2.py` | — |
-| validation harness | `validate_v2.py` | — |
-
-Generated datasets (`sample.jsonl`, `supplement.jsonl`, `decisions_*.jsonl`, `val_preds.json`) are
-**gitignored** — they are multi-megabyte, machine-generated, and reproducible from `mafia.db` plus
-the API key. `decisions_sample.jsonl` (300 stratified rows) **is** committed so the label schema and
-real example decisions are reviewable without pulling the full corpus.
-
-## The judge (Jev)
-
-`POST https://api.experientiallabs.ai/v1/systemone`, model `jev-latest`, key from
-`EXPERIENTIAL_LABS_API_KEY` in the repo `.env` (never printed, never logged).
-
-Each request carries the full rules explanation as the *state* plus per-item questions:
-`noul` (probability the message breaks a rule), `choice` (which of 14 categories, or
-`no_violation`) and `score` (severity). Messages are batched **4 per request** — the rules block
-is ~2.5k tokens, so batching cuts cost from 2,744 to ~1,000 tokens per message. Batching was
-validated against per-message judging: 16/16 agreement.
-
-**The decision is driven by `noul`, not by `choice`.** Jev's `choice` is over-eager — it names a
-category even for borderline messages where `noul` is low. `noul` separated every reference case
-correctly. Final label:
+### The artifact
 
 ```
-violation  <=>  noul >= 0.5  AND  choice != "no_violation"
+rules_ml/finetune_cls3_out/model.int8.onnx      21.9 MB, int8 quantised, CPU only
 ```
 
-### Rules encoded
+Do **not** ship the fp32 weights it came from: on individual messages they differ by up to 0.40,
+and every number below is measured on the int8 file.
 
-14 categories, from `react_main/src/pages/Policy/Rules.jsx`. **"Play to win" / gamethrowing is
-deliberately excluded** — intent is not inferable from a single message.
+### Dependencies
+
+One: `onnxruntime-node` (`^1.30.0`, already pinned in `harness/package.json`). No Python, no
+`transformers`, no network access at inference time.
+
+### The contract
+
+| | |
+|---|---|
+| **Input** | **one message, exactly as sent.** No chat history, no game state |
+| **Output** | a 4-class softmax over `no_violation · abuse · outside_game_influence · other` |
+| **The decision** | `p = 1 − probs[0]` — one minus the `no_violation` probability |
+| **Category** | `argmax`, for a message like "you're gamethrowing" |
+| **Latency** | ~13 ms per message, single-threaded, on a laptop CPU |
+
+Context is deliberately not used. It was tested: stripping the surrounding chat changed the
+verdict on 13 of 277 hand-judged messages (5%) and moved agreement from 82.3% to 82.7% — a wash.
+Score a bare string and keep the integration trivial.
+
+### Reference implementation
+
+**`harness/cls.js`** is the working one-file implementation: a hand-written WordPiece tokenizer
+plus the ONNX session, ~120 lines, no build step. Copy it, or `require` it directly.
+
+```js
+const cls = require('./harness/cls.js');
+
+await cls.init();                      // loads the ONNX session and vocab.txt
+const r = await cls.score("im suing");
+// r = { prob: 0.856, category: 'outside_game_influence',
+//       categoryLabel: 'outside game influence', categoryConf: 0.856 }
+
+if (r.prob >= 0.50) {
+  // ask the author to reconsider before sending
+}
+```
+
+Its tokenizer was verified to produce ids identical to HuggingFace's for representative inputs
+(`im suing` -> `101 10047 24086 3070 102`). **If you reimplement the tokenizer, re-run that
+check** — a silent mismatch corrupts every score without erroring.
+
+### Two gotchas that cost real time
+
+- **The quantised graph is fixed batch=1.** Feed it a batch and it errors on rank. Score one
+  message per call, or loop.
+- **Class order is load-bearing:** `['no_violation', 'abuse', 'outside_game_influence', 'other']`,
+  matching `CLASSES` in `cls.js` and `finetune_cls3.py`.
+
+### Choosing the threshold
+
+Measured on 277 hand-judged messages (a held-out set the model never trained on), against
+judgements made by one of the site's developers:
+
+| threshold | precision | recall | agreement |
+|---|---|---|---|
+| 0.35 | 0.700 | 0.875 | 85.6% |
+| **0.50** | **0.731** | **0.850** | **86.6%** |
+| 0.70 | 0.743 | 0.688 | 84.1% |
+
+For a "reconsider" prompt the asymmetry favours the low end: **a false nudge costs the sender
+nothing, a missed violation costs the community.** Start at **0.40–0.50**.
+
+### How good is it, honestly
+
+86.6% agreement with the developer's own judgements. For scale: never flagging anything scores
+71.1% on the same rows, so the model is worth about 15 points over doing nothing.
+
+Its ceiling is its teacher, **Clef** (Cloudflare, via the same gateway), which agrees with the
+developer 87.0% of the time — so the model is 0.4 points from that ceiling, and the remaining
+error is chiefly the *teacher's* disagreement with the human rather than a modelling failure.
+13% of the set is teacher-versus-human disagreement; no model trained on this teacher fixes it.
+
+> **Do not tune against the held-out test split.** Its labels *are* the teacher's, so any case
+> where the model correctly disagrees with the teacher scores there as an error. Only the
+> hand-check set measures agreement with a human.
+
+---
+
+## Background
+
+Judged by **Clef** through the Experiential Labs gateway (`POST /v1/systemone`) applying a single
+frozen rubric (`jev_lib2.py`), which a developer has ruled on case by case. 10,741 messages from
+4,075 games are labelled this way; the model is a fine-tuned MiniLM-L6 distilled from them.
+
+The rules come from `react_main/src/pages/Policy/Rules.jsx`. **"Play to win" / gamethrowing is
+deliberately not judged** — intent is not inferable from one message — except that *accusing*
+another player of it is itself a violation.
 
 Boundaries that were got wrong first and corrected:
 
-* **OGI** is about outside *evidence*, not outside *reasoning*. Asserting meta and acting on it
+- **OGI is about outside *evidence*, not outside *reasoning*.** Asserting meta and acting on it
   ("my meta on XYZ says they're mafia, vote them out") is allowed; sending a **link to a past
-  game** to prove it is not. So are report threats, rule-accusations, non-game bribes/threats,
-  pregame pacts, posting off-site during a game, and pretending to cheat.
-* **Cheating** = multi-accounting *in the same game*. Saying "X is my alt" is not cheating.
-* **GRA** = actually leaving (suing/suiciding) or urging it. "I'll stop trying" and defensive
-  rule-talk ("you can't report me for GT") are not GRA; gamethrowing is out of scope entirely.
-* Don't flag on a keyword. A message must actually break the rule.
+  game** to prove it is not. Report threats, rule-accusations, non-game bribes/threats, pregame
+  pacts, off-site posting during a game, and pretending to cheat also violate it.
+- **Cheating** = multi-accounting *in the same game*. Saying "X is my alt" is not cheating.
+- **Leaving** ("sui" / "suiciding" / "suing") for an in-game reason violates, including the
+  threat. `sue me` is a dare, **not** leave-talk.
+- **Don't flag on a keyword.** The message must actually break the rule. A bare dismissal
+  (`stfu`, `shut up`) is not a personal attack; criticising someone's *play* or *skill* is not
+  either — only an insult aimed at a person is.
 
-## The distilled model
-
-`model.json` — word (1,2)-gram TF-IDF + logistic regression (C=4, balanced), 4,044 features,
-**157 KB**. `model_char.json` — char_wb (2,5)-grams, higher recall, 585 KB.
-
-Input is the **target message only**; adding surrounding chat consistently *hurt* held-out
-performance, so `use_context` is false.
-
-Held-out (25% split, enriched sample):
-
-| model | acc | P | R | F1 | AUC |
-|---|---|---|---|---|---|
-| word (1,2) | 0.857 | 0.533 | 0.649 | 0.585 | 0.864 |
-| char_wb (2,5) | 0.858 | 0.530 | 0.752 | **0.622** | **0.897** |
-
-**Threshold matters more than anything else here.** The training sample is deliberately enriched
-(50% keyword-matched), so the model's raw probabilities are calibrated to a much higher base rate
-than production. On the *representative* uniform subset (3.6% true rate), precision is only ~0.22
-at threshold 0.5 but rises to ~0.41 at 0.7 and ~0.50 at 0.8. **For a "reconsider" prompt, raise
-the threshold (~0.7–0.8) — nagging users is worse than missing a flag.**
-
-### Verified
-
-* portable Python re-implementation vs scikit-learn: `max|diff| = 2.0e-08`
-* **`predict.js` (Node) vs Python: `max|diff| = 2.2e-16`** (exact)
-* latency **0.024–0.030 ms/message**, single-threaded, no dependencies
-
-Two subtle bugs found by that verification, both easy to reintroduce:
-`TfidfVectorizer` lowercases **before** analysis (the char path must lowercase too), and the word
-analyzer emits **n-grams** (`ngram_range=(1,2)` means unigrams *and* bigrams). Also, sklearn's
-`char_wb` **breaks** out of the loop once a word is shorter than `n` — it does not emit longer
-n-grams for short words.
-
-## Usage (Node)
-
-```js
-const { loadModel, predict } = require('./predict');
-const model = loadModel();                       // model.json, cached by the caller
-const p = predict("im suing", ["alice: vote bob"], model);
-if (p >= 0.7) { /* ask the author to reconsider */ }
-```
+`PROCESS.md` documents the whole pipeline: corpus construction, the label corrections, the
+export pitfalls, the evaluation tooling, and every trap found along the way.
 
 ## Known limitations
 
-* **Small, enriched sample.** 5,207 decisions, 809 positives; only 90 positives in the uniform
-  subset, so representative precision/recall are noisy (±1 case moves precision by ~0.05).
-* **Rare slang is data-starved.** "suing" occurs in just 25 messages archive-wide and "suiciding"
-  in 8 — none landed in the uniform sample, so 207 targeted messages were added as a supplement.
-  This taught the model the slang but made it somewhat trigger-happy on "suicid*" tokens.
-* **No real ground truth.** Labels come from Jev; the distilled model's ceiling is Jev's accuracy,
-  which is itself unmeasured against moderator decisions.
-* **Single-turn.** Multi-accounting, doxxing, cheating and bug abuse are largely not observable
-  from one message; they are present as categories but rarely fire.
+- **`other` is not learnable.** 9 training examples, 4 in test. Doxxing lands at `no_violation`
+  ~0.90. It needs synthetic data or a non-ML rule.
+- **The `you're the ___` frame over-fires.** `UR THE GOAT BRO` scores ~0.48 while `he is the goat`
+  scores ~0.04 — the construction generalises from insult to praise. `you rock` is flagged, which
+  is intended: it reads as praise or as "as dumb as a rock", and ambiguity resolves toward
+  flagging.
+- **The hand-check set is 277 rows judged by one person, who later retracted 8 of their own
+  calls.** The metric's own resolution is roughly ±2–4 points, so differences smaller than that
+  are not meaningful.
+- **Terse gamethrowing accusations are the known weak spot** (`gt sheriff`, `that is a
+  gamethrow`, `youre obviously a throw account`) — the teacher under-calls them, and the model
+  inherits that. They are now worked examples in the rubric; the fix is a relabel, not more
+  training.
