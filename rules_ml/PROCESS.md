@@ -260,3 +260,21 @@ band. The remaining false positives therefore cannot be removed by moving the th
   essentially unchanged. Tune thresholds against the int8 model, since that's what ships.
 - **Precision/recall is a real dial, not a bug.** At 0.35–0.40 the recall bias is intentional
   (a false nudge costs a sender nothing); the cost is that roughly a third of flags are wrong.
+
+## 8. Where the one-off scripts live
+
+Not every file here is part of the pipeline. The investigations whose findings are written up
+above — the context A/B, the disagreement dump, the P&A relaxation sizing, the viewer labelling,
+the one-off label-correction runs — have been moved out of the repository so that what remains is
+the path that actually produced the shipped model:
+
+```
+~/Documents/Ultimafia-analysis/
+  apply_corrections.py   apply_rulings2.py       context_test2.py
+  decision_list.py       dump_disagreements.py   relax_size.py
+  viewer_clef.py         cleanup_move.py
+```
+
+Everything left in `rules_ml/` is either part of training this model, part of measuring it, or
+part of running it. Every number quoted in this file is reproducible from the scripts that
+remain.
