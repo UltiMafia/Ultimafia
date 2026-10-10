@@ -568,6 +568,9 @@ export default function Game() {
               customStickers:
                 data.users[i] && data.users[i].settings.customStickers,
               nameFont: data.users[i] && data.users[i].settings.nameFont,
+              avatarShape: data.anonymousGame
+                ? "circle"
+                : data.users[i] && data.users[i].settings.gameAvatarShape,
               animatedNameColor:
                 data.users[i] && data.users[i].settings.animatedNameColor,
               nameGradientColorA:
@@ -596,6 +599,10 @@ export default function Game() {
                 data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.customStickers,
               nameFont:
                 data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.nameFont,
+              avatarShape: data.anonymousGame
+                ? "circle"
+                : data.spectatorsUsers[i] &&
+                  data.spectatorsUsers[i].settings.gameAvatarShape,
               animatedNameColor:
                 data.spectatorsUsers[i] &&
                 data.spectatorsUsers[i].settings.animatedNameColor,
@@ -2663,6 +2670,7 @@ const MessageRow = React.memo(function MessageRow(props) {
                 avatarId={avatarId}
                 name={player.name}
                 avatar={player.avatar}
+                isSquare={player.avatarShape === "square"}
                 color={resolveDisplayNameColor({
                   accessibleNameColors,
                   ignoreTextColor: user.settings?.ignoreTextColor,
@@ -3597,7 +3605,11 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
         {(() => {
           const nameWithAvatar = (
             <NameWithAvatar
-              {...playerNameWithAvatarProps(player, { user, theme })}
+              {...playerNameWithAvatarProps(player, {
+                user,
+                theme,
+                square: true,
+              })}
               dead={className === "dead"}
               active={activity.speaking[player.id]}
               noLink={stateViewing >= 0 && game.options.anonymousGame}

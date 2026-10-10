@@ -21,6 +21,14 @@ module.exports = class User {
       props.settings && props.settings.nameGradientColorB;
     this.nameGradientColorC =
       props.settings && props.settings.nameGradientColorC;
+    // In-game shape only. Profile avatarShape is a separate setting.
+    this.avatarShape =
+      props.itemsOwned &&
+      props.itemsOwned.avatarShape &&
+      props.settings &&
+      props.settings.gameAvatarShape === "square"
+        ? "square"
+        : "circle";
     this.customEmotes = props.settings && props.settings.customEmotes;
     this.customStickers = props.settings && props.settings.customStickers;
     this.birthday = dateOnly.normalizeBirthday(props.birthday);
@@ -43,14 +51,6 @@ module.exports = class User {
     this.settings = props.settings;
     this.isTest = props.isTest;
     this.vanityUrl = props.vanityUrl;
-    // Square avatars are a shop item; only honor the setting if it's owned.
-    this.avatarShape =
-      props.settings &&
-      props.settings.avatarShape === "square" &&
-      props.itemsOwned &&
-      props.itemsOwned.avatarShape
-        ? "square"
-        : "circle";
   }
 
   send(eventName, data) {
