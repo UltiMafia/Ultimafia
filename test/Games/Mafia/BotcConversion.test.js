@@ -70,7 +70,7 @@ async function makeGame(setup, onStart) {
       game.enteredStates.push(name);
     });
     game.events.on("afterActions", () => {
-      if (game.getStateName() == "Night" && !game._snap) {
+      if (game.getStateName() == "Night" && !game._snap && !game._continueNights) {
         game._snap = {};
         for (let player of game.players) {
           game._snap[player.id] = {
@@ -202,6 +202,12 @@ function snap(game, player) {
 
 function phaseLasted(game, name) {
   const row = (game.phaseTimes || []).find((item) => item.name == name);
+  return row ? row.ms : 0;
+}
+
+function phaseLastedAt(game, name, index) {
+  const rows = (game.phaseTimes || []).filter((item) => item.name == name);
+  const row = rows[index];
   return row ? row.ms : 0;
 }
 
@@ -1242,6 +1248,81 @@ describe("BotC conversion night", function () {
         CONVERSION_TEST_MS - 80
       );
       alertTexts(game).join("\n").should.not.include("kicked if you fail");
+    });
+
+    it("runs the full converting clock on a later night after Mi-Go has died", async function () {
+      const game = await makeGame(
+        {
+          total: 6,
+          roles: [{ "Mi-Go": 1, Imp: 1, Villager: 4 }],
+        },
+        (current) => {
+          current._continueNights = true;
+          for (let state of current.states) {
+            if (state.name == "Day") state.length = 8000;
+            if (state.name == "Night") state.length = 250;
+          }
+          current.events.on("state", () => {
+            const converting = (current.phaseTimes || []).filter(
+              (item) => item.name == "Night (Converting)"
+            );
+            if (converting.length >= 2) {
+              current.createNextStateTimer = function () {};
+              current._laterNightDone = true;
+              return;
+            }
+            if (current.getStateName() != "Day" || current._dayVoteTimer) return;
+            current._dayVoteTimer = setTimeout(() => {
+              const miGo = byRole(current, "Mi-Go")[0];
+              const village = current.getMeetingByName("Village");
+              if (!miGo || !village || current.finished) return;
+              for (let player of current.players) {
+                player.user.socket.sendToServer("vote", {
+                  selection: miGo.id,
+                  meetingId: village.id,
+                });
+              }
+            }, 40);
+          });
+        }
+      );
+
+      bindVotes(game, (player, meeting) => {
+        if (meeting.name == "Select Player" || meeting.name == "Convert To") {
+          return null;
+        }
+        if (meeting.name == "Kill") {
+          const villager = byRole(game, "Villager").find((p) => p.alive);
+          return choose(meeting, villager && villager.id);
+        }
+        return null;
+      });
+
+      await waitFor(() => game._laterNightDone || game.finished, 10000);
+      const entered = (game.enteredStates || []).filter(
+        (name) => name == "Night (Converting)"
+      );
+      if (entered.length < 2) {
+        const roles = game.players
+          .map((p) => (p.role && p.role.name) + ":" + p.alive)
+          .join(",");
+        throw new Error(
+          JSON.stringify({
+            entered: game.enteredStates,
+            phaseTimes: game.phaseTimes,
+            finished: game.finished,
+            roles: roles,
+          })
+        );
+      }
+      const miGo = byRole(game, "Mi-Go")[0];
+      miGo.alive.should.equal(false);
+      phaseLastedAt(game, "Night (Converting)", 0).should.be.at.least(
+        CONVERSION_TEST_MS - 80
+      );
+      phaseLastedAt(game, "Night (Converting)", 1).should.be.at.least(
+        CONVERSION_TEST_MS - 80
+      );
     });
   });
 });

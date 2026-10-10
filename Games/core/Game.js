@@ -2744,6 +2744,10 @@ module.exports = class Game {
           }
         }
         this.gotoNextState();
+        // The state has already changed. The loop below would inspect the new
+        // state's meetings and, when nobody has one, skip that state. A
+        // conversion night with no living actor must still run its clock.
+        return;
       }
     }
 
