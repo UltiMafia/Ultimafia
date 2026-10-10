@@ -74,6 +74,7 @@ module.exports = class Meeting {
     if (options.flags) for (let flag of options.flags) this[flag] = true;
 
     // Create member object
+    const housed = !!player.housed;
     const member = {
       id: player.id,
       player: player,
@@ -81,18 +82,22 @@ module.exports = class Meeting {
       voteWeight: options.voteWeight ?? 1,
       canVote:
         options.canVote != false &&
+        !housed &&
         (player.alive || !options.passiveDead || this.votingDead) &&
         !player.exorcised,
       canUpdateVote:
         options.canUpdateVote != false &&
+        !housed &&
         (player.alive || !options.passiveDead || this.votingDead) &&
         !player.exorcised,
       canUnvote:
         options.canUnvote != false &&
+        !housed &&
         (player.alive || !options.passiveDead || this.votingDead) &&
         !player.exorcised,
       canTalk:
         options.canTalk != false &&
+        !housed &&
         (player.alive || options.speakDead || this.talkingDead) &&
         !player.exorcised,
       canWhisper: options.canWhisper != false,
@@ -667,7 +672,7 @@ module.exports = class Meeting {
               }
               break;
             case "alive":
-              if (player.alive) includePlayer[player.id] = include;
+              if (player.alive && !player.housed) includePlayer[player.id] = include;
               break;
             case "dead":
               if (!player.alive) includePlayer[player.id] = include;
@@ -737,6 +742,7 @@ module.exports = class Meeting {
           }
         }
       }
+      if (player.housed) includePlayer[player.id] = false;
     }
 
     for (let playerId in includePlayer) {

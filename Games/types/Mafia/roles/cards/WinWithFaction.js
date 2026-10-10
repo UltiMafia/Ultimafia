@@ -87,6 +87,7 @@ module.exports = class WinWithFaction extends Card {
           (p) =>
             p.faction == this.player.faction &&
             p.alive &&
+            !p.housed &&
             this.game.getRoleAlignment(p.role.name) != "Independent"
         ).length;
         if (
@@ -99,7 +100,11 @@ module.exports = class WinWithFaction extends Card {
           factionCount += aliveMastermind.length;
         }
 
-        const hasMajority = factionCount >= aliveCount / 2 && aliveCount > 0;
+        // Housed players are out of play, so they do not count toward parity.
+        const inPlayCount = this.game.players.filter(
+          (p) => p.alive && !p.housed
+        ).length;
+        const hasMajority = factionCount >= inPlayCount / 2 && inPlayCount > 0;
         const assassinInGame = this.game
           .alivePlayers()
           .filter((p) => p.hasEffect("AssassinEffect"));
@@ -474,6 +479,17 @@ module.exports = class WinWithFaction extends Card {
           this.player.faction == "Village" &&
           !ONE_NIGHT &&
           this.game.AllDemonsDead == true
+        ) {
+          factionWin(this);
+          return;
+        }
+
+        // Village wins by housing enough Village-aligned players.
+        if (
+          this.player.faction == "Village" &&
+          !ONE_NIGHT &&
+          this.game.getSafehouseQuota() > 0 &&
+          (this.game.safehouseVillageHoused || 0) >= this.game.getSafehouseQuota()
         ) {
           factionWin(this);
           return;
