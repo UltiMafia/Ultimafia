@@ -181,17 +181,36 @@ the 277 clean rows.
 
 | | agreement with the human | precision | recall |
 |---|---|---|---|
-| **teacher (Clef, current rubric)** | **82.3%** | 0.736 | 0.639 |
-| student (int8, p≥0.50) | 81.6% | 0.686 | 0.711 |
-| student (int8, p≥0.40) | 80.9% | 0.653 | 0.771 |
-| always say OK | 70.0% | — | — |
+| **teacher (Clef, current rubric)** | **87.0%** | 0.806 | 0.725 |
+| student (int8, p≥0.50) | 81.9% | 0.683 | 0.700 |
+| student (int8, p≥0.40) | 81.9% | 0.653 | 0.800 |
+| always say OK | 71.1% | — | — |
 | always say VIOLATION | — | 0.196 | 1.000 |
 
-**The student is 0.7 points below its teacher.** Distillation has essentially saturated: there
-is no meaningful capacity headroom left, and a larger encoder should not be expected to help.
-**18% of the set is teacher-versus-human disagreement**, which caps any clone of this teacher
-at 82.3%. Of the student's remaining errors, **48% of its false positives and 58% of its false
-negatives are rows the teacher gets wrong too** — shared label noise, not model failure.
+**The student is 5.1 points below its teacher, and that is the honest headline.** Retraining on
+the corrected labels closed only 0.7 of an earlier 5.8-point gap, so the remainder is genuine
+distillation loss and not label quality — which puts model capacity back on the table. **13% of
+the set is teacher-versus-human disagreement**, capping any clone of this teacher at 87.0%. Of
+the student's remaining errors, **38% of its false positives and 62% of its false negatives are
+rows the teacher gets wrong too**.
+
+**Per-class, on the held-out test split (1,903 messages):**
+
+| class | n | precision | recall | F1 |
+|---|---|---|---|---|
+| no_violation | 1594 | 0.963 | 0.903 | 0.932 |
+| abuse | 251 | 0.707 | 0.865 | 0.778 |
+| outside_game_influence | 57 | 0.317 | 0.561 | **0.405** |
+| other | 1 | — | — | 0.000 |
+
+Accuracy 0.887, macro F1 0.529. Binary view: F1 0.686 at 0.35, **0.709 at 0.50**, 0.721 at 0.70,
+0.652 at 0.90.
+
+**OGI is the binding constraint.** It is the site's most common violation and it has **158
+training examples** against `no_violation`'s 5,000, weighted 5.63 against 1.00. Its F1 fell from
+0.525 to 0.405 in the last round — not because the model got worse, but because relabelling
+correctly removed 44 mislabelled `sue me` messages that had been inflating it. The class is
+starved, not broken.
 
 **What the model is and isn't confident about.** 97% agreement where it is confident a message
 is *fine* — "the model says this is fine" is a trustworthy signal, and that is the half that
