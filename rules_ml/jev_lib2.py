@@ -92,11 +92,13 @@ CATEGORIES = [
      "PROVE your meta or read. The problem is the outside evidence itself: it makes the claim into "
      "something the other player cannot deny. Merely asserting meta, without such evidence, is fine.\n"
      "     - Pretending to cheat or to break a rule.\n"
-     "     - Announcing, threatening, or urging a LEAVE ('suing'/'suiciding') from a ranked or "
+     "     - Announcing, threatening, or urging a LEAVE ('suiciding', 'sui') from a ranked or "
      "competitive game for an IN-GAME reason - losing, disliking your role, being wronged, disliking "
-     "how the game is going ('im suing', 'sue me', 'just leave'). Urging another player to do this "
+     "how the game is going ('im sui', 'im suiciding', 'just leave'). Urging another player to do this "
      "counts too. Classify ALL of these here: actually leaving a game is an ACTION, not a chat "
      "message, so a message can only ever THREATEN or announce it, and that threat is OGI.\n"
+     "       NOTE: 'sue'/'suing' is NOT leave-language on this site. The term for leaving is 'sui' / "
+     "'suiciding'. 'sue me' is not a threat to leave and must not be flagged as one.\n"
      "     DOES NOT VIOLATE - all of the following are ALLOWED:\n"
      "     - Referring to things from outside the current game in general, including a previous game "
      "you both played in ('after you said something last night').\n"
@@ -110,8 +112,8 @@ CATEGORIES = [
      "to influence it, not mentioning their content.\n"
      "     - Saying that something is not reportable or arguing about what the rules do or do not "
      "allow.\n"
-     "     - Defending yourself about leaving, or discussing the rule: 'you can't report me for GT', "
-     "'I would never sue'. Leaving for a GENUINE real-life emergency is not a violation either.\n"
+     "     - Defending yourself about leaving, or discussing the rule: 'you can't report me for GT'. "
+     "Leaving for a GENUINE real-life emergency is not a violation either.\n"
      "     - Saying you have lost motivation, that you will 'stop trying', or that you are playing "
      "badly. Those are gamethrowing, which is deliberately not judged at all.",
      "Using outside-game info as leverage to win (OGI)"),
@@ -181,6 +183,9 @@ def rules_block():
         "- bw: a light, tentative read expressed in chat.",
         "- carol: a role/mechanic reference.",
         "- ate: game slang for consuming an action, a kill or information.",
+        "- bomb: a ROLE. A phrase like 'this idiot bomb' names the player HOLDING that role, so the",
+        "  insult is aimed at a person and DOES violate. Do not read 'bomb' as a weapon or a threat.",
+        "  The same goes for any role name used as a noun in an insult ('this useless cop').",
         "- meta: knowledge of how a player behaves from past games. Explicitly allowed (see OGI).",
         "- wifom: a standard mafia reasoning term ('wine in front of me').",
         "- omgus: a standard mafia term for a retaliatory vote.",
@@ -216,7 +221,7 @@ def rules_block():
         "  condition) is deliberately NOT judged, because a player's intentions cannot be inferred",
         "  reliably. Ignore it - except that accusing another player of gamethrowing is itself an",
         "  outside-game-influence violation, since it accuses them of a rule break.",
-        "- A threat to leave a game for an in-game reason ('I'm suing', 'suiciding') IS a violation",
+        "- A threat to leave a game for an in-game reason ('im sui', 'im suiciding') IS a violation",
         "  even before the player actually leaves.",
     ]
     return "\n".join(lines)
