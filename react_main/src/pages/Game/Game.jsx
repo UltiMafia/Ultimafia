@@ -214,8 +214,16 @@ export default function Game() {
   const [hostId, setHostId] = useState(null);
   const [changeSetupDialogOpen, setChangeSetupDialogOpen] = useState(false);
   const [kudos, setKudos] = useState(null);
+  // Set when a participant rehosts this finished game:
+  // { gameId, hostId, hostName, setup }
+  const [rehostInvite, setRehostInvite] = useState(null);
+  // Places that can show the invite (see RehostInvite).
+  const [rehostInviteSlots, setRehostInviteSlots] = useState([]);
+  const rehostInviteSlotsRef = useRef([]);
+  rehostInviteSlotsRef.current = rehostInviteSlots;
 
   const playersRef = useRef();
+  const rehostInviteSeenRef = useRef(false);
   const selfRef = useRef();
   const noLeaveRef = useRef();
   const ignoreDeathSoundsRef = useRef(!!user?.settings?.ignoreDeathSounds);
@@ -227,6 +235,8 @@ export default function Game() {
   const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
   const [selectedPanel, setSelectedPanel] = useState("chat");
+  const isPhoneDeviceRef = useRef(false);
+  isPhoneDeviceRef.current = isPhoneDevice;
 
   const isParticipant = !isSpectator && !review;
   const currentStateObject = history.states[history.currentState];
@@ -245,6 +255,20 @@ export default function Game() {
   function onReadyCheckVerify() {
     socket.send("readyCheck verify");
     stopAudio("urgent");
+  }
+
+  function onJoinRehostClick() {
+    if (!rehostInvite) return;
+
+    // Same leave-then-navigate dance as the Rehost button: leave this
+    // postgame lobby first so the new game accepts the join.
+    noLeaveRef.current = true;
+    if (socket.on) socket.send("leave");
+
+    setTimeout(() => {
+      window.location.href =
+        window.location.origin + `/game/${rehostInvite.gameId}`;
+    }, 500);
   }
 
   function onLeaveGameClick() {
@@ -670,6 +694,18 @@ export default function Game() {
     socket.on("finished", () => setFinished(true));
 
     socket.on("kudos", (data) => setKudos(data));
+
+    socket.on("rehosted", (info) => {
+      if (!info || !info.gameId) return;
+
+      // On phones, open the tab that shows the invite the first time.
+      if (!rehostInviteSeenRef.current && isPhoneDeviceRef.current) {
+        const inActions = rehostInviteSlotsRef.current.some((s) => s.priority === 0);
+        setSelectedPanel(inActions ? "actions" : "players");
+      }
+      rehostInviteSeenRef.current = true;
+      setRehostInvite(info);
+    });
 
     socket.on("state", (state) => {
       updateHistory({ type: "addState", state: state });
@@ -1137,6 +1173,10 @@ export default function Game() {
       stopAudio: stopAudio,
       stopAudios: stopAudios,
       noLeaveRef,
+      rehostInvite: rehostInvite,
+      onJoinRehostClick: onJoinRehostClick,
+      rehostInviteSlots: rehostInviteSlots,
+      setRehostInviteSlots: setRehostInviteSlots,
       dev: dev,
       hostId: hostId,
       changeSetupDialogOpen: changeSetupDialogOpen,
@@ -1239,6 +1279,80 @@ export default function Game() {
   }
 }
 
+/**
+ * Shown to everyone left in the postgame lobby when someone rehosts: the new
+ * game's setup card, and a "Leave & Join New Game" button under it that leaves
+ * this game and joins the new one.
+ *
+ * It is rendered inline in exactly one place per layout. Candidates register
+ * with a priority and the best one wins:
+ *   0 - the main action list (Mafia etc.: right under the kudos vote)
+ *   1 - a filtered action list (games whose action list only holds kicks)
+ *   2 - the bottom of the player list (games without an action list)
+ */
+function RehostInvite({ priority = 0 }) {
+  const game = useContext(GameContext);
+  const invite = game.rehostInvite;
+  const setup = (invite && invite.setup) || game.setup;
+  const { rehostInviteSlots, setRehostInviteSlots } = game;
+  const slotId = useRef(null);
+
+  if (slotId.current === null) slotId.current = ++rehostInviteSlotCounter;
+
+  useEffect(() => {
+    if (!setRehostInviteSlots) return;
+
+    const slot = { id: slotId.current, priority };
+    setRehostInviteSlots((slots) => [...slots, slot]);
+    return () =>
+      setRehostInviteSlots((slots) => slots.filter((s) => s.id !== slot.id));
+  }, [priority, setRehostInviteSlots]);
+
+  if (!invite || game.review) return null;
+
+  const best = (rehostInviteSlots || []).reduce(
+    (a, b) =>
+      !a || b.priority < a.priority || (b.priority === a.priority && b.id < a.id)
+        ? b
+        : a,
+    null
+  );
+  if (!best || best.id !== slotId.current) return null;
+
+  return (
+    <Stack
+      spacing={1}
+      data-testid="rehost-invite"
+      sx={{ p: 1, mt: 1, minWidth: 0, border: 2, borderColor: "primary.main", borderRadius: 1 }}
+    >
+      {setup && (
+        <Box sx={{ minWidth: 0 }}>
+          <Setup setup={setup} />
+        </Box>
+      )}
+      <Button
+        variant="contained"
+        color="primary"
+        size="large"
+        fullWidth
+        data-testid="rehost-join"
+        onClick={game.onJoinRehostClick}
+        startIcon={<i className="fas fa-sign-in-alt" />}
+        sx={{ minHeight: 48, fontWeight: 700 }}
+      >
+        Leave & Join New Game
+      </Button>
+      {invite.hostName && (
+        <Typography variant="caption" sx={{ opacity: 0.7, textAlign: "center" }}>
+          Rehosted by {invite.hostName}
+        </Typography>
+      )}
+    </Stack>
+  );
+}
+
+let rehostInviteSlotCounter = 0;
+
 export function useSocketListeners(listeners, socket) {
   useEffect(() => {
     if (!socket.on) return;
@@ -1279,11 +1393,18 @@ export function TopBar({ forceShow = false } = {}) {
           gameType: game.gameType,
           setup: game.setup.id,
           lobby: game.options.lobby,
+          lobbyName: game.options.lobbyName,
           private: game.options.private,
           spectating: game.options.spectating,
           guests: game.options.guests,
           ranked: game.options.ranked,
           competitive: game.options.competitive,
+          readyCheck: game.options.readyCheck,
+          noVeg: game.options.noVeg,
+          anonymousGame: game.options.anonymousGame,
+          anonymousDeckId: (game.options.anonymousDeck || [])
+            .map((deck) => deck.id)
+            .join(","),
           stateLengths: stateLengths,
           ...game.options.gameTypeOptions,
         })
@@ -3638,6 +3759,7 @@ export function PlayerList(props) {
             renderMarker={renderMarker}
             renderRowEnd={renderRowEnd}
           />
+          <RehostInvite priority={2} />
         </div>
       }
     />
@@ -3863,7 +3985,8 @@ export function ActionList({
     !showKudos &&
     (!regularActionDescriptors || regularActionDescriptors.length === 0)
   ) {
-    return null;
+    // Kick-only lists still host the rehost invite in games without a main list
+    return bare ? null : <RehostInvite priority={1} />;
   }
 
   const actionElements = (regularActionDescriptors || []).map(
@@ -3888,6 +4011,7 @@ export function ActionList({
         <div className="action-list">
           {showKudos && <KudosPanel />}
           {actionElements}
+          <RehostInvite priority={meetingFilter ? 1 : 0} />
         </div>
       }
     />

@@ -1049,7 +1049,43 @@ module.exports = class Game {
       anonymousGame: this.anonymousGame,
       anonymousDeck: this.anonymousDeck,
       graveyardParticipation: this.graveyardParticipation,
+      lobbyName: this.lobbyName,
+      readyCheck: this.readyCheck,
+      noVeg: this.noVeg,
     };
+  }
+
+  /**
+   * A participant rehosted this (finished) game. Invite everyone still here,
+   * players and spectators, except the person who rehosted it. Kept on the game
+   * so a reconnecting client still gets the invite.
+   */
+  announceRehost({ gameId, hostId = null, hostName = null, setup = null } = {}) {
+    if (!this.finished || !gameId || gameId === this.id) return false;
+
+    this.rehostInfo = { gameId, hostId, hostName, setup };
+
+    for (let player of this.players) {
+      if (player.left || this.isRehoster(player)) continue;
+      player.send("rehosted", this.rehostInfo);
+    }
+
+    for (let spectator of this.spectators) {
+      if (this.isRehoster(spectator)) continue;
+      spectator.send("rehosted", this.rehostInfo);
+    }
+
+    return true;
+  }
+
+  isRehoster(participant) {
+    if (!this.rehostInfo || !this.rehostInfo.hostId) return false;
+
+    // Anonymous players keep their real id in originalProfile.
+    const userId =
+      (participant.user && participant.user.id) ||
+      (participant.originalProfile && participant.originalProfile.userId);
+    return userId === this.rehostInfo.hostId;
   }
 
   broadcastOptions() {
@@ -1073,6 +1109,8 @@ module.exports = class Game {
     player.send("setup", this.getSetupInfo());
     player.send("emojis", this.emojis);
     player.send("isStarted", this.started);
+    if (this.rehostInfo && !this.isRehoster(player))
+      player.send("rehosted", this.rehostInfo);
     player.send("spectatorCount", this.spectators.length);
     player.send("spectators", this.getAllSpectatorInfo(player));
 

@@ -317,6 +317,26 @@ var deprecated = false;
           }
         });
 
+        // The main server telling us a finished game was rehosted
+        socket.on("gameRehosted", async (data) => {
+          try {
+            if (!socket.isServer)
+              throw new Error("Not authenticated as server.");
+
+            const game = games[String(data.gameId)];
+            if (!game) return; // everyone already left
+
+            game.announceRehost({
+              gameId: String(data.newGameId),
+              hostId: data.hostId ? String(data.hostId) : null,
+              hostName: data.hostName ? String(data.hostName) : null,
+              setup: data.setup && typeof data.setup == "object" ? data.setup : null,
+            });
+          } catch (e) {
+            logger.error(e);
+          }
+        });
+
         // The main server marking deprecating this process
         socket.on("deprecated", async (data) => {
           try {
