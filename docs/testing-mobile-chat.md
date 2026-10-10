@@ -72,6 +72,44 @@ here does not prove the full game is smooth, but a slowdown here gives us a loca
 reproduction to investigate. It tests the current source, not an A/B comparison
 with the old implementation.
 
+## Automated long-history regression (Linux/macOS or CI)
+
+With the fixture running, `react_main/perf/chat-layout.e2e.cjs` checks typing
+layout cost at 100 and 5,000 messages, reports 10,000-message metrics, and exercises
+send/echo-to-clear, follow-scroll, reading older messages during incoming messages,
+quotes, pins, all four layouts, empty chat, and a phone-sized viewport.
+
+Install Playwright separately so this optional test does not change the site's
+package manifest or lockfile. For example, on Linux, from `react_main`:
+
+```bash
+npm install --prefix /tmp/ultimafia-chat-e2e playwright
+/tmp/ultimafia-chat-e2e/node_modules/.bin/playwright install chromium
+PLAYWRIGHT_MODULE=/tmp/ultimafia-chat-e2e/node_modules/playwright \
+  node perf/chat-layout.e2e.cjs
+```
+
+Set `CHAT_TEST_URL` if the fixture is not on `http://127.0.0.1:3002`.
+`PLAYWRIGHT_CHROMIUM_CHANNEL` can select an installed browser (for example,
+`chrome`) on the non-Windows test host. GPU acceleration is not disabled; the
+runner prints the actual renderer and compositing status. A software-rendered
+CI run is a regression check, not a substitute for on-device GPU measurements.
+
+**Do not run fresh-profile Chrome automation on Windows for this investigation.**
+Repeated local Chrome launches coincided with Windows account-lockout events.
+The runner refuses Windows before importing or launching Playwright. Use a
+Linux/macOS host or CI instead; the WSL command above launches a Linux browser,
+not the Windows Chrome installation. Do not point automation at your personal
+Chrome profile.
+
+The timing assertion compares layout work for the same typed sentence, with a
+relative allowance plus 30 ms of slack. It is not a full-game latency/FPS budget:
+message creation, reconciliation, paint, animation, and server latency can still
+grow with history size. The fixture uses the real chat UI/reducer but a local
+asynchronous echo, not a live game server.
+
+Remove `/tmp/ultimafia-chat-e2e` after testing and stop the fixture server.
+
 ## Stop and remove forwarding
 
 Stop the WSL server with Ctrl+C. In Administrator PowerShell:
