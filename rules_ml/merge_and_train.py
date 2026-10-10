@@ -37,6 +37,8 @@ load("decisions_clef_game.jsonl")
 load("decisions_clef_targeted.jsonl")   # targeted buckets: gt/dox/tgt/untg (idx 400000+)
 load("decisions_clef_ogi.jsonl")        # OGI accusation forms (idx 500000+)
 load("decisions_clef_play.jsonl")       # play-directed vs person-directed profanity (idx 600000+)
+load("ogi_v2_decisions.jsonl")          # OGI round 2: accusations/reports/leaves/gt-misc (idx 700000+,
+                                        # already offset by mine_ogi2.py, so no offset here)
 
 out = DIR + "/decisions_final_clef.jsonl"
 with open(out, "w", encoding="utf-8") as f:

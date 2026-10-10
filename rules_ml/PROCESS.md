@@ -182,35 +182,44 @@ the 277 clean rows.
 | | agreement with the human | precision | recall |
 |---|---|---|---|
 | **teacher (Clef, current rubric)** | **87.0%** | 0.806 | 0.725 |
-| student (int8, p≥0.50) | 81.9% | 0.683 | 0.700 |
-| student (int8, p≥0.40) | 81.9% | 0.653 | 0.800 |
+| student (int8, p≥0.50) | 86.6% | 0.731 | 0.850 |
+| student (int8, p≥0.40) | 85.6% | 0.700 | 0.875 |
 | always say OK | 71.1% | — | — |
 | always say VIOLATION | — | 0.196 | 1.000 |
 
-**The student is 5.1 points below its teacher, and that is the honest headline.** Retraining on
-the corrected labels closed only 0.7 of an earlier 5.8-point gap, so the remainder is genuine
-distillation loss and not label quality — which puts model capacity back on the table. **13% of
-the set is teacher-versus-human disagreement**, capping any clone of this teacher at 87.0%. Of
-the student's remaining errors, **38% of its false positives and 62% of its false negatives are
-rows the teacher gets wrong too**.
+**The student is 0.4 points below its teacher.** Distillation is complete — what remains is the
+teacher's disagreement with the human, not the student failing to reproduce the teacher. Two
+changes got it there, worth 4.7 points between them:
 
-**Per-class, on the held-out test split (1,903 messages):**
+- **OGI mining, +2.9.** 1,534 candidates mined and labelled; 323 new OGI examples, taking the
+  class from 158 to 393 training rows. Per-form yields were informative: `leave` 40%,
+  `acc` 27%, `rep` 9%, `vmisc` 4% — the low-yield pools are almost all boundary negatives.
+- **Pinning the OGI class weight, +1.8.** The loss weights are `(1/count)**0.5`, so growing a
+  class silently *lowers* its weight: OGI went 5.63 → 3.84 as it grew from 158 to 393 examples.
+  Adding data to a starved class had been telling the trainer to care about it less. Pinning the
+  weight recovered five of the eleven terse gamethrowing accusations that mining alone had
+  pushed down.
 
-| class | n | precision | recall | F1 |
-|---|---|---|---|---|
-| no_violation | 1594 | 0.963 | 0.903 | 0.932 |
-| abuse | 251 | 0.707 | 0.865 | 0.778 |
-| outside_game_influence | 57 | 0.317 | 0.561 | **0.405** |
-| other | 1 | — | — | 0.000 |
+**13% of the set is teacher-versus-human disagreement**, which caps any clone of this teacher at
+87.0%. Of the student's remaining errors, 38% of its false positives and 62% of its false
+negatives are rows the teacher gets wrong too.
 
-Accuracy 0.887, macro F1 0.529. Binary view: F1 0.686 at 0.35, **0.709 at 0.50**, 0.721 at 0.70,
-0.652 at 0.90.
+**The six rows the student still misses are all rows the teacher also calls fine**
+(`@everyone vote gamethrower`, `gt sheriff`, `youre obviously a throw account`,
+`That is a gamethrow`, `<-- HC hermit nice GT DPO`, `guy is a throw account for sure`). They are
+teacher disagreements, not distillation failures. No amount of training closes them — only
+making the judge recognise terse accusation forms does, which is why the rubric now carries
+those forms as worked examples.
 
-**OGI is the binding constraint.** It is the site's most common violation and it has **158
-training examples** against `no_violation`'s 5,000, weighted 5.63 against 1.00. Its F1 fell from
-0.525 to 0.405 in the last round — not because the model got worse, but because relabelling
-correctly removed 44 mislabelled `sue me` messages that had been inflating it. The class is
-starved, not broken.
+### The held-out test split cannot measure this
+
+Its labels **are** the teacher's, so every case where the student correctly disagrees with the
+teacher registers as an error. Across the two changes that gained 4.7 points on the hand-check,
+OGI's test F1 moved 0.495 → 0.487. **The test set measures fidelity to the teacher; only the
+hand-check measures agreement with the human.** Do not tune against the test split.
+
+Per-class on the current test split (2,188 messages), for completeness: no_violation F1 0.912,
+abuse 0.749, outside_game_influence 0.487, other 0.000 (4 examples).
 
 **What the model is and isn't confident about.** 97% agreement where it is confident a message
 is *fine* — "the model says this is fine" is a trustworthy signal, and that is the half that

@@ -90,8 +90,18 @@ def main():
     cnt[cnt == 0] = 1.0
     wts = (1.0 / cnt) ** 0.5
     wts = wts / wts[0]
-    wts = torch.tensor(np.clip(wts, 0.5, 8.0), dtype=torch.float)
+    wts = np.clip(wts, 0.5, 8.0)
+    # PINNED: the sqrt-inverse weighting drifts whenever the corpus grows, so adding data to
+    # a class silently LOWERS its weight. OGI went 5.63 -> 3.84 when it grew 158 -> 393
+    # examples, which pushes its probabilities down - the opposite of what adding data for a
+    # starved class should do. Pinned here so the two effects can be told apart.
+    PINNED = {"outside_game_influence": 5.63}
+    for _cls, _val in PINNED.items():
+        wts[CLASSES.index(_cls)] = _val
+    wts = torch.tensor(wts, dtype=torch.float)
     print("weights:", ["%s=%.2f" % (CLASSES[i], wts[i]) for i in range(len(CLASSES))], flush=True)
+    if PINNED:
+        print("  (pinned: %s)" % PINNED, flush=True)
     lossf = nn.CrossEntropyLoss(weight=wts)
 
     epo = 1 if SMOKE else EPOCHS
