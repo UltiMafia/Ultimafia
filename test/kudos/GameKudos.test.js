@@ -253,21 +253,34 @@ describe("Game kudos integration", function () {
 });
 
 describe("Game kudos leavers and coins", function () {
-  it("a leaver's unvoted rows become No one and can settle a row", function () {
+  it("a leaver who didn't vote drops out of quorum and can settle a row", function () {
     const { game, players, sent } = stubGame({ groups: ["Village"] });
     game.startKudosVote();
     game.castKudosVote(players.t1, "Village", "t2");
     game.castKudosVote(players.m1, "Village", "t2");
     game.kudosVote.awarded.Village.should.deep.equal([]);
-    // t3 leaves without voting: No one in both rows; Town is now settled
-    // (2 for t2 vs 1 No one, only t2 left to vote).
+    // t3 leaves without voting. No ballot. Town is now settled: 2 for t2,
+    // no No one, only t2 left to vote.
     game.kudosVoterLeft(players.t3);
-    game.kudosVote.ballots.t3.should.deep.equal({
-      Village: NO_ONE,
-      Mafia: NO_ONE,
-    });
+    should.not.exist(game.kudosVote.ballots.t3);
+    game.kudosVote.voters.has("t3").should.equal(false);
+    game.kudosVote.tally("Village").noOne.should.equal(0);
+    game.kudosVote.tally("Mafia").noOne.should.equal(0);
+    game.kudosVote.remaining("Village").should.equal(1);
     game.kudosVote.awarded.Village.should.deep.equal(["t2"]);
     last(sent, "t1").awarded.Village.should.deep.equal(["t2"]);
+  });
+
+  it("a leave does not settle a row while someone left can still change it", function () {
+    const { game, players, alerts } = stubGame();
+    game.startKudosVote();
+    game.castKudosVote(players.t1, "Village", "t2");
+    game.kudosVoterLeft(players.t3);
+    should.not.exist(game.kudosVote.ballots.t3);
+    game.kudosVote.remaining("Village").should.equal(2); // t2 and m1
+    game.kudosVote.tally("Village").counts.t2.should.equal(1);
+    game.kudosVote.awarded.Village.should.deep.equal([]);
+    alerts.should.deep.equal([]);
   });
 
   it("a postgame disconnect counts as leaving unless they reconnect", async function () {
@@ -280,7 +293,8 @@ describe("Game kudos leavers and coins", function () {
     players.t2.socket = {}; // t2 reloaded the page: new socket
     await new Promise((r) => setTimeout(r, 20));
     game.kudosVote.voters.has("t1").should.equal(false);
-    game.kudosVote.ballots.t1.Village.should.equal(NO_ONE);
+    should.not.exist(game.kudosVote.ballots.t1);
+    game.kudosVote.tally("Village").noOne.should.equal(0);
     game.kudosVote.voters.has("t2").should.equal(true);
     game.clearBotKudosTimers();
   });
@@ -291,7 +305,9 @@ describe("Game kudos leavers and coins", function () {
     game.castKudosVote(players.t1, "Village", "t2");
     game.castKudosVote(players.m1, "Village", "t2");
     game.castKudosVote(players.t3, "Mafia", NO_ONE);
-    game.kudosVoterLeft(players.t2); // auto No one in Mafia, no coin
+    // t2 leaves without voting: no ballot and no coin.
+    game.kudosVoterLeft(players.t2);
+    should.not.exist(game.kudosVote.ballots.t2);
     game.evaluateKudos(true);
     game.kudosVoterCoins().should.deep.equal({ t1: 1, m1: 1 });
     game.alertKudosVoterCoins();
@@ -299,6 +315,27 @@ describe("Game kudos leavers and coins", function () {
       (sent[id] || []).filter(([e]) => e === "alert").map(([, m]) => m);
     alerts("t1").should.deep.equal(["You earned 1 coin for kudos voting!"]);
     alerts("t3").should.deep.equal([]);
+    alerts("t2").should.deep.equal([]);
+  });
+
+  it("pays a leaver for a row they voted and nothing for one they skipped", function () {
+    const { game, players } = stubGame();
+    game.startKudosVote();
+    game.castKudosVote(players.t1, "Village", "t2");
+    game.castKudosVote(players.t1, "Mafia", "m1");
+    game.castKudosVote(players.t3, "Village", "t2");
+    game.castKudosVote(players.t3, "Mafia", "m1");
+    // t2 voted Mafia (which will award) but not Town, then leaves.
+    game.castKudosVote(players.t2, "Mafia", "m1");
+    game.kudosVoterLeft(players.t2);
+    game.kudosVote.ballots.t2.should.deep.equal({ Mafia: "m1" });
+    // m1 never votes and leaves.
+    game.kudosVoterLeft(players.m1);
+    should.not.exist(game.kudosVote.ballots.m1);
+    game.evaluateKudos(true);
+    game.kudosVote.awarded.Village.should.deep.equal(["t2"]);
+    game.kudosVote.awarded.Mafia.should.deep.equal(["m1"]);
+    game.kudosVoterCoins().should.deep.equal({ t1: 2, t3: 2, t2: 1 });
   });
 
   it("pays nothing in a bot game, but says what it would have been", function () {
