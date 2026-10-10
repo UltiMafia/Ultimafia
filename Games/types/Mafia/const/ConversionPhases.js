@@ -31,21 +31,55 @@ function isConversionNightPhase(name) {
   return phaseByName(name) != null;
 }
 
-// Listeners are copied onto the role in Card.init and bound to the role.
+// Phase presence is decided from the setup, not from who is currently alive.
+// Keeping the hook so the cards still name the phase they meet in.
 function attachConversionPhase(card, phaseName) {
-  card.listeners = card.listeners || {};
-  card.listeners.extraStateCheck = function (stateName) {
-    if (stateName != phaseName) return;
-    if (!this.player || !this.player.alive) return;
-    if (this.player.role !== this) return;
+  card.conversionPhase = phaseName;
+}
 
-    const phase = phaseByName(phaseName);
-    if (!phase || !phase.roles.includes(this.name)) return;
-    if (this.game.ExtraStates == null) this.game.ExtraStates = [];
-    if (!this.game.ExtraStates.includes(phaseName)) {
-      this.game.ExtraStates.push(phaseName);
+function setupRoleNames(game) {
+  const names = new Set();
+  const add = (role) => {
+    if (!role) return;
+    names.add(String(role).split(":")[0]);
+  };
+
+  for (let role of game.PossibleRoles || []) add(role);
+
+  const collectRoleset = (roleset) => {
+    if (!roleset) return;
+    if (Array.isArray(roleset)) {
+      for (let role of roleset) add(role);
+      return;
+    }
+    if (typeof roleset == "object") {
+      for (let role of Object.keys(roleset)) add(role);
     }
   };
+
+  if (game.setup && Array.isArray(game.setup.roles)) {
+    for (let roleset of game.setup.roles) collectRoleset(roleset);
+  }
+  if (game.setup && game.setup.closedRoles) {
+    const closed = game.setup.closedRoles;
+    if (Array.isArray(closed)) {
+      for (let roleset of closed) collectRoleset(roleset);
+    } else {
+      collectRoleset(closed);
+    }
+  }
+
+  return names;
+}
+
+function setupUsesPhase(game, phaseName) {
+  const phase = phaseByName(phaseName);
+  if (!phase) return false;
+  const names = setupRoleNames(game);
+  for (let roleName of phase.roles) {
+    if (names.has(roleName)) return true;
+  }
+  return false;
 }
 
 function killIsBlocked(action, player) {
@@ -87,12 +121,21 @@ function queueDirectDeath(game, player) {
 }
 
 // Runs at PRIORITY_NIGHT_SAVER + 1 during main Night.
+// A non-Demon turned into a Demon: the chosen old Demon's kill does not land.
+// A Demon turned into another Demon: the new Demon's kill does not land.
 function resolveMigoOldDemons(game) {
   const newcomers = game.migoNewDemons || [];
+  const suppressed = game.migoSuppressedDemons || [];
   game.migoNewDemons = [];
+  game.migoSuppressedDemons = [];
   if (Array.isArray(game.nightOrderTrace)) {
     game.nightOrderTrace.push("migo-check");
   }
+
+  for (let player of suppressed) {
+    cancelKillActions(game, player);
+  }
+
   if (newcomers.length == 0) return;
 
   const newcomerPlayers = newcomers.map((entry) => entry.player);
@@ -124,8 +167,10 @@ function resolveMigoOldDemons(game) {
     const chosen = Random.randArrayVal(pool);
     const chosenIsProtected = unprotected.indexOf(chosen) == -1;
 
+    // The chosen old Demon's kill never lands on the conversion night.
+    // Protection only decides who dies: the old Demon, or the new one.
+    cancelKillActions(game, chosen);
     if (chosenIsProtected) {
-      cancelKillActions(game, chosen);
       queueDirectDeath(game, entry.player);
     } else {
       queueDirectDeath(game, chosen);
@@ -140,5 +185,6 @@ module.exports = {
   phaseByName,
   isConversionNightPhase,
   attachConversionPhase,
+  setupUsesPhase,
   resolveMigoOldDemons,
 };

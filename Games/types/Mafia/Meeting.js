@@ -5,6 +5,20 @@ module.exports = class MafiaMeeting extends Meeting {
     super(name, game);
   }
 
+  join(player, options) {
+    super.join(player, options);
+    if (
+      this.game &&
+      typeof this.game.isConversionNightPhase == "function" &&
+      this.game.isConversionNightPhase(this.game.getStateName())
+    ) {
+      // No choice, or a choice that arrives after the clock, is a skip.
+      // It is not a veg and it is not a kick.
+      this.noVeg = true;
+      this.mustAct = false;
+    }
+  }
+
   finish(isVote) {
     super.finish(isVote);
 

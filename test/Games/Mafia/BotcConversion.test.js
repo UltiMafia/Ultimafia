@@ -14,6 +14,9 @@ const {
   PRIORITY_KILL_DEFAULT,
 } = require("../../../Games/types/Mafia/const/Priority");
 
+// Production phases are 45s. Tests use a short clock and assert it still elapses.
+const CONVERSION_TEST_MS = 300;
+
 function makeUser() {
   return new User({
     id: shortid.generate(),
@@ -40,11 +43,31 @@ async function makeGame(setup, onStart) {
   });
 
   await game.init();
+  for (let state of game.states) {
+    if (
+      state.name == "Night (Becoming)" ||
+      state.name == "Night (Swapping)" ||
+      state.name == "Night (Converting)"
+    ) {
+      state.length = CONVERSION_TEST_MS;
+    }
+  }
   game.events.on("start", () => {
     game.enteredStates = [];
+    game.phaseTimes = [];
+    game._phaseMark = null;
     game._snap = null;
     game.events.on("state", () => {
-      game.enteredStates.push(game.getStateName());
+      const now = Date.now();
+      const name = game.getStateName();
+      if (game._phaseMark) {
+        game.phaseTimes.push({
+          name: game._phaseMark.name,
+          ms: now - game._phaseMark.at,
+        });
+      }
+      game._phaseMark = { name: name, at: now };
+      game.enteredStates.push(name);
     });
     game.events.on("afterActions", () => {
       if (game.getStateName() == "Night" && !game._snap) {
@@ -175,6 +198,11 @@ async function runNight(setup, decide, onStart) {
 
 function snap(game, player) {
   return game._snap[player.id];
+}
+
+function phaseLasted(game, name) {
+  const row = (game.phaseTimes || []).find((item) => item.name == name);
+  return row ? row.ms : 0;
 }
 
 describe("BotC conversion night", function () {
@@ -493,7 +521,7 @@ describe("BotC conversion night", function () {
   });
 
   describe("Mi-Go", function () {
-    it("kills an unprotected old Demon after that Demon kills, and the new Demon kills", async function () {
+    it("drops an unprotected old Demon's kill, and the new Demon still kills", async function () {
       let miGo, imp, villager, victim, bystander;
       const game = await runNight(
         {
@@ -539,7 +567,7 @@ describe("BotC conversion night", function () {
       snap(game, villager).role.should.equal("Lamia");
       snap(game, villager).alive.should.equal(true);
       snap(game, imp).alive.should.equal(false);
-      snap(game, victim).alive.should.equal(false);
+      snap(game, victim).alive.should.equal(true);
       snap(game, bystander).alive.should.equal(false);
     });
 
@@ -668,7 +696,7 @@ describe("BotC conversion night", function () {
       snap(game, imp).alive.should.equal(true);
       snap(game, jiangshi).alive.should.equal(false);
       snap(game, impVictim).alive.should.equal(false);
-      snap(game, jiangshiVictim).alive.should.equal(false);
+      snap(game, jiangshiVictim).alive.should.equal(true);
       snap(game, villager).role.should.equal("Lamia");
       snap(game, villager).alive.should.equal(true);
     });
@@ -776,7 +804,7 @@ describe("BotC conversion night", function () {
       snap(game, villager).alive.should.equal(false);
     });
 
-    it("lets a Demon converted into another Demon kill as the new Demon", async function () {
+    it("does not let a Demon converted into another Demon kill that night", async function () {
       let miGo, imp, spare, newVictim;
       const game = await runNight(
         {
@@ -817,7 +845,7 @@ describe("BotC conversion night", function () {
       snap(game, imp).role.should.equal("Lamia");
       snap(game, imp).alive.should.equal(true);
       snap(game, spare).alive.should.equal(true);
-      snap(game, newVictim).alive.should.equal(false);
+      snap(game, newVictim).alive.should.equal(true);
       snap(game, miGo).alive.should.equal(true);
     });
 
@@ -933,6 +961,9 @@ describe("BotC conversion night", function () {
       game.enteredStates.should.include("Night (Becoming)");
       game.enteredStates.should.not.include("Night (Swapping)");
       game.enteredStates.should.not.include("Night (Converting)");
+      phaseLasted(game, "Night (Becoming)").should.be.at.least(
+        CONVERSION_TEST_MS - 80
+      );
       const reports = alertsFor(game, philosopher).filter((text) =>
         text.includes("After investigating")
       );
@@ -1129,6 +1160,88 @@ describe("BotC conversion night", function () {
 
       snap(game, villager).role.should.equal("Villager");
       snap(game, villager).alive.should.equal(true);
+    });
+
+    it("runs conversion phases when those roles are in the setup but not in play", async function () {
+      const game = await runNight(
+        {
+          total: 3,
+          roles: [
+            {
+              "Philosopher:Banished": 1,
+              "Snake Charmer:Banished": 1,
+              "Mi-Go:Banished": 1,
+              Villager: 2,
+              Imp: 1,
+            },
+          ],
+        },
+        (player, meeting, current) => {
+          if (meeting.name == "Kill") {
+            const villager = byRole(current, "Villager")[0];
+            return choose(meeting, villager && villager.id);
+          }
+          return choose(meeting);
+        }
+      );
+
+      for (let player of game.players) {
+        player.role.name.should.not.equal("Philosopher");
+        player.role.name.should.not.equal("Snake Charmer");
+        player.role.name.should.not.equal("Mi-Go");
+      }
+      game.enteredStates.should.include("Night (Becoming)");
+      game.enteredStates.should.include("Night (Swapping)");
+      game.enteredStates.should.include("Night (Converting)");
+      phaseLasted(game, "Night (Becoming)").should.be.at.least(
+        CONVERSION_TEST_MS - 80
+      );
+      phaseLasted(game, "Night (Swapping)").should.be.at.least(
+        CONVERSION_TEST_MS - 80
+      );
+      phaseLasted(game, "Night (Converting)").should.be.at.least(
+        CONVERSION_TEST_MS - 80
+      );
+    });
+
+    it("skips a conversion action on timeout without a veg or kick", async function () {
+      let philosopher;
+      const game = await runNight(
+        {
+          total: 4,
+          roles: [{ Philosopher: 1, Cop: 1, Mafioso: 1, Villager: 1 }],
+        },
+        (player, meeting, current) => {
+          if (meeting.name == "Become Role") return null;
+          if (meeting.name == "Kill") {
+            const villager = byRole(current, "Villager")[0];
+            return choose(meeting, villager && villager.id);
+          }
+          return choose(meeting);
+        },
+        (current) => {
+          philosopher = byRole(current, "Philosopher")[0];
+          // Live games veg-kick when the clock expires. Conversion phases must not.
+          current.isTest = false;
+          current.kickAttempted = false;
+          current.checkVeg = function () {
+            if (current.isConversionNightPhase(current.getStateName())) {
+              current.kickAttempted = true;
+            }
+            current.gotoNextState();
+          };
+        }
+      );
+
+      snap(game, philosopher).role.should.equal("Philosopher");
+      snap(game, philosopher).alive.should.equal(true);
+      philosopher.exorcised.should.equal(false);
+      game.hadVegKill.should.equal(false);
+      game.kickAttempted.should.equal(false);
+      phaseLasted(game, "Night (Becoming)").should.be.at.least(
+        CONVERSION_TEST_MS - 80
+      );
+      alertTexts(game).join("\n").should.not.include("kicked if you fail");
     });
   });
 });

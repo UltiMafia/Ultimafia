@@ -14,6 +14,7 @@ const {
   CONVERSION_PHASES,
   isConversionNightPhase: nameIsConversionPhase,
   resolveMigoOldDemons,
+  setupUsesPhase,
 } = require("./const/ConversionPhases");
 const modifierData = require("../../../data/modifiers");
 const {
@@ -134,6 +135,7 @@ module.exports = class MafiaGame extends Game {
     this.lastNightVisits = [];
     this.infoLog = [];
     this.migoNewDemons = [];
+    this.migoSuppressedDemons = [];
 
     this.events.on("actionsNext", (queue) => {
       if (!queue) return;
@@ -149,7 +151,9 @@ module.exports = class MafiaGame extends Game {
 
     this.events.on("state", () => {
       if (this.getStateName() != "Night") return;
-      if (!this.migoNewDemons || this.migoNewDemons.length == 0) return;
+      const newcomers = this.migoNewDemons || [];
+      const suppressed = this.migoSuppressedDemons || [];
+      if (newcomers.length == 0 && suppressed.length == 0) return;
 
       this.queueAction(
         new Action({
@@ -170,13 +174,13 @@ module.exports = class MafiaGame extends Game {
 
   firstActiveNightPhase() {
     for (let phase of CONVERSION_PHASES) {
-      for (let player of this.alivePlayers()) {
-        if (player.role && phase.roles.includes(player.role.name)) {
-          return phase.name;
-        }
-      }
+      if (this.setupUsesConversionPhase(phase.name)) return phase.name;
     }
     return "Night";
+  }
+
+  setupUsesConversionPhase(state) {
+    return setupUsesPhase(this, state);
   }
 
   isDemonPlayer(player) {
@@ -187,8 +191,13 @@ module.exports = class MafiaGame extends Game {
   }
 
   noteMigoNewDemon(actor, player, wasDemon) {
-    if (wasDemon) return;
     if (!this.isDemonPlayer(player)) return;
+    if (wasDemon) {
+      // Demon into Demon: the new Demon's kill does not land tonight.
+      if (!this.migoSuppressedDemons) this.migoSuppressedDemons = [];
+      this.migoSuppressedDemons.push(player);
+      return;
+    }
     if (!this.migoNewDemons) this.migoNewDemons = [];
     this.migoNewDemons.push({ actor: actor, player: player });
   }
@@ -845,9 +854,9 @@ module.exports = class MafiaGame extends Game {
       this.ExtraStates = [];
     }
     if (this.isConversionNightPhase(state)) {
-      this.ExtraStates = this.ExtraStates.filter((name) => name !== state);
-      this.events.emit("extraStateCheck", state);
-      return !this.ExtraStates.includes(state);
+      // Run whenever the setup lists a role for this phase, even if nobody
+      // was dealt that role. Skip only when the setup does not use it.
+      return !this.setupUsesConversionPhase(state);
     }
     if (this.HaveHostingState == true) {
       return true;
@@ -961,12 +970,20 @@ module.exports = class MafiaGame extends Game {
         length = 1000 * 60;
       }
     }
-    if (this.isTest) {
+    // A conversion phase always runs its full clock. A timeout skips the
+    // action. It does not open a veg-kick vote.
+    if (this.isTest || this.isConversionNightPhase(this.getStateName())) {
       this.createTimer("main", length, () => this.gotoNextState());
     } else {
       this.createTimer("main", length, () => this.checkVeg());
     }
     this.checkAllMeetingsReady();
+  }
+
+  checkAllMeetingsReady() {
+    // Submitting the action must not end Becoming, Swapping, or Converting.
+    if (this.isConversionNightPhase(this.getStateName())) return;
+    return super.checkAllMeetingsReady();
   }
 
   getRoleNightOrder() {
