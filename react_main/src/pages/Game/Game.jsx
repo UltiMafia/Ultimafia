@@ -17,6 +17,7 @@ import { UserText } from "../../components/Basic";
 import Newspaper, {
   ObituariesMessage,
 } from "../../components/gameComponents/Newspaper";
+import { newspaperPlayer } from "../../utils/newspaperPlayers";
 import MafiaGame from "./MafiaGame";
 import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
@@ -2815,15 +2816,7 @@ function WinnersMessage(props) {
           }
         })
         .filter(Boolean) // Remove undefined/null players
-        .map((player) => ({
-          id: player.userId || player.id,
-          name: player.name,
-          avatar: player.avatar !== undefined ? player.avatar : true,
-          avatarId:
-            player.anonId === undefined
-              ? player.userId || player.id
-              : player.anonId,
-        }));
+        .map(newspaperPlayer);
 
       return {
         group: group,
@@ -2850,13 +2843,7 @@ function WinnersMessage(props) {
 
     return groupPlayers.length > 0
       ? groupPlayers.map((player) => ({
-          id: player.userId || player.id,
-          name: player.name,
-          avatar: player.avatar,
-          avatarId:
-            player.anonId === undefined
-              ? player.userId || player.id
-              : player.anonId,
+          ...newspaperPlayer(player),
           deathMessage: groupMessage,
           revealMessage: `${player.name} was a member of the ${group}.`,
           lastWill: "",

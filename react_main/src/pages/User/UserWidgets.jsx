@@ -374,6 +374,21 @@ function RipAvatarIcon({ small, large, absoluteLeftAvatarPx }) {
   return <div className="avatar avatar-rip-icon" style={style} aria-hidden />;
 }
 
+// Background color behind the default no-avatar image, picked from the name.
+function noAvatarColor(name, colors) {
+  var rand = 0;
+
+  for (let i = 0; i < name.length; i++) rand ^= name.charCodeAt(i);
+
+  rand ^= name.charCodeAt(1);
+  rand ^= rand << 13;
+  rand ^= rand >> 7;
+  rand ^= rand << 17;
+  rand = Math.abs(rand) / Math.pow(2, 31);
+
+  return colors[Math.floor(rand * colors.length)];
+}
+
 export function Avatar(props) {
   const small = props.small;
   const mediumlarge = props.mediumlarge;
@@ -399,6 +414,9 @@ export function Avatar(props) {
   const inGame = props.inGame;
 
   const siteInfo = useContext(SiteInfoContext);
+  // Last image URL that failed to load (missing upload etc.); fall back to the
+  // default no-avatar look for it.
+  const [failedSrc, setFailedSrc] = useState(null);
   const isDeckAvatar =
     !!deckProfile ||
     (typeof hasImage === "string" && hasImage.includes("decks"));
@@ -461,23 +479,17 @@ export function Avatar(props) {
   } else if (hasImage && imageUrl) {
     photoSrc = imageUrl;
   } else if (name) {
-    var rand = 0;
-
-    for (let i = 0; i < name.length; i++) rand ^= name.charCodeAt(i);
-
-    rand ^= name.charCodeAt(1);
-    rand ^= rand << 13;
-    rand ^= rand >> 7;
-    rand ^= rand << 17;
-    rand = Math.abs(rand) / Math.pow(2, 31);
-
-    style.backgroundColor = colors[Math.floor(rand * colors.length)];
+    style.backgroundColor = noAvatarColor(name, colors);
   }
   if (typeof hasImage == "string") {
     if (hasImage.includes("decks")) {
       photoSrc = `/uploads${hasImage}?t=${siteInfo.cacheVal}`;
       style.backgroundColor = "#00000000";
     }
+  }
+  if (photoSrc && photoSrc === failedSrc) {
+    photoSrc = null;
+    style.backgroundColor = name ? noAvatarColor(name, colors) : undefined;
   }
   if (photoSrc) {
     style.backgroundImage = "none";
@@ -520,7 +532,7 @@ export function Avatar(props) {
         border: border,
       }}
     >
-      <AvatarPhoto src={photoSrc} />
+      <AvatarPhoto src={photoSrc} onError={setFailedSrc} />
       {edit && (
         <div className="edit avatar-edit-overlay">
           <AvatarUpload
