@@ -176,36 +176,50 @@ separately; **rows 122–399 are the clean validation**.
 
 ### What it currently says
 
-Scored with the **shipped int8 model**, on the 277 clean rows (rows 0–121 excluded — they are
-the hard cases that prompted the targeting fix, so pooling would flatter or punish the model
-depending on which way the split happened to fall; they score 75.4% at 0.40 against the clean
-81.2%):
+Every number here is measured with the **shipped int8 model** and the **current rubric**, on
+the 277 clean rows.
 
-| threshold | precision | recall | F1 | agreement |
-|-----------|-----------|--------|-----|-----------|
-| 0.35 | 0.645 | 0.766 | 0.700 | 79.4% |
-| **0.40** | **0.681** | **0.766** | **0.721** | **81.2%** |
-| 0.50 | 0.710 | 0.721 | 0.716 | 81.9% |
-| 0.70 | 0.772 | 0.651 | 0.706 | 83.4% |
+| | agreement with the human | precision | recall |
+|---|---|---|---|
+| **teacher (Clef, current rubric)** | **82.3%** | 0.736 | 0.639 |
+| student (int8, p≥0.50) | 81.6% | 0.686 | 0.711 |
+| student (int8, p≥0.40) | 80.9% | 0.653 | 0.771 |
+| always say OK | 70.0% | — | — |
+| always say VIOLATION | — | 0.196 | 1.000 |
 
-With the trivial baselines on the same rows, since a percentage means nothing without them:
-
-```
-always say OK         -> 71.1% agreement   (the majority-class share)
-always say VIOLATION  -> precision 0.196, recall 1.000
-```
-
-So the model is **+10 points of agreement over never flagging anything**, at precision ~0.68
-and recall ~0.77 at the 0.40 operating point. That is the honest size of the effect.
+**The student is 0.7 points below its teacher.** Distillation has essentially saturated: there
+is no meaningful capacity headroom left, and a larger encoder should not be expected to help.
+**18% of the set is teacher-versus-human disagreement**, which caps any clone of this teacher
+at 82.3%. Of the student's remaining errors, **48% of its false positives and 58% of its false
+negatives are rows the teacher gets wrong too** — shared label noise, not model failure.
 
 **What the model is and isn't confident about.** 97% agreement where it is confident a message
 is *fine* — "the model says this is fine" is a trustworthy signal, and that is the half that
 matters for a flag-on-send tool. But among the messages it flags, confidence separates its
 errors not at all: **73%** where it is confident of a violation, **71%** in the uncertain
-band. An earlier version of this file claimed the probability "does not track how hard the
-case actually is"; that was too broad. It tracks *negatives* very well and tracks *nothing*
-among violations — which is why the remaining false positives cannot be removed by moving the
-threshold.
+band. The remaining false positives therefore cannot be removed by moving the threshold.
+
+### Three traps this section has already fallen into
+
+- **Stale teacher labels.** `eval_set.jsonl`'s `clef`/`clef_p` fields were produced by the
+  **pre-targeting-fix** rubric. Comparing those labels to the human while scoring a post-fix
+  student reported a **4.7-point** distillation gap that is really **0.7**. The stale values
+  survive as `clef_prev`/`clef_p_prev` and in `eval_set.pre_refresh.jsonl`. Never join a
+  teacher label to a human judgement without checking which rubric produced it.
+- **Pooling fitted and clean rows.** Rows 0–121 are the cases the targeting rule was derived
+  from and are systematically harder. Report them separately or they misstate the model in
+  whichever direction the split happens to fall.
+- **Measuring the wrong artifact.** Every headline number must come from the int8 ONNX that
+  ships, not the fp32 weights behind it.
+
+### Two properties worth re-checking whenever the judge changes
+
+- **The judge is deterministic.** Re-judging the same 40 items with byte-identical inputs
+  reproduced the same verdict on **40/40 rows**, so `run_batch.py` is safe to resume and a
+  single label per message is not a noisy draw.
+- **Surrounding chat is nearly inert.** Stripping the recent chat changed the verdict on
+  **13/277 rows (5%)** and moved agreement from 82.3% to 82.7% — a wash. It can be dropped
+  (fewer tokens, simpler prompt) at no measurable cost.
 
 ## 7. Known limitations
 
