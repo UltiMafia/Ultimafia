@@ -92,13 +92,13 @@ CATEGORIES = [
      "PROVE your meta or read. The problem is the outside evidence itself: it makes the claim into "
      "something the other player cannot deny. Merely asserting meta, without such evidence, is fine.\n"
      "     - Pretending to cheat or to break a rule.\n"
-     "     - Announcing, threatening, or urging a LEAVE ('suiciding', 'sui') from a ranked or "
+     "     - Announcing, threatening, or urging a LEAVE ('suiciding', 'sui', 'suing') from a ranked or "
      "competitive game for an IN-GAME reason - losing, disliking your role, being wronged, disliking "
-     "how the game is going ('im sui', 'im suiciding', 'just leave'). Urging another player to do this "
+     "how the game is going ('im sui', 'im suiciding', 'im suing', 'just leave'). Urging another player to do this "
      "counts too. Classify ALL of these here: actually leaving a game is an ACTION, not a chat "
      "message, so a message can only ever THREATEN or announce it, and that threat is OGI.\n"
-     "       NOTE: 'sue'/'suing' is NOT leave-language on this site. The term for leaving is 'sui' / "
-     "'suiciding'. 'sue me' is not a threat to leave and must not be flagged as one.\n"
+     "       CAREFUL: 'suing' (the -ing verb) IS leave-language - it is the verb form of 'sui'. But the "
+     "phrase 'sue me' is NOT a threat to leave; it is a dare. Do not flag 'sue me' as leave-talk.\n"
      "     DOES NOT VIOLATE - all of the following are ALLOWED:\n"
      "     - Referring to things from outside the current game in general, including a previous game "
      "you both played in ('after you said something last night').\n"
@@ -217,11 +217,16 @@ def rules_block():
         "  borderline on the SUBSTANCE of a rule (is this really an accusation of gamethrowing? is",
         "  this really aimed at a person?). It does NOT mean borderline on vocabulary. A message that",
         "  clearly does not target a person is not borderline, and that bias does not apply to it.",
+        "- AMBIGUOUS CONSTRUCTIONS: when a phrase has both an innocent and an insulting reading and",
+        "  text alone cannot separate them, FLAG it. 'you rock' is the worked example - it reads as",
+        "  praise (verb) or as 'you are as dumb as a rock' (noun), and the developer who wrote it",
+        "  confirms the noun reading is common. A false nudge costs the sender nothing; a miss costs",
+        "  the community, so ambiguity resolves toward flagging.",
         "- EXCLUDED RULE: 'Play to win' / gamethrowing (intentionally acting against your own win",
         "  condition) is deliberately NOT judged, because a player's intentions cannot be inferred",
         "  reliably. Ignore it - except that accusing another player of gamethrowing is itself an",
         "  outside-game-influence violation, since it accuses them of a rule break.",
-        "- A threat to leave a game for an in-game reason ('im sui', 'im suiciding') IS a violation",
+        "- A threat to leave a game for an in-game reason ('im sui', 'im suiciding', 'im suing') IS a violation",
         "  even before the player actually leaves.",
     ]
     return "\n".join(lines)

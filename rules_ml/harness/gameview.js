@@ -62,21 +62,32 @@ input[type=range]{width:260px;vertical-align:middle}
 var DATA=null, TH=0.50;
 var $=function(i){return document.getElementById(i);};
 function render(){
-  var list=$('list'), nf=0, html=[];
+  var list=$('list'), nf=0, nc=0, nd=0, html=[];
   DATA.messages.forEach(function(m){
     var f=m.p>=TH, near=!f&&m.p>=TH-0.10;
+    var hasC=(m.clef!==undefined&&m.clef!==null);
+    var cv=hasC&&(m.clef!=='no_violation')&&((m.clef_p||0)>=0.5);
     if(f) nf++;
-    if($('onlyflag').checked && !f) return;
+    if(hasC&&cv) nc++;
+    if(hasC&&f!==cv) nd++;
+    if($('onlyflag').checked && !f && !cv) return;
     html.push('<div class="msg '+(f?'flag':(near?'near':''))+'">'
       +'<span class="p">'+m.p.toFixed(2)+'</span>'
       +'<span class="ph">'+esc(m.phase)+'</span>'
       +'<span class="snd">'+esc(m.sender)+'</span>'
       +'<span class="txt">'+esc(m.text)+'</span>'
+      +(hasC?('<span title="Clef says: '+esc(m.clef)+' (p='+(m.clef_p||0).toFixed(2)+')" '
+        +'style="flex:0 0 auto;font:10px/1 monospace;padding:2px 5px;border-radius:3px;margin-left:6px;'
+        +'background:'+(cv?'#7a2f2f':'#2f3a2f')+';color:'+(cv?'#ffb3b3':'#9fb79f')+';'
+        +'outline:'+(f!==cv?'1px solid #ffd479':'none')+';'+(f!==cv?'font-weight:700':'')
+        +'">CLEF '+(cv?'VIO':'OK')+'</span>'):'')
       +(f?'<span class="cat">'+esc(m.category)+'</span>':'')
       +'</div>');
   });
   list.innerHTML=html.join('')||'<div class="sub">nothing at this threshold</div>';
-  $('nflag').textContent=nf; $('pct').textContent=(100*nf/DATA.messages.length).toFixed(1);
+  $('nflag').textContent=nf;
+  $('pct').textContent=(100*nf/DATA.messages.length).toFixed(1)
+    +(nc?('  ·  Clef flags '+nc+', we disagree on '+nd+(nd?' (outlined)':'')):'');
   var bars=$('hist').children, counts=[], i, j;
   for(i=0;i<bars.length;i++) counts.push(0);
   for(j=0;j<DATA.messages.length;j++){
