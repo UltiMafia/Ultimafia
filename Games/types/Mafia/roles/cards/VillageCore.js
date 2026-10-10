@@ -47,6 +47,20 @@ module.exports = class VillageCore extends Card {
               return;
             }
 
+            if (this.game.getSafehouseQuota() > 0) {
+              // The day vote houses instead of condemning. Immunity that
+              // would stop a condemn stops the housing as well.
+              if (
+                this.target &&
+                this.target != "*" &&
+                this.target != "*magus" &&
+                this.dominates()
+              ) {
+                this.game.sendToSafehouse(this.target);
+              }
+              return;
+            }
+
             if (this.dominates()) {
               if (
                 !this.target.alive &&
@@ -221,6 +235,7 @@ function cannotBeVoted(player) {
   return player.hasEffect("CannotBeVoted");
 }
 function canBeVoted(player) {
+  if (player.housed) return false;
   return (
     player.alive ||
     (!player.alive && !player.exorcised && player.game.ExorciseVillageMeeting)

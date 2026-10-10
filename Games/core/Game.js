@@ -996,6 +996,17 @@ module.exports = class Game {
     return this.players.filter((p) => p.alive);
   }
 
+  // Alive players who have not been sent to the safehouse.
+  playersInPlay() {
+    return this.players.filter((p) => p.alive && !p.housed);
+  }
+
+  getSafehouseQuota() {
+    const quota = Number(this.getGameSetting("Safehouse"));
+    if (!quota || quota < 0) return 0;
+    return quota;
+  }
+
   deadPlayers() {
     return this.players.filter((p) => !p.alive);
   }
@@ -2301,6 +2312,17 @@ module.exports = class Game {
           `:crystal2: ${this.setup.name}: This setup is using Majority Voting! A player must get at least 50% of the vote to be condemned`,
           undefined,
           { color: " #713cfe" }
+        ),
+      ];
+    }
+    if (this.getSafehouseQuota() > 0 && this.currentState == 0) {
+      const quota = this.getSafehouseQuota();
+      const noun = quota == 1 ? "player" : "players";
+      [
+        this.sendAlert(
+          `:house: ${this.setup.name}: Safehouse is on. The Village wins when ${quota} Village-aligned ${noun} ${quota == 1 ? "is" : "are"} sent to the safehouse.`,
+          undefined,
+          { color: "#d1cdab" }
         ),
       ];
     }

@@ -58,7 +58,8 @@ module.exports = class MafiaPlayer extends Player {
         if (
           this.game.getStateName() != "Day" ||
           this.votedForExtension ||
-          !this.alive
+          !this.alive ||
+          this.housed
         )
           return;
 
@@ -70,7 +71,7 @@ module.exports = class MafiaPlayer extends Player {
         this.votedForExtension = true;
         this.game.extensionVotes++;
 
-        var aliveCount = this.game.alivePlayers().length;
+        var aliveCount = this.game.playersInPlay().length;
         var votesNeeded = Math.ceil(aliveCount / 2) + this.game.extensions;
 
         if (votesNeeded > aliveCount) {
