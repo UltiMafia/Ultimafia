@@ -97,7 +97,7 @@ follow-scroll/reading older messages, all four message layouts, pins, quotes, an
 a 390×844 Chromium viewport. It retains every message; it does not virtualize or
 hide the history. Phone emulation is not a Safari test.
 
-After building with `npm run perf:chat:build`, run from `react_main`:
+Build with `npx rsbuild build --config rsbuild.chat-perf.config.ts`, then run from `react_main`:
 
 ```bash
 npm install --prefix /tmp/ultimafia-chat-e2e --no-save --no-package-lock playwright
