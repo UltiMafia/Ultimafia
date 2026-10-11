@@ -434,6 +434,10 @@
 
 .game .speech-wrapper {
   flex-grow: 1;
+  /* The panel allocates chat height. An auto flex basis measures the entire
+     transcript on every input edit, even when no message row rerenders. */
+  flex-basis: 0;
+  min-height: 0;
   display: flex;
   flex-flow: column;
 
