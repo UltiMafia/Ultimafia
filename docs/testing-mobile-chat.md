@@ -66,8 +66,9 @@ Record device/browser, layout, history size, several frame-delay readings, and
 whether typing or input clearing visibly pauses. A screenshot of the controls is
 enough to share the readings; a Mac debugger is unnecessary.
 
-The fixture isolates the transcript and input. It does not reproduce other game
-panels, real server delays, spam limits, or custom/animated avatars. A smooth result
+The fixture uses the real panel layout, transcript, input, sidebar names, and
+optional animated name cosmetics. It does not reproduce the full live-game UI,
+real server delays, spam limits, or custom/animated avatars. A smooth result
 here does not prove the full game is smooth, but a slowdown here gives us a local
 reproduction to investigate. It tests the current source, not an A/B comparison
 with the old implementation.
@@ -80,3 +81,43 @@ Stop the WSL server with Ctrl+C. In Administrator PowerShell:
 netsh interface portproxy delete v4tov4 listenaddress=0.0.0.0 listenport=3002
 Remove-NetFirewallRule -DisplayName "Ultimafia chat test 3002"
 ```
+
+
+## Animated long-day regression (Linux/macOS only)
+
+Open `http://localhost:3002/?count=2214&nameplates=1717&cosmetic=mixed` to
+match the reported transcript/nameplate counts. The desktop fixture includes the
+real three-panel layout and sidebar names. Narrow/touch viewports show the real
+transcript/input directly; this is not the entire mobile game shell. The default
+without query parameters keeps ordinary, unanimated names.
+
+The automated runner builds on those real components and checks idle layout,
+offscreen animation suspension, visible cosmetics, typing, socket-echo clearing,
+follow-scroll/reading older messages, all four message layouts, pins, quotes, and
+a 390×844 Chromium viewport. It retains every message; it does not virtualize or
+hide the history. Phone emulation is not a Safari test.
+
+After building with `npm run perf:chat:build`, run from `react_main`:
+
+```bash
+npm install --prefix /tmp/ultimafia-chat-e2e --no-save --no-package-lock playwright
+PLAYWRIGHT_BROWSERS_PATH=/tmp/ultimafia-chat-e2e/browsers /tmp/ultimafia-chat-e2e/node_modules/.bin/playwright install chromium
+PLAYWRIGHT_MODULE=/tmp/ultimafia-chat-e2e/node_modules/playwright PLAYWRIGHT_BROWSERS_PATH=/tmp/ultimafia-chat-e2e/browsers node perf/chat-animations.e2e.cjs build-chat-perf
+```
+
+The runner owns a loopback-only server on port 3048 and closes its browser/server
+on exit. It refuses Windows before importing Playwright: fresh-profile Windows
+Chrome launches caused account lockouts during the earlier investigation.
+Dependencies stay outside the shared project install.
+
+Optional environment variables:
+- `CHAT_TEST_HEADED=1`: use a graphical browser.
+- `CHAT_TEST_GL=1`: request ANGLE/OpenGL.
+- `CHAT_TEST_REQUIRE_GPU=1`: require browser-reported hardware compositing and
+  an active page layer tree; fail instead of accepting software-rendering evidence.
+  On this WSL host, `GALLIUM_DRIVER=d3d12` plus all three settings used its Radeon GPU.
+
+Timing budgets are performance checks, not universal hardware guarantees. Record
+browser/GPU and compare on the same machine. This is local simulated transport,
+not proof of real-server latency or Windows Chrome performance. A live long-game
+check remains required before declaring the original report completely resolved.

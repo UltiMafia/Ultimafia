@@ -19,8 +19,12 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import ImageViewer from "components/ImageViewer";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { useAvatarImageUrl, AvatarPhoto } from "utils/avatarUrl";
+import { observeNameAnimation } from "utils/nameAnimationViewport";
 
 import santaDir from "images/holiday/santahat.png";
+
+// Names without a miniprofile must not subscribe to every game update.
+const NameOnlyGameContext = React.createContext(null);
 
 // Miniprofile only renders inside an opened popover, and it pulls in d3 via
 // PieChart — keep it out of the initial bundle.
@@ -625,8 +629,16 @@ export function NameWithAvatar(props) {
   const nameGradientColorA = props.nameGradientColorA || "#ff0040";
   const nameGradientColorB = props.nameGradientColorB || "#00c2ff";
   const nameGradientColorC = props.nameGradientColorC || "#3dff6a";
+  const nameTextRef = useRef(null);
 
-  const game = useContext(GameContext);
+  useEffect(() => {
+    if (dead || !animatedNameColor || animatedNameColor === "none") return;
+    return observeNameAnimation(nameTextRef.current);
+  }, [animatedNameColor, dead]);
+
+  const game = useContext(
+    includeMiniprofile && !noLink ? GameContext : NameOnlyGameContext
+  );
   const user = useContext(UserContext);
   const [userProfile, setUserProfile] = useState(null);
   const [isClicked, setIsClicked] = useState(false);
@@ -741,6 +753,7 @@ export function NameWithAvatar(props) {
             <Typography
               component="span"
               className="user-name-text"
+              ref={nameTextRef}
               sx={{ color: "inherit", fontFamily: "inherit" }}
             >
               {name}

@@ -2092,6 +2092,7 @@ export function TextMeetingLayout() {
       <div className="speech-wrapper">
         <div
           className="speech-display"
+          data-name-animation-viewport
           onScroll={onSpeechScroll}
           ref={speechDisplayRef}
         >
