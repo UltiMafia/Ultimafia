@@ -1,0 +1,22 @@
+# Generated corpora. Reproducible from the scripts here given mafia.db and
+# EXPERIENTIAL_LABS_API_KEY, but they cost API budget to regenerate, so they are
+# never committed. NOTE: a broad glob on purpose - listing specific filenames let
+# play_new.jsonl, ogi_new.jsonl, *_subset.jsonl and friends leak into the PR once.
+*.jsonl
+!eval_set.jsonl
+
+# generated viewer payload
+game_view*.json
+
+# Model intermediates. The runnable artifact (finetune_cls3_out/model.int8.onnx,
+# 23 MB) IS committed; these are the 91 MB fp32 files it is quantised from.
+finetune_cls3_out/model.onnx
+finetune_cls3_out/model.safetensors
+
+# harness dependencies
+harness/node_modules/
+
+__pycache__/
+*.pyc
+*.log
+*.swp
