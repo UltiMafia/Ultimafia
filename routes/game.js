@@ -183,6 +183,19 @@ router.get("/openCounts", async function (req, res) {
   }
 });
 
+// Returns true if either user has blocked the other.
+async function usersBlockEachOther(userId, otherId, cache) {
+  if (!userId || !otherId || userId == otherId) return false;
+  const get = async (id) => {
+    if (cache && cache.has(id)) return cache.get(id);
+    const list = (await redis.getBlockedUsers(id)) || [];
+    if (cache) cache.set(id, list);
+    return list;
+  };
+  const [mine, theirs] = await Promise.all([get(userId), get(otherId)]);
+  return mine.includes(otherId) || theirs.includes(userId);
+}
+
 router.get("/list", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -227,6 +240,20 @@ router.get("/list", async function (req, res) {
     }
 
     if (lobby != "All") games = games.filter((game) => game.lobby == lobby);
+
+    // Hide lobbies where the host and caller have blocked each other
+    if (userId) {
+      const blockCache = new Map();
+      const hostIds = [...new Set(games.map((g) => g.hostId).filter(Boolean))];
+      const hidden = new Set();
+      await Promise.all(
+        hostIds.map(async (hostId) => {
+          if (await usersBlockEachOther(userId, hostId, blockCache))
+            hidden.add(hostId);
+        })
+      );
+      if (hidden.size) games = games.filter((g) => !hidden.has(g.hostId));
+    }
 
     games = games.slice(start, end);
 
@@ -327,6 +354,19 @@ router.get("/:id/connect", async function (req, res) {
     if (!userId && !game.settings.guests) {
       errors.unauthorized(res, "You must be logged in to join or spectate games.");
       return;
+    }
+
+    // Block checks against the host and seated players
+    // (skipped if the user is already in this game so they can finish it)
+    if (userId && (await redis.inGame(userId)) !== gameId) {
+      const blockCache = new Map();
+      const others = [game.hostId, ...(game.players || [])];
+      for (let otherId of new Set(others.filter(Boolean))) {
+        if (await usersBlockEachOther(userId, otherId, blockCache)) {
+          errors.forbidden(res, "You can't join this game.");
+          return;
+        }
+      }
     }
 
     // If the user is in this game, then ignore all checks so that they can finish out the game
