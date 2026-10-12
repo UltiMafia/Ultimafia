@@ -471,16 +471,72 @@ iframe {
 @keyframes name-color-glow {
   0%,
   100% {
-    filter: brightness(1)
-      drop-shadow(0 0 1px currentColor)
-      drop-shadow(0 0 4px currentColor)
-      drop-shadow(0 0 0 transparent);
+    /* Filter shadows stack cumulatively, unlike independent text shadows.
+       Attenuate the halo and brighten the completed result, as before. */
+    filter: drop-shadow(
+        0 0 1px
+          rgb(
+            var(
+                --name-glow-rgb,
+                var(--mui-palette-text-primaryChannel, 255 255 255)
+              ) /
+              var(--name-glow-dim-alpha, 0.75)
+          )
+      )
+      drop-shadow(
+        0 0 4px
+          rgb(
+            var(
+                --name-glow-rgb,
+                var(--mui-palette-text-primaryChannel, 255 255 255)
+              ) /
+              var(--name-glow-dim-alpha, 0.75)
+          )
+      )
+      drop-shadow(
+        0 0 0
+          rgb(
+            var(
+                --name-glow-rgb,
+                var(--mui-palette-text-primaryChannel, 255 255 255)
+              ) /
+              0
+          )
+      )
+      brightness(1);
   }
   50% {
-    filter: brightness(1.35)
-      drop-shadow(0 0 2px currentColor)
-      drop-shadow(0 0 8px currentColor)
-      drop-shadow(0 0 14px currentColor);
+    filter: drop-shadow(
+        0 0 2px
+          rgb(
+            var(
+                --name-glow-rgb,
+                var(--mui-palette-text-primaryChannel, 255 255 255)
+              ) /
+              var(--name-glow-peak-alpha, 0.61)
+          )
+      )
+      drop-shadow(
+        0 0 8px
+          rgb(
+            var(
+                --name-glow-rgb,
+                var(--mui-palette-text-primaryChannel, 255 255 255)
+              ) /
+              var(--name-glow-peak-alpha, 0.61)
+          )
+      )
+      drop-shadow(
+        0 0 14px
+          rgb(
+            var(
+                --name-glow-rgb,
+                var(--mui-palette-text-primaryChannel, 255 255 255)
+              ) /
+              var(--name-glow-peak-alpha, 0.61)
+          )
+      )
+      brightness(1.35);
   }
 }
 

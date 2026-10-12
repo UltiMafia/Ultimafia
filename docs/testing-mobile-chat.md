@@ -121,3 +121,23 @@ Timing budgets are performance checks, not universal hardware guarantees. Record
 browser/GPU and compare on the same machine. This is local simulated transport,
 not proof of real-server latency or Windows Chrome performance. A live long-game
 check remains required before declaring the original report completely resolved.
+
+
+### Glow appearance regression
+
+With the same isolated Playwright install, run
+`PLAYWRIGHT_MODULE=/tmp/ultimafia-chat-e2e/node_modules/playwright PLAYWRIGHT_BROWSERS_PATH=/tmp/ultimafia-chat-e2e/browsers node perf/chat-glow.e2e.cjs`
+from `react_main`. The same headed/GPU options apply;
+`CHAT_TEST_CHROMIUM_PATH` optionally selects an existing Linux/macOS Chromium.
+This test requires Node 22.12+ and freezes the original and patched glow at five matching phases
+with opaque neutral/blue text and translucent blue text. It compares halo intensity outside the glyphs and
+pixel error, and rejects restoring animated text-shadow. It is a visual
+regression check, not a frame-rate benchmark or an exact pixel-equivalence claim.
+
+Optionally set `CHAT_TEST_FIXTURE_URL` to a running loopback chat fixture
+(for example `http://127.0.0.1:3002/?count=12&nameplates=12&cosmetic=glow`)
+to check that real name components inherit the correct glow color. This option
+allows only localhost/127.0.0.1 and does not launch or stop the fixture server.
+
+Run `node perf/name-glow-style.test.cjs` from `react_main` for the browser-free
+color parsing and inline-style cleanup/priority regression.

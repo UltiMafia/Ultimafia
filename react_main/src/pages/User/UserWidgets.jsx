@@ -20,6 +20,7 @@ import ImageViewer from "components/ImageViewer";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { useAvatarImageUrl, AvatarPhoto } from "utils/avatarUrl";
 import { observeNameAnimation } from "utils/nameAnimationViewport";
+import { nameGlowStyle, applyNameGlowStyle } from "utils/nameGlowStyle";
 
 import santaDir from "images/holiday/santahat.png";
 
@@ -665,6 +666,9 @@ export function NameWithAvatar(props) {
   const useSolidNameColor = !dead && autoColor && !usesClipText;
   const nameStyle = {
     ...(useSolidNameColor ? { color: autoColor } : {}),
+    ...(!dead && animatedNameColor === "glow" && useSolidNameColor
+      ? nameGlowStyle(autoColor)
+      : {}),
     display: "inline",
     ...(animatedNameColor === "gradient" || animatedNameColor === "tricolor"
       ? {
@@ -676,6 +680,17 @@ export function NameWithAvatar(props) {
         }
       : {}),
   };
+
+  useEffect(() => {
+    if (dead || animatedNameColor !== "glow") return;
+    if (useSolidNameColor && Object.keys(nameGlowStyle(autoColor)).length) return;
+    const element = nameTextRef.current;
+    if (!element) return;
+    // Inherited name colors need their actual channels, not palette defaults.
+    // Resolve once when color/theme changes, never on animation frames.
+    const inheritedStyle = nameGlowStyle(window.getComputedStyle(element).color);
+    return applyNameGlowStyle(element, inheritedStyle);
+  }, [animatedNameColor, dead, useSolidNameColor, autoColor, user]);
 
   const {
     popoverOpen: canOpenPopover,
