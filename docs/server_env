@@ -65,3 +65,8 @@ DEV_USERNAME=x
 VAPID_PUBLIC_KEY=
 VAPID_PRIVATE_KEY=
 VAPID_SUBJECT=
+
+# optional - Sign in with Apple server-to-server notifications
+# (POST /api/auth/apple/notifications). Comma-separated list of allowed "aud"
+# values: the iOS bundle ID and/or web Services ID. Unset = all rejected (400).
+APPLE_SIWA_AUDIENCE=VCCCLLC.Ultimafia
