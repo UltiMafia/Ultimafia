@@ -423,7 +423,7 @@ export default function TermsOfService() {
         </Typography>
         <Typography variant="body1" paragraph>
           <strong>For Users in the United States:</strong> These Terms shall be governed by and construed in 
-          accordance with the laws of the State of [Your State], United States, without regard to its conflict of 
+          accordance with the laws of the State of Wyoming, United States, without regard to its conflict of 
           law provisions. Any disputes arising out of or relating to these Terms or the Service shall be resolved 
           through binding arbitration in accordance with the rules of the American Arbitration Association, except 
           that you may assert claims in small claims court if your claims qualify.
