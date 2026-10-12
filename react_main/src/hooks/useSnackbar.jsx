@@ -44,6 +44,12 @@ export const useSnackbar = () => {
       "error"
     );
   };
+  const popSignupBlocked = () => {
+    popSnackbar(
+      "We could not create an account for you. If you believe this is a mistake, please contact a moderator.",
+      "error"
+    );
+  };
   const popUserDeleted = () => {
     popSnackbar(
       "Your user is deleted. To restore your account, contact a site administrator.",
@@ -76,6 +82,7 @@ export const useSnackbar = () => {
     popLoginFailed,
     popSiteBanned,
     popUserDeleted,
+    popSignupBlocked,
     SnackbarWrapped,
   };
 };

@@ -725,7 +725,9 @@ export function parseGamePopover(game) {
       }
       delete playerIdMap[userId];
     }
-    const isKudos = game.kudosReceiver && game.kudosReceiver === userId;
+    const isKudos =
+      (game.kudosReceiver && game.kudosReceiver === userId) ||
+      (game.kudosReceivers || []).includes(userId);
     const alignmentColor = getAlignmentColor(playerAlignmentMap[userId]);
 
     let trophies = [];

@@ -39,6 +39,45 @@ router.get("/", async function (req, res) {
   }
 });
 
+// Polled every 10s by every open tab, which only needs the badge count and
+// the restart time. Counting in Mongo avoids loading and serializing every
+// unread notification document on each poll.
+router.get("/unreadCount", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+
+    if (!userId) {
+      res.send({ nextRestart: constants.restart, count: 0 });
+      return;
+    }
+
+    const user = await models.User.findOne({ id: userId })
+      .select("globalNotifs")
+      .lean();
+    const globalIds = (user && user.globalNotifs) || [];
+
+    const [globalCount, userCount] = await Promise.all([
+      globalIds.length
+        ? models.Notification.countDocuments({
+            _id: { $in: globalIds },
+            read: { $ne: true },
+          })
+        : 0,
+      models.Notification.countDocuments({
+        user: userId,
+        isChat: false,
+        read: false,
+      }),
+    ]);
+
+    res.send({ nextRestart: constants.restart, count: globalCount + userCount });
+  } catch (e) {
+    logger.error(e);
+    res.send({ nextRestart: constants.restart, count: 0 });
+  }
+});
+
 // New endpoint for inbox page - returns all notifications with pagination
 router.get("/inbox", async function (req, res) {
   res.setHeader("Content-Type", "application/json");

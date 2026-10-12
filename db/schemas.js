@@ -53,6 +53,10 @@ var schemas = {
     ],
     ip: [{ type: String, index: true }],
     email: [{ type: String, index: true }],
+    // One per (platform, stable, unstable); platform allows future clients their own print format. _id:false lets $addToSet de-duplicate by triple.
+    fingerprints: [
+      { _id: false, platform: { type: String, index: true }, stable: { type: String, index: true }, unstable: { type: String, index: true } },
+    ],
     birthday: String,
     pronouns: {
       type: String,
@@ -91,12 +95,16 @@ var schemas = {
       backgroundColor: String,
       bannerFormat: String,
       avatarShape: { type: String, default: "circle" },
+      // In-game avatar shape, independent of the profile avatarShape.
+      gameAvatarShape: { type: String, default: "circle" },
       iconFilter: { type: String, default: "none" },
       customPrimaryColor: { type: String, default: "none" },
       textColor: String,
       warnTextColor: String,
       ignoreTextColor: { type: Boolean, default: false },
       accessibleNameColors: { type: Boolean, default: false },
+      // Viewer preference: render every username in the default font.
+      ignoreNameFonts: { type: Boolean, default: false },
       nameColor: String,
       warnNameColor: String,
       // Cosmetic name font for in-game player list (not site-wide, not chat body)
@@ -417,12 +425,16 @@ var schemas = {
     stateLengths: { type: Map, of: Number },
     gameTypeOptions: String,
     broken: Boolean,
+    // First kudos receiver (kept for older readers); see kudosReceivers.
     kudosReceiver: { type: String, default: "" },
+    kudosReceivers: { type: [String], default: undefined },
     anonymousGame: Boolean,
     // This is a mongoose subdocument. It won't change if the anonyonous deck that the game was started with changes.
     anonymousDeck: [anonymousDeck],
     /** True if any in-game veg kill occurred (stats excluded when true). */
     hadVeg: { type: Boolean, default: false },
+    /** True if a bot was ever seated; the game changed no ratings or stats. */
+    hadBots: { type: Boolean, default: false },
     /** Setup version manifest at game end (for backfill / audits). */
     setupVersion: { type: Number, default: null },
     setupStatsBackfilled: { type: Boolean, default: false },
@@ -434,7 +446,14 @@ var schemas = {
       },
     ],
     skillRefunded: { type: Boolean, default: false },
-  }),
+  })
+    // Profile game counts and the paged game history filter on users and
+    // sort by endTime; without this both were full collection scans.
+    .index({ users: 1, endTime: -1 })
+    // Setup page "played" count (setup + endTime).
+    .index({ setup: 1, endTime: -1 })
+    // Site activity / recent-games windows filter on startTime.
+    .index({ startTime: -1 }),
   ArchivedGame: new mongoose.Schema({
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -729,7 +748,9 @@ var schemas = {
     icon: String,
     link: String,
     read: { type: Boolean, default: false, index: true },
-  }),
+  })
+    // Unread-notification query polled by every open tab.
+    .index({ user: 1, isChat: 1, read: 1 }),
   Friend: new mongoose.Schema(
     {
       userId: { type: String, index: true },

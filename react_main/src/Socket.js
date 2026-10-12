@@ -53,6 +53,16 @@ class Socket {
 
     for (let message of this.received)
       if (message.eventName === eventName) action(message.data);
+
+    return action;
+  }
+
+  off(eventName, action) {
+    const actions = this.listeners[eventName];
+    if (!actions || action == null) return;
+
+    const index = actions.indexOf(action);
+    if (index !== -1) actions.splice(index, 1);
   }
 
   send(eventName, data) {

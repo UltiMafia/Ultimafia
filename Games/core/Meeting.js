@@ -1215,6 +1215,7 @@ module.exports = class Meeting {
 
   typing(playerId, isTyping) {
     var member = this.members[playerId];
+    if (!member) return;
     const isSilenced = member.player.hasEffect("Silenced");
 
     if (member && this.speech && !this.anonymous && member.canTalk) {
@@ -1226,6 +1227,12 @@ module.exports = class Meeting {
             meetingId: isTyping ? this.id : null,
           });
         }
+      }
+      if (!isSilenced && this.game.isSpectatorMeeting(this)) {
+        this.game.spectatorsSeeTyping({
+          playerId,
+          meetingId: isTyping ? this.id : null,
+        });
       }
     }
   }

@@ -30,8 +30,6 @@ const artContributors = {
       "Mediator:vivid",
       "Drama Queen:vivid",
       "Incubus:vivid",
-      "Moonshine:vivid",
-      "Ominous Warning:vivid",
       "Eclipse:vivid",
       "Volcanic Eruption:vivid",
       "Lightning Strike",

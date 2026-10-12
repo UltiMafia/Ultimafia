@@ -137,10 +137,22 @@ export function useAvatarUrlMap(ids, { cacheVal, family = false } = {}) {
   }, [listKey, freeze, frozenIds, family, cacheVal]);
 }
 
-export function AvatarPhoto({ src, alt = "" }) {
-  if (!src) return null;
+// Hides itself if the image fails to load (deleted/missing upload, bad deck
+// file) so the default no-avatar background shows instead of a broken image.
+export function AvatarPhoto({ src, alt = "", onError }) {
+  const [failedSrc, setFailedSrc] = useState(null);
+  if (!src || src === failedSrc) return null;
   return (
-    <img className="avatar-img" src={src} alt={alt} draggable={false} />
+    <img
+      className="avatar-img"
+      src={src}
+      alt={alt}
+      draggable={false}
+      onError={() => {
+        setFailedSrc(src);
+        if (onError) onError(src);
+      }}
+    />
   );
 }
 

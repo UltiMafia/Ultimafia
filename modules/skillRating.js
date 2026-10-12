@@ -107,6 +107,10 @@ async function updateGameRatings(game) {
   if (game.skillRefunded) {
     return;
   }
+  // Games with a bot in them never move anyone's rating.
+  if (game.hadBots) {
+    return;
+  }
   if (game.skillRatingChanges && game.skillRatingChanges.length > 0) {
     return;
   }

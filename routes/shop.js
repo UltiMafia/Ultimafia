@@ -426,7 +426,7 @@ const shopItems = [
   },
   {
     name: "Square",
-    desc: "Unlock the ability to become a square (currently profile only)",
+    desc: "Unlock the ability to become a square on your profile and in games",
     key: "avatarShape",
     category: "profile",
     price: 20,

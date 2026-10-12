@@ -17,6 +17,7 @@ import { UserText } from "../../components/Basic";
 import Newspaper, {
   ObituariesMessage,
 } from "../../components/gameComponents/Newspaper";
+import { newspaperPlayer } from "../../utils/newspaperPlayers";
 import MafiaGame from "./MafiaGame";
 import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
@@ -122,6 +123,13 @@ import ReadyCheckDialog from "./components/ReadyCheck";
 import PushNotificationPrompt from "./components/PushNotificationPrompt";
 import { releaseSubscription } from "utils/pushNotifications";
 import RoleMarkerToggle from "./components/RoleMarkerToggle";
+import { playerNameWithAvatarProps } from "./playerDisplay";
+import {
+  KudosDock,
+  KudosPanel,
+  KudosIcon,
+  kudosAwardedIds,
+} from "./components/Kudos";
 
 const emoteMap = {
   dice1: dice1,
@@ -206,8 +214,17 @@ export default function Game() {
   const [roleRevealData, setRoleRevealData] = useState(null);
   const [hostId, setHostId] = useState(null);
   const [changeSetupDialogOpen, setChangeSetupDialogOpen] = useState(false);
+  const [kudos, setKudos] = useState(null);
+  // Set when a participant rehosts this finished game:
+  // { gameId, hostId, hostName, setup }
+  const [rehostInvite, setRehostInvite] = useState(null);
+  // Places that can show the invite (see RehostInvite).
+  const [rehostInviteSlots, setRehostInviteSlots] = useState([]);
+  const rehostInviteSlotsRef = useRef([]);
+  rehostInviteSlotsRef.current = rehostInviteSlots;
 
   const playersRef = useRef();
+  const rehostInviteSeenRef = useRef(false);
   const selfRef = useRef();
   const noLeaveRef = useRef();
   const ignoreDeathSoundsRef = useRef(!!user?.settings?.ignoreDeathSounds);
@@ -219,6 +236,8 @@ export default function Game() {
   const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
   const [selectedPanel, setSelectedPanel] = useState("chat");
+  const isPhoneDeviceRef = useRef(false);
+  isPhoneDeviceRef.current = isPhoneDevice;
 
   const isParticipant = !isSpectator && !review;
   const currentStateObject = history.states[history.currentState];
@@ -237,6 +256,20 @@ export default function Game() {
   function onReadyCheckVerify() {
     socket.send("readyCheck verify");
     stopAudio("urgent");
+  }
+
+  function onJoinRehostClick() {
+    if (!rehostInvite) return;
+
+    // Same leave-then-navigate dance as the Rehost button: leave this
+    // postgame lobby first so the new game accepts the join.
+    noLeaveRef.current = true;
+    if (socket.on) socket.send("leave");
+
+    setTimeout(() => {
+      window.location.href =
+        window.location.origin + `/game/${rehostInvite.gameId}`;
+    }, 500);
   }
 
   function onLeaveGameClick() {
@@ -518,6 +551,9 @@ export default function Game() {
 
           var players = {};
           var spectators = {};
+          const kudosUserIds = (data.kudosReceivers || []).concat(
+            data.kudosReceiver ? [data.kudosReceiver] : []
+          );
 
           for (let i in data.players) {
             players[data.players[i]] = {
@@ -532,6 +568,9 @@ export default function Game() {
               customStickers:
                 data.users[i] && data.users[i].settings.customStickers,
               nameFont: data.users[i] && data.users[i].settings.nameFont,
+              avatarShape: data.anonymousGame
+                ? "circle"
+                : data.users[i] && data.users[i].settings.gameAvatarShape,
               animatedNameColor:
                 data.users[i] && data.users[i].settings.animatedNameColor,
               nameGradientColorA:
@@ -541,6 +580,8 @@ export default function Game() {
               nameGradientColorC:
                 data.users[i] && data.users[i].settings.nameGradientColorC,
               left: data.left.indexOf(data.players[i]) !== -1,
+              kudos:
+                !!data.users[i] && kudosUserIds.includes(data.users[i].id),
             };
           }
 
@@ -558,6 +599,10 @@ export default function Game() {
                 data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.customStickers,
               nameFont:
                 data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.nameFont,
+              avatarShape: data.anonymousGame
+                ? "circle"
+                : data.spectatorsUsers[i] &&
+                  data.spectatorsUsers[i].settings.gameAvatarShape,
               animatedNameColor:
                 data.spectatorsUsers[i] &&
                 data.spectatorsUsers[i].settings.animatedNameColor,
@@ -655,6 +700,20 @@ export default function Game() {
     });
 
     socket.on("finished", () => setFinished(true));
+
+    socket.on("kudos", (data) => setKudos(data));
+
+    socket.on("rehosted", (info) => {
+      if (!info || !info.gameId) return;
+
+      // On phones, open the tab that shows the invite the first time.
+      if (!rehostInviteSeenRef.current && isPhoneDeviceRef.current) {
+        const inActions = rehostInviteSlotsRef.current.some((s) => s.priority === 0);
+        setSelectedPanel(inActions ? "actions" : "players");
+      }
+      rehostInviteSeenRef.current = true;
+      setRehostInvite(info);
+    });
 
     socket.on("state", (state) => {
       updateHistory({ type: "addState", state: state });
@@ -900,7 +959,12 @@ export default function Game() {
     socket.on("readyCheck init", (data) => {
       const readyMap = {};
       if (data.readyPlayers) data.readyPlayers.forEach((id) => (readyMap[id] = true));
-      setReadyCheckInfo({ active: true, readyPlayers: readyMap, endTime: data.endTime });
+      setReadyCheckInfo({
+        active: true,
+        readyPlayers: readyMap,
+        endTime: data.endTime,
+        timeLeft: data.timeLeft,
+      });
       playAudio("urgent");
       setPingInfo({
         msg: `⚠ Ready Check!`,
@@ -1117,13 +1181,18 @@ export default function Game() {
       stopAudio: stopAudio,
       stopAudios: stopAudios,
       noLeaveRef,
+      rehostInvite: rehostInvite,
+      onJoinRehostClick: onJoinRehostClick,
+      rehostInviteSlots: rehostInviteSlots,
+      setRehostInviteSlots: setRehostInviteSlots,
       dev: dev,
       hostId: hostId,
       changeSetupDialogOpen: changeSetupDialogOpen,
       setChangeSetupDialogOpen: setChangeSetupDialogOpen,
       spectators: spectators,
       setSpectators: setSpectators,
-      readyCheckInfo: readyCheckInfo
+      readyCheckInfo: readyCheckInfo,
+      kudos: review ? null : kudos,
     };
 
     const isUrgent = voteKickUrgency || (readyCheckInfo.active && !readyCheckInfo.readyPlayers[self]);
@@ -1175,6 +1244,7 @@ export default function Game() {
         <ReadyCheckDialog
           open={readyCheckInfo.active && !readyCheckInfo.readyPlayers[self]}
           endTime={readyCheckInfo.endTime}
+          timeLeft={readyCheckInfo.timeLeft}
           onReady={onReadyCheckVerify}
           onLeave={leaveGame}
         />
@@ -1217,6 +1287,80 @@ export default function Game() {
   }
 }
 
+/**
+ * Shown to everyone left in the postgame lobby when someone rehosts: the new
+ * game's setup card, and a "Leave & Join New Game" button under it that leaves
+ * this game and joins the new one.
+ *
+ * It is rendered inline in exactly one place per layout. Candidates register
+ * with a priority and the best one wins:
+ *   0 - the main action list (Mafia etc.: right under the kudos vote)
+ *   1 - a filtered action list (games whose action list only holds kicks)
+ *   2 - the bottom of the player list (games without an action list)
+ */
+function RehostInvite({ priority = 0 }) {
+  const game = useContext(GameContext);
+  const invite = game.rehostInvite;
+  const setup = (invite && invite.setup) || game.setup;
+  const { rehostInviteSlots, setRehostInviteSlots } = game;
+  const slotId = useRef(null);
+
+  if (slotId.current === null) slotId.current = ++rehostInviteSlotCounter;
+
+  useEffect(() => {
+    if (!setRehostInviteSlots) return;
+
+    const slot = { id: slotId.current, priority };
+    setRehostInviteSlots((slots) => [...slots, slot]);
+    return () =>
+      setRehostInviteSlots((slots) => slots.filter((s) => s.id !== slot.id));
+  }, [priority, setRehostInviteSlots]);
+
+  if (!invite || game.review) return null;
+
+  const best = (rehostInviteSlots || []).reduce(
+    (a, b) =>
+      !a || b.priority < a.priority || (b.priority === a.priority && b.id < a.id)
+        ? b
+        : a,
+    null
+  );
+  if (!best || best.id !== slotId.current) return null;
+
+  return (
+    <Stack
+      spacing={1}
+      data-testid="rehost-invite"
+      sx={{ p: 1, mt: 1, minWidth: 0, border: 2, borderColor: "primary.main", borderRadius: 1 }}
+    >
+      {setup && (
+        <Box sx={{ minWidth: 0 }}>
+          <Setup setup={setup} />
+        </Box>
+      )}
+      <Button
+        variant="contained"
+        color="primary"
+        size="large"
+        fullWidth
+        data-testid="rehost-join"
+        onClick={game.onJoinRehostClick}
+        startIcon={<i className="fas fa-sign-in-alt" />}
+        sx={{ minHeight: 48, fontWeight: 700 }}
+      >
+        Leave & Join New Game
+      </Button>
+      {invite.hostName && (
+        <Typography variant="caption" sx={{ opacity: 0.7, textAlign: "center" }}>
+          Rehosted by {invite.hostName}
+        </Typography>
+      )}
+    </Stack>
+  );
+}
+
+let rehostInviteSlotCounter = 0;
+
 export function useSocketListeners(listeners, socket) {
   useEffect(() => {
     if (!socket.on) return;
@@ -1257,11 +1401,18 @@ export function TopBar({ forceShow = false } = {}) {
           gameType: game.gameType,
           setup: game.setup.id,
           lobby: game.options.lobby,
+          lobbyName: game.options.lobbyName,
           private: game.options.private,
           spectating: game.options.spectating,
           guests: game.options.guests,
           ranked: game.options.ranked,
           competitive: game.options.competitive,
+          readyCheck: game.options.readyCheck,
+          noVeg: game.options.noVeg,
+          anonymousGame: game.options.anonymousGame,
+          anonymousDeckId: (game.options.anonymousDeck || [])
+            .map((deck) => deck.id)
+            .join(","),
           stateLengths: stateLengths,
           ...game.options.gameTypeOptions,
         })
@@ -1946,6 +2097,7 @@ export function TextMeetingLayout() {
         >
           {messages}
         </div>
+        <KudosDock onResize={doAutoScroll} />
         {canSpeak && (
           <SpeechInput
             meetings={meetings}
@@ -2518,6 +2670,7 @@ const MessageRow = React.memo(function MessageRow(props) {
                 avatarId={avatarId}
                 name={player.name}
                 avatar={player.avatar}
+                isSquare={player.avatarShape === "square"}
                 color={resolveDisplayNameColor({
                   accessibleNameColors,
                   ignoreTextColor: user.settings?.ignoreTextColor,
@@ -2671,15 +2824,7 @@ function WinnersMessage(props) {
           }
         })
         .filter(Boolean) // Remove undefined/null players
-        .map((player) => ({
-          id: player.userId || player.id,
-          name: player.name,
-          avatar: player.avatar !== undefined ? player.avatar : true,
-          avatarId:
-            player.anonId === undefined
-              ? player.userId || player.id
-              : player.anonId,
-        }));
+        .map(newspaperPlayer);
 
       return {
         group: group,
@@ -2706,13 +2851,7 @@ function WinnersMessage(props) {
 
     return groupPlayers.length > 0
       ? groupPlayers.map((player) => ({
-          id: player.userId || player.id,
-          name: player.name,
-          avatar: player.avatar,
-          avatarId:
-            player.anonId === undefined
-              ? player.userId || player.id
-              : player.anonId,
+          ...newspaperPlayer(player),
           deathMessage: groupMessage,
           revealMessage: `${player.name} was a member of the ${group}.`,
           lastWill: "",
@@ -3256,8 +3395,10 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
     isolationEnabled,
     togglePlayerIsolation,
     isolatedPlayers,
-    readyCheckInfo
+    readyCheckInfo,
+    kudos,
   } = game;
+  const kudosIds = kudosAwardedIds(kudos);
 
   const prevStateRef = useRef(history?.currentState);
 
@@ -3422,11 +3563,6 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
       }
     }
 
-    let avatarId;
-    if (player !== undefined) {
-      avatarId = player.anonId === undefined ? player.userId : player.anonId;
-    }
-
     const readyCheck = readyCheckInfo?.active;
     const isReady = readyCheck && readyCheckInfo.readyPlayers[player.id];
 
@@ -3466,34 +3602,48 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
             </>
           )
         )}
-        <NameWithAvatar
-          id={player.userId}
-          avatarId={avatarId}
-          name={player.name}
-          avatar={player.avatar}
-          dead={className === "dead"}
-          color={resolveDisplayNameColor({
-            accessibleNameColors,
-            ignoreTextColor: user.settings?.ignoreTextColor,
-            rawNameColor: player.nameColor,
-            autoContrastColor: user.autoContrastColor.bind(user),
-            theme,
-          })}
-          nameColorSwatch={
-            accessibleNameColors && player.nameColor
-              ? player.nameColor
-              : undefined
-          }
-          nameFont={player.nameFont}
-          animatedNameColor={player.animatedNameColor}
-          nameGradientColorA={player.nameGradientColorA}
-          nameGradientColorB={player.nameGradientColorB}
-          nameGradientColorC={player.nameGradientColorC}
-          active={activity.speaking[player.id]}
-          noLink={stateViewing >= 0 && game.options.anonymousGame}
-          includeMiniprofile
-          newTab
-        />
+        {(() => {
+          const nameWithAvatar = (
+            <NameWithAvatar
+              {...playerNameWithAvatarProps(player, {
+                user,
+                theme,
+                square: true,
+              })}
+              dead={className === "dead"}
+              active={activity.speaking[player.id]}
+              noLink={stateViewing >= 0 && game.options.anonymousGame}
+              includeMiniprofile
+              newTab
+            />
+          );
+          if (!player.kudos && !kudosIds.includes(player.id))
+            return nameWithAvatar;
+          // Kudos badge on the avatar's bottom-right corner.
+          return (
+            <Box
+              sx={{
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                flexGrow: 1,
+                minWidth: 0,
+              }}
+            >
+              {nameWithAvatar}
+              <KudosIcon
+                size={18}
+                sx={{
+                  position: "absolute",
+                  left: 26,
+                  bottom: -2,
+                  borderRadius: "50%",
+                  backgroundColor: "background.paper",
+                }}
+              />
+            </Box>
+          );
+        })()}
         {selTab && showBubbles && visibleTyping[player.id] === selTab && (
           <ReactLoading
             className={`typing-icon ${stateViewing != -1 ? "has-role" : ""}`}
@@ -3608,6 +3758,7 @@ export function PlayerList(props) {
             renderMarker={renderMarker}
             renderRowEnd={renderRowEnd}
           />
+          <RehostInvite priority={2} />
         </div>
       }
     />
@@ -3824,8 +3975,17 @@ export function ActionList({
     }
   }
 
-  if (hideIfEmpty && (!regularActionDescriptors || regularActionDescriptors.length === 0)) {
-    return null;
+  // "Kudos Awarded:" list at the top of the (main) Actions panel, shown only
+  // once someone has been awarded kudos.
+  const showKudos = !bare && kudosAwardedIds(game.kudos).length > 0;
+
+  if (
+    hideIfEmpty &&
+    !showKudos &&
+    (!regularActionDescriptors || regularActionDescriptors.length === 0)
+  ) {
+    // Kick-only lists still host the rehost invite in games without a main list
+    return bare ? null : <RehostInvite priority={1} />;
   }
 
   const actionElements = (regularActionDescriptors || []).map(
@@ -3846,7 +4006,13 @@ export function ActionList({
       title={
         <UnresolvedActionCount>{title || "Actions"}</UnresolvedActionCount>
       }
-      content={<div className="action-list">{actionElements}</div>}
+      content={
+        <div className="action-list">
+          {showKudos && <KudosPanel />}
+          {actionElements}
+          <RehostInvite priority={meetingFilter ? 1 : 0} />
+        </div>
+      }
     />
   );
 }

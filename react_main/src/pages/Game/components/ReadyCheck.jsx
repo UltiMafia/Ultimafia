@@ -8,9 +8,16 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { readyCheckLocalEnd } from "utils/timerSync";
 
-export default function ReadyCheckDialog({ open, endTime, onReady, onLeave }) {
-  const [timeLeft, setTimeLeft] = useState(0);
+export default function ReadyCheckDialog({
+  open,
+  endTime,
+  timeLeft,
+  onReady,
+  onLeave,
+}) {
+  const [remaining, setRemaining] = useState(0);
 
   useEffect(() => {
     if (!open) return;
@@ -20,14 +27,20 @@ export default function ReadyCheckDialog({ open, endTime, onReady, onLeave }) {
       document.activeElement.blur();
     }
 
-    const interval = setInterval(() => {
-      const remaining = Math.max(0, endTime - Date.now());
-      setTimeLeft(remaining);
-      if (remaining <= 0) clearInterval(interval);
-    }, 100);
+    const localEnd = readyCheckLocalEnd(Date.now(), { timeLeft, endTime });
+    let interval;
+
+    const tick = () => {
+      const left = Math.max(0, localEnd - Date.now());
+      setRemaining(left);
+      if (left <= 0) clearInterval(interval);
+    };
+
+    tick();
+    interval = setInterval(tick, 100);
 
     return () => clearInterval(interval);
-  }, [open, endTime]);
+  }, [open, endTime, timeLeft]);
 
   // Enter confirms Ready. Capture so Game.jsx's global "focus the chat
   // input" listener does not steal the key. Leave Game still works if
@@ -61,8 +74,11 @@ export default function ReadyCheckDialog({ open, endTime, onReady, onLeave }) {
           <Typography variant="body1">
             The game is starting! Please confirm you are here.
           </Typography>
-          <Typography variant="h4" color={timeLeft < 10000 ? "error" : "primary"}>
-            {(timeLeft / 1000).toFixed(0)}s
+          <Typography
+            variant="h4"
+            color={remaining < 10000 ? "error" : "primary"}
+          >
+            {(remaining / 1000).toFixed(0)}s
           </Typography>
           <Typography variant="caption" color="text.secondary">
             Failure to ready up will result in being kicked.

@@ -417,7 +417,8 @@ const modifierData = {
       category: "Other",
       internal: ["KillImmune"],
       tags: ["Unkillable"],
-      description: "You can only be killed by condemn.",
+      description:
+        "You can only be killed by condemn (including a Frustrated death).",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Blessed: {
@@ -508,7 +509,7 @@ const modifierData = {
       internal: ["FrustratedCondemnation"],
       tags: ["Voting", "Condemn"],
       description:
-        "You cannot be condemned by majority vote. A non-zero minority vote will kill you.",
+        "You cannot be condemned by majority vote. If you receive votes but fewer than every other player who received votes, you die instead, even if you are Unkillable. Vote weight counts.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Diplomatic"],
     },
