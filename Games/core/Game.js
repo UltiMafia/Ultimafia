@@ -3287,8 +3287,11 @@ module.exports = class Game {
     }
   }
 
-  // A voter who leaves the postgame gets "No one" in every row they haven't
-  // voted in (see KudosVote.removeVoter), which can settle rows early.
+  // A voter who leaves the postgame is dropped from every row they have not
+  // voted in (see KudosVote.removeVoter). Votes they already cast stay.
+  // Dropping them can settle a row immediately: remaining() no longer counts
+  // them, so evaluateKudos can lock a winner in as soon as nobody left can
+  // change the outcome.
   kudosVoterLeft(player) {
     if (!this.kudosVote || !this.finished || this.postgameOver) return;
     try {
