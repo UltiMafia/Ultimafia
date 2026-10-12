@@ -117,6 +117,13 @@ db.promise
   .then(() => seedDefaultWordDecks())
   .catch((e) => console.error("Default deck seeding failed", e));
 
+app.get("/.well-known/apple-app-site-association", (req, res) => {
+  res.type("application/json");
+  res.sendFile(
+    path.join(__dirname, "react_main/public/.well-known/apple-app-site-association")
+  );
+});
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "react_main/build_public/index.html"));
 });
