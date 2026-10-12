@@ -135,3 +135,16 @@ This site is based on the code provided by r3ndd from [this repository](https://
 ## Additional Credits
 
 Music is by Fred, check out his youtube [@fredthemontymole](https://www.youtube.com/@fredthemontymole)
+
+## Sign in with Apple notifications
+
+Apple sends account events to `POST /api/auth/apple/notifications` (set this
+URL under the App ID's Sign in with Apple configuration in the Apple Developer
+portal). The signed payload is checked against Apple's keys, `iss`, `exp`, and
+`APPLE_SIWA_AUDIENCE` (see `docs/server_env`).
+
+- `email-enabled` / `email-disabled`: stores `appleEmailForwarding` on the user.
+- `consent-revoked`: revokes Firebase refresh tokens, clears site sessions, sets `appleConsentRevoked`.
+- `account-delete`: same as above, sets `appleAccountDeleted` and logs for moderator follow-up. No data is deleted.
+
+Apple does not send password or Apple ID email changes.
