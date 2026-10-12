@@ -6,6 +6,8 @@ import { GameContext, SiteInfoContext, UserContext } from "../src/Contexts";
 import {
   IsPhoneDeviceContext,
   TextMeetingLayout,
+  ThreePanelLayout,
+  SideMenu,
   useHistoryReducer,
   useSettingsReducer,
 } from "../src/pages/Game/Game";
@@ -13,6 +15,15 @@ import { getSiteTheme } from "../src/constants/themes";
 import { useIsPhoneDevice } from "../src/hooks/useIsPhoneDevice";
 import "../src/css/main.css";
 import "./chat.css";
+import { NameWithAvatar } from "../src/pages/User/UserWidgets";
+
+const params = new URLSearchParams(window.location.search);
+const cosmetic = params.get("cosmetic") || "none";
+const modes = ["rainbow", "pulse", "glow", "gradient", "patriotic", "tricolor"];
+const initialCount = Number(params.get("count") || 100);
+const nameplateTarget = params.has("nameplates")
+  ? Math.max(1, Math.min(initialCount, Number(params.get("nameplates"))))
+  : null;
 
 const theme = getSiteTheme();
 const noop = () => {};
@@ -22,7 +33,8 @@ const spectators = {};
 const isolatedPlayers = new Set();
 const options = {};
 const players = Object.fromEntries(Array.from({ length: 12 }, (_, i) => [
-  `test-${i}`, { id: `test-${i}`, name: i === 0 ? "You" : `Player${i}`, alive: true },
+  `test-${i}`, { id: `test-${i}`, name: i === 0 ? "You" : `Player${i}`, alive: true,
+    animatedNameColor: cosmetic === "mixed" ? modes[i % modes.length] : cosmetic },
 ]));
 let nextId = 0;
 const phrases = [
@@ -37,7 +49,8 @@ const phrases = [
 function makeMessage(content, senderId, time = Date.now()) {
   const id = nextId++;
   return {
-    id: `perf-${id}`, senderId: senderId || `test-${Math.floor(id / 3) % 12}`,
+    id: `perf-${id}`, senderId: senderId || `test-${(nameplateTarget === null ? Math.floor(id / 3)
+      : id - Math.ceil(id * (initialCount - nameplateTarget) / initialCount)) % 12}`,
     meetingId: "village", time, content: content || `${phrases[id % phrases.length]} (${id})`,
     alive: true, quotable: true,
   };
@@ -49,6 +62,7 @@ function makeState(count) {
   return {
     0: {
       name: "Day 1", selTab: "village", alerts: [], obituaries: {},
+      dead: {}, exorcised: {},
       meetings: {
         village: {
           id: "village", name: "Village", speech: true, amMember: true, canTalk: true,
@@ -69,7 +83,7 @@ function ChatPerformance() {
   const isPhone = useIsPhoneDevice();
 
   useEffect(() => {
-    updateHistory({ type: "set", history: makeState(100) });
+    updateHistory({ type: "set", history: makeState(initialCount) });
   }, [updateHistory]);
 
   // This replaces only the transport. The real reducer, transcript, text input,
@@ -125,12 +139,17 @@ function ChatPerformance() {
     getSetupGameSetting: noop, playAudio: noop, setup: { total: 12 },
   };
 
-  function load(count) {
+  const load = useCallback((count) => {
     setStreaming(false);
     setPinnedMessages({});
     updateHistory({ type: "set", history: makeState(count) });
     status.current.textContent = "Ready. Type a message below and press Return.";
-  }
+  }, [updateHistory]);
+
+  useEffect(() => {
+    window.chatPerf = { load, append: () => append(makeMessage()), setStreaming };
+    return () => { delete window.chatPerf; };
+  }, [load, append]);
 
   return (
     <main className="chat-perf dark-mode">
@@ -157,7 +176,15 @@ function ChatPerformance() {
       <GameContext.Provider value={game}>
         <IsPhoneDeviceContext.Provider value={isPhone}>
           <div className="game perf-game">
-            {state && <TextMeetingLayout />}
+            {state && (params.get("panels") === "flat" || isPhone ? <TextMeetingLayout /> :
+              <ThreePanelLayout
+                leftPanelContent={<SideMenu title="Players" scrollable content={
+                  Object.values(players).map((p) => <NameWithAvatar key={p.id}
+                    name={p.name} animatedNameColor={p.animatedNameColor} noLink />)
+                } />}
+                centerPanelContent={<TextMeetingLayout />}
+                rightPanelContent={<SideMenu title="Actions" content={<div>No pending actions</div>} />}
+              />)}
           </div>
         </IsPhoneDeviceContext.Provider>
       </GameContext.Provider>

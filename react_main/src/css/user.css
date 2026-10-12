@@ -355,12 +355,12 @@ iframe {
 .user-name.name-anim-pulse .user-name-text,
 .name-color-preview.name-anim-pulse {
   animation: name-color-pulse 1.1s ease-in-out infinite;
-  will-change: opacity, text-shadow, transform;
+  will-change: opacity, filter, transform;
 }
 .user-name.name-anim-glow .user-name-text,
 .name-color-preview.name-anim-glow {
   animation: name-color-glow 1.6s ease-in-out infinite;
-  will-change: text-shadow, filter;
+  will-change: filter;
 }
 
 /*
@@ -458,29 +458,85 @@ iframe {
   100% {
     opacity: 1;
     transform: scale(1);
-    text-shadow: 0 0 0 transparent;
-    filter: brightness(1);
+    /* Animated text-shadow changes glyph overflow and forces text layout. */
+    filter: brightness(1) drop-shadow(0 0 0 transparent);
   }
   50% {
     opacity: 0.55;
     transform: scale(1.04);
-    text-shadow: 0 0 10px currentColor;
-    filter: brightness(1.45);
+    filter: brightness(1.45) drop-shadow(0 0 5px currentColor);
   }
 }
 
 @keyframes name-color-glow {
   0%,
   100% {
-    text-shadow: 0 0 2px currentColor, 0 0 8px currentColor;
-    filter: brightness(1);
+    /* Filter shadows stack cumulatively, unlike independent text shadows.
+       Attenuate the halo and brighten the completed result, as before. */
+    filter: drop-shadow(
+        0 0 1px
+          rgb(
+            var(
+                --name-glow-rgb,
+                var(--mui-palette-text-primaryChannel, 255 255 255)
+              ) /
+              var(--name-glow-dim-alpha, 0.75)
+          )
+      )
+      drop-shadow(
+        0 0 4px
+          rgb(
+            var(
+                --name-glow-rgb,
+                var(--mui-palette-text-primaryChannel, 255 255 255)
+              ) /
+              var(--name-glow-dim-alpha, 0.75)
+          )
+      )
+      drop-shadow(
+        0 0 0
+          rgb(
+            var(
+                --name-glow-rgb,
+                var(--mui-palette-text-primaryChannel, 255 255 255)
+              ) /
+              0
+          )
+      )
+      brightness(1);
   }
   50% {
-    text-shadow:
-      0 0 4px currentColor,
-      0 0 16px currentColor,
-      0 0 28px currentColor;
-    filter: brightness(1.35);
+    filter: drop-shadow(
+        0 0 2px
+          rgb(
+            var(
+                --name-glow-rgb,
+                var(--mui-palette-text-primaryChannel, 255 255 255)
+              ) /
+              var(--name-glow-peak-alpha, 0.61)
+          )
+      )
+      drop-shadow(
+        0 0 8px
+          rgb(
+            var(
+                --name-glow-rgb,
+                var(--mui-palette-text-primaryChannel, 255 255 255)
+              ) /
+              var(--name-glow-peak-alpha, 0.61)
+          )
+      )
+      drop-shadow(
+        0 0 14px
+          rgb(
+            var(
+                --name-glow-rgb,
+                var(--mui-palette-text-primaryChannel, 255 255 255)
+              ) /
+              var(--name-glow-peak-alpha, 0.61)
+          )
+      )
+      brightness(1.35);
   }
 }
 

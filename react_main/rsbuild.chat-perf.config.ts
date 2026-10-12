@@ -9,7 +9,10 @@ export default defineConfig({
     entry: { index: "./perf/chat.jsx" },
     tsconfigPath: "./jsconfig.json",
   },
-  html: { title: "Ultimafia chat performance test" },
+  html: {
+    title: "Ultimafia chat performance test",
+    tags: [{ tag: "link", attrs: { rel: "stylesheet", href: "/css/fontawesome.min.css" } }],
+  },
   output: {
     distPath: { root: "build-chat-perf" },
     dataUriLimit: { image: 0, media: 0 },
