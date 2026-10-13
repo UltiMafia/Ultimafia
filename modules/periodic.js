@@ -328,6 +328,12 @@ module.exports = function () {
       },
       interval: 1000 * 60,
     },
+    githubContributions: {
+      run: async function () {
+        await require("./githubContributions").syncIfDue();
+      },
+      interval: 1000 * 60 * 60,
+    },
     competitivePeriodic: {
       run: async function () {
         await competitive.progressCompetitive();

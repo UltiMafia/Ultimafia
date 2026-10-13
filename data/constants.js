@@ -20,6 +20,7 @@ var rates = null;
 
 if (process.env.NODE_ENV.includes("development")) {
   rates = {
+    githubLink: 10 * 1000,
     hostGame: 60 * 100,
     createSetup: 60 * 100,
     createThread: 5 * 60 * 100,
@@ -42,6 +43,7 @@ if (process.env.NODE_ENV.includes("development")) {
   };
 } else {
   rates = {
+    githubLink: 10 * 1000,
     hostGame: 30 * 1000,
     createSetup: 60 * 1000,
     createThread: 5 * 60 * 1000,
@@ -622,6 +624,7 @@ module.exports = {
     deleteViolation: true,
     devApi: true,
     devTestPublic: true,
+    approveGithubLinks: true,
   },
   defaultGroups: {
     Owner: {
@@ -633,6 +636,7 @@ module.exports = {
       rank: 10,
       visible: true,
       perms: [
+        "approveGithubLinks",
         "deleteAnyPost",
         "lockThreads",
         "pinThreads",
