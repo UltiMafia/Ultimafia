@@ -58,12 +58,9 @@ export function MobileNav() {
     <Paper
       className="mobile-nav"
       elevation={8}
+      square
       sx={{
-        position: "fixed",
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 1200,
+        flexShrink: 0,
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
         backgroundColor: "background.paper",
       }}

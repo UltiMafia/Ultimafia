@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import axios from "axios";
 import { Box, Drawer, Skeleton, Stack } from "@mui/material";
+import { useLocation } from "react-router-dom";
 
 import Miniprofile from "./Miniprofile";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
@@ -22,8 +23,14 @@ export const ProfileSheetContext = createContext({
 // This matches how the native app lets you check a player mid-game.
 export function ProfileSheetProvider({ children }) {
   const isPhone = useIsPhoneDevice();
+  const location = useLocation();
   const [request, setRequest] = useState(null); // { id, props, gameId }
   const [profile, setProfile] = useState(null);
+
+  // The bottom navigation is part of the site shell, which is hidden while a
+  // game is full screen. When it is visible, lift the sheet above it so the
+  // sheet does not cover the navigation.
+  const navVisible = isPhone && !location.pathname.startsWith("/game/");
 
   const openProfile = useCallback((id, props, gameId) => {
     if (!id) return;
@@ -68,9 +75,12 @@ export function ProfileSheetProvider({ children }) {
             ? {
                 borderTopLeftRadius: 16,
                 borderTopRightRadius: 16,
-                maxHeight: "85vh",
+                maxHeight: "70vh",
+                marginBottom: navVisible
+                  ? "calc(56px + env(safe-area-inset-bottom, 0px))"
+                  : undefined,
               }
-            : { width: 380 },
+            : { width: 360 },
         }}
       >
         <Box sx={{ overflowY: "auto" }}>

@@ -177,8 +177,11 @@ function Main(props) {
     <Stack sx={{
       backgroundColor: "background.paper",
       minHeight: "100dvh",
-      // Clearance for the fixed bottom navigation on phones.
-      pb: isPhoneDevice ? "60px" : undefined,
+      // On phones the shell is a fixed-height frame: the header, a scrolling
+      // content area, and the bottom navigation are laid out in flow. This
+      // avoids the scroll gap a position:fixed bottom bar shows on mobile
+      // browsers when the address bar moves.
+      ...(isPhoneDevice ? { height: "100dvh", overflow: "hidden" } : {}),
       // Kept mounted, not unmounted, while a game is displayed.
       display: inGame ? "none" : undefined,
     }}>
@@ -189,6 +192,8 @@ function Main(props) {
       <Stack direction="row" className="site-wrapper" sx={{
         flex: "1",
         justifyContent: "center",
+        // On phones, the content scrolls inside the frame instead of the page.
+        ...(isPhoneDevice ? { overflowY: "auto", minHeight: 0 } : {}),
       }}>
         <Stack direction="column" spacing={1} sx={{
           margin: "0 auto",
