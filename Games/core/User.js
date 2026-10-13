@@ -13,6 +13,7 @@ module.exports = class User {
     this.textColor = props.settings && props.settings.textColor;
     this.nameColor = props.settings && props.settings.nameColor;
     this.nameFont = props.settings && props.settings.nameFont;
+    this.diceColor = props.settings && props.settings.diceColor;
     this.animatedNameColor =
       props.settings && props.settings.animatedNameColor;
     this.nameGradientColorA =
