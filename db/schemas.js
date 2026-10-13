@@ -109,6 +109,8 @@ var schemas = {
       warnNameColor: String,
       // Cosmetic name font for in-game player list (not site-wide, not chat body)
       nameFont: { type: String, default: "default" },
+      // Liar's Dice face color (#rrggbb); needs itemsOwned.diceColor unless white.
+      diceColor: String,
       // Animated name color style: none | pulse | glow | rainbow | gradient
       animatedNameColor: { type: String, default: "none" },
       // Two colors used when animatedNameColor === "gradient"
