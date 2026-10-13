@@ -512,9 +512,6 @@ html[data-keyboard="open"] .game .meeting-tabs {
   align-items: flex-start;
 
   margin: 10px;
-  /* A drag that starts on the input must not pan the visual viewport (which is
-     what let the chat slide past the bottom while the keyboard was up). */
-  touch-action: none;
 }
 
 .with-radial-gradient {
