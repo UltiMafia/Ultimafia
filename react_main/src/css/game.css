@@ -493,7 +493,6 @@
   align-items: flex-start;
 
   margin: 10px;
-  padding-bottom: var(--safe-inset-bottom);
 }
 
 .with-radial-gradient {

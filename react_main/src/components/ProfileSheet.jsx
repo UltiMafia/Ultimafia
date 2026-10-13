@@ -34,8 +34,14 @@ export function ProfileSheetProvider({ children }) {
 
   const openProfile = useCallback((id, props, gameId) => {
     if (!id) return;
-    setProfile(null);
-    setRequest({ id, props: props || {}, gameId });
+    // Re-opening the same profile (a duplicate click, say) must not blank and
+    // reload the sheet.
+    setRequest((current) =>
+      current && current.id === id
+        ? current
+        : { id, props: props || {}, gameId }
+    );
+    setProfile((current) => (current && current.id === id ? current : null));
   }, []);
 
   const closeProfile = useCallback(() => {

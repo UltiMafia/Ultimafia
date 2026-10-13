@@ -1,34 +1,44 @@
 import { useEffect } from "react";
 
-// Sizes the app frame (the phone site shell and the game session) to the
-// *visual* viewport through CSS variables, so nothing sits under the mobile
-// browser's toolbars or the on-screen keyboard, and no gap opens below the
-// bottom bar. `--app-height` is the visible height, `--app-offset-top` the
-// visible area's top offset (which changes when the keyboard opens).
+// Sizes the app frame (the phone site shell and the game session) through CSS
+// variables. Normally the frame fills the layout viewport, so the bottom bar is
+// flush and no gap opens. When the on-screen keyboard is open (the visual
+// viewport is much shorter than the layout viewport) the frame shrinks to the
+// visible area so the top bar and bottom input stay on screen.
 export function useAppViewport() {
   useEffect(() => {
-    const visualViewport = window.visualViewport;
-    if (!visualViewport) return;
-
     const root = document.documentElement;
+    const visualViewport = window.visualViewport;
 
     function update() {
-      root.style.setProperty(
-        "--app-height",
-        `${Math.round(visualViewport.height)}px`
-      );
-      root.style.setProperty(
-        "--app-offset-top",
-        `${Math.round(visualViewport.offsetTop)}px`
-      );
+      const layoutHeight = root.clientHeight;
+      const keyboardOpen =
+        visualViewport && visualViewport.height < layoutHeight - 120;
+
+      const height = keyboardOpen
+        ? Math.round(visualViewport.height)
+        : layoutHeight;
+      const top = keyboardOpen ? Math.round(visualViewport.offsetTop) : 0;
+
+      root.style.setProperty("--app-height", `${height}px`);
+      root.style.setProperty("--app-offset-top", `${top}px`);
     }
 
     update();
-    visualViewport.addEventListener("resize", update);
-    visualViewport.addEventListener("scroll", update);
+    window.addEventListener("resize", update);
+    window.addEventListener("orientationchange", update);
+    if (visualViewport) {
+      visualViewport.addEventListener("resize", update);
+      visualViewport.addEventListener("scroll", update);
+    }
+
     return () => {
-      visualViewport.removeEventListener("resize", update);
-      visualViewport.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+      if (visualViewport) {
+        visualViewport.removeEventListener("resize", update);
+        visualViewport.removeEventListener("scroll", update);
+      }
     };
   }, []);
 }
