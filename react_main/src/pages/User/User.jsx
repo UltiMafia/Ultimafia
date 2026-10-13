@@ -28,7 +28,7 @@ export default function User(props) {
   // Local boundary: without it the nearest fallback is the one in Main, which
   // would blank the whole page (header and all) on every sub-route switch.
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<Loading small />}>
       <Routes>
         <Route path="/" element={<Profile />} />
         <Route path="settings/*" element={<Settings />} />

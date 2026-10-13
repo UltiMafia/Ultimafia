@@ -13,6 +13,18 @@ import "css/play.css";
 
 import { Loading } from "../../components/Loading";
 
+// Route components must be created once, at module scope. Calling lazy() inside
+// Play gives every route a new component type on each Play render, so changing
+// the lobby query (?lobby=) or the game filter (?game=) unmounted and remounted
+// the whole page and re-showed its loading spinner. See the same note in Main.
+const LobbyBrowser = lazy(() => import("./LobbyBrowser/LobbyBrowser"));
+const CreateSetup = lazy(() => import("./CreateSetup/CreateSetup"));
+const DeckSelector = lazy(() => import("./Decks/DeckSelector"));
+const CreateDecks = lazy(() => import("./Decks/CreateDeck"));
+const WordDeckSelector = lazy(() => import("./WordDecks/WordDeckSelector"));
+const CreateWordDeck = lazy(() => import("./WordDecks/CreateWordDeck"));
+const HostBrowser = lazy(() => import("./Host/HostBrowser"));
+
 export default function Play(props) {
   const defaultGameType = "Mafia";
 
@@ -45,18 +57,10 @@ export default function Play(props) {
     setGameType(gameType);
   }
 
-  const LobbyBrowser = lazy(() => import("./LobbyBrowser/LobbyBrowser"));
-  const CreateSetup = lazy(() => import("./CreateSetup/CreateSetup"));
-  const DeckSelector = lazy(() => import("./Decks/DeckSelector"));
-  const CreateDecks = lazy(() => import("./Decks/CreateDeck"));
-  const WordDeckSelector = lazy(() => import("./WordDecks/WordDeckSelector"));
-  const CreateWordDeck = lazy(() => import("./WordDecks/CreateWordDeck"));
-  const HostBrowser = lazy(() => import("./Host/HostBrowser"));
-
   return (
     <>
       <div className="inner-content play">
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Loading small />}>
           <Routes>
             <Route path="/" element={<LobbyBrowser />} />
             <Route path="host" element={<HostBrowser />} />

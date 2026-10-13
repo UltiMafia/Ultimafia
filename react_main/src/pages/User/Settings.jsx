@@ -79,7 +79,7 @@ function CookieSettings() {
         <Typography variant="body2" color="text.secondary" paragraph>
           Manage your cookie preferences. These settings are stored in your browser 
           and apply to this device only. For more information, see our{" "}
-          <Link href="/policy/privacy" target="_blank">
+          <Link to="/policy/privacy">
             Privacy Policy
           </Link>.
         </Typography>
@@ -2015,7 +2015,11 @@ export default function Settings() {
       .then(() => {
         siteInfo.showAlert("Profile background removed", "success");
         siteInfo.clearCache();
-        window.location.reload();
+        user.set(
+          update(user.state, {
+            profileBackground: { $set: false },
+          })
+        );
       })
       .catch(errorAlert);
   }
@@ -2049,8 +2053,6 @@ export default function Settings() {
         );
 
         siteInfo.clearCache();
-        // Refresh the page to show the new background
-        window.location.reload();
       })
       .catch((e) => {
         if (e.response == null || e.response.status === 413)
@@ -2066,7 +2068,6 @@ export default function Settings() {
         user.clear();
         setCaptchaVisible(true);
         navigate("/");
-        window.location.reload();
       })
       .catch(errorAlert);
   }

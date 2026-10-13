@@ -26,7 +26,16 @@ const GameStatus = (props) => {
   const isPhoneDevice = useIsPhoneDevice();
   const showGameState = props.showGameState;
 
+  // A full lobby that has not started cannot be joined. Showing the button here
+  // sent players into a game that refuses them and left the client on a loading
+  // screen, so it is hidden entirely.
+  const isFullOpenGame =
+    props.game.status === "Open" &&
+    props.game.setup &&
+    props.game.players >= props.game.setup.total;
+
   const canShowGameButton =
+    !isFullOpenGame &&
     (user.loggedIn || props.game.status === "Finished") &&
     !props.game.broken &&
     !props.game.private;

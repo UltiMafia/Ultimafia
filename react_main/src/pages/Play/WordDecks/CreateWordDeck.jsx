@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { SiteInfoContext } from "../../../Contexts";
 import { useErrorAlert } from "../../../components/Alerts";
@@ -241,7 +241,7 @@ export default function CreateWordDeck() {
               }}
             >
               You need to purchase more word deck slots from the shop.{" "}
-              <a href="/user/shop?buy=wordDeck">Visit the shop</a>
+              <Link to="/user/shop?buy=wordDeck">Visit the shop</Link>
             </div>
           )}
 
@@ -336,12 +336,12 @@ export default function CreateWordDeck() {
                     </span>
                   </div>
                   {atLimit && (
-                    <a
+                    <Link
                       className="btn deck-buy-btn"
-                      href="/user/shop?buy=wordDeck"
+                      to="/user/shop?buy=wordDeck"
                     >
                       Buy More Slots
-                    </a>
+                    </Link>
                   )}
                 </div>
               )}

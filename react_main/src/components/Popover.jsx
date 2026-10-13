@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { Link as RouterLink } from "react-router-dom";
 
 import { GameStates } from "Constants";
 import { SiteInfoContext } from "Contexts";
@@ -46,7 +47,7 @@ export function PopoverContent({ title, content, page = null, icon = <></>, subT
 
   if (page) {
     wrappedTitle = (
-      <Link href={page} target="_blank" rel="noopener noreferrer">
+      <Link component={RouterLink} to={page}>
         {wrappedTitle}
       </Link>
     );

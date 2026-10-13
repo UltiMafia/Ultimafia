@@ -4,7 +4,7 @@ import "css/host.css";
 import "css/deck.css";
 import "css/play.css";
 import { BotBarLink } from "../Play";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useErrorAlert } from "../../../components/Alerts";
 import { UserContext } from "../../../Contexts";
 import axios from "axios";
@@ -117,7 +117,7 @@ export default function DeckSelector() {
           placeholder="🔎 Deck Name"
           onInput={onSearchInput}
         />
-        <Button href="/play/createDeck" sx={{ ml: "auto" }}>
+        <Button component={Link} to="/play/createDeck" sx={{ ml: "auto" }}>
           Create New Deck
         </Button>
       </div>

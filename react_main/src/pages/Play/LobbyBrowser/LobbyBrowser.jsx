@@ -180,6 +180,19 @@ export default function LobbyBrowser() {
     <Tabs
       value={lobbyName}
       onChange={(_, newValue) => setLobbyName(newValue)}
+      variant="scrollable"
+      scrollButtons="auto"
+      allowScrollButtonsMobile
+      sx={{
+        minHeight: 40,
+        "& .MuiTab-root": {
+          minHeight: 40,
+          minWidth: "auto",
+          px: 1.5,
+          fontSize: "0.8rem",
+          textTransform: "none",
+        },
+      }}
     >
       {lobbies
         .filter((lobby) => !lobby.hidden)
@@ -211,9 +224,13 @@ export default function LobbyBrowser() {
     </Tabs>
   );
 
-  const gameList = loading ? (
-    <Loading small />
-  ) : games.length ? (
+  // Keep the current list visible while the next one loads, so switching
+  // lobbies does not blank the page or flash a spinner. The spinner is only
+  // for the very first load, when there is nothing to show yet.
+  const gameList =
+    loading && games.length === 0 ? (
+      <Loading small />
+    ) : games.length ? (
     <Stack direction="column" spacing={1}>
       {games.map((game) => {
         return (

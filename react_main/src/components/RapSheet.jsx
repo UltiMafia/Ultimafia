@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import {
   Box,
   Button,
@@ -224,13 +225,9 @@ function VerdictDialog({
                 Game
               </Typography>
               <Typography variant="body2">
-                <a
-                  href={`/game/${report.gameId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <Link to={`/game/${report.gameId}`}>
                   {report.gameId}
-                </a>
+                </Link>
               </Typography>
             </Box>
           )}

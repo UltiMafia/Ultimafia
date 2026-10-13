@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 import {
   Menu,
@@ -51,6 +51,13 @@ export default function NavDropdown({
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  // Close when the route changes (e.g. browser back/forward), so an open menu
+  // never lingers over the next page.
+  useEffect(() => {
+    setAnchorEl(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname, location.search]);
 
   const handleMenuItemClick = (item) => {
     handleClose();

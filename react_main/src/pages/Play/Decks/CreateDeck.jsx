@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { SiteInfoContext } from "../../../Contexts";
 import { useFieldArray, useForm } from "react-hook-form";
 import axios from "axios";
@@ -294,12 +294,12 @@ export default function CreateDecks() {
                     </span>
                   </div>
                   {atLimit && (
-                    <a
+                    <Link
                       className="btn deck-buy-btn"
-                      href="/user/shop?buy=anonymousDeck"
+                      to="/user/shop?buy=anonymousDeck"
                     >
                       Buy More Decks
-                    </a>
+                    </Link>
                   )}
                 </div>
               )}

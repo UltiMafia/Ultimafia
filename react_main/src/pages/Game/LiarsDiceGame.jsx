@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   useSocketListeners,
@@ -587,11 +588,12 @@ function LiarsDicePlayerRow({
 }) {
   previousRolls = previousRolls || [];
   const isSamePlayer = whoseTurnIsIt === userId;
+  const navigate = useNavigate();
   return (
     <div className="liars-dice-player-section">
       <div
         className="ld-player-avatar"
-        onClick={() => window.open(`/user/${userId}`, "_blank")}
+        onClick={() => navigate(`/user/${userId}`)}
       >
         <Avatar id={userId} name={playerName} hasImage={avatar} />
         <div

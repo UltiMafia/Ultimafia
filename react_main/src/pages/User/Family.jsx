@@ -205,8 +205,7 @@ export default function Family() {
       .then(() => {
         siteInfo.showAlert("You have joined the family!", "success");
         setPendingInvite(null);
-        // Reload the page to show updated member list
-        window.location.reload();
+        loadFamilyProfile();
       })
       .catch(errorAlert);
   }
@@ -238,8 +237,7 @@ export default function Family() {
       .delete(`/api/family/${familyId}/member/${memberId}`)
       .then(() => {
         siteInfo.showAlert("Member removed from family", "success");
-        // Reload the page to show updated member list
-        window.location.reload();
+        loadFamilyProfile();
       })
       .catch(errorAlert);
   }

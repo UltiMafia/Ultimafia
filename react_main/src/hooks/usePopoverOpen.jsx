@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { activateOnEnterOrSpace } from "../utils/keyboard";
 
 export const usePopoverOpen = () => {
+  const location = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
   const [openByHover, setOpenByHover] = useState(false);
   const [openByClick, setOpenByClick] = useState(false);
@@ -31,6 +33,16 @@ export const usePopoverOpen = () => {
     setOpenByClick(false);
     setOpenByHover(false);
   };
+
+  // Close on any navigation. A popover anchored to an element on the previous
+  // page otherwise lingered after the route changed, pointing at a node that is
+  // no longer on screen.
+  useEffect(() => {
+    setAnchorEl(null);
+    setOpenByClick(false);
+    setOpenByHover(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname, location.search]);
 
   const handleKeyDown = (e) => {
     activateOnEnterOrSpace(e, handleClick);
