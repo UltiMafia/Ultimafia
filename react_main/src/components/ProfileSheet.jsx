@@ -32,13 +32,17 @@ export function ProfileSheetProvider({ children }) {
   profileRef.current = profile;
 
   // The bottom navigation is part of the site shell, which is hidden while a
-  // game is full screen. When it is visible, lift the sheet above it so the
-  // sheet does not cover the navigation.
-  const navVisible = isPhone && !location.pathname.startsWith("/game/");
+  // game is full screen. When it is visible, lift the sheet above it. This is
+  // decided when the sheet opens and held until the next open, so navigating
+  // (for example tapping the name link) does not shift the sheet mid-close.
+  const navVisibleRef = useRef(false);
+  navVisibleRef.current = isPhone && !location.pathname.startsWith("/game/");
+  const [aboveNav, setAboveNav] = useState(false);
 
   const openProfile = useCallback((id, props, gameId) => {
     if (!id) return;
     const nextProps = props || {};
+    setAboveNav(navVisibleRef.current);
 
     // Already loaded for this user: open straight away.
     if (profileRef.current && profileRef.current.id === id) {
@@ -87,7 +91,7 @@ export function ProfileSheetProvider({ children }) {
                 borderTopLeftRadius: 16,
                 borderTopRightRadius: 16,
                 maxHeight: "70vh",
-                marginBottom: navVisible
+                marginBottom: aboveNav
                   ? "calc(56px + env(safe-area-inset-bottom, 0px))"
                   : undefined,
               }
