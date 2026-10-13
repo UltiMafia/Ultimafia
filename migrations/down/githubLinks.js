@@ -1,5 +1,5 @@
 /**
- * Rolls back GitHub links (#36): unsets every user's github field, drops its
+ * Rolls back GitHub links: unsets every user's github field, drops its
  * index, and removes approveGithubLinks from every group. Pair it with a code
  * rollback, or startup gives Admin the permission again.
  *
