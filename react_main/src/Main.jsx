@@ -177,26 +177,27 @@ function Main(props) {
   }, []);
 
   const siteContent = (
-    <Stack sx={{
-      backgroundColor: "background.paper",
-      // Kept mounted, not unmounted, while a game is displayed.
-      display: inGame ? "none" : undefined,
-      ...(isPhoneDevice
-        ? {
-            // A fixed frame that reaches the screen edge. The site bottom nav
-            // does not move with the on-screen keyboard (the keyboard covers
-            // it); only the game session insets for the keyboard. The frame
-            // paints the safe area so no browser colour shows under the nav.
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            overflow: "hidden",
-            paddingBottom: "env(safe-area-inset-bottom, 0px)",
-          }
-        : { minHeight: "100dvh" }),
-    }}>
+    <Stack
+      className="app-shell"
+      sx={{
+        backgroundColor: "background.paper",
+        // Kept mounted, not unmounted, while a game is displayed.
+        display: inGame ? "none" : undefined,
+        ...(isPhoneDevice
+          ? {
+              // A fixed frame that reaches the screen edge. The site bottom nav
+              // does not move with the on-screen keyboard (the keyboard covers
+              // it); only the game session insets for the keyboard.
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              overflow: "hidden",
+            }
+          : { minHeight: "100dvh" }),
+      }}
+    >
       <CookieBanner />
       <Header
         setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
