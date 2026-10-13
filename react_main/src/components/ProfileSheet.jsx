@@ -1,5 +1,7 @@
 import React, {
   createContext,
+  lazy,
+  Suspense,
   useCallback,
   useContext,
   useEffect,
@@ -10,8 +12,14 @@ import axios from "axios";
 import { Box, Drawer } from "@mui/material";
 import { useLocation } from "react-router-dom";
 
-import Miniprofile from "./Miniprofile";
+import { ProfileSkeleton } from "./Skeletons";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
+
+// Miniprofile only renders once the sheet is open, and it drags in d3 (via
+// PieChart) and react-mde (via ReportDialog -> Form). Keep it out of the
+// initial bundle; the sheet fetches the profile before opening, so the chunk
+// is requested at the same time as the data.
+const Miniprofile = lazy(() => import("./Miniprofile"));
 
 export const ProfileSheetContext = createContext({
   openProfile: () => {},
@@ -97,10 +105,12 @@ export function ProfileSheetProvider({ children }) {
       >
         <Box sx={{ overflowY: "auto" }}>
           {profile && (
-            <Miniprofile
-              user={profile}
-              game={request?.gameId ? { gameId: request.gameId } : null}
-            />
+            <Suspense fallback={<ProfileSkeleton />}>
+              <Miniprofile
+                user={profile}
+                game={request?.gameId ? { gameId: request.gameId } : null}
+              />
+            </Suspense>
           )}
         </Box>
       </Drawer>
