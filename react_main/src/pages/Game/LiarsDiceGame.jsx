@@ -151,9 +151,11 @@ export function RoundBetLog({ history, stateViewing }) {
               <span className="ld-bet-log-name">{bid.bidder}</span>
               <span className="ld-bet-log-bid">
                 {bid.amount} ×{" "}
-                <span className={`ld-bet-log-die dice dice-${bid.face}`}>
-                  {DIE_FACES[bid.face]}
-                </span>
+                <span
+                  className={`dice dice-${bid.face} ld-inline-die ld-bet-log-die`}
+                  role="img"
+                  aria-label={`${bid.face}`}
+                />
               </span>
             </li>
           ))}
@@ -164,8 +166,6 @@ export function RoundBetLog({ history, stateViewing }) {
 
   return <SideMenu title="Bets this round" content={content} />;
 }
-
-const DIE_FACES = ["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
 
 function LiarsDiceRulesModal({ options, onClose }) {
   return (
