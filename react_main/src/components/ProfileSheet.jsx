@@ -44,16 +44,17 @@ export function ProfileSheetProvider({ children }) {
     setProfile((current) => (current && current.id === id ? current : null));
   }, []);
 
+  // Keep the loaded profile while closing, so the closing animation shows the
+  // content instead of reverting to a skeleton. It is cleared on the next open
+  // of a different profile.
   const closeProfile = useCallback(() => {
     setRequest(null);
-    setProfile(null);
   }, []);
 
   // Close the sheet when the route changes, e.g. when the name link inside it
   // navigates to the full profile.
   useEffect(() => {
     setRequest(null);
-    setProfile(null);
   }, [location.pathname, location.search]);
 
   const open = Boolean(request);

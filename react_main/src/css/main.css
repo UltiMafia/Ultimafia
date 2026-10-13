@@ -83,15 +83,16 @@ body {
   height: 100%;
 }
 
-/* The game session is hosted outside the route table and sized to the visual
-   viewport, so the top bar and the bottom input stay visible when the on-screen
-   keyboard opens, and it is hidden (not unmounted) while the user is elsewhere. */
+/* The game session is hosted outside the route table and sized to the viewport
+   with top/bottom offsets, so the top bar and the bottom input stay visible when
+   the on-screen keyboard opens, and it is hidden (not unmounted) while the user
+   is elsewhere. */
 .game-session {
   position: fixed;
   left: 0;
   right: 0;
-  top: var(--app-offset-top, 0px);
-  height: var(--app-height, 100dvh);
+  top: var(--app-top, 0px);
+  bottom: var(--app-bottom, 0px);
   z-index: 1100;
 }
 

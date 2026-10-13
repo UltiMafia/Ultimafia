@@ -183,13 +183,14 @@ function Main(props) {
       display: inGame ? "none" : undefined,
       ...(isPhoneDevice
         ? {
-            // Fill the visual viewport exactly: no gap under the bottom bar,
-            // and the frame shrinks with the on-screen keyboard.
+            // Fill the viewport with top/bottom offsets so the frame reaches
+            // the screen edge (a fixed bottom bar did), and insets to the
+            // visible area while the keyboard is open.
             position: "fixed",
-            top: "var(--app-offset-top, 0px)",
+            top: "var(--app-top, 0px)",
             left: 0,
             right: 0,
-            height: "var(--app-height, 100dvh)",
+            bottom: "var(--app-bottom, 0px)",
             overflow: "hidden",
           }
         : { minHeight: "100dvh" }),
