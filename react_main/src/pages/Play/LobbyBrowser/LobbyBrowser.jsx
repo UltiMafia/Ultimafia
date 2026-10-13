@@ -180,19 +180,6 @@ export default function LobbyBrowser() {
     <Tabs
       value={lobbyName}
       onChange={(_, newValue) => setLobbyName(newValue)}
-      variant="scrollable"
-      scrollButtons="auto"
-      allowScrollButtonsMobile
-      sx={{
-        minHeight: 40,
-        "& .MuiTab-root": {
-          minHeight: 40,
-          minWidth: "auto",
-          px: 1.5,
-          fontSize: "0.8rem",
-          textTransform: "none",
-        },
-      }}
     >
       {lobbies
         .filter((lobby) => !lobby.hidden)
