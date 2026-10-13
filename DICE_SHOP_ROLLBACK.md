@@ -1,7 +1,6 @@
 # Deploy and rollback: Liar's Dice Colors shop item
 
-Merge order: #39 (game chat core), #40 (Liar's Dice engine), #38 (dice sprites), then this PR.
-This branch already contains #38 and #40 (and #40's base #39), so once those are merged its diff is only the shop work.
+Merge after the game chat core, Liar's Dice engine and Liar's Dice sprites changes; this one comes last.
 
 ## What changes in the database
 
