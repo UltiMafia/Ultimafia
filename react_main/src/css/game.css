@@ -503,7 +503,7 @@ html[data-keyboard="open"] .game .meeting-tabs {
   overflow-x: hidden;
   /* Do not let the transcript scroll past its last message (or chain the
      overscroll to the page) on touch devices. */
-  overscroll-behavior: contain;
+  overscroll-behavior: none;
 }
 
 .game .speech-input-area {
@@ -512,6 +512,9 @@ html[data-keyboard="open"] .game .meeting-tabs {
   align-items: flex-start;
 
   margin: 10px;
+  /* A drag that starts on the input must not pan the visual viewport (which is
+     what let the chat slide past the bottom while the keyboard was up). */
+  touch-action: none;
 }
 
 .with-radial-gradient {
