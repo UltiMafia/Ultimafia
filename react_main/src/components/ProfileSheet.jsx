@@ -12,7 +12,6 @@ import { useLocation } from "react-router-dom";
 
 import Miniprofile from "./Miniprofile";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
-import { useDismissOnBack } from "../hooks/useDismissOnBack";
 
 export const ProfileSheetContext = createContext({
   openProfile: () => {},
@@ -73,8 +72,6 @@ export function ProfileSheetProvider({ children }) {
   useEffect(() => {
     setRequest(null);
   }, [location.pathname, location.search]);
-
-  useDismissOnBack(Boolean(request), closeProfile);
 
   const open = Boolean(request);
 

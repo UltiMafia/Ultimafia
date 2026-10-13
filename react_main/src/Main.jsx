@@ -15,6 +15,7 @@ import {
   useLocation,
   useNavigate,
   matchPath,
+  UNSAFE_LocationContext,
 } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import axios from "axios";
@@ -153,6 +154,19 @@ function Main(props) {
   const routeGameId = matchGameId(location.pathname);
   const inGame = Boolean(routeGameId);
 
+  // Keep the last site page mounted while a game is shown, so leaving a game and
+  // returning to the same page does not remount it (and refetch). The site
+  // subtree is frozen at its last non-game location while in a game; otherwise
+  // URL-driven pages (the lobby reads ?lobby= / ?game=) would see the game URL
+  // and try to navigate.
+  const lastSiteLocationRef = useRef(location);
+  if (!inGame) lastSiteLocationRef.current = location;
+  const siteLocation = inGame ? lastSiteLocationRef.current : location;
+  const siteLocationContext = {
+    location: siteLocation,
+    navigationType: "POP",
+  };
+
   // Retained across navigation so that leaving the game URL does not tear the
   // session down. Only an explicit leave clears it.
   const [hostedGameId, setHostedGameId] = useState(null);
@@ -276,7 +290,13 @@ function Main(props) {
       {loading && <Loading />}
       {!loading && (
         <ProfileSheetProvider>
-          {siteContent}
+          {UNSAFE_LocationContext ? (
+            <UNSAFE_LocationContext.Provider value={siteLocationContext}>
+              {siteContent}
+            </UNSAFE_LocationContext.Provider>
+          ) : (
+            siteContent
+          )}
           {gameSession}
           <AlertList />
           <ConnectionBanner />
@@ -548,7 +568,7 @@ function InGameWarning() {
           maxWidth: "calc(100vw - 16px)",
           // Sit above the phone bottom navigation instead of over it.
           bottom: isPhoneDevice
-            ? "calc(64px + env(safe-area-inset-bottom, 0px))"
+            ? "calc(60px + env(safe-area-inset-bottom, 0px))"
             : undefined,
         }}
       >
