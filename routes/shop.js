@@ -554,6 +554,16 @@ const shopItems = [
       }
     },
   },
+  {
+    // Appended last: purchases are by list index, so earlier items keep theirs.
+    name: "Liar's Dice Colors",
+    desc: "Pick any face color for your Liar's Dice dice in Settings. Other players see your hidden dice in your color, and everyone sees it when they are revealed. White stays free.",
+    key: "diceColor",
+    category: "game",
+    price: 100,
+    limit: 1,
+    onBuy: async function (userId) {},
+  },
 ];
 
 router.get("/info", async function (req, res) {

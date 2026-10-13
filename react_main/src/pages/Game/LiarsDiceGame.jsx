@@ -223,7 +223,12 @@ function LiarsDiceBoard({ history, stateViewing, self, players: gamePlayers }) {
   const whoseTurnIsIt = extraInfo.whoseTurnIsIt;
   const players = extraInfo.randomizedPlayers || [];
 
-  const ownDice = diceColorProps(gamePlayers?.[self]?.diceColor);
+  // Color comes from the round info (server only sends owned colors), with
+  // the player list as a fallback for older states.
+  const colorOf = (playerId) =>
+    players.find((p) => p.playerId === playerId)?.diceColor ??
+    gamePlayers?.[playerId]?.diceColor;
+  const ownDice = diceColorProps(colorOf(self));
 
   return (
     <div
@@ -242,7 +247,7 @@ function LiarsDiceBoard({ history, stateViewing, self, players: gamePlayers }) {
             isCurrentPlayer={player.playerId === self}
             isTheFlyingDutchman={isTheFlyingDutchman}
             whoseTurnIsIt={whoseTurnIsIt}
-            diceColor={gamePlayers?.[player.playerId]?.diceColor}
+            diceColor={colorOf(player.playerId)}
           />
         ))}
       </div>
