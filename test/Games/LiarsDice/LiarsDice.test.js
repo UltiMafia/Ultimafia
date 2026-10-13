@@ -192,6 +192,76 @@ describe("Games/LiarsDice engine", function () {
     Math.abs(perBid[500].bytes - perBid[50].bytes).should.be.below(400);
   });
 
+  it("never sends a player anyone else's unrevealed dice", async function () {
+    const { game, users } = await startGame({ players: 5 });
+    const frames = new Map();
+    for (const user of users) {
+      const list = [];
+      frames.set(user, list);
+      const inner = user.socket.send;
+      user.socket.send = (e, d) => {
+        list.push([e, JSON.parse(JSON.stringify(d ?? null))]);
+        return inner(e, d);
+      };
+    }
+    const reconnecting = game.players.array()[2];
+    game.sendAllGameInfo(reconnecting);
+    for (let i = 0; i < 6 && !game.finished; i++) {
+      bot.act(game);
+      await tick();
+    }
+
+    let checked = 0;
+    const leaks = [];
+    function scan(node, viewerId) {
+      if (!node || typeof node != "object") return;
+      if (Array.isArray(node)) return node.forEach((n) => scan(n, viewerId));
+      if (node.playerId && Array.isArray(node.rolledDice)) {
+        checked += 1;
+        if (node.playerId != viewerId && node.rolledDice.some((d) => d != 0))
+          leaks.push({ viewerId, owner: node.playerId });
+      }
+      for (const key in node) scan(node[key], viewerId);
+    }
+    for (const [user, list] of frames) {
+      const viewer = game.players.array().find((p) => p.user == user);
+      scan(list, viewer.id);
+      for (const state of Object.values(viewer.history.getHistoryInfo()))
+        scan(state.extraInfo, viewer.id);
+    }
+    for (const state of Object.values(game.spectatorHistory.getHistoryInfo()))
+      scan(state.extraInfo, null);
+
+    checked.should.be.above(20);
+    leaks.should.deep.equal([]);
+  });
+
+  it("reveals the called round's dice as previous rolls", async function () {
+    const { game } = await startGame();
+    const dice = [[5, 5, 1], [5, 2, 3], [4, 4, 4], [6, 6, 2]];
+    rig(game, dice);
+    await bid(game, 9, 6);
+    const caller = seat(game);
+    const observer = game.players.array().find((p) => p != caller);
+    const inner = observer.user.socket.send;
+    let state;
+    observer.user.socket.send = (e, d) => {
+      if (e == "state") state = JSON.parse(JSON.stringify(d));
+      return inner(e, d);
+    };
+
+    await call(game, "CallLie");
+
+    const revealed = Object.fromEntries(
+      state.extraInfo.randomizedPlayers.map((p) => [p.playerId, p.previousRolls])
+    );
+    game.randomizedPlayersCopy.forEach((p, i) => {
+      const expected = p == game.lastBidder || p.diceNum < 3 ? null : dice[i];
+      if (expected) revealed[p.id].should.deep.equal(expected);
+      revealed[p.id].length.should.be.at.least(2);
+    });
+  });
+
   it("plays a full bot game to a single winner", async function () {
     const { game } = await startGame({ players: 5, startingDice: 2, wildOnes: true });
     let moves = 0;

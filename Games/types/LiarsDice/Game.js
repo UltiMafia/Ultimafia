@@ -1030,6 +1030,44 @@ module.exports = class LiarsDiceGame extends Game {
     return info;
   }
 
+  // Every player's current dice are secret until a call reveals them (they
+  // become previousRolls on the next roll). Each viewer gets only their own.
+  extraInfoFor(extraInfo, viewer) {
+    if (!extraInfo || !extraInfo.randomizedPlayers || this.finished)
+      return extraInfo;
+    return {
+      ...extraInfo,
+      randomizedPlayers: extraInfo.randomizedPlayers.map((p) =>
+        viewer && p.playerId == viewer.id
+          ? p
+          : { ...p, rolledDice: p.rolledDice.map(() => 0) }
+      ),
+    };
+  }
+
+  stateInfoForViewer(stateInfo, viewer) {
+    const isPlayer = viewer && this.players.array().includes(viewer);
+    return this.stateInfoFor(stateInfo, isPlayer ? viewer : null);
+  }
+
+  stateInfoFor(stateInfo, viewer) {
+    return { ...stateInfo, extraInfo: this.extraInfoFor(stateInfo.extraInfo, viewer) };
+  }
+
+  broadcastState(stateInfo = this.getStateInfo()) {
+    for (let player of this.players)
+      player.send("state", this.stateInfoFor(stateInfo, player));
+    const hidden = this.stateInfoFor(stateInfo, null);
+    for (let spectator of this.spectators) spectator.send("state", hidden);
+  }
+
+  addStateExtraInfoToHistories(extraInfo, state) {
+    this.history.addStateExtraInfo(extraInfo, state);
+    this.spectatorHistory.addStateExtraInfo(this.extraInfoFor(extraInfo, null), state);
+    for (let player of this.players)
+      player.addStateExtraInfoToHistory(this.extraInfoFor(extraInfo, player), state);
+  }
+
   simplifyPlayers(players) {
     const simplified = [];
     for (const key in players) {

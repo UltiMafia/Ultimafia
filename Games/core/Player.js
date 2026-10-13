@@ -1235,7 +1235,7 @@ module.exports = class Player {
   }
 
   sendStateInfo() {
-    this.send("state", this.game.getStateInfo());
+    this.send("state", this.game.stateInfoForViewer(this.game.getStateInfo(), this));
   }
 
   addStateToHistory(name, state) {

@@ -2487,6 +2487,11 @@ module.exports = class Game {
     this.checkAllMeetingsReady();
   }
 
+  // Games with hidden per-player state override this to redact it per viewer.
+  stateInfoForViewer(stateInfo, viewer) {
+    return stateInfo;
+  }
+
   broadcastState(stateInfo = this.getStateInfo()) {
     //this.broadcast("effectAge", stateInfo);
     this.broadcast("state", stateInfo);
