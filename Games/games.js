@@ -14,6 +14,8 @@ const publisher = redis.client.duplicate();
 const axios = require("axios");
 const gameContext = require("../modules/gameContext");
 const pushNotifications = require("../modules/pushNotifications");
+const gameEventLog = require("../modules/gameEventLog");
+const { devApiEnabled } = require("../modules/devApi/policy");
 
 const serverId = Number(process.env.NODE_APP_INSTANCE) || 0;
 const port = Number(process.env.GAME_PORT || "3010") + serverId;
@@ -86,10 +88,16 @@ var deprecated = false;
 
     clearBrokenGames();
 
+    sockets.setFrameHook((frameInfo) => {
+      const game = games[frameInfo.socket.gameId];
+      if (game) gameEventLog.frame(game, frameInfo);
+    });
+
     server.on("connection", (socket) => {
       try {
         var user;
 
+        socket.logId = shortid.generate();
         socket.send("connected");
 
         socket.on("auth", async (token) => {
@@ -136,6 +144,10 @@ var deprecated = false;
             }
 
             user = user.toObject();
+            user.dev =
+              user.dev ||
+              (devApiEnabled() &&
+                (await routeUtils.verifyPermission(userId, "devApi")));
             user.socket = socket;
             user.settings = user.settings || {};
             utils.remapCustomEmotes(user, userId);
@@ -205,6 +217,8 @@ var deprecated = false;
               }
             }
 
+            socket.gameId = gameId;
+            socket.logUserId = user.id;
             game.userJoin(user, isBot);
           } catch (e) {
             logger.error(e);
@@ -293,6 +307,22 @@ var deprecated = false;
               userId: data.userId,
               error: e.message,
             });
+          }
+        });
+
+        socket.on("devControl", async (data) => {
+          const reply = (result) =>
+            socket.send("devControlResult", { requestId: data.requestId, ...result });
+          try {
+            if (!socket.isServer)
+              throw new Error("Not authenticated as server.");
+
+            const game = games[String(data.gameId)];
+            if (!game) throw new Error("Game not found.");
+
+            reply({ ok: true, result: game.runDevControl(String(data.command), data.args) });
+          } catch (e) {
+            reply({ ok: false, error: e.message });
           }
         });
 

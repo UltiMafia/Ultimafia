@@ -35,6 +35,8 @@ const PostgameMeeting = require("./PostgameMeeting");
 const { KudosVote, isWinLossResult, pickBotVote } = require("./Kudos");
 const dbStats = require("../../db/stats");
 const { isTestBotPlayer } = require("./botPlayers");
+const devControls = require("./devControls");
+const gameEventLog = require("../../modules/gameEventLog");
 const KUDOS_DISCONNECT_GRACE_MS = 20000;
 const VegKickMeeting = require("./VegKickMeeting");
 const mongo = require("mongodb");
@@ -164,6 +166,12 @@ module.exports = class Game {
 
     this.isReadyCheckActive = false;
     this.readyPlayers = {};
+    this.devControls = { timerScale: 1, seed: null, forcedRoles: {} };
+  }
+
+  runDevControl(command, args) {
+    gameEventLog.server(this, "devControl", { command, args });
+    return devControls.runDevControl(this, command, args);
   }
 
   async init() {
@@ -256,6 +264,7 @@ module.exports = class Game {
   async cancel() {
     for (let timeout of this.timeouts) clearTimeout(timeout);
 
+    gameEventLog.close(this);
     delete games[this.id];
     await redis.deleteGame(this.id);
   }
@@ -669,6 +678,7 @@ module.exports = class Game {
       await redis.leaveGame(userId);
 
       if (this.players.length == 0) {
+        gameEventLog.close(this);
         delete games[this.id];
         await redis.deleteGame(this.id);
       }
@@ -1384,9 +1394,10 @@ module.exports = class Game {
     }
 
     // Tell clients the game started, assign roles, and move to the next state
-    this.assignRoles();
+    devControls.withDevSeed(this, () => this.assignRoles());
     this.captureStartingFactions();
     this.started = true;
+    gameEventLog.server(this, "start", { roles: this.originalRoles, seed: this.devControls.seed });
     this.broadcast("start");
     this.broadcastOptions();
     this.events.emit("start");
@@ -1768,7 +1779,11 @@ module.exports = class Game {
 
     this.numHostInGame = hostCount;
     let remainingToAssign = players.slice(hostCount);
-    var randomPlayers = Random.randomizeArray(remainingToAssign);
+    var randomPlayers = devControls.orderPlayersForForcedRoles(
+      Random.randomizeArray(remainingToAssign),
+      roleset,
+      this.devControls.forcedRoles
+    );
 
     var i = 0;
 
@@ -2489,6 +2504,7 @@ module.exports = class Game {
 
   broadcastState(stateInfo = this.getStateInfo()) {
     //this.broadcast("effectAge", stateInfo);
+    gameEventLog.server(this, "phase", stateInfo);
     this.broadcast("state", stateInfo);
   }
 
@@ -2589,12 +2605,15 @@ module.exports = class Game {
   createTimer(name, delay, then, clients) {
     this.timers[name] = new Timer({
       name,
-      delay,
+      delay:
+        name == "pregameWait"
+          ? delay
+          : devControls.scaleTimerDelay(delay, this.devControls.timerScale),
       then,
       game: this,
       clients,
     });
-    this.timers[name].start();
+    devControls.startTimer(this, this.timers[name]);
   }
 
   getTimeLeft(timerName) {
@@ -3581,6 +3600,7 @@ module.exports = class Game {
 
       let stateInfo = this.getStateInfo();
       stateInfo.winners = winnersInfo;
+      gameEventLog.server(this, "end", winnersInfo);
       this.broadcastState(stateInfo);
       this.addStateToHistories(stateInfo.name);
       this.addStateExtraInfoToHistories(stateInfo.extraInfo);
@@ -4237,6 +4257,7 @@ module.exports = class Game {
       /* ignore */
     }
 
+    gameEventLog.close(this);
     delete games[this.id];
     deprecationCheck();
   }
