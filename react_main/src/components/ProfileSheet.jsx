@@ -3,10 +3,11 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import axios from "axios";
-import { Box, Drawer, Skeleton, Stack } from "@mui/material";
+import { Box, Drawer } from "@mui/material";
 import { useLocation } from "react-router-dom";
 
 import Miniprofile from "./Miniprofile";
@@ -27,6 +28,9 @@ export function ProfileSheetProvider({ children }) {
   const [request, setRequest] = useState(null); // { id, props, gameId }
   const [profile, setProfile] = useState(null);
 
+  const profileRef = useRef(null);
+  profileRef.current = profile;
+
   // The bottom navigation is part of the site shell, which is hidden while a
   // game is full screen. When it is visible, lift the sheet above it so the
   // sheet does not cover the navigation.
@@ -34,19 +38,28 @@ export function ProfileSheetProvider({ children }) {
 
   const openProfile = useCallback((id, props, gameId) => {
     if (!id) return;
-    // Re-opening the same profile (a duplicate click, say) must not blank and
-    // reload the sheet.
-    setRequest((current) =>
-      current && current.id === id
-        ? current
-        : { id, props: props || {}, gameId }
-    );
-    setProfile((current) => (current && current.id === id ? current : null));
+    const nextProps = props || {};
+
+    // Already loaded for this user: open straight away.
+    if (profileRef.current && profileRef.current.id === id) {
+      setRequest({ id, props: nextProps, gameId });
+      return;
+    }
+
+    // Fetch first, then open. Opening immediately with a skeleton made the
+    // bottom sheet slide up, grow, and re-animate once the content arrived.
+    axios
+      .get(`/api/user/${id}/profile`)
+      .then((res) => {
+        res.data.props = nextProps;
+        setProfile(res.data);
+        setRequest({ id, props: nextProps, gameId });
+      })
+      .catch(() => {});
   }, []);
 
   // Keep the loaded profile while closing, so the closing animation shows the
-  // content instead of reverting to a skeleton. It is cleared on the next open
-  // of a different profile.
+  // content. It is replaced on the next open of a different profile.
   const closeProfile = useCallback(() => {
     setRequest(null);
   }, []);
@@ -57,25 +70,9 @@ export function ProfileSheetProvider({ children }) {
     setRequest(null);
   }, [location.pathname, location.search]);
 
+  useDismissOnBack(Boolean(request), closeProfile);
+
   const open = Boolean(request);
-
-  useEffect(() => {
-    if (!request) return;
-    let cancelled = false;
-    axios
-      .get(`/api/user/${request.id}/profile`)
-      .then((res) => {
-        if (cancelled) return;
-        res.data.props = request.props;
-        setProfile(res.data);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [request]);
-
-  useDismissOnBack(open, closeProfile);
 
   return (
     <ProfileSheetContext.Provider value={{ openProfile, closeProfile }}>
@@ -98,17 +95,11 @@ export function ProfileSheetProvider({ children }) {
         }}
       >
         <Box sx={{ overflowY: "auto" }}>
-          {profile ? (
+          {profile && (
             <Miniprofile
               user={profile}
               game={request?.gameId ? { gameId: request.gameId } : null}
             />
-          ) : (
-            <Stack spacing={1.5} sx={{ p: 2 }}>
-              <Skeleton variant="circular" width={64} height={64} />
-              <Skeleton variant="text" width="60%" />
-              <Skeleton variant="rounded" height={120} />
-            </Stack>
           )}
         </Box>
       </Drawer>

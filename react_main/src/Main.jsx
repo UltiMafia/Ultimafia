@@ -183,15 +183,17 @@ function Main(props) {
       display: inGame ? "none" : undefined,
       ...(isPhoneDevice
         ? {
-            // Fill the viewport with top/bottom offsets so the frame reaches
-            // the screen edge (a fixed bottom bar did), and insets to the
-            // visible area while the keyboard is open.
+            // A fixed frame that reaches the screen edge. The site bottom nav
+            // does not move with the on-screen keyboard (the keyboard covers
+            // it); only the game session insets for the keyboard. The frame
+            // paints the safe area so no browser colour shows under the nav.
             position: "fixed",
-            top: "var(--app-top, 0px)",
+            top: 0,
             left: 0,
             right: 0,
-            bottom: "var(--app-bottom, 0px)",
+            bottom: 0,
             overflow: "hidden",
+            paddingBottom: "env(safe-area-inset-bottom, 0px)",
           }
         : { minHeight: "100dvh" }),
     }}>
@@ -537,7 +539,10 @@ function InGameWarning() {
     <>
       <Snackbar
         open={user.inGame !== null}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: isPhoneDevice ? "center" : "left",
+        }}
         sx={{
           maxWidth: "calc(100vw - 16px)",
           // Sit above the phone bottom navigation instead of over it.

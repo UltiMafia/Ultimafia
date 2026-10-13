@@ -61,7 +61,6 @@ export function MobileNav() {
       square
       sx={{
         flexShrink: 0,
-        paddingBottom: "env(safe-area-inset-bottom, 0px)",
         backgroundColor: "background.paper",
       }}
     >
