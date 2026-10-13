@@ -26,10 +26,15 @@ const GameStatus = (props) => {
   const isPhoneDevice = useIsPhoneDevice();
   const showGameState = props.showGameState;
 
+  // Testing lobby games are only listed for Developers/Owners, and the
+  // server lets them review those games even when locked.
+  const isReviewableTestingGame =
+    props.game.lobby === "Testing" && props.game.status === "Finished";
+
   const canShowGameButton =
     (user.loggedIn || props.game.status === "Finished") &&
     !props.game.broken &&
-    !props.game.private;
+    (!props.game.private || isReviewableTestingGame);
 
   let buttonUrl, buttonText, buttonVariant, buttonColor, buttonDisabled;
   if (props.game.status === "Open") {
@@ -93,7 +98,7 @@ const GameStatus = (props) => {
             title="Broken"
           />
         )}
-        {props.game.private && (
+        {props.game.private && !isReviewableTestingGame && (
           <i
             className="fas fa-lock"
             style={{ fontSize: "24px", cursor: "not-allowed" }}

@@ -35,6 +35,7 @@ const PostgameMeeting = require("./PostgameMeeting");
 const { KudosVote, isWinLossResult, pickBotVote } = require("./Kudos");
 const dbStats = require("../../db/stats");
 const { isTestBotPlayer } = require("./botPlayers");
+const devControls = require("./devControls");
 const KUDOS_DISCONNECT_GRACE_MS = 20000;
 const VegKickMeeting = require("./VegKickMeeting");
 const mongo = require("mongodb");
@@ -164,6 +165,11 @@ module.exports = class Game {
 
     this.isReadyCheckActive = false;
     this.readyPlayers = {};
+    this.devControls = { timerScale: 1, seed: null, forcedRoles: {} };
+  }
+
+  runDevControl(command, args) {
+    return devControls.runDevControl(this, command, args);
   }
 
   async init() {
@@ -1384,7 +1390,7 @@ module.exports = class Game {
     }
 
     // Tell clients the game started, assign roles, and move to the next state
-    this.assignRoles();
+    devControls.withDevSeed(this, () => this.assignRoles());
     this.captureStartingFactions();
     this.started = true;
     this.broadcast("start");
@@ -1768,7 +1774,11 @@ module.exports = class Game {
 
     this.numHostInGame = hostCount;
     let remainingToAssign = players.slice(hostCount);
-    var randomPlayers = Random.randomizeArray(remainingToAssign);
+    var randomPlayers = devControls.orderPlayersForForcedRoles(
+      Random.randomizeArray(remainingToAssign),
+      roleset,
+      this.devControls.forcedRoles
+    );
 
     var i = 0;
 
@@ -2589,12 +2599,15 @@ module.exports = class Game {
   createTimer(name, delay, then, clients) {
     this.timers[name] = new Timer({
       name,
-      delay,
+      delay:
+        name == "pregameWait"
+          ? delay
+          : devControls.scaleTimerDelay(delay, this.devControls.timerScale),
       then,
       game: this,
       clients,
     });
-    this.timers[name].start();
+    devControls.startTimer(this, this.timers[name]);
   }
 
   getTimeLeft(timerName) {
