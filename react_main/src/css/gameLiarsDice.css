@@ -109,40 +109,58 @@
 .liars-dice-dice-container .current-rolls .dice {
   width: 64px;
   height: 64px;
-  background-size: 512px 128px;
+  --ds: 64px;
   margin: 4px 6px;
 }
-.liars-dice-dice-container .current-rolls .dice-1 { background-position: 0 -64px; }
-.liars-dice-dice-container .current-rolls .dice-2 { background-position: -64px -64px; }
-.liars-dice-dice-container .current-rolls .dice-3 { background-position: -128px -64px; }
-.liars-dice-dice-container .current-rolls .dice-4 { background-position: -192px -64px; }
-.liars-dice-dice-container .current-rolls .dice-5 { background-position: -256px -64px; }
-.liars-dice-dice-container .current-rolls .dice-6 { background-position: -320px -64px; }
-.liars-dice-dice-container .current-rolls .dice-unknown { background-position: -384px -64px; }
 
 /* Dice images */
 .dice {
   width: 32px;
   height: 32px;
   margin: 4px;
-  background-image: url("/src/images/diceset.png");
+  /* Sprite sheet: 8 columns x 2 rows of square cells; row 2 is used.
+     --ds = rendered cell size, --df = face column (set by .dice-N).
+     The sheet is transparent except outline and pips; the face color is
+     painted underneath and clipped to the die by a mask of the same sheet
+     geometry, so it stays pixel-aligned at every size. */
+  --ds: 32px;
+  --df: 6;
+  --dice-sheet-size: calc(var(--ds) * 8) calc(var(--ds) * 2);
+  --dice-sheet-pos: calc(var(--df) * var(--ds) * -1) calc(var(--ds) * -1);
+  background-color: var(--dice-color, #ffffff);
+  background-image: var(--dice-lines, url("/src/images/diceset.png"));
   background-repeat: no-repeat;
-  background-size: 256px 64px;
-  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  background-position-x: 0;
+  background-size: var(--dice-sheet-size);
+  background-position: var(--dice-sheet-pos);
+  -webkit-mask-image: url("/src/images/diceset-mask.png");
+  mask-image: url("/src/images/diceset-mask.png");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: var(--dice-sheet-size);
+  mask-size: var(--dice-sheet-size);
+  -webkit-mask-position: var(--dice-sheet-pos);
+  mask-position: var(--dice-sheet-pos);
+  image-rendering: pixelated;
+  transition: transform 0.15s ease-in-out, filter 0.15s ease-in-out;
+}
+
+/* Dark face colors: swap to the sheet with white pips (outline stays black). */
+.dice-dark-face .dice {
+  --dice-lines: url("/src/images/diceset-light-pips.png");
+}
+.dice-light-face .dice {
+  --dice-lines: url("/src/images/diceset.png");
 }
 
 .dice:hover {
   transform: scale(1.15) rotate(8deg);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
 }
 
 .previous-rolls .dice {
   width: 24px;
   height: 24px;
-  background-size: 192px 48px;
+  --ds: 24px;
   margin: 2px;
-  background-position-x: 0;
 }
 
 .previous-rolls-label {
@@ -154,47 +172,25 @@
 }
 
 .dice-1 {
-  background-position: 0 -32px;
+  --df: 0;
 }
 .dice-2 {
-  background-position: -32px -32px;
+  --df: 1;
 }
 .dice-3 {
-  background-position: -64px -32px;
+  --df: 2;
 }
 .dice-4 {
-  background-position: -96px -32px;
+  --df: 3;
 }
 .dice-5 {
-  background-position: -128px -32px;
+  --df: 4;
 }
 .dice-6 {
-  background-position: -160px -32px;
+  --df: 5;
 }
 .dice-unknown {
-  background-position: -192px -32px;
-}
-
-.previous-rolls .dice-1 {
-  background-position: 0 -24px;
-}
-.previous-rolls .dice-2 {
-  background-position: -24px -24px;
-}
-.previous-rolls .dice-3 {
-  background-position: -48px -24px;
-}
-.previous-rolls .dice-4 {
-  background-position: -72px -24px;
-}
-.previous-rolls .dice-5 {
-  background-position: -96px -24px;
-}
-.previous-rolls .dice-6 {
-  background-position: -120px -24px;
-}
-.previous-rolls .dice-unknown {
-  background-position: -168px -24px;
+  --df: 6;
 }
 
 .current-rolls {
@@ -308,16 +304,9 @@
   .liars-dice-dice-container .current-rolls .dice {
     width: 36px;
     height: 36px;
-    background-size: 288px 72px;
+    --ds: 36px;
     margin: 2px 3px;
   }
-  .liars-dice-dice-container .current-rolls .dice-1 { background-position: 0 -36px; }
-  .liars-dice-dice-container .current-rolls .dice-2 { background-position: -36px -36px; }
-  .liars-dice-dice-container .current-rolls .dice-3 { background-position: -72px -36px; }
-  .liars-dice-dice-container .current-rolls .dice-4 { background-position: -108px -36px; }
-  .liars-dice-dice-container .current-rolls .dice-5 { background-position: -144px -36px; }
-  .liars-dice-dice-container .current-rolls .dice-6 { background-position: -180px -36px; }
-  .liars-dice-dice-container .current-rolls .dice-unknown { background-position: -216px -36px; }
 
   .previous-rolls {
     margin-top: 8px;
@@ -390,15 +379,8 @@
   .ld-face-die {
     width: 22px;
     height: 22px;
-    background-size: 176px 44px;
+    --ds: 22px;
   }
-  .ld-face-die.dice-1 { background-position: 0 -22px; }
-  .ld-face-die.dice-2 { background-position: -22px -22px; }
-  .ld-face-die.dice-3 { background-position: -44px -22px; }
-  .ld-face-die.dice-4 { background-position: -66px -22px; }
-  .ld-face-die.dice-5 { background-position: -88px -22px; }
-  .ld-face-die.dice-6 { background-position: -110px -22px; }
-  .ld-face-die.dice-unknown { background-position: -132px -22px; }
 
   .ld-call-group {
     gap: 6px;
@@ -472,21 +454,14 @@
   height: 18px;
   margin: 0 2px;
   vertical-align: middle;
-  background-size: 144px 36px;
+  --ds: 18px;
   transition: none;
 }
 
 .ld-inline-die:hover {
   transform: none;
-  box-shadow: none;
 }
 
-.ld-inline-die.dice-1 { background-position: 0 -18px; }
-.ld-inline-die.dice-2 { background-position: -18px -18px; }
-.ld-inline-die.dice-3 { background-position: -36px -18px; }
-.ld-inline-die.dice-4 { background-position: -54px -18px; }
-.ld-inline-die.dice-5 { background-position: -72px -18px; }
-.ld-inline-die.dice-6 { background-position: -90px -18px; }
 
 .ld-face-menu {
   display: grid;

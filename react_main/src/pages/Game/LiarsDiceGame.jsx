@@ -81,6 +81,7 @@ export default function LiarsDiceGame(props) {
       history={history}
       stateViewing={stateViewing}
       self={self}
+      players={players}
     />
   );
 
@@ -197,7 +198,24 @@ function LiarsDiceRulesModal({ options, onClose }) {
   );
 }
 
-function LiarsDiceBoard({ history, stateViewing, self }) {
+// Per-player dice face color (user setting "diceColor"). Returns the CSS
+// variable plus a class that swaps to white pips on dark faces.
+function diceColorProps(color) {
+  if (typeof color !== "string" || !/^#[0-9a-fA-F]{6}$/.test(color)) {
+    color = "#ffffff";
+  }
+  const lin = (i) => {
+    const c = parseInt(color.slice(i, i + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  };
+  const luminance = 0.2126 * lin(1) + 0.7152 * lin(3) + 0.0722 * lin(5);
+  return {
+    style: { "--dice-color": color },
+    className: luminance < 0.18 ? "dice-dark-face" : "dice-light-face",
+  };
+}
+
+function LiarsDiceBoard({ history, stateViewing, self, players: gamePlayers }) {
   if (stateViewing < 0) return null;
 
   const extraInfo = history.states[stateViewing]?.extraInfo || {};
@@ -205,8 +223,13 @@ function LiarsDiceBoard({ history, stateViewing, self }) {
   const whoseTurnIsIt = extraInfo.whoseTurnIsIt;
   const players = extraInfo.randomizedPlayers || [];
 
+  const ownDice = diceColorProps(gamePlayers?.[self]?.diceColor);
+
   return (
-    <div className="liars-dice-wrapper ld-board">
+    <div
+      className={`liars-dice-wrapper ld-board ${ownDice.className}`}
+      style={ownDice.style}
+    >
       <div className="liars-dice-players-container">
         {players.map((player, index) => (
           <LiarsDicePlayerRow
@@ -219,6 +242,7 @@ function LiarsDiceBoard({ history, stateViewing, self }) {
             isCurrentPlayer={player.playerId === self}
             isTheFlyingDutchman={isTheFlyingDutchman}
             whoseTurnIsIt={whoseTurnIsIt}
+            diceColor={gamePlayers?.[player.playerId]?.diceColor}
           />
         ))}
       </div>
@@ -619,8 +643,10 @@ function LiarsDicePlayerRow({
   isCurrentPlayer,
   isTheFlyingDutchman,
   whoseTurnIsIt,
+  diceColor,
 }) {
   previousRolls = previousRolls || [];
+  const dice = diceColorProps(diceColor);
   const isSamePlayer = whoseTurnIsIt === userId;
   return (
     <div className="liars-dice-player-section">
@@ -641,13 +667,15 @@ function LiarsDicePlayerRow({
         </div>
       </div>
       <div
-        className="liars-dice-dice-container"
+        className={`liars-dice-dice-container ${dice.className}`}
         style={
           isTheFlyingDutchman
             ? {
+                ...dice.style,
                 borderColor: isSamePlayer ? "grey" : "#3B5841",
               }
             : {
+                ...dice.style,
                 borderColor: isSamePlayer ? "grey" : undefined,
               }
         }
