@@ -2174,30 +2174,32 @@ export function TextMeetingLayout() {
         >
           {messages}
         </div>
-        {newMessageCount > 0 && (
-          <button
-            type="button"
-            className="new-messages-pill"
-            onClick={jumpToLatest}
-          >
-            {newMessageCount} new message{newMessageCount === 1 ? "" : "s"}
-          </button>
-        )}
-        <KudosDock onResize={doAutoScroll} />
-        {canSpeak && (
-          <SpeechInput
-            meetings={meetings}
-            selTab={selTab}
-            isCurrentState={stateViewing === history.currentState}
-            players={players}
-            options={game.options}
-            socket={game.socket}
-            setAutoScroll={setAutoScroll}
-            speechInput={speechInput}
-            setSpeechInput={setSpeechInput}
-            whispersEnabled={game.getSetupGameSetting("Whispers")}
-          />
-        )}
+        <div className="speech-footer">
+          {newMessageCount > 0 && (
+            <button
+              type="button"
+              className="new-messages-pill"
+              onClick={jumpToLatest}
+            >
+              {newMessageCount} new message{newMessageCount === 1 ? "" : "s"}
+            </button>
+          )}
+          <KudosDock onResize={doAutoScroll} />
+          {canSpeak && (
+            <SpeechInput
+              meetings={meetings}
+              selTab={selTab}
+              isCurrentState={stateViewing === history.currentState}
+              players={players}
+              options={game.options}
+              socket={game.socket}
+              setAutoScroll={setAutoScroll}
+              speechInput={speechInput}
+              setSpeechInput={setSpeechInput}
+              whispersEnabled={game.getSetupGameSetting("Whispers")}
+            />
+          )}
+        </div>
       </div>
     </>
   );
