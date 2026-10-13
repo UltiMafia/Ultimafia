@@ -1,5 +1,5 @@
 /**
- * Rolls back the per-game event log (#35): drops the gameeventlogchunks
+ * Rolls back the per-game event log: drops the gameeventlogchunks
  * collection and its TTL index. Set GAME_EVENT_LOG=off first, or running
  * games will create it again.
  *
