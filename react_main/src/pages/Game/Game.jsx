@@ -1985,7 +1985,12 @@ export function TextMeetingLayout() {
           history={history}
           players={players}
           spectators={spectators}
-          stateViewing={stateViewing}
+          stateViewing={
+            singleState && !message.obituaries && !message.winners
+              ? rowStateClass(stateViewing)
+              : stateViewing
+          }
+          meetingState={singleState ? message.fromState : stateViewing}
           key={message.id || message.messageId + message.time || i}
           onMessageQuote={game.onMessageQuote}
           onPinMessage={game.onPinMessage}
@@ -2118,7 +2123,9 @@ export function TextMeetingLayout() {
   );
 }
 
-function getAllMessagesToDisplay(history) {
+const stateMessagesCache = new WeakMap();
+
+export function getAllMessagesToDisplay(history) {
   var messages = [];
   var postgameWinnersMessages = [];
   const states = Object.keys(history.states).sort(
@@ -2136,6 +2143,14 @@ function getAllMessagesToDisplay(history) {
       continue;
     }
 
+    const cached = stateMessagesCache.get(stateData);
+    if (cached) {
+      messages.push(...cached.messages);
+      if (cached.postgameWinners) postgameWinnersMessages.push(cached.postgameWinners);
+      continue;
+    }
+
+    let postgameWinners = null;
     let stateMessages = [];
     for (let meeting in stateMeetings) {
       var meetingData = stateMeetings[meeting];
@@ -2166,6 +2181,7 @@ function getAllMessagesToDisplay(history) {
         senderId: "server",
       };
       if (state === "-2") {
+        postgameWinners = winnersMessage;
         postgameWinnersMessages.push(winnersMessage);
       } else {
         stateMessages.push(winnersMessage);
@@ -2173,6 +2189,10 @@ function getAllMessagesToDisplay(history) {
     }
 
     stateMessages.sort((a, b) => a.time - b.time);
+    stateMessagesCache.set(stateData, {
+      messages: stateMessages,
+      postgameWinners,
+    });
     messages.push(...stateMessages);
   }
 
@@ -2358,16 +2378,21 @@ function getContentClasses(message) {
  */
 export const IsPhoneDeviceContext = createContext(false);
 
+export function rowStateClass(stateViewing) {
+  return stateViewing > 0 ? 1 : stateViewing;
+}
+
 function Message(props) {
-  const { history, isMessagePinned, ...rowProps } = props;
+  const { history, isMessagePinned, meetingState, ...rowProps } = props;
   const { message, stateViewing } = props;
+  const nameState = meetingState ?? stateViewing;
   // History changes on every append. Only quotes and summary rows need it;
   // ordinary rows depend on the meeting's name, not its growing message array.
   return (
     <MessageRow
       {...rowProps}
       pinned={isMessagePinned(message)}
-      meetingName={history.states[stateViewing]?.meetings?.[message.meetingId]?.name}
+      meetingName={history.states[nameState]?.meetings?.[message.meetingId]?.name}
       quoteState={message.isQuote ? history.states[message.fromState] : undefined}
       history={message.obituaries || message.winners ? history : undefined}
     />
@@ -5898,6 +5923,11 @@ export function Notes() {
   );
 }
 
+function selTabName(state) {
+  if (!state || !state.selTab || !state.meetings) return state?.carrySelTabName;
+  return state.meetings[state.selTab]?.name;
+}
+
 export function useHistoryReducer() {
   return useReducer(
     (history, action) => {
@@ -5936,11 +5966,24 @@ export function useHistoryReducer() {
                     dead: { ...history.states[prevState].dead },
                     exorcised: { ...history.states[prevState].exorcised },
                     extraInfo: { ...action.state.extraInfo },
+                    carrySelTabName: selTabName(history.states[prevState]),
                   },
                 },
               },
               currentState: {
                 $set: Number.parseInt(action.state.id),
+              },
+            });
+          } else if (
+            action.state.extraInfo &&
+            !action.state.winners &&
+            history.states[action.state.id]
+          ) {
+            return update(history, {
+              states: {
+                [action.state.id]: {
+                  extraInfo: { $set: { ...action.state.extraInfo } },
+                },
               },
             });
           } else if (action.state.winners && history.states[action.state.id]) {
@@ -5964,6 +6007,11 @@ export function useHistoryReducer() {
           let state = history.states[history.currentState];
 
           if (state) {
+            const carryTab =
+              !state.selTab &&
+              action.meeting.speech &&
+              state.carrySelTabName &&
+              state.carrySelTabName === action.meeting.name;
             return update(history, {
               states: {
                 [history.currentState]: {
@@ -5972,6 +6020,7 @@ export function useHistoryReducer() {
                       $set: action.meeting,
                     },
                   },
+                  ...(carryTab ? { selTab: { $set: action.meeting.id } } : {}),
                 },
               },
             });
