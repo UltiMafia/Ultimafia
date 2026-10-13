@@ -1,6 +1,8 @@
 const express = require("express");
 const shortid = require("shortid");
 const constants = require("../data/constants");
+const devApiKeys = require("../modules/devApi/keys");
+
 const trophyData = require("../data/trophies");
 const DailyChallengeData = require("../data/DailyChallenge");
 const roleData = require("../data/roles");
@@ -12,6 +14,7 @@ const models = require("../db/models");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const roleIconCreditUtils = require("../modules/roleIconCreditUtils");
+const githubContributions = require("../modules/githubContributions");
 const { getBasicUserInfo } = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
@@ -282,6 +285,10 @@ router.post("/groupPerms", async function (req, res) {
   }
 });
 
+function requiredGroupRank(groupName, groupRank) {
+  return constants.ownerOnlyGroups.includes(groupName) ? Infinity : groupRank + 1;
+}
+
 router.post("/addToGroup", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
@@ -296,7 +303,14 @@ router.post("/addToGroup", async function (req, res) {
       return;
     }
 
-    if (!(await routeUtils.verifyPermission(res, userId, perm, group.rank + 1)))
+    if (
+      !(await routeUtils.verifyPermission(
+        res,
+        userId,
+        perm,
+        requiredGroupRank(groupName, group.rank)
+      ))
+    )
       return;
 
     var userToAdd = await models.User.findOne({
@@ -352,7 +366,14 @@ router.post("/removeFromGroup", async function (req, res) {
       return;
     }
 
-    if (!(await routeUtils.verifyPermission(res, userId, perm, group.rank + 1)))
+    if (
+      !(await routeUtils.verifyPermission(
+        res,
+        userId,
+        perm,
+        requiredGroupRank(groupName, group.rank)
+      ))
+    )
       return;
 
     var userToRemove = await models.User.findOne({
@@ -369,6 +390,8 @@ router.post("/removeFromGroup", async function (req, res) {
       user: userToRemove._id,
       group: group._id,
     }).exec();
+    if (groupName == "Developer")
+      await devApiKeys.revokeKeys({ userId: userIdToRemove }, userId);
     await redis.cacheUserInfo(userIdToRemove, true);
     await redis.cacheUserPermissions(userIdToRemove);
 
@@ -811,6 +834,52 @@ router.post("/unban", async (req, res) => {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not unban user. Please try again.");
+  }
+});
+
+router.get("/githubLinks", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "approveGithubLinks"))) return;
+    const status = githubContributions.statuses.includes(req.query.status) ? req.query.status : "pending";
+    const users = await models.User.find({ "github.status": status, deleted: false })
+      .select("id name avatar github -_id")
+      .sort({ "github.requestedAt": 1 })
+      .limit(100)
+      .lean();
+    res.send(users);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not load GitHub links. Please try again.");
+  }
+});
+
+router.post("/githubLinks", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "approveGithubLinks"))) return;
+    const userIdToActOn = String(req.body.userId || "").trim();
+    const decision = String(req.body.decision || "");
+    if (decision != "approved" && decision != "rejected") {
+      errors.badRequest(res, "Decision must be approved or rejected.");
+      return;
+    }
+    const target = await models.User.findOne({ id: userIdToActOn, deleted: false }).select("github").lean();
+    if (!target || !target.github || !target.github.username) {
+      errors.notFound(res, "That user has no GitHub username set.");
+      return;
+    }
+    await models.User.updateOne(
+      { id: userIdToActOn, "github.username": target.github.username },
+      { $set: { "github.status": decision, "github.reviewedBy": userId, "github.reviewedAt": Date.now() } }
+    );
+    routeUtils.createModAction(userId, "Review GitHub Link", [userIdToActOn, target.github.username, decision]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not review GitHub link. Please try again.");
   }
 });
 
