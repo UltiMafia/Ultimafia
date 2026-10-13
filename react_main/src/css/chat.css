@@ -216,6 +216,7 @@
   padding: 0px 10px;
 
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .chat-wrapper .message {
