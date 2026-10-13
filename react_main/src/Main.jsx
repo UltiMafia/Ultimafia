@@ -27,6 +27,7 @@ import {
   SiteInfoContext,
   SiteInfoProvider,
   UserProvider,
+  InGameContext,
 } from "./Contexts";
 import { getSiteTheme } from "./constants/themes";
 import { AlertList, useErrorAlert } from "./components/Alerts";
@@ -256,7 +257,10 @@ function Main(props) {
               </Suspense>
             )}
           </div>
-          <InGameWarning />
+          {/* Only while the user is elsewhere: while a game has the screen the
+              warning is pointless, and the Snackbar portals to <body>, where
+              the hidden shell does not reach it. */}
+          {!inGame && <InGameWarning />}
         </Stack>
       </Stack>
       {/* The large site footer is website chrome; on phones it is hidden so the
@@ -290,13 +294,15 @@ function Main(props) {
       {loading && <Loading />}
       {!loading && (
         <ProfileSheetProvider>
-          {UNSAFE_LocationContext ? (
-            <UNSAFE_LocationContext.Provider value={siteLocationContext}>
-              {siteContent}
-            </UNSAFE_LocationContext.Provider>
-          ) : (
-            siteContent
-          )}
+          <InGameContext.Provider value={inGame}>
+            {UNSAFE_LocationContext ? (
+              <UNSAFE_LocationContext.Provider value={siteLocationContext}>
+                {siteContent}
+              </UNSAFE_LocationContext.Provider>
+            ) : (
+              siteContent
+            )}
+          </InGameContext.Provider>
           {gameSession}
           <AlertList />
           <ConnectionBanner />

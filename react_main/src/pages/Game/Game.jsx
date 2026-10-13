@@ -230,7 +230,26 @@ export default function Game(props) {
   const ignoreDeathSoundsRef = useRef(!!user?.settings?.ignoreDeathSounds);
   const deathSoundVolumeRef = useRef(1);
 
-  const { playAudio, loadAudioFiles, stopAudio, stopAudios, playDeathSounds } = useAudio(settings);
+  // A session retained while the user browses the site must be silent. Before
+  // the session was kept mounted, navigating away unmounted it and its cleanup
+  // stopped the audio. Muting rather than stopping keeps the music where it is,
+  // so coming back resumes it instead of waiting for the next track.
+  const audibleSettings = useMemo(
+    () =>
+      props.active !== false
+        ? settings
+        : {
+            ...settings,
+            sfxVolume: 0,
+            musicVolume: 0,
+            pregameMusicVolume: 0,
+            importantVolume: 0,
+          },
+    [props.active, settings]
+  );
+
+  const { playAudio, loadAudioFiles, stopAudio, stopAudios, playDeathSounds } =
+    useAudio(audibleSettings);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
@@ -240,6 +259,10 @@ export default function Game(props) {
   const gameId = props.gameId || routeGameId;
   // False while the session is retained but the user is on another page.
   const active = props.active !== false;
+  // Socket handlers are created once and would otherwise capture the value of
+  // `active` from when they were registered.
+  const activeRef = useRef(active);
+  activeRef.current = active;
   const navigate = useNavigate();
   const [selectedPanel, setSelectedPanel] = useState("chat");
   const isPhoneDeviceRef = useRef(false);
@@ -875,7 +898,9 @@ export default function Game(props) {
       // User preference: skip all custom death sounds (ref stays current mid-game)
       if (ignoreDeathSoundsRef.current) return;
 
-      void playDeathSounds(urls, () => deathSoundVolumeRef.current);
+      void playDeathSounds(urls, () =>
+        activeRef.current ? deathSoundVolumeRef.current : 0
+      );
     });
 
     socket.on("revival", (playerId) => {
@@ -5749,14 +5774,14 @@ function FirstGameModal(props) {
       <div className="paragraph">
         <div>
           - You can learn roles, items, mechanics, and slang{" "}
-          <Link to="/learn">
+          <Link to="/learn" onClick={cancel}>
             here
           </Link>
           !
         </div>
         <div>
           - You can familiarize yourself with the site rules{" "}
-          <Link to="/policy/rules">
+          <Link to="/policy/rules" onClick={cancel}>
             here
           </Link>
           .
@@ -5774,7 +5799,10 @@ function FirstGameModal(props) {
         </div>
         <div>
           - Want to learn how to be a better player? Sign up to be a mentee{" "}
-          <Link to="/community/forums/thread/iU8EPBj9Z?reply=cpSlmcz-q">
+          <Link
+            to="/community/forums/thread/iU8EPBj9Z?reply=cpSlmcz-q"
+            onClick={cancel}
+          >
             here
           </Link>
           !
@@ -5782,14 +5810,14 @@ function FirstGameModal(props) {
         <div>
           - If you have suggestions, feedback, or notice any bugs, you can make
           a thread{" "}
-          <Link to="/community/forums/board/SiJGWYr6O">
+          <Link to="/community/forums/board/SiJGWYr6O" onClick={cancel}>
             here
           </Link>
           .
         </div>
         <div>
           - Our website is open-source! You can contribute code on our{" "}
-          <Link to="/community/forums/board/SiJGWYr6O">
+          <Link to="/community/forums/board/SiJGWYr6O" onClick={cancel}>
             GitHub repository
           </Link>
           .

@@ -225,7 +225,7 @@ function VerdictDialog({
                 Game
               </Typography>
               <Typography variant="body2">
-                <Link to={`/game/${report.gameId}`}>
+                <Link to={`/game/${report.gameId}`} onClick={onClose}>
                   {report.gameId}
                 </Link>
               </Typography>

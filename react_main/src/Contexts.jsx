@@ -23,6 +23,13 @@ export const UserContext = React.createContext();
 export const SiteInfoContext = React.createContext();
 export const GameContext = React.createContext();
 
+// Whether a game session currently has the screen. Main keeps the site shell
+// mounted but hidden behind the game, so a component in the shell cannot tell
+// from the location that a game took over -- and MUI overlays portal out of the
+// shell to <body>, where "hidden" does not reach them. Components that own such
+// an overlay read this to close themselves when a game is shown.
+export const InGameContext = React.createContext(false);
+
 export function UserProvider({
   children,
   setUserLoading,
