@@ -1,10 +1,13 @@
 import { useEffect } from "react";
 
-// Positions the app frame (the phone site shell and the game session) with top
-// and bottom offsets on a fixed element. Normally both are zero, so the frame
-// fills the viewport exactly like the fixed bottom bar did (flush to the screen
-// edge). When the on-screen keyboard is open the frame is inset to the visible
-// area so the top bar and bottom input stay on screen.
+// Sizes the app frame (the phone site shell and the game session) with top and
+// bottom offsets on a fixed element, and flags the keyboard with
+// <html data-keyboard="open">.
+//
+// The frame offsets use the visual viewport (for browsers where the keyboard
+// overlays the page). The keyboard flag uses focus rather than the viewport,
+// because `interactive-widget=resizes-content` shrinks the layout viewport, so
+// the visual-viewport heuristic no longer distinguishes the keyboard.
 export function useAppViewport() {
   useEffect(() => {
     const root = document.documentElement;
@@ -23,11 +26,9 @@ export function useAppViewport() {
         );
         root.style.setProperty("--app-top", `${top}px`);
         root.style.setProperty("--app-bottom", `${bottom}px`);
-        root.setAttribute("data-keyboard", "open");
       } else {
         root.style.setProperty("--app-top", "0px");
         root.style.setProperty("--app-bottom", "0px");
-        root.removeAttribute("data-keyboard");
       }
     }
 
@@ -39,6 +40,28 @@ export function useAppViewport() {
       visualViewport.addEventListener("scroll", update);
     }
 
+    // While a text field is focused the on-screen keyboard is up: hide the site
+    // bottom navigation and the game chat's tabs+timer bar. The game's own
+    // bottom bar is not touched.
+    function isTextField(el) {
+      if (!el) return false;
+      if (el.isContentEditable) return true;
+      if (el.tagName === "TEXTAREA") return true;
+      if (el.tagName !== "INPUT") return false;
+      const type = (el.getAttribute("type") || "text").toLowerCase();
+      return ["text", "search", "email", "password", "tel", "url", "number"].includes(
+        type
+      );
+    }
+    function onFocusIn(event) {
+      if (isTextField(event.target)) root.setAttribute("data-keyboard", "open");
+    }
+    function onFocusOut(event) {
+      if (isTextField(event.target)) root.removeAttribute("data-keyboard");
+    }
+    document.addEventListener("focusin", onFocusIn);
+    document.addEventListener("focusout", onFocusOut);
+
     return () => {
       window.removeEventListener("resize", update);
       window.removeEventListener("orientationchange", update);
@@ -46,6 +69,8 @@ export function useAppViewport() {
         visualViewport.removeEventListener("resize", update);
         visualViewport.removeEventListener("scroll", update);
       }
+      document.removeEventListener("focusin", onFocusIn);
+      document.removeEventListener("focusout", onFocusOut);
     };
   }, []);
 }

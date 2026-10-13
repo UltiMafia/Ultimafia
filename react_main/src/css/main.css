@@ -110,6 +110,14 @@ body {
   padding-top: var(--safe-inset-top);
 }
 
+/* While a text field is focused (the on-screen keyboard is up), hide the site
+   bottom navigation. With interactive-widget=resizes-content the layout shrinks
+   with the keyboard, so the nav would otherwise ride up under it; hiding it is
+   the app-like behaviour. The game's own bottom bar is not hidden. */
+html[data-keyboard="open"] .mobile-nav {
+  display: none;
+}
+
 /* Page transitions: navigation is client-side and instant, with no remount and
    no full-page spinner, so no cross-fade is applied. A View Transitions pass
    was tried here and removed: the API renders the previous page as a snapshot
