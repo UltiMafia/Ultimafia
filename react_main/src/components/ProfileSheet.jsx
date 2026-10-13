@@ -43,6 +43,13 @@ export function ProfileSheetProvider({ children }) {
     setProfile(null);
   }, []);
 
+  // Close the sheet when the route changes, e.g. when the name link inside it
+  // navigates to the full profile.
+  useEffect(() => {
+    setRequest(null);
+    setProfile(null);
+  }, [location.pathname, location.search]);
+
   const open = Boolean(request);
 
   useEffect(() => {

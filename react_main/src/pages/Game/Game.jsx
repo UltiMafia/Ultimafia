@@ -65,7 +65,6 @@ import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { hyphenDelimit, isBirthdayToday } from "../../utils";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
-import { useKeyboardInset } from "../../hooks/useKeyboardInset";
 import {
   Accordion,
   AccordionSummary,
@@ -2991,9 +2990,6 @@ function SpeechInput(props) {
 
   const speechInput = props.speechInput;
   const setSpeechInput = props.setSpeechInput;
-  // Lifts the input above the on-screen keyboard; the game layout is fixed and
-  // does not resize when the keyboard covers the lower part of the screen.
-  const keyboardInset = useKeyboardInset();
   const pendingSpeechRef = useRef(null);
   const [speechDropdownOptions, setSpeechDropdownOptions] = useState([]);
   const [speechDropdownValue, setSpeechDropdownValue] = useState("Say");
@@ -3313,10 +3309,7 @@ function SpeechInput(props) {
   }
 
   return (
-    <div
-      className="speech-input-area"
-      style={keyboardInset ? { marginBottom: keyboardInset } : undefined}
-    >
+    <div className="speech-input-area">
       <div className="speech-input-wrapper">
         <Dropdown
           className="speech-dropdown"

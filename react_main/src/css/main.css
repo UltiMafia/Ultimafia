@@ -83,12 +83,15 @@ body {
   height: 100%;
 }
 
-/* The game session is hosted outside the route table and given a definite
-   height it can fill. Hidden with an inline display:none, not unmounted, while
-   the user is on another page. */
+/* The game session is hosted outside the route table and sized to the visual
+   viewport, so the top bar and the bottom input stay visible when the on-screen
+   keyboard opens, and it is hidden (not unmounted) while the user is elsewhere. */
 .game-session {
   position: fixed;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: var(--app-offset-top, 0px);
+  height: var(--app-height, 100dvh);
   z-index: 1100;
 }
 

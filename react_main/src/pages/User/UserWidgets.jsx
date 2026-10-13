@@ -824,38 +824,40 @@ export function NameWithAvatar(props) {
             isClicked ? " name-with-avatar-clicked" : ""
           }`}
           onClick={handlePlayerClick}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onMouseEnter={isPhone ? undefined : handleMouseEnter}
+          onMouseLeave={isPhone ? undefined : handleMouseLeave}
         >
           {contents}
         </div>
-        <div>
-          <Popover
-            open={props.showPopover !== false && popoverOpen}
-            sx={{ pointerEvents: openByClick ? "auto" : "none" }}
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: "center",
-              horizontal: "right",
-            }}
-            transformOrigin={{
-              vertical: "center",
-              horizontal: "left",
-            }}
-            onClose={handleMiniprofileClose}
-            disableScrollLock
-          >
-            {userProfile && (
-              <React.Suspense fallback={null}>
-                <Miniprofile
-                  user={userProfile}
-                  game={game}
-                  key={userProfile.id}
-                />
-              </React.Suspense>
-            )}
-          </Popover>
-        </div>
+        {!isPhone && (
+          <div>
+            <Popover
+              open={props.showPopover !== false && popoverOpen}
+              sx={{ pointerEvents: openByClick ? "auto" : "none" }}
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "center",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "center",
+                horizontal: "left",
+              }}
+              onClose={handleMiniprofileClose}
+              disableScrollLock
+            >
+              {userProfile && (
+                <React.Suspense fallback={null}>
+                  <Miniprofile
+                    user={userProfile}
+                    game={game}
+                    key={userProfile.id}
+                  />
+                </React.Suspense>
+              )}
+            </Popover>
+          </div>
+        )}
       </>
     );
   } else {

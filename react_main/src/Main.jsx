@@ -38,6 +38,7 @@ import NavDropdown from "./components/NavDropdown";
 import { Loading } from "./components/Loading";
 import { MobileNav } from "./components/MobileNav";
 import { ProfileSheetProvider } from "./components/ProfileSheet";
+import { useAppViewport } from "./hooks/useAppViewport";
 import "css/main.css";
 import "css/accessibility.css";
 
@@ -147,6 +148,8 @@ function Main(props) {
 
   const location = useLocation();
   const navigate = useNavigate();
+  // Size the phone shell and game session to the visual viewport.
+  useAppViewport();
   const routeGameId = matchGameId(location.pathname);
   const inGame = Boolean(routeGameId);
 
@@ -176,14 +179,20 @@ function Main(props) {
   const siteContent = (
     <Stack sx={{
       backgroundColor: "background.paper",
-      minHeight: "100dvh",
-      // On phones the shell is a fixed-height frame: the header, a scrolling
-      // content area, and the bottom navigation are laid out in flow. This
-      // avoids the scroll gap a position:fixed bottom bar shows on mobile
-      // browsers when the address bar moves.
-      ...(isPhoneDevice ? { height: "100dvh", overflow: "hidden" } : {}),
       // Kept mounted, not unmounted, while a game is displayed.
       display: inGame ? "none" : undefined,
+      ...(isPhoneDevice
+        ? {
+            // Fill the visual viewport exactly: no gap under the bottom bar,
+            // and the frame shrinks with the on-screen keyboard.
+            position: "fixed",
+            top: "var(--app-offset-top, 0px)",
+            left: 0,
+            right: 0,
+            height: "var(--app-height, 100dvh)",
+            overflow: "hidden",
+          }
+        : { minHeight: "100dvh" }),
     }}>
       <CookieBanner />
       <Header
