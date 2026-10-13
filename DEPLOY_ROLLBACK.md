@@ -1,19 +1,19 @@
-# Deploy and rollback: Developer API (#34), game log (#35), GitHub links (#36)
+# Deploy and rollback: Developer API, game event log, GitHub links
 
-Merge into `dev` in this order: #34, then #35, then #36.
+Merge into `master` in this order: Developer API, then game event log, then GitHub links. Each builds on the one before.
 
 ## What changes in the database
 
 | PR | Change | When it happens |
 |----|--------|-----------------|
-| #34 | Groups `Developer` (visible, rank 0, `devApi`) and `Developer Public Testing` (hidden, `devTestPublic`) are created with no members. Owner gets `devApi` and `devTestPublic`. | www startup (`modules/startup.js` syncs default groups) |
-| #34 | `Dev` group (hidden, no permissions) is deleted. | Only if `migrations/replaceDevGroupWithDeveloper.js --confirm` is run (optional) |
-| #34 | New `devapikeys` collection | First API key created |
-| #34 | Redis: `devapi:token:*` (1 h TTL), `devapi:accounts:*` (24 h TTL), `devapi:game:<id>:creator` (7 d TTL), rate limit keys | Developer use only |
-| #35 | New `gameeventlogchunks` collection with a TTL index on `expireAt` (24 h for Testing games, 7 d for others) | First game that logs |
-| #36 | `users.github` subdocument and a `github.status` index on `users` | www startup (index build; small, sparse in practice) |
-| #36 | Admin gets `approveGithubLinks` | www startup |
-| #36 | `Review GitHub Link` mod actions | Each review |
+| Developer API | Groups `Developer` (visible, rank 0, `devApi`) and `Developer Public Testing` (hidden, `devTestPublic`) are created with no members. Owner gets `devApi` and `devTestPublic`. | www startup (`modules/startup.js` syncs default groups) |
+| Developer API | `Dev` group (hidden, no permissions) is deleted. | Only if `migrations/replaceDevGroupWithDeveloper.js --confirm` is run (optional) |
+| Developer API | New `devapikeys` collection | First API key created |
+| Developer API | Redis: `devapi:token:*` (1 h TTL), `devapi:accounts:*` (24 h TTL), `devapi:game:<id>:creator` (7 d TTL), rate limit keys | Developer use only |
+| Game log | New `gameeventlogchunks` collection with a TTL index on `expireAt` (24 h for Testing games, 7 d for others) | First game that logs |
+| GitHub links | `users.github` subdocument and a `github.status` index on `users` | www startup (index build; small, sparse in practice) |
+| GitHub links | Admin gets `approveGithubLinks` | www startup |
+| GitHub links | `Review GitHub Link` mod actions | Each review |
 
 ## Feature flags (no code rollback needed)
 
@@ -38,9 +38,9 @@ This writes groups, ingroups, devapikeys, modactions, and each user's `id`/`gith
 1. Turn the features off with the flags above, or roll the code back.
 2. Run the down scripts you need, newest first. Each one takes `--dry-run`.
    ```
-   node migrations/down/githubLinks.js --confirm        # #36
-   node migrations/down/gameEventLog.js --confirm       # #35
-   node migrations/down/developerApi.js --confirm --backup backups/pre-deploy   # #34
+   node migrations/down/githubLinks.js --confirm        # GitHub links
+   node migrations/down/gameEventLog.js --confirm       # game log
+   node migrations/down/developerApi.js --confirm --backup backups/pre-deploy   # Developer API
    ```
 3. Restart www. Startup clears the permission cache.
 
