@@ -51,6 +51,9 @@ module.exports = class LiarsDiceGame extends Game {
     this.lastBidAnnoyedJustTriggered = false; //true on the bid that flips gameMasterAnnoyedByHighBidsThisRoundYet
 
     this.chatName = "Casino";
+    this.sendOnlyNewInstantMeetings = true;
+    this.roundBids = [];
+    this.turn = 0;
 
     this.spectatorMeetFilter = {
       Pregame: true,
@@ -131,24 +134,87 @@ module.exports = class LiarsDiceGame extends Game {
       (this.currentIndex + 1) % this.randomizedPlayersCopy.length;
   }
 
-  //After someone uses microphone, it passes it to the next player.
-  incrementState() {
-    let previousState = this.getStateName();
+  passMicrophone() {
+    while (true) {
+      this.incrementCurrentIndex();
 
-    if (previousState == "Guess Dice") {
-      console.log(this.spectatorMeetFilter);
-      while (true) {
-        this.incrementCurrentIndex();
-
-        let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
-        if (nextPlayer.alive) {
-          nextPlayer.holdItem("Microphone");
-          break;
-        }
+      let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
+      if (nextPlayer.alive) {
+        nextPlayer.holdItem("Microphone");
+        break;
       }
     }
+  }
+
+  //After someone uses microphone, it passes it to the next player.
+  incrementState() {
+    if (this.getStateName() == "Guess Dice") this.passMicrophone();
 
     super.incrementState();
+    this.aliveAtTurnStart = this.alivePlayers().length;
+  }
+
+  recordBid(bidder) {
+    const amount = parseInt(this.lastAmountBid);
+    const face = parseInt(this.lastFaceBid);
+    this.roundBids.push({ bidder: bidder.name, amount, face });
+    this.sendAlert(`${bidder.name} bids ${amount}x :dice${face}:`);
+    this.turnHandoverPending = true;
+  }
+
+  // A bid only passes the turn. The round, the dice and the chat stay as they
+  // are, so the turn moves on inside the current state; calls, deaths and
+  // timeouts still take the full state change.
+  gotoNextState() {
+    const handover = this.turnHandoverPending;
+    this.turnHandoverPending = false;
+
+    if (
+      handover &&
+      this.started &&
+      !this.finished &&
+      this.getStateName() == "Guess Dice" &&
+      !this.vegKickMeeting &&
+      this.deathQueue.items.length == 0 &&
+      this.alivePlayers().length == this.aliveAtTurnStart
+    ) {
+      return this.passTurnInPlace();
+    }
+
+    return super.gotoNextState();
+  }
+
+  passTurnInPlace() {
+    this.clearTimers();
+    this.processActionQueue();
+    if (this.checkGameEnd()) return;
+
+    for (let meeting of this.history.getMeetings()) {
+      if (meeting.speech) continue;
+      if (!meeting.finished) meeting.finish();
+      for (let member of Array.from(meeting.members))
+        meeting.leave(member.player, true, true);
+    }
+
+    this.passMicrophone();
+    this.turn += 1;
+
+    const before = new Set(this.history.getMeetings().map((m) => m.id));
+    for (let player of this.players) player.meet();
+    const fresh = this.history.getMeetings().filter((m) => !before.has(m.id));
+    for (let meeting of fresh) meeting.init();
+
+    this.sendNewMeetings(fresh, this.players);
+
+    this.processRevealQueue();
+    this.processAlertQueue();
+
+    const stateInfo = this.getStateInfo();
+    this.addStateExtraInfoToHistories(stateInfo.extraInfo);
+    this.broadcastState(stateInfo);
+    this.events.emit("meetingsMade");
+    this.aliveAtTurnStart = this.alivePlayers().length;
+    this.createNextStateTimer(stateInfo);
   }
 
   //Checks whether bid was a lie, removes dice, then passes onto next player.
@@ -725,6 +791,7 @@ module.exports = class LiarsDiceGame extends Game {
 
   //Rolls/Rerolls dice for each player and resets variables
   rollDice() {
+    this.roundBids = [];
     this.lastAmountBid = 0;
     this.lastFaceBid = 1;
     this.lastBidder = null;
@@ -944,6 +1011,7 @@ module.exports = class LiarsDiceGame extends Game {
       randomizedPlayers: simplifiedPlayers,
       isTheFlyingDutchman:
         this.chatName == "The Flying Dutchman" ? true : false,
+      turn: this.turn || 0,
       whoseTurnIsIt:
         this.randomizedPlayersCopy?.[this.currentIndex]?.user.id ?? 0,
       bidInfo: {
@@ -956,9 +1024,48 @@ module.exports = class LiarsDiceGame extends Game {
         uhhVariant: this.lastBidUhhVariant,
         geniusVariant: this.lastBidGeniusVariant,
         annoyedJustTriggered: this.lastBidAnnoyedJustTriggered,
+        roundBids: (this.roundBids || []).slice(),
       },
     };
     return info;
+  }
+
+  // Every player's current dice are secret until a call reveals them (they
+  // become previousRolls on the next roll). Each viewer gets only their own.
+  extraInfoFor(extraInfo, viewer) {
+    if (!extraInfo || !extraInfo.randomizedPlayers || this.finished)
+      return extraInfo;
+    return {
+      ...extraInfo,
+      randomizedPlayers: extraInfo.randomizedPlayers.map((p) =>
+        viewer && p.playerId == viewer.id
+          ? p
+          : { ...p, rolledDice: p.rolledDice.map(() => 0) }
+      ),
+    };
+  }
+
+  stateInfoForViewer(stateInfo, viewer) {
+    const isPlayer = viewer && this.players.array().includes(viewer);
+    return this.stateInfoFor(stateInfo, isPlayer ? viewer : null);
+  }
+
+  stateInfoFor(stateInfo, viewer) {
+    return { ...stateInfo, extraInfo: this.extraInfoFor(stateInfo.extraInfo, viewer) };
+  }
+
+  broadcastState(stateInfo = this.getStateInfo()) {
+    for (let player of this.players)
+      player.send("state", this.stateInfoFor(stateInfo, player));
+    const hidden = this.stateInfoFor(stateInfo, null);
+    for (let spectator of this.spectators) spectator.send("state", hidden);
+  }
+
+  addStateExtraInfoToHistories(extraInfo, state) {
+    this.history.addStateExtraInfo(extraInfo, state);
+    this.spectatorHistory.addStateExtraInfo(this.extraInfoFor(extraInfo, null), state);
+    for (let player of this.players)
+      player.addStateExtraInfoToHistory(this.extraInfoFor(extraInfo, player), state);
   }
 
   simplifyPlayers(players) {
@@ -971,6 +1078,8 @@ module.exports = class LiarsDiceGame extends Game {
           userId: player.user.id,
           playerName: player.name,
           avatar: player.user.avatar,
+          // Face color only (shop item); never the dice values.
+          diceColor: player.user.diceColor,
           rolledDice: player.rolledDice,
           previousRolls: player.previousRolls,
         });

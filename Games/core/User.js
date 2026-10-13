@@ -13,6 +13,11 @@ module.exports = class User {
     this.textColor = props.settings && props.settings.textColor;
     this.nameColor = props.settings && props.settings.nameColor;
     this.nameFont = props.settings && props.settings.nameFont;
+    // Only owners of the "Liar's Dice Colors" shop item get a dice color.
+    this.diceColor =
+      props.itemsOwned && props.itemsOwned.diceColor && props.settings
+        ? props.settings.diceColor
+        : undefined;
     this.animatedNameColor =
       props.settings && props.settings.animatedNameColor;
     this.nameGradientColorA =
