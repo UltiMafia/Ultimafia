@@ -114,6 +114,12 @@
   background-color: var(--scheme-color-background);
 }
 
+/* While the on-screen keyboard is open, hide the meeting-tabs + timer bar so
+   the chat has the room. Flagged on <html> by useAppViewport. */
+html[data-keyboard="open"] .game .meeting-tabs {
+  display: none;
+}
+
 .game .tab {
   padding: 4px var(--mui-spacing);
 

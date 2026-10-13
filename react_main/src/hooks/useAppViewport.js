@@ -23,9 +23,11 @@ export function useAppViewport() {
         );
         root.style.setProperty("--app-top", `${top}px`);
         root.style.setProperty("--app-bottom", `${bottom}px`);
+        root.setAttribute("data-keyboard", "open");
       } else {
         root.style.setProperty("--app-top", "0px");
         root.style.setProperty("--app-bottom", "0px");
+        root.removeAttribute("data-keyboard");
       }
     }
 
