@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useCallback, useRef } from "rea
 import { Navigate, useLocation, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
-import { UserContext } from "Contexts";
+import { UserContext, InGameContext } from "Contexts";
 import { getPageNavFilterArg, PageNav } from "components/Nav";
 import { useErrorAlert } from "components/Alerts";
 import { camelCase } from "../../../utils";
@@ -40,6 +40,10 @@ import { getRowStubColor } from "./gameRowColors.js";
 
 import { lobbies } from "../../../constants/lobbies";
 
+// How often the lobby refreshes its open-game list on its own. A tick is
+// skipped while the tab is hidden or a game has the screen.
+const LOBBY_POLL_MS = 20000;
+
 export default function LobbyBrowser() {
   const isPhoneDevice = useIsPhoneDevice();
   const theme = useTheme();
@@ -57,6 +61,7 @@ export default function LobbyBrowser() {
   const isMountedRef = useRef(true);
 
   const user = useContext(UserContext);
+  const inGame = useContext(InGameContext);
   const errorAlert = useErrorAlert();
   const params = new URLSearchParams(location.search);
   const [lobbyName, setLobbyName] = useState(
@@ -101,12 +106,19 @@ export default function LobbyBrowser() {
     });
   }, []);
 
-  const getGameList = async (_listType, _page, finallyCallback = null) => {
-    setLoading(true);
+  const getGameList = async (
+    _listType,
+    _page,
+    finallyCallback = null,
+    { background = false } = {}
+  ) => {
+    // A background refresh (the poll) must not flash the loading skeleton on an
+    // empty list, so it leaves the loading state alone entirely.
+    if (!background) setLoading(true);
     var filterArg = getPageNavFilterArg(_page, page, games, "endTime");
 
     if (filterArg == null) {
-      if (isMountedRef.current) {
+      if (isMountedRef.current && !background) {
         setLoading(false);
       }
       return;
@@ -127,17 +139,66 @@ export default function LobbyBrowser() {
         setGames(res.data);
       }
     } catch (err) {
-      if (isMountedRef.current) {
+      // A failed background refresh must not raise an alert every tick; the
+      // list it already has stays on screen and the next tick tries again.
+      if (isMountedRef.current && !background) {
         errorAlert();
       }
     }
-    if (isMountedRef.current) {
+    if (isMountedRef.current && !background) {
       setLoading(false);
     }
     if (isMountedRef.current && finallyCallback) {
       finallyCallback();
     }
   };
+
+  // What the poll loop should call next: the newest functions and the page and
+  // lobby the user is looking at. Read through a ref so one interval can do
+  // that without being torn down and rebuilt on every render.
+  const pollRef = useRef(null);
+  pollRef.current = { getGameList, getOpenGameCounts, listType, page, inGame };
+
+  // Refresh the list on its own so it does not sit at whatever it showed when
+  // the page opened. Ticks are skipped while the tab is hidden (nobody is
+  // looking) or while a game has the screen (this lobby is behind it), and one
+  // runs straight away when either ends, so the list you come back to is not
+  // the one you left behind.
+  const pollHasRunRef = useRef(false);
+  useEffect(() => {
+    let inFlight = false;
+
+    async function poll() {
+      const current = pollRef.current;
+      if (inFlight || current.inGame) return;
+      if (document.visibilityState !== "visible") return;
+
+      inFlight = true;
+      try {
+        await current.getOpenGameCounts();
+        await current.getGameList(current.listType, current.page, null, {
+          background: true,
+        });
+      } catch (_) {
+        // Next tick tries again.
+      } finally {
+        inFlight = false;
+      }
+    }
+
+    const interval = setInterval(poll, LOBBY_POLL_MS);
+    document.addEventListener("visibilitychange", poll);
+
+    // The effects above already fetch on mount and on a lobby change, so only
+    // poll here when this run is a return from a game or a re-shown tab.
+    if (pollHasRunRef.current) poll();
+    pollHasRunRef.current = true;
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", poll);
+    };
+  }, [inGame]);
 
   const refreshGames = async () => {
     if (!isMountedRef.current) return;
