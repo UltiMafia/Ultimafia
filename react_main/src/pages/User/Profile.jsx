@@ -49,7 +49,8 @@ import PendingTradeConfirmations from "components/PendingTradeConfirmations";
 import CasePanel from "components/CasePanel";
 import { RoleCount } from "components/Roles";
 import AdminVisuals from "./AdminVisuals";
-import { Loading } from "components/Loading";
+import { ProfileSkeleton } from "components/Skeletons";
+import { TIER_ICONS, getConservativeRank } from "utils/skillRating";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
 import {
   Box,
@@ -94,8 +95,6 @@ export {
   ACHIEVEMENTS_ICON,
   DAILY_ICON,
 };
-
-import { TIER_ICONS, getConservativeRank } from "utils/skillRating";
 
 
 
@@ -1203,7 +1202,7 @@ export default function Profile() {
     return <Navigate to={profilePath} replace />;
   }
 
-  if (!profileLoaded || !user.loaded) return <Loading small />;
+  if (!profileLoaded || !user.loaded) return <ProfileSkeleton />;
 
   const handleOpenTrade = () => {
     setTradeModalOpen(true);

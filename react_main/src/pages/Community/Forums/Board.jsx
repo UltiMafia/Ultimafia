@@ -11,7 +11,7 @@ import { ViewsAndReplies } from "./Forums";
 import { TextEditor } from "../../../components/Form";
 import { Time } from "../../../components/Basic";
 import { UserContext } from "../../../Contexts";
-import { Loading } from "../../../components/Loading";
+import { ListSkeleton } from "../../../components/Skeletons";
 
 export default function Board(props) {
   const [boardInfo, setBoardInfo] = useState({});
@@ -173,7 +173,7 @@ export default function Board(props) {
 
   if (redirect) return <Navigate to={redirect} />;
 
-  if (!loaded) return <Loading small />;
+  if (!loaded) return <ListSkeleton />;
 
   const threads = boardInfo.threads.map(threadRowsMap);
   const pinnedThreads = boardInfo.pinnedThreads.map(threadRowsMap);

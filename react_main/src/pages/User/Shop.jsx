@@ -27,7 +27,7 @@ import {
   IconButton,
 } from "@mui/material";
 
-import { Loading } from "../../components/Loading";
+import { PageSkeleton } from "../../components/Skeletons";
 
 import coin from "images/umcoin.png";
 import CryptoDonate from "./CryptoDonate";
@@ -421,7 +421,7 @@ export default function Shop(props) {
 
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
 
-  if (!loaded) return <Loading small />;
+  if (!loaded) return <PageSkeleton />;
 
   return (
     <Stack direction="column" spacing={1}>

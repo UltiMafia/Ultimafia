@@ -37,6 +37,7 @@ import LeaveGameDialog from "./components/LeaveGameDialog";
 import NavDropdown from "./components/NavDropdown";
 import { Loading } from "./components/Loading";
 import { MobileNav } from "./components/MobileNav";
+import { ProfileSheetProvider } from "./components/ProfileSheet";
 import "css/main.css";
 import "css/accessibility.css";
 
@@ -256,12 +257,12 @@ function Main(props) {
     <SiteInfoProvider setSiteInfoLoading={setSiteInfoLoading}>
       {loading && <Loading />}
       {!loading && (
-        <>
+        <ProfileSheetProvider>
           {siteContent}
           {gameSession}
           <AlertList />
           <ConnectionBanner />
-        </>
+        </ProfileSheetProvider>
       )}
     </SiteInfoProvider>
   );

@@ -38,7 +38,7 @@ import { useCookieConsent } from "../../hooks/useCookieConsent";
 
 import "css/settings.css";
 import { setCaptchaVisible } from "utils";
-import { Loading } from "components/Loading";
+import { PageSkeleton } from "components/Skeletons";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 function CookieSettings() {
@@ -1096,7 +1096,7 @@ export default function Settings() {
 
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
   if (!settingsLoaded || !accountsLoaded || !user.loaded || !familyLoaded)
-    return <Loading small />;
+    return <PageSkeleton />;
 
   const sections = [
     {

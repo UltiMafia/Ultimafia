@@ -16,6 +16,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { useProfileSheet } from "components/ProfileSheet";
 import ImageViewer from "components/ImageViewer";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { useAvatarImageUrl, AvatarPhoto } from "utils/avatarUrl";
@@ -641,6 +642,8 @@ export function NameWithAvatar(props) {
     includeMiniprofile && !noLink ? GameContext : NameOnlyGameContext
   );
   const user = useContext(UserContext);
+  const isPhone = useIsPhoneDevice();
+  const { openProfile } = useProfileSheet();
   const [userProfile, setUserProfile] = useState(null);
   const [isClicked, setIsClicked] = useState(false);
 
@@ -796,6 +799,13 @@ export function NameWithAvatar(props) {
       if (props.onClick) return props.onClick();
 
       if (!props.name || !includeMiniprofile) return;
+
+      // On a phone, open the profile as a sheet over the game instead of an
+      // anchored popover. Desktop keeps the hover/anchored popover.
+      if (isPhone) {
+        openProfile(id, props, game?.gameId);
+        return;
+      }
 
       handlePopoverClick(e);
 

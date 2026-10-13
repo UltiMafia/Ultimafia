@@ -10,7 +10,7 @@ import Comments from "../../Community/Comments";
 import { Lobbies } from "../../../Constants";
 import "css/join.css";
 import { RefreshButton } from "./RefreshButton";
-import { Loading } from "components/Loading";
+import { ListSkeleton, PageSkeleton } from "components/Skeletons";
 import {
   Box,
   Divider,
@@ -173,7 +173,7 @@ export default function LobbyBrowser() {
   if (lobbyName !== "All" && Lobbies.indexOf(lobbyName) === -1)
     setLobbyName(defaultLobbyName);
 
-  if (!user.loaded) return <Loading small />;
+  if (!user.loaded) return <PageSkeleton />;
   // Allow logged-out users to access LobbyBrowser
 
   const lobbyTabs = (
@@ -229,7 +229,7 @@ export default function LobbyBrowser() {
   // for the very first load, when there is nothing to show yet.
   const gameList =
     loading && games.length === 0 ? (
-      <Loading small />
+      <ListSkeleton rows={4} />
     ) : games.length ? (
     <Stack direction="column" spacing={1}>
       {games.map((game) => {

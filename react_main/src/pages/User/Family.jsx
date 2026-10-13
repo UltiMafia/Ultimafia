@@ -23,7 +23,7 @@ import { filterProfanity } from "components/Basic";
 import { TextEditor } from "components/Form";
 import { Avatar, NameWithAvatar, MediaEmbed } from "./UserWidgets";
 import Comments from "../Community/Comments";
-import { Loading } from "components/Loading";
+import { PageSkeleton } from "components/Skeletons";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import CustomMarkdown from "components/CustomMarkdown";
 import TrophyCase from "components/TrophyCase";
@@ -242,7 +242,7 @@ export default function Family() {
       .catch(errorAlert);
   }
 
-  if (!familyLoaded) return <Loading small />;
+  if (!familyLoaded) return <PageSkeleton />;
   if (!family) return <Navigate to="/play" />;
 
   const hasTrophySpotlight = family.perks?.some((p) => p.key === "trophySpotlight" && p.owned);

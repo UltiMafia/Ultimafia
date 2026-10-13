@@ -10,7 +10,7 @@ import { Time, filterProfanity } from "components/Basic";
 import { PageNav } from "components/Nav";
 import { TextEditor } from "components/Form";
 import { UserContext } from "Contexts";
-import { Loading } from "components/Loading";
+import { ThreadSkeleton } from "components/Skeletons";
 import { ThreadPoll } from "components/Poll";
 
 import { VoteWidget } from "components/VoteWidget";
@@ -600,7 +600,7 @@ function onAddTag(targetUserId) {
 
   if (redirect) return <Navigate to={redirect} />;
 
-  if (!loaded) return <Loading small />;
+  if (!loaded) return <ThreadSkeleton />;
 
   const isAuthor = user.id === threadInfo.author?.id;
   const isMuted = !!threadInfo.isMuted || false;
