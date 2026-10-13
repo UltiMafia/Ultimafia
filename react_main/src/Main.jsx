@@ -1,6 +1,21 @@
-import React, { useState, useContext, useEffect, Suspense } from "react";
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useRef,
+  useCallback,
+  Suspense,
+} from "react";
 import { lazyWithRetry, clearChunkReloadFlag } from "./lib/lazyWithRetry";
-import { Route, Link, NavLink, Navigate, Routes, useLocation } from "react-router-dom";
+import {
+  Route,
+  Link,
+  Navigate,
+  Routes,
+  useLocation,
+  useNavigate,
+  matchPath,
+} from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import axios from "axios";
 import { Icon } from "@iconify/react";
@@ -14,12 +29,14 @@ import {
 } from "./Contexts";
 import { getSiteTheme } from "./constants/themes";
 import { AlertList, useErrorAlert } from "./components/Alerts";
+import { ConnectionBanner } from "./components/ConnectionBanner";
 import { Nav } from "./components/Nav";
 import UserNavSection from "./pages/User/UserNavSection";
 import CookieBanner from "./components/CookieBanner";
 import LeaveGameDialog from "./components/LeaveGameDialog";
 import NavDropdown from "./components/NavDropdown";
 import { Loading } from "./components/Loading";
+import { MobileNav } from "./components/MobileNav";
 import "css/main.css";
 import "css/accessibility.css";
 
@@ -109,6 +126,13 @@ const SiteActivity = lazyWithRetry(() => import("pages/Activity/Activity"));
 const User = lazyWithRetry(() => import("pages/User/User"));
 const Welcome = lazyWithRetry(() => import("pages/Welcome/Welcome"));
 
+// The game session is rendered outside the route table, so the route table must
+// not treat a game URL as an unknown site path and redirect away from it.
+function matchGameId(pathname) {
+  const match = matchPath({ path: "/game/:gameId", end: false }, pathname);
+  return match ? match.params.gameId : null;
+}
+
 function Main(props) {
   const errorContent = props.errorContent;
 
@@ -120,6 +144,28 @@ function Main(props) {
 
   const isPhoneDevice = useIsPhoneDevice();
 
+  const location = useLocation();
+  const navigate = useNavigate();
+  const routeGameId = matchGameId(location.pathname);
+  const inGame = Boolean(routeGameId);
+
+  // Retained across navigation so that leaving the game URL does not tear the
+  // session down. Only an explicit leave clears it.
+  const [hostedGameId, setHostedGameId] = useState(null);
+  const inGameRef = useRef(inGame);
+  inGameRef.current = inGame;
+
+  useEffect(() => {
+    if (routeGameId) setHostedGameId(routeGameId);
+  }, [routeGameId]);
+
+  const leaveGameSession = useCallback(() => {
+    setHostedGameId(null);
+    // A server-driven end of a game the player is watching from elsewhere must
+    // not yank them off the page they are on.
+    if (inGameRef.current) navigate("/play");
+  }, [navigate]);
+
   const loading = isUserLoading || isSiteInfoLoading;
 
   useEffect(() => {
@@ -129,7 +175,11 @@ function Main(props) {
   const siteContent = (
     <Stack sx={{
       backgroundColor: "background.paper",
-      minHeight: "100vh",
+      minHeight: "100dvh",
+      // Clearance for the fixed bottom navigation on phones.
+      pb: isPhoneDevice ? "60px" : undefined,
+      // Kept mounted, not unmounted, while a game is displayed.
+      display: inGame ? "none" : undefined,
     }}>
       <CookieBanner />
       <Header
@@ -154,8 +204,11 @@ function Main(props) {
             {errorContent ? (
               errorContent
             ) : (
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Loading small />}>
                 <Routes>
+                  {/* The game is hosted outside this route table; swallow its
+                      URL here so the catch-all does not redirect away. */}
+                  <Route path="game/:gameId/*" element={null} />
                   <Route path="welcome" element={<Welcome />} />
                   <Route path="play/*" element={<Play />} />
                   <Route path="community/*" element={<Community />} />
@@ -171,31 +224,44 @@ function Main(props) {
             )}
           </div>
           <InGameWarning />
-          <AlertList />
         </Stack>
       </Stack>
-      <Footer />
+      {/* The large site footer is website chrome; on phones it is hidden so the
+          app does not end in a wall of links. Those links remain in the Policy
+          menu and the pages themselves. */}
+      {!isPhoneDevice && <Footer />}
+      {isPhoneDevice && <MobileNav />}
     </Stack>
   );
 
-  // Site content will display instead of game if content is being overriden by the error boundary
-  const gameContent = errorContent ? (
-    siteContent
-  ) : (
-    <Suspense fallback={<Loading />}>
-      <Game />
-      <AlertList />
-    </Suspense>
-  );
+  // The game session is rendered outside the route table so that navigating
+  // between site pages does not unmount it. It is hidden, not unmounted, while
+  // the user is elsewhere, and is torn down only when the game leaves.
+  const gameSession =
+    hostedGameId && !errorContent ? (
+      <div
+        className="game-session"
+        style={{ display: inGame ? undefined : "none" }}
+      >
+        <Game
+          key={hostedGameId}
+          gameId={hostedGameId}
+          active={inGame}
+          onLeave={leaveGameSession}
+        />
+      </div>
+    ) : null;
 
   const mainContent = (
     <SiteInfoProvider setSiteInfoLoading={setSiteInfoLoading}>
       {loading && <Loading />}
       {!loading && (
-        <Routes>
-          <Route path="/game/:gameId/*" element={gameContent} />
-          <Route path="/*" element={siteContent} />
-        </Routes>
+        <>
+          {siteContent}
+          {gameSession}
+          <AlertList />
+          <ConnectionBanner />
+        </>
       )}
     </SiteInfoProvider>
   );
@@ -330,14 +396,14 @@ function Header({ setShowAnnouncementTemporarily }) {
           <SiteLogo small />
           {/* User section */}
           <div style={{ flex: "1 0" }}>
-            {user.loggedIn ? (
+            {/* Signed-out auth lives in the phone bottom navigation; the header
+                Login/Register buttons overflowed the bar. */}
+            {user.loggedIn && (
               <UserNavSection
                 openAnnouncements={openAnnouncements}
                 user={user}
                 useUnreadNotifications={useUnreadNotifications}
               />
-            ) : (
-              !isOnWelcomePage && <GuestAuthButtons />
             )}
           </div>
         </Stack>
@@ -473,7 +539,12 @@ function InGameWarning() {
         >
           <AlertTitle>You are in a game in progress.</AlertTitle>
           <Stack direction="row" spacing={1} alignItems="center">
-            <Button href={`/game/${user.inGame}`} size="small" sx={{ flex: "1" }}>
+            <Button
+              component={Link}
+              to={`/game/${user.inGame}`}
+              size="small"
+              sx={{ flex: "1" }}
+            >
               Return
             </Button>
             <Button onClick={() => setLeaveDialogOpen(true)} size="small" sx={{ flex: "1" }}>
@@ -583,6 +654,7 @@ function Footer() {
           <MuiLink
             component={Link}
             to="/policy/tos"
+            viewTransition
           >
             Terms of Service
           </MuiLink>
@@ -590,6 +662,7 @@ function Footer() {
           <MuiLink
             component={Link}
             to="/policy/privacy"
+            viewTransition
           >
             Privacy Policy
           </MuiLink>

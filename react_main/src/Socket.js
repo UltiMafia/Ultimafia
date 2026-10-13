@@ -1,10 +1,20 @@
+import {
+  registerSocket,
+  unregisterSocket,
+  setSocketState,
+} from "./lib/connectionStatus";
+
 const PING_INTERVAL = 10000;
+
+// Application-level connection status; see lib/connectionStatus.js.
+let nextSocketId = 0;
 
 class Socket {
   constructor(socket) {
     this.listeners = {};
     this.sendQueue = [];
     this.received = [];
+    this.id = `socket-${++nextSocketId}`;
 
     this.setSocket(socket);
   }
@@ -12,15 +22,19 @@ class Socket {
   setSocket(socket) {
     this.socket = socket;
 
+    registerSocket(this.id);
+
     this.configureListeners();
 
     this.socket.addEventListener("open", () => {
+      setSocketState(this.id, "open");
       this.received = [];
 
       for (let message of this.sendQueue) this.socket.send(message);
     });
 
     this.socket.addEventListener("close", () => {
+      setSocketState(this.id, "closed");
       this.triggerEvent("disconnected");
     });
 
@@ -129,6 +143,8 @@ export class ClientSocket extends Socket {
 
   clear() {
     clearTimeout(this.pingTimeout);
+
+    unregisterSocket(this.id);
 
     this.persistent = false;
     this.listeners = {};

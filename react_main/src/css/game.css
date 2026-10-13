@@ -442,7 +442,36 @@
   display: flex;
   flex-flow: column;
 
+  position: relative;
+
   background-color: var(--scheme-color-background);
+}
+
+/* Shown when messages arrived while the reader is scrolled away from the
+   newest line. */
+.game .new-messages-pill {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  z-index: 2;
+
+  padding: 4px 12px;
+
+  border: none;
+  border-radius: 999px;
+
+  background-color: var(--scheme-color-sec);
+  color: var(--scheme-color-text);
+  font-family: inherit;
+  font-size: 0.8rem;
+
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.game .new-messages-pill:hover {
+  filter: brightness(1.15);
 }
 
 .game .speech-display {
@@ -464,6 +493,7 @@
   align-items: flex-start;
 
   margin: 10px;
+  padding-bottom: var(--safe-inset-bottom);
 }
 
 .with-radial-gradient {

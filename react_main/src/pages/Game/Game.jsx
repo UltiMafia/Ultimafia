@@ -65,6 +65,7 @@ import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { hyphenDelimit, isBirthdayToday } from "../../utils";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
+import { useKeyboardInset } from "../../hooks/useKeyboardInset";
 import {
   Accordion,
   AccordionSummary,
@@ -170,7 +171,7 @@ export const GameTypeContext = createContext({
   singleState: false,
 });
 
-export default function Game() {
+export default function Game(props) {
   const user = useContext(UserContext);
   const [loaded, setLoaded] = useState(false);
   const [review, setReview] = useState(false);
@@ -234,7 +235,13 @@ export default function Game() {
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
-  const { gameId } = useParams();
+  const { gameId: routeGameId } = useParams();
+  // Hosted outside the route table, where useParams is empty; fall back to it
+  // so the component still works when rendered inside a route.
+  const gameId = props.gameId || routeGameId;
+  // False while the session is retained but the user is on another page.
+  const active = props.active !== false;
+  const navigate = useNavigate();
   const [selectedPanel, setSelectedPanel] = useState("chat");
   const isPhoneDeviceRef = useRef(false);
   isPhoneDeviceRef.current = isPhoneDevice;
@@ -256,6 +263,9 @@ export default function Game() {
   function onReadyCheckVerify() {
     socket.send("readyCheck verify");
     stopAudio("urgent");
+    // A ready check can arrive while the player is on another page; confirming
+    // it returns them to the game. Leaving does not navigate (see Main).
+    if (!active) navigate(`/game/${gameId}`);
   }
 
   function onJoinRehostClick() {
@@ -310,6 +320,10 @@ export default function Game() {
   }
 
   useEffect(() => {
+    // Only the visible session reacts to Escape. A session retained while the
+    // user browses another page must not capture the key.
+    if (!active) return;
+
     function handleKeyDown(e) {
       if (e.key === "Escape") {
         onLeaveGameClick();
@@ -320,7 +334,35 @@ export default function Game() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [active]);
+
+  // The session is hosted by Main, which owns teardown and the redirect. The
+  // game only reports that it left, whether by the player's action or because
+  // the server ended the game.
+  useEffect(() => {
+    if (leave && props.onLeave) props.onLeave();
+  }, [leave, props.onLeave]);
+
+  // Warn before a reload or tab close while a game is in progress. In-app
+  // navigation is not blocked, because the shell retains the session; this
+  // covers the destructive cases the browser controls.
+  useEffect(() => {
+    if (!active) return;
+
+    const inProgress =
+      history.currentState >= 0 && !finished && !review && isParticipant;
+    if (!inProgress) return;
+
+    function handleBeforeUnload(event) {
+      event.preventDefault();
+      event.returnValue = "";
+      return "";
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () =>
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [active, history.currentState, finished, review, isParticipant]);
 
   const [persistentGameData, updatePersistentGameData] = useReducer(
     (state, action) => {
@@ -1120,7 +1162,7 @@ export default function Game() {
     return null;
   }
 
-  if (leave) return <Navigate to="/play" />;
+  if (leave) return props.onLeave ? null : <Navigate to="/play" />;
   else if (!loaded || stateViewing == null)
     return (
       <div className="game">
@@ -1375,7 +1417,7 @@ export function TopBar({ forceShow = false } = {}) {
 
   const theme = useTheme();
   const isPhoneDevice = useIsPhoneDevice();
-  const { gameId } = useParams();
+  const gameId = game.gameId;
   const errorAlert = useErrorAlert();
   const siteInfo = useContext(SiteInfoContext);
 
@@ -1447,7 +1489,7 @@ export function TopBar({ forceShow = false } = {}) {
       flex: "1",
       alignItems: "center",
     }}>
-      <SiteLogo newTab />
+      <SiteLogo />
     </Stack>
   );
 
@@ -1826,6 +1868,8 @@ export function TextMeetingLayout() {
   const [speechInput, setSpeechInput] = useState("");
   const [autoScroll, setAutoScroll] = useState(true);
   const [mouseMoved, setMouseMoved] = useState(false);
+  const [newMessageCount, setNewMessageCount] = useState(0);
+  const previousMessageCountRef = useRef(0);
   const speechDisplayRef = useRef();
   const hasMouse = useMediaQuery("(pointer:fine)");
 
@@ -2028,6 +2072,31 @@ export function TextMeetingLayout() {
     return () => cancelAnimationFrame(frame);
   }, [messages, autoScroll]);
 
+  // Count messages that arrived while the reader is scrolled away, so the
+  // transcript can offer a way back to the newest line instead of silently
+  // appending below the fold.
+  useEffect(() => {
+    const previousCount = previousMessageCountRef.current;
+    const count = messages.length;
+    previousMessageCountRef.current = count;
+
+    if (autoScroll) {
+      setNewMessageCount((current) => (current === 0 ? current : 0));
+      return;
+    }
+
+    if (count > previousCount) {
+      setNewMessageCount((current) => current + (count - previousCount));
+    }
+  }, [messages, autoScroll]);
+
+  function jumpToLatest() {
+    setAutoScroll(true);
+    setNewMessageCount(0);
+    const container = speechDisplayRef.current;
+    if (container) container.scrollTo(0, container.scrollHeight);
+  }
+
   const activeMeeting = selTab ? meetings[selTab] : null;
 
   var canSpeak = activeMeeting;
@@ -2098,6 +2167,15 @@ export function TextMeetingLayout() {
         >
           {messages}
         </div>
+        {newMessageCount > 0 && (
+          <button
+            type="button"
+            className="new-messages-pill"
+            onClick={jumpToLatest}
+          >
+            {newMessageCount} new message{newMessageCount === 1 ? "" : "s"}
+          </button>
+        )}
         <KudosDock onResize={doAutoScroll} />
         {canSpeak && (
           <SpeechInput
@@ -2905,6 +2983,9 @@ function SpeechInput(props) {
 
   const speechInput = props.speechInput;
   const setSpeechInput = props.setSpeechInput;
+  // Lifts the input above the on-screen keyboard; the game layout is fixed and
+  // does not resize when the keyboard covers the lower part of the screen.
+  const keyboardInset = useKeyboardInset();
   const pendingSpeechRef = useRef(null);
   const [speechDropdownOptions, setSpeechDropdownOptions] = useState([]);
   const [speechDropdownValue, setSpeechDropdownValue] = useState("Say");
@@ -3224,7 +3305,10 @@ function SpeechInput(props) {
   }
 
   return (
-    <div className="speech-input-area">
+    <div
+      className="speech-input-area"
+      style={keyboardInset ? { marginBottom: keyboardInset } : undefined}
+    >
       <div className="speech-input-wrapper">
         <Dropdown
           className="speech-dropdown"
@@ -3615,7 +3699,6 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
               active={activity.speaking[player.id]}
               noLink={stateViewing >= 0 && game.options.anonymousGame}
               includeMiniprofile
-              newTab
             />
           );
           if (!player.kudos && !kudosIds.includes(player.id))
@@ -5649,16 +5732,16 @@ function FirstGameModal(props) {
       <div className="paragraph">
         <div>
           - You can learn roles, items, mechanics, and slang{" "}
-          <a href="/learn" target="_blank">
+          <Link to="/learn">
             here
-          </a>
+          </Link>
           !
         </div>
         <div>
           - You can familiarize yourself with the site rules{" "}
-          <a href="/rules" target="_blank">
+          <Link to="/policy/rules">
             here
-          </a>
+          </Link>
           .
         </div>
         <div>
@@ -5674,27 +5757,24 @@ function FirstGameModal(props) {
         </div>
         <div>
           - Want to learn how to be a better player? Sign up to be a mentee{" "}
-          <a
-            href="/community/forums/thread/iU8EPBj9Z?reply=cpSlmcz-q"
-            target="_blank"
-          >
+          <Link to="/community/forums/thread/iU8EPBj9Z?reply=cpSlmcz-q">
             here
-          </a>
+          </Link>
           !
         </div>
         <div>
           - If you have suggestions, feedback, or notice any bugs, you can make
           a thread{" "}
-          <a href="/community/forums/board/SiJGWYr6O" target="_blank">
+          <Link to="/community/forums/board/SiJGWYr6O">
             here
-          </a>
+          </Link>
           .
         </div>
         <div>
           - Our website is open-source! You can contribute code on our{" "}
-          <a href="/community/forums/board/SiJGWYr6O" target="_blank">
+          <Link to="/community/forums/board/SiJGWYr6O">
             GitHub repository
-          </a>
+          </Link>
           .
         </div>
         <div>
@@ -5857,7 +5937,7 @@ export function Notes() {
   const game = useContext(GameContext);
   const stateViewing = game.stateViewing;
   const [notes, setNotes] = useState("");
-  const { gameId } = useParams();
+  const gameId = game.gameId;
 
   useEffect(() => {
     var notesData = window.localStorage.getItem("notesData");
@@ -6028,20 +6108,31 @@ export function useHistoryReducer() {
           break;
         }
         case "addMessage": {
-          if (history.states[history.currentState]) {
-            if (action.message.meetingId) {
-              if (
-                history.states[history.currentState].meetings[
-                  action.message.meetingId
-                ]
-              ) {
+          const currentStateData = history.states[history.currentState];
+          if (currentStateData) {
+            const message = action.message;
+            const messageId = message.id;
+
+            if (message.meetingId) {
+              const meeting = currentStateData.meetings[message.meetingId];
+              if (meeting) {
+                // Pure duplicate check: a repeated delivery or a replay of
+                // history after reconnecting must not add a second row. The
+                // reducer must not mutate anything, because React may call it
+                // more than once for the same action.
+                if (
+                  messageId != null &&
+                  meeting.messages.some((m) => m.id === messageId)
+                ) {
+                  break;
+                }
                 return update(history, {
                   states: {
                     [history.currentState]: {
                       meetings: {
-                        [action.message.meetingId]: {
+                        [message.meetingId]: {
                           messages: {
-                            $push: [action.message],
+                            $push: [message],
                           },
                         },
                       },
@@ -6050,11 +6141,17 @@ export function useHistoryReducer() {
                 });
               }
             } else {
+              if (
+                messageId != null &&
+                (currentStateData.alerts || []).some((m) => m.id === messageId)
+              ) {
+                break;
+              }
               return update(history, {
                 states: {
                   [history.currentState]: {
                     alerts: {
-                      $push: [action.message],
+                      $push: [message],
                     },
                   },
                 },

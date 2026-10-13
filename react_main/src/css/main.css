@@ -83,6 +83,34 @@ body {
   height: 100%;
 }
 
+/* The game session is hosted outside the route table and given a definite
+   height it can fill. Hidden with an inline display:none, not unmounted, while
+   the user is on another page. */
+.game-session {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+}
+
+/* Safe-area insets, for phones with a notch or a home indicator. */
+:root {
+  --safe-inset-top: env(safe-area-inset-top, 0px);
+  --safe-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-inset-left: env(safe-area-inset-left, 0px);
+  --safe-inset-right: env(safe-area-inset-right, 0px);
+}
+
+.connection-banner {
+  padding-top: var(--safe-inset-top);
+}
+
+/* Page transitions: navigation is client-side and instant, with no remount and
+   no full-page spinner, so no cross-fade is applied. A View Transitions pass
+   was tried here and removed: the API renders the previous page as a snapshot
+   over the new one, which ghosted the old content on top of the new during the
+   transition. Do not reintroduce snapshot-based page transitions without
+   reproducing that artifact first. */
+
 .hidden {
   display: none;
 }
