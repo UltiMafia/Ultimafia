@@ -10,6 +10,7 @@ import {
   SettingsMenu,
   MobileLayout,
   GameTypeContext,
+  SideMenu,
 } from "./Game";
 import { Avatar } from "../User/UserWidgets";
 import { GameContext } from "../../Contexts";
@@ -94,6 +95,7 @@ export default function LiarsDiceGame(props) {
         leftPanelContent={
           <>
             {stateViewing < 0 && <PlayerList />}
+            <RoundBetLog history={history} stateViewing={stateViewing} />
             <KickActionList />
             <SettingsMenu />
           </>
@@ -112,6 +114,7 @@ export default function LiarsDiceGame(props) {
         outerLeftContent={
           <>
             <PlayerList />
+            <RoundBetLog history={history} stateViewing={stateViewing} />
             <KickActionList />
           </>
         }
@@ -131,6 +134,38 @@ export default function LiarsDiceGame(props) {
     </GameTypeContext.Provider>
   );
 }
+
+export function RoundBetLog({ history, stateViewing }) {
+  if (stateViewing < 0) return null;
+  const bids = history.states[stateViewing]?.extraInfo?.bidInfo?.roundBids;
+  if (!bids) return null;
+
+  const content = (
+    <div className="ld-bet-log">
+      {bids.length == 0 ? (
+        <div className="ld-bet-log-empty">No bets yet</div>
+      ) : (
+        <ol className="ld-bet-log-list">
+          {bids.map((bid, i) => (
+            <li key={i} className="ld-bet-log-row">
+              <span className="ld-bet-log-name">{bid.bidder}</span>
+              <span className="ld-bet-log-bid">
+                {bid.amount} ×{" "}
+                <span className={`ld-bet-log-die dice dice-${bid.face}`}>
+                  {DIE_FACES[bid.face]}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  );
+
+  return <SideMenu title="Bets this round" content={content} />;
+}
+
+const DIE_FACES = ["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
 
 function LiarsDiceRulesModal({ options, onClose }) {
   return (
