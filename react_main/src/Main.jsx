@@ -506,6 +506,7 @@ function Header({ setShowAnnouncementTemporarily }) {
 function InGameWarning() {
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
+  const isPhoneDevice = useIsPhoneDevice();
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -526,7 +527,14 @@ function InGameWarning() {
     <>
       <Snackbar
         open={user.inGame !== null}
-        sx={{ maxWidth: "calc(100vw - 16px)" }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        sx={{
+          maxWidth: "calc(100vw - 16px)",
+          // Sit above the phone bottom navigation instead of over it.
+          bottom: isPhoneDevice
+            ? "calc(64px + env(safe-area-inset-bottom, 0px))"
+            : undefined,
+        }}
       >
         <Alert
           severity="warning"
@@ -534,6 +542,8 @@ function InGameWarning() {
           sx={{
             width: "100%",
             backgroundColor: "background.paper",
+            alignItems: "center",
+            py: 0.5,
           }}
           slotProps={{
             message: {
@@ -543,7 +553,9 @@ function InGameWarning() {
             },
           }}
         >
-          <AlertTitle>You are in a game in progress.</AlertTitle>
+          <AlertTitle sx={{ mb: 0.5, fontSize: "0.9rem" }}>
+            You are in a game in progress.
+          </AlertTitle>
           <Stack direction="row" spacing={1} alignItems="center">
             <Button
               component={Link}

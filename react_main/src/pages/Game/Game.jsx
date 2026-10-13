@@ -495,13 +495,21 @@ export default function Game(props) {
 
     var socketURL;
 
+    // The configured socket host defaults to "localhost", which is wrong for any
+    // client that is not the host machine -- a phone on the LAN or a tailnet, for
+    // example. Fall back to the page's own host, so the same build works from
+    // localhost, a LAN/tailnet address, or the real domain.
+    const configuredSocketHost = import.meta.env.REACT_APP_SOCKET_URI;
+    const socketHost =
+      !configuredSocketHost || configuredSocketHost === "localhost"
+        ? window.location.hostname
+        : configuredSocketHost;
+
     if (import.meta.env.REACT_APP_USE_PORT === "true")
-      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${
-        import.meta.env.REACT_APP_SOCKET_URI
-      }:${port}`;
+      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${socketHost}:${port}`;
     else
       socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${
-        import.meta.env[`REACT_APP_SOCKET_URI_${port}`] || import.meta.env.REACT_APP_SOCKET_URI
+        import.meta.env[`REACT_APP_SOCKET_URI_${port}`] || socketHost
       }/${port}`;
 
     var newSocket = new Socket(socketURL);
