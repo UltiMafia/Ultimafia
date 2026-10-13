@@ -2,7 +2,7 @@
  * Rolls back the Liar's Dice Colors shop item. Take a backup first
  * (scripts/db/diceShopBackup.js) and pair this with a code rollback.
  *
- *   node migrations/down/diceShop.js --dry-run|--confirm [--refund]
+ *   node migrations/down/diceShop.js --dry-run|--confirm [--refund] [--skip-cache]
  *
  * - Removes itemsOwned.diceColor and settings.diceColor from every user, so
  *   everyone is back to the default white dice.
@@ -15,6 +15,8 @@ const { PRICE, query, users, refreshCaches } = require("../../scripts/db/diceSho
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
+// --skip-cache: no Redis access here; cached user info expires within an hour.
+const skipCache = args.includes("--skip-cache");
 const confirmed = args.includes("--confirm");
 const refund = args.includes("--refund");
 
@@ -29,7 +31,7 @@ const refund = args.includes("--refund");
     if (refund && owners.length)
       await users().updateMany({ id: { $in: owners } }, { $inc: { coins: PRICE } });
     await users().updateMany(query, { $unset: { "itemsOwned.diceColor": "", "settings.diceColor": "" } });
-    await refreshCaches(docs.map((u) => u.id));
+    if (!skipCache) await refreshCaches(docs.map((u) => u.id));
   }
   console.log(dryRun ? "Dry run: nothing changed." : "Dice color data rolled back.");
   process.exit(0);
