@@ -619,12 +619,16 @@
 
 .ld-bet-log-row {
   display: flex;
-  justify-content: space-between;
-  gap: 8px;
+  justify-content: flex-start;
+  align-items: baseline;
+  gap: 10px;
   padding: 2px 0;
+  min-width: 0;
 }
 
 .ld-bet-log-name {
+  min-width: 0;
+  max-width: 70%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
