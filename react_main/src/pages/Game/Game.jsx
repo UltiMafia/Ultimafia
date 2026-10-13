@@ -2079,6 +2079,20 @@ export function TextMeetingLayout() {
     return () => cancelAnimationFrame(frame);
   }, [messages, autoScroll]);
 
+  // Keep the newest message in view when the transcript is resized, e.g. when
+  // the on-screen keyboard opens and the game frame shrinks (which grows the
+  // scrollable range and would otherwise leave a previously-at-bottom chat above
+  // the bottom).
+  useEffect(() => {
+    const container = speechDisplayRef.current;
+    if (!container || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => {
+      if (autoScroll) container.scrollTo(0, container.scrollHeight);
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [autoScroll]);
+
   // Count messages that arrived while the reader is scrolled away, so the
   // transcript can offer a way back to the newest line instead of silently
   // appending below the fold.
