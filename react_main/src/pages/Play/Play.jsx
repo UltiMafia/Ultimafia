@@ -48,7 +48,13 @@ export default function Play(props) {
     ) {
       const newParams = new URLSearchParams(location.search);
       newParams.set("game", gameType);
-      navigate(location.pathname + "?" + newParams.toString());
+      // Replace, not push: the game filter is derived state that mirrors the
+      // current page. Pushing it left an entry for the same page without the
+      // query, so Back landed there, the effect added the query again, and
+      // leaving the page took two presses. The lobby query does the same.
+      navigate(location.pathname + "?" + newParams.toString(), {
+        replace: true,
+      });
     }
   }, [location.pathname, gameType]);
   // Allow logged-out users to access Play page

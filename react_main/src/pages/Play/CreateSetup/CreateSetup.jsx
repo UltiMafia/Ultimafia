@@ -61,7 +61,12 @@ export default function CreateSetup(props) {
     localStorage.setItem("gameType", newValue);
     const params = new URLSearchParams(location.search);
     params.set("game", newValue);
-    navigate({ pathname: location.pathname, search: params.toString() });
+    // Replace, not push: picking a game type filters this page, it is not a
+    // navigation, and a pushed entry would need extra Back presses to leave.
+    navigate(
+      { pathname: location.pathname, search: params.toString() },
+      { replace: true }
+    );
     setDrawerOpen(false);
   };
 
