@@ -1,5 +1,5 @@
 /**
- * Rolls back the Developer API data (reverse of the #34 deploy and of
+ * Rolls back the Developer API data (reverse of the Developer API deploy and of
  * migrations/replaceDevGroupWithDeveloper.js). Pair it with a code rollback,
  * or startup will recreate the Developer groups.
  *
