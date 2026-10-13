@@ -63,7 +63,7 @@ module.exports = class Item {
     this.game.events.removeListener("state", this.ageListener);
 
     for (let eventName in this.listeners)
-      holder.events.removeListener(eventName, this.listeners[eventName]);
+      this.game.events.removeListener(eventName, this.listeners[eventName]);
 
     this.removeEffects();
     if (nope == "No") {

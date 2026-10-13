@@ -70,7 +70,7 @@ module.exports = class PlagueStarter extends Card {
                 }
               }
               for (let neighbor of player.getNeighbors()) {
-                if (neighbor.hasEffect("Virus")) {
+                if (!neighbor || neighbor.hasEffect("Virus")) {
                   continue;
                 }
 

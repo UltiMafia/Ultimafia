@@ -13,6 +13,10 @@ const {
 
 module.exports = class AlignmentInfo extends Information {
   constructor(creator, game, target) {
+    if (game && !game.alivePlayers && game.game) {
+      target = target || game;
+      game = game.game;
+    }
     super("Alignment Info", creator, game);
     if (target == null) {
       this.randomTarget = true;

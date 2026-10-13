@@ -564,7 +564,7 @@ module.exports = class MafiaPlayer extends Player {
 
   isEvil(absolute, fair) {
     if (this.isFairMisReg() && absolute != true) {
-      let temp = this.game.createInformation("AlignmentInfo", this, this);
+      let temp = this.game.createInformation("AlignmentInfo", this, this.game, this);
       return temp.isAppearanceEvil(this, "investigate");
     }
     if (
@@ -588,7 +588,7 @@ module.exports = class MafiaPlayer extends Player {
 
   getFaction(absolute, fair) {
     if (this.isFairMisReg() && absolute != true) {
-      let temp = this.game.createInformation("AlignmentInfo", this, this);
+      let temp = this.game.createInformation("AlignmentInfo", this, this.game, this);
       return temp.mainInfo;
     }
     return this.faction;
@@ -615,7 +615,9 @@ module.exports = class MafiaPlayer extends Player {
 
   getNeighbors() {
     let alive = this.game.alivePlayers();
+    if (alive.length <= 1) return [];
     let index = alive.indexOf(this);
+    if (index === -1) return [];
 
     const leftIdx = (index - 1 + alive.length) % alive.length;
     const rightIdx = (index + 1) % alive.length;

@@ -12,10 +12,10 @@ module.exports = class ConvertIfVisitsAllMafia extends Card {
     super(role);
 
     this.methods.excludeAlreadyVisited = function (player) {
-      if (player === this) {
+      if (!this || player === this) {
         return true;
       }
-      return this.role.visitedMentors.has(player);
+      return role.visitedMentors ? role.visitedMentors.has(player) : false;
     };
 
     this.meetings = {

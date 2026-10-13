@@ -41,7 +41,7 @@ module.exports = class Virus extends Effect {
                 }
               }
               for (let neighbor of player.getNeighbors()) {
-                if (neighbor.hasEffect("Virus")) {
+                if (!neighbor || neighbor.hasEffect("Virus")) {
                   continue;
                 }
 

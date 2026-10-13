@@ -1500,6 +1500,7 @@ module.exports = class Player {
 
     for (let meetingName in meetings) {
       let options = meetings[meetingName];
+      if (!options) continue;
       let disabled = false;
 
       for (let item of this.items)
@@ -1513,6 +1514,7 @@ module.exports = class Player {
       //      can be condensed.
       if (
         disabled ||
+        !options.states ||
         (options.states.indexOf(currentStateName) == -1 &&
           options.states.indexOf("*") == -1) ||
         options.disabled ||

@@ -254,6 +254,10 @@ module.exports = class MafiaGame extends Game {
         mission: this.mission,
         team: [],
       };
+    } else if (!this.currentMissionHistory?.team?.length) {
+      // No mission took place. Team-selection failures are recorded with -1
+      // only after the retry limit is reached.
+      return false;
     }
 
     this.currentMissionHistory.numFails = numFails;
@@ -264,13 +268,31 @@ module.exports = class MafiaGame extends Game {
     this.missionRecord.score[winningTeam] += 1;
     this.currentMissionHistory = null;
     this.checkGameEnd();
+    return true;
   }
 
   incrementState(index, skipped) {
     if (this.ResistanceMode) {
       let previousState = this.getStateInfo().name;
 
-      if (previousState.match(/Mission/)) {
+      if (previousState.match(/Team Approval/)) {
+        if (!this.currentMissionHistory?.team?.length || !this.teamApproved) {
+          if (!this.currentTeamFail) {
+            this.teamFails++;
+            this.queueAlert("No team was approved; choosing a new leader.");
+          }
+          this.currentTeamFail = true;
+        }
+        // Core selects the next state before resolving votes. Re-evaluate
+        // Mission's skip check now that the approval result is available.
+        [index, skipped] = this.getNextStateIndex();
+        if (index === null) {
+          this.endForNoPlayableState();
+          return;
+        }
+      }
+
+      if (previousState.match(/Mission/) && this.currentMissionHistory?.team?.length) {
         if (this.currentMissionFails > 0) {
           this.missionFails++;
           var plural = this.currentMissionFails > 1;
@@ -302,12 +324,15 @@ module.exports = class MafiaGame extends Game {
         this.currentMissionFails = 0;
         this.teamFails = 0;
       }
+      if (this.finished) return;
     }
 
     super.incrementState(index, skipped);
 
     if (this.ResistanceMode && this.getStateInfo().name.match(/Night/)) {
       this.currentTeamFail = false;
+      this.teamApproved = false;
+      this.currentMissionHistory = null;
 
       for (let player of this.players) {
         for (let item of player.items) {
@@ -775,7 +800,18 @@ module.exports = class MafiaGame extends Game {
       this.ExtraStates = [];
     }
     if (this.HaveHostingState == true) {
-      return true;
+      let hasHost = false;
+      for (let p of this.players) {
+        if (p.role && p.role.name === "Host") {
+          hasHost = true;
+          break;
+        }
+      }
+      if (!hasHost) {
+        this.HaveHostingState = false;
+      } else {
+        return true;
+      }
     }
     if (this.HaveTreasureChestState == true) {
       this.events.emit("extraStateCheck", "Treasure Chest");

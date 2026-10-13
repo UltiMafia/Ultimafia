@@ -692,7 +692,7 @@ module.exports = class Meeting {
               break;
             default:
               if (typeof tag == "function") {
-                var matched = tag.bind(self)(player);
+                var matched = self ? tag.bind(self)(player) : tag(player);
 
                 if (matched) includePlayer[player.id] = include;
               } else if (player.id == tag) includePlayer[player.id] = include;

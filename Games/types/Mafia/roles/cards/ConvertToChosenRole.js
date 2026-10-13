@@ -29,7 +29,11 @@ module.exports = class ConvertToChosenRole extends Card {
           priority: PRIORITY_CONVERT_DEFAULT + 4,
           run: function () {
             let targetPlayer = this.role.data.targetPlayer;
-            if (targetPlayer) {
+            if (targetPlayer && targetPlayer.role) {
+              if (!this.target || this.target === "None" || this.target === "*") {
+                delete this.role.data.targetPlayer;
+                return;
+              }
               let players = this.game.players.filter((p) => p.role);
               let currentRoles = [];
 

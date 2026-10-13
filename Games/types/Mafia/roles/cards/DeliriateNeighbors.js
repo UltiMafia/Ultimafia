@@ -40,65 +40,77 @@ module.exports = class DeliriateNeighbors extends Card {
       },
     ];
 
-    this.listeners = {
-      AbilityToggle: function (player) {
-        if (this.startingNeighbors) {
-          return;
-        }
-        if (this.hasAbility(["Deception"])) {
-          if (this.startingNeighbors == null) {
-            let players = this.game.alivePlayers();
-            var indexOfActor = players.indexOf(this.player);
-            var rightIdx;
-            var leftIdx;
-            var leftAlign;
-            var rightAlign;
-            var distance = 0;
-            var foundUp = 0;
-            var foundDown = 0;
+    const card = this;
 
-            for (let x = 0; x < players.length; x++) {
-              leftIdx =
-                (indexOfActor - distance - 1 + players.length) % players.length;
-              rightIdx = (indexOfActor + distance + 1) % players.length;
-              leftAlign = players[leftIdx].getRoleAlignment();
-              rightAlign = players[rightIdx].getRoleAlignment();
+    function calculateStartingNeighbors() {
+      if (!role.game.started) {
+        return;
+      }
+      if (role.startingNeighbors) {
+        return;
+      }
+      if (role.hasAbility(["Deception"])) {
+        if (role.startingNeighbors == null) {
+          let players = role.game.alivePlayers();
+          var indexOfActor = players.indexOf(role.player);
+          var rightIdx;
+          var leftIdx;
+          var leftAlign;
+          var rightAlign;
+          var distance = 0;
+          var foundUp = 0;
+          var foundDown = 0;
 
-              if (
-                rightAlign == "Village" &&
-                !players[rightIdx].role.data.banished &&
-                foundUp == 0
-              ) {
-                foundUp = players[rightIdx];
-              }
-              if (
-                leftAlign == "Village" &&
-                !players[leftIdx].role.data.banished &&
-                foundDown == 0
-              ) {
-                foundDown = players[leftIdx];
-              }
-              if (foundUp == 0 || foundDown == 0) {
-                distance = x;
-              } else {
-                break;
-              }
+          for (let x = 0; x < players.length; x++) {
+            leftIdx =
+              (indexOfActor - distance - 1 + players.length) % players.length;
+            rightIdx = (indexOfActor + distance + 1) % players.length;
+            leftAlign = players[leftIdx].getRoleAlignment();
+            rightAlign = players[rightIdx].getRoleAlignment();
+
+            if (
+              rightAlign == "Village" &&
+              !players[rightIdx].role.data.banished &&
+              foundUp == 0
+            ) {
+              foundUp = players[rightIdx];
             }
+            if (
+              leftAlign == "Village" &&
+              !players[leftIdx].role.data.banished &&
+              foundDown == 0
+            ) {
+              foundDown = players[leftIdx];
+            }
+            if (foundUp == 0 || foundDown == 0) {
+              distance = x;
+            } else {
+              break;
+            }
+          }
 
-            let victims = [foundUp, foundDown];
-            this.startingNeighbors = victims;
-          }
-          for (let player of this.startingNeighbors) {
-            let effect = this.giveEffect(
-              player,
-              "Delirious",
-              this.player,
-              Infinity,
-              null,
-              this
-            );
-          }
+          let victims = [foundUp, foundDown];
+          role.startingNeighbors = victims;
         }
+        for (let player of role.startingNeighbors) {
+          role.giveEffect(
+            player,
+            "Delirious",
+            role.player,
+            Infinity,
+            null,
+            role
+          );
+        }
+      }
+    }
+
+    this.listeners = {
+      start: function () {
+        calculateStartingNeighbors();
+      },
+      AbilityToggle: function (player) {
+        calculateStartingNeighbors();
       },
     };
   }
