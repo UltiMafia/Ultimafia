@@ -44,6 +44,21 @@ import { lobbies } from "../../../constants/lobbies";
 // skipped while the tab is hidden or a game has the screen.
 const LOBBY_POLL_MS = 20000;
 
+// The list endpoint can return two documents for one game id -- a finished game
+// recorded twice, which was live on dev.ultimafia.gg (7Ufg1CxTF appeared twice
+// on every page). Rows are keyed by game id, so a duplicate id makes React
+// render the list wrongly: an extra row and items in the wrong order, and which
+// row lands where depends on what was rendered before, so the same lobby looked
+// different each time you came back to it. Show one row per game.
+function oneRowPerGame(games) {
+  const seen = new Set();
+  return games.filter((game) => {
+    if (seen.has(game.id)) return false;
+    seen.add(game.id);
+    return true;
+  });
+}
+
 export default function LobbyBrowser() {
   const isPhoneDevice = useIsPhoneDevice();
   const theme = useTheme();
@@ -153,7 +168,7 @@ export default function LobbyBrowser() {
       if (res.data.length > 0 || _page === 1) {
         setListType(_listType);
         setPage(_page);
-        setGames(res.data);
+        setGames(oneRowPerGame(res.data));
       }
     } catch (err) {
       // A failed background refresh must not raise an alert every tick; the
