@@ -334,9 +334,7 @@ export default function Game(props) {
     // with socket terminate() in playerLeave and often fails on iOS Safari.
     setLeave(true);
 
-    if (gameId === user.inGame) {
-      user.setInGame(null);
-    }
+    user.setInGame((current) => (current === gameId ? null : current));
 
     setLeaveDialogOpen(false);
   }
@@ -757,6 +755,7 @@ export default function Game(props) {
     socket.on("loaded", () => {
       console.log("[WEBSOCKET] loaded");
       setLoaded(true);
+      user.refreshGameMembership();
     });
 
     socket.on("setup", (data) => {
@@ -771,7 +770,12 @@ export default function Game(props) {
       setEmojis(emojis);
     });
 
-    socket.on("finished", () => setFinished(true));
+    socket.on("finished", () => {
+      setFinished(true);
+      // The server broadcasts this before its Redis cleanup completes, so a
+      // lookup here could briefly return the membership it is about to delete.
+      user.setInGame((current) => (current === gameId ? null : current));
+    });
 
     socket.on("kudos", (data) => setKudos(data));
 
@@ -1016,6 +1020,7 @@ export default function Game(props) {
 
     socket.on("left", () => {
       if (!noLeaveRef.current) {
+        user.setInGame((current) => (current === gameId ? null : current));
         setLeave(true);
         siteInfo.hideAllAlerts();
       }

@@ -37,7 +37,13 @@ export function UserProvider({
 }) {
   const siteInfo = useContext(SiteInfoContext);
   const theme = useTheme();
-  const [inGame, setInGame] = useState(null);
+  const [inGame, setInGameState] = useState(null);
+  const membershipRequestRef = useRef(0);
+  const setInGame = useCallback((value) => {
+    // A lifecycle event supersedes any membership lookup already in flight.
+    membershipRequestRef.current += 1;
+    setInGameState(value);
+  }, []);
   const [dpiCorrection, setDpiCorrection] = useState(undefined);
   const [iconFilter, setIconFilter] = useState({});
   const [user, setUser] = useState({
@@ -51,6 +57,7 @@ export function UserProvider({
   });
 
   const clear = useCallback(() => {
+    setInGame(null);
     setUser({
       loggedIn: false,
       loaded: true,
@@ -58,7 +65,7 @@ export function UserProvider({
       rank: 0,
       blockedUsers: [],
     });
-  }, []);
+  }, [setInGame]);
 
   function blockUserToggle(userId) {
     var userIndex = user.blockedUsers.indexOf(userId);
@@ -120,9 +127,24 @@ export function UserProvider({
   const siteInfoRef = useRef(siteInfo);
   siteInfoRef.current = siteInfo;
 
+  // Query actual membership after a socket join/reconnect. Watching a game is
+  // not the same as being seated in it, so do not infer this from the route.
+  const refreshGameMembership = useCallback(async () => {
+    const request = ++membershipRequestRef.current;
+    try {
+      const { data } = await axios.get("/api/user/info");
+      if (request === membershipRequestRef.current) {
+        setInGameState(data.id ? data.inGame || null : null);
+      }
+    } catch (_) {
+      // A failed lookup is not evidence that the player left their game.
+    }
+  }, []);
+
   // Re-fetches the session and rebuilds the user. Used after signing in so the
   // document does not have to be reloaded.
   const refreshUser = useCallback(() => {
+    const membershipRequest = ++membershipRequestRef.current;
     return axios
       .get("/api/user/info")
       .then((res) => {
@@ -161,9 +183,8 @@ export function UserProvider({
           );
         }
 
-        if (res.data.inGame) {
-          // TODO make this more accurate via websockets that communicate updates to this in real time
-          setInGame(res.data.inGame);
+        if (membershipRequest === membershipRequestRef.current) {
+          setInGameState(res.data.id ? res.data.inGame || null : null);
         }
 
         setUserLoading(false);
@@ -188,6 +209,7 @@ export function UserProvider({
     inGame,
     setInGame,
     refreshUser,
+    refreshGameMembership,
   };
 
   useEffect(() => {
