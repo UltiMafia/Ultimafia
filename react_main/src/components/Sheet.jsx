@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Box, Drawer } from "@mui/material";
+import { Box, ButtonBase, Drawer } from "@mui/material";
 import { useLocation } from "react-router-dom";
 
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
@@ -34,10 +34,44 @@ export function SheetProvider({ children }) {
   // content instead of emptying out first.
   const [sheet, setSheet] = useState(null);
   const [open, setOpen] = useState(false);
+  const paperRef = useRef(null);
+  const dragFrameRef = useRef(null);
+  const pendingDragDistanceRef = useRef(0);
+  const dragStartRef = useRef(null);
+  const draggedRef = useRef(false);
 
   const openRef = useRef(false);
   openRef.current = open;
   const onCloseRef = useRef(null);
+
+  // Pointer motion must not re-render the provider and every sheet consumer.
+  // Translate is independent of Slide's transform, so dismissal can still
+  // animate from the position reached by the drag. Write the property directly:
+  // an inherited custom property can invalidate styles throughout the sheet.
+  const setDragDistance = useCallback((distance, immediate = false) => {
+    pendingDragDistanceRef.current = distance;
+    const apply = () => {
+      dragFrameRef.current = null;
+      if (paperRef.current) {
+        paperRef.current.style.translate = `0 ${pendingDragDistanceRef.current}px`;
+      }
+    };
+
+    // Reset/release synchronously; otherwise coalesce high-frequency pointer
+    // events into one update per display frame.
+    if (immediate || distance === 0) {
+      if (dragFrameRef.current !== null) {
+        cancelAnimationFrame(dragFrameRef.current);
+      }
+      apply();
+    } else if (dragFrameRef.current === null) {
+      dragFrameRef.current = requestAnimationFrame(apply);
+    }
+  }, []);
+
+  useEffect(() => () => {
+    if (dragFrameRef.current !== null) cancelAnimationFrame(dragFrameRef.current);
+  }, []);
 
   const closeSheet = useCallback(() => {
     const onClose = onCloseRef.current;
@@ -48,9 +82,10 @@ export function SheetProvider({ children }) {
 
   const openSheet = useCallback((node, { onClose = null } = {}) => {
     onCloseRef.current = onClose;
+    setDragDistance(0);
     setSheet({ node });
     setOpen(true);
-  }, []);
+  }, [setDragDistance]);
 
   // Restore the nav before the closing animation paints, so the descending
   // sheet reveals it instead of leaving an empty space that fills afterwards.
@@ -81,15 +116,23 @@ export function SheetProvider({ children }) {
           transition: {
             onExited: () => {
               // A sheet opened during the closing animation must not be cleared.
-              if (!openRef.current) setSheet(null);
+              if (!openRef.current) {
+                setSheet(null);
+                setDragDistance(0);
+              }
             },
           },
           paper: {
+            ref: paperRef,
             sx: isPhone
               ? {
                   borderTopLeftRadius: 16,
                   borderTopRightRadius: 16,
                   maxHeight: "70vh",
+                  boxShadow: "0 -5px 20px rgba(0, 0, 0, 0.28)",
+                  // Keep the contents/shadow in a composited layer while the
+                  // mounted sheet moves, rather than repainting them each frame.
+                  willChange: "translate, transform",
                   // The sheet is the bottom surface on a phone (the nav is
                   // hidden while it is open), so where the browser leaves the
                   // home-indicator strip to the page, the sheet fills it.
@@ -99,6 +142,74 @@ export function SheetProvider({ children }) {
           },
         }}
       >
+        {isPhone && (
+          <ButtonBase
+            className="mui-popover-title"
+            aria-label="Close sheet"
+            onClick={(event) => {
+              // A short drag snaps back; its synthesized click must not close
+              // the sheet. Keyboard activation still closes it.
+              if (!draggedRef.current || event.detail === 0) closeSheet();
+            }}
+            onPointerDown={(event) => {
+              if (!event.isPrimary || event.button !== 0) return;
+              dragStartRef.current = event.clientY;
+              draggedRef.current = false;
+              event.currentTarget.setPointerCapture(event.pointerId);
+            }}
+            onPointerMove={(event) => {
+              if (dragStartRef.current === null) return;
+              if (Math.abs(event.clientY - dragStartRef.current) > 4) {
+                draggedRef.current = true;
+              }
+              setDragDistance(Math.max(0, event.clientY - dragStartRef.current));
+            }}
+            onPointerUp={(event) => {
+              const start = dragStartRef.current;
+              dragStartRef.current = null;
+              if (start !== null && event.clientY - start >= 40) {
+                // Keep the offset through the exit animation rather than
+                // jumping back to the resting position before sliding out.
+                setDragDistance(event.clientY - start, true);
+                closeSheet();
+              } else {
+                setDragDistance(0);
+              }
+            }}
+            onPointerCancel={() => {
+              dragStartRef.current = null;
+              setDragDistance(0);
+            }}
+            disableRipple
+            sx={{
+              width: "100%",
+              minHeight: 28,
+              flexShrink: 0,
+              touchAction: "none",
+              // Use exactly the same background rule as the adjacent title.
+              backgroundImage: "none",
+              borderBottom: 0,
+              padding: 0,
+              borderRadius: "16px 16px 0 0",
+              "&.Mui-focusVisible": {
+                outline: "2px solid",
+                outlineColor: "primary.main",
+                outlineOffset: -2,
+              },
+            }}
+          >
+            <Box
+              aria-hidden="true"
+              sx={{
+                width: 32,
+                height: 3,
+                borderRadius: 2,
+                bgcolor: "text.secondary",
+                opacity: 0.4,
+              }}
+            />
+          </ButtonBase>
+        )}
         <Box sx={{ overflowY: "auto" }}>{sheet && sheet.node}</Box>
       </Drawer>
     </SheetContext.Provider>
