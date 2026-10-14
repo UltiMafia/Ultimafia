@@ -501,9 +501,10 @@ html[data-keyboard="open"] .game .meeting-tabs {
 
   overflow-y: scroll;
   overflow-x: hidden;
-  /* Do not let the transcript scroll past its last message (or chain the
-     overscroll to the page) on touch devices. */
-  overscroll-behavior: none;
+  /* Let the transcript keep its own overscroll affordance (the glow on Android,
+     the bounce on iOS) without chaining the overscroll to the page. `none`
+     here instead of `contain` also removed the glow. */
+  overscroll-behavior: contain;
 }
 
 .game .speech-input-area {

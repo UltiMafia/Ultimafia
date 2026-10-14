@@ -216,7 +216,9 @@
   padding: 0px 10px;
 
   overflow-y: auto;
-  overscroll-behavior: none;
+  /* Keep the local overscroll affordance (the glow) without chaining the
+     overscroll to the page. */
+  overscroll-behavior: contain;
 }
 
 .chat-wrapper .message {
