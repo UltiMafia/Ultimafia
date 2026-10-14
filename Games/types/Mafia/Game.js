@@ -85,6 +85,7 @@ module.exports = class MafiaGame extends Game {
     }
     this.advancedHosting = options.settings.advancedHosting;
     this.dayCount = 0;
+    this.safehouseVillageHoused = 0;
     this.spectatorMeetFilter = {
       Village: true,
       Pregame: true,
@@ -595,7 +596,7 @@ module.exports = class MafiaGame extends Game {
         if (this.extendLength == 0) {
           this.extensions = 99;
         }
-        var aliveCount = this.alivePlayers().length;
+        var aliveCount = this.playersInPlay().length;
         var votesNeeded = Math.ceil(aliveCount / 2) + this.extensions;
 
         if (this.extensionVotes < votesNeeded || this.isTest) break;
@@ -626,6 +627,20 @@ module.exports = class MafiaGame extends Game {
       (this.dayCount == 0 ||
         (this.dayCount == 1 && this.getGameSetting("Day Start")))
     );
+  }
+
+  sendToSafehouse(player) {
+    if (!player || !player.alive || player.housed || player.exorcised) return;
+
+    player.housed = true;
+    const villageAligned =
+      player.faction == "Village" &&
+      player.role &&
+      player.role.alignment == "Village";
+    if (villageAligned) {
+      this.safehouseVillageHoused = (this.safehouseVillageHoused || 0) + 1;
+    }
+    this.queueAlert(`${player.name} was sent to the safehouse.`);
   }
 
   checkWinConditions() {
