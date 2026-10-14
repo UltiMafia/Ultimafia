@@ -2,12 +2,16 @@ const express = require("express");
 const constants = require("../data/constants");
 const models = require("../db/models");
 const routeUtils = require("./utils");
+const gameListPaging = require("./gameListPaging");
 const utils = require("../lib/Utils");
 const redis = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const rehost = require("../modules/rehost");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
+
+// Extra finished rows fetched per page so a repeated id can be dropped.
+const FINISHED_DEDUPE_SLACK = 5;
 const axios = require("axios");
 const errors = require("../lib/errors");
 
@@ -200,7 +204,12 @@ router.get("/list", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     var userId = await routeUtils.verifyLoggedIn(req, true);
-    var start = ((Number(req.query.page) || 1) - 1) * constants.lobbyPageSize;
+    var start =
+      (Math.max(1, Math.floor(Number(req.query.page)) || 1) - 1) *
+      constants.lobbyPageSize;
+    // With a page number, finished games are paged by offset. The `last` /
+    // `first` cursor is only used by callers that send no page.
+    var usePageOffset = req.query.page !== undefined;
     var listName = String(req.query.list).toLowerCase();
     var lobby = String(req.query.lobby || "All");
     var last = Number(req.query.last);
@@ -255,6 +264,7 @@ router.get("/list", async function (req, res) {
       if (hidden.size) games = games.filter((g) => !hidden.has(g.hostId));
     }
 
+    var liveCount = games.length;
     games = games.slice(start, end);
 
     const setupIds = [
@@ -309,23 +319,44 @@ router.get("/list", async function (req, res) {
       games.length < constants.lobbyPageSize
     ) {
       var gameFilter = lobby != "All" ? { lobby } : {};
-      var finishedGames = await routeUtils.modelPageQuery(
-        models.Game,
-        gameFilter,
-        "endTime",
-        last,
-        first,
-        "id type setup lobby lobbyName anonymousGame anonymousDeck ranked competitive private spectating guests readyCheck noVeg stateLengths gameTypeOptions broken winnersInfo playerIdMap playerAlignmentMap endTime -_id",
-        constants.lobbyPageSize - games.length,
-        [
-          "setup",
-          "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id",
-        ]
-      );
-      finishedGames = finishedGames.map((game) => ({
-        ...game.toJSON(),
-        status: "Finished",
-      }));
+      var finishedNeeded = constants.lobbyPageSize - games.length;
+      var finishedSelect =
+        "id type setup lobby lobbyName anonymousGame anonymousDeck ranked competitive private spectating guests readyCheck noVeg stateLengths gameTypeOptions broken winnersInfo playerIdMap playerAlignmentMap endTime -_id";
+      var finishedSetupSelect =
+        "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id";
+      // A few extra rows so that dropping a repeated id still fills the page.
+      var finishedLimit = finishedNeeded + FINISHED_DEDUPE_SLACK;
+      var finishedGames;
+
+      if (usePageOffset) {
+        finishedGames = await models.Game.find(gameFilter)
+          .select(finishedSelect)
+          .sort({ endTime: -1, _id: -1 })
+          .skip(gameListPaging.finishedSkip(start, liveCount))
+          .limit(finishedLimit)
+          .populate("setup", finishedSetupSelect);
+      } else {
+        finishedGames = await routeUtils.modelPageQuery(
+          models.Game,
+          gameFilter,
+          "endTime",
+          last,
+          first,
+          finishedSelect,
+          finishedLimit,
+          ["setup", finishedSetupSelect]
+        );
+      }
+
+      finishedGames = gameListPaging
+        .dedupeById(
+          finishedGames.map((game) => ({
+            ...game.toJSON(),
+            status: "Finished",
+          })),
+          games.map((game) => game.id)
+        )
+        .slice(0, finishedNeeded);
       games = games.concat(finishedGames);
     }
 
