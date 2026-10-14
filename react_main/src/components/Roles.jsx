@@ -344,7 +344,14 @@ export function RoleCount({
 
   const digits = count ? count.toString().split("") : [];
 
-  const popoverDisabled = !showPopover || (roleClass == "null" && !alignment);
+  // A prediction chooser is a list of choices, not hover targets. Tapping a role
+  // fires mouseenter before the click, and the hover path would open the role's
+  // own popover for the instant before the click records the prediction and the
+  // sheet closes.
+  const popoverDisabled =
+    Boolean(makeRolePrediction) ||
+    !showPopover ||
+    (roleClass == "null" && !alignment);
   const popoverOpen = !popoverDisabled && canOpenPopover;
 
   const isInteractive =
@@ -365,8 +372,8 @@ export function RoleCount({
   const popoverProps = {
     ...keyboardProps,
     onClick: handleRoleCountClick,
-    onMouseEnter: handleMouseEnter,
-    onMouseLeave: handleMouseLeave,
+    onMouseEnter: popoverDisabled ? undefined : handleMouseEnter,
+    onMouseLeave: popoverDisabled ? undefined : handleMouseLeave,
     style: {
       cursor: isInteractive ? "pointer" : "default",
     },
