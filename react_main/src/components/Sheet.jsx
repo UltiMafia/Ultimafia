@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -51,16 +52,15 @@ export function SheetProvider({ children }) {
     setOpen(true);
   }, []);
 
-  // While a sheet exists the site bottom navigation is hidden (see
-  // css/main.css): it would otherwise sit directly under the sheet, dimmed by
-  // the modal backdrop and dead to touch. Keyed on the sheet rather than on
-  // `open` so the nav does not reappear under the sheet while it animates shut.
-  useEffect(() => {
+  // Restore the nav before the closing animation paints, so the descending
+  // sheet reveals it instead of leaving an empty space that fills afterwards.
+  // The drawer's backdrop still blocks interaction until the animation ends.
+  useLayoutEffect(() => {
     const root = document.documentElement;
-    if (sheet) root.setAttribute("data-sheet", "open");
+    if (open) root.setAttribute("data-sheet", "open");
     else root.removeAttribute("data-sheet");
     return () => root.removeAttribute("data-sheet");
-  }, [sheet]);
+  }, [open]);
 
   // The sheet belongs to the view it was opened from: a tap on a link inside it
   // navigates, and the sheet goes with the old view.
