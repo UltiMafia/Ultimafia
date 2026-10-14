@@ -104,6 +104,18 @@ body {
   --safe-inset-bottom: env(safe-area-inset-bottom, 0px);
   --safe-inset-left: env(safe-area-inset-left, 0px);
   --safe-inset-right: env(safe-area-inset-right, 0px);
+  /* What the bottom bar has to add beneath itself: the browser's own bottom
+     safe area, on the platforms that hand it to the page. Set on <html> by
+     Main; see the rule just below. */
+  --bottom-safe-area: 0px;
+}
+
+/* The page owns the bottom safe area (iOS browsers, Chrome on Android), so the
+   bottom bar has to fill the home-indicator / gesture strip itself. Where the
+   browser reserves it instead (Firefox on Android), adding the inset again is
+   exactly the gap between the bar and the space the browser kept. */
+html[data-bottom-inset="page"] {
+  --bottom-safe-area: var(--safe-inset-bottom, 0px);
 }
 
 .connection-banner {
@@ -115,6 +127,20 @@ body {
    with the keyboard, so the nav would otherwise ride up under it; hiding it is
    the app-like behaviour. The game's own bottom bar is not hidden. */
 html[data-keyboard="open"] .mobile-nav {
+  display: none;
+}
+
+/* The site bottom navigation. Reserves the home-indicator strip on iOS only
+   (see --bottom-safe-area); the Paper's own background fills whatever it
+   reserves, which is what the safe area is for. */
+.mobile-nav {
+  padding-bottom: var(--bottom-safe-area);
+}
+
+/* A sheet is the bottom surface while it is open. Leaving the nav there would
+   only show it sitting flush under the sheet, dimmed by the modal backdrop and
+   dead to touch. */
+html[data-sheet="open"] .mobile-nav {
   display: none;
 }
 

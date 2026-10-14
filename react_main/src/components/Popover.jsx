@@ -16,8 +16,10 @@ import { NameWithAvatar } from "pages/User/UserWidgets";
 
 import { Box, Divider, Link, Popover, Stack, Typography } from "@mui/material";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { GameSettingCount } from "./Roles";
 import { KUDOS_ICON } from "pages/User/profileIcons";
+import { useSheet } from "./Sheet";
 
 export function PopoverContent({ title, content, page = null, icon = <></>, subTitle = <></> }) {
   let wrappedTitle = (
@@ -75,7 +77,7 @@ export const InfoPopover = function ({
   icon,
   subTitle,
 }) {
-  // No hooks below this point, so the early return is safe.
+  // Every hook lives above the early returns.
   //
   // This used to call useMemo *after* the return, which changed the hook count
   // whenever `content` flipped between null and non-null -- React rejects that
@@ -83,7 +85,37 @@ export const InfoPopover = function ({
   // popoverOpen, anchorEl and content, so it could hand back an element built
   // from stale props. Dropping the memo fixes both; it was not saving anything
   // worth the risk.
+  const isPhone = useIsPhoneDevice();
+  const { openSheet } = useSheet();
+
+  // On a phone the details open as a sheet instead of a card anchored to the
+  // icon: a card pinned to a 20px glyph is a poor target for a thumb. Wider
+  // screens keep the anchored card. Content already fetched is reused, so
+  // reopening the same thing is instant.
+  useEffect(() => {
+    if (!isPhone || showPopover === false) return;
+    if (!popoverOpen || content === null) return;
+
+    openSheet(
+      <PopoverContent
+        page={page}
+        title={title}
+        content={content}
+        icon={icon}
+        subTitle={subTitle}
+      />,
+      { onClose: closePopover }
+    );
+    // title/page/icon/subTitle are literals at every call site; depending on
+    // them would reopen the sheet on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPhone, popoverOpen, content, showPopover]);
+
   if (content === null) {
+    return <></>;
+  }
+
+  if (isPhone) {
     return <></>;
   }
 
@@ -129,6 +161,16 @@ export function usePopover({ path, type, postprocessData }) {
     handleMouseLeave,
     closePopover,
   } = usePopoverOpen();
+
+  const { closeSheet } = useSheet();
+
+  // Closing the popover has to close its sheet too: call sites call this after
+  // they act (picking a predicted role), and on a phone the sheet is what is on
+  // screen. closeSheet is idempotent, so this cannot loop.
+  function closePopoverAndSheet() {
+    closePopover();
+    closeSheet();
+  }
 
   const errorAlert = useErrorAlert();
 
@@ -190,7 +232,7 @@ export function usePopover({ path, type, postprocessData }) {
     handleClick,
     handleMouseEnter,
     handleMouseLeave,
-    closePopover,
+    closePopover: closePopoverAndSheet,
     content,
   };
 }

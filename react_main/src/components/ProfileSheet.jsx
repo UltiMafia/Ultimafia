@@ -4,16 +4,13 @@ import React, {
   Suspense,
   useCallback,
   useContext,
-  useEffect,
   useRef,
   useState,
 } from "react";
 import axios from "axios";
-import { Box, Drawer } from "@mui/material";
-import { useLocation } from "react-router-dom";
 
 import { ProfileSkeleton } from "./Skeletons";
-import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
+import { useSheet } from "./Sheet";
 
 // Miniprofile only renders once the sheet is open, and it drags in d3 (via
 // PieChart) and react-mde (via ReportDialog -> Form). Keep it out of the
@@ -26,94 +23,71 @@ export const ProfileSheetContext = createContext({
   closeProfile: () => {},
 });
 
-// A profile shown as a sheet over whatever is on screen -- a bottom sheet on a
-// phone, a side panel on desktop -- instead of navigating away or opening a tab.
-// This matches how the native app lets you check a player mid-game.
+// A player's profile, in the shared sheet -- a bottom sheet on a phone, a side
+// panel on desktop -- instead of navigating away or opening a tab. This matches
+// how the native app lets you check a player mid-game.
 export function ProfileSheetProvider({ children }) {
-  const isPhone = useIsPhoneDevice();
-  const location = useLocation();
-  const [request, setRequest] = useState(null); // { id, props, gameId }
+  const { openSheet, closeSheet } = useSheet();
   const [profile, setProfile] = useState(null);
 
   const profileRef = useRef(null);
   profileRef.current = profile;
 
-  // The bottom navigation is part of the site shell, which is hidden while a
-  // game is full screen. When it is visible, lift the sheet above it. This is
-  // decided when the sheet opens and held until the next open, so navigating
-  // (for example tapping the name link) does not shift the sheet mid-close.
-  const navVisibleRef = useRef(false);
-  navVisibleRef.current = isPhone && !location.pathname.startsWith("/game/");
-  const [aboveNav, setAboveNav] = useState(false);
+  // Whether the sheet on screen is ours, so closeProfile cannot close someone
+  // else's (a role's details, a game's information).
+  const showingRef = useRef(false);
 
-  const openProfile = useCallback((id, props, gameId) => {
-    if (!id) return;
-    const nextProps = props || {};
-    setAboveNav(navVisibleRef.current);
+  const show = useCallback(
+    (data, gameId) => {
+      const node = (
+        <Suspense fallback={<ProfileSkeleton />}>
+          <Miniprofile user={data} game={gameId ? { gameId } : null} />
+        </Suspense>
+      );
 
-    // Already loaded for this user: open straight away.
-    if (profileRef.current && profileRef.current.id === id) {
-      setRequest({ id, props: nextProps, gameId });
-      return;
-    }
+      showingRef.current = true;
+      openSheet(node, {
+        onClose: () => {
+          showingRef.current = false;
+        },
+      });
+    },
+    [openSheet]
+  );
 
-    // Fetch first, then open. Opening immediately with a skeleton made the
-    // bottom sheet slide up, grow, and re-animate once the content arrived.
-    axios
-      .get(`/api/user/${id}/profile`)
-      .then((res) => {
-        res.data.props = nextProps;
-        setProfile(res.data);
-        setRequest({ id, props: nextProps, gameId });
-      })
-      .catch(() => {});
-  }, []);
+  const openProfile = useCallback(
+    (id, props, gameId) => {
+      if (!id) return;
+      const nextProps = props || {};
 
-  // Keep the loaded profile while closing, so the closing animation shows the
-  // content. It is replaced on the next open of a different profile.
+      // Already loaded for this user: open straight away. The loaded profile is
+      // also kept between opens, so a reopen does not refetch.
+      if (profileRef.current && profileRef.current.id === id) {
+        show(profileRef.current, gameId);
+        return;
+      }
+
+      // Fetch first, then open. Opening immediately with a skeleton made the
+      // bottom sheet slide up, grow, and re-animate once the content arrived.
+      axios
+        .get(`/api/user/${id}/profile`)
+        .then((res) => {
+          res.data.props = nextProps;
+          setProfile(res.data);
+          show(res.data, gameId);
+        })
+        .catch(() => {});
+    },
+    [show]
+  );
+
   const closeProfile = useCallback(() => {
-    setRequest(null);
-  }, []);
-
-  // Close the sheet when the route changes, e.g. when the name link inside it
-  // navigates to the full profile.
-  useEffect(() => {
-    setRequest(null);
-  }, [location.pathname, location.search]);
-
-  const open = Boolean(request);
+    if (showingRef.current) closeSheet();
+  }, [closeSheet]);
 
   return (
     <ProfileSheetContext.Provider value={{ openProfile, closeProfile }}>
       {children}
-      <Drawer
-        anchor={isPhone ? "bottom" : "right"}
-        open={open}
-        onClose={closeProfile}
-        PaperProps={{
-          sx: isPhone
-            ? {
-                borderTopLeftRadius: 16,
-                borderTopRightRadius: 16,
-                maxHeight: "70vh",
-                marginBottom: aboveNav
-                  ? "calc(56px + env(safe-area-inset-bottom, 0px))"
-                  : undefined,
-              }
-            : { width: 360 },
-        }}
-      >
-        <Box sx={{ overflowY: "auto" }}>
-          {profile && (
-            <Suspense fallback={<ProfileSkeleton />}>
-              <Miniprofile
-                user={profile}
-                game={request?.gameId ? { gameId: request.gameId } : null}
-              />
-            </Suspense>
-          )}
-        </Box>
-      </Drawer>
     </ProfileSheetContext.Provider>
   );
 }

@@ -40,7 +40,9 @@ import NavDropdown from "./components/NavDropdown";
 import { Loading } from "./components/Loading";
 import { MobileNav } from "./components/MobileNav";
 import { ProfileSheetProvider } from "./components/ProfileSheet";
+import { SheetProvider } from "./components/Sheet";
 import { useAppViewport } from "./hooks/useAppViewport";
+import { browserReservesBottomSafeArea } from "./utils/platform";
 import "css/main.css";
 import "css/accessibility.css";
 
@@ -152,6 +154,17 @@ function Main(props) {
   const navigate = useNavigate();
   // Size the phone shell and game session to the visual viewport.
   useAppViewport();
+
+  // Who owns the bottom safe area: Firefox on Android already keeps the layout
+  // viewport clear of it, while iOS browsers and Chrome on Android hand the
+  // strip to the page, so the bottom bar has to fill it there. css/main.css
+  // reads this.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (browserReservesBottomSafeArea()) root.removeAttribute("data-bottom-inset");
+    else root.setAttribute("data-bottom-inset", "page");
+    return () => root.removeAttribute("data-bottom-inset");
+  }, []);
   const routeGameId = matchGameId(location.pathname);
   const inGame = Boolean(routeGameId);
 
@@ -293,20 +306,22 @@ function Main(props) {
     <SiteInfoProvider setSiteInfoLoading={setSiteInfoLoading}>
       {loading && <Loading />}
       {!loading && (
-        <ProfileSheetProvider>
-          <InGameContext.Provider value={inGame}>
-            {UNSAFE_LocationContext ? (
-              <UNSAFE_LocationContext.Provider value={siteLocationContext}>
-                {siteContent}
-              </UNSAFE_LocationContext.Provider>
-            ) : (
-              siteContent
-            )}
-          </InGameContext.Provider>
-          {gameSession}
-          <AlertList />
-          <ConnectionBanner />
-        </ProfileSheetProvider>
+        <SheetProvider>
+          <ProfileSheetProvider>
+            <InGameContext.Provider value={inGame}>
+              {UNSAFE_LocationContext ? (
+                <UNSAFE_LocationContext.Provider value={siteLocationContext}>
+                  {siteContent}
+                </UNSAFE_LocationContext.Provider>
+              ) : (
+                siteContent
+              )}
+            </InGameContext.Provider>
+            {gameSession}
+            <AlertList />
+            <ConnectionBanner />
+          </ProfileSheetProvider>
+        </SheetProvider>
       )}
     </SiteInfoProvider>
   );
