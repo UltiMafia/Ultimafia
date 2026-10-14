@@ -170,6 +170,13 @@ function Main(props) {
   const routeGameId = matchGameId(location.pathname);
   const inGame = Boolean(routeGameId);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    if (inGame) root.setAttribute("data-game-view", "active");
+    else root.removeAttribute("data-game-view");
+    return () => root.removeAttribute("data-game-view");
+  }, [inGame]);
+
   // Keep the last site page mounted while a game is shown, so leaving a game and
   // returning to the same page does not remount it (and refetch). The site
   // subtree is frozen at its last non-game location while in a game; otherwise

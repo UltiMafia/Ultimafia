@@ -70,8 +70,6 @@ body {
   padding: 0px;
 
   overflow-x: initial;
-  /* No document-level overscroll / rubber-band on touch devices. */
-  overscroll-behavior: none;
 
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
@@ -83,6 +81,19 @@ body {
 #root {
   width: 100%;
   height: 100%;
+}
+
+/* Site content keeps its local touch edge feedback without passing scroll
+   gestures into the fixed phone shell. Do not suppress it on the document. */
+.app-shell .site-wrapper {
+  overscroll-behavior: contain;
+}
+
+/* Only the game view needs document-level overscroll suppression. Its own
+   transcript scroller still uses contain, retaining its local edge feedback. */
+html[data-game-view="active"],
+html[data-game-view="active"] body {
+  overscroll-behavior: none;
 }
 
 /* The game session is hosted outside the route table and sized to the viewport
