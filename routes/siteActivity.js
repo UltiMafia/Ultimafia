@@ -292,7 +292,10 @@ async function fetchComments(cutoff, limit) {
 
   const [setupDocs, userDocs] = await Promise.all([
     setupIds.size
-      ? models.Setup.find({ id: { $in: [...setupIds] } })
+      ? models.Setup.find({
+          id: { $in: [...setupIds] },
+          archived: { $ne: true },
+        })
           .select("id name")
           .lean()
       : [],
@@ -382,12 +385,12 @@ async function fetchSetupVersions(cutoff, limit) {
   const rows = await models.SetupVersion.find({
     timestamp: { $gte: new Date(cutoff) },
   })
-    .populate({ path: "setup", select: "id name creator" })
+    .populate({ path: "setup", select: "id name creator archived" })
     .sort({ timestamp: -1 })
     .limit(limit)
     .lean();
   return rows
-    .filter((r) => r.setup)
+    .filter((r) => r.setup && r.setup.archived !== true)
     .map((r) => ({
       id: `setupversion:${r._id}`,
       type: r.version === 1 ? "setupCreate" : "setupEdit",
@@ -561,7 +564,10 @@ async function fetchForumVotes(cutoff, limit) {
     strategyByOid,
   ] = await Promise.all([
     shortIdList.length
-      ? models.Setup.find({ id: { $in: shortIdList } })
+      ? models.Setup.find({
+          id: { $in: shortIdList },
+          archived: { $ne: true },
+        })
           .select("id name")
           .lean()
       : [],

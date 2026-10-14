@@ -6,6 +6,7 @@ const models = require("../db/models");
 const routeUtils = require("./utils");
 const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
+const setupArchive = require("../modules/setupArchive");
 
 const router = express.Router();
 
@@ -90,6 +91,16 @@ router.get("/", async function (req, res) {
     if (!setupId) {
       res.status(400);
       res.send("Missing setupId.");
+      return;
+    }
+
+    const setup = await models.Setup.findOne({ id: setupId })
+      .select("id archived creator")
+      .populate("creator", "id")
+      .lean();
+    if (setup && !(await setupArchive.canViewArchived(userId, setup))) {
+      res.status(404);
+      res.send("Setup not found.");
       return;
     }
 
@@ -190,10 +201,11 @@ router.post("/", async function (req, res) {
     }
 
     const setup = await models.Setup.findOne({ id: setupId })
-      .select("_id id gameType")
+      .select("_id id gameType archived creator")
+      .populate("creator", "id")
       .lean();
 
-    if (!setup) {
+    if (!setup || !(await setupArchive.canViewArchived(userId, setup))) {
       res.status(404);
       res.send("Setup not found.");
       return;

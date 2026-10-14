@@ -60,7 +60,10 @@ router.post("/create", async function (req, res) {
       return;
     }
 
-    const setups = await models.Setup.find({ competitive: true })
+    const setups = await models.Setup.find({
+      competitive: true,
+      archived: { $ne: true },
+    })
       .select("_id factionRatings")
       .lean();
 

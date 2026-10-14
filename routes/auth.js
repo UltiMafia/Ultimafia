@@ -303,7 +303,7 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint) {
     var id = routeUtils.getUserId(req);
     var ip = routeUtils.getIP(req);
     var user = await models.User.findOne({ email, deleted: false }).select(
-      "id deleted discordId fbUid"
+      "id deleted discordId fbUid systemAccount"
     );
     var bannedUser = await models.User.findOne({ email, banned: true }).select(
       "id discordId"
@@ -336,12 +336,22 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint) {
       var name = null;
       if (discordProfile) {
         name = discordProfile.global_name;
-        doesItExist = await models.User.findOne({ name: name }).select("id");
-        if (doesItExist.id) {
+        if (routeUtils.isReservedUsername(name)) {
           name = routeUtils.nameGen().slice(0, constants.maxUserNameLength);
+        } else {
+          var doesItExist = await models.User.findOne({ name: name }).select(
+            "id"
+          );
+          if (doesItExist && doesItExist.id) {
+            name = routeUtils.nameGen().slice(0, constants.maxUserNameLength);
+          }
         }
       } else {
         name = routeUtils.nameGen().slice(0, constants.maxUserNameLength);
+      }
+      if (routeUtils.isReservedUsername(name)) {
+        name =
+          routeUtils.nameGen().slice(0, constants.maxUserNameLength - 1) + "x";
       }
 
       id = shortid.generate();
@@ -492,6 +502,11 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint) {
       //Link or refresh account (1) (2) (7)
       id = user.id;
 
+      if (user.systemAccount) {
+        logger.warn(`Refusing login for system account ${id}`);
+        return;
+      }
+
       // CRITICAL SECURITY: Verify Firebase UID matches stored fbUid to prevent privilege escalation
       if (uid) {
         if (user.fbUid && user.fbUid !== uid) {
@@ -528,6 +543,11 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint) {
       }
 
       await syncRankedCompetitiveAccess(id);
+    }
+
+    if (user && user.systemAccount) {
+      logger.warn(`Refusing login for system account ${user.id}`);
+      return;
     }
 
     req.session.user = {

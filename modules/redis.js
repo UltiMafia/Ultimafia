@@ -646,12 +646,15 @@ async function getFeaturedSetup(featuredCategory) {
 
         // ranked: true should prevent stale classic setups from being searched
         ranked: true,
+        archived: { $ne: true },
       }).select(
         "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
       );
     } else {
       let filter = {
         featured: true,
+        archived: { $ne: true },
+        creator: { $exists: true },
       };
 
       // I would ideally like to incorporate setup tags into this one day so that tags can help separate featured setups for different lobbies
@@ -1480,10 +1483,28 @@ async function getOnlineUsersInfo(limit) {
     if (user != null) users.push(user);
   }
 
-  return users;
+  return filterSystemAccounts(users);
+}
+
+// Drops system accounts (and SetupArchivistBot) from online lists.
+async function filterSystemAccounts(users) {
+  const list = (users || []).filter((user) => user && user.id);
+  if (!list.length) return [];
+
+  const docs = await models.User.find({
+    id: { $in: list.map((user) => user.id) },
+    systemAccount: true,
+  })
+    .select("id")
+    .lean();
+
+  const hidden = new Set((docs || []).map((doc) => doc.id));
+  hidden.add(constants.SETUP_ARCHIVIST_BOT_ID);
+  return list.filter((user) => !hidden.has(user.id));
 }
 
 async function updateUserOnline(userId) {
+  if (!userId || userId === constants.SETUP_ARCHIVIST_BOT_ID) return;
   await client.zaddAsync("onlineUsers", Date.now(), userId);
   await client.setAsync(`user:${userId}:info:status`, "online");
   client.expire(`user:${userId}:info:status`, constants.userOnlineTTL / 1000);
@@ -1698,6 +1719,7 @@ module.exports = {
   getAllGameServerPorts,
   getOnlineUsers,
   getOnlineUsersInfo,
+  filterSystemAccounts,
   updateUserOnline,
   setUserOffline,
   removeStaleUsers,

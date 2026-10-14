@@ -861,6 +861,34 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Restore Setups": {
+      perm: "restoreSetup",
+      category: "Setup Management",
+      custom: "restoreSetups",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+          optional: true,
+        },
+        {
+          label: "Setup Id",
+          name: "setupId",
+          type: "text",
+          optional: true,
+        },
+      ],
+      run: function () {},
+    },
+    "Archive Stale Setups": {
+      perm: "seeModPanel",
+      ownerOnly: true,
+      category: "Setup Management",
+      custom: "archiveStale",
+      args: [],
+      run: function () {},
+    },
     "Toggle Disable Deck": {
       perm: "disableDeck",
       category: "Deck Management",

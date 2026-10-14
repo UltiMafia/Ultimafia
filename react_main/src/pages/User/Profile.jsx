@@ -54,11 +54,13 @@ import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
 import {
   Box,
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
+  FormControlLabel,
   Grid,
   IconButton,
   Paper,
@@ -222,6 +224,7 @@ export default function Profile() {
   const [setupsPage, setSetupsPage] = useState(1);
   const [setupsMaxPage, setSetupsMaxPage] = useState(1);
   const [setupsLoading, setSetupsLoading] = useState(false);
+  const [showArchivedSetups, setShowArchivedSetups] = useState(false);
   const [bustCache, setBustCache] = useState(false);
   const [friendsPage, setFriendsPage] = useState(1);
   // const [maxFriendsPage, setMaxFriendsPage] = useState(1);
@@ -345,6 +348,7 @@ export default function Profile() {
   useEffect(() => {
     setEditingBio(false);
     setEditingPronouns(false);
+    setShowArchivedSetups(false);
     setUserFamily(null);
     setProfileFamily(null);
     // Stop previous profile's player immediately; otherwise the iframe
@@ -393,7 +397,11 @@ export default function Profile() {
           setRecentGamesPage(1);
           setRecentGamesMaxPage(res.data.maxGamesPage || 1);
           setArchivedGames(res.data.archivedGames);
-          setCreatedSetups(res.data.setups);
+          setCreatedSetups(
+            (res.data.setups || []).filter(
+              (setup) => !setup || setup.archived !== true
+            )
+          );
           setSetupsPage(1);
           setSetupsMaxPage(res.data.maxSetupsPage || 1);
           // setMaxFriendsPage(res.data.maxFriendsPage);
@@ -967,7 +975,7 @@ export default function Profile() {
       });
   }
 
-  function loadSetups(id, pageToLoad = 1) {
+  function loadSetups(id, pageToLoad = 1, showArchived = showArchivedSetups) {
     if (!id) return;
     setSetupsLoading(true);
 
@@ -975,6 +983,7 @@ export default function Profile() {
       .get(`/api/user/${id}/setups`, {
         params: {
           page: pageToLoad,
+          ...(showArchived ? { showArchived: "true" } : {}),
         },
       })
       .then((res) => {
@@ -1025,6 +1034,12 @@ export default function Profile() {
     const targetPage = Math.min(Math.max(page, 1), maxPage);
 
     loadSetups(profileUserId, targetPage);
+  }
+
+  function onToggleArchivedSetups(checked) {
+    setShowArchivedSetups(checked);
+    setSetupsPage(1);
+    loadSetups(profileUserId, 1, checked);
   }
 
   const panelStyle = {
@@ -2228,9 +2243,32 @@ export default function Profile() {
               </div>
             </div>
             <div className="box-panel" style={panelStyle}>
-              <Typography variant="h3" style={headingStyle}>
-                Setups Created
-              </Typography>
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <Typography variant="h3" style={headingStyle}>
+                  Setups Created
+                </Typography>
+                {user.loggedIn && (isSelf || Number(user.rank) >= 10) ? (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        size="small"
+                        checked={showArchivedSetups}
+                        onChange={(e) => onToggleArchivedSetups(e.target.checked)}
+                      />
+                    }
+                    label="Show archived"
+                    sx={
+                      headingStyle.color
+                        ? { color: headingStyle.color, mr: 1 }
+                        : { mr: 1 }
+                    }
+                  />
+                ) : null}
+              </Stack>
               <div className="content">
                 {setupsMaxPage > 1 && (
                   <PageNav

@@ -17,7 +17,9 @@ import {
   Box,
   Button,
   Divider,
+  Checkbox,
   FormControl,
+  FormControlLabel,
   IconButton,
   InputLabel,
   List,
@@ -55,6 +57,7 @@ export default function HostBrowser(props) {
   const isPhoneDevice = useIsPhoneDevice();
   const theme = useTheme();
   const errorAlert = useErrorAlert();
+  const user = useContext(UserContext);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -109,6 +112,9 @@ export default function HostBrowser(props) {
             creatorName: action.value?.name ?? "",
           };
         }
+        case "ChangeShowArchived": {
+          return { ...state, page: 1, showArchived: action.value };
+        }
       }
     },
     {
@@ -120,8 +126,17 @@ export default function HostBrowser(props) {
       sortBy: "",
       creatorId: "",
       creatorName: "",
+      showArchived: false,
     }
   );
+
+  const isAdminPlus = Number(user?.rank) >= 10;
+  const viewingOwnSetups =
+    !!user?.loggedIn &&
+    (filters.option === "Yours" ||
+      (!!filters.creatorId && filters.creatorId === user.id));
+  // Admin+ can list every archived setup. Anyone else only sees their own.
+  const canShowArchived = isAdminPlus || viewingOwnSetups;
 
   const requestedGameType =
     params.get("game") || localStorage.getItem("gameType") || defaultGameType;
@@ -156,12 +171,12 @@ export default function HostBrowser(props) {
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
-      getSetupList(filters);
+      getSetupList(filters, canShowArchived);
     }, 100);
     return () => {
       window.clearTimeout(timeout);
     };
-  }, [filters, gameType]);
+  }, [filters, gameType, canShowArchived]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -170,13 +185,16 @@ export default function HostBrowser(props) {
     };
   }, []);
 
-  function getSetupList(filters) {
+  function getSetupList(filters, includeArchived) {
+    const params = {
+      gameType: gameType,
+      ...filters,
+    };
+    if (includeArchived && params.showArchived) params.showArchived = "true";
+    else delete params.showArchived;
     axios
       .get(
-        `/api/setup/search?${new URLSearchParams({
-          gameType: gameType,
-          ...filters,
-        }).toString()}`
+        `/api/setup/search?${new URLSearchParams(params).toString()}`
       )
       .then((res) => {
         if (isMountedRef.current) {
@@ -452,6 +470,23 @@ export default function HostBrowser(props) {
                   placeholder="Filter by creator"
                 />
               </FormControl>
+              {canShowArchived ? (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      checked={!!filters.showArchived}
+                      onChange={(e) =>
+                        dispatchFilters({
+                          type: "ChangeShowArchived",
+                          value: e.target.checked,
+                        })
+                      }
+                    />
+                  }
+                  label="Show archived"
+                />
+              ) : null}
             </Stack>
           </Grid>
         </Grid>

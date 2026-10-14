@@ -18,6 +18,7 @@ const logger = require("../modules/logging")(".");
 const fortunePoints = require("../modules/fortunePoints");
 const errors = require("../lib/errors");
 const skillRating = require("../modules/skillRating");
+const setupArchive = require("../modules/setupArchive");
 const router = express.Router();
 
 router.get("/groups", async function (req, res) {
@@ -1109,9 +1110,20 @@ router.post("/clearSetupName", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var setupId = String(req.body.setupId);
-    var perm = "clearSetupName";
 
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+    var setup = await models.Setup.findOne({ id: setupId })
+      .select("id creator")
+      .populate("creator", "id");
+
+    if (!setup) {
+      errors.notFound(res, "That setup does not exist. It may have been removed.");
+      return;
+    }
+
+    if (!(await setupArchive.canManageSetup(userId, setup, "clearName"))) {
+      errors.forbidden(res, "You do not have the required permissions.");
+      return;
+    }
 
     await models.Setup.updateOne(
       { id: setupId },
@@ -1131,9 +1143,20 @@ router.post("/clearSetupDescription", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var setupId = String(req.body.setupId);
-    var perm = "clearSetupName";
 
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+    var described = await models.Setup.findOne({ id: setupId })
+      .select("id creator")
+      .populate("creator", "id");
+
+    if (!described) {
+      errors.notFound(res, "That setup does not exist. It may have been removed.");
+      return;
+    }
+
+    if (!(await setupArchive.canManageSetup(userId, described, "clearDescription"))) {
+      errors.forbidden(res, "You do not have the required permissions.");
+      return;
+    }
 
     await models.Setup.updateOne(
       { id: setupId },
@@ -1192,6 +1215,23 @@ router.post("/deleteStrategy", async (req, res) => {
   }
 });
 
+// Renames setups this user still owns. Bot-owned setups stay put unless the
+// actor can manage archived setups.
+async function renameOwnedSetups(user, actorId) {
+  const targetIsBot =
+    user.id === constants.SETUP_ARCHIVIST_BOT_ID || user.systemAccount === true;
+  if (
+    targetIsBot &&
+    !(await routeUtils.verifyPermission(actorId, "manageArchivedSetups"))
+  ) {
+    return;
+  }
+  return models.Setup.updateMany(
+    { creator: user._id },
+    { $set: { name: "Unnamed setup" } }
+  ).exec();
+}
+
 // Unified route for clearing user content
 router.post("/clearUserContent", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
@@ -1203,7 +1243,9 @@ router.post("/clearUserContent", async (req, res) => {
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var user = await models.User.findOne({ id: userIdToClear }).select("_id");
+    var user = await models.User.findOne({ id: userIdToClear }).select(
+      "_id id systemAccount"
+    );
 
     if (!user) {
       errors.notFound(res, "User not found.");
@@ -1418,10 +1460,7 @@ router.post("/clearUserContent", async (req, res) => {
             { creator: user._id },
             { $set: { deleted: true } }
           ).exec(),
-          models.Setup.updateMany(
-            { creator: user._id },
-            { $set: { name: "Unnamed setup" } }
-          ).exec(),
+          renameOwnedSetups(user, userId),
           models.ForumThread.updateMany(
             { author: user._id },
             { $set: { deleted: true } }
@@ -2544,6 +2583,11 @@ router.post("/changeName", async (req, res) => {
     var perm = "changeUsersName";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    if (routeUtils.isReservedUsername(name)) {
+      errors.conflict(res, "There is already a user with this name.");
+      return;
+    }
 
     // Get current user to record previous name
     const currentUser = await models.User.findOne({
