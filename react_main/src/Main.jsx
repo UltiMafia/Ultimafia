@@ -41,7 +41,9 @@ import { Loading } from "./components/Loading";
 import { MobileNav } from "./components/MobileNav";
 import { ProfileSheetProvider } from "./components/ProfileSheet";
 import { SheetProvider } from "./components/Sheet";
+import ThemeColorMeta from "./components/ThemeColorMeta";
 import { useAppViewport } from "./hooks/useAppViewport";
+import { useThemeColorMeta } from "./hooks/useThemeColorMeta";
 import { browserReservesBottomSafeArea } from "./utils/platform";
 import "css/main.css";
 import "css/accessibility.css";
@@ -308,6 +310,7 @@ function Main(props) {
       {!loading && (
         <SheetProvider>
           <ProfileSheetProvider>
+            <ThemeColorMeta />
             <InGameContext.Provider value={inGame}>
               {UNSAFE_LocationContext ? (
                 <UNSAFE_LocationContext.Provider value={siteLocationContext}>
