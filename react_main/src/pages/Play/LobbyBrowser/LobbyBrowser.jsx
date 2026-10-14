@@ -88,12 +88,16 @@ export default function LobbyBrowser() {
     }
 
     document.title = `🔪 Ultimafia Lobby`;
+    // A newly picked lobby starts at page 1. Without resetting it the page
+    // number stayed on the previous lobby's page, and the second request the
+    // other effect fired for that page raced this one -- two different lists,
+    // whichever response landed last.
+    setPage(1);
     getGameList(listType, 1);
   }, [location.pathname, lobbyName]);
 
   useEffect(() => {
     setHasOneOpenGame(false);
-    getGameList(listType, page);
     getOpenGameCounts();
   }, [lobbyName]);
 
@@ -106,16 +110,28 @@ export default function LobbyBrowser() {
     });
   }, []);
 
+  // The cursor the page now on screen was fetched with. The list endpoint gives
+  // open and in-progress games endTime 0, so a cursor recomputed from the items
+  // on screen is not the one that produced this page -- reusing the real one is
+  // what makes a refresh, a poll, and a return to a lobby show the same list
+  // instead of a different slice each time.
+  const pageCursorRef = useRef("last=Infinity");
+
   const getGameList = async (
     _listType,
     _page,
     finallyCallback = null,
-    { background = false } = {}
+    { background = false, reload = false } = {}
   ) => {
     // A background refresh (the poll) must not flash the loading skeleton on an
     // empty list, so it leaves the loading state alone entirely.
     if (!background) setLoading(true);
-    var filterArg = getPageNavFilterArg(_page, page, games, "endTime");
+
+    // A reload re-fetches the page already on screen. Paging computes a cursor
+    // from the items on screen; a reload reuses the cursor that worked.
+    const filterArg = reload
+      ? pageCursorRef.current
+      : getPageNavFilterArg(_page, page, games, "endTime");
 
     if (filterArg == null) {
       if (isMountedRef.current && !background) {
@@ -124,12 +140,13 @@ export default function LobbyBrowser() {
       return;
     }
 
-    filterArg += `&page=${_page}`;
+    if (!reload) pageCursorRef.current = filterArg;
+    const query = `${filterArg}&page=${_page}`;
     try {
       const res = await axios.get(
         `/api/game/list?list=${camelCase(
           _listType
-        )}&lobby=${lobbyName}&${filterArg}`
+        )}&lobby=${lobbyName}&${query}`
       );
       if (!isMountedRef.current) return;
 
@@ -178,6 +195,7 @@ export default function LobbyBrowser() {
         await current.getOpenGameCounts();
         await current.getGameList(current.listType, current.page, null, {
           background: true,
+          reload: true,
         });
       } catch (_) {
         // Next tick tries again.
@@ -227,7 +245,7 @@ export default function LobbyBrowser() {
         setRefreshButtonIsSpinning(false);
       }
     };
-    getGameList(listType, page, callback);
+    getGameList(listType, page, callback, { reload: true });
     getOpenGameCounts();
   };
 
@@ -296,7 +314,7 @@ export default function LobbyBrowser() {
             <GameRow
               game={game}
               lobby={lobbyName}
-              refresh={() => getGameList(listType, page)}
+              refresh={() => getGameList(listType, page, null, { reload: true })}
               odd={games.indexOf(game) % 2 === 1}
               key={game.id}
               showLobbyName
