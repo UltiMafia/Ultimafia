@@ -462,6 +462,13 @@ module.exports = class Role {
       } else if (options.state == "Day" && stateName.match("Dusk")) {
         stateValid = true;
       }
+      if (
+        options.state == "Night" &&
+        typeof this.game.isConversionNightPhase == "function" &&
+        this.game.isConversionNightPhase(this.game.getStateName())
+      ) {
+        stateValid = false;
+      }
       if (stateValid) {
         if (options.ability && !this.hasAbility(options.ability)) {
           return;

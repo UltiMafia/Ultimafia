@@ -77,8 +77,16 @@ module.exports = class Player {
 
     // Configure temporary immunity reset
     this.game.events.on("afterActions", () => {
+      const inConversion =
+        typeof this.game.isConversionNightPhase == "function" &&
+        this.game.isConversionNightPhase(this.game.getStateName());
+      const convertPower = this.tempImmunity["convert"];
       this.tempImmunity = {};
       this.tempAppearance = {};
+      if (inConversion && convertPower != null) {
+        this.tempImmunity["convert"] = convertPower;
+      }
+      if (!inConversion) this.nightRoleblocked = false;
     });
   }
 

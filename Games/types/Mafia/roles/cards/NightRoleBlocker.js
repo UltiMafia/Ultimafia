@@ -7,8 +7,11 @@ module.exports = class NightRoleBlocker extends Card {
 
     this.meetings = {
       Block: {
-        states: ["Night"],
+        states: ["Night (Becoming)", "Night (Swapping)", "Night (Converting)", "Night"],
         flags: ["voting"],
+        shouldMeet: function () {
+          return this.game.getStateName() == this.game.firstActiveNightPhase();
+        },
         action: {
           labels: ["block"],
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,

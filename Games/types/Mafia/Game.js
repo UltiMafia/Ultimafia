@@ -9,6 +9,13 @@ const Action = require("./Action");
 const stateEventMessages = require("./templates/stateEvents");
 const roleData = require("../../../data/roles");
 const rolePriority = require("./const/RolePriority");
+const { PRIORITY_MIGO_OLD_DEMON } = require("./const/Priority");
+const {
+  CONVERSION_PHASES,
+  isConversionNightPhase: nameIsConversionPhase,
+  resolveMigoOldDemons,
+  setupUsesPhase,
+} = require("./const/ConversionPhases");
 const modifierData = require("../../../data/modifiers");
 const {
   MAFIA_FACTIONS,
@@ -60,6 +67,12 @@ module.exports = class MafiaGame extends Game {
         name: "Treasure Chest",
         length: 1000 * 60,
       },
+      ...CONVERSION_PHASES.map((phase) => ({
+        name: phase.name,
+        length: phase.length,
+        delayActions: false,
+        skipChecks: [() => this.shouldSkipState(phase.name)],
+      })),
       {
         name: "Night",
         length: this.BaseNightLength,
@@ -121,6 +134,72 @@ module.exports = class MafiaGame extends Game {
     this.GameEndEvent = this.setup.GameEndEvent || "Meteor";
     this.lastNightVisits = [];
     this.infoLog = [];
+    this.migoNewDemons = [];
+    this.migoSuppressedDemons = [];
+
+    this.events.on("actionsNext", (queue) => {
+      if (!queue) return;
+      const phase = this.getStateName();
+      if (phase != "Night" && !this.isConversionNightPhase(phase)) return;
+
+      for (let action of queue) {
+        if (!action.actor || !action.actor.nightRoleblocked) continue;
+        if (action.hasLabel("absolute")) continue;
+        action.cancel(true);
+      }
+    });
+
+    this.events.on("state", () => {
+      if (this.getStateName() != "Night") return;
+      const newcomers = this.migoNewDemons || [];
+      const suppressed = this.migoSuppressedDemons || [];
+      if (newcomers.length == 0 && suppressed.length == 0) return;
+
+      this.queueAction(
+        new Action({
+          game: this,
+          priority: PRIORITY_MIGO_OLD_DEMON,
+          labels: ["hidden", "absolute"],
+          run: function () {
+            resolveMigoOldDemons(this.game);
+          },
+        })
+      );
+    });
+  }
+
+  isConversionNightPhase(name) {
+    return nameIsConversionPhase(name);
+  }
+
+  firstActiveNightPhase() {
+    for (let phase of CONVERSION_PHASES) {
+      if (this.setupUsesConversionPhase(phase.name)) return phase.name;
+    }
+    return "Night";
+  }
+
+  setupUsesConversionPhase(state) {
+    return setupUsesPhase(this, state);
+  }
+
+  isDemonPlayer(player) {
+    if (!player || !player.role) return false;
+    if (player.isDemonic && player.isDemonic(true)) return true;
+    const data = roleData[this.type] && roleData[this.type][player.role.name];
+    return !!(data && data.category == "Demon");
+  }
+
+  noteMigoNewDemon(actor, player, wasDemon) {
+    if (!this.isDemonPlayer(player)) return;
+    if (wasDemon) {
+      // Demon into Demon: the new Demon's kill does not land tonight.
+      if (!this.migoSuppressedDemons) this.migoSuppressedDemons = [];
+      this.migoSuppressedDemons.push(player);
+      return;
+    }
+    if (!this.migoNewDemons) this.migoNewDemons = [];
+    this.migoNewDemons.push({ actor: actor, player: player });
   }
 
   rebroadcastSetup() {
@@ -774,6 +853,11 @@ module.exports = class MafiaGame extends Game {
     if (this.ExtraStates == null) {
       this.ExtraStates = [];
     }
+    if (this.isConversionNightPhase(state)) {
+      // Run whenever the setup lists a role for this phase, even if nobody
+      // was dealt that role. Skip only when the setup does not use it.
+      return !this.setupUsesConversionPhase(state);
+    }
     if (this.HaveHostingState == true) {
       return true;
     }
@@ -886,12 +970,20 @@ module.exports = class MafiaGame extends Game {
         length = 1000 * 60;
       }
     }
-    if (this.isTest) {
+    // A conversion phase always runs its full clock. A timeout skips the
+    // action. It does not open a veg-kick vote.
+    if (this.isTest || this.isConversionNightPhase(this.getStateName())) {
       this.createTimer("main", length, () => this.gotoNextState());
     } else {
       this.createTimer("main", length, () => this.checkVeg());
     }
     this.checkAllMeetingsReady();
+  }
+
+  checkAllMeetingsReady() {
+    // Submitting the action must not end Becoming, Swapping, or Converting.
+    if (this.isConversionNightPhase(this.getStateName())) return;
+    return super.checkAllMeetingsReady();
   }
 
   getRoleNightOrder() {
