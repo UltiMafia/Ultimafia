@@ -30,7 +30,7 @@ import { UserContext, SiteInfoContext } from "Contexts";
 import Form, { useForm, HiddenUpload, UserSearchSelect } from "components/Form";
 import { useErrorAlert } from "components/Alerts";
 import { FamilyAvatarImage } from "utils/avatarUrl";
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import AccountCredentials from "./AccountCredentials";
 import AvatarUpload from "components/AvatarUpload";
 import BannerUpload from "components/BannerUpload";
 // DeathSoundUpload is rendered via Form field type "deathSoundUpload"
@@ -213,7 +213,6 @@ export default function Settings() {
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [accountsLoaded, setAccountsLoaded] = useState(false);
   const [accounts, setAccounts] = useState({});
-  const [emailForPasswordReset, setEmailForPasswordReset] = useState("");
   const [loading, setLoading] = useState(false);
   const [familyName, setFamilyName] = useState("");
   const [familyAvatarUploaded, setFamilyAvatarUploaded] = useState(false);
@@ -1080,20 +1079,6 @@ export default function Settings() {
     updateGameFields(changes);
   };
 
-  const handlePasswordReset = async () => {
-    setLoading(true);
-    try {
-      const auth = getAuth();
-      await sendPasswordResetEmail(auth, emailForPasswordReset);
-      siteInfo.showAlert("Password reset email has been sent.", "success");
-      setEmailForPasswordReset("");
-    } catch (err) {
-      siteInfo.showAlert("Failed to send password reset email.", "error");
-      console.error(err);
-    }
-    setLoading(false);
-  };
-
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
   if (!settingsLoaded || !accountsLoaded || !user.loaded || !familyLoaded)
     return <Loading small />;
@@ -1167,21 +1152,8 @@ export default function Settings() {
       path: "account",
       wrapInPaper: true,
       content: (
-        <Stack direction="column" spacing={1}>
-          <TextField
-            sx={{ minWidth: "240px" }}
-            label="Email Address"
-            value={emailForPasswordReset}
-            onChange={(e) => setEmailForPasswordReset(e.target.value)}
-            disabled={loading}
-          />
-          <Button
-            sx={{ minWidth: "240px" }}
-            onClick={handlePasswordReset}
-            disabled={loading || !emailForPasswordReset}
-          >
-            Reset Password
-          </Button>
+        <Stack direction="column" spacing={2}>
+          <AccountCredentials />
           <Button
             variant="outlined"
             sx={{ minWidth: "120px" }}
