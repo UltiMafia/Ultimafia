@@ -12,7 +12,17 @@ export function useHostedGameSession() {
   const routeGameId = gameIdAt(location.pathname);
   const inGame = Boolean(routeGameId);
   const previousSite = useRef(location);
-  if (!inGame) previousSite.current = location;
+  const gameReturnLocations = useRef(new Map());
+  if (!inGame) {
+    previousSite.current = location;
+  } else {
+    // Back/Forward restores an existing game entry, including the site it was
+    // entered from, rather than the page we just browsed while in that game.
+    if (!gameReturnLocations.current.has(location.key)) {
+      gameReturnLocations.current.set(location.key, previousSite.current);
+    }
+    previousSite.current = gameReturnLocations.current.get(location.key);
+  }
   const activeRef = useRef(inGame);
   activeRef.current = inGame;
   const [hostedGameId, setHostedGameId] = useState(null);

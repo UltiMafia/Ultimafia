@@ -261,6 +261,20 @@ async function tests() {
     assert(document.querySelector('#site-scroll') === scroller && scroller.scrollTop === 42,'scroll container remounted');
   });
 
+  await run("Back to a game restores that entry's leave destination", async () => {
+    mount(<MemoryRouter initialEntries={["/play?lobby=Main#list"]}><SessionApp /></MemoryRouter>);
+    await until(() => api, 'history return fixture');
+    api.navigate('/game/one'); await until(() => api.inGame && api.hostedGameId, 'enter game');
+    api.navigate('/other'); await until(() => !api.inGame, 'browse profile');
+    api.navigate(-1); await until(() => api.inGame, 'back to game');
+    api.navigate(1); await until(() => !api.inGame, 'forward to profile');
+    api.navigate(-1); await until(() => api.inGame, 'back to game again');
+    api.leaveGameSession(); await until(() => !api.inGame, 'leave game');
+    assert(document.querySelector('#view-route').textContent === '/play', 'leave returned to profile instead of original page');
+    assert(document.querySelector('#view-query').textContent === '?lobby=Main#list', 'original query/hash lost');
+    assert(!document.querySelector('#session-value'), 'leave retained session');
+  });
+
   await run("server leave while browsing closes the session without redirecting", async () => {
     mount(<MemoryRouter initialEntries={["/play"]}><SessionApp /></MemoryRouter>);
     await until(() => api, 'background leave fixture');
