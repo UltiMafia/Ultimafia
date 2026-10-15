@@ -80,6 +80,8 @@ async function run(storyline, actions, opts = {}) {
   });
   // Force a storyline's random branch (e.g. { branch: "cop" } sets data.target).
   if (opts.branch) game.tutorial.data.target = opts.branch;
+  // Janitor / Lawyer: force which seat is cleaned on Night 1.
+  if (opts.victim) game.tutorial.data.victim = opts.victim;
   await game.userJoin(human, false);
 
   const t = game.tutorial;
@@ -184,7 +186,7 @@ async function run(storyline, actions, opts = {}) {
     storyline,
     finished: !!game.finished,
     winners: game.winners ? Object.keys(game.winners.groups) : null,
-    branch: t.branch,
+    branch: t.branch || (t.data && t.data.victim) || null,
     humanAlive: t.human().alive,
     failed: !!t.failed,
     closed: !!game._tutorialClosing,
@@ -201,9 +203,10 @@ async function run(storyline, actions, opts = {}) {
     buttons: overlays.filter((o) => o && o.choices).length,
     lastOverlay: overlays[overlays.length - 1],
     leftoverActions: queue.length,
-    log: t.log,
-    alerts,
-    chat,
+    // Cap log/alerts so parent test runners don't truncate the JSON line.
+    log: (t.log || []).slice(-400),
+    alerts: alerts.slice(-200),
+    chat: chat.slice(-100),
     overlays: overlays.length,
     rejoin,
     errors,

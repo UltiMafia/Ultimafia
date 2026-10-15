@@ -18,18 +18,9 @@ const { TestSocket } = require("../../../lib/sockets");
 const chatMatch = require("./chatMatch");
 const storylines = require("./storylines");
 
-// Seats in Frontier Justice and the bot that sits in each.
-const CAST = {
-  cop: { name: "Cassidy", role: "Cop" },
-  journalist: { name: "Jesse", role: "Journalist" },
-  sheriff: { name: "Wyatt", role: "Sheriff" },
-  v1: { name: "Dolly", role: "Villager" },
-  v2: { name: "Eli", role: "Villager" },
-  v3: { name: "Hattie", role: "Villager" },
-  janitor: { name: "Boone", role: "Janitor" },
-  lawyer: { name: "Flint", role: "Lawyer:Loyal" },
-  mafioso: { name: "Silas", role: "Mafioso" },
-};
+// Seats in Frontier Justice and the bot that sits in each (live-player
+// cosmetics: Games/core/tutorial/cast.js).
+const CAST = require("./cast");
 
 const SETUP = require("./setup");
 
@@ -98,11 +89,16 @@ class TutorialController {
     const bots = [];
     for (const key in CAST) {
       if (key === this.humanSeat) continue;
+      const seat = CAST[key];
+      const settings = {};
+      if (seat.nameColor) settings.nameColor = seat.nameColor;
+      if (seat.textColor) settings.textColor = seat.textColor;
       const user = new User({
         id: `tutbot-${key}-${shortid.generate()}`,
-        name: CAST[key].name,
+        name: seat.name,
+        avatar: seat.avatar || false,
         socket: new TestSocket(),
-        settings: {},
+        settings,
         isTest: true,
       });
       user.tutorialBot = true;
@@ -385,6 +381,34 @@ class TutorialController {
     }
   }
 
+  // Every living bot casts a Village (or other) vote before the lynch
+  // proceeds, including the player being condemned. dissenters: { key: otherTarget }
+  // lets a few vote elsewhere for flavor; everyone still votes.
+  async everyoneVotes(target, token, meetingName = "Village", { fast = false, dissenters = {} } = {}) {
+    const entries = [];
+    for (const key in CAST) {
+      if (key === this.humanSeat) continue;
+      const p = this.player(key);
+      if (!p || !p.alive) continue;
+      entries.push([key, dissenters[key] || target]);
+    }
+    await this.townVote(entries, null, token, meetingName, { fast });
+  }
+
+  // The most recently killed bot (e.g. by the Sheriff's gun): { key, name, role }.
+  lastShot() {
+    for (const key in CAST) {
+      if (key === this.humanSeat) continue;
+      const p = this.player(key);
+      if (p && !p.alive && !(this.data.seenDead || []).includes(key)) {
+        (this.data.seenDead = this.data.seenDead || []).push(key);
+        const role = p.role ? p.role.name : CAST[key].role.split(":")[0];
+        return { key, name: p.name, role };
+      }
+    }
+    return null;
+  }
+
   // target: a cast key, "*" (no one), or a literal option like "Yes".
   selectionFor(target) {
     if (CAST[target]) {
@@ -480,7 +504,7 @@ class TutorialController {
   // vote?: { meeting, target } (target "*other" = any other choice there),
   // say?: example line (good chat option), sample?/when?: a bad chat option
   // detected by when(text, result) }.
-  ask({ text, options, meeting = "Village", want, reactions = {}, hints = {}, wrong, wrongReactions, idleHint, token }) {
+  ask({ text, options, meeting = "Village", want, match, reactions = {}, hints = {}, wrong, wrongReactions, idleHint, token }) {
     this.checkToken(token);
     const names = this.players().filter((p) => p !== this.human()).map((p) => p.name);
     const w = want && Object.assign({}, want);
@@ -491,6 +515,7 @@ class TutorialController {
         options,
         meeting,
         want: w,
+        match,
         names,
         reactions: Object.assign({ wrongVote: wrongReactions || [] }, reactions),
         hints,
@@ -550,11 +575,12 @@ class TutorialController {
 
   // A claim the player types in the real chat. The example is shown as plain
   // text; `also` holds bad options (votes, or chat lines detected by when()).
-  expectChat({ meeting, expect, text, example, reactions = {}, hints = {}, token, also = [] }) {
+  expectChat({ meeting, expect, text, example, reactions = {}, hints = {}, token, also = [], match }) {
     return this.decide({
       token,
       meeting,
       want: expect,
+      match,
       text,
       reactions,
       hints,
@@ -633,13 +659,22 @@ class TutorialController {
   onHumanSpeak(player, meeting, content) {
     if (player !== this.human()) return;
     const p = this.pending;
-    if (!p || !p.want || meeting.name !== p.meeting) return;
+    if (!p || meeting.name !== p.meeting) return;
+    if (!p.want && !p.match) return;
     if (!(this.steps[0] && this.steps[0].pending === p)) return;
-    const result = chatMatch.evaluate(content, p.want, p.names);
+    const result = chatMatch.evaluate(content, p.want || {}, p.names);
     this.log.push(`human said "${content}" -> ${result.problem || "ok"}`);
     const bad = p.options.find((o) => o.when && o.when(content, result, this));
     if (bad) return this.settle(p, bad.id);
-    if (result.ok) return this.settle(p, "go");
+    if (result.ok) {
+      if (p.match && !p.match(content, result, this)) {
+        this.react(p, "incomplete");
+        this.guide((p.hints && p.hints.incomplete) || p.text);
+        this.armSilence(p);
+        return;
+      }
+      return this.settle(p, "go");
+    }
     // Bots react in character, then the tutorial steers back.
     const reactionDelay = Math.min(this.timing.chat, 1200);
     const t = setTimeout(() => {

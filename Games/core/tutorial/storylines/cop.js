@@ -1,6 +1,6 @@
-// COP: investigate at night, get a guilty result, claim Cop and share it.
-// The town lynches the Mafia member you found; a fake Cop claim on Day 2 is
-// settled by the Journalist, and the town wins.
+// COP: investigate, share a guilty, Sheriff shoots that Mafia, then leads the
+// town onto a second Mafia. Night 2 the Cop dies; the Journalist was reading
+// them and reveals the last guilty. Autowin is taught before the final lynch.
 
 const CLAIM_REACTIONS = {
   wrongRole: [
@@ -59,23 +59,21 @@ async function lynch(t, k, target, text) {
       ["sheriff", "Vote your own result, {name}."],
     ],
   });
-  await t.townVote(["journalist", "sheriff", "v1", "v2", "v3"], target, k, "Village", { fast: true });
+  // Everyone alive votes, including the player being condemned.
+  await t.everyoneVotes(target, k, "Village", { fast: true });
   await t.advance(k);
 }
 
-// A Cop who names a random player guilty gets caught: the real result comes
-// out, and the Sheriff shoots the liar.
 function randomGuilty(t, victim) {
   return {
     id: "randomGuilty",
     label: `Say: “I'm the Cop. ${t.nameOf(victim)} is guilty.” (a guess)`,
     sample: `I'm the Cop. ${t.nameOf(victim)} is guilty.`,
-    // Claims Cop with a guilty on someone other than the real result.
     when: (text, r) => r.problem === "wrongTarget" && r.verdict === "guilty",
     bad: {
       reactions: [
         [victim, "WHAT? I'm a Villager! You never checked me!"],
-        ["journalist", "I'm the Journalist. I read the Cop's report last night, and it wasn't on Dolly. {name} is lying."],
+        ["journalist", `I'm the Journalist. I read the Cop's report last night, and it wasn't on ${t.nameOf(victim)}. {name} is lying.`],
         ["sheriff", "A Cop who lies about a result is no Cop. Sorry, {name}."],
       ],
       consequence: async (t, k) => {
@@ -89,23 +87,12 @@ function randomGuilty(t, victim) {
   };
 }
 
-const QUIET = {
-  id: "quiet",
-  label: "Stay quiet for now",
-  bad: {
-    reactions: [
-      ["sheriff", "No Cop claim on Day 1? Then I've got nothing to shoot."],
-      ["v3", "If our Cop won't talk, we're lynching blind."],
-    ],
-    lesson:
-      "In Frontier Justice the Cop claims on Day 1 with a guilty: the town needs a lynch target and the Sheriff needs someone to shoot. Hiding a guilty wastes it.",
-  },
-};
-
 function mafiaKill(t, target) {
-  for (const key of ["mafioso", "lawyer", "janitor"]) t.vote(key, "Mafia Kill", target);
-  t.vote("janitor", "Clean Death", "No");
-  t.vote("lawyer", "Litigate", "*");
+  for (const key of ["mafioso", "lawyer", "janitor"]) {
+    if (t.player(key) && t.player(key).alive) t.vote(key, "Mafia Kill", target);
+  }
+  if (t.player("janitor") && t.player("janitor").alive) t.vote("janitor", "Clean Death", "No");
+  if (t.player("lawyer") && t.player("lawyer").alive) t.vote("lawyer", "Litigate", "*");
 }
 
 module.exports = {
@@ -123,75 +110,82 @@ module.exports = {
     async Night1(t, k) {
       await t.expectVote("Investigate", "mafioso", {
         token: k,
-        text: "Pick someone to investigate. In the Investigate box, click Silas.",
-        wrong: () => t.guide("For this tutorial, investigate Silas. Click Silas in the Investigate box."),
+        text: `Pick someone to investigate. In the Investigate box, click ${t.nameOf("mafioso")}.`,
+        wrong: () => t.guide(`For this tutorial, investigate ${t.nameOf("mafioso")}. Click ${t.nameOf("mafioso")} in the Investigate box.`),
       });
       mafiaKill(t, "v2");
+      // Journalist reads the Cop so night 2's report survives the Cop's death.
+      t.vote("journalist", "Receive Reports", "cop");
       await t.advance(k, "Done for tonight. Look out for your investigation report in the chat when the day starts. Click Continue to start Day 1.");
     },
 
     async Day1(t, k) {
-      t.guide("Your report arrived at dawn (see the chat): Silas is GUILTY. He's Mafia!");
+      t.guide(`Your report arrived at dawn (see the chat): ${t.nameOf("mafioso")} is GUILTY. They're Mafia!`);
       await t.chat("Village", [
-        ["v1", "Eli's dead. Anyone have information?"],
+        ["v1", `${t.nameOf("v2")}'s dead. Anyone have information?`],
         ["v3", "Power roles, now's the time."],
       ], k);
       await t.expectChat({
         token: k,
         meeting: "Village",
         expect: { role: "cop", target: "mafioso", verdict: "guilty" },
-        text: "Share your result. In town chat, claim Cop and say Silas is guilty.",
-        example: "I'm the Cop. I investigated Silas last night: GUILTY.",
+        text: `Share your result. In town chat, claim Cop and say ${t.nameOf("mafioso")} is guilty.`,
+        example: `I'm the Cop. I investigated ${t.nameOf("mafioso")} last night: GUILTY.`,
         reactions: CLAIM_REACTIONS,
-        hints: hints("Silas"),
+        hints: hints(t.nameOf("mafioso")),
         also: [randomGuilty(t, "v1")],
       });
       await t.chat("Village", [
         ["mafioso", "What?! That's a lie!"],
         ["sheriff", "A Cop with a guilty result. That's good enough for me."],
-        ["v1", "Silas it is."],
+        ["v1", `${t.nameOf("mafioso")} it is.`],
       ], k);
-      await lynch(t, k, "mafioso", "The town believes you. In the Village box, vote Silas.");
+      t.guide(`The Sheriff believes you. Watch: in Frontier Justice the Sheriff often shoots a confirmed guilty instead of waiting on the lynch.`);
+      t.vote("sheriff", "Shoot Gun", "mafioso");
+      await t.wait(t.timing.beat, k);
+      t.guide(`${t.nameOf("mafioso")} was shot and flipped ${t.constructor.CAST.mafioso.role}: real Mafia. Your report was right.`);
+      await t.chat("Village", [
+        ["sheriff", `Cop's legit. I'm leading on ${t.nameOf("lawyer")} next — been whispering with ${t.nameOf("mafioso")} all game.`],
+        ["journalist", "I'll follow the Sheriff."],
+        ["v3", `${t.nameOf("lawyer")} it is.`],
+        ["lawyer", "This is ridiculous!"],
+      ], k);
+      t.guide(`The Sheriff is leading the town onto a second Mafia suspect. Vote with them.`);
+      await lynch(t, k, "lawyer", `In the Village box, vote ${t.nameOf("lawyer")}.`);
     },
 
     async Night2(t, k) {
-      await t.expectVote("Investigate", "lawyer", {
+      await t.expectVote("Investigate", "janitor", {
         token: k,
-        text: "Investigate again. In the Investigate box, click Flint.",
-        wrong: () => t.guide("Investigate Flint this time. Click Flint in the Investigate box."),
+        text: `Investigate again. In the Investigate box, click ${t.nameOf("janitor")}.`,
+        wrong: () => t.guide(`Investigate ${t.nameOf("janitor")} this time. Click ${t.nameOf("janitor")} in the Investigate box.`),
       });
-      mafiaKill(t, "v3");
-      await t.advance(k, "Done for tonight. Your report on Flint will arrive at the start of the day. Click Continue to start Day 2.");
+      // Journalist stays on the Cop to catch the last report when the Cop dies.
+      t.vote("journalist", "Receive Reports", "cop");
+      mafiaKill(t, "cop");
+      await t.advance(k, "Done for tonight. Click Continue to start Day 2.");
     },
 
     async Day2(t, k) {
-      t.guide("Your report arrived at dawn: Flint is GUILTY.");
-      await t.say("v1", "Village", "Hattie's gone. Cop, anything new?", k);
-      await t.expectChat({
-        token: k,
-        meeting: "Village",
-        expect: { role: "cop", target: "lawyer", verdict: "guilty" },
-        text: "Share tonight's result: say Flint is guilty.",
-        example: "Cop again: I checked Flint last night, GUILTY.",
-        reactions: CLAIM_REACTIONS,
-        hints: hints("Flint"),
-      });
+      t.guide("You were killed by the Mafia last night. You're dead, but you can still watch — and your last report is not lost.");
       await t.chat("Village", [
-        ["janitor", "Hold on, I'M the real Cop. I checked our 'Cop' here: GUILTY."],
-        ["v3", "Two Cops?"],
-        ["journalist", "I'm the Journalist. I've been reading the Cop's reports: the guilty results on Silas and Flint were real. Boone is lying."],
-        ["sheriff", "Then Boone's the fake. Bang."],
+        ["v1", `Our Cop is dead! Anyone have anything?`],
+        ["journalist", `I'm the Journalist. I was reading the Cop's reports. Last night they checked ${t.nameOf("janitor")}: GUILTY.`],
+        ["janitor", "Convenient timing for a 'Journalist' claim..."],
+        ["sheriff", "The Journalist had the Cop's line. I trust it."],
       ], k);
-      t.guide("When someone counterclaims your role, other roles can confirm you. The Journalist proved your reports were real, so the Sheriff shot the fake Cop.");
-      t.vote("sheriff", "Shoot Gun", "janitor");
-      await t.wait(t.timing.beat, k);
-      t.guide("Boone was the Janitor, Mafia. One left: Flint. On the last day the Mafia often fakes a power role like this; your confirmed results beat a late claim.");
-      await lynch(t, k, "lawyer", "Finish it: in the Village box, vote Flint.");
+      t.guide(`Because the Journalist was on you, they received your last report after you died: ${t.nameOf("janitor")} is GUILTY.`);
+      t.guide(
+        "This is an autowin setup: you already have clears (or confirmed town) from earlier, plus a guilty on the last Mafia. Lynching between the last two unresolved players with that info guarantees a town win — if they flip Mafia you're done, and if not the other one is Mafia."
+      );
+      // Dead Cop can't vote; town finishes it.
+      await t.everyoneVotes("janitor", k, "Village", { fast: true });
+      await t.advance(k, "The town is lynching the last Mafia. Click Continue.");
     },
   },
 
   epilogue: () => [
     "The town won!",
-    "Lesson: as Cop, share guilty results clearly (role, name, result). If someone counterclaims you, other town roles and your track record can prove you're real.",
+    "Lesson: share guilty results clearly. The Sheriff can shoot a confirmed guilty. If you die, a Journalist who was reading you still gets your last report. With clears plus a final guilty, the last lynch is an autowin.",
   ],
 };

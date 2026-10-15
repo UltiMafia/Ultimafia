@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useMemo } from "react";
 import { usePopover, InfoPopover } from "components/Popover";
 import { getKeyboardActivationProps } from "utils/keyboard";
 
@@ -17,13 +17,28 @@ export default function RoleMarkerToggle({
     [playerId, toggleRolePrediction]
   );
 
+  // Tutorial (and any in-memory) setups are not in the DB, so prefer the
+  // setup object already on the game. Fall back to the API for normal games.
+  const setupPath = useMemo(() => {
+    if (setup && setup.roles) {
+      const roles =
+        typeof setup.roles === "string"
+          ? setup.roles
+          : JSON.stringify(setup.roles);
+      return Promise.resolve({ ...setup, roles });
+    }
+    return setup && setup.id ? `/api/setup/${setup.id}` : Promise.resolve({ roles: "[]" });
+  }, [setup]);
+
   const popoverProps = usePopover({
-    path: `/api/setup/${setup.id}`,
+    path: setupPath,
     type: "rolePrediction",
     boundingEl: roleMarkerRef.current,
     postprocessData: (data) => {
       let roles = {};
-      for (let r of JSON.parse(data.roles)) {
+      const raw = data.roles;
+      const list = typeof raw === "string" ? JSON.parse(raw || "[]") : raw || [];
+      for (let r of list) {
         Object.assign(roles, r);
       }
 

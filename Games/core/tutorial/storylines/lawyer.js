@@ -2,7 +2,6 @@ const chatMatch = require("../chatMatch");
 // LAWYER: learn jan codes. The Janitor sets a code in Mafia chat, cleans the
 // night kill, and tells you the hidden role in public using the code.
 
-// Phrase the Janitor will drop in town chat for each role.
 const CODE = {
   Villager: "nice weather",
   Cop: "storm's coming",
@@ -10,8 +9,6 @@ const CODE = {
   Sheriff: "sunset",
 };
 
-// The Sheriff stays alive: with a gun in town, the D1 lynch always happens.
-// A janned power role is possible but not certain, as in real FJ games.
 const VICTIMS = ["cop", "journalist", "v1", "v2"];
 
 module.exports = {
@@ -23,7 +20,7 @@ module.exports = {
   available: true,
   freeVote: () => false,
   intro:
-    "Welcome to the tutorial! You are the Lawyer, on the Mafia team with Boone (Janitor) and Silas (Mafioso). It's Night 1.",
+    "Welcome to the tutorial! You are the Lawyer, on the Mafia team with Golbolco (Janitor) and nia (Mafioso). It's Night 1.",
 
   states: {
     async Night1(t, k) {
@@ -36,11 +33,14 @@ module.exports = {
         ["mafioso", `Got it. Let's take ${victimName}.`],
       ], k);
       t.guide(
-        "That was a jan code. The Janitor will learn the cleaned player's role, but Mafia chat closes during the day, so he'll tell you in public with an innocent-sounding phrase. Remember the code!"
+        "That was a jan code. The Janitor will learn the cleaned player's role, but Mafia chat closes during the day, so they'll tell you in public with an innocent-sounding phrase. Remember the code!"
+      );
+      t.guide(
+        "As Lawyer you must do TWO things tonight before Continue unlocks: (1) vote with your team on the Mafia Kill, and (2) use Litigate on someone. Both are required."
       );
       await t.expectVote("Mafia Kill", victim, {
         token: k,
-        text: `Your team picked ${victimName}. In the Mafia Kill box, click ${victimName}.`,
+        text: `Your team picked ${victimName}. First: in the Mafia Kill box, click ${victimName}.`,
       });
       t.vote("mafioso", "Mafia Kill", victim);
       t.vote("janitor", "Mafia Kill", victim);
@@ -48,25 +48,25 @@ module.exports = {
       t.vote("cop", "Investigate", "mafioso");
       await t.expectVote("Litigate", "mafioso", {
         token: k,
-        label: "Litigate: Silas",
-        text: "As Lawyer, Litigate makes someone look like the opposite alignment to investigators. Protect your teammate: click Silas in the Litigate box.",
+        label: `Litigate: ${t.nameOf("mafioso")}`,
+        text: `Second: as Lawyer, Litigate makes someone look like the opposite alignment to investigators. Protect your teammate: click ${t.nameOf("mafioso")} in the Litigate box. (You need both the kill vote and this Litigate.)`,
         also: [
           {
             id: "litigateTown",
             vote: { meeting: "Litigate", target: "*other" },
             bad: {
-              lesson: "Litigating a town player makes them look GUILTY, which can be useful, but tonight the Cop may check your teammate. Protect Silas first.",
+              lesson: `Litigating a town player makes them look GUILTY, which can be useful, but tonight the Cop may check your teammate. Protect ${t.nameOf("mafioso")} first.`,
             },
           },
         ],
       });
-      await t.advance(k, "Silas will look innocent to the Cop tonight. Click Continue to start Day 1.");
+      await t.advance(k, `${t.nameOf("mafioso")} will look innocent to the Cop tonight. Click Continue to start Day 1.`);
     },
 
     async Day1(t, k) {
       const victim = t.data.victim;
       const victimName = t.nameOf(victim);
-      const role = t.constructor.CAST[victim].role;
+      const role = t.constructor.CAST[victim].role.split(":")[0];
       const phrase = CODE[role];
       await t.chat("Village", [
         ["v3", `${victimName} is dead and the role is hidden. There's a Janitor.`],
@@ -74,13 +74,13 @@ module.exports = {
       ], k);
       if (victim !== "cop") {
         await t.chat("Village", [
-          ["cop", "Cop here. I checked Silas last night: innocent."],
+          ["cop", `Cop here. I checked ${t.nameOf("mafioso")} last night: innocent.`],
           ["mafioso", "See? Clean."],
         ], k);
-        t.guide("Your Litigate worked: the Cop's check on Silas came back innocent, so the Cop just cleared a Mafia member in public.");
+        t.guide(`Your Litigate worked: the Cop's check on ${t.nameOf("mafioso")} came back innocent, so the Cop just cleared a Mafia member in public.`);
       }
       t.guide(
-        `Boone just said "${phrase}". By the code, that means ${victimName} was the ${role}. You know it and the town doesn't.`
+        `${t.nameOf("janitor")} just said "${phrase}". By the code, that means ${victimName} was the ${role}. You know it and the town doesn't.`
       );
       const reactions = {
         wrongRole: [
@@ -111,7 +111,6 @@ module.exports = {
             id: "leakCode",
             label: `Say: “${victimName} was the ${role}!”`,
             sample: `${victimName} was the ${role}!`,
-            // Names the cleaned player together with their hidden role.
             when: (text, r) =>
               r.named.includes(victimName) && chatMatch.mentionedRoles(text).includes(role.toLowerCase()),
             bad: {
@@ -130,34 +129,30 @@ module.exports = {
         ],
       });
       await t.chat("Village", [
-        ["v1", "Okay. Hattie's been pushing hard all day. Feels off."],
-        ["mafioso", "Agreed, Hattie."],
+        ["v1", `Okay. ${t.nameOf("v3")}'s been pushing hard all day. Feels off.`],
+        ["mafioso", `Agreed, ${t.nameOf("v3")}.`],
       ], k);
       await t.expectVote("Village", "v3", {
         token: k,
-        label: "Vote Hattie",
+        label: `Vote ${t.nameOf("v3")}`,
         also: [
           {
             id: "voteTeammate",
-            label: "Vote Silas",
+            label: `Vote ${t.nameOf("mafioso")}`,
             vote: { meeting: "Village", target: "mafioso" },
             bad: {
               reactions: [["mafioso", "Wait, what? I'm clean, the Cop said so!"]],
-              lesson: "Voting your own teammate here would get Mafia lynched for nothing. Stick with your team's push onto Hattie.",
+              lesson: "Voting your own teammate here would get Mafia lynched for nothing. Stick with your team's push.",
             },
           },
         ],
-        text: "Your team is pushing the lynch onto Hattie, a Villager. Vote Hattie in the Village box.",
+        text: `Your team is pushing the lynch onto ${t.nameOf("v3")}, a Villager. Vote ${t.nameOf("v3")} in the Village box.`,
         wrongReactions: [
-          ["mafioso", "Huh? We were all on Hattie. Why switch now?"],
+          ["mafioso", `Huh? We were all on ${t.nameOf("v3")}. Why switch now?`],
           ["v3", "Wait, why are you voting THEM, {name}? Suspicious."],
         ],
       });
-      await t.townVote(
-        ["janitor", "mafioso", "v1", "journalist", "cop", "sheriff", "v2"].filter((key) => key !== victim),
-        "v3",
-        k
-      );
+      await t.everyoneVotes("v3", k);
       await t.advance(k);
     },
 
@@ -167,6 +162,7 @@ module.exports = {
       );
       t.data.victim2 = pick;
       await t.say("janitor", "Mafia Meeting", `One more and the town's ours. ${t.nameOf(pick)}?`, k);
+      t.guide("Again: vote the Mafia Kill. (Litigate is optional when the night is almost over, but the kill vote is required.)");
       await t.expectVote("Mafia Kill", pick, {
         token: k,
         text: `Three Mafia against three town after tonight. Click ${t.nameOf(pick)} in Mafia Kill to finish it.`,
@@ -180,6 +176,6 @@ module.exports = {
 
   epilogue: (t) => [
     "The Mafia won! When the Mafia equals the town, the Mafia wins.",
-    `Lesson: a jan code lets the Janitor pass a cleaned role to teammates in plain sight. "${CODE[t.constructor.CAST[t.data.victim].role]}" sounded like small talk, but it told you exactly what ${t.nameOf(t.data.victim)} was.`,
+    `Lesson: a jan code lets the Janitor pass a cleaned role to teammates in plain sight. "${CODE[t.constructor.CAST[t.data.victim].role.split(":")[0]]}" sounded like small talk, but it told you exactly what ${t.nameOf(t.data.victim)} was. And as Lawyer you must both vote the kill and Litigate.`,
   ],
 };
