@@ -1,3 +1,4 @@
+const chatMatch = require("../chatMatch");
 // LAWYER: learn jan codes. The Janitor sets a code in Mafia chat, cleans the
 // night kill, and tells you the hidden role in public using the code.
 
@@ -48,14 +49,13 @@ module.exports = {
       await t.expectVote("Litigate", "mafioso", {
         token: k,
         label: "Litigate: Silas",
-        text: "As Lawyer, Litigate makes someone look like the opposite alignment to investigators. Protect your teammate: click Silas in the Litigate box (or the button here).",
+        text: "As Lawyer, Litigate makes someone look like the opposite alignment to investigators. Protect your teammate: click Silas in the Litigate box.",
         also: [
           {
             id: "litigateTown",
-            label: "Litigate: Dolly",
-            vote: { meeting: "Litigate", target: "v1" },
+            vote: { meeting: "Litigate", target: "*other" },
             bad: {
-              lesson: "Litigating a Villager makes them look GUILTY, which can be useful, but tonight the Cop may check your teammate. Protect Silas first.",
+              lesson: "Litigating a town player makes them look GUILTY, which can be useful, but tonight the Cop may check your teammate. Protect Silas first.",
             },
           },
         ],
@@ -110,7 +110,10 @@ module.exports = {
           {
             id: "leakCode",
             label: `Say: “${victimName} was the ${role}!”`,
-            say: `${victimName} was the ${role}!`,
+            sample: `${victimName} was the ${role}!`,
+            // Names the cleaned player together with their hidden role.
+            when: (text, r) =>
+              r.named.includes(victimName) && chatMatch.mentionedRoles(text).includes(role.toLowerCase()),
             bad: {
               reactions: [
                 ["v3", `How could you possibly know that? ${victimName}'s role was cleaned!`],
@@ -144,7 +147,7 @@ module.exports = {
             },
           },
         ],
-        text: "Your team is pushing the lynch onto Hattie, a Villager. Vote Hattie in the Village box (or click the button here).",
+        text: "Your team is pushing the lynch onto Hattie, a Villager. Vote Hattie in the Village box.",
         wrongReactions: [
           ["mafioso", "Huh? We were all on Hattie. Why switch now?"],
           ["v3", "Wait, why are you voting THEM, {name}? Suspicious."],

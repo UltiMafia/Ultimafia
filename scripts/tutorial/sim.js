@@ -1,6 +1,6 @@
 // Headless run of a tutorial storyline with a simulated human, no DB/redis.
 //   node scripts/tutorial/sim.js <storyline> '<json actions>'
-// actions: [{choose:"optionId"}, {chat:"..."}, {vote:["Meeting", "Name"|"*"|"Yes"|"$expected"]}, {silent:true}]
+// actions: [{do:"optionId"} (performs that option through the real meeting/chat), {chat:"..."}, {vote:["Meeting", "Name"|"*"|"Yes"|"$expected"]}, {silent:true}]
 // The simulated player clicks Continue whenever it is enabled (and, with
 // opts.earlyContinue, also tries to click it before then).
 // Each action answers the next guided step. Prints a JSON result line.
@@ -108,8 +108,33 @@ async function run(storyline, actions, opts = {}) {
       busy = true;
       used.push(action);
       const me = t.human();
-      if (action.choose) {
-        socket.sendToServer("tutorialChoose", { id: action.choose });
+      if (action.do) {
+        // Act through the real game UI: vote in the meeting or type in chat.
+        const opt = t.pending.options.find((o) => o.id === action.do) || t.pending.options[0];
+        if (opt.vote) {
+          const meeting = t.meetingFor(me, opt.vote.meeting);
+          let selection;
+          if (opt.vote.target === "*other") {
+            const taken = t.pending.options
+              .filter((o) => o.vote && o.vote.meeting === opt.vote.meeting && o.vote.target !== "*other")
+              .map((o) => t.selectionFor(o.vote.target));
+            const pick = ["v1", "v3", "v2", "journalist", "sheriff", "cop"]
+              .map((k) => t.player(k))
+              .find((p) => p && p.alive && p !== me && !taken.includes(p.id));
+            selection = pick ? pick.id : t.selectionFor("v1");
+          } else selection = t.selectionFor(opt.vote.target);
+          if (meeting) socket.sendToServer("vote", { meetingId: meeting.id, selection });
+          setTimeout(() => {
+            if (t.pending === lastPending) lastPending = null;
+          }, 15);
+        } else {
+          const meeting = t.meetingFor(me, t.pending.meeting);
+          const content = opt.say || opt.sample;
+          if (meeting) socket.sendToServer("speak", { meetingId: meeting.id, content });
+          setTimeout(() => {
+            if (t.pending === lastPending) lastPending = null;
+          }, 1250);
+        }
       } else if (action.chat) {
         const meeting = t.meetingFor(me, t.pending.meeting);
         const content = action.chat === "$example" ? lastExample : action.chat;
@@ -132,7 +157,8 @@ async function run(storyline, actions, opts = {}) {
         setTimeout(() => {
           if (t.pending === lastPending) lastPending = null;
         }, 1250);
-      setTimeout(() => (busy = false), action.chat || action.silent ? 1300 : 25);
+      const chatty = action.chat || action.silent || (action.do && !(t.pending && t.pending.options.find((o) => o.id === action.do && o.vote)));
+      setTimeout(() => (busy = false), chatty ? 1300 : 25);
     }, 3);
   });
 
@@ -152,7 +178,9 @@ async function run(storyline, actions, opts = {}) {
     nexts,
     phases: phases.length,
     voteTimes: t.voteTimes || [],
-    choices: overlays.filter((o) => o && o.choices).map((o) => o.choices.map((c) => c.id)),
+    highlights: overlays.filter((o) => o && o.highlight).map((o) => o.highlight),
+    examples: overlays.filter((o) => o && o.examples).map((o) => o.examples),
+    buttons: overlays.filter((o) => o && o.choices).length,
     lastOverlay: overlays[overlays.length - 1],
     leftoverActions: queue.length,
     log: t.log,

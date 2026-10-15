@@ -44,11 +44,10 @@ async function lynch(t, k, target, text) {
     also: [
       {
         id: "voteOther",
-        label: "Vote Dolly",
-        vote: { meeting: "Village", target: "v1" },
+        vote: { meeting: "Village", target: "*other" },
         bad: {
           reactions: [
-            ["v1", "ME?! You just told us who's guilty, {name}!"],
+            ["v3", "Hold on, you just told us who's guilty, {name}!"],
             ["sheriff", "A Cop voting against their own guilty? That's how fakes act."],
           ],
           lesson: `Vote your own guilty result. Voting someone else makes the town doubt your claim. Vote ${t.nameOf(target)}.`,
@@ -70,7 +69,9 @@ function randomGuilty(t, victim) {
   return {
     id: "randomGuilty",
     label: `Say: “I'm the Cop. ${t.nameOf(victim)} is guilty.” (a guess)`,
-    say: `I'm the Cop. ${t.nameOf(victim)} is guilty.`,
+    sample: `I'm the Cop. ${t.nameOf(victim)} is guilty.`,
+    // Claims Cop with a guilty on someone other than the real result.
+    when: (text, r) => r.problem === "wrongTarget" && r.verdict === "guilty",
     bad: {
       reactions: [
         [victim, "WHAT? I'm a Villager! You never checked me!"],
@@ -143,7 +144,7 @@ module.exports = {
         example: "I'm the Cop. I investigated Silas last night: GUILTY.",
         reactions: CLAIM_REACTIONS,
         hints: hints("Silas"),
-        also: [randomGuilty(t, "v1"), QUIET],
+        also: [randomGuilty(t, "v1")],
       });
       await t.chat("Village", [
         ["mafioso", "What?! That's a lie!"],
@@ -174,7 +175,6 @@ module.exports = {
         example: "Cop again: I checked Flint last night, GUILTY.",
         reactions: CLAIM_REACTIONS,
         hints: hints("Flint"),
-        also: [QUIET],
       });
       await t.chat("Village", [
         ["janitor", "Hold on, I'M the real Cop. I checked our 'Cop' here: GUILTY."],

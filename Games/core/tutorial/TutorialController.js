@@ -38,6 +38,20 @@ const TUTORIAL_COLOR = "#7fb6ff";
 const PAUSE_NOTE =
   "⏸ The clock is paused in this tutorial: a phase only ends when you click Continue in this box. In a real game time does NOT stop. Every phase ends on a timer, so act and read quickly.";
 
+// One-time tour of the real game screen on the first Night and Day. Each
+// step highlights that part of the UI.
+const WALKTHROUGH = {
+  night: [
+    ["players", "Screen tour: this is the player list, everyone in the game. When someone dies they're marked dead and their role is usually shown."],
+    ["actions", "Your actions live in the Actions panel: on a phone it's the Actions tab in the bottom bar, on a computer it's on the right. Each box is one action. Open it and pick a player."],
+    ["chat", "This is the chat. At night only teams like the Mafia can talk. Private results (like a Cop's report) show up here as system messages when the day starts."],
+  ],
+  day: [
+    ["chat", "Daytime: everyone talks in the town chat. Type in the chat box at the bottom. That's where you claim your role and share info."],
+    ["actions", "The Village box in Actions is the lynch vote. Whoever has the most votes when the day ends is lynched. You can change your vote until then."],
+  ],
+};
+
 class Cancelled extends Error {}
 
 class TutorialController {
@@ -52,7 +66,7 @@ class TutorialController {
     this.humanSeat = story.userSeat;
     // Delays in ms; tests set these to 0.
     this.timing = Object.assign(
-      { chat: 1600, beat: 2500, silence: 60000, maxSilence: 3, vote: [500, 1200], fastVote: [200, 500], autoContinue: false },
+      { chat: 1600, beat: 2500, silence: 45000, idle: 25000, vote: [500, 1200], fastVote: [200, 500], autoContinue: false },
       timing
     );
     this.cast = {};
@@ -165,7 +179,9 @@ class TutorialController {
     if (key === "Night1") {
       if (this.story.intro) this.guide(this.story.intro);
       this.guide(PAUSE_NOTE);
+      for (const [ui, text] of WALKTHROUGH.night) this.guide(text, { highlight: [{ ui }] });
     }
+    if (key === "Day1") for (const [ui, text] of WALKTHROUGH.day) this.guide(text, { highlight: [{ ui }] });
     if (!handler) {
       this.advance(token).catch(() => {});
       return;
@@ -264,7 +280,9 @@ class TutorialController {
     const data = {
       storyline: this.story.id,
       text: step.text,
-      choices: step.choices,
+      highlight: step.highlight,
+      examples: step.examples,
+      action: !!step.pending,
       done: step.done,
       failed: step.failed,
       hasNext: this.canNext(),
@@ -276,13 +294,13 @@ class TutorialController {
 
   canNext() {
     const head = this.steps[0];
-    return !!head && !head.choices && !head.done && this.steps.length > 1;
+    return !!head && !head.pending && !head.done && this.steps.length > 1;
   }
 
   // Continue only once every message has been read and nothing is pending.
   continueOpen() {
     const head = this.steps[0];
-    return !!this.canContinue && this.steps.length <= 1 && !(head && (head.choices || head.done));
+    return !!this.canContinue && this.steps.length <= 1 && !(head && (head.pending || head.done));
   }
 
   onNext(player) {
@@ -448,7 +466,12 @@ class TutorialController {
     return String(line).replace(/\{name\}/g, human ? human.name : "you");
   }
 
-  ask({ text, options, meeting = "Village", want, reactions = {}, hints = {}, wrong, wrongReactions, token }) {
+  // A question answered only through the real game UI: a vote in a meeting
+  // (highlighted for the player) or a line typed in chat. options: { id,
+  // vote?: { meeting, target } (target "*other" = any other choice there),
+  // say?: example line (good chat option), sample?/when?: a bad chat option
+  // detected by when(text, result) }.
+  ask({ text, options, meeting = "Village", want, reactions = {}, hints = {}, wrong, wrongReactions, idleHint, token }) {
     this.checkToken(token);
     const names = this.players().filter((p) => p !== this.human()).map((p) => p.name);
     const w = want && Object.assign({}, want);
@@ -464,6 +487,7 @@ class TutorialController {
         hints,
         wrong,
         text,
+        idleHint,
         silences: 0,
         reactionIndex: {},
         resolve,
@@ -471,10 +495,19 @@ class TutorialController {
       };
       this.pending = pending;
       this.log.push(`guide ${text}`);
-      this.steps.push({ text, pending, choices: options.map((o) => ({ id: o.id, label: o.label })) });
+      const highlight = [];
+      for (const o of options)
+        if (o.vote && !highlight.some((h) => h.meeting === o.vote.meeting && h.target === this.targetName(o.vote.target)))
+          highlight.push({
+            meeting: o.vote.meeting,
+            target: o.vote.target === "*other" ? null : this.targetName(o.vote.target),
+          });
+      if (w || options.some((o) => o.say)) highlight.push({ chat: true });
+      const examples = options.filter((o) => o.say).map((o) => o.say);
+      this.steps.push({ text, pending, highlight, examples: examples.length ? examples : undefined });
       if (this.steps.length === 1) this.showHead(true);
       else this.sendOverlay(this.steps[0]);
-      if (w) this.armSilence(pending);
+      this.armSilence(pending);
     });
   }
 
@@ -490,31 +523,11 @@ class TutorialController {
     setImmediate(() => p.resolve(id));
   }
 
-  // The tutorial box's buttons.
-  onChoose(player, id) {
-    if (player !== this.human()) return;
-    const p = this.pending;
-    if (!p || !this.steps[0] || this.steps[0].pending !== p) return;
-    const opt = p.options.find((o) => o.id === id);
-    if (!opt) return;
-    if (opt.vote) {
-      const meeting = this.meetingFor(player, opt.vote.meeting);
-      if (!meeting) return;
-      meeting.vote(player, this.selectionFor(opt.vote.target));
-      if (!this.game.finished) player.sendMeeting(meeting);
-    }
-    if (opt.say) {
-      const meeting = this.meetingFor(player, p.meeting);
-      if (meeting) meeting.speak({ sender: player, content: opt.say });
-    }
-    this.settle(p, id);
-  }
-
   expectVote(meeting, target, opts = {}) {
     return this.decide(
       Object.assign({}, opts, {
         options: [
-          { id: "go", label: opts.label || `${meeting}: ${this.targetName(target)}`, vote: { meeting, target } },
+          { id: "go", vote: { meeting, target } },
         ].concat(opts.also || []),
       })
     );
@@ -526,8 +539,8 @@ class TutorialController {
     return target;
   }
 
-  // A claim the player makes in chat: a button with the example line, plus
-  // any extra (usually bad) options in `also`. Typing it works too.
+  // A claim the player types in the real chat. The example is shown as plain
+  // text; `also` holds bad options (votes, or chat lines detected by when()).
   expectChat({ meeting, expect, text, example, reactions = {}, hints = {}, token, also = [] }) {
     return this.decide({
       token,
@@ -536,27 +549,28 @@ class TutorialController {
       text,
       reactions,
       hints,
-      options: [{ id: "go", label: `Say: “${example}”`, say: example }].concat(also),
+      options: [{ id: "go", say: example }].concat(also),
     });
   }
 
+  // Idle hints: while a question is on screen and nothing happens, the bots
+  // nudge in character (chat questions) and the box adds a pointer to the
+  // real control. It never answers for the player.
   armSilence(pending) {
     if (pending.timer) clearTimeout(pending.timer);
+    const chatOnly = !!pending.want && !pending.options.some((o) => o.vote);
     pending.timer = setTimeout(() => {
       if (this.pending !== pending) return;
-      // Only count silence while the question is actually on screen.
       if (!(this.steps[0] && this.steps[0].pending === pending)) return this.armSilence(pending);
       pending.silences++;
-      this.react(pending, "silence");
-      if (pending.silences >= this.timing.maxSilence) {
-        // Keep the story moving; the scripted outcome doesn't depend on it.
-        this.guide("Let's keep going — the town has moved on.");
-        this.settle(pending, "go");
-        return;
-      }
-      this.guide(pending.hints.silence || pending.text);
+      if (chatOnly) this.react(pending, "silence");
+      const hint = chatOnly
+        ? pending.hints.silence || "Type your claim in the chat box at the bottom of the chat."
+        : pending.idleHint ||
+          "Still looking? Open the Actions tab (on a phone it's in the bottom bar; on a computer the actions are on the right), find the highlighted box and pick the highlighted player.";
+      this.guide(`${pending.text} (${hint})`);
       this.armSilence(pending);
-    }, this.timing.silence);
+    }, chatOnly ? this.timing.silence : this.timing.idle);
   }
 
   react(pending, problem) {
@@ -584,9 +598,10 @@ class TutorialController {
       return false;
     }
     if (p) {
-      const match = p.options.find(
-        (o) => o.vote && o.vote.meeting === meeting.name && this.selectionFor(o.vote.target) === selection
-      );
+      const match =
+        p.options.find(
+          (o) => o.vote && o.vote.meeting === meeting.name && o.vote.target !== "*other" && this.selectionFor(o.vote.target) === selection
+        ) || p.options.find((o) => o.vote && o.vote.meeting === meeting.name && o.vote.target === "*other");
       if (match) {
         this.settle(p, match.id);
         return true;
@@ -595,7 +610,7 @@ class TutorialController {
       if (typeof p.wrong === "function") p.wrong(meeting, selection);
       else
         this.guide(
-          p.wrong || `Not that one. Pick one of the options in the tutorial box.`
+          p.wrong || `Not that one. Follow the tutorial box: the right choice is highlighted.`
         );
       return false;
     }
@@ -613,6 +628,8 @@ class TutorialController {
     if (!(this.steps[0] && this.steps[0].pending === p)) return;
     const result = chatMatch.evaluate(content, p.want, p.names);
     this.log.push(`human said "${content}" -> ${result.problem || "ok"}`);
+    const bad = p.options.find((o) => o.when && o.when(content, result, this));
+    if (bad) return this.settle(p, bad.id);
     if (result.ok) return this.settle(p, "go");
     // Bots react in character, then the tutorial steers back.
     const reactionDelay = Math.min(this.timing.chat, 1200);

@@ -46,7 +46,7 @@ function mafiaKill(t, target, clean) {
 async function lynch(t, k, target, text) {
   await t.expectVote("Village", target, {
     token: k,
-    text: text || `Vote ${t.nameOf(target)} in the Village box (or click the button here).`,
+    text: text || `Vote ${t.nameOf(target)} in the Village box.`,
     label: `Vote ${t.nameOf(target)}`,
     also: [
       {
@@ -75,7 +75,8 @@ async function lynch(t, k, target, text) {
 const FAKE_COP = {
   id: "claimCop",
   label: "Say: “Actually I'm the Cop.”",
-  say: "Actually I'm the Cop.",
+  sample: "Actually I'm the Cop.",
+  when: (text, r) => r.roles.includes("cop") && !r.roles.includes("journalist"),
   bad: {
     reactions: [
       ["v3", "A THIRD Cop? Come on."],
@@ -122,7 +123,7 @@ module.exports = {
       await t.expectVote("Receive Reports", target, {
         token: k,
         label: `Receive Reports: ${t.nameOf(target)}`,
-        text: `Let's read someone's reports tonight. Click ${t.nameOf(target)} in the Receive Reports box (or the button here).`,
+        text: `Let's read someone's reports tonight. Click ${t.nameOf(target)} in the Receive Reports box.`,
         wrong: () => t.guide(`For this tutorial, read ${t.nameOf(target)}'s reports. Click ${t.nameOf(target)} in the Receive Reports box.`),
       });
       t.vote("cop", "Investigate", "mafioso");
@@ -162,10 +163,9 @@ module.exports = {
         also: [
           {
             id: "readVillager",
-            label: "Receive Reports: Dolly",
-            vote: { meeting: "Receive Reports", target: "v1" },
+            vote: { meeting: "Receive Reports", target: "*other" },
             bad: {
-              lesson: `A Villager gets no reports, so that check would learn nothing. Follow the Cop claim: read ${t.nameOf("cop")}.`,
+              lesson: `That player isn't a Cop claimant, so their reports won't prove anything. Follow the Cop claim: read ${t.nameOf("cop")}.`,
             },
           },
         ],
@@ -193,7 +193,6 @@ module.exports = {
         example: "I'm the real Journalist. I read Cassidy's report: she checked Flint, GUILTY. Flint is lying.",
         reactions: CLAIM_REACTIONS,
         hints: claimHints(t, "Flint"),
-        also: [QUIET],
       });
       await t.chat("Village", [["sheriff", "The Journalist has been right every time. Flint goes."]], k);
       await lynch(t, k, "lawyer", "Finish it: vote Flint.");
@@ -217,7 +216,7 @@ async function copDay1(t, k) {
     example: `I'm the Journalist. I read Cassidy's report: Silas is guilty. Boone is the fake Cop.`,
     reactions: CLAIM_REACTIONS,
     hints: claimHints(t, "Silas"),
-    also: [FAKE_COP, QUIET],
+    also: [FAKE_COP],
   });
   await t.chat("Village", [
     ["janitor", "A 'Journalist' showing up to save her? Convenient!"],
@@ -237,7 +236,7 @@ async function janitorDay1(t, k) {
     example: `I'm the Journalist. I read Boone's reports: he cleaned Eli. Boone is the Janitor, guilty!`,
     reactions: CLAIM_REACTIONS,
     hints: claimHints(t, t.nameOf("janitor")),
-    also: [FAKE_COP, QUIET],
+    also: [FAKE_COP],
   });
   await t.chat("Village", [
     ["janitor", "That's ridiculous! I'm the Cop!"],

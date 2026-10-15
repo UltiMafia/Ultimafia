@@ -81,7 +81,8 @@ module.exports = {
           {
             id: "randomGuilty",
             label: `Say: “I'm the Cop. Dolly is guilty.” (a random guess)`,
-            say: "I'm the Cop. Dolly is guilty.",
+            sample: "I'm the Cop. Dolly is guilty.",
+            when: (text, r) => r.problem === "wrongTarget" && r.verdict === "guilty",
             bad: {
               reactions: [
                 ["cop", "Funny, I'M the Cop, and I checked Dolly last night: innocent."],
@@ -100,7 +101,8 @@ module.exports = {
           {
             id: "claimVillager",
             label: "Say: “Just a Villager here.”",
-            say: "Just a Villager here.",
+            sample: "Just a Villager here.",
+            when: (text, r) => r.roles.includes("villager"),
             bad: {
               reactions: [
                 ["cop", "Then listen up: I'm the Cop. Silas is GUILTY."],

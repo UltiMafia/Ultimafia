@@ -4,14 +4,15 @@ import { Box, Button, IconButton, Paper, Stack, Typography } from "@mui/material
 
 import { useSocketListeners } from "pages/Game/Game";
 import { UserContext } from "../Contexts";
+import { HIGHLIGHT_CLASS, HIGHLIGHT_CSS, resolveHighlights } from "../lib/tutorialHighlight";
 
 const POS_KEY = "tutorialBoxPos";
 
 // Guided steps for the new-user tutorial. The game server sends "tutorial"
 // events (Games/core/tutorial/TutorialController.js) with the current
-// instruction and, at each decision, multiple-choice buttons; a button sends
-// "tutorialChoose" and the server casts the vote or says the line for the
-// player. "tutorialPhase" says whether Continue is enabled: phases only end
+// instruction. The box has no action buttons: decisions are made in the real
+// meetings and chat, which the step highlights (lib/tutorialHighlight.js);
+// the server judges the actual vote or chat line. "tutorialPhase" says whether Continue is enabled: phases only end
 // when the player clicks it. Tutorial messages wait for Next (hasNext). The box can be dragged anywhere by its header
 // and collapsed.
 export default function TutorialOverlay({ socket }) {
@@ -19,7 +20,6 @@ export default function TutorialOverlay({ socket }) {
   const [step, setStep] = useState(null);
   const [canContinue, setCanContinue] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const [sent, setSent] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [pos, setPos] = useState(() => {
     try {
@@ -36,7 +36,6 @@ export default function TutorialOverlay({ socket }) {
       if (!data) return;
       setStep(data);
       if (typeof data.canContinue == "boolean") setCanContinue(data.canContinue);
-      setSent(false);
     });
     socket.on("tutorialPhase", (data) => {
       setCanContinue(Boolean(data && data.canContinue));
@@ -44,6 +43,33 @@ export default function TutorialOverlay({ socket }) {
   }, socket);
 
   // Keep the box on screen after a resize.
+  // Pulse the real UI the current step points at. Re-resolved on a short
+  // interval so it follows tab switches and dropdowns opening.
+  const highlight = step && !step.done && !collapsed ? step.highlight : null;
+  useEffect(() => {
+    if (!highlight || !highlight.length) return undefined;
+    let style = document.getElementById("tutorial-highlight-css");
+    if (!style) {
+      style = document.createElement("style");
+      style.id = "tutorial-highlight-css";
+      style.textContent = HIGHLIGHT_CSS;
+      document.head.appendChild(style);
+    }
+    let lit = [];
+    const apply = () => {
+      const els = resolveHighlights(highlight, document);
+      lit.forEach((el) => !els.includes(el) && el.classList.remove(HIGHLIGHT_CLASS));
+      els.forEach((el) => el.classList.add(HIGHLIGHT_CLASS));
+      lit = els;
+    };
+    apply();
+    const id = setInterval(apply, 400);
+    return () => {
+      clearInterval(id);
+      lit.forEach((el) => el.classList.remove(HIGHLIGHT_CLASS));
+    };
+  }, [highlight]);
+
   useEffect(() => {
     function clamp() {
       setPos((p) => (p ? clampPos(p, boxRef.current) : p));
@@ -75,11 +101,6 @@ export default function TutorialOverlay({ socket }) {
       if (p) window.localStorage.setItem(POS_KEY, JSON.stringify(p));
       return p;
     });
-  }
-
-  function choose(choice) {
-    socket.send("tutorialChoose", { id: choice.id });
-    setSent(true);
   }
 
   function nextStep() {
@@ -178,30 +199,21 @@ export default function TutorialOverlay({ socket }) {
           {collapsed ? "▴" : "▾"}
         </IconButton>
       </Stack>
-      {!collapsed && step.choices && !step.done && (
-        <Stack spacing={1} sx={{ mt: 1.5 }}>
-          {step.choices.map((choice) => (
-            <Button
-              key={choice.id}
-              variant="outlined"
-              size="small"
-              disabled={sent}
-              data-testid={`tutorial-choice-${choice.id}`}
-              onClick={() => choose(choice)}
-              sx={{
-                justifyContent: "flex-start",
-                textAlign: "left",
-                textTransform: "none",
-                whiteSpace: "normal",
-                overflowWrap: "anywhere",
-                minHeight: 40,
-                lineHeight: 1.3,
-              }}
+      {!collapsed && step.examples && step.examples.length > 0 && !step.done && (
+        <Box sx={{ mt: 1.5 }} data-testid="tutorial-examples">
+          <Typography variant="caption" sx={{ opacity: 0.8 }}>
+            For example, type in chat:
+          </Typography>
+          {step.examples.map((line) => (
+            <Typography
+              key={line}
+              variant="body2"
+              sx={{ fontStyle: "italic", overflowWrap: "anywhere" }}
             >
-              {choice.label}
-            </Button>
+              "{line}"
+            </Typography>
           ))}
-        </Stack>
+        </Box>
       )}
       {!collapsed && !step.done && (
         <Stack

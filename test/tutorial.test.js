@@ -54,27 +54,26 @@ describe("Tutorial storylines registry", function () {
 
 describe("Tutorial storylines end to end", function () {
   this.timeout(180000);
-  const go = (n) => Array.from({ length: n }, () => ({ choose: "go" }));
+  const go = (n) => Array.from({ length: n }, () => ({ do: "go" }));
   const lessons = (r) => r.alerts.filter((a) => a.includes("✗"));
 
   it("Cop: wrong claim gets a reaction, bad choices teach a lesson, town wins", function () {
     const r = sim("cop", [
       { vote: ["Investigate", "Silas"] },
       { chat: "im the journalist" },
-      { choose: "quiet" },
-      { choose: "go" },
-      { choose: "voteOther" },
+      { do: "go" },
+      { do: "voteOther" },
       ...go(4),
     ]);
     expect(r.winners).to.deep.equal(["Village"]);
     expect(r.failed).to.be.false;
     expect(r.log.some((l) => l.startsWith("react wrongRole"))).to.be.true;
-    expect(lessons(r).length).to.equal(2);
+    expect(lessons(r).length).to.equal(1);
     expect(r.errors).to.deep.equal([]);
   });
 
   it("Cop: a random guilty gets you shot by the Sheriff and ends the run", function () {
-    const r = sim("cop", [{ vote: ["Investigate", "Silas"] }, { choose: "randomGuilty" }]);
+    const r = sim("cop", [{ vote: ["Investigate", "Silas"] }, { do: "randomGuilty" }]);
     expect(r.failed).to.be.true;
     expect(r.humanAlive).to.be.false;
     expect(r.log).to.include("vote sheriff@Shoot Gun -> cop");
@@ -84,12 +83,11 @@ describe("Tutorial storylines end to end", function () {
   for (const branch of ["cop", "janitor"]) {
     it(`Journalist (${branch} branch): Sheriff shoots the Janitor, N2 check on the Cop claimant, town wins`, function () {
       const r = sim("journalist", [
-        { choose: "go" },
-        { choose: "quiet" },
-        { choose: "go" },
-        { choose: "voteCop" },
-        { choose: "go" },
-        { choose: "readVillager" },
+        { do: "go" },
+        { do: "go" },
+        { do: "voteCop" },
+        { do: "go" },
+        { do: "readVillager" },
         ...go(3),
       ], { branch });
       expect(r.branch).to.equal(branch);
@@ -105,25 +103,25 @@ describe("Tutorial storylines end to end", function () {
   }
 
   it("Journalist: claiming Cop gets you shot", function () {
-    const r = sim("journalist", [{ choose: "go" }, { choose: "claimCop" }], { branch: "janitor" });
+    const r = sim("journalist", [{ do: "go" }, { do: "claimCop" }], { branch: "janitor" });
     expect(r.failed).to.be.true;
     expect(r.humanAlive).to.be.false;
   });
 
   it("Lawyer: jan code storyline ends in a Mafia win; leaking the code gets you shot", function () {
-    const r = sim("lawyer", [{ choose: "go" }, { choose: "litigateTown" }, ...go(2), { choose: "voteTeammate" }, ...go(2)]);
+    const r = sim("lawyer", [{ do: "go" }, { do: "litigateTown" }, ...go(2), { do: "voteTeammate" }, ...go(2)]);
     expect(r.winners).to.deep.equal(["Mafia"]);
     expect(lessons(r).length).to.equal(2);
-    const bad = sim("lawyer", [...go(2), { choose: "leakCode" }]);
+    const bad = sim("lawyer", [...go(2), { do: "leakCode" }]);
     expect(bad.failed).to.be.true;
     expect(bad.humanAlive).to.be.false;
   });
 
   it("Janitor: claiming Villager is a lesson, a random guilty is fatal, the framed Cop path wins", function () {
-    const r = sim("janitor", [...go(2), { choose: "claimVillager" }, { choose: "go" }]);
+    const r = sim("janitor", [...go(2), { do: "claimVillager" }, { do: "go" }]);
     expect(r.winners).to.deep.equal(["Mafia"]);
     expect(r.log).to.include("vote sheriff@Shoot Gun -> cop");
-    const bad = sim("janitor", [...go(2), { choose: "randomGuilty" }]);
+    const bad = sim("janitor", [...go(2), { do: "randomGuilty" }]);
     expect(bad.failed).to.be.true;
   });
 
@@ -135,7 +133,7 @@ describe("Tutorial storylines end to end", function () {
 
   for (const [choice, winner] of [["wait", "Village"], ["shootFake", "Village"], ["shootReal", "Mafia"]]) {
     it(`Sheriff (${choice}) ends in a ${winner} win and never no-lynches Day 1`, function () {
-      const r = sim("sheriff", [{ choose: choice }, { choose: "noLynch" }, ...go(4)]);
+      const r = sim("sheriff", [{ do: choice }, { do: "noLynch" }, ...go(4)]);
       expect(r.branch).to.equal(choice);
       expect(r.winners).to.deep.equal([winner]);
       expect(r.log.some((l) => /@Village -> \*/.test(l))).to.be.false;
@@ -144,7 +142,7 @@ describe("Tutorial storylines end to end", function () {
   }
 
   it("Sheriff: shooting a random player ends the run with a lesson", function () {
-    const r = sim("sheriff", [{ choose: "shootRandom" }]);
+    const r = sim("sheriff", [{ do: "shootRandom" }]);
     expect(r.failed).to.be.true;
     expect(r.alerts.join(" ")).to.include("Never shoot without a reason");
     expect(r.lastOverlay).to.include({ done: true, failed: true });
@@ -172,7 +170,7 @@ describe("Tutorial storylines end to end", function () {
 
   it("night tutorial text never reveals the coming report", function () {
     for (const [story, opts] of [["cop", {}], ["journalist", { branch: "cop" }], ["journalist", { branch: "janitor" }]]) {
-      const r = sim(story, [{ choose: "go" }, ...go(8)], opts);
+      const r = sim(story, [{ do: "go" }, ...go(8)], opts);
       let night = false;
       for (const l of r.log) {
         if (l.startsWith("state ")) night = l.startsWith("state Night");
@@ -206,14 +204,14 @@ describe("Tutorial storylines end to end", function () {
   });
 
   it("leaving after the end closes the postgame too", function () {
-    const r = sim("sheriff", [{ choose: "shootReal" }], { leaveAfterFinish: true });
+    const r = sim("sheriff", [{ do: "shootReal" }], { leaveAfterFinish: true });
     expect(r.winners).to.deep.equal(["Mafia"]);
     expect(r.closed).to.be.true;
     expect(r.postgameOver).to.be.true;
   });
 
   it("never runs kudos in a tutorial game", function () {
-    const r = sim("sheriff", [{ choose: "shootReal" }]);
+    const r = sim("sheriff", [{ do: "shootReal" }]);
     expect(r.winners).to.deep.equal(["Mafia"]);
     expect(r.kudosStarted).to.be.false;
     expect(r.kudosEvents).to.equal(0);
@@ -227,8 +225,17 @@ describe("Tutorial storylines end to end", function () {
   });
 
   it("Lessons only come from tutorial messages, never bot chat", function () {
-    const r = sim("sheriff", [{ choose: "wait" }, ...go(4)]);
+    const r = sim("sheriff", [{ do: "wait" }, ...go(4)]);
     expect(r.chat.join(" ")).to.not.match(/waiting to gather info|Lesson/i);
     expect(r.alerts.join(" ")).to.include("waiting to gather info");
+  });
+  it("real-UI decisions: no buttons in the box, highlights point at the meeting/row/chat", function () {
+    const r = sim("cop", [{ vote: ["Investigate", "Silas"] }, ...go(8)]);
+    expect(r.buttons).to.equal(0);
+    const flat = r.highlights.flat();
+    expect(flat.some((h) => h.meeting && h.target)).to.be.true;
+    expect(flat.some((h) => h.chat)).to.be.true;
+    expect(flat.some((h) => h.ui === "actions")).to.be.true;
+    expect(r.examples.length).to.be.greaterThan(0);
   });
 });

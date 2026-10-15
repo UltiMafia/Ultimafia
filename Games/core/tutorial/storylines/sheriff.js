@@ -42,26 +42,25 @@ module.exports = {
       t.guide("Right now it's one word against another. Nothing proves either claim yet.");
       const choice = await t.decide({
         token: k,
-        text: `Your choice. Shoot ${t.nameOf("cop")} or ${t.nameOf("janitor")} (click their name in the Shoot Gun box or a button here), or hold your shot today and see what the lynch reveals.`,
+        text: `Your choice, made in the Actions panel. Shoot ${t.nameOf("cop")} or ${t.nameOf("janitor")} in the Shoot Gun box, OR hold your shot: vote Silas in the Village box to test ${t.nameOf("cop")}'s claim with a lynch.`,
         options: [
           { id: "shootFake", label: `Shoot ${t.nameOf("janitor")}`, vote: { meeting: "Shoot Gun", target: "janitor" } },
           { id: "shootReal", label: `Shoot ${t.nameOf("cop")}`, vote: { meeting: "Shoot Gun", target: "cop" } },
-          { id: "wait", label: "Hold your shot for now" },
+          { id: "wait", vote: { meeting: "Village", target: "mafioso" } },
           {
             id: "shootRandom",
-            label: "Shoot Dolly (she's been quiet)",
-            vote: { meeting: "Shoot Gun", target: "v1" },
+            vote: { meeting: "Shoot Gun", target: "*other" },
             bad: {
               consequence: async (t, k) => {
                 await t.wait(t.timing.beat, k);
                 await t.chat("Village", [
-                  ["v3", "Dolly was a VILLAGER! Why would you shoot her?!"],
+                  ["v3", "That was a VILLAGER! Why would you shoot them?!"],
                   ["janitor", "Wow. Our Sheriff just wasted the only gun in town."],
                 ], k);
               },
               fatal: true,
               lesson:
-                "Dolly was a Villager and your only bullet is gone. Never shoot without a reason: in Frontier Justice the Sheriff's shot belongs on a Cop counterclaim or a confirmed guilty, not on a quiet player.",
+                "You shot a Villager and your only bullet is gone. Never shoot without a reason: in Frontier Justice the Sheriff's shot belongs on a Cop counterclaim or a confirmed guilty, not on a quiet player.",
             },
           },
         ],
@@ -146,7 +145,9 @@ async function waitDay1(t, k) {
     ["journalist", "Agreed. If Silas flips Mafia, Cassidy is real."],
     ["janitor", "Fine, but when Silas flips town, Cassidy's next."],
   ], k);
-  await lynchVote(t, k, "mafioso", `The town is testing ${t.nameOf("cop")}'s claim by lynching Silas. Vote Silas.`, false);
+  // The player already voted Silas (that was the "hold" choice).
+  await t.townVote(TOWN, "mafioso", k);
+  await t.advance(k);
 }
 
 async function waitDay2(t, k) {
@@ -161,7 +162,7 @@ async function waitDay2(t, k) {
   t.guide(`${t.nameOf("journalist")}, the Journalist, confirms ${t.nameOf("cop")} checked Flint. ${t.nameOf("cop")} is the real Cop and ${t.nameOf("janitor")} is the fake.`);
   await t.decide({
     token: k,
-    text: `Now you know who's lying. Shoot the fake Cop: click ${t.nameOf("janitor")} in the Shoot Gun box (or the button here).`,
+    text: `Now you know who's lying. Shoot the fake Cop: click ${t.nameOf("janitor")} in the Shoot Gun box.`,
     options: [
       { id: "go", label: `Shoot ${t.nameOf("janitor")}`, vote: { meeting: "Shoot Gun", target: "janitor" } },
       {
@@ -192,7 +193,7 @@ async function lynchVote(t, k, target, text, fast = true) {
   await t.expectVote("Village", target, {
     token: k,
     label: `Vote ${t.nameOf(target)}`,
-    text: text || `The Cop said ${t.nameOf(target)} is guilty. Vote ${t.nameOf(target)} in the Village box (or click the button here).`,
+    text: text || `The Cop said ${t.nameOf(target)} is guilty. Vote ${t.nameOf(target)} in the Village box.`,
     also: [
       {
         id: "noLynch",
