@@ -238,4 +238,16 @@ describe("Tutorial storylines end to end", function () {
     expect(flat.some((h) => h.ui === "actions")).to.be.true;
     expect(r.examples.length).to.be.greaterThan(0);
   });
+  it("rejoining mid-game (refresh / come back) restores the box: step, Next/Continue and highlights", function () {
+    const r = sim("cop", [{ vote: ["Investigate", "Silas"] }, ...go(8)], { rejoinAtPending: true });
+    expect(r.rejoin).to.be.an("object");
+    expect(r.rejoin.got.length).to.be.greaterThan(0);
+    const last = r.rejoin.got[0];
+    expect(last.text).to.equal(r.rejoin.before.text);
+    expect(last.highlight).to.deep.equal(r.rejoin.before.highlight);
+    expect(last).to.have.property("hasNext");
+    expect(last).to.have.property("canContinue");
+    expect(r.rejoin.phases.length).to.be.greaterThan(0);
+    expect(r.errors).to.deep.equal([]);
+  });
 });

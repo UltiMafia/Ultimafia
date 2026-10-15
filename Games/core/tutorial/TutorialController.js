@@ -292,6 +292,15 @@ class TutorialController {
     if (this.timing.autoNext && data.hasNext) setImmediate(() => this.onNext(human));
   }
 
+  // A reconnect, refresh or remount of the game page: send the current step,
+  // its Next/Continue state and highlights again. No alert is repeated.
+  resync(player) {
+    if (!player || player !== this.human()) return false;
+    this.sendPhase();
+    if (this.steps[0]) this.sendOverlay(this.steps[0]);
+    return true;
+  }
+
   canNext() {
     const head = this.steps[0];
     return !!head && !head.pending && !head.done && this.steps.length > 1;

@@ -42,6 +42,12 @@ export default function TutorialOverlay({ socket }) {
     });
   }, socket);
 
+  // Ask the server for the current step on mount and whenever the socket
+  // changes (rejoining the game or refreshing the page).
+  useEffect(() => {
+    if (socket && socket.send) socket.send("tutorialSync");
+  }, [socket]);
+
   // Keep the box on screen after a resize.
   // Pulse the real UI the current step points at. Re-resolved on a short
   // interval so it follows tab switches and dropdowns opening.

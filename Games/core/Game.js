@@ -570,6 +570,7 @@ module.exports = class Game {
 
         this.sendAllGameInfo(player);
         player.send("loaded");
+        if (this.tutorial) this.tutorial.resync(player);
         return;
       }
 

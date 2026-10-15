@@ -60,8 +60,8 @@ export default function TutorialPicker() {
   return (
     <Stack spacing={2} sx={{ maxWidth: 900, mx: "auto", p: { xs: 1, sm: 2 } }}>
       <Box>
-        <Typography variant="h4">📘 Tutorial</Typography>
-        <Typography variant="body1" sx={{ mt: 1 }}>
+        <Typography variant="h4" sx={{ fontSize: { xs: "1.75rem", sm: "2.125rem" } }}>📘 Tutorial</Typography>
+        <Typography variant="body1" sx={{ mt: 1, lineHeight: 1.55 }}>
           Play a guided game of <b>Frontier Justice</b> against bots: Cop,
           Journalist, Sheriff and 3 Villagers vs Janitor, Lawyer and Mafioso.
           The tutorial tells you exactly what to click at each step. It's
@@ -70,35 +70,56 @@ export default function TutorialPicker() {
         </Typography>
       </Box>
       <Box data-testid="tutorial-setup">
-        <Typography variant="subtitle2" sx={{ opacity: 0.8, mb: 0.5 }}>
-          Frontier Justice (9 players). Hover a role to read it.
+        <Typography variant="subtitle2" sx={{ opacity: 0.8, mb: 1 }}>
+          Frontier Justice (9 players). Tap or hover a role to read it.
         </Typography>
-        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+        <Stack
+          direction="row"
+          flexWrap="wrap"
+          useFlexGap
+          sx={{ gap: { xs: 1.5, sm: 1 }, "& > *": { minWidth: 40, minHeight: 40 } }}
+        >
           {FJ_ROLES.map(([role, count]) => (
             <RoleCount key={role} role={role} count={count} gameType="Mafia" />
           ))}
         </Stack>
       </Box>
       <Typography variant="h6">Choose your role</Typography>
-      <Grid2 container spacing={2}>
+      <Grid2 container spacing={{ xs: 1.5, sm: 2 }}>
         {storylines.map((s) => (
           <Grid2 key={s.id} size={{ xs: 12, sm: 6 }}>
-            <Card variant="outlined" data-testid={`tutorial-${s.id}`} sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-              <CardContent sx={{ flex: 1 }}>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <RoleCount role={s.role} gameType="Mafia" />
-                  <Typography variant="h6">{s.title}</Typography>
-                  {!s.available && <Chip size="small" label="Coming soon" />}
+            <Card
+              variant="outlined"
+              data-testid={`tutorial-${s.id}`}
+              sx={{ height: "100%", display: "flex", flexDirection: "column", minWidth: 0 }}
+            >
+              <CardContent sx={{ flex: 1, p: { xs: 1.5, sm: 2 }, "&:last-child": { pb: { xs: 1.5, sm: 2 } } }}>
+                <Stack direction="row" spacing={1.5} alignItems="center" sx={{ minWidth: 0 }}>
+                  <Box sx={{ flexShrink: 0, display: "flex" }}>
+                    <RoleCount role={s.role} gameType="Mafia" />
+                  </Box>
+                  <Typography
+                    variant="h6"
+                    sx={{ minWidth: 0, flex: 1, lineHeight: 1.25, overflowWrap: "anywhere", fontSize: { xs: "1.1rem", sm: "1.25rem" } }}
+                  >
+                    {s.title}
+                  </Typography>
+                  {!s.available && <Chip size="small" label="Coming soon" sx={{ flexShrink: 0 }} />}
                 </Stack>
-                <Typography variant="body2" sx={{ mt: 1, opacity: 0.85 }}>
+                <Typography
+                  variant="body2"
+                  sx={{ mt: 1, opacity: 0.85, lineHeight: 1.5, overflowWrap: "anywhere" }}
+                >
                   {s.blurb}
                 </Typography>
               </CardContent>
-              <CardActions>
+              <CardActions sx={{ px: { xs: 1.5, sm: 2 }, pb: { xs: 1.5, sm: 2 }, pt: 0 }}>
                 <Button
                   variant="contained"
+                  fullWidth
                   disabled={!user.loggedIn || !s.available || Boolean(starting)}
                   onClick={() => start(s.id)}
+                  sx={{ minHeight: 44, textTransform: "none", fontSize: "1rem", whiteSpace: "normal" }}
                 >
                   {!s.available ? "Coming soon" : starting === s.id ? "Starting…" : `Play as ${s.title}`}
                 </Button>

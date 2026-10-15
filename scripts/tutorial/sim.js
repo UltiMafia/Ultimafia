@@ -47,6 +47,7 @@ async function run(storyline, actions, opts = {}) {
   const chat = [];
   let lastExample = null;
   let nexts = 0;
+  let rejoin = null;
   socket.onClientEvent("tutorial", (d) => {
     overlays.push(d);
     if (d && d.hasNext && !opts.noNext)
@@ -102,6 +103,23 @@ async function run(storyline, actions, opts = {}) {
       // Answer only once the question is the step on screen.
       if (!(t.steps[0] && t.steps[0].pending === t.pending)) return;
       if (t.pending === lastPending) return;
+      if (opts.rejoinAtPending && !rejoin) {
+        // Refresh / come back: a new socket joins the same game as the same user.
+        rejoin = { before: overlays[overlays.length - 1], got: [], phases: [] };
+        const s2 = new TestSocket();
+        s2.onClientEvent("tutorial", (d) => rejoin.got.push(d));
+        s2.onClientEvent("tutorialPhase", (d) => rejoin.phases.push(d));
+        const u2 = new User({ id: "human", name: "Newbie", socket: s2, settings: {}, isTest: true });
+        busy = true;
+        game.userJoin(u2).then(() => {
+          s2.sendToServer("tutorialSync");
+          setTimeout(() => {
+            busy = false;
+            socket.sendToServer = s2.sendToServer.bind(s2);
+          }, 20);
+        });
+        return;
+      }
       const action = queue.shift();
       if (!action) return;
       lastPending = t.pending;
@@ -187,6 +205,7 @@ async function run(storyline, actions, opts = {}) {
     alerts,
     chat,
     overlays: overlays.length,
+    rejoin,
     errors,
   };
   t.destroy();

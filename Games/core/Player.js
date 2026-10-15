@@ -619,6 +619,15 @@ module.exports = class Player {
       }
     });
 
+    // The tutorial box asks for its state when it mounts (rejoin/refresh).
+    socket.on("tutorialSync", () => {
+      try {
+        if (this.game.tutorial) this.game.tutorial.resync(this);
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
     socket.on("leave", () => {
       try {
         this.game.playerLeave(this);
