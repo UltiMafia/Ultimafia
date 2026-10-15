@@ -67,7 +67,7 @@ async function lynch(t, k, target, text) {
       ["cop", "Stick with the evidence, {name}."],
     ],
   });
-  await t.townVote(["cop", "sheriff", "v1", "v2", "v3"], target, k);
+  await t.townVote(["cop", "sheriff", "v1", "v2", "v3"], target, k, "Village", { fast: true });
   await t.advance(k);
 }
 

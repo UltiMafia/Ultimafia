@@ -146,7 +146,7 @@ async function waitDay1(t, k) {
     ["journalist", "Agreed. If Silas flips Mafia, Cassidy is real."],
     ["janitor", "Fine, but when Silas flips town, Cassidy's next."],
   ], k);
-  await lynchVote(t, k, "mafioso", `The town is testing ${t.nameOf("cop")}'s claim by lynching Silas. Vote Silas.`);
+  await lynchVote(t, k, "mafioso", `The town is testing ${t.nameOf("cop")}'s claim by lynching Silas. Vote Silas.`, false);
 }
 
 async function waitDay2(t, k) {
@@ -188,7 +188,7 @@ async function waitDay2(t, k) {
   await lynchVote(t, k, "lawyer");
 }
 
-async function lynchVote(t, k, target, text) {
+async function lynchVote(t, k, target, text, fast = true) {
   await t.expectVote("Village", target, {
     token: k,
     label: `Vote ${t.nameOf(target)}`,
@@ -209,7 +209,7 @@ async function lynchVote(t, k, target, text) {
       ["cop", "Trust the report, {name}. That vote makes you look bad."],
     ],
   });
-  await t.townVote(TOWN, target, k);
+  await t.townVote(TOWN, target, k, "Village", { fast });
   await t.advance(k);
 }
 

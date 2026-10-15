@@ -36,7 +36,7 @@ async function run(storyline, actions, opts = {}) {
       noVeg: true,
       pregameCountdownLength: 0,
       stateLengths: { Day: 600000, Night: 600000 },
-      tutorial: { storyline, timing: Object.assign({ chat: 0, beat: 1, silence: 2500, maxSilence: 2, vote: [0, 1] }, opts.timing) },
+      tutorial: { storyline, timing: Object.assign({ chat: 0, beat: 1, silence: 2500, maxSilence: 2, vote: [0, 1], fastVote: [0, 1] }, opts.timing) },
     },
   });
   await game.init();

@@ -52,7 +52,7 @@ class TutorialController {
     this.humanSeat = story.userSeat;
     // Delays in ms; tests set these to 0.
     this.timing = Object.assign(
-      { chat: 1600, beat: 2500, silence: 60000, maxSilence: 3, vote: [1100, 2300], autoContinue: false },
+      { chat: 1600, beat: 2500, silence: 60000, maxSilence: 3, vote: [500, 1200], fastVote: [200, 500], autoContinue: false },
       timing
     );
     this.cast = {};
@@ -339,7 +339,8 @@ class TutorialController {
   // Town votes land one at a time in a random order, a second or two apart
   // (about 5+ seconds for a full town), like real players.
   // entries: ["key", ...] (all vote `target`) or [["key", target], ...].
-  async townVote(entries, target, token, meetingName = "Village") {
+  // fast: the target is confirmed Mafia, so the town piles on (0.2-0.5 s).
+  async townVote(entries, target, token, meetingName = "Village", { fast = false } = {}) {
     const list = entries
       .map((e) => (Array.isArray(e) ? e : [e, target]))
       .filter(([key]) => {
@@ -350,7 +351,7 @@ class TutorialController {
       const j = Math.floor(Math.random() * (i + 1));
       [list[i], list[j]] = [list[j], list[i]];
     }
-    const [lo, hi] = this.timing.vote;
+    const [lo, hi] = fast ? this.timing.fastVote : this.timing.vote;
     for (const [key, tgt] of list) {
       await this.wait(lo + Math.random() * (hi - lo), token);
       if (this.vote(key, meetingName, tgt)) (this.voteTimes = this.voteTimes || []).push(Date.now());

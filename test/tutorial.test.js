@@ -188,11 +188,15 @@ describe("Tutorial storylines end to end", function () {
     expect([...seen].sort()).to.deep.equal(["cop", "janitor"]);
   });
 
-  it("town votes are staggered over time", function () {
-    const r = sim("lawyer", go(5), { timing: { vote: [60, 90] } });
-    const t = r.voteTimes;
-    expect(t.length).to.be.at.least(6);
-    for (let i = 1; i < 6; i++) expect(t[i] - t[i - 1]).to.be.at.least(50);
+  it("town votes are staggered; confirmed Mafia gets a quick pile-on", function () {
+    // Lawyer: the town lynches a Villager on suspicion -> normal pace.
+    const slow = sim("lawyer", go(5), { timing: { vote: [60, 90], fastVote: [5, 10] } }).voteTimes;
+    expect(slow.length).to.be.at.least(6);
+    for (let i = 1; i < 6; i++) expect(slow[i] - slow[i - 1]).to.be.within(50, 200);
+    // Cop: the town lynches a reported guilty -> fast pile-on.
+    const fast = sim("cop", [{ vote: ["Investigate", "Silas"] }, ...go(6)], { timing: { vote: [300, 400], fastVote: [20, 40] } }).voteTimes;
+    expect(fast.length).to.be.at.least(4);
+    for (let i = 1; i < 4; i++) expect(fast[i] - fast[i - 1]).to.be.below(150);
   });
 
   it("leaving mid-game closes the tutorial game", function () {
