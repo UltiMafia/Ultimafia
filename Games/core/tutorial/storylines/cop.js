@@ -126,10 +126,11 @@ module.exports = {
         wrong: () => t.guide("For this tutorial, investigate Silas. Click Silas in the Investigate box."),
       });
       mafiaKill(t, "v2");
-      await t.advance(k, "Your result arrives when the night ends: Silas is GUILTY. He's Mafia! Click Continue to start Day 1.");
+      await t.advance(k, "Done for tonight. Look out for your investigation report in the chat when the day starts. Click Continue to start Day 1.");
     },
 
     async Day1(t, k) {
+      t.guide("Your report arrived at dawn (see the chat): Silas is GUILTY. He's Mafia!");
       await t.chat("Village", [
         ["v1", "Eli's dead. Anyone have information?"],
         ["v3", "Power roles, now's the time."],
@@ -159,10 +160,11 @@ module.exports = {
         wrong: () => t.guide("Investigate Flint this time. Click Flint in the Investigate box."),
       });
       mafiaKill(t, "v3");
-      await t.advance(k, "Result: Flint is GUILTY. Click Continue to start Day 2.");
+      await t.advance(k, "Done for tonight. Your report on Flint will arrive at the start of the day. Click Continue to start Day 2.");
     },
 
     async Day2(t, k) {
+      t.guide("Your report arrived at dawn: Flint is GUILTY.");
       await t.say("v1", "Village", "Hattie's gone. Cop, anything new?", k);
       await t.expectChat({
         token: k,

@@ -146,7 +146,8 @@ describe("Tutorial storylines end to end", function () {
   it("Sheriff: shooting a random player ends the run with a lesson", function () {
     const r = sim("sheriff", [{ choose: "shootRandom" }]);
     expect(r.failed).to.be.true;
-    expect(r.lastOverlay.text).to.include("Never shoot without a reason");
+    expect(r.alerts.join(" ")).to.include("Never shoot without a reason");
+    expect(r.lastOverlay).to.include({ done: true, failed: true });
   });
 
   it("phases wait for Continue: early clicks are rejected and nothing advances on its own", function () {
@@ -158,6 +159,33 @@ describe("Tutorial storylines end to end", function () {
     expect(stuck.state).to.equal("Night 1");
     expect(stuck.log).to.include("ready");
     expect(stuck.log).to.not.include("advance");
+  });
+
+  it("tutorial steps only move on Next, never on a timer", function () {
+    const r = sim("cop", [{ vote: ["Investigate", "Silas"] }, ...go(6)]);
+    expect(r.nexts).to.be.at.least(10);
+    const stuck = sim("cop", [{ vote: ["Investigate", "Silas"] }], { noNext: true, timeoutMs: 1500 });
+    expect(stuck.log).to.not.include("human chose go");
+    expect(stuck.lastOverlay.hasNext).to.be.true;
+    expect(stuck.state).to.equal("Night 1");
+  });
+
+  it("night tutorial text never reveals the coming report", function () {
+    for (const [story, opts] of [["cop", {}], ["journalist", { branch: "cop" }], ["journalist", { branch: "janitor" }]]) {
+      const r = sim(story, [{ choose: "go" }, ...go(8)], opts);
+      let night = false;
+      for (const l of r.log) {
+        if (l.startsWith("state ")) night = l.startsWith("state Night");
+        else if (night && l.startsWith("guide") && !l.includes("Welcome")) expect(l, l).to.not.match(/GUILTY|innocent|cleaned Eli|learned/i);
+      }
+      expect(r.winners).to.deep.equal(["Village"]);
+    }
+  });
+
+  it("Journalist picks the Cop or Janitor branch at random", function () {
+    const seen = new Set();
+    for (let i = 0; i < 12 && seen.size < 2; i++) seen.add(sim("journalist", [], { timeoutMs: 400 }).branch);
+    expect([...seen].sort()).to.deep.equal(["cop", "janitor"]);
   });
 
   it("town votes are staggered over time", function () {

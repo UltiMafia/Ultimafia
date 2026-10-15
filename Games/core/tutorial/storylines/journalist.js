@@ -127,15 +127,15 @@ module.exports = {
       });
       t.vote("cop", "Investigate", "mafioso");
       mafiaKill(t, "v2", true);
-      await t.advance(
-        k,
-        target === "cop"
-          ? `Report received: ${t.nameOf("cop")} investigated Silas and learned he is GUILTY. Only a Cop gets investigation results, so ${t.nameOf("cop")} is the real Cop. Click Continue.`
-          : `Report received: ${t.nameOf("janitor")} cleaned Eli's body and learned Eli was a Villager. Only the Janitor cleans bodies, so ${t.nameOf("janitor")} is Mafia! Click Continue.`
-      );
+      await t.advance(k, `Done for tonight. Whatever reports ${t.nameOf(target)} gets tonight will come to you too: look out for them in the chat when the day starts. Click Continue.`);
     },
 
     async Day1(t, k) {
+      t.guide(
+        t.branch === "cop"
+          ? `Your report arrived at dawn: ${t.nameOf("cop")} investigated Silas and learned he is GUILTY. Only a Cop gets investigation results, so ${t.nameOf("cop")} is the real Cop.`
+          : `Your report arrived at dawn: ${t.nameOf("janitor")} cleaned Eli's body and learned Eli was a Villager. Only the Janitor cleans bodies, so ${t.nameOf("janitor")} is Mafia!`
+      );
       // Typical Frontier Justice Day 1: the Cop claims a guilty and the Mafia
       // counterclaims Cop.
       await t.chat("Village", [
@@ -173,10 +173,11 @@ module.exports = {
       t.vote("cop", "Investigate", "lawyer");
       t.vote("lawyer", "Mafia Kill", "v3");
       t.vote("lawyer", "Litigate", "*");
-      await t.advance(k, `Report received: ${t.nameOf("cop")} investigated Flint and learned he is GUILTY. Click Continue.`);
+      await t.advance(k, `Done for tonight. Look out for ${t.nameOf("cop")}'s report in the chat when the day starts. Click Continue.`);
     },
 
     async Day2(t, k) {
+      t.guide(`Your report arrived at dawn: ${t.nameOf("cop")} investigated Flint and learned he is GUILTY.`);
       // Last day: the last Mafia member fakes a power role.
       await t.chat("Village", [
         ["v1", "Hattie's gone. Cop?"],

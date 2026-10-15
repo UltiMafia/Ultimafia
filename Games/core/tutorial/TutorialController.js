@@ -59,6 +59,7 @@ class TutorialController {
     for (const key in CAST) this.cast[key] = Object.assign({ key }, CAST[key]);
     this.stateToken = 0;
     this.pending = null; // the guided action we're waiting on
+    this.steps = []; // tutorial messages waiting for Next
     this.timeouts = new Set();
     this.log = [];
     this.branch = null;
@@ -184,9 +185,9 @@ class TutorialController {
     const epilogue = this.story.epilogue && this.story.epilogue(this);
     if (epilogue) for (const line of [].concat(epilogue)) this.guide(line);
     this.guide(
-      "Tutorial complete! You can replay any tutorial from the Play page whenever you like."
+      "Tutorial complete! You can replay any tutorial from the Play page whenever you like.",
+      { done: true }
     );
-    this.sendOverlay({ text: "Tutorial complete!", done: true });
     if (this.onComplete) this.onComplete(this);
   }
 
@@ -227,31 +228,86 @@ class TutorialController {
 
   // --- talking to the human -----------------------------------------------
 
-  // A tutorial message: a system alert to the human only, plus the overlay.
-  // While a choice is open, its buttons ride along with every message.
+  // Tutorial messages are steps in a queue. The box shows the first one; the
+  // player clicks Next to move on (never on a timer). A step that asks for an
+  // action (choices) can't be skipped with Next: answering it moves on. Each
+  // step's system alert goes to chat when the step is shown.
   guide(text, overlay) {
-    const human = this.human();
     this.log.push(`guide ${text}`);
-    if (!human) return;
-    this.game.sendAlert(`📘 ${text}`, [human], { color: TUTORIAL_COLOR });
-    const extra = overlay || (this.pending && this.pending.overlay) || {};
-    this.sendOverlay(Object.assign({ text }, extra));
+    const p = this.pending;
+    const head = this.steps[0];
+    // A hint while a question is on screen rewrites that question's text.
+    if (!overlay && p && head && head.pending === p) {
+      head.text = text;
+      this.showHead(true);
+      return;
+    }
+    this.steps.push(Object.assign({ text }, overlay || {}));
+    if (this.steps.length === 1) this.showHead(true);
+    else this.sendOverlay(this.steps[0]);
   }
 
-  sendOverlay(data) {
+  showHead(alert) {
+    const head = this.steps[0];
     const human = this.human();
-    if (human)
-      human.send(
-        "tutorial",
-        Object.assign({ storyline: this.story.id, canContinue: !!this.canContinue }, data)
-      );
+    if (!head || !human) return;
+    if (alert && head.text && !head.alerted) {
+      head.alerted = true;
+      this.game.sendAlert(`📘 ${head.text}`, [human], { color: TUTORIAL_COLOR });
+    }
+    this.sendOverlay(head);
+  }
+
+  sendOverlay(step) {
+    const human = this.human();
+    if (!human || !step) return;
+    const data = {
+      storyline: this.story.id,
+      text: step.text,
+      choices: step.choices,
+      done: step.done,
+      failed: step.failed,
+      hasNext: this.canNext(),
+      canContinue: this.continueOpen(),
+    };
+    human.send("tutorial", data);
+    if (this.timing.autoNext && data.hasNext) setImmediate(() => this.onNext(human));
+  }
+
+  canNext() {
+    const head = this.steps[0];
+    return !!head && !head.choices && !head.done && this.steps.length > 1;
+  }
+
+  // Continue only once every message has been read and nothing is pending.
+  continueOpen() {
+    const head = this.steps[0];
+    return !!this.canContinue && this.steps.length <= 1 && !(head && (head.choices || head.done));
+  }
+
+  onNext(player) {
+    if (player !== this.human() || !this.canNext()) {
+      this.log.push("next rejected");
+      return false;
+    }
+    this.steps.shift();
+    this.showHead(true);
+    this.sendPhase();
+    return true;
   }
 
   // The Continue button: disabled until the phase's required steps are done.
   setContinue(on) {
     this.canContinue = !!on;
+    this.sendPhase();
+    if (this.steps[0]) this.sendOverlay(this.steps[0]);
+  }
+
+  sendPhase() {
     const human = this.human();
-    if (human) human.send("tutorialPhase", { phase: this.phase, canContinue: this.canContinue });
+    const open = this.continueOpen();
+    if (human) human.send("tutorialPhase", { phase: this.phase, canContinue: open });
+    if (open && this.timing.autoContinue) setImmediate(() => this.onContinue(this.human()));
   }
 
   // --- bot actions --------------------------------------------------------
@@ -320,12 +376,11 @@ class TutorialController {
       text ||
         "That's everything for this phase. Read the chat, then click Continue in this box when you're ready."
     );
-    if (this.timing.autoContinue) setImmediate(() => this.onContinue(this.human()));
   }
 
   onContinue(player) {
     if (player !== this.human() || this.done || this.game.finished) return false;
-    if (!this.canContinue) {
+    if (!this.continueOpen()) {
       this.log.push("continue rejected");
       return false;
     }
@@ -343,10 +398,10 @@ class TutorialController {
     this.log.push(`fail ${lesson}`);
     this.cancelPending();
     this.setContinue(false);
+    this.steps = [];
     this.guide(`✗ ${lesson}`);
-    this.guide("This run is over. Click Try again to replay this tutorial and pick a different option.");
+    this.guide("This run is over. Click Try again to replay this tutorial and pick a different option.", { done: true, failed: true });
     this.done = true;
-    this.sendOverlay({ text: `✗ ${lesson}`, done: true, failed: true });
     for (const t of this.timeouts) clearTimeout(t);
     this.timeouts.clear();
     throw new Cancelled();
@@ -359,6 +414,8 @@ class TutorialController {
     const p = this.pending;
     this.pending = null;
     if (p.timer) clearTimeout(p.timer);
+    const i = this.steps.findIndex((st) => st.pending === p);
+    if (i !== -1) this.steps.splice(i, 1);
     p.reject(new Cancelled());
   }
 
@@ -411,9 +468,11 @@ class TutorialController {
         resolve,
         reject,
       };
-      pending.overlay = { choices: options.map((o) => ({ id: o.id, label: o.label })) };
       this.pending = pending;
-      this.guide(text);
+      this.log.push(`guide ${text}`);
+      this.steps.push({ text, pending, choices: options.map((o) => ({ id: o.id, label: o.label })) });
+      if (this.steps.length === 1) this.showHead(true);
+      else this.sendOverlay(this.steps[0]);
       if (w) this.armSilence(pending);
     });
   }
@@ -423,6 +482,10 @@ class TutorialController {
     this.pending = null;
     if (p.timer) clearTimeout(p.timer);
     this.log.push(`human chose ${id}`);
+    const i = this.steps.findIndex((st) => st.pending === p);
+    if (i !== -1) this.steps.splice(i, 1);
+    if (i === 0) this.showHead(true);
+    this.sendPhase();
     setImmediate(() => p.resolve(id));
   }
 
@@ -430,7 +493,7 @@ class TutorialController {
   onChoose(player, id) {
     if (player !== this.human()) return;
     const p = this.pending;
-    if (!p) return;
+    if (!p || !this.steps[0] || this.steps[0].pending !== p) return;
     const opt = p.options.find((o) => o.id === id);
     if (!opt) return;
     if (opt.vote) {
@@ -480,6 +543,8 @@ class TutorialController {
     if (pending.timer) clearTimeout(pending.timer);
     pending.timer = setTimeout(() => {
       if (this.pending !== pending) return;
+      // Only count silence while the question is actually on screen.
+      if (!(this.steps[0] && this.steps[0].pending === pending)) return this.armSilence(pending);
       pending.silences++;
       this.react(pending, "silence");
       if (pending.silences >= this.timing.maxSilence) {
@@ -512,6 +577,11 @@ class TutorialController {
   allowVote(player, meeting, selection) {
     if (player !== this.human()) return true;
     const p = this.pending;
+    if (p && !(this.steps[0] && this.steps[0].pending === p)) {
+      const h = this.human();
+      if (h) this.game.sendAlert("📘 Read the tutorial box and click Next first.", [h], { color: TUTORIAL_COLOR });
+      return false;
+    }
     if (p) {
       const match = p.options.find(
         (o) => o.vote && o.vote.meeting === meeting.name && this.selectionFor(o.vote.target) === selection
@@ -539,6 +609,7 @@ class TutorialController {
     if (player !== this.human()) return;
     const p = this.pending;
     if (!p || !p.want || meeting.name !== p.meeting) return;
+    if (!(this.steps[0] && this.steps[0].pending === p)) return;
     const result = chatMatch.evaluate(content, p.want, p.names);
     this.log.push(`human said "${content}" -> ${result.problem || "ok"}`);
     if (result.ok) return this.settle(p, "go");

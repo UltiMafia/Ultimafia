@@ -12,7 +12,7 @@ const POS_KEY = "tutorialBoxPos";
 // instruction and, at each decision, multiple-choice buttons; a button sends
 // "tutorialChoose" and the server casts the vote or says the line for the
 // player. "tutorialPhase" says whether Continue is enabled: phases only end
-// when the player clicks it. The box can be dragged anywhere by its header
+// when the player clicks it. Tutorial messages wait for Next (hasNext). The box can be dragged anywhere by its header
 // and collapsed.
 export default function TutorialOverlay({ socket }) {
   const user = useContext(UserContext);
@@ -80,6 +80,11 @@ export default function TutorialOverlay({ socket }) {
   function choose(choice) {
     socket.send("tutorialChoose", { id: choice.id });
     setSent(true);
+  }
+
+  function nextStep() {
+    socket.send("tutorialNext");
+    setStep((st) => (st ? { ...st, hasNext: false } : st));
   }
 
   function next() {
@@ -182,9 +187,18 @@ export default function TutorialOverlay({ socket }) {
         </Stack>
       )}
       {!collapsed && !step.done && (
-        <Stack direction="row" justifyContent="flex-end" sx={{ mt: 1.5 }}>
+        <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ mt: 1.5 }}>
           <Button
-            variant="contained"
+            variant={step.hasNext ? "contained" : "outlined"}
+            size="small"
+            data-testid="tutorial-next"
+            disabled={!step.hasNext}
+            onClick={nextStep}
+          >
+            Next
+          </Button>
+          <Button
+            variant={canContinue ? "contained" : "outlined"}
             size="small"
             data-testid="tutorial-continue"
             disabled={!canContinue}

@@ -46,8 +46,14 @@ async function run(storyline, actions, opts = {}) {
   const alerts = [];
   const chat = [];
   let lastExample = null;
+  let nexts = 0;
   socket.onClientEvent("tutorial", (d) => {
     overlays.push(d);
+    if (d && d.hasNext && !opts.noNext)
+      setTimeout(() => {
+        nexts++;
+        socket.sendToServer("tutorialNext");
+      }, 2);
     if (d && d.example) lastExample = d.example;
   });
   const phases = [];
@@ -93,6 +99,8 @@ async function run(storyline, actions, opts = {}) {
         return setTimeout(resolve, opts.leaveAfterFinish ? 300 : 20);
       }
       if (busy || !t.pending) return;
+      // Answer only once the question is the step on screen.
+      if (!(t.steps[0] && t.steps[0].pending === t.pending)) return;
       if (t.pending === lastPending) return;
       const action = queue.shift();
       if (!action) return;
@@ -141,6 +149,7 @@ async function run(storyline, actions, opts = {}) {
     kudosEvents: kudosEvents,
     state: game.getStateInfo().name,
     continues,
+    nexts,
     phases: phases.length,
     voteTimes: t.voteTimes || [],
     choices: overlays.filter((o) => o && o.choices).map((o) => o.choices.map((c) => c.id)),

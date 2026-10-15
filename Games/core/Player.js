@@ -612,6 +612,14 @@ module.exports = class Player {
       }
     });
 
+    socket.on("tutorialNext", () => {
+      try {
+        if (this.game.tutorial) this.game.tutorial.onNext(this);
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
     socket.on("tutorialContinue", () => {
       try {
         if (this.game.tutorial) this.game.tutorial.onContinue(this);
