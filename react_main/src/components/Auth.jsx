@@ -18,6 +18,7 @@ import DiscordIcon from "../images/welcome_page/DiscordIcon.png";
 import {
   getAuth,
   GoogleAuthProvider,
+  OAuthProvider,
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
@@ -32,6 +33,9 @@ import { collectFingerprint } from "../utils/fingerprint";
 import { useSnackbar } from "../hooks/useSnackbar";
 import { SiteInfoContext } from "../Contexts";
 import { Link } from "react-router-dom";
+import SignInWithAppleButton, {
+  createAppleProvider,
+} from "./SignInWithAppleButton";
 
 export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
   const snackbarHook = useSnackbar();
@@ -48,6 +52,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showResendVerification, setShowResendVerification] = useState(false);
   const googleProvider = new GoogleAuthProvider();
+  const appleProvider = createAppleProvider(OAuthProvider);
   const skips = JSON.parse(import.meta.env.REACT_APP_RECAP_SKIP || "[]");
 
   // Reset form when tab changes
@@ -224,13 +229,17 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
     setLoading(false);
   };
 
-  const loginGoogle = async () => {
+  const loginGoogle = () => loginWithPopup(googleProvider);
+  const loginApple = () => loginWithPopup(appleProvider);
+
+  // Google and Apple: Firebase popup, then the site's idToken login.
+  const loginWithPopup = async (provider) => {
     setLoading(true);
     try {
       if (import.meta.env.MODE !== "development") {
         await verifyRecaptcha("auth");
       }
-      const userCred = await signInWithPopup(getAuth(), googleProvider);
+      const userCred = await signInWithPopup(getAuth(), provider);
       const idToken = await userCred.user.getIdToken(true);
       const fingerprint = await collectFingerprint();
 
@@ -371,14 +380,19 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
     setLoading(false);
   };
 
-  const registerGoogle = async (e) => {
+  const registerGoogle = (e) => registerWithRedirect(e, googleProvider);
+  const registerApple = (e) => registerWithRedirect(e, appleProvider);
+
+  // Google and Apple: Firebase redirect; Welcome.jsx finishes it with
+  // getRedirectResult and the site's idToken login.
+  const registerWithRedirect = async (e, provider) => {
     e.preventDefault();
     setLoading(true);
     try {
       if (import.meta.env.MODE !== "development") {
         await verifyRecaptcha("auth");
       }
-      await signInWithRedirect(getAuth(), googleProvider);
+      await signInWithRedirect(getAuth(), provider);
     } catch (err) {
       if (!err?.message) return;
       if (err.message.includes("(auth/too-many-requests)")) {
@@ -642,6 +656,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
               </IconButton>
             </Tooltip>
           </Stack>
+          <SignInWithAppleButton onClick={loginApple} disabled={loading} />
           <Typography
             color="text.secondary"
             sx={{
@@ -785,6 +800,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
           </IconButton>
         </Tooltip>
       </Stack>
+      <SignInWithAppleButton onClick={registerApple} disabled={loading} />
       <Typography
         color="text.secondary"
         sx={{
