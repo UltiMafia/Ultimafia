@@ -5,16 +5,22 @@ const { execFileSync } = require("child_process");
 
 const chatMatch = require("../Games/core/tutorial/chatMatch");
 const storylines = require("../Games/core/tutorial/storylines");
-const CAST = require("../Games/core/tutorial/cast");
+const { CAST, buildCast, ROSTER } = require("../Games/core/tutorial/cast");
 
-const NAMES = Object.values(CAST).map((c) => c.name);
-const MAF = CAST.mafioso.name; // nia
-const COP = CAST.cop.name;
-const JAN = CAST.janitor.name;
-const LAW = CAST.lawyer.name;
-const V1 = CAST.v1.name;
-const V2 = CAST.v2.name;
-const V3 = CAST.v3.name;
+const NAMES = ROSTER.map((r) => r.name);
+// Names for bots in a given storyline (human seat excluded from roster seats).
+function seats(storylineId) {
+  return buildCast(storylines.get(storylineId).userSeat);
+}
+const copSeats = seats("cop");
+const sheriffSeats = seats("sheriff");
+const MAF = copSeats.mafioso.name;
+const COP = sheriffSeats.cop.name; // when human is sheriff, cop is a bot
+const JAN = sheriffSeats.janitor.name;
+const LAW = sheriffSeats.lawyer.name;
+const V1 = sheriffSeats.v1.name;
+const V2 = sheriffSeats.v2.name;
+const V3 = sheriffSeats.v3.name;
 
 function sim(storyline, actions, opts = {}) {
   const out = execFileSync(
@@ -26,21 +32,22 @@ function sim(storyline, actions, opts = {}) {
 }
 
 describe("Tutorial chat matching", function () {
-  const want = { role: "cop", target: COP, verdict: "guilty" };
+  const target = "Aspect8445";
+  const want = { role: "cop", target, verdict: "guilty" };
 
   it("accepts lenient claims", function () {
     for (const text of [
-      `I'm the Cop. ${COP} is guilty!`,
-      `cop here, ${COP.slice(0, 4).toLowerCase()} is mafia`,
-      `COP: checked ${COP} -> GUILTY`,
+      `I'm the Cop. ${target} is guilty!`,
+      `cop here, aspe is mafia`,
+      `COP: checked ${target} -> GUILTY`,
     ])
       expect(chatMatch.evaluate(text, want, NAMES).ok, text).to.be.true;
   });
 
   it("names the problem", function () {
-    expect(chatMatch.evaluate(`I'm the sheriff, ${COP} is guilty`, want, NAMES).problem).to.equal("wrongRole");
-    expect(chatMatch.evaluate(`cop: ${V1} is guilty`, want, NAMES).problem).to.equal("wrongTarget");
-    expect(chatMatch.evaluate(`cop: ${COP} is innocent`, want, NAMES).problem).to.equal("wrongVerdict");
+    expect(chatMatch.evaluate(`I'm the sheriff, ${target} is guilty`, want, NAMES).problem).to.equal("wrongRole");
+    expect(chatMatch.evaluate(`cop: Z is guilty`, want, NAMES).problem).to.equal("wrongTarget");
+    expect(chatMatch.evaluate(`cop: ${target} is innocent`, want, NAMES).problem).to.equal("wrongVerdict");
     expect(chatMatch.evaluate("hello everyone", want, NAMES).problem).to.equal("incomplete");
   });
 
@@ -56,12 +63,21 @@ describe("Tutorial storylines registry", function () {
     expect(s.filter((x) => !x.available)).to.deep.equal([]);
   });
 
-  it("cast uses snapshotted live-player cosmetics", function () {
-    expect(CAST.cop.name).to.equal("Aspect8445");
-    expect(CAST.mafioso.name).to.equal("nia");
-    expect(CAST.cop.avatar).to.match(/^\/images\/tutorial-bots\//);
-    expect(CAST.cop.textColor).to.equal("#9b92ff");
-    expect(CAST.cop.nameColor).to.equal("#c6c5ff");
+  it("cast uses all 8 live players as bots; human is the 9th", function () {
+    expect(ROSTER.map((r) => r.name).sort()).to.deep.equal(
+      ["Aspect8445", "Birbtales", "Gauss", "Giga13", "Golbolco", "Z", "nia", "sure"].sort()
+    );
+    for (const id of ["cop", "journalist", "lawyer", "janitor", "sheriff"]) {
+      const c = seats(id);
+      const botNames = Object.keys(c)
+        .filter((k) => k !== storylines.get(id).userSeat)
+        .map((k) => c[k].name)
+        .sort();
+      expect(botNames, id).to.deep.equal(ROSTER.map((r) => r.name).sort());
+      expect(c[storylines.get(id).userSeat].name).to.equal(null);
+    }
+    const sample = seats("cop").journalist;
+    expect(sample.avatar).to.match(/^\/images\/tutorial-bots\//);
   });
 });
 
@@ -92,6 +108,14 @@ describe("Tutorial storylines end to end", function () {
     expect(r.humanAlive).to.be.false;
     expect(r.log).to.include("vote sheriff@Shoot Gun -> cop");
     expect(r.lastOverlay).to.include({ done: true, failed: true });
+  });
+
+  it("Cop game has all 8 live bots and no Eli", function () {
+    const r = sim("cop", [{ vote: ["Investigate", MAF] }, ...go(8)]);
+    expect(r.botNames.slice().sort()).to.deep.equal(ROSTER.map((x) => x.name).sort());
+    expect(r.humanSeat).to.equal("cop");
+    expect(r.botNames).to.not.include("Eli");
+    expect(r.winners).to.deep.equal(["Village"]);
   });
 
   it("Cop: everyone votes on a lynch including the condemned", function () {

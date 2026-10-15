@@ -22,11 +22,13 @@ module.exports = {
   blurb: "Set a jan code, clean a kill, and fool the town as Mafia.",
   available: true,
   freeVote: (t, meeting) => meeting.name === "Village",
-  intro:
-    "Welcome to the tutorial! You are the Janitor, on the Mafia team with Birbtales (Lawyer) and nia (Mafioso). Nobody else knows who you are. It's Night 1.",
+  intro: null,
 
   states: {
     async Night1(t, k) {
+      t.guide(
+        `Welcome to the tutorial! You are the Janitor, on the Mafia team with ${t.nameOf("lawyer")} (Lawyer) and ${t.nameOf("mafioso")} (Mafioso). Nobody else knows who you are. It's Night 1.`
+      );
       const victim =
         t.data.victim || (t.data.victim = VICTIMS[Math.floor(Math.random() * VICTIMS.length)]);
       t.branch = victim;

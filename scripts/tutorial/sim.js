@@ -203,6 +203,8 @@ async function run(storyline, actions, opts = {}) {
     buttons: overlays.filter((o) => o && o.choices).length,
     lastOverlay: overlays[overlays.length - 1],
     leftoverActions: queue.length,
+    botNames: t.botNames(),
+    humanSeat: t.humanSeat,
     // Cap log/alerts so parent test runners don't truncate the JSON line.
     log: (t.log || []).slice(-400),
     alerts: alerts.slice(-200),

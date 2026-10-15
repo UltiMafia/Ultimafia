@@ -19,11 +19,13 @@ module.exports = {
   blurb: "Learn how the Mafia passes secret info with a jan code.",
   available: true,
   freeVote: () => false,
-  intro:
-    "Welcome to the tutorial! You are the Lawyer, on the Mafia team with Golbolco (Janitor) and nia (Mafioso). It's Night 1.",
+  intro: null, // filled in Night1 once bot names are known
 
   states: {
     async Night1(t, k) {
+      t.guide(
+        `Welcome to the tutorial! You are the Lawyer, on the Mafia team with ${t.nameOf("janitor")} (Janitor) and ${t.nameOf("mafioso")} (Mafioso). It's Night 1.`
+      );
       const victim =
         t.data.victim || (t.data.victim = VICTIMS[Math.floor(Math.random() * VICTIMS.length)]);
       const victimName = t.nameOf(victim);

@@ -20,7 +20,7 @@ const storylines = require("./storylines");
 
 // Seats in Frontier Justice and the bot that sits in each (live-player
 // cosmetics: Games/core/tutorial/cast.js).
-const CAST = require("./cast");
+const { CAST, buildCast, ROSTER } = require("./cast");
 
 const SETUP = require("./setup");
 
@@ -60,8 +60,8 @@ class TutorialController {
       { chat: 1600, beat: 2500, silence: 45000, idle: 25000, vote: [500, 1200], fastVote: [200, 500], autoContinue: false },
       timing
     );
-    this.cast = {};
-    for (const key in CAST) this.cast[key] = Object.assign({ key }, CAST[key]);
+    // Eight live-player bots + the human. Roster assignment depends on seat.
+    this.cast = buildCast(this.humanSeat);
     this.stateToken = 0;
     this.pending = null; // the guided action we're waiting on
     this.steps = []; // tutorial messages waiting for Next
@@ -85,11 +85,11 @@ class TutorialController {
   async addBots() {
     // userId -> role, applied by orderPlayers() when the game assigns roles.
     const forced = (this.forced = {});
-    forced[this.humanUserId] = CAST[this.humanSeat].role;
+    forced[this.humanUserId] = this.cast[this.humanSeat].role;
     const bots = [];
-    for (const key in CAST) {
+    for (const key in this.cast) {
       if (key === this.humanSeat) continue;
-      const seat = CAST[key];
+      const seat = this.cast[key];
       const settings = {};
       if (seat.nameColor) settings.nameColor = seat.nameColor;
       if (seat.textColor) settings.textColor = seat.textColor;
@@ -102,7 +102,7 @@ class TutorialController {
         isTest: true,
       });
       user.tutorialBot = true;
-      forced[user.id] = CAST[key].role;
+      forced[user.id] = seat.role;
       bots.push(user);
     }
     for (const user of bots) await this.game.userJoin(user, true);
@@ -144,13 +144,22 @@ class TutorialController {
 
   player(key) {
     if (key === this.humanSeat) return this.human();
-    const name = CAST[key] && CAST[key].name;
+    const name = this.cast[key] && this.cast[key].name;
     return this.players().find((p) => p.isBot && p.name === name);
   }
 
   nameOf(key) {
+    if (key === this.humanSeat) {
+      const h = this.human();
+      return h ? h.name : "you";
+    }
     const p = this.player(key);
-    return p ? p.name : CAST[key].name;
+    return p ? p.name : (this.cast[key] && this.cast[key].name);
+  }
+
+  // All eight live-player bot names in this game (for assertions / matching).
+  botNames() {
+    return ROSTER.map((r) => r.name);
   }
 
   meetingFor(player, meetingName) {
@@ -386,7 +395,7 @@ class TutorialController {
   // lets a few vote elsewhere for flavor; everyone still votes.
   async everyoneVotes(target, token, meetingName = "Village", { fast = false, dissenters = {} } = {}) {
     const entries = [];
-    for (const key in CAST) {
+    for (const key in this.cast) {
       if (key === this.humanSeat) continue;
       const p = this.player(key);
       if (!p || !p.alive) continue;
@@ -397,12 +406,12 @@ class TutorialController {
 
   // The most recently killed bot (e.g. by the Sheriff's gun): { key, name, role }.
   lastShot() {
-    for (const key in CAST) {
+    for (const key in this.cast) {
       if (key === this.humanSeat) continue;
       const p = this.player(key);
       if (p && !p.alive && !(this.data.seenDead || []).includes(key)) {
         (this.data.seenDead = this.data.seenDead || []).push(key);
-        const role = p.role ? p.role.name : CAST[key].role.split(":")[0];
+        const role = p.role ? p.role.name : this.cast[key].role.split(":")[0];
         return { key, name: p.name, role };
       }
     }
