@@ -326,18 +326,18 @@ describe("Tutorial storylines end to end", function () {
     expect(asJan.janitor.name).to.equal(null);
   });
 
-  it("Sheriff shootFake: Z posts ezclap, :jerry:, then LMAO!", function () {
+  it("Sheriff shootFake: Z posts :ez: :clap:, then LMAO, then :jerry:", function () {
     const r = sim("sheriff", [{ do: "shootFake" }, ...go(6)]);
     expect(r.branch).to.equal("shootFake");
     expect(r.winners).to.deep.equal(["Village"]);
     const chat = r.chat.join("\n");
-    expect(chat).to.match(/ezclap/);
+    expect(chat).to.match(/:ez: :clap:/);
+    expect(chat).to.match(/\bLMAO\b/);
     expect(chat).to.match(/:jerry:/);
-    expect(chat).to.match(/LMAO!/);
-    // Order: ezclap before jerry before LMAO
-    const i1 = chat.indexOf("ezclap");
-    const i2 = chat.indexOf(":jerry:");
-    const i3 = chat.indexOf("LMAO!");
+    // Order: :ez: :clap: → LMAO → :jerry: (big sticker last)
+    const i1 = chat.indexOf(":ez: :clap:");
+    const i2 = chat.indexOf("LMAO");
+    const i3 = chat.indexOf(":jerry:");
     expect(i1).to.be.at.least(0);
     expect(i2).to.be.above(i1);
     expect(i3).to.be.above(i2);

@@ -811,15 +811,6 @@ export const Emotes = {
     name: "lore",
     type: "webp",
   },
-  // Twitch/7TV "EZ Clap" (snapshotted locally; used in Sheriff tutorial).
-  ezclap: {
-    name: "ezclap",
-    type: "webp",
-  },
-  ":ezclap:": {
-    name: "ezclap",
-    type: "webp",
-  },
 };
 
 export const EmoteKeys = Object.keys(Emotes);

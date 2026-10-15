@@ -93,8 +93,18 @@ class TutorialController {
       const settings = {};
       if (seat.nameColor) settings.nameColor = seat.nameColor;
       if (seat.textColor) settings.textColor = seat.textColor;
-      // Z's Jerry laugh sticker (Sheriff tutorial EZ Clap flex).
+      // Z's flex assets (Sheriff tutorial): small :ez: :clap: emotes + big Jerry sticker.
       if (seat.name === "Z") {
+        settings.customEmotes = {
+          ":ez:": {
+            name: "ez",
+            path: "images/tutorial-bots/ez.webp",
+          },
+          ":clap:": {
+            name: "clap",
+            path: "images/tutorial-bots/clap.webp",
+          },
+        };
         settings.customStickers = {
           ":jerry:": {
             name: "jerry",
@@ -367,15 +377,15 @@ class TutorialController {
     for (const [key, text] of lines) await this.say(key, meetingName, text, token);
   }
 
-  // Z's flex when the Sheriff shoots Gauss (fake Cop): EZ Clap emote, Jerry
-  // sticker, then "LMAO!" — three short messages.
+  // Z's flex when the Sheriff shoots Gauss (fake Cop): :ez: :clap: (small
+  // emotes, one message), then "LMAO", then the Jerry GIF as a big sticker.
   async ezClapFlex(token, meetingName = "Village") {
     const gap = Math.min(this.timing.chat || 400, 450);
-    await this.say("cop", meetingName, "ezclap", token);
+    await this.say("cop", meetingName, ":ez: :clap:", token);
+    await this.wait(gap, token);
+    await this.say("cop", meetingName, "LMAO", token);
     await this.wait(gap, token);
     await this.say("cop", meetingName, ":jerry:", token);
-    await this.wait(gap, token);
-    await this.say("cop", meetingName, "LMAO!", token);
   }
 
   vote(key, meetingName, target) {
