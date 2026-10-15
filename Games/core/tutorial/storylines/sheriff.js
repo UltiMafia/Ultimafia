@@ -1,17 +1,19 @@
-// SHERIFF: two players claim Cop on Day 1. Each names a guilty that is NOT
-// the other Cop claim: one guilty is a Villager, the other is the Lawyer.
-// The Janitor is the Mafia fake-claimer. Shoot now, or hold the shot and let
-// the lynch flip tell you who is real.
+// SHERIFF: Z is always the real Cop; Gauss is the Janitor fake-claiming Cop.
+// Shoot Gauss → Z flexes (EZ Clap, Jerry sticker, LMAO!). Hold the shot and
+// the lynch flip proves Z. If Z survives Day 1, Mafia kills Z Night 2 and the
+// Journalist (who was on Z) shares Z's final guilty.
 
 const WAIT_LESSON = "As Sheriff, waiting to gather info can be better than shooting early.";
 
-function night(t, victim, { check } = {}) {
+function night(t, victim, { check, journalistOn } = {}) {
   for (const key of ["mafioso", "lawyer", "janitor"]) {
     if (t.player(key) && t.player(key).alive) t.vote(key, "Mafia Kill", victim);
   }
   if (t.player("janitor") && t.player("janitor").alive) t.vote("janitor", "Clean Death", "No");
   if (t.player("lawyer") && t.player("lawyer").alive) t.vote("lawyer", "Litigate", "*");
   if (check && t.player("cop") && t.player("cop").alive) t.vote("cop", "Investigate", check);
+  if (journalistOn && t.player("journalist") && t.player("journalist").alive)
+    t.vote("journalist", "Receive Reports", journalistOn);
 }
 
 module.exports = {
@@ -27,8 +29,9 @@ module.exports = {
 
   states: {
     async Night1(t, k) {
-      // Real Cop finds the Lawyer (Mafia). Fake Cop will claim a Villager.
-      night(t, "v2", { check: "lawyer" });
+      // Real Cop (Z) finds the Lawyer. Fake Cop (Gauss) will claim a Villager.
+      // Journalist sits on the Cop so they can carry Z's final report if Z dies N2.
+      night(t, "v2", { check: "lawyer", journalistOn: "cop" });
       await t.advance(k, "You have nothing to do at night. When you've read this, click Continue to start Day 1.");
     },
 
@@ -58,7 +61,6 @@ module.exports = {
             id: "shootRandom",
             vote: { meeting: "Shoot Gun", target: "*other" },
             bad: {
-              // The flip text comes from the role the shot player actually had.
               consequence: async (t, k) => {
                 await t.wait(t.timing.beat, k);
                 const shot = t.lastShot();
@@ -89,14 +91,26 @@ module.exports = {
     },
 
     async Night2(t, k) {
-      if (t.branch === "shootReal") night(t, "journalist");
-      else night(t, "v3", { check: "mafioso" });
+      if (t.branch === "shootReal") {
+        // Cop already dead; Mafia just kills down numbers.
+        night(t, "journalist");
+      } else if (t.player("cop") && t.player("cop").alive) {
+        // Z survived Day 1 → Mafia kills Z. Cop's last check is mafioso;
+        // Journalist (still on Z) will carry that report tomorrow.
+        t.data.copDiedN2 = true;
+        night(t, "cop", { check: "mafioso", journalistOn: "cop" });
+      } else {
+        night(t, "v3", { check: "mafioso" });
+      }
       await t.advance(k, "Night passes. Click Continue to start the next day.");
     },
 
     async Day2(t, k) {
       if (t.branch === "wait") return waitDay2(t, k);
-      if (t.branch === "shootFake") return lynchDay(t, k, "mafioso", 2);
+      if (t.branch === "shootFake") {
+        if (t.data.copDiedN2) return afterCopDiedDay2(t, k, "mafioso");
+        return lynchDay(t, k, "mafioso", 2);
+      }
     },
 
     async Night3(t, k) {
@@ -118,7 +132,7 @@ module.exports = {
       : t.branch === "wait"
       ? [
           "The town won! Waiting a day gave you the proof you needed.",
-          `Lesson: ${WAIT_LESSON}`,
+          `Lesson: ${WAIT_LESSON} And when the Cop died Night 2, the Journalist who had been reading them still had the last report — that's how town kept the info alive.`,
         ]
       : [
           "The town won! You read the fake Cop correctly.",
@@ -129,6 +143,8 @@ module.exports = {
 async function shootFakeDay1(t, k) {
   await t.wait(t.timing.beat, k);
   const role = t.constructor.CAST.janitor.role;
+  // Z flexes on Gauss getting shot.
+  await t.ezClapFlex(k);
   t.guide(`${t.nameOf("janitor")} flipped ${role}, Mafia! The real Cop is ${t.nameOf("cop")}, so their report on ${t.nameOf("lawyer")} is true.`);
   await t.chat("Village", [
     ["v1", `${t.nameOf("janitor")} was Mafia! ${t.nameOf("cop")}'s the real deal.`],
@@ -163,51 +179,78 @@ async function waitDay1(t, k) {
     ["journalist", `Agreed. If ${t.nameOf("lawyer")} flips Mafia, ${t.nameOf("cop")} is real.`],
     ["janitor", `Fine, but when ${t.nameOf("lawyer")} flips town, ${t.nameOf("cop")}'s next.`],
   ], k);
-  // Player already voted lawyer (the "hold" choice). Everyone else votes too,
-  // including the condemned.
   await t.everyoneVotes("lawyer", k);
   await t.advance(k);
 }
 
 async function waitDay2(t, k) {
   const lawRole = t.constructor.CAST.lawyer.role;
-  await t.chat("Village", [
-    ["v1", `${t.nameOf("lawyer")} flipped ${lawRole.toUpperCase()}. ${t.nameOf("cop")} was telling the truth.`],
-    ["cop", `Checked ${t.nameOf("mafioso")} last night: GUILTY.`],
-    ["janitor", `I checked, uh... ${t.nameOf("v3")}. Innocent.`],
-    ["v1", `${t.nameOf("janitor")}, ${t.nameOf("v3")} died LAST NIGHT. And ${t.nameOf("lawyer")} flipped Mafia, the one you defended.`],
-    ["journalist", `I'm the Journalist: I get the Cop's reports. Last night I received a report on ${t.nameOf("mafioso")}: guilty. Nothing on ${t.nameOf("v3")}.`],
-  ], k);
-  t.guide(`New information! ${t.nameOf("lawyer")} flipped ${lawRole}, which proves ${t.nameOf("cop")}'s Day 1 result. ${t.nameOf("janitor")} also slipped: they 'checked' ${t.nameOf("v3")}, who was killed last night.`);
-  t.guide(`${t.nameOf("journalist")}, the Journalist, confirms ${t.nameOf("cop")} checked ${t.nameOf("mafioso")}. ${t.nameOf("cop")} is the real Cop and ${t.nameOf("janitor")} is the fake.`);
+  if (t.data.copDiedN2) {
+    await t.chat("Village", [
+      ["v1", `${t.nameOf("lawyer")} flipped ${lawRole.toUpperCase()}. ${t.nameOf("cop")} was telling the truth — and now ${t.nameOf("cop")} is dead too.`],
+      ["journalist", `I'm the Journalist: I was reading ${t.nameOf("cop")}. Their last check was ${t.nameOf("mafioso")}: GUILTY.`],
+      ["janitor", `Convenient that the 'Journalist' shows up after both Cops are gone...`],
+      ["v1", `${t.nameOf("lawyer")} flipped Mafia, the one you defended. And ${t.nameOf("journalist")} has the Cop's last report.`],
+    ], k);
+    t.guide(
+      `New information! ${t.nameOf("lawyer")} flipped ${lawRole}, which proves ${t.nameOf("cop")}'s Day 1 result. Mafia killed ${t.nameOf("cop")} last night — but ${t.nameOf("journalist")} was reading them and still has the final guilty on ${t.nameOf("mafioso")}.`
+    );
+  } else {
+    await t.chat("Village", [
+      ["v1", `${t.nameOf("lawyer")} flipped ${lawRole.toUpperCase()}. ${t.nameOf("cop")} was telling the truth.`],
+      ["cop", `Checked ${t.nameOf("mafioso")} last night: GUILTY.`],
+      ["janitor", `I checked, uh... ${t.nameOf("v3")}. Innocent.`],
+      ["v1", `${t.nameOf("janitor")}, ${t.nameOf("v3")} died LAST NIGHT. And ${t.nameOf("lawyer")} flipped Mafia, the one you defended.`],
+      ["journalist", `I'm the Journalist: I get the Cop's reports. Last night I received a report on ${t.nameOf("mafioso")}: guilty.`],
+    ], k);
+    t.guide(`New information! ${t.nameOf("lawyer")} flipped ${lawRole}, which proves ${t.nameOf("cop")}'s Day 1 result.`);
+  }
+  t.guide(`${t.nameOf("journalist")} confirms the Cop's line. ${t.nameOf("cop")} was the real Cop and ${t.nameOf("janitor")} is the fake.`);
+  const shootOpts = [
+    { id: "go", label: `Shoot ${t.nameOf("janitor")}`, vote: { meeting: "Shoot Gun", target: "janitor" } },
+  ];
+  // Only offer shooting the Cop if they're still alive (Z died N2 on the usual path).
+  if (t.player("cop") && t.player("cop").alive) {
+    shootOpts.push({
+      id: "shootCop",
+      label: `Shoot ${t.nameOf("cop")}`,
+      vote: { meeting: "Shoot Gun", target: "cop" },
+      bad: {
+        consequence: async (t, k) => {
+          await t.wait(t.timing.beat, k);
+          await t.say("v1", "Village", "They were the REAL Cop, proven twice! What have you done?", k);
+        },
+        fatal: true,
+        lesson: `${t.nameOf("cop")} was proven by the ${t.nameOf("lawyer")} flip and the Journalist. Shooting against the evidence hands the game to the Mafia. When you wait for information, use it.`,
+      },
+    });
+  }
   await t.decide({
     token: k,
     text: `Now you know who's lying. Shoot the fake Cop: click ${t.nameOf("janitor")} in the Shoot Gun box.`,
-    options: [
-      { id: "go", label: `Shoot ${t.nameOf("janitor")}`, vote: { meeting: "Shoot Gun", target: "janitor" } },
-      {
-        id: "shootCop",
-        label: `Shoot ${t.nameOf("cop")}`,
-        vote: { meeting: "Shoot Gun", target: "cop" },
-        bad: {
-          consequence: async (t, k) => {
-            await t.wait(t.timing.beat, k);
-            await t.say("v1", "Village", "They were the REAL Cop, proven twice! What have you done?", k);
-          },
-          fatal: true,
-          lesson: `${t.nameOf("cop")} was proven by the ${t.nameOf("lawyer")} flip and the Journalist. Shooting against the evidence hands the game to the Mafia. When you wait for information, use it.`,
-        },
-      },
-    ],
+    options: shootOpts,
     wrong: () => {
-      t.say("v1", "Village", `Don't you DARE shoot ${t.nameOf("cop")}, they've been right twice!`).catch(() => {});
-      t.guide(`${t.nameOf("cop")} is proven. Shoot ${t.nameOf("janitor")}, the fake Cop.`);
+      t.say("v1", "Village", `Don't you DARE shoot anyone but the fake Cop!`).catch(() => {});
+      t.guide(`Shoot ${t.nameOf("janitor")}, the fake Cop.`);
     },
   });
   await t.wait(t.timing.beat, k);
   const janRole = t.constructor.CAST.janitor.role;
   t.guide(`${t.nameOf("janitor")} flipped ${janRole}, Mafia. ${WAIT_LESSON} You shot with proof instead of a guess.`);
   await lynchVote(t, k, "mafioso");
+}
+
+// Shoot-fake path after Mafia killed Z Night 2: Journalist carries the last guilty.
+async function afterCopDiedDay2(t, k, target) {
+  await t.chat("Village", [
+    ["v1", `Our Cop (${t.nameOf("cop")}) is dead!`],
+    ["journalist", `I'm the Journalist — I was on ${t.nameOf("cop")}. Their last check: ${t.nameOf(target)} GUILTY.`],
+    ["v3", "Trust the Journalist. Finish it."],
+  ], k);
+  t.guide(
+    `Mafia killed ${t.nameOf("cop")} last night. ${t.nameOf("journalist")} was reading them and still has the final report: ${t.nameOf(target)} is guilty.`
+  );
+  await lynchVote(t, k, target, `Vote ${t.nameOf(target)} — the Cop's last guilty, carried by the Journalist.`);
 }
 
 async function lynchVote(t, k, target, text, fast = true) {
@@ -228,7 +271,7 @@ async function lynchVote(t, k, target, text, fast = true) {
     ],
     wrongReactions: [
       ["v1", `Sheriff?! The Cop literally said ${t.nameOf(target)}. Why vote someone else?`],
-      ["cop", "Trust the report, {name}. That vote makes you look bad."],
+      ["journalist", "Trust the report, {name}. That vote makes you look bad."],
     ],
   });
   await t.everyoneVotes(target, k, "Village", { fast });

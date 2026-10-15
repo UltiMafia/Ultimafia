@@ -2,6 +2,9 @@
 // players (snapshotted avatars + nameColor + textColor) always fill the eight
 // bot seats; the ninth seat is the human playing the tutorial. Nothing loads
 // from live at runtime. Profiles fetched 2026-10-15.
+//
+// Pinned when those seats are bots (Sheriff tutorial needs this):
+//   Cop → Z,  Janitor → Gauss. Remaining roster fills the other bot seats.
 
 const ROLES = {
   cop: "Cop",
@@ -27,7 +30,6 @@ const SEAT_ORDER = [
   "mafioso",
 ];
 
-// Vinman's eight live players. Always used as the eight bots.
 const ROSTER = [
   {
     name: "Z",
@@ -87,30 +89,45 @@ const ROSTER = [
   },
 ];
 
-// Assign every roster entry to a bot seat. The human seat keeps only its role
-// (the human's own name/avatar/colors are used in-game).
+const BY_NAME = Object.fromEntries(ROSTER.map((r) => [r.name, r]));
+
+// Prefer these identities on these seats when the seat is a bot.
+const PINNED = { cop: "Z", janitor: "Gauss" };
+
 function buildCast(humanSeat) {
   if (!humanSeat || !ROLES[humanSeat])
     throw new Error("buildCast requires the tutorial human seat.");
   const cast = {};
-  let i = 0;
+  const used = new Set();
+
   for (const key of SEAT_ORDER) {
     const role = ROLES[key];
     if (key === humanSeat) {
       cast[key] = { key, role, name: null };
       continue;
     }
-    if (i >= ROSTER.length)
-      throw new Error("Roster exhausted: expected exactly 8 bots.");
-    cast[key] = Object.assign({ key, role }, ROSTER[i++]);
+    const pin = PINNED[key];
+    if (pin && BY_NAME[pin] && !used.has(pin)) {
+      cast[key] = Object.assign({ key, role }, BY_NAME[pin]);
+      used.add(pin);
+    }
   }
-  if (i !== ROSTER.length)
-    throw new Error(`Expected 8 bots, assigned ${i}.`);
+
+  let i = 0;
+  for (const key of SEAT_ORDER) {
+    if (cast[key]) continue;
+    while (i < ROSTER.length && used.has(ROSTER[i].name)) i++;
+    if (i >= ROSTER.length) throw new Error("Roster exhausted.");
+    cast[key] = Object.assign({ key, role: ROLES[key] }, ROSTER[i]);
+    used.add(ROSTER[i].name);
+    i++;
+  }
+
+  if (used.size !== ROSTER.length)
+    throw new Error(`Expected 8 bots, got ${used.size}.`);
   return cast;
 }
 
-// Role-only view for storylines that read CAST[seat].role (names come from
-// the per-game cast via nameOf).
 const CAST = {};
 for (const key of SEAT_ORDER) CAST[key] = { role: ROLES[key] };
 
@@ -118,6 +135,7 @@ module.exports = {
   ROLES,
   ROSTER,
   SEAT_ORDER,
+  PINNED,
   buildCast,
   CAST,
 };

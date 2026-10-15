@@ -93,6 +93,15 @@ class TutorialController {
       const settings = {};
       if (seat.nameColor) settings.nameColor = seat.nameColor;
       if (seat.textColor) settings.textColor = seat.textColor;
+      // Z's Jerry laugh sticker (Sheriff tutorial EZ Clap flex).
+      if (seat.name === "Z") {
+        settings.customStickers = {
+          ":jerry:": {
+            name: "jerry",
+            path: "images/tutorial-bots/jerry-laugh.gif",
+          },
+        };
+      }
       const user = new User({
         id: `tutbot-${key}-${shortid.generate()}`,
         name: seat.name,
@@ -356,6 +365,17 @@ class TutorialController {
   // Several lines in order: [[key, text], ...] in one meeting.
   async chat(meetingName, lines, token) {
     for (const [key, text] of lines) await this.say(key, meetingName, text, token);
+  }
+
+  // Z's flex when the Sheriff shoots Gauss (fake Cop): EZ Clap emote, Jerry
+  // sticker, then "LMAO!" — three short messages.
+  async ezClapFlex(token, meetingName = "Village") {
+    const gap = Math.min(this.timing.chat || 400, 450);
+    await this.say("cop", meetingName, "ezclap", token);
+    await this.wait(gap, token);
+    await this.say("cop", meetingName, ":jerry:", token);
+    await this.wait(gap, token);
+    await this.say("cop", meetingName, "LMAO!", token);
   }
 
   vote(key, meetingName, target) {

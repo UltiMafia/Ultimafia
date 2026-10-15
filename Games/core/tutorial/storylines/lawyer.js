@@ -1,6 +1,6 @@
 const chatMatch = require("../chatMatch");
-// LAWYER: learn jan codes. The Janitor sets a code in Mafia chat, cleans the
-// night kill, and tells you the hidden role in public using the code.
+// LAWYER: learn jan codes. Day 1 the Sheriff and town both miss (shoot/lynch
+// villagers). Night 2 reminds you to Litigate again (optional, not gated).
 
 const CODE = {
   Villager: "nice weather",
@@ -18,8 +18,7 @@ module.exports = {
   userSeat: "lawyer",
   blurb: "Learn how the Mafia passes secret info with a jan code.",
   available: true,
-  freeVote: () => false,
-  intro: null, // filled in Night1 once bot names are known
+  intro: null,
 
   states: {
     async Night1(t, k) {
@@ -51,7 +50,7 @@ module.exports = {
       await t.expectVote("Litigate", "mafioso", {
         token: k,
         label: `Litigate: ${t.nameOf("mafioso")}`,
-        text: `Second: as Lawyer, Litigate makes someone look like the opposite alignment to investigators. Protect your teammate: click ${t.nameOf("mafioso")} in the Litigate box. (You need both the kill vote and this Litigate.)`,
+        text: `Second: Litigate makes someone look like the opposite alignment to investigators. Protect your teammate: click ${t.nameOf("mafioso")} in the Litigate box.`,
         also: [
           {
             id: "litigateTown",
@@ -79,34 +78,32 @@ module.exports = {
           ["cop", `Cop here. I checked ${t.nameOf("mafioso")} last night: innocent.`],
           ["mafioso", "See? Clean."],
         ], k);
-        t.guide(`Your Litigate worked: the Cop's check on ${t.nameOf("mafioso")} came back innocent, so the Cop just cleared a Mafia member in public.`);
+        t.guide(`Your Litigate worked: the Cop's check on ${t.nameOf("mafioso")} came back innocent.`);
       }
       t.guide(
         `${t.nameOf("janitor")} just said "${phrase}". By the code, that means ${victimName} was the ${role}. You know it and the town doesn't.`
       );
-      const reactions = {
-        wrongRole: [
-          ["cop", "You're claiming THAT? Interesting... I'm watching you, {name}."],
-          ["v3", "That claim doesn't add up, {name}."],
-        ],
-        incomplete: [["v1", "What's your role, {name}?"]],
-        silence: [
-          ["v3", "{name}, you haven't said a word. What are you?"],
-          ["sheriff", "Quiet ones make me nervous. Claim, {name}."],
-        ],
-      };
       await t.expectChat({
         token: k,
         meeting: "Village",
         expect: { role: "villager" },
-        text:
-          "The town wants everyone to claim. Don't reveal what you learned; blend in. Type in town chat that you're a Villager.",
+        text: "The town wants everyone to claim. Blend in — type that you're a Villager.",
         example: "Just a Villager here, sorry.",
-        reactions,
+        reactions: {
+          wrongRole: [
+            ["cop", "You're claiming THAT? Interesting..."],
+            ["v3", "That claim doesn't add up, {name}."],
+          ],
+          incomplete: [["v1", "What's your role, {name}?"]],
+          silence: [
+            ["v3", "{name}, you haven't said a word. What are you?"],
+            ["sheriff", "Quiet ones make me nervous. Claim, {name}."],
+          ],
+        },
         hints: {
-          wrongRole: "Claiming a power role invites a counterclaim. Claim Villager: it's the safest cover.",
+          wrongRole: "Claim Villager: it's the safest cover.",
           incomplete: "Say your role. Claim Villager.",
-          silence: 'Type something like: "I\'m just a Villager."',
+          silence: 'Type: "I\'m just a Villager."',
         },
         also: [
           {
@@ -118,43 +115,56 @@ module.exports = {
             bad: {
               reactions: [
                 ["v3", `How could you possibly know that? ${victimName}'s role was cleaned!`],
-                ["sheriff", "Only the Mafia knows a cleaned role. Thanks for telling me, {name}."],
+                ["sheriff", "Only the Mafia knows a cleaned role. Thanks, {name}."],
               ],
               consequence: async (t, k) => {
                 t.vote("sheriff", "Shoot Gun", "lawyer");
                 await t.wait(t.timing.beat, k);
               },
               fatal: true,
-              lesson: "The Sheriff shot you. A cleaned role is hidden from the town, so only the Mafia can know it. Never reveal what you learned from a jan code.",
+              lesson: "The Sheriff shot you. Never reveal what you learned from a jan code.",
             },
           },
         ],
       });
+      // Sheriff shoots wrong (a villager), then town lynches wrong (another villager).
+      const shootTarget = ["v1", "v3", "v2"].find((key) => key !== victim && t.player(key) && t.player(key).alive) || "v1";
+      const lynchTarget = ["v1", "v3", "v2"].find(
+        (key) => key !== victim && key !== shootTarget && t.player(key) && t.player(key).alive
+      ) || shootTarget;
       await t.chat("Village", [
-        ["v1", `Okay. ${t.nameOf("v3")}'s been pushing hard all day. Feels off.`],
-        ["mafioso", `Agreed, ${t.nameOf("v3")}.`],
+        ["sheriff", `I've heard enough. Gun's coming out — ${t.nameOf(shootTarget)}.`],
+        ["v3", "Wait, Sheriff?!"],
       ], k);
-      await t.expectVote("Village", "v3", {
+      t.vote("sheriff", "Shoot Gun", shootTarget);
+      await t.wait(t.timing.beat, k);
+      t.guide(`The Sheriff shot ${t.nameOf(shootTarget)} — a Villager. Town just wasted its only gun.`);
+      await t.chat("Village", [
+        ["v1", `${t.nameOf(shootTarget)} was town! Now what?`],
+        ["mafioso", `Then let's go ${t.nameOf(lynchTarget)}. Felt off all day.`],
+        ["janitor", `Yeah, ${t.nameOf(lynchTarget)}.`],
+      ], k);
+      await t.expectVote("Village", lynchTarget, {
         token: k,
-        label: `Vote ${t.nameOf("v3")}`,
+        label: `Vote ${t.nameOf(lynchTarget)}`,
+        text: `Your team is pushing ${t.nameOf(lynchTarget)} (also town). Vote them in the Village box — town is about to miss again.`,
         also: [
           {
             id: "voteTeammate",
             label: `Vote ${t.nameOf("mafioso")}`,
             vote: { meeting: "Village", target: "mafioso" },
             bad: {
-              reactions: [["mafioso", "Wait, what? I'm clean, the Cop said so!"]],
-              lesson: "Voting your own teammate here would get Mafia lynched for nothing. Stick with your team's push.",
+              reactions: [["mafioso", "Wait, what? I'm clean!"]],
+              lesson: "Don't vote your teammate here. Stick with the town mislynch.",
             },
           },
         ],
-        text: `Your team is pushing the lynch onto ${t.nameOf("v3")}, a Villager. Vote ${t.nameOf("v3")} in the Village box.`,
         wrongReactions: [
-          ["mafioso", `Huh? We were all on ${t.nameOf("v3")}. Why switch now?`],
-          ["v3", "Wait, why are you voting THEM, {name}? Suspicious."],
+          ["mafioso", `Huh? We were on ${t.nameOf(lynchTarget)}.`],
         ],
       });
-      await t.everyoneVotes("v3", k);
+      await t.everyoneVotes(lynchTarget, k);
+      t.guide(`Town lynched ${t.nameOf(lynchTarget)} — another Villager. Sheriff shot wrong and town lynched wrong. Mafia is winning the information war.`);
       await t.advance(k);
     },
 
@@ -164,20 +174,36 @@ module.exports = {
       );
       t.data.victim2 = pick;
       await t.say("janitor", "Mafia Meeting", `One more and the town's ours. ${t.nameOf(pick)}?`, k);
-      t.guide("Again: vote the Mafia Kill. (Litigate is optional when the night is almost over, but the kill vote is required.)");
+      t.guide(
+        "Reminder: you should always use your Lawyer action (Litigate) when you have it — even tonight. It is NOT required to click Continue this phase, but skipping Litigate in a real game wastes a powerful tool."
+      );
       await t.expectVote("Mafia Kill", pick, {
         token: k,
-        text: `Three Mafia against three town after tonight. Click ${t.nameOf(pick)} in Mafia Kill to finish it.`,
+        text: `Click ${t.nameOf(pick)} in Mafia Kill.`,
+        also: [
+          {
+            id: "litigateAgain",
+            vote: { meeting: "Litigate", target: "mafioso" },
+            // Allowed optional: settling this counts as a choice id but we want kill to be the gate.
+            // Prefer separate free path — Litigate is freeVote for lawyer on Night2.
+          },
+        ].filter(() => false),
       });
+      // Allow optional Litigate without gating Continue: freeVote on Litigate this night.
+      t.data.allowLitigate = true;
       t.vote("mafioso", "Mafia Kill", pick);
       t.vote("janitor", "Mafia Kill", pick);
       t.vote("janitor", "Clean Death", "No");
-      await t.advance(k, "Click Continue to end the night.");
+      // Default Litigate if they don't — bots can, but user optional
+      if (!t.data.userLitigated) t.vote("lawyer", "Litigate", "*");
+      await t.advance(k, "Click Continue to end the night. (Using Litigate again was optional but recommended.)");
     },
   },
 
+  freeVote: (t, meeting) => meeting.name === "Litigate" && t.data.allowLitigate,
+
   epilogue: (t) => [
     "The Mafia won! When the Mafia equals the town, the Mafia wins.",
-    `Lesson: a jan code lets the Janitor pass a cleaned role to teammates in plain sight. "${CODE[t.constructor.CAST[t.data.victim].role.split(":")[0]]}" sounded like small talk, but it told you exactly what ${t.nameOf(t.data.victim)} was. And as Lawyer you must both vote the kill and Litigate.`,
+    `Lesson: a jan code passes cleaned roles in plain sight. Day 1 showed town missing both with the gun and the lynch. And always Litigate when you can — even when the night doesn't force it.`,
   ],
 };

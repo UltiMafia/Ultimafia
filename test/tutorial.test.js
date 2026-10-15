@@ -126,22 +126,21 @@ describe("Tutorial storylines end to end", function () {
   });
 
   for (const branch of ["cop", "janitor"]) {
-    it(`Journalist (${branch} branch): Sheriff shoots the Janitor, N2 check on the Cop claimant, town wins`, function () {
+    it(`Journalist (${branch} branch): exposes Janitor D1, Cop dies N2, shares last report D2, town wins`, function () {
       const r = sim("journalist", [
-        { do: "go" },
-        { do: "go" },
-        { do: "voteCop" },
-        { do: "go" },
-        { do: "readVillager" },
-        ...go(3),
+        { do: "go" }, // N1 receive
+        { do: "go" }, // D1 claim
+        { do: "go" }, // D1 lynch mafioso
+        { do: "go" }, // N2 receive Cop
+        { do: "go" }, // D2 share lawyer guilty
+        { do: "go" }, // D2 lynch lawyer
+        ...go(2),
       ], { branch });
       expect(r.branch).to.equal(branch);
       expect(r.winners).to.deep.equal(["Village"]);
       expect(r.log).to.include("vote sheriff@Shoot Gun -> janitor");
-      expect(r.log.some((l) => /@Village -> janitor/.test(l))).to.be.false;
-      const n2 = r.log.indexOf("state Night2");
-      expect(r.log.slice(n2).find((l) => l.startsWith("guide"))).to.include("Cop claimant");
-      expect(r.alerts.join(" ")).to.match(/autowin/i);
+      expect(r.log.some((l) => /@Mafia Kill -> cop/.test(l))).to.be.true;
+      expect(r.alerts.join(" ")).to.match(/last report|Cop dies|Journalist/i);
       expect(r.errors).to.deep.equal([]);
     });
   }
@@ -150,6 +149,18 @@ describe("Tutorial storylines end to end", function () {
     const r = sim("journalist", [{ do: "go" }, { do: "claimCop" }], { branch: "janitor" });
     expect(r.failed).to.be.true;
     expect(r.humanAlive).to.be.false;
+  });
+
+  it("Journalist: wrong Day-2 report is fatal (lynched, town loses)", function () {
+    const r = sim("journalist", [
+      { do: "go" },
+      { do: "go" },
+      { do: "go" },
+      { do: "go" },
+      { do: "wrongReport" },
+    ], { branch: "cop" });
+    expect(r.failed).to.be.true;
+    expect(r.alerts.join(" ")).to.match(/wrong report|lynched you/i);
   });
 
   it("Lawyer: requires kill vote and Litigate; jan code; leaking gets you shot", function () {
@@ -164,7 +175,7 @@ describe("Tutorial storylines end to end", function () {
 
   for (const victim of ["v1", "cop", "journalist", "sheriff"]) {
     it(`Janitor (${victim} clean): sets a code, drops the phrase, Mafia wins`, function () {
-      const r = sim("janitor", [...go(12)], { branch: victim, victim });
+      const r = sim("janitor", [...go(20)], { branch: victim, victim });
       expect(r.winners).to.deep.equal(["Mafia"]);
       expect(r.alerts.join(" ")).to.match(/jan code|code/i);
       expect(r.errors).to.deep.equal([]);
@@ -300,6 +311,50 @@ describe("Tutorial storylines end to end", function () {
     expect(flat.some((h) => h.ui === "actions")).to.be.true;
     expect(r.examples.length).to.be.greaterThan(0);
   });
+
+  it("pins Z as Cop and Gauss as Janitor whenever those seats are bots", function () {
+    expect(COP).to.equal("Z");
+    expect(JAN).to.equal("Gauss");
+    const asSheriff = seats("sheriff");
+    expect(asSheriff.cop.name).to.equal("Z");
+    expect(asSheriff.janitor.name).to.equal("Gauss");
+    const asCop = seats("cop");
+    expect(asCop.janitor.name).to.equal("Gauss");
+    // Human is janitor → Gauss seat empty, Cop still Z
+    const asJan = seats("janitor");
+    expect(asJan.cop.name).to.equal("Z");
+    expect(asJan.janitor.name).to.equal(null);
+  });
+
+  it("Sheriff shootFake: Z posts ezclap, :jerry:, then LMAO!", function () {
+    const r = sim("sheriff", [{ do: "shootFake" }, ...go(6)]);
+    expect(r.branch).to.equal("shootFake");
+    expect(r.winners).to.deep.equal(["Village"]);
+    const chat = r.chat.join("\n");
+    expect(chat).to.match(/ezclap/);
+    expect(chat).to.match(/:jerry:/);
+    expect(chat).to.match(/LMAO!/);
+    // Order: ezclap before jerry before LMAO
+    const i1 = chat.indexOf("ezclap");
+    const i2 = chat.indexOf(":jerry:");
+    const i3 = chat.indexOf("LMAO!");
+    expect(i1).to.be.at.least(0);
+    expect(i2).to.be.above(i1);
+    expect(i3).to.be.above(i2);
+  });
+
+  it("Sheriff wait/shootFake: if Z survives D1, Mafia kills Z N2 and Journalist shares the final guilty", function () {
+    const mafN = seats("sheriff").mafioso.name;
+    for (const choice of ["wait", "shootFake"]) {
+      const r = sim("sheriff", [{ do: choice }, ...go(8)]);
+      expect(r.log, choice).to.include("vote mafioso@Mafia Kill -> cop");
+      const chat = r.chat.join("\n");
+      expect(chat, choice).to.match(/Journalist/i);
+      expect(chat, choice).to.match(new RegExp(`last check: ${mafN} GUILTY|last check was ${mafN}: GUILTY|Checked ${mafN} last night: GUILTY`, "i"));
+      expect(r.winners, choice).to.deep.equal(["Village"]);
+    }
+  });
+
   it("rejoining mid-game (refresh / come back) restores the box: step, Next/Continue and highlights", function () {
     const r = sim("cop", [{ vote: ["Investigate", MAF] }, ...go(10)], { rejoinAtPending: true });
     expect(r.rejoin).to.be.an("object");
