@@ -602,6 +602,24 @@ module.exports = class Player {
       );
     });
 
+    // Tutorial box: a multiple-choice answer, and Continue to the next phase.
+    socket.on("tutorialChoose", (info) => {
+      try {
+        if (this.game.tutorial && info && typeof info == "object")
+          this.game.tutorial.onChoose(this, String(info.id));
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
+    socket.on("tutorialContinue", () => {
+      try {
+        if (this.game.tutorial) this.game.tutorial.onContinue(this);
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
     socket.on("leave", () => {
       try {
         this.game.playerLeave(this);

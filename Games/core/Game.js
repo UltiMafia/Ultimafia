@@ -232,6 +232,8 @@ module.exports = class Game {
 
   // The tutorial's only human left: stop the script and close the game.
   async endTutorialEarly(player) {
+    if (this._tutorialClosing) return;
+    this._tutorialClosing = true;
     try {
       this.tutorial.destroy();
       this.clearTimers();
@@ -243,6 +245,9 @@ module.exports = class Game {
         } catch (e) {}
       }, 100);
       for (const p of this.players) await redis.leaveGame(p.user.id);
+      // Finished: close the postgame (persists nothing for tutorials).
+      // Mid-game: drop the game outright.
+      if (this.finished) await this.endPostgame();
       await this.cancel();
     } catch (e) {
       logger.error(e);
@@ -745,6 +750,12 @@ module.exports = class Game {
   }
 
   async playerLeave(player) {
+    // The tutorial's human leaving (in-game Leave, or the tutorial box's
+    // "Back to Play") closes the whole game, so nothing keeps them in-game.
+    if (this.tutorial && player.user && player.user.id === this.hostId) {
+      await this.endTutorialEarly(player);
+      return;
+    }
     // The subscription only exists to cover the pregame wait, so it goes as soon
     // as the player does. Note this is driven by leaving, not by the socket
     // closing: a player who backgrounds or closes their browser stays in the
@@ -2507,6 +2518,8 @@ module.exports = class Game {
   }
 
   createNextStateTimer(stateInfo) {
+    // The phase clock is paused in tutorials (see checkAllMeetingsReady).
+    if (this.tutorial && !this.tutorial.done) return;
     if (this.isTest) {
       this.createTimer("main", stateInfo.length, () => this.gotoNextState());
     } else {
@@ -2810,6 +2823,11 @@ module.exports = class Game {
   }
 
   checkAllMeetingsReady() {
+    // Tutorials never advance on their own: the player clicks Continue
+    // (TutorialController.onContinue calls gotoNextState directly).
+    if (this.tutorial && this.started && !this.finished && !this.tutorial.done)
+      return;
+
     var allReady = true;
 
     if (this.type == "Mafia" && this.getStateName() == "Day") {

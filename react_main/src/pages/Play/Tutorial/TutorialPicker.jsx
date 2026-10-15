@@ -16,6 +16,18 @@ import { UserContext } from "../../../Contexts";
 import { useErrorAlert } from "../../../components/Alerts";
 import { Loading } from "../../../components/Loading";
 import { useNavigate } from "react-router-dom";
+import { RoleCount } from "../../../components/Roles";
+
+// Frontier Justice, as played in the tutorial.
+const FJ_ROLES = [
+  ["Cop", 1],
+  ["Journalist", 1],
+  ["Sheriff", 1],
+  ["Villager", 3],
+  ["Janitor", 1],
+  ["Lawyer:Loyal", 1],
+  ["Mafioso", 1],
+];
 
 // Pick a role for the guided new-user tutorial (Frontier Justice vs bots).
 export default function TutorialPicker() {
@@ -57,6 +69,16 @@ export default function TutorialPicker() {
           time.
         </Typography>
       </Box>
+      <Box data-testid="tutorial-setup">
+        <Typography variant="subtitle2" sx={{ opacity: 0.8, mb: 0.5 }}>
+          Frontier Justice (9 players). Hover a role to read it.
+        </Typography>
+        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+          {FJ_ROLES.map(([role, count]) => (
+            <RoleCount key={role} role={role} count={count} gameType="Mafia" />
+          ))}
+        </Stack>
+      </Box>
       <Typography variant="h6">Choose your role</Typography>
       <Grid2 container spacing={2}>
         {storylines.map((s) => (
@@ -64,6 +86,7 @@ export default function TutorialPicker() {
             <Card variant="outlined" data-testid={`tutorial-${s.id}`} sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
               <CardContent sx={{ flex: 1 }}>
                 <Stack direction="row" spacing={1} alignItems="center">
+                  <RoleCount role={s.role} gameType="Mafia" />
                   <Typography variant="h6">{s.title}</Typography>
                   {!s.available && <Chip size="small" label="Coming soon" />}
                 </Stack>

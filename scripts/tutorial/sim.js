@@ -1,6 +1,8 @@
 // Headless run of a tutorial storyline with a simulated human, no DB/redis.
 //   node scripts/tutorial/sim.js <storyline> '<json actions>'
-// actions: [{chat:"..."}, {vote:["Meeting", "Name"|"*"|"Yes"]}, {silent:true}]
+// actions: [{choose:"optionId"}, {chat:"..."}, {vote:["Meeting", "Name"|"*"|"Yes"|"$expected"]}, {silent:true}]
+// The simulated player clicks Continue whenever it is enabled (and, with
+// opts.earlyContinue, also tries to click it before then).
 // Each action answers the next guided step. Prints a JSON result line.
 process.env.NODE_ENV = "test";
 const path = require("path");
@@ -34,7 +36,7 @@ async function run(storyline, actions, opts = {}) {
       noVeg: true,
       pregameCountdownLength: 0,
       stateLengths: { Day: 600000, Night: 600000 },
-      tutorial: { storyline, timing: Object.assign({ chat: 0, beat: 1, silence: 2500, maxSilence: 2 }, opts.timing) },
+      tutorial: { storyline, timing: Object.assign({ chat: 0, beat: 1, silence: 2500, maxSilence: 2, vote: [0, 1] }, opts.timing) },
     },
   });
   await game.init();
@@ -47,6 +49,21 @@ async function run(storyline, actions, opts = {}) {
   socket.onClientEvent("tutorial", (d) => {
     overlays.push(d);
     if (d && d.example) lastExample = d.example;
+  });
+  const phases = [];
+  let continues = 0;
+  socket.onClientEvent("tutorialPhase", (d) => {
+    phases.push(d);
+    if (opts.leaveAt && d.phase === opts.leaveAt) {
+      setTimeout(() => socket.sendToServer("leave"), 5);
+      return;
+    }
+    if (opts.earlyContinue && !d.canContinue) setTimeout(() => socket.sendToServer("tutorialContinue"), 2);
+    if (d.canContinue && !opts.noContinue)
+      setTimeout(() => {
+        continues++;
+        socket.sendToServer("tutorialContinue");
+      }, 5);
   });
   socket.onClientEvent("message", (m) => {
     if (m && m.senderId === "server") alerts.push(m.content);
@@ -64,19 +81,22 @@ async function run(storyline, actions, opts = {}) {
   await new Promise((resolve) => {
     const deadline = Date.now() + (opts.timeoutMs || 15000);
     const tick = setInterval(() => {
-      if (game.finished || Date.now() > deadline) {
+      if (game.finished || t.failed || game._tutorialClosing || Date.now() > deadline) {
         clearInterval(tick);
-        return setTimeout(resolve, 20);
+        if (opts.leaveAfterFinish) socket.sendToServer("leave");
+        return setTimeout(resolve, opts.leaveAfterFinish ? 300 : 20);
       }
       if (busy || !t.pending) return;
-      if (t.pending === lastPending && t.pending.kind === "vote") return;
+      if (t.pending === lastPending) return;
       const action = queue.shift();
       if (!action) return;
       lastPending = t.pending;
       busy = true;
       used.push(action);
       const me = t.human();
-      if (action.chat) {
+      if (action.choose) {
+        socket.sendToServer("tutorialChoose", { id: action.choose });
+      } else if (action.chat) {
         const meeting = t.meetingFor(me, t.pending.meeting);
         const content = action.chat === "$example" ? lastExample : action.chat;
         socket.sendToServer("speak", { meetingId: meeting.id, content });
@@ -86,13 +106,18 @@ async function run(storyline, actions, opts = {}) {
         const p = t.players().find((x) => x.name === target);
         let selection = p ? p.id : target;
         // "$expected": whatever the current step asks for.
-        if (target === "$expected") selection = t.selectionFor(t.pending.options[0].target);
+        if (target === "$expected") selection = t.selectionFor(t.pending.options[0].vote.target);
         if (meeting) socket.sendToServer("vote", { meetingId: meeting.id, selection });
         // A rejected vote leaves the same step pending: allow the next action.
         setTimeout(() => {
           if (t.pending === lastPending) lastPending = null;
         }, 15);
       }
+      // A chat that doesn't match leaves the same step pending: allow the next action.
+      if (action.chat)
+        setTimeout(() => {
+          if (t.pending === lastPending) lastPending = null;
+        }, 1250);
       setTimeout(() => (busy = false), action.chat || action.silent ? 1300 : 25);
     }, 3);
   });
@@ -103,6 +128,15 @@ async function run(storyline, actions, opts = {}) {
     winners: game.winners ? Object.keys(game.winners.groups) : null,
     branch: t.branch,
     humanAlive: t.human().alive,
+    failed: !!t.failed,
+    closed: !!game._tutorialClosing,
+    postgameOver: !!game.postgameOver,
+    state: game.getStateInfo().name,
+    continues,
+    phases: phases.length,
+    voteTimes: t.voteTimes || [],
+    choices: overlays.filter((o) => o && o.choices).map((o) => o.choices.map((c) => c.id)),
+    lastOverlay: overlays[overlays.length - 1],
     leftoverActions: queue.length,
     log: t.log,
     alerts,

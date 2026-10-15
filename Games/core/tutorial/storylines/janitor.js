@@ -32,8 +32,7 @@ module.exports = {
       });
       await t.say("lawyer", "Mafia Meeting", "Clean as a whistle. Tomorrow we make the Cop look like the liar.", k);
       t.vote("lawyer", "Litigate", "*");
-      t.guide("Good. You'll learn Eli's role privately when the night ends. Tomorrow you'll pretend to be the Cop.");
-      await t.advance(k);
+      await t.advance(k, "Good. You'll learn Eli's role privately when the night ends. Tomorrow you'll pretend to be the Cop. Click Continue to start Day 1.");
     },
 
     async Day1(t, k) {
@@ -78,6 +77,40 @@ module.exports = {
           incomplete: `Include all three: you're the Cop, ${t.nameOf("cop")}, guilty.`,
           silence: `The town is waiting. Type: "I'm the Cop. ${t.nameOf("cop")} is guilty."`,
         },
+        also: [
+          {
+            id: "randomGuilty",
+            label: `Say: “I'm the Cop. Dolly is guilty.” (a random guess)`,
+            say: "I'm the Cop. Dolly is guilty.",
+            bad: {
+              reactions: [
+                ["cop", "Funny, I'M the Cop, and I checked Dolly last night: innocent."],
+                ["v1", "I'm a Villager! {name} is making it up!"],
+                ["sheriff", "Two Cops, and one of them just called a confirmed innocent guilty. Easy call."],
+              ],
+              consequence: async (t, k) => {
+                t.vote("sheriff", "Shoot Gun", "janitor");
+                await t.wait(t.timing.beat, k);
+              },
+              fatal: true,
+              lesson:
+                "The Sheriff shot you. A random guilty is easy to disprove: the real Cop may have checked that very player. A fake Cop should counter the real Cop directly, framing her, so it's one word against another.",
+            },
+          },
+          {
+            id: "claimVillager",
+            label: "Say: “Just a Villager here.”",
+            say: "Just a Villager here.",
+            bad: {
+              reactions: [
+                ["cop", "Then listen up: I'm the Cop. Silas is GUILTY."],
+                ["sheriff", "Uncontested Cop with a guilty? If nobody objects, Silas is getting shot."],
+              ],
+              lesson:
+                "If nobody counterclaims, the real Cop's guilty goes uncontested and the Sheriff shoots your teammate. That's why the Mafia usually counterclaims the Cop on Day 1. Try the Cop claim.",
+            },
+          },
+        ],
       });
       await t.chat("Village", [
         ["cop", "That's a LIE. I'M the Cop! I checked Silas last night. Silas is guilty!"],
@@ -98,9 +131,8 @@ module.exports = {
         ["lawyer", "Agreed. Cassidy named Silas, but a dead Cop could've been framed too. Let's start with the liar."],
       ], k);
       t.guide("Your teammates are voting against you to look like town. That's called bussing. The town is lynching you; that's okay. Watch how your team keeps fooling everyone.");
-      for (const key of ["journalist", "sheriff", "v1", "v3", "mafioso", "lawyer"])
-        t.vote(key, "Village", "janitor");
-      await t.advance(k);
+      await t.townVote(["journalist", "sheriff", "v1", "v3", "mafioso", "lawyer"], "janitor", k);
+      await t.advance(k, "You've been lynched. Click Continue to watch the rest of the game.");
     },
 
     async Night2(t, k) {
@@ -108,7 +140,7 @@ module.exports = {
       t.vote("mafioso", "Mafia Kill", "sheriff");
       t.vote("lawyer", "Mafia Kill", "sheriff");
       t.vote("lawyer", "Litigate", "*");
-      await t.advance(k);
+      await t.advance(k, "Click Continue when you're ready.");
     },
 
     async Day2(t, k) {
@@ -120,9 +152,8 @@ module.exports = {
         ["journalist", "I don't love it, but I'll go with Dolly."],
       ], k);
       t.guide("The Mafia is steering the town onto an innocent Villager. If Dolly goes, the Mafia equals the town and wins.");
-      for (const key of ["journalist", "v3", "mafioso", "lawyer"]) t.vote(key, "Village", "v1");
-      t.vote("v1", "Village", "mafioso");
-      await t.advance(k);
+      await t.townVote([["journalist", "v1"], ["v3", "v1"], ["mafioso", "v1"], ["lawyer", "v1"], ["v1", "mafioso"]], null, k);
+      await t.advance(k, "Click Continue to see how it ends.");
     },
   },
 
