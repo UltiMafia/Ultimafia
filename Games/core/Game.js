@@ -230,6 +230,25 @@ module.exports = class Game {
     await this.tutorial.addBots();
   }
 
+  // The tutorial's only human left: stop the script and close the game.
+  async endTutorialEarly(player) {
+    try {
+      this.tutorial.destroy();
+      this.clearTimers();
+      player.send("left");
+      player.left = true;
+      setTimeout(() => {
+        try {
+          if (player.user) player.user.disconnect();
+        } catch (e) {}
+      }, 100);
+      for (const p of this.players) await redis.leaveGame(p.user.id);
+      await this.cancel();
+    } catch (e) {
+      logger.error(e);
+    }
+  }
+
   async markTutorialCompleted() {
     if (this.isTest) return;
     try {
@@ -698,6 +717,11 @@ module.exports = class Game {
         player = p;
         break;
       }
+    }
+
+    if (this.tutorial && player && userId == this.hostId) {
+      await this.endTutorialEarly(player);
+      return;
     }
 
     if (!player && userId != this.hostId) return;

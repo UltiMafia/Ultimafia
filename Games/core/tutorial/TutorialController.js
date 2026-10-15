@@ -179,7 +179,10 @@ class TutorialController {
 
   reportError(e) {
     this.log.push(`error ${e && e.message}`);
-    if (this.game.logError) this.game.logError(e);
+    if (this.logError) this.logError(e);
+    // Lets a client (and the live smoke test) see that the script failed.
+    const human = this.human();
+    if (human) human.send("tutorialError", String((e && e.message) || e));
   }
 
   checkToken(token) {
