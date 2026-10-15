@@ -10,10 +10,10 @@ const NAMES = ["Cassidy", "Jesse", "Wyatt", "Dolly", "Eli", "Hattie", "Flint", "
 
 // Storylines run in a child process: the sim stubs redis/db in its require
 // cache, which mustn't leak into other test files.
-function sim(storyline, actions) {
+function sim(storyline, actions, opts = {}) {
   const out = execFileSync(
     process.execPath,
-    [path.join(__dirname, "../scripts/tutorial/sim.js"), storyline, JSON.stringify(actions)],
+    [path.join(__dirname, "../scripts/tutorial/sim.js"), storyline, JSON.stringify(actions), JSON.stringify(opts)],
     { encoding: "utf8", timeout: 60000 }
   );
   return JSON.parse(out.trim().split("\n").pop());
@@ -45,10 +45,10 @@ describe("Tutorial chat matching", function () {
 });
 
 describe("Tutorial storylines registry", function () {
-  it("lists five, with Cop and Journalist as coming-soon stubs", function () {
+  it("lists five, all playable", function () {
     const s = storylines.summary();
     expect(s.map((x) => x.id)).to.have.members(["cop", "journalist", "lawyer", "janitor", "sheriff"]);
-    expect(s.filter((x) => !x.available).map((x) => x.id)).to.have.members(["cop", "journalist"]);
+    expect(s.filter((x) => !x.available)).to.deep.equal([]);
   });
 });
 
@@ -96,6 +96,53 @@ describe("Tutorial storylines end to end", function () {
     expect(r.winners).to.deep.equal(["Mafia"]);
     expect(r.log.some((l) => l.startsWith("react wrongRole"))).to.be.true;
     expect(r.log.some((l) => /By the code, that means/.test(l))).to.be.true;
+  });
+
+  for (const branch of ["cop", "janitor"]) {
+    it(`Journalist (${branch} branch): reports, reactions, town wins`, function () {
+      const day1 = [
+        { vote: ["Receive Reports", "$expected"] },
+        { chat: "I'm the cop actually" },
+        { chat: "$example" },
+        { vote: ["Village", "$expected"] },
+      ];
+      const rest =
+        branch === "cop"
+          ? [{ vote: ["Receive Reports", "$expected"] }, { chat: "$example" }, { vote: ["Village", "$expected"] }]
+          : [{ vote: ["Village", "$expected"] }];
+      const r = sim("journalist", day1.concat(rest), { branch });
+      expect(r.errors).to.deep.equal([]);
+      expect(r.branch).to.equal(branch);
+      expect(r.winners).to.deep.equal(["Village"]);
+      expect(r.log.some((l) => l.startsWith("react wrongRole"))).to.be.true;
+      expect(r.log).to.include("vote sheriff@Shoot Gun -> janitor");
+    });
+  }
+
+  it("Cop: guilty result, wrong claims get reactions, town wins", function () {
+    const r = sim("cop", [
+      { vote: ["Investigate", "Dolly"] },
+      { vote: ["Investigate", "Silas"] },
+      { chat: "I'm the cop, Silas is innocent" },
+      { chat: "cop here: Dolly is guilty" },
+      { chat: "$example" },
+      { vote: ["Village", "Silas"] },
+      { vote: ["Investigate", "Flint"] },
+      { chat: "$example" },
+      { vote: ["Village", "Flint"] },
+    ]);
+    expect(r.errors).to.deep.equal([]);
+    expect(r.winners).to.deep.equal(["Village"]);
+    expect(r.log.some((l) => l.startsWith("react wrongVerdict"))).to.be.true;
+    expect(r.log.some((l) => l.startsWith("react wrongTarget"))).to.be.true;
+    expect(r.log.filter((l) => l.startsWith("guide For this tutorial, investigate Silas"))).to.have.length(1);
+  });
+
+  it("can be replayed: a second tutorial hosts and finishes the same way", function () {
+    for (let i = 0; i < 2; i++) {
+      const r = sim("sheriff", [{ vote: ["Shoot Gun", "Cassidy"] }]);
+      expect(r.finished).to.be.true;
+    }
   });
 
   const LESSON = "As Sheriff, waiting to gather info can be better than shooting early.";

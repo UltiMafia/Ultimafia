@@ -14,6 +14,7 @@ import { RefreshButton } from "./RefreshButton";
 import { Loading } from "components/Loading";
 import {
   Box,
+  Button,
   Divider,
   Grid,
   Grid2,
@@ -263,9 +264,14 @@ export default function LobbyBrowser() {
         <Typography variant="h3" color="primary">
           Games
         </Typography>
-        <div onClick={refreshGames}>
-          <RefreshButton isSpinning={refreshButtonIsSpinning} />
-        </div>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Button component={Link} to="/play/tutorial" size="small" variant="outlined" data-testid="tutorial-link">
+            📘 Tutorial
+          </Button>
+          <div onClick={refreshGames}>
+            <RefreshButton isSpinning={refreshButtonIsSpinning} />
+          </div>
+        </Stack>
       </Stack>
     </Paper>
   );

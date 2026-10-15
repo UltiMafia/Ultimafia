@@ -43,11 +43,17 @@ async function run(storyline, actions, opts = {}) {
   const overlays = [];
   const alerts = [];
   const chat = [];
-  socket.onClientEvent("tutorial", (d) => overlays.push(d));
+  let lastExample = null;
+  socket.onClientEvent("tutorial", (d) => {
+    overlays.push(d);
+    if (d && d.example) lastExample = d.example;
+  });
   socket.onClientEvent("message", (m) => {
     if (m && m.senderId === "server") alerts.push(m.content);
     else if (m) chat.push(m.content);
   });
+  // Force a storyline's random branch (e.g. { branch: "cop" } sets data.target).
+  if (opts.branch) game.tutorial.data.target = opts.branch;
   await game.userJoin(human, false);
 
   const t = game.tutorial;
@@ -72,7 +78,8 @@ async function run(storyline, actions, opts = {}) {
       const me = t.human();
       if (action.chat) {
         const meeting = t.meetingFor(me, t.pending.meeting);
-        socket.sendToServer("speak", { meetingId: meeting.id, content: action.chat });
+        const content = action.chat === "$example" ? lastExample : action.chat;
+        socket.sendToServer("speak", { meetingId: meeting.id, content });
       } else if (action.vote) {
         const [name, target] = action.vote;
         const meeting = t.meetingFor(me, name);
@@ -111,7 +118,7 @@ async function run(storyline, actions, opts = {}) {
 module.exports = { run };
 
 if (require.main === module) {
-  run(process.argv[2], JSON.parse(process.argv[3] || "[]")).then((r) => {
+  run(process.argv[2], JSON.parse(process.argv[3] || "[]"), JSON.parse(process.argv[4] || "{}")).then((r) => {
     console.log(JSON.stringify(r));
     process.exit(0);
   });
