@@ -133,7 +133,12 @@ export default function TutorialOverlay({ socket }) {
         width: { xs: "calc(100% - 16px)", sm: 520 },
         maxWidth: "calc(100vw - 16px)",
         zIndex: 1300,
-        p: collapsed ? 1 : 2,
+        p: collapsed ? 1 : { xs: 1.5, sm: 2 },
+        boxSizing: "border-box",
+        maxHeight: "min(70vh, calc(100dvh - 16px))",
+        overflowY: "auto",
+        overflowX: "hidden",
+        overscrollBehavior: "contain",
         border: "2px solid #7fb6ff",
         borderRadius: 2,
       }}
@@ -150,18 +155,22 @@ export default function TutorialOverlay({ socket }) {
         sx={{ cursor: "move", touchAction: "none", userSelect: "none" }}
       >
         <Typography sx={{ fontSize: 20, lineHeight: 1.2 }}>📘</Typography>
-        <Box sx={{ flex: 1 }}>
-          <Typography variant="subtitle2" sx={{ color: "#7fb6ff" }}>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Typography variant="subtitle2" noWrap sx={{ color: "#7fb6ff" }}>
             Tutorial <span style={{ opacity: 0.6, fontWeight: 400 }}>· drag to move</span>
           </Typography>
           {!collapsed && (
-            <Typography variant="body2" sx={{ mt: 0.5, cursor: "auto", userSelect: "text" }}>
+            <Typography
+              variant="body2"
+              sx={{ mt: 0.5, cursor: "auto", userSelect: "text", overflowWrap: "anywhere", wordBreak: "break-word" }}
+            >
               {step.text}
             </Typography>
           )}
         </Box>
         <IconButton
           size="small"
+          sx={{ minWidth: 40, minHeight: 40, mt: -0.75, mr: -0.75, flexShrink: 0 }}
           data-testid="tutorial-collapse"
           aria-label={collapsed ? "Expand tutorial" : "Collapse tutorial"}
           onClick={() => setCollapsed(!collapsed)}
@@ -179,7 +188,15 @@ export default function TutorialOverlay({ socket }) {
               disabled={sent}
               data-testid={`tutorial-choice-${choice.id}`}
               onClick={() => choose(choice)}
-              sx={{ justifyContent: "flex-start", textAlign: "left", textTransform: "none" }}
+              sx={{
+                justifyContent: "flex-start",
+                textAlign: "left",
+                textTransform: "none",
+                whiteSpace: "normal",
+                overflowWrap: "anywhere",
+                minHeight: 40,
+                lineHeight: 1.3,
+              }}
             >
               {choice.label}
             </Button>
@@ -187,7 +204,13 @@ export default function TutorialOverlay({ socket }) {
         </Stack>
       )}
       {!collapsed && !step.done && (
-        <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ mt: 1.5 }}>
+        <Stack
+          direction={{ xs: "column-reverse", sm: "row" }}
+          justifyContent="flex-end"
+          useFlexGap
+          gap={1}
+          sx={{ mt: 1.5, "& > button": { minHeight: 40, width: { xs: "100%", sm: "auto" } } }}
+        >
           <Button
             variant={step.hasNext ? "contained" : "outlined"}
             size="small"
@@ -210,7 +233,13 @@ export default function TutorialOverlay({ socket }) {
         </Stack>
       )}
       {!collapsed && step.done && (
-        <Stack direction="row" spacing={1} sx={{ mt: 1.5 }} flexWrap="wrap">
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          useFlexGap
+          gap={1}
+          flexWrap="wrap"
+          sx={{ mt: 1.5, "& > button": { minHeight: 40, width: { xs: "100%", sm: "auto" } } }}
+        >
           {step.failed && (
             <Button variant="contained" size="small" disabled={leaving} onClick={() => leaveTo("/play/tutorial", step.storyline)}>
               Try again
