@@ -120,11 +120,18 @@ can otherwise select body before the parent ref exists. Inactive views do not
 enforce focus, auto-focus or lock the visible page. Keep global overlays outside
 this boundary only when they are intentionally global.
 
-## Device matrix: still required
+## Real-device testing and regression checklist
 
-Neither viewport simulation nor a UA-string test verifies native browser policy.
-Test the real app in Firefox Android, Chrome Android, Safari iOS, and installed
-iOS/Android modes. For each record browser/version and mode, then check:
+Real-device Safari/iOS and Android testing has been completed, as confirmed by
+the maintainer. It must not be described as outstanding merely because the
+automated fixtures use viewport simulation. Exact browser versions and installed
+versus browser-tab modes are not recorded here; this confirmation does not claim
+exhaustive coverage of every browser/version/mode combination.
+
+Neither viewport simulation nor a UA-string test alone verifies native browser
+policy. Retain the following checklist for future real-device regression runs
+in Firefox Android, Chrome Android, Safari iOS, and installed iOS/Android modes.
+Record the browser/version and mode for each run, then check:
 
 1. bottom nav clear of the gesture/home strip without an extra gap;
 2. open/dismiss/reopen a sheet, scroll its content, tap and drag the handle;
