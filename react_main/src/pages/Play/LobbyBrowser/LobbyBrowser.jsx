@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback, useRef } from "react";
+import { TutorialLobbyBanner } from "components/TutorialPrompt";
 import { Navigate, useLocation, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
@@ -276,6 +277,7 @@ export default function LobbyBrowser() {
         <Grid2 size={{ xs: 12, md: 8 }}>
           <Stack spacing={2}>
             <Stack direction="column" spacing={1}>
+              <TutorialLobbyBanner />
               {buttons}
               {gameList}
             </Stack>

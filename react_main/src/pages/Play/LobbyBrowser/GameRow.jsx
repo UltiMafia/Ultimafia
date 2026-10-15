@@ -1,4 +1,6 @@
 import React, { useContext, useState } from "react";
+import { useRankedTutorialGate } from "components/TutorialPrompt";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import "css/shiny.css";
@@ -22,6 +24,7 @@ import { getRowColor, getSetupBackgroundColor } from "./gameRowColors.js";
 import StateIcon from "components/StateIcon";
 
 const GameStatus = (props) => {
+  const navigate = useNavigate();
   const user = useContext(UserContext);
   const isPhoneDevice = useIsPhoneDevice();
   const showGameState = props.showGameState;
@@ -60,10 +63,15 @@ const GameStatus = (props) => {
     buttonDisabled = false;
   }
 
+  const isRankedJoin =
+    props.game.status === "Open" && (props.game.ranked || props.game.competitive);
+  const tutorialGate = useRankedTutorialGate(() => navigate(buttonUrl));
+
   const GameButton = (
     <Button
       component={Link}
       to={buttonUrl}
+      onClick={isRankedJoin ? tutorialGate.guard : undefined}
       variant={buttonVariant}
       color={buttonColor}
       disabled={buttonDisabled}
@@ -80,6 +88,7 @@ const GameStatus = (props) => {
   const gameButtonWrapped = (
     <Box sx={{ width: "100px" }}>
       {canShowGameButton && GameButton}
+      {isRankedJoin && tutorialGate.dialog}
       <div
         style={{
           display: "flex",

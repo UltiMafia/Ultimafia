@@ -47,6 +47,7 @@ const {
 } = require("../../modules/userEligibility");
 const stockMarket = require("../../lib/StockMarket");
 const skillRating = require("../../modules/skillRating");
+const TutorialController = require("./tutorial/TutorialController");
 
 module.exports = class Game {
   constructor(options) {
@@ -164,6 +165,10 @@ module.exports = class Game {
 
     this.isReadyCheckActive = false;
     this.readyPlayers = {};
+    // New-user tutorial: { storyline }. Unranked, private, one human, bots
+    // driven by TutorialController. Nothing about it is persisted.
+    this.tutorialSettings = options.settings.tutorial || null;
+    this.tutorial = null;
   }
 
   async init() {
@@ -203,6 +208,7 @@ module.exports = class Game {
           this.competitive
         );
         this.startHostingTimer();
+        if (this.tutorialSettings) await this.initTutorial();
       } else {
         await redis.setHostingScheduled(this.hostId, this.id);
         this.queueScheduleNotifications();
@@ -210,6 +216,30 @@ module.exports = class Game {
     } catch (e) {
       logger.error(e);
       // this.handleError(e);
+    }
+  }
+
+  async initTutorial() {
+    this.tutorial = new TutorialController(this, {
+      storylineId: this.tutorialSettings.storyline,
+      humanUserId: this.hostId,
+      timing: this.tutorialSettings.timing,
+    });
+    this.tutorial.onComplete = () => this.markTutorialCompleted();
+    this.tutorial.logError = (e) => logger.error(e);
+    await this.tutorial.addBots();
+  }
+
+  async markTutorialCompleted() {
+    if (this.isTest) return;
+    try {
+      await models.User.updateOne(
+        { id: this.hostId },
+        { $set: { tutorialCompleted: true } }
+      ).exec();
+      await redis.cacheUserInfo(this.hostId, true);
+    } catch (e) {
+      logger.error(e);
     }
   }
 
@@ -452,6 +482,12 @@ module.exports = class Game {
           "error",
           "You must leave your current game before joining a new one."
         );
+        user.socket.terminate();
+        return;
+      }
+
+      if (this.tutorial && !isBot && user.id !== this.hostId) {
+        user.send("error", "This is a private tutorial game.");
         user.socket.terminate();
         return;
       }
@@ -1769,6 +1805,8 @@ module.exports = class Game {
     this.numHostInGame = hostCount;
     let remainingToAssign = players.slice(hostCount);
     var randomPlayers = Random.randomizeArray(remainingToAssign);
+    if (this.tutorial)
+      randomPlayers = this.tutorial.orderPlayers(randomPlayers, roleset);
 
     var i = 0;
 
@@ -3723,6 +3761,7 @@ module.exports = class Game {
   }
 
   async penalizePlayerForLeaving(userId) {
+    if (this.tutorial) return;
     let leavePenalty = await models.LeavePenalty.findOne({
       userId: userId,
     }).select("level");
@@ -4267,6 +4306,12 @@ module.exports = class Game {
     let kudosCoins = {};
 
     try {
+      if (this.tutorial) {
+        // Tutorials never count: no Game record, stats, ratings, hearts,
+        // coins or playedGame. Only tutorialCompleted is set (at game end).
+        this.tutorial.destroy();
+        this._postgamePersisted = true;
+      }
       if (!this._postgamePersisted) {
         if (this.kudosVote) {
           try {

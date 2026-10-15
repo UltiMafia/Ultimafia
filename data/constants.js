@@ -63,6 +63,9 @@ if (process.env.NODE_ENV.includes("development")) {
 }
 
 module.exports = {
+  // Accounts that joined on/after this time are prompted to play the new-user
+  // tutorial before ranked games. Earlier accounts are never prompted.
+  tutorialPromptSince: Date.UTC(2026, 9, 15),
   restart: null,
   gameTypes: [
     "Mafia",

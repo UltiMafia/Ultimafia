@@ -246,6 +246,9 @@ var schemas = {
     nameChanged: { type: Boolean, default: false },
     bdayChanged: { type: Boolean, default: false },
     playedGame: { type: Boolean, default: false },
+    // Finished a new-user tutorial game (Games/core/tutorial). Only gates a
+    // soft prompt; see TUTORIAL_ROLLBACK.md.
+    tutorialCompleted: { type: Boolean, default: false },
     referrer: String,
     transactions: [Number],
     skillRating: {

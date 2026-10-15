@@ -114,7 +114,7 @@ router.get("/info", async function (req, res) {
       redis.userInDonorGroup(userId),
       // Coin balance comes straight from the database to guarantee consistency
       // with the shop.
-      models.User.findOne({ id: userId }).select("coins").lean(),
+      models.User.findOne({ id: userId }).select("coins tutorialCompleted joined").lean(),
     ]);
 
     const perms = userPerms || {};
@@ -124,6 +124,12 @@ router.get("/info", async function (req, res) {
     user.perms = perms.perms || {};
     user.isDonor = isDonor;
     user.coins = userDb ? userDb.coins : 0;
+    user.tutorialCompleted = !!(userDb && userDb.tutorialCompleted);
+    // Soft tutorial prompt: only accounts created since the tutorial shipped.
+    user.tutorialPrompt =
+      !user.tutorialCompleted &&
+      !!userDb &&
+      Number(userDb.joined) >= constants.tutorialPromptSince;
 
     delete user.status;
 

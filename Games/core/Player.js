@@ -319,6 +319,9 @@ module.exports = class Player {
           abilityTarget: message.abilityTarget,
           forceLeak: message.forceLeak,
         });
+
+        if (this.game.tutorial)
+          this.game.tutorial.onHumanSpeak(this, meeting, message.content);
       } catch (e) {
         logger.error(e);
         // this.handleError(e);
@@ -465,6 +468,14 @@ module.exports = class Player {
 
         if (!skipRateLimit) votePast.push(Date.now());
 
+        if (
+          this.game.tutorial &&
+          !this.game.tutorial.allowVote(this, meeting, vote.selection)
+        ) {
+          this.sendMeeting(meeting);
+          return;
+        }
+
         const gameStateBeforeVote = this.game.currentState;
         meeting.vote(this, vote.selection);
 
@@ -489,6 +500,12 @@ module.exports = class Player {
 
         var meeting = this.game.getMeeting(meetingId);
         if (!meeting) return;
+
+        // Tutorial votes are scripted steps; they can't be taken back.
+        if (this.game.tutorial && !this.isBot) {
+          this.sendMeeting(meeting);
+          return;
+        }
 
         meeting.unvote(this, target);
         this.sendMeeting(meeting);
