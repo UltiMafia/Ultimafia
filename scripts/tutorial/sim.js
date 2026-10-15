@@ -51,6 +51,8 @@ async function run(storyline, actions, opts = {}) {
     if (d && d.example) lastExample = d.example;
   });
   const phases = [];
+  let kudosEvents = 0;
+  socket.onClientEvent("kudos", () => kudosEvents++);
   let continues = 0;
   socket.onClientEvent("tutorialPhase", (d) => {
     phases.push(d);
@@ -83,6 +85,10 @@ async function run(storyline, actions, opts = {}) {
     const tick = setInterval(() => {
       if (game.finished || t.failed || game._tutorialClosing || Date.now() > deadline) {
         clearInterval(tick);
+        if (game.finished) {
+          game.startKudosVote();
+          game.castKudosVote(t.human(), "mvp", "x");
+        }
         if (opts.leaveAfterFinish) socket.sendToServer("leave");
         return setTimeout(resolve, opts.leaveAfterFinish ? 300 : 20);
       }
@@ -131,6 +137,8 @@ async function run(storyline, actions, opts = {}) {
     failed: !!t.failed,
     closed: !!game._tutorialClosing,
     postgameOver: !!game.postgameOver,
+    kudosStarted: !!game.kudosVote,
+    kudosEvents: kudosEvents,
     state: game.getStateInfo().name,
     continues,
     phases: phases.length,

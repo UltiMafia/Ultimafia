@@ -180,6 +180,13 @@ describe("Tutorial storylines end to end", function () {
     expect(r.postgameOver).to.be.true;
   });
 
+  it("never runs kudos in a tutorial game", function () {
+    const r = sim("sheriff", [{ choose: "shootReal" }]);
+    expect(r.winners).to.deep.equal(["Mafia"]);
+    expect(r.kudosStarted).to.be.false;
+    expect(r.kudosEvents).to.equal(0);
+  });
+
   it("can be replayed: a second run plays out the same way", function () {
     const a = sim("cop", [{ vote: ["Investigate", "Silas"] }, ...go(6)]);
     const b = sim("cop", [{ vote: ["Investigate", "Silas"] }, ...go(6)]);

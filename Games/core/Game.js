@@ -3294,6 +3294,8 @@ module.exports = class Game {
   startKudosVote() {
     if (this.kudosVote !== undefined) return;
     this.kudosVote = null;
+    // No kudos in tutorial games.
+    if (this.tutorial || this.tutorialSettings) return;
 
     if (!this.isKudosEligible() || !this.winners) return;
     const info = this.winners.getWinnersInfo();
@@ -3460,6 +3462,7 @@ module.exports = class Game {
   }
 
   castKudosVote(player, rowKey, target) {
+    if (this.tutorial || this.tutorialSettings) return;
     if (!this.kudosVote || !this.finished || this.postgameOver) return;
 
     const error = this.kudosVote.castVote(player.id, rowKey, target);

@@ -215,6 +215,7 @@ export default function Game() {
   const [hostId, setHostId] = useState(null);
   const [changeSetupDialogOpen, setChangeSetupDialogOpen] = useState(false);
   const [kudos, setKudos] = useState(null);
+  const tutorialGameRef = useRef(false);
   // Set when a participant rehosts this finished game:
   // { gameId, hostId, hostName, setup }
   const [rehostInvite, setRehostInvite] = useState(null);
@@ -701,7 +702,14 @@ export default function Game() {
 
     socket.on("finished", () => setFinished(true));
 
-    socket.on("kudos", (data) => setKudos(data));
+    // Tutorial games have no kudos at all (the server never starts a vote).
+    socket.on("kudos", (data) => {
+      if (!tutorialGameRef.current) setKudos(data);
+    });
+    socket.on("tutorial", () => {
+      tutorialGameRef.current = true;
+      setKudos(null);
+    });
 
     socket.on("rehosted", (info) => {
       if (!info || !info.gameId) return;
