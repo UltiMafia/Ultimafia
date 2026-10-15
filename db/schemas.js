@@ -142,6 +142,8 @@ var schemas = {
       hideDonorBadge: { type: Boolean, default: false },
       disablePokes: { type: Boolean, default: false },
       hideRankedModal: { type: Boolean, default: false },
+      // Hides only the lobby page's Tutorial button (not prompts or the Play menu link).
+      hideTutorialButton: { type: Boolean, default: false },
       hideCompetitiveModal: { type: Boolean, default: false },
       deathMessage: String,
       // Viewer preference: do not play other players' custom death sounds

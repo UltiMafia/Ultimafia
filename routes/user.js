@@ -2546,6 +2546,7 @@ router.post("/settings/update", async function (req, res) {
       "hideJoinDate",
       "hideDonorBadge",
       "hideRankedModal",
+      "hideTutorialButton",
       "hideCompetitiveModal",
       "ignoreTextColor",
       "accessibleNameColors",

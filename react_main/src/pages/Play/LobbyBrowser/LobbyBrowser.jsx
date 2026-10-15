@@ -265,9 +265,11 @@ export default function LobbyBrowser() {
           Games
         </Typography>
         <Stack direction="row" spacing={1} alignItems="center">
-          <Button component={Link} to="/play/tutorial" size="small" variant="outlined" data-testid="tutorial-link">
-            📘 Tutorial
-          </Button>
+          {!user.settings?.hideTutorialButton && (
+            <Button component={Link} to="/play/tutorial" size="small" variant="outlined" data-testid="tutorial-link">
+              📘 Tutorial
+            </Button>
+          )}
           <div onClick={refreshGames}>
             <RefreshButton isSpinning={refreshButtonIsSpinning} />
           </div>

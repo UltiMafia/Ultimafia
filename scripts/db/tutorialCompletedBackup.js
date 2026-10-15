@@ -1,5 +1,6 @@
 /**
- * Backs up users.tutorialCompleted (ids of users who have it set) before
+ * Backs up users.tutorialCompleted and users.settings.hideTutorialButton
+ * (ids of users who have them set) before
  * deploying or rolling back the new-user tutorial. backups/ is git-ignored.
  *
  *   node scripts/db/tutorialCompletedBackup.js [backupDir]
@@ -23,10 +24,18 @@ const dir =
     .project({ _id: 0, id: 1, tutorialCompleted: 1 })
     .toArray();
   fs.writeFileSync(path.join(dir, "tutorialCompleted.json"), JSON.stringify(docs), { mode: 0o600 });
+  const hidden = (
+    await users
+      .find({ "settings.hideTutorialButton": { $exists: true } })
+      .project({ _id: 0, id: 1, "settings.hideTutorialButton": 1 })
+      .toArray()
+  ).map((d) => ({ id: d.id, hideTutorialButton: d.settings.hideTutorialButton }));
+  fs.writeFileSync(path.join(dir, "hideTutorialButton.json"), JSON.stringify(hidden), { mode: 0o600 });
   const manifest = {
     createdAt: new Date().toISOString(),
     usersWithField: docs.length,
     completed: docs.filter((d) => d.tutorialCompleted).length,
+    usersWithHideTutorialButton: hidden.length,
   };
   fs.writeFileSync(path.join(dir, "manifest.json"), JSON.stringify(manifest, null, 2));
   console.log(`Backup written to ${dir}`, JSON.stringify(manifest));
