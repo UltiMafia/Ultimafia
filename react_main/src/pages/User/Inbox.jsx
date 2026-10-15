@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { Navigate, Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 
 import {

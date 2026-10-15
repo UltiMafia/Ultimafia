@@ -4,11 +4,13 @@ import React, {
   useContext,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 import { Box, ButtonBase, Drawer } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import { useAppLocation } from "../hooks/useViewActivity";
+import { SheetController } from "../lib/sheetController.js";
 
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 
@@ -22,27 +24,27 @@ import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 // marker. The opener can pass onClose to reset its own state when the sheet is
 // dismissed from the sheet's own UI (backdrop tap, Escape, swipe).
 export const SheetContext = createContext({
-  openSheet: () => {},
-  closeSheet: () => {},
+  reserveSheet: () => ({ isCurrent: () => false, show: () => false, update: () => false, close: () => {} }),
 });
 
 export function SheetProvider({ children }) {
   const isPhone = useIsPhoneDevice();
-  const location = useLocation();
+  const location = useAppLocation();
 
   // Kept while the drawer animates shut, so the closing sheet still shows its
   // content instead of emptying out first.
-  const [sheet, setSheet] = useState(null);
-  const [open, setOpen] = useState(false);
+  const controllerRef = useRef(null);
+  if (!controllerRef.current) controllerRef.current = new SheetController();
+  const controller = controllerRef.current;
+  useEffect(() => () => controller.closeCurrent(), [controller]);
+  const [{ sheet, open }, setSnapshot] = useState(controller.snapshot);
+  useLayoutEffect(() => controller.subscribe(setSnapshot), [controller]);
   const paperRef = useRef(null);
   const dragFrameRef = useRef(null);
   const pendingDragDistanceRef = useRef(0);
   const dragStartRef = useRef(null);
   const draggedRef = useRef(false);
 
-  const openRef = useRef(false);
-  openRef.current = open;
-  const onCloseRef = useRef(null);
 
   // Pointer motion must not re-render the provider and every sheet consumer.
   // Translate is independent of Slide's transform, so dismissal can still
@@ -74,18 +76,22 @@ export function SheetProvider({ children }) {
   }, []);
 
   const closeSheet = useCallback(() => {
-    const onClose = onCloseRef.current;
-    onCloseRef.current = null;
-    setOpen(false);
-    if (onClose) onClose();
-  }, []);
+    controller.closeCurrent();
+  }, [controller]);
 
-  const openSheet = useCallback((node, { onClose = null } = {}) => {
-    onCloseRef.current = onClose;
-    setDragDistance(0);
-    setSheet({ node });
-    setOpen(true);
-  }, [setDragDistance]);
+  const reserveSheet = useCallback((onClose) => {
+    const request = controller.reserve(onClose);
+    return {
+      ...request,
+      show: (render) => {
+        if (!request.isCurrent()) return false;
+        dragStartRef.current = null;
+        draggedRef.current = false;
+        setDragDistance(0);
+        return request.show(render);
+      },
+    };
+  }, [controller, setDragDistance]);
 
   // Restore the nav before the closing animation paints, so the descending
   // sheet reveals it instead of leaving an empty space that fills afterwards.
@@ -99,11 +105,11 @@ export function SheetProvider({ children }) {
 
   // The sheet belongs to the view it was opened from: a tap on a link inside it
   // navigates, and the sheet goes with the old view.
-  useEffect(() => {
+  useLayoutEffect(() => {
     closeSheet();
-  }, [location.pathname, location.search, closeSheet]);
+  }, [location.key, location.pathname, location.search, location.hash, closeSheet]);
 
-  const value = { openSheet, closeSheet, sheetOpen: open };
+  const value = useMemo(() => ({ reserveSheet }), [reserveSheet]);
 
   return (
     <SheetContext.Provider value={value}>
@@ -116,8 +122,8 @@ export function SheetProvider({ children }) {
           transition: {
             onExited: () => {
               // A sheet opened during the closing animation must not be cleared.
-              if (!openRef.current) {
-                setSheet(null);
+              if (!controller.snapshot.open) {
+                controller.finishExit();
                 setDragDistance(0);
               }
             },
@@ -144,6 +150,7 @@ export function SheetProvider({ children }) {
       >
         {isPhone && (
           <ButtonBase
+            disabled={!open}
             className="mui-popover-title"
             aria-label="Close sheet"
             onClick={(event) => {
@@ -152,7 +159,7 @@ export function SheetProvider({ children }) {
               if (!draggedRef.current || event.detail === 0) closeSheet();
             }}
             onPointerDown={(event) => {
-              if (!event.isPrimary || event.button !== 0) return;
+              if (!controller.snapshot.open || !event.isPrimary || event.button !== 0) return;
               dragStartRef.current = event.clientY;
               draggedRef.current = false;
               event.currentTarget.setPointerCapture(event.pointerId);
@@ -210,7 +217,9 @@ export function SheetProvider({ children }) {
             />
           </ButtonBase>
         )}
-        <Box sx={{ overflowY: "auto" }}>{sheet && sheet.node}</Box>
+        <Box sx={{ overflowY: "auto" }}>
+          {sheet && <React.Fragment key={sheet.owner.id}>{sheet.render()}</React.Fragment>}
+        </Box>
       </Drawer>
     </SheetContext.Provider>
   );

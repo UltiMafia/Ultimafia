@@ -42,7 +42,9 @@ export function useDismissOnBack(isOpen, onClose) {
     };
     overlayStack.push(entry);
 
-    window.history.pushState({ __overlay: id }, "");
+    // Preserve React Router's key/index/user state instead of replacing it with
+    // our private marker. Opening an overlay is not a route navigation.
+    window.history.pushState({ ...window.history.state, __overlay: id }, "");
 
     return () => {
       const index = overlayStack.indexOf(entry);

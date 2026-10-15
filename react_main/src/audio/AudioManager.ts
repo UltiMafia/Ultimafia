@@ -112,11 +112,15 @@ export default class AudioManager {
   }
 
   dispose(): void {
-    this.generation++;
+    this.stopTransientSounds();
     for (const track of Object.values(this.tracks)) track.sound.dispose();
+    this.tracks = {};
+  }
+
+  stopTransientSounds(): void {
+    this.generation++;
     for (const sound of this.transientSounds) sound.dispose();
     this.transientSounds.clear();
-    this.tracks = {};
   }
 
   syncVolume(sfx: number, music: number, pregameMusic: number, important: number): void {

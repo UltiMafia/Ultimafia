@@ -1,6 +1,7 @@
 import React, { useContext, Suspense } from "react";
 
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
+import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 
 import { lazyWithRetry } from "lib/lazyWithRetry";
 import { Loading } from "components/Loading";

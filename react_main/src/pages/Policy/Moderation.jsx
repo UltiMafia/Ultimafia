@@ -2,9 +2,9 @@ import React, { useState, useEffect, useContext } from "react";
 import {
   Outlet,
   useLocation,
-  useNavigate,
   useOutletContext,
 } from "react-router-dom";
+import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import { Box, Grid, Stack, Tab, Tabs, Typography } from "@mui/material";
 
 import { UserContext } from "Contexts";

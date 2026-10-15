@@ -1,7 +1,8 @@
 // React 17 does not batch state updates outside its own event handlers.
 import { unstable_batchedUpdates } from "react-dom";
 import React, { useState, useEffect, useContext, useRef, useMemo, Suspense, lazy } from "react";
-import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import update from "immutability-helper";
 import colorContrast from "color-contrast";

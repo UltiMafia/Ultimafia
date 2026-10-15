@@ -38,7 +38,11 @@ import { GameContext, SiteInfoContext, UserContext } from "Contexts";
 import Dropdown from "../../components/Dropdown";
 import Setup from "../../components/Setup";
 import { NameWithAvatar } from "../User/UserWidgets";
-import { ClientSocket as Socket } from "../../Socket";
+import { ClientSocket as Socket, subscribeSocketListeners } from "../../Socket";
+import { LatestRequest } from "../../lib/latestRequest.js";
+import { useViewActive } from "../../hooks/useViewActivity";
+import { useGameMembership } from "../../hooks/useGameMembership";
+import { useGameSessionIdentity } from "../../hooks/useGameSessionIdentity";
 import { RoleCount } from "../../components/Roles";
 import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
@@ -175,6 +179,7 @@ export default function Game(props) {
   const [loaded, setLoaded] = useState(false);
   const [review, setReview] = useState(false);
   const [leave, setLeave] = useState(false);
+  const sessionIdentityValid = useGameSessionIdentity(() => setLeave(true));
   const [finished, setFinished] = useState(false);
   const [port, setPort] = useState();
   const [gameType, setGameType] = useState();
@@ -248,7 +253,7 @@ export default function Game(props) {
     [props.active, settings]
   );
 
-  const { playAudio, loadAudioFiles, stopAudio, stopAudios, playDeathSounds } =
+  const { playAudio, loadAudioFiles, stopAudio, stopAudios, playDeathSounds, stopDeathSounds } =
     useAudio(audibleSettings);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
@@ -257,12 +262,22 @@ export default function Game(props) {
   // Hosted outside the route table, where useParams is empty; fall back to it
   // so the component still works when rendered inside a route.
   const gameId = props.gameId || routeGameId;
+  useGameMembership(socket, gameId, sessionIdentityValid);
   // False while the session is retained but the user is on another page.
   const active = props.active !== false;
   // Socket handlers are created once and would otherwise capture the value of
   // `active` from when they were registered.
   const activeRef = useRef(active);
   activeRef.current = active;
+  const connectionRequests = useRef(new LatestRequest());
+  const registeredSocketRef = useRef(null);
+  useEffect(() => () => connectionRequests.current.invalidate(), []);
+  useEffect(() => {
+    if (leave || finished) connectionRequests.current.invalidate();
+  }, [leave, finished]);
+  useEffect(() => {
+    if (!active) stopDeathSounds();
+  }, [active, stopDeathSounds]);
   const navigate = useNavigate();
   const [selectedPanel, setSelectedPanel] = useState("chat");
   const isPhoneDeviceRef = useRef(false);
@@ -511,7 +526,7 @@ export default function Game(props) {
   };
 
   useEffect(() => {
-    if (token == null) return;
+    if (token == null || !sessionIdentityValid || leave || finished || review) return;
 
     var socketURL;
 
@@ -533,14 +548,14 @@ export default function Game(props) {
       }/${port}`;
 
     var newSocket = new Socket(socketURL);
-    newSocket.on("connected", () => setConnected(connected + 1));
-    newSocket.on("disconnected", () => setConnected(connected - 1));
+    newSocket.on("connected", () => setConnected((current) => current + 1));
+    newSocket.on("disconnected", () => setConnected((current) => current - 1));
     setSocket(newSocket);
 
     return () => {
       if (newSocket) newSocket.clear();
     };
-  }, [token]);
+  }, [token, port, gameId, leave, finished, review, sessionIdentityValid]);
 
   useEffect(() => {
     if (finished) {
@@ -567,6 +582,7 @@ export default function Game(props) {
       loadAudioFiles(coreAudioConfig);
 
       function onKeydown() {
+        if (!activeRef.current) return;
         var speechInput = document.getElementById("speechInput");
         var activeElName = document.activeElement.tagName;
 
@@ -745,6 +761,9 @@ export default function Game(props) {
         guestId: window.localStorage.getItem("cacheVal"),
       });
 
+    const replay = registeredSocketRef.current !== socket;
+    registeredSocketRef.current = socket;
+    return subscribeSocketListeners(socket, (socket) => {
     socket.on("authSuccess", () => {
       socket.send("join", {
         gameId,
@@ -755,7 +774,6 @@ export default function Game(props) {
     socket.on("loaded", () => {
       console.log("[WEBSOCKET] loaded");
       setLoaded(true);
-      user.refreshGameMembership();
     });
 
     socket.on("setup", (data) => {
@@ -772,9 +790,6 @@ export default function Game(props) {
 
     socket.on("finished", () => {
       setFinished(true);
-      // The server broadcasts this before its Redis cleanup completes, so a
-      // lookup here could briefly return the membership it is about to delete.
-      user.setInGame((current) => (current === gameId ? null : current));
     });
 
     socket.on("kudos", (data) => setKudos(data));
@@ -898,6 +913,7 @@ export default function Game(props) {
 
     // Custom death sounds: server sends URLs already shuffled; play one-by-one
     socket.on("deathSounds", (urls) => {
+      if (!activeRef.current) return;
       if (!Array.isArray(urls) || urls.length === 0) return;
       // User preference: skip all custom death sounds (ref stays current mid-game)
       if (ignoreDeathSoundsRef.current) return;
@@ -1020,7 +1036,6 @@ export default function Game(props) {
 
     socket.on("left", () => {
       if (!noLeaveRef.current) {
-        user.setInGame((current) => (current === gameId ? null : current));
         setLeave(true);
         siteInfo.hideAllAlerts();
       }
@@ -1074,6 +1089,7 @@ export default function Game(props) {
         playAudio(audioName);
       }
     });
+    }, { replay });
   }, [connected, user.loaded, sportsmanshipModal.open]);
 
   function settingIsTrue(value) {
@@ -1081,19 +1097,22 @@ export default function Game(props) {
   }
 
   function connectToGame(isSpectating) {
+    const request = connectionRequests.current.begin();
     const url = `/api/game/${gameId}/connect${
       isSpectating ? "?spectate=true" : ""
     }`;
 
     axios
-      .get(url)
+      .get(url, { signal: request.signal })
       .then((res) => {
+        if (!request.isCurrent()) return;
         setGameType(res.data.type);
         setPort(res.data.port);
         setToken(res.data.token || false);
         setHostId(res.data.hostId);
       })
       .catch((e) => {
+        if (!request.isCurrent()) return;
         var msg = e && e.response && e.response.data;
         if (msg === "Game not found.") setReview(true);
         else {
@@ -1112,9 +1131,11 @@ export default function Game(props) {
       return;
     }
 
+    const request = connectionRequests.current.begin();
     axios
-      .get(`/api/game/${gameId}/info`)
+      .get(`/api/game/${gameId}/info`, { signal: request.signal })
       .then((res) => {
+        if (!request.isCurrent()) return;
         const game = res.data;
         const ranked = !!game.settings?.ranked;
         const competitive = !!game.settings?.competitive;
@@ -1143,6 +1164,7 @@ export default function Game(props) {
         connectToGame(isSpectating);
       })
       .catch(() => {
+        if (!request.isCurrent()) return;
         // Finished / missing games fall through to connect (review path)
         connectToGame(isSpectating);
       });
@@ -1199,12 +1221,12 @@ export default function Game(props) {
     return null;
   }
 
-  if (leave) return props.onLeave ? null : <Navigate to="/play" />;
+  if (leave || !sessionIdentityValid) return props.onLeave ? null : <Navigate to="/play" />;
   else if (!loaded || stateViewing == null)
     return (
       <div className="game">
         <SportsmanshipJoinModal
-          open={sportsmanshipModal.open}
+          open={active && sportsmanshipModal.open}
           type={sportsmanshipModal.type}
           onAccept={onSportsmanshipAccept}
           onCancel={onSportsmanshipCancel}
@@ -1293,7 +1315,7 @@ export default function Game(props) {
             }}
           >
             <FirstGameModal
-              showModal={showFirstGameModal}
+              showModal={active && showFirstGameModal}
               setShowModal={setShowFirstGameModal}
             />
             {gameType === "Mafia" && <MafiaGame />}
@@ -1317,7 +1339,7 @@ export default function Game(props) {
           </Box>
         </Stack>
         <UrgencyOverlay hidden={!isUrgent} />
-        {!review && history.currentState == -1 && (
+        {active && !review && history.currentState == -1 && (
           <PushNotificationPrompt socket={socket} />
         )}
         <ReadyCheckDialog
@@ -1328,7 +1350,7 @@ export default function Game(props) {
           onLeave={leaveGame}
         />
         <LeaveGameDialog
-          open={leaveDialogOpen}
+          open={active && leaveDialogOpen}
           onClose={() => setLeaveDialogOpen(false)}
           onConfirm={leaveGame}
           isParticipationRequired={(() => {
@@ -1344,14 +1366,14 @@ export default function Game(props) {
         />
         {(gameType === "Mafia" || gameType === "Secret Dictator") && (
           <RoleRevealModal
-            open={roleRevealModalOpen}
+            open={active && roleRevealModalOpen}
             onClose={() => setRoleRevealModalOpen(false)}
             roleData={roleRevealData}
             gameType={gameType}
           />
         )}
         <ChangeSetupDialog
-          open={changeSetupDialogOpen}
+          open={active && changeSetupDialogOpen}
           onClose={() => setChangeSetupDialogOpen(false)}
           gameType={gameType}
           currentSetup={setup}
@@ -1442,9 +1464,7 @@ let rehostInviteSlotCounter = 0;
 
 export function useSocketListeners(listeners, socket) {
   useEffect(() => {
-    if (!socket.on) return;
-
-    listeners(socket);
+    return subscribeSocketListeners(socket, listeners);
   }, [socket]);
 }
 
@@ -1728,7 +1748,7 @@ export function MobileLayout({
 
   function onBottomNavigationChange(event, newValue) {
     if (newValue === "leave") {
-      onLeaveGameClick();
+      game.onLeaveGameClick();
     } else {
       setSelectedPanel(newValue);
     }
@@ -3900,7 +3920,7 @@ export function OptionsList() {
   const game = useContext(GameContext);
   const gameOptions = game.options.gameTypeOptions;
 
-  if (history.currentState !== -1) {
+  if (game.history.currentState !== -1) {
     return <></>;
   }
 
@@ -4248,6 +4268,7 @@ export function InventoryPanel({
 }
 
 function InventorySlot({ item, metadata, actionDescriptors, gameType }) {
+  const active = useViewActive();
   const [anchorEl, setAnchorEl] = useState(null);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const hasActions = actionDescriptors && actionDescriptors.length > 0;
@@ -4271,7 +4292,10 @@ function InventorySlot({ item, metadata, actionDescriptors, gameType }) {
   };
   const handleTooltipClose = () => setTooltipOpen(false);
 
-  const open = Boolean(anchorEl);
+  const open = active && Boolean(anchorEl);
+  useEffect(() => {
+    if (!active) setAnchorEl(null);
+  }, [active]);
   const iconTargetName = metadata?.icon || metadata?.name || item?.name;
   const iconClass =
     iconTargetName && gameType

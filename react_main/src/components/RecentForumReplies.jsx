@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
@@ -6,13 +6,16 @@ import { Paper, Stack, Typography, Box } from "@mui/material";
 import { Avatar } from "pages/User/UserWidgets";
 import { Time } from "components/Basic";
 import LobbySidebarPanel from "pages/Play/LobbyBrowser/LobbySidebarPanel";
+import { useViewActive } from "../hooks/useViewActivity";
 
 export function RecentForumReplies() {
+  const active = useViewActive();
   const [newestThreads, setNewestThreads] = useState([]);
   const [recentReplies, setRecentReplies] = useState([]);
-  const isMountedRef = useRef(true);
 
   useEffect(() => {
+    if (!active) return;
+    let cancelled = false;
     const fetchForumActivity = async () => {
       try {
         const res = await axios.get("/api/forums/categories");
@@ -49,7 +52,7 @@ export function RecentForumReplies() {
           }
         }
 
-        if (!isMountedRef.current) return;
+        if (cancelled) return;
 
         threads.sort((a, b) => (b.date || 0) - (a.date || 0));
         replies.sort((a, b) => (b.date || 0) - (a.date || 0));
@@ -57,7 +60,7 @@ export function RecentForumReplies() {
         setRecentReplies(replies.slice(0, 5));
       } catch (e) {
         // Silently ignore; show empty state below
-        if (isMountedRef.current) {
+        if (!cancelled) {
           setNewestThreads([]);
           setRecentReplies([]);
         }
@@ -68,14 +71,16 @@ export function RecentForumReplies() {
     fetchForumActivity();
 
     // Poll every 30 seconds for updates
-    const interval = setInterval(fetchForumActivity, 30000);
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") fetchForumActivity();
+    }, 30000);
 
     // Cleanup interval and mounted status on unmount
     return () => {
-      isMountedRef.current = false;
+      cancelled = true;
       clearInterval(interval);
     };
-  }, []);
+  }, [active]);
 
   return (
     <LobbySidebarPanel title="Forum Activity">

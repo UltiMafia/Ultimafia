@@ -2,12 +2,12 @@ import React, { useState, useContext, useEffect, Suspense, lazy } from "react";
 import {
   Route,
   Routes,
-  Navigate,
   useLocation,
-  useNavigate,
 } from "react-router-dom";
 
 import { UserContext } from "../../Contexts";
+import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
+import { useViewActive } from "../../hooks/useViewActivity";
 
 import "css/play.css";
 
@@ -29,6 +29,7 @@ export default function Play(props) {
   const defaultGameType = "Mafia";
 
   const user = useContext(UserContext);
+  const active = useViewActive();
   const location = useLocation();
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
@@ -38,6 +39,7 @@ export default function Play(props) {
   );
 
   useEffect(() => {
+    if (!active) return;
     localStorage.setItem("gameType", gameType);
 
     if (
@@ -56,7 +58,7 @@ export default function Play(props) {
         replace: true,
       });
     }
-  }, [location.pathname, gameType]);
+  }, [location.pathname, gameType, active]);
   // Allow logged-out users to access Play page
 
   function onFilterGameType(gameType) {

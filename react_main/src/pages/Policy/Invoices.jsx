@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import axios from "axios";
 import {
   Button,

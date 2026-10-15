@@ -2,8 +2,6 @@ import React, {
   useState,
   useContext,
   useEffect,
-  useRef,
-  useCallback,
   Suspense,
 } from "react";
 import { lazyWithRetry, clearChunkReloadFlag } from "./lib/lazyWithRetry";
@@ -13,14 +11,11 @@ import {
   Navigate,
   Routes,
   useLocation,
-  useNavigate,
-  matchPath,
-  UNSAFE_LocationContext,
 } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import axios from "axios";
 import { Icon } from "@iconify/react";
-import { ThemeProvider, CssBaseline, createTheme, AppBar, Link as MuiLink, Toolbar } from "@mui/material";
+import { ThemeProvider, CssBaseline, AppBar, Link as MuiLink } from "@mui/material";
 
 import {
   UserContext,
@@ -32,7 +27,6 @@ import {
 import { getSiteTheme } from "./constants/themes";
 import { AlertList, useErrorAlert } from "./components/Alerts";
 import { ConnectionBanner } from "./components/ConnectionBanner";
-import { Nav } from "./components/Nav";
 import UserNavSection from "./pages/User/UserNavSection";
 import CookieBanner from "./components/CookieBanner";
 import LeaveGameDialog from "./components/LeaveGameDialog";
@@ -42,8 +36,11 @@ import { MobileNav } from "./components/MobileNav";
 import { ProfileSheetProvider } from "./components/ProfileSheet";
 import { SheetProvider } from "./components/Sheet";
 import ThemeColorMeta from "./components/ThemeColorMeta";
+import RetainedSiteRoutes from "./components/RetainedSiteRoutes";
+import ViewOverlayBoundary from "./components/ViewOverlayBoundary";
+import { AppLocationContext, ViewActivityContext, ViewNavigate } from "./hooks/useViewActivity";
 import { useAppViewport } from "./hooks/useAppViewport";
-import { useThemeColorMeta } from "./hooks/useThemeColorMeta";
+import { useHostedGameSession } from "./hooks/useHostedGameSession";
 import { browserReservesBottomSafeArea } from "./utils/platform";
 import "css/main.css";
 import "css/accessibility.css";
@@ -136,11 +133,6 @@ const Welcome = lazyWithRetry(() => import("pages/Welcome/Welcome"));
 
 // The game session is rendered outside the route table, so the route table must
 // not treat a game URL as an unknown site path and redirect away from it.
-function matchGameId(pathname) {
-  const match = matchPath({ path: "/game/:gameId", end: false }, pathname);
-  return match ? match.params.gameId : null;
-}
-
 function Main(props) {
   const errorContent = props.errorContent;
 
@@ -153,7 +145,6 @@ function Main(props) {
   const isPhoneDevice = useIsPhoneDevice();
 
   const location = useLocation();
-  const navigate = useNavigate();
   // Size the phone shell and game session to the visual viewport.
   useAppViewport();
 
@@ -167,8 +158,7 @@ function Main(props) {
     else root.setAttribute("data-bottom-inset", "page");
     return () => root.removeAttribute("data-bottom-inset");
   }, []);
-  const routeGameId = matchGameId(location.pathname);
-  const inGame = Boolean(routeGameId);
+  const { inGame, hostedGameId, leaveGameSession } = useHostedGameSession();
 
   useEffect(() => {
     const root = document.documentElement;
@@ -176,36 +166,6 @@ function Main(props) {
     else root.removeAttribute("data-game-view");
     return () => root.removeAttribute("data-game-view");
   }, [inGame]);
-
-  // Keep the last site page mounted while a game is shown, so leaving a game and
-  // returning to the same page does not remount it (and refetch). The site
-  // subtree is frozen at its last non-game location while in a game; otherwise
-  // URL-driven pages (the lobby reads ?lobby= / ?game=) would see the game URL
-  // and try to navigate.
-  const lastSiteLocationRef = useRef(location);
-  if (!inGame) lastSiteLocationRef.current = location;
-  const siteLocation = inGame ? lastSiteLocationRef.current : location;
-  const siteLocationContext = {
-    location: siteLocation,
-    navigationType: "POP",
-  };
-
-  // Retained across navigation so that leaving the game URL does not tear the
-  // session down. Only an explicit leave clears it.
-  const [hostedGameId, setHostedGameId] = useState(null);
-  const inGameRef = useRef(inGame);
-  inGameRef.current = inGame;
-
-  useEffect(() => {
-    if (routeGameId) setHostedGameId(routeGameId);
-  }, [routeGameId]);
-
-  const leaveGameSession = useCallback(() => {
-    setHostedGameId(null);
-    // A server-driven end of a game the player is watching from elsewhere must
-    // not yank them off the page they are on.
-    if (inGameRef.current) navigate("/play");
-  }, [navigate]);
 
   const loading = isUserLoading || isSiteInfoLoading;
 
@@ -261,10 +221,7 @@ function Main(props) {
               errorContent
             ) : (
               <Suspense fallback={<Loading small />}>
-                <Routes>
-                  {/* The game is hosted outside this route table; swallow its
-                      URL here so the catch-all does not redirect away. */}
-                  <Route path="game/:gameId/*" element={null} />
+                <RetainedSiteRoutes active={!inGame}>
                   <Route path="welcome" element={<Welcome />} />
                   <Route path="play/*" element={<Play />} />
                   <Route path="community/*" element={<Community />} />
@@ -274,8 +231,8 @@ function Main(props) {
                   <Route path="activity/*" element={<SiteActivity />} />
 
                   <Route path="user/*" element={<User />} />
-                  <Route path="*" element={<Navigate to="play" />} />
-                </Routes>
+                  <Route path="*" element={<ViewNavigate to="play" />} />
+                </RetainedSiteRoutes>
               </Suspense>
             )}
           </div>
@@ -315,23 +272,23 @@ function Main(props) {
     <SiteInfoProvider setSiteInfoLoading={setSiteInfoLoading}>
       {loading && <Loading />}
       {!loading && (
+        <AppLocationContext.Provider value={location}>
         <SheetProvider>
           <ProfileSheetProvider>
             <ThemeColorMeta />
             <InGameContext.Provider value={inGame}>
-              {UNSAFE_LocationContext ? (
-                <UNSAFE_LocationContext.Provider value={siteLocationContext}>
+              <ViewOverlayBoundary active={!inGame}>
                   {siteContent}
-                </UNSAFE_LocationContext.Provider>
-              ) : (
-                siteContent
-              )}
+              </ViewOverlayBoundary>
             </InGameContext.Provider>
-            {gameSession}
+            <ViewActivityContext.Provider value={inGame}>
+              {gameSession}
+            </ViewActivityContext.Provider>
             <AlertList />
             <ConnectionBanner />
           </ProfileSheetProvider>
         </SheetProvider>
+        </AppLocationContext.Provider>
       )}
     </SiteInfoProvider>
   );
@@ -739,7 +696,6 @@ function Footer() {
           <MuiLink
             component={Link}
             to="/policy/tos"
-            viewTransition
           >
             Terms of Service
           </MuiLink>
@@ -747,7 +703,6 @@ function Footer() {
           <MuiLink
             component={Link}
             to="/policy/privacy"
-            viewTransition
           >
             Privacy Policy
           </MuiLink>

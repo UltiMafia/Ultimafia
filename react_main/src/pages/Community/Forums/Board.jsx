@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Navigate, useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import axios from "axios";
 
 import { useErrorAlert } from "../../../components/Alerts";

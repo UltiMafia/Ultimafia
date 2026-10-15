@@ -4,6 +4,11 @@ Status: layers 1, 2a, 3, and 4 are implemented, together with parts of layer 5
 (delivery deduplication, connection status, and an unread affordance). Layer 2b,
 the optimistic send lifecycle, and ephemeral signals are not implemented.
 
+Lifecycle hardening uses the public route-location API, explicit view activity,
+owned sheets/requests and component-owned socket subscriptions. The regression
+commands, retained-view rules and remaining device-test matrix are documented in
+[testing-app-lifecycle.md](testing-app-lifecycle.md).
+
 ## 1. Problem
 
 The web client at ultimafia.com is a single-page application that behaves like a set

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Box, Button, Container, Stack, Typography, Paper, Grid2 } from "@mui/material";
-import { Navigate } from "react-router-dom";
+import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import "css/main.css";
 import { Auth } from "../../components/Auth";
 import IconGallery from "../../components/IconGallery";

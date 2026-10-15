@@ -15,6 +15,7 @@ import { UserContext, SiteInfoContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { StampItem } from "components/Scrapbook";
 import { NameWithAvatar } from "pages/User/UserWidgets";
+import { useViewActive } from "../hooks/useViewActivity";
 
 function StickerPlaceholder({ size = 32, onClick }) {
   return (
@@ -50,6 +51,7 @@ export default function RecentTradesFeed() {
   const STAMPS_PER_PAGE = 20;
 
   const user = useContext(UserContext);
+  const active = useViewActive();
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
 
@@ -61,6 +63,7 @@ export default function RecentTradesFeed() {
   }
 
   useEffect(() => {
+    if (!active) return;
     let cancelled = false;
     function loadRecent() {
       axios
@@ -81,6 +84,7 @@ export default function RecentTradesFeed() {
     loadRecent();
     loadOpen();
     const interval = setInterval(() => {
+      if (document.visibilityState !== "visible") return;
       loadRecent();
       loadOpen();
     }, 30000);
@@ -88,7 +92,7 @@ export default function RecentTradesFeed() {
       cancelled = true;
       clearInterval(interval);
     };
-  }, []);
+  }, [active]);
 
   function openRespondDialog(trade) {
     setRespondingTo(trade);

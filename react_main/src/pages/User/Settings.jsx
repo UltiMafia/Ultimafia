@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link, Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
+import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import update from "immutability-helper";
 import { ContrastComparison } from "utilsFolder/autoContrast";

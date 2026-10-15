@@ -359,7 +359,9 @@ export function RoleCount({
 
   const keyboardProps = isInteractive
     ? getKeyboardActivationProps(handleRoleCountClick, {
-        ariaLabel: roleName
+        ariaLabel: makeRolePrediction
+          ? roleName ? `Mark role as ${roleName}` : "Clear role mark"
+          : roleName
           ? `View role: ${roleName}`
           : alignment
           ? `View ${alignment} roleset`
@@ -1198,20 +1200,20 @@ export function ModifierSearch(props) {
     else if (query === "" && roleListType.length === 0) setRoleListType("Items");
   }
 
-  if (!siteInfo.modifiers) return <Loading small />;
-
   const tabs = ["Items", "Visits", "Appearance", "Chat", "Other"].map((type) => ({
     label: type,
     value: type,
   }));
 
   const compatibleNames = useMemo(
-    () => getCompatibleModifiersOther(siteInfo, props.gameType, props.curMods),
+    () => siteInfo.modifiers?.[props.gameType]
+      ? getCompatibleModifiersOther(siteInfo, props.gameType, props.curMods)
+      : [],
     [siteInfo, props.gameType, props.curMods]
   );
 
   const filteredItems = useMemo(() => {
-    const filtered = siteInfo.modifiers[props.gameType].filter((role) => {
+    const filtered = (siteInfo.modifiers?.[props.gameType] || []).filter((role) => {
       const searchTerms = searchVal
         .split(",")
         .filter((term) => term.trim() !== "")
@@ -1240,6 +1242,8 @@ export function ModifierSearch(props) {
     roleListType,
     compatibleNames,
   ]);
+
+  if (!siteInfo.modifiers) return <Loading small />;
 
   return (
     <CellSearch

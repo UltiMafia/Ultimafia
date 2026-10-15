@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useParams, Navigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import axios from "axios";
 import {
   Grid,

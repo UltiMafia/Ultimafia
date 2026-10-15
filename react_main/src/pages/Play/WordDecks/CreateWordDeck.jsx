@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
+import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import { SiteInfoContext } from "../../../Contexts";
 import { useErrorAlert } from "../../../components/Alerts";

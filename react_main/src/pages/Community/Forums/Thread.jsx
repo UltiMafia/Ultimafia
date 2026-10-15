@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
-import { Navigate, Link, useParams, useLocation } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
+import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import update from "immutability-helper";
 import { Popover, List, ListItem, Typography, Button } from "@mui/material";
 

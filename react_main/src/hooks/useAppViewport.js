@@ -73,6 +73,9 @@ export function useAppViewport() {
     }
 
     return () => {
+      root.removeAttribute("data-keyboard");
+      root.style.removeProperty("--app-top");
+      root.style.removeProperty("--app-bottom");
       window.removeEventListener("resize", update);
       if (visualViewport) {
         visualViewport.removeEventListener("resize", update);

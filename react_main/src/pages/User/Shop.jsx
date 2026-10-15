@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, useRef, useMemo } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import axios from "axios";
 import update from "immutability-helper";
 

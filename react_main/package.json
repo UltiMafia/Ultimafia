@@ -48,6 +48,8 @@
     }
   },
   "scripts": {
+    "test:lifecycle": "node --test test/*.test.mjs",
+    "test:lifecycle:browser": "rsbuild build --config rsbuild.lifecycle-test.config.ts && rsbuild preview --config rsbuild.lifecycle-test.config.ts",
     "perf:chat": "rsbuild build --config rsbuild.chat-perf.config.ts && rsbuild preview --config rsbuild.chat-perf.config.ts",
     "start": "rsbuild dev",
     "build": "rsbuild build",

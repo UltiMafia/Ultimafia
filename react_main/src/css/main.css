@@ -133,7 +133,7 @@ html[data-bottom-inset="page"] {
   padding-top: var(--safe-inset-top);
 }
 
-/* While a text field is focused (the on-screen keyboard is up), hide the site
+/* While the viewport indicates an open keyboard, hide the site
    bottom navigation. With interactive-widget=resizes-content the layout shrinks
    with the keyboard, so the nav would otherwise ride up under it; hiding it is
    the app-like behaviour. The game's own bottom bar is not hidden. */
@@ -141,7 +141,7 @@ html[data-keyboard="open"] .mobile-nav {
   display: none;
 }
 
-/* The site bottom navigation. Reserves the home-indicator strip on iOS only
+/* The site bottom navigation. Reserves the strip where the browser hands it over
    (see --bottom-safe-area); the Paper's own background fills whatever it
    reserves, which is what the safe area is for. */
 .mobile-nav {
@@ -155,12 +155,8 @@ html[data-sheet="open"] .mobile-nav {
   display: none;
 }
 
-/* Page transitions: navigation is client-side and instant, with no remount and
-   no full-page spinner, so no cross-fade is applied. A View Transitions pass
-   was tried here and removed: the API renders the previous page as a snapshot
-   over the new one, which ghosted the old content on top of the new during the
-   transition. Do not reintroduce snapshot-based page transitions without
-   reproducing that artifact first. */
+/* Route changes are instant client-side navigation, without snapshot-based
+   page transitions or a sitewide cross-fade. */
 
 .hidden {
   display: none;

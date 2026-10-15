@@ -1,15 +1,16 @@
 import { useContext, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useAppLocation, useViewActive } from "./useViewActivity";
 import { activateOnEnterOrSpace } from "../utils/keyboard";
 import { InGameContext } from "Contexts";
 
 export const usePopoverOpen = () => {
-  const location = useLocation();
+  const location = useAppLocation();
+  const active = useViewActive();
   const inGame = useContext(InGameContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openByHover, setOpenByHover] = useState(false);
   const [openByClick, setOpenByClick] = useState(false);
-  const popoverOpen = Boolean(anchorEl);
+  const popoverOpen = active && Boolean(anchorEl);
 
   const handleMouseEnter = (e) => {
     if (!openByClick) {
@@ -28,6 +29,7 @@ export const usePopoverOpen = () => {
     openPopover(e);
   };
   const openPopover = (e) => {
+    if (!active) return;
     setAnchorEl(e.currentTarget);
   };
   const closePopover = () => {
@@ -46,7 +48,7 @@ export const usePopoverOpen = () => {
     setOpenByClick(false);
     setOpenByHover(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname, location.search, inGame]);
+  }, [location.key, location.pathname, location.search, location.hash, inGame, active]);
 
   const handleKeyDown = (e) => {
     activateOnEnterOrSpace(e, handleClick);
