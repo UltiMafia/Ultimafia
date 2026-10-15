@@ -1,11 +1,9 @@
-import React, { createContext, lazy, Suspense, useCallback, useContext, useLayoutEffect, useMemo, useRef } from "react";
+import React, { createContext, useCallback, useContext, useLayoutEffect, useMemo, useRef } from "react";
 import axios from "axios";
-import { ProfileSkeleton } from "./Skeletons";
 import { useSheet } from "./Sheet";
 import { useAppLocation } from "../hooks/useViewActivity";
 import { LatestRequest } from "../lib/latestRequest.js";
 
-const Miniprofile = lazy(() => import("./Miniprofile"));
 export const ProfileSheetContext = createContext({ openProfile: () => {}, closeProfile: () => {} });
 
 export function ProfileSheetProvider({ children }) {
@@ -33,9 +31,14 @@ export function ProfileSheetProvider({ children }) {
     sheetRequestRef.current = sheetRequest;
     const request = requests.current.begin();
     try {
-      const data = cache.current?.id === id
-        ? cache.current
-        : (await axios.get(`/api/user/${id}/profile`, { signal: request.signal })).data;
+      // Load code and data together before opening: a Suspense placeholder can
+      // otherwise change the drawer's height during its first slide-in.
+      const [data, { default: Miniprofile }] = await Promise.all([
+        cache.current?.id === id
+          ? cache.current
+          : axios.get(`/api/user/${id}/profile`, { signal: request.signal }).then((res) => res.data),
+        import("./Miniprofile"),
+      ]);
       if (!request.isCurrent() || !sheetRequest.isCurrent()) return;
       if (!data || data.id !== id) {
         sheetRequest.close();
@@ -44,9 +47,7 @@ export function ProfileSheetProvider({ children }) {
       cache.current = data;
       // Cache data only: caller-specific props/game ids must be fresh on reopen.
       sheetRequest.show(() => (
-        <Suspense fallback={<ProfileSkeleton />}>
-          <Miniprofile user={{ ...data, props }} game={gameId ? { gameId } : null} />
-        </Suspense>
+        <Miniprofile user={{ ...data, props }} game={gameId ? { gameId } : null} />
       ));
     } catch (_) {
       if (request.isCurrent()) sheetRequest.close();
