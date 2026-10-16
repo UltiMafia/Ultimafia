@@ -14,6 +14,7 @@
 }
 
 .ios-beta-ticker__viewport {
+  position: relative;
   flex: 1;
   min-width: 0;
   height: 100%;
@@ -31,7 +32,8 @@ a.ios-beta-ticker__viewport {
 .ios-beta-ticker__track {
   display: inline-flex;
   width: max-content;
-  animation: ios-beta-ticker-scroll 40s linear infinite;
+  animation: ios-beta-ticker-scroll var(--ios-beta-ticker-duration, 40s) linear
+    infinite;
   will-change: transform;
 }
 
@@ -41,6 +43,17 @@ a.ios-beta-ticker__viewport {
 }
 
 .ios-beta-ticker__run {
+  display: inline-flex;
+}
+
+/* One cycle of items, kept in the viewport so it shares the same font
+   metrics, but taken out of flow so it does not affect the -50% loop. */
+.ios-beta-ticker__measure {
+  position: absolute;
+  left: 0;
+  top: 0;
+  visibility: hidden;
+  pointer-events: none;
   display: inline-flex;
 }
 
@@ -71,6 +84,7 @@ a.ios-beta-ticker__viewport {
     transform: translateX(0);
   }
   to {
+    /* Exactly one run: two equal TickerItems siblings. */
     transform: translateX(-50%);
   }
 }
