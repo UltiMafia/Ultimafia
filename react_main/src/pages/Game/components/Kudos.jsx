@@ -93,7 +93,6 @@ function KudosPlayer({ player, small, noLink = true, sx }) {
         small={small}
         noLink={noLink}
         includeMiniprofile={!noLink}
-        newTab
       />
     </Box>
   );

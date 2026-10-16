@@ -1,4 +1,6 @@
 import React, { useRef, useEffect, useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useViewActive } from "../../hooks/useViewActivity";
 
 import {
   useSocketListeners,
@@ -352,12 +354,16 @@ const LD_GENIUS_VARIANTS = [
 ];
 
 function LiarsDiceBetForm() {
+  const active = useViewActive();
   const game = useContext(GameContext);
   const { history, stateViewing, socket } = game;
 
   const [amount, setAmount] = useState("");
   const [face, setFace] = useState(null);
   const [faceMenuAnchor, setFaceMenuAnchor] = useState(null);
+  useEffect(() => {
+    if (!active) setFaceMenuAnchor(null);
+  }, [active]);
   const [bidError, setBidError] = useState("");
 
   const currentState =
@@ -534,7 +540,7 @@ function LiarsDiceBetForm() {
               />
             </button>
             <Popover
-              open={Boolean(faceMenuAnchor)}
+              open={active && Boolean(faceMenuAnchor)}
               anchorEl={faceMenuAnchor}
               onClose={() => setFaceMenuAnchor(null)}
               anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
@@ -587,11 +593,12 @@ function LiarsDicePlayerRow({
 }) {
   previousRolls = previousRolls || [];
   const isSamePlayer = whoseTurnIsIt === userId;
+  const navigate = useNavigate();
   return (
     <div className="liars-dice-player-section">
       <div
         className="ld-player-avatar"
-        onClick={() => window.open(`/user/${userId}`, "_blank")}
+        onClick={() => navigate(`/user/${userId}`)}
       >
         <Avatar id={userId} name={playerName} hasImage={avatar} />
         <div
