@@ -228,6 +228,9 @@ module.exports = {
     },
   },
 
+  // Loyal Lawyer: Litigate lists only living Mafia teammates (never self).
+  litigateTargets: true,
+
   freeVote: (t, meeting) => meeting.name === "Litigate" && t.data.allowLitigate,
 
   epilogue: (t) => [

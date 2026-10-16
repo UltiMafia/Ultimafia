@@ -203,6 +203,9 @@ class TutorialController {
   onState() {
     if (this.done || this.game.finished) return;
     const token = ++this.stateToken;
+    // Before this state's meetings are made: keep the Loyal Litigate list
+    // restricted to Mafia teammates.
+    this.restrictLitigate(this.human());
     this.cancelPending();
     const info = this.game.getStateInfo();
     const key = String(info.name).replace(/\s+/g, "");
