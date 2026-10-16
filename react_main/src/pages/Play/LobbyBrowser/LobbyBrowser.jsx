@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback, useRef } from "react";
+import { TutorialLobbyBanner } from "components/TutorialPrompt";
 import { Navigate, useLocation, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
@@ -13,6 +14,7 @@ import { RefreshButton } from "./RefreshButton";
 import { Loading } from "components/Loading";
 import {
   Box,
+  Button,
   Divider,
   Grid,
   Grid2,
@@ -262,9 +264,16 @@ export default function LobbyBrowser() {
         <Typography variant="h3" color="primary">
           Games
         </Typography>
-        <div onClick={refreshGames}>
-          <RefreshButton isSpinning={refreshButtonIsSpinning} />
-        </div>
+        <Stack direction="row" spacing={1} alignItems="center">
+          {!user.settings?.hideTutorialButton && (
+            <Button component={Link} to="/play/tutorial" size="small" variant="outlined" data-testid="tutorial-link">
+              📘 Tutorial
+            </Button>
+          )}
+          <div onClick={refreshGames}>
+            <RefreshButton isSpinning={refreshButtonIsSpinning} />
+          </div>
+        </Stack>
       </Stack>
     </Paper>
   );
@@ -276,6 +285,7 @@ export default function LobbyBrowser() {
         <Grid2 size={{ xs: 12, md: 8 }}>
           <Stack spacing={2}>
             <Stack direction="column" spacing={1}>
+              <TutorialLobbyBanner />
               {buttons}
               {gameList}
             </Stack>

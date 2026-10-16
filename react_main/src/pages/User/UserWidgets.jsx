@@ -490,6 +490,10 @@ export function Avatar(props) {
     if (hasImage.includes("decks")) {
       photoSrc = `/uploads${hasImage}?t=${siteInfo.cacheVal}`;
       style.backgroundColor = "#00000000";
+    } else if (hasImage.startsWith("/images/")) {
+      // Tutorial bot avatars (and other static public images).
+      photoSrc = hasImage;
+      style.backgroundColor = "#00000000";
     }
   }
   if (photoSrc && photoSrc === failedSrc) {

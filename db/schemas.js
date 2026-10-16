@@ -142,6 +142,8 @@ var schemas = {
       hideDonorBadge: { type: Boolean, default: false },
       disablePokes: { type: Boolean, default: false },
       hideRankedModal: { type: Boolean, default: false },
+      // Hides only the lobby page's Tutorial button (not prompts or the Play menu link).
+      hideTutorialButton: { type: Boolean, default: false },
       hideCompetitiveModal: { type: Boolean, default: false },
       deathMessage: String,
       // Viewer preference: do not play other players' custom death sounds
@@ -246,6 +248,9 @@ var schemas = {
     nameChanged: { type: Boolean, default: false },
     bdayChanged: { type: Boolean, default: false },
     playedGame: { type: Boolean, default: false },
+    // Finished a new-user tutorial game (Games/core/tutorial). Only gates a
+    // soft prompt; see TUTORIAL_ROLLBACK.md.
+    tutorialCompleted: { type: Boolean, default: false },
     referrer: String,
     transactions: [Number],
     skillRating: {

@@ -215,6 +215,7 @@ export default function Game() {
   const [hostId, setHostId] = useState(null);
   const [changeSetupDialogOpen, setChangeSetupDialogOpen] = useState(false);
   const [kudos, setKudos] = useState(null);
+  const tutorialGameRef = useRef(false);
   // Set when a participant rehosts this finished game:
   // { gameId, hostId, hostName, setup }
   const [rehostInvite, setRehostInvite] = useState(null);
@@ -701,7 +702,14 @@ export default function Game() {
 
     socket.on("finished", () => setFinished(true));
 
-    socket.on("kudos", (data) => setKudos(data));
+    // Tutorial games have no kudos at all (the server never starts a vote).
+    socket.on("kudos", (data) => {
+      if (!tutorialGameRef.current) setKudos(data);
+    });
+    socket.on("tutorial", () => {
+      tutorialGameRef.current = true;
+      setKudos(null);
+    });
 
     socket.on("rehosted", (info) => {
       if (!info || !info.gameId) return;
@@ -1716,7 +1724,10 @@ export function MobileLayout({
             },
           }}
         >
-          <BottomNavigationAction {...outerLeftNavigationProps} />
+          <BottomNavigationAction
+            {...outerLeftNavigationProps}
+            data-tutorial={`${outerLeftNavigationProps.value}-tab`}
+          />
           {!hideInfoTab && (
             <BottomNavigationAction
               label="Info"
@@ -1748,7 +1759,10 @@ export function MobileLayout({
               {!singleState && <Divider orientation="vertical" flexItem />}
             </Stack>
           )}
-          <BottomNavigationAction {...innerRightNavigationProps} />
+          <BottomNavigationAction
+            {...innerRightNavigationProps}
+            data-tutorial={`${innerRightNavigationProps.value}-tab`}
+          />
           <BottomNavigationAction
             label="Menu"
             value="menu"
@@ -3224,7 +3238,7 @@ function SpeechInput(props) {
   }
 
   return (
-    <div className="speech-input-area">
+    <div className="speech-input-area" data-tutorial="chat-input">
       <div className="speech-input-wrapper">
         <Dropdown
           className="speech-dropdown"
@@ -3569,7 +3583,7 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
 
     return (
       <div 
-        className={`player ${className ? className : ""}`} 
+        className={`player ${className ? className : ""}`} data-player-name={player.name} 
         key={player.id}
         style={readyCheck ? {
           boxShadow: isReady ? "inset 4px 0 0 #4caf50" : "inset 4px 0 0 #e02626",
@@ -3729,7 +3743,7 @@ export function PlayerList(props) {
       title={title}
       scrollable
       content={
-        <div className="player-list">
+        <div className="player-list" data-tutorial="player-list">
           <PlayerRows
             players={alivePlayers}
             renderMarker={renderMarker}
@@ -4540,7 +4554,7 @@ function ActionSelect(props) {
 
   return (
     <Box
-      className="action"
+      className="action" data-meeting-name={props.meeting && props.meeting.name}
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -4730,7 +4744,7 @@ function ActionProfileAssignment(props) {
 
   return (
     <Box
-      className="action"
+      className="action" data-meeting-name={props.meeting && props.meeting.name}
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -4817,7 +4831,7 @@ function ActionSelectShowAllOptions(props) {
 
   return (
     <Box
-      className="action"
+      className="action" data-meeting-name={props.meeting && props.meeting.name}
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -4902,7 +4916,7 @@ function ActionButton(props) {
   const myVoteDisplay = votes[props.self];
 
   return (
-    <Box className="action" sx={{ ...props.style }}>
+    <Box className="action" data-meeting-name={props.meeting && props.meeting.name} sx={{ ...props.style }}>
       <Typography variant="subtitle1" sx={{ mb: 1 }}>
         {meeting.actionName}
       </Typography>
@@ -4999,7 +5013,7 @@ function ActionImageButtons(props) {
   });
 
   return (
-    <div className="action" style={{ ...props.style }}>
+    <div className="action" data-meeting-name={props.meeting && props.meeting.name} style={{ ...props.style }}>
       <div className="action-name">{meeting.actionName}</div>
       <div style={{ display: "flex", flexWrap: "wrap" }}>{buttons}</div>
     </div>
@@ -5067,7 +5081,7 @@ function PlayingCardButtons(props) {
   });
 
   return (
-    <div className="action" style={{ ...props.style }}>
+    <div className="action" data-meeting-name={props.meeting && props.meeting.name} style={{ ...props.style }}>
       <div className="action-name">{meeting.actionName}</div>
       <div style={{ display: "flex", flexWrap: "wrap" }}>{buttons}</div>
     </div>
@@ -5204,7 +5218,7 @@ function ActionText(props) {
   }
 
   return (
-    <Box className="action">
+    <Box className="action" data-meeting-name={props.meeting && props.meeting.name}>
       <Typography variant="subtitle1" gutterBottom>
         {meeting.actionName}
       </Typography>
@@ -5268,7 +5282,7 @@ function ActionSeparatingText(props) {
   const text = meeting.actionName;
 
   return (
-    <div className="action" style={{ ...props.style }}>
+    <div className="action" data-meeting-name={props.meeting && props.meeting.name} style={{ ...props.style }}>
       <br />
       <div className="action-name">{text}</div>
       <br />
