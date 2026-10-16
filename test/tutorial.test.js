@@ -164,8 +164,12 @@ describe("Tutorial storylines end to end", function () {
   });
 
   it("Lawyer: requires kill vote and Litigate; jan code; leaking gets you shot", function () {
-    const r = sim("lawyer", [{ do: "go" }, { do: "litigateJanitor" }, ...go(2), { do: "voteTeammate" }, ...go(2)]);
+    const r = sim("lawyer", [{ do: "go" }, { do: "litigateJanitor" }, ...go(2), { do: "voteTeammate" }, ...go(4)]);
     expect(r.winners).to.deep.equal(["Mafia"]);
+    expect(r.log).to.include("state Night2");
+    expect(r.log).to.include("state Day2");
+    expect(r.alerts.join(" ")).to.match(/Reminder: you should always use your Lawyer action/);
+    expect(r.alerts.join(" ")).to.match(/another Villager/);
     expect(r.alerts.join(" ")).to.match(/both|Litigate|kill/i);
     expect(lessons(r).length).to.equal(2);
     const bad = sim("lawyer", [...go(2), { do: "leakCode" }]);
@@ -174,8 +178,11 @@ describe("Tutorial storylines end to end", function () {
   });
 
   it("Lawyer (Loyal): the Litigate box lists only Mafia teammates, never town", function () {
-    const r = sim("lawyer", go(5));
+    const r = sim("lawyer", go(8));
     const law = seats("lawyer");
+    // Night 1 lists both teammates; Night 2 (Janitor shot Day 1) only the Mafioso.
+    const n2 = r.litigateTargets.filter((l) => !l.includes(law.janitor.name) && l.includes(law.mafioso.name));
+    expect(n2.length, "Night 2 Litigate list").to.be.greaterThan(0);
     const town = ["cop", "journalist", "sheriff", "v1", "v2", "v3"].map((k) => law[k].name);
     expect(r.litigateTargets.length).to.be.greaterThan(0);
     for (const list of r.litigateTargets) {
