@@ -19,6 +19,7 @@ const Settings = lazyWithRetry(() => import("./Settings"));
 const Shop = lazyWithRetry(() => import("./Shop"));
 const Inbox = lazyWithRetry(() => import("./Inbox"));
 const Family = lazyWithRetry(() => import("./Family"));
+const DeveloperApi = lazyWithRetry(() => import("./DeveloperApi"));
 
 export default function User(props) {
   const user = useContext(UserContext);
@@ -34,6 +35,7 @@ export default function User(props) {
         <Route path="settings/*" element={<Settings />} />
         <Route path="shop" element={<Shop />} />
         <Route path="inbox" element={<Inbox />} />
+        <Route path="developer" element={<DeveloperApi />} />
         <Route path="family/:familyId" element={<Family />} />
         <Route path=":userId" element={<Profile />} />
       </Routes>

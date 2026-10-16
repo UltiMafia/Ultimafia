@@ -31,10 +31,12 @@ const constants = require("../../data/constants");
 const renamedRoleMapping = require("../../data/renamedRoles");
 const renamedModifierMapping = require("../../data/renamedModifiers");
 const routeUtils = require("../../routes/utils");
+const devApiPolicy = require("../../modules/devApi/policy");
 const PostgameMeeting = require("./PostgameMeeting");
 const { KudosVote, isWinLossResult, pickBotVote } = require("./Kudos");
 const dbStats = require("../../db/stats");
 const { isTestBotPlayer } = require("./botPlayers");
+const devControls = require("./devControls");
 const KUDOS_DISCONNECT_GRACE_MS = 20000;
 const VegKickMeeting = require("./VegKickMeeting");
 const mongo = require("mongodb");
@@ -115,6 +117,8 @@ module.exports = class Game {
     this.history = new History(this);
     this.spectatorHistory = new History(this, "spectator");
     this.spectatorMeetFilter = { "*": true };
+    // True roles at the start of each state, for omniscient spectators.
+    this.omniscientRoles = {};
     this.timers = {};
     this.actions = [new Queue()];
     this.useObituaries = false;
@@ -164,6 +168,11 @@ module.exports = class Game {
 
     this.isReadyCheckActive = false;
     this.readyPlayers = {};
+    this.devControls = { timerScale: 1, seed: null, forcedRoles: {} };
+  }
+
+  runDevControl(command, args) {
+    return devControls.runDevControl(this, command, args);
   }
 
   async init() {
@@ -576,9 +585,10 @@ module.exports = class Game {
         user.id,
         "canSpectateAny"
       );
+      const omniscient = await this.canSpectateOmnisciently(user);
 
       // Check if spectating is allowed
-      if (!this.spectating && !canSpectateAny) {
+      if (!this.spectating && !canSpectateAny && !omniscient) {
         user.send("error", "Spectating is not enabled for this game");
         return;
       }
@@ -596,24 +606,31 @@ module.exports = class Game {
       // Reconnect if already a spectator
       if (spectator) {
         spectator.setUser(user);
+        spectator.omniscient = omniscient;
         this.sendAllGameInfo(spectator);
+        if (omniscient) spectator.sendMeetings();
         spectator.send("loaded");
         return;
       }
 
       // Check if spectator limit is reached
-      if (this.spectators.length >= this.spectatorLimit && !canSpectateAny) {
+      if (
+        this.spectators.length >= this.spectatorLimit &&
+        !canSpectateAny &&
+        !omniscient
+      ) {
         user.send("error", "Spectator limit reached");
         return;
       }
 
       // Join as a new spectator
       spectator = new Spectator(user, this);
+      spectator.omniscient = omniscient;
       spectator.init();
 
       this.spectators.push(spectator);
       this.spectatorsOld.push(spectator);
-      this.spectatorMeeting.join(spectator);
+      if (this.spectatorMeeting) this.spectatorMeeting.join(spectator);
       this.sendAllGameInfo(spectator);
       spectator.sendMeetings();
       spectator.send("loaded");
@@ -1384,7 +1401,7 @@ module.exports = class Game {
     }
 
     // Tell clients the game started, assign roles, and move to the next state
-    this.assignRoles();
+    devControls.withDevSeed(this, () => this.assignRoles());
     this.captureStartingFactions();
     this.started = true;
     this.broadcast("start");
@@ -1768,7 +1785,11 @@ module.exports = class Game {
 
     this.numHostInGame = hostCount;
     let remainingToAssign = players.slice(hostCount);
-    var randomPlayers = Random.randomizeArray(remainingToAssign);
+    var randomPlayers = devControls.orderPlayersForForcedRoles(
+      Random.randomizeArray(remainingToAssign),
+      roleset,
+      this.devControls.forcedRoles
+    );
 
     var i = 0;
 
@@ -2495,6 +2516,8 @@ module.exports = class Game {
   addStateToHistories(name, state) {
     this.history.addState(name, state);
     this.spectatorHistory.addState(name, state);
+    this.omniscientRoles[state == null ? this.currentState : state] =
+      this.getTrueRoles();
 
     for (let player of this.players) player.addStateToHistory(name, state);
   }
@@ -2589,12 +2612,15 @@ module.exports = class Game {
   createTimer(name, delay, then, clients) {
     this.timers[name] = new Timer({
       name,
-      delay,
+      delay:
+        name == "pregameWait"
+          ? delay
+          : devControls.scaleTimerDelay(delay, this.devControls.timerScale),
       then,
       game: this,
       clients,
     });
-    this.timers[name].start();
+    devControls.startTimer(this, this.timers[name]);
   }
 
   getTimeLeft(timerName) {
@@ -2819,6 +2845,127 @@ module.exports = class Game {
     for (let spectator of this.spectators) spectator.sendMeetings();
   }
 
+  /*
+   * Omniscient spectating: users with the Developer permission (devApi)
+   * spectating a Testing lobby game see every meeting, vote, whisper and
+   * private alert, plus everyone's true role. Decided here on the server;
+   * normal spectators keep the filtered spectator view.
+   */
+  async canSpectateOmnisciently(user) {
+    if (!user || !user.id || user.isTest) return false;
+    if (!devApiPolicy.isTestingGame(this)) return false;
+    if (!devApiPolicy.devApiEnabled()) return false;
+    return await routeUtils.verifyPermission(user.id, "devApi");
+  }
+
+  getOmniscientSpectators() {
+    return this.spectators.filter((s) => s.omniscient);
+  }
+
+  getTrueRoles() {
+    const roles = {};
+    for (let player of this.players)
+      if (player.role)
+        roles[player.id] = `${player.role.name}:${player.role.modifier}`;
+    return roles;
+  }
+
+  getOmniscientMessageInfo(message) {
+    const info = message.getMessageInfo();
+    if (!info) return;
+
+    const recipients = message.recipients;
+    if (
+      !message.meeting &&
+      !message.globalAlert &&
+      Array.isArray(recipients) &&
+      recipients.length > 0 &&
+      recipients.length < this.players.length
+    ) {
+      const names = recipients.map((r) => r && r.name).filter(Boolean);
+      if (names.length) info.prefix = `to ${names.join(", ")}`;
+    } else if (message.abilityName == "Whisper" && message.abilityTarget) {
+      const target = this.getPlayer && this.getPlayer(message.abilityTarget);
+      info.prefix = `whisper to ${target ? target.name : "?"}`;
+    }
+
+    return info;
+  }
+
+  getOmniscientMeetingInfo(meeting) {
+    const info = meeting.getMeetingInfo();
+    info.messages = meeting.messages.reduce((msgs, m) => {
+      m = this.getOmniscientMessageInfo(m);
+      if (m) msgs.push(m);
+      return msgs;
+    }, []);
+
+    if (!meeting.group) {
+      const names = meeting.members
+        .array()
+        .map((m) => m.player && m.player.name)
+        .filter(Boolean);
+      if (names.length) info.name = `${info.name} (${names.join(", ")})`;
+    }
+
+    // Item actions normally live in the owner's inventory; list them inline.
+    info.itemId = null;
+    info.omniscient = true;
+    return info;
+  }
+
+  getOmniscientHistoryInfo(spectator, targetState) {
+    const res = {};
+
+    for (let state in this.history.states) {
+      if (targetState != null && targetState != state) continue;
+
+      const master = this.history.states[state];
+      const spec = this.spectatorHistory.states[state] || {};
+      const meetings = {};
+      const alerts = [];
+
+      for (let id in master.meetings)
+        meetings[id] = this.getOmniscientMeetingInfo(master.meetings[id]);
+
+      for (let id in spec.meetings || {})
+        if (!meetings[id])
+          meetings[id] = spec.meetings[id].getMeetingInfo(spectator);
+
+      for (let alert of master.alerts) {
+        alert = this.getOmniscientMessageInfo(alert);
+        if (alert) alerts.push(alert);
+      }
+
+      const roles = {
+        ...(spec.roles || {}),
+        ...(this.omniscientRoles[state] || {}),
+      };
+      if (state == this.currentState) Object.assign(roles, this.getTrueRoles());
+
+      res[state] = {
+        name: master.name,
+        meetings,
+        alerts,
+        stateEvents: Object.keys(master.stateEvents),
+        obituaries: spec.obituaries || master.obituaries,
+        roles,
+        dead: { ...master.dead, ...(spec.dead || {}) },
+        exorcised: { ...master.exorcised, ...(spec.exorcised || {}) },
+        winners: master.winners || null,
+        extraInfo: master.extraInfo,
+      };
+    }
+
+    if (targetState != null) return res[targetState];
+    return res;
+  }
+
+  omniscientSpectatorsHear(message) {
+    for (let spectator of this.getOmniscientSpectators())
+      spectator.hearOmniscient(message);
+  }
+
   spectatorsHear(message) {
     if (
       message.meeting &&
@@ -2828,7 +2975,8 @@ module.exports = class Game {
       return;
     }
     if (message.abilityName != "Whisper") {
-      for (let spectator of this.spectators) spectator.hear(message);
+      for (let spectator of this.spectators)
+        if (!spectator.omniscient) spectator.hear(message);
     }
   }
 
@@ -2840,19 +2988,28 @@ module.exports = class Game {
     ) {
       return;
     }
-    for (let spectator of this.spectators) spectator.hearQuote(quote);
+    for (let spectator of this.spectators)
+        if (!spectator.omniscient) spectator.hearQuote(quote);
+  }
+
+  omniscientSpectatorsSee(event, info) {
+    for (let spectator of this.getOmniscientSpectators())
+      spectator[event](info);
   }
 
   spectatorsSeeVote(vote) {
-    for (let spectator of this.spectators) spectator.seeVote(vote);
+    for (let spectator of this.spectators)
+        if (!spectator.omniscient) spectator.seeVote(vote);
   }
 
   spectatorsSeeUnvote(info) {
-    for (let spectator of this.spectators) spectator.seeUnvote(info);
+    for (let spectator of this.spectators)
+        if (!spectator.omniscient) spectator.seeUnvote(info);
   }
 
   spectatorsSeeTyping(info) {
-    for (let spectator of this.spectators) spectator.seeTyping(info);
+    for (let spectator of this.spectators)
+        if (!spectator.omniscient) spectator.seeTyping(info);
   }
 
   queueAction(action, instant) {
