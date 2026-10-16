@@ -13,6 +13,7 @@ import { useHostedGameSession } from "../src/hooks/useHostedGameSession";
 import { useDismissOnBack } from "../src/hooks/useDismissOnBack";
 import { useGameMembership } from "../src/hooks/useGameMembership";
 import { useGameSessionIdentity } from "../src/hooks/useGameSessionIdentity";
+import { useNewMessageCount } from "../src/hooks/useNewMessageCount";
 import { ClientSocket, subscribeSocketListeners } from "../src/Socket";
 import { useAppViewport } from "../src/hooks/useAppViewport";
 import LobbyBrowser from "../src/pages/Play/LobbyBrowser/LobbyBrowser";
@@ -214,7 +215,59 @@ axios.defaults.adapter = config => new Promise((resolve, reject) => {
 });
 const fakeProfile = id => ({id, name: id, stats: {}, settings: {}, groups: [], achievements: [], gamesPlayed: 0});
 
+function NewMessageFixture() {
+  const [view, setView] = useState({
+    messageCount: 10, transcriptKey: "day-1:public", enabled: true, autoScroll: false,
+  });
+  const count = useNewMessageCount(view);
+  useEffect(() => { api = { update: patch => setView(current => ({ ...current, ...patch })) }; });
+  return <span id="new-message-count">{count}</span>;
+}
+
+async function updateMessageView(patch, expected) {
+  api.update(patch);
+  await wait();
+  assert(document.querySelector("#new-message-count").textContent === String(expected),
+    `expected ${expected} new messages after ${JSON.stringify(patch)}`);
+}
+
 async function tests() {
+  await run("unread messages exclude initial history, accumulate live arrivals and clear at bottom", async () => {
+    mount(<NewMessageFixture />);
+    await until(() => api, "message fixture mount");
+    assert(document.querySelector("#new-message-count").textContent === "0", "initial history counted");
+    await updateMessageView({ messageCount: 12 }, 2);
+    await updateMessageView({ messageCount: 15 }, 5);
+    await updateMessageView({ autoScroll: true }, 0);
+    await updateMessageView({ messageCount: 17 }, 0);
+    await updateMessageView({ autoScroll: false }, 0);
+    await updateMessageView({ messageCount: 18 }, 1);
+  });
+
+  await run("review and historical transcripts never accumulate unread messages", async () => {
+    mount(<NewMessageFixture />);
+    await until(() => api, "message fixture mount");
+    await updateMessageView({ messageCount: 11 }, 1);
+    await updateMessageView({ enabled: false, messageCount: 40 }, 0);
+    await updateMessageView({ transcriptKey: "day-2:public", messageCount: 100 }, 0);
+    await updateMessageView({ transcriptKey: "day-3:public", messageCount: 200 }, 0);
+    await updateMessageView({ messageCount: 250 }, 0);
+    await updateMessageView({ enabled: true, messageCount: 300 }, 0);
+    await updateMessageView({ messageCount: 301 }, 1);
+  });
+
+  await run("day, meeting, filter and voting-log changes reset the unread baseline", async () => {
+    mount(<NewMessageFixture />);
+    await until(() => api, "message fixture mount");
+    let messageCount = 10;
+    for (const transcriptKey of ["day-2:public", "day-2:mafia", "filter-cleared", "voting-log-on", "other-game"]) {
+      await updateMessageView({ messageCount: ++messageCount }, 1);
+      messageCount += 50;
+      await updateMessageView({ transcriptKey, messageCount }, 0);
+    }
+    await updateMessageView({ messageCount: ++messageCount }, 1);
+  });
+
   await run("retained routes see their view URL; lifecycle sees actual navigation", async () => {
     FakeSocket.all = [];
     mount(<MemoryRouter initialEntries={["/play?lobby=Main#list"]}><Routes><Route path="/*" element={<SessionApp />} /></Routes></MemoryRouter>);

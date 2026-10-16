@@ -43,6 +43,7 @@ import { LatestRequest } from "../../lib/latestRequest.js";
 import { useViewActive } from "../../hooks/useViewActivity";
 import { useGameMembership } from "../../hooks/useGameMembership";
 import { useGameSessionIdentity } from "../../hooks/useGameSessionIdentity";
+import { useNewMessageCount } from "../../hooks/useNewMessageCount";
 import { RoleCount } from "../../components/Roles";
 import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
@@ -1925,8 +1926,6 @@ export function TextMeetingLayout() {
   const [speechInput, setSpeechInput] = useState("");
   const [autoScroll, setAutoScroll] = useState(true);
   const [mouseMoved, setMouseMoved] = useState(false);
-  const [newMessageCount, setNewMessageCount] = useState(0);
-  const previousMessageCountRef = useRef(0);
   const speechDisplayRef = useRef();
   const hasMouse = useMediaQuery("(pointer:fine)");
 
@@ -2143,27 +2142,24 @@ export function TextMeetingLayout() {
     return () => observer.disconnect();
   }, [autoScroll]);
 
-  // Count messages that arrived while the reader is scrolled away, so the
-  // transcript can offer a way back to the newest line instead of silently
-  // appending below the fold.
-  useEffect(() => {
-    const previousCount = previousMessageCountRef.current;
-    const count = messages.length;
-    previousMessageCountRef.current = count;
-
-    if (autoScroll) {
-      setNewMessageCount((current) => (current === 0 ? current : 0));
-      return;
-    }
-
-    if (count > previousCount) {
-      setNewMessageCount((current) => current + (count - previousCount));
-    }
-  }, [messages, autoScroll]);
+  const newMessageCount = useNewMessageCount({
+    messageCount: messages.length,
+    enabled: !game.review && (singleState || stateViewing === history.currentState),
+    autoScroll,
+    transcriptKey: JSON.stringify([
+      game.gameId,
+      singleState,
+      singleState ? null : stateViewing,
+      singleState ? null : selTab,
+      game.speechFilters?.from || "",
+      game.speechFilters?.contains || "",
+      Boolean(settings.votingLog),
+      isSpectator,
+    ]),
+  });
 
   function jumpToLatest() {
     setAutoScroll(true);
-    setNewMessageCount(0);
     const container = speechDisplayRef.current;
     if (container) container.scrollTo(0, container.scrollHeight);
   }
