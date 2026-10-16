@@ -164,13 +164,36 @@ describe("Tutorial storylines end to end", function () {
   });
 
   it("Lawyer: requires kill vote and Litigate; jan code; leaking gets you shot", function () {
-    const r = sim("lawyer", [{ do: "go" }, { do: "litigateTown" }, ...go(2), { do: "voteTeammate" }, ...go(2)]);
+    const r = sim("lawyer", [{ do: "go" }, { do: "litigateJanitor" }, ...go(2), { do: "voteTeammate" }, ...go(2)]);
     expect(r.winners).to.deep.equal(["Mafia"]);
     expect(r.alerts.join(" ")).to.match(/both|Litigate|kill/i);
     expect(lessons(r).length).to.equal(2);
     const bad = sim("lawyer", [...go(2), { do: "leakCode" }]);
     expect(bad.failed).to.be.true;
     expect(bad.humanAlive).to.be.false;
+  });
+
+  it("Lawyer (Loyal): the Litigate box lists only Mafia teammates, never town", function () {
+    const r = sim("lawyer", go(5));
+    const law = seats("lawyer");
+    const town = ["cop", "journalist", "sheriff", "v1", "v2", "v3"].map((k) => law[k].name);
+    expect(r.litigateTargets.length).to.be.greaterThan(0);
+    for (const list of r.litigateTargets) {
+      const people = list.filter((n) => n !== "*");
+      expect(people.length).to.be.greaterThan(0);
+      for (const n of people) expect([law.mafioso.name, law.janitor.name]).to.include(n);
+      for (const n of town) expect(list).to.not.include(n);
+      expect(list).to.not.include("Newbie");
+    }
+    expect(r.winners).to.deep.equal(["Mafia"]);
+  });
+
+  it("No tutorial line teaches a Lawyer framing town in Frontier Justice", function () {
+    const fs = require("fs");
+    const dir = path.join(__dirname, "../Games/core/tutorial/storylines");
+    const src = fs.readdirSync(dir).map((f) => fs.readFileSync(path.join(dir, f), "utf8")).join("\n");
+    expect(src).to.not.match(/Lawyer on them|framed by a Lawyer|Litigating a town player makes them look GUILTY/i);
+    expect(src).to.match(/non-Loyal\) Lawyer can also make a town player look guilty/);
   });
 
   for (const victim of ["v1", "cop", "journalist", "sheriff"]) {

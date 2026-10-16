@@ -57,6 +57,16 @@ async function run(storyline, actions, opts = {}) {
       }, 2);
     if (d && d.example) lastExample = d.example;
   });
+  // Targets the client is shown in the Litigate box (names; "*" = no one).
+  const litigateTargets = [];
+  socket.onClientEvent("meeting", (m) => {
+    if (!m || m.name !== "Litigate" || !Array.isArray(m.targets)) return;
+    const names = m.targets.map((id) => {
+      const p = game.players.array().find((x) => x.id === id);
+      return p ? p.name : id;
+    });
+    litigateTargets.push(names);
+  });
   const phases = [];
   let kudosEvents = 0;
   socket.onClientEvent("kudos", () => kudosEvents++);
@@ -198,6 +208,7 @@ async function run(storyline, actions, opts = {}) {
     nexts,
     phases: phases.length,
     voteTimes: t.voteTimes || [],
+    litigateTargets,
     highlights: overlays.filter((o) => o && o.highlight).map((o) => o.highlight),
     examples: overlays.filter((o) => o && o.examples).map((o) => o.examples),
     buttons: overlays.filter((o) => o && o.choices).length,

@@ -253,7 +253,7 @@ module.exports = {
     const role = roleOf(t, t.data.victim);
     return [
       "The Mafia won.",
-      `Lesson: you set a jan code ("${CODE[role]}" = ${role}), cleaned a ${role}, and when you fake-claimed Cop you named the Lawyer (Mafia) as your 'guilty' — a Villager usually has the Lawyer on them so they can't show guilty. You died Day 1 (bussed), Sheriff died Night 2, town lynched the confirmed Lawyer, and the Mafioso closed a 3-way.`,
+      `Lesson: you set a jan code ("${CODE[role]}" = ${role}), cleaned a ${role}, and when you fake-claimed Cop you named the Lawyer (Mafia) as your 'guilty' — a Loyal Lawyer can't frame town, so a Villager 'guilty' would be exposed by their flip, while the Lawyer guilty was true. You died Day 1 (bussed), Sheriff died Night 2, town lynched the confirmed Lawyer, and the Mafioso closed a 3-way.`,
     ];
   },
 };
@@ -298,13 +298,14 @@ async function claimFakeCopOnLawyer(t, k) {
       ["v3", "{name}??"],
     ],
   };
-  // The Cop's 'guilty' you invent is the Lawyer — NOT a Villager (Lawyer often
-  // litigates villagers so they look guilty to a real Cop).
+  // The Cop's 'guilty' you invent is the Lawyer — NOT a Villager. The Lawyer is
+  // Loyal and can't frame town, so a real Cop's guilty is always real Mafia; a
+  // Villager 'guilty' is exposed the moment they flip town.
   await t.expectChat({
     token: k,
     meeting: "Village",
     expect: { role: "cop", target: "lawyer", verdict: "guilty" },
-    text: `Fake-claim Cop. Name ${t.nameOf("lawyer")} as GUILTY (the Mafia Lawyer) — not a Villager. Villagers often have the Lawyer on them so a real Cop wouldn't see them guilty.`,
+    text: `Fake-claim Cop. Name ${t.nameOf("lawyer")} as GUILTY (the Mafia Lawyer) — not a Villager. Here the Lawyer is Loyal and can't make town look guilty, so a Villager 'guilty' falls apart the moment they flip town. A guilty on the Lawyer is true, so it survives the flip.`,
     example: `I'm the Cop. I checked ${t.nameOf("lawyer")} last night: guilty!`,
     reactions,
     hints: {
@@ -335,9 +336,9 @@ async function claimFakeCopOnLawyer(t, k) {
         bad: {
           reactions: [
             ["v1", "I'm a Villager!"],
-            ["cop", `Funny — I'M the Cop, and villagers often have a Lawyer on them. You named the wrong kind of guilty.`],
+            ["cop", `Funny — I'M the Cop. The Lawyer can't frame town in this setup, so a guilty on a Villager means you're lying.`],
           ],
-          lesson: `A fake Cop should put the guilty on the Lawyer (${t.nameOf("lawyer")}), not a Villager. Villagers usually look clear or get litigated — the Lawyer is the believable Mafia guilty.`,
+          lesson: `A fake Cop should put the guilty on the Lawyer (${t.nameOf("lawyer")}), not a Villager. A Loyal Lawyer can't frame town, so a Villager 'guilty' is disproved by their flip. The Lawyer is a real guilty, so naming them holds up (a plain, non-Loyal Lawyer could frame town, but most setups use Loyal).`,
         },
       },
     ],

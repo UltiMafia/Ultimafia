@@ -126,8 +126,18 @@ class TutorialController {
     }
     for (const user of bots) await this.game.userJoin(user, true);
 
+    this.game.events.on("roleAssigned", (p) => this.restrictLitigate(p));
     this.game.events.on("state", () => this.onState());
     this.game.events.on("aboutToFinish", () => this.onFinish());
+  }
+
+  // Loyal Lawyer (human seat): Litigate lists only living Mafia teammates, so
+  // town players never show up as targets (instead of Loyal blocking later).
+  restrictLitigate(player) {
+    if (!this.story.litigateTargets || !player || player !== this.human()) return;
+    const mtg = player.role && player.role.meetings && player.role.meetings.Litigate;
+    if (!mtg) return;
+    mtg.targets = { include: ["Mafia"], exclude: ["dead", "self"] };
   }
 
   players() {

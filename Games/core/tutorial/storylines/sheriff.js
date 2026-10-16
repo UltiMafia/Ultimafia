@@ -160,7 +160,7 @@ async function shootRealDay1(t, k) {
   t.guide(`${t.nameOf("cop")} flipped ${role} — the real Cop. That means ${t.nameOf("janitor")} lied, but the town just lost its investigator.`);
   await t.chat("Village", [
     ["v3", `${t.nameOf("cop")} was the REAL Cop?! Sheriff, what did you do...`],
-    ["janitor", `Uh, they must've been framed by a Lawyer. Anyway, ${t.nameOf("v1")}'s been weird all day.`],
+    ["janitor", `Okay, I was wrong about them. Anyway, ${t.nameOf("v1")}'s been weird all day.`],
     ["lawyer", `Yeah, ${t.nameOf("v1")}. Let's go.`],
     ["mafioso", t.nameOf("v1")],
   ], k);

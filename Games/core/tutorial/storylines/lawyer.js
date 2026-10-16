@@ -1,6 +1,8 @@
 const chatMatch = require("../chatMatch");
 // LAWYER: learn jan codes. Day 1 the Sheriff and town both miss (shoot/lynch
 // villagers). Night 2 reminds you to Litigate again (optional, not gated).
+// The Lawyer is Loyal: the human's Litigate box lists only Mafia teammates
+// (see litigateTargets / TutorialController.restrictLitigate).
 
 const CODE = {
   Villager: "nice weather",
@@ -37,7 +39,10 @@ module.exports = {
         "That was a jan code. The Janitor will learn the cleaned player's role, but Mafia chat closes during the day, so they'll tell you in public with an innocent-sounding phrase. Remember the code!"
       );
       t.guide(
-        "As Lawyer you must do TWO things tonight before Continue unlocks: (1) vote with your team on the Mafia Kill, and (2) use Litigate on someone. Both are required."
+        "As Lawyer you must do TWO things tonight before Continue unlocks: (1) vote with your team on the Mafia Kill, and (2) use Litigate on a Mafia teammate. Both are required."
+      );
+      t.guide(
+        "This setup's Lawyer is Loyal: Litigate only works on your own Mafia teammates (it makes them look innocent), so only they appear in the Litigate box. A plain (non-Loyal) Lawyer can also make a town player look guilty, but most setups use Loyal."
       );
       await t.expectVote("Mafia Kill", victim, {
         token: k,
@@ -50,13 +55,14 @@ module.exports = {
       await t.expectVote("Litigate", "mafioso", {
         token: k,
         label: `Litigate: ${t.nameOf("mafioso")}`,
-        text: `Second: Litigate makes someone look like the opposite alignment to investigators. Protect your teammate: click ${t.nameOf("mafioso")} in the Litigate box.`,
+        text: `Second: Litigate makes a teammate look innocent to investigators. The Mafioso is the likeliest Cop check, so protect them: click ${t.nameOf("mafioso")} in the Litigate box.`,
         also: [
           {
-            id: "litigateTown",
-            vote: { meeting: "Litigate", target: "*other" },
+            id: "litigateJanitor",
+            label: `Litigate: ${t.nameOf("janitor")}`,
+            vote: { meeting: "Litigate", target: "janitor" },
             bad: {
-              lesson: `Litigating a town player makes them look GUILTY, which can be useful, but tonight the Cop may check your teammate. Protect ${t.nameOf("mafioso")} first.`,
+              lesson: `${t.nameOf("janitor")} is a teammate too, but the Mafioso is the one most likely to be checked tonight. Protect ${t.nameOf("mafioso")}.`,
             },
           },
         ],
@@ -175,7 +181,7 @@ module.exports = {
       t.data.victim2 = pick;
       await t.say("janitor", "Mafia Meeting", `One more and the town's ours. ${t.nameOf(pick)}?`, k);
       t.guide(
-        "Reminder: you should always use your Lawyer action (Litigate) when you have it — even tonight. It is NOT required to click Continue this phase, but skipping Litigate in a real game wastes a powerful tool."
+        "Reminder: you should always use your Lawyer action (Litigate) on a teammate when you have it — even tonight. It is NOT required to click Continue this phase, but skipping Litigate in a real game wastes a powerful tool."
       );
       await t.expectVote("Mafia Kill", pick, {
         token: k,
@@ -199,6 +205,9 @@ module.exports = {
       await t.advance(k, "Click Continue to end the night. (Using Litigate again was optional but recommended.)");
     },
   },
+
+  // Loyal Lawyer: Litigate lists only living Mafia teammates (never self).
+  litigateTargets: true,
 
   freeVote: (t, meeting) => meeting.name === "Litigate" && t.data.allowLitigate,
 
