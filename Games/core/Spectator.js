@@ -235,9 +235,45 @@ module.exports = class Spectator extends Player {
   sendSelf() {
     super.sendSelf();
     this.send("isSpectator");
+    if (this.omniscient) this.send("omniscientSpectator");
+  }
+
+  getMeetings(state) {
+    if (!this.omniscient) return super.getMeetings(state);
+
+    const spectatorOnly = this.game.spectatorHistory
+      .getMeetings(state)
+      .filter((m) => this.game.isSpectatorOnlyMeeting(m));
+    return this.game.history.getMeetings(state).concat(spectatorOnly);
+  }
+
+  sendMeetings(meetings) {
+    super.sendMeetings(meetings);
+    if (this.omniscient) this.sendTrueRoles();
+  }
+
+  sendTrueRoles() {
+    const roles = this.game.getTrueRoles();
+    for (let playerId in roles)
+      this.send("reveal", { playerId, role: roles[playerId] });
+  }
+
+  getHistory(targetState) {
+    if (!this.omniscient) return super.getHistory(targetState);
+    return this.game.getOmniscientHistoryInfo(this, targetState);
+  }
+
+  hearOmniscient(message) {
+    const info = this.game.getOmniscientMessageInfo(message);
+    if (!info) return;
+    this.send(message.isQuote ? "quote" : "message", info);
   }
 
   sendMeeting(meeting) {
+    if (this.omniscient && !this.game.isSpectatorOnlyMeeting(meeting)) {
+      this.send("meeting", this.game.getOmniscientMeetingInfo(meeting));
+      return;
+    }
     if(meeting.name == "Spectator Meeting"){
       this.send("meeting", meeting.getMeetingInfo(this));
     }

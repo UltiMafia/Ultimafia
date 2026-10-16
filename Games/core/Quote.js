@@ -40,6 +40,8 @@ module.exports = class Quote extends Message {
     if (this.game.isSpectatorMeeting(this.meeting))
       this.game.spectatorsHearQuote(this.versions["*"]);
 
+    this.game.omniscientSpectatorsHear?.(this);
+
     this.game.events.emit("message", this);
   }
 
