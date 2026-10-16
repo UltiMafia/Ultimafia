@@ -92,6 +92,19 @@ describe("Omniscient spectating (Developer, Testing lobby)", function () {
       (await game.canSpectateOmnisciently({ id: "u" })).should.equal(false);
     });
 
+    it("refuses when the Developer API is switched off", async function () {
+      routeUtils.verifyPermission = async () => true;
+      const before = process.env.DEV_API_ENABLED;
+      process.env.DEV_API_ENABLED = "false";
+      try {
+        const game = makeGame();
+        (await game.canSpectateOmnisciently({ id: "dev" })).should.equal(false);
+      } finally {
+        if (before === undefined) delete process.env.DEV_API_ENABLED;
+        else process.env.DEV_API_ENABLED = before;
+      }
+    });
+
     it("refuses outside the Testing lobby, even for developers", async function () {
       routeUtils.verifyPermission = async () => true;
       for (const lobby of ["Main", "Sandbox", "Competitive", undefined]) {

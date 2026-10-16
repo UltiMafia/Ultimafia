@@ -31,6 +31,7 @@ const constants = require("../../data/constants");
 const renamedRoleMapping = require("../../data/renamedRoles");
 const renamedModifierMapping = require("../../data/renamedModifiers");
 const routeUtils = require("../../routes/utils");
+const devApiPolicy = require("../../modules/devApi/policy");
 const PostgameMeeting = require("./PostgameMeeting");
 const { KudosVote, isWinLossResult, pickBotVote } = require("./Kudos");
 const dbStats = require("../../db/stats");
@@ -2852,7 +2853,8 @@ module.exports = class Game {
    */
   async canSpectateOmnisciently(user) {
     if (!user || !user.id || user.isTest) return false;
-    if (this.lobby !== (constants.testingLobby || "Testing")) return false;
+    if (!devApiPolicy.isTestingGame(this)) return false;
+    if (!devApiPolicy.devApiEnabled()) return false;
     return await routeUtils.verifyPermission(user.id, "devApi");
   }
 
