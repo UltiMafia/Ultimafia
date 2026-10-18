@@ -1179,6 +1179,7 @@ module.exports = class Meeting {
       abilityName: message.abilityName,
       abilityTarget: message.abilityTarget,
       anonymous: this.anonymous,
+      textEffect: message.textEffect,
     });
 
     message.send();

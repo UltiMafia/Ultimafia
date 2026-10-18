@@ -2,6 +2,7 @@ const shortid = require("shortid");
 const nameGen = require("../../routes/utils").nameGen;
 const History = require("./History");
 const Message = require("./Message");
+const textEffects = require("../../shared/textEffects");
 const Quote = require("./Quote");
 const Utils = require("./Utils");
 const Spam = require("./Spam");
@@ -296,6 +297,8 @@ module.exports = class Player {
           }
         }
 
+        if (this.applyTextEffect(message)) return;
+
         if (
           message.content[0] == "/" &&
           message.content.slice(0, 4) != "/me "
@@ -318,6 +321,7 @@ module.exports = class Player {
           abilityName: message.abilityName,
           abilityTarget: message.abilityTarget,
           forceLeak: message.forceLeak,
+          textEffect: message.textEffect,
         });
       } catch (e) {
         logger.error(e);
@@ -681,6 +685,34 @@ module.exports = class Player {
 
   getVegKickMeeting() {
     return this.game.vegKickMeeting;
+  }
+
+  // Handles "/wave hello" style text effects. The command is stripped here, on
+  // the server, and only owners of "Advanced Text Effects" get an effect
+  // attached; the content that is sent, filtered and logged stays plain text.
+  // Returns true when the message must not be sent (no text, or not owned).
+  applyTextEffect(message) {
+    delete message.textEffect;
+    const parsed = textEffects.parseTextEffect(message.content);
+    if (!parsed) return false;
+
+    if (!this.user || !this.user.textEffects) {
+      this.sendAlert(
+        `:system: /${parsed.effect} requires the Advanced Text Effects shop item.`
+      );
+      return true;
+    }
+
+    if (!parsed.text) {
+      this.sendAlert(
+        `:system: Type a message after /${parsed.effect}, e.g. /${parsed.effect} hello.`
+      );
+      return true;
+    }
+
+    message.content = parsed.text;
+    message.textEffect = parsed.effect;
+    return false;
   }
 
   parseCommand(message) {
@@ -1329,6 +1361,7 @@ module.exports = class Player {
       if (message.fiddled) {
         message.content =
           message.sender.name + " says something, but you cannot hear them!";
+        message.textEffect = undefined;
         message.modified = true;
         break;
       }

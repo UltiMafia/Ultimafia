@@ -144,6 +144,8 @@ module.exports = class Spectator extends Player {
           return;
         }
 
+        if (this.applyTextEffect(message)) return;
+
         if (
           message.content[0] == "/" &&
           message.content.slice(0, 4) != "/me "
@@ -166,6 +168,7 @@ module.exports = class Spectator extends Player {
           abilityName: message.abilityName,
           abilityTarget: message.abilityTarget,
           forceLeak: message.forceLeak,
+          textEffect: message.textEffect,
         });
       } catch (e) {
         logger.error(e);

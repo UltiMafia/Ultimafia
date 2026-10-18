@@ -9,6 +9,7 @@ import { Slang } from "./Slang";
 import { Typography } from "@mui/material";
 import { SiteInfoContext } from "../Contexts";
 import { InlineRoleMention } from "./Roles";
+import { splitIntoLetters } from "./TextEffects";
 import { useAvatarImageUrl, AvatarPhoto } from "utils/avatarUrl";
 
 export function ItemList(props) {
@@ -211,8 +212,11 @@ export function UserText(props) {
 
     if (props.roleify) text = roleifySegments(text, siteInfo);
 
+    // Per-letter chat text effects (wave, rainbow) run on the filtered text.
+    if (props.splitLetters) text = splitIntoLetters(text);
+
     setContent(text);
-  }, [props.text, props.terminologyEmoticons, props.customEmotes, props.customStickers, props.systemMessage]);
+  }, [props.text, props.terminologyEmoticons, props.customEmotes, props.customStickers, props.systemMessage, props.splitLetters]);
 
   return content ?? "";
 }
