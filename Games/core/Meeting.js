@@ -470,9 +470,9 @@ module.exports = class Meeting {
         this.unvote(this.members[voterId], t);
       }
 
-      // no one was unvoted, proceed as per normal
+      // no one was unvoted, move on to the next voter
       if (!unvoted) {
-        return;
+        continue;
       }
 
       if (
