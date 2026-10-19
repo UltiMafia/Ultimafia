@@ -3032,6 +3032,18 @@ module.exports = class Game {
     this.sendSpectatorMeetings();
   }
 
+  // Sends only the given meetings, so open chat meetings and their messages
+  // are not resent to everyone who joins a one-off action meeting.
+  sendNewMeetings(meetings, players) {
+    for (let player of players)
+      for (let meeting of meetings)
+        if (meeting.hasJoined(player)) player.sendMeeting(meeting);
+
+    for (let spectator of this.spectators)
+      for (let meeting of meetings)
+        if (this.isSpectatorMeeting(meeting)) spectator.sendMeeting(meeting);
+  }
+
   removeMeeting(meeting) {
     if (!this.isSpectatorOnlyMeeting(meeting))
       this.history.removeMeeting(meeting);
@@ -3213,6 +3225,7 @@ module.exports = class Game {
   // A test branch version of this.makeMeetings()
   // will refactor into makeMeetings when stable
   instantMeeting(meetings, players) {
+    const initialized = [];
     const meetingIdsBefore = new Set(
       this.history.getMeetings().map((m) => m.id)
     );
@@ -3241,10 +3254,12 @@ module.exports = class Game {
 
       if (toMeet) {
         toMeet.init();
+        initialized.push(toMeet);
       }
     }
 
-    this.sendMeetings(players);
+    if (this.sendOnlyNewInstantMeetings) this.sendNewMeetings(initialized, players);
+    else this.sendMeetings(players);
 
     if (this.vegKickMeeting !== undefined) {
       this.vegKickMeeting.resetKicks();
