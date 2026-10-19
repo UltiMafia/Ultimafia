@@ -18,52 +18,45 @@ module.exports = class KillorPass extends Card {
           priority: PRIORITY_KILL_SPECIAL,
           role: this.role,
           run: function () {
-            let action = new Action({
-                  actor: this.actor,
-                  target: this.target,
-                  role: this.role,
-                  game: this.game,
-                  labels: ["convert"],
-                  run: function () {
-                    if (this.dominates()) {
-                    }
-                  },
-                });
             let savers = this.getVisitors(this.target, "save");
-            if (savers.length == 0 && this.target === this.actor) {
-              var aliveTargets = this.game.players.filter(
-                (p) => p.alive && p != this.actor
-              );
-              var cultTargets = aliveTargets.filter(
-                (p) => p.getRoleAlignment(true) == "Cult"
-              );
-              if (cultTargets.length <= 0) {
-                var cultTargets = aliveTargets.filter(
-                  (p) => p.getRoleAlignment() == "Cult"
+            if (this.target === this.actor) {
+              if (savers.length == 0 && this.dominates(this.actor)) {
+                var aliveTargets = this.game.players.filter(
+                  (p) => p.alive && p != this.actor
                 );
-              }
-
-              if (cultTargets.length > 0) {
-                const randomTarget = Random.randArrayVal(cultTargets);
-                if (action.dominates(randomTarget)) {
-                  randomTarget.setRole(
-                    `${this.role.name}:${this.role.modifier}`,
-                    this.role.data,
-                    null,
-                    null,
-                    null,
-                    "No Change"
+                var cultTargets = aliveTargets.filter(
+                  (p) => p.getRoleAlignment(true) == "Cult"
+                );
+                if (cultTargets.length <= 0) {
+                  var cultTargets = aliveTargets.filter(
+                    (p) => p.getRoleAlignment() == "Cult"
                   );
                 }
-                const tempKillImmunity =
-                  this.actor.tempImmunity &&
-                  this.actor.tempImmunity["kill"] != null &&
-                  this.actor.tempImmunity["kill"] > 0;
 
-                if (!tempKillImmunity) {
-                  this.actor.kill("basic");
+                if (cultTargets.length > 0) {
+                  const randomTarget = Random.randArrayVal(cultTargets);
+                  let action = new Action({
+                    actor: this.actor,
+                    target: this.target,
+                    role: this.role,
+                    game: this.game,
+                    labels: ["convert"],
+                    run: function () {},
+                  });
+                  if (action.dominates(randomTarget)) {
+                    randomTarget.setRole(
+                      `${this.role.name}:${this.role.modifier}`,
+                      this.role.data,
+                      null,
+                      null,
+                      null,
+                      "No Change"
+                    );
+                  }
                 }
+                this.actor.kill("basic");
               }
+              return;
             }
 
             if (this.dominates()) this.target.kill("basic", this.actor);
