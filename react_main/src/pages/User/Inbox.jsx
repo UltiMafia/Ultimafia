@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { Navigate, Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 
 import {
@@ -16,7 +17,7 @@ import {
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
-import { Loading } from "components/Loading";
+import { PageSkeleton } from "components/Skeletons";
 
 import "css/inbox.css";
 
@@ -155,7 +156,7 @@ export default function Inbox() {
   }
 
   if (!user.loaded || loading) {
-    return <Loading small />;
+    return <PageSkeleton />;
   }
 
   return (

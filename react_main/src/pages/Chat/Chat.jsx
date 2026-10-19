@@ -33,7 +33,8 @@ import {
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useTheme } from "@mui/material/styles";
 
-import { ClientSocket as Socket } from "../../Socket";
+import { ClientSocket as Socket, subscribeSocketListeners } from "../../Socket";
+import { LatestRequest } from "../../lib/latestRequest.js";
 import { useErrorAlert } from "../../components/Alerts";
 import { NameWithAvatar, StatusIcon } from "../User/UserWidgets";
 import { UserContext } from "../../Contexts";
@@ -62,6 +63,8 @@ export default function Chat() {
   const messageListRef = useRef();
   const oldScrollHeight = useRef();
   const isMountedRef = useRef(true);
+  const tokenRequests = useRef(new LatestRequest());
+  const registeredSocketRef = useRef(null);
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
   const theme = useTheme();
@@ -69,18 +72,23 @@ export default function Chat() {
   useLayoutEffect(() => manageScroll());
 
   useEffect(() => {
-    if (!user.loggedIn && token) setToken("");
+    if (!user.loggedIn) {
+      tokenRequests.current.invalidate();
+      if (token) setToken("");
+    }
   }, [user.loggedIn]);
 
   // Cleanup on unmount
   useEffect(() => {
+    isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
+      tokenRequests.current.invalidate();
     };
   }, []);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token || !user.loggedIn) return;
 
     var socketURL;
 
@@ -94,16 +102,17 @@ export default function Chat() {
       }/chatSocket`;
 
     var newSocket = new Socket(socketURL);
-    newSocket.on("connected", () => setConnected(connected + 1));
-    newSocket.on("disconnected", () => setConnected(connected - 1));
+    newSocket.on("connected", () => setConnected((current) => current + 1));
+    newSocket.on("disconnected", () => setConnected((current) => current - 1));
     setSocket(newSocket);
 
     return () => {
       if (newSocket) newSocket.clear();
     };
-  }, [token]);
+  }, [token, user.loggedIn]);
 
   useEffect(() => {
+    if (!user.loaded || !user.loggedIn) return;
     if (socket.readyState !== 1) {
       if (socket.readyState == null || socket.readyState === 3) getToken();
 
@@ -112,6 +121,9 @@ export default function Chat() {
 
     socket.send("auth", token);
 
+    const replay = registeredSocketRef.current !== socket;
+    registeredSocketRef.current = socket;
+    return subscribeSocketListeners(socket, (socket) => {
     socket.on("chatInfo", (chatInfo) => {
       updateChatInfo({
         type: "set",
@@ -162,14 +174,12 @@ export default function Chat() {
       });
 
       if (info.focus) {
-        setCurrentTab("chats");
         setCurrentChannelId(info.channel.id);
         socket.send("getChannel", info.channel.id);
       }
     });
 
     socket.on("openDM", (channelId) => {
-      setCurrentTab("chats");
       setCurrentChannelId(channelId);
       socket.send("getChannel", channelId);
     });
@@ -202,7 +212,8 @@ export default function Chat() {
     socket.on("error", (error) => {
       errorAlert(error);
     });
-  }, [connected]);
+    }, { replay });
+  }, [connected, user.loaded, user.loggedIn]);
 
   useEffect(() => {
     if (!channel.id) return;
@@ -217,15 +228,16 @@ export default function Chat() {
   }, [channel]);
 
   function getToken() {
+    const request = tokenRequests.current.begin();
     axios
-      .get("/api/chat/connect")
+      .get("/api/chat/connect", { signal: request.signal })
       .then((res) => {
-        if (isMountedRef.current) {
+        if (isMountedRef.current && request.isCurrent()) {
           setToken(res.data);
         }
       })
       .catch((err) => {
-        if (isMountedRef.current) {
+        if (isMountedRef.current && request.isCurrent()) {
           errorAlert(err);
         }
       });

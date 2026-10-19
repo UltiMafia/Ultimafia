@@ -434,8 +434,8 @@
   transform: scale(1.05);
 }
 
-.row .fa,
-.fas {
+.row .deck-buttons-wrapper .fa,
+.row .deck-buttons-wrapper .fas {
   font-size: 20px;
 }
 

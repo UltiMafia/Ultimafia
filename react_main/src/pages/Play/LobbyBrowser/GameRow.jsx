@@ -26,6 +26,13 @@ const GameStatus = (props) => {
   const isPhoneDevice = useIsPhoneDevice();
   const showGameState = props.showGameState;
 
+  // Player capacity limits joining, not spectating. Keep the spectator action
+  // available while a full lobby waits for its ready check.
+  const isFullOpenGame =
+    props.game.status === "Open" &&
+    props.game.setup &&
+    props.game.players >= props.game.setup.total;
+
   const canShowGameButton =
     (user.loggedIn || props.game.status === "Finished") &&
     !props.game.broken &&
@@ -66,6 +73,9 @@ const GameStatus = (props) => {
     <Button
       component={Link}
       to={buttonUrl}
+      // Spectate changes server membership. A client-side route change would
+      // merely reveal the same retained, possibly seated game session.
+      reloadDocument={buttonText === "Spectate"}
       variant={buttonVariant}
       color={buttonColor}
       disabled={buttonDisabled}
@@ -83,6 +93,7 @@ const GameStatus = (props) => {
     <Button
       component={Link}
       to={`/game/${props.game.id}?spectate=true`}
+      reloadDocument
       variant="outlined"
       color="inherit"
       sx={{
@@ -99,7 +110,7 @@ const GameStatus = (props) => {
     <Box sx={{ width: "100px" }}>
       {canShowGameButton && (
         <Stack spacing={0.5}>
-          {GameButton}
+          {!isFullOpenGame && GameButton}
           {spectateButton}
         </Stack>
       )}

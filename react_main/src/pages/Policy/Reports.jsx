@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import {
   Autocomplete,

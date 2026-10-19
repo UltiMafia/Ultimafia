@@ -13,7 +13,7 @@ export const useLoading = ({ minLoadingTime } = {}) => {
     setIsFakeLoading(true);
     const timeout = setTimeout(
       () => setIsFakeLoading(false),
-      minLoadingTime ?? 200
+      minLoadingTime ?? 0
     );
 
     return () => clearTimeout(timeout);
