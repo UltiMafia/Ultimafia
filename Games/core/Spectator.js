@@ -32,6 +32,14 @@ module.exports = class Spectator extends Player {
       }
     });
 
+    socket.on("takeSeat", () => {
+      try {
+        Promise.resolve(this.game.takeSeat(this)).catch((e) => logger.error(e));
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
     socket.on("getTimerInfo", () => {
       try {
         this.game.resendTimers(this);
@@ -42,12 +50,8 @@ module.exports = class Spectator extends Player {
 
     socket.on("disconnected", () => {
       try {
-        var index = this.game.spectators.indexOf(this);
-
-        if (index == -1) return;
-
-        this.game.spectators.splice(index, 1);
-        this.game.broadcast("spectatorCount", this.game.spectators.length);
+        // Keep the user id so a refresh during pregame stays spectating.
+        this.game.removeSpectator(this, { forget: false });
       } catch (e) {
         logger.error(e);
       }
@@ -238,11 +242,20 @@ module.exports = class Spectator extends Player {
   }
 
   sendMeeting(meeting) {
-    if(meeting.name == "Spectator Meeting"){
-      this.send("meeting", meeting.getMeetingInfo(this));
-    }
-    else{
-    this.send("meeting", meeting.getMeetingInfo("spectator"));
+    const isMember = meeting.members && meeting.members[this.id];
+
+    if (meeting.name == "Spectator Meeting" || isMember) {
+      const info = meeting.getMeetingInfo(this);
+
+      // Member versions are per player id. Pregame chat is public, so use
+      // the spectator transcript while still advertising canTalk.
+      if (meeting.name == "Pregame") {
+        info.messages = meeting.getPlayerMessages("spectator");
+      }
+
+      this.send("meeting", info);
+    } else {
+      this.send("meeting", meeting.getMeetingInfo("spectator"));
     }
   }
 

@@ -1219,21 +1219,27 @@ module.exports = class Meeting {
     const isSilenced = member.player.hasEffect("Silenced");
 
     if (member && this.speech && !this.anonymous && member.canTalk) {
+      const info = {
+        playerId,
+        meetingId: isTyping ? this.id : null,
+      };
+      // Town-visible meetings (including Pregame) also notify spectators
+      // via spectatorsSeeTyping. Pregame spectators are meeting members so
+      // they can talk; sending to them here as well delivers the event twice.
+      const spectatorsAlsoNotified =
+        !isSilenced && this.game.isSpectatorMeeting(this);
+
       for (let _playerId in this.members) {
         // Let silenced players see their own typing activity, but prevent others from seeing it
-        if (!isSilenced || _playerId === playerId) {
-          this.members[_playerId].player.seeTyping({
-            playerId,
-            meetingId: isTyping ? this.id : null,
-          });
-        }
+        if (isSilenced && _playerId !== playerId) continue;
+
+        const recipient = this.members[_playerId].player;
+        if (spectatorsAlsoNotified && recipient && recipient.spectator)
+          continue;
+
+        recipient.seeTyping(info);
       }
-      if (!isSilenced && this.game.isSpectatorMeeting(this)) {
-        this.game.spectatorsSeeTyping({
-          playerId,
-          meetingId: isTyping ? this.id : null,
-        });
-      }
+      if (spectatorsAlsoNotified) this.game.spectatorsSeeTyping(info);
     }
   }
 
