@@ -98,7 +98,32 @@ function pregameSpectatorList(spectators, { currentState, stateViewing, review }
     .sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")));
 }
 
+// Names Tab completes in the chat box. Players always. Current spectators
+// too during pregame (everyone shares Pregame chat), and for spectators
+// during the game (spectator chat). Players in a started game never get
+// spectator names.
+function tabCompleteNames({ players, spectators, isPregame, isSpectator }) {
+  const names = [];
+  const seen = new Set();
+  const add = (name) => {
+    if (!name || seen.has(name)) return;
+    seen.add(name);
+    names.push(name);
+  };
+
+  for (const player of Object.values(players || {})) add(player && player.name);
+
+  if (isPregame || isSpectator) {
+    for (const spectator of Object.values(spectators || {})) {
+      if (spectator && spectator.watching) add(spectator.name);
+    }
+  }
+
+  return names;
+}
+
 module.exports = {
+  tabCompleteNames,
   SPECTATOR_MEETING_NAME,
   isSpectatorChatMeeting,
   findSpectatorChatMeeting,

@@ -8,6 +8,7 @@ const {
   mergeSpectatorChat,
   pickSpeechTarget,
   pregameSpectatorList,
+  tabCompleteNames,
 } = require("../react_main/src/shared/spectatorChat");
 
 function meeting(id, name, extra) {
@@ -128,6 +129,44 @@ describe("Spectator chat (client helpers)", function () {
       currentState: -1,
       stateViewing: -1,
     }).should.deep.equal([]);
+  });
+});
+
+describe("Tab completion names", function () {
+  const players = {
+    p1: { id: "p1", name: "Alice" },
+    p2: { id: "p2", name: "Bob" },
+  };
+  const spectators = {
+    s1: { id: "s1", name: "Watcher", watching: true },
+    s2: { id: "s2", name: "OldSpec" },
+  };
+
+  it("players complete current spectators in pregame", function () {
+    tabCompleteNames({ players, spectators, isPregame: true, isSpectator: false })
+      .should.deep.equal(["Alice", "Bob", "Watcher"]);
+  });
+
+  it("spectators complete players and spectators", function () {
+    tabCompleteNames({ players, spectators, isPregame: true, isSpectator: true })
+      .should.deep.equal(["Alice", "Bob", "Watcher"]);
+    tabCompleteNames({ players, spectators, isPregame: false, isSpectator: true })
+      .should.deep.equal(["Alice", "Bob", "Watcher"]);
+  });
+
+  it("players in a started game get player names only", function () {
+    tabCompleteNames({ players, spectators, isPregame: false, isSpectator: false })
+      .should.deep.equal(["Alice", "Bob"]);
+  });
+
+  it("handles missing maps and repeated names", function () {
+    tabCompleteNames({ players: undefined, spectators: undefined, isPregame: true })
+      .should.deep.equal([]);
+    tabCompleteNames({
+      players,
+      spectators: { s3: { id: "s3", name: "Alice", watching: true } },
+      isPregame: true,
+    }).should.deep.equal(["Alice", "Bob"]);
   });
 });
 

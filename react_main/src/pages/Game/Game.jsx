@@ -26,6 +26,7 @@ import {
   mergeSpectatorChat,
   pickSpeechTarget,
   pregameSpectatorList,
+  tabCompleteNames,
 } from "shared/spectatorChat";
 import Newspaper, {
   ObituariesMessage,
@@ -3542,7 +3543,12 @@ function SpeechInput(props) {
       const prefix = word.substring(0, word.length - seedString.length);
       if (!seedString.length) return;
 
-      const playerNames = Object.values(players).map((player) => player.name);
+      const playerNames = tabCompleteNames({
+        players,
+        spectators: game.spectators,
+        isPregame: game.history?.currentState == -1,
+        isSpectator: game.isSpectator,
+      });
       const playerSeeds = playerNames.map((playerName) =>
         playerName.toLowerCase().substring(0, seedString.length)
       );
