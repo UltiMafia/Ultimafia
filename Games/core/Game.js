@@ -3529,11 +3529,12 @@ module.exports = class Game {
     )
       return;
 
-    // Players still in the game when it ended can receive kudos; everyone
-    // who is still in the lobby (and isn't a bot) can vote.
+    // Every player who was dealt a role can receive kudos, including those
+    // who left before the game ended (e.g. died and left from the
+    // graveyard). Only players still in the lobby (and not bots) can vote.
     const candidates = [];
     for (let player of this.players) {
-      if (player.left || !this.originalRoles[player.id]) continue;
+      if (!this.originalRoles[player.id]) continue;
       candidates.push({
         id: player.id,
         alignment: this.getKudosAlignment(player),
