@@ -108,6 +108,7 @@ module.exports = class Microphone extends Item {
               this.game.lastAmountBid = this.target;
               this.game.lastFaceBid = this.actor.role.data.face;
               this.item.sendBidAlert(this.actor);
+              this.game.recordBid(this.actor);
               this.item.drop();
 
               this.actor.getMeetings().forEach((meeting) => {
@@ -164,6 +165,7 @@ module.exports = class Microphone extends Item {
                 this.target.length - 1
               );
               this.item.sendBidAlert(this.actor);
+              this.game.recordBid(this.actor);
               this.item.drop();
 
               this.actor.getMeetings().forEach((meeting) => {

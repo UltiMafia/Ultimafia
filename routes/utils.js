@@ -5,6 +5,7 @@ const Random = require("../lib/Random");
 const constants = require("../data/constants");
 const names = require("../json/names");
 const errors = require("../lib/errors");
+const { getDirectLinkedAccountIds } = require("../modules/accountLinkage");
 
 const alphaNumRegex = /[\w\s]/g;
 const nonAlphaNumRegex = /[^\w\s]/g;
@@ -252,6 +253,7 @@ async function banUser(userId, length, permissions, type, modId) {
   });
   await ban.save();
   await redis.cacheUserPermissions(userId);
+  return ban;
 }
 
 function nameGen() {
@@ -346,19 +348,7 @@ async function createModAction(modId, name, args) {
 }
 
 async function getAltAccountIds(userId) {
-  // Get the user's IP addresses
-  const user = await models.User.findOne({ id: userId }).select("ip");
-  if (!user || !user.ip || user.ip.length === 0) {
-    return [userId]; // Return just the original user if no IPs found
-  }
-
-  // Find all users with matching IPs
-  const altUsers = await models.User.find({
-    ip: { $elemMatch: { $in: user.ip } },
-  }).select("id -_id");
-
-  // Return array of user IDs (including the original user)
-  return altUsers.map((u) => u.id);
+  return getDirectLinkedAccountIds(userId);
 }
 
 function getReportReporters(report) {

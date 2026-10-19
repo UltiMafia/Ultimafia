@@ -32,12 +32,14 @@ const GameStatus = (props) => {
     !props.game.private;
 
   let buttonUrl, buttonText, buttonVariant, buttonColor, buttonDisabled;
+  let showSpectate = false;
   if (props.game.status === "Open") {
     buttonUrl = `/game/${props.game.id}`;
     buttonText = "Join";
     buttonColor = "primary";
     buttonVariant = "contained";
     buttonDisabled = false;
+    showSpectate = !!props.game.spectating;
   } else if (props.game.status === "In Progress") {
     if (props.game.spectating /* || user.perms.canSpectateAny */) {
       buttonUrl = `/game/${props.game.id}?spectate=true`;
@@ -77,9 +79,30 @@ const GameStatus = (props) => {
     </Button>
   );
 
+  const spectateButton = showSpectate && (
+    <Button
+      component={Link}
+      to={`/game/${props.game.id}?spectate=true`}
+      variant="outlined"
+      color="inherit"
+      sx={{
+        p: 0.5,
+        width: "100%",
+        fontWeight: "bold",
+      }}
+    >
+      Spectate
+    </Button>
+  );
+
   const gameButtonWrapped = (
     <Box sx={{ width: "100px" }}>
-      {canShowGameButton && GameButton}
+      {canShowGameButton && (
+        <Stack spacing={0.5}>
+          {GameButton}
+          {spectateButton}
+        </Stack>
+      )}
       <div
         style={{
           display: "flex",

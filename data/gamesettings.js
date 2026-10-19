@@ -93,6 +93,15 @@ const gameSettingData = {
       tags: ["Death", "Voting"],
       description: "Dead players can vote in the village meeting.",
     },
+    Safehouse: {
+      category: "Voting",
+      internal: ["Safehouse"],
+      tags: ["Day", "Voting", "Win Condition"],
+      description:
+        "The village day vote sends a player to the safehouse instead of condemning them. No one is still an option, and the usual plurality rules apply. A housed player does not die and their role is not revealed. They cannot vote, speak, act, or be targeted, but they can still read the village chat. They do not count toward living majorities. The Village wins when X Village-aligned players (Village alignment and Village faction) have been housed. Housing a Mafia, Cult, or Independent player does not advance the count. X is the number of times this setting is added.",
+      allowDuplicate: true,
+      maxCount: 49,
+    },
 
     //Timer
 
