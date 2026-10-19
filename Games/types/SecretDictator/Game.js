@@ -60,6 +60,18 @@ module.exports = class SecretDictatorGame extends Game {
 
     this.presidentialPowersBoard = {};
     this.lastVoteResults = null;
+
+    this.sendOnlyNewInstantMeetings = true;
+  }
+
+  // Card picks and vetoes happen inside the Legislative Session. Tell everyone
+  // straight away instead of waiting for the next phase.
+  publishBoard() {
+    if (!this.started || this.finished) return;
+    this.processAlertQueue();
+    const stateInfo = this.getStateInfo();
+    this.addStateExtraInfoToHistories(stateInfo.extraInfo);
+    this.broadcastState(stateInfo);
   }
 
   start() {
@@ -137,6 +149,7 @@ module.exports = class SecretDictatorGame extends Game {
     }
     this.policyPile = [];
     this.incrementFailedElectionTracker();
+    this.publishBoard();
   }
 
   enactPolicyAndDiscardRemaining(policy) {
@@ -144,6 +157,7 @@ module.exports = class SecretDictatorGame extends Game {
     this.removeFromPolicyPile(policy);
     this.drawDiscardPile.discard(this.policyPile[0]);
     this.policyPile = [];
+    this.publishBoard();
   }
 
   removeFromPolicyPile(p) {

@@ -81,7 +81,7 @@ export default function ReadyCheckDialog({
             {(remaining / 1000).toFixed(0)}s
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            Failure to ready up will result in being kicked.
+            Failure to ready up will move you to spectators.
           </Typography>
         </Stack>
       </DialogContent>

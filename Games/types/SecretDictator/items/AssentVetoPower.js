@@ -24,6 +24,7 @@ module.exports = class AssentVetoPower extends Item {
             this.game.instantMeeting(item.meetings, [
               this.game.lastElectedChancellor,
             ]);
+            this.game.publishBoard();
           },
         },
       },

@@ -743,6 +743,15 @@ export default function Settings() {
         "Leave default (use Reset) for no custom color. Custom colors must have good contrast in both light and dark themes (minimum 3:1 ratio).",
     },
     {
+      label: "Dice Color",
+      ref: "diceColor",
+      type: "color",
+      default: "#ffffff",
+      resetValue: "",
+      extraInfo:
+        "Face color of your Liar's Dice dice. Other players see it too. Dark colors switch the pips to white.",
+    },
+    {
       label: "Name Font (player list only)",
       ref: "nameFont",
       type: "select",
