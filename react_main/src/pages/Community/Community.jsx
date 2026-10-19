@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
+import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import { useTheme } from "@mui/material/styles";
 import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
 

@@ -30,12 +30,13 @@ import axios from "axios";
 import { verifyRecaptcha } from "../utils";
 import { collectFingerprint } from "../utils/fingerprint";
 import { useSnackbar } from "../hooks/useSnackbar";
-import { SiteInfoContext } from "../Contexts";
+import { SiteInfoContext, UserContext } from "../Contexts";
 import { Link } from "react-router-dom";
 
 export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
   const snackbarHook = useSnackbar();
   const siteInfo = useContext(SiteInfoContext);
+  const user = useContext(UserContext);
   const [tabValue, setTabValue] = useState(defaultTab);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
@@ -151,10 +152,11 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
 
       try {
         await axios.post("/api/auth", { idToken, fingerprint });
+        // Refresh the session in place instead of reloading the document.
+        await user.refreshUser();
         if (asDialog && onClose) {
           onClose();
         }
-        window.location.reload();
       } catch (err) {
         // Check if this is a site-ban error
         if (err?.response?.status === 403 && err?.response?.data) {
@@ -236,10 +238,11 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
 
       try {
         await axios.post("/api/auth", { idToken, fingerprint });
+        // Refresh the session in place instead of reloading the document.
+        await user.refreshUser();
         if (asDialog && onClose) {
           onClose();
         }
-        window.location.reload();
       } catch (err) {
         // Check if this is a site-ban error
         if (err?.response?.status === 403 && err?.response?.data) {

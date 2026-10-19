@@ -1,7 +1,8 @@
 // React 17 does not batch state updates outside its own event handlers.
 import { unstable_batchedUpdates } from "react-dom";
 import React, { useState, useEffect, useContext, useRef, useMemo, Suspense, lazy } from "react";
-import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import update from "immutability-helper";
 import colorContrast from "color-contrast";
@@ -49,7 +50,8 @@ import PendingTradeConfirmations from "components/PendingTradeConfirmations";
 import CasePanel from "components/CasePanel";
 import { RoleCount } from "components/Roles";
 import AdminVisuals from "./AdminVisuals";
-import { Loading } from "components/Loading";
+import { ProfileSkeleton } from "components/Skeletons";
+import { TIER_ICONS, getConservativeRank } from "utils/skillRating";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
 import {
   Box,
@@ -94,8 +96,6 @@ export {
   ACHIEVEMENTS_ICON,
   DAILY_ICON,
 };
-
-import { TIER_ICONS, getConservativeRank } from "utils/skillRating";
 
 
 
@@ -1203,7 +1203,7 @@ export default function Profile() {
     return <Navigate to={profilePath} replace />;
   }
 
-  if (!profileLoaded || !user.loaded) return <Loading small />;
+  if (!profileLoaded || !user.loaded) return <ProfileSkeleton />;
 
   const handleOpenTrade = () => {
     setTradeModalOpen(true);

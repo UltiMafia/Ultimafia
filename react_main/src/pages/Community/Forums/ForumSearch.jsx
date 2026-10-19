@@ -15,7 +15,7 @@ import {
   IconButton,
   InputAdornment,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 
 import { useErrorAlert } from "../../../components/Alerts";

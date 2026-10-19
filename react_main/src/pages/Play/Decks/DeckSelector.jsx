@@ -4,7 +4,8 @@ import "css/host.css";
 import "css/deck.css";
 import "css/play.css";
 import { BotBarLink } from "../Play";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
+import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import { useErrorAlert } from "../../../components/Alerts";
 import { UserContext } from "../../../Contexts";
 import axios from "axios";
@@ -13,7 +14,7 @@ import { PageNav, SearchBar } from "../../../components/Nav";
 import { camelCase } from "../../../utils";
 import AnonymousDeck from "../../../components/Deck";
 import { SiteInfoContext } from "../../../Contexts";
-import { Navigate } from "react-router-dom";
+import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import { Button } from "@mui/material";
 import { VoteWidget } from "../../../components/VoteWidget";
 
@@ -117,7 +118,7 @@ export default function DeckSelector() {
           placeholder="🔎 Deck Name"
           onInput={onSearchInput}
         />
-        <Button href="/play/createDeck" sx={{ ml: "auto" }}>
+        <Button component={Link} to="/play/createDeck" sx={{ ml: "auto" }}>
           Create New Deck
         </Button>
       </div>

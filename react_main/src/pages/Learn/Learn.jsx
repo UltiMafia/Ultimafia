@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Route, Routes, Navigate, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
+import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 
 import Setups from "./Setup/SetupPage";
 import RolePage from "./role/RolePage";

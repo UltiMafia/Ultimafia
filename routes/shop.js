@@ -554,6 +554,16 @@ const shopItems = [
       }
     },
   },
+  {
+    // Appended last: purchases are by list index, so earlier items keep theirs.
+    name: "Advanced Text Effects",
+    desc: "Animate a game chat message once: /wave, /shake, /glow, /rainbow, /slide or /flash before your text (e.g. /wave hello). Players who prefer reduced motion see plain text.",
+    key: "textEffects",
+    category: "game",
+    price: 100,
+    limit: 1,
+    onBuy: async function (userId) {},
+  },
 ];
 
 router.get("/info", async function (req, res) {

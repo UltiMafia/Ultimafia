@@ -312,6 +312,26 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Reset Birthday Limit": {
+      perm: "resetBirthdayLimit",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/resetBirthdayLimit", argValues)
+          .then(() => {
+            siteInfo.showAlert("Birthday limit reset.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Get User Permissions": {
       perm: "viewPerms",
       category: "User Management",

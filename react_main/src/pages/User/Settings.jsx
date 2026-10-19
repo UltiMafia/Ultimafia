@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link, Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
+import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import update from "immutability-helper";
 import { ContrastComparison } from "utilsFolder/autoContrast";
@@ -40,7 +41,7 @@ import { useCookieConsent } from "../../hooks/useCookieConsent";
 
 import "css/settings.css";
 import { setCaptchaVisible } from "utils";
-import { Loading } from "components/Loading";
+import { PageSkeleton } from "components/Skeletons";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 const githubStatusChips = {
@@ -169,7 +170,7 @@ function CookieSettings() {
         <Typography variant="body2" color="text.secondary" paragraph>
           Manage your cookie preferences. These settings are stored in your browser 
           and apply to this device only. For more information, see our{" "}
-          <Link href="/policy/privacy" target="_blank">
+          <Link to="/policy/privacy">
             Privacy Policy
           </Link>.
         </Typography>
@@ -1195,7 +1196,7 @@ export default function Settings() {
 
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
   if (!settingsLoaded || !accountsLoaded || !user.loaded || !familyLoaded)
-    return <Loading small />;
+    return <PageSkeleton />;
 
   const sections = [
     {
@@ -1790,7 +1791,11 @@ export default function Settings() {
   }
 
   function onBirthdayClear(deps) {
-    if (!window.confirm("Are you sure you want to clear your birthday?")) {
+    if (
+      !window.confirm(
+        "Are you sure you want to clear your birthday? You won't be able to set it again without asking a moderator."
+      )
+    ) {
       return;
     }
 
@@ -1802,7 +1807,6 @@ export default function Settings() {
         deps.user.set(
           update(deps.user, {
             birthday: { $set: undefined },
-            bdayChanged: { $set: false },
           })
         );
 
@@ -2120,7 +2124,11 @@ export default function Settings() {
       .then(() => {
         siteInfo.showAlert("Profile background removed", "success");
         siteInfo.clearCache();
-        window.location.reload();
+        user.set(
+          update(user.state, {
+            profileBackground: { $set: false },
+          })
+        );
       })
       .catch(errorAlert);
   }
@@ -2154,8 +2162,6 @@ export default function Settings() {
         );
 
         siteInfo.clearCache();
-        // Refresh the page to show the new background
-        window.location.reload();
       })
       .catch((e) => {
         if (e.response == null || e.response.status === 413)
@@ -2171,7 +2177,6 @@ export default function Settings() {
         user.clear();
         setCaptchaVisible(true);
         navigate("/");
-        window.location.reload();
       })
       .catch(errorAlert);
   }

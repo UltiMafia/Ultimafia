@@ -114,6 +114,12 @@
   background-color: var(--scheme-color-background);
 }
 
+/* While the on-screen keyboard is open, hide the meeting-tabs + timer bar so
+   the chat has the room. Flagged on <html> by useAppViewport. */
+html[data-keyboard="open"] .game .meeting-tabs {
+  display: none;
+}
+
 .game .tab {
   padding: 4px var(--mui-spacing);
 
@@ -442,7 +448,46 @@
   display: flex;
   flex-flow: column;
 
+  position: relative;
+
   background-color: var(--scheme-color-background);
+}
+
+/* The kudos dock and the speech input, which the "new messages" pill floats
+   above. */
+.game .speech-footer {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  flex-flow: column;
+}
+
+/* Shown when messages arrived while the reader is scrolled away from the
+   newest line. Sits just above the input, not over it. */
+.game .new-messages-pill {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  margin-bottom: 4px;
+  transform: translateX(-50%);
+  z-index: 2;
+
+  padding: 4px 12px;
+
+  border: none;
+  border-radius: 999px;
+
+  background-color: var(--scheme-color-sec);
+  color: var(--scheme-color-text);
+  font-family: inherit;
+  font-size: 0.8rem;
+
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.game .new-messages-pill:hover {
+  filter: brightness(1.15);
 }
 
 .game .speech-display {
@@ -456,6 +501,10 @@
 
   overflow-y: scroll;
   overflow-x: hidden;
+  /* Let the transcript keep its own overscroll affordance (the glow on Android,
+     the bounce on iOS) without chaining the overscroll to the page. `none`
+     here instead of `contain` also removed the glow. */
+  overscroll-behavior: contain;
 }
 
 .game .speech-input-area {

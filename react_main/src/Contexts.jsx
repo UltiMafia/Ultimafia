@@ -1,4 +1,12 @@
-import React, { useEffect, useMemo, useReducer, useState, useContext } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+  useContext,
+} from "react";
 import { setCaptchaVisible } from "./utils";
 import update from "immutability-helper";
 import MuiLink from "@mui/material/Link";
@@ -15,6 +23,13 @@ export const UserContext = React.createContext();
 export const SiteInfoContext = React.createContext();
 export const GameContext = React.createContext();
 
+// Whether a game session currently has the screen. Main keeps the site shell
+// mounted but hidden behind the game, so a component in the shell cannot tell
+// from the location that a game took over -- and MUI overlays portal out of the
+// shell to <body>, where "hidden" does not reach them. Components that own such
+// an overlay read this to close themselves when a game is shown.
+export const InGameContext = React.createContext(false);
+
 export function UserProvider({
   children,
   setUserLoading,
@@ -22,7 +37,13 @@ export function UserProvider({
 }) {
   const siteInfo = useContext(SiteInfoContext);
   const theme = useTheme();
-  const [inGame, setInGame] = useState(null);
+  const [inGame, setInGameState] = useState(null);
+  const membershipRequestRef = useRef(0);
+  const setInGame = useCallback((value) => {
+    // A lifecycle event supersedes any membership lookup already in flight.
+    membershipRequestRef.current += 1;
+    setInGameState(value);
+  }, []);
   const [dpiCorrection, setDpiCorrection] = useState(undefined);
   const [iconFilter, setIconFilter] = useState({});
   const [user, setUser] = useState({
@@ -35,7 +56,8 @@ export function UserProvider({
     itemsOwned: {},
   });
 
-  function clear() {
+  const clear = useCallback(() => {
+    setInGame(null);
     setUser({
       loggedIn: false,
       loaded: true,
@@ -43,7 +65,7 @@ export function UserProvider({
       rank: 0,
       blockedUsers: [],
     });
-  }
+  }, [setInGame]);
 
   function blockUserToggle(userId) {
     var userIndex = user.blockedUsers.indexOf(userId);
@@ -102,6 +124,79 @@ export function UserProvider({
     }
   };
 
+  const siteInfoRef = useRef(siteInfo);
+  siteInfoRef.current = siteInfo;
+
+  // Query actual membership after a socket join/reconnect. Watching a game is
+  // not the same as being seated in it, so do not infer this from the route.
+  const refreshGameMembership = useCallback(async () => {
+    const request = ++membershipRequestRef.current;
+    try {
+      const { data } = await axios.get("/api/user/info");
+      if (request === membershipRequestRef.current) {
+        setInGameState(data.id ? data.inGame || null : null);
+      }
+    } catch (_) {
+      // A failed lookup is not evidence that the player left their game.
+    }
+  }, []);
+
+  // Re-fetches the session and rebuilds the user. Used after signing in so the
+  // document does not have to be reloaded.
+  const refreshUser = useCallback(() => {
+    const membershipRequest = ++membershipRequestRef.current;
+    return axios
+      .get("/api/user/info")
+      .then((res) => {
+        if (res.data.id) {
+          setCaptchaVisible(false);
+
+          axios.defaults.headers.common["x-csrf"] = res.data.csrf;
+          axios.post("/api/user/online");
+
+          res.data.loggedIn = true;
+          res.data.loaded = true;
+          res.data.rank = Number(res.data.rank);
+          setUser(res.data);
+
+          var referrer = window.localStorage.getItem("referrer");
+
+          if (referrer) {
+            axios.post("/api/user/referred", { referrer });
+            window.localStorage.removeItem("referrer");
+          }
+        } else {
+          clear();
+          setCaptchaVisible(true);
+        }
+
+        if (res.data.nameChanged === false) {
+          siteInfoRef.current?.showAlert(
+            () => (
+              <div>
+                New account created, you can change your username once in your{" "}
+                <MuiLink href={`/user/settings`}>settings</MuiLink>.
+              </div>
+            ),
+            "basic",
+            true
+          );
+        }
+
+        if (membershipRequest === membershipRequestRef.current) {
+          setInGameState(res.data.id ? res.data.inGame || null : null);
+        }
+
+        setUserLoading(false);
+      })
+      .catch((err) => {
+        console.error("User info bootstrap failed", err);
+        clear();
+        setCaptchaVisible(true);
+        setUserLoading(false);
+      });
+  }, [clear, setInGame, setUserLoading]);
+
   const userVal = {
     ...user,
     contrastLookup: contrastLookup,
@@ -113,70 +208,21 @@ export function UserProvider({
     clear,
     inGame,
     setInGame,
+    refreshUser,
+    refreshGameMembership,
   };
 
   useEffect(() => {
-    let onlineInterval = null;
+    refreshUser();
 
-    axios.get("/api/user/info").then((res) => {
-      if (res.data.id) {
-        setCaptchaVisible(false);
-
-        axios.defaults.headers.common["x-csrf"] = res.data.csrf;
-        axios.post("/api/user/online");
-
-        res.data.loggedIn = true;
-        res.data.loaded = true;
-        res.data.rank = Number(res.data.rank);
-        setUser(res.data);
-
-        var referrer = window.localStorage.getItem("referrer");
-
-        if (referrer) {
-          axios.post("/api/user/referred", { referrer });
-          window.localStorage.removeItem("referrer");
-        }
-      } else {
-        clear();
-        setCaptchaVisible(true);
-      }
-
-      if (res.data.nameChanged === false) {
-        siteInfo?.showAlert(
-          () => (
-            <div>
-              New account created, you can change your username once in your{" "}
-              <MuiLink href={`/user/settings`}>settings</MuiLink>.
-            </div>
-          ),
-          "basic",
-          true
-        );
-      }
-
-      if (res.data.inGame) {
-        // TODO make this more accurate via websockets that communicate updates to this in real time
-        setInGame(res.data.inGame);
-      }
-
-      setUserLoading(false);
-
-      onlineInterval = setInterval(() => {
-        axios.post("/api/user/online");
-      }, 1000 * 30);
-    }).catch((err) => {
-      console.error("User info bootstrap failed", err);
-      clear();
-      setCaptchaVisible(true);
-      setUserLoading(false);
-    });
+    const onlineInterval = setInterval(() => {
+      axios.post("/api/user/online");
+    }, 1000 * 30);
 
     return () => {
-      if (onlineInterval) {
-        clearInterval(onlineInterval);
-      }
+      clearInterval(onlineInterval);
     };
-  }, []);
+  }, [refreshUser]);
 
   const fontSize =
     (user.settings &&
