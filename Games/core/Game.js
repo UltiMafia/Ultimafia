@@ -881,6 +881,13 @@ module.exports = class Game {
       return refuse("You are not seated in this game.");
     }
 
+    // Moving the last seated player out would leave a lobby with no players.
+    if (this.players.length <= 1) {
+      return refuse(
+        "You are the only player in this game, so you cannot move to spectators. Leave the game instead, or wait for another player to join."
+      );
+    }
+
     const refusal = await this.spectatorJoinRefusal(player.user);
     if (refusal) return refuse(`${refusal}.`);
 

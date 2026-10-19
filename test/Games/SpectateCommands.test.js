@@ -291,16 +291,41 @@ describe("Games/SpectateCommands", function () {
       events(other.socket, "readyCheck cancel").should.have.lengthOf(0);
     });
 
+    it("refuses the only seated player and keeps the seat", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const watcher = makeUser(null, "watcher");
+      await game.userJoin(host);
+      await game.userJoin(watcher, { spectate: true });
+
+      host.socket.flushMessages();
+      watcher.socket.flushMessages();
+      say(playerFor(game, host), "/spectate", game.pregame.id);
+      await settle();
+
+      game.players.should.have.lengthOf(1);
+      game.spectators.should.have.lengthOf(1);
+      game.hostId.should.equal(host.id);
+      (await redis.inGame(host.id)).should.equal(game.id);
+      chatTexts(host.socket).should.include(
+        ":system: You are the only player in this game, so you cannot move to spectators. Leave the game instead, or wait for another player to join."
+      );
+      // Only the player who asked sees the refusal.
+      chatTexts(watcher.socket).some((t) => t.includes("only player")).should.equal(false);
+    });
+
     it("refuses when spectating is off and keeps the seat", async function () {
       const game = await openGame.call(this, { total: 3, spectating: false });
       const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
       await game.userJoin(host);
+      await game.userJoin(other);
 
       host.socket.flushMessages();
       say(playerFor(game, host), "/spectate", game.pregame.id);
       await settle();
 
-      game.players.should.have.lengthOf(1);
+      game.players.should.have.lengthOf(2);
       game.spectators.should.have.lengthOf(0);
       chatTexts(host.socket).should.include(
         ":system: Spectating is not enabled for this game."
@@ -310,14 +335,16 @@ describe("Games/SpectateCommands", function () {
     it("refuses once the game has started", async function () {
       const game = await openGame.call(this, { total: 3 });
       const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
       await game.userJoin(host);
+      await game.userJoin(other);
       await startBare(game);
 
       host.socket.flushMessages();
       say(playerFor(game, host), "/spectate", game.pregame.id);
       await settle();
 
-      game.players.should.have.lengthOf(1);
+      game.players.should.have.lengthOf(2);
       game.spectators.should.have.lengthOf(0);
       chatTexts(host.socket).should.include(
         ":system: You can only move to spectators during pregame."
