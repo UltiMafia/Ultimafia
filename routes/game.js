@@ -657,6 +657,10 @@ router.get("/:id/info", async function (req, res) {
 });
 
 router.post("/host", async function (req, res) {
+  var rehostId = null;
+  // Set while this request holds the claim to rehost `rehostId`
+  var rehostToken = null;
+
   try {
     var userId;
 
@@ -668,7 +672,7 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    var rehostId = req.body.rehost && String(req.body.rehost);
+    rehostId = req.body.rehost && String(req.body.rehost);
     var rehostSource = null;
 
     if (rehostId) {
@@ -680,6 +684,26 @@ router.post("/host", async function (req, res) {
         Object.assign(req.body, rehostSource.body);
         delete req.body.scheduled;
       } else rehostSource = null;
+
+      // One new lobby per finished game: the first participant to click
+      // claims it, everyone after that is sent to the lobby it made.
+      const claim = await rehost.claimRehost(rehostId, {
+        canCreate: Boolean(rehostSource),
+      });
+
+      if (claim.gameId) {
+        res.send(claim.gameId);
+        return;
+      }
+
+      if (claim.busy) {
+        errors.conflict(res, "This game is already being rehosted. Please try again in a moment.");
+        return;
+      }
+
+      if (claim.token) rehostToken = claim.token;
+      // Not in the old game and nothing to join: host a normal lobby.
+      else rehostId = null;
     }
 
     var gameType = String(req.body.gameType);
@@ -714,10 +738,13 @@ router.post("/host", async function (req, res) {
     }
 
     if (rehostId) {
+      // A lobby rehosted before claims were tracked
       var openGames = await redis.getOpenGames(gameType);
 
       for (let game of openGames) {
         if (game.settings.rehostId == rehostId) {
+          await redis.finishRehost(rehostId, game.id);
+          rehostToken = null;
           res.send(game.id);
           return;
         }
@@ -1022,6 +1049,11 @@ router.post("/host", async function (req, res) {
         ...settings,
       });
 
+      if (rehostToken) {
+        await redis.finishRehost(rehostId, gameId);
+        rehostToken = null;
+      }
+
       res.send(gameId);
       redis.unsetCreatingGame(userId);
 
@@ -1069,6 +1101,10 @@ router.post("/host", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not host game. Please try again or contact support if this persists.");
+  } finally {
+    // Hosting failed (a check refused it, or an error): let the next click try.
+    if (rehostToken)
+      redis.releaseRehost(rehostId, rehostToken).catch((e) => logger.error(e));
   }
 });
 

@@ -116,7 +116,6 @@ import {
 import lore from "images/emotes/lore.webp";
 import poison from "images/emotes/poison.webp";
 import exit from "images/emotes/exit.png";
-import veg from "images/emotes/veg.webp";
 import { usePopover, InfoPopover, SetupInfo } from "components/Popover";
 
 import dice1 from "images/emotes/dice1.webp";
@@ -245,6 +244,8 @@ export default function Game(props) {
   // Set when a participant rehosts this finished game:
   // { gameId, hostId, hostName, setup }
   const [rehostInvite, setRehostInvite] = useState(null);
+  // This player clicked "Rehost?" and is waiting for the new lobby.
+  const [rehostPending, setRehostPending] = useState(false);
   // Places that can show the invite (see RehostInvite).
   const [rehostInviteSlots, setRehostInviteSlots] = useState([]);
   const rehostInviteSlotsRef = useRef([]);
@@ -355,6 +356,54 @@ export default function Game(props) {
     // A ready check can arrive while the player is on another page; confirming
     // it returns them to the game. Leaving does not navigate (see Main).
     if (!active) navigate(`/game/${gameId}`);
+  }
+
+  // "Rehost?": leave this postgame lobby, then ask for a new lobby with the
+  // same settings. The server lets only the first click create it; anyone
+  // whose click lands after that gets the existing lobby back and joins it.
+  function onRehostClick() {
+    if (rehostPending || review) return;
+    setRehostPending(true);
+
+    noLeaveRef.current = true;
+    if (socket.on) socket.send("leave");
+
+    setTimeout(() => {
+      var stateLengths = {};
+
+      for (let stateName in options.stateLengths)
+        stateLengths[stateName] = options.stateLengths[stateName] / 60000;
+
+      axios
+        .post("/api/game/host", {
+          rehost: gameId,
+          gameType: gameType,
+          setup: setup.id,
+          lobby: options.lobby,
+          lobbyName: options.lobbyName,
+          private: options.private,
+          spectating: options.spectating,
+          guests: options.guests,
+          ranked: options.ranked,
+          competitive: options.competitive,
+          readyCheck: options.readyCheck,
+          noVeg: options.noVeg,
+          anonymousGame: options.anonymousGame,
+          anonymousDeckId: (options.anonymousDeck || [])
+            .map((deck) => deck.id)
+            .join(","),
+          stateLengths: stateLengths,
+          ...options.gameTypeOptions,
+        })
+        .then((res) => {
+          window.location.href = window.location.origin + `/game/${res.data}`;
+        })
+        .catch((e) => {
+          noLeaveRef.current = false;
+          setRehostPending(false);
+          errorAlert(e);
+        });
+    }, 500);
   }
 
   function onJoinRehostClick() {
@@ -1366,6 +1415,8 @@ export default function Game(props) {
       noLeaveRef,
       rehostInvite: rehostInvite,
       onJoinRehostClick: onJoinRehostClick,
+      onRehostClick: onRehostClick,
+      rehostPending: rehostPending,
       rehostInviteSlots: rehostInviteSlots,
       setRehostInviteSlots: setRehostInviteSlots,
       dev: dev,
@@ -1472,9 +1523,13 @@ export default function Game(props) {
 }
 
 /**
- * Shown to everyone left in the postgame lobby when someone rehosts: the new
- * game's setup card, and a "Leave & Join New Game" button under it that leaves
- * this game and joins the new one.
+ * The postgame rehost box, shown once the game is over.
+ *  - Before anyone rehosts: a "Rehost?" button for every player. The first to
+ *    click becomes host of a new lobby with this game's settings (the server
+ *    lets only one click create it; later clicks join that lobby).
+ *  - After someone rehosts (pushed live via the "rehosted" event): the new
+ *    game's setup card and "Leave & Join New Game", for players and
+ *    spectators alike. Spectators can join a rehost but not start one.
  *
  * It is rendered inline in exactly one place per layout. Candidates register
  * with a priority and the best one wins:
@@ -1485,7 +1540,6 @@ export default function Game(props) {
 function RehostInvite({ priority = 0 }) {
   const game = useContext(GameContext);
   const invite = game.rehostInvite;
-  const setup = (invite && invite.setup) || game.setup;
   const { rehostInviteSlots, setRehostInviteSlots } = game;
   const slotId = useRef(null);
 
@@ -1500,7 +1554,12 @@ function RehostInvite({ priority = 0 }) {
       setRehostInviteSlots((slots) => slots.filter((s) => s.id !== slot.id));
   }, [priority, setRehostInviteSlots]);
 
-  if (!invite || game.review) return null;
+  if (game.review) return null;
+
+  const gameOver =
+    game.finished || (game.history && game.history.currentState === -2);
+  const canRehost = !invite && gameOver && game.isParticipant && !!game.setup;
+  if (!invite && !canRehost) return null;
 
   const best = (rehostInviteSlots || []).reduce(
     (a, b) =>
@@ -1510,6 +1569,8 @@ function RehostInvite({ priority = 0 }) {
     null
   );
   if (!best || best.id !== slotId.current) return null;
+
+  const setup = (invite && invite.setup) || game.setup;
 
   return (
     <Stack
@@ -1522,23 +1583,41 @@ function RehostInvite({ priority = 0 }) {
           <Setup setup={setup} />
         </Box>
       )}
-      <Button
-        variant="contained"
-        color="primary"
-        size="large"
-        fullWidth
-        data-testid="rehost-join"
-        onClick={game.onJoinRehostClick}
-        startIcon={<i className="fas fa-sign-in-alt" />}
-        sx={{ minHeight: 48, fontWeight: 700 }}
-      >
-        Leave & Join New Game
-      </Button>
-      {invite.hostName && (
-        <Typography variant="caption" sx={{ opacity: 0.7, textAlign: "center" }}>
-          Rehosted by {invite.hostName}
-        </Typography>
+      {invite ? (
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          fullWidth
+          data-testid="rehost-join"
+          onClick={game.onJoinRehostClick}
+          startIcon={<i className="fas fa-sign-in-alt" />}
+          sx={{ minHeight: 48, fontWeight: 700 }}
+        >
+          Leave & Join New Game
+        </Button>
+      ) : (
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          fullWidth
+          data-testid="rehost-start"
+          disabled={game.rehostPending}
+          onClick={game.onRehostClick}
+          startIcon={<i className="fas fa-redo" />}
+          sx={{ minHeight: 48, fontWeight: 700 }}
+        >
+          Rehost?
+        </Button>
       )}
+      <Typography variant="caption" sx={{ opacity: 0.7, textAlign: "center" }}>
+        {invite
+          ? invite.hostName
+            ? `Rehosted by ${invite.hostName}`
+            : "This game was rehosted"
+          : "Same setup and settings. The first to click hosts the new lobby."}
+      </Typography>
     </Stack>
   );
 }
@@ -1564,48 +1643,6 @@ export function TopBar({ forceShow = false } = {}) {
   function onTestClick() {
     for (let i = 0; i < game.setup.total - 1; i++)
       window.open(window.location + "?bot");
-  }
-
-  function onRehostGameClick() {
-    game.noLeaveRef.current = true;
-
-    if (game.socket.on) game.socket.send("leave");
-
-    setTimeout(() => {
-      var stateLengths = {};
-
-      for (let stateName in game.options.stateLengths)
-        stateLengths[stateName] = game.options.stateLengths[stateName] / 60000;
-
-      axios
-        .post("/api/game/host", {
-          rehost: gameId,
-          gameType: game.gameType,
-          setup: game.setup.id,
-          lobby: game.options.lobby,
-          lobbyName: game.options.lobbyName,
-          private: game.options.private,
-          spectating: game.options.spectating,
-          guests: game.options.guests,
-          ranked: game.options.ranked,
-          competitive: game.options.competitive,
-          readyCheck: game.options.readyCheck,
-          noVeg: game.options.noVeg,
-          anonymousGame: game.options.anonymousGame,
-          anonymousDeckId: (game.options.anonymousDeck || [])
-            .map((deck) => deck.id)
-            .join(","),
-          stateLengths: stateLengths,
-          ...game.options.gameTypeOptions,
-        })
-        .then((res) => {
-          window.location.href = window.location.origin + `/game/${res.data}`;
-        })
-        .catch((e) => {
-          game.noLeaveRef.current = false;
-          errorAlert(e);
-        });
-    }, 500);
   }
 
   function onArchiveGameClick() {
@@ -1677,14 +1714,6 @@ export function TopBar({ forceShow = false } = {}) {
         <Tooltip title="Fill">
           <IconButton size="large" onClick={onTestClick}>
             <img src={poison} alt="Fill" />
-          </IconButton>
-        </Tooltip>
-      )}
-
-      {!game.review && game.history.currentState === -2 && (
-        <Tooltip title="Rehost">
-          <IconButton size="large" onClick={onRehostGameClick}>
-            <img src={veg} alt="Rehost" />
           </IconButton>
         </Tooltip>
       )}
