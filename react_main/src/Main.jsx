@@ -17,6 +17,7 @@ import { AlertList, useErrorAlert } from "./components/Alerts";
 import { Nav } from "./components/Nav";
 import UserNavSection from "./pages/User/UserNavSection";
 import CookieBanner from "./components/CookieBanner";
+import IosBetaTicker from "./components/IosBetaTicker";
 import LeaveGameDialog from "./components/LeaveGameDialog";
 import NavDropdown from "./components/NavDropdown";
 import { Loading } from "./components/Loading";
@@ -132,6 +133,7 @@ function Main(props) {
       minHeight: "100vh",
     }}>
       <CookieBanner />
+      <IosBetaTicker />
       <Header
         setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
       />
