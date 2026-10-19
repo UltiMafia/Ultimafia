@@ -730,6 +730,36 @@ router.post("/logout", async (req, res) => {
   }
 });
 
+// Reset Birthday Limit: lets a user change their birthday once more.
+router.post("/resetBirthdayLimit", async (req, res) => {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdToActOn = String(req.body.userId);
+    var perm = "resetBirthdayLimit";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    const result = await models.User.updateOne(
+      { id: userIdToActOn, deleted: false },
+      { $set: { bdayChanged: false } }
+    ).exec();
+
+    if (!result.matchedCount && !result.n) {
+      errors.notFound(res, "User does not exist.");
+      return;
+    }
+
+    await redis.cacheUserInfo(userIdToActOn, true);
+    await routeUtils.createModAction(userId, "Reset Birthday Limit", [
+      userIdToActOn,
+    ]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not reset birthday limit. Please try again.");
+  }
+});
+
 //Clear Leave Penalty
 router.post("/clearleavepenalty", async (req, res) => {
   try {

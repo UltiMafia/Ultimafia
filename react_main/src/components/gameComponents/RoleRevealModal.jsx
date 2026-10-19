@@ -11,6 +11,7 @@ import {
 import { hyphenDelimit } from "../../utils";
 import { RoleDetails } from "../Roles";
 import { UserContext, GameContext } from "../../Contexts";
+import { useDismissOnBack } from "../../hooks/useDismissOnBack";
 
 const RoleRevealModal = ({
   open,
@@ -21,6 +22,8 @@ const RoleRevealModal = ({
 }) => {
   const user = useContext(UserContext);
   const gameContext = useContext(GameContext);
+
+  useDismissOnBack(open, onClose);
 
   if (!roleData) return null;
 

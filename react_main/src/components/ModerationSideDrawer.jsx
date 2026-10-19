@@ -14,7 +14,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { UserContext } from "Contexts";
+import { UserContext, InGameContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 
 import { ModCommands, COMMAND_COLOR } from "pages/Policy/Moderation";
@@ -29,8 +29,15 @@ export default function ModerationSideDrawer({
   const [commandsAvailable, setCommandsAvailable] = useState(false);
 
   const user = useContext(UserContext);
+  const inGame = useContext(InGameContext);
   const theme = useTheme();
   const errorAlert = useErrorAlert();
+
+  // The drawer portals to <body>, so hiding the shell behind a game does not
+  // hide it. Close it when a game takes the screen.
+  useEffect(() => {
+    if (inGame) setOpen(false);
+  }, [inGame, setOpen]);
 
   return (
     <>

@@ -6,7 +6,7 @@ import { NameWithAvatar } from "../../User/UserWidgets";
 import { Time } from "../../../components/Basic";
 import { useErrorAlert } from "../../../components/Alerts";
 import { ViewsAndReplies } from "./Forums";
-import { Loading } from "../../../components/Loading";
+import { ListSkeleton } from "../../../components/Skeletons";
 
 export default function Categories(props) {
   const [categoryInfo, setCategoryInfo] = useState([]);
@@ -135,7 +135,7 @@ export default function Categories(props) {
     );
   });
 
-  if (!loaded) return <Loading small />;
+  if (!loaded) return <ListSkeleton />;
 
   return categories;
 }

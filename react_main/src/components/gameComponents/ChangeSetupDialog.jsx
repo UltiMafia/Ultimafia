@@ -24,6 +24,7 @@ import { GameContext, UserContext } from "../../Contexts";
 import Setup from "../Setup";
 import { getSetupBackgroundColor } from "../../pages/Play/LobbyBrowser/gameRowColors.js";
 import changeling from "images/roles/cult/changeling-vivid.png";
+import { useDismissOnBack } from "../../hooks/useDismissOnBack";
 
 export default function ChangeSetupDialog({
   open,
@@ -41,6 +42,8 @@ export default function ChangeSetupDialog({
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  useDismissOnBack(open, onClose);
 
   const numPlayers = Object.values(game.players).filter(
     (player) => !player.left

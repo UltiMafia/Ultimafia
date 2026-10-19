@@ -1,0 +1,86 @@
+/* Chat text effects (Advanced Text Effects shop item). Every effect plays
+   once and ends on the normal text; nothing loops. */
+
+.text-effect {
+  position: relative;
+}
+
+.text-effect .te-ch {
+  display: inline-block;
+  white-space: pre;
+}
+
+/* wave: each letter hops once, left to right */
+.text-effect-wave .te-ch {
+  animation: te-wave 0.6s ease-out 1;
+  animation-delay: calc(min(var(--te-i), 40) * 40ms);
+}
+@keyframes te-wave {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-0.35em); }
+  70% { transform: translateY(0.05em); }
+}
+
+/* rainbow: colours sweep across once, then back to the normal colour */
+.text-effect-rainbow .te-ch {
+  animation: te-rainbow 0.9s linear 1;
+  animation-delay: calc(min(var(--te-i), 40) * 30ms);
+}
+@keyframes te-rainbow {
+  0% { color: hsl(0, 85%, 60%); }
+  20% { color: hsl(45, 90%, 55%); }
+  40% { color: hsl(120, 70%, 50%); }
+  60% { color: hsl(200, 85%, 60%); }
+  80% { color: hsl(280, 75%, 65%); }
+}
+
+/* shake: a short jitter */
+.text-effect-shake {
+  animation: te-shake 0.45s ease-in-out 1;
+}
+@keyframes te-shake {
+  0%, 100% { left: 0; }
+  15% { left: -2px; }
+  30% { left: 2px; }
+  45% { left: -2px; }
+  60% { left: 2px; }
+  75% { left: -1px; }
+  90% { left: 1px; }
+}
+
+/* glow: one soft pulse */
+.text-effect-glow {
+  animation: te-glow 1.2s ease-in-out 1;
+}
+@keyframes te-glow {
+  0%, 100% { text-shadow: none; }
+  45% { text-shadow: 0 0 6px currentColor, 0 0 12px rgba(255, 215, 120, 0.8); }
+}
+
+/* slide: slides in from the left */
+.text-effect-slide {
+  animation: te-slide 0.4s ease-out 1;
+}
+@keyframes te-slide {
+  from { left: -1.5em; opacity: 0; }
+  to { left: 0; opacity: 1; }
+}
+
+/* flash: blinks twice */
+.text-effect-flash {
+  animation: te-flash 0.9s steps(1, end) 1;
+}
+@keyframes te-flash {
+  0% { opacity: 1; }
+  15% { opacity: 0.15; }
+  35% { opacity: 1; }
+  55% { opacity: 0.15; }
+  75%, 100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-effect,
+  .text-effect .te-ch {
+    animation: none !important;
+  }
+}
