@@ -2,7 +2,8 @@ import React, {
   useReducer,
   useState,
 } from "react";
-import { NavLink, Routes, Route, Navigate } from "react-router-dom";
+import { NavLink, Routes, Route } from "react-router-dom";
+import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 
 import Categories from "./Categories";
 import Board from "./Board";

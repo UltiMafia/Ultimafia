@@ -1,5 +1,6 @@
 import React, { useContext, useMemo, useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
+import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import {
   Box,
   Paper,

@@ -1468,6 +1468,30 @@ router.get("/:id/reports", async function (req, res) {
   }
 });
 
+// Fields of GET /api/user/:id/info that anyone logged in may see. Everything
+// else in the cached user record (birthday, bdayChanged, blockedUsers, settings,
+// dailyChallenges, itemsOwned, hearts, points, heart timers, nameChanged,
+// gamesPlayed, achievements, groups, perms, rank, inGame, csrf) is owner-only.
+const PUBLIC_USER_INFO_FIELDS = [
+  "id",
+  "name",
+  "avatar",
+  "pronouns",
+  "joined",
+  "vanityUrl",
+  "isBirthday",
+];
+
+function publicUserInfo(user, extra = {}) {
+  const out = {};
+  for (const key of PUBLIC_USER_INFO_FIELDS) {
+    if (user[key] !== undefined) out[key] = user[key];
+  }
+  if (extra.status !== undefined) out.status = extra.status;
+  if (extra.lastActive !== undefined) out.lastActive = extra.lastActive;
+  return out;
+}
+
 router.get("/:id/info", async function (req, res) {
   try {
     const reqUserId = await routeUtils.verifyLoggedIn(req, true);
@@ -1496,6 +1520,21 @@ router.get("/:id/info", async function (req, res) {
         name: "[not found]",
         avatar: false,
       });
+      return;
+    }
+
+    const isOwner = reqUserId === user.id;
+
+    // Privacy: non-owners only get the public fields below (allowlist). The
+    // only frontend caller for other users is ModActions (id, name, avatar);
+    // the rest mirrors what the public profile already shows. The owner keeps
+    // the full cached record.
+    if (!isOwner) {
+      const status = await redis.getUserStatus(user.id);
+      const userDoc = await models.User.findOne({ id: user.id }).select(
+        "lastActive -_id"
+      );
+      res.send(publicUserInfo(user, { status, lastActive: userDoc?.lastActive }));
       return;
     }
 
@@ -3495,14 +3534,19 @@ router.post("/birthday", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     let userId = await routeUtils.verifyLoggedIn(req);
-    var bdayChanged = await redis.getUserInfo(userId).nameChanged;
     var perm = "changeBday";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) {
       return;
     }
 
-    if (bdayChanged) {
+    // The database is the source of truth for the one-change limit (the old
+    // check read a field off an un-awaited promise, so it never blocked).
+    const current = await models.User.findOne({ id: userId })
+      .select("bdayChanged -_id")
+      .lean();
+
+    if (current?.bdayChanged) {
       errors.conflict(
         res,
         "You have already changed your birthday. Please contact a moderator if you need to reset it."
@@ -3516,13 +3560,22 @@ router.post("/birthday", async function (req, res) {
       return;
     }
 
-    await models.User.updateOne(
-      { id: userId },
+    // Conditional update so two concurrent requests cannot both succeed.
+    const result = await models.User.updateOne(
+      { id: userId, bdayChanged: { $ne: true } },
       {
         $set: { birthday: value, bdayChanged: true },
       }
     ).exec();
     await redis.cacheUserInfo(userId, true);
+
+    if (!result.matchedCount && !result.n) {
+      errors.conflict(
+        res,
+        "You have already changed your birthday. Please contact a moderator if you need to reset it."
+      );
+      return;
+    }
 
     res.sendStatus(200);
   } catch (e) {
@@ -3539,8 +3592,9 @@ router.delete("/birthday", async function (req, res) {
     await models.User.updateOne(
       { id: userId },
       {
+        // Clearing hides the date but keeps the one-change limit; only an
+        // admin "Reset Birthday Limit" re-enables changing it.
         $unset: { birthday: "" },
-        $set: { bdayChanged: false },
       }
     ).exec();
     await redis.cacheUserInfo(userId, true);

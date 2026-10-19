@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 import {
   Menu,
@@ -10,6 +10,7 @@ import {
   Button,
 } from "@mui/material";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
+import { InGameContext } from "Contexts";
 
 export default function NavDropdown({
   label,
@@ -22,6 +23,7 @@ export default function NavDropdown({
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const location = useLocation();
+  const inGame = useContext(InGameContext);
   const isMobile = useIsPhoneDevice();
   const open = Boolean(anchorEl);
   const menuId = `nav-menu-${label || triggerAriaLabel || "custom"}`;
@@ -51,6 +53,14 @@ export default function NavDropdown({
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  // Close when the route changes (e.g. browser back/forward), so an open menu
+  // never lingers over the next page, and when a game takes the screen (the
+  // shell keeps its location, so that is not a route change it can see).
+  useEffect(() => {
+    setAnchorEl(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname, location.search, inGame]);
 
   const handleMenuItemClick = (item) => {
     handleClose();
