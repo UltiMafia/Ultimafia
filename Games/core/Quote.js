@@ -45,6 +45,7 @@ module.exports = class Quote extends Message {
 
   parseMessageInfoObj(version, senderId) {
     return {
+      id: version.id,
       isQuote: true,
       senderId: senderId,
       messageId: version.messageId,

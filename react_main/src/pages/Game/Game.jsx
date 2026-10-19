@@ -3076,6 +3076,14 @@ const MessageRow = React.memo(function MessageRow(props) {
           )}
           {message.isQuote && (
             <>
+              {message.spectatorChat && (
+                <span
+                  className="spectator-chat-tag"
+                  title="Spectator chat: only spectators can see this"
+                >
+                  <i className="fas fa-eye" /> Spectator
+                </span>
+              )}
               <i className="fas fa-quote-left" />
               <Timestamp time={quotedMessage.time} />
               <span className="quote-info">
@@ -6494,12 +6502,20 @@ export function useHistoryReducer() {
           break;
         }
         case "addQuote": {
-          if (
+          const quoteMeeting =
             history.states[history.currentState] &&
             history.states[history.currentState].meetings[
               action.quote.toMeetingId
-            ]
-          ) {
+            ];
+          if (quoteMeeting) {
+            // Same duplicate check as addMessage: a repeated delivery or a
+            // replay after reconnecting must not add a second quote row.
+            if (
+              action.quote.id != null &&
+              quoteMeeting.messages.some((m) => m.id === action.quote.id)
+            ) {
+              break;
+            }
             return update(history, {
               states: {
                 [history.currentState]: {

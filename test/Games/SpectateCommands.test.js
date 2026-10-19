@@ -475,6 +475,98 @@ describe("Games/SpectateCommands", function () {
       chatTexts(host.socket).should.not.include("from out");
     });
 
+    function quoteInto(meeting, sender, message, fromMeeting, fromState) {
+      meeting.quote(sender, {
+        messageId: message.id,
+        toMeetingId: meeting.id,
+        fromMeetingId: (fromMeeting || meeting).id,
+        fromState: String(fromState),
+        messageContent: message.content,
+      });
+    }
+
+    function heard(socket) {
+      return socket.clientMessages
+        .filter((m) => m.eventName === "message" || m.eventName === "quote")
+        .map((m) =>
+          m.eventName === "quote" ? `quote:${m.data.messageId}` : m.data.content
+        );
+    }
+
+    it("delivers pregame messages and quotes once to spectators", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const watcher = makeUser(null, "watcher");
+      await game.userJoin(host);
+      await game.userJoin(watcher, { spectate: true });
+      const player = playerFor(game, host);
+      const spectator = game.spectators[0];
+
+      host.socket.flushMessages();
+      watcher.socket.flushMessages();
+      game.pregame.speak({ sender: player, content: "from host" });
+      game.pregame.speak({ sender: spectator, content: "from spec" });
+      const [m1, m2] = game.pregame.messages;
+      quoteInto(game.pregame, player, m2, null, -1);
+      quoteInto(game.pregame, spectator, m1, null, -1);
+
+      const expected = ["from host", "from spec", `quote:${m2.id}`, `quote:${m1.id}`];
+      heard(watcher.socket).should.deep.equal(expected);
+      heard(host.socket).should.deep.equal(expected);
+
+      // Quotes carry their own id so the client can drop a repeat.
+      const quotes = events(watcher.socket, "quote");
+      should.exist(quotes[0].data.id);
+      quotes[0].data.id.should.not.equal(quotes[1].data.id);
+    });
+
+    it("delivers in-game quotes once and keeps spectator quotes from players", async function () {
+      const Meeting = require("../../Games/core/Meeting");
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      const watcher = makeUser(null, "watcher");
+      const watcher2 = makeUser(null, "watcher2");
+      await game.userJoin(host);
+      await game.userJoin(other);
+      await game.userJoin(watcher, { spectate: true });
+      await game.userJoin(watcher2, { spectate: true });
+      await startBare(game);
+
+      const village = game.createMeeting(Meeting, "Village");
+      village.group = true;
+      village.speech = true;
+      village.voting = false;
+      for (const p of game.players) village.join(p);
+      village.init();
+
+      const [p1, p2] = game.players.array();
+      const s1 = game.spectators.filter((s) => s.user.id === watcher.id)[0];
+      const s2 = game.spectators.filter((s) => s.user.id === watcher2.id)[0];
+      for (const u of [host, other, watcher, watcher2]) u.socket.flushMessages();
+
+      village.speak({ sender: p1, content: "village talk" });
+      game.spectatorMeeting.speak({ sender: s1, content: "spec talk" });
+      const vm = village.messages[0];
+      const sm = game.spectatorMeeting.messages[0];
+      quoteInto(village, p2, vm, null, game.currentState);
+      quoteInto(game.spectatorMeeting, s2, sm, null, game.currentState);
+      quoteInto(game.spectatorMeeting, s2, vm, village, game.currentState);
+
+      const spectatorView = [
+        "village talk",
+        "spec talk",
+        `quote:${vm.id}`,
+        `quote:${sm.id}`,
+        `quote:${vm.id}`,
+      ];
+      heard(watcher.socket).should.deep.equal(spectatorView);
+      heard(watcher2.socket).should.deep.equal(spectatorView);
+      // Players get the village message and quote once, no spectator chat.
+      heard(host.socket).should.deep.equal(["village talk", `quote:${vm.id}`]);
+      heard(other.socket).should.deep.equal(["village talk", `quote:${vm.id}`]);
+    });
+
     it("pregame chat stays shared between players and spectators", async function () {
       const game = await openGame.call(this, { total: 3 });
       const host = makeUser(game.hostId, "host");

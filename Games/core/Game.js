@@ -3219,7 +3219,14 @@ module.exports = class Game {
     ) {
       return;
     }
-    for (let spectator of this.spectators) spectator.hearQuote(quote);
+    for (let spectator of this.spectators) {
+      // Members (pregame spectators, spectator chat) already heard this as
+      // recipients. A second copy showed every quote twice.
+      if (quote.recipients && quote.recipients.indexOf(spectator) != -1)
+        continue;
+
+      spectator.hearQuote(quote);
+    }
   }
 
   spectatorsSeeVote(vote) {
