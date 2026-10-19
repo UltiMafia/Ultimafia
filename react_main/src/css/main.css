@@ -83,6 +83,81 @@ body {
   height: 100%;
 }
 
+/* Site content keeps its local touch edge feedback without passing scroll
+   gestures into the fixed phone shell. Do not suppress it on the document. */
+.app-shell .site-wrapper {
+  overscroll-behavior: contain;
+}
+
+/* Only the game view needs document-level overscroll suppression. Its own
+   transcript scroller still uses contain, retaining its local edge feedback. */
+html[data-game-view="active"],
+html[data-game-view="active"] body {
+  overscroll-behavior: none;
+}
+
+/* The game session is hosted outside the route table and sized to the viewport
+   with top/bottom offsets, so the top bar and the bottom input stay visible when
+   the on-screen keyboard opens, and it is hidden (not unmounted) while the user
+   is elsewhere. */
+.game-session {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: var(--app-top, 0px);
+  bottom: var(--app-bottom, 0px);
+  z-index: 1100;
+}
+
+/* Safe-area insets, for phones with a notch or a home indicator. */
+:root {
+  --safe-inset-top: env(safe-area-inset-top, 0px);
+  --safe-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-inset-left: env(safe-area-inset-left, 0px);
+  --safe-inset-right: env(safe-area-inset-right, 0px);
+  /* What the bottom bar has to add beneath itself: the browser's own bottom
+     safe area, on the platforms that hand it to the page. Set on <html> by
+     Main; see the rule just below. */
+  --bottom-safe-area: 0px;
+}
+
+/* The page owns the bottom safe area (iOS browsers, Chrome on Android), so the
+   bottom bar has to fill the home-indicator / gesture strip itself. Where the
+   browser reserves it instead (Firefox on Android), adding the inset again is
+   exactly the gap between the bar and the space the browser kept. */
+html[data-bottom-inset="page"] {
+  --bottom-safe-area: var(--safe-inset-bottom, 0px);
+}
+
+.connection-banner {
+  padding-top: var(--safe-inset-top);
+}
+
+/* While the viewport indicates an open keyboard, hide the site
+   bottom navigation. With interactive-widget=resizes-content the layout shrinks
+   with the keyboard, so the nav would otherwise ride up under it; hiding it is
+   the app-like behaviour. The game's own bottom bar is not hidden. */
+html[data-keyboard="open"] .mobile-nav {
+  display: none;
+}
+
+/* The site bottom navigation. Reserves the strip where the browser hands it over
+   (see --bottom-safe-area); the Paper's own background fills whatever it
+   reserves, which is what the safe area is for. */
+.mobile-nav {
+  padding-bottom: var(--bottom-safe-area);
+}
+
+/* A sheet is the bottom surface while it is open. Leaving the nav there would
+   only show it sitting flush under the sheet, dimmed by the modal backdrop and
+   dead to touch. */
+html[data-sheet="open"] .mobile-nav {
+  display: none;
+}
+
+/* Route changes are instant client-side navigation, without snapshot-based
+   page transitions or a sitewide cross-fade. */
+
 .hidden {
   display: none;
 }

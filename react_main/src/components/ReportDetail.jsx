@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import {
   Box,
@@ -356,13 +356,9 @@ export default function ReportDetail({
                     Game
                   </Typography>
                   <Typography>
-                    <a
-                      href={`/game/${report.gameId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
+                    <Link to={`/game/${report.gameId}`}>
                       {report.gameId}
-                    </a>
+                    </Link>
                   </Typography>
                 </Box>
               )}
@@ -424,13 +420,11 @@ export default function ReportDetail({
                             Original Report
                           </Typography>
                           <Typography variant="body2">
-                            <a
-                              href={`/policy/reports/${report.originalReport.id}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <Link
+                              to={`/policy/reports/${report.originalReport.id}`}
                             >
                               Report #{report.originalReport.id}
-                            </a>
+                            </Link>
                           </Typography>
                           <Typography variant="body2">
                             Violation:{" "}

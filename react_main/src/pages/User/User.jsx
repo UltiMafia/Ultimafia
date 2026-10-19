@@ -1,6 +1,7 @@
 import React, { useContext, Suspense } from "react";
 
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
+import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 
 import { lazyWithRetry } from "lib/lazyWithRetry";
 import { Loading } from "components/Loading";
@@ -28,7 +29,7 @@ export default function User(props) {
   // Local boundary: without it the nearest fallback is the one in Main, which
   // would blank the whole page (header and all) on every sub-route switch.
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<Loading small />}>
       <Routes>
         <Route path="/" element={<Profile />} />
         <Route path="settings/*" element={<Settings />} />

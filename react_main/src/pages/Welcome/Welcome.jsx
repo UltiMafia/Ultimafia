@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Box, Button, Container, Stack, Typography, Paper, Grid2 } from "@mui/material";
-import { Navigate } from "react-router-dom";
+import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import "css/main.css";
 import { Auth } from "../../components/Auth";
 import IconGallery from "../../components/IconGallery";
@@ -48,8 +48,10 @@ export const Welcome = () => {
         const fingerprint = await collectFingerprint();
         axios
           .post("/api/auth", { idToken, fingerprint })
-          .then(() => {
-            window.location.reload();
+          .then(async () => {
+            // Refresh the session in place instead of reloading the document.
+            // The Welcome page redirects to /play once the user is logged in.
+            await user.refreshUser();
           })
           .catch((err) => {
             console.log(err);

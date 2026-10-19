@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useLayoutEffect, useContext, useRef, useMemo } from "react";
 import axios from "axios";
+import { Link as RouterLink } from "react-router-dom";
 
 import { GameStates } from "Constants";
 import { SiteInfoContext } from "Contexts";
@@ -15,8 +16,12 @@ import { NameWithAvatar } from "pages/User/UserWidgets";
 
 import { Box, Divider, Link, Popover, Stack, Typography } from "@mui/material";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { GameSettingCount } from "./Roles";
 import { KUDOS_ICON } from "pages/User/profileIcons";
+import { useSheet } from "./Sheet";
+import { useAppLocation, useViewActive } from "../hooks/useViewActivity";
+import { LatestRequest } from "../lib/latestRequest.js";
 
 export function PopoverContent({ title, content, page = null, icon = <></>, subTitle = <></> }) {
   let wrappedTitle = (
@@ -46,7 +51,7 @@ export function PopoverContent({ title, content, page = null, icon = <></>, subT
 
   if (page) {
     wrappedTitle = (
-      <Link href={page} target="_blank" rel="noopener noreferrer">
+      <Link component={RouterLink} to={page}>
         {wrappedTitle}
       </Link>
     );
@@ -73,8 +78,9 @@ export const InfoPopover = function ({
   content,
   icon,
   subTitle,
+  sheetRequestRef,
 }) {
-  // No hooks below this point, so the early return is safe.
+  // Every hook lives above the early returns.
   //
   // This used to call useMemo *after* the return, which changed the hook count
   // whenever `content` flipped between null and non-null -- React rejects that
@@ -82,7 +88,37 @@ export const InfoPopover = function ({
   // popoverOpen, anchorEl and content, so it could hand back an element built
   // from stale props. Dropping the memo fixes both; it was not saving anything
   // worth the risk.
+  const isPhone = useIsPhoneDevice();
+
+  // On a phone the details open as a sheet instead of a card anchored to the
+  // icon: a card pinned to a 20px glyph is a poor target for a thumb. Wider
+  // screens keep the anchored card. Content already fetched is reused, so
+  // reopening the same thing is instant.
+  useEffect(() => {
+    if (!isPhone || showPopover === false || !popoverOpen) {
+      sheetRequestRef?.current?.close();
+      return;
+    }
+    if (content === null) return;
+
+    const sheetRequest = sheetRequestRef?.current;
+    if (!sheetRequest?.isCurrent()) return;
+    const render = () => <PopoverContent
+        page={page}
+        title={title}
+        content={content}
+        icon={icon}
+        subTitle={subTitle}
+      />;
+    // An update does not open a new sheet or steal another caller's ownership.
+    if (!sheetRequest.update(render)) sheetRequest.show(render);
+  }, [isPhone, popoverOpen, content, showPopover, page, title, icon, subTitle, sheetRequestRef]);
+
   if (content === null) {
+    return <></>;
+  }
+
+  if (isPhone) {
     return <></>;
   }
 
@@ -117,7 +153,13 @@ export const InfoPopover = function ({
 
 export function usePopover({ path, type, postprocessData }) {
   const siteInfo = useContext(SiteInfoContext);
-  const [content, setContent] = useState(null);
+  const [result, setResult] = useState(null);
+  const isPhone = useIsPhoneDevice();
+  const active = useViewActive();
+  const location = useAppLocation();
+  const requests = useRef(new LatestRequest());
+  const sheetRequestRef = useRef(null);
+  const mountedRef = useRef(true);
 
   const {
     popoverOpen,
@@ -129,68 +171,101 @@ export function usePopover({ path, type, postprocessData }) {
     closePopover,
   } = usePopoverOpen();
 
+  const { reserveSheet } = useSheet();
+
+  // Closing the popover has to close its sheet too: call sites call this after
+  // they act (picking a predicted role), and on a phone the sheet is what is on
+  // screen. closeSheet is idempotent, so this cannot loop.
+  function closePopoverAndSheet() {
+    requests.current.invalidate();
+    closePopover();
+    sheetRequestRef.current?.close();
+    sheetRequestRef.current = null;
+  }
+
+  function openWithSheet(event, handler) {
+    if (!active) return;
+    if (isPhone && !sheetRequestRef.current?.isCurrent()) {
+      sheetRequestRef.current = reserveSheet(() => {
+        requests.current.invalidate();
+        if (mountedRef.current) closePopover();
+      });
+    }
+    handler(event);
+  }
+
   const errorAlert = useErrorAlert();
 
-  function ready(data, type) {
+  const content = useMemo(() => {
+    if (!result || result.path !== path || result.type !== type) return null;
+    if (result.error) return "Error fetching data";
+    const data = { ...result.data };
+    if (postprocessData) postprocessData(data);
     switch (type) {
       case "setup":
-        setContent(parseSetupPopover(data, siteInfo));
-        break;
+        return parseSetupPopover(data, siteInfo);
       case "deck":
-        setContent(parseDeckPopover(data));
-        break;
+        return parseDeckPopover(data);
       case "rolePrediction":
-        setContent(parseRolePredictionPopover(data));
-        break;
+        return parseRolePredictionPopover(data);
       case "role":
-        setContent(parseRolePopover(data.roleName, data.modifiers));
-        break;
+        return parseRolePopover(data.roleName, data.modifiers);
       case "modifier":
-        setContent(parseModifierPopover(data.roleName));
-        break;
+        return parseModifierPopover(data.roleName);
       case "roleGroup":
-        setContent(parseRoleGroupPopover(data));
-        break;
+        return parseRoleGroupPopover(data);
       case "game":
-        setContent(parseGamePopover(data));
-        break;
+        return parseGamePopover(data);
     }
-  }
+    return null;
+  }, [result, path, type, siteInfo, postprocessData]);
 
   useEffect(
     function () {
-      if (popoverOpen && content === null) {
+      if (active && popoverOpen && content === null) {
+        const request = requests.current.begin();
         let promise;
 
         if (path instanceof Promise) {
           promise = path;
         } else {
-          promise = axios.get(path);
+          promise = axios.get(path, { signal: request.signal });
         }
         promise
           .then((res) => {
-            if (postprocessData) postprocessData(res.data);
-            ready(res.data, type);
+            if (request.isCurrent()) setResult({ path, type, data: res.data });
           })
           .catch((e) => {
+            if (!request.isCurrent()) return;
             console.error(e);
             errorAlert(e);
-            setContent("Error fetching data");
+            setResult({ path, type, error: true });
           });
       }
+      return () => requests.current.invalidate();
     },
-    [popoverOpen]
+    [popoverOpen, active, path, type, location.key, location.pathname, location.search, location.hash]
   );
+
+  useLayoutEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      requests.current.invalidate();
+      sheetRequestRef.current?.close();
+    };
+  }, []);
 
   return {
     popoverOpen,
     openByClick,
     anchorEl,
-    handleClick,
-    handleMouseEnter,
-    handleMouseLeave,
-    closePopover,
+    handleClick: (event) => openWithSheet(event, handleClick),
+    handleMouseEnter: isPhone ? undefined : handleMouseEnter,
+    handleMouseLeave: isPhone ? undefined : handleMouseLeave,
+    closePopover: closePopoverAndSheet,
     content,
+    sheetRequestRef,
   };
 }
 
