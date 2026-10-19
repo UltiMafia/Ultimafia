@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useParams, Navigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import axios from "axios";
 import {
   Grid,
@@ -23,7 +24,7 @@ import { filterProfanity } from "components/Basic";
 import { TextEditor } from "components/Form";
 import { Avatar, NameWithAvatar, MediaEmbed } from "./UserWidgets";
 import Comments from "../Community/Comments";
-import { Loading } from "components/Loading";
+import { PageSkeleton } from "components/Skeletons";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import CustomMarkdown from "components/CustomMarkdown";
 import TrophyCase from "components/TrophyCase";
@@ -205,8 +206,7 @@ export default function Family() {
       .then(() => {
         siteInfo.showAlert("You have joined the family!", "success");
         setPendingInvite(null);
-        // Reload the page to show updated member list
-        window.location.reload();
+        loadFamilyProfile();
       })
       .catch(errorAlert);
   }
@@ -238,13 +238,12 @@ export default function Family() {
       .delete(`/api/family/${familyId}/member/${memberId}`)
       .then(() => {
         siteInfo.showAlert("Member removed from family", "success");
-        // Reload the page to show updated member list
-        window.location.reload();
+        loadFamilyProfile();
       })
       .catch(errorAlert);
   }
 
-  if (!familyLoaded) return <Loading small />;
+  if (!familyLoaded) return <PageSkeleton />;
   if (!family) return <Navigate to="/play" />;
 
   const hasTrophySpotlight = family.perks?.some((p) => p.key === "trophySpotlight" && p.owned);

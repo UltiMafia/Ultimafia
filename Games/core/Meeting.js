@@ -74,6 +74,7 @@ module.exports = class Meeting {
     if (options.flags) for (let flag of options.flags) this[flag] = true;
 
     // Create member object
+    const housed = !!player.housed;
     const member = {
       id: player.id,
       player: player,
@@ -81,18 +82,22 @@ module.exports = class Meeting {
       voteWeight: options.voteWeight ?? 1,
       canVote:
         options.canVote != false &&
+        !housed &&
         (player.alive || !options.passiveDead || this.votingDead) &&
         !player.exorcised,
       canUpdateVote:
         options.canUpdateVote != false &&
+        !housed &&
         (player.alive || !options.passiveDead || this.votingDead) &&
         !player.exorcised,
       canUnvote:
         options.canUnvote != false &&
+        !housed &&
         (player.alive || !options.passiveDead || this.votingDead) &&
         !player.exorcised,
       canTalk:
         options.canTalk != false &&
+        !housed &&
         (player.alive || options.speakDead || this.talkingDead) &&
         !player.exorcised,
       canWhisper: options.canWhisper != false,
@@ -470,9 +475,9 @@ module.exports = class Meeting {
         this.unvote(this.members[voterId], t);
       }
 
-      // no one was unvoted, proceed as per normal
+      // no one was unvoted, move on to the next voter
       if (!unvoted) {
-        return;
+        continue;
       }
 
       if (
@@ -667,7 +672,7 @@ module.exports = class Meeting {
               }
               break;
             case "alive":
-              if (player.alive) includePlayer[player.id] = include;
+              if (player.alive && !player.housed) includePlayer[player.id] = include;
               break;
             case "dead":
               if (!player.alive) includePlayer[player.id] = include;
@@ -737,6 +742,7 @@ module.exports = class Meeting {
           }
         }
       }
+      if (player.housed) includePlayer[player.id] = false;
     }
 
     for (let playerId in includePlayer) {
@@ -1179,6 +1185,7 @@ module.exports = class Meeting {
       abilityName: message.abilityName,
       abilityTarget: message.abilityTarget,
       anonymous: this.anonymous,
+      textEffect: message.textEffect,
     });
 
     message.send();
@@ -1219,21 +1226,27 @@ module.exports = class Meeting {
     const isSilenced = member.player.hasEffect("Silenced");
 
     if (member && this.speech && !this.anonymous && member.canTalk) {
+      const info = {
+        playerId,
+        meetingId: isTyping ? this.id : null,
+      };
+      // Town-visible meetings (including Pregame) also notify spectators
+      // via spectatorsSeeTyping. Pregame spectators are meeting members so
+      // they can talk; sending to them here as well delivers the event twice.
+      const spectatorsAlsoNotified =
+        !isSilenced && this.game.isSpectatorMeeting(this);
+
       for (let _playerId in this.members) {
         // Let silenced players see their own typing activity, but prevent others from seeing it
-        if (!isSilenced || _playerId === playerId) {
-          this.members[_playerId].player.seeTyping({
-            playerId,
-            meetingId: isTyping ? this.id : null,
-          });
-        }
+        if (isSilenced && _playerId !== playerId) continue;
+
+        const recipient = this.members[_playerId].player;
+        if (spectatorsAlsoNotified && recipient && recipient.spectator)
+          continue;
+
+        recipient.seeTyping(info);
       }
-      if (!isSilenced && this.game.isSpectatorMeeting(this)) {
-        this.game.spectatorsSeeTyping({
-          playerId,
-          meetingId: isTyping ? this.id : null,
-        });
-      }
+      if (spectatorsAlsoNotified) this.game.spectatorsSeeTyping(info);
     }
   }
 

@@ -18,6 +18,8 @@ module.exports = class User {
       props.itemsOwned && props.itemsOwned.diceColor && props.settings
         ? props.settings.diceColor
         : undefined;
+    // Owners of the "Advanced Text Effects" shop item can use /wave etc.
+    this.textEffects = !!(props.itemsOwned && props.itemsOwned.textEffects);
     this.animatedNameColor =
       props.settings && props.settings.animatedNameColor;
     this.nameGradientColorA =

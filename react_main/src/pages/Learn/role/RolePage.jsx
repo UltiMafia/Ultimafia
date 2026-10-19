@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Navigate, useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import { NameWithAvatar } from "../../User/UserWidgets";
 import {
   Box,
@@ -170,6 +171,26 @@ export function RoleThings() {
       .catch(() => {});
   }, [RoleName]);
 
+  const theme = useTheme();
+  const roleSkinField = siteFields.find((f) => f.ref === "roleSkins");
+  const roleSkinOptions = roleSkinField?.options || [];
+
+  useEffect(() => {
+    let nextRoleSkin = "vivid";
+    if (typeof user?.settings?.roleSkins === "string") {
+      const matched = user.settings.roleSkins.split(",")
+        .find((skin) => skin.split(":")[0] === RoleName);
+      if (matched?.split(":")[1]) nextRoleSkin = matched.split(":")[1];
+    }
+    if (roleSkinField?.value && roleSkinOptions.some((option) => option.value === roleSkinField.value)) {
+      nextRoleSkin = roleSkinField.value;
+    }
+    if (roleSkinOptions.length > 0 && !roleSkinOptions.some((option) => option.value === nextRoleSkin)) {
+      nextRoleSkin = roleSkinOptions[0].value;
+    }
+    setSelectedRoleSkin((previous) => previous === nextRoleSkin ? previous : nextRoleSkin);
+  }, [RoleName, roleSkinField, roleSkinOptions, user?.settings?.roleSkins]);
+
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
 
   if (!role || !user.loaded) return <Loading small />;
@@ -306,7 +327,6 @@ export function RoleThings() {
   }
 
   const alignmentColor = getAlignmentColor(role[1].alignment);
-  const theme = useTheme();
   const isLightMode = theme.palette.mode === "light";
 
   // Match SetupPage banner legibility: light mode uses near-black text,
@@ -322,40 +342,6 @@ export function RoleThings() {
   };
 
   const isFavorited = favoriteRoles.indexOf(roleId) !== -1;
-
-  const roleSkinField = siteFields.find((f) => f.ref === "roleSkins");
-  const roleSkinOptions = roleSkinField?.options || [];
-
-  useEffect(() => {
-    let nextRoleSkin = "vivid";
-
-    if (user?.settings && typeof user.settings.roleSkins === "string") {
-      const userRoleSkins = user.settings.roleSkins.split(",");
-      const matched = userRoleSkins.find((s) => s.split(":")[0] === RoleName);
-      if (matched && matched.split(":")[1]) {
-        nextRoleSkin = matched.split(":")[1];
-      }
-    }
-
-    if (
-      roleSkinField &&
-      roleSkinField.value &&
-      roleSkinOptions.some((o) => o.value === roleSkinField.value)
-    ) {
-      nextRoleSkin = roleSkinField.value;
-    }
-
-    if (
-      roleSkinOptions.length > 0 &&
-      !roleSkinOptions.some((o) => o.value === nextRoleSkin)
-    ) {
-      nextRoleSkin = roleSkinOptions[0].value;
-    }
-
-    setSelectedRoleSkin((prev) =>
-      prev === nextRoleSkin ? prev : nextRoleSkin
-    );
-  }, [RoleName, roleSkinField, roleSkinOptions, user?.settings?.roleSkins]);
 
   const activeRoleSkin = roleSkinOptions.some(
     (o) => o.value === selectedRoleSkin

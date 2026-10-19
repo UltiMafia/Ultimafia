@@ -556,6 +556,16 @@ const shopItems = [
   },
   {
     // Appended last: purchases are by list index, so earlier items keep theirs.
+    name: "Advanced Text Effects",
+    desc: "Animate a game chat message once: /wave, /shake, /glow, /rainbow, /slide or /flash before your text (e.g. /wave hello). Players who prefer reduced motion see plain text.",
+    key: "textEffects",
+    category: "game",
+    price: 100,
+    limit: 1,
+    onBuy: async function (userId) {},
+  },
+  {
+    // Appended last: purchases are by list index, so earlier items keep theirs.
     name: "Liar's Dice Colors",
     desc: "Pick any face color for your Liar's Dice dice in Settings. Other players see your hidden dice in your color, and everyone sees it when they are revealed. White stays free.",
     key: "diceColor",

@@ -39,6 +39,11 @@ const commandData = {
     input: "Amount, Dice Type",
     description: "Rolls dice, results are shown to everyone.",
   },
+  "/wave, /shake, /glow, /rainbow, /slide, /flash": {
+    input: "Text",
+    description:
+      "Animates your game chat message once (e.g. /wave hello). Needs Advanced Text Effects from the Shop.",
+  },
   "/help": {
     input: "N/A",
     description: "Lists the commands on the site.",

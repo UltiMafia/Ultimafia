@@ -14,6 +14,7 @@ import {
   Divider,
 } from "@mui/material";
 import { useCookieConsent } from "../hooks/useCookieConsent";
+import { Link as RouterLink } from "react-router-dom";
 
 export default function CookieBanner() {
   const [open, setOpen] = useState(false);
@@ -139,7 +140,7 @@ export default function CookieBanner() {
             
             <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: "block" }}>
               For more information, please see our{" "}
-              <Link href="/policy/privacy" target="_blank">
+              <Link component={RouterLink} to="/policy/privacy">
                 Privacy Policy
               </Link>.
             </Typography>

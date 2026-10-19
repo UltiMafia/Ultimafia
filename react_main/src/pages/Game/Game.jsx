@@ -14,6 +14,12 @@ import axios from "axios";
 import ReactLoading from "react-loading";
 
 import { UserText } from "../../components/Basic";
+import {
+  TextEffect,
+  isPerLetterEffect,
+  useTextEffect,
+} from "../../components/TextEffects";
+import { parseTextEffect } from "shared/textEffects";
 import Newspaper, {
   ObituariesMessage,
 } from "../../components/gameComponents/Newspaper";
@@ -38,7 +44,12 @@ import { GameContext, SiteInfoContext, UserContext } from "Contexts";
 import Dropdown from "../../components/Dropdown";
 import Setup from "../../components/Setup";
 import { NameWithAvatar } from "../User/UserWidgets";
-import { ClientSocket as Socket } from "../../Socket";
+import { ClientSocket as Socket, subscribeSocketListeners } from "../../Socket";
+import { LatestRequest } from "../../lib/latestRequest.js";
+import { useViewActive } from "../../hooks/useViewActivity";
+import { useGameMembership } from "../../hooks/useGameMembership";
+import { useGameSessionIdentity } from "../../hooks/useGameSessionIdentity";
+import { useNewMessageCount } from "../../hooks/useNewMessageCount";
 import { RoleCount } from "../../components/Roles";
 import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
@@ -62,7 +73,7 @@ import { Loading } from "../../components/Loading";
 import StateSwitcher from "../../components/gameComponents/StateSwitcher";
 
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
-import { hyphenDelimit, isBirthdayToday } from "../../utils";
+import { hyphenDelimit } from "../../utils";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
 import {
@@ -170,11 +181,27 @@ export const GameTypeContext = createContext({
   singleState: false,
 });
 
-export default function Game() {
+// urgent.mp3 does not loop (~15s). Repeat it until the failed player leaves,
+// takes a seat, refreshes, or a new ready check starts.
+const READY_CHECK_BELL_REPEAT_MS = 15000;
+
+export default function Game(props) {
   const user = useContext(UserContext);
+  // HTTP connect, socket join and reconnect all belong to the same entry URL,
+  // even while this session is retained behind an unrelated site page. Only a
+  // server-confirmed membership change may replace the spectator join mode.
+  const joinOptionsRef = useRef(null);
+  if (!joinOptionsRef.current) {
+    const search = props.joinSearch ?? window.location.search;
+    joinOptionsRef.current = {
+      spectate: new URLSearchParams(search).get("spectate") === "true",
+      isBot: search === "?bot",
+    };
+  }
   const [loaded, setLoaded] = useState(false);
   const [review, setReview] = useState(false);
   const [leave, setLeave] = useState(false);
+  const sessionIdentityValid = useGameSessionIdentity(() => setLeave(true));
   const [finished, setFinished] = useState(false);
   const [port, setPort] = useState();
   const [gameType, setGameType] = useState();
@@ -230,11 +257,80 @@ export default function Game() {
   const ignoreDeathSoundsRef = useRef(!!user?.settings?.ignoreDeathSounds);
   const deathSoundVolumeRef = useRef(1);
 
-  const { playAudio, loadAudioFiles, stopAudio, stopAudios, playDeathSounds } = useAudio(settings);
+  // A session retained while the user browses the site must be silent. Before
+  // the session was kept mounted, navigating away unmounted it and its cleanup
+  // stopped the audio. Muting rather than stopping keeps the music where it is,
+  // so coming back resumes it instead of waiting for the next track.
+  const audibleSettings = useMemo(
+    () =>
+      props.active !== false
+        ? settings
+        : {
+            ...settings,
+            sfxVolume: 0,
+            musicVolume: 0,
+            pregameMusicVolume: 0,
+            importantVolume: 0,
+          },
+    [props.active, settings]
+  );
+
+  const { playAudio, loadAudioFiles, stopAudio, stopAudios, playDeathSounds, stopDeathSounds } =
+    useAudio(audibleSettings);
+  const playAudioRef = useRef(playAudio);
+  const stopAudioRef = useRef(stopAudio);
+  const readyBellRepeatRef = useRef(null);
+  const stopReadyBellRepeatRef = useRef(() => {});
+  const startReadyBellRepeatRef = useRef(() => {});
+  playAudioRef.current = playAudio;
+  stopAudioRef.current = stopAudio;
+
+  function stopReadyBellRepeat() {
+    if (readyBellRepeatRef.current) {
+      clearInterval(readyBellRepeatRef.current);
+      readyBellRepeatRef.current = null;
+    }
+    if (stopAudioRef.current) stopAudioRef.current("urgent");
+  }
+
+  function startReadyBellRepeat() {
+    if (readyBellRepeatRef.current) {
+      clearInterval(readyBellRepeatRef.current);
+      readyBellRepeatRef.current = null;
+    }
+    if (playAudioRef.current) playAudioRef.current("urgent");
+    readyBellRepeatRef.current = setInterval(() => {
+      if (playAudioRef.current) playAudioRef.current("urgent");
+    }, READY_CHECK_BELL_REPEAT_MS);
+  }
+
+  stopReadyBellRepeatRef.current = stopReadyBellRepeat;
+  startReadyBellRepeatRef.current = startReadyBellRepeat;
+
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
-  const { gameId } = useParams();
+  const { gameId: routeGameId } = useParams();
+  // Hosted outside the route table, where useParams is empty; fall back to it
+  // so the component still works when rendered inside a route.
+  const gameId = props.gameId || routeGameId;
+  useGameMembership(socket, gameId, sessionIdentityValid);
+  // False while the session is retained but the user is on another page.
+  const active = props.active !== false;
+  // Socket handlers are created once and would otherwise capture the value of
+  // `active` from when they were registered.
+  const activeRef = useRef(active);
+  activeRef.current = active;
+  const connectionRequests = useRef(new LatestRequest());
+  const registeredSocketRef = useRef(null);
+  useEffect(() => () => connectionRequests.current.invalidate(), []);
+  useEffect(() => {
+    if (leave || finished) connectionRequests.current.invalidate();
+  }, [leave, finished]);
+  useEffect(() => {
+    if (!active) stopDeathSounds();
+  }, [active, stopDeathSounds]);
+  const navigate = useNavigate();
   const [selectedPanel, setSelectedPanel] = useState("chat");
   const isPhoneDeviceRef = useRef(false);
   isPhoneDeviceRef.current = isPhoneDevice;
@@ -255,7 +351,10 @@ export default function Game() {
 
   function onReadyCheckVerify() {
     socket.send("readyCheck verify");
-    stopAudio("urgent");
+    stopReadyBellRepeat();
+    // A ready check can arrive while the player is on another page; confirming
+    // it returns them to the game. Leaving does not navigate (see Main).
+    if (!active) navigate(`/game/${gameId}`);
   }
 
   function onJoinRehostClick() {
@@ -286,6 +385,7 @@ export default function Game() {
   }
 
   function leaveGame() {
+    stopReadyBellRepeat();
     if (finished) siteInfo.hideAllAlerts();
 
     // Drop the server-side push target, but leave the browser subscription in
@@ -302,14 +402,16 @@ export default function Game() {
     // with socket terminate() in playerLeave and often fails on iOS Safari.
     setLeave(true);
 
-    if (gameId === user.inGame) {
-      user.setInGame(null);
-    }
+    user.setInGame((current) => (current === gameId ? null : current));
 
     setLeaveDialogOpen(false);
   }
 
   useEffect(() => {
+    // Only the visible session reacts to Escape. A session retained while the
+    // user browses another page must not capture the key.
+    if (!active) return;
+
     function handleKeyDown(e) {
       if (e.key === "Escape") {
         onLeaveGameClick();
@@ -319,6 +421,43 @@ export default function Game() {
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [active]);
+
+  // The session is hosted by Main, which owns teardown and the redirect. The
+  // game only reports that it left, whether by the player's action or because
+  // the server ended the game.
+  useEffect(() => {
+    if (leave && props.onLeave) props.onLeave();
+  }, [leave, props.onLeave]);
+
+  // Warn before a reload or tab close while a game is in progress. In-app
+  // navigation is not blocked, because the shell retains the session; this
+  // covers the destructive cases the browser controls.
+  useEffect(() => {
+    if (!active) return;
+
+    const inProgress =
+      history.currentState >= 0 && !finished && !review && isParticipant;
+    if (!inProgress) return;
+
+    function handleBeforeUnload(event) {
+      event.preventDefault();
+      event.returnValue = "";
+      return "";
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () =>
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [active, history.currentState, finished, review, isParticipant]);
+
+  useEffect(() => {
+    return () => {
+      if (readyBellRepeatRef.current) {
+        clearInterval(readyBellRepeatRef.current);
+        readyBellRepeatRef.current = null;
+      }
     };
   }, []);
 
@@ -449,28 +588,36 @@ export default function Game() {
   };
 
   useEffect(() => {
-    if (token == null) return;
+    if (token == null || !sessionIdentityValid || leave || finished || review) return;
 
     var socketURL;
 
+    // The configured socket host defaults to "localhost", which is wrong for any
+    // client that is not the host machine -- a phone on the LAN or a tailnet, for
+    // example. Fall back to the page's own host, so the same build works from
+    // localhost, a LAN/tailnet address, or the real domain.
+    const configuredSocketHost = import.meta.env.REACT_APP_SOCKET_URI;
+    const socketHost =
+      !configuredSocketHost || configuredSocketHost === "localhost"
+        ? window.location.hostname
+        : configuredSocketHost;
+
     if (import.meta.env.REACT_APP_USE_PORT === "true")
-      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${
-        import.meta.env.REACT_APP_SOCKET_URI
-      }:${port}`;
+      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${socketHost}:${port}`;
     else
       socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${
-        import.meta.env[`REACT_APP_SOCKET_URI_${port}`] || import.meta.env.REACT_APP_SOCKET_URI
+        import.meta.env[`REACT_APP_SOCKET_URI_${port}`] || socketHost
       }/${port}`;
 
     var newSocket = new Socket(socketURL);
-    newSocket.on("connected", () => setConnected(connected + 1));
-    newSocket.on("disconnected", () => setConnected(connected - 1));
+    newSocket.on("connected", () => setConnected((current) => current + 1));
+    newSocket.on("disconnected", () => setConnected((current) => current - 1));
     setSocket(newSocket);
 
     return () => {
       if (newSocket) newSocket.clear();
     };
-  }, [token]);
+  }, [token, port, gameId, leave, finished, review, sessionIdentityValid]);
 
   useEffect(() => {
     if (finished) {
@@ -497,6 +644,7 @@ export default function Game() {
       loadAudioFiles(coreAudioConfig);
 
       function onKeydown() {
+        if (!activeRef.current) return;
         var speechInput = document.getElementById("speechInput");
         var activeElName = document.activeElement.tagName;
 
@@ -668,17 +816,23 @@ export default function Game() {
     }
 
     console.log("[WEBSOCKET] Successfully connected");
+
     if (token) socket.send("auth", token);
     else
       socket.send("join", {
         gameId,
         guestId: window.localStorage.getItem("cacheVal"),
+        spectate: joinOptionsRef.current.spectate,
       });
 
+    const replay = registeredSocketRef.current !== socket;
+    registeredSocketRef.current = socket;
+    return subscribeSocketListeners(socket, (socket) => {
     socket.on("authSuccess", () => {
       socket.send("join", {
         gameId,
-        isBot: window.location.search === "?bot",
+        isBot: joinOptionsRef.current.isBot,
+        spectate: joinOptionsRef.current.spectate,
       });
     });
 
@@ -699,7 +853,9 @@ export default function Game() {
       setEmojis(emojis);
     });
 
-    socket.on("finished", () => setFinished(true));
+    socket.on("finished", () => {
+      setFinished(true);
+    });
 
     socket.on("kudos", (data) => setKudos(data));
 
@@ -822,11 +978,14 @@ export default function Game() {
 
     // Custom death sounds: server sends URLs already shuffled; play one-by-one
     socket.on("deathSounds", (urls) => {
+      if (!activeRef.current) return;
       if (!Array.isArray(urls) || urls.length === 0) return;
       // User preference: skip all custom death sounds (ref stays current mid-game)
       if (ignoreDeathSoundsRef.current) return;
 
-      void playDeathSounds(urls, () => deathSoundVolumeRef.current);
+      void playDeathSounds(urls, () =>
+        activeRef.current ? deathSoundVolumeRef.current : 0
+      );
     });
 
     socket.on("revival", (playerId) => {
@@ -936,11 +1095,15 @@ export default function Game() {
       setShowFirstGameModal(true);
     });
 
-    socket.on("isSpectator", () => {
-      setIsSpectator(true);
+    socket.on("isSpectator", (value) => {
+      const spectatingNow = value !== false;
+      joinOptionsRef.current.spectate = spectatingNow;
+      setIsSpectator(spectatingNow);
+      if (!spectatingNow) stopReadyBellRepeatRef.current();
     });
 
     socket.on("left", () => {
+      stopReadyBellRepeatRef.current();
       if (!noLeaveRef.current) {
         setLeave(true);
         siteInfo.hideAllAlerts();
@@ -952,11 +1115,20 @@ export default function Game() {
       errorAlert(error);
     });
 
+    socket.on("takeSeatFailed", (message) => {
+      errorAlert(message);
+    });
+
+    socket.on("spectateFailed", (message) => {
+      errorAlert(message);
+    });
+
     socket.on("dev", () => {
       setDev(true);
     });
 
     socket.on("readyCheck init", (data) => {
+      stopReadyBellRepeatRef.current();
       const readyMap = {};
       if (data.readyPlayers) data.readyPlayers.forEach((id) => (readyMap[id] = true));
       setReadyCheckInfo({
@@ -973,13 +1145,18 @@ export default function Game() {
     });
 
     socket.on("readyCheck cancel", () => {
-      stopAudio("urgent");
+      stopReadyBellRepeatRef.current();
       setReadyCheckInfo({ active: false, readyPlayers: {}, endTime: 0 });
     });
 
     socket.on("readyCheck success", () => {
-      stopAudio("urgent");
+      stopReadyBellRepeatRef.current();
       setReadyCheckInfo({ active: false, readyPlayers: {}, endTime: 0 });
+    });
+
+    socket.on("readyCheck failed", () => {
+      setReadyCheckInfo({ active: false, readyPlayers: {}, endTime: 0 });
+      startReadyBellRepeatRef.current();
     });
 
     socket.on("readyCheck update", (data) => {
@@ -995,6 +1172,7 @@ export default function Game() {
         playAudio(audioName);
       }
     });
+    }, { replay });
   }, [connected, user.loaded, sportsmanshipModal.open]);
 
   function settingIsTrue(value) {
@@ -1002,19 +1180,22 @@ export default function Game() {
   }
 
   function connectToGame(isSpectating) {
+    const request = connectionRequests.current.begin();
     const url = `/api/game/${gameId}/connect${
       isSpectating ? "?spectate=true" : ""
     }`;
 
     axios
-      .get(url)
+      .get(url, { signal: request.signal })
       .then((res) => {
+        if (!request.isCurrent()) return;
         setGameType(res.data.type);
         setPort(res.data.port);
         setToken(res.data.token || false);
         setHostId(res.data.hostId);
       })
       .catch((e) => {
+        if (!request.isCurrent()) return;
         var msg = e && e.response && e.response.data;
         if (msg === "Game not found.") setReview(true);
         else {
@@ -1025,17 +1206,18 @@ export default function Game() {
   }
 
   function getConnectionInfo() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const isSpectating = urlParams.get("spectate") === "true";
+    const isSpectating = joinOptionsRef.current.spectate;
 
     if (isSpectating || sportsmanshipAcceptedRef.current) {
       connectToGame(isSpectating);
       return;
     }
 
+    const request = connectionRequests.current.begin();
     axios
-      .get(`/api/game/${gameId}/info`)
+      .get(`/api/game/${gameId}/info`, { signal: request.signal })
       .then((res) => {
+        if (!request.isCurrent()) return;
         const game = res.data;
         const ranked = !!game.settings?.ranked;
         const competitive = !!game.settings?.competitive;
@@ -1064,6 +1246,7 @@ export default function Game() {
         connectToGame(isSpectating);
       })
       .catch(() => {
+        if (!request.isCurrent()) return;
         // Finished / missing games fall through to connect (review path)
         connectToGame(isSpectating);
       });
@@ -1120,12 +1303,12 @@ export default function Game() {
     return null;
   }
 
-  if (leave) return <Navigate to="/play" />;
+  if (leave || !sessionIdentityValid) return props.onLeave ? null : <Navigate to="/play" />;
   else if (!loaded || stateViewing == null)
     return (
       <div className="game">
         <SportsmanshipJoinModal
-          open={sportsmanshipModal.open}
+          open={active && sportsmanshipModal.open}
           type={sportsmanshipModal.type}
           onAccept={onSportsmanshipAccept}
           onCancel={onSportsmanshipCancel}
@@ -1214,7 +1397,7 @@ export default function Game() {
             }}
           >
             <FirstGameModal
-              showModal={showFirstGameModal}
+              showModal={active && showFirstGameModal}
               setShowModal={setShowFirstGameModal}
             />
             {gameType === "Mafia" && <MafiaGame />}
@@ -1238,9 +1421,10 @@ export default function Game() {
           </Box>
         </Stack>
         <UrgencyOverlay hidden={!isUrgent} />
-        {!review && history.currentState == -1 && (
+        {active && !review && history.currentState == -1 && (
           <PushNotificationPrompt socket={socket} />
         )}
+        {!isPhoneDevice && <PregameSeatActions />}
         <ReadyCheckDialog
           open={readyCheckInfo.active && !readyCheckInfo.readyPlayers[self]}
           endTime={readyCheckInfo.endTime}
@@ -1249,7 +1433,7 @@ export default function Game() {
           onLeave={leaveGame}
         />
         <LeaveGameDialog
-          open={leaveDialogOpen}
+          open={active && leaveDialogOpen}
           onClose={() => setLeaveDialogOpen(false)}
           onConfirm={leaveGame}
           isParticipationRequired={(() => {
@@ -1265,14 +1449,14 @@ export default function Game() {
         />
         {(gameType === "Mafia" || gameType === "Secret Dictator") && (
           <RoleRevealModal
-            open={roleRevealModalOpen}
+            open={active && roleRevealModalOpen}
             onClose={() => setRoleRevealModalOpen(false)}
             roleData={roleRevealData}
             gameType={gameType}
           />
         )}
         <ChangeSetupDialog
-          open={changeSetupDialogOpen}
+          open={active && changeSetupDialogOpen}
           onClose={() => setChangeSetupDialogOpen(false)}
           gameType={gameType}
           currentSetup={setup}
@@ -1363,9 +1547,7 @@ let rehostInviteSlotCounter = 0;
 
 export function useSocketListeners(listeners, socket) {
   useEffect(() => {
-    if (!socket.on) return;
-
-    listeners(socket);
+    return subscribeSocketListeners(socket, listeners);
   }, [socket]);
 }
 
@@ -1375,7 +1557,7 @@ export function TopBar({ forceShow = false } = {}) {
 
   const theme = useTheme();
   const isPhoneDevice = useIsPhoneDevice();
-  const { gameId } = useParams();
+  const gameId = game.gameId;
   const errorAlert = useErrorAlert();
   const siteInfo = useContext(SiteInfoContext);
 
@@ -1447,7 +1629,7 @@ export function TopBar({ forceShow = false } = {}) {
       flex: "1",
       alignItems: "center",
     }}>
-      <SiteLogo newTab />
+      <SiteLogo />
     </Stack>
   );
 
@@ -1649,7 +1831,7 @@ export function MobileLayout({
 
   function onBottomNavigationChange(event, newValue) {
     if (newValue === "leave") {
-      onLeaveGameClick();
+      game.onLeaveGameClick();
     } else {
       setSelectedPanel(newValue);
     }
@@ -1809,8 +1991,68 @@ function getDefaultSpeechMeetingId(speechMeetings) {
 
 const EMPTY_CHAT_STATE = { meetings: {}, alerts: [], obituaries: {} };
 
+function settingIsTrueValue(value) {
+  return value === true || value === "true";
+}
+
+// Desktop renders this under the chat. On a phone that spot is below the
+// viewport, under the bottom nav, so the compact variant sits in the chat.
+function PregameSeatActions({ compact = false }) {
+  const { review, history, isSpectator, socket, options, gameId } =
+    useContext(GameContext);
+
+  if (review || !history || history.currentState != -1) return null;
+
+  const showJoin = !!isSpectator;
+  const showSpectate =
+    !isSpectator && settingIsTrueValue(options && options.spectating);
+  if (!showJoin && !showSpectate) return null;
+
+  return (
+    <Box
+      sx={
+        compact
+          ? {
+              display: "flex",
+              flexShrink: 0,
+              width: "100%",
+              boxSizing: "border-box",
+              px: 1.25,
+              py: 0.5,
+            }
+          : { display: "flex", justifyContent: "center", p: 1 }
+      }
+    >
+      {showJoin ? (
+        <Button
+          variant="contained"
+          fullWidth={compact}
+          size={compact ? "small" : "medium"}
+          onClick={() => {
+            if (socket && socket.on) socket.send("takeSeat");
+          }}
+        >
+          Join open seat
+        </Button>
+      ) : (
+        <Button
+          variant="outlined"
+          fullWidth={compact}
+          size={compact ? "small" : "medium"}
+          onClick={() => {
+            window.location.assign(`/game/${gameId}?spectate=true`);
+          }}
+        >
+          Spectate
+        </Button>
+      )}
+    </Box>
+  );
+}
+
 export function TextMeetingLayout() {
   const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
   const { singleState } = useContext(GameTypeContext);
   const { isolationEnabled, isolatedPlayers, isSpectator } = game;
   const { history, players, stateViewing, updateHistory, settings, filters, spectators } =
@@ -2033,6 +2275,42 @@ export function TextMeetingLayout() {
     return () => cancelAnimationFrame(frame);
   }, [messages, autoScroll]);
 
+  // Keep the newest message in view when the transcript is resized, e.g. when
+  // the on-screen keyboard opens and the game frame shrinks (which grows the
+  // scrollable range and would otherwise leave a previously-at-bottom chat above
+  // the bottom).
+  useEffect(() => {
+    const container = speechDisplayRef.current;
+    if (!container || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => {
+      if (autoScroll) container.scrollTo(0, container.scrollHeight);
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [autoScroll]);
+
+  const newMessageCount = useNewMessageCount({
+    messageCount: messages.length,
+    enabled: !game.review && (singleState || stateViewing === history.currentState),
+    autoScroll,
+    transcriptKey: JSON.stringify([
+      game.gameId,
+      singleState,
+      singleState ? null : stateViewing,
+      singleState ? null : selTab,
+      game.speechFilters?.from || "",
+      game.speechFilters?.contains || "",
+      Boolean(settings.votingLog),
+      isSpectator,
+    ]),
+  });
+
+  function jumpToLatest() {
+    setAutoScroll(true);
+    const container = speechDisplayRef.current;
+    if (container) container.scrollTo(0, container.scrollHeight);
+  }
+
   const activeMeeting = selTab ? meetings[selTab] : null;
 
   var canSpeak = activeMeeting;
@@ -2103,21 +2381,33 @@ export function TextMeetingLayout() {
         >
           {messages}
         </div>
-        <KudosDock onResize={doAutoScroll} />
-        {canSpeak && (
-          <SpeechInput
-            meetings={meetings}
-            selTab={selTab}
-            isCurrentState={stateViewing === history.currentState}
-            players={players}
-            options={game.options}
-            socket={game.socket}
-            setAutoScroll={setAutoScroll}
-            speechInput={speechInput}
-            setSpeechInput={setSpeechInput}
-            whispersEnabled={game.getSetupGameSetting("Whispers")}
-          />
-        )}
+        <div className="speech-footer">
+          {newMessageCount > 0 && (
+            <button
+              type="button"
+              className="new-messages-pill"
+              onClick={jumpToLatest}
+            >
+              {newMessageCount} new message{newMessageCount === 1 ? "" : "s"}
+            </button>
+          )}
+          {isPhoneDevice && <PregameSeatActions compact />}
+          <KudosDock onResize={doAutoScroll} />
+          {canSpeak && (
+            <SpeechInput
+              meetings={meetings}
+              selTab={selTab}
+              isCurrentState={stateViewing === history.currentState}
+              players={players}
+              options={game.options}
+              socket={game.socket}
+              setAutoScroll={setAutoScroll}
+              speechInput={speechInput}
+              setSpeechInput={setSpeechInput}
+              whispersEnabled={game.getSetupGameSetting("Whispers")}
+            />
+          )}
+        </div>
       </div>
     </>
   );
@@ -2415,6 +2705,12 @@ const MessageRow = React.memo(function MessageRow(props) {
     useCallback(() => onPinMessage(messageObj), [onPinMessage, messageObj]),
     600
   );
+  // Chat text effect (/wave etc.), attached by the server for item owners.
+  // Plays once when the message first appears; pinned and review rows stay plain.
+  const textEffect = useTextEffect(
+    messageObj,
+    props.forceDefaultStyling || props.review
+  );
 
   const history = props.history;
   const players = props.players;
@@ -2571,8 +2867,7 @@ const MessageRow = React.memo(function MessageRow(props) {
       contentClass += "party ";
     } else if (
       player.anonId == undefined &&
-      player.birthday !== undefined &&
-      isBirthdayToday(player.birthday)
+      player.isBirthday === true
     ) {
       contentClass += " party ";
     } else if (playerFiddled) {
@@ -2738,23 +3033,26 @@ const MessageRow = React.memo(function MessageRow(props) {
                   ({message.prefix})
                 </div>
               )}
-              <UserText
-                text={message.content}
-                settings={user.settings}
-                players={players}
-                spectators={spectators}
-                customEmotes={customEmotes}
-                customStickers={customStickers}
-                systemMessage={isServerMessage}
-                filterProfanity
-                linkify
-                emotify
-                slangify
-                slangifySeed={message.time.toString()}
-                terminologyEmoticons={props.settings.terminologyEmoticons}
-                iconUsername
-                roleify={props.settings.roleMentions}
-              />
+              <TextEffect effect={textEffect}>
+                <UserText
+                  text={message.content}
+                  settings={user.settings}
+                  players={players}
+                  spectators={spectators}
+                  customEmotes={customEmotes}
+                  customStickers={customStickers}
+                  systemMessage={isServerMessage}
+                  filterProfanity
+                  linkify
+                  emotify
+                  slangify
+                  slangifySeed={message.time.toString()}
+                  terminologyEmoticons={props.settings.terminologyEmoticons}
+                  iconUsername
+                  roleify={props.settings.roleMentions}
+                  splitLetters={isPerLetterEffect(textEffect)}
+                />
+              </TextEffect>
             </>
           )}
           {message.isQuote && (
@@ -3151,7 +3449,9 @@ function SpeechInput(props) {
 
     if (
       e.target.value.length > 0 &&
-      (e.target.value[0] !== "/" || e.target.value.slice(0, 4) === "/me ") &&
+      (e.target.value[0] !== "/" ||
+        e.target.value.slice(0, 4) === "/me " ||
+        parseTextEffect(e.target.value)) &&
       meetings[selTab] &&
       !meetings[selTab].anonymous &&
       speechDropdownValue === "Say"
@@ -3640,7 +3940,6 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
               active={activity.speaking[player.id]}
               noLink={stateViewing >= 0 && game.options.anonymousGame}
               includeMiniprofile
-              newTab
             />
           );
           if (!player.kudos && !kudosIds.includes(player.id))
@@ -3795,7 +4094,7 @@ export function OptionsList() {
   const game = useContext(GameContext);
   const gameOptions = game.options.gameTypeOptions;
 
-  if (history.currentState !== -1) {
+  if (game.history.currentState !== -1) {
     return <></>;
   }
 
@@ -4143,6 +4442,7 @@ export function InventoryPanel({
 }
 
 function InventorySlot({ item, metadata, actionDescriptors, gameType }) {
+  const active = useViewActive();
   const [anchorEl, setAnchorEl] = useState(null);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const hasActions = actionDescriptors && actionDescriptors.length > 0;
@@ -4166,7 +4466,10 @@ function InventorySlot({ item, metadata, actionDescriptors, gameType }) {
   };
   const handleTooltipClose = () => setTooltipOpen(false);
 
-  const open = Boolean(anchorEl);
+  const open = active && Boolean(anchorEl);
+  useEffect(() => {
+    if (!active) setAnchorEl(null);
+  }, [active]);
   const iconTargetName = metadata?.icon || metadata?.name || item?.name;
   const iconClass =
     iconTargetName && gameType
@@ -5674,16 +5977,16 @@ function FirstGameModal(props) {
       <div className="paragraph">
         <div>
           - You can learn roles, items, mechanics, and slang{" "}
-          <a href="/learn" target="_blank">
+          <Link to="/learn" onClick={cancel}>
             here
-          </a>
+          </Link>
           !
         </div>
         <div>
           - You can familiarize yourself with the site rules{" "}
-          <a href="/rules" target="_blank">
+          <Link to="/policy/rules" onClick={cancel}>
             here
-          </a>
+          </Link>
           .
         </div>
         <div>
@@ -5699,27 +6002,27 @@ function FirstGameModal(props) {
         </div>
         <div>
           - Want to learn how to be a better player? Sign up to be a mentee{" "}
-          <a
-            href="/community/forums/thread/iU8EPBj9Z?reply=cpSlmcz-q"
-            target="_blank"
+          <Link
+            to="/community/forums/thread/iU8EPBj9Z?reply=cpSlmcz-q"
+            onClick={cancel}
           >
             here
-          </a>
+          </Link>
           !
         </div>
         <div>
           - If you have suggestions, feedback, or notice any bugs, you can make
           a thread{" "}
-          <a href="/community/forums/board/SiJGWYr6O" target="_blank">
+          <Link to="/community/forums/board/SiJGWYr6O" onClick={cancel}>
             here
-          </a>
+          </Link>
           .
         </div>
         <div>
           - Our website is open-source! You can contribute code on our{" "}
-          <a href="/community/forums/board/SiJGWYr6O" target="_blank">
+          <Link to="/community/forums/board/SiJGWYr6O" onClick={cancel}>
             GitHub repository
-          </a>
+          </Link>
           .
         </div>
         <div>
@@ -5882,7 +6185,7 @@ export function Notes() {
   const game = useContext(GameContext);
   const stateViewing = game.stateViewing;
   const [notes, setNotes] = useState("");
-  const { gameId } = useParams();
+  const gameId = game.gameId;
 
   useEffect(() => {
     var notesData = window.localStorage.getItem("notesData");
@@ -6077,20 +6380,31 @@ export function useHistoryReducer() {
           break;
         }
         case "addMessage": {
-          if (history.states[history.currentState]) {
-            if (action.message.meetingId) {
-              if (
-                history.states[history.currentState].meetings[
-                  action.message.meetingId
-                ]
-              ) {
+          const currentStateData = history.states[history.currentState];
+          if (currentStateData) {
+            const message = action.message;
+            const messageId = message.id;
+
+            if (message.meetingId) {
+              const meeting = currentStateData.meetings[message.meetingId];
+              if (meeting) {
+                // Pure duplicate check: a repeated delivery or a replay of
+                // history after reconnecting must not add a second row. The
+                // reducer must not mutate anything, because React may call it
+                // more than once for the same action.
+                if (
+                  messageId != null &&
+                  meeting.messages.some((m) => m.id === messageId)
+                ) {
+                  break;
+                }
                 return update(history, {
                   states: {
                     [history.currentState]: {
                       meetings: {
-                        [action.message.meetingId]: {
+                        [message.meetingId]: {
                           messages: {
-                            $push: [action.message],
+                            $push: [message],
                           },
                         },
                       },
@@ -6099,11 +6413,17 @@ export function useHistoryReducer() {
                 });
               }
             } else {
+              if (
+                messageId != null &&
+                (currentStateData.alerts || []).some((m) => m.id === messageId)
+              ) {
+                break;
+              }
               return update(history, {
                 states: {
                   [history.currentState]: {
                     alerts: {
-                      $push: [action.message],
+                      $push: [message],
                     },
                   },
                 },

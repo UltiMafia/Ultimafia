@@ -16,6 +16,9 @@ module.exports = class Message {
     this.abilityName = info.abilityName;
     this.abilityTarget = info.abilityTarget;
     this.forceLeak = info.forceLeak;
+    // Chat text effect ("wave", ...). Set only by the server for owners of
+    // Advanced Text Effects; content itself is always the plain text.
+    this.textEffect = info.textEffect;
     this.anonymous = info.anonymous;
     this.versions = {};
     this.timeSent = info.timeSent;
@@ -94,6 +97,8 @@ module.exports = class Message {
 
     if (!version) version = this;
 
+    // Anonymous senders get no text effect: it would hint at who they are.
+    var textEffect = version.textEffect;
     if (version.isServer) senderId = "server";
     else if (
       version.anonymous &&
@@ -115,6 +120,7 @@ module.exports = class Message {
               : "";
           version.customEmotes = [];
           version.customStickers = [];
+          textEffect = undefined;
         } else {
           version.textColor =
             version.sender.user.settings.textColor !== undefined
@@ -136,10 +142,12 @@ module.exports = class Message {
       }
     } else return;
 
-    return this.parseMessageInfoObj(version, senderId);
+    if (senderId === "anonymous" || senderId === "server") textEffect = undefined;
+
+    return this.parseMessageInfoObj(version, senderId, textEffect);
   }
 
-  parseMessageInfoObj(version, senderId) {
+  parseMessageInfoObj(version, senderId, textEffect) {
     return {
       id: version.id,
       senderId: senderId,
@@ -155,6 +163,7 @@ module.exports = class Message {
       alive: version.alive !== undefined ? version.alive : undefined,
       extraStyle: version.extraStyle,
       tags: version.tags,
+      textEffect: textEffect || undefined,
     };
   }
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
@@ -127,6 +127,10 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
     }
     onHostGame(setup.id, getFormFieldValue)
       .then((res) => {
+        // Close before navigating: the dialog renders in a portal, so it stays
+        // visible over the game even while the lobby it lives in is frozen.
+        setOpen(false);
+        user.refreshGameMembership();
         navigate(`/game/${res.data}`);
       })
       .catch(errorAlert);

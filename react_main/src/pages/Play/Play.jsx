@@ -2,21 +2,34 @@ import React, { useState, useContext, useEffect, Suspense, lazy } from "react";
 import {
   Route,
   Routes,
-  Navigate,
   useLocation,
-  useNavigate,
 } from "react-router-dom";
 
 import { UserContext } from "../../Contexts";
+import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
+import { useViewActive } from "../../hooks/useViewActivity";
 
 import "css/play.css";
 
 import { Loading } from "../../components/Loading";
 
+// Route components must be created once, at module scope. Calling lazy() inside
+// Play gives every route a new component type on each Play render, so changing
+// the lobby query (?lobby=) or the game filter (?game=) unmounted and remounted
+// the whole page and re-showed its loading spinner. See the same note in Main.
+const LobbyBrowser = lazy(() => import("./LobbyBrowser/LobbyBrowser"));
+const CreateSetup = lazy(() => import("./CreateSetup/CreateSetup"));
+const DeckSelector = lazy(() => import("./Decks/DeckSelector"));
+const CreateDecks = lazy(() => import("./Decks/CreateDeck"));
+const WordDeckSelector = lazy(() => import("./WordDecks/WordDeckSelector"));
+const CreateWordDeck = lazy(() => import("./WordDecks/CreateWordDeck"));
+const HostBrowser = lazy(() => import("./Host/HostBrowser"));
+
 export default function Play(props) {
   const defaultGameType = "Mafia";
 
   const user = useContext(UserContext);
+  const active = useViewActive();
   const location = useLocation();
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
@@ -26,6 +39,7 @@ export default function Play(props) {
   );
 
   useEffect(() => {
+    if (!active) return;
     localStorage.setItem("gameType", gameType);
 
     if (
@@ -36,27 +50,25 @@ export default function Play(props) {
     ) {
       const newParams = new URLSearchParams(location.search);
       newParams.set("game", gameType);
-      navigate(location.pathname + "?" + newParams.toString());
+      // Replace, not push: the game filter is derived state that mirrors the
+      // current page. Pushing it left an entry for the same page without the
+      // query, so Back landed there, the effect added the query again, and
+      // leaving the page took two presses. The lobby query does the same.
+      navigate(location.pathname + "?" + newParams.toString(), {
+        replace: true,
+      });
     }
-  }, [location.pathname, gameType]);
+  }, [location.pathname, gameType, active]);
   // Allow logged-out users to access Play page
 
   function onFilterGameType(gameType) {
     setGameType(gameType);
   }
 
-  const LobbyBrowser = lazy(() => import("./LobbyBrowser/LobbyBrowser"));
-  const CreateSetup = lazy(() => import("./CreateSetup/CreateSetup"));
-  const DeckSelector = lazy(() => import("./Decks/DeckSelector"));
-  const CreateDecks = lazy(() => import("./Decks/CreateDeck"));
-  const WordDeckSelector = lazy(() => import("./WordDecks/WordDeckSelector"));
-  const CreateWordDeck = lazy(() => import("./WordDecks/CreateWordDeck"));
-  const HostBrowser = lazy(() => import("./Host/HostBrowser"));
-
   return (
     <>
       <div className="inner-content play">
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Loading small />}>
           <Routes>
             <Route path="/" element={<LobbyBrowser />} />
             <Route path="host" element={<HostBrowser />} />

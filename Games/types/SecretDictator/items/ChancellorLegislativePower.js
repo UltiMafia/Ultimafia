@@ -21,6 +21,7 @@ module.exports = class ChancellorLegislativePower extends Item {
               this.game.instantMeeting(item.meetings, [
                 this.game.lastElectedPresident,
               ]);
+              this.game.publishBoard();
               return;
             }
 

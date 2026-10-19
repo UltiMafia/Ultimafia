@@ -337,7 +337,7 @@ module.exports = {
   maxWordDeckDescriptionLength: 120,
   maxOwnedCustomEmotes: 10,
   maxOwnedCustomEmotesExtra: 10,
-  maxOwnedCustomStickers: 5,
+  maxOwnedCustomStickers: 10,
   maxCustomStickerFileSizeBytes: 10 * 1024 * 1024, // 10 MB
   maxCustomStickerDimension: 512, // max width or height in pixels
   maxCustomStickerNameLength: 25,
@@ -581,6 +581,7 @@ module.exports = {
     giveCoins: true,
     refundGame: true,
     changeUsersName: true,
+    resetBirthdayLimit: true,
     whitelist: true,
     disableAllCensors: true,
     kick: true,
@@ -654,6 +655,7 @@ module.exports = {
         "viewFlagged",
         "approvePending",
         "changeUsersName",
+        "resetBirthdayLimit",
         "reviewPrivate",
         "approveRanked",
         "approveCompetitive",

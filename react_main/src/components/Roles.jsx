@@ -344,7 +344,14 @@ export function RoleCount({
 
   const digits = count ? count.toString().split("") : [];
 
-  const popoverDisabled = !showPopover || (roleClass == "null" && !alignment);
+  // A prediction chooser is a list of choices, not hover targets. Tapping a role
+  // fires mouseenter before the click, and the hover path would open the role's
+  // own popover for the instant before the click records the prediction and the
+  // sheet closes.
+  const popoverDisabled =
+    Boolean(makeRolePrediction) ||
+    !showPopover ||
+    (roleClass == "null" && !alignment);
   const popoverOpen = !popoverDisabled && canOpenPopover;
 
   const isInteractive =
@@ -352,7 +359,9 @@ export function RoleCount({
 
   const keyboardProps = isInteractive
     ? getKeyboardActivationProps(handleRoleCountClick, {
-        ariaLabel: roleName
+        ariaLabel: makeRolePrediction
+          ? roleName ? `Mark role as ${roleName}` : "Clear role mark"
+          : roleName
           ? `View role: ${roleName}`
           : alignment
           ? `View ${alignment} roleset`
@@ -365,8 +374,8 @@ export function RoleCount({
   const popoverProps = {
     ...keyboardProps,
     onClick: handleRoleCountClick,
-    onMouseEnter: handleMouseEnter,
-    onMouseLeave: handleMouseLeave,
+    onMouseEnter: popoverDisabled ? undefined : handleMouseEnter,
+    onMouseLeave: popoverDisabled ? undefined : handleMouseLeave,
     style: {
       cursor: isInteractive ? "pointer" : "default",
     },
@@ -1191,20 +1200,20 @@ export function ModifierSearch(props) {
     else if (query === "" && roleListType.length === 0) setRoleListType("Items");
   }
 
-  if (!siteInfo.modifiers) return <Loading small />;
-
   const tabs = ["Items", "Visits", "Appearance", "Chat", "Other"].map((type) => ({
     label: type,
     value: type,
   }));
 
   const compatibleNames = useMemo(
-    () => getCompatibleModifiersOther(siteInfo, props.gameType, props.curMods),
+    () => siteInfo.modifiers?.[props.gameType]
+      ? getCompatibleModifiersOther(siteInfo, props.gameType, props.curMods)
+      : [],
     [siteInfo, props.gameType, props.curMods]
   );
 
   const filteredItems = useMemo(() => {
-    const filtered = siteInfo.modifiers[props.gameType].filter((role) => {
+    const filtered = (siteInfo.modifiers?.[props.gameType] || []).filter((role) => {
       const searchTerms = searchVal
         .split(",")
         .filter((term) => term.trim() !== "")
@@ -1233,6 +1242,8 @@ export function ModifierSearch(props) {
     roleListType,
     compatibleNames,
   ]);
+
+  if (!siteInfo.modifiers) return <Loading small />;
 
   return (
     <CellSearch

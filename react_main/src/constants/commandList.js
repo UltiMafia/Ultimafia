@@ -46,6 +46,11 @@ export const commandList = {
     description:
       "Lists the Night Order for the Setup (Ties are resloved by Player Order).",
   },
+  "/wave, /shake, /glow, /rainbow, /slide, /flash": {
+    input: "Text",
+    description:
+      "Animates your game chat message once (e.g. /wave hello). Needs Advanced Text Effects from the Shop.",
+  },
   "/help": {
     input: "N/A",
     description: "Lists the commands on the site.",

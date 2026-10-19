@@ -228,6 +228,7 @@ var schemas = {
       profileBackground: { type: Number, default: 0 },
       forumBanner: { type: Number, default: 0 },
       createFamily: { type: Number, default: 0 },
+      textEffects: { type: Number, default: 0 },
       diceColor: { type: Number, default: 0 },
     },
     stats: {},
