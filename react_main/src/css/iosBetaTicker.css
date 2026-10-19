@@ -1,0 +1,98 @@
+.ios-beta-ticker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 28px;
+  overflow: hidden;
+  font-family: "RobotoMono", "Roboto Mono", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ios-beta-ticker__viewport {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.ios-beta-ticker__viewport {
+  cursor: pointer;
+}
+
+.ios-beta-ticker__track {
+  display: inline-flex;
+  width: max-content;
+  animation: ios-beta-ticker-scroll var(--ios-beta-ticker-duration, 40s) linear
+    infinite;
+  will-change: transform;
+}
+
+.ios-beta-ticker:hover .ios-beta-ticker__track,
+.ios-beta-ticker__viewport:focus-visible .ios-beta-ticker__track {
+  animation-play-state: paused;
+}
+
+.ios-beta-ticker__run {
+  display: inline-flex;
+}
+
+/* One cycle of items, kept in the viewport so it shares the same font
+   metrics, but taken out of flow so it does not affect the -50% loop. */
+.ios-beta-ticker__measure {
+  position: absolute;
+  left: 0;
+  top: 0;
+  visibility: hidden;
+  pointer-events: none;
+  display: inline-flex;
+}
+
+.ios-beta-ticker__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 8px;
+}
+
+.ios-beta-ticker__mark {
+  font-size: 9px;
+}
+
+.ios-beta-ticker__divider {
+  padding: 0 10px;
+  font-size: 9px;
+}
+
+.ios-beta-ticker__close {
+  flex-shrink: 0;
+  margin: 0 4px !important;
+  padding: 2px !important;
+}
+
+@keyframes ios-beta-ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* Exactly one run: two equal TickerItems siblings. */
+    transform: translateX(-50%);
+  }
+}
+
+/* Reduced motion: no scrolling; the start of the text stays in place. */
+@media (prefers-reduced-motion: reduce) {
+  .ios-beta-ticker__track {
+    animation: none;
+    padding-left: 12px;
+  }
+}

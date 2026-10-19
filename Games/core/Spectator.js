@@ -32,6 +32,14 @@ module.exports = class Spectator extends Player {
       }
     });
 
+    socket.on("takeSeat", () => {
+      try {
+        Promise.resolve(this.game.takeSeat(this)).catch((e) => logger.error(e));
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
     socket.on("getTimerInfo", () => {
       try {
         this.game.resendTimers(this);
@@ -42,12 +50,8 @@ module.exports = class Spectator extends Player {
 
     socket.on("disconnected", () => {
       try {
-        var index = this.game.spectators.indexOf(this);
-
-        if (index == -1) return;
-
-        this.game.spectators.splice(index, 1);
-        this.game.broadcast("spectatorCount", this.game.spectators.length);
+        // Keep the user id so a refresh during pregame stays spectating.
+        this.game.removeSpectator(this, { forget: false });
       } catch (e) {
         logger.error(e);
       }
@@ -235,14 +239,57 @@ module.exports = class Spectator extends Player {
   sendSelf() {
     super.sendSelf();
     this.send("isSpectator");
+    if (this.omniscient) this.send("omniscientSpectator");
+  }
+
+  getMeetings(state) {
+    if (!this.omniscient) return super.getMeetings(state);
+
+    const spectatorOnly = this.game.spectatorHistory
+      .getMeetings(state)
+      .filter((m) => this.game.isSpectatorOnlyMeeting(m));
+    return this.game.history.getMeetings(state).concat(spectatorOnly);
+  }
+
+  sendMeetings(meetings) {
+    super.sendMeetings(meetings);
+    if (this.omniscient) this.sendTrueRoles();
+  }
+
+  sendTrueRoles() {
+    const roles = this.game.getTrueRoles();
+    for (let playerId in roles)
+      this.send("reveal", { playerId, role: roles[playerId] });
+  }
+
+  getHistory(targetState) {
+    if (!this.omniscient) return super.getHistory(targetState);
+    return this.game.getOmniscientHistoryInfo(this, targetState);
+  }
+
+  hearOmniscient(message) {
+    const info = this.game.getOmniscientMessageInfo(message);
+    if (!info) return;
+    this.send(message.isQuote ? "quote" : "message", info);
   }
 
   sendMeeting(meeting) {
-    if(meeting.name == "Spectator Meeting"){
-      this.send("meeting", meeting.getMeetingInfo(this));
-    }
-    else{
-    this.send("meeting", meeting.getMeetingInfo("spectator"));
+    const isMember = meeting.members && meeting.members[this.id];
+
+    if (meeting.name == "Spectator Meeting" || isMember) {
+      const info = meeting.getMeetingInfo(this);
+
+      // Member versions are per player id. Pregame chat is public, so use
+      // the spectator transcript while still advertising canTalk.
+      if (meeting.name == "Pregame") {
+        info.messages = meeting.getPlayerMessages("spectator");
+      }
+
+      this.send("meeting", info);
+    } else if (this.omniscient && !this.game.isSpectatorOnlyMeeting(meeting)) {
+      this.send("meeting", this.game.getOmniscientMeetingInfo(meeting));
+    } else {
+      this.send("meeting", meeting.getMeetingInfo("spectator"));
     }
   }
 

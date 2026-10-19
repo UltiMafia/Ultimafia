@@ -12,6 +12,10 @@ const crypto = require("crypto");
 const fs = require("fs");
 const models = require("../db/models");
 const routeUtils = require("./utils");
+const {
+  clearAllLinkEvidence,
+  removeSharedLinkEvidence,
+} = require("../modules/accountLinkage");
 const redis = require("../modules/redis");
 const roleIconCreditUtils = require("../modules/roleIconCreditUtils");
 const { getBasicUserInfo } = require("../modules/redis");
@@ -623,7 +627,7 @@ router.post("/ban", async (req, res) => {
       site: "site",
     };
 
-    // Get all alt account IDs (accounts sharing IPs)
+    // Get all alt account IDs (accounts sharing IPs or exact fingerprints)
     const allAltAccountIds = await routeUtils.getAltAccountIds(userIdToBan);
 
     // Get mod's rank to validate which alt accounts can be banned
@@ -1032,17 +1036,15 @@ router.get("/alts", async (req, res) => {
 
     var user = await models.User.findOne({
       id: userIdToActOn /*, deleted: false*/,
-    }).select("ip");
+    }).select("id");
 
     if (!user) {
       errors.notFound(res, "User does not exist.");
       return;
     }
 
-    var ips = user.ip;
-    var users = await models.User.find({
-      ip: { $elemMatch: { $in: ips } },
-    }).select("id name -_id");
+    const altAccountIds = await routeUtils.getAltAccountIds(userIdToActOn);
+    var users = await models.User.find({ id: { $in: altAccountIds } }).select("id name -_id");
 
     res.send(users);
   } catch (e) {
@@ -2073,7 +2075,7 @@ router.post("/clearAllIPs", async (req, res) => {
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    await models.User.updateMany({}, { $unset: { ip: "" } }).exec();
+    await clearAllLinkEvidence();
 
     res.sendStatus(200);
   } catch (e) {
@@ -2082,8 +2084,8 @@ router.post("/clearAllIPs", async (req, res) => {
   }
 });
 
-// Removes shared stored login IPs from both users so getAltAccountIds no longer
-// associates them (until they share a new IP on a future login).
+// Removes shared stored login IP/device evidence so getAltAccountIds no longer
+// associates them (until they share new evidence on a future login).
 router.post("/unlinkAccounts", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -2107,46 +2109,40 @@ router.post("/unlinkAccounts", async (req, res) => {
       return;
     }
 
-    const user1 = await models.User.findOne({
-      id: userId1,
+    const users = await models.User.countDocuments({
+      id: { $in: [userId1, userId2] },
       deleted: false,
-    }).select("ip");
-    const user2 = await models.User.findOne({
-      id: userId2,
-      deleted: false,
-    }).select("ip");
-
-    if (!user1 || !user2) {
+    });
+    if (users !== 2) {
       res.status(404);
       res.send("One or both users do not exist.");
       return;
     }
 
-    const ips1 = user1.ip || [];
-    const ips2 = user2.ip || [];
-    const set2 = new Set(ips2);
-    const intersection = [...new Set(ips1.filter((ip) => set2.has(ip)))];
+    const removed = await removeSharedLinkEvidence(userId1, userId2);
 
-    if (intersection.length === 0) {
+    // A user may have been deleted after the existence check. Do not report a
+    // partial unlink as a successful moderation action.
+    if (!removed) {
+      res.status(404);
+      res.send("One or both users no longer exist.");
+      return;
+    }
+
+    if (removed.ips.length === 0 && removed.fingerprintCount === 0) {
       res.send({
         removed: [],
         message:
-          "No shared IPs to remove; accounts were not linked by stored IPs.",
+          "No shared login evidence to remove; accounts were not directly linked.",
       });
       return;
     }
 
-    await models.User.updateOne(
-      { id: userId1 },
-      { $pullAll: { ip: intersection } }
-    ).exec();
-    await models.User.updateOne(
-      { id: userId2 },
-      { $pullAll: { ip: intersection } }
-    ).exec();
-
     routeUtils.createModAction(modId, "Unlink Accounts", [userId1, userId2]);
-    res.send({ removed: intersection });
+    res.send({
+      removed: removed.ips,
+      removedFingerprintCount: removed.fingerprintCount,
+    });
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not unlink accounts. Please try again.");
@@ -3342,6 +3338,7 @@ router.post("/reports/:id/complete", async (req, res) => {
     let violationId = null;
     let violationName = null;
     let banLengthStr = null;
+    let banLengthMs;
     let violationDef = null;
 
     // If not dismissed and not warning, create violation ticket and ban
@@ -3374,7 +3371,7 @@ router.post("/reports/:id/complete", async (req, res) => {
         return;
       }
 
-      // Get all alt account IDs (accounts sharing IPs)
+      // Get all alt account IDs (accounts sharing IPs or exact fingerprints)
       const altAccountIds = await routeUtils.getAltAccountIds(
         report.reportedUserId
       );
@@ -3405,7 +3402,6 @@ router.post("/reports/:id/complete", async (req, res) => {
       banLengthStr = violationDef.offenses[offenseIndex];
 
       // Parse ban length
-      let banLengthMs;
       if (
         banLengthStr.toLowerCase() === "permaban" ||
         banLengthStr.toLowerCase() === "permanent" ||
@@ -3485,7 +3481,7 @@ router.post("/reports/:id/complete", async (req, res) => {
         return;
       }
 
-      // Get all alt account IDs (accounts sharing IPs) - already fetched above
+      // Get all alt account IDs (accounts sharing IPs or exact fingerprints) - already fetched above
       // Create ban for all alt accounts if ban length > 0 (or permanent)
       if (banLengthMs >= 0 && permissions.length > 0) {
         // Apply ban to all alt accounts
@@ -3538,7 +3534,7 @@ router.post("/reports/:id/complete", async (req, res) => {
           : 6 * 30 * 24 * 60 * 60 * 1000; // 6 months
       const activeUntil = Date.now() + activityPeriodMs;
 
-      // Get all alt account IDs (accounts sharing IPs) - already fetched above
+      // Get all alt account IDs (accounts sharing IPs or exact fingerprints) - already fetched above
       // Create violation tickets for all alt accounts (even if no ban was created)
       const violationTicketPromises = altAccountIds.map((altUserId, index) => {
         // Link to the corresponding ban if it exists
