@@ -369,6 +369,137 @@ describe("Games/SpectateCommands", function () {
     });
   });
 
+  describe("join hint", function () {
+    const HINT =
+      ":system: You are spectating. Type /join to take a seat at the table.";
+    const hints = (socket) => chatTexts(socket).filter((t) => t === HINT);
+
+    it("tells a user who joins the lobby as a spectator, once", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const watcher = makeUser(null, "watcher");
+      await game.userJoin(host);
+      host.socket.flushMessages();
+      await game.userJoin(watcher, { spectate: true });
+      await settle();
+
+      hints(watcher.socket).should.have.lengthOf(1);
+      hints(host.socket).should.have.lengthOf(0);
+    });
+
+    it("tells a spectator who lands in a full lobby", async function () {
+      const game = await openGame.call(this, { total: 1 });
+      const host = makeUser(game.hostId, "host");
+      const watcher = makeUser(null, "watcher");
+      await game.userJoin(host);
+      await game.userJoin(watcher);
+      await settle();
+
+      game.spectators.should.have.lengthOf(1);
+      hints(watcher.socket).should.have.lengthOf(1);
+      hints(host.socket).should.have.lengthOf(0);
+    });
+
+    it("tells a player moved to spectators by a missed ready check", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      const late = makeUser(null, "late");
+      await game.userJoin(host);
+      await game.userJoin(other);
+      await game.userJoin(late);
+      game.startReadyCheck();
+      game.readyPlayers[playerFor(game, host).id] = true;
+      game.readyPlayers[playerFor(game, other).id] = true;
+
+      for (const u of [host, other, late]) u.socket.flushMessages();
+      await game.failReadyCheck();
+      await settle();
+
+      game.spectators.should.have.lengthOf(1);
+      game.spectators[0].user.id.should.equal(late.id);
+      hints(late.socket).should.have.lengthOf(1);
+      hints(host.socket).should.have.lengthOf(0);
+      hints(other.socket).should.have.lengthOf(0);
+    });
+
+    it("tells a player who types /spectate", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      await game.userJoin(host);
+      await game.userJoin(other);
+
+      host.socket.flushMessages();
+      other.socket.flushMessages();
+      say(playerFor(game, other), "/spectate", game.pregame.id);
+      await settle();
+
+      game.spectators.should.have.lengthOf(1);
+      hints(other.socket).should.have.lengthOf(1);
+      hints(host.socket).should.have.lengthOf(0);
+    });
+
+    it("is not sent once the game has started", async function () {
+      const game = await openGame.call(this, { total: 2 });
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      const early = makeUser(null, "early");
+      const watcher = makeUser(null, "watcher");
+      await game.userJoin(host);
+      await game.userJoin(other);
+      await game.userJoin(early, { spectate: true });
+      await settle();
+      hints(early.socket).should.have.lengthOf(1);
+
+      early.socket.flushMessages();
+      await startBare(game);
+
+      await game.userJoin(watcher, { spectate: true });
+      await settle();
+
+      game.spectators.should.have.lengthOf(2);
+      hints(watcher.socket).should.have.lengthOf(0);
+      hints(early.socket).should.have.lengthOf(0);
+    });
+
+    it("is not sent when a gate would refuse the seat (banned)", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const watcher = makeUser(null, "watcher");
+      game.banned[watcher.id] = true;
+      await game.userJoin(host);
+      await game.userJoin(watcher, { spectate: true });
+      await settle();
+
+      game.spectators.should.have.lengthOf(1);
+      hints(watcher.socket).should.have.lengthOf(0);
+    });
+
+    it("is not sent again on reconnect or to players later", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const watcher = makeUser(null, "watcher");
+      await game.userJoin(host);
+      await game.userJoin(watcher, { spectate: true });
+      await settle();
+      hints(watcher.socket).should.have.lengthOf(1);
+
+      // A refresh reconnects the same spectator on a new socket.
+      const again = makeUser(watcher.id, "watcher");
+      await game.userJoin(again);
+      await settle();
+      game.spectators.should.have.lengthOf(1);
+      hints(again.socket).should.have.lengthOf(0);
+
+      // Players reconnecting never get it.
+      const hostAgain = makeUser(host.id, "host");
+      await game.userJoin(hostAgain);
+      await settle();
+      hints(hostAgain.socket).should.have.lengthOf(0);
+    });
+  });
+
   describe("spectators list", function () {
     it("marks only current spectators as watching", async function () {
       const game = await openGame.call(this, { total: 3 });

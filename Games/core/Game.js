@@ -548,7 +548,7 @@ module.exports = class Game {
           await redis.leaveGame(user.id);
         }
 
-        this.addSpectator(user);
+        await this.sendSpectatorJoinHint(this.addSpectator(user));
         return;
       }
 
@@ -568,7 +568,7 @@ module.exports = class Game {
         return;
       }
 
-      this.addSpectator(user);
+      await this.sendSpectatorJoinHint(this.addSpectator(user));
     } catch (e) {
       logger.error(e);
       // this.handleError(e);
@@ -805,7 +805,30 @@ module.exports = class Game {
       this.sendAlert(options.alert, undefined, undefined, ["info"]);
     }
 
+    await this.sendSpectatorJoinHint(spectator);
     return spectator;
+  }
+
+  // Tells someone who just became a pregame spectator (joined to watch,
+  // missed the ready check, or typed /spectate) how to sit down. Only they
+  // see it. Skipped once the game has started or when a gate (ban, ranked or
+  // competitive lock, leave penalty) would refuse the seat anyway. A refresh
+  // reconnects the same spectator and does not send it again.
+  async sendSpectatorJoinHint(spectator) {
+    if (!spectator || !spectator.user || spectator.user.isBot) return;
+    if (this.started || this.currentState != -1) return;
+
+    const reason = await this.seatBlockReason(spectator.user);
+    if (reason) return;
+
+    // The check above is async; the game may have started or they may have
+    // taken a seat in the meantime.
+    if (this.started || this.currentState != -1) return;
+    if (this.spectators.indexOf(spectator) == -1) return;
+
+    spectator.sendAlert(
+      ":system: You are spectating. Type /join to take a seat at the table."
+    );
   }
 
   // options.viaCommand: the request came from the /join chat command, so a
