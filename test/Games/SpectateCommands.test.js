@@ -498,6 +498,96 @@ describe("Games/SpectateCommands", function () {
       await settle();
       hints(hostAgain.socket).should.have.lengthOf(0);
     });
+
+    // A browser refresh: the old socket closes, then a new one connects.
+    async function refresh(game, user, joinOptions) {
+      user.socket.sendToServer("disconnected");
+      const again = makeUser(user.id, user.name);
+      await game.userJoin(again, joinOptions);
+      await settle();
+      return again;
+    }
+
+    const entriesFor = (game, userId) =>
+      Object.values(game.getAllSpectatorInfo()).filter(
+        (s) => s.userId === userId
+      );
+
+    for (const label of ["with ?spectate=true", "without ?spectate=true"]) {
+      it(`a refresh ${label} keeps one entry and sends no second hint`, async function () {
+        const game = await openGame.call(this, { total: 3 });
+        const host = makeUser(game.hostId, "host");
+        const watcher = makeUser(null, "watcher");
+        await game.userJoin(host);
+        await game.userJoin(watcher, { spectate: true });
+        await settle();
+        hints(watcher.socket).should.have.lengthOf(1);
+        const firstId = game.spectators[0].id;
+
+        host.socket.flushMessages();
+        const opts = label.startsWith("with ") ? { spectate: true } : undefined;
+        let current = watcher;
+        for (let i = 0; i < 3; i++) {
+          current = await refresh(game, current, opts);
+          hints(current.socket).should.have.lengthOf(0);
+        }
+
+        game.spectators.should.have.lengthOf(1);
+        game.spectators[0].id.should.equal(firstId);
+        game.players.should.have.lengthOf(1);
+        entriesFor(game, watcher.id).should.have.lengthOf(1);
+        // Players see no leave/join churn for the refresh.
+        events(host.socket, "spectatorCount").should.have.lengthOf(0);
+        events(host.socket, "spectators").should.have.lengthOf(0);
+      });
+    }
+
+    it("a reconnect after the grace time reuses the entry and sends no hint", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      game.spectatorReconnectGraceMs = 20;
+      const host = makeUser(game.hostId, "host");
+      const watcher = makeUser(null, "watcher");
+      await game.userJoin(host);
+      await game.userJoin(watcher, { spectate: true });
+      await settle();
+      const firstId = game.spectators[0].id;
+
+      watcher.socket.sendToServer("disconnected");
+      await settle();
+      game.spectators.should.have.lengthOf(0);
+
+      // No ?spectate=true: the remembered user id keeps them spectating.
+      const again = makeUser(watcher.id, "watcher");
+      await game.userJoin(again);
+      await settle();
+
+      game.spectators.should.have.lengthOf(1);
+      game.players.should.have.lengthOf(1);
+      game.spectators[0].id.should.equal(firstId);
+      entriesFor(game, watcher.id).should.have.lengthOf(1);
+      hints(again.socket).should.have.lengthOf(0);
+    });
+
+    it("tells them again after a seat and /spectate, with one entry", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const watcher = makeUser(null, "watcher");
+      await game.userJoin(host);
+      await game.userJoin(watcher, { spectate: true });
+      await settle();
+
+      say(game.spectators[0], "/join", game.pregame.id);
+      await settle();
+      game.spectators.should.have.lengthOf(0);
+
+      watcher.socket.flushMessages();
+      say(playerFor(game, watcher), "/spectate", game.pregame.id);
+      await settle();
+
+      game.spectators.should.have.lengthOf(1);
+      hints(watcher.socket).should.have.lengthOf(1);
+      entriesFor(game, watcher.id).filter((s) => s.watching).should.have.lengthOf(1);
+    });
   });
 
   describe("spectators list", function () {

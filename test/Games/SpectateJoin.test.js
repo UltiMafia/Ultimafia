@@ -488,6 +488,9 @@ describe("Games/SpectateJoin", function () {
 
   it("remembers a pregame spectator across refresh", async function () {
     const game = await openGame.call(this, { total: 2 });
+    // No reconnect grace: the closed socket removes the spectator right away,
+    // so the return goes through the remembered user id.
+    game.spectatorReconnectGraceMs = 0;
     const user = makeUser(null, "refresh");
     await game.userJoin(user, { spectate: true });
 

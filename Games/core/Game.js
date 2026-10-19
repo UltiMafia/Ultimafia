@@ -167,6 +167,12 @@ module.exports = class Game {
     // Users who chose to spectate, or were moved here by a failed ready check.
     // A refresh must not hand them an open seat.
     this.pregameSpectatorUserIds = new Set();
+    // Users already told they can /join since they last became a spectator,
+    // so a refresh or reconnect does not repeat it.
+    this.spectatorHintUserIds = new Set();
+    // How long a spectator whose socket closed keeps their entry, so a
+    // refresh takes it over instead of leaving and joining again.
+    this.spectatorReconnectGraceMs = 10000;
   }
 
   async init() {
@@ -694,6 +700,8 @@ module.exports = class Game {
       }
 
       this.players.push(player);
+      // Seated now; becoming a spectator again is a new transition.
+      if (user.id) this.spectatorHintUserIds.delete(user.id);
       if (isTestBotPlayer(player)) {
         this.hadBots = true;
         // A bot game is free; give back hearts already charged.
@@ -735,6 +743,7 @@ module.exports = class Game {
 
   addSpectator(user) {
     const spectator = new Spectator(user, this);
+    this.reusePastSpectatorId(spectator);
     spectator.init();
 
     this.spectators.push(spectator);
@@ -755,6 +764,51 @@ module.exports = class Game {
     redis.setSpectatorCount(this.id, this.spectators.length);
     this.broadcast("spectators", this.getAllSpectatorInfo());
     return spectator;
+  }
+
+  // Someone who spectated this game before (a refresh after the reconnect
+  // grace time, or back from a seat) keeps their old spectator id, so the
+  // spectators map has one entry per user and old chat still names them.
+  reusePastSpectatorId(spectator) {
+    const userId = spectator.user && spectator.user.id;
+    if (!userId) return;
+
+    const past = this.spectatorsOld.filter(
+      (s) =>
+        s.spectator &&
+        s !== spectator &&
+        s.user &&
+        s.user.id == userId &&
+        this.spectators.indexOf(s) == -1
+    )[0];
+    if (!past) return;
+
+    spectator.id = past.id;
+    this.spectatorsOld.splice(this.spectatorsOld.indexOf(past), 1);
+  }
+
+  // A refresh closes the old socket just before the new one connects. Keep
+  // the spectator for a short grace time so the reconnect takes the entry
+  // over (same id, no leave/join broadcasts, no repeat hint).
+  scheduleSpectatorRemoval(spectator, socket) {
+    if (spectator.reconnectTimer) clearTimeout(spectator.reconnectTimer);
+    spectator.reconnectTimer = null;
+
+    const grace = this.spectatorReconnectGraceMs;
+    if (!(grace > 0)) {
+      this.removeSpectator(spectator, { forget: false });
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      spectator.reconnectTimer = null;
+      if (spectator.socket !== socket) return; // reconnected
+      // Keep the user id so a refresh during pregame stays spectating.
+      this.removeSpectator(spectator, { forget: false });
+    }, grace);
+    if (timer.unref) timer.unref();
+    spectator.reconnectTimer = timer;
+    this.timeouts.push(timer);
   }
 
   dropPregameMember(person) {
@@ -812,8 +866,9 @@ module.exports = class Game {
   // Tells someone who just became a pregame spectator (joined to watch,
   // missed the ready check, or typed /spectate) how to sit down. Only they
   // see it. Skipped once the game has started or when a gate (ban, ranked or
-  // competitive lock, leave penalty) would refuse the seat anyway. A refresh
-  // reconnects the same spectator and does not send it again.
+  // competitive lock, leave penalty) would refuse the seat anyway. Sent once
+  // per user until they take a seat or leave, so a refresh or reconnect does
+  // not repeat it.
   async sendSpectatorJoinHint(spectator) {
     if (!spectator || !spectator.user || spectator.user.isBot) return;
     if (this.started || this.currentState != -1) return;
@@ -825,6 +880,12 @@ module.exports = class Game {
     // taken a seat in the meantime.
     if (this.started || this.currentState != -1) return;
     if (this.spectators.indexOf(spectator) == -1) return;
+
+    const userId = spectator.user.id;
+    if (userId) {
+      if (this.spectatorHintUserIds.has(userId)) return;
+      this.spectatorHintUserIds.add(userId);
+    }
 
     spectator.sendAlert(
       ":system: You are spectating. Type /join to take a seat at the table."
@@ -1247,11 +1308,17 @@ module.exports = class Game {
     const index = this.spectators.indexOf(spectator);
     if (index == -1) return;
 
+    if (spectator.reconnectTimer) {
+      clearTimeout(spectator.reconnectTimer);
+      spectator.reconnectTimer = null;
+    }
+
     this.spectators.splice(index, 1);
     this.dropPregameMember(spectator);
 
     if (options.forget !== false && spectator.user && spectator.user.id) {
       this.pregameSpectatorUserIds.delete(spectator.user.id);
+      this.spectatorHintUserIds.delete(spectator.user.id);
     }
 
     this.broadcast("spectatorCount", this.spectators.length);

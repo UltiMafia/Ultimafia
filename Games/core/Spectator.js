@@ -50,8 +50,8 @@ module.exports = class Spectator extends Player {
 
     socket.on("disconnected", () => {
       try {
-        // Keep the user id so a refresh during pregame stays spectating.
-        this.game.removeSpectator(this, { forget: false });
+        if (this.socket !== socket) return; // replaced by a reconnect
+        this.game.scheduleSpectatorRemoval(this, socket);
       } catch (e) {
         logger.error(e);
       }
