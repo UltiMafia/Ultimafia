@@ -268,9 +268,21 @@ module.exports = class Spectator extends Player {
   }
 
   hear(message) {
-    message = message.getMessageInfo("spectator");
+    var info = message.getMessageInfo("spectator");
 
-    if (message) this.send("message", message);
+    // The spectator view hides alerts aimed at particular players. An alert
+    // aimed at this spectator (a /join refusal, /role output) is theirs.
+    if (
+      !info &&
+      message.isServer &&
+      !message.meeting &&
+      message.recipients &&
+      message.recipients.indexOf(this) != -1
+    ) {
+      info = message.parseMessageInfoObj(message, "server");
+    }
+
+    if (info) this.send("message", info);
   }
 
   hearQuote(quote) {

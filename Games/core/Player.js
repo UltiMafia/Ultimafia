@@ -853,6 +853,24 @@ module.exports = class Player {
           this.sendAlert(`:system: ${info}`);
         }
         return;
+      case "join":
+        if (!this.spectator) {
+          this.sendAlert(":system: You are already playing in this game.");
+          return;
+        }
+        Promise.resolve(this.game.takeSeat(this, { viaCommand: true })).catch(
+          (e) => logger.error(e)
+        );
+        return;
+      case "spectate":
+        if (this.spectator) {
+          this.sendAlert(":system: You are already spectating this game.");
+          return;
+        }
+        Promise.resolve(this.game.spectateFromSeat(this)).catch((e) =>
+          logger.error(e)
+        );
+        return;
       case "ban":
       case "kick":
         // Allow /kick to be used to kick players during veg votekick.

@@ -808,23 +808,31 @@ module.exports = class Game {
     return spectator;
   }
 
-  async takeSeat(spectator) {
+  // options.viaCommand: the request came from the /join chat command, so a
+  // refusal is shown as a system message in chat instead of a pop-up.
+  async takeSeat(spectator, options) {
     if (!spectator) return;
+    options = options || {};
+
+    const refuse = (target, reason) => {
+      if (options.viaCommand) target.sendAlert(`:system: ${reason}`);
+      else target.send("takeSeatFailed", reason);
+    };
 
     if (this.started || this.currentState != -1) {
-      spectator.send("takeSeatFailed", "You can only take a seat during pregame.");
+      refuse(spectator, "You can only take a seat during pregame.");
       return;
     }
 
     if (this.spectators.indexOf(spectator) == -1) {
-      spectator.send("takeSeatFailed", "You are not spectating this game.");
+      refuse(spectator, "You are not spectating this game.");
       return;
     }
 
     const user = spectator.user;
     const reason = await this.seatBlockReason(user);
     if (reason) {
-      spectator.send("takeSeatFailed", reason);
+      refuse(spectator, reason);
       return;
     }
 
@@ -834,7 +842,7 @@ module.exports = class Game {
     this.joinMutexUnlock();
 
     if (!seatOpen) {
-      spectator.send("takeSeatFailed", "No open seats.");
+      refuse(spectator, "No open seats.");
       return;
     }
 
@@ -845,12 +853,46 @@ module.exports = class Game {
 
     const player = await this.seatPlayer(user, false);
     if (!player) {
-      this.addSpectator(user);
-      user.send("takeSeatFailed", "No open seats.");
+      const back = this.addSpectator(user);
+      refuse(back, "No open seats.");
       return;
     }
 
     player.send("isSpectator", false);
+    return player;
+  }
+
+  // /spectate: a seated pregame player gives up the seat and watches. Same
+  // path as opening the game with ?spectate=true (host handoff included).
+  // Returns the new spectator, or null with a system message explaining why.
+  async spectateFromSeat(player) {
+    if (!player || player.spectator) return null;
+
+    const refuse = (reason) => {
+      player.sendAlert(`:system: ${reason}`);
+      return null;
+    };
+
+    if (this.started || this.currentState != -1) {
+      return refuse("You can only move to spectators during pregame.");
+    }
+
+    if (!this.players[player.id] || player.left) {
+      return refuse("You are not seated in this game.");
+    }
+
+    const refusal = await this.spectatorJoinRefusal(player.user);
+    if (refusal) return refuse(`${refusal}.`);
+
+    // Giving up a seat breaks a running ready check or start countdown, the
+    // same as leaving the lobby does.
+    if (this.isReadyCheckActive || this.timers["pregameCountdown"]) {
+      this.cancelReadyCheck([player]);
+    }
+
+    return this.movePlayerToSpectator(player, {
+      alert: `${player.name} is now spectating.`,
+    });
   }
 
   joinMutexLock() {
@@ -1038,6 +1080,10 @@ module.exports = class Game {
 
     this.spectators.push(spectator);
     this.spectatorsOld.push(spectator);
+    // Out of the game, so they read and write spectator chat from now on.
+    if (this.spectatorMeeting && !this.spectatorMeeting.finished) {
+      this.spectatorMeeting.join(spectator);
+    }
     this.sendAllGameInfo(spectator);
     spectator.send("loaded");
 
@@ -1278,6 +1324,12 @@ module.exports = class Game {
 
     for (let player2 of this.spectatorsOld){
       allPlayerInfo[player2.id] = player2.getPlayerInfo(recipient);
+    }
+
+    // Old entries stay so chat can still name past spectators. "watching"
+    // marks who is spectating right now (the pregame spectators list).
+    for (let player of this.spectators) {
+      if (allPlayerInfo[player.id]) allPlayerInfo[player.id].watching = true;
     }
 
     return allPlayerInfo;
