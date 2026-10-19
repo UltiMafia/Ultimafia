@@ -14,6 +14,12 @@ import axios from "axios";
 import ReactLoading from "react-loading";
 
 import { UserText } from "../../components/Basic";
+import {
+  TextEffect,
+  isPerLetterEffect,
+  useTextEffect,
+} from "../../components/TextEffects";
+import { parseTextEffect } from "shared/textEffects";
 import Newspaper, {
   ObituariesMessage,
 } from "../../components/gameComponents/Newspaper";
@@ -2699,6 +2705,12 @@ const MessageRow = React.memo(function MessageRow(props) {
     useCallback(() => onPinMessage(messageObj), [onPinMessage, messageObj]),
     600
   );
+  // Chat text effect (/wave etc.), attached by the server for item owners.
+  // Plays once when the message first appears; pinned and review rows stay plain.
+  const textEffect = useTextEffect(
+    messageObj,
+    props.forceDefaultStyling || props.review
+  );
 
   const history = props.history;
   const players = props.players;
@@ -3022,23 +3034,26 @@ const MessageRow = React.memo(function MessageRow(props) {
                   ({message.prefix})
                 </div>
               )}
-              <UserText
-                text={message.content}
-                settings={user.settings}
-                players={players}
-                spectators={spectators}
-                customEmotes={customEmotes}
-                customStickers={customStickers}
-                systemMessage={isServerMessage}
-                filterProfanity
-                linkify
-                emotify
-                slangify
-                slangifySeed={message.time.toString()}
-                terminologyEmoticons={props.settings.terminologyEmoticons}
-                iconUsername
-                roleify={props.settings.roleMentions}
-              />
+              <TextEffect effect={textEffect}>
+                <UserText
+                  text={message.content}
+                  settings={user.settings}
+                  players={players}
+                  spectators={spectators}
+                  customEmotes={customEmotes}
+                  customStickers={customStickers}
+                  systemMessage={isServerMessage}
+                  filterProfanity
+                  linkify
+                  emotify
+                  slangify
+                  slangifySeed={message.time.toString()}
+                  terminologyEmoticons={props.settings.terminologyEmoticons}
+                  iconUsername
+                  roleify={props.settings.roleMentions}
+                  splitLetters={isPerLetterEffect(textEffect)}
+                />
+              </TextEffect>
             </>
           )}
           {message.isQuote && (
@@ -3435,7 +3450,9 @@ function SpeechInput(props) {
 
     if (
       e.target.value.length > 0 &&
-      (e.target.value[0] !== "/" || e.target.value.slice(0, 4) === "/me ") &&
+      (e.target.value[0] !== "/" ||
+        e.target.value.slice(0, 4) === "/me " ||
+        parseTextEffect(e.target.value)) &&
       meetings[selTab] &&
       !meetings[selTab].anonymous &&
       speechDropdownValue === "Say"
