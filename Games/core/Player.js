@@ -70,6 +70,8 @@ module.exports = class Player {
     this.passiveExtraRoles = [];
     this.joinTime = Date.now(); // Track when player joined for host reassignment
     this.youAreBeingVoteKicked = false;
+    // Sent to the safehouse: still alive, but out of play.
+    this.housed = false;
   }
 
   init() {
@@ -77,8 +79,16 @@ module.exports = class Player {
 
     // Configure temporary immunity reset
     this.game.events.on("afterActions", () => {
+      const inConversion =
+        typeof this.game.isConversionNightPhase == "function" &&
+        this.game.isConversionNightPhase(this.game.getStateName());
+      const convertPower = this.tempImmunity["convert"];
       this.tempImmunity = {};
       this.tempAppearance = {};
+      if (inConversion && convertPower != null) {
+        this.tempImmunity["convert"] = convertPower;
+      }
+      if (!inConversion) this.nightRoleblocked = false;
     });
   }
 
@@ -1005,6 +1015,8 @@ module.exports = class Player {
       textColor: this.user.textColor,
       nameColor: this.user.nameColor,
       nameFont: this.user.nameFont,
+      // Cosmetic Liar's Dice face color; visible to everyone in the game.
+      diceColor: this.user.diceColor,
       animatedNameColor: this.user.animatedNameColor,
       nameGradientColorA: this.user.nameGradientColorA,
       nameGradientColorB: this.user.nameGradientColorB,
@@ -1235,7 +1247,7 @@ module.exports = class Player {
   }
 
   sendStateInfo() {
-    this.send("state", this.game.getStateInfo());
+    this.send("state", this.game.stateInfoForViewer(this.game.getStateInfo(), this));
   }
 
   addStateToHistory(name, state) {
@@ -1501,6 +1513,15 @@ module.exports = class Player {
     for (let meetingName in meetings) {
       let options = meetings[meetingName];
       let disabled = false;
+
+      // Housed players may only sit in the village chat, and only to read it.
+      if (
+        this.housed &&
+        meetingName != "Village" &&
+        meetingName != "Village Dusk"
+      ) {
+        continue;
+      }
 
       for (let item of this.items)
         disabled = disabled || item.shouldDisableMeeting(meetingName, options);

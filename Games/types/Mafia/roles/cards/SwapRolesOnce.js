@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_SWAP_ROLES } = require("../../const/Priority");
+const { attachConversionPhase } = require("../../const/ConversionPhases");
 
 module.exports = class SwapRolesOnce extends Card {
   constructor(role) {
@@ -7,7 +8,7 @@ module.exports = class SwapRolesOnce extends Card {
 
     this.meetings = {
       "Swap Roles": {
-        states: ["Night"],
+        states: ["Night (Swapping)"],
         flags: ["voting"],
         action: {
           role: this.role,
@@ -53,5 +54,6 @@ module.exports = class SwapRolesOnce extends Card {
         },
       },
     };
+    attachConversionPhase(this, "Night (Swapping)");
   }
 };

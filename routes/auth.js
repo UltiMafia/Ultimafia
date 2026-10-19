@@ -13,6 +13,7 @@ const {
 } = require("../modules/userEligibility");
 const { sendFlaggedUserDiscordAlert } = require("./report");
 const { normalizeFingerprint, checkFingerprintBan } = require("../modules/fingerprintBan");
+const { recordLoginFingerprint } = require("../modules/fingerprintLogin");
 const router = express.Router();
 const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
@@ -312,6 +313,7 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint) {
       email,
       deleted: true,
     }).select("id discordId");
+    const fingerprintMatch = normalizeFingerprint(fingerprint);
 
     if (!user && !bannedUser && !deletedUser) {
       //Create new account (5) (6)
@@ -325,7 +327,6 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint) {
       var aliasAccount = await findAliasAccount(email);
       if (aliasAccount) throw { emailAliasInUse: true };
 
-      var fingerprintMatch = normalizeFingerprint(fingerprint);
       var fingerprintBan = fingerprintMatch ? await checkFingerprintBan(fingerprintMatch) : null;
       if (fingerprintBan === "block") throw { banEvasion: true };
 
@@ -461,6 +462,8 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint) {
         }
       );
 
+      await recordLoginFingerprint(bannedUser.id, fingerprint);
+
       // Get site ban information to return to frontend
       var siteBan = await models.Ban.findOne({
         userId: bannedUser.id,
@@ -509,9 +512,7 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint) {
       }
 
       await models.User.updateOne({ id: id }, { $addToSet: { ip: ip } });
-      if (fingerprintMatch) {
-        await models.User.updateOne({ id: id }, { $addToSet: { fingerprints: fingerprintMatch } });
-      }
+      await recordLoginFingerprint(id, fingerprint);
 
       // Link Discord profile if logging in with Discord.
       if (discordProfile && !user.discordId) {

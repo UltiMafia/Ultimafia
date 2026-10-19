@@ -58,6 +58,8 @@ module.exports = class Message {
     )
       this.game.spectatorsHear(this.versions["*"]);
 
+    this.game.omniscientSpectatorsHear?.(this);
+
     this.game.events.emit("message", this);
   }
 
@@ -97,6 +99,7 @@ module.exports = class Message {
     if (version.isServer) senderId = "server";
     else if (
       version.anonymous &&
+      player &&
       (player.alive || (!player.alive && version.sender.alive))
     )
       senderId = "anonymous";
