@@ -1695,7 +1695,11 @@ export default function Settings() {
   }
 
   function onBirthdayClear(deps) {
-    if (!window.confirm("Are you sure you want to clear your birthday?")) {
+    if (
+      !window.confirm(
+        "Are you sure you want to clear your birthday? You won't be able to set it again without asking a moderator."
+      )
+    ) {
       return;
     }
 
@@ -1707,7 +1711,6 @@ export default function Settings() {
         deps.user.set(
           update(deps.user, {
             birthday: { $set: undefined },
-            bdayChanged: { $set: false },
           })
         );
 

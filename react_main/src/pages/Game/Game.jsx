@@ -73,7 +73,7 @@ import { Loading } from "../../components/Loading";
 import StateSwitcher from "../../components/gameComponents/StateSwitcher";
 
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
-import { hyphenDelimit, isBirthdayToday } from "../../utils";
+import { hyphenDelimit } from "../../utils";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
 import {
@@ -2867,8 +2867,7 @@ const MessageRow = React.memo(function MessageRow(props) {
       contentClass += "party ";
     } else if (
       player.anonId == undefined &&
-      player.birthday !== undefined &&
-      isBirthdayToday(player.birthday)
+      player.isBirthday === true
     ) {
       contentClass += " party ";
     } else if (playerFiddled) {

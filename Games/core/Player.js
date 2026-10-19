@@ -1,4 +1,5 @@
 const shortid = require("shortid");
+const dateOnly = require("../../lib/dateOnly");
 const nameGen = require("../../routes/utils").nameGen;
 const History = require("./History");
 const Message = require("./Message");
@@ -1055,7 +1056,8 @@ module.exports = class Player {
       nameGradientColorC: this.user.nameGradientColorC,
       customEmotes: this.user.customEmotes,
       customStickers: this.user.customStickers,
-      birthday: this.user.birthday,
+      // Never send the birthday date to other players; only whether it is today.
+      isBirthday: dateOnly.isBirthdayOn(this.user.birthday),
       vanityUrl: this.user.vanityUrl,
       // Anonymous players show their deck avatar, never their own shape.
       avatarShape:
