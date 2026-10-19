@@ -604,3 +604,46 @@
 .ld-modal-btn:hover {
   background: #43a047;
 }
+
+.ld-bet-log {
+  margin-bottom: 8px;
+  padding: 8px;
+}
+
+.ld-bet-log-list {
+  margin: 4px 0 0;
+  padding-left: 22px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.ld-bet-log-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: baseline;
+  gap: 10px;
+  padding: 2px 0;
+  min-width: 0;
+}
+
+.ld-bet-log-name {
+  min-width: 0;
+  max-width: 70%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ld-bet-log-bid {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.ld-bet-log-die {
+  margin: 0 0 0 2px;
+}
+
+.ld-bet-log-empty {
+  opacity: 0.7;
+  font-style: italic;
+}
