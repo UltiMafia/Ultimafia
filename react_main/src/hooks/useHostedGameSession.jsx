@@ -25,14 +25,21 @@ export function useHostedGameSession() {
   }
   const activeRef = useRef(inGame);
   activeRef.current = inGame;
-  const [hostedGameId, setHostedGameId] = useState(null);
+  const [hostedGame, setHostedGame] = useState(null);
 
   useEffect(() => {
-    if (routeGameId) setHostedGameId(routeGameId);
-  }, [routeGameId]);
+    if (!routeGameId) return;
+    // Capture the entry URL before the lazy game mounts or authenticates. Site
+    // navigation must not change whether this session joins as a spectator/bot.
+    // Returning to the same game keeps both its state and its original intent.
+    setHostedGame(current => current?.id === routeGameId ? current : {
+      id: routeGameId,
+      search: location.search,
+    });
+  }, [routeGameId, location.search]);
 
   const leaveGameSession = useCallback(() => {
-    setHostedGameId(null);
+    setHostedGame(null);
     if (!activeRef.current) return;
     const previous = previousSite.current;
     navigate(gameIdAt(previous.pathname) ? "/play" : {
@@ -42,5 +49,10 @@ export function useHostedGameSession() {
     }, { replace: true, state: previous.state });
   }, [navigate]);
 
-  return { inGame, hostedGameId, leaveGameSession };
+  return {
+    inGame,
+    hostedGameId: hostedGame?.id || null,
+    hostedGameSearch: hostedGame?.search || "",
+    leaveGameSession,
+  };
 }

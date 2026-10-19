@@ -14,9 +14,11 @@ import { useDismissOnBack } from "../src/hooks/useDismissOnBack";
 import { useGameMembership } from "../src/hooks/useGameMembership";
 import { useGameSessionIdentity } from "../src/hooks/useGameSessionIdentity";
 import { useNewMessageCount } from "../src/hooks/useNewMessageCount";
-import { ClientSocket, subscribeSocketListeners } from "../src/Socket";
+import { ClientSocket, parseMessage, subscribeSocketListeners } from "../src/Socket";
 import { useAppViewport } from "../src/hooks/useAppViewport";
 import LobbyBrowser from "../src/pages/Play/LobbyBrowser/LobbyBrowser";
+import { GameRow } from "../src/pages/Play/LobbyBrowser/GameRow";
+import Game from "../src/pages/Game/Game";
 import RoleMarkerToggle from "../src/pages/Game/components/RoleMarkerToggle";
 import Chat from "../src/pages/Chat/Chat";
 import { InGameContext } from "../src/Contexts";
@@ -38,6 +40,7 @@ async function until(predicate, message, ms = 5000) {
 }
 const theme = createTheme({ palette: { mode: "dark" }, breakpoints: { values: { xs: 0, sm: 600, md: 2000, lg: 2200, xl: 2400 } } });
 let api;
+let restoreGameHistory = null;
 function mount(node) {
   api = null;
   ReactDOM.render(<ThemeProvider theme={theme}>{node}</ThemeProvider>, root);
@@ -45,6 +48,10 @@ function mount(node) {
 async function cleanup() {
   deferChatConnect = false;
   ReactDOM.unmountComponentAtNode(root);
+  if (restoreGameHistory) {
+    window.history.replaceState(restoreGameHistory.state, "", restoreGameHistory.url);
+    restoreGameHistory = null;
+  }
   await wait(100);
 }
 async function run(name, fn) {
@@ -170,6 +177,61 @@ function Predictions() {
   </SiteInfoContext.Provider></UserContext.Provider></MemoryRouter>;
 }
 const ignore = () => {};
+const publicGame = {
+  id: "fixture-game", status: "Open", players: 9, spectating: true,
+  lobby: "Main", lobbyName: "Main", type: "Mafia",
+  setup: { id: "fixture", name: "Fixture", gameType: "Mafia", roles: "[{}]", total: 10, closed: false },
+};
+function GameSessionFixture({ delayed = false, loggedIn = true }) {
+  const session = useHostedGameSession();
+  const navigate = useNavigate();
+  const [gameMounted, setGameMounted] = useState(!delayed);
+  useEffect(() => { api = { ...session, navigate, setGameMounted }; });
+  return <UserContext.Provider value={{ ...user, loggedIn, id: loggedIn ? "fixture-member" : null,
+    refreshGameMembership: ignore, setInGame: ignore }}><SiteInfoContext.Provider value={siteInfo}>
+    {!session.inGame && <GameRow small game={{ ...publicGame }} />}
+    {session.hostedGameId && gameMounted && <ViewActivityContext.Provider value={session.inGame}>
+      <Game key={session.hostedGameId} gameId={session.hostedGameId}
+        joinSearch={session.hostedGameSearch} active={session.inGame} onLeave={session.leaveGameSession} />
+    </ViewActivityContext.Provider>}
+  </SiteInfoContext.Provider></UserContext.Provider>;
+}
+function mountGameSession(url, options = {}) {
+  restoreGameHistory = { state: window.history.state, url: window.location.href };
+  window.history.replaceState({ idx: 0, key: "game-fixture", usr: null }, "", url);
+  FakeSocket.all = [];
+  pending.length = 0;
+  mount(<BrowserRouter><GameSessionFixture {...options} /></BrowserRouter>);
+}
+async function nextGameRequest(spectating) {
+  await until(() => pending.some(p => !p.handled), "game connection request");
+  let request = pending.find(p => !p.handled);
+  request.handled = true;
+  if (!spectating) {
+    assert(request.url === "/api/game/fixture-game/info", "unexpected game info URL: " + request.url);
+    request.resolve({ status: "Open", settings: {} });
+    await until(() => pending.some(p => !p.handled), "game connect after info");
+    request = pending.find(p => !p.handled);
+    request.handled = true;
+  }
+  assert(request.url === "/api/game/fixture-game/connect" + (spectating ? "?spectate=true" : ""),
+    "connection changed join intent: " + request.url);
+  return request;
+}
+async function authenticateGame(request, token = "fixture-token", beforeAuth = ignore) {
+  const previousCount = FakeSocket.all.length;
+  request.resolve({ type: "Fixture", port: 3010, token, hostId: "host" });
+  await until(() => FakeSocket.all.length > previousCount, "game socket");
+  const native = FakeSocket.all[FakeSocket.all.length - 1];
+  native.open(); native.message("connected");
+  if (token) {
+    await until(() => native.sent.some(s => parseMessage(s)?.[0] === "auth"), "game auth");
+    await beforeAuth();
+    native.message("authSuccess");
+  }
+  await until(() => native.sent.some(s => parseMessage(s)?.[0] === "join"), "game join");
+  return { native, join: native.sent.map(parseMessage).find(([event]) => event === "join")[1] };
+}
 function MembershipFixture() {
   return <SiteInfoContext.Provider value={siteInfo}>
     <UserProvider setUserLoading={ignore} setSiteTheme={ignore}><MembershipDriver /></UserProvider>
@@ -204,6 +266,10 @@ axios.defaults.adapter = config => new Promise((resolve, reject) => {
     pending.push({url:config.url,config,resolve:data=>resolve({data,status:200,headers:{},config})});
     return;
   }
+  if (/^\/api\/game\/fixture-game\/(info|connect)(\?|$)/.test(config.url)) {
+    pending.push({ url: config.url, config, resolve: data => resolve({ data, status: 200, headers: {}, config }), reject });
+    return;
+  }
   if (config.url !== '/api/setup/fixture' && config.url !== '/api/user/info' && !config.url.startsWith('/api/user/') &&
       !config.url.startsWith('/api/game/list?')) {
     const data = config.url.startsWith('/api/game/openCounts') ? {counts:{},hasOpen:false}
@@ -232,6 +298,117 @@ async function updateMessageView(patch, expected) {
 }
 
 async function tests() {
+  await run("game entry query survives browsing before the lazy game mounts", async () => {
+    mountGameSession("/game/fixture-game?spectate=true", { delayed: true });
+    await until(() => api?.hostedGameId, "hosted game entry");
+    api.navigate("/play"); await until(() => !api.inGame, "browse before game mount");
+    api.setGameMounted(true);
+    const request = await nextGameRequest(true);
+    const { join } = await authenticateGame(request);
+    assert(join.spectate === true, "lazy mount lost spectator intent");
+  });
+
+  await run("authenticated spectator joins and reconnects keep their intent while browsing", async () => {
+    mountGameSession("/game/fixture-game?spectate=true");
+    const request = await nextGameRequest(true);
+    api.navigate("/play"); await until(() => !api.inGame, "browse during connect");
+    const { native, join } = await authenticateGame(request);
+    assert(join.spectate === true, "auth join took a player seat");
+    api.navigate("/game/fixture-game"); await until(() => api.inGame, "return without a spectator query");
+    assert(FakeSocket.all.length === 1 && api.hostedGameSearch === "?spectate=true",
+      "ordinary return replaced the socket or changed join intent");
+    api.navigate("/play?bot"); await until(() => !api.inGame, "browse again before reconnect");
+    native.close();
+    const reconnect = await nextGameRequest(true);
+    const returned = await authenticateGame(reconnect, "reconnect-token");
+    assert(returned.join.spectate === true, "reconnect lost spectator intent");
+  });
+
+  await run("navigation between socket authentication and join cannot change spectate intent", async () => {
+    mountGameSession("/game/fixture-game?spectate=true");
+    const request = await nextGameRequest(true);
+    const { join } = await authenticateGame(request, "fixture-token", async () => {
+      api.navigate("/play"); await until(() => !api.inGame, "browse while authentication is pending");
+    });
+    assert(join.spectate === true, "auth response used the new page's query");
+  });
+
+  await run("only a server-confirmed seat change replaces spectator reconnect intent", async () => {
+    mountGameSession("/game/fixture-game?spectate=true");
+    const first = await authenticateGame(await nextGameRequest(true));
+    first.native.message("isSpectator:boolean:true");
+    first.native.message("takeSeatFailed:string:No open seats.");
+    first.native.close();
+    const retry = await authenticateGame(await nextGameRequest(true), "retry-token");
+    assert(retry.join.spectate === true, "failed seat request stopped spectating");
+    // takeSeat sends this only after successfully creating the player.
+    retry.native.message("isSpectator:boolean:false");
+    api.navigate("/play"); await until(() => !api.inGame, "browse after taking a seat");
+    retry.native.close();
+    const seated = await authenticateGame(await nextGameRequest(false), "seated-token");
+    assert(seated.join.spectate === false, "reconnect gave up the confirmed player seat");
+  });
+
+  await run("guest spectators keep their intent when the page changes before joining", async () => {
+    mountGameSession("/game/fixture-game?spectate=true", { loggedIn: false });
+    const request = await nextGameRequest(true);
+    api.navigate("/play"); await until(() => !api.inGame, "guest browses during connect");
+    const { join } = await authenticateGame(request, false);
+    assert(join.spectate === true, "guest join took a player seat");
+  });
+
+  await run("unrelated site queries cannot change a player or bot join", async () => {
+    mountGameSession("/game/fixture-game?bot");
+    const request = await nextGameRequest(false);
+    api.navigate("/play?spectate=true"); await until(() => !api.inGame, "browse during player connect");
+    const { join } = await authenticateGame(request);
+    assert(join.spectate === false && join.isBot === true, "site query changed the session's join flags");
+  });
+
+  await run("explicit Spectate re-enters the server even for an already retained game", async () => {
+    mountGameSession("/game/fixture-game");
+    await authenticateGame(await nextGameRequest(false));
+    api.navigate("/play"); await until(() => !api.inGame, "browse from seated game");
+    const link = [...root.querySelectorAll("a")].find(el => el.textContent === "Spectate");
+    assert(link, "lobby spectator link missing");
+    let documentNavigation;
+    const intercept = event => {
+      if (!link.contains(event.target)) return;
+      // Observe React Router's handling at document bubble, then prevent the
+      // actual reload so this fixture can finish. Production must NOT turn the
+      // membership-changing click into a same-session client-side route change.
+      documentNavigation = { preventedByRouter: event.defaultPrevented, href: link.getAttribute("href") };
+      event.preventDefault();
+    };
+    document.addEventListener("click", intercept);
+    try { link.click(); } finally { document.removeEventListener("click", intercept); }
+    assert(documentNavigation && !documentNavigation.preventedByRouter,
+      "Spectate reused the seated session without asking the server");
+    assert(documentNavigation.href === "/game/fixture-game?spectate=true", "wrong spectator destination");
+  });
+
+  await run("full public lobbies retain Spectate without exposing restricted games", async () => {
+    const cases = [
+      [{ players: 9 }, true, ["Join", "Spectate"]],
+      [{ players: 10 }, true, ["Spectate"]],
+      [{ status: "In Progress", players: 10 }, true, ["Spectate"]],
+      [{ players: 10, spectating: false }, true, []],
+      [{ players: 10, private: true }, true, []],
+      [{ players: 10, broken: true }, true, []],
+      [{ players: 10 }, false, []],
+      [{ status: "Finished", players: 10 }, false, ["Review"]],
+    ];
+    for (const [patch, loggedIn, expected] of cases) {
+      mount(<MemoryRouter><UserContext.Provider value={{ ...user, loggedIn }}><SiteInfoContext.Provider value={siteInfo}>
+        <GameRow small game={{ ...publicGame, ...patch }} />
+      </SiteInfoContext.Provider></UserContext.Provider></MemoryRouter>);
+      await wait();
+      const buttons = [...root.querySelectorAll("a")].filter(el => el.getAttribute("href")?.startsWith("/game/"));
+      assert(JSON.stringify(buttons.map(el => el.textContent)) === JSON.stringify(expected),
+        "wrong lobby controls: " + JSON.stringify({ patch, loggedIn, actual: buttons.map(el => el.textContent) }));
+    }
+  });
+
   await run("unread messages exclude initial history, accumulate live arrivals and clear at bottom", async () => {
     mount(<NewMessageFixture />);
     await until(() => api, "message fixture mount");

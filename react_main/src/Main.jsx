@@ -29,6 +29,7 @@ import { AlertList, useErrorAlert } from "./components/Alerts";
 import { ConnectionBanner } from "./components/ConnectionBanner";
 import UserNavSection from "./pages/User/UserNavSection";
 import CookieBanner from "./components/CookieBanner";
+import IosBetaTicker from "./components/IosBetaTicker";
 import LeaveGameDialog from "./components/LeaveGameDialog";
 import NavDropdown from "./components/NavDropdown";
 import { Loading } from "./components/Loading";
@@ -158,7 +159,7 @@ function Main(props) {
     else root.setAttribute("data-bottom-inset", "page");
     return () => root.removeAttribute("data-bottom-inset");
   }, []);
-  const { inGame, hostedGameId, leaveGameSession } = useHostedGameSession();
+  const { inGame, hostedGameId, hostedGameSearch, leaveGameSession } = useHostedGameSession();
 
   useEffect(() => {
     const root = document.documentElement;
@@ -196,6 +197,7 @@ function Main(props) {
       }}
     >
       <CookieBanner />
+      <IosBetaTicker />
       <Header
         setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
       />
@@ -262,6 +264,7 @@ function Main(props) {
         <Game
           key={hostedGameId}
           gameId={hostedGameId}
+          joinSearch={hostedGameSearch}
           active={inGame}
           onLeave={leaveGameSession}
         />

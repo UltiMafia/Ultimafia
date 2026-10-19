@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_SWAP_ROLES } = require("../../const/Priority");
+const { attachConversionPhase } = require("../../const/ConversionPhases");
 
 module.exports = class SwapTwoOtherRolesNoAlignment extends Card {
   constructor(role) {
@@ -7,7 +8,7 @@ module.exports = class SwapTwoOtherRolesNoAlignment extends Card {
 
     this.meetings = {
       "First Player": {
-        states: ["Night"],
+        states: ["Night (Swapping)"],
         flags: ["voting"],
         action: {
           role: this.role,
@@ -19,7 +20,7 @@ module.exports = class SwapTwoOtherRolesNoAlignment extends Card {
         },
       },
       "Second Player": {
-        states: ["Night"],
+        states: ["Night (Swapping)"],
         flags: ["voting"],
         action: {
           role: this.role,
@@ -57,5 +58,6 @@ module.exports = class SwapTwoOtherRolesNoAlignment extends Card {
         },
       },
     };
+    attachConversionPhase(this, "Night (Swapping)");
   }
 };

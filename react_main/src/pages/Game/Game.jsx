@@ -175,8 +175,23 @@ export const GameTypeContext = createContext({
   singleState: false,
 });
 
+// urgent.mp3 does not loop (~15s). Repeat it until the failed player leaves,
+// takes a seat, refreshes, or a new ready check starts.
+const READY_CHECK_BELL_REPEAT_MS = 15000;
+
 export default function Game(props) {
   const user = useContext(UserContext);
+  // HTTP connect, socket join and reconnect all belong to the same entry URL,
+  // even while this session is retained behind an unrelated site page. Only a
+  // server-confirmed membership change may replace the spectator join mode.
+  const joinOptionsRef = useRef(null);
+  if (!joinOptionsRef.current) {
+    const search = props.joinSearch ?? window.location.search;
+    joinOptionsRef.current = {
+      spectate: new URLSearchParams(search).get("spectate") === "true",
+      isBot: search === "?bot",
+    };
+  }
   const [loaded, setLoaded] = useState(false);
   const [review, setReview] = useState(false);
   const [leave, setLeave] = useState(false);
@@ -256,6 +271,36 @@ export default function Game(props) {
 
   const { playAudio, loadAudioFiles, stopAudio, stopAudios, playDeathSounds, stopDeathSounds } =
     useAudio(audibleSettings);
+  const playAudioRef = useRef(playAudio);
+  const stopAudioRef = useRef(stopAudio);
+  const readyBellRepeatRef = useRef(null);
+  const stopReadyBellRepeatRef = useRef(() => {});
+  const startReadyBellRepeatRef = useRef(() => {});
+  playAudioRef.current = playAudio;
+  stopAudioRef.current = stopAudio;
+
+  function stopReadyBellRepeat() {
+    if (readyBellRepeatRef.current) {
+      clearInterval(readyBellRepeatRef.current);
+      readyBellRepeatRef.current = null;
+    }
+    if (stopAudioRef.current) stopAudioRef.current("urgent");
+  }
+
+  function startReadyBellRepeat() {
+    if (readyBellRepeatRef.current) {
+      clearInterval(readyBellRepeatRef.current);
+      readyBellRepeatRef.current = null;
+    }
+    if (playAudioRef.current) playAudioRef.current("urgent");
+    readyBellRepeatRef.current = setInterval(() => {
+      if (playAudioRef.current) playAudioRef.current("urgent");
+    }, READY_CHECK_BELL_REPEAT_MS);
+  }
+
+  stopReadyBellRepeatRef.current = stopReadyBellRepeat;
+  startReadyBellRepeatRef.current = startReadyBellRepeat;
+
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
@@ -300,7 +345,7 @@ export default function Game(props) {
 
   function onReadyCheckVerify() {
     socket.send("readyCheck verify");
-    stopAudio("urgent");
+    stopReadyBellRepeat();
     // A ready check can arrive while the player is on another page; confirming
     // it returns them to the game. Leaving does not navigate (see Main).
     if (!active) navigate(`/game/${gameId}`);
@@ -334,6 +379,7 @@ export default function Game(props) {
   }
 
   function leaveGame() {
+    stopReadyBellRepeat();
     if (finished) siteInfo.hideAllAlerts();
 
     // Drop the server-side push target, but leave the browser subscription in
@@ -399,6 +445,15 @@ export default function Game(props) {
     return () =>
       window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [active, history.currentState, finished, review, isParticipant]);
+
+  useEffect(() => {
+    return () => {
+      if (readyBellRepeatRef.current) {
+        clearInterval(readyBellRepeatRef.current);
+        readyBellRepeatRef.current = null;
+      }
+    };
+  }, []);
 
   const [persistentGameData, updatePersistentGameData] = useReducer(
     (state, action) => {
@@ -755,11 +810,13 @@ export default function Game(props) {
     }
 
     console.log("[WEBSOCKET] Successfully connected");
+
     if (token) socket.send("auth", token);
     else
       socket.send("join", {
         gameId,
         guestId: window.localStorage.getItem("cacheVal"),
+        spectate: joinOptionsRef.current.spectate,
       });
 
     const replay = registeredSocketRef.current !== socket;
@@ -768,7 +825,8 @@ export default function Game(props) {
     socket.on("authSuccess", () => {
       socket.send("join", {
         gameId,
-        isBot: window.location.search === "?bot",
+        isBot: joinOptionsRef.current.isBot,
+        spectate: joinOptionsRef.current.spectate,
       });
     });
 
@@ -1031,11 +1089,15 @@ export default function Game(props) {
       setShowFirstGameModal(true);
     });
 
-    socket.on("isSpectator", () => {
-      setIsSpectator(true);
+    socket.on("isSpectator", (value) => {
+      const spectatingNow = value !== false;
+      joinOptionsRef.current.spectate = spectatingNow;
+      setIsSpectator(spectatingNow);
+      if (!spectatingNow) stopReadyBellRepeatRef.current();
     });
 
     socket.on("left", () => {
+      stopReadyBellRepeatRef.current();
       if (!noLeaveRef.current) {
         setLeave(true);
         siteInfo.hideAllAlerts();
@@ -1047,11 +1109,20 @@ export default function Game(props) {
       errorAlert(error);
     });
 
+    socket.on("takeSeatFailed", (message) => {
+      errorAlert(message);
+    });
+
+    socket.on("spectateFailed", (message) => {
+      errorAlert(message);
+    });
+
     socket.on("dev", () => {
       setDev(true);
     });
 
     socket.on("readyCheck init", (data) => {
+      stopReadyBellRepeatRef.current();
       const readyMap = {};
       if (data.readyPlayers) data.readyPlayers.forEach((id) => (readyMap[id] = true));
       setReadyCheckInfo({
@@ -1068,13 +1139,18 @@ export default function Game(props) {
     });
 
     socket.on("readyCheck cancel", () => {
-      stopAudio("urgent");
+      stopReadyBellRepeatRef.current();
       setReadyCheckInfo({ active: false, readyPlayers: {}, endTime: 0 });
     });
 
     socket.on("readyCheck success", () => {
-      stopAudio("urgent");
+      stopReadyBellRepeatRef.current();
       setReadyCheckInfo({ active: false, readyPlayers: {}, endTime: 0 });
+    });
+
+    socket.on("readyCheck failed", () => {
+      setReadyCheckInfo({ active: false, readyPlayers: {}, endTime: 0 });
+      startReadyBellRepeatRef.current();
     });
 
     socket.on("readyCheck update", (data) => {
@@ -1124,8 +1200,7 @@ export default function Game(props) {
   }
 
   function getConnectionInfo() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const isSpectating = urlParams.get("spectate") === "true";
+    const isSpectating = joinOptionsRef.current.spectate;
 
     if (isSpectating || sportsmanshipAcceptedRef.current) {
       connectToGame(isSpectating);
@@ -1343,6 +1418,7 @@ export default function Game(props) {
         {active && !review && history.currentState == -1 && (
           <PushNotificationPrompt socket={socket} />
         )}
+        {!isPhoneDevice && <PregameSeatActions />}
         <ReadyCheckDialog
           open={readyCheckInfo.active && !readyCheckInfo.readyPlayers[self]}
           endTime={readyCheckInfo.endTime}
@@ -1909,8 +1985,68 @@ function getDefaultSpeechMeetingId(speechMeetings) {
 
 const EMPTY_CHAT_STATE = { meetings: {}, alerts: [], obituaries: {} };
 
+function settingIsTrueValue(value) {
+  return value === true || value === "true";
+}
+
+// Desktop renders this under the chat. On a phone that spot is below the
+// viewport, under the bottom nav, so the compact variant sits in the chat.
+function PregameSeatActions({ compact = false }) {
+  const { review, history, isSpectator, socket, options, gameId } =
+    useContext(GameContext);
+
+  if (review || !history || history.currentState != -1) return null;
+
+  const showJoin = !!isSpectator;
+  const showSpectate =
+    !isSpectator && settingIsTrueValue(options && options.spectating);
+  if (!showJoin && !showSpectate) return null;
+
+  return (
+    <Box
+      sx={
+        compact
+          ? {
+              display: "flex",
+              flexShrink: 0,
+              width: "100%",
+              boxSizing: "border-box",
+              px: 1.25,
+              py: 0.5,
+            }
+          : { display: "flex", justifyContent: "center", p: 1 }
+      }
+    >
+      {showJoin ? (
+        <Button
+          variant="contained"
+          fullWidth={compact}
+          size={compact ? "small" : "medium"}
+          onClick={() => {
+            if (socket && socket.on) socket.send("takeSeat");
+          }}
+        >
+          Join open seat
+        </Button>
+      ) : (
+        <Button
+          variant="outlined"
+          fullWidth={compact}
+          size={compact ? "small" : "medium"}
+          onClick={() => {
+            window.location.assign(`/game/${gameId}?spectate=true`);
+          }}
+        >
+          Spectate
+        </Button>
+      )}
+    </Box>
+  );
+}
+
 export function TextMeetingLayout() {
   const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
   const { singleState } = useContext(GameTypeContext);
   const { isolationEnabled, isolatedPlayers, isSpectator } = game;
   const { history, players, stateViewing, updateHistory, settings, filters, spectators } =
@@ -2085,7 +2221,12 @@ export function TextMeetingLayout() {
           history={history}
           players={players}
           spectators={spectators}
-          stateViewing={stateViewing}
+          stateViewing={
+            singleState && !message.obituaries && !message.winners
+              ? rowStateClass(stateViewing)
+              : stateViewing
+          }
+          meetingState={singleState ? message.fromState : stateViewing}
           key={message.id || message.messageId + message.time || i}
           onMessageQuote={game.onMessageQuote}
           onPinMessage={game.onPinMessage}
@@ -2244,6 +2385,7 @@ export function TextMeetingLayout() {
               {newMessageCount} new message{newMessageCount === 1 ? "" : "s"}
             </button>
           )}
+          {isPhoneDevice && <PregameSeatActions compact />}
           <KudosDock onResize={doAutoScroll} />
           {canSpeak && (
             <SpeechInput
@@ -2265,7 +2407,9 @@ export function TextMeetingLayout() {
   );
 }
 
-function getAllMessagesToDisplay(history) {
+const stateMessagesCache = new WeakMap();
+
+export function getAllMessagesToDisplay(history) {
   var messages = [];
   var postgameWinnersMessages = [];
   const states = Object.keys(history.states).sort(
@@ -2283,6 +2427,14 @@ function getAllMessagesToDisplay(history) {
       continue;
     }
 
+    const cached = stateMessagesCache.get(stateData);
+    if (cached) {
+      messages.push(...cached.messages);
+      if (cached.postgameWinners) postgameWinnersMessages.push(cached.postgameWinners);
+      continue;
+    }
+
+    let postgameWinners = null;
     let stateMessages = [];
     for (let meeting in stateMeetings) {
       var meetingData = stateMeetings[meeting];
@@ -2313,6 +2465,7 @@ function getAllMessagesToDisplay(history) {
         senderId: "server",
       };
       if (state === "-2") {
+        postgameWinners = winnersMessage;
         postgameWinnersMessages.push(winnersMessage);
       } else {
         stateMessages.push(winnersMessage);
@@ -2320,6 +2473,10 @@ function getAllMessagesToDisplay(history) {
     }
 
     stateMessages.sort((a, b) => a.time - b.time);
+    stateMessagesCache.set(stateData, {
+      messages: stateMessages,
+      postgameWinners,
+    });
     messages.push(...stateMessages);
   }
 
@@ -2505,16 +2662,21 @@ function getContentClasses(message) {
  */
 export const IsPhoneDeviceContext = createContext(false);
 
+export function rowStateClass(stateViewing) {
+  return stateViewing > 0 ? 1 : stateViewing;
+}
+
 function Message(props) {
-  const { history, isMessagePinned, ...rowProps } = props;
+  const { history, isMessagePinned, meetingState, ...rowProps } = props;
   const { message, stateViewing } = props;
+  const nameState = meetingState ?? stateViewing;
   // History changes on every append. Only quotes and summary rows need it;
   // ordinary rows depend on the meeting's name, not its growing message array.
   return (
     <MessageRow
       {...rowProps}
       pinned={isMessagePinned(message)}
-      meetingName={history.states[stateViewing]?.meetings?.[message.meetingId]?.name}
+      meetingName={history.states[nameState]?.meetings?.[message.meetingId]?.name}
       quoteState={message.isQuote ? history.states[message.fromState] : undefined}
       history={message.obituaries || message.winners ? history : undefined}
     />
@@ -6048,6 +6210,11 @@ export function Notes() {
   );
 }
 
+function selTabName(state) {
+  if (!state || !state.selTab || !state.meetings) return state?.carrySelTabName;
+  return state.meetings[state.selTab]?.name;
+}
+
 export function useHistoryReducer() {
   return useReducer(
     (history, action) => {
@@ -6086,11 +6253,24 @@ export function useHistoryReducer() {
                     dead: { ...history.states[prevState].dead },
                     exorcised: { ...history.states[prevState].exorcised },
                     extraInfo: { ...action.state.extraInfo },
+                    carrySelTabName: selTabName(history.states[prevState]),
                   },
                 },
               },
               currentState: {
                 $set: Number.parseInt(action.state.id),
+              },
+            });
+          } else if (
+            action.state.extraInfo &&
+            !action.state.winners &&
+            history.states[action.state.id]
+          ) {
+            return update(history, {
+              states: {
+                [action.state.id]: {
+                  extraInfo: { $set: { ...action.state.extraInfo } },
+                },
               },
             });
           } else if (action.state.winners && history.states[action.state.id]) {
@@ -6114,6 +6294,11 @@ export function useHistoryReducer() {
           let state = history.states[history.currentState];
 
           if (state) {
+            const carryTab =
+              !state.selTab &&
+              action.meeting.speech &&
+              state.carrySelTabName &&
+              state.carrySelTabName === action.meeting.name;
             return update(history, {
               states: {
                 [history.currentState]: {
@@ -6122,6 +6307,7 @@ export function useHistoryReducer() {
                       $set: action.meeting,
                     },
                   },
+                  ...(carryTab ? { selTab: { $set: action.meeting.id } } : {}),
                 },
               },
             });
