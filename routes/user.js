@@ -2774,6 +2774,23 @@ router.post("/settings/update", async function (req, res) {
       }
     }
 
+    // Liar's Dice face color: #rrggbb only; empty resets to the default white.
+    if (prop === "diceColor") {
+      if (!value || value === "none" || value === "null" || value === "undefined") {
+        await models.User.updateOne(
+          { id: userId },
+          { $unset: { "settings.diceColor": "" } }
+        );
+        await redis.cacheUserInfo(userId, true);
+        res.sendStatus(200);
+        return;
+      }
+      if (!/^#[0-9a-fA-F]{6}$/.test(value)) {
+        errors.badRequest(res, "Dice color must be a #rrggbb color.");
+        return;
+      }
+    }
+
     // Clearing name/text color restores system defaults (works in light + dark mode)
     if (
       (prop === "textColor" || prop === "nameColor") &&

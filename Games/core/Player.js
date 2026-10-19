@@ -1015,6 +1015,8 @@ module.exports = class Player {
       textColor: this.user.textColor,
       nameColor: this.user.nameColor,
       nameFont: this.user.nameFont,
+      // Cosmetic Liar's Dice face color; visible to everyone in the game.
+      diceColor: this.user.diceColor,
       animatedNameColor: this.user.animatedNameColor,
       nameGradientColorA: this.user.nameGradientColorA,
       nameGradientColorB: this.user.nameGradientColorB,
