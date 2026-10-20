@@ -26,8 +26,8 @@ import {
   mergeSpectatorChat,
   pickSpeechTarget,
   pregameSpectatorList,
-  tabCompleteNames,
 } from "shared/spectatorChat";
+import { completePlayerName, tabCompleteNames } from "shared/tabComplete";
 import Newspaper, {
   ObituariesMessage,
 } from "../../components/gameComponents/Newspaper";
@@ -3538,40 +3538,18 @@ function SpeechInput(props) {
       e.preventDefault();
       const words = speechInput.split(" ");
       const word = words.pop();
-      // Removing non-word characters before the string.
-      const seedString = word.match(/[^\w-]?([\w-]*)$/)[1].toLowerCase();
-      const prefix = word.substring(0, word.length - seedString.length);
-      if (!seedString.length) return;
-
-      const playerNames = tabCompleteNames({
-        players,
-        spectators: game.spectators,
-        isPregame: game.history?.currentState == -1,
-        isSpectator: game.isSpectator,
-      });
-      const playerSeeds = playerNames.map((playerName) =>
-        playerName.toLowerCase().substring(0, seedString.length)
+      const completed = completePlayerName(
+        word,
+        tabCompleteNames({
+          players,
+          spectators: game.spectators,
+          isPregame: game.history?.currentState == -1,
+          isSpectator: game.isSpectator,
+        })
       );
-      const matchedPlayers = [];
-      for (const i in playerSeeds) {
-        if (playerSeeds[i] === seedString) {
-          matchedPlayers.push(playerNames[i]);
-        }
-      }
-      if (matchedPlayers.length) {
-        if (matchedPlayers.length === 1) {
-          words.push(prefix + matchedPlayers[0]);
-        } else {
-          let i = 1;
-          while (
-            matchedPlayers.every(
-              (playerName) => playerName[i] === matchedPlayers[0][i]
-            )
-          ) {
-            i += 1;
-          }
-          words.push(prefix + matchedPlayers[0].substring(0, i));
-        }
+      if (completed === undefined) return;
+      if (completed) {
+        words.push(completed);
         setSpeechInput(words.join(" "));
       } else if (word.toLowerCase() === "@everyone".substring(0, word.length)) {
         words.push("@everyone");

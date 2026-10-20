@@ -8,8 +8,11 @@ const {
   mergeSpectatorChat,
   pickSpeechTarget,
   pregameSpectatorList,
-  tabCompleteNames,
 } = require("../react_main/src/shared/spectatorChat");
+const {
+  tabCompleteNames,
+  completePlayerName,
+} = require("../react_main/src/shared/tabComplete");
 
 function meeting(id, name, extra) {
   return Object.assign(
@@ -167,6 +170,75 @@ describe("Tab completion names", function () {
       spectators: { s3: { id: "s3", name: "Alice", watching: true } },
       isPregame: true,
     }).should.deep.equal(["Alice", "Bob"]);
+  });
+});
+
+describe("Tab completion with repeated names", function () {
+  // What the client map holds after B spectates and takes a seat again (or
+  // leaves and rejoins in pregame): the old entry stays, marked left.
+  const players = {
+    a: { id: "a", name: "Alice" },
+    b1: { id: "b1", name: "Bob", left: true },
+    c: { id: "c", name: "Carol" },
+    b2: { id: "b2", name: "Bob" },
+  };
+
+  it("skips left players and keeps the rejoined one once", function () {
+    tabCompleteNames({ players, spectators: {}, isPregame: true })
+      .should.deep.equal(["Alice", "Carol", "Bob"]);
+  });
+
+  it("a left player is not a candidate at all", function () {
+    tabCompleteNames({
+      players: { x: { id: "x", name: "Gone", left: true } },
+      spectators: { s: { id: "s", name: "Gone2", watching: true, left: true } },
+      isPregame: true,
+    }).should.deep.equal([]);
+  });
+
+  it("drops empty and missing names", function () {
+    tabCompleteNames({
+      players: { a: { id: "a", name: "" }, b: { id: "b" }, c: null, d: { name: "Dee" } },
+      spectators: { s: { id: "s", name: "", watching: true } },
+      isPregame: true,
+    }).should.deep.equal(["Dee"]);
+  });
+
+  it("a player and a spectator with the same name complete once", function () {
+    const names = tabCompleteNames({
+      players: { a: { id: "a", name: "Bob" } },
+      spectators: {
+        s: { id: "s", name: "Bob", watching: true },
+        t: { id: "t", name: "Bobby", watching: true },
+      },
+      isPregame: true,
+    });
+    names.should.deep.equal(["Bob", "Bobby"]);
+    completePlayerName("bo", names).should.equal("Bob");
+    completePlayerName("bobb", names).should.equal("Bobby");
+  });
+
+  it("completes a left-and-rejoined name instead of hanging", function () {
+    // Even with the raw map (left entry included) the loop must end.
+    const raw = Object.values(players).map((p) => p.name);
+    completePlayerName("b", raw).should.equal("Bob");
+    completePlayerName("Bob", ["Bob", "Bob", "Bob"]).should.equal("Bob");
+    const names = tabCompleteNames({ players, spectators: {}, isPregame: true });
+    completePlayerName("b", names).should.equal("Bob");
+  });
+
+  it("completes a current spectator's name in pregame only for players", function () {
+    const spectators = { s: { id: "s", name: "Watcher", watching: true } };
+    completePlayerName(
+      "wa",
+      tabCompleteNames({ players, spectators, isPregame: true, isSpectator: false })
+    ).should.equal("Watcher");
+    expect(
+      completePlayerName(
+        "wa",
+        tabCompleteNames({ players, spectators, isPregame: false, isSpectator: false })
+      )
+    ).to.equal(null);
   });
 });
 
