@@ -4111,8 +4111,8 @@ export function PlayerList(props) {
   );
 }
 
-// Who is spectating, listed only during pregame. Once the game starts the
-// list is hidden (the eye count in the header stays).
+// Who is spectating. Everyone sees it in pregame; once the game starts only
+// spectators do (players keep the eye count in the header).
 function PregameSpectatorRows() {
   const game = useContext(GameContext);
   const user = useContext(UserContext);
@@ -4122,6 +4122,7 @@ function PregameSpectatorRows() {
     currentState: game.history?.currentState,
     stateViewing: game.stateViewing,
     review: game.review,
+    isSpectator: game.isSpectator,
   });
   if (watching.length === 0) return null;
 

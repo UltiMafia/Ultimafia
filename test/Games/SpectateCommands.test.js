@@ -758,6 +758,126 @@ describe("Games/SpectateCommands", function () {
         .map((s) => s.name)
         .should.include("a");
     });
+
+    const latestSpectators = (socket) => {
+      const sent = events(socket, "spectators");
+      return sent.length ? sent[sent.length - 1].data : null;
+    };
+    const names = (info) =>
+      Object.values(info || {})
+        .map((s) => s.name)
+        .sort();
+    const watching = (info) =>
+      Object.values(info || {})
+        .filter((s) => s.watching)
+        .map((s) => s.name)
+        .sort();
+
+    it("everyone gets the list in pregame, players and spectators", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const watcher = makeUser(null, "watcher");
+      await game.userJoin(host);
+      host.socket.flushMessages();
+      await game.userJoin(watcher, { spectate: true });
+
+      names(latestSpectators(host.socket)).should.deep.equal(["watcher"]);
+      latestSpectators(host.socket)[game.spectators[0].id].watching.should.equal(
+        true
+      );
+      watching(latestSpectators(watcher.socket)).should.deep.equal(["watcher"]);
+    });
+
+    it("after the start players get no names, spectators get the full list", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      const third = makeUser(null, "third");
+      const early = makeUser(null, "early");
+      await game.userJoin(host);
+      await game.userJoin(other);
+      await game.userJoin(third);
+      await game.userJoin(early, { spectate: true });
+      await startBare(game);
+
+      host.socket.flushMessages();
+      early.socket.flushMessages();
+      const late = makeUser(null, "late");
+      await game.userJoin(late, { spectate: true });
+
+      // Players only hear the count change.
+      events(host.socket, "spectators").should.have.lengthOf(0);
+      events(host.socket, "spectatorCount")
+        .map((e) => e.data)
+        .should.include(2);
+      // Spectators get everyone watching.
+      watching(latestSpectators(early.socket)).should.deep.equal(["early", "late"]);
+      watching(latestSpectators(late.socket)).should.deep.equal(["early", "late"]);
+
+      // A spectator leaving: players hear nothing but the count.
+      host.socket.flushMessages();
+      early.socket.flushMessages();
+      game.removeSpectator(
+        game.spectators.filter((s) => s.user.id === late.id)[0]
+      );
+      events(host.socket, "spectators").should.have.lengthOf(0);
+      watching(latestSpectators(early.socket)).should.deep.equal(["early"]);
+    });
+
+    it("a player reconnecting after the start gets only pregame speakers, unmarked", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      const talker = makeUser(null, "talker");
+      const quiet = makeUser(null, "quiet");
+      await game.userJoin(host);
+      await game.userJoin(other);
+      await game.userJoin(talker, { spectate: true });
+      await game.userJoin(quiet, { spectate: true });
+      const talkerSpectator = game.spectators.filter(
+        (s) => s.user.id === talker.id
+      )[0];
+      say(talkerSpectator, "hi from the rail", game.pregame.id);
+      await settle();
+      await startBare(game);
+
+      const player = playerFor(game, host);
+      const info = game.getSpectatorInfoFor(player);
+      names(info).should.deep.equal(["talker"]);
+      should.not.exist(info[talkerSpectator.id].watching);
+
+      // Spectators still get everyone watching.
+      watching(game.getSpectatorInfoFor(talkerSpectator)).should.deep.equal([
+        "quiet",
+        "talker",
+      ]);
+
+      // What the reconnecting player's socket is sent.
+      const hostAgain = makeUser(host.id, "host");
+      await game.userJoin(hostAgain);
+      await settle();
+      const sent = latestSpectators(hostAgain.socket);
+      names(sent).should.deep.equal(["talker"]);
+      Object.values(sent).some((s) => s.watching).should.equal(false);
+    });
+
+    it("a player who is out of the game gets the full list", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      const watcher = makeUser(null, "watcher");
+      await game.userJoin(host);
+      await game.userJoin(other);
+      await game.userJoin(watcher, { spectate: true });
+      await startBare(game);
+
+      host.socket.flushMessages();
+      other.socket.flushMessages();
+      game.exorcisePlayer(playerFor(game, other));
+
+      watching(latestSpectators(other.socket)).should.include("watcher");
+      events(host.socket, "spectators").should.have.lengthOf(0);
+    });
   });
 
   describe("spectator chat visibility", function () {

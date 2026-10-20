@@ -1,6 +1,6 @@
-// Spectator chat shown inline in the game chat, and the pregame spectators
-// list. Plain CommonJS with no React so test/spectatorChat.test.js can load
-// it directly.
+// Spectator chat shown inline in the game chat, and the spectators list.
+// Plain CommonJS with no React so test/spectatorChat.test.js can load it
+// directly.
 //
 // The server still keeps spectator chat in its own "Spectator Meeting". Only
 // spectators (and players who are out of the game, who become spectators)
@@ -87,12 +87,19 @@ function pickSpeechTarget({ activeMeeting, spectatorMeeting, isPregame }) {
   return { meetingId: null, spectatorChat: false };
 }
 
-// The spectators to list, only while the game is in pregame. The spectators
-// map also keeps past spectators so chat can name them; "watching" marks the
-// ones spectating now.
-function pregameSpectatorList(spectators, { currentState, stateViewing, review }) {
-  if (review || Number(currentState) !== -1 || Number(stateViewing) !== -1)
-    return [];
+// The spectators to list. Everyone sees the list in pregame. Once the game
+// has started only spectators see it (players just see the count; the
+// server no longer sends them who is watching). The spectators map also
+// keeps past spectators so chat can name them; "watching" marks the ones
+// spectating now.
+function pregameSpectatorList(
+  spectators,
+  { currentState, stateViewing, review, isSpectator }
+) {
+  if (review) return [];
+  const inPregame =
+    Number(currentState) === -1 && Number(stateViewing) === -1;
+  if (!inPregame && !isSpectator) return [];
   return Object.values(spectators || {})
     .filter((spectator) => spectator && spectator.watching)
     .sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")));

@@ -106,7 +106,7 @@ describe("Spectator chat (client helpers)", function () {
     }).should.deep.equal({ meetingId: null, spectatorChat: false });
   });
 
-  it("lists spectators only in pregame", function () {
+  it("lists spectators in pregame, then only for spectators", function () {
     const spectators = {
       s1: { id: "s1", name: "zed", watching: true },
       s2: { id: "s2", name: "amy", watching: true },
@@ -131,6 +131,25 @@ describe("Spectator chat (client helpers)", function () {
     pregameSpectatorList(undefined, {
       currentState: -1,
       stateViewing: -1,
+    }).should.deep.equal([]);
+    // Once started, only spectators see the list.
+    pregameSpectatorList(spectators, {
+      currentState: 2,
+      stateViewing: 2,
+      isSpectator: true,
+    })
+      .map((s) => s.name)
+      .should.deep.equal(["amy", "zed"]);
+    pregameSpectatorList(spectators, {
+      currentState: 2,
+      stateViewing: 1,
+      isSpectator: false,
+    }).should.deep.equal([]);
+    pregameSpectatorList(spectators, {
+      currentState: 2,
+      stateViewing: 2,
+      isSpectator: true,
+      review: true,
     }).should.deep.equal([]);
   });
 });

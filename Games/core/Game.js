@@ -802,7 +802,7 @@ module.exports = class Game {
 
     this.broadcast("spectatorCount", this.spectators.length);
     redis.setSpectatorCount(this.id, this.spectators.length);
-    this.broadcast("spectators", this.getAllSpectatorInfo());
+    this.broadcastSpectators();
     return spectator;
   }
 
@@ -1224,6 +1224,7 @@ module.exports = class Game {
 
     this.broadcast("spectatorCount", this.spectators.length);
     redis.setSpectatorCount(this.id, this.spectators.length);
+    this.broadcastSpectators();
   }
 
   // Returns if the integrity of the game was broken for the first time or not
@@ -1367,7 +1368,7 @@ module.exports = class Game {
 
     this.broadcast("spectatorCount", this.spectators.length);
     redis.setSpectatorCount(this.id, this.spectators.length);
-    this.broadcast("spectators", this.getAllSpectatorInfo());
+    this.broadcastSpectators();
   }
 
   async kickPlayer(player, permanent) {
@@ -1476,6 +1477,45 @@ module.exports = class Game {
     return allPlayerInfo;
   }
 
+  // Who may see who is spectating. Everyone in pregame. Once the game has
+  // started, only spectators (players see just the count), until it ends.
+  canSeeSpectatorList(recipient) {
+    if (!this.started || this.finished) return true;
+    return !!(recipient && recipient.spectator);
+  }
+
+  // The spectators payload for one recipient. A player in a started game
+  // gets only the spectators who spoke in pregame, so that chat can still
+  // name them, and no "watching" mark: they never learn who is watching now.
+  getSpectatorInfoFor(recipient) {
+    const all = this.getAllSpectatorInfo(recipient);
+    if (this.canSeeSpectatorList(recipient)) return all;
+
+    const spoke = new Set();
+    const pregameMessages = (this.pregame && this.pregame.messages) || [];
+    for (let message of pregameMessages)
+      if (message && message.sender && message.sender.spectator)
+        spoke.add(message.sender.id);
+
+    const limited = {};
+    for (let id of spoke) {
+      if (!all[id]) continue;
+      const { watching, ...info } = all[id];
+      limited[id] = info;
+    }
+    return limited;
+  }
+
+  // Sends the spectators list to everyone allowed to see it.
+  broadcastSpectators() {
+    if (this.canSeeSpectatorList(null)) {
+      this.broadcast("spectators", this.getAllSpectatorInfo());
+      return;
+    }
+    const all = this.getAllSpectatorInfo();
+    for (let spectator of this.spectators) spectator.send("spectators", all);
+  }
+
   getOptionsPayload() {
     return {
       lobby: this.lobby,
@@ -1552,7 +1592,7 @@ module.exports = class Game {
     if (this.rehostInfo && !this.isRehoster(player))
       player.send("rehosted", this.rehostInfo);
     player.send("spectatorCount", this.spectators.length);
-    player.send("spectators", this.getAllSpectatorInfo(player));
+    player.send("spectators", this.getSpectatorInfoFor(player));
 
     if (!player.user.playedGame && !player.isBot) player.send("firstGame");
 
