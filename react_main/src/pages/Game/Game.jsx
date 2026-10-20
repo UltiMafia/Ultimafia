@@ -20,7 +20,6 @@ import {
   useTextEffect,
 } from "../../components/TextEffects";
 import { parseTextEffect } from "shared/textEffects";
-import { pregameSeatAction } from "shared/pregameSeatAction";
 import Newspaper, {
   ObituariesMessage,
 } from "../../components/gameComponents/Newspaper";
@@ -76,6 +75,7 @@ import StateSwitcher from "../../components/gameComponents/StateSwitcher";
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { hyphenDelimit } from "../../utils";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { pregameSeatAction } from "shared/pregameSeatAction";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
 import {
   Accordion,
