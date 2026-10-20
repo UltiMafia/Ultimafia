@@ -1093,7 +1093,9 @@ module.exports = class Game {
       pushNotifications.unregisterUser(player.user.id);
     }
 
-    player.send("left");
+    // player.leaveReason: why the server removed them, shown on their page.
+    const reason = player.leaveReason;
+    player.send("left", reason ? { reason } : undefined);
     player.left = true;
 
     this.kudosVoterLeft(player);
@@ -1744,16 +1746,17 @@ module.exports = class Game {
     const userId = player.user && player.user.id;
     this.forgetPregameSpectator(userId);
 
-    player.send(
-      "error",
-      "You were removed from the game for not readying in time. You can rejoin from the lobby."
-    );
     this.sendAlert(
       `${player.name} was removed from the game for not readying.`,
       undefined,
       undefined,
       ["info"]
     );
+    // Sent with the one "left" event, so the page leaves, clears its in-game
+    // banner, then shows why. It rides on the player because game types
+    // override playerLeave(player) without extra arguments.
+    player.leaveReason =
+      "You were removed from the game for not readying in time. You can rejoin from the lobby.";
     await this.playerLeave(player);
   }
 

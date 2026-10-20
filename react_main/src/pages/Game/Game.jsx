@@ -1110,11 +1110,15 @@ export default function Game(props) {
       if (!spectatingNow) stopReadyBellRepeatRef.current();
     });
 
-    socket.on("left", () => {
+    socket.on("left", (data) => {
       stopReadyBellRepeatRef.current();
       if (!noLeaveRef.current) {
         setLeave(true);
         siteInfo.hideAllAlerts();
+        // The server says why it removed us (e.g. a missed ready check).
+        if (data && typeof data.reason === "string") {
+          siteInfo.showAlert(data.reason, "warning", true);
+        }
       }
     });
 

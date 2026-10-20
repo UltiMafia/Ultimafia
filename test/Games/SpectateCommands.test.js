@@ -620,8 +620,13 @@ describe("Games/SpectateCommands", function () {
       game.players.should.have.lengthOf(2);
       game.spectators.should.have.lengthOf(0);
       game.pregameSpectatorUserIds.has(late.id).should.equal(false);
-      events(late.socket, "error").should.have.lengthOf(1);
-      events(late.socket, "left").should.have.lengthOf(1);
+      events(late.socket, "error").should.have.lengthOf(0);
+      events(late.socket, "left").map((e) => e.data).should.deep.equal([
+        {
+          reason:
+            "You were removed from the game for not readying in time. You can rejoin from the lobby.",
+        },
+      ]);
       events(late.socket, "readyCheck failed").should.have.lengthOf(0);
       hints(late.socket).should.have.lengthOf(0);
       chatTexts(host.socket).should.include(
