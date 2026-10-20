@@ -604,6 +604,7 @@ module.exports = {
     deleteFanart: true,
     seeModPanel: true,
     deleteViolation: true,
+    approveGameBlocks: true,
   },
   defaultGroups: {
     Owner: {
@@ -670,6 +671,7 @@ module.exports = {
         "deleteStrategy",
         "deleteFanart",
         "seeModPanel",
+        "approveGameBlocks",
       ],
     },
     Liaison: {

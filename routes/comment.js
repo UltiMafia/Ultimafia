@@ -8,6 +8,7 @@ const {
   getReactionSummaries,
   attachReactionSummaries,
 } = require("../modules/reactions");
+const blocks = require("../modules/blocks");
 const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
 const router = express.Router();
@@ -125,6 +126,25 @@ router.post("/", async function (req, res) {
     if (content.length == 0 || content.length > maxLength) {
       errors.unprocessable(res, `Content must be between 1 and ${maxLength} characters.`);
       return;
+    }
+
+    // A profile wall's location is the owner's user id. Blocking works both
+    // ways: neither can comment on the other's profile.
+    if (location != userId) {
+      const profileOwner = await models.User.findOne({
+        id: location,
+        deleted: false,
+      })
+        .select("id -_id")
+        .lean();
+
+      if (
+        profileOwner &&
+        (await blocks.usersBlockEachOther(userId, profileOwner.id))
+      ) {
+        errors.forbidden(res, "You can't comment on this profile.");
+        return;
+      }
     }
 
     var comment = new models.Comment({

@@ -22,6 +22,7 @@ const logger = require("../modules/logging")(".");
 const fortunePoints = require("../modules/fortunePoints");
 const errors = require("../lib/errors");
 const skillRating = require("../modules/skillRating");
+const blocks = require("../modules/blocks");
 const router = express.Router();
 
 router.get("/groups", async function (req, res) {
@@ -1225,6 +1226,61 @@ router.post("/deleteStrategy", async (req, res) => {
 });
 
 // Unified route for clearing user content
+// Block requests involving a user (as blocker or blocked), for staff review.
+router.get("/blockRequests", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const modId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, modId, "approveGameBlocks")))
+      return;
+
+    const userId = String(req.query.userId || "");
+    const user = await models.User.findOne({ id: userId })
+      .select("id name -_id")
+      .lean();
+    if (!user) {
+      errors.notFound(res, "User not found.");
+      return;
+    }
+
+    res.send({ user, requests: await blocks.requestsInvolving(userId) });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not load block requests.");
+  }
+});
+
+// Approving is the only action: from then on neither user can join a game
+// the other hosts or is seated in. Only the blocker can undo it, by
+// unblocking.
+router.post("/blockRequests/approve", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const modId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, modId, "approveGameBlocks")))
+      return;
+
+    const result = await blocks.approveRequest(
+      String(req.body.requestId || ""),
+      modId
+    );
+    if (result.error) {
+      res.status(result.status);
+      res.send(result.error);
+      return;
+    }
+
+    await routeUtils.createModAction(modId, "Approve Game Block", [
+      result.request.blockerId,
+      result.request.blockedId,
+    ]);
+    res.send({ request: result.request });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not approve the block request.");
+  }
+});
+
 router.post("/clearUserContent", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {

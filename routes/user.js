@@ -21,6 +21,7 @@ const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
 const stockMarket = require("../lib/StockMarket");
 const skillRatingModule = require("../modules/skillRating");
+const blocks = require("../modules/blocks");
 const { DEFAULT_MU, DEFAULT_SIGMA, MIN_RATED_GAMES } = skillRatingModule;
 const router = express.Router();
 
@@ -3737,20 +3738,27 @@ router.post("/block", async function (req, res) {
 
     var user = await models.User.findOne({ id: userId }).select("blockedUsers");
 
-    if (user.blockedUsers.indexOf(userIdToBlock) == -1) {
+    const blocking = user.blockedUsers.indexOf(userIdToBlock) == -1;
+
+    // The block cuts communication now. Keeping each other out of games
+    // waits for staff to approve the request filed here. Unblocking drops
+    // the request too, approved or not.
+    if (blocking) {
       await models.User.updateOne(
         { id: userId },
-        { $push: { blockedUsers: userIdToBlock } }
+        { $addToSet: { blockedUsers: userIdToBlock } }
       ).exec();
+      await blocks.recordBlockRequest(userId, userIdToBlock);
     } else {
       await models.User.updateOne(
         { id: userId },
         { $pull: { blockedUsers: userIdToBlock } }
       ).exec();
+      await blocks.removeBlockRequest(userId, userIdToBlock);
     }
 
     await redis.cacheUserInfo(userId, true);
-    res.sendStatus(200);
+    res.send({ blocked: blocking });
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not block user. Please try again.");
