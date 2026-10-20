@@ -524,6 +524,21 @@ module.exports = class Game {
 
       var spectator = this.findSpectator(user);
 
+      // Someone left watching a game that does not allow it (an older ready
+      // check moved them there) gets their seat back instead of a refusal.
+      if (
+        spectator &&
+        !spectate &&
+        !this.started &&
+        (await this.spectatingClosedFor(user))
+      ) {
+        if (spectator.socket && spectator.socket.clearListeners) {
+          spectator.socket.clearListeners();
+        }
+        this.removeSpectator(spectator);
+        spectator = null;
+      }
+
       // Reconnect if already a spectator. Do this before seating so a refresh
       // during pregame cannot take an open seat.
       if (spectator) {
@@ -533,11 +548,22 @@ module.exports = class Game {
         return;
       }
 
-      const rememberedSpectator =
+      let rememberedSpectator =
         !isBot &&
         !this.started &&
         user.id &&
         this.pregameSpectatorUserIds.has(user.id);
+
+      // Remembering a spectator only makes sense when they may spectate.
+      if (
+        rememberedSpectator &&
+        !spectate &&
+        (await this.spectatingClosedFor(user))
+      ) {
+        this.forgetPregameSpectator(user.id);
+        rememberedSpectator = false;
+      }
+
       const spectateIntent =
         (spectate || rememberedSpectator) && !this.started;
 
@@ -628,6 +654,20 @@ module.exports = class Game {
     }
 
     return null;
+  }
+
+  // Spectating is off for this game and the user has no permission to watch
+  // anyway.
+  async spectatingClosedFor(user) {
+    if (this.spectating) return false;
+    if (!user || !user.id) return true;
+    return !(await routeUtils.verifyPermission(user.id, "canSpectateAny"));
+  }
+
+  forgetPregameSpectator(userId) {
+    if (!userId) return;
+    this.pregameSpectatorUserIds.delete(userId);
+    this.spectatorHintUserIds.delete(userId);
   }
 
   // Bans, ranked/competitive permission, hearts, and leave penalty. Same gates
@@ -872,6 +912,8 @@ module.exports = class Game {
   async sendSpectatorJoinHint(spectator) {
     if (!spectator || !spectator.user || spectator.user.isBot) return;
     if (this.started || this.currentState != -1) return;
+    // "/join" only reads well where spectating is a normal option.
+    if (!this.spectating) return;
 
     const reason = await this.seatBlockReason(spectator.user);
     if (reason) return;
@@ -1606,7 +1648,9 @@ module.exports = class Game {
 
     this.pushToPlayers({
       title: "Your game is ready!",
-      body: "Ready up now or you will be moved to spectators.",
+      body: this.spectating
+        ? "Ready up now or you will be moved to spectators."
+        : "Ready up now or you will be removed from the game.",
     });
 
     const endTime = Date.now() + this.readyCountdownLength;
@@ -1676,6 +1720,13 @@ module.exports = class Game {
 
     const moved = [];
     for (let player of unready) {
+      // With spectating off there is nowhere to move them. Remove them like a
+      // pregame leave (no penalty) so the seat is free and they can rejoin.
+      if (await this.spectatingClosedFor(player.user)) {
+        await this.removeUnreadyPlayer(player);
+        continue;
+      }
+
       const spectator = await this.movePlayerToSpectator(player, {
         alert: `${player.name} was moved to spectators for not readying.`,
       });
@@ -1687,6 +1738,23 @@ module.exports = class Game {
     for (let spectator of moved) spectator.send("readyCheck failed", {});
 
     if (this.players.length == 0) await this.cancel();
+  }
+
+  async removeUnreadyPlayer(player) {
+    const userId = player.user && player.user.id;
+    this.forgetPregameSpectator(userId);
+
+    player.send(
+      "error",
+      "You were removed from the game for not readying in time. You can rejoin from the lobby."
+    );
+    this.sendAlert(
+      `${player.name} was removed from the game for not readying.`,
+      undefined,
+      undefined,
+      ["info"]
+    );
+    await this.playerLeave(player);
   }
 
   startPregameCountdown() {

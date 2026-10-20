@@ -590,6 +590,143 @@ describe("Games/SpectateCommands", function () {
     });
   });
 
+  describe("missed ready check with spectating off", function () {
+    const HINT =
+      ":system: You are spectating. Type /join to take a seat at the table.";
+    const hints = (socket) => chatTexts(socket).filter((t) => t === HINT);
+
+    async function failLate(game, total) {
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      const late = makeUser(null, "late");
+      await game.userJoin(host);
+      await game.userJoin(other);
+      await game.userJoin(late);
+      game.players.should.have.lengthOf(total);
+      game.startReadyCheck();
+      game.readyPlayers[playerFor(game, host).id] = true;
+      game.readyPlayers[playerFor(game, other).id] = true;
+
+      for (const u of [host, other, late]) u.socket.flushMessages();
+      await game.failReadyCheck();
+      await settle();
+      return { host, other, late };
+    }
+
+    it("removes the player without a penalty and they can rejoin the seat", async function () {
+      const game = await openGame.call(this, { total: 3, spectating: false });
+      const { host, late } = await failLate(game, 3);
+
+      game.players.should.have.lengthOf(2);
+      game.spectators.should.have.lengthOf(0);
+      game.pregameSpectatorUserIds.has(late.id).should.equal(false);
+      events(late.socket, "error").should.have.lengthOf(1);
+      events(late.socket, "left").should.have.lengthOf(1);
+      events(late.socket, "readyCheck failed").should.have.lengthOf(0);
+      hints(late.socket).should.have.lengthOf(0);
+      chatTexts(host.socket).should.include(
+        "late was removed from the game for not readying."
+      );
+      should.not.exist(await models.LeavePenalty.findOne({ userId: late.id }));
+      expect(await redis.inGame(late.id)).to.not.equal(game.id);
+
+      // Back through the lobby link: a seat, not a "spectating is off" error.
+      const again = makeUser(late.id, "late");
+      await game.userJoin(again);
+      await settle();
+
+      events(again.socket, "error").should.have.lengthOf(0);
+      game.players.should.have.lengthOf(3);
+      game.spectators.should.have.lengthOf(0);
+      should.exist(playerFor(game, again));
+      (await redis.inGame(late.id)).should.equal(game.id);
+    });
+
+    it("seats a user left counted as a spectator in a no-spectate game", async function () {
+      const game = await openGame.call(this, { total: 3, spectating: false });
+      game.spectatorReconnectGraceMs = 0;
+      const host = makeUser(game.hostId, "host");
+      const stuck = makeUser(null, "stuck");
+      await game.userJoin(host);
+      // What an older ready check left behind.
+      game.addSpectator(stuck);
+      await settle();
+      hints(stuck.socket).should.have.lengthOf(0);
+
+      stuck.socket.sendToServer("disconnected");
+      await settle();
+      game.spectators.should.have.lengthOf(0);
+      game.pregameSpectatorUserIds.has(stuck.id).should.equal(true);
+
+      const again = makeUser(stuck.id, "stuck");
+      await game.userJoin(again);
+      await settle();
+
+      events(again.socket, "error").should.have.lengthOf(0);
+      game.players.should.have.lengthOf(2);
+      should.exist(playerFor(game, again));
+      game.spectators.should.have.lengthOf(0);
+      game.pregameSpectatorUserIds.has(stuck.id).should.equal(false);
+    });
+
+    it("seats a stuck spectator who reconnects inside the grace time", async function () {
+      const game = await openGame.call(this, { total: 3, spectating: false });
+      const host = makeUser(game.hostId, "host");
+      const stuck = makeUser(null, "stuck");
+      await game.userJoin(host);
+      game.addSpectator(stuck);
+
+      stuck.socket.sendToServer("disconnected");
+      const again = makeUser(stuck.id, "stuck");
+      await game.userJoin(again);
+      await settle();
+
+      events(again.socket, "error").should.have.lengthOf(0);
+      game.players.should.have.lengthOf(2);
+      should.exist(playerFor(game, again));
+      game.spectators.should.have.lengthOf(0);
+    });
+
+    it("still refuses ?spectate=true when spectating is off", async function () {
+      const game = await openGame.call(this, { total: 3, spectating: false });
+      const host = makeUser(game.hostId, "host");
+      const watcher = makeUser(null, "watcher");
+      await game.userJoin(host);
+      await game.userJoin(watcher, { spectate: true });
+      await settle();
+
+      events(watcher.socket, "error").map((e) => e.data).should.deep.equal([
+        "Spectating is not enabled for this game",
+      ]);
+      game.players.should.have.lengthOf(1);
+      game.spectators.should.have.lengthOf(0);
+    });
+
+    it("spectating on: the player still moves to spectators and stays there", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      game.spectatorReconnectGraceMs = 0;
+      const { late } = await failLate(game, 3);
+
+      game.players.should.have.lengthOf(2);
+      game.spectators.should.have.lengthOf(1);
+      game.spectators[0].user.id.should.equal(late.id);
+      events(late.socket, "error").should.have.lengthOf(0);
+      events(late.socket, "left").should.have.lengthOf(0);
+      events(late.socket, "readyCheck failed").should.have.lengthOf(1);
+      hints(late.socket).should.have.lengthOf(1);
+
+      late.socket.sendToServer("disconnected");
+      await settle();
+      const again = makeUser(late.id, "late");
+      await game.userJoin(again);
+      await settle();
+
+      game.players.should.have.lengthOf(2);
+      game.spectators.should.have.lengthOf(1);
+      game.spectators[0].user.id.should.equal(late.id);
+    });
+  });
+
   describe("spectators list", function () {
     it("marks only current spectators as watching", async function () {
       const game = await openGame.call(this, { total: 3 });
