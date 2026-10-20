@@ -117,10 +117,11 @@ function ConnectFourBoardWrapper() {
   const history = game.history;
   const stateViewing = game.stateViewing;
 
-  if (stateViewing === -1) return <TextMeetingLayout />;
+  if (stateViewing === -1) return <TextMeetingLayout seatActions={false} />;
 
   const currentState = history.states[stateViewing];
-  if (!currentState?.extraInfo?.board) return <TextMeetingLayout />;
+  if (!currentState?.extraInfo?.board)
+    return <TextMeetingLayout seatActions={false} />;
   const meetings = currentState ? currentState.meetings : {};
   const isCurrentState = stateViewing === history.currentState;
 
