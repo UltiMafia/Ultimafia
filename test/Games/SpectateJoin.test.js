@@ -248,7 +248,7 @@ describe("Games/SpectateJoin", function () {
     (await redis.inGame(game.hostId)).should.equal(game.id);
     events(again.socket, "spectateFailed")
       .map((message) => message.data)
-      .should.include("Spectating is not enabled for this game");
+      .should.include("Spectating is not enabled for this game.");
     events(again.socket, "error").should.have.lengthOf(0);
   });
 

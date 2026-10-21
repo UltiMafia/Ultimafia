@@ -40,6 +40,11 @@ module.exports = class Spectator extends Player {
       }
     });
 
+    // The app's "spectate" event from someone already watching.
+    socket.on("spectate", () => {
+      this.send("spectateFailed", "You are already spectating this game.");
+    });
+
     socket.on("getTimerInfo", () => {
       try {
         this.game.resendTimers(this);

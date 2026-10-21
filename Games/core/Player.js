@@ -199,6 +199,14 @@ module.exports = class Player {
       }
     });
 
+    // App equivalent of /spectate: give up the seat and watch, during
+    // pregame. On a refusal the client gets "spectateFailed" with the reason.
+    socket.on("spectate", () => {
+      Promise.resolve(this.game.spectateFromSeat(this)).catch((e) =>
+        logger.error(e)
+      );
+    });
+
     socket.on("speak", (message) => {
       try {
         if (typeof message != "object") return;
@@ -867,9 +875,9 @@ module.exports = class Player {
           this.sendAlert(":system: You are already spectating this game.");
           return;
         }
-        Promise.resolve(this.game.spectateFromSeat(this)).catch((e) =>
-          logger.error(e)
-        );
+        Promise.resolve(
+          this.game.spectateFromSeat(this, { viaCommand: true })
+        ).catch((e) => logger.error(e));
         return;
       case "ban":
       case "kick":
@@ -1015,7 +1023,24 @@ module.exports = class Player {
         return;
     }
 
+    // Anything the game type does not handle either gets a reply instead of
+    // being dropped silently.
+    if (!this.gameCommands().includes(cmd.name)) {
+      this.sendAlert(
+        cmd.name
+          ? `:system: Unknown command /${cmd.name}. Type /help for the list of commands.`
+          : ":system: Unknown command. Type /help for the list of commands."
+      );
+      return;
+    }
+
     return cmd;
+  }
+
+  // Commands a game type's Player handles after the shared ones above
+  // (super.parseCommand returns the parsed command for these only).
+  gameCommands() {
+    return [];
   }
 
   send(eventName, data) {
