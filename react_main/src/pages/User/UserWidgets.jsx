@@ -19,6 +19,7 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { useProfileSheet } from "components/ProfileSheet";
 import ImageViewer from "components/ImageViewer";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
+import { useViewActive } from "hooks/useViewActivity";
 import { useAvatarImageUrl, AvatarPhoto } from "utils/avatarUrl";
 import { observeNameAnimation } from "utils/nameAnimationViewport";
 import { nameGlowStyle, applyNameGlowStyle } from "utils/nameGlowStyle";
@@ -176,6 +177,7 @@ function ImageWithViewer({ imageUrl }) {
 }
 
 export function MediaEmbed(props) {
+  const active = useViewActive();
   const mediaUrl = props.mediaUrl;
   const loop = !!props.loop;
   // When collapsible, show expand/collapse control. `collapsed` is the initial state.
@@ -208,11 +210,6 @@ export function MediaEmbed(props) {
     };
   }, [mediaUrl]);
 
-  const mediaOptions = JSON.parse(
-    window.localStorage.getItem("mediaOptions") || "{}"
-  );
-  const volume = mediaOptions.volume || 1;
-  const muted = mediaOptions.muted || false;
   let embedId;
 
   const getMediaType = (mediaUrl) => {
@@ -250,24 +247,27 @@ export function MediaEmbed(props) {
   };
   const mediaType = props.mediaType || getMediaType(mediaUrl);
 
-  const trackVolume = (e) => {
-    mediaOptions.volume = e.target.volume;
-    mediaOptions.muted = e.target.muted;
-    window.localStorage.setItem("mediaOptions", JSON.stringify(mediaOptions));
-  };
-
   useEffect(() => {
-    if (mediaRef && mediaRef.current) {
-      mediaRef.current.volume = volume;
-      mediaRef.current.muted = muted;
-      mediaRef.current.addEventListener("volumechange", trackVolume);
-    }
-    return () => {
-      if (mediaRef && mediaRef.current) {
-        mediaRef.current.removeEventListener("volumechange", trackVolume);
-      }
+    const media = mediaRef.current;
+    if (!media) return;
+    const mediaOptions = JSON.parse(
+      window.localStorage.getItem("mediaOptions") || "{}"
+    );
+    const trackVolume = (e) => {
+      mediaOptions.volume = e.target.volume;
+      mediaOptions.muted = e.target.muted;
+      window.localStorage.setItem("mediaOptions", JSON.stringify(mediaOptions));
     };
-  }, [mediaRef]);
+    media.volume = mediaOptions.volume || 1;
+    media.muted = mediaOptions.muted || false;
+    media.addEventListener("volumechange", trackVolume);
+    return () => media.removeEventListener("volumechange", trackVolume);
+  }, [active, mediaUrl, mediaType]);
+
+  // The site stays mounted behind a game. Remove the players, not just their
+  // CSS visibility, to stop both native media and cross-origin iframe playback.
+  // Keep this component's collapse state when the view becomes active again.
+  if (!active) return null;
 
   let body = null;
   switch (mediaType) {
