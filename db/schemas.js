@@ -63,6 +63,11 @@ var schemas = {
       default: "",
     },
     fbUid: String,
+    // Sign in with Apple server notifications (routes/appleNotifications.js)
+    appleEmailForwarding: Boolean,
+    appleEmailForwardingUpdated: Date,
+    appleConsentRevoked: Date,
+    appleAccountDeleted: Date,
     discordId: String,
     discordName: String,
     discordUsername: String,
