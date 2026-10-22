@@ -47,6 +47,9 @@ const db = require("./db/db");
 
 const session = require("./modules/session");
 const csrf = require("./modules/csrf");
+const devApiBearer = require("./modules/devApi/bearer");
+const devApiRouter = require("./routes/devApi");
+const { devApiEnabled } = require("./modules/devApi/policy");
 const passport = require("passport");
 
 const app = express();
@@ -59,6 +62,7 @@ app.use(cors());
 app.use(session);
 app.use(passport.initialize());
 app.use(passport.session());
+if (devApiEnabled()) app.use(devApiBearer);
 app.use(csrf);
 app.use(
   compression({
@@ -82,6 +86,15 @@ apiRouter.use("/", indexRouter);
 apiRouter.use("/auth/apple", appleNotificationsRouter);
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/game", gameRouter);
+apiRouter.use(
+  "/dev",
+  devApiEnabled()
+    ? devApiRouter
+    : (req, res) =>
+        res.status(404).send({
+          error: { status: 404, code: "disabled", message: "The developer API is turned off." },
+        })
+);
 apiRouter.use("/setup", setupRouter);
 apiRouter.use("/deck", deckRouter);
 apiRouter.use("/wordDeck", wordDeckRouter);

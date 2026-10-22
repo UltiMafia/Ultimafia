@@ -15,6 +15,19 @@ import { SiteInfoContext } from "Contexts";
 import { Badge, NameWithAvatar, StatusIcon } from "pages/User/UserWidgets";
 import { Loading } from "components/Loading";
 
+// Fixed display order; any other group follows, highest rank first.
+const GROUP_ORDER = ["Owner", "Developer", "Admin", "Mod", "Moderator", "Liaison"];
+
+function orderGroups(groups) {
+  const position = (g) => {
+    const i = GROUP_ORDER.indexOf(g.name);
+    return i === -1 ? GROUP_ORDER.length : i;
+  };
+  return [...groups].sort(
+    (a, b) => position(a) - position(b) || b.rank - a.rank
+  );
+}
+
 export function GroupPanels({ user }) {
   const [groups, setGroups] = useState([]);
   const [loaded, setLoaded] = useState(false);
@@ -31,7 +44,7 @@ export function GroupPanels({ user }) {
     return axios
       .get("/api/mod/groups")
       .then((res) => {
-        setGroups(res.data.sort((a, b) => b.rank - a.rank));
+        setGroups(orderGroups(res.data));
         setLoaded(true);
       })
       .catch((e) => {
