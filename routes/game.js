@@ -15,7 +15,14 @@ const router = express.Router();
 // Extra finished rows fetched per page so a repeated id can be dropped.
 const FINISHED_DEDUPE_SLACK = 5;
 const axios = require("axios");
+const { devApiEnabled } = require("../modules/devApi/policy");
 const errors = require("../lib/errors");
+
+const isTestingLobby = (lobby) => lobby == constants.testingLobby;
+const canUseTesting = (userId) =>
+  devApiEnabled() &&
+  Boolean(userId) &&
+  routeUtils.verifyPermission(userId, "devApi");
 
 function alignPopulatedUsersWithSeats(seatIds, idMapJson, populatedUsers) {
   if (!seatIds?.length) return [];
@@ -220,9 +227,16 @@ router.get("/list", async function (req, res) {
 
     if (
       !routeUtils.validProp(lobby) ||
-      (constants.lobbies.indexOf(lobby) == -1 && lobby != "All")
+      (constants.lobbies.indexOf(lobby) == -1 &&
+        lobby != "All" &&
+        !isTestingLobby(lobby))
     ) {
       logger.error("Invalid lobby.");
+      res.send([]);
+      return;
+    }
+
+    if (isTestingLobby(lobby) && !(await canUseTesting(userId))) {
       res.send([]);
       return;
     }
@@ -230,7 +244,8 @@ router.get("/list", async function (req, res) {
     var end = start + constants.lobbyPageSize;
 
     const canSeePrivate =
-      userId && (await routeUtils.verifyPermission(userId, "breakGame"));
+      isTestingLobby(lobby) ||
+      (userId && (await routeUtils.verifyPermission(userId, "breakGame")));
 
     if (listName == "all" || listName == "open") {
       var openGames = canSeePrivate
@@ -251,6 +266,7 @@ router.get("/list", async function (req, res) {
     }
 
     if (lobby != "All") games = games.filter((game) => game.lobby == lobby);
+    else games = games.filter((game) => !isTestingLobby(game.lobby));
 
     // Hide lobbies where the host and caller have blocked each other
     if (userId) {
@@ -320,7 +336,8 @@ router.get("/list", async function (req, res) {
       (listName == "all" || listName == "finished") &&
       games.length < constants.lobbyPageSize
     ) {
-      var gameFilter = lobby != "All" ? { lobby } : {};
+      var gameFilter =
+        lobby != "All" ? { lobby } : { lobby: { $ne: constants.testingLobby } };
       var finishedNeeded = constants.lobbyPageSize - games.length;
       var finishedSelect =
         "id type setup lobby lobbyName anonymousGame anonymousDeck ranked competitive private spectating guests readyCheck noVeg stateLengths gameTypeOptions broken winnersInfo playerIdMap playerAlignmentMap endTime -_id";
@@ -442,6 +459,11 @@ router.get("/:id/connect", async function (req, res) {
 
     if (!userId && !game.settings.guests) {
       errors.unauthorized(res, "You must be logged in to join or spectate games.");
+      return;
+    }
+
+    if (isTestingLobby(game.lobby) && !(await canUseTesting(userId))) {
+      errors.notFound(res, "Game not found.");
       return;
     }
 
@@ -639,6 +661,12 @@ router.get("/:id/review/data", async function (req, res) {
         }
         return false;
       }
+      if (isTestingLobby(game.lobby)) {
+        if (await canUseTesting(userId)) res.send(game);
+        else errors.notFound(res, "Game not found");
+        return;
+      }
+
       if (
         !game.private ||
         (await routeUtils.verifyPermission(userId, perm)) ||
@@ -763,7 +791,17 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    if (
+    if (isTestingLobby(lobby)) {
+      if (!(await canUseTesting(userId))) {
+        errors.badRequest(res, "Invalid lobby.");
+        return;
+      }
+      if (req.body.ranked || req.body.competitive) {
+        errors.badRequest(res, "Testing lobby games cannot be ranked or competitive.");
+        return;
+      }
+      req.body.private = true;
+    } else if (
       !routeUtils.validProp(lobby) ||
       constants.lobbies.indexOf(lobby) == -1
     ) {
@@ -1080,6 +1118,9 @@ router.post("/host", async function (req, res) {
         ...settings,
       });
 
+      if (isTestingLobby(lobby))
+        await redis.client.setexAsync(`devapi:game:${gameId}:creator`, 7 * 24 * 3600, userId);
+
       res.send(gameId);
       redis.unsetCreatingGame(userId);
 
@@ -1313,6 +1354,7 @@ router.post("/cancel", async function (req, res) {
 });
 
 const lobbyChecks = {
+  [constants.testingLobby]: () => {},
   Main: (gameType, setup, settings) => {
     if (gameType != "Mafia") return "Only Mafia is allowed in the Main lobby.";
 

@@ -29,6 +29,10 @@ const GameStatus = (props) => {
   const isPhoneDevice = useIsPhoneDevice();
   const showGameState = props.showGameState;
 
+  // Testing lobby games are only listed for Developers/Owners, and the
+  // server lets them review those games even when locked.
+  const isReviewableTestingGame =
+    props.game.lobby === "Testing" && props.game.status === "Finished";
   // Player capacity limits joining, not spectating. Keep the spectator action
   // available while a full lobby waits for its ready check.
   const isFullOpenGame =
@@ -39,7 +43,7 @@ const GameStatus = (props) => {
   const canShowGameButton =
     (user.loggedIn || props.game.status === "Finished") &&
     !props.game.broken &&
-    !props.game.private;
+    (!props.game.private || isReviewableTestingGame);
 
   let buttonUrl, buttonText, buttonVariant, buttonColor, buttonDisabled;
   let showSpectate = false;
@@ -136,7 +140,7 @@ const GameStatus = (props) => {
             title="Broken"
           />
         )}
-        {props.game.private && (
+        {props.game.private && !isReviewableTestingGame && (
           <i
             className="fas fa-lock"
             style={{ fontSize: "24px", cursor: "not-allowed" }}

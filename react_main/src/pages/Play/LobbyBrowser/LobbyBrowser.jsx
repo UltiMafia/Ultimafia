@@ -9,7 +9,6 @@ import { getPageNavFilterArg, PageNav } from "components/Nav";
 import { useErrorAlert } from "components/Alerts";
 import { camelCase } from "../../../utils";
 import Comments from "../../Community/Comments";
-import { Lobbies } from "../../../Constants";
 import "css/join.css";
 import { RefreshButton } from "./RefreshButton";
 import { ListSkeleton, PageSkeleton } from "components/Skeletons";
@@ -41,7 +40,7 @@ import { DailyChallenges } from "./DailyChallengeDisplay";
 import { CompetitiveRounds } from "./CompetitiveRounds";
 import { getRowStubColor } from "./gameRowColors.js";
 
-import { lobbies } from "../../../constants/lobbies";
+import { lobbiesFor } from "../../../constants/lobbies";
 import { useViewActive } from "../../../hooks/useViewActivity";
 import { LatestRequest } from "../../../lib/latestRequest.js";
 
@@ -67,7 +66,7 @@ function oneRowPerGame(games) {
 export default function LobbyBrowser() {
   const isPhoneDevice = useIsPhoneDevice();
   const theme = useTheme();
-  const defaultLobbyName = lobbies[0].name;
+  const defaultLobbyName = "All";
   const [openGamesCounts, setOpenGamesCounts] = useState({});
   const [refreshButtonIsSpinning, setRefreshButtonIsSpinning] = useState(false);
   const refreshTimeoutRef = useRef(null);
@@ -83,6 +82,7 @@ export default function LobbyBrowser() {
   const isMountedRef = useRef(true);
 
   const user = useContext(UserContext);
+  const lobbies = lobbiesFor(user);
   const inGame = useContext(InGameContext);
   const active = useViewActive();
   const errorAlert = useErrorAlert();
@@ -299,7 +299,7 @@ export default function LobbyBrowser() {
     getOpenGameCounts();
   };
 
-  if (lobbyName !== "All" && Lobbies.indexOf(lobbyName) === -1)
+  if (lobbyName !== "All" && !lobbies.some((l) => l.name === lobbyName))
     setLobbyName(defaultLobbyName);
 
   if (!user.loaded) return <PageSkeleton />;
@@ -425,7 +425,7 @@ export default function LobbyBrowser() {
               location={
                 lobbyName === "All"
                   ? lobbies
-                      .filter((l) => l.name !== "All")
+                      .filter((l) => l.name !== "All" && !l.developerOnly)
                       .map((l) =>
                         l.name === "Main" ? "lobby" : `lobby-${l.name}`
                       )
