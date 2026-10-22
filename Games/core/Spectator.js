@@ -169,7 +169,7 @@ module.exports = class Spectator extends Player {
         });
 
         var meeting = this.game.getMeeting(message.meetingId);
-        if (!meeting) return;
+        if (!this.canSpeakIn(meeting)) return;
 
         meeting.speak({
           sender: this,
@@ -226,7 +226,7 @@ module.exports = class Spectator extends Player {
         speechPast.push(Date.now());
 
         var meeting = this.game.getMeeting(quote.toMeetingId);
-        if (!meeting) return;
+        if (!this.canSpeakIn(meeting)) return;
 
         meeting.quote(this, quote);
       } catch (e) {
@@ -240,6 +240,19 @@ module.exports = class Spectator extends Player {
         "Warning: Your message contains inappropriate language. Please revise your message without using offensive terms."
       );
     });
+  }
+
+  // Spectators talk only in Pregame (before the start) and in the
+  // spectator meeting, always under their own name. Any other meeting id
+  // from a spectator's socket is ignored.
+  canSpeakIn(meeting) {
+    if (!meeting) return false;
+    if (meeting === this.game.spectatorMeeting) return true;
+    return (
+      meeting === this.game.pregame &&
+      !this.game.started &&
+      !this.game.starting
+    );
   }
 
   gameEventListeners() {}
