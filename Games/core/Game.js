@@ -112,6 +112,12 @@ module.exports = class Game {
     this.postgameLength = 1000 * 60 * 2;
     this.players = new ArrayHash();
     this.playersGone = {};
+    // Players who gave up their pregame seat to spectate, by their old player
+    // id, so chat keeps naming them after a refresh (see getAllPlayerInfo).
+    this.pastPregamePlayers = {};
+    // True from the moment start() begins until the game has started. Seats
+    // cannot change hands in between.
+    this.starting = false;
     this.spectators = [];
     this.spectatorsOld = [];
     this.spectatorLimit = constants.maxSpectators;
@@ -482,7 +488,11 @@ module.exports = class Game {
 
       // A seated player opening ?spectate=true during pregame gives up the seat.
       if (player && !player.left && spectate && !this.started) {
-        const refusal = await this.spectatorJoinRefusal(user);
+        let refusal = await this.spectatorJoinRefusal(user);
+        // Seats are fixed once the start has begun (the check above waits on
+        // the database, so look again).
+        if (!refusal && (this.started || this.starting))
+          refusal = "You can only move to spectators during pregame.";
         if (refusal) {
           player = player.setUser(user);
           this.sendAllGameInfo(player);
@@ -780,6 +790,23 @@ module.exports = class Game {
     return spectator;
   }
 
+  // Name and avatar for a player who is no longer seated, for chat only.
+  pastPlayerInfo(player) {
+    const user = player.user || {};
+    return {
+      id: player.id,
+      userId: user.id,
+      name: player.name,
+      avatar: user.avatar,
+      emojis: user.emojis,
+      textColor: user.textColor,
+      nameColor: user.nameColor,
+      customEmotes: user.customEmotes,
+      alive: player.alive,
+      left: true,
+    };
+  }
+
   dropPregameMember(person) {
     if (!this.pregame || !person || !this.pregame.members[person.id]) return;
 
@@ -797,10 +824,20 @@ module.exports = class Game {
 
   async movePlayerToSpectator(player, options) {
     options = options || {};
+    // Seats are fixed once the start has begun.
+    if (this.started || this.starting) return null;
+
     const user = options.user || player.user;
     const userId = player.user && player.user.id;
     const wasHost = userId && userId === this.hostId;
 
+    // A seat opening breaks a running ready check or start countdown, the
+    // same as leaving does. Without this the game could start one short.
+    if (this.isReadyCheckActive || this.timers["pregameCountdown"]) {
+      this.cancelReadyCheck([player]);
+    }
+
+    this.pastPregamePlayers[player.id] = this.pastPlayerInfo(player);
     this.dropPregameMember(player);
     this.broadcast("playerLeave", player.id);
     delete this.players[player.id];
@@ -837,7 +874,7 @@ module.exports = class Game {
   async takeSeat(spectator) {
     if (!spectator) return;
 
-    if (this.started || this.currentState != -1) {
+    if (this.started || this.starting || this.currentState != -1) {
       spectator.send("takeSeatFailed", "You can only take a seat during pregame.");
       return;
     }
@@ -1285,6 +1322,13 @@ module.exports = class Game {
       allPlayerInfo[player.id] = player;
     }
 
+    // Their pregame messages still carry the old player id. Listed as left so
+    // no player list shows them.
+    for (let playerId in this.pastPregamePlayers) {
+      if (!allPlayerInfo[playerId])
+        allPlayerInfo[playerId] = this.pastPregamePlayers[playerId];
+    }
+
     for (let playerInfo of this.beforeAnonPlayerInfo) {
       allPlayerInfo[playerInfo.id] = playerInfo;
     }
@@ -1585,7 +1629,69 @@ module.exports = class Game {
     );
   }
 
+  tableIsFull() {
+    return !!this.setup && this.players.length >= this.setup.total;
+  }
+
+  // start() found fewer players than the setup needs. Back to pregame with
+  // the seat open: hearts charged for this start are returned, the ready
+  // check is cleared and pregame spectators can talk in Pregame again.
+  async abortStart() {
+    logger.warn(
+      `Game ${this.id}: start cancelled with ${this.players.length} of ${
+        this.setup && this.setup.total
+      } players.`
+    );
+    this.starting = false;
+    this.startTime = null;
+    await this.refundHeartsChargedAtStart();
+    redis.setGameStatus(this.id, "Open");
+
+    this.clearTimer("pregameCountdown");
+    this.isReadyCheckActive = false;
+    this.readyPlayers = {};
+    this.sendReadyCheckCancel();
+
+    if (this.pregame) {
+      for (let spectator of this.spectators) {
+        if (this.pregame.members[spectator.id]) continue;
+        this.pregame.join(spectator);
+        spectator.sendMeetings();
+      }
+    }
+
+    this.sendAlert(
+      "A seat opened before the game could start, so the start was cancelled. The game will start when the table is full again."
+    );
+  }
+
+  // Undoes chargeHeartsAtStart for a start that did not happen.
+  async refundHeartsChargedAtStart() {
+    if (!this.heartsChargedAtStart || !this.heartsCharged) return;
+    const { userIds, red, gold } = this.heartsCharged;
+    this.heartsCharged = null;
+    this.heartsChargedAtStart = false;
+    for (const userId of userIds) {
+      if (this.heartsRefundedUserIds.has(userId)) continue;
+      await models.User.updateOne(
+        { id: userId },
+        { $inc: { redHearts: red, goldHearts: gold } }
+      ).exec();
+      await redis.cacheUserInfo(userId, true);
+    }
+    this.heartsRefundedUserIds = new Set();
+  }
+
   async start() {
+    if (this.started || this.starting) return;
+
+    // Roles are only ever assigned to a full table.
+    if (!this.tableIsFull()) {
+      await this.abortStart();
+      return;
+    }
+    this.starting = true;
+
     // Pregame spectators stop being members of Pregame. makeMeetings keeps
     // them in the spectator meeting.
     this.removePregameSpectators();
@@ -1684,10 +1790,18 @@ module.exports = class Game {
       }
     }
 
+    // Someone may have left during the waits above. Never deal roles to a
+    // short table: go back to pregame instead.
+    if (!this.tableIsFull()) {
+      await this.abortStart();
+      return;
+    }
+
     // Tell clients the game started, assign roles, and move to the next state
     devControls.withDevSeed(this, () => this.assignRoles());
     this.captureStartingFactions();
     this.started = true;
+    this.starting = false;
     gameEventLog.server(this, "start", { roles: this.originalRoles, seed: this.devControls.seed });
     this.broadcast("start");
     this.broadcastOptions();

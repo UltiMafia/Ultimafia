@@ -532,6 +532,8 @@ describe("Games/SpectateJoin", function () {
     game.assignRoles = () => {};
     game.captureStartingFactions = () => {};
     game.gotoNextState = () => {};
+    // start() only runs on a full table; the spectator does not fill it.
+    game.setup.total = game.players.length;
     await game.start();
 
     game.players.should.have.lengthOf(1);
