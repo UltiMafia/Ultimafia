@@ -14,6 +14,7 @@ const publisher = redis.client.duplicate();
 const axios = require("axios");
 const gameContext = require("../modules/gameContext");
 const pushNotifications = require("../modules/pushNotifications");
+const gameEventLog = require("../modules/gameEventLog");
 const { devApiEnabled } = require("../modules/devApi/policy");
 
 const serverId = Number(process.env.NODE_APP_INSTANCE) || 0;
@@ -87,10 +88,16 @@ var deprecated = false;
 
     clearBrokenGames();
 
+    sockets.setFrameHook((frameInfo) => {
+      const game = games[frameInfo.socket.gameId];
+      if (game) gameEventLog.frame(game, frameInfo);
+    });
+
     server.on("connection", (socket) => {
       try {
         var user;
 
+        socket.logId = shortid.generate();
         socket.send("connected");
 
         socket.on("auth", async (token) => {
@@ -210,6 +217,8 @@ var deprecated = false;
               }
             }
 
+            socket.gameId = gameId;
+            socket.logUserId = user.id;
             game.userJoin(user, {
               isBot: isBot,
               spectate: info.spectate === true || info.spectate === "true",
