@@ -20,6 +20,14 @@ import {
   useTextEffect,
 } from "../../components/TextEffects";
 import { parseTextEffect } from "shared/textEffects";
+import {
+  isSpectatorChatMeeting,
+  findSpectatorChatMeeting,
+  mergeSpectatorChat,
+  pickSpeechTarget,
+  pregameSpectatorList,
+} from "shared/spectatorChat";
+import { completePlayerName, tabCompleteNames } from "shared/tabComplete";
 import Newspaper, {
   ObituariesMessage,
 } from "../../components/gameComponents/Newspaper";
@@ -1116,11 +1124,15 @@ export default function Game(props) {
       setIsOmniscientSpectator(true);
     });
 
-    socket.on("left", () => {
+    socket.on("left", (data) => {
       stopReadyBellRepeatRef.current();
       if (!noLeaveRef.current) {
         setLeave(true);
         siteInfo.hideAllAlerts();
+        // The server says why it removed us (e.g. a missed ready check).
+        if (data && typeof data.reason === "string") {
+          siteInfo.showAlert(data.reason, "warning", true);
+        }
       }
     });
 
@@ -1995,19 +2007,16 @@ export function ThreePanelLayout({
   );
 }
 
-function getSpeechMeetings(meetings, isSpectator) {
+// Spectator chat has no tab of its own: it is shown inline in the selected
+// chat (see shared/spectatorChat.js).
+function getSpeechMeetings(meetings) {
   return Object.values(meetings || {}).filter(
-    (meeting) =>
-      meeting.speech &&
-      (isSpectator || meeting.name !== "Spectator Meeting")
+    (meeting) => meeting.speech && !isSpectatorChatMeeting(meeting)
   );
 }
 
 function getDefaultSpeechMeetingId(speechMeetings) {
-  const meeting =
-    speechMeetings.find((m) => m.name !== "Spectator Meeting") ||
-    speechMeetings[0];
-  return meeting?.id;
+  return speechMeetings[0]?.id;
 }
 
 const EMPTY_CHAT_STATE = { meetings: {}, alerts: [], obituaries: {} };
@@ -2092,7 +2101,8 @@ export function TextMeetingLayout() {
   const speechDisplayRef = useRef();
   const hasMouse = useMediaQuery("(pointer:fine)");
 
-  const speechMeetings = getSpeechMeetings(meetings, isSpectator);
+  const speechMeetings = getSpeechMeetings(meetings);
+  const spectatorChatMeeting = findSpectatorChatMeeting(meetings, isSpectator);
 
   function onTabChange(event, newValue) {
     updateHistory({
@@ -2106,7 +2116,7 @@ export function TextMeetingLayout() {
   useEffect(() => {
     if (stateViewing == null || !speechMeetings.length) return;
 
-    const visibleSpeechMeetings = getSpeechMeetings(meetings, isSpectator);
+    const visibleSpeechMeetings = getSpeechMeetings(meetings);
     const selTabMeeting = selTab ? meetings[selTab] : null;
     const selTabMissing =
       (selTab && !selTabMeeting) ||
@@ -2222,7 +2232,8 @@ export function TextMeetingLayout() {
         players,
         settings,
         filters,
-        spectators
+        spectators,
+        spectatorChatMeeting
       );
     }
 
@@ -2277,6 +2288,7 @@ export function TextMeetingLayout() {
     spectators,
     settings,
     filters,
+    spectatorChatMeeting,
     isolationEnabled,
     isolatedPlayers,
     game.review,
@@ -2334,17 +2346,15 @@ export function TextMeetingLayout() {
 
   const activeMeeting = selTab ? meetings[selTab] : null;
 
-  var canSpeak = activeMeeting;
-  canSpeak =
-    canSpeak &&
-    (activeMeeting.members.length > 1 ||
-      history.currentState == -1 ||
-      activeMeeting.name == "Spectator Meeting");
-  canSpeak =
-    canSpeak &&
-    stateViewing === history.currentState &&
-    activeMeeting.amMember &&
-    activeMeeting.canTalk;
+  // A spectator who cannot talk in the selected meeting talks in spectator
+  // chat instead, which shows inline in the same stream.
+  const speechTarget = pickSpeechTarget({
+    activeMeeting,
+    spectatorMeeting: spectatorChatMeeting,
+    isPregame: history.currentState == -1,
+  });
+  const canSpeak =
+    !!speechTarget.meetingId && stateViewing === history.currentState;
   return (
     <>
       <Box
@@ -2417,7 +2427,8 @@ export function TextMeetingLayout() {
           {canSpeak && (
             <SpeechInput
               meetings={meetings}
-              selTab={selTab}
+              selTab={speechTarget.meetingId}
+              spectatorChat={speechTarget.spectatorChat}
               isCurrentState={stateViewing === history.currentState}
               players={players}
               options={game.options}
@@ -2471,7 +2482,9 @@ export function getAllMessagesToDisplay(history) {
         }
       }
 
-      stateMessages.push(...meetingData.messages);
+      if (isSpectatorChatMeeting(meetingData))
+        stateMessages.push(...mergeSpectatorChat([], meetingData, null));
+      else stateMessages.push(...meetingData.messages);
     }
     const stateAlerts = stateData.alerts;
     stateMessages.push(...stateAlerts);
@@ -2525,12 +2538,15 @@ function getMessagesToDisplay(
   players,
   settings,
   filters,
-  spectators
+  spectators,
+  spectatorChatMeeting
 ) {
   var messages;
 
   if (selTab && meetings[selTab]) messages = [...meetings[selTab].messages];
   else messages = [];
+
+  messages = mergeSpectatorChat(messages, spectatorChatMeeting, selTab);
 
   if (filters && (filters.from || filters.contains))
     messages = messages.filter((m) => {
@@ -2977,7 +2993,7 @@ const MessageRow = React.memo(function MessageRow(props) {
 
   return (
     <div
-      className="message"
+      className={message.spectatorChat ? "message spectator-chat" : "message"}
       onDoubleClick={() => props.onMessageQuote(message)}
       style={messageStyle}
       onMouseEnter={messageOnMouseEnter}
@@ -3049,6 +3065,14 @@ const MessageRow = React.memo(function MessageRow(props) {
         >
           {!message.isQuote && (
             <>
+              {message.spectatorChat && (
+                <span
+                  className="spectator-chat-tag"
+                  title="Spectator chat: only spectators can see this"
+                >
+                  <i className="fas fa-eye" /> Spectator
+                </span>
+              )}
               {message.prefix && (
                 <div className="prefix" style={{ display: "inline" }}>
                   ({message.prefix})
@@ -3078,6 +3102,14 @@ const MessageRow = React.memo(function MessageRow(props) {
           )}
           {message.isQuote && (
             <>
+              {message.spectatorChat && (
+                <span
+                  className="spectator-chat-tag"
+                  title="Spectator chat: only spectators can see this"
+                >
+                  <i className="fas fa-eye" /> Spectator
+                </span>
+              )}
               <i className="fas fa-quote-left" />
               <Timestamp time={quotedMessage.time} />
               <span className="quote-info">
@@ -3246,6 +3278,7 @@ function SpeechInput(props) {
   const selTab = props.selTab;
   const isCurrentState = props.isCurrentState;
   const players = props.players;
+  const spectatorChat = !!props.spectatorChat;
 
   const speechInput = props.speechInput;
   const setSpeechInput = props.setSpeechInput;
@@ -3278,7 +3311,11 @@ function SpeechInput(props) {
 
     const speechAbilities = meetings[selTab].speechAbilities || [];
     const newDropdownOptions = [
-      { label: "Say", id: "Say", placeholder: "to everyone" },
+      {
+        label: "Say",
+        id: "Say",
+        placeholder: spectatorChat ? "to spectators" : "to everyone",
+      },
     ];
 
     for (let ability of speechAbilities) {
@@ -3308,7 +3345,7 @@ function SpeechInput(props) {
     }
 
     setSpeechDropdownOptions(newDropdownOptions);
-  }, [selTab]);
+  }, [selTab, spectatorChat]);
 
   useEffect(() => {
     if (lastTyped > 0) {
@@ -3526,35 +3563,18 @@ function SpeechInput(props) {
       e.preventDefault();
       const words = speechInput.split(" ");
       const word = words.pop();
-      // Removing non-word characters before the string.
-      const seedString = word.match(/[^\w-]?([\w-]*)$/)[1].toLowerCase();
-      const prefix = word.substring(0, word.length - seedString.length);
-      if (!seedString.length) return;
-
-      const playerNames = Object.values(players).map((player) => player.name);
-      const playerSeeds = playerNames.map((playerName) =>
-        playerName.toLowerCase().substring(0, seedString.length)
+      const completed = completePlayerName(
+        word,
+        tabCompleteNames({
+          players,
+          spectators: game.spectators,
+          isPregame: game.history?.currentState == -1,
+          isSpectator: game.isSpectator,
+        })
       );
-      const matchedPlayers = [];
-      for (const i in playerSeeds) {
-        if (playerSeeds[i] === seedString) {
-          matchedPlayers.push(playerNames[i]);
-        }
-      }
-      if (matchedPlayers.length) {
-        if (matchedPlayers.length === 1) {
-          words.push(prefix + matchedPlayers[0]);
-        } else {
-          let i = 1;
-          while (
-            matchedPlayers.every(
-              (playerName) => playerName[i] === matchedPlayers[0][i]
-            )
-          ) {
-            i += 1;
-          }
-          words.push(prefix + matchedPlayers[0].substring(0, i));
-        }
+      if (completed === undefined) return;
+      if (completed) {
+        words.push(completed);
         setSpeechInput(words.join(" "));
       } else if (word.toLowerCase() === "@everyone".substring(0, word.length)) {
         words.push("@everyone");
@@ -4115,10 +4135,48 @@ export function PlayerList(props) {
             renderMarker={renderMarker}
             renderRowEnd={renderRowEnd}
           />
+          <PregameSpectatorRows />
           <RehostInvite priority={2} />
         </div>
       }
     />
+  );
+}
+
+// Who is spectating. Everyone sees it in pregame; once the game starts only
+// spectators do (players keep the eye count in the header).
+function PregameSpectatorRows() {
+  const game = useContext(GameContext);
+  const user = useContext(UserContext);
+  const theme = useTheme();
+
+  const watching = pregameSpectatorList(game.spectators, {
+    currentState: game.history?.currentState,
+    stateViewing: game.stateViewing,
+    review: game.review,
+    isSpectator: game.isSpectator,
+  });
+  if (watching.length === 0) return null;
+
+  return (
+    <div className="pregame-spectators">
+      <div className="section-title">
+        <i className="fas fa-eye" />
+        Spectators
+      </div>
+      {watching.map((spectator) => (
+        <div className="player pregame-spectator" key={spectator.id}>
+          <NameWithAvatar
+            {...playerNameWithAvatarProps(spectator, {
+              user,
+              theme,
+              square: true,
+            })}
+            includeMiniprofile
+          />
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -6465,12 +6523,20 @@ export function useHistoryReducer() {
           break;
         }
         case "addQuote": {
-          if (
+          const quoteMeeting =
             history.states[history.currentState] &&
             history.states[history.currentState].meetings[
               action.quote.toMeetingId
-            ]
-          ) {
+            ];
+          if (quoteMeeting) {
+            // Same duplicate check as addMessage: a repeated delivery or a
+            // replay after reconnecting must not add a second quote row.
+            if (
+              action.quote.id != null &&
+              quoteMeeting.messages.some((m) => m.id === action.quote.id)
+            ) {
+              break;
+            }
             return update(history, {
               states: {
                 [history.currentState]: {

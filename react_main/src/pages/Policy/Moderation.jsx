@@ -61,6 +61,7 @@ function getTabValue(pathname) {
   if (pathname.includes("/competitive")) return "competitive";
   if (pathname.includes("/handbook")) return "handbook";
   if (pathname.includes("/flagged-intake")) return "flagged-intake";
+  if (pathname.includes("/github-links")) return "github-links";
   if (pathname.includes("/volunteer")) return "volunteer";
   return "log";
 }
@@ -95,6 +96,11 @@ export default function Moderation() {
       !user?.perms?.whitelist
     ) {
       navigate("/policy/moderation", { replace: true });
+    } else if (
+      location.pathname.includes("/github-links") &&
+      !user?.perms?.approveGithubLinks
+    ) {
+      navigate("/policy/moderation", { replace: true });
     }
   }, [
     location.pathname,
@@ -102,6 +108,7 @@ export default function Moderation() {
     user?.perms?.viewModActions,
     user?.perms?.manageCompetitive,
     user?.perms?.whitelist,
+    user?.perms?.approveGithubLinks,
     navigate,
   ]);
 
@@ -113,6 +120,7 @@ export default function Moderation() {
     else if (newValue === "handbook") navigate(`${base}/handbook`);
     else if (newValue === "flagged-intake") navigate(`${base}/flagged-intake`);
     else if (newValue === "volunteer") navigate(`${base}/volunteer`);
+    else if (newValue === "github-links") navigate(`${base}/github-links`);
   };
 
   return (
@@ -140,6 +148,9 @@ export default function Moderation() {
         )}
         {user?.perms?.whitelist && (
           <Tab label="Flagged Intake" value="flagged-intake" />
+        )}
+        {user?.perms?.approveGithubLinks && (
+          <Tab label="GitHub Links" value="github-links" />
         )}
       </Tabs>
 

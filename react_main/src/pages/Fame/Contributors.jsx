@@ -193,6 +193,31 @@ export default function Contributors(props) {
                 >
                   {contributor.name}
                 </Typography>
+                {contributor.github && (
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Typography
+                      component="a"
+                      href={`https://github.com/${contributor.github.username}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      variant="body2"
+                      sx={{
+                        color: "inherit",
+                        opacity: 0.8,
+                        textDecoration: "none",
+                        "&:hover": { textDecoration: "underline" },
+                      }}
+                    >
+                      <i className="fab fa-github" /> {contributor.github.username}
+                    </Typography>
+                    <Chip
+                      label={`${contributor.github.lines.toLocaleString()} lines`}
+                      size="small"
+                      title="Lines added plus lines deleted in UltiMafia/Ultimafia"
+                    />
+                  </Stack>
+                )}
               </Stack>
               <Box
                 display="flex"

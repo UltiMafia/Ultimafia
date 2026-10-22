@@ -18,6 +18,7 @@ const {
 } = require("../modules/accountLinkage");
 const redis = require("../modules/redis");
 const roleIconCreditUtils = require("../modules/roleIconCreditUtils");
+const githubContributions = require("../modules/githubContributions");
 const { getBasicUserInfo } = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
@@ -867,6 +868,52 @@ router.post("/unban", async (req, res) => {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not unban user. Please try again.");
+  }
+});
+
+router.get("/githubLinks", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "approveGithubLinks"))) return;
+    const status = githubContributions.statuses.includes(req.query.status) ? req.query.status : "pending";
+    const users = await models.User.find({ "github.status": status, deleted: false })
+      .select("id name avatar github -_id")
+      .sort({ "github.requestedAt": 1 })
+      .limit(100)
+      .lean();
+    res.send(users);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not load GitHub links. Please try again.");
+  }
+});
+
+router.post("/githubLinks", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "approveGithubLinks"))) return;
+    const userIdToActOn = String(req.body.userId || "").trim();
+    const decision = String(req.body.decision || "");
+    if (decision != "approved" && decision != "rejected") {
+      errors.badRequest(res, "Decision must be approved or rejected.");
+      return;
+    }
+    const target = await models.User.findOne({ id: userIdToActOn, deleted: false }).select("github").lean();
+    if (!target || !target.github || !target.github.username) {
+      errors.notFound(res, "That user has no GitHub username set.");
+      return;
+    }
+    await models.User.updateOne(
+      { id: userIdToActOn, "github.username": target.github.username },
+      { $set: { "github.status": decision, "github.reviewedBy": userId, "github.reviewedAt": Date.now() } }
+    );
+    routeUtils.createModAction(userId, "Review GitHub Link", [userIdToActOn, target.github.username, decision]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not review GitHub link. Please try again.");
   }
 });
 

@@ -1480,6 +1480,44 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Review GitHub Link": {
+      perm: "approveGithubLinks",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "GitHub Username",
+          name: "username",
+          type: "text",
+          optional: true,
+        },
+        {
+          label: "Decision",
+          name: "decision",
+          type: "select",
+          options: [
+            { value: "approved", label: "Approve" },
+            { value: "rejected", label: "Reject" },
+          ],
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/githubLinks", {
+            userId: argValues.userId,
+            decision: argValues.decision,
+          })
+          .then(() => {
+            siteInfo.showAlert("GitHub link reviewed.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Manage Role Icon Credit": {
       perm: "changeUsersName",
       category: "User Management",

@@ -7,6 +7,7 @@ const testAccounts = require("../modules/devApi/testAccounts");
 const { isTestingGame } = require("../modules/devApi/policy");
 const logger = require("../modules/logging")(".");
 const errors = require("../modules/devApi/errors");
+const models = require("../db/models");
 const router = express.Router();
 
 function handle(fn) {
@@ -256,6 +257,63 @@ router.post(
     } catch (e) {
       errors.badRequest(res, e.message);
     }
+  })
+);
+
+const logChunksPerPage = 20;
+
+function parseLines(chunk) {
+  return chunk.lines.map((line) => JSON.parse(line));
+}
+
+router.get(
+  "/games/:gameId/log",
+  handle(async (req, res) => {
+    const userId = await requireDeveloper(req, res);
+    if (!userId) return;
+    const gameId = String(req.params.gameId);
+    const from = Math.max(0, Number(req.query.fromChunk) || 0);
+    const chunks = await models.GameEventLogChunk.find({ gameId, n: { $gte: from } })
+      .select("n lines -_id")
+      .sort("n")
+      .limit(logChunksPerPage)
+      .lean();
+    if (chunks.length == 0 && from == 0) {
+      errors.notFound(res, "No event log for this game.");
+      return;
+    }
+    res.send({
+      gameId,
+      events: chunks.flatMap(parseLines),
+      nextChunk: chunks.length == logChunksPerPage ? chunks[chunks.length - 1].n + 1 : null,
+    });
+  })
+);
+
+router.get(
+  "/games/:gameId/log.jsonl",
+  handle(async (req, res) => {
+    const userId = await requireDeveloper(req, res);
+    if (!userId) return;
+    const gameId = String(req.params.gameId);
+    const first = await models.GameEventLogChunk.findOne({ gameId }).select("hostId").lean();
+    if (!first) {
+      errors.notFound(res, "No event log for this game.");
+      return;
+    }
+    const creatorId = await redis.client.getAsync(`devapi:game:${gameId}:creator`);
+    const isHost = (creatorId || first.hostId) == userId;
+    if (!isHost && !(await routeUtils.verifyPermission(userId, "giveGroup", Infinity))) {
+      errors.forbidden(res, "Only the developer who hosted this game or an Owner can download its log.");
+      return;
+    }
+    res.set("Content-Type", "application/x-ndjson");
+    res.set("Content-Disposition", `attachment; filename="game-${gameId}.jsonl"`);
+    const cursor = models.GameEventLogChunk.find({ gameId }).select("lines -_id").sort("n").lean().cursor();
+    for await (const chunk of cursor) {
+      for (const line of chunk.lines) res.write(line + "\n");
+    }
+    res.end();
   })
 );
 

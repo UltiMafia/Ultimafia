@@ -24,6 +24,8 @@ import {
   Checkbox,
   FormControlLabel,
   Switch,
+  Chip,
+  Link as MuiLink,
 } from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
 
@@ -41,6 +43,94 @@ import "css/settings.css";
 import { setCaptchaVisible } from "utils";
 import { PageSkeleton } from "components/Skeletons";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+
+const githubStatusChips = {
+  pending: { label: "Pending approval", color: "warning" },
+  approved: { label: "Approved", color: "success" },
+  rejected: { label: "Rejected", color: "error" },
+};
+
+function GithubSettings() {
+  const siteInfo = useContext(SiteInfoContext);
+  const errorAlert = useErrorAlert();
+  const [link, setLink] = useState(null);
+  const [username, setUsername] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    axios
+      .get("/api/user/github")
+      .then((res) => {
+        setLink(res.data);
+        setUsername(res.data.username || "");
+      })
+      .catch(errorAlert);
+  }, []);
+
+  const onSave = () => {
+    setSaving(true);
+    axios
+      .post("/api/user/github", { username })
+      .then((res) => {
+        setLink(res.data);
+        setUsername(res.data.username || "");
+        siteInfo.showAlert(
+          res.data.username ? "GitHub username saved." : "GitHub link removed.",
+          "success"
+        );
+      })
+      .catch(errorAlert)
+      .finally(() => setSaving(false));
+  };
+
+  if (!link) return <Loading small />;
+
+  const statusChip = githubStatusChips[link.status];
+  const unchanged = username.trim().replace(/^@/, "") === (link.username || "");
+
+  return (
+    <Stack direction="column" spacing={2}>
+      <Box>
+        <Typography variant="h4" sx={{ mb: 1 }}>
+          GitHub
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Link your GitHub account to show your code contributions to{" "}
+          <MuiLink href="https://github.com/UltiMafia/Ultimafia" target="_blank" rel="noopener noreferrer">
+            UltiMafia/Ultimafia
+          </MuiLink>{" "}
+          on the Contributors page. An admin reviews each username before it
+          is shown, and changing it sends it back for review.
+        </Typography>
+      </Box>
+      {link.username && statusChip && (
+        <Stack direction="row" spacing={1} alignItems="center">
+          <MuiLink href={`https://github.com/${link.username}`} target="_blank" rel="noopener noreferrer">
+            @{link.username}
+          </MuiLink>
+          <Chip label={statusChip.label} color={statusChip.color} size="small" variant="outlined" />
+          {link.status === "approved" && link.lastSynced && (
+            <Typography variant="caption" color="text.secondary">
+              {(link.additions || 0) + (link.deletions || 0)} lines, {link.commits || 0} commits
+            </Typography>
+          )}
+        </Stack>
+      )}
+      <Stack direction="row" spacing={1}>
+        <TextField
+          sx={{ minWidth: "240px" }}
+          label="GitHub Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          disabled={saving}
+        />
+        <Button onClick={onSave} disabled={saving || unchanged}>
+          {username.trim() ? "Save" : "Remove"}
+        </Button>
+      </Stack>
+    </Stack>
+  );
+}
 
 function CookieSettings() {
   const { preferences, updatePreferences, acceptAll, rejectAll } = useCookieConsent();
@@ -1212,6 +1302,12 @@ export default function Settings() {
           </Button>
         </Stack>
       ),
+    },
+    {
+      title: "GitHub",
+      path: "github",
+      wrapInPaper: true,
+      content: <GithubSettings />,
     },
     {
       title: "Cookies",

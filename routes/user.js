@@ -14,6 +14,7 @@ const routeUtils = require("./utils");
 const utils = require("../lib/Utils");
 const dateOnly = require("../lib/dateOnly");
 const redis = require("../modules/redis");
+const githubContributions = require("../modules/githubContributions");
 const constants = require("../data/constants");
 const dbStats = require("../db/stats");
 const { colorHasGoodContrastForBothThemes } = require("../shared/colors");
@@ -2921,6 +2922,74 @@ router.post("/bio", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not edit bio. Please try again.");
+  }
+});
+
+function githubLinkView(github) {
+  if (!github || !github.username) return { username: "", status: null };
+  return {
+    username: github.username,
+    status: github.status,
+    additions: github.additions,
+    deletions: github.deletions,
+    commits: github.commits,
+    lastSynced: github.lastSynced,
+  };
+}
+
+router.get("/github", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const user = await models.User.findOne({ id: userId }).select("github").lean();
+    res.send(githubLinkView(user && user.github));
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not load your GitHub link. Please try again.");
+  }
+});
+
+router.post("/github", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const username = String(req.body.username || "").trim().replace(/^@/, "");
+
+    if (!(await redis.rateLimit(userId, "githubLink"))) {
+      errors.tooManyRequests(res, "You're doing that too much. Please wait a few seconds.");
+      return;
+    }
+
+    if (!username) {
+      await models.User.updateOne({ id: userId }, { $unset: { github: "" } });
+      res.send(githubLinkView(null));
+      return;
+    }
+
+    if (!githubContributions.isValidUsername(username)) {
+      errors.unprocessable(res, "That isn't a valid GitHub username.");
+      return;
+    }
+
+    const user = await models.User.findOne({ id: userId }).select("github").lean();
+    const current = user && user.github;
+    if (current && current.username && current.username.toLowerCase() == username.toLowerCase()) {
+      res.send(githubLinkView(current));
+      return;
+    }
+
+    const login = await githubContributions.findGithubLogin(username);
+    if (!login) {
+      errors.unprocessable(res, "No GitHub user exists with that username.");
+      return;
+    }
+
+    const github = { username: login, status: "pending", requestedAt: Date.now() };
+    await models.User.updateOne({ id: userId }, { $set: { github } });
+    res.send(githubLinkView(github));
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not save your GitHub username. Please try again.");
   }
 });
 

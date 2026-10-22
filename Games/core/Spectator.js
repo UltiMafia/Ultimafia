@@ -40,6 +40,11 @@ module.exports = class Spectator extends Player {
       }
     });
 
+    // The app's "spectate" event from someone already watching.
+    socket.on("spectate", () => {
+      this.send("spectateFailed", "You are already spectating this game.");
+    });
+
     socket.on("getTimerInfo", () => {
       try {
         this.game.resendTimers(this);
@@ -50,8 +55,8 @@ module.exports = class Spectator extends Player {
 
     socket.on("disconnected", () => {
       try {
-        // Keep the user id so a refresh during pregame stays spectating.
-        this.game.removeSpectator(this, { forget: false });
+        if (this.socket !== socket) return; // replaced by a reconnect
+        this.game.scheduleSpectatorRemoval(this, socket);
       } catch (e) {
         logger.error(e);
       }
@@ -164,7 +169,7 @@ module.exports = class Spectator extends Player {
         });
 
         var meeting = this.game.getMeeting(message.meetingId);
-        if (!meeting) return;
+        if (!this.canSpeakIn(meeting)) return;
 
         meeting.speak({
           sender: this,
@@ -221,7 +226,7 @@ module.exports = class Spectator extends Player {
         speechPast.push(Date.now());
 
         var meeting = this.game.getMeeting(quote.toMeetingId);
-        if (!meeting) return;
+        if (!this.canSpeakIn(meeting)) return;
 
         meeting.quote(this, quote);
       } catch (e) {
@@ -235,6 +240,19 @@ module.exports = class Spectator extends Player {
         "Warning: Your message contains inappropriate language. Please revise your message without using offensive terms."
       );
     });
+  }
+
+  // Spectators talk only in Pregame (before the start) and in the
+  // spectator meeting, always under their own name. Any other meeting id
+  // from a spectator's socket is ignored.
+  canSpeakIn(meeting) {
+    if (!meeting) return false;
+    if (meeting === this.game.spectatorMeeting) return true;
+    return (
+      meeting === this.game.pregame &&
+      !this.game.started &&
+      !this.game.starting
+    );
   }
 
   gameEventListeners() {}
@@ -302,9 +320,21 @@ module.exports = class Spectator extends Player {
   }
 
   hear(message) {
-    message = message.getMessageInfo("spectator");
+    var info = message.getMessageInfo("spectator");
 
-    if (message) this.send("message", message);
+    // The spectator view hides alerts aimed at particular players. An alert
+    // aimed at this spectator (a /join refusal, /role output) is theirs.
+    if (
+      !info &&
+      message.isServer &&
+      !message.meeting &&
+      message.recipients &&
+      message.recipients.indexOf(this) != -1
+    ) {
+      info = message.parseMessageInfoObj(message, "server");
+    }
+
+    if (info) this.send("message", info);
   }
 
   hearQuote(quote) {
