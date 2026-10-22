@@ -20,10 +20,12 @@ function getIP(req) {
 }
 
 function getUserId(req) {
+  if (req.devApi) return req.devApi.userId;
   return req.session.user && req.session.user.id;
 }
 
 async function verifyLoggedIn(req, ignoreError) {
+  if (req.devApi) return req.devApi.userId;
   if (req.session.user && req.session.user.id) return req.session.user.id;
   else if (!ignoreError) throw new Error("Not logged in");
 }

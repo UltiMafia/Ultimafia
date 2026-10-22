@@ -872,6 +872,7 @@ module.exports = class Meeting {
     }
 
     if (this.game.isSpectatorMeeting(this)) this.game.spectatorsSeeVote(vote);
+    this.game.omniscientSpectatorsSee?.("seeVote", vote);
 
     this.events.emit("vote", vote);
 
@@ -949,6 +950,7 @@ module.exports = class Meeting {
     }
 
     if (this.game.isSpectatorMeeting(this)) this.game.spectatorsSeeUnvote(info);
+    this.game.omniscientSpectatorsSee?.("seeUnvote", info);
 
     this.checkReady();
 
@@ -1247,6 +1249,7 @@ module.exports = class Meeting {
         recipient.seeTyping(info);
       }
       if (spectatorsAlsoNotified) this.game.spectatorsSeeTyping(info);
+      this.game.omniscientSpectatorsSee?.("seeTyping", info);
     }
   }
 

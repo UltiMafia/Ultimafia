@@ -102,6 +102,15 @@ export default function UserNavSection({
       path: "/user/shop",
       icon: (<i className="fas fa-coins"/>),
     },
+    ...(user.perms?.devApi
+      ? [
+          {
+            text: "Developer API",
+            path: "/user/developer",
+            icon: (<i className="fas fa-code"/>),
+          },
+        ]
+      : []),
     {
       text: "Announcements",
       onClick: openAnnouncements,

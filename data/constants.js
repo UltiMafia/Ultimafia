@@ -38,6 +38,7 @@ if (process.env.NODE_ENV.includes("development")) {
     feedbackSubmission: 24 * 60 * 60 * 100,
     poke: 5 * 100,
     tradeStamp: 2 * 100,
+    devApiToken: 1000,
   };
 } else {
   rates = {
@@ -59,6 +60,7 @@ if (process.env.NODE_ENV.includes("development")) {
     feedbackSubmission: 24 * 60 * 60 * 1000,
     poke: 5 * 1000,
     tradeStamp: 2 * 1000,
+    devApiToken: 1000,
   };
 }
 
@@ -87,6 +89,21 @@ module.exports = {
   // created or hosted anymore. Acrotopia is covered by Wacky Words' acronym mode.
   disabledGameTypes: ["Acrotopia", "Resistance"],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
+  testingLobby: "Testing",
+  ownerOnlyGroups: ["Developer", "Developer Public Testing"],
+  devApi: {
+    maxTestAccountsInGame: 50,
+    maxTestAccountsInPublicGame: 1,
+    tokenTtlSeconds: 3600,
+    keyLifetimeMs: 90 * 24 * 60 * 60 * 1000,
+    maxKeysPerDeveloper: 5,
+    eventBufferSize: 500,
+    minTimerScale: 0.01,
+    minScaledTimerMs: 1000,
+    maxJumpStates: 40,
+    sendsPerSecond: 20,
+    maxBurstSends: 200,
+  },
   alignments: {
     Mafia: ["Village", "Mafia", "Cult", "Independent", "Event"],
     Resistance: ["Resistance", "Spies"],
@@ -604,6 +621,8 @@ module.exports = {
     deleteFanart: true,
     seeModPanel: true,
     deleteViolation: true,
+    devApi: true,
+    devTestPublic: true,
   },
   defaultGroups: {
     Owner: {
@@ -734,10 +753,15 @@ module.exports = {
         "deleteFanart",
       ],
     },
-    Dev: {
-      rank: 5,
+    Developer: {
+      rank: 0,
+      visible: true,
+      perms: ["devApi"],
+    },
+    "Developer Public Testing": {
+      rank: 0,
       visible: false,
-      perms: [],
+      perms: ["devTestPublic"],
     },
     Donor: {
       rank: 5,

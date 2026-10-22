@@ -6,4 +6,11 @@ export const lobbies = [
   { name: "Games", displayName: "🎲 Minigames" },
   { name: "Survivor", displayName: "🍹 Survivor" },
   { name: "Roleplay", displayName: "🎭 Roleplay" },
+  { name: "Testing", displayName: "🧪 Testing", developerOnly: true },
 ];
+
+export function lobbiesFor(user) {
+  return lobbies.filter(
+    (lobby) => !lobby.developerOnly || Boolean(user?.perms?.devApi)
+  );
+}
