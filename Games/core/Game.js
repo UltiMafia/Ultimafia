@@ -1040,7 +1040,7 @@ module.exports = class Game {
   // Why a seated player may not move to spectators right now, or null.
   // Every reason is a full sentence ending in a period.
   async spectateFromSeatRefusal(player) {
-    if (this.started || this.currentState != -1) {
+    if (this.started || this.starting || this.currentState != -1) {
       return "You can only move to spectators during pregame.";
     }
 
@@ -1072,7 +1072,13 @@ module.exports = class Game {
     options = options || {};
     if (!player || player.spectator) return null;
 
-    const reason = await this.spectateFromSeatRefusal(player);
+    let reason = await this.spectateFromSeatRefusal(player);
+    // The checks above wait on the database. The start may have begun, or
+    // the seat changed, in the meantime.
+    if (!reason && (this.started || this.starting || this.currentState != -1))
+      reason = "You can only move to spectators during pregame.";
+    else if (!reason && (!this.players[player.id] || player.left))
+      reason = "You are not seated in this game.";
     if (reason) {
       if (options.user) {
         player = player.setUser(options.user);

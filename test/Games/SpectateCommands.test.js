@@ -71,7 +71,9 @@ async function makeGame(extra) {
 }
 
 // Starts the game without roles or states so spectator chat can be checked.
+// start() refuses a short table, so the setup is sized to the players seated.
 async function startBare(game) {
+  game.setup.total = game.players.length;
   game.assignRoles = () => {};
   game.captureStartingFactions = () => {};
   game.gotoNextState = () => {};

@@ -231,6 +231,40 @@ describe("Games/SpectateSeatAndNames", function () {
     });
   });
 
+  describe("the /spectate command", function () {
+    it("is refused while the start is in progress, so all 3 get roles", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const dealt = instrumentStart(game, 150);
+      const users = await fullTable(game, 3);
+
+      const starting = game.start();
+      await settle(20);
+      say(playerFor(game, users[2]), "/spectate", game.pregame.id);
+      await starting;
+      await settle();
+
+      dealt.should.deep.equal([3]);
+      game.players.length.should.equal(3);
+      game.spectators.should.have.lengthOf(0);
+    });
+
+    it("after everyone readied stops the start countdown", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      game.pregameCountdownLength = 50;
+      const dealt = instrumentStart(game);
+      const users = await fullTable(game, 3);
+      game.startReadyCheck();
+      for (const user of users) game.playerReady(playerFor(game, user));
+
+      say(playerFor(game, users[2]), "/spectate", game.pregame.id);
+      await settle(150);
+
+      should.not.exist(game.timers["pregameCountdown"]);
+      dealt.should.have.lengthOf(0);
+      game.players.length.should.equal(2);
+    });
+  });
+
   describe("names in chat after a refresh", function () {
     it("a player who moved to spectators keeps their name on pregame messages", async function () {
       const game = await openGame.call(this, { total: 3 });
