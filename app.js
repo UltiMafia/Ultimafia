@@ -9,6 +9,7 @@ const logger = require("./modules/logging")(".");
 
 const indexRouter = require("./routes/index");
 const authRouter = require("./routes/auth");
+const appleNotificationsRouter = require("./routes/appleNotifications");
 const gameRouter = require("./routes/game");
 const setupRouter = require("./routes/setup");
 const deckRouter = require("./routes/anonymousDeck");
@@ -82,6 +83,7 @@ app.use(
 const apiRouter = express.Router();
 
 apiRouter.use("/", indexRouter);
+apiRouter.use("/auth/apple", appleNotificationsRouter);
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/game", gameRouter);
 apiRouter.use(
