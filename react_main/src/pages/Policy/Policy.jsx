@@ -12,6 +12,7 @@ import Reports from "./Reports";
 import CompetitiveManagement from "./Moderation/CompetitiveManagement";
 import StaffHandbook from "./Moderation/StaffHandbook";
 import FlaggedIntake from "./Moderation/FlaggedIntake";
+import GithubLinks from "./Moderation/GithubLinks";
 import Volunteer from "./Moderation/Volunteer";
 import Invoices from "./Invoices";
 
@@ -47,6 +48,7 @@ export default function Policy() {
           <Route path="competitive" element={<CompetitiveManagement />} />
           <Route path="handbook" element={<StaffHandbook />} />
           <Route path="flagged-intake" element={<FlaggedIntake />} />
+          <Route path="github-links" element={<GithubLinks />} />
           <Route path="volunteer" element={<Volunteer />} />
         </Route>
         <Route path="reports/*" element={<ReportsRedirect />} />

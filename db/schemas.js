@@ -173,6 +173,17 @@ var schemas = {
       maxlength: 240,
       default: "",
     },
+    github: {
+      username: String,
+      status: { type: String, enum: ["pending", "approved", "rejected"], index: true },
+      requestedAt: Number,
+      reviewedBy: String,
+      reviewedAt: Number,
+      additions: Number,
+      deletions: Number,
+      commits: Number,
+      lastSynced: Number,
+    },
     donorBio: {
       type: String,
       maxlength: 240,
