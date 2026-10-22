@@ -1,6 +1,8 @@
 const express = require("express");
 const shortid = require("shortid");
 const constants = require("../data/constants");
+const devApiKeys = require("../modules/devApi/keys");
+
 const trophyData = require("../data/trophies");
 const DailyChallengeData = require("../data/DailyChallenge");
 const roleData = require("../data/roles");
@@ -286,6 +288,10 @@ router.post("/groupPerms", async function (req, res) {
   }
 });
 
+function requiredGroupRank(groupName, groupRank) {
+  return constants.ownerOnlyGroups.includes(groupName) ? Infinity : groupRank + 1;
+}
+
 router.post("/addToGroup", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
@@ -300,7 +306,14 @@ router.post("/addToGroup", async function (req, res) {
       return;
     }
 
-    if (!(await routeUtils.verifyPermission(res, userId, perm, group.rank + 1)))
+    if (
+      !(await routeUtils.verifyPermission(
+        res,
+        userId,
+        perm,
+        requiredGroupRank(groupName, group.rank)
+      ))
+    )
       return;
 
     var userToAdd = await models.User.findOne({
@@ -356,7 +369,14 @@ router.post("/removeFromGroup", async function (req, res) {
       return;
     }
 
-    if (!(await routeUtils.verifyPermission(res, userId, perm, group.rank + 1)))
+    if (
+      !(await routeUtils.verifyPermission(
+        res,
+        userId,
+        perm,
+        requiredGroupRank(groupName, group.rank)
+      ))
+    )
       return;
 
     var userToRemove = await models.User.findOne({
@@ -373,6 +393,8 @@ router.post("/removeFromGroup", async function (req, res) {
       user: userToRemove._id,
       group: group._id,
     }).exec();
+    if (groupName == "Developer")
+      await devApiKeys.revokeKeys({ userId: userIdToRemove }, userId);
     await redis.cacheUserInfo(userIdToRemove, true);
     await redis.cacheUserPermissions(userIdToRemove);
 

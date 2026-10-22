@@ -19,6 +19,7 @@ const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const Diff = require("diff");
 const errors = require("../lib/errors");
+const { requestUserObjectId } = require("../modules/devApi/requestUser");
 
 function canModifySetup(setup) {
   return !setup.ranked && !setup.competitive;
@@ -140,7 +141,7 @@ router.get("/featuredSetup", async function (req, res) {
 router.get("/search", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
-    var sessionUserId = req.session?.user?._id;
+    var sessionUserId = await requestUserObjectId(req);
 
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var gameType = String(req.query.gameType);
@@ -940,7 +941,7 @@ router.post("/create", async function (req, res) {
     const userId = await routeUtils.verifyLoggedIn(req);
 
     var user = await models.User.findOne({ id: userId, deleted: false }).select(
-      "setups"
+      "_id setups"
     );
     user = user.toJSON();
 
@@ -1145,7 +1146,7 @@ router.post("/create", async function (req, res) {
       setupId = setup.id;
     } else {
       obj.id = shortid.generate();
-      obj.creator = req.session.user._id;
+      obj.creator = user._id;
       if (obj.copiedFrom) obj.copiedAt = new Date();
 
       setup = new models.Setup(obj);
