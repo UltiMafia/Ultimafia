@@ -84,6 +84,7 @@ import {
   Box,
   Button,
   ButtonGroup,
+  Chip,
   Divider,
   Dialog,
   DialogActions,
@@ -218,6 +219,7 @@ export default function Game(props) {
   const [spectators, setSpectators] = useState();
   const [spectatorCount, setSpectatorCount] = useState(0);
   const [isSpectator, setIsSpectator] = useState(false);
+  const [isOmniscientSpectator, setIsOmniscientSpectator] = useState(false);
   const [self, setSelf] = useState();
   const [voteKickUrgency, setVoteKickUrgency] = useState(false);
   const [lastWill, setLastWill] = useState("");
@@ -1102,6 +1104,10 @@ export default function Game(props) {
       if (!spectatingNow) stopReadyBellRepeatRef.current();
     });
 
+    socket.on("omniscientSpectator", () => {
+      setIsOmniscientSpectator(true);
+    });
+
     socket.on("left", () => {
       stopReadyBellRepeatRef.current();
       if (!noLeaveRef.current) {
@@ -1332,6 +1338,7 @@ export default function Game(props) {
       updateStateViewing: updateStateViewing,
       self: self,
       isSpectator: isSpectator,
+      isOmniscientSpectator: isOmniscientSpectator,
       isParticipant: isParticipant,
       players: players,
       updatePlayers: updatePlayers,
@@ -4032,6 +4039,17 @@ export function PlayerList(props) {
       }}
     >
       <Typography>Players</Typography>
+      {game.isOmniscientSpectator && (
+        <Tooltip title="Developer view: you can see every meeting, vote, whisper, private message and true role in this Testing lobby game. Players cannot see this.">
+          <Chip
+            className="omniscient-spectator-chip"
+            size="small"
+            color="warning"
+            icon={<i className="fas fa-eye" style={{ marginLeft: 8 }} />}
+            label="Dev view"
+          />
+        </Tooltip>
+      )}
       <Box sx={{ marginLeft: "auto !important" }}>
         <PlayerCount
           game={game}
