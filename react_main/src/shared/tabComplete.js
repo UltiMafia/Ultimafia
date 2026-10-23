@@ -1,5 +1,5 @@
 // Tab completion of names in the game chat box. Plain CommonJS with no React
-// so the server tests (test/spectatorChat.test.js) and the client node tests
+// so the server tests (mocha) and the client node tests
 // (react_main/test/tabComplete.test.mjs) can load it directly.
 //
 // The client's player map can hold the same name more than once: a player

@@ -6,6 +6,8 @@ const redis = require("../../modules/redis");
 const Game = require("../../Games/core/Game");
 const User = require("../../Games/core/User");
 const Socket = require("../../lib/sockets").TestSocket;
+const path = require("path");
+const { spawnSync } = require("child_process");
 
 let seq = 0;
 
@@ -86,6 +88,34 @@ async function spectateFromSeat(game, user) {
   const again = makeUser(user.id, user.name);
   await game.userJoin(again, { spectate: true });
   return again;
+}
+
+// Runs the chat box's Tab completion on a "players" payload in a child
+// process, so a completion that never ends fails the test instead of
+// hanging it. Returns { status, completed } (status null on a timeout).
+function tabCompleteInChild(players, word) {
+  const modulePath = path.join(
+    __dirname,
+    "../../react_main/src/shared/tabComplete.js"
+  );
+  const script = `
+    const { tabCompleteNames, completePlayerName } = require(${JSON.stringify(modulePath)});
+    let input = "";
+    process.stdin.on("data", (d) => (input += d));
+    process.stdin.on("end", () => {
+      const { players, word } = JSON.parse(input);
+      const completed = completePlayerName(word, tabCompleteNames({ players }));
+      process.stdout.write(JSON.stringify(completed === undefined ? "<none>" : completed));
+    });`;
+  const out = spawnSync(process.execPath, ["-e", script], {
+    input: JSON.stringify({ players, word }),
+    timeout: 5000,
+    encoding: "utf8",
+  });
+  return {
+    status: out.status,
+    completed: out.status === 0 ? JSON.parse(out.stdout) : undefined,
+  };
 }
 
 function playerFor(game, user) {
@@ -310,6 +340,47 @@ describe("Games/SpectateSeatAndNames", function () {
       await game.userJoin(again);
       await settle();
       unnamedSenders(again.socket).should.deep.equal([]);
+    });
+  });
+
+  describe("Tab completion after a spectate and a re-seat", function () {
+    it("completes the name of a player who spectated and sat back down", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const users = await fullTable(game, 2);
+      await spectateFromSeat(game, users[1]);
+      await settle();
+      const spectator = game.spectators.filter(
+        (s) => s.user.id === users[1].id
+      )[0];
+      should.exist(spectator);
+      await game.takeSeat(spectator);
+      await settle();
+      should.exist(playerFor(game, users[1]));
+
+      // A refresh: the players payload names the old seat (left) and the
+      // new one, both "p1".
+      const host = makeUser(game.hostId, "host");
+      users[0].socket.sendToServer("disconnected");
+      await game.userJoin(host);
+      await settle();
+      const players = events(host.socket, "players").slice(-1)[0].data;
+      const named = Object.values(players).filter((p) => p.name === "p1");
+      named.should.have.lengthOf(2);
+      named.filter((p) => p.left).should.have.lengthOf(1);
+
+      tabCompleteInChild(players, "p").should.deep.equal({
+        status: 0,
+        completed: "p1",
+      });
+      tabCompleteInChild(players, "@p1").should.deep.equal({
+        status: 0,
+        completed: "@p1",
+      });
+      // Before the fix two copies of a name made completion loop forever.
+      tabCompleteInChild(
+        { a: { id: "a", name: "Bob" }, b: { id: "b", name: "Bob" } },
+        "b"
+      ).should.deep.equal({ status: 0, completed: "Bob" });
     });
   });
 
