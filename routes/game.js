@@ -448,7 +448,7 @@ async function hostTutorial(res, userId, storyline) {
       return;
     }
 
-    const gameId = await gameLoadBalancer.createGame(userId, "Mafia", {
+    const settings = {
       setup: JSON.parse(JSON.stringify(tutorialSetup)),
       lobby: "Main",
       lobbyName: `Tutorial: ${story.title}`,
@@ -459,32 +459,59 @@ async function hostTutorial(res, userId, storyline) {
       spectating: false,
       readyCheck: false,
       noVeg: true,
+      // Hours, as for any lobby. Left unset it is NaN, and the "waited too
+      // long" close fires at once: the lobby shuts 30 seconds later unless
+      // the game has started by then.
+      pregameWaitLength: 1,
       // The script advances the game; these are just a safety net.
       stateLengths: { Day: 20 * 60 * 1000, Night: 20 * 60 * 1000 },
       gameTypeOptions: JSON.stringify({}),
       tutorial: { storyline: story.id },
-    });
+    };
 
     // The bots are seated while the game is created. A lobby without them
-    // (the game server could not add them, or does not run tutorials) is
-    // closed rather than handed to the player.
-    const info = await redis.getGameInfo(gameId, true);
-    const seated = info && Array.isArray(info.players) ? info.players.length : 0;
-    if (seated < tutorialSetup.total) {
+    // (that game server could not add them, or runs code from before the
+    // tutorial and treats it as a normal lobby) is closed rather than handed
+    // to the player, and the next game server is tried.
+    const servers = (await redis.getAllGameServerPorts().catch(() => []))
+      .length;
+    const attempts = Math.min(Math.max(servers, 1), 4);
+    let gameId = null;
+    for (let attempt = 1; attempt <= attempts && !gameId; attempt++) {
+      const created = await gameLoadBalancer.createGame(
+        userId,
+        "Mafia",
+        JSON.parse(JSON.stringify(settings))
+      );
+      const info = await redis.getGameInfo(created, true);
+      const seated =
+        info && Array.isArray(info.players) ? info.players.length : 0;
+      if (seated >= tutorialSetup.total) {
+        gameId = created;
+        break;
+      }
       logger.error(
         new Error(
-          `Tutorial game ${gameId} has ${seated} of ${tutorialSetup.total} seats filled; closing it.`
+          `Tutorial game ${created} on game server port ${
+            info && info.port
+          } has ${seated} of ${
+            tutorialSetup.total
+          } seats filled; closing it (attempt ${attempt} of ${attempts}).`
         )
       );
       try {
         await Promise.race([
-          gameLoadBalancer.cancelGame(userId, gameId),
+          gameLoadBalancer.cancelGame(userId, created),
           new Promise((resolve) => setTimeout(resolve, 5000)),
         ]);
       } catch (e) {
         logger.error(e);
       }
-      if ((await redis.inGame(userId)) == gameId) await redis.leaveGame(userId);
+      if ((await redis.inGame(userId)) == created)
+        await redis.leaveGame(userId);
+    }
+
+    if (!gameId) {
       errors.serverError(res, "Unable to start the tutorial. Please try again.");
       return;
     }
