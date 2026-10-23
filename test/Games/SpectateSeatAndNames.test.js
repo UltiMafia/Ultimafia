@@ -6,6 +6,7 @@ const redis = require("../../modules/redis");
 const Game = require("../../Games/core/Game");
 const User = require("../../Games/core/User");
 const Socket = require("../../lib/sockets").TestSocket;
+const routeUtils = require("../../routes/utils");
 const path = require("path");
 const { spawnSync } = require("child_process");
 
@@ -415,6 +416,29 @@ describe("Games/SpectateSeatAndNames", function () {
       await settle();
       should.exist(playerFor(game, next));
       game.players.should.have.lengthOf(3);
+    });
+
+    it("removes a staff player too when spectating is off", async function () {
+      const game = await openGame.call(this, { total: 3, spectating: false });
+      const users = await fullTable(game, 3);
+      const late = users[2];
+      // Staff can spectate any game (canSpectateAny), but a missed ready
+      // check still removes them like everyone else.
+      const originalVerifyPermission = routeUtils.verifyPermission;
+      routeUtils.verifyPermission = async (...args) =>
+        args.includes("canSpectateAny") ||
+        originalVerifyPermission.apply(routeUtils, args);
+      try {
+        await missReadyCheck(game, users);
+      } finally {
+        routeUtils.verifyPermission = originalVerifyPermission;
+      }
+
+      should.not.exist(playerFor(game, late));
+      game.players.should.have.lengthOf(2);
+      game.spectators.filter((s) => s.user.id === late.id).should.have.lengthOf(0);
+      (await redis.inGame(late.id)).should.equal(false);
+      events(late.socket, "left").should.have.lengthOf(1);
     });
 
     it("moves the player to spectators when spectating is on", async function () {
