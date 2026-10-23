@@ -42,6 +42,7 @@ import { useCookieConsent } from "../../hooks/useCookieConsent";
 import "css/settings.css";
 import { setCaptchaVisible } from "utils";
 import { PageSkeleton } from "components/Skeletons";
+import { Loading } from "components/Loading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 const githubStatusChips = {
