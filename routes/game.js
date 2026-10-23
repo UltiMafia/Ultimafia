@@ -435,10 +435,34 @@ router.post("/tutorial/host", async function (req, res) {
       tutorial: { storyline: story.id },
     });
 
+    // The bots are seated while the game is created. A lobby without them
+    // (the game server could not add them, or does not run tutorials) is
+    // closed rather than handed to the player.
+    const info = await redis.getGameInfo(gameId, true);
+    const seated = info && Array.isArray(info.players) ? info.players.length : 0;
+    if (seated < tutorialSetup.total) {
+      logger.error(
+        new Error(
+          `Tutorial game ${gameId} has ${seated} of ${tutorialSetup.total} seats filled; closing it.`
+        )
+      );
+      try {
+        await Promise.race([
+          gameLoadBalancer.cancelGame(userId, gameId),
+          new Promise((resolve) => setTimeout(resolve, 5000)),
+        ]);
+      } catch (e) {
+        logger.error(e);
+      }
+      if ((await redis.inGame(userId)) == gameId) await redis.leaveGame(userId);
+      errors.serverError(res, "Unable to start the tutorial. Please try again.");
+      return;
+    }
+
     res.send(gameId);
   } catch (e) {
     logger.error(e);
-    errors.serverError(res, "Unable to start the tutorial.");
+    errors.serverError(res, "Unable to start the tutorial. Please try again.");
   }
 });
 

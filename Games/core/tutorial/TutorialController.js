@@ -126,6 +126,16 @@ class TutorialController {
     }
     for (const user of bots) await this.game.userJoin(user, true);
 
+    // userJoin logs and swallows its errors, so check that every bot is
+    // actually seated before the game is handed to the player.
+    const seated = this.game.players.filter(
+      (p) => p.user && p.user.tutorialBot
+    ).length;
+    if (seated !== bots.length)
+      throw new Error(
+        `Only ${seated} of ${bots.length} tutorial bots joined game ${this.game.id}.`
+      );
+
     this.game.events.on("roleAssigned", (p) => this.restrictLitigate(p));
     this.game.events.on("state", () => this.onState());
     this.game.events.on("aboutToFinish", () => this.onFinish());

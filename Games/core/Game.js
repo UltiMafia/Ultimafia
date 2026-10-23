@@ -241,7 +241,31 @@ module.exports = class Game {
       }
     } catch (e) {
       logger.error(e);
+      // A tutorial without its bots is an empty lobby the player can do
+      // nothing in. Close it and let the create request fail instead.
+      if (this.tutorialSettings) {
+        await this.abandonTutorialSetup();
+        throw e;
+      }
       // this.handleError(e);
+    }
+  }
+
+  // Undo a tutorial whose setup failed: no one stays in it, and the host is
+  // free to start another one.
+  async abandonTutorialSetup() {
+    try {
+      if (this.tutorial) this.tutorial.destroy();
+      this.clearTimers();
+      for (const p of this.players) {
+        if (p.user && p.user.id && (await redis.inGame(p.user.id)) == this.id)
+          await redis.leaveGame(p.user.id);
+      }
+      if ((await redis.inGame(this.hostId)) == this.id)
+        await redis.leaveGame(this.hostId);
+      await this.cancel();
+    } catch (e) {
+      logger.error(e);
     }
   }
 
