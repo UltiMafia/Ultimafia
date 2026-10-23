@@ -7,6 +7,7 @@ import { GameContext, SiteInfoContext, UserContext } from "Contexts";
 import { usePopoverOpen } from "../../hooks/usePopoverOpen";
 import { PopoverContent } from "../Popover";
 import { hyphenDelimit } from "../../utils";
+import { obituaryDeath } from "../../utils/newspaperPlayers";
 
 import "css/newspaper.css";
 
@@ -140,7 +141,7 @@ export default function Newspaper(props) {
               >
                 {players.map((player) => (
                   <div
-                    key={player.id}
+                    key={player.key || player.id}
                     className="win-avatar-cell"
                     style={{
                       width: `${cellSize}px`,
@@ -186,7 +187,7 @@ export default function Newspaper(props) {
 
   // Handle death/obituary newspapers (original behavior)
   const obituaries = deaths.map((death) => (
-    <div className="obituary" key={death.id}>
+    <div className="obituary" key={death.key || death.id}>
       <div className="obituary-header">
         <div>{death.name}</div>
       </div>
@@ -464,17 +465,7 @@ export function ObituariesMessage(props) {
     title = "Breaking News";
   }
 
-  const deaths = message.obituaries.map((obituary) => {
-    return {
-      id: obituary.playerInfo.userId,
-      name: obituary.playerInfo.name,
-      avatar: obituary.playerInfo.avatar,
-      customEmotes: obituary.playerInfo.customEmotes,
-      deathMessage: obituary.snippets.deathMessage,
-      revealMessage: obituary.snippets.revealMessage,
-      lastWill: obituary.snippets.lastWill,
-    };
-  });
+  const deaths = message.obituaries.map(obituaryDeath);
 
   return (
     <>

@@ -14,6 +14,7 @@ const routeUtils = require("./utils");
 const utils = require("../lib/Utils");
 const dateOnly = require("../lib/dateOnly");
 const redis = require("../modules/redis");
+const githubContributions = require("../modules/githubContributions");
 const constants = require("../data/constants");
 const dbStats = require("../db/stats");
 const { colorHasGoodContrastForBothThemes } = require("../shared/colors");
@@ -1499,6 +1500,30 @@ router.get("/:id/reports", async function (req, res) {
   }
 });
 
+// Fields of GET /api/user/:id/info that anyone logged in may see. Everything
+// else in the cached user record (birthday, bdayChanged, blockedUsers, settings,
+// dailyChallenges, itemsOwned, hearts, points, heart timers, nameChanged,
+// gamesPlayed, achievements, groups, perms, rank, inGame, csrf) is owner-only.
+const PUBLIC_USER_INFO_FIELDS = [
+  "id",
+  "name",
+  "avatar",
+  "pronouns",
+  "joined",
+  "vanityUrl",
+  "isBirthday",
+];
+
+function publicUserInfo(user, extra = {}) {
+  const out = {};
+  for (const key of PUBLIC_USER_INFO_FIELDS) {
+    if (user[key] !== undefined) out[key] = user[key];
+  }
+  if (extra.status !== undefined) out.status = extra.status;
+  if (extra.lastActive !== undefined) out.lastActive = extra.lastActive;
+  return out;
+}
+
 router.get("/:id/info", async function (req, res) {
   try {
     const reqUserId = await routeUtils.verifyLoggedIn(req, true);
@@ -1527,6 +1552,21 @@ router.get("/:id/info", async function (req, res) {
         name: "[not found]",
         avatar: false,
       });
+      return;
+    }
+
+    const isOwner = reqUserId === user.id;
+
+    // Privacy: non-owners only get the public fields below (allowlist). The
+    // only frontend caller for other users is ModActions (id, name, avatar);
+    // the rest mirrors what the public profile already shows. The owner keeps
+    // the full cached record.
+    if (!isOwner) {
+      const status = await redis.getUserStatus(user.id);
+      const userDoc = await models.User.findOne({ id: user.id }).select(
+        "lastActive -_id"
+      );
+      res.send(publicUserInfo(user, { status, lastActive: userDoc?.lastActive }));
       return;
     }
 
@@ -2574,6 +2614,7 @@ router.post("/settings/update", async function (req, res) {
       "hideCompetitiveModal",
       "ignoreTextColor",
       "accessibleNameColors",
+      "ignoreNameFonts",
       "ignoreDeathSounds",
     ]);
     if (BOOLEAN_SETTINGS.has(prop)) {
@@ -2631,6 +2672,20 @@ router.post("/settings/update", async function (req, res) {
     if (prop == "avatarShape" && !itemsOwned.avatarShape) {
       errors.forbidden(res, "You must purchase Square with coins from the Shop.");
       return;
+    }
+
+    if (prop == "gameAvatarShape") {
+      if (value !== "circle" && value !== "square") {
+        errors.badRequest(res, "Invalid in-game avatar shape.");
+        return;
+      }
+      if (!itemsOwned.avatarShape) {
+        errors.forbidden(
+          res,
+          "You must purchase Square with coins from the Shop."
+        );
+        return;
+      }
     }
 
     if (prop == "customPrimaryColor" && !itemsOwned.customPrimaryColor) {
@@ -2790,6 +2845,23 @@ router.post("/settings/update", async function (req, res) {
       }
     }
 
+    // Liar's Dice face color: #rrggbb only; empty resets to the default white.
+    if (prop === "diceColor") {
+      if (!value || value === "none" || value === "null" || value === "undefined") {
+        await models.User.updateOne(
+          { id: userId },
+          { $unset: { "settings.diceColor": "" } }
+        );
+        await redis.cacheUserInfo(userId, true);
+        res.sendStatus(200);
+        return;
+      }
+      if (!/^#[0-9a-fA-F]{6}$/.test(value)) {
+        errors.badRequest(res, "Dice color must be a #rrggbb color.");
+        return;
+      }
+    }
+
     // Clearing name/text color restores system defaults (works in light + dark mode)
     if (
       (prop === "textColor" || prop === "nameColor") &&
@@ -2874,6 +2946,74 @@ router.post("/bio", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not edit bio. Please try again.");
+  }
+});
+
+function githubLinkView(github) {
+  if (!github || !github.username) return { username: "", status: null };
+  return {
+    username: github.username,
+    status: github.status,
+    additions: github.additions,
+    deletions: github.deletions,
+    commits: github.commits,
+    lastSynced: github.lastSynced,
+  };
+}
+
+router.get("/github", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const user = await models.User.findOne({ id: userId }).select("github").lean();
+    res.send(githubLinkView(user && user.github));
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not load your GitHub link. Please try again.");
+  }
+});
+
+router.post("/github", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const username = String(req.body.username || "").trim().replace(/^@/, "");
+
+    if (!(await redis.rateLimit(userId, "githubLink"))) {
+      errors.tooManyRequests(res, "You're doing that too much. Please wait a few seconds.");
+      return;
+    }
+
+    if (!username) {
+      await models.User.updateOne({ id: userId }, { $unset: { github: "" } });
+      res.send(githubLinkView(null));
+      return;
+    }
+
+    if (!githubContributions.isValidUsername(username)) {
+      errors.unprocessable(res, "That isn't a valid GitHub username.");
+      return;
+    }
+
+    const user = await models.User.findOne({ id: userId }).select("github").lean();
+    const current = user && user.github;
+    if (current && current.username && current.username.toLowerCase() == username.toLowerCase()) {
+      res.send(githubLinkView(current));
+      return;
+    }
+
+    const login = await githubContributions.findGithubLogin(username);
+    if (!login) {
+      errors.unprocessable(res, "No GitHub user exists with that username.");
+      return;
+    }
+
+    const github = { username: login, status: "pending", requestedAt: Date.now() };
+    await models.User.updateOne({ id: userId }, { $set: { github } });
+    res.send(githubLinkView(github));
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not save your GitHub username. Please try again.");
   }
 });
 
@@ -3494,14 +3634,19 @@ router.post("/birthday", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     let userId = await routeUtils.verifyLoggedIn(req);
-    var bdayChanged = await redis.getUserInfo(userId).nameChanged;
     var perm = "changeBday";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) {
       return;
     }
 
-    if (bdayChanged) {
+    // The database is the source of truth for the one-change limit (the old
+    // check read a field off an un-awaited promise, so it never blocked).
+    const current = await models.User.findOne({ id: userId })
+      .select("bdayChanged -_id")
+      .lean();
+
+    if (current?.bdayChanged) {
       errors.conflict(
         res,
         "You have already changed your birthday. Please contact a moderator if you need to reset it."
@@ -3515,13 +3660,22 @@ router.post("/birthday", async function (req, res) {
       return;
     }
 
-    await models.User.updateOne(
-      { id: userId },
+    // Conditional update so two concurrent requests cannot both succeed.
+    const result = await models.User.updateOne(
+      { id: userId, bdayChanged: { $ne: true } },
       {
         $set: { birthday: value, bdayChanged: true },
       }
     ).exec();
     await redis.cacheUserInfo(userId, true);
+
+    if (!result.matchedCount && !result.n) {
+      errors.conflict(
+        res,
+        "You have already changed your birthday. Please contact a moderator if you need to reset it."
+      );
+      return;
+    }
 
     res.sendStatus(200);
   } catch (e) {
@@ -3538,8 +3692,9 @@ router.delete("/birthday", async function (req, res) {
     await models.User.updateOne(
       { id: userId },
       {
+        // Clearing hides the date but keeps the one-change limit; only an
+        // admin "Reset Birthday Limit" re-enables changing it.
         $unset: { birthday: "" },
-        $set: { bdayChanged: false },
       }
     ).exec();
     await redis.cacheUserInfo(userId, true);
@@ -4075,20 +4230,23 @@ router.post("/referred", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var referrer = String(req.body.referrer);
-    var user = await models.User.findOne({ id: userId }).select("referrer ip");
+    var user = await models.User.findOne({ id: userId }).select("referrer");
 
     if (user.referrer) {
       res.sendStatus(200);
       return;
     }
 
-    var referrerUser = await models.User.findOne({ id: referrer }).select("ip");
+    var referrerUser = await models.User.findOne({ id: referrer }).select("id");
+    if (!referrerUser) {
+      res.sendStatus(200);
+      return;
+    }
 
-    for (let ip of user.ip) {
-      if (referrerUser.ip.indexOf(ip) != -1) {
-        res.sendStatus(200);
-        return;
-      }
+    const linkedAccountIds = await routeUtils.getAltAccountIds(userId);
+    if (linkedAccountIds.includes(referrer)) {
+      res.sendStatus(200);
+      return;
     }
 
     await models.User.updateOne({ id: userId }, { $set: { referrer } }).exec();

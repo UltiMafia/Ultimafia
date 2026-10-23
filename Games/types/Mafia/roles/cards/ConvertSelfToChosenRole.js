@@ -1,13 +1,14 @@
 const Card = require("../../Card");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 const { addArticle } = require("../../../../core/Utils");
+const { attachConversionPhase } = require("../../const/ConversionPhases");
 module.exports = class ConvertSelfToChosenRole extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
       "Become Role": {
-        states: ["Night"],
+        states: ["Night (Becoming)"],
         flags: ["voting"],
         inputType: "AllRoles",
         AllRolesFilters: ["aligned"],
@@ -71,5 +72,6 @@ module.exports = class ConvertSelfToChosenRole extends Card {
         },
       },
     };
+    attachConversionPhase(this, "Night (Becoming)");
   }
 };

@@ -9,6 +9,7 @@ const logger = require("./modules/logging")(".");
 
 const indexRouter = require("./routes/index");
 const authRouter = require("./routes/auth");
+const appleNotificationsRouter = require("./routes/appleNotifications");
 const gameRouter = require("./routes/game");
 const setupRouter = require("./routes/setup");
 const deckRouter = require("./routes/anonymousDeck");
@@ -46,6 +47,9 @@ const db = require("./db/db");
 
 const session = require("./modules/session");
 const csrf = require("./modules/csrf");
+const devApiBearer = require("./modules/devApi/bearer");
+const devApiRouter = require("./routes/devApi");
+const { devApiEnabled } = require("./modules/devApi/policy");
 const passport = require("passport");
 
 const app = express();
@@ -58,6 +62,7 @@ app.use(cors());
 app.use(session);
 app.use(passport.initialize());
 app.use(passport.session());
+if (devApiEnabled()) app.use(devApiBearer);
 app.use(csrf);
 app.use(
   compression({
@@ -78,8 +83,18 @@ app.use(
 const apiRouter = express.Router();
 
 apiRouter.use("/", indexRouter);
+apiRouter.use("/auth/apple", appleNotificationsRouter);
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/game", gameRouter);
+apiRouter.use(
+  "/dev",
+  devApiEnabled()
+    ? devApiRouter
+    : (req, res) =>
+        res.status(404).send({
+          error: { status: 404, code: "disabled", message: "The developer API is turned off." },
+        })
+);
 apiRouter.use("/setup", setupRouter);
 apiRouter.use("/deck", deckRouter);
 apiRouter.use("/wordDeck", wordDeckRouter);
@@ -116,6 +131,13 @@ app.use("/api", apiRouter);
 db.promise
   .then(() => seedDefaultWordDecks())
   .catch((e) => console.error("Default deck seeding failed", e));
+
+app.get("/.well-known/apple-app-site-association", (req, res) => {
+  res.type("application/json");
+  res.sendFile(
+    path.join(__dirname, "react_main/public/.well-known/apple-app-site-association")
+  );
+});
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "react_main/build_public/index.html"));

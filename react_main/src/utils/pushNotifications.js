@@ -1,4 +1,5 @@
 import axios from "axios";
+import { isIos } from "./platform";
 
 /**
  * Web push subscription helpers.
@@ -45,15 +46,8 @@ export function isStandalone() {
   );
 }
 
-export function isIos() {
-  if (typeof navigator === "undefined") return false;
-
-  return (
-    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    // iPadOS 13+ reports as a Mac; the touch point check separates it out.
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
-  );
-}
+// isIos() lives in utils/platform.js now: the bottom safe area needs it too.
+export { isIos };
 
 /** True when we can ask at all: supported, and on iOS only once installed. */
 export function canRequestPush() {

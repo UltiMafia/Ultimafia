@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_VILLAGE } = require("../../const/Priority");
+const { PRIORITY_VILLAGE_MEETING } = require("../../const/Priority");
 
 module.exports = class VillageCore extends Card {
   constructor(role) {
@@ -20,7 +20,7 @@ module.exports = class VillageCore extends Card {
         speakDead: true,
         action: {
           labels: ["kill", "condemn", "hidden"],
-          priority: PRIORITY_VILLAGE,
+          priority: PRIORITY_VILLAGE_MEETING,
           power: 3,
           run: function () {
             if (this.target == "*magus") {
@@ -43,6 +43,20 @@ module.exports = class VillageCore extends Card {
                     p.role.data.MagusWin = true;
                   }
                 }
+              }
+              return;
+            }
+
+            if (this.game.getSafehouseQuota() > 0) {
+              // The day vote houses instead of condemning. Immunity that
+              // would stop a condemn stops the housing as well.
+              if (
+                this.target &&
+                this.target != "*" &&
+                this.target != "*magus" &&
+                this.dominates()
+              ) {
+                this.game.sendToSafehouse(this.target);
               }
               return;
             }
@@ -221,6 +235,7 @@ function cannotBeVoted(player) {
   return player.hasEffect("CannotBeVoted");
 }
 function canBeVoted(player) {
+  if (player.housed) return false;
   return (
     player.alive ||
     (!player.alive && !player.exorcised && player.game.ExorciseVillageMeeting)

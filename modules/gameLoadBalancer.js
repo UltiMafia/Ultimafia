@@ -52,6 +52,15 @@ function establishGameConn(port) {
     gameResults.reject(new Error(info.error));
   });
 
+  socket.on("devControlResult", (info) => {
+    const results = waiting[info.requestId];
+    if (!results) return;
+
+    delete waiting[info.requestId];
+    if (info.ok) results.resolve(info.result);
+    else results.reject(new Error(info.error));
+  });
+
   socket.on("gameLeft", (userId) => {
     const leaveResults = waiting[userId];
     if (!leaveResults) return;
@@ -164,6 +173,39 @@ async function cancelGame(userId, gameId) {
   });
 }
 
+async function devControl(gameId, command, args) {
+  const port = await redis.getGamePort(gameId);
+  if (!port || !servers[port]) throw new Error("Game not found.");
+
+  const requestId = `devControl:${shortid.generate()}`;
+  return new Promise((resolve, reject) => {
+    waiting[requestId] = { resolve, reject };
+    servers[port].send("devControl", { requestId, gameId, command, args });
+    setTimeout(() => {
+      if (!waiting[requestId]) return;
+      delete waiting[requestId];
+      reject(new Error("Timeout waiting for the game server."));
+    }, 10000);
+  });
+}
+
+// Tell the game server holding `oldGameId` (still in postgame) that it was
+// rehosted, so it can invite the players left in it. Fire-and-forget.
+async function notifyRehost(oldGameId, newGameId, { hostId, hostName, setup } = {}) {
+  const port = await redis.getGamePort(oldGameId);
+  if (!port || !servers[port]) return false;
+
+  servers[port].send("gameRehosted", {
+    key: process.env.LOAD_BALANCER_KEY,
+    gameId: oldGameId,
+    newGameId,
+    hostId,
+    hostName,
+    setup: setup || null,
+  });
+  return true;
+}
+
 async function deprecateServer(port) {
   await redis.removeGameServer(port);
   servers[port].send("deprecated", {
@@ -175,5 +217,7 @@ module.exports = {
   createGame,
   leaveGame,
   cancelGame,
+  notifyRehost,
+  devControl,
   deprecateServer,
 };

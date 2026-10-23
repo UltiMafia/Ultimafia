@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, useReducer, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 
 import { UserContext } from "Contexts";

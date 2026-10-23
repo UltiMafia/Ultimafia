@@ -26,18 +26,31 @@ const GameStatus = (props) => {
   const isPhoneDevice = useIsPhoneDevice();
   const showGameState = props.showGameState;
 
+  // Testing lobby games are only listed for Developers/Owners, and the
+  // server lets them review those games even when locked.
+  const isReviewableTestingGame =
+    props.game.lobby === "Testing" && props.game.status === "Finished";
+  // Player capacity limits joining, not spectating. Keep the spectator action
+  // available while a full lobby waits for its ready check.
+  const isFullOpenGame =
+    props.game.status === "Open" &&
+    props.game.setup &&
+    props.game.players >= props.game.setup.total;
+
   const canShowGameButton =
     (user.loggedIn || props.game.status === "Finished") &&
     !props.game.broken &&
-    !props.game.private;
+    (!props.game.private || isReviewableTestingGame);
 
   let buttonUrl, buttonText, buttonVariant, buttonColor, buttonDisabled;
+  let showSpectate = false;
   if (props.game.status === "Open") {
     buttonUrl = `/game/${props.game.id}`;
     buttonText = "Join";
     buttonColor = "primary";
     buttonVariant = "contained";
     buttonDisabled = false;
+    showSpectate = !!props.game.spectating;
   } else if (props.game.status === "In Progress") {
     if (props.game.spectating /* || user.perms.canSpectateAny */) {
       buttonUrl = `/game/${props.game.id}?spectate=true`;
@@ -64,6 +77,9 @@ const GameStatus = (props) => {
     <Button
       component={Link}
       to={buttonUrl}
+      // Spectate changes server membership. A client-side route change would
+      // merely reveal the same retained, possibly seated game session.
+      reloadDocument={buttonText === "Spectate"}
       variant={buttonVariant}
       color={buttonColor}
       disabled={buttonDisabled}
@@ -77,9 +93,31 @@ const GameStatus = (props) => {
     </Button>
   );
 
+  const spectateButton = showSpectate && (
+    <Button
+      component={Link}
+      to={`/game/${props.game.id}?spectate=true`}
+      reloadDocument
+      variant="outlined"
+      color="inherit"
+      sx={{
+        p: 0.5,
+        width: "100%",
+        fontWeight: "bold",
+      }}
+    >
+      Spectate
+    </Button>
+  );
+
   const gameButtonWrapped = (
     <Box sx={{ width: "100px" }}>
-      {canShowGameButton && GameButton}
+      {canShowGameButton && (
+        <Stack spacing={0.5}>
+          {!isFullOpenGame && GameButton}
+          {spectateButton}
+        </Stack>
+      )}
       <div
         style={{
           display: "flex",
@@ -93,7 +131,7 @@ const GameStatus = (props) => {
             title="Broken"
           />
         )}
-        {props.game.private && (
+        {props.game.private && !isReviewableTestingGame && (
           <i
             className="fas fa-lock"
             style={{ fontSize: "24px", cursor: "not-allowed" }}

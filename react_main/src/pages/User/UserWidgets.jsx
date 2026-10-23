@@ -16,11 +16,17 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { useProfileSheet } from "components/ProfileSheet";
 import ImageViewer from "components/ImageViewer";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { useAvatarImageUrl, AvatarPhoto } from "utils/avatarUrl";
+import { observeNameAnimation } from "utils/nameAnimationViewport";
+import { nameGlowStyle, applyNameGlowStyle } from "utils/nameGlowStyle";
 
 import santaDir from "images/holiday/santahat.png";
+
+// Names without a miniprofile must not subscribe to every game update.
+const NameOnlyGameContext = React.createContext(null);
 
 // Miniprofile only renders inside an opened popover, and it pulls in d3 via
 // PieChart — keep it out of the initial bundle.
@@ -374,6 +380,21 @@ function RipAvatarIcon({ small, large, absoluteLeftAvatarPx }) {
   return <div className="avatar avatar-rip-icon" style={style} aria-hidden />;
 }
 
+// Background color behind the default no-avatar image, picked from the name.
+function noAvatarColor(name, colors) {
+  var rand = 0;
+
+  for (let i = 0; i < name.length; i++) rand ^= name.charCodeAt(i);
+
+  rand ^= name.charCodeAt(1);
+  rand ^= rand << 13;
+  rand ^= rand >> 7;
+  rand ^= rand << 17;
+  rand = Math.abs(rand) / Math.pow(2, 31);
+
+  return colors[Math.floor(rand * colors.length)];
+}
+
 export function Avatar(props) {
   const small = props.small;
   const mediumlarge = props.mediumlarge;
@@ -399,6 +420,9 @@ export function Avatar(props) {
   const inGame = props.inGame;
 
   const siteInfo = useContext(SiteInfoContext);
+  // Last image URL that failed to load (missing upload etc.); fall back to the
+  // default no-avatar look for it.
+  const [failedSrc, setFailedSrc] = useState(null);
   const isDeckAvatar =
     !!deckProfile ||
     (typeof hasImage === "string" && hasImage.includes("decks"));
@@ -461,23 +485,17 @@ export function Avatar(props) {
   } else if (hasImage && imageUrl) {
     photoSrc = imageUrl;
   } else if (name) {
-    var rand = 0;
-
-    for (let i = 0; i < name.length; i++) rand ^= name.charCodeAt(i);
-
-    rand ^= name.charCodeAt(1);
-    rand ^= rand << 13;
-    rand ^= rand >> 7;
-    rand ^= rand << 17;
-    rand = Math.abs(rand) / Math.pow(2, 31);
-
-    style.backgroundColor = colors[Math.floor(rand * colors.length)];
+    style.backgroundColor = noAvatarColor(name, colors);
   }
   if (typeof hasImage == "string") {
     if (hasImage.includes("decks")) {
       photoSrc = `/uploads${hasImage}?t=${siteInfo.cacheVal}`;
       style.backgroundColor = "#00000000";
     }
+  }
+  if (photoSrc && photoSrc === failedSrc) {
+    photoSrc = null;
+    style.backgroundColor = name ? noAvatarColor(name, colors) : undefined;
   }
   if (photoSrc) {
     style.backgroundImage = "none";
@@ -520,7 +538,7 @@ export function Avatar(props) {
         border: border,
       }}
     >
-      <AvatarPhoto src={photoSrc} />
+      <AvatarPhoto src={photoSrc} onError={setFailedSrc} />
       {edit && (
         <div className="edit avatar-edit-overlay">
           <AvatarUpload
@@ -613,15 +631,29 @@ export function NameWithAvatar(props) {
   const nameGradientColorA = props.nameGradientColorA || "#ff0040";
   const nameGradientColorB = props.nameGradientColorB || "#00c2ff";
   const nameGradientColorC = props.nameGradientColorC || "#3dff6a";
+  const nameTextRef = useRef(null);
 
-  const game = useContext(GameContext);
+  useEffect(() => {
+    if (dead || !animatedNameColor || animatedNameColor === "none") return;
+    return observeNameAnimation(nameTextRef.current);
+  }, [animatedNameColor, dead]);
+
+  const game = useContext(
+    includeMiniprofile && !noLink ? GameContext : NameOnlyGameContext
+  );
   const user = useContext(UserContext);
+  const isPhone = useIsPhoneDevice();
+  const { openProfile } = useProfileSheet();
   const [userProfile, setUserProfile] = useState(null);
   const [isClicked, setIsClicked] = useState(false);
 
   const autoColor = user.autoContrastColor(color);
+  // Viewer setting: drop special name fonts. Colors and animations stay.
+  const ignoreNameFonts = user.settings && user.settings.ignoreNameFonts;
   const nameFontClass =
-    nameFont && nameFont !== "default" ? `name-font-${nameFont}` : "";
+    !ignoreNameFonts && nameFont && nameFont !== "default"
+      ? `name-font-${nameFont}`
+      : "";
   // Dead names stay red; skip cosmetics that would override .user-name.dead
   const nameAnimClass =
     !dead && animatedNameColor && animatedNameColor !== "none"
@@ -637,6 +669,9 @@ export function NameWithAvatar(props) {
   const useSolidNameColor = !dead && autoColor && !usesClipText;
   const nameStyle = {
     ...(useSolidNameColor ? { color: autoColor } : {}),
+    ...(!dead && animatedNameColor === "glow" && useSolidNameColor
+      ? nameGlowStyle(autoColor)
+      : {}),
     display: "inline",
     ...(animatedNameColor === "gradient" || animatedNameColor === "tricolor"
       ? {
@@ -648,6 +683,17 @@ export function NameWithAvatar(props) {
         }
       : {}),
   };
+
+  useEffect(() => {
+    if (dead || animatedNameColor !== "glow") return;
+    if (useSolidNameColor && Object.keys(nameGlowStyle(autoColor)).length) return;
+    const element = nameTextRef.current;
+    if (!element) return;
+    // Inherited name colors need their actual channels, not palette defaults.
+    // Resolve once when color/theme changes, never on animation frames.
+    const inheritedStyle = nameGlowStyle(window.getComputedStyle(element).color);
+    return applyNameGlowStyle(element, inheritedStyle);
+  }, [animatedNameColor, dead, useSolidNameColor, autoColor, user]);
 
   const {
     popoverOpen: canOpenPopover,
@@ -725,6 +771,7 @@ export function NameWithAvatar(props) {
             <Typography
               component="span"
               className="user-name-text"
+              ref={nameTextRef}
               sx={{ color: "inherit", fontFamily: "inherit" }}
             >
               {name}
@@ -753,6 +800,13 @@ export function NameWithAvatar(props) {
 
       if (!props.name || !includeMiniprofile) return;
 
+      // On a phone, open the profile as a sheet over the game instead of an
+      // anchored popover. Desktop keeps the hover/anchored popover.
+      if (isPhone) {
+        openProfile(id, props, game?.gameId);
+        return;
+      }
+
       handlePopoverClick(e);
 
       setIsClicked(popoverOpen);
@@ -770,38 +824,40 @@ export function NameWithAvatar(props) {
             isClicked ? " name-with-avatar-clicked" : ""
           }`}
           onClick={handlePlayerClick}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onMouseEnter={isPhone ? undefined : handleMouseEnter}
+          onMouseLeave={isPhone ? undefined : handleMouseLeave}
         >
           {contents}
         </div>
-        <div>
-          <Popover
-            open={props.showPopover !== false && popoverOpen}
-            sx={{ pointerEvents: openByClick ? "auto" : "none" }}
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: "center",
-              horizontal: "right",
-            }}
-            transformOrigin={{
-              vertical: "center",
-              horizontal: "left",
-            }}
-            onClose={handleMiniprofileClose}
-            disableScrollLock
-          >
-            {userProfile && (
-              <React.Suspense fallback={null}>
-                <Miniprofile
-                  user={userProfile}
-                  game={game}
-                  key={userProfile.id}
-                />
-              </React.Suspense>
-            )}
-          </Popover>
-        </div>
+        {!isPhone && (
+          <div>
+            <Popover
+              open={props.showPopover !== false && popoverOpen}
+              sx={{ pointerEvents: openByClick ? "auto" : "none" }}
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "center",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "center",
+                horizontal: "left",
+              }}
+              onClose={handleMiniprofileClose}
+              disableScrollLock
+            >
+              {userProfile && (
+                <React.Suspense fallback={null}>
+                  <Miniprofile
+                    user={userProfile}
+                    game={game}
+                    key={userProfile.id}
+                  />
+                </React.Suspense>
+              )}
+            </Popover>
+          </div>
+        )}
       </>
     );
   } else {

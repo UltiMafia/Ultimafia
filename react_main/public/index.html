@@ -2,12 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <script>
+      // Marks the document as scripted, so the crawlable copy in #root stays
+      // hidden (see the rule in the style below). Runs as the head is parsed,
+      // before the body exists, so the copy never paints over the app.
+      document.documentElement.classList.add("js");
+    </script>
     <style>
       html {
         /* Prevent flash of white when reloading screen on dark mode */
         background-color: #121212;
         width: 100vw;
         height: 100vh;
+      }
+
+      /* React replaces the crawlable copy inside #root when it mounts. Until
+         then it painted for a moment: black text once the app's own stylesheet
+         had set a light body background, but before React's DOM update landed.
+         Hide it only when scripting is on, so crawlers that run no scripts, and
+         readers with JavaScript off, still get the copy. */
+      html.js #root > main {
+        display: none;
       }
     </style>
 
@@ -94,7 +109,7 @@
     />
     <meta
       name="viewport"
-      content="width=device-width, shrink-to-fit=no, initial-scale=1.0"
+      content="width=device-width, shrink-to-fit=no, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
     />
     <meta name="author" content="Ultimafia" />
     <meta

@@ -440,6 +440,7 @@ async function getUserInfo(userId) {
   info.nameChanged = nameChanged === "true";
   info.bdayChanged = bdayChanged === "true";
   info.birthday = dateOnly.normalizeBirthday(birthday);
+  info.isBirthday = dateOnly.isBirthdayOn(info.birthday);
   info.pronouns = pronouns;
   info.gamesPlayed = gamesPlayed;
   info.joined = Number(joined || 0);

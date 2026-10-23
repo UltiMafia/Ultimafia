@@ -426,7 +426,7 @@ const shopItems = [
   },
   {
     name: "Square",
-    desc: "Unlock the ability to become a square (currently profile only)",
+    desc: "Unlock the ability to become a square on your profile and in games",
     key: "avatarShape",
     category: "profile",
     price: 20,
@@ -553,6 +553,16 @@ const shopItems = [
         throw e;
       }
     },
+  },
+  {
+    // Appended last: purchases are by list index, so earlier items keep theirs.
+    name: "Advanced Text Effects",
+    desc: "Animate a game chat message once: /wave, /shake, /glow, /rainbow, /slide or /flash before your text (e.g. /wave hello). Players who prefer reduced motion see plain text.",
+    key: "textEffects",
+    category: "game",
+    price: 100,
+    limit: 1,
+    onBuy: async function (userId) {},
   },
 ];
 

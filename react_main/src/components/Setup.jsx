@@ -33,6 +33,7 @@ export function isArchivistSetup(setup) {
 import { usePopover, InfoPopover } from "components/Popover";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { PopoverContent } from "./Popover";
+import { useNavigate } from "react-router-dom";
 
 export default function Setup(props) {
   const user = useContext(UserContext);
@@ -884,6 +885,7 @@ export function GameStateIcon(props) {
 export function SetupManipulationButtons(props) {
   const user = useContext(UserContext);
   const isPhoneDevice = useIsPhoneDevice();
+  const navigate = useNavigate();
   const iconSize = isPhoneDevice ? "small" : "medium";
 
   const isOwner = props.setup.creator?.id === user.id;
@@ -920,10 +922,7 @@ export function SetupManipulationButtons(props) {
       size={iconSize}
       sx={editStyle}
       onClick={() =>
-        window.open(
-          `/play/create?edit=${props.setup.id}&game=${props.setup.gameType}`,
-          "_blank"
-        )
+        navigate(`/play/create?edit=${props.setup.id}&game=${props.setup.gameType}`)
       }
     >
       <i className={`setup-btn edit-setup fa-pen-square fas`} />
@@ -958,9 +957,8 @@ export function SetupManipulationButtons(props) {
         aria-label="copy"
         size={iconSize}
         onClick={() =>
-          window.open(
-            `/play/create?copy=${props.setup.id}&game=${props.setup.gameType}`,
-            "_blank"
+          navigate(
+            `/play/create?copy=${props.setup.id}&game=${props.setup.gameType}`
           )
         }
       >

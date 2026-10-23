@@ -140,50 +140,118 @@ describe("Kudos", function () {
   });
 
   describe("leavers and finalizing", function () {
-    it("gives a leaver No one in every row they haven't voted in", function () {
+    it("excludes a leaver who didn't vote and casts no No one", function () {
       const v = makeVote(["t1", "t2", "m1", "m2"], {
         m1: "Mafia",
         m2: "Mafia",
       });
       v.castVote("t1", "Village", "t2");
+      // t1 voted Town only. Leaving drops them from the Mafia quorum
+      // without a ballot.
+      v.remaining("Mafia").should.equal(4);
       v.removeVoter("t1");
-      v.ballots.t1.should.deep.equal({ Village: "t2", Mafia: NO_ONE });
+      v.ballots.t1.should.deep.equal({ Village: "t2" });
       v.tally("Village").noOne.should.equal(0);
-      v.tally("Mafia").noOne.should.equal(1);
+      v.tally("Mafia").noOne.should.equal(0);
+      v.tally("Village").counts.t2.should.equal(1);
       v.voters.has("t1").should.equal(false);
+      v.remaining("Village").should.equal(3); // already voted Town
+      v.remaining("Mafia").should.equal(3); // gone from the Mafia quorum
       v.removeVoter("t1"); // twice is a no-op
-      v.tally("Mafia").noOne.should.equal(1);
+      v.remaining("Mafia").should.equal(3);
+      v.tally("Mafia").noOne.should.equal(0);
+
+      // A leaver who never voted any row leaves no ballots at all.
+      v.removeVoter("m2");
+      should.not.exist(v.ballots.m2);
+      v.voters.has("m2").should.equal(false);
+      v.tally("Village").noOne.should.equal(0);
+      v.tally("Mafia").noOne.should.equal(0);
+      v.remaining("Village").should.equal(2);
+      v.remaining("Mafia").should.equal(2);
     });
 
-    it("a leaver's No one vote can settle a row early", function () {
+    it("keeps votes cast before leaving in the tally", function () {
       const v = makeVote(["a", "b", "c", "d"]);
-      v.castVote("a", "Village", "b");
-      v.castVote("c", "Village", "b");
-      v.evaluate().should.deep.equal([]); // 2 vs 0, b and d still to vote
-      v.removeVoter("d");
-      v.remaining("Village").should.equal(1);
-      v.evaluate().should.deep.equal(["b"]); // 2 vs 1 No one + 1 left
+      v.castVote("a", "Village", "c");
+      v.removeVoter("a");
+      v.voters.has("a").should.equal(false);
+      v.ballots.a.should.deep.equal({ Village: "c" });
+      v.tally("Village").counts.c.should.equal(1);
+      v.tally("Village").noOne.should.equal(0);
+      v.castVote("a", "Village", "b").should.be.a("string");
+      // a's vote still counts at the end, alongside a vote cast after a left.
+      v.castVote("b", "Village", "c");
+      v.evaluate(true).should.deep.equal(["c"]);
+      v.tally("Village").counts.c.should.equal(2);
     });
 
-    it("Bob with 2 votes still wins a tie with a leaver's and another No one", function () {
+    it("locks a winner in when a leave leaves nobody who can change it", function () {
+      // 4 voters A,B,C,D. A and B vote for C. Not safe yet: C and D could
+      // still put a rival or No one on 2.
+      const v = makeVote(["a", "b", "c", "d"]);
+      v.castVote("a", "Village", "c");
+      v.castVote("b", "Village", "c");
+      v.remaining("Village").should.equal(2);
+      v.evaluate().should.deep.equal([]);
+      v.removeVoter("d");
+      should.not.exist(v.ballots.d);
+      v.tally("Village").noOne.should.equal(0);
+      v.tally("Village").counts.c.should.equal(2);
+      v.remaining("Village").should.equal(1); // only c
+      // C has 2. No one can reach at most 1, and so can any rival.
+      v.evaluate().should.deep.equal(["c"]);
+    });
+
+    it("does not lock a winner in when a leave still leaves the row open", function () {
+      // One vote for C, then D leaves. B and C can still catch up or tie.
+      const v = makeVote(["a", "b", "c", "d"]);
+      v.castVote("a", "Village", "c");
+      v.evaluate().should.deep.equal([]);
+      v.removeVoter("d");
+      should.not.exist(v.ballots.d);
+      v.remaining("Village").should.equal(2); // b and c
+      v.tally("Village").noOne.should.equal(0);
+      v.tally("Village").counts.c.should.equal(1);
+      v.evaluate().should.deep.equal([]);
+      v.evaluate(true).should.deep.equal([]); // a single vote is not enough
+    });
+
+    it("a leave among several outstanding votes does not lock the row", function () {
+      // Same 2 votes for C, but five voters. D leaves and E is still here,
+      // so C's 2 is not strictly ahead of what E plus C could do.
+      const v = makeVote(["a", "b", "c", "d", "e"]);
+      v.castVote("a", "Village", "c");
+      v.castVote("b", "Village", "c");
+      v.removeVoter("d");
+      v.tally("Village").noOne.should.equal(0);
+      v.remaining("Village").should.equal(2); // c and e
+      v.evaluate().should.deep.equal([]);
+    });
+
+    it("a real No one vote still counts, and a leaver does not add another", function () {
       const v = makeVote(["a", "b", "c", "d", "e"]);
       v.castVote("a", "Village", "b");
       v.castVote("c", "Village", "b");
       v.castVote("e", "Village", NO_ONE);
       v.removeVoter("d");
-      v.tally("Village").noOne.should.equal(2);
-      v.evaluate(true).should.deep.equal(["b"]); // b abstains
+      v.tally("Village").noOne.should.equal(1);
+      v.tally("Village").counts.b.should.equal(2);
+      v.evaluate(true).should.deep.equal(["b"]); // b abstains; 2 >= 1 No one
     });
 
-    it("Bob with 2 votes loses to 3 No one votes from leavers", function () {
+    it("leavers add no No one votes, so two real votes still win", function () {
       const v = makeVote(["a", "b", "c", "d", "e", "f"]);
       v.castVote("a", "Village", "b");
       v.castVote("c", "Village", "b");
       v.removeVoter("d");
       v.removeVoter("e");
       v.removeVoter("f");
-      v.evaluate().should.deep.equal([]);
+      v.tally("Village").noOne.should.equal(0);
+      v.remaining("Village").should.equal(1); // only b
+      v.evaluate().should.deep.equal(["b"]);
       v.evaluate(true).should.deep.equal([]);
+      v.awardedIds().should.deep.equal(["b"]);
     });
 
     it("doesn't add No one votes once voting is settled", function () {
@@ -233,12 +301,14 @@ describe("Kudos", function () {
       v.castVote("t1", "Mafia", "m1");
       v.castVote("t3", "Mafia", NO_ONE);
       v.voterCoins().should.deep.equal({}); // not settled yet
-      // m2 leaves: auto No one in both rows earns nothing.
+      // m2 leaves without voting either row: no ballot, no coin.
       v.removeVoter("m2");
+      should.not.exist(v.ballots.m2);
       v.evaluate(true);
       v.awarded.Village.should.deep.equal(["t2"]);
       v.awarded.Mafia.should.deep.equal([]);
       v.voterCoins().should.deep.equal({ t1: 1, t3: 1, m1: 1 });
+      should.not.exist(v.voterCoins().m2);
     });
 
     it("pays per row: three awarding rows are three coins", function () {
@@ -257,13 +327,23 @@ describe("Kudos", function () {
       v.voterCoins().should.deep.equal({ t1: 3, t3: 3 });
     });
 
-    it("keeps coins for real votes cast before leaving", function () {
-      const v = makeVote(["a", "b", "c", "d"], { d: "Mafia" });
+    it("pays a leaver only for rows they actually voted in", function () {
+      const v = makeVote(["a", "b", "c", "d", "e"], { e: "Mafia" });
+      // Town awards b. Mafia awards e. a votes Town then leaves; d never votes.
       v.castVote("a", "Village", "b");
       v.castVote("c", "Village", "b");
-      v.removeVoter("a"); // a's Mafia row becomes an unpaid No one
+      v.castVote("c", "Mafia", "e");
+      v.castVote("b", "Mafia", "e");
+      v.removeVoter("a");
+      v.removeVoter("d");
+      should.not.exist(v.ballots.a.Mafia);
+      should.not.exist(v.ballots.d);
       v.evaluate(true);
-      v.voterCoins().should.deep.equal({ a: 1, c: 1 });
+      v.awarded.Village.should.deep.equal(["b"]);
+      v.awarded.Mafia.should.deep.equal(["e"]);
+      // a: Town only. c: both. b: Mafia only. d: nothing.
+      v.voterCoins().should.deep.equal({ a: 1, b: 1, c: 2 });
+      should.not.exist(v.voterCoins().d);
     });
   });
 

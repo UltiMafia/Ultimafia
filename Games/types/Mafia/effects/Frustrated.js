@@ -1,6 +1,55 @@
 const Effect = require("../Effect");
 const Action = require("../Action");
-const { PRIORITY_OVERTHROW_VOTE } = require("../const/Priority");
+
+// Players with 0 votes, "no one" ("*"), and "*magus" are not in the set.
+// F dies only when F is in that set, someone else is too, and F is strictly
+// below every other member (a tie for lowest does not kill).
+function isFrustratedLowest(count, playerId) {
+  if (count == null || playerId == null) return false;
+
+  const selfId = String(playerId);
+  let selfVotes = null;
+  const others = [];
+
+  for (const target in count) {
+    if (target === "*" || target === "*magus") continue;
+
+    const votes = count[target];
+    if (typeof votes !== "number" || !(votes > 0)) continue;
+
+    if (target === selfId) selfVotes = votes;
+    else others.push(votes);
+  }
+
+  if (selfVotes == null || others.length === 0) return false;
+
+  for (let i = 0; i < others.length; i++) {
+    if (!(selfVotes < others[i])) return false;
+  }
+
+  return true;
+}
+
+function isVillageCondemn(action) {
+  if (!action || action.hasLabel == null) return false;
+  if (!action.hasLabel("condemn") || action.hasLabel("overthrow")) {
+    return false;
+  }
+  if (
+    action.meeting &&
+    action.meeting.name &&
+    action.meeting.name !== "Village"
+  ) {
+    return false;
+  }
+  return true;
+}
+
+function actionTargetId(action) {
+  const target = action.target;
+  if (target && target.id != null) return target.id;
+  return target;
+}
 
 module.exports = class Frustrated extends Effect {
   constructor(lifespan) {
@@ -9,113 +58,61 @@ module.exports = class Frustrated extends Effect {
     this.immunity["condemn"] = 3;
 
     this.listeners = {
-      /*
-      state: function (stateInfo) {
-        if (!this.player.alive) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Day/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_OVERTHROW_VOTE - 3,
-          labels: ["hidden", "absolute"],
-          run: function () {
-            //if (this.game.getStateName() != "Day" && this.game.getStateName() != "Dusk") return;
-
-            let villageMeeting = this.game.getMeetingByName("Village");
-
-            //New code
-            const voteCounts = Object.values(villageMeeting.votes).reduce(
-              (acc, vote) => {
-                acc[vote] = (acc[vote] || 0) + 1;
-                return acc;
-              },
-              {}
-            );
-
-            const minVotes = Math.min(...Object.values(voteCounts));
-            const maxVotes = Math.max(...Object.values(voteCounts));
-
-            if (
-              voteCounts[this.actor.id] !== minVotes ||
-              voteCounts[this.actor.id] === maxVotes ||
-              voteCounts[this.actor.id] === 0
-            ) {
-              return;
-            }
-
-            for (let action of this.game.actions[0]) {
-              if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
-                // Only one village vote can be overthrown
-                action.cancel(true);
-                break;
-              }
-            }
-
-            let action = new Action({
-              actor: this.actor,
-              target: this.actor,
-              game: this.game,
-              labels: ["kill", "frustration", "hidden"],
-              power: 3,
-              run: function () {
-                this.game.sendAlert(
-                  `${this.target.name} feels immensely frustrated!`
-                );
-                if (this.dominates()) this.target.kill("basic", this.actor);
-              },
-            });
-            action.do();
-          },
-        });
-
-        this.game.queueAction(action);
-      },
-      */
       PostVotingPowers: function (meeting, count, highest) {
-        const voteCounts = Object.values(meeting.votes).reduce((acc, vote) => {
-          acc[vote] = (acc[vote] || 0) + 1;
-          return acc;
-        }, {});
+        if (!meeting || meeting.name !== "Village") return;
+        if (!this.player || !this.player.alive) return;
 
-        const minVotes = Math.min(...Object.values(voteCounts));
-        const maxVotes = Math.max(...Object.values(voteCounts));
+        const dies = isFrustratedLowest(count, this.player.id);
+        const targets = highest && highest.targets;
+        const isCondemnTarget =
+          targets &&
+          targets.length === 1 &&
+          String(targets[0]) === String(this.player.id);
 
-        if (
-          voteCounts[this.player.id] !== minVotes ||
-          voteCounts[this.player.id] === maxVotes ||
-          voteCounts[this.player.id] === 0
-        ) {
-          return;
-        }
+        if (!dies && !isCondemnTarget) return;
 
-        let action = new Action({
+        const playerId = this.player.id;
+        // Power 4 beats this effect's own condemn immunity of 3.
+        // The condemn label hits Unkillable's cancelImmunity.condemn,
+        // so the death goes through. Cancelling a Village condemn aimed
+        // at this player stops that same cancel-immunity from letting a
+        // majority vote kill an Unkillable Frustrated player.
+        const action = new Action({
           actor: this.player,
           target: this.player,
           game: this.game,
-          labels: ["kill", "frustration", "hidden"],
-          power: 3,
+          labels: dies
+            ? ["kill", "condemn", "frustration", "hidden"]
+            : ["hidden"],
+          power: 4,
           run: function () {
-            for (let action of this.game.actions[0]) {
-              if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
-                // Only one village vote can be overthrown
-                action.cancel(true);
-                break;
+            const queued = this.game.actions[0];
+            if (queued) {
+              for (let other of queued) {
+                if (other === this || !isVillageCondemn(other)) continue;
+
+                const targetsThis =
+                  String(actionTargetId(other)) === String(playerId);
+                if (dies || targetsThis) {
+                  other.cancel(true);
+                  break;
+                }
               }
             }
+
+            if (!dies) return;
+
             this.game.sendAlert(
               `${this.target.name} feels immensely frustrated!`
             );
             if (this.dominates()) this.target.kill("condemn", this.actor);
           },
         });
+
         this.game.queueAction(action);
       },
     };
   }
 };
+
+module.exports.isFrustratedLowest = isFrustratedLowest;

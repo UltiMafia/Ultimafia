@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link, Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
+import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import update from "immutability-helper";
 import { ContrastComparison } from "utilsFolder/autoContrast";
@@ -23,6 +24,8 @@ import {
   Checkbox,
   FormControlLabel,
   Switch,
+  Chip,
+  Link as MuiLink,
 } from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
 
@@ -38,8 +41,96 @@ import { useCookieConsent } from "../../hooks/useCookieConsent";
 
 import "css/settings.css";
 import { setCaptchaVisible } from "utils";
-import { Loading } from "components/Loading";
+import { PageSkeleton } from "components/Skeletons";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+
+const githubStatusChips = {
+  pending: { label: "Pending approval", color: "warning" },
+  approved: { label: "Approved", color: "success" },
+  rejected: { label: "Rejected", color: "error" },
+};
+
+function GithubSettings() {
+  const siteInfo = useContext(SiteInfoContext);
+  const errorAlert = useErrorAlert();
+  const [link, setLink] = useState(null);
+  const [username, setUsername] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    axios
+      .get("/api/user/github")
+      .then((res) => {
+        setLink(res.data);
+        setUsername(res.data.username || "");
+      })
+      .catch(errorAlert);
+  }, []);
+
+  const onSave = () => {
+    setSaving(true);
+    axios
+      .post("/api/user/github", { username })
+      .then((res) => {
+        setLink(res.data);
+        setUsername(res.data.username || "");
+        siteInfo.showAlert(
+          res.data.username ? "GitHub username saved." : "GitHub link removed.",
+          "success"
+        );
+      })
+      .catch(errorAlert)
+      .finally(() => setSaving(false));
+  };
+
+  if (!link) return <Loading small />;
+
+  const statusChip = githubStatusChips[link.status];
+  const unchanged = username.trim().replace(/^@/, "") === (link.username || "");
+
+  return (
+    <Stack direction="column" spacing={2}>
+      <Box>
+        <Typography variant="h4" sx={{ mb: 1 }}>
+          GitHub
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Link your GitHub account to show your code contributions to{" "}
+          <MuiLink href="https://github.com/UltiMafia/Ultimafia" target="_blank" rel="noopener noreferrer">
+            UltiMafia/Ultimafia
+          </MuiLink>{" "}
+          on the Contributors page. An admin reviews each username before it
+          is shown, and changing it sends it back for review.
+        </Typography>
+      </Box>
+      {link.username && statusChip && (
+        <Stack direction="row" spacing={1} alignItems="center">
+          <MuiLink href={`https://github.com/${link.username}`} target="_blank" rel="noopener noreferrer">
+            @{link.username}
+          </MuiLink>
+          <Chip label={statusChip.label} color={statusChip.color} size="small" variant="outlined" />
+          {link.status === "approved" && link.lastSynced && (
+            <Typography variant="caption" color="text.secondary">
+              {(link.additions || 0) + (link.deletions || 0)} lines, {link.commits || 0} commits
+            </Typography>
+          )}
+        </Stack>
+      )}
+      <Stack direction="row" spacing={1}>
+        <TextField
+          sx={{ minWidth: "240px" }}
+          label="GitHub Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          disabled={saving}
+        />
+        <Button onClick={onSave} disabled={saving || unchanged}>
+          {username.trim() ? "Save" : "Remove"}
+        </Button>
+      </Stack>
+    </Stack>
+  );
+}
 
 function CookieSettings() {
   const { preferences, updatePreferences, acceptAll, rejectAll } = useCookieConsent();
@@ -79,7 +170,7 @@ function CookieSettings() {
         <Typography variant="body2" color="text.secondary" paragraph>
           Manage your cookie preferences. These settings are stored in your browser 
           and apply to this device only. For more information, see our{" "}
-          <Link href="/policy/privacy" target="_blank">
+          <Link to="/policy/privacy">
             Privacy Policy
           </Link>.
         </Typography>
@@ -738,6 +829,15 @@ export default function Settings() {
         "Leave default (use Reset) for no custom color. Custom colors must have good contrast in both light and dark themes (minimum 3:1 ratio).",
     },
     {
+      label: "Dice Color",
+      ref: "diceColor",
+      type: "color",
+      default: "#ffffff",
+      resetValue: "",
+      extraInfo:
+        "Face color of your Liar's Dice dice. Other players see it too. Dark colors switch the pips to white.",
+    },
+    {
       label: "Name Font (player list only)",
       ref: "nameFont",
       type: "select",
@@ -929,9 +1029,35 @@ export default function Settings() {
       extraInfo: "Third color of the tricolor gradient (order: 1 → 2 → 3).",
     },
     {
+      label: "In-game Avatar Shape",
+      ref: "gameAvatarShape",
+      type: "select",
+      value: "circle",
+      options: [
+        {
+          label: "Circle",
+          value: "circle",
+        },
+        {
+          label: "Square",
+          value: "square",
+        },
+      ],
+      disabled: (deps) => !deps.user.itemsOwned.avatarShape,
+      extraInfo:
+        "Shape of your avatar in the player list, chat, lobby, and spectator lists. Your profile avatar shape is separate.",
+    },
+    {
       label: "Ignore Custom Text Color",
       ref: "ignoreTextColor",
       type: "boolean",
+    },
+    {
+      label: "Ignore Custom Name Font",
+      ref: "ignoreNameFonts",
+      type: "boolean",
+      extraInfo:
+        "When enabled, all usernames use the default font. Name colors and animations are unchanged.",
     },
     {
       label: "Accessible Name Colors",
@@ -1070,7 +1196,7 @@ export default function Settings() {
 
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
   if (!settingsLoaded || !accountsLoaded || !user.loaded || !familyLoaded)
-    return <Loading small />;
+    return <PageSkeleton />;
 
   const sections = [
     {
@@ -1171,6 +1297,12 @@ export default function Settings() {
           </Button>
         </Stack>
       ),
+    },
+    {
+      title: "GitHub",
+      path: "github",
+      wrapInPaper: true,
+      content: <GithubSettings />,
     },
     {
       title: "Cookies",
@@ -1659,7 +1791,11 @@ export default function Settings() {
   }
 
   function onBirthdayClear(deps) {
-    if (!window.confirm("Are you sure you want to clear your birthday?")) {
+    if (
+      !window.confirm(
+        "Are you sure you want to clear your birthday? You won't be able to set it again without asking a moderator."
+      )
+    ) {
       return;
     }
 
@@ -1671,7 +1807,6 @@ export default function Settings() {
         deps.user.set(
           update(deps.user, {
             birthday: { $set: undefined },
-            bdayChanged: { $set: false },
           })
         );
 
@@ -1989,7 +2124,11 @@ export default function Settings() {
       .then(() => {
         siteInfo.showAlert("Profile background removed", "success");
         siteInfo.clearCache();
-        window.location.reload();
+        user.set(
+          update(user.state, {
+            profileBackground: { $set: false },
+          })
+        );
       })
       .catch(errorAlert);
   }
@@ -2023,8 +2162,6 @@ export default function Settings() {
         );
 
         siteInfo.clearCache();
-        // Refresh the page to show the new background
-        window.location.reload();
       })
       .catch((e) => {
         if (e.response == null || e.response.status === 413)
@@ -2040,7 +2177,6 @@ export default function Settings() {
         user.clear();
         setCaptchaVisible(true);
         navigate("/");
-        window.location.reload();
       })
       .catch(errorAlert);
   }
