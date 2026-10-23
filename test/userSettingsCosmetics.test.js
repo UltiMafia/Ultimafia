@@ -56,6 +56,7 @@ describe("routes/user - /settings/update cosmetics", function () {
   let originalUpdateOne;
   let originalGetItems;
   let originalCache;
+  let originalFindOne;
 
   before(function () {
     const layer = router.stack.find(
@@ -68,18 +69,25 @@ describe("routes/user - /settings/update cosmetics", function () {
     originalUpdateOne = models.User.updateOne;
     originalGetItems = redis.getUserItemsOwned;
     originalCache = redis.cacheUserInfo;
+    originalFindOne = models.User.findOne;
   });
 
   after(function () {
     models.User.updateOne = originalUpdateOne;
     redis.getUserItemsOwned = originalGetItems;
     redis.cacheUserInfo = originalCache;
+    models.User.findOne = originalFindOne;
   });
 
   async function postSetting(prop, value, itemsOwned) {
     let saved = null;
     redis.getUserItemsOwned = async () => itemsOwned;
     redis.cacheUserInfo = async () => true;
+    // verifyLoggedIn looks up systemAccount (setup archive); not a system account.
+    models.User.findOne = () => {
+      const query = { select: () => query, lean: async () => null };
+      return query;
+    };
     models.User.updateOne = async (filter, update) => {
       saved = { filter, update };
       return {};
