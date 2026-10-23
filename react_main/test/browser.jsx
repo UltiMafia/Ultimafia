@@ -21,6 +21,7 @@ import { GameRow } from "../src/pages/Play/LobbyBrowser/GameRow";
 import Game from "../src/pages/Game/Game";
 import RoleMarkerToggle from "../src/pages/Game/components/RoleMarkerToggle";
 import Chat from "../src/pages/Chat/Chat";
+import { MediaEmbed } from "../src/pages/User/UserWidgets";
 import { InGameContext } from "../src/Contexts";
 import "../src/css/main.css";
 
@@ -101,13 +102,34 @@ function SessionView({ id }) {
   }, [id]);
   return <span id="session-value">{messages}</span>;
 }
+function ProfileMediaView() {
+  // A local silent WAV exercises native playback without external media requests.
+  const bytes = new Uint8Array(8044);
+  const wav = new DataView(bytes.buffer);
+  const text = (offset, value) => [...value].forEach((c, i) => wav.setUint8(offset + i, c.charCodeAt(0)));
+  text(0, "RIFF"); wav.setUint32(4, 8036, true); text(8, "WAVEfmt ");
+  wav.setUint32(16, 16, true); wav.setUint16(20, 1, true); wav.setUint16(22, 1, true);
+  wav.setUint32(24, 8000, true); wav.setUint32(28, 8000, true);
+  wav.setUint16(32, 1, true); wav.setUint16(34, 8, true); text(36, "data");
+  wav.setUint32(40, 8000, true); bytes.fill(128, 44);
+  const mediaUrl = "data:audio/wav;base64," + btoa(String.fromCharCode(...bytes));
+  return <div id="profile-media"><SiteView />
+    <MediaEmbed mediaUrl={mediaUrl} mediaType="audio" loop collapsible />
+    <MediaEmbed mediaUrl={mediaUrl} mediaType="video" loop />
+    <MediaEmbed mediaUrl="https://www.youtube.com/watch?v=lifecycle01" />
+    <MediaEmbed mediaUrl="https://soundcloud.com/lifecycle-fixture/track" />
+    <MediaEmbed mediaUrl="https://open.spotify.com/track/lifecyclefixture" />
+    <MediaEmbed mediaUrl="https://vimeo.com/123456789" />
+    <MediaEmbed mediaUrl="https://yewtu.be/watch?v=lifecycle02" />
+  </div>;
+}
 function SessionApp() {
   const location = useLocation();
   const navigate = useNavigate();
   const session = useHostedGameSession();
   useEffect(() => { api = { ...session, navigate }; });
   return <AppLocationContext.Provider value={location}>
-    <RetainedSiteRoutes active={!session.inGame}><Route path="play" element={<SiteView key="play" />} /><Route path="other" element={<SiteView key="other" />} /></RetainedSiteRoutes>
+    <RetainedSiteRoutes active={!session.inGame}><Route path="play" element={<SiteView key="play" />} /><Route path="other" element={<SiteView key="other" />} /><Route path="user/profile" element={<ProfileMediaView />} /></RetainedSiteRoutes>
     {session.hostedGameId && <ViewActivityContext.Provider value={session.inGame}><SessionView key={session.hostedGameId} id={session.hostedGameId} /></ViewActivityContext.Provider>}
   </AppLocationContext.Provider>;
 }
@@ -466,6 +488,41 @@ async function tests() {
     assert(!document.querySelector('#session-value'), 'leave retained the session');
     assert(FakeSocket.all[0].readyState === 3, 'leave did not dispose socket');
     assert(document.querySelector('#view-route').textContent === '/other', 'leave lost previous page');
+  });
+
+  await run("returning from a profile to a retained game stops native media and removes provider players", async () => {
+    const savedOptions = localStorage.getItem("mediaOptions");
+    localStorage.setItem("mediaOptions", JSON.stringify({volume:0.25,muted:true}));
+    try {
+      mount(<MemoryRouter initialEntries={["/game/one"]}><SessionApp /></MemoryRouter>);
+      await until(() => api?.hostedGameId === "one", "initial game");
+      const socket = FakeSocket.all[FakeSocket.all.length - 1];
+      api.navigate("/user/profile");
+      await until(() => root.querySelectorAll("#profile-media iframe").length === 5, "profile players");
+      document.getElementById("site-increment").click();
+      document.querySelector('[aria-label="Collapse media player"]').click();
+      const players = [...root.querySelectorAll("audio, video")];
+      assert(players.length === 2, "native audio and video rendered");
+      for (const player of players) {
+        assert(player.volume === 0.25 && player.muted, "saved media options applied");
+        await player.play();
+        assert(!player.paused, "native media playing before navigation");
+      }
+      document.getElementById("enter-game").click();
+      await until(() => api.inGame, "return to game");
+      assert(!root.querySelector("#profile-media audio, #profile-media video, #profile-media iframe"), "inactive profile must not retain media players");
+      await until(() => players.every(player => player.paused), "detached native media stopped");
+      assert(socket.readyState === 1, "return preserves game socket");
+      assert(document.getElementById("site-value").textContent === "1", "profile state retained");
+      api.navigate("/user/profile");
+      await until(() => root.querySelectorAll("#profile-media iframe").length === 5, "players recreated on profile return");
+      assert(root.querySelector("audio") !== players[0], "return creates a fresh player");
+      await until(() => root.querySelector("audio").volume === 0.25 && root.querySelector("audio").muted, "recreated player restores saved media options");
+      assert(document.querySelector('[aria-label="Expand media player"]'), "collapsed preference retained");
+    } finally {
+      if (savedOptions === null) localStorage.removeItem("mediaOptions");
+      else localStorage.setItem("mediaOptions", savedOptions);
+    }
   });
 
   await run("inactive view redirects and old imperative callbacks cannot redirect a game", async () => {

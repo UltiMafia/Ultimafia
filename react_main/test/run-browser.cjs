@@ -30,9 +30,18 @@ async function main() {
     const page = await browser.newPage({viewport:{width:390,height:844}});
     const errors = [];
     const blocked = [];
+    // Provider documents are controlled fixtures, not live third-party playback.
+    const profileEmbeds = new Set([
+      "https://www.youtube.com/embed/lifecycle01?autoplay=0&mute=0",
+      "https://www.youtube.com/embed/lifecycle02?autoplay=0&mute=0",
+      "https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Flifecycle-fixture%2Ftrack&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true",
+      "https://open.spotify.com/embed/track/lifecyclefixture",
+      "https://player.vimeo.com/video/123456789?autoplay=0&muted=0",
+    ]);
     page.on("pageerror", error => errors.push(error.message));
     page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
     await page.route("**/*", route => {
+      if (profileEmbeds.has(route.request().url())) return route.fulfill({contentType:"text/html",body:"<!doctype html><title>Profile player fixture</title>"});
       const url = new URL(route.request().url());
       if (url.protocol === "data:" || url.hostname === "127.0.0.1") return route.continue();
       blocked.push(url.origin);

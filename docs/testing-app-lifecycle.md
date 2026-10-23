@@ -76,6 +76,9 @@ Browser cases exercise actual React 17/React Router/MUI components:
 - full public lobbies hide Join but retain Spectate, without exposing private,
   broken or spectating-disabled games or bypassing the logged-in requirement;
 - conditional/imperative site redirects not hijacking a game while inactive;
+- game → profile → game navigation stopping native audio/video and removing all
+  five provider iframe types while retaining profile state and the game socket;
+  returning to the profile recreates players with saved volume/mute options;
 - portalled dialogs staying inside their owner and hiding with an inactive view;
 - sheet ownership, updates and pending opens invalidated by navigation;
 - drag distance, no React content rerender per pointer move, release offset,
@@ -128,6 +131,13 @@ inventory/dice menus closed. Ready-check dialogs are deliberately global so a
 player browsing the site can still respond. Site list/activity polling pauses
 while the view is inactive. Async callbacks must still use request ownership;
 remaining mounted is not a reason to accept obsolete responses.
+
+`MediaEmbed` removes its players while `useViewActive` is false: CSS hiding alone
+does not stop native or cross-origin iframe playback. Its collapse state stays
+mounted, but playback position resets on return (and configured autoplay applies
+again). Native playback is exercised with a local silent WAV; third-party frame
+documents are controlled fixtures, so removal is tested without claiming live
+YouTube/SoundCloud/Spotify/Vimeo/Invidious integration coverage.
 
 `ViewOverlayBoundary` supplies an owned portal container through MUI's public
 theme defaults. Container attachment is reactive: child portal layout effects
