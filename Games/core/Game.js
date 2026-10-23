@@ -50,6 +50,7 @@ const {
 } = require("../../modules/userEligibility");
 const stockMarket = require("../../lib/StockMarket");
 const skillRating = require("../../modules/skillRating");
+const TutorialController = require("./tutorial/TutorialController");
 
 module.exports = class Game {
   constructor(options) {
@@ -112,6 +113,12 @@ module.exports = class Game {
     this.postgameLength = 1000 * 60 * 2;
     this.players = new ArrayHash();
     this.playersGone = {};
+    // Players who gave up their pregame seat to spectate, by their old player
+    // id, so chat keeps naming them after a refresh (see getAllPlayerInfo).
+    this.pastPregamePlayers = {};
+    // True from the moment start() begins until the game has started. Seats
+    // cannot change hands in between.
+    this.starting = false;
     this.spectators = [];
     this.spectatorsOld = [];
     this.spectatorLimit = constants.maxSpectators;
@@ -169,9 +176,19 @@ module.exports = class Game {
 
     this.isReadyCheckActive = false;
     this.readyPlayers = {};
+    // New-user tutorial: { storyline }. Unranked, private, one human, bots
+    // driven by TutorialController. Nothing about it is persisted.
+    this.tutorialSettings = options.settings.tutorial || null;
+    this.tutorial = null;
     // Users who chose to spectate, or were moved here by a failed ready check.
     // A refresh must not hand them an open seat.
     this.pregameSpectatorUserIds = new Set();
+    // Users already told they can /join since they last became a spectator,
+    // so a refresh or reconnect does not repeat it.
+    this.spectatorHintUserIds = new Set();
+    // How long a spectator whose socket closed keeps their entry, so a
+    // refresh takes it over instead of leaving and joining again.
+    this.spectatorReconnectGraceMs = 10000;
     this.devControls = { timerScale: 1, seed: null, forcedRoles: {} };
   }
 
@@ -217,6 +234,7 @@ module.exports = class Game {
           this.competitive
         );
         this.startHostingTimer();
+        if (this.tutorialSettings) await this.initTutorial();
       } else {
         await redis.setHostingScheduled(this.hostId, this.id);
         this.queueScheduleNotifications();
@@ -224,6 +242,54 @@ module.exports = class Game {
     } catch (e) {
       logger.error(e);
       // this.handleError(e);
+    }
+  }
+
+  async initTutorial() {
+    this.tutorial = new TutorialController(this, {
+      storylineId: this.tutorialSettings.storyline,
+      humanUserId: this.hostId,
+      timing: this.tutorialSettings.timing,
+    });
+    this.tutorial.onComplete = () => this.markTutorialCompleted();
+    this.tutorial.logError = (e) => logger.error(e);
+    await this.tutorial.addBots();
+  }
+
+  // The tutorial's only human left: stop the script and close the game.
+  async endTutorialEarly(player) {
+    if (this._tutorialClosing) return;
+    this._tutorialClosing = true;
+    try {
+      this.tutorial.destroy();
+      this.clearTimers();
+      player.send("left");
+      player.left = true;
+      setTimeout(() => {
+        try {
+          if (player.user) player.user.disconnect();
+        } catch (e) {}
+      }, 100);
+      for (const p of this.players) await redis.leaveGame(p.user.id);
+      // Finished: close the postgame (persists nothing for tutorials).
+      // Mid-game: drop the game outright.
+      if (this.finished) await this.endPostgame();
+      await this.cancel();
+    } catch (e) {
+      logger.error(e);
+    }
+  }
+
+  async markTutorialCompleted() {
+    if (this.isTest) return;
+    try {
+      await models.User.updateOne(
+        { id: this.hostId },
+        { $set: { tutorialCompleted: true } }
+      ).exec();
+      await redis.cacheUserInfo(this.hostId, true);
+    } catch (e) {
+      logger.error(e);
     }
   }
 
@@ -478,23 +544,26 @@ module.exports = class Game {
         return;
       }
 
+      if (this.tutorial && !isBot && user.id !== this.hostId) {
+        user.send("error", "This is a private tutorial game.");
+        user.socket.terminate();
+        return;
+      }
+
       var player = this.findJoinedPlayer(user, isBot);
 
-      // A seated player opening ?spectate=true during pregame gives up the seat.
-      if (player && !player.left && spectate && !this.started) {
-        const refusal = await this.spectatorJoinRefusal(user);
-        if (refusal) {
-          player = player.setUser(user);
-          this.sendAllGameInfo(player);
-          player.send("loaded");
-          player.send("spectateFailed", refusal);
-          return;
-        }
-
-        await this.movePlayerToSpectator(player, {
-          user: user,
-          alert: `${player.name} is now spectating.`,
-        });
+      // A seated player opening ?spectate=true during pregame gives up the
+      // seat through the same path as /spectate and the spectate event
+      // (ready-check cancel and the only-player guard included).
+      // Not in tutorials: the one human must keep their seat.
+      if (
+        player &&
+        !player.left &&
+        spectate &&
+        !this.started &&
+        !this.tutorial
+      ) {
+        await this.spectateFromSeat(player, { user: user });
         return;
       }
 
@@ -525,10 +594,26 @@ module.exports = class Game {
 
         this.sendAllGameInfo(player);
         player.send("loaded");
+        if (this.tutorial) this.tutorial.resync(player);
         return;
       }
 
       var spectator = this.findSpectator(user);
+
+      // Someone left watching a game that does not allow it (an older ready
+      // check moved them there) gets their seat back instead of a refusal.
+      if (
+        spectator &&
+        !spectate &&
+        !this.started &&
+        (await this.spectatingClosedFor(user))
+      ) {
+        if (spectator.socket && spectator.socket.clearListeners) {
+          spectator.socket.clearListeners();
+        }
+        this.removeSpectator(spectator);
+        spectator = null;
+      }
 
       const omniscient = await this.canSpectateOmnisciently(user);
 
@@ -543,11 +628,22 @@ module.exports = class Game {
         return;
       }
 
-      const rememberedSpectator =
+      let rememberedSpectator =
         !isBot &&
         !this.started &&
         user.id &&
         this.pregameSpectatorUserIds.has(user.id);
+
+      // Remembering a spectator only makes sense when they may spectate.
+      if (
+        rememberedSpectator &&
+        !spectate &&
+        (await this.spectatingClosedFor(user))
+      ) {
+        this.forgetPregameSpectator(user.id);
+        rememberedSpectator = false;
+      }
+
       const spectateIntent =
         (spectate || rememberedSpectator) && !this.started;
 
@@ -564,7 +660,7 @@ module.exports = class Game {
           await redis.leaveGame(user.id);
         }
 
-        this.addSpectator(user, omniscient);
+        await this.sendSpectatorJoinHint(this.addSpectator(user, omniscient));
         return;
       }
 
@@ -584,7 +680,7 @@ module.exports = class Game {
         return;
       }
 
-      this.addSpectator(user, omniscient);
+      await this.sendSpectatorJoinHint(this.addSpectator(user, omniscient));
     } catch (e) {
       logger.error(e);
       // this.handleError(e);
@@ -644,6 +740,20 @@ module.exports = class Game {
     }
 
     return null;
+  }
+
+  // Spectating is off for this game and the user has no permission to watch
+  // anyway.
+  async spectatingClosedFor(user) {
+    if (this.spectating) return false;
+    if (!user || !user.id) return true;
+    return !(await routeUtils.verifyPermission(user.id, "canSpectateAny"));
+  }
+
+  forgetPregameSpectator(userId) {
+    if (!userId) return;
+    this.pregameSpectatorUserIds.delete(userId);
+    this.spectatorHintUserIds.delete(userId);
   }
 
   // Bans, ranked/competitive permission, hearts, and leave penalty. Same gates
@@ -716,6 +826,8 @@ module.exports = class Game {
       }
 
       this.players.push(player);
+      // Seated now; becoming a spectator again is a new transition.
+      if (user.id) this.spectatorHintUserIds.delete(user.id);
       if (isTestBotPlayer(player)) {
         this.hadBots = true;
         // A bot game is free; give back hearts already charged.
@@ -757,6 +869,7 @@ module.exports = class Game {
 
   addSpectator(user, omniscient) {
     const spectator = new Spectator(user, this);
+    this.reusePastSpectatorId(spectator);
     spectator.omniscient = !!omniscient;
     spectator.init();
 
@@ -776,8 +889,70 @@ module.exports = class Game {
 
     this.broadcast("spectatorCount", this.spectators.length);
     redis.setSpectatorCount(this.id, this.spectators.length);
-    this.broadcast("spectators", this.getAllSpectatorInfo());
+    this.broadcastSpectators();
     return spectator;
+  }
+
+  // Someone who spectated this game before (a refresh after the reconnect
+  // grace time, or back from a seat) keeps their old spectator id, so the
+  // spectators map has one entry per user and old chat still names them.
+  reusePastSpectatorId(spectator) {
+    const userId = spectator.user && spectator.user.id;
+    if (!userId) return;
+
+    const past = this.spectatorsOld.filter(
+      (s) =>
+        s.spectator &&
+        s !== spectator &&
+        s.user &&
+        s.user.id == userId &&
+        this.spectators.indexOf(s) == -1
+    )[0];
+    if (!past) return;
+
+    spectator.id = past.id;
+    this.spectatorsOld.splice(this.spectatorsOld.indexOf(past), 1);
+  }
+
+  // A refresh closes the old socket just before the new one connects. Keep
+  // the spectator for a short grace time so the reconnect takes the entry
+  // over (same id, no leave/join broadcasts, no repeat hint).
+  scheduleSpectatorRemoval(spectator, socket) {
+    if (spectator.reconnectTimer) clearTimeout(spectator.reconnectTimer);
+    spectator.reconnectTimer = null;
+
+    const grace = this.spectatorReconnectGraceMs;
+    if (!(grace > 0)) {
+      this.removeSpectator(spectator, { forget: false });
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      spectator.reconnectTimer = null;
+      if (spectator.socket !== socket) return; // reconnected
+      // Keep the user id so a refresh during pregame stays spectating.
+      this.removeSpectator(spectator, { forget: false });
+    }, grace);
+    if (timer.unref) timer.unref();
+    spectator.reconnectTimer = timer;
+    this.timeouts.push(timer);
+  }
+
+  // Name and avatar for a player who is no longer seated, for chat only.
+  pastPlayerInfo(player) {
+    const user = player.user || {};
+    return {
+      id: player.id,
+      userId: user.id,
+      name: player.name,
+      avatar: user.avatar,
+      emojis: user.emojis,
+      textColor: user.textColor,
+      nameColor: user.nameColor,
+      customEmotes: user.customEmotes,
+      alive: player.alive,
+      left: true,
+    };
   }
 
   dropPregameMember(person) {
@@ -797,10 +972,20 @@ module.exports = class Game {
 
   async movePlayerToSpectator(player, options) {
     options = options || {};
+    // Seats are fixed once the start has begun.
+    if (this.started || this.starting) return null;
+
     const user = options.user || player.user;
     const userId = player.user && player.user.id;
     const wasHost = userId && userId === this.hostId;
 
+    // A seat opening breaks a running ready check or start countdown, the
+    // same as leaving does. Without this the game could start one short.
+    if (this.isReadyCheckActive || this.timers["pregameCountdown"]) {
+      this.cancelReadyCheck([player]);
+    }
+
+    this.pastPregamePlayers[player.id] = this.pastPlayerInfo(player);
     this.dropPregameMember(player);
     this.broadcast("playerLeave", player.id);
     delete this.players[player.id];
@@ -831,26 +1016,66 @@ module.exports = class Game {
       this.sendAlert(options.alert, undefined, undefined, ["info"]);
     }
 
+    await this.sendSpectatorJoinHint(spectator);
     return spectator;
   }
 
-  async takeSeat(spectator) {
-    if (!spectator) return;
+  // Tells someone who just became a pregame spectator (joined to watch,
+  // missed the ready check, or typed /spectate) how to sit down. Only they
+  // see it. Skipped once the game has started or when a gate (ban, ranked or
+  // competitive lock, leave penalty) would refuse the seat anyway. Sent once
+  // per user until they take a seat or leave, so a refresh or reconnect does
+  // not repeat it.
+  async sendSpectatorJoinHint(spectator) {
+    if (!spectator || !spectator.user || spectator.user.isBot) return;
+    if (this.started || this.currentState != -1) return;
+    // "/join" only reads well where spectating is a normal option.
+    if (!this.spectating) return;
 
-    if (this.started || this.currentState != -1) {
-      spectator.send("takeSeatFailed", "You can only take a seat during pregame.");
+    const reason = await this.seatBlockReason(spectator.user);
+    if (reason) return;
+
+    // The check above is async; the game may have started or they may have
+    // taken a seat in the meantime.
+    if (this.started || this.currentState != -1) return;
+    if (this.spectators.indexOf(spectator) == -1) return;
+
+    const userId = spectator.user.id;
+    if (userId) {
+      if (this.spectatorHintUserIds.has(userId)) return;
+      this.spectatorHintUserIds.add(userId);
+    }
+
+    spectator.sendAlert(
+      ":system: You are spectating. Type /join to take a seat at the table."
+    );
+  }
+
+  // options.viaCommand: the request came from the /join chat command, so a
+  // refusal is shown as a system message in chat instead of a pop-up.
+  async takeSeat(spectator, options) {
+    if (!spectator) return;
+    options = options || {};
+
+    const refuse = (target, reason) => {
+      if (options.viaCommand) target.sendAlert(`:system: ${reason}`);
+      else target.send("takeSeatFailed", reason);
+    };
+
+    if (this.started || this.starting || this.currentState != -1) {
+      refuse(spectator, "You can only take a seat during pregame.");
       return;
     }
 
     if (this.spectators.indexOf(spectator) == -1) {
-      spectator.send("takeSeatFailed", "You are not spectating this game.");
+      refuse(spectator, "You are not spectating this game.");
       return;
     }
 
     const user = spectator.user;
     const reason = await this.seatBlockReason(user);
     if (reason) {
-      spectator.send("takeSeatFailed", reason);
+      refuse(spectator, reason);
       return;
     }
 
@@ -860,7 +1085,7 @@ module.exports = class Game {
     this.joinMutexUnlock();
 
     if (!seatOpen) {
-      spectator.send("takeSeatFailed", "No open seats.");
+      refuse(spectator, "No open seats.");
       return;
     }
 
@@ -871,12 +1096,83 @@ module.exports = class Game {
 
     const player = await this.seatPlayer(user, false);
     if (!player) {
-      this.addSpectator(user, spectator.omniscient);
-      user.send("takeSeatFailed", "No open seats.");
+      const back = this.addSpectator(user, spectator.omniscient);
+      refuse(back, "No open seats.");
       return;
     }
 
     player.send("isSpectator", false);
+    return player;
+  }
+
+  // Why a seated player may not move to spectators right now, or null.
+  // Every reason is a full sentence ending in a period.
+  async spectateFromSeatRefusal(player) {
+    if (this.started || this.starting || this.currentState != -1) {
+      return "You can only move to spectators during pregame.";
+    }
+
+    if (!this.players[player.id] || player.left) {
+      return "You are not seated in this game.";
+    }
+
+    // The tutorial's one human must keep their seat.
+    if (this.tutorial) {
+      return "You cannot move to spectators during the tutorial.";
+    }
+
+    const refusal = await this.spectatorJoinRefusal(player.user);
+    if (refusal) return /[.!?]$/.test(refusal) ? refusal : `${refusal}.`;
+
+    // Moving the last seated player out would leave a lobby with no players.
+    if (this.players.length <= 1) {
+      return "You are the only player in this game, so you cannot move to spectators. Leave the game instead, or wait for another player to join.";
+    }
+
+    return null;
+  }
+
+  // A seated pregame player gives up the seat and watches. Used by /spectate,
+  // the "spectate" socket event and opening the game with ?spectate=true, so
+  // all three cancel a running ready check, keep the only-player guard and
+  // hand off host the same way.
+  // options.viaCommand: refusals are shown as a system message in chat.
+  //   Otherwise the client gets "spectateFailed" with the reason string.
+  // options.user: a new connection for this seat (?spectate=true). On a
+  //   refusal the player is reconnected on it and keeps the seat.
+  // Returns the new spectator, or null when refused.
+  async spectateFromSeat(player, options) {
+    options = options || {};
+    if (!player || player.spectator) return null;
+
+    let reason = await this.spectateFromSeatRefusal(player);
+    // The checks above wait on the database. The start may have begun, or
+    // the seat changed, in the meantime.
+    if (!reason && (this.started || this.starting || this.currentState != -1))
+      reason = "You can only move to spectators during pregame.";
+    else if (!reason && (!this.players[player.id] || player.left))
+      reason = "You are not seated in this game.";
+    if (reason) {
+      if (options.user) {
+        player = player.setUser(options.user);
+        this.sendAllGameInfo(player);
+        player.send("loaded");
+      }
+      if (options.viaCommand) player.sendAlert(`:system: ${reason}`);
+      else player.send("spectateFailed", reason);
+      return null;
+    }
+
+    // Giving up a seat breaks a running ready check or start countdown, the
+    // same as leaving the lobby does.
+    if (this.isReadyCheckActive || this.timers["pregameCountdown"]) {
+      this.cancelReadyCheck([player]);
+    }
+
+    return this.movePlayerToSpectator(player, {
+      user: options.user,
+      alert: `${player.name} is now spectating.`,
+    });
   }
 
   joinMutexLock() {
@@ -915,6 +1211,11 @@ module.exports = class Game {
       }
     }
 
+    if (this.tutorial && player && userId == this.hostId) {
+      await this.endTutorialEarly(player);
+      return;
+    }
+
     if (!player && userId != this.hostId) return;
     else if (!player) {
       await redis.leaveGame(userId);
@@ -937,6 +1238,12 @@ module.exports = class Game {
   }
 
   async playerLeave(player) {
+    // The tutorial's human leaving (in-game Leave, or the tutorial box's
+    // "Back to Play") closes the whole game, so nothing keeps them in-game.
+    if (this.tutorial && player.user && player.user.id === this.hostId) {
+      await this.endTutorialEarly(player);
+      return;
+    }
     // The subscription only exists to cover the pregame wait, so it goes as soon
     // as the player does. Note this is driven by leaving, not by the socket
     // closing: a player who backgrounds or closes their browser stays in the
@@ -945,7 +1252,9 @@ module.exports = class Game {
       pushNotifications.unregisterUser(player.user.id);
     }
 
-    player.send("left");
+    // player.leaveReason: why the server removed them, shown on their page.
+    const reason = player.leaveReason;
+    player.send("left", reason ? { reason } : undefined);
     player.left = true;
 
     this.kudosVoterLeft(player);
@@ -1065,11 +1374,16 @@ module.exports = class Game {
 
     this.spectators.push(spectator);
     this.spectatorsOld.push(spectator);
+    // Out of the game, so they read and write spectator chat from now on.
+    if (this.spectatorMeeting && !this.spectatorMeeting.finished) {
+      this.spectatorMeeting.join(spectator);
+    }
     this.sendAllGameInfo(spectator);
     spectator.send("loaded");
 
     this.broadcast("spectatorCount", this.spectators.length);
     redis.setSpectatorCount(this.id, this.spectators.length);
+    this.broadcastSpectators();
   }
 
   // Returns if the integrity of the game was broken for the first time or not
@@ -1198,16 +1512,22 @@ module.exports = class Game {
     const index = this.spectators.indexOf(spectator);
     if (index == -1) return;
 
+    if (spectator.reconnectTimer) {
+      clearTimeout(spectator.reconnectTimer);
+      spectator.reconnectTimer = null;
+    }
+
     this.spectators.splice(index, 1);
     this.dropPregameMember(spectator);
 
     if (options.forget !== false && spectator.user && spectator.user.id) {
       this.pregameSpectatorUserIds.delete(spectator.user.id);
+      this.spectatorHintUserIds.delete(spectator.user.id);
     }
 
     this.broadcast("spectatorCount", this.spectators.length);
     redis.setSpectatorCount(this.id, this.spectators.length);
-    this.broadcast("spectators", this.getAllSpectatorInfo());
+    this.broadcastSpectators();
   }
 
   async kickPlayer(player, permanent) {
@@ -1285,6 +1605,13 @@ module.exports = class Game {
       allPlayerInfo[player.id] = player;
     }
 
+    // Their pregame messages still carry the old player id. Listed as left so
+    // no player list shows them.
+    for (let playerId in this.pastPregamePlayers) {
+      if (!allPlayerInfo[playerId])
+        allPlayerInfo[playerId] = this.pastPregamePlayers[playerId];
+    }
+
     for (let playerInfo of this.beforeAnonPlayerInfo) {
       allPlayerInfo[playerInfo.id] = playerInfo;
     }
@@ -1307,7 +1634,54 @@ module.exports = class Game {
       allPlayerInfo[player2.id] = player2.getPlayerInfo(recipient);
     }
 
+    // Old entries stay so chat can still name past spectators. "watching" is
+    // always a boolean: true for who is spectating right now (the pregame
+    // spectators list), false for past spectators.
+    const current = new Set(this.spectators.map((player) => player.id));
+    for (let id in allPlayerInfo) {
+      allPlayerInfo[id].watching = current.has(id);
+    }
+
     return allPlayerInfo;
+  }
+
+  // Who may see who is spectating. Everyone in pregame. Once the game has
+  // started, only spectators (players see just the count), until it ends.
+  canSeeSpectatorList(recipient) {
+    if (!this.started || this.finished) return true;
+    return !!(recipient && recipient.spectator);
+  }
+
+  // The spectators payload for one recipient. A player in a started game
+  // gets only the spectators who spoke in pregame, so that chat can still
+  // name them, each with "watching": false, so they never learn who is
+  // watching now.
+  getSpectatorInfoFor(recipient) {
+    const all = this.getAllSpectatorInfo(recipient);
+    if (this.canSeeSpectatorList(recipient)) return all;
+
+    const spoke = new Set();
+    const pregameMessages = (this.pregame && this.pregame.messages) || [];
+    for (let message of pregameMessages)
+      if (message && message.sender && message.sender.spectator)
+        spoke.add(message.sender.id);
+
+    const limited = {};
+    for (let id of spoke) {
+      if (!all[id]) continue;
+      limited[id] = { ...all[id], watching: false };
+    }
+    return limited;
+  }
+
+  // Sends the spectators list to everyone allowed to see it.
+  broadcastSpectators() {
+    if (this.canSeeSpectatorList(null)) {
+      this.broadcast("spectators", this.getAllSpectatorInfo());
+      return;
+    }
+    const all = this.getAllSpectatorInfo();
+    for (let spectator of this.spectators) spectator.send("spectators", all);
   }
 
   getOptionsPayload() {
@@ -1386,7 +1760,7 @@ module.exports = class Game {
     if (this.rehostInfo && !this.isRehoster(player))
       player.send("rehosted", this.rehostInfo);
     player.send("spectatorCount", this.spectators.length);
-    player.send("spectators", this.getAllSpectatorInfo(player));
+    player.send("spectators", this.getSpectatorInfoFor(player));
 
     if (!player.user.playedGame && !player.isBot) player.send("firstGame");
 
@@ -1484,7 +1858,9 @@ module.exports = class Game {
 
     this.pushToPlayers({
       title: "Your game is ready!",
-      body: "Ready up now or you will be moved to spectators.",
+      body: this.spectating
+        ? "Ready up now or you will be moved to spectators."
+        : "Ready up now or you will be removed from the game.",
     });
 
     const endTime = Date.now() + this.readyCountdownLength;
@@ -1554,6 +1930,14 @@ module.exports = class Game {
 
     const moved = [];
     for (let player of unready) {
+      // With spectating off, everyone (staff included) is removed like a
+      // pregame leave (no penalty) so the seat is free and they can rejoin.
+      // Staff can still choose to spectate such a game themselves.
+      if (!this.spectating) {
+        await this.removeUnreadyPlayer(player);
+        continue;
+      }
+
       const spectator = await this.movePlayerToSpectator(player, {
         alert: `${player.name} was moved to spectators for not readying.`,
       });
@@ -1565,6 +1949,24 @@ module.exports = class Game {
     for (let spectator of moved) spectator.send("readyCheck failed", {});
 
     if (this.players.length == 0) await this.cancel();
+  }
+
+  async removeUnreadyPlayer(player) {
+    const userId = player.user && player.user.id;
+    this.forgetPregameSpectator(userId);
+
+    this.sendAlert(
+      `${player.name} was removed from the game for not readying.`,
+      undefined,
+      undefined,
+      ["info"]
+    );
+    // Sent with the one "left" event, so the page leaves, clears its in-game
+    // banner, then shows why. It rides on the player because game types
+    // override playerLeave(player) without extra arguments.
+    player.leaveReason =
+      "You were removed from the game for not readying in time. You can rejoin from the lobby.";
+    await this.playerLeave(player);
   }
 
   startPregameCountdown() {
@@ -1585,7 +1987,69 @@ module.exports = class Game {
     );
   }
 
+  tableIsFull() {
+    return !!this.setup && this.players.length >= this.setup.total;
+  }
+
+  // start() found fewer players than the setup needs. Back to pregame with
+  // the seat open: hearts charged for this start are returned, the ready
+  // check is cleared and pregame spectators can talk in Pregame again.
+  async abortStart() {
+    logger.warn(
+      `Game ${this.id}: start cancelled with ${this.players.length} of ${
+        this.setup && this.setup.total
+      } players.`
+    );
+    this.starting = false;
+    this.startTime = null;
+    await this.refundHeartsChargedAtStart();
+    redis.setGameStatus(this.id, "Open");
+
+    this.clearTimer("pregameCountdown");
+    this.isReadyCheckActive = false;
+    this.readyPlayers = {};
+    this.sendReadyCheckCancel();
+
+    if (this.pregame) {
+      for (let spectator of this.spectators) {
+        if (this.pregame.members[spectator.id]) continue;
+        this.pregame.join(spectator);
+        spectator.sendMeetings();
+      }
+    }
+
+    this.sendAlert(
+      "A seat opened before the game could start, so the start was cancelled. The game will start when the table is full again."
+    );
+  }
+
+  // Undoes chargeHeartsAtStart for a start that did not happen.
+  async refundHeartsChargedAtStart() {
+    if (!this.heartsChargedAtStart || !this.heartsCharged) return;
+    const { userIds, red, gold } = this.heartsCharged;
+    this.heartsCharged = null;
+    this.heartsChargedAtStart = false;
+    for (const userId of userIds) {
+      if (this.heartsRefundedUserIds.has(userId)) continue;
+      await models.User.updateOne(
+        { id: userId },
+        { $inc: { redHearts: red, goldHearts: gold } }
+      ).exec();
+      await redis.cacheUserInfo(userId, true);
+    }
+    this.heartsRefundedUserIds = new Set();
+  }
+
   async start() {
+    if (this.started || this.starting) return;
+
+    // Roles are only ever assigned to a full table.
+    if (!this.tableIsFull()) {
+      await this.abortStart();
+      return;
+    }
+    this.starting = true;
+
     // Pregame spectators stop being members of Pregame. makeMeetings keeps
     // them in the spectator meeting.
     this.removePregameSpectators();
@@ -1684,10 +2148,18 @@ module.exports = class Game {
       }
     }
 
+    // Someone may have left during the waits above. Never deal roles to a
+    // short table: go back to pregame instead.
+    if (!this.tableIsFull()) {
+      await this.abortStart();
+      return;
+    }
+
     // Tell clients the game started, assign roles, and move to the next state
     devControls.withDevSeed(this, () => this.assignRoles());
     this.captureStartingFactions();
     this.started = true;
+    this.starting = false;
     gameEventLog.server(this, "start", { roles: this.originalRoles, seed: this.devControls.seed });
     this.broadcast("start");
     this.broadcastOptions();
@@ -2075,6 +2547,8 @@ module.exports = class Game {
       roleset,
       this.devControls.forcedRoles
     );
+    if (this.tutorial)
+      randomPlayers = this.tutorial.orderPlayers(randomPlayers, roleset);
 
     var i = 0;
 
@@ -2770,6 +3244,8 @@ module.exports = class Game {
   }
 
   createNextStateTimer(stateInfo) {
+    // The phase clock is paused in tutorials (see checkAllMeetingsReady).
+    if (this.tutorial && !this.tutorial.done) return;
     if (this.isTest) {
       this.createTimer("main", stateInfo.length, () => this.gotoNextState());
     } else {
@@ -3096,6 +3572,11 @@ module.exports = class Game {
   }
 
   checkAllMeetingsReady() {
+    // Tutorials never advance on their own: the player clicks Continue
+    // (TutorialController.onContinue calls gotoNextState directly).
+    if (this.tutorial && this.started && !this.finished && !this.tutorial.done)
+      return;
+
     var allReady = true;
 
     if (this.type == "Mafia" && this.getStateName() == "Day") {
@@ -3326,8 +3807,16 @@ module.exports = class Game {
     ) {
       return;
     }
-    for (let spectator of this.spectators)
-        if (!spectator.omniscient) spectator.hearQuote(quote);
+    for (let spectator of this.spectators) {
+      // Omniscient spectators get every message via omniscientSpectatorsHear.
+      if (spectator.omniscient) continue;
+      // Members (pregame spectators, spectator chat) already heard this as
+      // recipients. A second copy showed every quote twice.
+      if (quote.recipients && quote.recipients.indexOf(spectator) != -1)
+        continue;
+
+      spectator.hearQuote(quote);
+    }
   }
 
   omniscientSpectatorsSee(event, info) {
@@ -3712,6 +4201,8 @@ module.exports = class Game {
   startKudosVote() {
     if (this.kudosVote !== undefined) return;
     this.kudosVote = null;
+    // No kudos in tutorial games.
+    if (this.tutorial || this.tutorialSettings) return;
 
     if (!this.isKudosEligible() || !this.winners) return;
     const info = this.winners.getWinnersInfo();
@@ -3882,6 +4373,7 @@ module.exports = class Game {
   }
 
   castKudosVote(player, rowKey, target) {
+    if (this.tutorial || this.tutorialSettings) return;
     if (!this.kudosVote || !this.finished || this.postgameOver) return;
 
     const error = this.kudosVote.castVote(player.id, rowKey, target);
@@ -4226,6 +4718,7 @@ module.exports = class Game {
   }
 
   async penalizePlayerForLeaving(userId) {
+    if (this.tutorial) return;
     let leavePenalty = await models.LeavePenalty.findOne({
       userId: userId,
     }).select("level");
@@ -4771,6 +5264,12 @@ module.exports = class Game {
     let kudosCoins = {};
 
     try {
+      if (this.tutorial) {
+        // Tutorials never count: no Game record, stats, ratings, hearts,
+        // coins or playedGame. Only tutorialCompleted is set (at game end).
+        this.tutorial.destroy();
+        this._postgamePersisted = true;
+      }
       if (!this._postgamePersisted) {
         if (this.kudosVote) {
           try {

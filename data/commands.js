@@ -39,6 +39,16 @@ const commandData = {
     input: "Amount, Dice Type",
     description: "Rolls dice, results are shown to everyone.",
   },
+  "/join": {
+    input: "N/A",
+    description:
+      "Used by a spectator during pregame to take an open seat in the game.",
+  },
+  "/spectate": {
+    input: "N/A",
+    description:
+      "Used during pregame to give up your seat and watch as a spectator.",
+  },
   "/wave, /shake, /glow, /rainbow, /slide, /flash": {
     input: "Text",
     description:

@@ -1,3 +1,5 @@
+const tutorialStorylines = require("../Games/core/tutorial/storylines");
+const tutorialSetup = require("../Games/core/tutorial/setup");
 const express = require("express");
 const constants = require("../data/constants");
 const models = require("../db/models");
@@ -381,6 +383,62 @@ router.get("/list", async function (req, res) {
   } catch (e) {
     logger.error(e);
     res.send([]);
+  }
+});
+
+// New-user tutorial: a private, unranked Frontier Justice game against
+// scripted bots run inside the game server (Games/core/tutorial).
+router.get("/tutorial/storylines", async function (req, res) {
+  res.send(tutorialStorylines.summary());
+});
+
+router.post("/tutorial/host", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+
+    if (!(await routeUtils.verifyPermission(userId, "playGame"))) {
+      errors.forbidden(res, "You are unable to play games.");
+      return;
+    }
+
+    const story = tutorialStorylines.get(req.body.storyline);
+    if (!story) {
+      errors.badRequest(res, "Unknown tutorial.");
+      return;
+    }
+    if (!story.available) {
+      errors.badRequest(res, `The ${story.title} tutorial is coming soon.`);
+      return;
+    }
+
+    if (await redis.inGame(userId)) {
+      errors.conflict(res, "You must leave your current game before starting the tutorial.");
+      return;
+    }
+
+    if (!(await routeUtils.rateLimit(userId, "hostGame", res))) return;
+
+    const gameId = await gameLoadBalancer.createGame(userId, "Mafia", {
+      setup: JSON.parse(JSON.stringify(tutorialSetup)),
+      lobby: "Main",
+      lobbyName: `Tutorial: ${story.title}`,
+      private: true,
+      guests: false,
+      ranked: false,
+      competitive: false,
+      spectating: false,
+      readyCheck: false,
+      noVeg: true,
+      // The script advances the game; these are just a safety net.
+      stateLengths: { Day: 20 * 60 * 1000, Night: 20 * 60 * 1000 },
+      gameTypeOptions: JSON.stringify({}),
+      tutorial: { storyline: story.id },
+    });
+
+    res.send(gameId);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Unable to start the tutorial.");
   }
 });
 
