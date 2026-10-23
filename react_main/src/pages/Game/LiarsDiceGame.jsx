@@ -687,7 +687,10 @@ function LiarsDicePlayerRow({
               }
         }
       >
-        <div className="current-rolls">
+        <div
+          className="current-rolls"
+          style={{ "--ld-dice-count": Math.max(diceValues.length, 1) }}
+        >
           {diceValues.map((value, index) => (
             <div
               key={index}
@@ -712,7 +715,12 @@ function LiarsDicePlayerRow({
               >
                 Last round:
               </div>
-              <div className="previous-rolls-dice">
+              <div
+                className="previous-rolls-dice"
+                style={{
+                  "--ld-dice-count": Math.max(previousRolls.length, 1),
+                }}
+              >
                 {previousRolls.map((value, index) => (
                   <div
                     key={index}

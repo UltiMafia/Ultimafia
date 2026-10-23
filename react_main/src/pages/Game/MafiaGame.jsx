@@ -113,6 +113,7 @@ function MissionHistoryPanel(props) {
 }
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { StrategiesPanel, StrategiesSection } from "components/Strategies";
+import TutorialOverlay from "components/TutorialOverlay";
 
 export default function MafiaGame() {
   const game = useContext(GameContext);
@@ -511,6 +512,7 @@ export default function MafiaGame() {
       }}
     >
       <TopBar />
+      <TutorialOverlay socket={game.socket} />
       <ThreePanelLayout
         leftPanelContent={
           <>

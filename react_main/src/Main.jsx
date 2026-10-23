@@ -358,6 +358,7 @@ function Header({ setShowAnnouncementTemporarily }) {
                 label: "Play",
                 items: [
                   { text: "Play", path: "/play" },
+                  { text: "Tutorial", path: "/play/tutorial" },
                   {
                     text: "Host",
                     path: "/play/host",
@@ -456,6 +457,7 @@ function Header({ setShowAnnouncementTemporarily }) {
               label="Play"
               items={[
                 { text: "Play", path: "/play" },
+                { text: "Tutorial", path: "/play/tutorial" },
                 { text: "Host", path: "/play/host", hide: !user.loggedIn },
                 {
                   text: "Create Setup",

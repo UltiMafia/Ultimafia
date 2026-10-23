@@ -1,4 +1,6 @@
 import React, { useContext, useState } from "react";
+import { useRankedTutorialGate } from "components/TutorialPrompt";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import "css/shiny.css";
@@ -22,6 +24,7 @@ import { getRowColor, getSetupBackgroundColor } from "./gameRowColors.js";
 import StateIcon from "components/StateIcon";
 
 const GameStatus = (props) => {
+  const navigate = useNavigate();
   const user = useContext(UserContext);
   const isPhoneDevice = useIsPhoneDevice();
   const showGameState = props.showGameState;
@@ -73,10 +76,15 @@ const GameStatus = (props) => {
     buttonDisabled = false;
   }
 
+  const isRankedJoin =
+    props.game.status === "Open" && (props.game.ranked || props.game.competitive);
+  const tutorialGate = useRankedTutorialGate(() => navigate(buttonUrl));
+
   const GameButton = (
     <Button
       component={Link}
       to={buttonUrl}
+      onClick={isRankedJoin ? tutorialGate.guard : undefined}
       // Spectate changes server membership. A client-side route change would
       // merely reveal the same retained, possibly seated game session.
       reloadDocument={buttonText === "Spectate"}
@@ -118,6 +126,7 @@ const GameStatus = (props) => {
           {spectateButton}
         </Stack>
       )}
+      {isRankedJoin && tutorialGate.dialog}
       <div
         style={{
           display: "flex",

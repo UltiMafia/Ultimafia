@@ -316,6 +316,40 @@ describe("Games/SpectateCommands", function () {
       chatTexts(watcher.socket).some((t) => t.includes("only player")).should.equal(false);
     });
 
+    it("keeps the tutorial's human seated (/spectate and ?spectate=true)", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const bot = makeUser(null, "bot");
+      await game.userJoin(host);
+      await game.userJoin(bot);
+      // Stand-in for the tutorial controller; only resync is reached here.
+      game.tutorial = { resync: () => {} };
+
+      try {
+        host.socket.flushMessages();
+        say(playerFor(game, host), "/spectate", game.pregame.id);
+        await settle();
+
+        game.players.should.have.lengthOf(2);
+        game.spectators.should.have.lengthOf(0);
+        chatTexts(host.socket).should.include(
+          ":system: You cannot move to spectators during the tutorial."
+        );
+
+        // Opening the game with ?spectate=true reconnects to the seat instead.
+        const again = makeUser(host.id, host.name);
+        await game.userJoin(again, { spectate: true });
+        await settle();
+
+        game.players.should.have.lengthOf(2);
+        game.spectators.should.have.lengthOf(0);
+        should.exist(playerFor(game, again));
+        (!!playerFor(game, again).left).should.equal(false);
+      } finally {
+        game.tutorial = null;
+      }
+    });
+
     it("refuses when spectating is off and keeps the seat", async function () {
       const game = await openGame.call(this, { total: 3, spectating: false });
       const host = makeUser(game.hostId, "host");

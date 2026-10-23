@@ -50,6 +50,7 @@ const {
 } = require("../../modules/userEligibility");
 const stockMarket = require("../../lib/StockMarket");
 const skillRating = require("../../modules/skillRating");
+const TutorialController = require("./tutorial/TutorialController");
 
 module.exports = class Game {
   constructor(options) {
@@ -175,6 +176,10 @@ module.exports = class Game {
 
     this.isReadyCheckActive = false;
     this.readyPlayers = {};
+    // New-user tutorial: { storyline }. Unranked, private, one human, bots
+    // driven by TutorialController. Nothing about it is persisted.
+    this.tutorialSettings = options.settings.tutorial || null;
+    this.tutorial = null;
     // Users who chose to spectate, or were moved here by a failed ready check.
     // A refresh must not hand them an open seat.
     this.pregameSpectatorUserIds = new Set();
@@ -229,6 +234,7 @@ module.exports = class Game {
           this.competitive
         );
         this.startHostingTimer();
+        if (this.tutorialSettings) await this.initTutorial();
       } else {
         await redis.setHostingScheduled(this.hostId, this.id);
         this.queueScheduleNotifications();
@@ -236,6 +242,54 @@ module.exports = class Game {
     } catch (e) {
       logger.error(e);
       // this.handleError(e);
+    }
+  }
+
+  async initTutorial() {
+    this.tutorial = new TutorialController(this, {
+      storylineId: this.tutorialSettings.storyline,
+      humanUserId: this.hostId,
+      timing: this.tutorialSettings.timing,
+    });
+    this.tutorial.onComplete = () => this.markTutorialCompleted();
+    this.tutorial.logError = (e) => logger.error(e);
+    await this.tutorial.addBots();
+  }
+
+  // The tutorial's only human left: stop the script and close the game.
+  async endTutorialEarly(player) {
+    if (this._tutorialClosing) return;
+    this._tutorialClosing = true;
+    try {
+      this.tutorial.destroy();
+      this.clearTimers();
+      player.send("left");
+      player.left = true;
+      setTimeout(() => {
+        try {
+          if (player.user) player.user.disconnect();
+        } catch (e) {}
+      }, 100);
+      for (const p of this.players) await redis.leaveGame(p.user.id);
+      // Finished: close the postgame (persists nothing for tutorials).
+      // Mid-game: drop the game outright.
+      if (this.finished) await this.endPostgame();
+      await this.cancel();
+    } catch (e) {
+      logger.error(e);
+    }
+  }
+
+  async markTutorialCompleted() {
+    if (this.isTest) return;
+    try {
+      await models.User.updateOne(
+        { id: this.hostId },
+        { $set: { tutorialCompleted: true } }
+      ).exec();
+      await redis.cacheUserInfo(this.hostId, true);
+    } catch (e) {
+      logger.error(e);
     }
   }
 
@@ -490,12 +544,25 @@ module.exports = class Game {
         return;
       }
 
+      if (this.tutorial && !isBot && user.id !== this.hostId) {
+        user.send("error", "This is a private tutorial game.");
+        user.socket.terminate();
+        return;
+      }
+
       var player = this.findJoinedPlayer(user, isBot);
 
       // A seated player opening ?spectate=true during pregame gives up the
       // seat through the same path as /spectate and the spectate event
       // (ready-check cancel and the only-player guard included).
-      if (player && !player.left && spectate && !this.started) {
+      // Not in tutorials: the one human must keep their seat.
+      if (
+        player &&
+        !player.left &&
+        spectate &&
+        !this.started &&
+        !this.tutorial
+      ) {
         await this.spectateFromSeat(player, { user: user });
         return;
       }
@@ -527,6 +594,7 @@ module.exports = class Game {
 
         this.sendAllGameInfo(player);
         player.send("loaded");
+        if (this.tutorial) this.tutorial.resync(player);
         return;
       }
 
@@ -1048,6 +1116,11 @@ module.exports = class Game {
       return "You are not seated in this game.";
     }
 
+    // The tutorial's one human must keep their seat.
+    if (this.tutorial) {
+      return "You cannot move to spectators during the tutorial.";
+    }
+
     const refusal = await this.spectatorJoinRefusal(player.user);
     if (refusal) return /[.!?]$/.test(refusal) ? refusal : `${refusal}.`;
 
@@ -1138,6 +1211,11 @@ module.exports = class Game {
       }
     }
 
+    if (this.tutorial && player && userId == this.hostId) {
+      await this.endTutorialEarly(player);
+      return;
+    }
+
     if (!player && userId != this.hostId) return;
     else if (!player) {
       await redis.leaveGame(userId);
@@ -1160,6 +1238,12 @@ module.exports = class Game {
   }
 
   async playerLeave(player) {
+    // The tutorial's human leaving (in-game Leave, or the tutorial box's
+    // "Back to Play") closes the whole game, so nothing keeps them in-game.
+    if (this.tutorial && player.user && player.user.id === this.hostId) {
+      await this.endTutorialEarly(player);
+      return;
+    }
     // The subscription only exists to cover the pregame wait, so it goes as soon
     // as the player does. Note this is driven by leaving, not by the socket
     // closing: a player who backgrounds or closes their browser stays in the
@@ -2463,6 +2547,8 @@ module.exports = class Game {
       roleset,
       this.devControls.forcedRoles
     );
+    if (this.tutorial)
+      randomPlayers = this.tutorial.orderPlayers(randomPlayers, roleset);
 
     var i = 0;
 
@@ -3158,6 +3244,8 @@ module.exports = class Game {
   }
 
   createNextStateTimer(stateInfo) {
+    // The phase clock is paused in tutorials (see checkAllMeetingsReady).
+    if (this.tutorial && !this.tutorial.done) return;
     if (this.isTest) {
       this.createTimer("main", stateInfo.length, () => this.gotoNextState());
     } else {
@@ -3484,6 +3572,11 @@ module.exports = class Game {
   }
 
   checkAllMeetingsReady() {
+    // Tutorials never advance on their own: the player clicks Continue
+    // (TutorialController.onContinue calls gotoNextState directly).
+    if (this.tutorial && this.started && !this.finished && !this.tutorial.done)
+      return;
+
     var allReady = true;
 
     if (this.type == "Mafia" && this.getStateName() == "Day") {
@@ -4108,6 +4201,8 @@ module.exports = class Game {
   startKudosVote() {
     if (this.kudosVote !== undefined) return;
     this.kudosVote = null;
+    // No kudos in tutorial games.
+    if (this.tutorial || this.tutorialSettings) return;
 
     if (!this.isKudosEligible() || !this.winners) return;
     const info = this.winners.getWinnersInfo();
@@ -4278,6 +4373,7 @@ module.exports = class Game {
   }
 
   castKudosVote(player, rowKey, target) {
+    if (this.tutorial || this.tutorialSettings) return;
     if (!this.kudosVote || !this.finished || this.postgameOver) return;
 
     const error = this.kudosVote.castVote(player.id, rowKey, target);
@@ -4622,6 +4718,7 @@ module.exports = class Game {
   }
 
   async penalizePlayerForLeaving(userId) {
+    if (this.tutorial) return;
     let leavePenalty = await models.LeavePenalty.findOne({
       userId: userId,
     }).select("level");
@@ -5167,6 +5264,12 @@ module.exports = class Game {
     let kudosCoins = {};
 
     try {
+      if (this.tutorial) {
+        // Tutorials never count: no Game record, stats, ratings, hearts,
+        // coins or playedGame. Only tutorialCompleted is set (at game end).
+        this.tutorial.destroy();
+        this._postgamePersisted = true;
+      }
       if (!this._postgamePersisted) {
         if (this.kudosVote) {
           try {
