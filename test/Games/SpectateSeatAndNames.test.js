@@ -54,7 +54,7 @@ async function makeGame(extra) {
       private: true,
       ranked: false,
       competitive: false,
-      spectating: true,
+      spectating: extra.spectating !== false,
       readyCheck: true,
       stateLengths: { Day: 1000, Night: 1000 },
     },
@@ -381,6 +381,53 @@ describe("Games/SpectateSeatAndNames", function () {
         { a: { id: "a", name: "Bob" }, b: { id: "b", name: "Bob" } },
         "b"
       ).should.deep.equal({ status: 0, completed: "Bob" });
+    });
+  });
+
+  describe("a missed ready check", function () {
+    async function missReadyCheck(game, users) {
+      game.startReadyCheck();
+      game.playerReady(playerFor(game, users[0]));
+      game.playerReady(playerFor(game, users[1]));
+      for (const user of users) user.socket.flushMessages();
+      await game.failReadyCheck();
+      await settle();
+    }
+
+    it("removes the player from the game when spectating is off, freeing the seat", async function () {
+      const game = await openGame.call(this, { total: 3, spectating: false });
+      const users = await fullTable(game, 3);
+      const late = users[2];
+      await missReadyCheck(game, users);
+
+      should.not.exist(playerFor(game, late));
+      game.players.should.have.lengthOf(2);
+      game.spectators.filter((s) => s.user.id === late.id).should.have.lengthOf(0);
+      (await redis.inGame(late.id)).should.equal(false);
+      events(late.socket, "left").should.have.lengthOf(1);
+      events(users[0].socket, "message")
+        .map((m) => m.data.content)
+        .should.include("p2 was removed from the game for not readying.");
+
+      // The seat is open again.
+      const next = makeUser(null, "next");
+      await game.userJoin(next);
+      await settle();
+      should.exist(playerFor(game, next));
+      game.players.should.have.lengthOf(3);
+    });
+
+    it("moves the player to spectators when spectating is on", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const users = await fullTable(game, 3);
+      const late = users[2];
+      await missReadyCheck(game, users);
+
+      should.not.exist(playerFor(game, late));
+      game.players.should.have.lengthOf(2);
+      game.spectators.filter((s) => s.user.id === late.id).should.have.lengthOf(1);
+      (await redis.inGame(late.id)).should.equal(false);
+      events(late.socket, "readyCheck failed").should.have.lengthOf(1);
     });
   });
 
