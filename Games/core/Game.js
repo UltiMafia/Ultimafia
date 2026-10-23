@@ -1846,9 +1846,10 @@ module.exports = class Game {
 
     const moved = [];
     for (let player of unready) {
-      // With spectating off there is nowhere to move them. Remove them like a
+      // With spectating off, everyone (staff included) is removed like a
       // pregame leave (no penalty) so the seat is free and they can rejoin.
-      if (await this.spectatingClosedFor(player.user)) {
+      // Staff can still choose to spectate such a game themselves.
+      if (!this.spectating) {
         await this.removeUnreadyPlayer(player);
         continue;
       }
