@@ -20,6 +20,7 @@ var rates = null;
 
 if (process.env.NODE_ENV.includes("development")) {
   rates = {
+    githubLink: 10 * 1000,
     hostGame: 60 * 100,
     createSetup: 60 * 100,
     createThread: 5 * 60 * 100,
@@ -38,9 +39,11 @@ if (process.env.NODE_ENV.includes("development")) {
     feedbackSubmission: 24 * 60 * 60 * 100,
     poke: 5 * 100,
     tradeStamp: 2 * 100,
+    devApiToken: 1000,
   };
 } else {
   rates = {
+    githubLink: 10 * 1000,
     hostGame: 30 * 1000,
     createSetup: 60 * 1000,
     createThread: 5 * 60 * 1000,
@@ -59,10 +62,14 @@ if (process.env.NODE_ENV.includes("development")) {
     feedbackSubmission: 24 * 60 * 60 * 1000,
     poke: 5 * 1000,
     tradeStamp: 2 * 1000,
+    devApiToken: 1000,
   };
 }
 
 module.exports = {
+  // Accounts that joined on/after this time are prompted to play the new-user
+  // tutorial before ranked games. Earlier accounts are never prompted.
+  tutorialPromptSince: Date.UTC(2026, 9, 15),
   restart: null,
   gameTypes: [
     "Mafia",
@@ -87,6 +94,21 @@ module.exports = {
   // created or hosted anymore. Acrotopia is covered by Wacky Words' acronym mode.
   disabledGameTypes: ["Acrotopia", "Resistance"],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
+  testingLobby: "Testing",
+  ownerOnlyGroups: ["Developer", "Developer Public Testing"],
+  devApi: {
+    maxTestAccountsInGame: 50,
+    maxTestAccountsInPublicGame: 1,
+    tokenTtlSeconds: 3600,
+    keyLifetimeMs: 90 * 24 * 60 * 60 * 1000,
+    maxKeysPerDeveloper: 5,
+    eventBufferSize: 500,
+    minTimerScale: 0.01,
+    minScaledTimerMs: 1000,
+    maxJumpStates: 40,
+    sendsPerSecond: 20,
+    maxBurstSends: 200,
+  },
   alignments: {
     Mafia: ["Village", "Mafia", "Cult", "Independent", "Event"],
     Resistance: ["Resistance", "Spies"],
@@ -337,7 +359,7 @@ module.exports = {
   maxWordDeckDescriptionLength: 120,
   maxOwnedCustomEmotes: 10,
   maxOwnedCustomEmotesExtra: 10,
-  maxOwnedCustomStickers: 5,
+  maxOwnedCustomStickers: 10,
   maxCustomStickerFileSizeBytes: 10 * 1024 * 1024, // 10 MB
   maxCustomStickerDimension: 512, // max width or height in pixels
   maxCustomStickerNameLength: 25,
@@ -581,6 +603,7 @@ module.exports = {
     giveCoins: true,
     refundGame: true,
     changeUsersName: true,
+    resetBirthdayLimit: true,
     whitelist: true,
     disableAllCensors: true,
     kick: true,
@@ -603,6 +626,9 @@ module.exports = {
     deleteFanart: true,
     seeModPanel: true,
     deleteViolation: true,
+    devApi: true,
+    devTestPublic: true,
+    approveGithubLinks: true,
   },
   defaultGroups: {
     Owner: {
@@ -614,6 +640,7 @@ module.exports = {
       rank: 10,
       visible: true,
       perms: [
+        "approveGithubLinks",
         "deleteAnyPost",
         "lockThreads",
         "pinThreads",
@@ -654,6 +681,7 @@ module.exports = {
         "viewFlagged",
         "approvePending",
         "changeUsersName",
+        "resetBirthdayLimit",
         "reviewPrivate",
         "approveRanked",
         "approveCompetitive",
@@ -732,10 +760,15 @@ module.exports = {
         "deleteFanart",
       ],
     },
-    Dev: {
-      rank: 5,
+    Developer: {
+      rank: 0,
+      visible: true,
+      perms: ["devApi"],
+    },
+    "Developer Public Testing": {
+      rank: 0,
       visible: false,
-      perms: [],
+      perms: ["devTestPublic"],
     },
     Donor: {
       rank: 5,

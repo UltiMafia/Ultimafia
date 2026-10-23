@@ -169,6 +169,29 @@ describe("Web Audio game playback", function () {
     assert.equal(h.sources[0].stopped, true);
   });
 
+  it("stops hidden-view custom sounds without discarding resumable music", async function () {
+    const h = harness();
+    const manager = new h.Manager();
+    try {
+      manager.load([{ fileName: "music/one", loop: true }]);
+      manager.play("music/one"); h.respond(0); await flush();
+      const custom = manager.playUrls(["/custom", "/next"], () => 0.3);
+      h.respond(1); await flush();
+      manager.stopTransientSounds(); await custom;
+      assert.equal(h.sources[1].stopped, true);
+      assert.equal(h.sources[0].stopped, undefined);
+      assert.equal(h.requests.length, 2);
+      assert.deepEqual(Array.from(manager.loadedNames), ["music/one"]);
+      manager.syncVolume(1, 0, 1, 1);
+      assert.equal(h.gains[0].gain.value, 0);
+      manager.syncVolume(1, 0.7, 1, 1);
+      assert.equal(h.gains[0].gain.value, 0.7);
+      assert.equal(h.sources.length, 2);
+    } finally {
+      manager.dispose();
+    }
+  });
+
   it("sequences custom sounds and cancels the remaining queue on unmount", async function () {
     const h = harness();
     const manager = new h.Manager();

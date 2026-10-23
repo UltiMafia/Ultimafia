@@ -16,8 +16,10 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { useProfileSheet } from "components/ProfileSheet";
 import ImageViewer from "components/ImageViewer";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
+import { useViewActive } from "hooks/useViewActivity";
 import { useAvatarImageUrl, AvatarPhoto } from "utils/avatarUrl";
 import { observeNameAnimation } from "utils/nameAnimationViewport";
 import { nameGlowStyle, applyNameGlowStyle } from "utils/nameGlowStyle";
@@ -175,6 +177,7 @@ function ImageWithViewer({ imageUrl }) {
 }
 
 export function MediaEmbed(props) {
+  const active = useViewActive();
   const mediaUrl = props.mediaUrl;
   const loop = !!props.loop;
   // When collapsible, show expand/collapse control. `collapsed` is the initial state.
@@ -207,11 +210,6 @@ export function MediaEmbed(props) {
     };
   }, [mediaUrl]);
 
-  const mediaOptions = JSON.parse(
-    window.localStorage.getItem("mediaOptions") || "{}"
-  );
-  const volume = mediaOptions.volume || 1;
-  const muted = mediaOptions.muted || false;
   let embedId;
 
   const getMediaType = (mediaUrl) => {
@@ -249,24 +247,27 @@ export function MediaEmbed(props) {
   };
   const mediaType = props.mediaType || getMediaType(mediaUrl);
 
-  const trackVolume = (e) => {
-    mediaOptions.volume = e.target.volume;
-    mediaOptions.muted = e.target.muted;
-    window.localStorage.setItem("mediaOptions", JSON.stringify(mediaOptions));
-  };
-
   useEffect(() => {
-    if (mediaRef && mediaRef.current) {
-      mediaRef.current.volume = volume;
-      mediaRef.current.muted = muted;
-      mediaRef.current.addEventListener("volumechange", trackVolume);
-    }
-    return () => {
-      if (mediaRef && mediaRef.current) {
-        mediaRef.current.removeEventListener("volumechange", trackVolume);
-      }
+    const media = mediaRef.current;
+    if (!media) return;
+    const mediaOptions = JSON.parse(
+      window.localStorage.getItem("mediaOptions") || "{}"
+    );
+    const trackVolume = (e) => {
+      mediaOptions.volume = e.target.volume;
+      mediaOptions.muted = e.target.muted;
+      window.localStorage.setItem("mediaOptions", JSON.stringify(mediaOptions));
     };
-  }, [mediaRef]);
+    media.volume = mediaOptions.volume || 1;
+    media.muted = mediaOptions.muted || false;
+    media.addEventListener("volumechange", trackVolume);
+    return () => media.removeEventListener("volumechange", trackVolume);
+  }, [active, mediaUrl, mediaType]);
+
+  // The site stays mounted behind a game. Remove the players, not just their
+  // CSS visibility, to stop both native media and cross-origin iframe playback.
+  // Keep this component's collapse state when the view becomes active again.
+  if (!active) return null;
 
   let body = null;
   switch (mediaType) {
@@ -490,6 +491,10 @@ export function Avatar(props) {
     if (hasImage.includes("decks")) {
       photoSrc = `/uploads${hasImage}?t=${siteInfo.cacheVal}`;
       style.backgroundColor = "#00000000";
+    } else if (hasImage.startsWith("/images/")) {
+      // Tutorial bot avatars (and other static public images).
+      photoSrc = hasImage;
+      style.backgroundColor = "#00000000";
     }
   }
   if (photoSrc && photoSrc === failedSrc) {
@@ -641,6 +646,8 @@ export function NameWithAvatar(props) {
     includeMiniprofile && !noLink ? GameContext : NameOnlyGameContext
   );
   const user = useContext(UserContext);
+  const isPhone = useIsPhoneDevice();
+  const { openProfile } = useProfileSheet();
   const [userProfile, setUserProfile] = useState(null);
   const [isClicked, setIsClicked] = useState(false);
 
@@ -797,6 +804,13 @@ export function NameWithAvatar(props) {
 
       if (!props.name || !includeMiniprofile) return;
 
+      // On a phone, open the profile as a sheet over the game instead of an
+      // anchored popover. Desktop keeps the hover/anchored popover.
+      if (isPhone) {
+        openProfile(id, props, game?.gameId);
+        return;
+      }
+
       handlePopoverClick(e);
 
       setIsClicked(popoverOpen);
@@ -814,38 +828,40 @@ export function NameWithAvatar(props) {
             isClicked ? " name-with-avatar-clicked" : ""
           }`}
           onClick={handlePlayerClick}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onMouseEnter={isPhone ? undefined : handleMouseEnter}
+          onMouseLeave={isPhone ? undefined : handleMouseLeave}
         >
           {contents}
         </div>
-        <div>
-          <Popover
-            open={props.showPopover !== false && popoverOpen}
-            sx={{ pointerEvents: openByClick ? "auto" : "none" }}
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: "center",
-              horizontal: "right",
-            }}
-            transformOrigin={{
-              vertical: "center",
-              horizontal: "left",
-            }}
-            onClose={handleMiniprofileClose}
-            disableScrollLock
-          >
-            {userProfile && (
-              <React.Suspense fallback={null}>
-                <Miniprofile
-                  user={userProfile}
-                  game={game}
-                  key={userProfile.id}
-                />
-              </React.Suspense>
-            )}
-          </Popover>
-        </div>
+        {!isPhone && (
+          <div>
+            <Popover
+              open={props.showPopover !== false && popoverOpen}
+              sx={{ pointerEvents: openByClick ? "auto" : "none" }}
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "center",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "center",
+                horizontal: "left",
+              }}
+              onClose={handleMiniprofileClose}
+              disableScrollLock
+            >
+              {userProfile && (
+                <React.Suspense fallback={null}>
+                  <Miniprofile
+                    user={userProfile}
+                    game={game}
+                    key={userProfile.id}
+                  />
+                </React.Suspense>
+              )}
+            </Popover>
+          </div>
+        )}
       </>
     );
   } else {

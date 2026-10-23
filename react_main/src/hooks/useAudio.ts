@@ -15,6 +15,7 @@ interface UseAudioReturn {
   stopAudio: (audioName?: string) => void;
   stopAudios: (audioNames: string[]) => void;
   playDeathSounds: (urls: string[], volume: () => number) => Promise<void>;
+  stopDeathSounds: () => void;
 }
 
 /**
@@ -117,5 +118,7 @@ export function useAudio(settings: AudioSettings): UseAudioReturn {
     [manager]
   );
 
-  return { playAudio, loadAudioFiles, stopAudio, stopAudios, playDeathSounds };
+  const stopDeathSounds = useCallback(() => manager.stopTransientSounds(), [manager]);
+
+  return { playAudio, loadAudioFiles, stopAudio, stopAudios, playDeathSounds, stopDeathSounds };
 }

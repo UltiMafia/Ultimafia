@@ -13,11 +13,16 @@ const {
 } = require("../modules/userEligibility");
 const { sendFlaggedUserDiscordAlert } = require("./report");
 const { normalizeFingerprint, checkFingerprintBan } = require("../modules/fingerprintBan");
+const { recordLoginFingerprint } = require("../modules/fingerprintLogin");
 const router = express.Router();
 const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
 const errors = require("../lib/errors");
 const { findAliasAccount } = require("../modules/emailAlias");
+const {
+  signInProvider,
+  isAllowedSignupEmail,
+} = require("../modules/authProviders");
 const { planEmailSync } = require("../modules/accountEmail");
 
 let callbackUrl;
@@ -94,10 +99,20 @@ router.post("/", async function (req, res) {
 
     // Verify Firebase ID token - this will throw if invalid
     var userData = await fbAdmin.auth().verifyIdToken(idToken);
+    // Google and Apple (apple.com) sign-ins carry a provider-verified email;
+    // email/password accounts must verify theirs first. A token without an
+    // email is refused: accounts are matched by email.
     var verified = userData.email_verified;
 
-    if (verified) {
-      await authSuccess(req, userData.uid, userData.email, null, req.body.fingerprint);
+    if (verified && userData.email) {
+      await authSuccess(
+        req,
+        userData.uid,
+        userData.email,
+        null,
+        req.body.fingerprint,
+        signInProvider(userData)
+      );
       // Check if authSuccess actually created a session
       if (req.session.user) {
         res.sendStatus(200);
@@ -285,7 +300,7 @@ router.post("/resendVerification", async function (req, res) {
   }
 });
 
-async function authSuccess(req, uid, email, discordProfile, fingerprint) {
+async function authSuccess(req, uid, email, discordProfile, fingerprint, provider) {
   try {
     /* *** Scenarios ***
             - Signed in
@@ -313,6 +328,7 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint) {
       email,
       deleted: true,
     }).select("id discordId");
+    const fingerprintMatch = normalizeFingerprint(fingerprint);
 
     // The Firebase account changed its email (verified): sign in to the same
     // site account and store the new address instead of making a new account.
@@ -352,13 +368,12 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint) {
       var aliasAccount = await findAliasAccount(email);
       if (aliasAccount) throw { emailAliasInUse: true };
 
-      var fingerprintMatch = normalizeFingerprint(fingerprint);
       var fingerprintBan = fingerprintMatch ? await checkFingerprintBan(fingerprintMatch) : null;
       if (fingerprintBan === "block") throw { banEvasion: true };
 
-      var emailDomain = email.split("@")[1] || "";
-
-      if (allowedEmailDomans.indexOf(emailDomain) == -1) return;
+      // Apple's private relay addresses are allowed for Apple sign-ins.
+      if (!isAllowedSignupEmail(email, provider || "", allowedEmailDomans))
+        return;
 
       var name = null;
       if (discordProfile) {
@@ -488,6 +503,8 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint) {
         }
       );
 
+      await recordLoginFingerprint(bannedUser.id, fingerprint);
+
       // Get site ban information to return to frontend
       var siteBan = await models.Ban.findOne({
         userId: bannedUser.id,
@@ -536,9 +553,7 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint) {
       }
 
       await models.User.updateOne({ id: id }, { $addToSet: { ip: ip } });
-      if (fingerprintMatch) {
-        await models.User.updateOne({ id: id }, { $addToSet: { fingerprints: fingerprintMatch } });
-      }
+      await recordLoginFingerprint(id, fingerprint);
 
       // Link Discord profile if logging in with Discord.
       if (discordProfile && !user.discordId) {

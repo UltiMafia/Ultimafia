@@ -32,6 +32,19 @@ module.exports = class Spectator extends Player {
       }
     });
 
+    socket.on("takeSeat", () => {
+      try {
+        Promise.resolve(this.game.takeSeat(this)).catch((e) => logger.error(e));
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
+    // The app's "spectate" event from someone already watching.
+    socket.on("spectate", () => {
+      this.send("spectateFailed", "You are already spectating this game.");
+    });
+
     socket.on("getTimerInfo", () => {
       try {
         this.game.resendTimers(this);
@@ -42,12 +55,8 @@ module.exports = class Spectator extends Player {
 
     socket.on("disconnected", () => {
       try {
-        var index = this.game.spectators.indexOf(this);
-
-        if (index == -1) return;
-
-        this.game.spectators.splice(index, 1);
-        this.game.broadcast("spectatorCount", this.game.spectators.length);
+        if (this.socket !== socket) return; // replaced by a reconnect
+        this.game.scheduleSpectatorRemoval(this, socket);
       } catch (e) {
         logger.error(e);
       }
@@ -144,6 +153,8 @@ module.exports = class Spectator extends Player {
           return;
         }
 
+        if (this.applyTextEffect(message)) return;
+
         if (
           message.content[0] == "/" &&
           message.content.slice(0, 4) != "/me "
@@ -158,7 +169,7 @@ module.exports = class Spectator extends Player {
         });
 
         var meeting = this.game.getMeeting(message.meetingId);
-        if (!meeting) return;
+        if (!this.canSpeakIn(meeting)) return;
 
         meeting.speak({
           sender: this,
@@ -166,6 +177,7 @@ module.exports = class Spectator extends Player {
           abilityName: message.abilityName,
           abilityTarget: message.abilityTarget,
           forceLeak: message.forceLeak,
+          textEffect: message.textEffect,
         });
       } catch (e) {
         logger.error(e);
@@ -214,7 +226,7 @@ module.exports = class Spectator extends Player {
         speechPast.push(Date.now());
 
         var meeting = this.game.getMeeting(quote.toMeetingId);
-        if (!meeting) return;
+        if (!this.canSpeakIn(meeting)) return;
 
         meeting.quote(this, quote);
       } catch (e) {
@@ -230,19 +242,75 @@ module.exports = class Spectator extends Player {
     });
   }
 
+  // Spectators talk only in Pregame (before the start) and in the
+  // spectator meeting, always under their own name. Any other meeting id
+  // from a spectator's socket is ignored.
+  canSpeakIn(meeting) {
+    if (!meeting) return false;
+    if (meeting === this.game.spectatorMeeting) return true;
+    return (
+      meeting === this.game.pregame &&
+      !this.game.started &&
+      !this.game.starting
+    );
+  }
+
   gameEventListeners() {}
 
   sendSelf() {
     super.sendSelf();
     this.send("isSpectator");
+    if (this.omniscient) this.send("omniscientSpectator");
+  }
+
+  getMeetings(state) {
+    if (!this.omniscient) return super.getMeetings(state);
+
+    const spectatorOnly = this.game.spectatorHistory
+      .getMeetings(state)
+      .filter((m) => this.game.isSpectatorOnlyMeeting(m));
+    return this.game.history.getMeetings(state).concat(spectatorOnly);
+  }
+
+  sendMeetings(meetings) {
+    super.sendMeetings(meetings);
+    if (this.omniscient) this.sendTrueRoles();
+  }
+
+  sendTrueRoles() {
+    const roles = this.game.getTrueRoles();
+    for (let playerId in roles)
+      this.send("reveal", { playerId, role: roles[playerId] });
+  }
+
+  getHistory(targetState) {
+    if (!this.omniscient) return super.getHistory(targetState);
+    return this.game.getOmniscientHistoryInfo(this, targetState);
+  }
+
+  hearOmniscient(message) {
+    const info = this.game.getOmniscientMessageInfo(message);
+    if (!info) return;
+    this.send(message.isQuote ? "quote" : "message", info);
   }
 
   sendMeeting(meeting) {
-    if(meeting.name == "Spectator Meeting"){
-      this.send("meeting", meeting.getMeetingInfo(this));
-    }
-    else{
-    this.send("meeting", meeting.getMeetingInfo("spectator"));
+    const isMember = meeting.members && meeting.members[this.id];
+
+    if (meeting.name == "Spectator Meeting" || isMember) {
+      const info = meeting.getMeetingInfo(this);
+
+      // Member versions are per player id. Pregame chat is public, so use
+      // the spectator transcript while still advertising canTalk.
+      if (meeting.name == "Pregame") {
+        info.messages = meeting.getPlayerMessages("spectator");
+      }
+
+      this.send("meeting", info);
+    } else if (this.omniscient && !this.game.isSpectatorOnlyMeeting(meeting)) {
+      this.send("meeting", this.game.getOmniscientMeetingInfo(meeting));
+    } else {
+      this.send("meeting", meeting.getMeetingInfo("spectator"));
     }
   }
 
@@ -252,9 +320,21 @@ module.exports = class Spectator extends Player {
   }
 
   hear(message) {
-    message = message.getMessageInfo("spectator");
+    var info = message.getMessageInfo("spectator");
 
-    if (message) this.send("message", message);
+    // The spectator view hides alerts aimed at particular players. An alert
+    // aimed at this spectator (a /join refusal, /role output) is theirs.
+    if (
+      !info &&
+      message.isServer &&
+      !message.meeting &&
+      message.recipients &&
+      message.recipients.indexOf(this) != -1
+    ) {
+      info = message.parseMessageInfoObj(message, "server");
+    }
+
+    if (info) this.send("message", info);
   }
 
   hearQuote(quote) {

@@ -1,7 +1,9 @@
 const shortid = require("shortid");
+const dateOnly = require("../../lib/dateOnly");
 const nameGen = require("../../routes/utils").nameGen;
 const History = require("./History");
 const Message = require("./Message");
+const textEffects = require("../../shared/textEffects");
 const Quote = require("./Quote");
 const Utils = require("./Utils");
 const Spam = require("./Spam");
@@ -70,6 +72,8 @@ module.exports = class Player {
     this.passiveExtraRoles = [];
     this.joinTime = Date.now(); // Track when player joined for host reassignment
     this.youAreBeingVoteKicked = false;
+    // Sent to the safehouse: still alive, but out of play.
+    this.housed = false;
   }
 
   init() {
@@ -77,8 +81,16 @@ module.exports = class Player {
 
     // Configure temporary immunity reset
     this.game.events.on("afterActions", () => {
+      const inConversion =
+        typeof this.game.isConversionNightPhase == "function" &&
+        this.game.isConversionNightPhase(this.game.getStateName());
+      const convertPower = this.tempImmunity["convert"];
       this.tempImmunity = {};
       this.tempAppearance = {};
+      if (inConversion && convertPower != null) {
+        this.tempImmunity["convert"] = convertPower;
+      }
+      if (!inConversion) this.nightRoleblocked = false;
     });
   }
 
@@ -185,6 +197,14 @@ module.exports = class Player {
       } catch (e) {
         logger.error(e);
       }
+    });
+
+    // App equivalent of /spectate: give up the seat and watch, during
+    // pregame. On a refusal the client gets "spectateFailed" with the reason.
+    socket.on("spectate", () => {
+      Promise.resolve(this.game.spectateFromSeat(this)).catch((e) =>
+        logger.error(e)
+      );
     });
 
     socket.on("speak", (message) => {
@@ -296,6 +316,8 @@ module.exports = class Player {
           }
         }
 
+        if (this.applyTextEffect(message)) return;
+
         if (
           message.content[0] == "/" &&
           message.content.slice(0, 4) != "/me "
@@ -318,7 +340,11 @@ module.exports = class Player {
           abilityName: message.abilityName,
           abilityTarget: message.abilityTarget,
           forceLeak: message.forceLeak,
+          textEffect: message.textEffect,
         });
+
+        if (this.game.tutorial)
+          this.game.tutorial.onHumanSpeak(this, meeting, message.content);
       } catch (e) {
         logger.error(e);
         // this.handleError(e);
@@ -465,6 +491,14 @@ module.exports = class Player {
 
         if (!skipRateLimit) votePast.push(Date.now());
 
+        if (
+          this.game.tutorial &&
+          !this.game.tutorial.allowVote(this, meeting, vote.selection)
+        ) {
+          this.sendMeeting(meeting);
+          return;
+        }
+
         const gameStateBeforeVote = this.game.currentState;
         meeting.vote(this, vote.selection);
 
@@ -489,6 +523,12 @@ module.exports = class Player {
 
         var meeting = this.game.getMeeting(meetingId);
         if (!meeting) return;
+
+        // Tutorial votes are scripted steps; they can't be taken back.
+        if (this.game.tutorial && !this.isBot) {
+          this.sendMeeting(meeting);
+          return;
+        }
 
         meeting.unvote(this, target);
         this.sendMeeting(meeting);
@@ -583,6 +623,32 @@ module.exports = class Player {
       this.sendAlert(
         "Warning: Your message contains inappropriate language. Please revise your message without using offensive terms."
       );
+    });
+
+    // Tutorial box: Next (message steps) and Continue (next phase).
+    socket.on("tutorialNext", () => {
+      try {
+        if (this.game.tutorial) this.game.tutorial.onNext(this);
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
+    socket.on("tutorialContinue", () => {
+      try {
+        if (this.game.tutorial) this.game.tutorial.onContinue(this);
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
+    // The tutorial box asks for its state when it mounts (rejoin/refresh).
+    socket.on("tutorialSync", () => {
+      try {
+        if (this.game.tutorial) this.game.tutorial.resync(this);
+      } catch (e) {
+        logger.error(e);
+      }
     });
 
     socket.on("leave", () => {
@@ -681,6 +747,34 @@ module.exports = class Player {
 
   getVegKickMeeting() {
     return this.game.vegKickMeeting;
+  }
+
+  // Handles "/wave hello" style text effects. The command is stripped here, on
+  // the server, and only owners of "Advanced Text Effects" get an effect
+  // attached; the content that is sent, filtered and logged stays plain text.
+  // Returns true when the message must not be sent (no text, or not owned).
+  applyTextEffect(message) {
+    delete message.textEffect;
+    const parsed = textEffects.parseTextEffect(message.content);
+    if (!parsed) return false;
+
+    if (!this.user || !this.user.textEffects) {
+      this.sendAlert(
+        `:system: /${parsed.effect} requires the Advanced Text Effects shop item.`
+      );
+      return true;
+    }
+
+    if (!parsed.text) {
+      this.sendAlert(
+        `:system: Type a message after /${parsed.effect}, e.g. /${parsed.effect} hello.`
+      );
+      return true;
+    }
+
+    message.content = parsed.text;
+    message.textEffect = parsed.effect;
+    return false;
   }
 
   parseCommand(message) {
@@ -809,6 +903,24 @@ module.exports = class Player {
         for (let info of dailyInfo) {
           this.sendAlert(`:system: ${info}`);
         }
+        return;
+      case "join":
+        if (!this.spectator) {
+          this.sendAlert(":system: You are already playing in this game.");
+          return;
+        }
+        Promise.resolve(this.game.takeSeat(this, { viaCommand: true })).catch(
+          (e) => logger.error(e)
+        );
+        return;
+      case "spectate":
+        if (this.spectator) {
+          this.sendAlert(":system: You are already spectating this game.");
+          return;
+        }
+        Promise.resolve(
+          this.game.spectateFromSeat(this, { viaCommand: true })
+        ).catch((e) => logger.error(e));
         return;
       case "ban":
       case "kick":
@@ -954,7 +1066,24 @@ module.exports = class Player {
         return;
     }
 
+    // Anything the game type does not handle either gets a reply instead of
+    // being dropped silently.
+    if (!this.gameCommands().includes(cmd.name)) {
+      this.sendAlert(
+        cmd.name
+          ? `:system: Unknown command /${cmd.name}. Type /help for the list of commands.`
+          : ":system: Unknown command. Type /help for the list of commands."
+      );
+      return;
+    }
+
     return cmd;
+  }
+
+  // Commands a game type's Player handles after the shared ones above
+  // (super.parseCommand returns the parsed command for these only).
+  gameCommands() {
+    return [];
   }
 
   send(eventName, data) {
@@ -1005,13 +1134,16 @@ module.exports = class Player {
       textColor: this.user.textColor,
       nameColor: this.user.nameColor,
       nameFont: this.user.nameFont,
+      // Cosmetic Liar's Dice face color; visible to everyone in the game.
+      diceColor: this.user.diceColor,
       animatedNameColor: this.user.animatedNameColor,
       nameGradientColorA: this.user.nameGradientColorA,
       nameGradientColorB: this.user.nameGradientColorB,
       nameGradientColorC: this.user.nameGradientColorC,
       customEmotes: this.user.customEmotes,
       customStickers: this.user.customStickers,
-      birthday: this.user.birthday,
+      // Never send the birthday date to other players; only whether it is today.
+      isBirthday: dateOnly.isBirthdayOn(this.user.birthday),
       vanityUrl: this.user.vanityUrl,
       // Anonymous players show their deck avatar, never their own shape.
       avatarShape:
@@ -1235,7 +1367,7 @@ module.exports = class Player {
   }
 
   sendStateInfo() {
-    this.send("state", this.game.getStateInfo());
+    this.send("state", this.game.stateInfoForViewer(this.game.getStateInfo(), this));
   }
 
   addStateToHistory(name, state) {
@@ -1329,6 +1461,7 @@ module.exports = class Player {
       if (message.fiddled) {
         message.content =
           message.sender.name + " says something, but you cannot hear them!";
+        message.textEffect = undefined;
         message.modified = true;
         break;
       }
@@ -1501,6 +1634,15 @@ module.exports = class Player {
     for (let meetingName in meetings) {
       let options = meetings[meetingName];
       let disabled = false;
+
+      // Housed players may only sit in the village chat, and only to read it.
+      if (
+        this.housed &&
+        meetingName != "Village" &&
+        meetingName != "Village Dusk"
+      ) {
+        continue;
+      }
 
       for (let item of this.items)
         disabled = disabled || item.shouldDisableMeeting(meetingName, options);

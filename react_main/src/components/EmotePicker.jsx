@@ -1,4 +1,11 @@
-import React, { useContext, useState, Suspense, lazy } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+  Suspense,
+  lazy,
+} from "react";
 
 import {
   Box,
@@ -94,6 +101,22 @@ function EmotePicker({ onEmoteSelected, className = "", players }) {
   const { popoverOpen, openByClick, anchorEl, handleClick, closePopover } =
     usePopoverOpen();
 
+  // The popover is placed once, when it opens. On the first open the lazy
+  // emoji picker has not loaded yet, so only the tab header is measured and
+  // the full picker then grows down off the screen. Reposition whenever the
+  // content changes size (picker loaded, tab switched).
+  const popoverActions = useRef(null);
+  const resizeObserver = useRef(null);
+  const observeContent = useCallback((node) => {
+    resizeObserver.current?.disconnect();
+    resizeObserver.current = null;
+    if (!node || typeof ResizeObserver === "undefined") return;
+    resizeObserver.current = new ResizeObserver(() =>
+      popoverActions.current?.updatePosition()
+    );
+    resizeObserver.current.observe(node);
+  }, []);
+
   const customEmotesMap = user.settings?.customEmotes || {};
   const customEmotes = Object.keys(customEmotesMap).map((emoteName) => {
     return {
@@ -165,6 +188,7 @@ function EmotePicker({ onEmoteSelected, className = "", players }) {
         </Button>
       </Tooltip>
       <Popover
+        action={popoverActions}
         open={popoverOpen}
         sx={{ pointerEvents: openByClick ? "auto" : "none" }}
         anchorEl={anchorEl}
@@ -181,6 +205,7 @@ function EmotePicker({ onEmoteSelected, className = "", players }) {
         disableRestoreFocus
       >
         <Box
+          ref={observeContent}
           sx={{
             bgcolor: "var(--scheme-color)",
             color: "var(--scheme-color-text)",

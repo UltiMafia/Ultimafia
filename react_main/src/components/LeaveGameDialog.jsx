@@ -13,6 +13,7 @@ import {
 
 import godfather from "images/roles/mafia/godfather-vivid.png";
 import exit from "images/emotes/exit.png";
+import { useDismissOnBack } from "../hooks/useDismissOnBack";
 
 const DEFAULT_LOCK_SECONDS = 10;
 
@@ -49,6 +50,10 @@ export default function LeaveGameDialog({
   }, [open, isParticipationRequired, lockSeconds]);
 
   const isLocked = lockRemaining > 0;
+
+  // The Android/browser Back button closes the dialog rather than leaving the
+  // game route.
+  useDismissOnBack(open, onClose);
 
   const handleStayClick = () => {
     setAlertOpen(true);

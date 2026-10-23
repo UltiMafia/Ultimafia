@@ -440,6 +440,7 @@ async function getUserInfo(userId) {
   info.nameChanged = nameChanged === "true";
   info.bdayChanged = bdayChanged === "true";
   info.birthday = dateOnly.normalizeBirthday(birthday);
+  info.isBirthday = dateOnly.isBirthdayOn(info.birthday);
   info.pronouns = pronouns;
   info.gamesPlayed = gamesPlayed;
   info.joined = Number(joined || 0);
@@ -1000,6 +1001,45 @@ async function unsetCreatingGame(userId) {
   const newVal = await client.decrAsync(key);
 
   if (newVal <= 0) await client.delAsync(key);
+}
+
+// Postgame rehost: `rehost:<oldGameId>` holds "pending:<token>" while one
+// request is creating the new lobby, then the new lobby's id. SET NX makes the
+// first claim win; every later request reads the value instead.
+const REHOST_DONE_TTL = 24 * 60 * 60;
+
+async function claimRehost(oldGameId, token, ttlSeconds) {
+  const ok = await client.setAsync(
+    `rehost:${oldGameId}`,
+    `pending:${token}`,
+    "EX",
+    ttlSeconds,
+    "NX"
+  );
+  return ok === "OK";
+}
+
+async function getRehost(oldGameId) {
+  return (await client.getAsync(`rehost:${oldGameId}`)) || null;
+}
+
+async function finishRehost(oldGameId, newGameId) {
+  await client.setAsync(
+    `rehost:${oldGameId}`,
+    String(newGameId),
+    "EX",
+    REHOST_DONE_TTL
+  );
+}
+
+// Drop a claim that never produced a lobby, but only if it is still ours.
+async function releaseRehost(oldGameId, token) {
+  await client.evalAsync(
+    "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end",
+    1,
+    `rehost:${oldGameId}`,
+    `pending:${token}`
+  );
 }
 
 async function setHostingScheduled(userId, gameId) {
@@ -1665,6 +1705,10 @@ module.exports = {
   getCreatingGame,
   getSetCreatingGame,
   unsetCreatingGame,
+  claimRehost,
+  getRehost,
+  finishRehost,
+  releaseRehost,
   setHostingScheduled,
   clearHostingScheduled,
   getGameInfo,

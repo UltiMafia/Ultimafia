@@ -63,6 +63,11 @@ var schemas = {
       default: "",
     },
     fbUid: String,
+    // Sign in with Apple server notifications (routes/appleNotifications.js)
+    appleEmailForwarding: Boolean,
+    appleEmailForwardingUpdated: Date,
+    appleConsentRevoked: Date,
+    appleAccountDeleted: Date,
     discordId: String,
     discordName: String,
     discordUsername: String,
@@ -142,6 +147,8 @@ var schemas = {
       hideDonorBadge: { type: Boolean, default: false },
       disablePokes: { type: Boolean, default: false },
       hideRankedModal: { type: Boolean, default: false },
+      // Hides only the lobby page's Tutorial button (not prompts or the Play menu link).
+      hideTutorialButton: { type: Boolean, default: false },
       hideCompetitiveModal: { type: Boolean, default: false },
       deathMessage: String,
       // Viewer preference: do not play other players' custom death sounds
@@ -167,6 +174,17 @@ var schemas = {
       type: String,
       maxlength: 240,
       default: "",
+    },
+    github: {
+      username: String,
+      status: { type: String, enum: ["pending", "approved", "rejected"], index: true },
+      requestedAt: Number,
+      reviewedBy: String,
+      reviewedAt: Number,
+      additions: Number,
+      deletions: Number,
+      commits: Number,
+      lastSynced: Number,
     },
     donorBio: {
       type: String,
@@ -226,6 +244,7 @@ var schemas = {
       profileBackground: { type: Number, default: 0 },
       forumBanner: { type: Number, default: 0 },
       createFamily: { type: Number, default: 0 },
+      textEffects: { type: Number, default: 0 },
     },
     stats: {},
     winRate: { type: Number, default: 0 },
@@ -246,6 +265,9 @@ var schemas = {
     nameChanged: { type: Boolean, default: false },
     bdayChanged: { type: Boolean, default: false },
     playedGame: { type: Boolean, default: false },
+    // Finished a new-user tutorial game (Games/core/tutorial). Only gates a
+    // soft prompt; see TUTORIAL_ROLLBACK.md.
+    tutorialCompleted: { type: Boolean, default: false },
     referrer: String,
     transactions: [Number],
     skillRating: {
@@ -850,6 +872,27 @@ var schemas = {
     badge: String,
     badgeColor: String,
     visible: { type: Boolean, index: true },
+  }),
+  GameEventLogChunk: new mongoose.Schema({
+    gameId: { type: String, index: true },
+    n: Number,
+    lobby: String,
+    hostId: String,
+    lines: [String],
+    bytes: Number,
+    createdAt: Number,
+    expireAt: { type: Date, expires: 0 },
+  }),
+  DevApiKey: new mongoose.Schema({
+    clientId: { type: String, index: true, unique: true },
+    secretHash: String,
+    userId: { type: String, index: true },
+    name: String,
+    createdAt: Number,
+    expiresAt: Number,
+    lastUsedAt: Number,
+    revokedAt: { type: Number, index: true },
+    revokedBy: String,
   }),
   InGroup: new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },

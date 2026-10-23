@@ -50,7 +50,6 @@ export default function UserNavSection({
       .then(() => {
         user.clear();
         navigate("/");
-        window.location.reload();
       })
       .catch((error) => {
         console.error("Logout failed:", error);
@@ -103,6 +102,15 @@ export default function UserNavSection({
       path: "/user/shop",
       icon: (<i className="fas fa-coins"/>),
     },
+    ...(user.perms?.devApi
+      ? [
+          {
+            text: "Developer API",
+            path: "/user/developer",
+            icon: (<i className="fas fa-code"/>),
+          },
+        ]
+      : []),
     {
       text: "Announcements",
       onClick: openAnnouncements,

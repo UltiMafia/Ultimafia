@@ -1,15 +1,28 @@
+const tutorialStorylines = require("../Games/core/tutorial/storylines");
+const tutorialSetup = require("../Games/core/tutorial/setup");
 const express = require("express");
 const constants = require("../data/constants");
 const models = require("../db/models");
 const routeUtils = require("./utils");
+const gameListPaging = require("./gameListPaging");
 const utils = require("../lib/Utils");
 const redis = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const rehost = require("../modules/rehost");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
+
+// Extra finished rows fetched per page so a repeated id can be dropped.
+const FINISHED_DEDUPE_SLACK = 5;
 const axios = require("axios");
+const { devApiEnabled } = require("../modules/devApi/policy");
 const errors = require("../lib/errors");
+
+const isTestingLobby = (lobby) => lobby == constants.testingLobby;
+const canUseTesting = (userId) =>
+  devApiEnabled() &&
+  Boolean(userId) &&
+  routeUtils.verifyPermission(userId, "devApi");
 
 function alignPopulatedUsersWithSeats(seatIds, idMapJson, populatedUsers) {
   if (!seatIds?.length) return [];
@@ -200,7 +213,12 @@ router.get("/list", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     var userId = await routeUtils.verifyLoggedIn(req, true);
-    var start = ((Number(req.query.page) || 1) - 1) * constants.lobbyPageSize;
+    var start =
+      (Math.max(1, Math.floor(Number(req.query.page)) || 1) - 1) *
+      constants.lobbyPageSize;
+    // With a page number, finished games are paged by offset. The `last` /
+    // `first` cursor is only used by callers that send no page.
+    var usePageOffset = req.query.page !== undefined;
     var listName = String(req.query.list).toLowerCase();
     var lobby = String(req.query.lobby || "All");
     var last = Number(req.query.last);
@@ -209,9 +227,16 @@ router.get("/list", async function (req, res) {
 
     if (
       !routeUtils.validProp(lobby) ||
-      (constants.lobbies.indexOf(lobby) == -1 && lobby != "All")
+      (constants.lobbies.indexOf(lobby) == -1 &&
+        lobby != "All" &&
+        !isTestingLobby(lobby))
     ) {
       logger.error("Invalid lobby.");
+      res.send([]);
+      return;
+    }
+
+    if (isTestingLobby(lobby) && !(await canUseTesting(userId))) {
       res.send([]);
       return;
     }
@@ -219,7 +244,8 @@ router.get("/list", async function (req, res) {
     var end = start + constants.lobbyPageSize;
 
     const canSeePrivate =
-      userId && (await routeUtils.verifyPermission(userId, "breakGame"));
+      isTestingLobby(lobby) ||
+      (userId && (await routeUtils.verifyPermission(userId, "breakGame")));
 
     if (listName == "all" || listName == "open") {
       var openGames = canSeePrivate
@@ -240,6 +266,7 @@ router.get("/list", async function (req, res) {
     }
 
     if (lobby != "All") games = games.filter((game) => game.lobby == lobby);
+    else games = games.filter((game) => !isTestingLobby(game.lobby));
 
     // Hide lobbies where the host and caller have blocked each other
     if (userId) {
@@ -255,6 +282,7 @@ router.get("/list", async function (req, res) {
       if (hidden.size) games = games.filter((g) => !hidden.has(g.hostId));
     }
 
+    var liveCount = games.length;
     games = games.slice(start, end);
 
     const setupIds = [
@@ -308,24 +336,46 @@ router.get("/list", async function (req, res) {
       (listName == "all" || listName == "finished") &&
       games.length < constants.lobbyPageSize
     ) {
-      var gameFilter = lobby != "All" ? { lobby } : {};
-      var finishedGames = await routeUtils.modelPageQuery(
-        models.Game,
-        gameFilter,
-        "endTime",
-        last,
-        first,
-        "id type setup lobby lobbyName anonymousGame anonymousDeck ranked competitive private spectating guests readyCheck noVeg stateLengths gameTypeOptions broken winnersInfo playerIdMap playerAlignmentMap endTime -_id",
-        constants.lobbyPageSize - games.length,
-        [
-          "setup",
-          "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id",
-        ]
-      );
-      finishedGames = finishedGames.map((game) => ({
-        ...game.toJSON(),
-        status: "Finished",
-      }));
+      var gameFilter =
+        lobby != "All" ? { lobby } : { lobby: { $ne: constants.testingLobby } };
+      var finishedNeeded = constants.lobbyPageSize - games.length;
+      var finishedSelect =
+        "id type setup lobby lobbyName anonymousGame anonymousDeck ranked competitive private spectating guests readyCheck noVeg stateLengths gameTypeOptions broken winnersInfo playerIdMap playerAlignmentMap endTime -_id";
+      var finishedSetupSelect =
+        "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id";
+      // A few extra rows so that dropping a repeated id still fills the page.
+      var finishedLimit = finishedNeeded + FINISHED_DEDUPE_SLACK;
+      var finishedGames;
+
+      if (usePageOffset) {
+        finishedGames = await models.Game.find(gameFilter)
+          .select(finishedSelect)
+          .sort({ endTime: -1, _id: -1 })
+          .skip(gameListPaging.finishedSkip(start, liveCount))
+          .limit(finishedLimit)
+          .populate("setup", finishedSetupSelect);
+      } else {
+        finishedGames = await routeUtils.modelPageQuery(
+          models.Game,
+          gameFilter,
+          "endTime",
+          last,
+          first,
+          finishedSelect,
+          finishedLimit,
+          ["setup", finishedSetupSelect]
+        );
+      }
+
+      finishedGames = gameListPaging
+        .dedupeById(
+          finishedGames.map((game) => ({
+            ...game.toJSON(),
+            status: "Finished",
+          })),
+          games.map((game) => game.id)
+        )
+        .slice(0, finishedNeeded);
       games = games.concat(finishedGames);
     }
 
@@ -333,6 +383,62 @@ router.get("/list", async function (req, res) {
   } catch (e) {
     logger.error(e);
     res.send([]);
+  }
+});
+
+// New-user tutorial: a private, unranked Frontier Justice game against
+// scripted bots run inside the game server (Games/core/tutorial).
+router.get("/tutorial/storylines", async function (req, res) {
+  res.send(tutorialStorylines.summary());
+});
+
+router.post("/tutorial/host", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+
+    if (!(await routeUtils.verifyPermission(userId, "playGame"))) {
+      errors.forbidden(res, "You are unable to play games.");
+      return;
+    }
+
+    const story = tutorialStorylines.get(req.body.storyline);
+    if (!story) {
+      errors.badRequest(res, "Unknown tutorial.");
+      return;
+    }
+    if (!story.available) {
+      errors.badRequest(res, `The ${story.title} tutorial is coming soon.`);
+      return;
+    }
+
+    if (await redis.inGame(userId)) {
+      errors.conflict(res, "You must leave your current game before starting the tutorial.");
+      return;
+    }
+
+    if (!(await routeUtils.rateLimit(userId, "hostGame", res))) return;
+
+    const gameId = await gameLoadBalancer.createGame(userId, "Mafia", {
+      setup: JSON.parse(JSON.stringify(tutorialSetup)),
+      lobby: "Main",
+      lobbyName: `Tutorial: ${story.title}`,
+      private: true,
+      guests: false,
+      ranked: false,
+      competitive: false,
+      spectating: false,
+      readyCheck: false,
+      noVeg: true,
+      // The script advances the game; these are just a safety net.
+      stateLengths: { Day: 20 * 60 * 1000, Night: 20 * 60 * 1000 },
+      gameTypeOptions: JSON.stringify({}),
+      tutorial: { storyline: story.id },
+    });
+
+    res.send(gameId);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Unable to start the tutorial.");
   }
 });
 
@@ -353,6 +459,11 @@ router.get("/:id/connect", async function (req, res) {
 
     if (!userId && !game.settings.guests) {
       errors.unauthorized(res, "You must be logged in to join or spectate games.");
+      return;
+    }
+
+    if (isTestingLobby(game.lobby) && !(await canUseTesting(userId))) {
+      errors.notFound(res, "Game not found.");
       return;
     }
 
@@ -550,6 +661,12 @@ router.get("/:id/review/data", async function (req, res) {
         }
         return false;
       }
+      if (isTestingLobby(game.lobby)) {
+        if (await canUseTesting(userId)) res.send(game);
+        else errors.notFound(res, "Game not found");
+        return;
+      }
+
       if (
         !game.private ||
         (await routeUtils.verifyPermission(userId, perm)) ||
@@ -626,6 +743,10 @@ router.get("/:id/info", async function (req, res) {
 });
 
 router.post("/host", async function (req, res) {
+  var rehostId = null;
+  // Set while this request holds the claim to rehost `rehostId`
+  var rehostToken = null;
+
   try {
     var userId;
 
@@ -637,7 +758,7 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    var rehostId = req.body.rehost && String(req.body.rehost);
+    rehostId = req.body.rehost && String(req.body.rehost);
     var rehostSource = null;
 
     if (rehostId) {
@@ -649,6 +770,26 @@ router.post("/host", async function (req, res) {
         Object.assign(req.body, rehostSource.body);
         delete req.body.scheduled;
       } else rehostSource = null;
+
+      // One new lobby per finished game: the first participant to click
+      // claims it, everyone after that is sent to the lobby it made.
+      const claim = await rehost.claimRehost(rehostId, {
+        canCreate: Boolean(rehostSource),
+      });
+
+      if (claim.gameId) {
+        res.send(claim.gameId);
+        return;
+      }
+
+      if (claim.busy) {
+        errors.conflict(res, "This game is already being rehosted. Please try again in a moment.");
+        return;
+      }
+
+      if (claim.token) rehostToken = claim.token;
+      // Not in the old game and nothing to join: host a normal lobby.
+      else rehostId = null;
     }
 
     var gameType = String(req.body.gameType);
@@ -674,7 +815,17 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    if (
+    if (isTestingLobby(lobby)) {
+      if (!(await canUseTesting(userId))) {
+        errors.badRequest(res, "Invalid lobby.");
+        return;
+      }
+      if (req.body.ranked || req.body.competitive) {
+        errors.badRequest(res, "Testing lobby games cannot be ranked or competitive.");
+        return;
+      }
+      req.body.private = true;
+    } else if (
       !routeUtils.validProp(lobby) ||
       constants.lobbies.indexOf(lobby) == -1
     ) {
@@ -683,10 +834,13 @@ router.post("/host", async function (req, res) {
     }
 
     if (rehostId) {
+      // A lobby rehosted before claims were tracked
       var openGames = await redis.getOpenGames(gameType);
 
       for (let game of openGames) {
         if (game.settings.rehostId == rehostId) {
+          await redis.finishRehost(rehostId, game.id);
+          rehostToken = null;
           res.send(game.id);
           return;
         }
@@ -991,6 +1145,13 @@ router.post("/host", async function (req, res) {
         ...settings,
       });
 
+      if (isTestingLobby(lobby))
+        await redis.client.setexAsync(`devapi:game:${gameId}:creator`, 7 * 24 * 3600, userId);
+      if (rehostToken) {
+        await redis.finishRehost(rehostId, gameId);
+        rehostToken = null;
+      }
+
       res.send(gameId);
       redis.unsetCreatingGame(userId);
 
@@ -1038,6 +1199,10 @@ router.post("/host", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not host game. Please try again or contact support if this persists.");
+  } finally {
+    // Hosting failed (a check refused it, or an error): let the next click try.
+    if (rehostToken)
+      redis.releaseRehost(rehostId, rehostToken).catch((e) => logger.error(e));
   }
 });
 
@@ -1224,6 +1389,7 @@ router.post("/cancel", async function (req, res) {
 });
 
 const lobbyChecks = {
+  [constants.testingLobby]: () => {},
   Main: (gameType, setup, settings) => {
     if (gameType != "Mafia") return "Only Mafia is allowed in the Main lobby.";
 

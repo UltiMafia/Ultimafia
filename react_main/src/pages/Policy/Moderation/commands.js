@@ -312,6 +312,26 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Reset Birthday Limit": {
+      perm: "resetBirthdayLimit",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/resetBirthdayLimit", argValues)
+          .then(() => {
+            siteInfo.showAlert("Birthday limit reset.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Get User Permissions": {
       perm: "viewPerms",
       category: "User Management",
@@ -881,7 +901,7 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Clear All IPs": {
+    "Clear All Login Link Evidence": {
       perm: "clearAllIPs",
       category: "Site Management",
       args: [],
@@ -889,7 +909,7 @@ export function useModCommands(argValues, commandRan, setResults) {
         axios
           .post("/api/mod/clearAllIPs", argValues)
           .then(() => {
-            siteInfo.showAlert("IPs cleared.", "success");
+            siteInfo.showAlert("IP and device-link evidence cleared.", "success");
             commandRan();
           })
           .catch(errorAlert);
@@ -936,15 +956,18 @@ export function useModCommands(argValues, commandRan, setResults) {
           .then((res) => {
             const removed = res.data && res.data.removed;
             const n = Array.isArray(removed) ? removed.length : 0;
+            const fingerprints = Number(res.data && res.data.removedFingerprintCount) || 0;
             if (n === 0) {
               siteInfo.showAlert(
                 (res.data && res.data.message) ||
-                  "No shared IPs removed.",
+                  (fingerprints > 0
+                    ? `Removed ${fingerprints} shared device-link record(s) from both users.`
+                    : "No shared login evidence removed."),
                 "success"
               );
             } else {
               siteInfo.showAlert(
-                `Removed ${n} shared IP address(es) from both users.`,
+                `Removed ${n} shared IP address(es) and ${fingerprints} shared device-link record(s) from both users.`,
                 "success"
               );
             }
@@ -1452,6 +1475,44 @@ export function useModCommands(argValues, commandRan, setResults) {
           })
           .then(() => {
             siteInfo.showAlert("Contributor credit updated.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Review GitHub Link": {
+      perm: "approveGithubLinks",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "GitHub Username",
+          name: "username",
+          type: "text",
+          optional: true,
+        },
+        {
+          label: "Decision",
+          name: "decision",
+          type: "select",
+          options: [
+            { value: "approved", label: "Approve" },
+            { value: "rejected", label: "Reject" },
+          ],
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/githubLinks", {
+            userId: argValues.userId,
+            decision: argValues.decision,
+          })
+          .then(() => {
+            siteInfo.showAlert("GitHub link reviewed.", "success");
             commandRan();
           })
           .catch(errorAlert);

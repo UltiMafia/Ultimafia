@@ -2,6 +2,7 @@ const express = require("express");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 const models = require("../db/models");
+const githubContributions = require("../modules/githubContributions");
 const { violationDefinitions } = require("../data/violations");
 const pushNotifications = require("../modules/pushNotifications");
 
@@ -15,7 +16,7 @@ router.get("/contributors", async function (req, res) {
       contributorTypes: { $exists: true },
       deleted: false,
     }).select(
-      "id name avatar vanityUrl contributorTypes contributorBio lastActive -_id"
+      "id name avatar vanityUrl contributorTypes contributorBio lastActive github -_id"
     );
 
     // Filter to only include users with non-empty contributorTypes array
@@ -32,6 +33,7 @@ router.get("/contributors", async function (req, res) {
     // Format response with contributor types included
     var result = allContributors.map((user) => {
       const userObj = user.toJSON();
+      const github = userObj.github;
       return {
         id: userObj.id,
         name: userObj.name,
@@ -39,8 +41,19 @@ router.get("/contributors", async function (req, res) {
         vanityUrl: userObj.vanityUrl,
         types: userObj.contributorTypes || [],
         bio: userObj.contributorBio || "",
+        github:
+          github && github.status == "approved"
+            ? {
+                username: github.username,
+                lines: githubContributions.lineContributions(github),
+                commits: github.commits || 0,
+                lastSynced: github.lastSynced || null,
+              }
+            : null,
       };
     });
+
+    result = githubContributions.sortContributors(result);
 
     res.send(result);
   } catch (e) {

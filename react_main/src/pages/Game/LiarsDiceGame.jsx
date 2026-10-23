@@ -1,4 +1,6 @@
 import React, { useRef, useEffect, useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useViewActive } from "../../hooks/useViewActivity";
 
 import {
   useSocketListeners,
@@ -10,6 +12,7 @@ import {
   SettingsMenu,
   MobileLayout,
   GameTypeContext,
+  SideMenu,
 } from "./Game";
 import { Avatar } from "../User/UserWidgets";
 import { GameContext } from "../../Contexts";
@@ -80,6 +83,7 @@ export default function LiarsDiceGame(props) {
       history={history}
       stateViewing={stateViewing}
       self={self}
+      players={players}
     />
   );
 
@@ -94,6 +98,7 @@ export default function LiarsDiceGame(props) {
         leftPanelContent={
           <>
             {stateViewing < 0 && <PlayerList />}
+            <RoundBetLog history={history} stateViewing={stateViewing} />
             <KickActionList />
             <SettingsMenu />
           </>
@@ -112,6 +117,7 @@ export default function LiarsDiceGame(props) {
         outerLeftContent={
           <>
             <PlayerList />
+            <RoundBetLog history={history} stateViewing={stateViewing} />
             <KickActionList />
           </>
         }
@@ -130,6 +136,38 @@ export default function LiarsDiceGame(props) {
       )}
     </GameTypeContext.Provider>
   );
+}
+
+export function RoundBetLog({ history, stateViewing }) {
+  if (stateViewing < 0) return null;
+  const bids = history.states[stateViewing]?.extraInfo?.bidInfo?.roundBids;
+  if (!bids) return null;
+
+  const content = (
+    <div className="ld-bet-log">
+      {bids.length == 0 ? (
+        <div className="ld-bet-log-empty">No bets yet</div>
+      ) : (
+        <ol className="ld-bet-log-list">
+          {bids.map((bid, i) => (
+            <li key={i} className="ld-bet-log-row">
+              <span className="ld-bet-log-name">{bid.bidder}</span>
+              <span className="ld-bet-log-bid">
+                {bid.amount} ×{" "}
+                <span
+                  className={`dice dice-${bid.face} ld-inline-die ld-bet-log-die`}
+                  role="img"
+                  aria-label={`${bid.face}`}
+                />
+              </span>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  );
+
+  return <SideMenu title="Bets this round" content={content} />;
 }
 
 function LiarsDiceRulesModal({ options, onClose }) {
@@ -162,7 +200,24 @@ function LiarsDiceRulesModal({ options, onClose }) {
   );
 }
 
-function LiarsDiceBoard({ history, stateViewing, self }) {
+// Per-player dice face color (user setting "diceColor"). Returns the CSS
+// variable plus a class that swaps to white pips on dark faces.
+function diceColorProps(color) {
+  if (typeof color !== "string" || !/^#[0-9a-fA-F]{6}$/.test(color)) {
+    color = "#ffffff";
+  }
+  const lin = (i) => {
+    const c = parseInt(color.slice(i, i + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  };
+  const luminance = 0.2126 * lin(1) + 0.7152 * lin(3) + 0.0722 * lin(5);
+  return {
+    style: { "--dice-color": color },
+    className: luminance < 0.18 ? "dice-dark-face" : "dice-light-face",
+  };
+}
+
+function LiarsDiceBoard({ history, stateViewing, self, players: gamePlayers }) {
   if (stateViewing < 0) return null;
 
   const extraInfo = history.states[stateViewing]?.extraInfo || {};
@@ -170,8 +225,13 @@ function LiarsDiceBoard({ history, stateViewing, self }) {
   const whoseTurnIsIt = extraInfo.whoseTurnIsIt;
   const players = extraInfo.randomizedPlayers || [];
 
+  const ownDice = diceColorProps(gamePlayers?.[self]?.diceColor);
+
   return (
-    <div className="liars-dice-wrapper ld-board">
+    <div
+      className={`liars-dice-wrapper ld-board ${ownDice.className}`}
+      style={ownDice.style}
+    >
       <div className="liars-dice-players-container">
         {players.map((player, index) => (
           <LiarsDicePlayerRow
@@ -184,6 +244,7 @@ function LiarsDiceBoard({ history, stateViewing, self }) {
             isCurrentPlayer={player.playerId === self}
             isTheFlyingDutchman={isTheFlyingDutchman}
             whoseTurnIsIt={whoseTurnIsIt}
+            diceColor={gamePlayers?.[player.playerId]?.diceColor}
           />
         ))}
       </div>
@@ -352,12 +413,16 @@ const LD_GENIUS_VARIANTS = [
 ];
 
 function LiarsDiceBetForm() {
+  const active = useViewActive();
   const game = useContext(GameContext);
   const { history, stateViewing, socket } = game;
 
   const [amount, setAmount] = useState("");
   const [face, setFace] = useState(null);
   const [faceMenuAnchor, setFaceMenuAnchor] = useState(null);
+  useEffect(() => {
+    if (!active) setFaceMenuAnchor(null);
+  }, [active]);
   const [bidError, setBidError] = useState("");
 
   const currentState =
@@ -534,7 +599,7 @@ function LiarsDiceBetForm() {
               />
             </button>
             <Popover
-              open={Boolean(faceMenuAnchor)}
+              open={active && Boolean(faceMenuAnchor)}
               anchorEl={faceMenuAnchor}
               onClose={() => setFaceMenuAnchor(null)}
               anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
@@ -584,14 +649,17 @@ function LiarsDicePlayerRow({
   isCurrentPlayer,
   isTheFlyingDutchman,
   whoseTurnIsIt,
+  diceColor,
 }) {
   previousRolls = previousRolls || [];
+  const dice = diceColorProps(diceColor);
   const isSamePlayer = whoseTurnIsIt === userId;
+  const navigate = useNavigate();
   return (
     <div className="liars-dice-player-section">
       <div
         className="ld-player-avatar"
-        onClick={() => window.open(`/user/${userId}`, "_blank")}
+        onClick={() => navigate(`/user/${userId}`)}
       >
         <Avatar id={userId} name={playerName} hasImage={avatar} />
         <div
@@ -606,18 +674,23 @@ function LiarsDicePlayerRow({
         </div>
       </div>
       <div
-        className="liars-dice-dice-container"
+        className={`liars-dice-dice-container ${dice.className}`}
         style={
           isTheFlyingDutchman
             ? {
+                ...dice.style,
                 borderColor: isSamePlayer ? "grey" : "#3B5841",
               }
             : {
+                ...dice.style,
                 borderColor: isSamePlayer ? "grey" : undefined,
               }
         }
       >
-        <div className="current-rolls">
+        <div
+          className="current-rolls"
+          style={{ "--ld-dice-count": Math.max(diceValues.length, 1) }}
+        >
           {diceValues.map((value, index) => (
             <div
               key={index}
@@ -642,7 +715,12 @@ function LiarsDicePlayerRow({
               >
                 Last round:
               </div>
-              <div className="previous-rolls-dice">
+              <div
+                className="previous-rolls-dice"
+                style={{
+                  "--ld-dice-count": Math.max(previousRolls.length, 1),
+                }}
+              >
                 {previousRolls.map((value, index) => (
                   <div
                     key={index}
