@@ -734,7 +734,7 @@ export default function Profile() {
   function onBlockUserClick() {
     if (!isBlocked) {
       var shouldBlock = window.confirm(
-        "Are you sure you wish to block this user?"
+        "Block this user? Neither of you will be able to send the other DMs or comment on each other's profile. Keeping them out of your games also needs a moderator to approve the block."
       );
       if (!shouldBlock) return;
     }
@@ -745,7 +745,11 @@ export default function Profile() {
         user.blockUserToggle(profileUserId);
 
         if (isBlocked) siteInfo.showAlert("User unblocked.", "success");
-        else siteInfo.showAlert("User blocked.", "success");
+        else
+          siteInfo.showAlert(
+            "User blocked. A moderator will review blocking them from your games.",
+            "success"
+          );
       })
       .catch(errorAlert);
   }
