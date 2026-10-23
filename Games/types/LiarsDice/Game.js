@@ -1078,6 +1078,8 @@ module.exports = class LiarsDiceGame extends Game {
           userId: player.user.id,
           playerName: player.name,
           avatar: player.user.avatar,
+          // Face color only (shop item); never the dice values.
+          diceColor: player.user.diceColor,
           rolledDice: player.rolledDice,
           previousRolls: player.previousRolls,
         });

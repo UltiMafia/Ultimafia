@@ -2837,6 +2837,14 @@ router.post("/settings/update", async function (req, res) {
         errors.badRequest(res, "Dice color must be a #rrggbb color.");
         return;
       }
+      // White is the free default; any other color needs the shop item.
+      if (value.toLowerCase() !== "#ffffff" && !itemsOwned.diceColor) {
+        errors.forbidden(
+          res,
+          "You must purchase Liar's Dice Colors with coins from the Shop."
+        );
+        return;
+      }
     }
 
     // Clearing name/text color restores system defaults (works in light + dark mode)

@@ -838,8 +838,9 @@ export default function Settings() {
       type: "color",
       default: "#ffffff",
       resetValue: "",
+      disabled: (deps) => !deps.user.itemsOwned.diceColor,
       extraInfo:
-        "Face color of your Liar's Dice dice. Other players see it too. Dark colors switch the pips to white.",
+        "Face color of your Liar's Dice dice. Other players see it too. Dark colors switch the pips to white. Buy Liar's Dice Colors in the Shop to change it from white.",
     },
     {
       label: "Name Font (player list only)",

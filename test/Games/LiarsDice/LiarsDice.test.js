@@ -236,6 +236,29 @@ describe("Games/LiarsDice engine", function () {
     leaks.should.deep.equal([]);
   });
 
+  it("sends each player's dice color to everyone but only the owner's values", async function () {
+    const { game } = await startGame();
+    const owner = game.randomizedPlayersCopy[0];
+    const viewer = game.randomizedPlayersCopy[1];
+    owner.user.diceColor = "#aa2233";
+    rig(game, [[2, 3, 4], [5, 5, 5], [1, 1, 1], [6, 6, 6]]);
+    const info = game.getStateInfo().extraInfo;
+    const seen = game.extraInfoFor(info, viewer).randomizedPlayers.find((p) => p.playerId == owner.id);
+    seen.diceColor.should.equal("#aa2233");
+    seen.rolledDice.should.deep.equal([0, 0, 0]);
+    const own = game.extraInfoFor(info, owner).randomizedPlayers.find((p) => p.playerId == owner.id);
+    own.rolledDice.should.deep.equal([2, 3, 4]);
+    own.diceColor.should.equal("#aa2233");
+  });
+
+  it("ignores a dice color the user has not bought", function () {
+    const User = require("../../../Games/core/User");
+    const settings = { diceColor: "#123456" };
+    should.not.exist(new User({ id: "a", settings, itemsOwned: {} }).diceColor);
+    should.not.exist(new User({ id: "b", settings, itemsOwned: { diceColor: 0 } }).diceColor);
+    new User({ id: "c", settings, itemsOwned: { diceColor: 1 } }).diceColor.should.equal("#123456");
+  });
+
   it("reveals the called round's dice as previous rolls", async function () {
     const { game } = await startGame();
     const dice = [[5, 5, 1], [5, 2, 3], [4, 4, 4], [6, 6, 2]];
