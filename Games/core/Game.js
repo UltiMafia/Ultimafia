@@ -1598,6 +1598,19 @@ module.exports = class Game {
 
     const moved = [];
     for (let player of unready) {
+      // With spectating off there is nowhere to move them. Remove them like a
+      // pregame leave (no penalty), which frees the seat.
+      if (!this.spectating) {
+        this.sendAlert(
+          `${player.name} was removed from the game for not readying.`,
+          undefined,
+          undefined,
+          ["info"]
+        );
+        await this.playerLeave(player);
+        continue;
+      }
+
       const spectator = await this.movePlayerToSpectator(player, {
         alert: `${player.name} was moved to spectators for not readying.`,
       });
