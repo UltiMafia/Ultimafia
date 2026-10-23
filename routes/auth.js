@@ -19,6 +19,7 @@ const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
 const errors = require("../lib/errors");
 const { findAliasAccount } = require("../modules/emailAlias");
+const { planEmailSync } = require("../modules/accountEmail");
 
 let callbackUrl;
 
@@ -314,6 +315,32 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint) {
       deleted: true,
     }).select("id discordId");
     const fingerprintMatch = normalizeFingerprint(fingerprint);
+
+    // The Firebase account changed its email (verified): sign in to the same
+    // site account and store the new address instead of making a new account.
+    if (!user && uid) {
+      var uidUser = await models.User.findOne({ fbUid: uid, deleted: false }).select(
+        "id deleted discordId fbUid email"
+      );
+      if (uidUser) {
+        var emailPlan = planEmailSync({
+          user: uidUser,
+          claims: { uid, email, email_verified: true },
+          allowedDomains: allowedEmailDomans,
+          takenByOther: !!(bannedUser || deletedUser),
+        });
+        if (!emailPlan.ok) {
+          logger.warn(`Email change for user ${uidUser.id} not stored: ${emailPlan.error}`);
+          return;
+        }
+        if (emailPlan.changed)
+          await models.User.updateOne(
+            { id: uidUser.id },
+            { $set: { email: emailPlan.emails } }
+          );
+        user = uidUser;
+      }
+    }
 
     if (!user && !bannedUser && !deletedUser) {
       //Create new account (5) (6)
