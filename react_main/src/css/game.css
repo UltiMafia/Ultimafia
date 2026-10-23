@@ -257,6 +257,29 @@ html[data-keyboard="open"] .game .meeting-tabs {
   font-style: italic;
 }
 
+/* Spectator chat shown inline in the game chat (only spectators get it). */
+.game .message.spectator-chat {
+  border-left: 2px solid rgba(128, 128, 128, 0.6);
+  padding-left: 4px;
+  opacity: 0.85;
+}
+
+.game .message .spectator-chat-tag {
+  display: inline-block;
+  margin-right: 5px;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: rgba(128, 128, 128, 0.25);
+  font-size: 0.75em;
+  font-weight: 600;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.game .pregame-spectators .pregame-spectator {
+  opacity: 0.85;
+}
+
 .game .message .content {
   display: inline;
 

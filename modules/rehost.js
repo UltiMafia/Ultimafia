@@ -1,6 +1,7 @@
 // Postgame "Rehost": carry the finished game's lobby settings into the new
 // lobby, and tell everyone still in the old game where the new one is.
 const models = require("../db/models");
+const crypto = require("crypto");
 const redis = require("./redis");
 
 // Body fields of POST /api/game/host that describe the lobby. Everything here
@@ -143,4 +144,49 @@ function setupSummary(setup) {
   return pick(typeof setup.toJSON === "function" ? setup.toJSON() : setup);
 }
 
-module.exports = { CARRIED_FIELDS, buildRehostBody, getRehostSource, setupSummary };
+
+// Outlives the slowest game creation, so a live claim never expires early.
+const CLAIM_TTL_SECONDS = Math.max(
+  30,
+  Math.ceil(Number(process.env.GAME_CREATION_TIMEOUT || 0) / 1000) + 15
+);
+
+/**
+ * First click wins. Decides what a POST /host with `rehost: rehostId` does:
+ *  - { token }   this request created the claim and must host the new lobby,
+ *                then call finishRehost (or releaseRehost if it fails).
+ *  - { gameId }  the game was already rehosted: send the user to that lobby.
+ *  - { busy }    another request is still creating it and didn't finish in
+ *                time.
+ *  - {}          nothing to join and this user may not create it.
+ * Only `canCreate` callers (participants of the old game) can claim. While a
+ * claim is pending, others wait for it so concurrent clicks all land in the
+ * same lobby; if the claimant fails and releases, the next waiter claims.
+ */
+async function claimRehost(
+  rehostId,
+  { canCreate, timeoutMs = 10000, pollMs = 150 } = {}
+) {
+  const token = crypto.randomBytes(8).toString("hex");
+  const deadline = Date.now() + timeoutMs;
+
+  while (true) {
+    if (canCreate && (await redis.claimRehost(rehostId, token, CLAIM_TTL_SECONDS)))
+      return { token };
+
+    const value = await redis.getRehost(rehostId);
+    if (value && !value.startsWith("pending:")) return { gameId: value };
+    if (!value && !canCreate) return {};
+    if (Date.now() >= deadline) return { busy: true };
+
+    await new Promise((resolve) => setTimeout(resolve, pollMs));
+  }
+}
+
+module.exports = {
+  CARRIED_FIELDS,
+  buildRehostBody,
+  getRehostSource,
+  setupSummary,
+  claimRehost,
+};

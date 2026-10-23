@@ -6,6 +6,10 @@ module.exports = class LiarsDicePlayer extends Player {
     this.usesCount = 0;
   }
 
+  gameCommands() {
+    return ["hack"];
+  }
+
   parseCommand(message) {
     var cmd = super.parseCommand(message);
 

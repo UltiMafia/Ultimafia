@@ -1,3 +1,5 @@
+const tutorialStorylines = require("../Games/core/tutorial/storylines");
+const tutorialSetup = require("../Games/core/tutorial/setup");
 const express = require("express");
 const constants = require("../data/constants");
 const models = require("../db/models");
@@ -366,6 +368,62 @@ router.get("/list", async function (req, res) {
   }
 });
 
+// New-user tutorial: a private, unranked Frontier Justice game against
+// scripted bots run inside the game server (Games/core/tutorial).
+router.get("/tutorial/storylines", async function (req, res) {
+  res.send(tutorialStorylines.summary());
+});
+
+router.post("/tutorial/host", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+
+    if (!(await routeUtils.verifyPermission(userId, "playGame"))) {
+      errors.forbidden(res, "You are unable to play games.");
+      return;
+    }
+
+    const story = tutorialStorylines.get(req.body.storyline);
+    if (!story) {
+      errors.badRequest(res, "Unknown tutorial.");
+      return;
+    }
+    if (!story.available) {
+      errors.badRequest(res, `The ${story.title} tutorial is coming soon.`);
+      return;
+    }
+
+    if (await redis.inGame(userId)) {
+      errors.conflict(res, "You must leave your current game before starting the tutorial.");
+      return;
+    }
+
+    if (!(await routeUtils.rateLimit(userId, "hostGame", res))) return;
+
+    const gameId = await gameLoadBalancer.createGame(userId, "Mafia", {
+      setup: JSON.parse(JSON.stringify(tutorialSetup)),
+      lobby: "Main",
+      lobbyName: `Tutorial: ${story.title}`,
+      private: true,
+      guests: false,
+      ranked: false,
+      competitive: false,
+      spectating: false,
+      readyCheck: false,
+      noVeg: true,
+      // The script advances the game; these are just a safety net.
+      stateLengths: { Day: 20 * 60 * 1000, Night: 20 * 60 * 1000 },
+      gameTypeOptions: JSON.stringify({}),
+      tutorial: { storyline: story.id },
+    });
+
+    res.send(gameId);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Unable to start the tutorial.");
+  }
+});
+
 router.get("/:id/connect", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -668,6 +726,10 @@ router.get("/:id/info", async function (req, res) {
 });
 
 router.post("/host", async function (req, res) {
+  var rehostId = null;
+  // Set while this request holds the claim to rehost `rehostId`
+  var rehostToken = null;
+
   try {
     var userId;
 
@@ -679,7 +741,7 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    var rehostId = req.body.rehost && String(req.body.rehost);
+    rehostId = req.body.rehost && String(req.body.rehost);
     var rehostSource = null;
 
     if (rehostId) {
@@ -691,6 +753,26 @@ router.post("/host", async function (req, res) {
         Object.assign(req.body, rehostSource.body);
         delete req.body.scheduled;
       } else rehostSource = null;
+
+      // One new lobby per finished game: the first participant to click
+      // claims it, everyone after that is sent to the lobby it made.
+      const claim = await rehost.claimRehost(rehostId, {
+        canCreate: Boolean(rehostSource),
+      });
+
+      if (claim.gameId) {
+        res.send(claim.gameId);
+        return;
+      }
+
+      if (claim.busy) {
+        errors.conflict(res, "This game is already being rehosted. Please try again in a moment.");
+        return;
+      }
+
+      if (claim.token) rehostToken = claim.token;
+      // Not in the old game and nothing to join: host a normal lobby.
+      else rehostId = null;
     }
 
     var gameType = String(req.body.gameType);
@@ -735,10 +817,13 @@ router.post("/host", async function (req, res) {
     }
 
     if (rehostId) {
+      // A lobby rehosted before claims were tracked
       var openGames = await redis.getOpenGames(gameType);
 
       for (let game of openGames) {
         if (game.settings.rehostId == rehostId) {
+          await redis.finishRehost(rehostId, game.id);
+          rehostToken = null;
           res.send(game.id);
           return;
         }
@@ -1066,6 +1151,10 @@ router.post("/host", async function (req, res) {
 
       if (isTestingLobby(lobby))
         await redis.client.setexAsync(`devapi:game:${gameId}:creator`, 7 * 24 * 3600, userId);
+      if (rehostToken) {
+        await redis.finishRehost(rehostId, gameId);
+        rehostToken = null;
+      }
 
       res.send(gameId);
       redis.unsetCreatingGame(userId);
@@ -1114,6 +1203,10 @@ router.post("/host", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not host game. Please try again or contact support if this persists.");
+  } finally {
+    // Hosting failed (a check refused it, or an error): let the next click try.
+    if (rehostToken)
+      redis.releaseRehost(rehostId, rehostToken).catch((e) => logger.error(e));
   }
 });
 

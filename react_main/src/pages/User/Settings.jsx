@@ -341,6 +341,11 @@ export default function Settings() {
       type: "boolean",
     },
     {
+      label: "Hide Tutorial",
+      ref: "hideTutorialButton",
+      type: "boolean",
+    },
+    {
       label: "Disable PG-13 Censor",
       ref: "disablePg13Censor",
       type: "boolean",

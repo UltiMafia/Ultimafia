@@ -248,7 +248,7 @@ describe("Games/SpectateJoin", function () {
     (await redis.inGame(game.hostId)).should.equal(game.id);
     events(again.socket, "spectateFailed")
       .map((message) => message.data)
-      .should.include("Spectating is not enabled for this game");
+      .should.include("Spectating is not enabled for this game.");
     events(again.socket, "error").should.have.lengthOf(0);
   });
 
@@ -488,6 +488,9 @@ describe("Games/SpectateJoin", function () {
 
   it("remembers a pregame spectator across refresh", async function () {
     const game = await openGame.call(this, { total: 2 });
+    // No reconnect grace: the closed socket removes the spectator right away,
+    // so the return goes through the remembered user id.
+    game.spectatorReconnectGraceMs = 0;
     const user = makeUser(null, "refresh");
     await game.userJoin(user, { spectate: true });
 
@@ -532,6 +535,8 @@ describe("Games/SpectateJoin", function () {
     game.assignRoles = () => {};
     game.captureStartingFactions = () => {};
     game.gotoNextState = () => {};
+    // start() only runs on a full table; the spectator does not fill it.
+    game.setup.total = game.players.length;
     await game.start();
 
     game.players.should.have.lengthOf(1);

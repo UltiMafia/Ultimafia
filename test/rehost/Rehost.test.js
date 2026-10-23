@@ -217,6 +217,28 @@ describe("Rehost: carry lobby settings over", function () {
       expect(received(users.p3, "rehosted")).to.have.lengthOf(0); // already left
     });
 
+    it("pushes the change live to players and spectators still in the postgame", async function () {
+      const { game, users } = await finishedGameWith(["host", "p1"]);
+      const watcher = new User({ id: "watcher", socket: new Socket(), name: "watcher", settings: {} });
+      await game.userJoin(watcher, { spectate: true });
+      game.finished = true;
+
+      // Before anyone rehosts, nobody has been told of a new game ("Rehost?").
+      const p1 = game.players.array().find((p) => p.user.id === "p1");
+      users.p1.socket.flushMessages();
+      game.sendAllGameInfo(p1);
+      expect(received(users.p1, "rehosted")).to.have.lengthOf(0);
+      expect(received(watcher, "rehosted")).to.have.lengthOf(0);
+
+      // The first click lands: everyone still connected flips to
+      // "Leave & Join New Game" without reloading.
+      users.p1.socket.flushMessages();
+      watcher.socket.flushMessages();
+      game.announceRehost({ gameId: "newGame", hostId: "host", hostName: "Host" });
+      expect(received(users.p1, "rehosted")).to.deep.equal([{ gameId: "newGame", hostId: "host", hostName: "Host", setup: null }]);
+      expect(received(watcher, "rehosted")).to.have.lengthOf(1);
+    });
+
     it("resends the invite when a participant's client reloads", async function () {
       const { game, users } = await finishedGameWith(["host", "p1"]);
       game.finished = true;
@@ -254,7 +276,9 @@ describe("Rehost: carry lobby settings over", function () {
   describe("POST /api/game/host with rehost", function () {
     const gameLoadBalancer = require("../../modules/gameLoadBalancer");
     const router = require("../../routes/game");
-    let handler, created, notified, origCreate, origNotify, setup, host;
+    let handler, created, notified, origCreate, origNotify, setup, host, p2, p3;
+    let createDelay = 0;
+    let failNextCreate = false;
 
     function res() {
       return {
@@ -274,6 +298,11 @@ describe("Rehost: carry lobby settings over", function () {
       origCreate = gameLoadBalancer.createGame;
       origNotify = gameLoadBalancer.notifyRehost;
       gameLoadBalancer.createGame = async (hostId, gameType, settings) => {
+        if (createDelay) await new Promise((r) => setTimeout(r, createDelay));
+        if (failNextCreate) {
+          failNextCreate = false;
+          throw new Error("game server down");
+        }
         created.push({ hostId, gameType, settings });
         return "newGame" + created.length;
       };
@@ -288,6 +317,8 @@ describe("Rehost: carry lobby settings over", function () {
       await models.AnonymousDeck.deleteMany({ id: "rehost-deck" });
       setup = await models.Setup.create({ id: "rehost-setup", name: "R", gameType: "Mafia", total: 3, roles: JSON.stringify([{ "Villager:": 2, "Mafioso:": 1 }]) });
       host = await models.User.create({ id: "rehost-host", name: "RehostHost" });
+      p2 = await models.User.create({ id: "rehost-p2", name: "PlayerTwo" });
+      p3 = await models.User.create({ id: "rehost-p3", name: "PlayerThree" });
       await models.User.create({ id: "rehost-other", name: "Stranger" });
       const profiles = await models.DeckProfile.insertMany([1, 2, 3].map((i) => ({ id: `rehost-prof${i}`, name: `Anon ${i}` })));
       await models.AnonymousDeck.create({ id: "rehost-deck", name: "Deck", profiles: profiles.map((p) => p._id), disabled: false });
@@ -297,7 +328,7 @@ describe("Rehost: carry lobby settings over", function () {
         lobby: "Sandbox",
         lobbyName: "Password-ish private lobby",
         setup: setup._id,
-        users: [host._id],
+        users: [host._id, p2._id, p3._id],
         private: true,
         guests: true,
         spectating: false,
@@ -313,8 +344,18 @@ describe("Rehost: carry lobby settings over", function () {
     beforeEach(async function () {
       created = [];
       notified = [];
-      await redis.client.delAsync("user:rehost-host:rateLimit:hostGame", "user:rehost-other:rateLimit:hostGame");
+      createDelay = 0;
+      failNextCreate = false;
+      await redis.client.delAsync(
+        "rehost:rehost-old2",
+        ...["rehost-host", "rehost-p2", "rehost-p3", "rehost-other"].map((u) => `user:${u}:rateLimit:hostGame`)
+      );
     });
+
+    function click(userId, extra = {}) {
+      const r = res();
+      return handler({ body: { key: process.env.BOT_KEY, userId, rehost: "rehost-old2", gameType: "Mafia", setup: "rehost-setup", lobby: "Main", ...extra } }, r).then(() => r);
+    }
 
     after(async function () {
       gameLoadBalancer.createGame = origCreate;
@@ -361,13 +402,63 @@ describe("Rehost: carry lobby settings over", function () {
       expect(info.setup).to.not.have.property("creator");
     });
 
-    it("someone who wasn't in the game gets the old behaviour (body only, no invite)", async function () {
-      const r = res();
-      await handler({ body: { key: process.env.BOT_KEY, userId: "rehost-other", rehost: "rehost-old2", gameType: "Mafia", setup: "rehost-setup", lobby: "Main", spectating: true } }, r);
+    it("someone who wasn't in the game can't claim the rehost (body only, no invite)", async function () {
+      const r = await click("rehost-other", { spectating: true });
       expect(created).to.have.lengthOf(1);
       expect(created[0].settings).to.include({ lobby: "Main", private: false, readyCheck: false, anonymousGame: false, spectating: true });
+      expect(created[0].settings.rehostId).to.not.be.ok;
+      expect(await redis.getRehost("rehost-old2")).to.equal(null);
       await new Promise((r) => setImmediate(r));
       expect(notified).to.have.lengthOf(0);
+    });
+
+    it("concurrent clicks create exactly one lobby with one host; everyone lands in it", async function () {
+      createDelay = 300; // keep the first claim pending while the others arrive
+      const results = await Promise.all([click("rehost-host"), click("rehost-p2"), click("rehost-p3")]);
+
+      expect(created).to.have.lengthOf(1);
+      expect(results.map((r) => r.statusCode)).to.deep.equal([200, 200, 200]);
+      expect(results.map((r) => r.body)).to.deep.equal(["newGame1", "newGame1", "newGame1"]);
+      expect(["rehost-host", "rehost-p2", "rehost-p3"]).to.include(created[0].hostId);
+      expect(await redis.getRehost("rehost-old2")).to.equal("newGame1");
+      await new Promise((r) => setImmediate(r));
+      expect(notified).to.have.lengthOf(1);
+      expect(notified[0][2].hostId).to.equal(created[0].hostId);
+    });
+
+    it("later clicks, including spectators, join the lobby the first click made", async function () {
+      const first = await click("rehost-p2");
+      expect(first.body).to.equal("newGame1");
+
+      const later = await click("rehost-host");
+      const spectator = await click("rehost-other");
+      expect(later.body).to.equal("newGame1");
+      expect(spectator.body).to.equal("newGame1");
+      expect(created).to.have.lengthOf(1);
+      expect(created[0].hostId).to.equal("rehost-p2");
+    });
+
+    it("a failed rehost frees the claim so the next click can host", async function () {
+      failNextCreate = true;
+      const failed = await click("rehost-host");
+      expect(failed.statusCode).to.equal(500);
+      expect(await redis.getRehost("rehost-old2")).to.equal(null);
+
+      const retry = await click("rehost-p2");
+      expect(retry.body).to.equal("newGame1");
+      expect(created).to.have.lengthOf(1);
+      expect(created[0].hostId).to.equal("rehost-p2");
+    });
+
+    it("a click refused by a check frees the claim too", async function () {
+      await redis.client.setAsync("user:rehost-host:game", "some-other-game");
+      const refused = await click("rehost-host");
+      await redis.client.delAsync("user:rehost-host:game");
+      expect(refused.statusCode).to.equal(409);
+      expect(created).to.have.lengthOf(0);
+      expect(await redis.getRehost("rehost-old2")).to.equal(null);
+
+      expect((await click("rehost-p3")).body).to.equal("newGame1");
     });
   });
 

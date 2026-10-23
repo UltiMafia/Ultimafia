@@ -20,6 +20,14 @@ import {
   useTextEffect,
 } from "../../components/TextEffects";
 import { parseTextEffect } from "shared/textEffects";
+import {
+  isSpectatorChatMeeting,
+  findSpectatorChatMeeting,
+  mergeSpectatorChat,
+  pickSpeechTarget,
+  pregameSpectatorList,
+} from "shared/spectatorChat";
+import { completePlayerName, tabCompleteNames } from "shared/tabComplete";
 import Newspaper, {
   ObituariesMessage,
 } from "../../components/gameComponents/Newspaper";
@@ -117,7 +125,6 @@ import {
 import lore from "images/emotes/lore.webp";
 import poison from "images/emotes/poison.webp";
 import exit from "images/emotes/exit.png";
-import veg from "images/emotes/veg.webp";
 import { usePopover, InfoPopover, SetupInfo } from "components/Popover";
 
 import dice1 from "images/emotes/dice1.webp";
@@ -244,9 +251,12 @@ export default function Game(props) {
   const [hostId, setHostId] = useState(null);
   const [changeSetupDialogOpen, setChangeSetupDialogOpen] = useState(false);
   const [kudos, setKudos] = useState(null);
+  const tutorialGameRef = useRef(false);
   // Set when a participant rehosts this finished game:
   // { gameId, hostId, hostName, setup }
   const [rehostInvite, setRehostInvite] = useState(null);
+  // This player clicked "Rehost?" and is waiting for the new lobby.
+  const [rehostPending, setRehostPending] = useState(false);
   // Places that can show the invite (see RehostInvite).
   const [rehostInviteSlots, setRehostInviteSlots] = useState([]);
   const rehostInviteSlotsRef = useRef([]);
@@ -357,6 +367,54 @@ export default function Game(props) {
     // A ready check can arrive while the player is on another page; confirming
     // it returns them to the game. Leaving does not navigate (see Main).
     if (!active) navigate(`/game/${gameId}`);
+  }
+
+  // "Rehost?": leave this postgame lobby, then ask for a new lobby with the
+  // same settings. The server lets only the first click create it; anyone
+  // whose click lands after that gets the existing lobby back and joins it.
+  function onRehostClick() {
+    if (rehostPending || review) return;
+    setRehostPending(true);
+
+    noLeaveRef.current = true;
+    if (socket.on) socket.send("leave");
+
+    setTimeout(() => {
+      var stateLengths = {};
+
+      for (let stateName in options.stateLengths)
+        stateLengths[stateName] = options.stateLengths[stateName] / 60000;
+
+      axios
+        .post("/api/game/host", {
+          rehost: gameId,
+          gameType: gameType,
+          setup: setup.id,
+          lobby: options.lobby,
+          lobbyName: options.lobbyName,
+          private: options.private,
+          spectating: options.spectating,
+          guests: options.guests,
+          ranked: options.ranked,
+          competitive: options.competitive,
+          readyCheck: options.readyCheck,
+          noVeg: options.noVeg,
+          anonymousGame: options.anonymousGame,
+          anonymousDeckId: (options.anonymousDeck || [])
+            .map((deck) => deck.id)
+            .join(","),
+          stateLengths: stateLengths,
+          ...options.gameTypeOptions,
+        })
+        .then((res) => {
+          window.location.href = window.location.origin + `/game/${res.data}`;
+        })
+        .catch((e) => {
+          noLeaveRef.current = false;
+          setRehostPending(false);
+          errorAlert(e);
+        });
+    }, 500);
   }
 
   function onJoinRehostClick() {
@@ -859,7 +917,14 @@ export default function Game(props) {
       setFinished(true);
     });
 
-    socket.on("kudos", (data) => setKudos(data));
+    // Tutorial games have no kudos at all (the server never starts a vote).
+    socket.on("kudos", (data) => {
+      if (!tutorialGameRef.current) setKudos(data);
+    });
+    socket.on("tutorial", () => {
+      tutorialGameRef.current = true;
+      setKudos(null);
+    });
 
     socket.on("rehosted", (info) => {
       if (!info || !info.gameId) return;
@@ -1108,11 +1173,15 @@ export default function Game(props) {
       setIsOmniscientSpectator(true);
     });
 
-    socket.on("left", () => {
+    socket.on("left", (data) => {
       stopReadyBellRepeatRef.current();
       if (!noLeaveRef.current) {
         setLeave(true);
         siteInfo.hideAllAlerts();
+        // The server says why it removed us (e.g. a missed ready check).
+        if (data && typeof data.reason === "string") {
+          siteInfo.showAlert(data.reason, "warning", true);
+        }
       }
     });
 
@@ -1373,6 +1442,8 @@ export default function Game(props) {
       noLeaveRef,
       rehostInvite: rehostInvite,
       onJoinRehostClick: onJoinRehostClick,
+      onRehostClick: onRehostClick,
+      rehostPending: rehostPending,
       rehostInviteSlots: rehostInviteSlots,
       setRehostInviteSlots: setRehostInviteSlots,
       dev: dev,
@@ -1479,9 +1550,13 @@ export default function Game(props) {
 }
 
 /**
- * Shown to everyone left in the postgame lobby when someone rehosts: the new
- * game's setup card, and a "Leave & Join New Game" button under it that leaves
- * this game and joins the new one.
+ * The postgame rehost box, shown once the game is over.
+ *  - Before anyone rehosts: a "Rehost?" button for every player. The first to
+ *    click becomes host of a new lobby with this game's settings (the server
+ *    lets only one click create it; later clicks join that lobby).
+ *  - After someone rehosts (pushed live via the "rehosted" event): the new
+ *    game's setup card and "Leave & Join New Game", for players and
+ *    spectators alike. Spectators can join a rehost but not start one.
  *
  * It is rendered inline in exactly one place per layout. Candidates register
  * with a priority and the best one wins:
@@ -1492,7 +1567,6 @@ export default function Game(props) {
 function RehostInvite({ priority = 0 }) {
   const game = useContext(GameContext);
   const invite = game.rehostInvite;
-  const setup = (invite && invite.setup) || game.setup;
   const { rehostInviteSlots, setRehostInviteSlots } = game;
   const slotId = useRef(null);
 
@@ -1507,7 +1581,12 @@ function RehostInvite({ priority = 0 }) {
       setRehostInviteSlots((slots) => slots.filter((s) => s.id !== slot.id));
   }, [priority, setRehostInviteSlots]);
 
-  if (!invite || game.review) return null;
+  if (game.review) return null;
+
+  const gameOver =
+    game.finished || (game.history && game.history.currentState === -2);
+  const canRehost = !invite && gameOver && game.isParticipant && !!game.setup;
+  if (!invite && !canRehost) return null;
 
   const best = (rehostInviteSlots || []).reduce(
     (a, b) =>
@@ -1517,6 +1596,8 @@ function RehostInvite({ priority = 0 }) {
     null
   );
   if (!best || best.id !== slotId.current) return null;
+
+  const setup = (invite && invite.setup) || game.setup;
 
   return (
     <Stack
@@ -1529,23 +1610,41 @@ function RehostInvite({ priority = 0 }) {
           <Setup setup={setup} />
         </Box>
       )}
-      <Button
-        variant="contained"
-        color="primary"
-        size="large"
-        fullWidth
-        data-testid="rehost-join"
-        onClick={game.onJoinRehostClick}
-        startIcon={<i className="fas fa-sign-in-alt" />}
-        sx={{ minHeight: 48, fontWeight: 700 }}
-      >
-        Leave & Join New Game
-      </Button>
-      {invite.hostName && (
-        <Typography variant="caption" sx={{ opacity: 0.7, textAlign: "center" }}>
-          Rehosted by {invite.hostName}
-        </Typography>
+      {invite ? (
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          fullWidth
+          data-testid="rehost-join"
+          onClick={game.onJoinRehostClick}
+          startIcon={<i className="fas fa-sign-in-alt" />}
+          sx={{ minHeight: 48, fontWeight: 700 }}
+        >
+          Leave & Join New Game
+        </Button>
+      ) : (
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          fullWidth
+          data-testid="rehost-start"
+          disabled={game.rehostPending}
+          onClick={game.onRehostClick}
+          startIcon={<i className="fas fa-redo" />}
+          sx={{ minHeight: 48, fontWeight: 700 }}
+        >
+          Rehost?
+        </Button>
       )}
+      <Typography variant="caption" sx={{ opacity: 0.7, textAlign: "center" }}>
+        {invite
+          ? invite.hostName
+            ? `Rehosted by ${invite.hostName}`
+            : "This game was rehosted"
+          : "Same setup and settings. The first to click hosts the new lobby."}
+      </Typography>
     </Stack>
   );
 }
@@ -1571,48 +1670,6 @@ export function TopBar({ forceShow = false } = {}) {
   function onTestClick() {
     for (let i = 0; i < game.setup.total - 1; i++)
       window.open(window.location + "?bot");
-  }
-
-  function onRehostGameClick() {
-    game.noLeaveRef.current = true;
-
-    if (game.socket.on) game.socket.send("leave");
-
-    setTimeout(() => {
-      var stateLengths = {};
-
-      for (let stateName in game.options.stateLengths)
-        stateLengths[stateName] = game.options.stateLengths[stateName] / 60000;
-
-      axios
-        .post("/api/game/host", {
-          rehost: gameId,
-          gameType: game.gameType,
-          setup: game.setup.id,
-          lobby: game.options.lobby,
-          lobbyName: game.options.lobbyName,
-          private: game.options.private,
-          spectating: game.options.spectating,
-          guests: game.options.guests,
-          ranked: game.options.ranked,
-          competitive: game.options.competitive,
-          readyCheck: game.options.readyCheck,
-          noVeg: game.options.noVeg,
-          anonymousGame: game.options.anonymousGame,
-          anonymousDeckId: (game.options.anonymousDeck || [])
-            .map((deck) => deck.id)
-            .join(","),
-          stateLengths: stateLengths,
-          ...game.options.gameTypeOptions,
-        })
-        .then((res) => {
-          window.location.href = window.location.origin + `/game/${res.data}`;
-        })
-        .catch((e) => {
-          game.noLeaveRef.current = false;
-          errorAlert(e);
-        });
-    }, 500);
   }
 
   function onArchiveGameClick() {
@@ -1684,14 +1741,6 @@ export function TopBar({ forceShow = false } = {}) {
         <Tooltip title="Fill">
           <IconButton size="large" onClick={onTestClick}>
             <img src={poison} alt="Fill" />
-          </IconButton>
-        </Tooltip>
-      )}
-
-      {!game.review && game.history.currentState === -2 && (
-        <Tooltip title="Rehost">
-          <IconButton size="large" onClick={onRehostGameClick}>
-            <img src={veg} alt="Rehost" />
           </IconButton>
         </Tooltip>
       )}
@@ -1905,7 +1954,10 @@ export function MobileLayout({
             },
           }}
         >
-          <BottomNavigationAction {...outerLeftNavigationProps} />
+          <BottomNavigationAction
+            {...outerLeftNavigationProps}
+            data-tutorial={`${outerLeftNavigationProps.value}-tab`}
+          />
           {!hideInfoTab && (
             <BottomNavigationAction
               label="Info"
@@ -1937,7 +1989,10 @@ export function MobileLayout({
               {!singleState && <Divider orientation="vertical" flexItem />}
             </Stack>
           )}
-          <BottomNavigationAction {...innerRightNavigationProps} />
+          <BottomNavigationAction
+            {...innerRightNavigationProps}
+            data-tutorial={`${innerRightNavigationProps.value}-tab`}
+          />
           <BottomNavigationAction
             label="Menu"
             value="menu"
@@ -1981,19 +2036,16 @@ export function ThreePanelLayout({
   );
 }
 
-function getSpeechMeetings(meetings, isSpectator) {
+// Spectator chat has no tab of its own: it is shown inline in the selected
+// chat (see shared/spectatorChat.js).
+function getSpeechMeetings(meetings) {
   return Object.values(meetings || {}).filter(
-    (meeting) =>
-      meeting.speech &&
-      (isSpectator || meeting.name !== "Spectator Meeting")
+    (meeting) => meeting.speech && !isSpectatorChatMeeting(meeting)
   );
 }
 
 function getDefaultSpeechMeetingId(speechMeetings) {
-  const meeting =
-    speechMeetings.find((m) => m.name !== "Spectator Meeting") ||
-    speechMeetings[0];
-  return meeting?.id;
+  return speechMeetings[0]?.id;
 }
 
 const EMPTY_CHAT_STATE = { meetings: {}, alerts: [], obituaries: {} };
@@ -2078,7 +2130,8 @@ export function TextMeetingLayout() {
   const speechDisplayRef = useRef();
   const hasMouse = useMediaQuery("(pointer:fine)");
 
-  const speechMeetings = getSpeechMeetings(meetings, isSpectator);
+  const speechMeetings = getSpeechMeetings(meetings);
+  const spectatorChatMeeting = findSpectatorChatMeeting(meetings, isSpectator);
 
   function onTabChange(event, newValue) {
     updateHistory({
@@ -2092,7 +2145,7 @@ export function TextMeetingLayout() {
   useEffect(() => {
     if (stateViewing == null || !speechMeetings.length) return;
 
-    const visibleSpeechMeetings = getSpeechMeetings(meetings, isSpectator);
+    const visibleSpeechMeetings = getSpeechMeetings(meetings);
     const selTabMeeting = selTab ? meetings[selTab] : null;
     const selTabMissing =
       (selTab && !selTabMeeting) ||
@@ -2208,7 +2261,8 @@ export function TextMeetingLayout() {
         players,
         settings,
         filters,
-        spectators
+        spectators,
+        spectatorChatMeeting
       );
     }
 
@@ -2263,6 +2317,7 @@ export function TextMeetingLayout() {
     spectators,
     settings,
     filters,
+    spectatorChatMeeting,
     isolationEnabled,
     isolatedPlayers,
     game.review,
@@ -2320,17 +2375,15 @@ export function TextMeetingLayout() {
 
   const activeMeeting = selTab ? meetings[selTab] : null;
 
-  var canSpeak = activeMeeting;
-  canSpeak =
-    canSpeak &&
-    (activeMeeting.members.length > 1 ||
-      history.currentState == -1 ||
-      activeMeeting.name == "Spectator Meeting");
-  canSpeak =
-    canSpeak &&
-    stateViewing === history.currentState &&
-    activeMeeting.amMember &&
-    activeMeeting.canTalk;
+  // A spectator who cannot talk in the selected meeting talks in spectator
+  // chat instead, which shows inline in the same stream.
+  const speechTarget = pickSpeechTarget({
+    activeMeeting,
+    spectatorMeeting: spectatorChatMeeting,
+    isPregame: history.currentState == -1,
+  });
+  const canSpeak =
+    !!speechTarget.meetingId && stateViewing === history.currentState;
   return (
     <>
       <Box
@@ -2403,7 +2456,8 @@ export function TextMeetingLayout() {
           {canSpeak && (
             <SpeechInput
               meetings={meetings}
-              selTab={selTab}
+              selTab={speechTarget.meetingId}
+              spectatorChat={speechTarget.spectatorChat}
               isCurrentState={stateViewing === history.currentState}
               players={players}
               options={game.options}
@@ -2457,7 +2511,9 @@ export function getAllMessagesToDisplay(history) {
         }
       }
 
-      stateMessages.push(...meetingData.messages);
+      if (isSpectatorChatMeeting(meetingData))
+        stateMessages.push(...mergeSpectatorChat([], meetingData, null));
+      else stateMessages.push(...meetingData.messages);
     }
     const stateAlerts = stateData.alerts;
     stateMessages.push(...stateAlerts);
@@ -2511,12 +2567,15 @@ function getMessagesToDisplay(
   players,
   settings,
   filters,
-  spectators
+  spectators,
+  spectatorChatMeeting
 ) {
   var messages;
 
   if (selTab && meetings[selTab]) messages = [...meetings[selTab].messages];
   else messages = [];
+
+  messages = mergeSpectatorChat(messages, spectatorChatMeeting, selTab);
 
   if (filters && (filters.from || filters.contains))
     messages = messages.filter((m) => {
@@ -2963,7 +3022,7 @@ const MessageRow = React.memo(function MessageRow(props) {
 
   return (
     <div
-      className="message"
+      className={message.spectatorChat ? "message spectator-chat" : "message"}
       onDoubleClick={() => props.onMessageQuote(message)}
       style={messageStyle}
       onMouseEnter={messageOnMouseEnter}
@@ -3035,6 +3094,14 @@ const MessageRow = React.memo(function MessageRow(props) {
         >
           {!message.isQuote && (
             <>
+              {message.spectatorChat && (
+                <span
+                  className="spectator-chat-tag"
+                  title="Spectator chat: only spectators can see this"
+                >
+                  <i className="fas fa-eye" /> Spectator
+                </span>
+              )}
               {message.prefix && (
                 <div className="prefix" style={{ display: "inline" }}>
                   ({message.prefix})
@@ -3064,6 +3131,14 @@ const MessageRow = React.memo(function MessageRow(props) {
           )}
           {message.isQuote && (
             <>
+              {message.spectatorChat && (
+                <span
+                  className="spectator-chat-tag"
+                  title="Spectator chat: only spectators can see this"
+                >
+                  <i className="fas fa-eye" /> Spectator
+                </span>
+              )}
               <i className="fas fa-quote-left" />
               <Timestamp time={quotedMessage.time} />
               <span className="quote-info">
@@ -3232,6 +3307,7 @@ function SpeechInput(props) {
   const selTab = props.selTab;
   const isCurrentState = props.isCurrentState;
   const players = props.players;
+  const spectatorChat = !!props.spectatorChat;
 
   const speechInput = props.speechInput;
   const setSpeechInput = props.setSpeechInput;
@@ -3264,7 +3340,11 @@ function SpeechInput(props) {
 
     const speechAbilities = meetings[selTab].speechAbilities || [];
     const newDropdownOptions = [
-      { label: "Say", id: "Say", placeholder: "to everyone" },
+      {
+        label: "Say",
+        id: "Say",
+        placeholder: spectatorChat ? "to spectators" : "to everyone",
+      },
     ];
 
     for (let ability of speechAbilities) {
@@ -3294,7 +3374,7 @@ function SpeechInput(props) {
     }
 
     setSpeechDropdownOptions(newDropdownOptions);
-  }, [selTab]);
+  }, [selTab, spectatorChat]);
 
   useEffect(() => {
     if (lastTyped > 0) {
@@ -3512,35 +3592,18 @@ function SpeechInput(props) {
       e.preventDefault();
       const words = speechInput.split(" ");
       const word = words.pop();
-      // Removing non-word characters before the string.
-      const seedString = word.match(/[^\w-]?([\w-]*)$/)[1].toLowerCase();
-      const prefix = word.substring(0, word.length - seedString.length);
-      if (!seedString.length) return;
-
-      const playerNames = Object.values(players).map((player) => player.name);
-      const playerSeeds = playerNames.map((playerName) =>
-        playerName.toLowerCase().substring(0, seedString.length)
+      const completed = completePlayerName(
+        word,
+        tabCompleteNames({
+          players,
+          spectators: game.spectators,
+          isPregame: game.history?.currentState == -1,
+          isSpectator: game.isSpectator,
+        })
       );
-      const matchedPlayers = [];
-      for (const i in playerSeeds) {
-        if (playerSeeds[i] === seedString) {
-          matchedPlayers.push(playerNames[i]);
-        }
-      }
-      if (matchedPlayers.length) {
-        if (matchedPlayers.length === 1) {
-          words.push(prefix + matchedPlayers[0]);
-        } else {
-          let i = 1;
-          while (
-            matchedPlayers.every(
-              (playerName) => playerName[i] === matchedPlayers[0][i]
-            )
-          ) {
-            i += 1;
-          }
-          words.push(prefix + matchedPlayers[0].substring(0, i));
-        }
+      if (completed === undefined) return;
+      if (completed) {
+        words.push(completed);
         setSpeechInput(words.join(" "));
       } else if (word.toLowerCase() === "@everyone".substring(0, word.length)) {
         words.push("@everyone");
@@ -3556,7 +3619,7 @@ function SpeechInput(props) {
   }
 
   return (
-    <div className="speech-input-area">
+    <div className="speech-input-area" data-tutorial="chat-input">
       <div className="speech-input-wrapper">
         <Dropdown
           className="speech-dropdown"
@@ -3901,7 +3964,7 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
 
     return (
       <div 
-        className={`player ${className ? className : ""}`} 
+        className={`player ${className ? className : ""}`} data-player-name={player.name} 
         key={player.id}
         style={readyCheck ? {
           boxShadow: isReady ? "inset 4px 0 0 #4caf50" : "inset 4px 0 0 #e02626",
@@ -4071,7 +4134,7 @@ export function PlayerList(props) {
       title={title}
       scrollable
       content={
-        <div className="player-list">
+        <div className="player-list" data-tutorial="player-list">
           <PlayerRows
             players={alivePlayers}
             renderMarker={renderMarker}
@@ -4101,10 +4164,48 @@ export function PlayerList(props) {
             renderMarker={renderMarker}
             renderRowEnd={renderRowEnd}
           />
+          <PregameSpectatorRows />
           <RehostInvite priority={2} />
         </div>
       }
     />
+  );
+}
+
+// Who is spectating. Everyone sees it in pregame; once the game starts only
+// spectators do (players keep the eye count in the header).
+function PregameSpectatorRows() {
+  const game = useContext(GameContext);
+  const user = useContext(UserContext);
+  const theme = useTheme();
+
+  const watching = pregameSpectatorList(game.spectators, {
+    currentState: game.history?.currentState,
+    stateViewing: game.stateViewing,
+    review: game.review,
+    isSpectator: game.isSpectator,
+  });
+  if (watching.length === 0) return null;
+
+  return (
+    <div className="pregame-spectators">
+      <div className="section-title">
+        <i className="fas fa-eye" />
+        Spectators
+      </div>
+      {watching.map((spectator) => (
+        <div className="player pregame-spectator" key={spectator.id}>
+          <NameWithAvatar
+            {...playerNameWithAvatarProps(spectator, {
+              user,
+              theme,
+              square: true,
+            })}
+            includeMiniprofile
+          />
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -4886,7 +4987,7 @@ function ActionSelect(props) {
 
   return (
     <Box
-      className="action"
+      className="action" data-meeting-name={props.meeting && props.meeting.name}
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -5076,7 +5177,7 @@ function ActionProfileAssignment(props) {
 
   return (
     <Box
-      className="action"
+      className="action" data-meeting-name={props.meeting && props.meeting.name}
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -5163,7 +5264,7 @@ function ActionSelectShowAllOptions(props) {
 
   return (
     <Box
-      className="action"
+      className="action" data-meeting-name={props.meeting && props.meeting.name}
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -5248,7 +5349,7 @@ function ActionButton(props) {
   const myVoteDisplay = votes[props.self];
 
   return (
-    <Box className="action" sx={{ ...props.style }}>
+    <Box className="action" data-meeting-name={props.meeting && props.meeting.name} sx={{ ...props.style }}>
       <Typography variant="subtitle1" sx={{ mb: 1 }}>
         {meeting.actionName}
       </Typography>
@@ -5345,7 +5446,7 @@ function ActionImageButtons(props) {
   });
 
   return (
-    <div className="action" style={{ ...props.style }}>
+    <div className="action" data-meeting-name={props.meeting && props.meeting.name} style={{ ...props.style }}>
       <div className="action-name">{meeting.actionName}</div>
       <div style={{ display: "flex", flexWrap: "wrap" }}>{buttons}</div>
     </div>
@@ -5413,7 +5514,7 @@ function PlayingCardButtons(props) {
   });
 
   return (
-    <div className="action" style={{ ...props.style }}>
+    <div className="action" data-meeting-name={props.meeting && props.meeting.name} style={{ ...props.style }}>
       <div className="action-name">{meeting.actionName}</div>
       <div style={{ display: "flex", flexWrap: "wrap" }}>{buttons}</div>
     </div>
@@ -5550,7 +5651,7 @@ function ActionText(props) {
   }
 
   return (
-    <Box className="action">
+    <Box className="action" data-meeting-name={props.meeting && props.meeting.name}>
       <Typography variant="subtitle1" gutterBottom>
         {meeting.actionName}
       </Typography>
@@ -5614,7 +5715,7 @@ function ActionSeparatingText(props) {
   const text = meeting.actionName;
 
   return (
-    <div className="action" style={{ ...props.style }}>
+    <div className="action" data-meeting-name={props.meeting && props.meeting.name} style={{ ...props.style }}>
       <br />
       <div className="action-name">{text}</div>
       <br />
@@ -6451,12 +6552,20 @@ export function useHistoryReducer() {
           break;
         }
         case "addQuote": {
-          if (
+          const quoteMeeting =
             history.states[history.currentState] &&
             history.states[history.currentState].meetings[
               action.quote.toMeetingId
-            ]
-          ) {
+            ];
+          if (quoteMeeting) {
+            // Same duplicate check as addMessage: a repeated delivery or a
+            // replay after reconnecting must not add a second quote row.
+            if (
+              action.quote.id != null &&
+              quoteMeeting.messages.some((m) => m.id === action.quote.id)
+            ) {
+              break;
+            }
             return update(history, {
               states: {
                 [history.currentState]: {
