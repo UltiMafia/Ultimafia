@@ -25,13 +25,15 @@ module.exports = class GivePermaDelirium extends Card {
               ) == "Village"
           );
           var villageTarget = Random.randArrayVal(villagePlayers);
-          this.DeliriousVictim = villageTarget.giveEffect(
-            "Delirious",
-            this.player,
-            1,
-            ["Delirium", "WhenDead", "Modifier"],
-            this
-          );
+          if (villageTarget) {
+            this.DeliriousVictim = villageTarget.giveEffect(
+              "Delirious",
+              this.player,
+              1,
+              ["Delirium", "WhenDead", "Modifier"],
+              this
+            );
+          }
         }
       },
     };

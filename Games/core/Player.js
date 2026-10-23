@@ -1547,6 +1547,7 @@ module.exports = class Player {
 
     for (let meetingName in meetings) {
       let options = meetings[meetingName];
+      if (!options) continue;
       let disabled = false;
 
       // Housed players may only sit in the village chat, and only to read it.
@@ -1569,6 +1570,7 @@ module.exports = class Player {
       //      can be condensed.
       if (
         disabled ||
+        !options.states ||
         (options.states.indexOf(currentStateName) == -1 &&
           options.states.indexOf("*") == -1) ||
         options.disabled ||

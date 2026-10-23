@@ -14,16 +14,19 @@ module.exports = class BondedForLife extends Card {
           role: role,
           priority: PRIORITY_EFFECT_GIVER_EARLY,
           run: function () {
+            if (!this.actor || !this.target || typeof this.target !== "object" || !this.target.name) return;
             this.role.giveEffect(this.target, "Lovesick", this.actor);
             this.queueGetEffectAlert("Lovesick", this.target, this.actor.name);
 
-            if (this.actor.role.name == "Lover") {
+            if (this.actor.role && this.actor.role.name == "Lover") {
               this.role.giveEffect(this.actor, "Lovesick", this.target);
             }
             this.queueGetEffectAlert("Lovesick", this.actor, this.target.name);
 
-            this.actor.role.loved = true;
-            this.actor.role.loves = this.target;
+            if (this.actor.role) {
+              this.actor.role.loved = true;
+              this.actor.role.loves = this.target;
+            }
           },
         },
         shouldMeet() {
