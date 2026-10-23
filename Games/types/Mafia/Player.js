@@ -44,6 +44,10 @@ module.exports = class MafiaPlayer extends Player {
     else return "death";
   }
 
+  gameCommands() {
+    return ["extend"];
+  }
+
   parseCommand(message) {
     var cmd = super.parseCommand(message);
 

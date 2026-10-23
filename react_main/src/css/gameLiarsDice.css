@@ -312,6 +312,30 @@
     margin-top: 8px;
   }
 
+  /* Previous-round dice sit next to a smaller label on the same line. */
+  .liars-dice-dice-container .previous-rolls {
+    flex-wrap: nowrap;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .liars-dice-dice-container .previous-rolls-label {
+    flex-shrink: 0;
+    margin-bottom: 0;
+    font-size: 0.75rem;
+  }
+
+  .liars-dice-dice-container .previous-rolls-dice {
+    flex: 1 1 0;
+    min-width: 0;
+    margin-left: 6px;
+  }
+
+  .liars-dice-dice-container .previous-rolls-dice .dice {
+    margin: 2px;
+  }
+
   .ld-bet-form {
     padding: 10px 8px 4px;
     margin-top: 8px;
@@ -621,4 +645,58 @@
 .ld-bet-log-empty {
   opacity: 0.7;
   font-style: italic;
+}
+
+/* Phones: keep each hand on one line however many dice a player holds.
+   Each dice row is a size container and gets its dice count in
+   --ld-dice-count, so every die takes an equal share of the row, capped at
+   the normal phone size. Rows only wrap if the dice would get smaller than
+   the minimum. Browsers without container queries keep the fixed sizes above. */
+@supports (container-type: inline-size) {
+  @media (max-width: 768px) {
+    .liars-dice-dice-container,
+    .liars-dice-dice-container .previous-rolls-dice {
+      container-type: inline-size;
+    }
+
+    .liars-dice-dice-container .current-rolls {
+      flex-wrap: wrap;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .liars-dice-dice-container .current-rolls .dice {
+      --ld-slot: calc(100cqi / var(--ld-dice-count, 5));
+      --ds: clamp(14px, calc(var(--ld-slot) - 7px), 36px);
+      flex: 0 0 auto;
+      width: var(--ds);
+      height: var(--ds);
+    }
+
+    .liars-dice-dice-container .previous-rolls-dice {
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+
+    .liars-dice-dice-container .previous-rolls-dice .dice {
+      --ld-slot: calc(100cqi / var(--ld-dice-count, 5));
+      --ds: clamp(10px, calc(var(--ld-slot) - 5px), 24px);
+      flex: 0 0 auto;
+      width: var(--ds);
+      height: var(--ds);
+    }
+  }
+}
+
+/* Whole-pixel dice keep the pixel-art sprite cells aligned. */
+@supports (container-type: inline-size) and (width: round(down, 1.5px, 1px)) {
+  @media (max-width: 768px) {
+    .liars-dice-dice-container .current-rolls .dice {
+      --ds: round(down, clamp(14px, calc(var(--ld-slot) - 7px), 36px), 1px);
+    }
+
+    .liars-dice-dice-container .previous-rolls-dice .dice {
+      --ds: round(down, clamp(10px, calc(var(--ld-slot) - 5px), 24px), 1px);
+    }
+  }
 }

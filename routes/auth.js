@@ -19,6 +19,11 @@ const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
 const errors = require("../lib/errors");
 const { findAliasAccount } = require("../modules/emailAlias");
+const {
+  signInProvider,
+  isAllowedSignupEmail,
+} = require("../modules/authProviders");
+const { planEmailSync } = require("../modules/accountEmail");
 
 let callbackUrl;
 
@@ -94,10 +99,20 @@ router.post("/", async function (req, res) {
 
     // Verify Firebase ID token - this will throw if invalid
     var userData = await fbAdmin.auth().verifyIdToken(idToken);
+    // Google and Apple (apple.com) sign-ins carry a provider-verified email;
+    // email/password accounts must verify theirs first. A token without an
+    // email is refused: accounts are matched by email.
     var verified = userData.email_verified;
 
-    if (verified) {
-      await authSuccess(req, userData.uid, userData.email, null, req.body.fingerprint);
+    if (verified && userData.email) {
+      await authSuccess(
+        req,
+        userData.uid,
+        userData.email,
+        null,
+        req.body.fingerprint,
+        signInProvider(userData)
+      );
       // Check if authSuccess actually created a session
       if (req.session.user) {
         res.sendStatus(200);
@@ -285,7 +300,7 @@ router.post("/resendVerification", async function (req, res) {
   }
 });
 
-async function authSuccess(req, uid, email, discordProfile, fingerprint) {
+async function authSuccess(req, uid, email, discordProfile, fingerprint, provider) {
   try {
     /* *** Scenarios ***
             - Signed in
@@ -315,6 +330,32 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint) {
     }).select("id discordId");
     const fingerprintMatch = normalizeFingerprint(fingerprint);
 
+    // The Firebase account changed its email (verified): sign in to the same
+    // site account and store the new address instead of making a new account.
+    if (!user && uid) {
+      var uidUser = await models.User.findOne({ fbUid: uid, deleted: false }).select(
+        "id deleted discordId fbUid email"
+      );
+      if (uidUser) {
+        var emailPlan = planEmailSync({
+          user: uidUser,
+          claims: { uid, email, email_verified: true },
+          allowedDomains: allowedEmailDomans,
+          takenByOther: !!(bannedUser || deletedUser),
+        });
+        if (!emailPlan.ok) {
+          logger.warn(`Email change for user ${uidUser.id} not stored: ${emailPlan.error}`);
+          return;
+        }
+        if (emailPlan.changed)
+          await models.User.updateOne(
+            { id: uidUser.id },
+            { $set: { email: emailPlan.emails } }
+          );
+        user = uidUser;
+      }
+    }
+
     if (!user && !bannedUser && !deletedUser) {
       //Create new account (5) (6)
       var bannedSameIP = await models.User.find({
@@ -330,9 +371,9 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint) {
       var fingerprintBan = fingerprintMatch ? await checkFingerprintBan(fingerprintMatch) : null;
       if (fingerprintBan === "block") throw { banEvasion: true };
 
-      var emailDomain = email.split("@")[1] || "";
-
-      if (allowedEmailDomans.indexOf(emailDomain) == -1) return;
+      // Apple's private relay addresses are allowed for Apple sign-ins.
+      if (!isAllowedSignupEmail(email, provider || "", allowedEmailDomans))
+        return;
 
       var name = null;
       if (discordProfile) {

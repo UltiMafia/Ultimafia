@@ -20,6 +20,7 @@ const dbStats = require("../db/stats");
 const { colorHasGoodContrastForBothThemes } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
+const { planEmailSync, normalizeEmail } = require("../modules/accountEmail");
 const stockMarket = require("../lib/StockMarket");
 const skillRatingModule = require("../modules/skillRating");
 const { DEFAULT_MU, DEFAULT_SIGMA, MIN_RATED_GAMES } = skillRatingModule;
@@ -115,7 +116,7 @@ router.get("/info", async function (req, res) {
       redis.userInDonorGroup(userId),
       // Coin balance comes straight from the database to guarantee consistency
       // with the shop.
-      models.User.findOne({ id: userId }).select("coins").lean(),
+      models.User.findOne({ id: userId }).select("coins tutorialCompleted joined").lean(),
     ]);
 
     const perms = userPerms || {};
@@ -125,6 +126,12 @@ router.get("/info", async function (req, res) {
     user.perms = perms.perms || {};
     user.isDonor = isDonor;
     user.coins = userDb ? userDb.coins : 0;
+    user.tutorialCompleted = !!(userDb && userDb.tutorialCompleted);
+    // Soft tutorial prompt: only accounts created since the tutorial shipped.
+    user.tutorialPrompt =
+      !user.tutorialCompleted &&
+      !!userDb &&
+      Number(userDb.joined) >= constants.tutorialPromptSince;
 
     delete user.status;
 
@@ -2580,6 +2587,7 @@ router.post("/settings/update", async function (req, res) {
       "hideJoinDate",
       "hideDonorBadge",
       "hideRankedModal",
+      "hideTutorialButton",
       "hideCompetitiveModal",
       "ignoreTextColor",
       "accessibleNameColors",
@@ -4229,6 +4237,71 @@ router.post("/logout", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not log out. Please try again.");
+  }
+});
+
+// The signed-in user's Firebase email and sign-in providers (for the account
+// settings: password and email changes need the "password" provider).
+router.get("/account/auth", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const user = await models.User.findOne({ id: userId, deleted: false }).select("fbUid");
+    if (!user || !user.fbUid) {
+      res.send({ email: null, providers: [] });
+      return;
+    }
+    const fbUser = await fbAdmin.auth().getUser(user.fbUid);
+    res.send({
+      email: fbUser.email || null,
+      providers: (fbUser.providerData || []).map((p) => p.providerId),
+    });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not load your sign-in details.");
+  }
+});
+
+// Stores the account's new email after a Firebase email change. The client
+// signs in with the new address and sends that fresh ID token; the server
+// checks it (verified, same Firebase uid, allowed domain, not used by another
+// account). The client never sets the email itself.
+router.post("/account/email/sync", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const idToken = String(req.body.idToken || "");
+    let claims;
+    try {
+      claims = await fbAdmin.auth().verifyIdToken(idToken, true);
+    } catch (e) {
+      errors.unauthorized(res, "Please sign in with your new email again.");
+      return;
+    }
+
+    const user = await models.User.findOne({ id: userId, deleted: false }).select(
+      "id fbUid email"
+    );
+    const newEmail = normalizeEmail(claims.email);
+    const takenByOther = !!(
+      newEmail &&
+      (await models.User.exists({ email: newEmail, id: { $ne: userId } }))
+    );
+    const plan = planEmailSync({
+      user,
+      claims,
+      allowedDomains: JSON.parse(process.env.EMAIL_DOMAINS || "[]"),
+      takenByOther,
+      oldEmail: req.body.oldEmail,
+    });
+    if (!plan.ok) {
+      errors.unprocessable(res, plan.error);
+      return;
+    }
+    if (plan.changed)
+      await models.User.updateOne({ id: userId }, { $set: { email: plan.emails } });
+    res.send({ email: plan.email, changed: plan.changed });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not update your email. Please try again.");
   }
 });
 
