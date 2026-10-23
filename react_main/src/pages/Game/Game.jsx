@@ -20,6 +20,7 @@ import {
   useTextEffect,
 } from "../../components/TextEffects";
 import { parseTextEffect } from "shared/textEffects";
+import { completePlayerName, tabCompleteNames } from "shared/tabComplete";
 import Newspaper, {
   ObituariesMessage,
 } from "../../components/gameComponents/Newspaper";
@@ -3512,35 +3513,10 @@ function SpeechInput(props) {
       e.preventDefault();
       const words = speechInput.split(" ");
       const word = words.pop();
-      // Removing non-word characters before the string.
-      const seedString = word.match(/[^\w-]?([\w-]*)$/)[1].toLowerCase();
-      const prefix = word.substring(0, word.length - seedString.length);
-      if (!seedString.length) return;
-
-      const playerNames = Object.values(players).map((player) => player.name);
-      const playerSeeds = playerNames.map((playerName) =>
-        playerName.toLowerCase().substring(0, seedString.length)
-      );
-      const matchedPlayers = [];
-      for (const i in playerSeeds) {
-        if (playerSeeds[i] === seedString) {
-          matchedPlayers.push(playerNames[i]);
-        }
-      }
-      if (matchedPlayers.length) {
-        if (matchedPlayers.length === 1) {
-          words.push(prefix + matchedPlayers[0]);
-        } else {
-          let i = 1;
-          while (
-            matchedPlayers.every(
-              (playerName) => playerName[i] === matchedPlayers[0][i]
-            )
-          ) {
-            i += 1;
-          }
-          words.push(prefix + matchedPlayers[0].substring(0, i));
-        }
+      const completed = completePlayerName(word, tabCompleteNames({ players }));
+      if (completed === undefined) return;
+      if (completed) {
+        words.push(completed);
         setSpeechInput(words.join(" "));
       } else if (word.toLowerCase() === "@everyone".substring(0, word.length)) {
         words.push("@everyone");
