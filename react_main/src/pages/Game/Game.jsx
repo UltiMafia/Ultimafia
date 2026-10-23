@@ -252,6 +252,8 @@ export default function Game(props) {
   const [changeSetupDialogOpen, setChangeSetupDialogOpen] = useState(false);
   const [kudos, setKudos] = useState(null);
   const tutorialGameRef = useRef(false);
+  // The tutorial's storyline, so Rehost can start it again (like Play again).
+  const tutorialStorylineRef = useRef(null);
   // Set when a participant rehosts this finished game:
   // { gameId, hostId, hostName, setup }
   const [rehostInvite, setRehostInvite] = useState(null);
@@ -375,6 +377,25 @@ export default function Game(props) {
   function onRehostClick() {
     if (rehostPending || review) return;
     setRehostPending(true);
+
+    // A tutorial is rehosted exactly like Play again: the server closes this
+    // tutorial lobby and starts a fresh one of the same storyline.
+    if (tutorialGameRef.current && tutorialStorylineRef.current) {
+      noLeaveRef.current = true;
+      axios
+        .post("/api/game/tutorial/host", {
+          storyline: tutorialStorylineRef.current,
+        })
+        .then((res) => {
+          window.location.href = window.location.origin + `/game/${res.data}`;
+        })
+        .catch((e) => {
+          noLeaveRef.current = false;
+          setRehostPending(false);
+          errorAlert(e);
+        });
+      return;
+    }
 
     noLeaveRef.current = true;
     if (socket.on) socket.send("leave");
@@ -921,8 +942,9 @@ export default function Game(props) {
     socket.on("kudos", (data) => {
       if (!tutorialGameRef.current) setKudos(data);
     });
-    socket.on("tutorial", () => {
+    socket.on("tutorial", (data) => {
       tutorialGameRef.current = true;
+      if (data && data.storyline) tutorialStorylineRef.current = data.storyline;
       setKudos(null);
     });
 

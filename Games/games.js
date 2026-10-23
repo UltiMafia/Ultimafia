@@ -302,7 +302,9 @@ var deprecated = false;
                 `User ${data.userId} unable to leave game ${gameId}.`
               );
 
-            game.userLeave(data.userId);
+            // Reply once the leave is done, so the site never sees the
+            // player still in this game right after "left" (Play again).
+            await game.userLeave(data.userId);
             socket.send("gameLeft", data.userId);
           } catch (e) {
             logger.error(e);
@@ -337,9 +339,14 @@ var deprecated = false;
 
             const game = games[data.gameId];
 
-            if (!game) throw new Error(`Unable to cancel game ${gameId}.`);
+            if (!game) throw new Error(`Unable to cancel game ${data.gameId}.`);
 
-            game.cancel();
+            // A tutorial's script and phase timers must not outlive it.
+            if (game.tutorial) {
+              game.tutorial.destroy();
+              game.clearTimers();
+            }
+            await game.cancel();
             socket.send("gameLeft", data.userId);
           } catch (e) {
             logger.error(e);

@@ -392,31 +392,61 @@ router.get("/tutorial/storylines", async function (req, res) {
   res.send(tutorialStorylines.summary());
 });
 
-router.post("/tutorial/host", async function (req, res) {
+// Close the tutorial lobby `gameId` that `userId` is still in (or still
+// leaving: the game server may not have cleared it yet), so Play again can
+// start a fresh one. Returns false when `gameId` is not this user's tutorial.
+async function closeOldTutorial(userId, gameId) {
+  const info = await redis.getGameInfo(gameId, true);
+
+  if (info) {
+    const tutorial = info.settings && info.settings.tutorial;
+    if (!tutorial || info.hostId !== userId) return false;
+
+    try {
+      await Promise.race([
+        gameLoadBalancer.cancelGame(userId, gameId),
+        new Promise((resolve) => setTimeout(resolve, 5000)),
+      ]);
+    } catch (e) {
+      // Already closed on the game server; clear what is left below.
+      logger.error(e);
+    }
+  }
+
+  // The game is gone (or was just closed): drop the stale in-game flag.
+  if ((await redis.inGame(userId)) == gameId) await redis.leaveGame(userId);
+  return true;
+}
+
+// Start a tutorial for `userId`. Shared by the tutorial picker, Play again
+// and Rehost on a finished tutorial.
+async function hostTutorial(res, userId, storyline) {
+  const story = tutorialStorylines.get(storyline);
+  if (!story) {
+    errors.badRequest(res, "Unknown tutorial.");
+    return;
+  }
+  if (!story.available) {
+    errors.badRequest(res, `The ${story.title} tutorial is coming soon.`);
+    return;
+  }
+
+  // One tutorial start at a time per user (double clicks, Play again racing
+  // the picker). There is no cooldown between tutorials.
+  if (await redis.getSetCreatingGame(userId)) {
+    redis.unsetCreatingGame(userId);
+    errors.conflict(res, "Your tutorial is already starting.");
+    return;
+  }
+
   try {
-    const userId = await routeUtils.verifyLoggedIn(req);
-
-    if (!(await routeUtils.verifyPermission(userId, "playGame"))) {
-      errors.forbidden(res, "You are unable to play games.");
-      return;
-    }
-
-    const story = tutorialStorylines.get(req.body.storyline);
-    if (!story) {
-      errors.badRequest(res, "Unknown tutorial.");
-      return;
-    }
-    if (!story.available) {
-      errors.badRequest(res, `The ${story.title} tutorial is coming soon.`);
-      return;
-    }
-
-    if (await redis.inGame(userId)) {
+    // Play again: the previous tutorial lobby is closed, not a reason to
+    // refuse. Any other game still has to be left first.
+    const currentGame = await redis.inGame(userId);
+    if (currentGame && !(await closeOldTutorial(userId, currentGame))) {
       errors.conflict(res, "You must leave your current game before starting the tutorial.");
       return;
     }
-
-    if (!(await routeUtils.rateLimit(userId, "hostGame", res))) return;
 
     const gameId = await gameLoadBalancer.createGame(userId, "Mafia", {
       setup: JSON.parse(JSON.stringify(tutorialSetup)),
@@ -460,9 +490,25 @@ router.post("/tutorial/host", async function (req, res) {
     }
 
     res.send(gameId);
+  } finally {
+    await redis.unsetCreatingGame(userId);
+  }
+}
+
+router.post("/tutorial/host", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+
+    if (!(await routeUtils.verifyPermission(userId, "playGame"))) {
+      errors.forbidden(res, "You are unable to play games.");
+      return;
+    }
+
+    await hostTutorial(res, userId, req.body.storyline);
   } catch (e) {
     logger.error(e);
-    errors.serverError(res, "Unable to start the tutorial. Please try again.");
+    if (!res.headersSent)
+      errors.serverError(res, "Unable to start the tutorial. Please try again.");
   }
 });
 
@@ -779,6 +825,24 @@ router.post("/host", async function (req, res) {
 
     if (!(await routeUtils.verifyPermission(userId, "playGame"))) {
       errors.forbidden(res, "You are unable to play games.");
+      return;
+    }
+
+    // Tutorial setups only run through hostTutorial. Rehost on a finished
+    // tutorial acts like Play again: a fresh tutorial of the same storyline.
+    if (String(req.body.setup) === tutorialSetup.id) {
+      const oldGame = req.body.rehost
+        ? await redis.getGameInfo(String(req.body.rehost), true)
+        : null;
+      const storyline =
+        oldGame && oldGame.hostId === userId && oldGame.settings && oldGame.settings.tutorial
+          ? oldGame.settings.tutorial.storyline
+          : null;
+      if (!storyline) {
+        errors.badRequest(res, "To replay the tutorial, use Play again.");
+        return;
+      }
+      await hostTutorial(res, userId, storyline);
       return;
     }
 

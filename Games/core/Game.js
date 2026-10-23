@@ -222,6 +222,10 @@ module.exports = class Game {
           anonymousGame: this.anonymousGame,
           anonymousDeck: this.anonymousDeck,
           gameTypeOptions: this.getGameTypeOptions(),
+          // Lets the site recognise a tutorial lobby (Play again, Rehost).
+          tutorial: this.tutorialSettings
+            ? { storyline: this.tutorialSettings.storyline }
+            : undefined,
         },
         createTime: this.createTime,
       });
