@@ -1,9 +1,12 @@
 // SHERIFF: Z is always the real Cop; Gauss is the Janitor fake-claiming Cop.
-// Shoot Gauss → Z flexes (EZ Clap, Jerry sticker, LMAO!). Hold the shot and
-// the lynch flip proves Z. If Z survives Day 1, Mafia kills Z Night 2 and the
+// Shoot Gauss → Z flexes (EZ Clap, Jerry sticker, LMAO!). Shoot the Lawyer Z
+// reported guilty → the flip proves Z and the town lynches Gauss. Hold the
+// shot and the lynch flip proves Z. If Z survives Day 1, Mafia kills Z Night 2 and the
 // Journalist (who was on Z) shares Z's final guilty.
 
 const WAIT_LESSON = "As Sheriff, waiting to gather info can be better than shooting early.";
+const GUN_HINT =
+  "Still looking? Your gun is an item: open your Inventory (in the Actions tab on a phone, on the right on a computer), click the gun, then pick the player in Shoot Gun. To vote instead, use the Village box.";
 
 function night(t, victim, { check, journalistOn } = {}) {
   for (const key of ["mafioso", "lawyer", "janitor"]) {
@@ -52,10 +55,14 @@ module.exports = {
       t.guide("Right now it's one word against another. Nothing proves either claim yet.");
       const choice = await t.decide({
         token: k,
-        text: `Your choice, made in the Actions panel. Shoot ${copN} or ${janN} in the Shoot Gun box, OR hold your shot: vote ${lawN} in the Village box to test ${copN}'s claim with a lynch.`,
+        text: `Your choice. Your gun is in your Inventory: click it to open Shoot Gun. Shoot one of the Cop claims (${copN} or ${janN}), or shoot ${lawN}, the player ${copN} reported guilty. OR hold your shot: vote ${lawN} in the Village box to test ${copN}'s claim with a lynch.`,
+        idleHint: GUN_HINT,
         options: [
           { id: "shootFake", label: `Shoot ${janN}`, vote: { meeting: "Shoot Gun", target: "janitor" } },
           { id: "shootReal", label: `Shoot ${copN}`, vote: { meeting: "Shoot Gun", target: "cop" } },
+          // Acting on the Cop's guilty is a real play: the Lawyer flips Mafia,
+          // which proves the Cop and exposes the fake claim.
+          { id: "shootGuilty", label: `Shoot ${lawN}`, vote: { meeting: "Shoot Gun", target: "lawyer" } },
           { id: "wait", vote: { meeting: "Village", target: "lawyer" } },
           {
             id: "shootRandom",
@@ -87,6 +94,7 @@ module.exports = {
       t.branch = choice;
       if (choice === "wait") return waitDay1(t, k);
       if (choice === "shootReal") return shootRealDay1(t, k);
+      if (choice === "shootGuilty") return shootGuiltyDay1(t, k);
       return shootFakeDay1(t, k);
     },
 
@@ -107,7 +115,7 @@ module.exports = {
 
     async Day2(t, k) {
       if (t.branch === "wait") return waitDay2(t, k);
-      if (t.branch === "shootFake") {
+      if (t.branch === "shootFake" || t.branch === "shootGuilty") {
         if (t.data.copDiedN2) return afterCopDiedDay2(t, k, "mafioso");
         return lynchDay(t, k, "mafioso", 2);
       }
@@ -128,6 +136,11 @@ module.exports = {
       ? [
           "The Mafia won. You shot the real Cop, so the town lost its best information and the Mafia took over.",
           `Lesson: ${WAIT_LESSON} With one more day, the lynch flip and the real Cop's next report would have shown you who to shoot.`,
+        ]
+      : t.branch === "shootGuilty"
+      ? [
+          "The town won! You shot on the Cop's guilty: the Lawyer flip proved the real Cop and exposed the fake Cop claim, and the town lynched them.",
+          `A guilty from a Cop claim is a fair reason to shoot, though you were still trusting one claim over another. ${WAIT_LESSON}`,
         ]
       : t.branch === "wait"
       ? [
@@ -152,6 +165,21 @@ async function shootFakeDay1(t, k) {
     ["lawyer", "This is a setup!"],
   ], k);
   await lynchVote(t, k, "lawyer");
+}
+
+async function shootGuiltyDay1(t, k) {
+  await t.wait(t.timing.beat, k);
+  const lawRole = t.constructor.CAST.lawyer.role.split(":")[0];
+  const copN = t.nameOf("cop");
+  const janN = t.nameOf("janitor");
+  t.guide(`${t.nameOf("lawyer")} flipped ${lawRole}, Mafia! ${copN}'s report was true, so ${copN} is the real Cop and ${janN} lied about being the Cop.`);
+  await t.chat("Village", [
+    ["v1", `${t.nameOf("lawyer")} was Mafia! ${copN}'s the real Cop.`],
+    ["cop", `Told you. Which makes ${janN} the fake Cop.`],
+    ["janitor", "Hold on, I can explain..."],
+    ["v3", `Explain to the noose. ${janN}.`],
+  ], k);
+  await lynchVote(t, k, "janitor", `${janN} fake-claimed Cop, so they're Mafia. Vote ${janN} in the Village box.`);
 }
 
 async function shootRealDay1(t, k) {
@@ -189,7 +217,7 @@ async function waitDay2(t, k) {
     await t.chat("Village", [
       ["v1", `${t.nameOf("lawyer")} flipped ${lawRole.toUpperCase()}. ${t.nameOf("cop")} was telling the truth — and now ${t.nameOf("cop")} is dead too.`],
       ["journalist", `I'm the Journalist: I was reading ${t.nameOf("cop")}. Their last check was ${t.nameOf("mafioso")}: GUILTY.`],
-      ["janitor", `Convenient that the 'Journalist' shows up after both Cops are gone...`],
+      ["janitor", `Convenient that the 'Journalist' shows up after the Cop is gone...`],
       ["v1", `${t.nameOf("lawyer")} flipped Mafia, the one you defended. And ${t.nameOf("journalist")} has the Cop's last report.`],
     ], k);
     t.guide(
@@ -227,7 +255,8 @@ async function waitDay2(t, k) {
   }
   await t.decide({
     token: k,
-    text: `Now you know who's lying. Shoot the fake Cop: click ${t.nameOf("janitor")} in the Shoot Gun box.`,
+    text: `Now you know who's lying. Shoot the fake Cop: open your gun in your Inventory and pick ${t.nameOf("janitor")} in Shoot Gun.`,
+    idleHint: GUN_HINT,
     options: shootOpts,
     wrong: () => {
       t.say("v1", "Village", `Don't you DARE shoot anyone but the fake Cop!`).catch(() => {});

@@ -662,7 +662,8 @@ class TutorialController {
       pending.silences++;
       if (chatOnly) this.react(pending, "silence");
       const hint = chatOnly
-        ? pending.hints.silence || "Type your claim in the chat box at the bottom of the chat."
+        ? pending.hints.silence ||
+          "Type your claim in the chat box at the bottom of the chat (on a phone, open the Chat tab first)."
         : pending.idleHint ||
           "Still looking? Open the Actions tab (on a phone it's in the bottom bar; on a computer the actions are on the right), find the highlighted box and pick the highlighted player.";
       this.guide(`${pending.text} (${hint})`);

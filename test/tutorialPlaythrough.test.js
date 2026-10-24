@@ -66,7 +66,7 @@ function res() {
 }
 
 // The human in the browser: reacts only to what the server sends them.
-function playAsHuman(game, userId, name) {
+function playAsHuman(game, userId, name, prefer) {
   const socket = new TestSocket();
   const user = new User({
     id: userId,
@@ -121,7 +121,10 @@ function playAsHuman(game, userId, name) {
     if (last !== d) return;
     const votes = (d.highlight || []).filter((h) => h.meeting);
     if (votes.length) {
-      const h = votes.find((x) => x.target) || votes[0];
+      // A test can pick another highlighted choice (or a wrong one), like a
+      // player who decides differently.
+      const h =
+        (prefer && prefer(d, votes)) || votes.find((x) => x.target) || votes[0];
       const m = mine().find((x) => x.name === h.meeting && x.voting);
       if (!m) return (out.stuck = `no "${h.meeting}" meeting shown`);
       const targets = Array.isArray(m.targets) ? m.targets : [];
@@ -241,7 +244,7 @@ describe("Tutorial playthrough (every storyline, through the host route)", funct
     }
   });
 
-  async function playStoryline(storyline) {
+  async function playStoryline(storyline, { data, prefer } = {}) {
     seq += 1;
     const userId = `tutplayer${seq}${Date.now()}`;
     await redis.leaveGame(userId);
@@ -257,7 +260,13 @@ describe("Tutorial playthrough (every storyline, through the host route)", funct
     const game = games[r.body];
     expect(game, `${storyline}: game exists`).to.be.ok;
 
-    const human = playAsHuman(game, userId, "Newbie");
+    if (data) Object.assign(game.tutorial.data, data);
+    const human = playAsHuman(
+      game,
+      userId,
+      "Newbie",
+      prefer && ((d, votes) => prefer(d, votes, game.tutorial)),
+    );
     await human.join;
     const seated = game.players.length;
     const ok = await until(
@@ -273,6 +282,15 @@ describe("Tutorial playthrough (every storyline, through the host route)", funct
       stuck: human.stuck,
       finished: !!game.finished,
       last: last && String(last.text).slice(0, 160),
+      branch: game.tutorial && game.tutorial.branch,
+      log: game.tutorial ? game.tutorial.log.slice() : [],
+      winners: game.winners ? Object.keys(game.winners.groups) : [],
+      dead: game.tutorial
+        ? Object.keys(game.tutorial.cast).filter((key) => {
+            const p = game.tutorial.player(key);
+            return p && !p.alive;
+          })
+        : [],
     };
     await redis.leaveGame(userId);
     return { ok, result, userId, game };
@@ -290,6 +308,112 @@ describe("Tutorial playthrough (every storyline, through the host route)", funct
         true,
       );
       expect(result.finished, JSON.stringify(result)).to.equal(true);
+    });
+  }
+
+  // Every branch of every storyline, with what the story says happens.
+  const shoot = (key) => (d, votes, t) =>
+    /^Your choice\b/.test(d.text)
+      ? { meeting: "Shoot Gun", target: t.nameOf(key) }
+      : null;
+  const BRANCHES = [
+    {
+      name: "sheriff: shooting the Lawyer the real Cop (Z) reported guilty is right; the town then lynches the fake Cop (Gauss) and wins",
+      storyline: "sheriff",
+      prefer: shoot("lawyer"),
+      branch: "shootGuilty",
+      winner: "Village",
+      dead: ["lawyer", "janitor", "mafioso"],
+      log: ["human chose shootGuilty", "vote v1@Village -> janitor"],
+    },
+    {
+      name: "sheriff: shooting the fake Cop wins",
+      storyline: "sheriff",
+      prefer: shoot("janitor"),
+      branch: "shootFake",
+      winner: "Village",
+    },
+    {
+      name: "sheriff: shooting the real Cop loses the game for town (not a failed run)",
+      storyline: "sheriff",
+      prefer: shoot("cop"),
+      branch: "shootReal",
+      winner: "Mafia",
+    },
+    {
+      name: "sheriff: holding the shot wins",
+      storyline: "sheriff",
+      prefer: (d, votes, t) =>
+        /^Your choice\b/.test(d.text)
+          ? { meeting: "Village", target: t.nameOf("lawyer") }
+          : null,
+      branch: "wait",
+      winner: "Village",
+    },
+    {
+      name: "sheriff: a blind shot at a Villager still ends the run",
+      storyline: "sheriff",
+      prefer: shoot("v1"),
+      failed: true,
+      log: ["bad shootRandom"],
+    },
+    {
+      name: "sheriff: a blind shot that happens to hit the Mafioso still ends the run",
+      storyline: "sheriff",
+      prefer: shoot("mafioso"),
+      failed: true,
+      log: ["bad shootRandom"],
+    },
+    { name: "cop", storyline: "cop", winner: "Village" },
+    {
+      name: "journalist: reading the Cop",
+      storyline: "journalist",
+      data: { target: "cop" },
+      winner: "Village",
+    },
+    {
+      name: "journalist: reading the Janitor",
+      storyline: "journalist",
+      data: { target: "janitor" },
+      winner: "Village",
+    },
+  ]
+    .concat(
+      ["cop", "journalist", "v1", "v2"].map((victim) => ({
+        name: `lawyer: the Mafia kills the ${victim}`,
+        storyline: "lawyer",
+        data: { victim },
+        winner: "Mafia",
+      })),
+    )
+    .concat(
+      ["cop", "journalist", "sheriff", "v1"].map((victim) => ({
+        name: `janitor: cleaning the ${victim}`,
+        storyline: "janitor",
+        data: { victim },
+        winner: "Mafia",
+      })),
+    );
+
+  for (const c of BRANCHES) {
+    it(`branch: ${c.name}`, async function () {
+      staleEvery = 0;
+      const { result } = await playStoryline(c.storyline, c);
+      const why = JSON.stringify(Object.assign({}, result, { log: result.log.slice(-12) }));
+      expect(result.stuck, why).to.equal(null);
+      expect(result.done, why).to.equal(true);
+      for (const line of c.log || [])
+        expect(result.log, why).to.include(line);
+      if (c.failed) {
+        expect(result.failed, why).to.equal(true);
+        return;
+      }
+      expect(result.failed, why).to.equal(false);
+      expect(result.finished, why).to.equal(true);
+      expect(result.log.some((l) => l.startsWith("fail ")), why).to.equal(false);
+      if (c.branch) expect(result.branch, why).to.equal(c.branch);
+      if (c.winner) expect(result.winners, why).to.include(c.winner);
+      for (const key of c.dead || []) expect(result.dead, why).to.include(key);
     });
   }
 
