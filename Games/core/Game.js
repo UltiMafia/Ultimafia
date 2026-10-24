@@ -854,6 +854,9 @@ module.exports = class Game {
       }
 
       this.players.push(player);
+      // A tutorial bot that shares the player's name is renamed before the
+      // player is sent the player list.
+      if (this.tutorial) this.tutorial.humanJoined(player);
       // Seated now; becoming a spectator again is a new transition.
       if (user.id) this.spectatorHintUserIds.delete(user.id);
       if (isTestBotPlayer(player)) {

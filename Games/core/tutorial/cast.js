@@ -37,6 +37,7 @@ const ROSTER = [
     textColor: "#21d6e1",
     avatar: "/images/tutorial-bots/Z.webp",
     sourceUserId: "Fy2Ee8BH9",
+    flexAssets: true, // :ez: :clap: emotes and the Jerry sticker
   },
   {
     name: "nia",

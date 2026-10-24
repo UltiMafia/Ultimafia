@@ -19,6 +19,7 @@ const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const routeUtils = require("../routes/utils");
 const router = require("../routes/game");
 const tutorialSetup = require("../Games/core/tutorial/setup");
+const { ROSTER } = require("../Games/core/tutorial/cast");
 
 if (!process.env.GAME_CREATION_TIMEOUT)
   process.env.GAME_CREATION_TIMEOUT = "20000";
@@ -90,9 +91,11 @@ function playAsHuman(game, userId, name, prefer) {
     if (d && d.canContinue)
       setTimeout(() => socket.sendToServer("tutorialContinue"), 1);
   });
+  out.texts = [];
   socket.onClientEvent("tutorial", (d) => {
     last = d;
     out.steps++;
+    if (d && d.text) out.texts.push(String(d.text));
     if (d.done) {
       out.done = true;
       out.failed = !!d.failed;
@@ -129,9 +132,16 @@ function playAsHuman(game, userId, name, prefer) {
       if (!m) return (out.stuck = `no "${h.meeting}" meeting shown`);
       const targets = Array.isArray(m.targets) ? m.targets : [];
       const taken = votes.filter((x) => x.target).map((x) => x.target);
+      // The tutorial points at a name; if two choices carry that name the
+      // player can't tell which one is meant (e.g. the player and a bot are
+      // both "Z"), so don't guess.
+      const named = h.target
+        ? targets.filter((t) => nameOf(t) === h.target)
+        : [];
+      if (named.length > 1)
+        return (out.stuck = `"${h.target}" is ${named.length} different choices in ${m.name}`);
       const sel = h.target
-        ? targets.find((t) => nameOf(t) === h.target) ||
-          (h.target === "No one" ? "*" : null)
+        ? named[0] || (h.target === "No one" ? "*" : null)
         : targets.find(
             (t) =>
               players[t] &&
@@ -244,7 +254,7 @@ describe("Tutorial playthrough (every storyline, through the host route)", funct
     }
   });
 
-  async function playStoryline(storyline, { data, prefer } = {}) {
+  async function playStoryline(storyline, { data, prefer, humanName } = {}) {
     seq += 1;
     const userId = `tutplayer${seq}${Date.now()}`;
     await redis.leaveGame(userId);
@@ -264,7 +274,7 @@ describe("Tutorial playthrough (every storyline, through the host route)", funct
     const human = playAsHuman(
       game,
       userId,
-      "Newbie",
+      humanName || "Newbie",
       prefer && ((d, votes) => prefer(d, votes, game.tutorial)),
     );
     await human.join;
@@ -285,6 +295,9 @@ describe("Tutorial playthrough (every storyline, through the host route)", funct
       branch: game.tutorial && game.tutorial.branch,
       log: game.tutorial ? game.tutorial.log.slice() : [],
       winners: game.winners ? Object.keys(game.winners.groups) : [],
+      names: game.tutorial.players().map((p) => p.name),
+      humanName: (game.tutorial.players().find((p) => p.user && p.user.id === userId) || {}).name,
+      texts: human.texts.slice(),
       dead: game.tutorial
         ? Object.keys(game.tutorial.cast).filter((key) => {
             const p = game.tutorial.player(key);
@@ -416,6 +429,60 @@ describe("Tutorial playthrough (every storyline, through the host route)", funct
       if (c.branch) expect(result.branch, why).to.equal(c.branch);
       if (c.winner) expect(result.winners, why).to.include(c.winner);
       for (const key of c.dead || []) expect(result.dead, why).to.include(key);
+    });
+  }
+
+  // The player's own name must never matter, even when it is a cast bot's
+  // name (Vinman's account "Z" joined with the bot "Z").
+  const CLASH_NAMES = ROSTER.map((r) => r.name).concat([
+    "z", // another case of a bot name
+    "GAUSS",
+    "Zbot", // the name a clashing bot is shown under
+  ]);
+  for (const humanName of CLASH_NAMES) {
+    for (const storyline of STORYLINES) {
+      it(`name clash: a player named "${humanName}" finishes ${storyline}, and every name in the game is distinct`, async function () {
+        staleEvery = 0;
+        const { result } = await playStoryline(storyline, { humanName });
+        const why = JSON.stringify(Object.assign({}, result, { log: result.log.slice(-12), texts: result.texts.slice(-4) }));
+        expect(result.seated, why).to.equal(tutorialSetup.total);
+        expect(result.humanName, why).to.equal(humanName);
+        const lower = result.names.map((n) => n.toLowerCase());
+        expect(new Set(lower).size, why).to.equal(result.names.length);
+        expect(result.stuck, why).to.equal(null);
+        expect(result.done && !result.failed, why).to.equal(true);
+        expect(result.finished, why).to.equal(true);
+        expect(result.log.some((l) => l.startsWith("fail ")), why).to.equal(false);
+      });
+    }
+  }
+
+  for (const humanName of ["Z", "sure", "Gauss"]) {
+    it(`name clash: the Sheriff named "${humanName}" shoots the Lawyer the real Cop reported guilty, and the steps name the bots as shown`, async function () {
+      staleEvery = 0;
+      let cast;
+      const { result, game } = await playStoryline("sheriff", {
+        humanName,
+        prefer: (d, votes, t) => {
+          cast = { cop: t.nameOf("cop"), lawyer: t.nameOf("lawyer"), janitor: t.nameOf("janitor") };
+          return shoot("lawyer")(d, votes, t);
+        },
+      });
+      const why = JSON.stringify(Object.assign({}, result, { log: result.log.slice(-12), texts: result.texts.slice(-4) }));
+      expect(result.stuck, why).to.equal(null);
+      expect(result.done && !result.failed && result.finished, why).to.equal(true);
+      expect(result.branch, why).to.equal("shootGuilty");
+      expect(result.winners, why).to.include("Village");
+      for (const key of ["lawyer", "janitor", "mafioso"]) expect(result.dead, why).to.include(key);
+      // The choice step names the bots by the names the player sees, none of
+      // which is the player's own.
+      const choice = result.texts.find((t) => /^Your choice\b/.test(t));
+      expect(choice, why).to.be.a("string");
+      for (const name of Object.values(cast)) {
+        expect(name.toLowerCase(), why).to.not.equal(humanName.toLowerCase());
+        expect(result.names, why).to.include(name);
+        expect(choice, why).to.include(name);
+      }
     });
   }
 
