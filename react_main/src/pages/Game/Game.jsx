@@ -32,6 +32,7 @@ import Newspaper, {
   ObituariesMessage,
 } from "../../components/gameComponents/Newspaper";
 import { newspaperPlayer } from "../../utils/newspaperPlayers";
+import { legacyObituaryMessages } from "../../utils/legacyObituaries";
 import MafiaGame from "./MafiaGame";
 import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
@@ -2739,6 +2740,17 @@ export function rowStateClass(stateViewing) {
 function Message(props) {
   const { history, isMessagePinned, meetingState, ...rowProps } = props;
   const { message, stateViewing } = props;
+  if (message.obituaries && props.settings.legacyObituaries) {
+    return legacyObituaryMessages(message).map((alert) => (
+      <Message
+        {...props}
+        key={alert.id}
+        message={alert}
+        chainToPrevious={false}
+        unfocusedMessage={false}
+      />
+    ));
+  }
   const nameState = meetingState ?? stateViewing;
   // History changes on every append. Only quotes and summary rows need it;
   // ordinary rows depend on the meeting's name, not its growing message array.
@@ -5872,6 +5884,12 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
       value: settings.messageLayout,
     },
     {
+      label: "Old-style Obituaries",
+      ref: "legacyObituaries",
+      type: "boolean",
+      value: settings.legacyObituaries,
+    },
+    {
       label: "Voting Log",
       ref: "votingLog",
       type: "boolean",
@@ -6898,6 +6916,7 @@ export function useSettingsReducer() {
     terminologyEmoticons: true,
     roleMentions: true,
     messageLayout: "default",
+    legacyObituaries: false,
   };
 
   function clampVolume(value, fallback = 1) {
