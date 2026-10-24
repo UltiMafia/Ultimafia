@@ -12,7 +12,7 @@ export function createAppleProvider(OAuthProvider) {
 
 // Apple logo (Apple's button guidelines: black button, white logo and
 // "Sign in with Apple").
-function AppleLogo() {
+export function AppleLogo() {
   return (
     <svg
       aria-hidden="true"
