@@ -83,6 +83,7 @@ import StateSwitcher from "../../components/gameComponents/StateSwitcher";
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { hyphenDelimit } from "../../utils";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { pregameSeatAction } from "shared/pregameSeatAction";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
 import {
   Accordion,
@@ -1502,7 +1503,6 @@ export default function Game(props) {
         {active && !review && history.currentState == -1 && (
           <PushNotificationPrompt socket={socket} />
         )}
-        {!isPhoneDevice && <PregameSeatActions />}
         <ReadyCheckDialog
           open={readyCheckInfo.active && !readyCheckInfo.readyPlayers[self]}
           endTime={readyCheckInfo.endTime}
@@ -2050,22 +2050,17 @@ function getDefaultSpeechMeetingId(speechMeetings) {
 
 const EMPTY_CHAT_STATE = { meetings: {}, alerts: [], obituaries: {} };
 
-function settingIsTrueValue(value) {
-  return value === true || value === "true";
-}
-
-// Desktop renders this under the chat. On a phone that spot is below the
-// viewport, under the bottom nav, so the compact variant sits in the chat.
-function PregameSeatActions({ compact = false }) {
+// Pregame "Join open seat" / "Spectate" button. It sits in the chat footer,
+// above the speech input, on every device (compact on a phone). It must stay
+// inside the game layout: the game session is a fixed, viewport-sized box, so
+// anything rendered after the game Stack is off screen and cannot be scrolled to.
+export function PregameSeatActions({ compact = false }) {
   const { review, history, isSpectator, socket, options, gameId } =
     useContext(GameContext);
 
-  if (review || !history || history.currentState != -1) return null;
-
-  const showJoin = !!isSpectator;
-  const showSpectate =
-    !isSpectator && settingIsTrueValue(options && options.spectating);
-  if (!showJoin && !showSpectate) return null;
+  const action = pregameSeatAction({ review, history, isSpectator, options });
+  if (!action) return null;
+  const showJoin = action === "join";
 
   return (
     <Box
@@ -2109,7 +2104,10 @@ function PregameSeatActions({ compact = false }) {
   );
 }
 
-export function TextMeetingLayout() {
+// seatActions: false for a second chat shown at the same time (some board
+// games show the chat in the board panel during pregame), so the button
+// appears once.
+export function TextMeetingLayout({ seatActions = true } = {}) {
   const game = useContext(GameContext);
   const isPhoneDevice = useIsPhoneDevice();
   const { singleState } = useContext(GameTypeContext);
@@ -2451,7 +2449,7 @@ export function TextMeetingLayout() {
               {newMessageCount} new message{newMessageCount === 1 ? "" : "s"}
             </button>
           )}
-          {isPhoneDevice && <PregameSeatActions compact />}
+          {seatActions && <PregameSeatActions compact={isPhoneDevice} />}
           <KudosDock onResize={doAutoScroll} />
           {canSpeak && (
             <SpeechInput

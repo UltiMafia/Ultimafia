@@ -89,7 +89,7 @@ function BattleshipBoardWrapper() {
   const history = game.history;
   const stateViewing = game.stateViewing;
 
-  if (stateViewing === -1) return <TextMeetingLayout />;
+  if (stateViewing === -1) return <TextMeetingLayout seatActions={false} />;
 
   return (
     <SideMenu
