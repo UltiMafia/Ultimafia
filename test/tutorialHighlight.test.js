@@ -10,8 +10,13 @@ const { resolveHighlights } = new Function(src + "\nreturn { resolveHighlights }
 
 // Tiny fake DOM: a map of selectors to elements; hidden elements have no
 // client rects, as a closed panel on a phone-width layout does.
-function el(name, shown = true, text = "") {
-  return { name, textContent: text, getClientRects: () => (shown ? [{}] : []) };
+function el(name, shown = true, text = "", attrs = {}) {
+  return {
+    name,
+    textContent: text,
+    getClientRects: () => (shown ? [{}] : []),
+    getAttribute: (a) => (a in attrs ? attrs[a] : null),
+  };
 }
 function doc(map) {
   return {
@@ -62,5 +67,72 @@ describe("Tutorial highlight resolver", function () {
       "chat",
       "m1",
     ]);
+  });
+
+  it("item meetings (the Sheriff's gun): lights the Inventory cell, then the Shoot Gun box once it's open", function () {
+    const gun = el("gun", true, "", { "data-item-meetings": "Shoot Gun" });
+    const other = el("other", true, "", { "data-item-meetings": "Village Thing" });
+    const shoot = [{ meeting: "Shoot Gun", target: "sure" }];
+    const closed = doc({
+      '[data-meeting-name="Shoot Gun"]': [],
+      "[data-item-meetings]": [other, gun],
+      '[data-tutorial="inventory-header"]': [el("inv")],
+      '[data-tutorial="actions-tab"]': [el("tab", false)],
+    });
+    expect(resolveHighlights(shoot, closed).map((e) => e.name)).to.deep.equal(["gun"]);
+    const open = doc({
+      '[data-meeting-name="Shoot Gun"]': [el("box")],
+      "[data-item-meetings]": [gun],
+      ".MuiMenuItem-root": [el("opt", true, "sure")],
+    });
+    expect(resolveHighlights(shoot, open).map((e) => e.name)).to.deep.equal(["box", "opt"]);
+  });
+
+  it("item meetings: a collapsed Inventory lights its header; on a phone the Actions tab", function () {
+    const shoot = [{ meeting: "Shoot Gun", target: "sure" }];
+    const collapsed = doc({
+      "[data-item-meetings]": [el("gun", false, "", { "data-item-meetings": "Shoot Gun" })],
+      '[data-tutorial="inventory-header"]': [el("inv")],
+      '[data-tutorial="actions-tab"]': [el("tab", false)],
+    });
+    expect(resolveHighlights(shoot, collapsed).map((e) => e.name)).to.deep.equal(["inv"]);
+    const phone = doc({
+      "[data-item-meetings]": [el("gun", false, "", { "data-item-meetings": "Shoot Gun" })],
+      '[data-tutorial="inventory-header"]': [el("inv", false)],
+      '[data-tutorial="actions-tab"]': [el("tab")],
+    });
+    expect(resolveHighlights(shoot, phone).map((e) => e.name)).to.deep.equal(["tab"]);
+  });
+
+  it("phone: a chat step lights the Chat tab while another tab is open", function () {
+    const d = doc({
+      '[data-tutorial="chat-input"]': [el("chat", false)],
+      '[data-tutorial="chat-tab"]': [el("ctab")],
+    });
+    expect(resolveHighlights([{ chat: true }], d).map((e) => e.name)).to.deep.equal(["ctab"]);
+    expect(resolveHighlights([{ ui: "chat" }], d).map((e) => e.name)).to.deep.equal(["ctab"]);
+  });
+
+  it("uses the on-screen copy when the hidden layout has the same element", function () {
+    const d = doc({
+      '[data-meeting-name="Village"]': [el("desktopBox", false), el("phoneBox")],
+      '[data-tutorial="chat-input"]': [el("desktopChat", false), el("phoneChat")],
+    });
+    expect(resolveHighlights([{ meeting: "Village" }, { chat: true }], d).map((e) => e.name)).to.deep.equal([
+      "phoneBox",
+      "phoneChat",
+    ]);
+  });
+
+  it("a phase with nothing to do or say lights the Actions panel and the chat on a computer", function () {
+    const d = doc({
+      "[data-meeting-name]": [],
+      '[data-tutorial="actions-panel"]': [el("apanel")],
+      '[data-tutorial="actions-tab"]': [el("atab", false)],
+      '[data-tutorial="chat-input"]': [],
+      '[data-tutorial="chat-panel"]': [el("cpanel")],
+      '[data-tutorial="chat-tab"]': [el("ctab", false)],
+    });
+    expect(resolveHighlights([{ ui: "actions" }, { ui: "chat" }], d).map((e) => e.name)).to.deep.equal(["apanel", "cpanel"]);
   });
 });
