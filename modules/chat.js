@@ -8,6 +8,7 @@ const models = require("../db/models");
 const redis = require("./redis");
 const constants = require("../data/constants");
 const utils = require("../routes/utils");
+const blocks = require("./blocks");
 
 const port = process.env.CHAT_PORT;
 const server = new sockets.SocketServer(port);
@@ -190,7 +191,17 @@ const channelMembers = {};
 
               for (let member of channel.members) {
                 if (member.id == user.id) continue;
-                else if (member.settings.onlyFriendDMs) {
+                // Blocks first: a friends-only setting must not let a
+                // blocked friend through.
+                const blockMessage = blocks.dmBlockMessage(
+                  user.id,
+                  blockedUsers,
+                  member
+                );
+                if (blockMessage) {
+                  socket.send("error", blockMessage);
+                  return;
+                } else if (member.settings && member.settings.onlyFriendDMs) {
                   var isFriend = await models.Friend.findOne({
                     userId: member.id,
                     friendId: user.id,
@@ -203,18 +214,6 @@ const channelMembers = {};
                     );
                     return;
                   }
-                } else if (member.blockedUsers.indexOf(user.id) != -1) {
-                  socket.send(
-                    "error",
-                    "Unable to send message, a member of this DM has blocked you."
-                  );
-                  return;
-                } else if (blockedUsers.indexOf(member.id) != -1) {
-                  socket.send(
-                    "error",
-                    "You cannot send a message to someone you have blocked."
-                  );
-                  return;
                 }
               }
             }
@@ -385,6 +384,20 @@ const channelMembers = {};
                 focus: true,
               });
               return;
+            }
+
+            // No new DM with someone either side has blocked. An existing
+            // DM still opens (history stays readable); sending is refused.
+            const blockCache = new Map();
+            for (let otherId of userIds) {
+              if (otherId == user.id) continue;
+              if (await blocks.usersBlockEachOther(user.id, otherId, blockCache)) {
+                socket.send(
+                  "error",
+                  "You can't start a DM with someone you have blocked or who has blocked you."
+                );
+                return;
+              }
             }
 
             channel = new models.ChatChannel({

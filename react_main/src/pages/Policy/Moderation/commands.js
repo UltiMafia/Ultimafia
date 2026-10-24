@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { createElement, useContext } from "react";
 import axios from "axios";
 
 import { useErrorAlert } from "components/Alerts";
@@ -10,6 +10,7 @@ import {
   MaxBoardDescLength,
 } from "Constants";
 import { lobbies } from "../../../constants/lobbies";
+import { BlockRequests } from "./BlockRequests";
 
 export const COMMAND_GROUP_ORDER = {
   "User Management": 1, // the lower the number, the higher it appears
@@ -648,6 +649,50 @@ export function useModCommands(argValues, commandRan, setResults) {
           })
           .catch(errorAlert);
       },
+    },
+    "Review Block Requests": {
+      perm: "approveGameBlocks",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        if (!argValues.userId) {
+          siteInfo.showAlert("Pick a user.", "warning");
+          return;
+        }
+        if (typeof setResults === "function") {
+          setResults(
+            createElement(BlockRequests, {
+              key: `${argValues.userId}-${Date.now()}`,
+              userId: argValues.userId,
+            })
+          );
+        }
+        commandRan();
+      },
+    },
+    // Logged when a request is approved from Review Block Requests.
+    "Approve Game Block": {
+      perm: "approveGameBlocks",
+      category: "User Management",
+      hidden: true,
+      args: [
+        {
+          label: "User",
+          name: "blockerId",
+          type: "user_search",
+        },
+        {
+          label: "User",
+          name: "blockedId",
+          type: "user_search",
+        },
+      ],
     },
     "Restore Deleted User": {
       perm: "restoreDeletedUser",

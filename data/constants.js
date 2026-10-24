@@ -626,6 +626,7 @@ module.exports = {
     deleteFanart: true,
     seeModPanel: true,
     deleteViolation: true,
+    approveGameBlocks: true,
     devApi: true,
     devTestPublic: true,
     approveGithubLinks: true,
@@ -696,6 +697,7 @@ module.exports = {
         "deleteStrategy",
         "deleteFanart",
         "seeModPanel",
+        "approveGameBlocks",
       ],
     },
     Liaison: {

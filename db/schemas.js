@@ -1269,7 +1269,28 @@ var schemas = {
       toJSON: { virtuals: true },
     }
   ),
+  // One per user block (blocker -> blocked). The block itself (User.blockedUsers)
+  // stops communication right away; game joins are only blocked once staff
+  // approve the request. Deleted when the blocker unblocks.
+  BlockRequest: new mongoose.Schema({
+    id: { type: String, index: true },
+    blockerId: { type: String, index: true },
+    blockedId: { type: String, index: true },
+    date: { type: Number, index: true },
+    status: {
+      type: String,
+      enum: ["pending", "approved"],
+      default: "pending",
+      index: true,
+    },
+    approvedBy: String,
+    approvedAt: Number,
+    // Created by the backfill for a block that existed before requests did.
+    legacy: { type: Boolean, default: false },
+  }),
 };
+
+schemas.BlockRequest.index({ blockerId: 1, blockedId: 1 }, { unique: true });
 
 schemas.ForumVote.virtual("user", {
   ref: "User",
