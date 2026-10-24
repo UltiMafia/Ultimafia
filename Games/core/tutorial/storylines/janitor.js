@@ -78,6 +78,9 @@ module.exports = {
       });
       t.vote("lawyer", "Litigate", "*");
       if (victim !== "cop") t.vote("cop", "Investigate", "lawyer");
+      // When the Cop is cleaned, the Journalist was reading you: tomorrow they
+      // have your clean report (see day1JannedCop).
+      else t.vote("journalist", "Receive Reports", "janitor");
       await t.advance(k, `You'll learn ${t.nameOf(victim)}'s role when the night ends. Click Continue.`);
     },
 

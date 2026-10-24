@@ -392,6 +392,8 @@ describe("Tutorial playthrough (every storyline, through the host route)", funct
         storyline: "janitor",
         data: { victim },
         winner: "Mafia",
+        // The Journalist who calls out the clean really read the Janitor.
+        log: victim === "cop" ? ["vote journalist@Receive Reports -> janitor"] : [],
       })),
     );
 
