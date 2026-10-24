@@ -1918,6 +1918,7 @@ export function MobileLayout({
   return (
     <>
       <Stack
+        data-tutorial-pad
         sx={{
           flex: "1",
           display:
@@ -1943,6 +1944,7 @@ export function MobileLayout({
         {centerContent}
       </Stack>
       <Stack
+        data-tutorial-pad
         sx={{
           flex: "1",
           display:
@@ -1992,10 +1994,12 @@ export function MobileLayout({
               label="Chat"
               value="chat"
               icon={<i className="fas fa-comments" />}
+              data-tutorial="chat-tab"
             />
           ) : (
             <Stack
               direction="row"
+              data-tutorial="chat-tab"
               onClick={() => setSelectedPanel("chat")}
               sx={{
                 flex: 2,
@@ -2051,7 +2055,10 @@ export function ThreePanelLayout({
       <div className="center-panel panel with-radial-gradient">
         {centerPanelContent}
       </div>
-      <div className="right-panel panel with-radial-gradient">
+      <div
+        className="right-panel panel with-radial-gradient"
+        data-tutorial="actions-panel"
+      >
         {rightPanelContent}
       </div>
     </Stack>
@@ -2454,7 +2461,7 @@ export function TextMeetingLayout() {
         </Box>
       </Box>
 
-      <div className="speech-wrapper">
+      <div className="speech-wrapper" data-tutorial="chat-panel">
         <div
           className="speech-display"
           data-name-animation-viewport
@@ -4559,7 +4566,9 @@ export function InventoryPanel({
   if (!show) return null;
 
   const title = (
-    <InventoryCountBadge count={itemCount}>Inventory</InventoryCountBadge>
+    <span data-tutorial="inventory-header">
+      <InventoryCountBadge count={itemCount}>Inventory</InventoryCountBadge>
+    </span>
   );
 
   return (
@@ -4630,8 +4639,17 @@ function InventorySlot({ item, metadata, actionDescriptors, gameType }) {
       ""
     );
 
+  // The meetings this item opens, so the tutorial can point at the item.
+  const itemMeetings = hasActions
+    ? actionDescriptors
+        .map((d) => d.props && d.props.meeting && d.props.meeting.name)
+        .filter(Boolean)
+        .join("|")
+    : undefined;
+
   const cell = (
     <div
+      data-item-meetings={itemMeetings}
       className={`inventory-cell ${
         item ? "inventory-cell--filled" : "inventory-cell--empty"
       } ${hasActions ? "inventory-cell--interactive" : ""}`}
