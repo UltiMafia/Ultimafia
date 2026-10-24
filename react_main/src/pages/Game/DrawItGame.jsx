@@ -12,6 +12,7 @@ import {
   MobileLayout,
   GameTypeContext,
 } from "./Game";
+import { nextStateBell } from "shared/stateBell";
 import { GameContext } from "../../Contexts";
 import DrawCanvas, { emitUndo, emitClear } from "./components/DrawCanvas";
 import DrawTools from "./components/DrawTools";
@@ -27,7 +28,7 @@ export default function DrawItGame() {
   const stateViewing = game.stateViewing;
   const updateStateViewing = game.updateStateViewing;
 
-  const playBellRef = useRef(false);
+  const playBellRef = useRef(null);
 
   // Toast notifications for guesses + score reveals.
   const [toasts, setToasts] = useState([]);
@@ -56,8 +57,9 @@ export default function DrawItGame() {
 
   useSocketListeners((socket) => {
     socket.on("state", () => {
-      if (playBellRef.current) game.playAudio("ping");
-      playBellRef.current = true;
+      const bell = nextStateBell(playBellRef.current, state);
+      playBellRef.current = bell.lastId;
+      if (bell.ring) game.playAudio("ping");
     });
     socket.on("drawToast", ({ message, time }) => pushToast(message, time));
     socket.on("drawGuessers", (names) => {

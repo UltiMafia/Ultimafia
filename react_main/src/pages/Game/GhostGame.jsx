@@ -13,6 +13,7 @@ import {
   MobileLayout,
   GameTypeContext,
 } from "./Game";
+import { nextStateBell } from "shared/stateBell";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
@@ -32,7 +33,7 @@ export default function GhostGame(props) {
   const players = game.players;
   const isSpectator = game.isSpectator;
 
-  const playBellRef = useRef(false);
+  const playBellRef = useRef(null);
 
   const gameType = "Ghost";
   const meetings = history.states[stateViewing]
@@ -51,9 +52,9 @@ export default function GhostGame(props) {
 
   useSocketListeners((socket) => {
     socket.on("state", (state) => {
-      if (playBellRef.current) game.playAudio("ping");
-
-      playBellRef.current = true;
+      const bell = nextStateBell(playBellRef.current, state);
+      playBellRef.current = bell.lastId;
+      if (bell.ring) game.playAudio("ping");
     });
 
     socket.on("winners", (winners) => {});

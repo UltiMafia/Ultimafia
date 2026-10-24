@@ -13,6 +13,7 @@ import {
   GameTypeContext,
   SideMenu,
 } from "./Game";
+import { nextStateBell } from "shared/stateBell";
 import { GameContext } from "../../Contexts";
 import { Avatar } from "../User/UserWidgets";
 
@@ -25,7 +26,7 @@ export default function WackyWordsGame() {
   const stateViewing = game.stateViewing;
   const updateStateViewing = game.updateStateViewing;
 
-  const playBellRef = useRef(false);
+  const playBellRef = useRef(null);
 
   useEffect(() => {
     updateStateViewing({ type: "current" });
@@ -37,8 +38,9 @@ export default function WackyWordsGame() {
 
   useSocketListeners((socket) => {
     socket.on("state", () => {
-      if (playBellRef.current) game.playAudio("ping");
-      playBellRef.current = true;
+      const bell = nextStateBell(playBellRef.current, state);
+      playBellRef.current = bell.lastId;
+      if (bell.ring) game.playAudio("ping");
     });
     socket.on("winners", () => {});
   }, game.socket);

@@ -12,6 +12,7 @@ import {
   GameTypeContext,
   ActionList,
 } from "./Game";
+import { nextStateBell } from "shared/stateBell";
 import { GameContext } from "../../Contexts";
 import { cardGameAudioConfig } from "../../audio/audioConfigs";
 import PokerTable from "./PokerTable";
@@ -28,7 +29,7 @@ export default function TexasHoldEmGame(props) {
   const history = game.history;
   const updateStateViewing = game.updateStateViewing;
 
-  const playBellRef = useRef(false);
+  const playBellRef = useRef(null);
   const [toasts, setToasts] = useState([]);
   const toastIdRef = useRef(0);
   // Same socket fires for every panel mounted in the page; dedupe by `time`.
@@ -60,9 +61,9 @@ export default function TexasHoldEmGame(props) {
 
   useSocketListeners((socket) => {
     socket.on("state", (state) => {
-      if (playBellRef.current) game.playAudio("ping");
-
-      playBellRef.current = true;
+      const bell = nextStateBell(playBellRef.current, state);
+      playBellRef.current = bell.lastId;
+      if (bell.ring) game.playAudio("ping");
     });
 
     socket.on("winners", (winners) => {});
