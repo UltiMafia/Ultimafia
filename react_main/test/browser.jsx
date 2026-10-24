@@ -365,7 +365,7 @@ function ObituaryFixture({ review = false, singleState = false }) {
 }
 
 async function tests() {
-  await run("old-style obituaries use real chat rows and saved in-game settings", async () => {
+  await run("compact obituaries use real chat rows and saved in-game settings", async () => {
     const saved = localStorage.getItem("gameSettings");
     localStorage.setItem("gameSettings", JSON.stringify({ timestamps: true }));
     try {
@@ -374,7 +374,7 @@ async function tests() {
       assert(api.settings.legacyObituaries === false, "existing settings must default to newspapers");
       const settingsButton = [...root.querySelectorAll("button")].find(button => button.textContent.includes("Settings"));
       settingsButton.click(); await wait();
-      const label = [...root.querySelectorAll("label")].find(label => label.textContent.includes("Old-style Obituaries"));
+      const label = [...root.querySelectorAll("label")].find(label => label.textContent.includes("Compact Obituaries"));
       assert(label, "in-game obituary option missing");
       label.click(); await wait();
       [...root.querySelectorAll("button")].find(button => button.textContent === "Save").click();

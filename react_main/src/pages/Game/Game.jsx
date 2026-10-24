@@ -5884,7 +5884,7 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
       value: settings.messageLayout,
     },
     {
-      label: "Old-style Obituaries",
+      label: "Compact Obituaries",
       ref: "legacyObituaries",
       type: "boolean",
       value: settings.legacyObituaries,
