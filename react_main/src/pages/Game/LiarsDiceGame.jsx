@@ -40,7 +40,9 @@ export default function LiarsDiceGame(props) {
   const isSpectator = game.isSpectator;
   const gameOptions = game.options.gameTypeOptions;
 
-  const playBellRef = useRef(null);
+  // Last state id seen, starting from the one already on screen: these sound
+  // listeners do not get the states delivered before they subscribed.
+  const playBellRef = useRef(game.history?.currentState ?? null);
   const [showRulesModal, setShowRulesModal] = useState(true);
 
   const gameType = "Liars Dice";
@@ -77,7 +79,7 @@ export default function LiarsDiceGame(props) {
     socket.on("gunshot", () => {
       game.playAudio("gunshot");
     });
-  }, game.socket);
+  }, game.socket, { replay: false });
 
   const board = (
     <LiarsDiceBoard

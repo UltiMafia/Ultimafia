@@ -33,7 +33,9 @@ export default function GhostGame(props) {
   const players = game.players;
   const isSpectator = game.isSpectator;
 
-  const playBellRef = useRef(null);
+  // Last state id seen, starting from the one already on screen: these sound
+  // listeners do not get the states delivered before they subscribed.
+  const playBellRef = useRef(game.history?.currentState ?? null);
 
   const gameType = "Ghost";
   const meetings = history.states[stateViewing]
@@ -58,7 +60,7 @@ export default function GhostGame(props) {
     });
 
     socket.on("winners", (winners) => {});
-  }, game.socket);
+  }, game.socket, { replay: false });
 
   return (
     <GameTypeContext.Provider

@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { ClientSocket, MAX_REPLAY_MESSAGES, parseMessage, subscribeSocketListeners } from "../src/Socket.js";
+import { ClientSocket, MAX_REPLAY_MESSAGES, parseMessage, stringifyMessage, subscribeSocketListeners } from "../src/Socket.js";
+import { nextStateBell } from "../src/shared/stateBell.js";
 import { getConnectionStatus } from "../src/lib/connectionStatus.js";
 import { LatestRequest } from "../src/lib/latestRequest.js";
 import { SheetController } from "../src/lib/sheetController.js";
@@ -222,4 +223,54 @@ test("platform workaround does not mistake Firefox iOS for Android Gecko", t => 
     assert.equal(browserReservesBottomSafeArea(),reserves);
     assert.equal(isIos(),ios);
   }
+});
+
+// The game types' sound listeners (state bell, gunshot, music) subscribe with
+// { replay: false } and start from the state already on screen, so a game view
+// that remounts mid-game does not replay old bells and gunshots.
+function mountSoundListeners(socket, currentState, replay) {
+  const played = [];
+  let lastId = currentState;
+  const dispose = subscribeSocketListeners(socket, scoped => {
+    scoped.on("state", state => {
+      const bell = nextStateBell(lastId, state);
+      lastId = bell.lastId;
+      if (bell.ring) played.push("bell");
+    });
+    scoped.on("gunshot", () => played.push("gunshot"));
+  }, { replay });
+  return { played, dispose };
+}
+
+test("sound listeners mounted mid-game do not replay old bells or gunshots", t => {
+  const {socket,native} = socketFixture(t);
+  for (const id of [-1, 1, 2]) native.emit("message", {data: stringifyMessage("state", {id})});
+  native.emit("message", {data: "gunshot"});
+  native.emit("message", {data: stringifyMessage("state", {id: 3})});
+
+  const quiet = mountSoundListeners(socket, 3, false);
+  assert.deepEqual(quiet.played, []);
+  native.emit("message", {data: stringifyMessage("state", {id: 3})});
+  assert.deepEqual(quiet.played, []);
+  native.emit("message", {data: stringifyMessage("state", {id: 4})});
+  native.emit("message", {data: "gunshot"});
+  assert.deepEqual(quiet.played, ["bell", "gunshot"]);
+  quiet.dispose();
+
+  // What a replaying subscription would have played on mount.
+  const replaying = mountSoundListeners(socket, null, true);
+  assert.ok(replaying.played.includes("gunshot"));
+  assert.ok(replaying.played.filter(s => s === "bell").length >= 3);
+  replaying.dispose();
+});
+
+test("a pregame lobby re-sent its Pregame state does not ring", t => {
+  const {socket,native} = socketFixture(t);
+  native.emit("message", {data: stringifyMessage("state", {id: -1, name: "Pregame"})});
+  const lobby = mountSoundListeners(socket, -1, false);
+  for (let i = 0; i < 3; i++) native.emit("message", {data: stringifyMessage("state", {id: -1, name: "Pregame"})});
+  assert.deepEqual(lobby.played, []);
+  native.emit("message", {data: stringifyMessage("state", {id: 1, name: "Night"})});
+  assert.deepEqual(lobby.played, ["bell"]);
+  lobby.dispose();
 });

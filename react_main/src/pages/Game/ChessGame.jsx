@@ -49,7 +49,9 @@ export default function ChessGame(props) {
   const updateStateViewing = game.updateStateViewing;
   const stateViewing = game.stateViewing;
 
-  const playBellRef = useRef(null);
+  // Last state id seen, starting from the one already on screen: these sound
+  // listeners do not get the states delivered before they subscribed.
+  const playBellRef = useRef(game.history?.currentState ?? null);
 
   // Make player view current state when it changes
   useEffect(() => {
@@ -69,7 +71,7 @@ export default function ChessGame(props) {
     });
 
     socket.on("winners", (winners) => {});
-  }, game.socket);
+  }, game.socket, { replay: false });
 
   return (
     <GameTypeContext.Provider
