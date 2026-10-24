@@ -46,7 +46,7 @@ import { LatestRequest } from "../../../lib/latestRequest.js";
 
 // How often the lobby refreshes its open-game list on its own. A tick is
 // skipped while the tab is hidden or a game has the screen.
-const LOBBY_POLL_MS = 20000;
+const LOBBY_POLL_MS = 10000;
 
 // The list endpoint can return two documents for one game id -- a finished game
 // recorded twice, which was live on dev.ultimafia.gg (7Ufg1CxTF appeared twice
