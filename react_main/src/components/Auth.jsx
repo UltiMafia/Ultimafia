@@ -772,7 +772,11 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
       >
         Sign up with Discord
       </ProviderButton>
-      <SignInWithAppleButton onClick={registerApple} disabled={loading} />
+      <SignInWithAppleButton
+        onClick={registerApple}
+        disabled={loading}
+        label="Sign up with Apple"
+      />
       <Typography
         color="text.secondary"
         sx={{

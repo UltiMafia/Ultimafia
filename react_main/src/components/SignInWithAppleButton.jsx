@@ -30,13 +30,17 @@ export function AppleLogo() {
   );
 }
 
-export default function SignInWithAppleButton({ onClick, disabled }) {
+export default function SignInWithAppleButton({
+  onClick,
+  disabled,
+  label = "Sign in with Apple",
+}) {
   return (
     <Button
       fullWidth
       onClick={onClick}
       disabled={disabled}
-      aria-label="Sign in with Apple"
+      aria-label={label}
       sx={{
         mt: 1.5,
         height: 40,
@@ -55,7 +59,7 @@ export default function SignInWithAppleButton({ onClick, disabled }) {
       }}
     >
       <AppleLogo />
-      Sign in with Apple
+      {label}
     </Button>
   );
 }
