@@ -18,6 +18,20 @@
   margin-bottom: 4px; /* add a teensy bit of margin since modifiers clip up into the name */
 }
 
+.setup-archived-badge {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  padding: 0 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.6;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+}
+
 .popover .setup,
 .roleList {
   flex-flow: row wrap;

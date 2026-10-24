@@ -20,9 +20,11 @@ const dbStats = require("../db/stats");
 const { colorHasGoodContrastForBothThemes } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
+const setupArchive = require("../modules/setupArchive");
 const { planEmailSync, normalizeEmail } = require("../modules/accountEmail");
 const stockMarket = require("../lib/StockMarket");
 const skillRatingModule = require("../modules/skillRating");
+const blocks = require("../modules/blocks");
 const { DEFAULT_MU, DEFAULT_SIGMA, MIN_RATED_GAMES } = skillRatingModule;
 const router = express.Router();
 
@@ -235,6 +237,7 @@ router.get("/searchName", async function (req, res) {
         $match: {
           name: new RegExp(query, "i"),
           deleted: false,
+          systemAccount: { $ne: true },
         },
       },
       {
@@ -421,7 +424,7 @@ router.get("/:id/profile", async function (req, res) {
       .populate({
         path: "setups",
         select:
-          "id gameType name closed useRoleGroups roleGroupSizes count roles total -_id",
+          "id gameType name closed useRoleGroups roleGroupSizes count roles total archived -_id",
         options: {
           limit: constants.userSetupsPerPage,
         },
@@ -447,6 +450,14 @@ router.get("/:id/profile", async function (req, res) {
     }
 
     user = user.toJSON();
+
+    // The first page is populated before paging. Drop archived rows here so
+    // they stay hidden until /setups?showArchived=true.
+    if (Array.isArray(user.setups)) {
+      user.setups = user.setups.filter(
+        (setup) => !setup || setup.archived !== true
+      );
+    }
 
     if (!user.skillRating) {
       user.skillRating = {
@@ -535,6 +546,7 @@ router.get("/:id/profile", async function (req, res) {
 
     const totalSetups = await models.Setup.countDocuments({
       creator: userMongoId,
+      archived: { $ne: true },
     });
     user.maxSetupsPage =
       Math.max(
@@ -1227,6 +1239,13 @@ router.get("/:id/setups", async function (req, res) {
 
     const pageSize = constants.userSetupsPerPage || 5;
     const requestedPage = Number(req.query.page) || 1;
+    const viewerId = await routeUtils.verifyLoggedIn(req, true);
+    const showArchived = setupArchive.showArchivedRequested(
+      req.query.showArchived
+    );
+    const includeArchived =
+      showArchived &&
+      (viewerId === userId || (await setupArchive.isAdminPlus(viewerId)));
 
     const userDoc = await models.User.findOne({
       id: userId,
@@ -1239,12 +1258,25 @@ router.get("/:id/setups", async function (req, res) {
       return;
     }
 
-    const total = userDoc.setups?.length || 0;
+    // Page from the visible ids so an archived setup does not take a slot.
+    let orderedIds = userDoc.setups || [];
+    if (!includeArchived && orderedIds.length > 0) {
+      const archivedDocs = await models.Setup.find({
+        _id: { $in: orderedIds },
+        archived: true,
+      })
+        .select("_id")
+        .lean();
+      const hidden = new Set(archivedDocs.map((doc) => String(doc._id)));
+      orderedIds = orderedIds.filter((id) => !hidden.has(String(id)));
+    }
+
+    const total = orderedIds.length;
     const maxPage = Math.max(Math.ceil(total / pageSize), 1);
     const sanitizedPage = Math.min(Math.max(requestedPage, 1), maxPage);
     const startIdx = (sanitizedPage - 1) * pageSize;
     const endIdx = startIdx + pageSize;
-    const subsetIds = (userDoc.setups || []).slice(startIdx, endIdx);
+    const subsetIds = orderedIds.slice(startIdx, endIdx);
 
     let setups = [];
 
@@ -1253,7 +1285,7 @@ router.get("/:id/setups", async function (req, res) {
         _id: { $in: subsetIds },
       })
         .select(
-          "id gameType name closed useRoleGroups roleGroupSizes count roles total"
+          "id gameType name closed useRoleGroups roleGroupSizes count roles total archived"
         )
         .lean();
 
@@ -3740,6 +3772,11 @@ router.post("/name", async function (req, res) {
       return;
     }
 
+    if (routeUtils.isReservedUsername(name)) {
+      errors.conflict(res, "There is already a user with this name.");
+      return;
+    }
+
     var ownedItems = await redis.getUserItemsOwned(userId);
 
     if (ownedItems.nameChange < 1) {
@@ -3822,20 +3859,27 @@ router.post("/block", async function (req, res) {
 
     var user = await models.User.findOne({ id: userId }).select("blockedUsers");
 
-    if (user.blockedUsers.indexOf(userIdToBlock) == -1) {
+    const blocking = user.blockedUsers.indexOf(userIdToBlock) == -1;
+
+    // The block cuts communication now. Keeping each other out of games
+    // waits for staff to approve the request filed here. Unblocking drops
+    // the request too, approved or not.
+    if (blocking) {
       await models.User.updateOne(
         { id: userId },
-        { $push: { blockedUsers: userIdToBlock } }
+        { $addToSet: { blockedUsers: userIdToBlock } }
       ).exec();
+      await blocks.recordBlockRequest(userId, userIdToBlock);
     } else {
       await models.User.updateOne(
         { id: userId },
         { $pull: { blockedUsers: userIdToBlock } }
       ).exec();
+      await blocks.removeBlockRequest(userId, userIdToBlock);
     }
 
     await redis.cacheUserInfo(userId, true);
-    res.sendStatus(200);
+    res.send({ blocked: blocking });
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not block user. Please try again.");
@@ -4360,6 +4404,17 @@ router.post("/delete", async function (req, res) {
         },
       }
     ).exec();
+
+    // Hiding setups must not block account deletion. A later backfill
+    // retries anything this hook fails to move.
+    try {
+      await setupArchive.archiveOwnedSetupsForDeletedUser(userId);
+    } catch (archiveErr) {
+      logger.error(
+        `Failed to archive setups for deleted user ${userId}`,
+        archiveErr
+      );
+    }
 
     await redis.setUserOffline(userId);
     await redis.deleteUserInfo(userId);

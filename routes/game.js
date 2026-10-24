@@ -9,6 +9,7 @@ const utils = require("../lib/Utils");
 const redis = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const rehost = require("../modules/rehost");
+const blocks = require("../modules/blocks");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 
@@ -17,6 +18,7 @@ const FINISHED_DEDUPE_SLACK = 5;
 const axios = require("axios");
 const { devApiEnabled } = require("../modules/devApi/policy");
 const errors = require("../lib/errors");
+const setupArchive = require("../modules/setupArchive");
 
 const isTestingLobby = (lobby) => lobby == constants.testingLobby;
 const canUseTesting = (userId) =>
@@ -196,19 +198,6 @@ router.get("/openCounts", async function (req, res) {
   }
 });
 
-// Returns true if either user has blocked the other.
-async function usersBlockEachOther(userId, otherId, cache) {
-  if (!userId || !otherId || userId == otherId) return false;
-  const get = async (id) => {
-    if (cache && cache.has(id)) return cache.get(id);
-    const list = (await redis.getBlockedUsers(id)) || [];
-    if (cache) cache.set(id, list);
-    return list;
-  };
-  const [mine, theirs] = await Promise.all([get(userId), get(otherId)]);
-  return mine.includes(otherId) || theirs.includes(userId);
-}
-
 router.get("/list", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -268,17 +257,10 @@ router.get("/list", async function (req, res) {
     if (lobby != "All") games = games.filter((game) => game.lobby == lobby);
     else games = games.filter((game) => !isTestingLobby(game.lobby));
 
-    // Hide lobbies where the host and caller have blocked each other
+    // Hide lobbies hosted by someone the caller has an approved game block
+    // with (either way). A plain block only stops communication.
     if (userId) {
-      const blockCache = new Map();
-      const hostIds = [...new Set(games.map((g) => g.hostId).filter(Boolean))];
-      const hidden = new Set();
-      await Promise.all(
-        hostIds.map(async (hostId) => {
-          if (await usersBlockEachOther(userId, hostId, blockCache))
-            hidden.add(hostId);
-        })
-      );
+      const hidden = await blocks.gameBlockedIds(userId);
       if (hidden.size) games = games.filter((g) => !hidden.has(g.hostId));
     }
 
@@ -467,16 +449,17 @@ router.get("/:id/connect", async function (req, res) {
       return;
     }
 
-    // Block checks against the host and seated players
-    // (skipped if the user is already in this game so they can finish it)
+    // Approved game blocks against the host and seated players, either way
+    // (skipped if the user is already in this game so they can finish it).
+    // Applies to spectating too.
     if (userId && (await redis.inGame(userId)) !== gameId) {
-      const blockCache = new Map();
       const others = [game.hostId, ...(game.players || [])];
-      for (let otherId of new Set(others.filter(Boolean))) {
-        if (await usersBlockEachOther(userId, otherId, blockCache)) {
-          errors.forbidden(res, "You can't join this game.");
-          return;
-        }
+      if (await blocks.gameBlockedWithAny(userId, others)) {
+        errors.forbidden(
+          res,
+          "You can't join this game because of a block between you and a player in it."
+        );
+        return;
       }
     }
 
@@ -869,12 +852,15 @@ router.post("/host", async function (req, res) {
 
     var setup = await models.Setup.findOne({
       id: String(req.body.setup),
-    }).select("-_id -__v -creator -hash");
+    }).select("-__v -hash");
 
-    if (!setup) {
+    // Same message as a missing setup so an archived setup is not revealed.
+    if (!setup || !(await setupArchive.canViewArchived(userId, setup))) {
       errors.notFound(res, "Setup not found");
       return;
     }
+
+    var wasArchived = setup.archived === true;
 
     if (setup.gameType != gameType) {
       errors.badRequest(res, "Invalid setup for this game");
@@ -1083,7 +1069,16 @@ router.post("/host", async function (req, res) {
       return;
     }
 
+    var setupDoc = setup;
     setup = setup.toJSON();
+    delete setup._id;
+    delete setup.creator;
+    delete setup.archived;
+    delete setup.archivedAt;
+    delete setup.archivedBy;
+    delete setup.archivedReason;
+    delete setup.originalCreator;
+    delete setup.ownershipHistory;
     setup.roles = JSON.parse(setup.roles);
 
     if (await redis.getSetCreatingGame(userId)) {
@@ -1125,6 +1120,15 @@ router.post("/host", async function (req, res) {
       lobbyName = `${user.name}'s lobby`;
     }
     lobbyName = lobbyName.substring(0, 50);
+
+    if (wasArchived) {
+      if (!(await setupArchive.canManageSetup(userId, setupDoc, "unarchive"))) {
+        errors.forbidden(res, "You do not have the required permissions.");
+        redis.unsetCreatingGame(userId);
+        return;
+      }
+      await setupArchive.unarchiveSetup(setup, userId);
+    }
 
     try {
       var gameId = await gameLoadBalancer.createGame(userId, gameType, {

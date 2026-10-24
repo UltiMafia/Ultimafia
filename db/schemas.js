@@ -282,6 +282,8 @@ var schemas = {
     deleted: { type: Boolean, default: false },
     banned: { type: Boolean, default: false },
     flagged: { type: Boolean, default: false },
+    // Login is refused for these users. SetupArchivistBot is the only one.
+    systemAccount: { type: Boolean, default: false },
   }),
   Session: new mongoose.Schema({
     expires: Date,
@@ -341,6 +343,29 @@ var schemas = {
       ranked: { type: Boolean, default: false },
       competitive: { type: Boolean, default: false },
       played: { type: Number, index: true },
+      // Missing or false means the setup is public. Archived setups stay in
+      // the database and keep their _id.
+      archived: { type: Boolean, default: false, index: true },
+      archivedAt: Number,
+      archivedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      archivedReason: {
+        type: String,
+        enum: ["stale", "ownerDeleted", "manual"],
+      },
+      originalCreator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      ownershipHistory: [
+        {
+          from: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+          to: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+          at: Number,
+          by: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+          reason: String,
+        },
+      ],
+      lastPlayedAt: { type: Number, index: true },
       rolePlays: {},
       roleWins: {},
       factionRatings: factionRatings,
@@ -1269,7 +1294,28 @@ var schemas = {
       toJSON: { virtuals: true },
     }
   ),
+  // One per user block (blocker -> blocked). The block itself (User.blockedUsers)
+  // stops communication right away; game joins are only blocked once staff
+  // approve the request. Deleted when the blocker unblocks.
+  BlockRequest: new mongoose.Schema({
+    id: { type: String, index: true },
+    blockerId: { type: String, index: true },
+    blockedId: { type: String, index: true },
+    date: { type: Number, index: true },
+    status: {
+      type: String,
+      enum: ["pending", "approved"],
+      default: "pending",
+      index: true,
+    },
+    approvedBy: String,
+    approvedAt: Number,
+    // Created by the backfill for a block that existed before requests did.
+    legacy: { type: Boolean, default: false },
+  }),
 };
+
+schemas.BlockRequest.index({ blockerId: 1, blockedId: 1 }, { unique: true });
 
 schemas.ForumVote.virtual("user", {
   ref: "User",
@@ -1534,6 +1580,10 @@ schemas.PayPalShopOrder = new mongoose.Schema({
     default: null,
   },
 });
+
+// Setup archive queries: stale sweep and restore-by-original-creator.
+schemas.Setup.index({ archived: 1, played: 1, lastPlayedAt: 1 });
+schemas.Setup.index({ originalCreator: 1 });
 
 // Compound indexes for Poke schema
 schemas.Poke.index({ userA: 1, userB: 1 }, { unique: true });

@@ -27,6 +27,11 @@ import {
   COMMAND_GROUP_ORDER,
   useModCommands,
 } from "./commands";
+import { ArchiveStaleForm, RestoreSetupsForm } from "./SetupArchiveCommands";
+
+function userIsOwner(user) {
+  return (user?.groups || []).some((group) => group && group.name === "Owner");
+}
 
 import "css/main.css";
 import "css/moderation.css";
@@ -122,9 +127,10 @@ export function ModCommands(props) {
           (modCommands[commandName].perm
             ? [modCommands[commandName].perm]
             : []);
-        const userHasPermission = commandPerms.some(
-          (perm) => user.perms[perm]
-        );
+        const ownerOnly = !!modCommands[commandName].ownerOnly;
+        const userHasPermission = ownerOnly
+          ? userIsOwner(user)
+          : commandPerms.some((perm) => user.perms[perm]);
         const matchesSearch =
           !searchVal || commandName.toLowerCase().includes(searchVal);
 
@@ -326,6 +332,9 @@ export function ModCommands(props) {
     setSearchVal(query.toLowerCase());
   }
 
+  const customPanel =
+    command && modCommands[command] ? modCommands[command].custom : null;
+
   function onExecute() {
     for (let arg of modCommands[command].args) {
       if (argValues[arg.name] == null) {
@@ -352,7 +361,9 @@ export function ModCommands(props) {
         >
           <Stack direction="column" spacing={1}>
             <Stack direction="row">
-              <Button onClick={onExecute}>Execute</Button>
+              {customPanel ? null : (
+                <Button onClick={onExecute}>Execute</Button>
+              )}
               <Button
                 variant="outlined"
                 onClick={() => setDialogueOpen(false)}
@@ -374,11 +385,28 @@ export function ModCommands(props) {
               {command}
             </Typography>
           </Stack>
-          {args.length > 0 && (
+          {customPanel === "restoreSetups" && isDialogueOpen ? (
+            <RestoreSetupsForm
+              initial={prefilledArgs}
+              onDone={() => {
+                commandRan();
+                closeDialogue();
+              }}
+            />
+          ) : null}
+          {customPanel === "archiveStale" && isDialogueOpen ? (
+            <ArchiveStaleForm
+              onDone={() => {
+                commandRan();
+                closeDialogue();
+              }}
+            />
+          ) : null}
+          {!customPanel && args.length > 0 ? (
             <Grid container spacing={1} sx={{ mt: 0 }}>
               {args}
             </Grid>
-          )}
+          ) : null}
         </DialogContent>
       </Dialog>
       <Stack
