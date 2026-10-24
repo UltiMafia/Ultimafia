@@ -3118,24 +3118,29 @@ const MessageRow = React.memo(function MessageRow(props) {
                 </div>
               )}
               <TextEffect effect={textEffect}>
-                <UserText
-                  text={message.content}
-                  settings={user.settings}
-                  players={players}
-                  spectators={spectators}
-                  customEmotes={customEmotes}
-                  customStickers={customStickers}
-                  systemMessage={isServerMessage}
-                  filterProfanity
-                  linkify
-                  emotify
-                  slangify
-                  slangifySeed={message.time.toString()}
-                  terminologyEmoticons={props.settings.terminologyEmoticons}
-                  iconUsername
-                  roleify={props.settings.roleMentions}
-                  splitLetters={isPerLetterEffect(textEffect)}
-                />
+                {(message.obituaryLines || [message.content]).map((line, index) => (
+                  <React.Fragment key={index}>
+                    {index > 0 && <br />}
+                    <UserText
+                      text={line}
+                      settings={user.settings}
+                      players={players}
+                      spectators={spectators}
+                      customEmotes={customEmotes}
+                      customStickers={customStickers}
+                      systemMessage={isServerMessage}
+                      filterProfanity
+                      linkify
+                      emotify
+                      slangify
+                      slangifySeed={message.time.toString()}
+                      terminologyEmoticons={props.settings.terminologyEmoticons}
+                      iconUsername
+                      roleify={props.settings.roleMentions}
+                      splitLetters={isPerLetterEffect(textEffect)}
+                    />
+                  </React.Fragment>
+                ))}
               </TextEffect>
             </>
           )}

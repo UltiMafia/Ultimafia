@@ -27,21 +27,27 @@ const message = {
   ],
 };
 
-test("legacy obituaries preserve public text in death/reveal/will order", () => {
+test("compact obituaries keep each death's public text in one box in death/reveal/will order", () => {
   const original = structuredClone(message);
   const alerts = legacyObituaryMessages(message);
-  assert.deepEqual(alerts.map((alert) => alert.content), [
-    "Anonymous One was killed.",
-    "Anonymous One's role is Doctor:Insane.",
-    ":will: As read from Anonymous One's last will: check Two",
-    ":bomb: Anonymous Two explodes into a thousand pieces.",
-    ":will: Anonymous Two did not leave a will.",
+  assert.equal(alerts.length, 2);
+  assert.deepEqual(alerts.map((alert) => alert.obituaryLines), [
+    [
+      "Anonymous One was killed.",
+      "Anonymous One's role is Doctor:Insane.",
+      ":will: As read from Anonymous One's last will: check Two",
+    ],
+    [
+      ":bomb: Anonymous Two explodes into a thousand pieces.",
+      ":will: Anonymous Two did not leave a will.",
+    ],
   ]);
   for (const alert of alerts) {
     assert.equal(alert.senderId, "server");
     assert.equal(alert.time, message.time);
     assert.deepEqual(alert.tags, ["important"]);
     assert.equal(alert.obituaries, undefined);
+    assert.equal(alert.content, alert.obituaryLines.join("\n"));
   }
   assert.deepEqual(message, original);
 });
@@ -64,7 +70,7 @@ test("alignment-only and hidden reveals are not inferred from player data", () =
         snippets: { deathMessage: "One was killed.", revealMessage },
       }],
     });
-    assert.deepEqual(alerts.map((alert) => alert.content), [
+    assert.deepEqual(alerts[0].obituaryLines, [
       "One was killed.",
       ...(revealMessage ? [revealMessage] : []),
     ]);

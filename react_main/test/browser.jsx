@@ -333,6 +333,9 @@ const obituaryHistory = {
           revealMessage: "Alice's role is Villager.",
           lastWill: ":will: Alice did not leave a will.",
         },
+      }, {
+        id: "bob", playerInfo: { name: "Bob" },
+        snippets: { deathMessage: ":bomb: Bob explodes into a thousand pieces." },
       }],
     } },
   } },
@@ -378,17 +381,19 @@ async function tests() {
       assert(label, "in-game obituary option missing");
       label.click(); await wait();
       [...root.querySelectorAll("button")].find(button => button.textContent === "Save").click();
-      await until(() => root.querySelectorAll(".content.server").length === 3, "legacy chat alerts");
+      await until(() => root.querySelectorAll(".content.server").length === 2, "one compact alert per death");
       assert(!root.querySelector(".newspaper"), "legacy mode still renders a newspaper");
       const lines = [...root.querySelectorAll(".content.server")];
-      assert(lines[0].textContent.trim() === "Alice was killed.", "death text changed");
-      assert(lines[1].textContent.includes("Alice's role is") && lines[1].querySelector(".role"), "original reveal or inline role icon missing");
-      assert(lines[2].textContent.includes("Alice did not leave a will."), "will missing");
-      assert(root.querySelectorAll(".message .time").length === 3, "each alert needs a timestamp");
+      assert(lines[0].textContent.includes("Alice was killed."), "death text changed");
+      assert(lines[0].textContent.includes("Alice's role is") && lines[0].querySelector(".role"), "reveal must stay in the same box with its inline role icon");
+      assert(lines[0].textContent.includes("Alice did not leave a will.") && lines[0].querySelector(".emote"), "will and its icon must stay in the same box");
+      assert(lines[0].querySelectorAll("br").length === 2, "death/reveal/will need separate lines");
+      assert(lines[1].textContent.includes("Bob explodes") && !lines[0].textContent.includes("Bob"), "different deaths must not share a box");
+      assert(root.querySelectorAll(".message .time").length === 2, "each death needs one timestamp");
       assert(JSON.parse(localStorage.getItem("gameSettings")).legacyObituaries, "preference was not saved");
       ReactDOM.unmountComponentAtNode(root);
       mount(<MemoryRouter><ObituaryFixture /></MemoryRouter>);
-      await until(() => api?.settings.legacyObituaries && root.querySelectorAll(".content.server").length === 3, "saved preference reload");
+      await until(() => api?.settings.legacyObituaries && root.querySelectorAll(".content.server").length === 2, "saved preference reload");
       api.updateSettings({ type: "setProp", propName: "timestamps", propval: false });
       await until(() => !root.querySelector(".message .time"), "timestamp option");
       api.updateSettings({ type: "setProp", propName: "legacyObituaries", propval: false });
@@ -405,7 +410,7 @@ async function tests() {
     try {
       for (const singleState of [false, true]) {
         mount(<MemoryRouter><ObituaryFixture review singleState={singleState} /></MemoryRouter>);
-        await until(() => root.querySelectorAll(".content.server").length === 3, "review alerts");
+        await until(() => root.querySelectorAll(".content.server").length === 2, "one compact review alert per death");
         assert(!root.querySelector(".newspaper"), "review ignored legacy setting");
         ReactDOM.unmountComponentAtNode(root);
       }

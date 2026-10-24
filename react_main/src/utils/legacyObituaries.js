@@ -1,4 +1,4 @@
-// Before newspapers, each obituary snippet was an ordinary server alert.
+// Compact obituaries use one ordinary server-alert box per death.
 // Use only the public snippets, not the player's current role or profile.
 export function legacyObituaryMessages(message) {
   const alert = (id, content) => ({
@@ -15,12 +15,15 @@ export function legacyObituaryMessages(message) {
       : [];
   }
 
-  return message.obituaries.flatMap((obituary, index) =>
-    ["deathMessage", "revealMessage", "lastWill"].flatMap((snippet) => {
-      const content = obituary.snippets[snippet];
-      return content
-        ? [alert(`${obituary.id || index}:${snippet}`, content)]
-        : [];
-    })
-  );
+  return message.obituaries.flatMap((obituary, index) => {
+    const obituaryLines = ["deathMessage", "revealMessage", "lastWill"]
+      .map((snippet) => obituary.snippets[snippet])
+      .filter(Boolean);
+    return obituaryLines.length
+      ? [{
+          ...alert(obituary.id || index, obituaryLines.join("\n")),
+          obituaryLines,
+        }]
+      : [];
+  });
 }
