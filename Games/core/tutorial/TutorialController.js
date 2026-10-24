@@ -126,16 +126,6 @@ class TutorialController {
     }
     for (const user of bots) await this.game.userJoin(user, true);
 
-    // userJoin logs and swallows its errors, so check that every bot is
-    // actually seated before the game is handed to the player.
-    const seated = this.game.players.filter(
-      (p) => p.user && p.user.tutorialBot
-    ).length;
-    if (seated !== bots.length)
-      throw new Error(
-        `Only ${seated} of ${bots.length} tutorial bots joined game ${this.game.id}.`
-      );
-
     this.game.events.on("roleAssigned", (p) => this.restrictLitigate(p));
     this.game.events.on("state", () => this.onState());
     this.game.events.on("aboutToFinish", () => this.onFinish());
@@ -662,8 +652,7 @@ class TutorialController {
       pending.silences++;
       if (chatOnly) this.react(pending, "silence");
       const hint = chatOnly
-        ? pending.hints.silence ||
-          "Type your claim in the chat box at the bottom of the chat (on a phone, open the Chat tab first)."
+        ? pending.hints.silence || "Type your claim in the chat box at the bottom of the chat."
         : pending.idleHint ||
           "Still looking? Open the Actions tab (on a phone it's in the bottom bar; on a computer the actions are on the right), find the highlighted box and pick the highlighted player.";
       this.guide(`${pending.text} (${hint})`);

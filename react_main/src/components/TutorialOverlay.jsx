@@ -30,16 +30,6 @@ export default function TutorialOverlay({ socket }) {
   });
   const boxRef = useRef(null);
   const drag = useRef(null);
-  // Moved to the top of the screen while it would cover what the step lights.
-  const [dodge, setDodge] = useState(false);
-  const posRef = useRef(pos);
-  posRef.current = pos;
-
-  // While the tutorial is open, phone panels get room to scroll past the box.
-  useEffect(() => {
-    document.body.classList.add("tutorial-open");
-    return () => document.body.classList.remove("tutorial-open");
-  }, []);
 
   useSocketListeners((socket) => {
     socket.on("tutorial", (data) => {
@@ -63,7 +53,6 @@ export default function TutorialOverlay({ socket }) {
   // interval so it follows tab switches and dropdowns opening.
   const highlight = step && !step.done && !collapsed ? step.highlight : null;
   useEffect(() => {
-    setDodge(false);
     if (!highlight || !highlight.length) return undefined;
     let style = document.getElementById("tutorial-highlight-css");
     if (!style) {
@@ -73,38 +62,11 @@ export default function TutorialOverlay({ socket }) {
       document.head.appendChild(style);
     }
     let lit = [];
-    const scrolled = new Set();
     const apply = () => {
       const els = resolveHighlights(highlight, document);
       lit.forEach((el) => !els.includes(el) && el.classList.remove(HIGHLIGHT_CLASS));
       els.forEach((el) => el.classList.add(HIGHLIGHT_CLASS));
       lit = els;
-      // An item (the Sheriff's gun) sits below the action boxes: on a phone it
-      // can be off screen or under this box. Bring it up once per step.
-      const box = boxRef.current && boxRef.current.getBoundingClientRect();
-      for (const el of els) {
-        if (scrolled.has(el) || !el.matches("[data-item-meetings], [data-tutorial='inventory-header']")) continue;
-        const r = el.getBoundingClientRect();
-        const offScreen = r.bottom > window.innerHeight || r.top < 0;
-        const covered = box && r.bottom > box.top && r.top < box.bottom && r.right > box.left && r.left < box.right;
-        if (offScreen || covered) {
-          scrolled.add(el);
-          el.scrollIntoView({ block: "start", behavior: "smooth" });
-        }
-      }
-      // Anything else it covers (e.g. the chat box at the bottom): move up,
-      // unless the player has placed the box themselves.
-      if (box && !posRef.current) {
-        const hidden = els.some((el) => {
-          if (el.matches("[data-item-meetings], [data-tutorial='inventory-header'], .MuiMenuItem-root")) return false;
-          const r = el.getBoundingClientRect();
-          const w = Math.min(r.right, box.right) - Math.max(r.left, box.left);
-          const h = Math.min(r.bottom, box.bottom) - Math.max(r.top, box.top);
-          // More than half of it is under the box.
-          return w > 0 && h > 0 && w * h > 0.5 * r.width * r.height;
-        });
-        if (hidden) setDodge(true);
-      }
     };
     apply();
     const id = setInterval(apply, 400);
@@ -181,12 +143,6 @@ export default function TutorialOverlay({ socket }) {
 
   const placed = pos
     ? { left: pos.x, top: pos.y }
-    : dodge
-    ? {
-        left: "50%",
-        transform: "translateX(-50%)",
-        top: { xs: "calc(8px + env(safe-area-inset-top))", md: 80 },
-      }
     : {
         left: "50%",
         transform: "translateX(-50%)",

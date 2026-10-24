@@ -176,7 +176,7 @@ module.exports = {
       ], k);
       t.guide(`Because the Journalist was on you, they received your last report after you died: ${t.nameOf("janitor")} is GUILTY.`);
       t.guide(
-        `This is an autowin (the winner is already decided): two of the three Mafia are already dead (${t.nameOf("mafioso")} shot, ${t.nameOf("lawyer")} lynched), and your last report puts the third on ${t.nameOf("janitor")}. Lynching a confirmed guilty who is the last Mafia ends the game.`
+        "This is an autowin setup: you already have clears (or confirmed town) from earlier, plus a guilty on the last Mafia. Lynching between the last two unresolved players with that info guarantees a town win — if they flip Mafia you're done, and if not the other one is Mafia."
       );
       // Dead Cop can't vote; town finishes it.
       await t.everyoneVotes("janitor", k, "Village", { fast: true });
@@ -186,6 +186,6 @@ module.exports = {
 
   epilogue: () => [
     "The town won!",
-    "Lesson: share guilty results clearly. The Sheriff can shoot a confirmed guilty. If you die, a Journalist who was reading you still gets your last report, and a guilty on the last Mafia ends the game.",
+    "Lesson: share guilty results clearly. The Sheriff can shoot a confirmed guilty. If you die, a Journalist who was reading you still gets your last report. With clears plus a final guilty, the last lynch is an autowin.",
   ],
 };
