@@ -78,9 +78,6 @@ module.exports = {
       });
       t.vote("lawyer", "Litigate", "*");
       if (victim !== "cop") t.vote("cop", "Investigate", "lawyer");
-      // When the Cop is cleaned, the Journalist was reading you: tomorrow they
-      // have your clean report (see day1JannedCop).
-      else t.vote("journalist", "Receive Reports", "janitor");
       await t.advance(k, `You'll learn ${t.nameOf(victim)}'s role when the night ends. Click Continue.`);
     },
 
@@ -254,16 +251,9 @@ module.exports = {
 
   epilogue: (t) => {
     const role = roleOf(t, t.data.victim);
-    const what = {
-      v1: "The Sheriff shot the real Cop, the town lynched you (your team voted with them: bussing), the Sheriff died Night 2, town lynched the Lawyer on the Cop's guilty, and the Mafioso closed it out.",
-      cop: "The Journalist was reading you and exposed your clean, so the Sheriff shot you. With the real Cop already gone, your teammates outlasted the town.",
-      journalist: "With the Journalist gone nobody could break the Cop tie, so the Sheriff shot the real Cop and the town lynched you. Your teammates finished the game.",
-      sheriff: "With no gun in town, the town lynched the real Cop instead of you, and your team took it from there.",
-    }[t.data.victim] || "Your teammates finished the game.";
     return [
       "The Mafia won.",
-      `Lesson: you set a jan code ("${CODE[role]}" = ${role}) and cleaned a ${role}. When you fake-claimed Cop you named the Lawyer (Mafia) as your 'guilty': a Loyal Lawyer can't frame town, so a Villager 'guilty' would be exposed by their flip, while the Lawyer guilty was true.`,
-      what,
+      `Lesson: you set a jan code ("${CODE[role]}" = ${role}), cleaned a ${role}, and when you fake-claimed Cop you named the Lawyer (Mafia) as your 'guilty' — a Loyal Lawyer can't frame town, so a Villager 'guilty' would be exposed by their flip, while the Lawyer guilty was true. You died Day 1 (bussed), Sheriff died Night 2, town lynched the confirmed Lawyer, and the Mafioso closed a 3-way.`,
     ];
   },
 };
@@ -361,7 +351,7 @@ async function day1JannedVillager(t, k) {
   );
   await claimFakeCopOnLawyer(t, k);
   await t.chat("Village", [
-    ["cop", `That's a LIE. I'M the Cop! I really did check ${t.nameOf("lawyer")} last night, and yes, GUILTY. ${t.human().name} is copying my result.`],
+    ["cop", `That's a LIE. I'M the Cop! I checked ${t.nameOf("lawyer")} — wait, no, I checked ${t.nameOf("mafioso")}: GUILTY!`],
     ["mafioso", `Ha. Classic counterclaim.`],
     ["lawyer", "Our Cop spoke first."],
     ["sheriff", "I'm the Sheriff. One of these Cops is Mafia."],

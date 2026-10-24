@@ -43,7 +43,7 @@ module.exports = {
         "As Lawyer you must do TWO things tonight before Continue unlocks: (1) vote with your team on the Mafia Kill, and (2) use Litigate on a Mafia teammate. Both are required."
       );
       t.guide(
-        "This setup's Lawyer is Loyal: Litigate only works on your own Mafia teammates (it makes them look innocent), so in this tutorial only they appear in the Litigate box. A plain (non-Loyal) Lawyer can also make a town player look guilty, but most setups use Loyal."
+        "This setup's Lawyer is Loyal: Litigate only works on your own Mafia teammates (it makes them look innocent), so only they appear in the Litigate box. A plain (non-Loyal) Lawyer can also make a town player look guilty, but most setups use Loyal."
       );
       await t.expectVote("Mafia Kill", victim, {
         token: k,
