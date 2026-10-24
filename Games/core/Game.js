@@ -82,7 +82,10 @@ module.exports = class Game {
     this.hasIntegrity = true;
     this.ranked = options.settings.ranked;
     this.competitive = options.settings.competitive;
-    this.spectating = options.settings.spectating;
+    // Strictly true: the string "false" must not turn spectating on.
+    this.spectating =
+      options.settings.spectating === true ||
+      options.settings.spectating === "true";
     this.readyCheck = options.settings.readyCheck;
     this.noVeg = options.settings.noVeg;
     this.anonymousGame = options.settings.anonymousGame;
@@ -970,8 +973,14 @@ module.exports = class Game {
     for (let spectator of this.spectators) this.dropPregameMember(spectator);
   }
 
+  // options.deliberate: the player chose to spectate (/spectate, the Spectate
+  // button, ?spectate=true) and spectateFromSeatRefusal already allowed it,
+  // which with spectating off is only staff with canSpectateAny. Nothing else
+  // (a failed ready check) may move a player to spectators when spectating
+  // is off.
   async movePlayerToSpectator(player, options) {
     options = options || {};
+    if (!this.spectating && !options.deliberate) return null;
     // Seats are fixed once the start has begun.
     if (this.started || this.starting) return null;
 
@@ -1172,6 +1181,7 @@ module.exports = class Game {
     return this.movePlayerToSpectator(player, {
       user: options.user,
       alert: `${player.name} is now spectating.`,
+      deliberate: true,
     });
   }
 
@@ -1942,6 +1952,10 @@ module.exports = class Game {
         alert: `${player.name} was moved to spectators for not readying.`,
       });
       if (spectator) moved.push(spectator);
+      // Not moved (spectating was turned off meanwhile, or the seat changed):
+      // never leave an unready player seated.
+      else if (this.players[player.id] && !player.left)
+        await this.removeUnreadyPlayer(player);
     }
 
     this.sendReadyCheckCancel(moved);

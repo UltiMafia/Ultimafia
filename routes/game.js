@@ -1117,7 +1117,8 @@ router.post("/host", async function (req, res) {
         guests: Boolean(req.body.guests),
         ranked: Boolean(req.body.ranked),
         competitive: Boolean(req.body.competitive),
-        spectating: Boolean(req.body.spectating),
+        spectating:
+          req.body.spectating === true || req.body.spectating === "true",
         rehostId: rehostId,
         scheduled: scheduled,
         readyCheck: isCompetitive ? true : Boolean(req.body.readyCheck),
