@@ -5,9 +5,6 @@
   "dependencies": {
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
-    "@fullcalendar/core": "^6.1.19",
-    "@fullcalendar/daygrid": "^6.1.19",
-    "@fullcalendar/react": "^6.1.19",
     "@iconify/react": "^4.1.1",
     "@mui/icons-material": "^6.5.0",
     "@mui/material": "^6.5.0",
@@ -18,27 +15,21 @@
     "d3": "7.8.5",
     "emoji-picker-react": "^4.16.1",
     "firebase": "^11.10.0",
-    "fullcalendar": "^6.1.19",
     "immutability-helper": "^3.0.2",
     "mui-color-input": "^6.0.0",
     "qrcode.react": "^4.2.0",
     "react": "^17.0.0",
     "react-color": "^2.18.0",
     "react-dom": "^17.0.1",
-    "react-dropdown": "^1.7.0",
     "react-error-boundary": "^6.0.0",
     "react-helmet": "6.1.0",
     "react-hook-form": "^7.45.2",
     "react-loading": "^2.0.3",
     "react-markdown": "^8.0.0",
     "react-mde": "^11.5.0",
-    "react-router-dom": "^6.30.1",
-    "react-sound": "^1.2.0"
+    "react-router-dom": "^6.30.1"
   },
   "overrides": {
-    "react-sound": {
-      "react": "$react"
-    },
     "react-is": {
       "react": "$react"
     },
