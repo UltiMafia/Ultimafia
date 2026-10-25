@@ -43,7 +43,8 @@ function loadRouters(models, redis) {
     const path = require.resolve(request);
     require.cache[path] = { id: path, filename: path, loaded: true, exports };
   }
-  for (const request of reloaded) delete require.cache[require.resolve(request)];
+  for (const request of reloaded)
+    delete require.cache[require.resolve(request)];
   const modRouter = require("../routes/mod");
   const banPageRouter = require("../routes/banPage");
   const banAppeals = require("../modules/banAppeals");
@@ -63,7 +64,7 @@ function loadRouters(models, redis) {
 function findHandler(router, method, path) {
   const layer = router.stack.find(
     (entry) =>
-      entry.route && entry.route.path === path && entry.route.methods[method]
+      entry.route && entry.route.path === path && entry.route.methods[method],
   );
   if (!layer) throw new Error(`Missing ${method.toUpperCase()} ${path}`);
   return layer.route.stack[0].handle;
@@ -145,7 +146,7 @@ describe("site ban page and appeals", function () {
       models[name] = connection.model(
         name,
         schemas[name],
-        `${name.toLowerCase()}_${namespace}`
+        `${name.toLowerCase()}_${namespace}`,
       );
     await models.SiteBanAppeal.init();
 
@@ -198,7 +199,7 @@ describe("site ban page and appeals", function () {
 
   beforeEach(async function () {
     await Promise.all(
-      Object.values(models).map((model) => model.deleteMany({}))
+      Object.values(models).map((model) => model.deleteMany({})),
     );
     ranks.clear();
     allowed.clear();
@@ -249,7 +250,7 @@ describe("site ban page and appeals", function () {
         length: "30 days",
         reason,
       }),
-      res
+      res,
     );
     return res;
   }
@@ -290,9 +291,13 @@ describe("site ban page and appeals", function () {
       ban.reason.should.equal("Repeated harassment");
       ban.modId.should.equal("banningAdmin");
       should.exist(ban.createdAt);
-      const action = await models.ModAction.findOne({ name: "Site Ban" }).lean();
+      const action = await models.ModAction.findOne({
+        name: "Site Ban",
+      }).lean();
       action.reason.should.equal("Repeated harassment");
-      const notif = await models.Notification.findOne({ user: "target" }).lean();
+      const notif = await models.Notification.findOne({
+        user: "target",
+      }).lean();
       notif.content.should.contain("Reason: Repeated harassment");
     });
 
@@ -304,10 +309,12 @@ describe("site ban page and appeals", function () {
           banType: "chat",
           length: "1 day",
         }),
-        res
+        res,
       );
       res.statusCode.should.equal(200);
-      should.not.exist((await models.Ban.findOne({ type: "chat" }).lean()).reason);
+      should.not.exist(
+        (await models.Ban.findOne({ type: "chat" }).lean()).reason,
+      );
     });
   });
 
@@ -365,7 +372,9 @@ describe("site ban page and appeals", function () {
     it("rejects a request without the ban page's csrf token", async function () {
       await siteBan();
       (await appeal(appealText, {})).statusCode.should.equal(403);
-      (await appeal(appealText, { "x-csrf": "wrong" })).statusCode.should.equal(403);
+      (await appeal(appealText, { "x-csrf": "wrong" })).statusCode.should.equal(
+        403,
+      );
       (await models.SiteBanAppeal.countDocuments({})).should.equal(0);
     });
 
@@ -391,7 +400,7 @@ describe("site ban page and appeals", function () {
       messages.length.should.equal(1);
       messages[0].senderId.should.equal("target");
       messages[0].content.should.equal(
-        `BAN-APPEAL: BadPlayer - BAN REASON: Repeated harassment in lobby chat , APPEAL: ${appealText}`
+        `BAN-APPEAL: BadPlayer - BAN REASON: Repeated harassment in lobby chat , APPEAL: ${appealText}`,
       );
 
       const admins = ["banningAdmin", "otherAdmin", "owner"];
@@ -399,18 +408,28 @@ describe("site ban page and appeals", function () {
         id: messages[0].channel,
       }).lean();
       channel.public.should.equal(false);
-      [...channel.memberIds].sort().should.deep.equal([...admins, "target"].sort());
+      [...channel.memberIds]
+        .sort()
+        .should.deep.equal([...admins, "target"].sort());
       channel.id.should.equal(
-        loaded.banAppeals.userIdsToChannelId([...admins, "target"])
+        loaded.banAppeals.userIdsToChannelId([...admins, "target"]),
       );
 
-      const opens = await models.ChannelOpen.find({ channelId: channel.id }).lean();
-      opens.map((open) => open.user).sort().should.deep.equal(admins);
+      const opens = await models.ChannelOpen.find({
+        channelId: channel.id,
+      }).lean();
+      opens
+        .map((open) => open.user)
+        .sort()
+        .should.deep.equal(admins);
       const notifs = await models.Notification.find({
         isChat: true,
         channelId: channel.id,
       }).lean();
-      notifs.map((notif) => notif.user).sort().should.deep.equal(admins);
+      notifs
+        .map((notif) => notif.user)
+        .sort()
+        .should.deep.equal(admins);
 
       const stored = await models.SiteBanAppeal.findOne({}).lean();
       stored.recipientIds.should.deep.equal(admins);
@@ -457,7 +476,7 @@ describe("site ban page and appeals", function () {
       const res = response();
       await handlers.vote(
         modRequest(modId, { userId: "target", vote: value, notes }),
-        res
+        res,
       );
       return res;
     }
@@ -466,20 +485,71 @@ describe("site ban page and appeals", function () {
       return models.SiteBanAppeal.findOne({}).lean();
     }
 
+    // Adds admins (Admin group members with the unban permission).
+    async function addAdmins(ids) {
+      const group = await models.Group.findOne({ name: "Admin" });
+      for (const id of ids) {
+        const user = await models.User.create({ id, name: id, deleted: false });
+        await models.InGroup.create({ user: user._id, group: group._id });
+        ranks.set(id, 10);
+        allowed.add(`${id}:unban`);
+      }
+    }
+
     beforeEach(async function () {
       // owner can vote too; give it the same permissions as the admins.
       ranks.set("owner", 20);
       allowed.add("owner:unban");
       await siteBan();
-      await appeal(appealText);
     });
 
-    it("one accept vote leaves the appeal PENDING and shows the tally", async function () {
+    // N = 3 by default: banningAdmin, otherAdmin, owner.
+    async function submit() {
+      (await appeal(appealText)).statusCode.should.equal(200);
+    }
+
+    it("decides by the rule: 2 accepts, or denies > N - 2", function () {
+      const { tallyVotes, decidedStatus } = loaded.banAppeals;
+      const admins = (n) => Array.from({ length: n }, (_, i) => `a${i}`);
+      const votes = (accepts, denies) => [
+        ...Array.from({ length: accepts }, (_, i) => ({
+          voterId: `a${i}`,
+          vote: "accept",
+        })),
+        ...Array.from({ length: denies }, (_, i) => ({
+          voterId: `a${accepts + i}`,
+          vote: "deny",
+        })),
+      ];
+      const status = (n, accepts, denies) =>
+        decidedStatus(tallyVotes(votes(accepts, denies), admins(n)));
+      status(5, 0, 3).should.equal("pending");
+      status(5, 0, 4).should.equal("denied");
+      status(5, 1, 3).should.equal("pending");
+      status(3, 0, 1).should.equal("pending");
+      status(3, 0, 2).should.equal("denied");
+      status(2, 0, 1).should.equal("denied");
+      status(3, 2, 1).should.equal("accepted");
+      status(1, 0, 1).should.equal("pending");
+      // Votes from someone outside the snapshot never count.
+      decidedStatus(
+        tallyVotes(
+          [
+            { voterId: "outsider", vote: "accept" },
+            { voterId: "a0", vote: "accept" },
+          ],
+          admins(3),
+        ),
+      ).should.equal("pending");
+    });
+
+    it("one accept vote leaves the appeal PENDING and shows N and the tally", async function () {
+      await submit();
       const res = await vote("otherAdmin", "accept", "Looks fine to me");
       res.statusCode.should.equal(200);
       res.body.should.deep.equal({
         status: "pending",
-        tally: { accept: 1, deny: 0, required: { accept: 2, deny: 2 } },
+        tally: { admins: 3, accept: 1, deny: 0, acceptAt: 2, denyAt: 2 },
       });
       const doc = await stored();
       doc.status.should.equal("pending");
@@ -492,6 +562,7 @@ describe("site ban page and appeals", function () {
     });
 
     it("two distinct accept votes make it ACCEPTED without unbanning", async function () {
+      await submit();
       await vote("otherAdmin", "accept");
       const res = await vote("banningAdmin", "accept");
       res.body.status.should.equal("accepted");
@@ -502,31 +573,97 @@ describe("site ban page and appeals", function () {
       (await info()).body.appeal.status.should.equal("accepted");
       // Lifting the ban stays a separate, explicit unban.
       (await models.Ban.countDocuments({ type: "site" })).should.equal(1);
-      should.exist(await models.ModAction.findOne({ name: "Accept Ban Appeal" }).lean());
+      should.exist(
+        await models.ModAction.findOne({ name: "Accept Ban Appeal" }).lean(),
+      );
     });
 
     it("an admin voting twice counts once, and the latest vote replaces the first", async function () {
+      await submit();
       await vote("otherAdmin", "accept");
       const again = await vote("otherAdmin", "accept");
       again.body.status.should.equal("pending");
       again.body.tally.accept.should.equal(1);
-      const changed = await vote("otherAdmin", "deny");
-      changed.body.tally.should.include({ accept: 0, deny: 1 });
       const doc = await stored();
       doc.votes.length.should.equal(1);
-      doc.votes[0].vote.should.equal("deny");
-      doc.status.should.equal("pending");
     });
 
-    it("two deny votes make it DENIED", async function () {
-      await vote("otherAdmin", "deny");
+    it("N = 3: 1 deny stays PENDING, 2 denies make it DENIED", async function () {
+      await submit();
+      (await vote("otherAdmin", "deny")).body.should.deep.equal({
+        status: "pending",
+        tally: { admins: 3, accept: 0, deny: 1, acceptAt: 2, denyAt: 2 },
+      });
       const res = await vote("owner", "deny");
       res.body.status.should.equal("denied");
       (await info()).body.appeal.status.should.equal("denied");
-      should.exist(await models.ModAction.findOne({ name: "Deny Ban Appeal" }).lean());
+      should.exist(
+        await models.ModAction.findOne({ name: "Deny Ban Appeal" }).lean(),
+      );
+    });
+
+    it("N = 5: 3 denies stay PENDING, the 4th makes it DENIED", async function () {
+      await addAdmins(["admin4", "admin5"]);
+      await submit();
+      (await stored()).recipientIds.length.should.equal(5);
+      for (const id of ["otherAdmin", "owner", "admin4"])
+        (await vote(id, "deny")).body.status.should.equal("pending");
+      const third = await vote("admin4", "deny");
+      third.body.tally.should.deep.equal({
+        admins: 5,
+        accept: 0,
+        deny: 3,
+        acceptAt: 2,
+        denyAt: 4,
+      });
+      const fourth = await vote("admin5", "deny");
+      fourth.body.status.should.equal("denied");
+    });
+
+    it("changing a vote from deny to accept recalculates the result", async function () {
+      await submit();
+      await vote("otherAdmin", "deny");
+      const changed = await vote("otherAdmin", "accept");
+      changed.body.tally.should.include({ accept: 1, deny: 0 });
+      // A second deny would now leave 1 deny, so still PENDING.
+      (await vote("owner", "deny")).body.status.should.equal("pending");
+      const res = await vote("banningAdmin", "accept");
+      res.body.status.should.equal("accepted");
+      res.body.tally.should.include({ accept: 2, deny: 1 });
+      (await stored()).votes.length.should.equal(3);
+    });
+
+    it("uses the admins snapshotted at submission: later admins can't vote and don't change N", async function () {
+      await submit();
+      await addAdmins(["lateAdmin"]);
+      (await vote("lateAdmin", "accept")).statusCode.should.equal(403);
+      // An admin removed after submission still counts in N.
+      const group = await models.Group.findOne({ name: "Admin" });
+      const owner = await models.User.findOne({ id: "otherAdmin" });
+      await models.InGroup.deleteMany({ user: owner._id, group: group._id });
+      const res = await vote("banningAdmin", "deny");
+      res.body.tally.admins.should.equal(3);
+      res.body.tally.denyAt.should.equal(2);
+      res.body.status.should.equal("pending");
+    });
+
+    it("with fewer than 2 admins it stays PENDING and is never auto-denied", async function () {
+      await models.InGroup.deleteMany({}).exec();
+      const group = await models.Group.findOne({ name: "Admin" });
+      const only = await models.User.findOne({ id: "otherAdmin" });
+      await models.InGroup.create({ user: only._id, group: group._id });
+      await submit();
+      (await stored()).recipientIds.should.deep.equal(["otherAdmin"]);
+      (await info()).body.appeal.status.should.equal("pending");
+      const res = await vote("otherAdmin", "deny");
+      res.body.should.deep.equal({
+        status: "pending",
+        tally: { admins: 1, accept: 0, deny: 1, acceptAt: 2, denyAt: null },
+      });
     });
 
     it("refuses votes after the appeal is decided", async function () {
+      await submit();
       await vote("otherAdmin", "accept");
       await vote("owner", "accept");
       const late = await vote("banningAdmin", "deny");
@@ -537,6 +674,7 @@ describe("site ban page and appeals", function () {
     });
 
     it("refuses non-admins, including a moderator with the unban permission", async function () {
+      await submit();
       (await vote("mod", "accept")).statusCode.should.equal(403);
       allowed.add("mod:unban");
       (await vote("mod", "accept")).statusCode.should.equal(403);
@@ -544,44 +682,61 @@ describe("site ban page and appeals", function () {
     });
 
     it("refuses a bad vote value and a user with no appeal", async function () {
+      await submit();
       (await vote("otherAdmin", "maybe")).statusCode.should.equal(400);
       await models.SiteBanAppeal.deleteMany({}).exec();
       (await vote("otherAdmin", "accept")).statusCode.should.equal(404);
     });
 
     it("posts each vote and the tally into the appeal's group DM", async function () {
-      await vote("otherAdmin", "accept");
+      await submit();
+      await vote("otherAdmin", "deny");
       await vote("banningAdmin", "accept");
+      await vote("owner", "accept");
       const doc = await stored();
       const messages = await models.ChatMessage.find({ channel: doc.channelId })
         .sort({ date: 1 })
         .lean();
-      messages.map((m) => m.content).slice(1).should.deep.equal([
-        "BAN-APPEAL VOTE: OtherAdmin voted ACCEPT - accept 1/2, deny 0/2 - still PENDING",
-        "BAN-APPEAL VOTE: BanningAdmin voted ACCEPT - accept 2/2, deny 0/2 - appeal ACCEPTED",
-      ]);
+      messages
+        .map((m) => m.content)
+        .slice(1)
+        .should.deep.equal([
+          "BAN-APPEAL VOTE: OtherAdmin voted DENY - 3 admins: accept 0/2, deny 1/2 - still PENDING",
+          "BAN-APPEAL VOTE: BanningAdmin voted ACCEPT - 3 admins: accept 1/2, deny 1/2 - still PENDING",
+          "BAN-APPEAL VOTE: Owner voted ACCEPT - 3 admins: accept 2/2, deny 1/2 - appeal ACCEPTED",
+        ]);
     });
 
-    it("shows admins the tally and who voted", async function () {
+    it("shows admins N, the tally and who voted", async function () {
+      await submit();
       await vote("otherAdmin", "accept", "ok");
       const res = response();
       await handlers.tally(
         { ...modRequest("banningAdmin"), query: { userId: "target" } },
-        res
+        res,
       );
       res.statusCode.should.equal(200);
       res.body.status.should.equal("pending");
-      res.body.tally.should.deep.equal({ accept: 1, deny: 0, required: { accept: 2, deny: 2 } });
-      res.body.votes.map((v) => `${v.voterName}:${v.vote}:${v.notes}`).should.deep.equal(["OtherAdmin:accept:ok"]);
+      res.body.tally.should.deep.equal({
+        admins: 3,
+        accept: 1,
+        deny: 0,
+        acceptAt: 2,
+        denyAt: 2,
+      });
+      res.body.votes
+        .map((v) => `${v.voterName}:${v.vote}:${v.notes}`)
+        .should.deep.equal(["OtherAdmin:accept:ok"]);
     });
 
     it("after ACCEPTED, a separate site unban ends the ban page", async function () {
+      await submit();
       await vote("otherAdmin", "accept");
       await vote("owner", "accept");
       const res = response();
       await handlers.unban(
         modRequest("otherAdmin", { userId: "target", banType: "site" }),
-        res
+        res,
       );
       res.statusCode.should.equal(200);
       (await info()).body.should.deep.equal({ banned: false, banEnded: true });

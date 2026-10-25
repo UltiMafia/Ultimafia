@@ -17,9 +17,14 @@ const MIN_APPEAL_LENGTH = 10;
 // Members of these groups receive appeals and vote on them.
 const APPEAL_RECIPIENT_GROUPS = ["Owner", "Admin"];
 
-// Votes needed to decide an appeal: ACCEPTED at this many accept votes,
-// DENIED at this many deny votes. Change here to change the rule.
-const APPEAL_VOTES_REQUIRED = { accept: 2, deny: 2 };
+// Deciding an appeal. N is the number of admins the appeal was sent to
+// (recipientIds, snapshotted at submission), D the deny votes:
+// - ACCEPTED once there are ACCEPT_VOTES_REQUIRED accept votes;
+// - DENIED once D > N - ACCEPT_VOTES_REQUIRED, i.e. the remaining admins can
+//   no longer reach ACCEPT_VOTES_REQUIRED accepts;
+// - otherwise PENDING. With N < ACCEPT_VOTES_REQUIRED the appeal can never
+//   reach ACCEPTED, and it stays PENDING (never auto-denied).
+const ACCEPT_VOTES_REQUIRED = 2;
 
 const VOTES = ["accept", "deny"];
 
@@ -124,7 +129,7 @@ async function getBanPageInfo(userId) {
     expires: ban.expires || 0,
     permanent: !ban.expires,
     appealLimit: 1,
-    votesRequired: APPEAL_VOTES_REQUIRED.accept,
+    votesRequired: ACCEPT_VOTES_REQUIRED,
     appeal: appealView(appeal),
   };
 }
@@ -241,17 +246,39 @@ async function submitAppeal(userId, rawText) {
   return appealView(appeal);
 }
 
-function tallyVotes(votes) {
-  const tally = { accept: 0, deny: 0, required: { ...APPEAL_VOTES_REQUIRED } };
+// N = admins the appeal went to; denyAt = deny votes that make it DENIED
+// (null when N < ACCEPT_VOTES_REQUIRED: it is never auto-denied).
+function tallyVotes(votes, recipientIds) {
+  const admins = (recipientIds || []).length;
+  const eligible = new Set(recipientIds || []);
+  const tally = {
+    admins,
+    accept: 0,
+    deny: 0,
+    acceptAt: ACCEPT_VOTES_REQUIRED,
+    denyAt:
+      admins >= ACCEPT_VOTES_REQUIRED
+        ? admins - ACCEPT_VOTES_REQUIRED + 1
+        : null,
+  };
   for (const vote of votes || [])
-    if (VOTES.includes(vote.vote)) tally[vote.vote]++;
+    if (VOTES.includes(vote.vote) && eligible.has(vote.voterId))
+      tally[vote.vote]++;
   return tally;
 }
 
 function decidedStatus(tally) {
-  if (tally.accept >= APPEAL_VOTES_REQUIRED.accept) return STATUS.ACCEPTED;
-  if (tally.deny >= APPEAL_VOTES_REQUIRED.deny) return STATUS.DENIED;
+  if (tally.accept >= ACCEPT_VOTES_REQUIRED) return STATUS.ACCEPTED;
+  if (tally.denyAt != null && tally.deny >= tally.denyAt) return STATUS.DENIED;
   return STATUS.PENDING;
+}
+
+function formatTally(tally) {
+  const deny =
+    tally.denyAt == null
+      ? `deny ${tally.deny} (too few admins to deny)`
+      : `deny ${tally.deny}/${tally.denyAt}`;
+  return `${tally.admins} admins: accept ${tally.accept}/${tally.acceptAt}, ${deny}`;
 }
 
 function formatVoteMessage({ voterName, vote, tally, status }) {
@@ -259,7 +286,7 @@ function formatVoteMessage({ voterName, vote, tally, status }) {
     status === STATUS.PENDING
       ? "still PENDING"
       : `appeal ${status.toUpperCase()}`;
-  return `BAN-APPEAL VOTE: ${voterName} voted ${vote.toUpperCase()} - accept ${tally.accept}/${tally.required.accept}, deny ${tally.deny}/${tally.required.deny} - ${result}`;
+  return `BAN-APPEAL VOTE: ${voterName} voted ${vote.toUpperCase()} - ${formatTally(tally)} - ${result}`;
 }
 
 async function findLatestAppeal(userId) {
@@ -281,7 +308,7 @@ async function getAppealForAdmins(userId) {
     banReason: appeal.banReason,
     text: appeal.text,
     createdAt: appeal.createdAt,
-    tally: tallyVotes(appeal.votes),
+    tally: tallyVotes(appeal.votes, appeal.recipientIds),
     votes: (appeal.votes || []).map((vote) => ({
       voterId: vote.voterId,
       voterName: names[vote.voterId] || vote.voterId,
@@ -293,7 +320,8 @@ async function getAppealForAdmins(userId) {
 }
 
 // An admin's vote on the user's pending appeal. Replaces that admin's earlier
-// vote; the appeal is decided once a side reaches APPEAL_VOTES_REQUIRED.
+// vote; see ACCEPT_VOTES_REQUIRED for when the appeal is decided. Only the
+// admins the appeal was sent to may vote.
 // Deciding never unbans: lifting the ban is a separate site Unban.
 async function voteOnAppeal({ modId, userId, vote, notes }) {
   if (!VOTES.includes(vote))
@@ -301,6 +329,11 @@ async function voteOnAppeal({ modId, userId, vote, notes }) {
 
   const appeal = await findLatestAppeal(userId);
   if (!appeal) throw new AppealError(404, "This user has no ban appeal.");
+  if (!(appeal.recipientIds || []).includes(modId))
+    throw new AppealError(
+      403,
+      "Only the admins this appeal was sent to can vote on it.",
+    );
   if (appeal.status !== STATUS.PENDING)
     throw new AppealError(
       409,
@@ -327,7 +360,7 @@ async function voteOnAppeal({ modId, userId, vote, notes }) {
     throw new AppealError(409, "This appeal was decided; votes are closed.");
 
   let current = await models.SiteBanAppeal.findOne({ id: appeal.id });
-  let tally = tallyVotes(current.votes);
+  let tally = tallyVotes(current.votes, current.recipientIds);
   const status = decidedStatus(tally);
   let decided = false;
   if (status !== STATUS.PENDING) {
@@ -342,7 +375,7 @@ async function voteOnAppeal({ modId, userId, vote, notes }) {
     } else {
       current = await models.SiteBanAppeal.findOne({ id: appeal.id });
     }
-    tally = tallyVotes(current.votes);
+    tally = tallyVotes(current.votes, current.recipientIds);
   }
 
   // Show the tally to the admins in the appeal's group DM.
@@ -374,7 +407,7 @@ module.exports = {
   STATUS,
   AppealError,
   APPEAL_RECIPIENT_GROUPS,
-  APPEAL_VOTES_REQUIRED,
+  ACCEPT_VOTES_REQUIRED,
   MAX_BAN_REASON_LENGTH,
   MAX_APPEAL_LENGTH,
   MIN_APPEAL_LENGTH,
@@ -388,6 +421,7 @@ module.exports = {
   sendAppealMessage,
   tallyVotes,
   decidedStatus,
+  formatTally,
   formatVoteMessage,
   getAppealForAdmins,
   voteOnAppeal,

@@ -12,6 +12,15 @@ import {
 import { lobbies } from "../../../constants/lobbies";
 import { BlockRequests } from "./BlockRequests";
 
+// "N admins: accept a/2, deny d/k" for a ban appeal tally from the server.
+function formatAppealTally(tally) {
+  const deny =
+    tally.denyAt == null
+      ? `deny ${tally.deny} (too few admins to deny)`
+      : `deny ${tally.deny}/${tally.denyAt}`;
+  return `${tally.admins} admins: accept ${tally.accept}/${tally.acceptAt}, ${deny}`;
+}
+
 export const COMMAND_GROUP_ORDER = {
   "User Management": 1, // the lower the number, the higher it appears
   "Setup Management": 2,
@@ -499,9 +508,10 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    // Ban-page appeals: each admin has one vote (changeable while pending);
-    // 2 accepts -> ACCEPTED, 2 denies -> DENIED. Lifting the ban is a
-    // separate Unban (Site).
+    // Ban-page appeals: each admin the appeal went to (N) has one vote,
+    // changeable while pending. 2 accepts -> ACCEPTED; DENIED once 2 accepts
+    // are out of reach (denies > N - 2). Lifting the ban is a separate
+    // Unban (Site).
     "Ban Appeal Vote": {
       perm: "unban",
       category: "User Management",
@@ -533,7 +543,7 @@ export function useModCommands(argValues, commandRan, setResults) {
           .then((res) => {
             const { status, tally } = res.data;
             siteInfo.showAlert(
-              `Vote recorded. Accept ${tally.accept}/${tally.required.accept}, deny ${tally.deny}/${tally.required.deny}: ${status.toUpperCase()}.`,
+              `Vote recorded. ${formatAppealTally(tally)}: ${status.toUpperCase()}.`,
               "success"
             );
             commandRan();
@@ -562,7 +572,7 @@ export function useModCommands(argValues, commandRan, setResults) {
                   .join(", ")
               : "no votes yet";
             siteInfo.showAlert(
-              `${status.toUpperCase()}. Accept ${tally.accept}/${tally.required.accept}, deny ${tally.deny}/${tally.required.deny} (${voteList}).`,
+              `${status.toUpperCase()}. ${formatAppealTally(tally)} (${voteList}).`,
               "info"
             );
             commandRan();

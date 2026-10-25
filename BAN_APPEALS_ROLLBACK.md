@@ -43,14 +43,24 @@ reason.
   above, so mods can't vote. Each admin has one vote per appeal, stored in
   `sitebanappeals.votes` as `{ voterId, vote, at, notes }`. Voting again
   replaces that admin's earlier vote while the appeal is PENDING.
-  - The appeal becomes ACCEPTED at 2 accept votes and DENIED at 2 deny votes.
-    To change the rule, edit `APPEAL_VOTES_REQUIRED` in
+  - N is the number of admins the appeal was sent to. It's snapshotted at
+    submission in `sitebanappeals.recipientIds`, so admins added or removed
+    later don't change N. Only those N admins can vote, and they must still
+    be admins when they vote.
+  - The appeal becomes ACCEPTED at 2 accept votes, checked first after each
+    vote.
+  - It becomes DENIED once 2 accepts are out of reach: with D deny votes,
+    DENIED when D > N - 2. For example, N = 3 is denied at 2 denies, N = 5 at
+    4 denies, and N = 2 at 1 deny.
+  - With N < 2 the appeal can never reach 2 accepts. It stays PENDING and is
+    never auto-denied (open question).
+  - To change the accept threshold, edit `ACCEPT_VOTES_REQUIRED` in
     `modules/banAppeals.js`.
   - Once decided, votes are closed (409).
   - Each vote also posts the tally into the appeal's group DM, e.g.
-    `BAN-APPEAL VOTE: AdminBob voted ACCEPT - accept 1/2, deny 0/2 - still PENDING`.
-  - "Ban Appeal Tally" (`GET /mod/banAppeal?userId=`) shows the status, the
-    tally and who voted what.
+    `BAN-APPEAL VOTE: AdminBob voted ACCEPT - 3 admins: accept 1/2, deny 0/2 - still PENDING`.
+  - "Ban Appeal Tally" (`GET /mod/banAppeal?userId=`) shows the status, N,
+    the accept and deny counts and who voted what.
   - The banned user sees only the status, not the votes.
   - Mod actions: "Vote On Ban Appeal" for each vote, plus "Accept Ban Appeal"
     / "Deny Ban Appeal" when the appeal is decided.
