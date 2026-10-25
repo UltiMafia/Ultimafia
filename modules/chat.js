@@ -9,6 +9,7 @@ const redis = require("./redis");
 const constants = require("../data/constants");
 const utils = require("../routes/utils");
 const blocks = require("./blocks");
+const siteSender = require("./siteSender");
 
 const port = process.env.CHAT_PORT;
 const server = new sockets.SocketServer(port);
@@ -78,10 +79,7 @@ const channelMembers = {};
 
             for (let i in messages) {
               let message = messages[i].toJSON();
-              message.sender = await redis.getBasicUserInfo(
-                message.sender.id,
-                true
-              );
+              message.sender = await messageSenderInfo(message);
               messages[i] = message;
             }
 
@@ -129,10 +127,7 @@ const channelMembers = {};
 
             for (let i in messages) {
               let message = messages[i].toJSON();
-              message.sender = await redis.getBasicUserInfo(
-                message.sender.id,
-                true
-              );
+              message.sender = await messageSenderInfo(message);
               messages[i] = message;
             }
 
@@ -517,6 +512,16 @@ const channelMembers = {};
     logger.log(e);
   }
 })();
+
+// Site messages (e.g. ban appeals) have no user account behind them.
+async function messageSenderInfo(message) {
+  if (siteSender.isSiteSender(message.senderId))
+    return siteSender.SITE_SENDER_INFO;
+  return redis.getBasicUserInfo(
+    message.sender ? message.sender.id : message.senderId,
+    true
+  );
+}
 
 async function sendChatInfo(userId, socket) {
   var permInfo = await redis.getUserPermissions(userId);

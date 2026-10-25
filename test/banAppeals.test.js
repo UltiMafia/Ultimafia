@@ -390,7 +390,7 @@ describe("site ban page and appeals", function () {
       (await models.SiteBanAppeal.countDocuments({})).should.equal(0);
     });
 
-    it("sends the exact message to a group DM with every admin, including the banning admin", async function () {
+    it("sends the exact message to an admins-only group DM, including the banning admin", async function () {
       await siteBan();
       const res = await appeal(`  ${appealText}  `);
       res.statusCode.should.equal(200);
@@ -398,7 +398,8 @@ describe("site ban page and appeals", function () {
 
       const messages = await models.ChatMessage.find({}).lean();
       messages.length.should.equal(1);
-      messages[0].senderId.should.equal("target");
+      // Posted by the site, not by the banned user.
+      messages[0].senderId.should.equal("site:ban-appeals");
       messages[0].content.should.equal(
         `BAN-APPEAL: BadPlayer - BAN REASON: Repeated harassment in lobby chat , APPEAL: ${appealText}`,
       );
@@ -408,25 +409,20 @@ describe("site ban page and appeals", function () {
         id: messages[0].channel,
       }).lean();
       channel.public.should.equal(false);
-      [...channel.memberIds]
-        .sort()
-        .should.deep.equal([...admins, "target"].sort());
-      channel.id.should.equal(
-        loaded.banAppeals.userIdsToChannelId([...admins, "target"]),
-      );
+      [...channel.memberIds].sort().should.deep.equal(admins);
+      channel.memberIds.should.not.include("target");
+      channel.id.should.equal(loaded.banAppeals.userIdsToChannelId(admins));
 
-      const opens = await models.ChannelOpen.find({
-        channelId: channel.id,
-      }).lean();
+      const opens = await models.ChannelOpen.find({}).lean();
       opens
         .map((open) => open.user)
         .sort()
         .should.deep.equal(admins);
-      const notifs = await models.Notification.find({
+      const chatNotifs = await models.Notification.find({
         isChat: true,
         channelId: channel.id,
       }).lean();
-      notifs
+      chatNotifs
         .map((notif) => notif.user)
         .sort()
         .should.deep.equal(admins);
@@ -435,6 +431,57 @@ describe("site ban page and appeals", function () {
       stored.recipientIds.should.deep.equal(admins);
       stored.banModId.should.equal("banningAdmin");
       stored.text.should.equal(appealText);
+    });
+
+    it("puts a 'Ban appeal pending' notification in each admin's inbox", async function () {
+      await siteBan();
+      await appeal(appealText);
+      const notifs = await models.Notification.find({
+        isChat: false,
+        content: /^Ban appeal pending/,
+      }).lean();
+      notifs
+        .map((notif) => notif.user)
+        .sort()
+        .should.deep.equal(["banningAdmin", "otherAdmin", "owner"]);
+      for (const notif of notifs) {
+        notif.content.should.equal("Ban appeal pending: BadPlayer");
+        notif.link.should.equal("/policy/moderation");
+        notif.icon.should.equal("gavel");
+        notif.read.should.equal(false);
+      }
+      // Nothing about the appeal goes to the banned user.
+      (
+        await models.Notification.countDocuments({
+          user: "target",
+          content: /appeal/i,
+        })
+      ).should.equal(0);
+    });
+
+    it("keeps a long appeal whole in one message", async function () {
+      await siteBan("r".repeat(300));
+      const long = "a".repeat(1000);
+      (await appeal(long)).statusCode.should.equal(200);
+      const message = await models.ChatMessage.findOne({}).lean();
+      message.content.should.equal(
+        `BAN-APPEAL: BadPlayer - BAN REASON: ${"r".repeat(300)} , APPEAL: ${long}`,
+      );
+      await models.SiteBanAppeal.deleteMany({}).exec();
+      (await appeal("a".repeat(1001))).statusCode.should.equal(400);
+    });
+
+    it("with no admins it stores the appeal as PENDING and sends nothing", async function () {
+      await siteBan();
+      await models.InGroup.deleteMany({}).exec();
+      const res = await appeal(appealText);
+      res.statusCode.should.equal(200);
+      res.body.appeal.status.should.equal("pending");
+      const stored = await models.SiteBanAppeal.findOne({}).lean();
+      stored.recipientIds.should.deep.equal([]);
+      should.not.exist(stored.channelId);
+      (await models.ChatMessage.countDocuments({})).should.equal(0);
+      (await info()).body.appeal.status.should.equal("pending");
     });
 
     it("allows only one appeal per ban: a second submit is refused and sends nothing", async function () {
@@ -508,7 +555,7 @@ describe("site ban page and appeals", function () {
       (await appeal(appealText)).statusCode.should.equal(200);
     }
 
-    it("decides by the rule: 2 accepts, or denies > N - 2", function () {
+    it("decides by the rule: min(2, N) accepts, or denies > N - min(2, N)", function () {
       const { tallyVotes, decidedStatus } = loaded.banAppeals;
       const admins = (n) => Array.from({ length: n }, (_, i) => `a${i}`);
       const votes = (accepts, denies) => [
@@ -528,9 +575,28 @@ describe("site ban page and appeals", function () {
       status(5, 1, 3).should.equal("pending");
       status(3, 0, 1).should.equal("pending");
       status(3, 0, 2).should.equal("denied");
-      status(2, 0, 1).should.equal("denied");
       status(3, 2, 1).should.equal("accepted");
-      status(1, 0, 1).should.equal("pending");
+      status(2, 0, 1).should.equal("denied");
+      status(2, 1, 0).should.equal("pending");
+      status(2, 2, 0).should.equal("accepted");
+      status(1, 0, 0).should.equal("pending");
+      status(1, 1, 0).should.equal("accepted");
+      status(1, 0, 1).should.equal("denied");
+      status(0, 0, 0).should.equal("pending");
+      tallyVotes([], admins(1)).should.deep.equal({
+        admins: 1,
+        accept: 0,
+        deny: 0,
+        acceptAt: 1,
+        denyAt: 1,
+      });
+      tallyVotes([], []).should.deep.equal({
+        admins: 0,
+        accept: 0,
+        deny: 0,
+        acceptAt: null,
+        denyAt: null,
+      });
       // Votes from someone outside the snapshot never count.
       decidedStatus(
         tallyVotes(
@@ -647,19 +713,38 @@ describe("site ban page and appeals", function () {
       res.body.status.should.equal("pending");
     });
 
-    it("with fewer than 2 admins it stays PENDING and is never auto-denied", async function () {
+    async function onlyOneAdmin() {
       await models.InGroup.deleteMany({}).exec();
       const group = await models.Group.findOne({ name: "Admin" });
       const only = await models.User.findOne({ id: "otherAdmin" });
       await models.InGroup.create({ user: only._id, group: group._id });
+    }
+
+    it("with 1 admin, that admin's single accept makes it ACCEPTED", async function () {
+      await onlyOneAdmin();
+      (await info()).body.votesRequired.should.equal(1);
       await submit();
       (await stored()).recipientIds.should.deep.equal(["otherAdmin"]);
-      (await info()).body.appeal.status.should.equal("pending");
-      const res = await vote("otherAdmin", "deny");
+      (await info()).body.votesRequired.should.equal(1);
+      const res = await vote("otherAdmin", "accept");
       res.body.should.deep.equal({
-        status: "pending",
-        tally: { admins: 1, accept: 0, deny: 1, acceptAt: 2, denyAt: null },
+        status: "accepted",
+        tally: { admins: 1, accept: 1, deny: 0, acceptAt: 1, denyAt: 1 },
       });
+      (await info()).body.appeal.status.should.equal("accepted");
+    });
+
+    it("with 1 admin, that admin's single deny makes it DENIED", async function () {
+      await onlyOneAdmin();
+      await submit();
+      const res = await vote("otherAdmin", "deny");
+      res.body.status.should.equal("denied");
+      const message = await models.ChatMessage.findOne({
+        content: /^BAN-APPEAL VOTE/,
+      }).lean();
+      message.content.should.equal(
+        "BAN-APPEAL VOTE: OtherAdmin voted DENY - 1 admin: accept 0/1, deny 1/1 - appeal DENIED",
+      );
     });
 
     it("refuses votes after the appeal is decided", async function () {
@@ -740,6 +825,156 @@ describe("site ban page and appeals", function () {
       );
       res.statusCode.should.equal(200);
       (await info()).body.should.deep.equal({ banned: false, banEnded: true });
+    });
+  });
+
+  describe("linked accounts (alts)", function () {
+    const appealText = "I was arguing, but I did not harass anyone.";
+    const fingerprint = { platform: "web", stable: "dev-1", unstable: "x" };
+
+    function as(userId) {
+      session = { siteBan: { userId, csrf } };
+    }
+
+    async function addUser(id, fields) {
+      await models.User.create({ id, name: id, deleted: false, ...fields });
+      ranks.set(id, 0);
+    }
+
+    it("blocks a shared-IP alt from appealing again and shows it the first appeal's status", async function () {
+      await addUser("altIp", { ip: ["203.0.113.9"] });
+      await siteBan();
+      // The site ban already banned the alt too, with its own Ban record.
+      (await models.Ban.countDocuments({ type: "site" })).should.equal(2);
+
+      as("target");
+      (await appeal(appealText)).statusCode.should.equal(200);
+
+      as("altIp");
+      const page = await info();
+      page.body.appeal.should.include({
+        status: "pending",
+        linkedAccount: true,
+      });
+      should.not.exist(page.body.appeal.text);
+      const second = await appeal("This is my other account appealing.");
+      second.statusCode.should.equal(409);
+      second.body.should.contain("linked to yours");
+      (await models.SiteBanAppeal.countDocuments({})).should.equal(1);
+      (
+        await models.ChatMessage.countDocuments({ content: /^BAN-APPEAL:/ })
+      ).should.equal(1);
+    });
+
+    it("links by device fingerprint as well, and follows the first appeal to its final status", async function () {
+      await models.User.updateOne(
+        { id: "target" },
+        { $set: { fingerprints: [fingerprint] } },
+      );
+      await addUser("altDevice", {
+        ip: ["198.51.100.7"],
+        fingerprints: [fingerprint],
+      });
+      await siteBan();
+
+      as("altDevice");
+      (await appeal(appealText)).statusCode.should.equal(200);
+      ranks.set("owner", 20);
+      allowed.add("owner:unban");
+      for (const admin of ["otherAdmin", "owner"]) {
+        const res = response();
+        await handlers.vote(
+          modRequest(admin, { userId: "altDevice", vote: "deny" }),
+          res,
+        );
+        res.statusCode.should.equal(200);
+      }
+
+      as("target");
+      (await info()).body.appeal.should.include({
+        status: "denied",
+        linkedAccount: true,
+      });
+      (await appeal(appealText)).statusCode.should.equal(409);
+    });
+
+    it("lets an unlinked banned user appeal on their own", async function () {
+      await addUser("stranger", { ip: ["192.0.2.50"] });
+      await siteBan();
+      as("target");
+      (await appeal(appealText)).statusCode.should.equal(200);
+
+      const res = response();
+      await handlers.ban(
+        modRequest("banningAdmin", {
+          userId: "stranger",
+          banType: "site",
+          length: "30 days",
+          reason: "Spamming",
+        }),
+        res,
+      );
+      as("stranger");
+      (await info()).body.appeal.should.deep.equal({ status: "not_submitted" });
+      (await appeal(appealText)).statusCode.should.equal(200);
+      (await models.SiteBanAppeal.countDocuments({})).should.equal(2);
+    });
+
+    it("allows only one appeal when linked accounts submit at the same time", async function () {
+      await addUser("altIp", { ip: ["203.0.113.9"] });
+      await addUser("altIp2", { ip: ["203.0.113.9"] });
+      await siteBan();
+      const submit = (userId) => {
+        const res = response();
+        return handlers
+          .appeal(
+            banRequest(
+              { siteBan: { userId, csrf } },
+              { appeal: appealText },
+              { "x-csrf": csrf },
+            ),
+            res,
+          )
+          .then(() => res);
+      };
+      const results = await Promise.all([
+        submit("target"),
+        submit("altIp"),
+        submit("altIp2"),
+      ]);
+      results.filter((r) => r.statusCode === 200).length.should.equal(1);
+      results.filter((r) => r.statusCode === 409).length.should.equal(2);
+      (await models.SiteBanAppeal.countDocuments({})).should.equal(1);
+      (
+        await models.ChatMessage.countDocuments({ content: /^BAN-APPEAL:/ })
+      ).should.equal(1);
+    });
+
+    it("doesn't count a linked appeal from a ban that ended before this one", async function () {
+      await addUser("altIp", { ip: ["203.0.113.9"] });
+      const longAgo = Date.now() - 90 * 24 * 60 * 60 * 1000;
+      await models.Ban.create({
+        id: "oldBan",
+        userId: "altIp",
+        modId: "banningAdmin",
+        type: "site",
+        expires: longAgo + 1000,
+        createdAt: longAgo,
+        permissions: ["signIn"],
+      });
+      await models.SiteBanAppeal.create({
+        id: "oldAppeal",
+        banId: "oldBan",
+        userId: "altIp",
+        text: "An old appeal.",
+        status: "denied",
+        recipientIds: ["otherAdmin"],
+        createdAt: longAgo + 100,
+      });
+      await siteBan();
+      as("target");
+      (await info()).body.appeal.status.should.equal("not_submitted");
+      (await appeal(appealText)).statusCode.should.equal(200);
     });
   });
 

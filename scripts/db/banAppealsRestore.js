@@ -28,11 +28,22 @@ const dir = process.argv[2];
     const r = await collection("sitebanappeals").updateOne(
       { banId: appeal.banId },
       { $setOnInsert: appeal },
-      { upsert: true }
+      { upsert: true },
     );
     restoredAppeals += r.upsertedCount;
   }
-  console.log(`Restored reasons on ${restoredBans} bans and ${restoredAppeals} appeals.`);
+  let restoredMessages = 0;
+  for (const message of readJson(dir, "sitemessages") || []) {
+    const r = await collection("chatmessages").updateOne(
+      { id: message.id },
+      { $setOnInsert: message },
+      { upsert: true },
+    );
+    restoredMessages += r.upsertedCount;
+  }
+  console.log(
+    `Restored reasons on ${restoredBans} bans, ${restoredAppeals} appeals and ${restoredMessages} site messages.`,
+  );
   process.exit(0);
 })().catch((e) => {
   console.error("Restore failed:", e.message);

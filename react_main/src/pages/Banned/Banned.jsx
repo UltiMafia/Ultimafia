@@ -188,13 +188,18 @@ export default function Banned() {
           />
         </Stack>
         <Alert severity="info">
-          You can only appeal this ban <b>once</b>. Your appeal goes to every
-          site admin. Explain clearly why the ban should be lifted.
+          You can only appeal <b>once</b>, and that includes any accounts linked
+          to yours. Your appeal goes to every site admin. Explain clearly why
+          the ban should be lifted.
         </Alert>
         <Typography color="text.secondary">
-          {APPEAL_STATUS_TEXT[status]}
+          {info.appeal?.linkedAccount
+            ? "An appeal was already filed from an account linked to yours. Only one appeal is allowed per person, so this is its status."
+            : APPEAL_STATUS_TEXT[status]}
           {status === "pending" && info.votesRequired
-            ? ` At least ${info.votesRequired} admins must agree to accept it.`
+            ? info.votesRequired === 1
+              ? " One admin must agree to accept it."
+              : ` At least ${info.votesRequired} admins must agree to accept it.`
             : ""}
         </Typography>
 
