@@ -12,6 +12,7 @@ import {
   GameTypeContext,
   SideMenu,
 } from "./Game";
+import { nextStateBell } from "shared/stateBell";
 import { GameContext } from "../../Contexts";
 import { cardGameAudioConfig } from "../../audio/audioConfigs";
 
@@ -33,7 +34,7 @@ export default function RatscrewGame() {
   const updateStateViewing = game.updateStateViewing;
   const self = game.self;
 
-  const playBellRef = useRef(false);
+  const playBellRef = useRef(null);
   const [liveExtraInfo, setLiveExtraInfo] = useState(null);
   const [toasts, setToasts] = useState([]);
   const toastIdRef = useRef(0);
@@ -68,8 +69,9 @@ export default function RatscrewGame() {
 
   useSocketListeners((socket) => {
     socket.on("state", () => {
-      if (playBellRef.current) game.playAudio("ping");
-      playBellRef.current = true;
+      const bell = nextStateBell(playBellRef.current, state);
+      playBellRef.current = bell.lastId;
+      if (bell.ring) game.playAudio("ping");
     });
     socket.on("cardShuffle", () => game.playAudio("cardShuffle"));
     socket.on("chips_large1", () => game.playAudio("chips_large1"));

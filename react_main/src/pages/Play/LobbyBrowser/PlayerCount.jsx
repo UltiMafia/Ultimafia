@@ -1,16 +1,23 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { Box, Popover, Stack, Typography } from "@mui/material";
 import { usePopover, InfoPopover } from "components/Popover";
 
 import "css/join.css";
 import { Time } from "components/Basic";
+import { lobbyCountFromInfo, displayedLobbyCount } from "shared/lobbyCount";
 
 export const PlayerCount = (props) => {
   const game = props.game;
   const numSlotsTotal = game.setup.total;
   const gameId = props.gameId;
   const status = props.status;
-  const numSlotsTaken = Math.min(props.numSlotsTaken || 0, numSlotsTotal);
+  // Live count from the info popover, tied to the list count it replaced so
+  // the next list refresh takes over again.
+  const [liveCount, setLiveCount] = useState(null);
+  const numSlotsTaken = Math.min(
+    displayedLobbyCount(props.numSlotsTaken || 0, liveCount),
+    numSlotsTotal
+  );
   const spectatingAllowed = props.spectatingAllowed || false;
   const spectatorCount = props.spectatorCount || 0;
 
@@ -21,6 +28,11 @@ export const PlayerCount = (props) => {
     path: `/api/game/${gameId}/info`,
     type: "game",
     boundingEl: infoRef.current,
+    onData: (info) => {
+      const count = lobbyCountFromInfo(info);
+      if (count !== null)
+        setLiveCount({ count, listCount: props.numSlotsTaken || 0 });
+    },
   });
   const { popoverOpen, handleClick } = popoverProps;
 

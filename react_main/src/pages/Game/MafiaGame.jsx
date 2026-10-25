@@ -19,6 +19,7 @@ import {
   InventoryPanel,
   buildActionDescriptors,
 } from "./Game";
+import { nextStateBell } from "shared/stateBell";
 import { GameContext, SiteInfoContext } from "../../Contexts";
 import { mafiaAudioConfig } from "../../audio/audioConfigs";
 import { SideMenu } from "./Game";
@@ -129,7 +130,9 @@ export default function MafiaGame() {
   const players = game.players;
   const isSpectator = game.isSpectator;
 
-  const playBellRef = useRef(false);
+  // Last state id seen, starting from the one already on screen: these sound
+  // listeners do not get the states delivered before they subscribed.
+  const playBellRef = useRef(game.history?.currentState ?? null);
 
   const gameType = "Mafia";
   const meetings = history.states[stateViewing]
@@ -382,12 +385,10 @@ export default function MafiaGame() {
 
   useSocketListeners((socket) => {
     socket.on("state", (state) => {
-      if (state && state.name && state.name.startsWith("Give Clue")) {
-      } else if (playBellRef.current) {
+      const bell = nextStateBell(playBellRef.current, state);
+      playBellRef.current = bell.lastId;
+      if (bell.ring && !(state.name && state.name.startsWith("Give Clue")))
         game.playAudio("bell");
-      }
-
-      playBellRef.current = true;
     });
 
     socket.on("winners", (winners) => {
@@ -503,7 +504,7 @@ export default function MafiaGame() {
     socket.on("snowball", () => {
       game.playAudio("snowball");
     });
-  }, game.socket);
+  }, game.socket, { replay: false });
 
   return (
     <GameTypeContext.Provider

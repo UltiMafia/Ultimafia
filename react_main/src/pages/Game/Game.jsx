@@ -1673,9 +1673,14 @@ function RehostInvite({ priority = 0 }) {
 
 let rehostInviteSlotCounter = 0;
 
-export function useSocketListeners(listeners, socket) {
+// options.replay (default true): also deliver the events this socket already
+// received before the listeners subscribed. Pass { replay: false } for
+// listeners that only play sounds, so a component that remounts mid-game does
+// not replay old bells, gunshots and music.
+export function useSocketListeners(listeners, socket, options) {
+  const replay = !options || options.replay !== false;
   useEffect(() => {
-    return subscribeSocketListeners(socket, listeners);
+    return subscribeSocketListeners(socket, listeners, { replay });
   }, [socket]);
 }
 

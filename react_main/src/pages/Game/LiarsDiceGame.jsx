@@ -14,6 +14,7 @@ import {
   GameTypeContext,
   SideMenu,
 } from "./Game";
+import { nextStateBell } from "shared/stateBell";
 import { Avatar } from "../User/UserWidgets";
 import { GameContext } from "../../Contexts";
 import { liarsDiceAudioConfig } from "../../audio/audioConfigs";
@@ -39,7 +40,9 @@ export default function LiarsDiceGame(props) {
   const isSpectator = game.isSpectator;
   const gameOptions = game.options.gameTypeOptions;
 
-  const playBellRef = useRef(false);
+  // Last state id seen, starting from the one already on screen: these sound
+  // listeners do not get the states delivered before they subscribed.
+  const playBellRef = useRef(game.history?.currentState ?? null);
   const [showRulesModal, setShowRulesModal] = useState(true);
 
   const gameType = "Liars Dice";
@@ -61,9 +64,9 @@ export default function LiarsDiceGame(props) {
 
   useSocketListeners((socket) => {
     socket.on("state", (state) => {
-      if (playBellRef.current) game.playAudio("ping");
-
-      playBellRef.current = true;
+      const bell = nextStateBell(playBellRef.current, state);
+      playBellRef.current = bell.lastId;
+      if (bell.ring) game.playAudio("ping");
     });
 
     socket.on("winners", (winners) => {});
@@ -76,7 +79,7 @@ export default function LiarsDiceGame(props) {
     socket.on("gunshot", () => {
       game.playAudio("gunshot");
     });
-  }, game.socket);
+  }, game.socket, { replay: false });
 
   const board = (
     <LiarsDiceBoard

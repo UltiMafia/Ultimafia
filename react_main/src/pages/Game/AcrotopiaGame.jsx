@@ -13,6 +13,7 @@ import {
   MobileLayout,
   GameTypeContext,
 } from "./Game";
+import { nextStateBell } from "shared/stateBell";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
@@ -32,7 +33,9 @@ export default function AcrotopiaGame(props) {
   const players = game.players;
   const isSpectator = game.isSpectator;
 
-  const playBellRef = useRef(false);
+  // Last state id seen, starting from the one already on screen: these sound
+  // listeners do not get the states delivered before they subscribed.
+  const playBellRef = useRef(game.history?.currentState ?? null);
 
   const gameType = "Acrotopia";
   const meetings = history.states[stateViewing]
@@ -51,13 +54,13 @@ export default function AcrotopiaGame(props) {
 
   useSocketListeners((socket) => {
     socket.on("state", (state) => {
-      if (playBellRef.current) game.playAudio("ping");
-
-      playBellRef.current = true;
+      const bell = nextStateBell(playBellRef.current, state);
+      playBellRef.current = bell.lastId;
+      if (bell.ring) game.playAudio("ping");
     });
 
     socket.on("winners", (winners) => {});
-  }, game.socket);
+  }, game.socket, { replay: false });
 
   return (
     <GameTypeContext.Provider

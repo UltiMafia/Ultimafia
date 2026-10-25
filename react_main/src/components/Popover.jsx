@@ -151,7 +151,7 @@ export const InfoPopover = function ({
   );
 };
 
-export function usePopover({ path, type, postprocessData }) {
+export function usePopover({ path, type, postprocessData, onData }) {
   const siteInfo = useContext(SiteInfoContext);
   const [result, setResult] = useState(null);
   const isPhone = useIsPhoneDevice();
@@ -233,7 +233,9 @@ export function usePopover({ path, type, postprocessData }) {
         }
         promise
           .then((res) => {
-            if (request.isCurrent()) setResult({ path, type, data: res.data });
+            if (!request.isCurrent()) return;
+            setResult({ path, type, data: res.data });
+            if (onData) onData(res.data);
           })
           .catch((e) => {
             if (!request.isCurrent()) return;
