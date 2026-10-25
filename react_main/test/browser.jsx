@@ -7,18 +7,19 @@ import RetainedSiteRoutes from "../src/components/RetainedSiteRoutes";
 import ViewOverlayBoundary from "../src/components/ViewOverlayBoundary";
 import { SheetProvider, useSheet } from "../src/components/Sheet";
 import { ProfileSheetProvider, useProfileSheet } from "../src/components/ProfileSheet";
-import { UserContext, SiteInfoContext, UserProvider } from "../src/Contexts";
+import { GameContext, UserContext, SiteInfoContext, UserProvider } from "../src/Contexts";
 import { AppLocationContext, ViewActivityContext, ViewNavigate, useAppLocation, useViewActive, useViewNavigate } from "../src/hooks/useViewActivity";
 import { useHostedGameSession } from "../src/hooks/useHostedGameSession";
 import { useDismissOnBack } from "../src/hooks/useDismissOnBack";
 import { useGameMembership } from "../src/hooks/useGameMembership";
 import { useGameSessionIdentity } from "../src/hooks/useGameSessionIdentity";
 import { useNewMessageCount } from "../src/hooks/useNewMessageCount";
+import { getSiteTheme } from "../src/constants/themes";
 import { ClientSocket, parseMessage, subscribeSocketListeners } from "../src/Socket";
 import { useAppViewport } from "../src/hooks/useAppViewport";
 import LobbyBrowser from "../src/pages/Play/LobbyBrowser/LobbyBrowser";
 import { GameRow } from "../src/pages/Play/LobbyBrowser/GameRow";
-import Game from "../src/pages/Game/Game";
+import Game, { GameTypeContext, SettingsMenu, TextMeetingLayout, useSettingsReducer } from "../src/pages/Game/Game";
 import RoleMarkerToggle from "../src/pages/Game/components/RoleMarkerToggle";
 import Chat from "../src/pages/Chat/Chat";
 import { MediaEmbed } from "../src/pages/User/UserWidgets";
@@ -319,7 +320,106 @@ async function updateMessageView(patch, expected) {
     `expected ${expected} new messages after ${JSON.stringify(patch)}`);
 }
 
+const obituaryHistory = {
+  currentState: 2,
+  states: { 1: {
+    name: "Day 1", meetings: {}, alerts: [],
+    obituaries: { Night: {
+      id: "1:Night", source: "Night", time: 123456,
+      obituaries: [{
+        id: "alice", playerInfo: { name: "Alice" },
+        snippets: {
+          deathMessage: "Alice was killed.",
+          revealMessage: "Alice's role is Villager.",
+          lastWill: ":will: Alice did not leave a will.",
+        },
+      }, {
+        id: "bob", playerInfo: { name: "Bob" },
+        snippets: { deathMessage: ":bomb: Bob explodes into a thousand pieces." },
+      }],
+    } },
+  } },
+};
+const obituaryTheme = getSiteTheme();
+
+function ObituaryFixture({ review = false, singleState = false }) {
+  const [settings, updateSettings] = useSettingsReducer();
+  useEffect(() => { updateSettings({ type: "load" }); }, []);
+  useEffect(() => { api = { settings, updateSettings }; });
+  const game = {
+    gameId: "obituary-fixture", gameType: "Mafia", review,
+    history: { ...obituaryHistory, currentState: review ? 2 : 1 },
+    stateViewing: 1, players: {}, spectators: {},
+    settings, updateSettings, filters: {}, options: {}, kudos: null,
+    updateHistory: ignore, getSetupGameSetting: () => false,
+    onMessageQuote: ignore, onPinMessage: ignore, isMessagePinned: () => false,
+  };
+  return <ThemeProvider theme={obituaryTheme}><UserContext.Provider value={{ ...user, autoContrastColor: color => color }}>
+    <SiteInfoContext.Provider value={{ ...siteInfo, roles: { Mafia: [{ name: "Villager" }] } }}>
+      <GameContext.Provider value={game}>
+        <GameTypeContext.Provider value={{ singleState }}>
+          <div className="game-session"><div className="game" style={{ maxWidth: 700 }}>
+            <SettingsMenu /><TextMeetingLayout seatActions={false} />
+          </div></div>
+        </GameTypeContext.Provider>
+      </GameContext.Provider>
+    </SiteInfoContext.Provider>
+  </UserContext.Provider></ThemeProvider>;
+}
+
 async function tests() {
+  await run("compact obituaries use real chat rows and saved in-game settings", async () => {
+    const saved = localStorage.getItem("gameSettings");
+    localStorage.setItem("gameSettings", JSON.stringify({ timestamps: true }));
+    try {
+      mount(<MemoryRouter><ObituaryFixture /></MemoryRouter>);
+      await until(() => api && root.querySelector(".newspaper"), "default newspaper");
+      assert(api.settings.legacyObituaries === false, "existing settings must default to newspapers");
+      const settingsButton = [...root.querySelectorAll("button")].find(button => button.textContent.includes("Settings"));
+      settingsButton.click(); await wait();
+      const label = [...root.querySelectorAll("label")].find(label => label.textContent.includes("Compact Obituaries"));
+      assert(label, "in-game obituary option missing");
+      label.click(); await wait();
+      [...root.querySelectorAll("button")].find(button => button.textContent === "Save").click();
+      await until(() => root.querySelectorAll(".content.server").length === 2, "one compact alert per death");
+      assert(!root.querySelector(".newspaper"), "legacy mode still renders a newspaper");
+      const lines = [...root.querySelectorAll(".content.server")];
+      assert(lines[0].textContent.includes("Alice was killed."), "death text changed");
+      assert(lines[0].textContent.includes("Alice's role is") && lines[0].querySelector(".role"), "reveal must stay in the same box with its inline role icon");
+      assert(lines[0].textContent.includes("Alice did not leave a will.") && lines[0].querySelector(".emote"), "will and its icon must stay in the same box");
+      assert(lines[0].querySelectorAll("br").length === 2, "death/reveal/will need separate lines");
+      assert(lines[1].textContent.includes("Bob explodes") && !lines[0].textContent.includes("Bob"), "different deaths must not share a box");
+      assert(root.querySelectorAll(".message .time").length === 2, "each death needs one timestamp");
+      assert(JSON.parse(localStorage.getItem("gameSettings")).legacyObituaries, "preference was not saved");
+      ReactDOM.unmountComponentAtNode(root);
+      mount(<MemoryRouter><ObituaryFixture /></MemoryRouter>);
+      await until(() => api?.settings.legacyObituaries && root.querySelectorAll(".content.server").length === 2, "saved preference reload");
+      api.updateSettings({ type: "setProp", propName: "timestamps", propval: false });
+      await until(() => !root.querySelector(".message .time"), "timestamp option");
+      api.updateSettings({ type: "setProp", propName: "legacyObituaries", propval: false });
+      await until(() => root.querySelector(".newspaper"), "switch back to newspapers");
+    } finally {
+      if (saved === null) localStorage.removeItem("gameSettings");
+      else localStorage.setItem("gameSettings", saved);
+    }
+  });
+
+  await run("legacy obituaries render historical and combined review transcripts", async () => {
+    const saved = localStorage.getItem("gameSettings");
+    localStorage.setItem("gameSettings", JSON.stringify({ legacyObituaries: true }));
+    try {
+      for (const singleState of [false, true]) {
+        mount(<MemoryRouter><ObituaryFixture review singleState={singleState} /></MemoryRouter>);
+        await until(() => root.querySelectorAll(".content.server").length === 2, "one compact review alert per death");
+        assert(!root.querySelector(".newspaper"), "review ignored legacy setting");
+        ReactDOM.unmountComponentAtNode(root);
+      }
+    } finally {
+      if (saved === null) localStorage.removeItem("gameSettings");
+      else localStorage.setItem("gameSettings", saved);
+    }
+  });
+
   await run("game entry query survives browsing before the lazy game mounts", async () => {
     mountGameSession("/game/fixture-game?spectate=true", { delayed: true });
     await until(() => api?.hostedGameId, "hosted game entry");
@@ -809,7 +909,10 @@ async function tests() {
   });
 }
 
-tests().catch(error => { failures.push({name:'runner',message:error.message}); }).finally(() => {
+// Manual visual check of the same real chat/settings fixture used above.
+if (new URLSearchParams(window.location.search).has("obituaries")) {
+  mount(<MemoryRouter><ObituaryFixture /></MemoryRouter>);
+} else tests().catch(error => { failures.push({name:'runner',message:error.message}); }).finally(() => {
   window.WebSocket = originalWebSocket;
   axios.defaults.adapter = originalAdapter;
   window.__lifecycleResults = { failures, passed: results.textContent.split('\n').filter(s => s.startsWith('PASS')).length };
