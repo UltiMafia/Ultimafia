@@ -2085,11 +2085,9 @@ function getDefaultSpeechMeetingId(speechMeetings) {
 
 const EMPTY_CHAT_STATE = { meetings: {}, alerts: [], obituaries: {} };
 
-// Pregame "Join open seat" / "Spectate" button. It sits in the chat footer,
-// above the speech input, on every device (compact on a phone). It must stay
-// inside the game layout: the game session is a fixed, viewport-sized box, so
-// anything rendered after the game Stack is off screen and cannot be scrolled to.
-export function PregameSeatActions({ compact = false }) {
+// Pregame seat actions ("Join open seat" and "Spectate") which sits
+// above the chat box on mobile and sits in the player list on desktop
+export function PregameSeatActions({ isPhoneDevice = false }) {
   const { review, history, isSpectator, socket, options, gameId } =
     useContext(GameContext);
 
@@ -2097,51 +2095,47 @@ export function PregameSeatActions({ compact = false }) {
   if (!action) return null;
   const showJoin = action === "join";
 
+  // { display: "flex", justifyContent: "center", p: 1 }
   return (
     <Box
-      sx={
-        compact
-          ? {
-              display: "flex",
-              flexShrink: 0,
-              width: "100%",
-              boxSizing: "border-box",
-              px: 1.25,
-              py: 0.5,
-            }
-          : { display: "flex", justifyContent: "center", p: 1 }
+    sx={
+      {
+        display: "flex",
+          flexShrink: 0,
+          width: "100%",
+          boxSizing: "border-box",
+          px: 1.25,
+          py: 0.5,
       }
+    }
     >
-      {showJoin ? (
-        <Button
-          variant="contained"
-          fullWidth={compact}
-          size={compact ? "small" : "medium"}
-          onClick={() => {
-            if (socket && socket.on) socket.send("takeSeat");
-          }}
-        >
-          Join open seat
-        </Button>
-      ) : (
-        <Button
-          variant="outlined"
-          fullWidth={compact}
-          size={compact ? "small" : "medium"}
-          onClick={() => {
-            window.location.assign(`/game/${gameId}?spectate=true`);
-          }}
-        >
-          Spectate
-        </Button>
-      )}
+    {showJoin ? (
+      <Button
+      variant="contained"
+      fullWidth={true}
+      size={ isPhoneDevice ? "small" : "medium" }
+      onClick={() => {
+        if (socket && socket.on) socket.send("takeSeat");
+      }}
+      >
+      Join open seat
+      </Button>
+    ) : (
+      <Button
+      variant="outlined"
+      fullWidth={true}
+      size={ isPhoneDevice ? "small" : "medium" }
+      onClick={() => {
+        window.location.assign(`/game/${gameId}?spectate=true`);
+      }}
+      >
+      Spectate
+      </Button>
+    )}
     </Box>
   );
 }
 
-// seatActions: false for a second chat shown at the same time (some board
-// games show the chat in the board panel during pregame), so the button
-// appears once.
 export function TextMeetingLayout({ seatActions = true } = {}) {
   const game = useContext(GameContext);
   const isPhoneDevice = useIsPhoneDevice();
@@ -2484,7 +2478,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
               {newMessageCount} new message{newMessageCount === 1 ? "" : "s"}
             </button>
           )}
-          {seatActions && <PregameSeatActions compact={isPhoneDevice} />}
+          {(seatActions && isPhoneDevice) && <PregameSeatActions isPhoneDevice={isPhoneDevice} />}
           <KudosDock onResize={doAutoScroll} />
           {canSpeak && (
             <SpeechInput
@@ -4122,6 +4116,7 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
 }
 
 export function PlayerList(props) {
+  const isPhoneDevice = useIsPhoneDevice();
   const { renderMarker, renderRowEnd } = props;
   const game = useContext(GameContext);
 
@@ -4214,6 +4209,7 @@ export function PlayerList(props) {
             renderRowEnd={renderRowEnd}
           />
           <PregameSpectatorRows />
+          {!isPhoneDevice && <PregameSeatActions />}
           <RehostInvite priority={2} />
         </div>
       }
