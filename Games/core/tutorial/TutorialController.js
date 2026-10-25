@@ -20,7 +20,7 @@ const storylines = require("./storylines");
 
 // Seats in Frontier Justice and the bot that sits in each (live-player
 // cosmetics: Games/core/tutorial/cast.js).
-const { CAST, buildCast, ROSTER } = require("./cast");
+const { CAST, buildCast } = require("./cast");
 
 const SETUP = require("./setup");
 
@@ -86,6 +86,9 @@ class TutorialController {
     // userId -> role, applied by orderPlayers() when the game assigns roles.
     const forced = (this.forced = {});
     forced[this.humanUserId] = this.cast[this.humanSeat].role;
+    // Bots are found by their user id, never by display name: the player may
+    // share a bot's name (see humanJoined).
+    const botIds = (this.botIds = {});
     const bots = [];
     for (const key in this.cast) {
       if (key === this.humanSeat) continue;
@@ -94,7 +97,7 @@ class TutorialController {
       if (seat.nameColor) settings.nameColor = seat.nameColor;
       if (seat.textColor) settings.textColor = seat.textColor;
       // Z's flex assets (Sheriff tutorial): small :ez: :clap: emotes + big Jerry sticker.
-      if (seat.name === "Z") {
+      if (seat.flexAssets) {
         settings.customEmotes = {
           ":ez:": {
             name: "ez",
@@ -121,10 +124,21 @@ class TutorialController {
         isTest: true,
       });
       user.tutorialBot = true;
+      botIds[key] = user.id;
       forced[user.id] = seat.role;
       bots.push(user);
     }
     for (const user of bots) await this.game.userJoin(user, true);
+
+    // userJoin logs and swallows its errors, so check that every bot is
+    // actually seated before the game is handed to the player.
+    const seated = this.game.players.filter(
+      (p) => p.user && p.user.tutorialBot
+    ).length;
+    if (seated !== bots.length)
+      throw new Error(
+        `Only ${seated} of ${bots.length} tutorial bots joined game ${this.game.id}.`
+      );
 
     this.game.events.on("roleAssigned", (p) => this.restrictLitigate(p));
     this.game.events.on("state", () => this.onState());
@@ -173,8 +187,31 @@ class TutorialController {
 
   player(key) {
     if (key === this.humanSeat) return this.human();
-    const name = this.cast[key] && this.cast[key].name;
-    return this.players().find((p) => p.isBot && p.name === name);
+    const id = this.botIds && this.botIds[key];
+    if (!id) return undefined;
+    return this.players().find((p) => p.user && p.user.id === id);
+  }
+
+  // The player took their seat. No bot may share their name (in any case):
+  // two "Z"s in the player list, a vote box or the story text can't be told
+  // apart, and picking the wrong one fails the step. A bot with the player's
+  // name is shown as "<name>bot" (or "<name>bot2", ...) for the whole game;
+  // every step names bots through nameOf(), so the text follows. Runs before
+  // the player is sent the player list.
+  humanJoined(player) {
+    if (!player || !player.user || player.user.id !== this.humanUserId) return;
+    const norm = (n) => String(n || "").trim().toLowerCase();
+    const taken = () => new Set(this.players().map((p) => norm(p.name)));
+    for (const key in this.botIds || {}) {
+      const bot = this.player(key);
+      if (!bot || norm(bot.name) !== norm(player.name)) continue;
+      const base = `${this.cast[key].name}bot`;
+      let name = base;
+      for (let n = 2; taken().has(norm(name)); n++) name = `${base}${n}`;
+      this.log.push(`renamed ${key} ${bot.name} -> ${name}`);
+      bot.name = name;
+      if (bot.user) bot.user.name = name;
+    }
   }
 
   nameOf(key) {
@@ -186,9 +223,9 @@ class TutorialController {
     return p ? p.name : (this.cast[key] && this.cast[key].name);
   }
 
-  // All eight live-player bot names in this game (for assertions / matching).
+  // All eight bot names in this game, as shown (for assertions / matching).
   botNames() {
-    return ROSTER.map((r) => r.name);
+    return Object.keys(this.botIds || {}).map((key) => this.nameOf(key));
   }
 
   meetingFor(player, meetingName) {
@@ -652,7 +689,8 @@ class TutorialController {
       pending.silences++;
       if (chatOnly) this.react(pending, "silence");
       const hint = chatOnly
-        ? pending.hints.silence || "Type your claim in the chat box at the bottom of the chat."
+        ? pending.hints.silence ||
+          "Type your claim in the chat box at the bottom of the chat (on a phone, open the Chat tab first)."
         : pending.idleHint ||
           "Still looking? Open the Actions tab (on a phone it's in the bottom bar; on a computer the actions are on the right), find the highlighted box and pick the highlighted player.";
       this.guide(`${pending.text} (${hint})`);
