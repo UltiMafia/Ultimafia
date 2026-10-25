@@ -73,24 +73,6 @@ export default function AnonymousDeck(props) {
   );
 }
 
-export function tempParseWordsToProfiles(words) {
-  let profiles = [];
-  for (let w of words.split(/\s+/g)) {
-    profiles.push({
-      name: w.replace(/\s/g, ""),
-    });
-  }
-  return profiles;
-}
-
-export function tempParseProfilesToWords(profiles) {
-  let words = [];
-  for (let p of profiles) {
-    words.push(p.name);
-  }
-  return words.join(" ");
-}
-
 export class Profile {
   constructor(name, avatar, deathMessage, color, deckId) {
     this.name = name;

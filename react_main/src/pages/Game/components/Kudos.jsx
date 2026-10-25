@@ -43,12 +43,6 @@ export function kudosAwardedIds(kudos) {
   return ids;
 }
 
-export function kudosRowsLeftToVote(kudos) {
-  if (!kudos || !kudos.canVote) return 0;
-  return (kudos.rows || []).filter((r) => !(r.key in (kudos.myVotes || {})))
-    .length;
-}
-
 // Renders a game player exactly like the player list does (NameWithAvatar
 // with the player's avatar/deck avatar, square shape, name color, animated
 // color and font). Long names wrap to two lines and then ellipsize (one line
