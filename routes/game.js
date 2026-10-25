@@ -9,6 +9,7 @@ const utils = require("../lib/Utils");
 const redis = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const rehost = require("../modules/rehost");
+const { defaultLobbyName, isCustomLobbyName } = require("../modules/lobbyName");
 const blocks = require("../modules/blocks");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
@@ -1218,9 +1219,10 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    if (!lobbyName || lobbyName === "" || lobbyName === "undefined") {
-      lobbyName = `${user.name}'s lobby`;
-    }
+    // A lobby name is custom unless it is blank or the default for this host.
+    // The flag goes with the game so a rehost can tell the two apart.
+    const lobbyNameCustom = isCustomLobbyName(lobbyName, user.name);
+    if (!lobbyNameCustom) lobbyName = defaultLobbyName(user.name);
     lobbyName = lobbyName.substring(0, 50);
 
     try {
@@ -1228,6 +1230,7 @@ router.post("/host", async function (req, res) {
         setup: setup,
         lobby: lobby,
         lobbyName: lobbyName,
+        lobbyNameCustom: lobbyNameCustom,
         private: Boolean(req.body.private),
         guests: Boolean(req.body.guests),
         ranked: Boolean(req.body.ranked),
