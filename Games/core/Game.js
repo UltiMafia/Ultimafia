@@ -653,8 +653,13 @@ module.exports = class Game {
       if (spectator) {
         spectator.setUser(user);
         spectator.omniscient = omniscient;
+        this.restoreSpectatorMeetings(spectator);
         this.sendAllGameInfo(spectator);
-        if (omniscient) spectator.sendMeetings();
+        // The history above is the shared spectator view, which is not a
+        // member of any meeting, so it never says this spectator can talk.
+        // Send their own Pregame / Spectator Meeting info too, or the chat
+        // box is gone after a refresh.
+        spectator.sendMeetings();
         spectator.send("loaded");
         return;
       }
@@ -925,6 +930,25 @@ module.exports = class Game {
     redis.setSpectatorCount(this.id, this.spectators.length);
     this.broadcastSpectators();
     return spectator;
+  }
+
+  // A reconnecting spectator talks where a new one would: Pregame before the
+  // start, the spectator meeting after it.
+  restoreSpectatorMeetings(spectator) {
+    if (
+      !this.started &&
+      this.pregame &&
+      !this.pregame.finished &&
+      !this.pregame.members[spectator.id]
+    )
+      this.pregame.join(spectator);
+
+    if (
+      this.spectatorMeeting &&
+      !this.spectatorMeeting.finished &&
+      !this.spectatorMeeting.members[spectator.id]
+    )
+      this.spectatorMeeting.join(spectator);
   }
 
   // Someone who spectated this game before (a refresh after the reconnect
