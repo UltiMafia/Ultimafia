@@ -2095,7 +2095,6 @@ export function PregameSeatActions({ isPhoneDevice = false }) {
   if (!action) return null;
   const showJoin = action === "join";
 
-  // { display: "flex", justifyContent: "center", p: 1 }
   return (
     <Box
     sx={
@@ -2136,6 +2135,10 @@ export function PregameSeatActions({ isPhoneDevice = false }) {
   );
 }
 
+// When seatActions is false, the join spectators/players button is hidden.
+// This is needed because some minigames show the chat in the board panel
+// during pregame, so without setting seatActions to false, the button
+// would apear twice.
 export function TextMeetingLayout({ seatActions = true } = {}) {
   const game = useContext(GameContext);
   const isPhoneDevice = useIsPhoneDevice();
