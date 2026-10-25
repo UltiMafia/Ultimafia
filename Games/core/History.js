@@ -71,18 +71,9 @@ module.exports = class History {
     this.states[state].obituaries[obituariesMessage.source] = obituariesMessage;
   }
 
-  setStateName(name, state) {
-    state = state == null ? this.game.currentState : state;
-    this.states[state].name = name;
-  }
-
   removeMeeting(meeting, state) {
     state = state == null ? this.game.currentState : state;
     delete this.states[state].meetings[meeting.id];
-  }
-
-  getPlayerId() {
-    return this.player ? this.player.id : null;
   }
 
   getMeetings(state) {
@@ -168,13 +159,6 @@ module.exports = class History {
 
     for (let player of this.game.players)
       this.states[state].dead[player.id] = !player.alive;
-  }
-
-  recordAllExorcised() {
-    var state = this.game.currentState;
-
-    for (let player of this.game.players)
-      this.states[state].exorcised[player.id] = player.exorcised;
   }
 
   recordWinners() {

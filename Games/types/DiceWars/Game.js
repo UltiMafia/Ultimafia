@@ -955,19 +955,6 @@ module.exports = class DiceWarsGame extends Game {
     }
   }
 
-  /**
-   * Awards bonus dice to all players at the end of a round
-   */
-  awardBonusDiceToAllPlayers() {
-    // Award dice to all alive players
-    for (let playerId of this.turnOrder) {
-      const player = this.players.array().find((p) => p.id === playerId);
-      if (player && player.alive) {
-        this.awardBonusDice(playerId);
-      }
-    }
-  }
-
   findLargestConnectedRegion(playerId) {
     const playerTerritories = this.territories.filter(
       (t) => t.playerId === playerId

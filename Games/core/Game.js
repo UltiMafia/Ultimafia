@@ -2908,10 +2908,6 @@ module.exports = class Game {
     }
   }
 
-  getAllAlignments() {
-    return constants.alignments[this.type];
-  }
-
   getRoleAlignment(role) {
     return roleData[this.type][role.split(":")[0]].alignment;
   }
@@ -3424,11 +3420,6 @@ module.exports = class Game {
 
   getStateName(state) {
     var info = this.getStateInfo(state);
-    return info.name.replace(/[0-9]*/g, "").trim();
-  }
-
-  getPrevStateName(state) {
-    var info = this.getPrevStateInfo(state);
     return info.name.replace(/[0-9]*/g, "").trim();
   }
 
