@@ -132,6 +132,7 @@ router.post("/", async function (req, res) {
         JSON.stringify({
           siteBanned: true,
           banExpires: e.banExpires,
+          banPage: "/banned",
         })
       );
     } else if (e.banEvasion) {
@@ -160,6 +161,10 @@ router.get("/discord", passport.authenticate("discord"));
 
 router.get("/discord/redirect", (req, res, next) => {
   passport.authenticate("discord", { session: false }, (err, user, info) => {
+    if (err && err.siteBanned && req.session.siteBan) {
+      res.redirect("/banned");
+      return;
+    }
     if (err) {
       logger.warn(`Discord authentication error: ${err.message}`);
       res.status(403);
@@ -512,6 +517,12 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint, provide
       }).select("expires");
 
       if (siteBan) {
+        // A restricted session that only the ban page endpoints read
+        // (routes/banPage.js); the user is still signed out everywhere else.
+        req.session.siteBan = {
+          userId: bannedUser.id,
+          csrf: crypto.randomBytes(24).toString("hex"),
+        };
         throw {
           siteBanned: true,
           banExpires: siteBan.expires,
@@ -572,6 +583,7 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint, provide
       await syncRankedCompetitiveAccess(id);
     }
 
+    delete req.session.siteBan;
     req.session.user = {
       id,
       fbUid: uid,

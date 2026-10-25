@@ -26,6 +26,7 @@ const fortunePoints = require("../modules/fortunePoints");
 const errors = require("../lib/errors");
 const skillRating = require("../modules/skillRating");
 const blocks = require("../modules/blocks");
+const banAppeals = require("../modules/banAppeals");
 const router = express.Router();
 
 router.get("/groups", async function (req, res) {
@@ -556,6 +557,24 @@ router.post("/ban", async (req, res) => {
     var banType = String(req.body.banType);
     var perm = "ban";
     var banRank = await redis.getUserRank(userIdToBan);
+    // Shown to the user on the ban page, so a site ban needs one.
+    var reason = banAppeals.normalizeBanReason(req.body.reason);
+
+    if (req.body.reason != null && String(req.body.reason).trim() && !reason) {
+      errors.badRequest(
+        res,
+        `The reason can be at most ${banAppeals.MAX_BAN_REASON_LENGTH} characters.`
+      );
+      return;
+    }
+
+    if (banType === "site" && !reason) {
+      errors.badRequest(
+        res,
+        "A reason is required for a site ban. The user sees it on the ban page."
+      );
+      return;
+    }
 
     if (banRank == null && banType !== "site") {
       errors.notFound(res, "User does not exist.");
@@ -660,7 +679,8 @@ router.post("/ban", async (req, res) => {
         length,
         banPermissions[banType],
         banDbTypes[banType],
-        userId
+        userId,
+        reason
       )
     );
     await Promise.all(banPromises);
@@ -679,7 +699,9 @@ router.post("/ban", async (req, res) => {
       {
         content: `You have received a violation. Your ${
           banTypeLabels[banType]
-        } ban expires on ${banExpires.toLocaleString()}.`,
+        } ban expires on ${banExpires.toLocaleString()}.${
+          reason ? ` Reason: ${reason}` : ""
+        }`,
         icon: "ban",
       },
       altAccountIds // Notify only banned alt accounts
@@ -694,10 +716,12 @@ router.post("/ban", async (req, res) => {
       site: "Site Ban",
     };
 
-    routeUtils.createModAction(userId, modActionNames[banType], [
-      userIdToBan,
-      lengthStr,
-    ]);
+    routeUtils.createModAction(
+      userId,
+      modActionNames[banType],
+      [userIdToBan, lengthStr],
+      reason
+    );
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
@@ -789,6 +813,83 @@ router.post("/clearleavepenalty", async (req, res) => {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not remove leave penalty. Please try again.");
+  }
+});
+
+// Ban-page appeals: admins vote; the appeal is decided at
+// banAppeals.APPEAL_VOTES_REQUIRED votes for one side. Deciding never unbans;
+// lifting the ban is a separate site /unban.
+async function verifyAppealAdmin(req, res) {
+  var userId = await routeUtils.verifyLoggedIn(req);
+  var userIdToActOn = String(req.body.userId || req.query.userId || "");
+  var rank = await redis.getUserRank(userIdToActOn);
+
+  if (rank == null) {
+    errors.notFound(res, "User does not exist.");
+    return null;
+  }
+
+  if (!(await routeUtils.verifyPermission(res, userId, "unban", rank + 1)))
+    return null;
+
+  // Appeals go to the admins, so only they vote on them.
+  if (!(await banAppeals.getAdminIds()).includes(userId)) {
+    errors.forbidden(res, "Only admins can vote on ban appeals.");
+    return null;
+  }
+
+  return { userId, userIdToActOn };
+}
+
+router.get("/banAppeal", async (req, res) => {
+  try {
+    var ids = await verifyAppealAdmin(req, res);
+    if (!ids) return;
+    res.send(await banAppeals.getAppealForAdmins(ids.userIdToActOn));
+  } catch (e) {
+    if (e instanceof banAppeals.AppealError) {
+      res.status(e.status).send(e.message);
+      return;
+    }
+    logger.error(e);
+    errors.serverError(res, "Could not load the appeal. Please try again.");
+  }
+});
+
+router.post("/banAppeal/vote", async (req, res) => {
+  try {
+    var ids = await verifyAppealAdmin(req, res);
+    if (!ids) return;
+    var vote = String(req.body.vote || "").toLowerCase();
+
+    var result = await banAppeals.voteOnAppeal({
+      modId: ids.userId,
+      userId: ids.userIdToActOn,
+      vote,
+      notes: req.body.notes,
+    });
+
+    await routeUtils.createModAction(
+      ids.userId,
+      "Vote On Ban Appeal",
+      [ids.userIdToActOn, result.appeal.id, vote],
+      req.body.notes ? String(req.body.notes).slice(0, 300) : undefined
+    );
+    if (result.decided)
+      await routeUtils.createModAction(
+        ids.userId,
+        result.status === "accepted" ? "Accept Ban Appeal" : "Deny Ban Appeal",
+        [ids.userIdToActOn, result.appeal.id]
+      );
+
+    res.send({ status: result.status, tally: result.tally });
+  } catch (e) {
+    if (e instanceof banAppeals.AppealError) {
+      res.status(e.status).send(e.message);
+      return;
+    }
+    logger.error(e);
+    errors.serverError(res, "Could not record the vote. Please try again.");
   }
 });
 
@@ -3614,6 +3715,13 @@ router.post("/reports/:id/complete", async (req, res) => {
         return;
       }
 
+      // The violation's justification is the ban's reason (shown on the ban
+      // page for site bans).
+      const violationBanReason = `${violationName}: ${finalRuling.notes.trim()}`.slice(
+        0,
+        banAppeals.MAX_BAN_REASON_LENGTH
+      );
+
       // Get all alt account IDs (accounts sharing IPs or exact fingerprints) - already fetched above
       // Create ban for all alt accounts if ban length > 0 (or permanent)
       if (banLengthMs >= 0 && permissions.length > 0) {
@@ -3624,7 +3732,8 @@ router.post("/reports/:id/complete", async (req, res) => {
             banLengthMs,
             permissions,
             banDbType,
-            userId
+            userId,
+            violationBanReason
           )
         );
         bans = await Promise.all(banPromises);

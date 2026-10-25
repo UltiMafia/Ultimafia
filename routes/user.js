@@ -97,7 +97,8 @@ router.get("/info", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req, true);
 
     if (!userId) {
-      res.send({});
+      // A site-banned user's restricted session: the client shows the ban page.
+      res.send(req.session.siteBan ? { siteBanned: true } : {});
       return;
     }
 

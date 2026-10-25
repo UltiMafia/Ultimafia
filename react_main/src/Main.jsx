@@ -131,6 +131,7 @@ const Policy = lazyWithRetry(() => import("pages/Policy/Policy"));
 const SiteActivity = lazyWithRetry(() => import("pages/Activity/Activity"));
 const User = lazyWithRetry(() => import("pages/User/User"));
 const Welcome = lazyWithRetry(() => import("pages/Welcome/Welcome"));
+const Banned = lazyWithRetry(() => import("pages/Banned/Banned"));
 
 // The game session is rendered outside the route table, so the route table must
 // not treat a game URL as an unknown site path and redirect away from it.
@@ -316,6 +317,9 @@ function Main(props) {
             <SnowstormController />
             <Routes>
               <Route path="/" element={<Navigate to="/welcome" />} />
+              {/* Full page, outside the site shell: a site-banned user can
+                  see why and appeal, and nothing else. */}
+              <Route path="/banned" element={<Banned />} />
               <Route path="/*" element={mainContent} />
             </Routes>
           </UserProvider>

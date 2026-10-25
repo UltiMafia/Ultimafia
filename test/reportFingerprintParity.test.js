@@ -97,6 +97,8 @@ describe("report workflow fingerprint/IP parity", function () {
     const bans = await models.Ban.find({}).lean();
     assert.deepEqual(bans.map((ban) => ban.userId).sort(), ["fp-alt", "ip-alt", "target"]);
     for (const ticket of tickets) assert.equal(ticket.linkedBanId, bans.find((ban) => ban.userId === ticket.userId).id);
+    // The violation's decision summary becomes the ban reason shown on the ban page.
+    for (const ban of bans) assert.equal(ban.reason, `${violationDefinitions[0].name} (1st Offense): Fixture decision`);
     assert.deepEqual((await models.User.find({ banned: true }).lean()).map((user) => user.id).sort(), ["fp-alt", "ip-alt", "target"]);
   });
 

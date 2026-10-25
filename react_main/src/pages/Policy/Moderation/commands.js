@@ -480,12 +480,91 @@ export function useModCommands(argValues, commandRan, setResults) {
           name: "length",
           type: "text",
         },
+        {
+          // Shown to the user on the ban page; the server requires it for
+          // site bans.
+          label: "Reason (required for site bans)",
+          name: "reason",
+          type: "text",
+          optional: true,
+        },
       ],
       run: function () {
         axios
           .post("/api/mod/ban", argValues)
           .then(() => {
             siteInfo.showAlert("User banned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    // Ban-page appeals: each admin has one vote (changeable while pending);
+    // 2 accepts -> ACCEPTED, 2 denies -> DENIED. Lifting the ban is a
+    // separate Unban (Site).
+    "Ban Appeal Vote": {
+      perm: "unban",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Vote",
+          name: "vote",
+          type: "select",
+          options: [
+            { value: "accept", label: "Accept" },
+            { value: "deny", label: "Deny" },
+          ],
+        },
+        {
+          label: "Notes",
+          name: "notes",
+          type: "text",
+          optional: true,
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/banAppeal/vote", argValues)
+          .then((res) => {
+            const { status, tally } = res.data;
+            siteInfo.showAlert(
+              `Vote recorded. Accept ${tally.accept}/${tally.required.accept}, deny ${tally.deny}/${tally.required.deny}: ${status.toUpperCase()}.`,
+              "success"
+            );
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Ban Appeal Tally": {
+      perm: "unban",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .get("/api/mod/banAppeal", { params: { userId: argValues.userId } })
+          .then((res) => {
+            const { status, tally, votes } = res.data;
+            const voteList = votes.length
+              ? votes
+                  .map((vote) => `${vote.voterName}: ${vote.vote.toUpperCase()}`)
+                  .join(", ")
+              : "no votes yet";
+            siteInfo.showAlert(
+              `${status.toUpperCase()}. Accept ${tally.accept}/${tally.required.accept}, deny ${tally.deny}/${tally.required.deny} (${voteList}).`,
+              "info"
+            );
             commandRan();
           })
           .catch(errorAlert);
@@ -1689,6 +1768,23 @@ export function useModCommands(argValues, commandRan, setResults) {
       run: () => {},
     };
   });
+
+  // Mod-action log entries written by /mod/banAppeal/rule.
+  ["Accept Ban Appeal", "Deny Ban Appeal", "Vote On Ban Appeal"].forEach(
+    (actionName) => {
+      commands[actionName] = {
+        perm: "unban",
+        category: "User Management",
+        hidden: true,
+        args: [
+          { label: "User", name: "userId", type: "user_search" },
+          { label: "Appeal Id", name: "appealId", type: "text" },
+          { label: "Vote", name: "vote", type: "text", optional: true },
+        ],
+        run: () => {},
+      };
+    }
+  );
 
   const unbanActionNames = [
     "Forum Unban",

@@ -167,7 +167,7 @@ describe("moderation fingerprint parity endpoints", function () {
         { session: { user: { id: "fingerprint-alt" } } },
       ]);
       const res = response();
-      await handlers.ban(request({ body: { userId: "target", length: "1 hour", banType } }), res);
+      await handlers.ban(request({ body: { userId: "target", length: "1 hour", banType, reason: "Test reason" } }), res);
 
       res.statusCode.should.equal(200);
       const bans = await models.Ban.find({ type: storedType, auto: false }).lean();
@@ -188,7 +188,7 @@ describe("moderation fingerprint parity endpoints", function () {
     ]);
     ["target", "ip-alt", "fingerprint-alt"].forEach((id) => ranks.set(id, 2));
     const banRes = response();
-    await handlers.ban(request({ body: { userId: "target", length: "1 hour", banType: "site" } }), banRes);
+    await handlers.ban(request({ body: { userId: "target", length: "1 hour", banType: "site", reason: "Test reason" } }), banRes);
     await models.Ban.create({ id: "automatic", userId: "fingerprint-alt", type: "site", auto: true, expires: 0, permissions: ["signIn"] });
     const res = response();
     await handlers.unban(request({ body: { userId: "target", banType: "site" } }), res);
@@ -203,7 +203,7 @@ describe("moderation fingerprint parity endpoints", function () {
     await users([{ id: "equal-rank", name: "Equal", fingerprints: [fingerprint("rank")]}]);
     ranks.set("equal-rank", 10);
     const res = response();
-    await handlers.ban(request({ body: { userId: "equal-rank", length: "1 hour", banType: "site" } }), res);
+    await handlers.ban(request({ body: { userId: "equal-rank", length: "1 hour", banType: "site", reason: "Test reason" } }), res);
     res.statusCode.should.equal(403);
     (await models.Ban.countDocuments({})).should.equal(0);
   });

@@ -1,0 +1,609 @@
+const chai = require("chai");
+const crypto = require("crypto");
+const mongoose = require("mongoose");
+const schemas = require("../db/schemas");
+
+const should = chai.should();
+
+function connectionUri() {
+  if (process.env.FINGERPRINT_TEST_MONGO_URI)
+    return process.env.FINGERPRINT_TEST_MONGO_URI;
+  const configured = process.env.MONGO_URL;
+  if (!configured) throw new Error("Mongo test configuration is required.");
+  if (/^mongodb(\+srv)?:\/\//.test(configured)) return configured;
+  const user = encodeURIComponent(process.env.MONGO_USER || "");
+  const password = encodeURIComponent(process.env.MONGO_PW || "");
+  const credentials = user || password ? `${user}:${password}@` : "";
+  return `mongodb://${credentials}${configured}/?authSource=admin`;
+}
+
+// Real routers and the real banAppeals module over an isolated database; only
+// Redis, logging and the game/firebase services are replaced.
+function loadRouters(models, redis) {
+  const stubbed = {
+    "../db/models": models,
+    "../modules/redis": redis,
+    "../modules/logging": () => ({ error() {}, warn() {}, info() {} }),
+    "../modules/gameLoadBalancer": { leaveGame: async () => {} },
+    "../modules/roleIconCreditUtils": {},
+    "../modules/fortunePoints": {},
+    "../modules/skillRating": {},
+    "firebase-admin": {},
+  };
+  const reloaded = [
+    "../modules/accountLinkage",
+    "../routes/utils",
+    "../modules/banAppeals",
+    "../routes/mod",
+    "../routes/banPage",
+  ];
+  const paths = [...Object.keys(stubbed), ...reloaded].map(require.resolve);
+  const previous = new Map(paths.map((path) => [path, require.cache[path]]));
+  for (const [request, exports] of Object.entries(stubbed)) {
+    const path = require.resolve(request);
+    require.cache[path] = { id: path, filename: path, loaded: true, exports };
+  }
+  for (const request of reloaded) delete require.cache[require.resolve(request)];
+  const modRouter = require("../routes/mod");
+  const banPageRouter = require("../routes/banPage");
+  const banAppeals = require("../modules/banAppeals");
+  return {
+    modRouter,
+    banPageRouter,
+    banAppeals,
+    restore() {
+      for (const path of paths) {
+        if (previous.get(path)) require.cache[path] = previous.get(path);
+        else delete require.cache[path];
+      }
+    },
+  };
+}
+
+function findHandler(router, method, path) {
+  const layer = router.stack.find(
+    (entry) =>
+      entry.route && entry.route.path === path && entry.route.methods[method]
+  );
+  if (!layer) throw new Error(`Missing ${method.toUpperCase()} ${path}`);
+  return layer.route.stack[0].handle;
+}
+
+function response() {
+  return {
+    statusCode: 200,
+    headers: {},
+    setHeader(name, value) {
+      this.headers[name] = value;
+    },
+    status(code) {
+      this.statusCode = code;
+      return this;
+    },
+    send(value) {
+      this.body = value;
+      return this;
+    },
+    json(value) {
+      this.body = value;
+      return this;
+    },
+    sendStatus(code) {
+      this.statusCode = code;
+      this.body = String(code);
+      return this;
+    },
+  };
+}
+
+function modRequest(userId, body = {}) {
+  return {
+    session: { user: { id: userId } },
+    body,
+    query: {},
+    headers: {},
+    connection: {},
+  };
+}
+
+function banRequest(session, body = {}, headers = {}) {
+  return {
+    session,
+    body,
+    query: {},
+    headers,
+    connection: {},
+    get(name) {
+      return headers[name.toLowerCase()];
+    },
+  };
+}
+
+describe("site ban page and appeals", function () {
+  this.timeout(20000);
+  let connection;
+  let models;
+  let loaded;
+  let ranks;
+  let allowed;
+  let handlers;
+
+  before(async function () {
+    const namespace = `banappeal_${process.pid}_${crypto
+      .randomBytes(6)
+      .toString("hex")}`;
+    connection = await mongoose
+      .createConnection(connectionUri(), {
+        dbName: namespace,
+        serverSelectionTimeoutMS: 10000,
+      })
+      .asPromise();
+    if (connection.name !== namespace)
+      throw new Error("Ban appeal tests need their own database.");
+    models = {};
+    for (const name of Object.keys(schemas))
+      models[name] = connection.model(
+        name,
+        schemas[name],
+        `${name.toLowerCase()}_${namespace}`
+      );
+    await models.SiteBanAppeal.init();
+
+    ranks = new Map();
+    allowed = new Set();
+    const redis = {
+      async getUserRank(id) {
+        return ranks.get(id);
+      },
+      async hasPermission(id, permission, rank) {
+        return (
+          allowed.has(`${id}:${permission || "*"}`) &&
+          (rank == null || (ranks.get(id) || 0) >= rank)
+        );
+      },
+      async hasPermissions() {
+        return false;
+      },
+      async cacheUserPermissions() {},
+      async cacheUserInfo() {},
+      async getUserStatus() {
+        return "offline";
+      },
+      async getBasicUserInfo() {
+        return null;
+      },
+    };
+    loaded = loadRouters(models, redis);
+    handlers = {
+      ban: findHandler(loaded.modRouter, "post", "/ban"),
+      vote: findHandler(loaded.modRouter, "post", "/banAppeal/vote"),
+      tally: findHandler(loaded.modRouter, "get", "/banAppeal"),
+      unban: findHandler(loaded.modRouter, "post", "/unban"),
+      info: findHandler(loaded.banPageRouter, "get", "/"),
+      appeal: findHandler(loaded.banPageRouter, "post", "/appeal"),
+      logout: findHandler(loaded.banPageRouter, "post", "/logout"),
+    };
+  });
+
+  after(async function () {
+    if (loaded) loaded.restore();
+    if (connection) {
+      await connection.dropDatabase();
+      await connection.close();
+    }
+  });
+
+  let session;
+  const csrf = "ban-csrf-token";
+
+  beforeEach(async function () {
+    await Promise.all(
+      Object.values(models).map((model) => model.deleteMany({}))
+    );
+    ranks.clear();
+    allowed.clear();
+
+    // banningAdmin issues the ban; otherAdmin and owner are admins too; mod is
+    // in the Mod group and must not get appeals.
+    const users = await models.User.create([
+      { id: "banningAdmin", name: "BanningAdmin", deleted: false },
+      { id: "otherAdmin", name: "OtherAdmin", deleted: false },
+      { id: "owner", name: "Owner", deleted: false },
+      { id: "mod", name: "JustAMod", deleted: false },
+      { id: "goneAdmin", name: "GoneAdmin", deleted: true },
+      { id: "target", name: "BadPlayer", deleted: false, ip: ["203.0.113.9"] },
+    ]);
+    const byId = Object.fromEntries(users.map((user) => [user.id, user]));
+    const [adminGroup, ownerGroup, modGroup] = await models.Group.create([
+      { name: "Admin", rank: 10 },
+      { name: "Owner", rank: 20 },
+      { name: "Mod", rank: 5 },
+    ]);
+    await models.InGroup.create([
+      { user: byId.banningAdmin._id, group: adminGroup._id },
+      { user: byId.otherAdmin._id, group: adminGroup._id },
+      { user: byId.goneAdmin._id, group: adminGroup._id },
+      { user: byId.owner._id, group: ownerGroup._id },
+      { user: byId.owner._id, group: adminGroup._id },
+      { user: byId.mod._id, group: modGroup._id },
+    ]);
+
+    ranks.set("banningAdmin", 10);
+    ranks.set("otherAdmin", 10);
+    ranks.set("mod", 5);
+    ranks.set("target", 0);
+    ["ban", "unban"].forEach((perm) => {
+      allowed.add(`banningAdmin:${perm}`);
+      allowed.add(`otherAdmin:${perm}`);
+    });
+
+    session = { siteBan: { userId: "target", csrf } };
+  });
+
+  async function siteBan(reason = "Repeated harassment in lobby chat") {
+    const res = response();
+    await handlers.ban(
+      modRequest("banningAdmin", {
+        userId: "target",
+        banType: "site",
+        length: "30 days",
+        reason,
+      }),
+      res
+    );
+    return res;
+  }
+
+  async function info() {
+    const res = response();
+    await handlers.info(banRequest(session), res);
+    return res;
+  }
+
+  async function appeal(text, headers = { "x-csrf": csrf }) {
+    const res = response();
+    await handlers.appeal(banRequest(session, { appeal: text }, headers), res);
+    return res;
+  }
+
+  describe("reason on site bans", function () {
+    it("refuses a site ban without a reason and writes nothing", async function () {
+      for (const reason of [null, "", "   "]) {
+        const res = await siteBan(reason);
+        res.statusCode.should.equal(400);
+      }
+      (await models.Ban.countDocuments({})).should.equal(0);
+      (await models.User.countDocuments({ banned: true })).should.equal(0);
+    });
+
+    it("refuses a reason over the length limit", async function () {
+      const res = await siteBan("x".repeat(301));
+      res.statusCode.should.equal(400);
+      (await models.Ban.countDocuments({})).should.equal(0);
+    });
+
+    it("stores the trimmed reason on the ban, the mod action and the notification", async function () {
+      const res = await siteBan("  Repeated harassment  ");
+      res.statusCode.should.equal(200);
+      const ban = await models.Ban.findOne({ userId: "target" }).lean();
+      ban.type.should.equal("site");
+      ban.reason.should.equal("Repeated harassment");
+      ban.modId.should.equal("banningAdmin");
+      should.exist(ban.createdAt);
+      const action = await models.ModAction.findOne({ name: "Site Ban" }).lean();
+      action.reason.should.equal("Repeated harassment");
+      const notif = await models.Notification.findOne({ user: "target" }).lean();
+      notif.content.should.contain("Reason: Repeated harassment");
+    });
+
+    it("keeps the reason optional for other ban types", async function () {
+      const res = response();
+      await handlers.ban(
+        modRequest("banningAdmin", {
+          userId: "target",
+          banType: "chat",
+          length: "1 day",
+        }),
+        res
+      );
+      res.statusCode.should.equal(200);
+      should.not.exist((await models.Ban.findOne({ type: "chat" }).lean()).reason);
+    });
+  });
+
+  describe("ban page data", function () {
+    it("reports not banned without a ban session", async function () {
+      session = {};
+      const res = await info();
+      res.body.should.deep.equal({ banned: false });
+    });
+
+    it("returns the reason, dates, account and NOT SUBMITTED status", async function () {
+      await siteBan();
+      const res = await info();
+      res.statusCode.should.equal(200);
+      res.body.banned.should.equal(true);
+      res.body.username.should.equal("BadPlayer");
+      res.body.reason.should.equal("Repeated harassment in lobby chat");
+      res.body.permanent.should.equal(false);
+      res.body.expires.should.be.greaterThan(Date.now());
+      res.body.issuedAt.should.be.at.most(Date.now());
+      res.body.appealLimit.should.equal(1);
+      res.body.votesRequired.should.equal(2);
+      res.body.appeal.should.deep.equal({ status: "not_submitted" });
+      res.body.csrf.should.equal(csrf);
+    });
+
+    it("clears the ban session once the ban is gone", async function () {
+      await siteBan();
+      await models.Ban.deleteMany({}).exec();
+      const res = await info();
+      res.body.should.deep.equal({ banned: false, banEnded: true });
+      should.not.exist(session.siteBan);
+    });
+
+    it("falls back to a placeholder for older bans with no reason", async function () {
+      await models.Ban.create({
+        id: "legacy",
+        userId: "target",
+        modId: "banningAdmin",
+        type: "site",
+        expires: 0,
+        auto: false,
+        permissions: ["signIn"],
+      });
+      const res = await info();
+      res.body.reason.should.equal("No reason was recorded for this ban.");
+      res.body.permanent.should.equal(true);
+      should.exist(res.body.issuedAt);
+    });
+  });
+
+  describe("appeal", function () {
+    const appealText = "I was arguing, but I did not harass anyone.";
+
+    it("rejects a request without the ban page's csrf token", async function () {
+      await siteBan();
+      (await appeal(appealText, {})).statusCode.should.equal(403);
+      (await appeal(appealText, { "x-csrf": "wrong" })).statusCode.should.equal(403);
+      (await models.SiteBanAppeal.countDocuments({})).should.equal(0);
+    });
+
+    it("rejects a request without a ban session", async function () {
+      await siteBan();
+      session = {};
+      (await appeal(appealText)).statusCode.should.equal(401);
+    });
+
+    it("rejects a too-short appeal", async function () {
+      await siteBan();
+      (await appeal("sorry")).statusCode.should.equal(400);
+      (await models.SiteBanAppeal.countDocuments({})).should.equal(0);
+    });
+
+    it("sends the exact message to a group DM with every admin, including the banning admin", async function () {
+      await siteBan();
+      const res = await appeal(`  ${appealText}  `);
+      res.statusCode.should.equal(200);
+      res.body.appeal.status.should.equal("pending");
+
+      const messages = await models.ChatMessage.find({}).lean();
+      messages.length.should.equal(1);
+      messages[0].senderId.should.equal("target");
+      messages[0].content.should.equal(
+        `BAN-APPEAL: BadPlayer - BAN REASON: Repeated harassment in lobby chat , APPEAL: ${appealText}`
+      );
+
+      const admins = ["banningAdmin", "otherAdmin", "owner"];
+      const channel = await models.ChatChannel.findOne({
+        id: messages[0].channel,
+      }).lean();
+      channel.public.should.equal(false);
+      [...channel.memberIds].sort().should.deep.equal([...admins, "target"].sort());
+      channel.id.should.equal(
+        loaded.banAppeals.userIdsToChannelId([...admins, "target"])
+      );
+
+      const opens = await models.ChannelOpen.find({ channelId: channel.id }).lean();
+      opens.map((open) => open.user).sort().should.deep.equal(admins);
+      const notifs = await models.Notification.find({
+        isChat: true,
+        channelId: channel.id,
+      }).lean();
+      notifs.map((notif) => notif.user).sort().should.deep.equal(admins);
+
+      const stored = await models.SiteBanAppeal.findOne({}).lean();
+      stored.recipientIds.should.deep.equal(admins);
+      stored.banModId.should.equal("banningAdmin");
+      stored.text.should.equal(appealText);
+    });
+
+    it("allows only one appeal per ban: a second submit is refused and sends nothing", async function () {
+      await siteBan();
+      (await appeal(appealText)).statusCode.should.equal(200);
+      const second = await appeal("Please, one more look at my case.");
+      second.statusCode.should.equal(409);
+      (await models.SiteBanAppeal.countDocuments({})).should.equal(1);
+      (await models.ChatMessage.countDocuments({})).should.equal(1);
+
+      // Even concurrent submits produce one appeal.
+      await models.SiteBanAppeal.deleteMany({}).exec();
+      await models.ChatMessage.deleteMany({}).exec();
+      const results = await Promise.all([
+        appeal(appealText),
+        appeal(appealText),
+        appeal(appealText),
+      ]);
+      results.filter((r) => r.statusCode === 200).length.should.equal(1);
+      results.filter((r) => r.statusCode === 409).length.should.equal(2);
+      (await models.SiteBanAppeal.countDocuments({})).should.equal(1);
+      (await models.ChatMessage.countDocuments({})).should.equal(1);
+    });
+
+    it("shows PENDING with the appeal text on the ban page", async function () {
+      await siteBan();
+      await appeal(appealText);
+      const res = await info();
+      res.body.appeal.status.should.equal("pending");
+      res.body.appeal.text.should.equal(appealText);
+      should.exist(res.body.appeal.submittedAt);
+    });
+  });
+
+  describe("voting", function () {
+    const appealText = "I was arguing, but I did not harass anyone.";
+
+    async function vote(modId, value, notes) {
+      const res = response();
+      await handlers.vote(
+        modRequest(modId, { userId: "target", vote: value, notes }),
+        res
+      );
+      return res;
+    }
+
+    async function stored() {
+      return models.SiteBanAppeal.findOne({}).lean();
+    }
+
+    beforeEach(async function () {
+      // owner can vote too; give it the same permissions as the admins.
+      ranks.set("owner", 20);
+      allowed.add("owner:unban");
+      await siteBan();
+      await appeal(appealText);
+    });
+
+    it("one accept vote leaves the appeal PENDING and shows the tally", async function () {
+      const res = await vote("otherAdmin", "accept", "Looks fine to me");
+      res.statusCode.should.equal(200);
+      res.body.should.deep.equal({
+        status: "pending",
+        tally: { accept: 1, deny: 0, required: { accept: 2, deny: 2 } },
+      });
+      const doc = await stored();
+      doc.status.should.equal("pending");
+      doc.votes.length.should.equal(1);
+      doc.votes[0].voterId.should.equal("otherAdmin");
+      doc.votes[0].vote.should.equal("accept");
+      should.exist(doc.votes[0].at);
+      (await info()).body.appeal.status.should.equal("pending");
+      should.not.exist((await info()).body.appeal.votes);
+    });
+
+    it("two distinct accept votes make it ACCEPTED without unbanning", async function () {
+      await vote("otherAdmin", "accept");
+      const res = await vote("banningAdmin", "accept");
+      res.body.status.should.equal("accepted");
+      res.body.tally.accept.should.equal(2);
+      const doc = await stored();
+      doc.status.should.equal("accepted");
+      doc.reviewedBy.should.equal("banningAdmin");
+      (await info()).body.appeal.status.should.equal("accepted");
+      // Lifting the ban stays a separate, explicit unban.
+      (await models.Ban.countDocuments({ type: "site" })).should.equal(1);
+      should.exist(await models.ModAction.findOne({ name: "Accept Ban Appeal" }).lean());
+    });
+
+    it("an admin voting twice counts once, and the latest vote replaces the first", async function () {
+      await vote("otherAdmin", "accept");
+      const again = await vote("otherAdmin", "accept");
+      again.body.status.should.equal("pending");
+      again.body.tally.accept.should.equal(1);
+      const changed = await vote("otherAdmin", "deny");
+      changed.body.tally.should.include({ accept: 0, deny: 1 });
+      const doc = await stored();
+      doc.votes.length.should.equal(1);
+      doc.votes[0].vote.should.equal("deny");
+      doc.status.should.equal("pending");
+    });
+
+    it("two deny votes make it DENIED", async function () {
+      await vote("otherAdmin", "deny");
+      const res = await vote("owner", "deny");
+      res.body.status.should.equal("denied");
+      (await info()).body.appeal.status.should.equal("denied");
+      should.exist(await models.ModAction.findOne({ name: "Deny Ban Appeal" }).lean());
+    });
+
+    it("refuses votes after the appeal is decided", async function () {
+      await vote("otherAdmin", "accept");
+      await vote("owner", "accept");
+      const late = await vote("banningAdmin", "deny");
+      late.statusCode.should.equal(409);
+      const doc = await stored();
+      doc.status.should.equal("accepted");
+      doc.votes.length.should.equal(2);
+    });
+
+    it("refuses non-admins, including a moderator with the unban permission", async function () {
+      (await vote("mod", "accept")).statusCode.should.equal(403);
+      allowed.add("mod:unban");
+      (await vote("mod", "accept")).statusCode.should.equal(403);
+      (await stored()).votes.length.should.equal(0);
+    });
+
+    it("refuses a bad vote value and a user with no appeal", async function () {
+      (await vote("otherAdmin", "maybe")).statusCode.should.equal(400);
+      await models.SiteBanAppeal.deleteMany({}).exec();
+      (await vote("otherAdmin", "accept")).statusCode.should.equal(404);
+    });
+
+    it("posts each vote and the tally into the appeal's group DM", async function () {
+      await vote("otherAdmin", "accept");
+      await vote("banningAdmin", "accept");
+      const doc = await stored();
+      const messages = await models.ChatMessage.find({ channel: doc.channelId })
+        .sort({ date: 1 })
+        .lean();
+      messages.map((m) => m.content).slice(1).should.deep.equal([
+        "BAN-APPEAL VOTE: OtherAdmin voted ACCEPT - accept 1/2, deny 0/2 - still PENDING",
+        "BAN-APPEAL VOTE: BanningAdmin voted ACCEPT - accept 2/2, deny 0/2 - appeal ACCEPTED",
+      ]);
+    });
+
+    it("shows admins the tally and who voted", async function () {
+      await vote("otherAdmin", "accept", "ok");
+      const res = response();
+      await handlers.tally(
+        { ...modRequest("banningAdmin"), query: { userId: "target" } },
+        res
+      );
+      res.statusCode.should.equal(200);
+      res.body.status.should.equal("pending");
+      res.body.tally.should.deep.equal({ accept: 1, deny: 0, required: { accept: 2, deny: 2 } });
+      res.body.votes.map((v) => `${v.voterName}:${v.vote}:${v.notes}`).should.deep.equal(["OtherAdmin:accept:ok"]);
+    });
+
+    it("after ACCEPTED, a separate site unban ends the ban page", async function () {
+      await vote("otherAdmin", "accept");
+      await vote("owner", "accept");
+      const res = response();
+      await handlers.unban(
+        modRequest("otherAdmin", { userId: "target", banType: "site" }),
+        res
+      );
+      res.statusCode.should.equal(200);
+      (await info()).body.should.deep.equal({ banned: false, banEnded: true });
+    });
+  });
+
+  describe("logout", function () {
+    it("ends the ban session", async function () {
+      await siteBan();
+      const bad = response();
+      await handlers.logout(banRequest(session, {}, {}), bad);
+      bad.statusCode.should.equal(403);
+      const res = response();
+      await handlers.logout(banRequest(session, {}, { "x-csrf": csrf }), res);
+      res.statusCode.should.equal(200);
+      should.not.exist(session.siteBan);
+    });
+  });
+
+  it("formats the appeal message exactly", function () {
+    loaded.banAppeals
+      .formatAppealMessage({ username: "U", reason: "R", appeal: "A" })
+      .should.equal("BAN-APPEAL: U - BAN REASON: R , APPEAL: A");
+  });
+});

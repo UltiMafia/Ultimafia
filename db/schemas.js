@@ -936,6 +936,10 @@ var schemas = {
       permissions: [String],
       type: String,
       auto: { type: Boolean, index: true },
+      // Why the user was banned. Required for site bans (shown on the ban
+      // page); optional for the other ban types.
+      reason: String,
+      createdAt: Number,
     },
     {
       toObject: { virtuals: true },
@@ -1226,6 +1230,45 @@ var schemas = {
           assigneesRemoved: [String],
         },
       ],
+    },
+    {
+      toObject: { virtuals: true },
+      toJSON: { virtuals: true },
+    }
+  ),
+  // A site-banned user's one appeal of a site ban, filed from the ban page.
+  // banId is unique, so a ban can be appealed only once.
+  SiteBanAppeal: new mongoose.Schema(
+    {
+      id: { type: String, index: true, unique: true },
+      banId: { type: String, index: true, unique: true },
+      userId: { type: String, index: true },
+      banModId: String,
+      banReason: String,
+      text: String,
+      status: {
+        type: String,
+        enum: ["pending", "accepted", "denied"],
+        default: "pending",
+        index: true,
+      },
+      channelId: String,
+      recipientIds: [String],
+      createdAt: { type: Number, index: true },
+      // One vote per admin; an admin may change it while the appeal is
+      // pending. See APPEAL_VOTES_REQUIRED in modules/banAppeals.js.
+      votes: [
+        {
+          _id: false,
+          voterId: String,
+          vote: { type: String, enum: ["accept", "deny"] },
+          at: Number,
+          notes: String,
+        },
+      ],
+      // Set when the votes decide the appeal.
+      reviewedBy: String,
+      reviewedAt: Number,
     },
     {
       toObject: { virtuals: true },
