@@ -7,14 +7,11 @@ import {
   Tab,
   Box,
   Stack,
-  IconButton,
-  Tooltip,
   Typography,
   Dialog,
   DialogContent,
 } from "@mui/material";
-import GoogleIcon from "../images/welcome_page/GoogleIcon.png";
-import DiscordIcon from "../images/welcome_page/DiscordIcon.png";
+import ProviderButton from "./ProviderButton";
 import {
   getAuth,
   GoogleAuthProvider,
@@ -629,36 +626,22 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
               Login
             </Button>
           </form>
-          <Stack direction="row" spacing={1} sx={{ mt: 2, justifyContent: "center" }}>
-            <Tooltip title="Login with Google">
-              <IconButton
-                onClick={loginGoogle}
-                sx={{
-                  border: 1,
-                  borderColor: "divider",
-                  "&:hover": {
-                    borderColor: "primary.main",
-                  },
-                }}
-              >
-                <img src={GoogleIcon} alt="Google" width={24} height={24} />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Login with Discord">
-              <IconButton
-                onClick={loginDiscord}
-                sx={{
-                  border: 1,
-                  borderColor: "divider",
-                  "&:hover": {
-                    borderColor: "primary.main",
-                  },
-                }}
-              >
-                <img src={DiscordIcon} alt="Discord" width={24} height={24} />
-              </IconButton>
-            </Tooltip>
-          </Stack>
+          <ProviderButton
+            provider="google"
+            onClick={loginGoogle}
+            disabled={loading}
+            sx={{ mt: 2 }}
+          >
+            Sign in with Google
+          </ProviderButton>
+          <ProviderButton
+            provider="discord"
+            onClick={loginDiscord}
+            disabled={loading}
+            sx={{ mt: 1.5 }}
+          >
+            Sign in with Discord
+          </ProviderButton>
           <SignInWithAppleButton onClick={loginApple} disabled={loading} />
           <Typography
             color="text.secondary"
@@ -773,37 +756,27 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
           Register
         </Button>
       </form>
-      <Stack direction="row" spacing={1} sx={{ mt: 2, justifyContent: "center" }}>
-        <Tooltip title="Register with Google">
-          <IconButton
-            onClick={registerGoogle}
-            sx={{
-              border: 1,
-              borderColor: "divider",
-              "&:hover": {
-                borderColor: "primary.main",
-              },
-            }}
-          >
-            <img src={GoogleIcon} alt="Google" width={24} height={24} />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Register with Discord">
-          <IconButton
-            onClick={registerDiscord}
-            sx={{
-              border: 1,
-              borderColor: "divider",
-              "&:hover": {
-                borderColor: "primary.main",
-              },
-            }}
-          >
-            <img src={DiscordIcon} alt="Discord" width={24} height={24} />
-          </IconButton>
-        </Tooltip>
-      </Stack>
-      <SignInWithAppleButton onClick={registerApple} disabled={loading} />
+      <ProviderButton
+        provider="google"
+        onClick={registerGoogle}
+        disabled={loading}
+        sx={{ mt: 2 }}
+      >
+        Sign up with Google
+      </ProviderButton>
+      <ProviderButton
+        provider="discord"
+        onClick={registerDiscord}
+        disabled={loading}
+        sx={{ mt: 1.5 }}
+      >
+        Sign up with Discord
+      </ProviderButton>
+      <SignInWithAppleButton
+        onClick={registerApple}
+        disabled={loading}
+        label="Sign up with Apple"
+      />
       <Typography
         color="text.secondary"
         sx={{

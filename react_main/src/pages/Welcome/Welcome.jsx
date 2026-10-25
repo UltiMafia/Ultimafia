@@ -138,7 +138,7 @@ export const Welcome = () => {
               elevation={2}
               sx={{
                 p: 2,
-                height: isPhoneDevice ? "400px" : "500px",
+                minHeight: isPhoneDevice ? "400px" : "500px",
                 display: "flex",
                 flexDirection: "column",
               }}
