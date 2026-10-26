@@ -164,6 +164,7 @@ const emoteMap = {
 const NO_ONE_NAME = "no one";
 const MAGUS_NAME = "Declare Magus Game";
 const UNKNOWN_NAME = "???";
+const EVERYONE_PING = "@every";
 
 function getOrderedPlayers(players) {
   return Object.values(players)
@@ -185,6 +186,10 @@ function getOrderedPlayers(players) {
       return a.index - b.index;
     })
     .map(({ player }) => player);
+}
+
+function parsePings(content) {
+  return content.match(/@[\w-]*/gm) || [];
 }
 
 export const GameTypeContext = createContext({
@@ -1121,15 +1126,15 @@ export default function Game(props) {
         message,
       });
 
-      const pings = message.content.match(/@[\w-]*/gm) || [];
-
+      const pings = parsePings(message.content);
       const iWasPinged =
         pings.indexOf("@" + playersRef?.current?.[selfRef?.current]?.name) !==
         -1;
+
       if (
         selfRef.current &&
         playersRef.current[selfRef.current] &&
-        (iWasPinged || pings.some((p) => p.startsWith("@every")))
+        (iWasPinged || pings.some((p) => p.startsWith(EVERYONE_PING)))
       ) {
         playAudio("ping");
         if (iWasPinged) {
@@ -2774,6 +2779,13 @@ export function rowStateClass(stateViewing) {
 function Message(props) {
   const { history, isMessagePinned, meetingState, ...rowProps } = props;
   const { message, stateViewing } = props;
+
+  const game = useContext(GameContext);
+  const pings = parsePings(message.content);
+  const iWasPinged =
+        pings.indexOf("@" + game.players?.[game.self]?.name) !== -1 || pings.some((p) => p.startsWith(EVERYONE_PING));
+  message.iWasPinged = iWasPinged;
+
   if (message.obituaries && props.settings.legacyObituaries) {
     return legacyObituaryMessages(message).map((alert) => (
       <Message
@@ -3064,9 +3076,14 @@ const MessageRow = React.memo(function MessageRow(props) {
     ? "nameplate-aligned"
     : "nameplate";
 
+  let className = "message";
+  // mention takes priority, because spectator messages have the "SPECTATING" tag on them anyways
+  if (message.iWasPinged) className += " mention";
+  else if (message.spectatorChat) className += " spectator-chat";
+  
   return (
     <div
-      className={message.spectatorChat ? "message spectator-chat" : "message"}
+      className={className}
       onDoubleClick={() => props.onMessageQuote(message)}
       style={messageStyle}
       onMouseEnter={messageOnMouseEnter}
