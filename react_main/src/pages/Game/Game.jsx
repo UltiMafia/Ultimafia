@@ -2091,43 +2091,50 @@ export function PregameSeatActions() {
   const isPhoneDevice = useIsPhoneDevice();
   const { review, history, isSpectator, socket, options, gameId } =
     useContext(GameContext);
-
   const action = pregameSeatAction({ review, history, isSpectator, options });
   if (!action) return null;
   const showJoin = action === "join";
 
+  const sx = isPhoneDevice ? {
+      display: "flex",
+      flexShrink: 0,
+      width: "100%",
+      boxSizing: "border-box",
+      px: 1.25,
+      py: 0.5,
+      py: 0.5,
+  } : {
+      display: "flex",
+      flexShrink: 0,
+      boxSizing: "border-box",
+      px: 1.25,
+      py: 0.5,
+      py: 0.5,
+  };
+
   return (
     <Box
-    sx={
-      {
-        display: "flex",
-          flexShrink: 0,
-          width: "100%",
-          boxSizing: "border-box",
-          px: 1.25,
-          py: 0.5,
-      }
-    }
+      sx={sx}
     >
     {showJoin ? (
       <Button
-      variant="contained"
-      fullWidth={true}
-      size={ isPhoneDevice ? "small" : "medium" }
-      onClick={() => {
-        if (socket && socket.on) socket.send("takeSeat");
-      }}
+        variant="contained"
+        fullWidth={true}
+        size={"small"}
+        onClick={() => {
+          if (socket && socket.on) socket.send("takeSeat");
+        }}
       >
       Join open seat
       </Button>
     ) : (
       <Button
-      variant="outlined"
-      fullWidth={true}
-      size={ isPhoneDevice ? "small" : "medium" }
-      onClick={() => {
-        window.location.assign(`/game/${gameId}?spectate=true`);
-      }}
+        variant="outlined"
+        fullWidth={true}
+        size={"small"}
+        onClick={() => {
+          window.location.assign(`/game/${gameId}?spectate=true`);
+        }}
       >
       Spectate
       </Button>
@@ -4161,6 +4168,7 @@ export function PlayerList(props) {
           />
         </Tooltip>
       )}
+      {!isPhoneDevice && <PregameSeatActions />}
       <Box sx={{ marginLeft: "auto !important" }}>
         <PlayerCount
           game={game}
@@ -4213,7 +4221,6 @@ export function PlayerList(props) {
             renderRowEnd={renderRowEnd}
           />
           <PregameSpectatorRows />
-          {!isPhoneDevice && <PregameSeatActions />}
           <RehostInvite priority={2} />
         </div>
       }
