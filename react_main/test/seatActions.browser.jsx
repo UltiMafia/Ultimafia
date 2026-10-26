@@ -1,5 +1,5 @@
 // Test page for test/run-seat-actions.cjs: the real game layouts (desktop
-// three-panel and phone) with the real TextMeetingLayout chat, hosted in a
+// three-panel with PlayerList, and phone with TextMeetingLayout), hosted in a
 // fixed, viewport-sized .game-session box like the app shell does, so the
 // pregame "Spectate" / "Join open seat" button can be checked for being on
 // screen. ?case=seated|spectator|started|review|nospectating picks the state;
@@ -12,6 +12,7 @@ import { Box, createTheme, Stack, ThemeProvider } from "@mui/material";
 import {
   GameTypeContext,
   MobileLayout,
+  PlayerList,
   PregameSeatActions,
   TextMeetingLayout,
   ThreePanelLayout,
@@ -30,9 +31,22 @@ window.__sent = [];
 
 function makeGame(selectedPanel, setSelectedPanel) {
   const started = testCase === "started";
-  const pregameState = { name: "Pregame", meetings: {}, alerts: [] };
+  const pregameState = {
+    name: "Pregame",
+    meetings: {},
+    alerts: [],
+    dead: {},
+    exorcised: {},
+  };
   const states = { [-1]: pregameState };
-  if (started) states[1] = { name: "Day 1", meetings: {}, alerts: [] };
+  if (started)
+    states[1] = {
+      name: "Day 1",
+      meetings: {},
+      alerts: [],
+      dead: {},
+      exorcised: {},
+    };
   return {
     gameId: "fixture",
     review: testCase === "review",
@@ -45,6 +59,8 @@ function makeGame(selectedPanel, setSelectedPanel) {
     spectators: [],
     settings: {},
     filters: {},
+    setup: { total: 8 },
+    spectatorCount: 0,
     socket: { on: () => {}, send: (...args) => window.__sent.push(args) },
     selectedPanel,
     setSelectedPanel,
@@ -57,6 +73,11 @@ function Fixture() {
   const [selectedPanel, setSelectedPanel] = useState("chat");
   const game = makeGame(selectedPanel, setSelectedPanel);
   const chat = <TextMeetingLayout seatActions={!legacy} />;
+  const players = legacy ? (
+    <div data-testid="players">Players</div>
+  ) : (
+    <PlayerList />
+  );
   return (
     <GameContext.Provider value={game}>
       <GameTypeContext.Provider value={{ singleState: false }}>
@@ -64,12 +85,12 @@ function Fixture() {
           <Stack direction="column" sx={{ height: "100%" }}>
             <Box className="game" sx={{ backgroundColor: "background.paper" }}>
               <ThreePanelLayout
-                leftPanelContent={<div data-testid="players">Players</div>}
+                leftPanelContent={players}
                 centerPanelContent={chat}
                 rightPanelContent={<div data-testid="info">Info</div>}
               />
               <MobileLayout
-                outerLeftContent={<div>Players</div>}
+                outerLeftContent={players}
                 centerContent={chat}
                 innerRightContent={<div>Actions</div>}
               />
