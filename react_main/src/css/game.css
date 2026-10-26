@@ -1217,3 +1217,30 @@ html[data-keyboard="open"] .game .meeting-tabs {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+/* A reply drawn as one row: the replier's header, a small muted preview of
+   the quoted line, then the reply text. */
+.game .message .reply-quote-preview {
+  display: block;
+
+  margin: 1px 0 2px;
+  padding-left: 6px;
+  border-left: 2px solid var(--scheme-color-sec);
+
+  font-size: 0.85em;
+  opacity: 0.7;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.game .message .reply-quote-preview .quote-content {
+  margin-right: 0;
+}
+
+/* Compact mode keeps the row on one line: name, preview, reply. */
+.game .message .content.dense .reply-quote-preview {
+  display: inline;
+  margin: 0 6px 0 0;
+}

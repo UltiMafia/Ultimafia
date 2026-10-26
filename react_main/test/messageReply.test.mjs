@@ -3,8 +3,10 @@ import assert from "node:assert/strict";
 import {
   buildReplyPayload,
   canReplyTo,
+  describeQuotedMessage,
   handleGameEscape,
   makeReplyTarget,
+  pairReplies,
   showPinButton,
 } from "../src/utils/messageReply.js";
 
@@ -40,13 +42,26 @@ test("the state the message was shown in is kept, or its own stamp", () => {
 
 test("commands, whispers and empty text are not replies", () => {
   const target = makeReplyTarget(claim, 1);
-  assert.equal(buildReplyPayload(target, { meetingId: "m", content: "/roll" }), null);
   assert.equal(
-    buildReplyPayload(target, { meetingId: "m", content: "hi", abilityName: "Whisper" }),
+    buildReplyPayload(target, { meetingId: "m", content: "/roll" }),
     null
   );
-  assert.equal(buildReplyPayload(target, { meetingId: "m", content: "" }), null);
-  assert.equal(buildReplyPayload(null, { meetingId: "m", content: "hi" }), null);
+  assert.equal(
+    buildReplyPayload(target, {
+      meetingId: "m",
+      content: "hi",
+      abilityName: "Whisper",
+    }),
+    null
+  );
+  assert.equal(
+    buildReplyPayload(target, { meetingId: "m", content: "" }),
+    null
+  );
+  assert.equal(
+    buildReplyPayload(null, { meetingId: "m", content: "hi" }),
+    null
+  );
   assert.ok(buildReplyPayload(target, { meetingId: "m", content: "/me nods" }));
 });
 
@@ -65,7 +80,13 @@ test("only quotable player messages can be replied to, pregame included", () => 
 
 function escapeRun(key, replyPending) {
   const calls = [];
-  const e = { key, defaultPrevented: false, preventDefault() { this.defaultPrevented = true; } };
+  const e = {
+    key,
+    defaultPrevented: false,
+    preventDefault() {
+      this.defaultPrevented = true;
+    },
+  };
   handleGameEscape(e, {
     replyPending,
     cancelReply: () => calls.push("cancelReply"),
@@ -75,11 +96,17 @@ function escapeRun(key, replyPending) {
 }
 
 test("Escape with a reply pending cancels it and does not open the leave dialog", () => {
-  assert.deepEqual(escapeRun("Escape", true), { calls: ["cancelReply"], prevented: true });
+  assert.deepEqual(escapeRun("Escape", true), {
+    calls: ["cancelReply"],
+    prevented: true,
+  });
 });
 
 test("Escape with no reply pending still asks to leave", () => {
-  assert.deepEqual(escapeRun("Escape", false), { calls: ["leave"], prevented: false });
+  assert.deepEqual(escapeRun("Escape", false), {
+    calls: ["leave"],
+    prevented: false,
+  });
 });
 
 test("other keys do nothing", () => {
@@ -95,11 +122,18 @@ test("one Escape press cancels the reply once, then the next press asks to leave
   target.addEventListener("keydown", (e) =>
     handleGameEscape(e, {
       replyPending: Boolean(reply),
-      cancelReply: () => { calls.push("cancelReply"); reply = null; },
+      cancelReply: () => {
+        calls.push("cancelReply");
+        reply = null;
+      },
       leave: () => calls.push("leave"),
     })
   );
-  const press = () => { const ev = new Event("keydown"); ev.key = "Escape"; target.dispatchEvent(ev); };
+  const press = () => {
+    const ev = new Event("keydown");
+    ev.key = "Escape";
+    target.dispatchEvent(ev);
+  };
   press();
   assert.deepEqual(calls, ["cancelReply"]);
   assert.equal(reply, null);
@@ -118,7 +152,11 @@ test("the pin shows exactly where master shows it", () => {
       for (const isHovering of [false, true])
         for (const stateViewing of [-2, -1, 0, 1, 2]) {
           const row = { review, isQuote, isHovering, stateViewing };
-          assert.equal(showPinButton(row), masterShowsPin(row), JSON.stringify(row));
+          assert.equal(
+            showPinButton(row),
+            masterShowsPin(row),
+            JSON.stringify(row)
+          );
         }
 });
 
@@ -136,5 +174,117 @@ test("a row that can be replied to still shows its pin once the game starts", ()
 test("pregame offers reply but no pin, as master has no pin there", () => {
   const view = { review: false, stateViewing: -1 };
   assert.equal(canReplyTo(claim, view), true);
-  assert.equal(showPinButton({ ...view, isQuote: false, isHovering: true }), false);
+  assert.equal(
+    showPinButton({ ...view, isQuote: false, isHovering: true }),
+    false
+  );
+});
+
+const quote = {
+  id: "quoteQ1",
+  isQuote: true,
+  senderId: "playerB",
+  meetingId: "village1",
+  messageId: claim.id,
+  fromMeetingId: "village1",
+  fromState: 1,
+};
+const reply = {
+  id: "replyR1",
+  senderId: "playerB",
+  meetingId: "village1",
+  content: "yo im replying to this",
+  replyTo: quote.id,
+};
+const other = {
+  id: "otherO1",
+  senderId: "playerC",
+  meetingId: "village1",
+  content: "hi",
+};
+
+test("a reply right under its quote becomes one row carrying the quote", () => {
+  const rows = pairReplies([other, quote, reply, other]);
+  assert.equal(rows.length, 3);
+  assert.equal(rows[1].message, reply);
+  assert.equal(rows[1].replyQuote, quote);
+  assert.equal(rows[0].replyQuote, undefined);
+  assert.equal(rows[2].replyQuote, undefined);
+});
+
+test("a quote whose reply has not arrived yet is drawn on its own", () => {
+  const rows = pairReplies([other, quote]);
+  assert.deepEqual(rows, [{ message: other }, { message: quote }]);
+});
+
+test("a reply whose quote is not directly above keeps the old look", () => {
+  const rows = pairReplies([quote, other, reply]);
+  assert.deepEqual(rows, [
+    { message: quote },
+    { message: other },
+    { message: reply },
+  ]);
+});
+
+test("plain quotes and quotes from someone else are not merged", () => {
+  const plain = { ...other, senderId: "playerB" };
+  assert.equal(pairReplies([quote, plain]).length, 2);
+  const otherSender = { ...reply, senderId: "playerC" };
+  assert.equal(pairReplies([quote, otherSender]).length, 2);
+  const otherMeeting = { ...reply, meetingId: "mafia1" };
+  assert.equal(pairReplies([quote, otherMeeting]).length, 2);
+  // A second line after the merged reply is drawn normally.
+  const rows = pairReplies([quote, reply, { ...reply, id: "r2" }]);
+  assert.equal(rows.length, 2);
+});
+
+test("anonymous replies pair by id and name the quoted sender Anonymous", () => {
+  const anonQuote = { ...quote, senderId: "anonymous" };
+  const anonReply = { ...reply, senderId: "anonymous" };
+  const rows = pairReplies([anonQuote, anonReply]);
+  assert.equal(rows.length, 1);
+  const state = {
+    name: "Day 1",
+    meetings: {
+      village1: {
+        name: "Village",
+        messages: [{ ...claim, senderId: "anonymous", time: 5 }],
+      },
+    },
+  };
+  const players = { anonymous: { name: "should not show" } };
+  assert.equal(
+    describeQuotedMessage(anonQuote, state, players, undefined).senderName,
+    "Anonymous"
+  );
+});
+
+test("the reply preview names the quoted sender, state and text", () => {
+  const state = {
+    name: "Pregame",
+    meetings: {
+      village1: { name: "Village", messages: [{ ...claim, time: 9 }] },
+    },
+  };
+  const players = { playerA: { name: "AlageRheba10" } };
+  assert.deepEqual(describeQuotedMessage(quote, state, players, {}), {
+    senderName: "AlageRheba10",
+    fromStateName: "Pregame",
+    meetingName: "Village",
+    content: claim.content,
+    time: 9,
+    customEmotes: undefined,
+    customStickers: undefined,
+  });
+  // Spectators are found too; a missing state or line gives null.
+  assert.equal(
+    describeQuotedMessage(quote, state, {}, { playerA: { name: "Spec" } })
+      .senderName,
+    "Spec"
+  );
+  assert.equal(describeQuotedMessage(quote, undefined, players, {}), null);
+  assert.equal(
+    describeQuotedMessage({ ...quote, messageId: "nope" }, state, players, {}),
+    null
+  );
 });
