@@ -2087,7 +2087,8 @@ const EMPTY_CHAT_STATE = { meetings: {}, alerts: [], obituaries: {} };
 
 // Pregame seat actions ("Join open seat" and "Spectate") which sits
 // above the chat box on mobile and sits in the player list on desktop
-export function PregameSeatActions({ isPhoneDevice = false }) {
+export function PregameSeatActions() {
+  const isPhoneDevice = useIsPhoneDevice();
   const { review, history, isSpectator, socket, options, gameId } =
     useContext(GameContext);
 
@@ -2135,10 +2136,10 @@ export function PregameSeatActions({ isPhoneDevice = false }) {
   );
 }
 
-// When seatActions is false, the join spectators/players button is hidden.
+// When seatActions is false, the join spectators/players button is hidden on mobile.
 // This is needed because some minigames show the chat in the board panel
 // during pregame, so without setting seatActions to false, the button
-// would apear twice.
+// would appear twice.
 export function TextMeetingLayout({ seatActions = true } = {}) {
   const game = useContext(GameContext);
   const isPhoneDevice = useIsPhoneDevice();
@@ -2481,7 +2482,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
               {newMessageCount} new message{newMessageCount === 1 ? "" : "s"}
             </button>
           )}
-          {(seatActions && isPhoneDevice) && <PregameSeatActions isPhoneDevice={isPhoneDevice} />}
+          {(seatActions && isPhoneDevice) && <PregameSeatActions />}
           <KudosDock onResize={doAutoScroll} />
           {canSpeak && (
             <SpeechInput
