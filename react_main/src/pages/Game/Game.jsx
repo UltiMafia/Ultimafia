@@ -2325,6 +2325,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           review={game.review}
           history={history}
           players={players}
+          self={game.self}
           spectators={spectators}
           stateViewing={
             singleState && !message.obituaries && !message.winners
@@ -2362,6 +2363,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     game.onMessageQuote,
     game.onPinMessage,
     game.isMessagePinned,
+    game.self,
   ]);
 
   // Typing and unrelated game updates must not repeatedly measure the entire
@@ -2780,11 +2782,12 @@ function Message(props) {
   const { history, isMessagePinned, meetingState, ...rowProps } = props;
   const { message, stateViewing } = props;
 
-  const game = useContext(GameContext);
-  const pings = parsePings(message.content);
-  const iWasPinged =
-        pings.indexOf("@" + game.players?.[game.self]?.name) !== -1 || pings.some((p) => p.startsWith(EVERYONE_PING));
-  message.iWasPinged = iWasPinged;
+  let iWasPinged = false;
+  if (message.content) {
+    const pings = parsePings(message.content);
+    iWasPinged =
+          pings.indexOf("@" + props.players?.[props.self]?.name) !== -1 || pings.some((p) => p.startsWith(EVERYONE_PING));
+  }
 
   if (message.obituaries && props.settings.legacyObituaries) {
     return legacyObituaryMessages(message).map((alert) => (
@@ -2803,6 +2806,7 @@ function Message(props) {
   return (
     <MessageRow
       {...rowProps}
+      iWasPinged={iWasPinged}
       pinned={isMessagePinned(message)}
       meetingName={history.states[nameState]?.meetings?.[message.meetingId]?.name}
       quoteState={message.isQuote ? history.states[message.fromState] : undefined}
@@ -3077,9 +3081,8 @@ const MessageRow = React.memo(function MessageRow(props) {
     : "nameplate";
 
   let className = "message";
-  // mention takes priority, because spectator messages have the "SPECTATING" tag on them anyways
-  if (message.iWasPinged) className += " mention";
-  else if (message.spectatorChat) className += " spectator-chat";
+  if (message.spectatorChat) className += " spectator-chat";
+  else if (props.iWasPinged) className += " mention";
   
   return (
     <div
@@ -6354,6 +6357,7 @@ export function PinnedMessages() {
         review={game.review}
         history={game.history}
         players={game.players}
+        self={game.self}
         spectators={game.spectators}
         stateViewing={game.stateViewing}
         key={message.id || message.messageId + message.time || i}
