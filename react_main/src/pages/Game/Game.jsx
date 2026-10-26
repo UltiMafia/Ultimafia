@@ -147,6 +147,7 @@ import {
   buildReplyPayload,
   canReplyTo,
   describeQuotedMessage,
+  findMessageRow,
   handleGameEscape,
   makeReplyTarget,
   pairReplies,
@@ -2346,7 +2347,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
 
     var previousMessage = null;
     // A reply and the quote right above it are drawn as one row.
-    return pairReplies(messageData).map(({ message, replyQuote }, i) => {
+    return pairReplies(messageData).map(({ message, replyQuote, replyMerged }, i) => {
       const isNotServerMessage = message.senderId !== "server";
       const unfocusedMessage =
         isolationEnabled &&
@@ -2383,6 +2384,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           unfocusedMessage={unfocusedMessage}
           chainToPrevious={chainToPrevious}
           replyQuote={replyQuote}
+          replyMerged={replyMerged}
         />
       );
     });
@@ -2813,8 +2815,14 @@ export function rowStateClass(stateViewing) {
 }
 
 function Message(props) {
-  const { history, isMessagePinned, meetingState, replyQuote, ...rowProps } =
-    props;
+  const {
+    history,
+    isMessagePinned,
+    meetingState,
+    replyQuote,
+    replyMerged,
+    ...rowProps
+  } = props;
   const { message, stateViewing } = props;
 
   let iWasPinged = false;
@@ -2860,10 +2868,97 @@ function Message(props) {
       iWasPinged={iWasPinged}
       pinned={isMessagePinned(message)}
       replyPreview={replyPreview || undefined}
+      replyMerged={!!replyPreview && !!replyMerged}
       meetingName={history.states[nameState]?.meetings?.[message.meetingId]?.name}
       quoteState={message.isQuote ? history.states[message.fromState] : undefined}
       history={message.obituaries || message.winners ? history : undefined}
     />
+  );
+}
+
+// The line above a reply, as in Discord: a curved line from the replier's
+// avatar column to a tiny avatar, the original sender's name and one line of
+// what they said. It never carries a timestamp, so the reply's own header
+// (and its timestamp) is drawn exactly like any other message's. Clicking it
+// jumps to the original line when that is in the same chat.
+function ReplyReference(props) {
+  const { reply, layout, dense, timestamps, players, spectators } = props;
+  const user = useContext(UserContext);
+  const theme = useTheme();
+  const accessibleNameColors = user.settings?.accessibleNameColors;
+  const sender = reply.sender;
+
+  let nameColor = sender && sender.anonId === undefined ? reply.nameColor : "";
+  if (Object.keys(nameColor ?? {}).length === 2)
+    nameColor = nameColor["darkTheme"];
+  const rawNameColor = nameColor && nameColor !== "" ? nameColor : null;
+  const color = resolveDisplayNameColor({
+    accessibleNameColors,
+    ignoreTextColor: user.settings?.ignoreTextColor,
+    rawNameColor,
+    autoContrastColor: user.autoContrastColor.bind(user),
+    theme,
+  });
+
+  function jumpToOriginal(e) {
+    e.stopPropagation();
+    const row = findMessageRow(e.currentTarget.closest(".message"), reply.messageId);
+    if (!row) return;
+    row.scrollIntoView({ block: "center", behavior: "smooth" });
+    row.classList.remove("reply-jump-highlight");
+    // Restart the highlight animation on repeated clicks.
+    void row.offsetWidth;
+    row.classList.add("reply-jump-highlight");
+    setTimeout(() => row.classList.remove("reply-jump-highlight"), 1600);
+  }
+
+  let className = `reply-reference reply-reference-${dense ? "dense" : layout === "defaultLarge" ? "large" : "default"}`;
+  if (dense && timestamps) className += " reply-reference-timestamps";
+
+  return (
+    <div
+      className={className}
+      title={`Replying to ${reply.senderName}`}
+      role="button"
+      tabIndex={-1}
+      onClick={jumpToOriginal}
+      onDoubleClick={(e) => e.stopPropagation()}
+    >
+      <span className="reply-spine" aria-hidden="true" />
+      <span className="reply-reference-sender">
+        {sender ? (
+          <NameWithAvatar
+            id={sender.userId}
+            avatarId={sender.anonId === undefined ? sender.userId : sender.anonId}
+            name={sender.name}
+            avatar={sender.avatar}
+            isSquare={sender.avatarShape === "square"}
+            color={color}
+            nameFont={sender.nameFont}
+            noLink
+            small
+          />
+        ) : (
+          <NameWithAvatar name="Anonymous" noLink small />
+        )}
+      </span>
+      <span className="reply-reference-text">
+        <UserText
+          text={reply.content}
+          settings={user.settings}
+          players={players}
+          spectators={spectators}
+          customEmotes={reply.customEmotes}
+          customStickers={reply.customStickers}
+          filterProfanity
+          linkify={false}
+          emotify
+          slangifySeed={String(reply.time)}
+          iconUsername
+          roleify={props.roleMentions}
+        />
+      </span>
+    </div>
   );
 }
 
@@ -3150,14 +3245,20 @@ const MessageRow = React.memo(function MessageRow(props) {
   let className = "message";
   if (message.spectatorChat) className += " spectator-chat";
   else if (props.iWasPinged) className += " mention";
+  // A reply shows what it answers above its header (see ReplyReference). One
+  // whose quote cannot be found keeps the indented look.
   if (message.replyTo && !message.isQuote && !props.replyPreview)
     className += " reply-message";
-  if (props.replyPreview) className += " reply-merged";
+  if (props.replyPreview)
+    className += props.replyMerged
+      ? " reply-merged with-reply-reference"
+      : " with-reply-reference";
   if (replyButtonSlot) className += " with-reply-button";
   
   return (
     <div
       className={className}
+      data-message-id={message.id ?? undefined}
       onDoubleClick={() => props.onMessageQuote(message)}
       style={messageStyle}
       onMouseEnter={messageOnMouseEnter}
@@ -3166,6 +3267,17 @@ const MessageRow = React.memo(function MessageRow(props) {
       onTouchEnd={messageLongPress.onTouchEnd}
     >
       <div className={innerClassName}>
+        {props.replyPreview && !message.isQuote && (
+          <ReplyReference
+            reply={props.replyPreview}
+            layout={messageLayout}
+            dense={denseMessages}
+            timestamps={!!props.settings.timestamps}
+            players={players}
+            spectators={spectators}
+            roleMentions={props.settings.roleMentions}
+          />
+        )}
         {(!chainToPrevious || denseMessages || isRightAligned) && (
           <div
             className={nameplateClassName}
@@ -3229,36 +3341,6 @@ const MessageRow = React.memo(function MessageRow(props) {
         >
           {!message.isQuote && (
             <>
-              {props.replyPreview && (
-                <span
-                  className="reply-quote-preview"
-                  title="Replying to this message"
-                >
-                  <i
-                    className="fas fa-reply fa-rotate-180 reply-marker"
-                    aria-hidden="true"
-                  />
-                  <span className="quote-info">
-                    {`${props.replyPreview.senderName} on ${props.replyPreview.fromStateName}: `}
-                  </span>
-                  <span className="quote-content">
-                    <UserText
-                      text={props.replyPreview.content}
-                      settings={user.settings}
-                      players={players}
-                      spectators={spectators}
-                      customEmotes={props.replyPreview.customEmotes}
-                      customStickers={props.replyPreview.customStickers}
-                      filterProfanity
-                      linkify
-                      emotify
-                      slangifySeed={String(props.replyPreview.time)}
-                      iconUsername
-                      roleify={props.settings.roleMentions}
-                    />
-                  </span>
-                </span>
-              )}
               {message.replyTo && !props.replyPreview && (
                 <i
                   className="fas fa-reply fa-rotate-180 reply-marker"

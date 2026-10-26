@@ -88,36 +88,52 @@ export function isReplyToQuote(message, quote) {
 }
 
 // Chat rows to draw. A reply whose quote is directly above it becomes one row
-// carrying that quote (`replyQuote`); the quote gets no row of its own. A
-// quote whose reply has not arrived yet, and a reply whose quote is not
-// directly above it, are drawn as before.
+// carrying that quote (`replyQuote`, `replyMerged`); the quote gets no row of
+// its own. A reply whose quote is elsewhere in the list keeps its own row but
+// still carries the quote (`replyMerged` false), so it can show what it
+// answers. A quote whose reply has not arrived yet is drawn as before.
 export function pairReplies(messages) {
+  const quotesById = new Map();
+  for (const m of messages) if (m && m.isQuote && m.id != null) quotesById.set(m.id, m);
+
   const rows = [];
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i];
     const next = messages[i + 1];
     if (isReplyToQuote(next, message)) {
-      rows.push({ message: next, replyQuote: message });
+      rows.push({ message: next, replyQuote: message, replyMerged: true });
       i++;
-    } else {
-      rows.push({ message });
+      continue;
     }
+    const quote =
+      message && !message.isQuote && message.replyTo != null
+        ? quotesById.get(message.replyTo)
+        : undefined;
+    if (quote && isReplyToQuote(message, quote))
+      rows.push({ message, replyQuote: quote, replyMerged: false });
+    else rows.push({ message });
   }
   return rows;
 }
 
-// What the reply preview shows about the quoted line: the same lookup a quote
-// row does (anonymous senders stay "Anonymous"). Null when it cannot be found.
+// What a reply shows about the line it answers: the same lookup a quote row
+// does (anonymous senders stay "Anonymous", with no player to draw). Null
+// when it cannot be found.
 export function describeQuotedMessage(quote, state, players, spectators) {
   if (!quote || !state) return null;
   const meeting = state.meetings?.[quote.fromMeetingId];
   if (!meeting) return null;
   const msg = (meeting.messages || []).find((m) => m.id === quote.messageId);
   if (!msg) return null;
-  const sender = players?.[msg.senderId] || spectators?.[msg.senderId];
+  const anonymous = msg.senderId === "anonymous";
+  const sender = anonymous
+    ? undefined
+    : players?.[msg.senderId] || spectators?.[msg.senderId];
   return {
-    senderName:
-      sender && msg.senderId !== "anonymous" ? sender.name : "Anonymous",
+    messageId: msg.id,
+    senderName: sender ? sender.name : "Anonymous",
+    sender,
+    nameColor: sender ? msg.nameColor : undefined,
     fromStateName: state.name,
     meetingName: meeting.name,
     content: msg.content,
@@ -125,4 +141,15 @@ export function describeQuotedMessage(quote, state, players, spectators) {
     customEmotes: msg.customEmotes,
     customStickers: msg.customStickers,
   };
+}
+
+// The original line's chat row, if it is on screen in the same chat as the
+// reply's row. Used to jump to it from the reply.
+export function findMessageRow(fromRow, messageId) {
+  if (!fromRow || messageId == null) return null;
+  const chat = fromRow.closest(".speech-display") || fromRow.parentElement;
+  if (!chat) return null;
+  for (const row of chat.querySelectorAll(".message[data-message-id]"))
+    if (row.dataset.messageId === String(messageId)) return row;
+  return null;
 }

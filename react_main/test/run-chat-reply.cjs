@@ -8,13 +8,19 @@
 // the pin sits exactly where it does without the reply feature (top-right),
 // the reply button sits below it (bottom-right) with a clear gap, both stay
 // inside their own row and can be clicked there, and hovering does not change
-// any row's height. Reply rows must show the reply arrow. SCREENSHOT_DIR, if
-// set, receives a screenshot per layout.
+// any row's height. A reply that can find the line it answers shows the
+// Discord-style reference above its header: one line, no timestamp, cut off
+// when long, inside its row, with the curved line starting over the avatar.
+// Every row's timestamp sits the same distance from the name, with the same
+// style, as on plain rows. A reply that cannot find it shows the reply arrow.
+// SCREENSHOT_DIR, if set, receives a screenshot per layout.
 const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
 
-const LAYOUTS = ["default", "compact", "compactInline", "compactAligned"];
+const LAYOUTS = ["default", "defaultLarge", "compactInline", "compactAligned"];
+// Extra variants, each checked in every layout on Day 1.
+const VARIANTS = ["anon=1", "spec=1", "dead=1", "ts=0"];
 const MIN_GAP = 3;
 
 async function main() {
@@ -130,12 +136,49 @@ async function main() {
               };
             return {
               text: m.innerText.replace(/\s+/g, " ").trim().slice(0, 40),
+              spectator: m.classList.contains("spectator-chat"),
               merged: m.classList.contains("reply-merged"),
               fallback: m.classList.contains("reply-message"),
-              arrowBeforePreview: !!m.querySelector(
-                ".reply-quote-preview > .reply-marker:first-child + .quote-info",
-              ),
               arrow: !!m.querySelector(".reply-marker"),
+              ref: (() => {
+                const ref = m.querySelector(".reply-reference");
+                if (!ref) return null;
+                const spine = ref.querySelector(".reply-spine");
+                const text = ref.querySelector(".reply-reference-text");
+                const avatar = m.querySelector(
+                  ":scope > div > .nameplate .avatar, :scope > div > .nameplate-aligned .avatar",
+                );
+                const firstChild = ref.parentElement.firstElementChild === ref;
+                return {
+                  box: box(ref),
+                  firstChild,
+                  spine: box(spine),
+                  tinyAvatar: !!ref.querySelector(".avatar"),
+                  name: ref.querySelector(".user-name")?.innerText.trim(),
+                  hasTime: !!ref.querySelector(".time"),
+                  text: text.innerText,
+                  cut: text.scrollWidth > text.clientWidth + 0.5,
+                  avatar: box(avatar),
+                };
+              })(),
+              time: (() => {
+                const np = m.querySelector(
+                  ":scope > div > .nameplate, :scope > div > .nameplate-aligned",
+                );
+                const t = np && np.querySelector(".time");
+                const n = np && np.querySelector(".user-name");
+                if (!t || !n) return null;
+                const tr = t.getBoundingClientRect();
+                const nr = n.getBoundingClientRect();
+                const cs = getComputedStyle(t);
+                return {
+                  dx: Math.round((tr.x - nr.x) * 100) / 100,
+                  dy: Math.round((tr.y + tr.height / 2 - (nr.y + nr.height / 2)) * 100) / 100,
+                  x: Math.round((tr.x - m.getBoundingClientRect().x) * 100) / 100,
+                  style: [cs.fontSize, cs.opacity, cs.color, cs.fontWeight].join("|"),
+                  name: n.innerText.trim(),
+                };
+              })(),
               row: box(m),
               pin: box(pin),
               pinInRow: offset(box(pin)),
@@ -150,9 +193,16 @@ async function main() {
       return { rows, before, after };
     }
 
+    const queries = [];
     for (const layout of LAYOUTS) {
-      for (const st of [1, -1]) {
-        const query = `layout=${layout}&st=${st}`;
+      for (const st of [1, -1]) queries.push(`layout=${layout}&st=${st}`);
+      for (const v of VARIANTS) queries.push(`layout=${layout}&st=1&${v}`);
+    }
+    for (const query of queries) {
+      {
+        const layout = new URLSearchParams(query).get("layout");
+        const st = Number(new URLSearchParams(query).get("st"));
+        const dense = layout.startsWith("compact");
         const off = await hoverRows(query + "&noreply=1");
         const on = await hoverRows(query);
         check(
@@ -179,8 +229,37 @@ async function main() {
             );
             check(r.pinHit, `${name}: pin clickable`);
           }
-          if (r.merged)
-            check(r.arrowBeforePreview, `${name}: arrow before the preview`);
+          if (r.merged) check(!!r.ref, `${name}: reply shows its reference`);
+          if (r.ref) {
+            const f = r.ref;
+            check(f.firstChild, `${name}: reference above the header`);
+            check(!r.arrow, `${name}: no old reply arrow with a reference`);
+            check(f.tinyAvatar && !!f.name, `${name}: reference has avatar and name`);
+            check(!f.hasTime, `${name}: no timestamp on the reference`);
+            check(!/on (Day|Night|Pregame)/.test(f.text), `${name}: no state on the reference`);
+            check(f.box.h <= 20, `${name}: reference is one line`);
+            check(
+              f.box.x + f.box.w <= r.row.x + r.row.w + 0.5 &&
+                f.box.y >= r.row.y - 0.5,
+              `${name}: reference inside its row`,
+            );
+            if (/long line/.test(f.text))
+              check(f.cut, `${name}: long reference is cut off`);
+            if (query.includes("anon=1"))
+              check(f.name === "Anonymous", `${name}: anonymous original`);
+            if (f.avatar) {
+              const centre = f.avatar.x + f.avatar.w / 2;
+              check(
+                Math.abs(f.spine.x + 1 - centre) < 1.5,
+                `${name}: curved line starts over the avatar`,
+              );
+              check(
+                f.spine.y + f.spine.h <= f.avatar.y + 0.5 &&
+                  f.avatar.y - (f.spine.y + f.spine.h) < 4,
+                `${name}: curved line ends just above the avatar`,
+              );
+            }
+          }
           if (r.fallback) check(r.arrow, `${name}: reply arrow`);
           for (const k of ["pin", "reply"]) {
             const b = r[k];
@@ -207,9 +286,45 @@ async function main() {
               `${name}: reply under the pin with a ${MIN_GAP}px gap`,
             );
         });
+        // Timestamps: same place next to the name, same vertical centre and
+        // same style on reply rows as on plain rows, and the same x in the
+        // row whenever the name is the same (dense layouts: always).
+        const plain = on.rows.filter((r) => r.time && !r.ref);
+        const timed = on.rows.filter((r) => r.time);
+        if (query.includes("ts=0"))
+          check(timed.length === 0, `${query}: no timestamps when off`);
+        else {
+          check(
+            on.rows.some((r) => r.ref && r.time),
+            `${query}: a reply row shows its timestamp`,
+          );
+          for (const r of timed) {
+            const ref = plain.find((p) => p.time.name === r.time.name) || plain[0];
+            check(
+              Math.abs(r.time.dx - ref.time.dx) < 0.5 &&
+                Math.abs(r.time.dy - ref.time.dy) < 0.5 &&
+                r.time.style === ref.time.style,
+              `${query} (${r.text}): timestamp placed and styled as on plain rows`,
+            );
+            // Spectator chat rows are drawn 2px in for their side bar, with
+            // or without replies.
+            if (
+              r.spectator === ref.spectator &&
+              (dense || ref.time.name === r.time.name)
+            )
+              check(
+                Math.abs(r.time.x - ref.time.x) < 0.5,
+                `${query} (${r.text}): timestamp at the same x as plain rows`,
+              );
+          }
+        }
         check(
           on.rows.some((r) => r.reply),
           `${query}: some row offers a reply`,
+        );
+        check(
+          on.rows.filter((r) => r.ref).length >= 3,
+          `${query}: replies show their reference`,
         );
         if (st === 1)
           check(
@@ -219,10 +334,23 @@ async function main() {
         if (shots) {
           fs.mkdirSync(shots, { recursive: true });
           await page.screenshot({
-            path: path.join(shots, `${layout}_st${st}.png`),
+            path: path.join(shots, `${query.replace(/[=&]/g, "_")}.png`),
           });
         }
       }
+    }
+    // Clicking a reference highlights the original line; it does not quote.
+    {
+      await page.goto(url + "?layout=default&st=1");
+      await page.waitForFunction(() => window.__ready, null, { timeout: 15000 });
+      await page.click(".message.reply-merged .reply-reference");
+      const jumped = await page.evaluate(
+        () =>
+          document
+            .querySelector('.message[data-message-id="m1aaaaaa"]')
+            ?.classList.contains("reply-jump-highlight") ?? false,
+      );
+      check(jumped, "clicking a reference highlights the original line");
     }
   } finally {
     await browser.close();

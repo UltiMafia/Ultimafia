@@ -4,7 +4,8 @@
 //
 // Query: layout (messageLayout setting), st (state; -1 is pregame), anon=1
 // (anonymous senders), noreply=1 (no reply handler, so rows are drawn exactly
-// as without the reply feature).
+// as without the reply feature), spec=1 (replies are spectator chat), dead=1
+// (repliers are dead), ts=0 (timestamps off).
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
@@ -27,6 +28,10 @@ const user = {
   autoContrastColor: (c) => c,
 };
 const S = (id) => (anon ? "anonymous" : id);
+const spec = params.get("spec") === "1";
+const dead = params.get("dead") === "1";
+// Extra flags for the reply lines (spectator chat, dead sender).
+const R = { ...(spec ? { spectatorChat: true } : {}), ...(dead ? { alive: false } : {}) };
 const t0 = 1761500000000;
 const msgs = [
   {
@@ -63,6 +68,7 @@ const msgs = [
     replyTo: "q1aaaaaa",
     time: t0 + 2001,
     quotable: true,
+    ...R,
   },
   {
     id: "q2aaaaaa",
@@ -124,10 +130,11 @@ const msgs = [
     senderId: S("pA"),
     meetingId: "v1",
     content:
-      "a multi-line reply: lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim",
+      "a multi-line reply @Vinman: lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim",
     replyTo: "q5aaaaaa",
     time: t0 + 4601,
     quotable: true,
+    ...R,
   },
   {
     id: "r3aaaaaa",
@@ -137,6 +144,37 @@ const msgs = [
     replyTo: "q3aaaaaa",
     time: t0 + 5002,
     quotable: true,
+    ...R,
+  },
+  // Vinman talks, then replies within 30s: a follow-up from the same sender
+  // (no header of its own).
+  {
+    id: "m6aaaaaa",
+    senderId: S("pC"),
+    meetingId: "v1",
+    content: "first line from vinman",
+    time: t0 + 6000,
+    quotable: true,
+  },
+  {
+    id: "q6aaaaaa",
+    isQuote: true,
+    senderId: S("pC"),
+    meetingId: "v1",
+    messageId: "m4aaaaaa",
+    fromMeetingId: "v1",
+    fromState: st,
+    time: t0 + 6500,
+  },
+  {
+    id: "r6aaaaaa",
+    senderId: S("pC"),
+    meetingId: "v1",
+    content: "follow-up reply from vinman",
+    replyTo: "q6aaaaaa",
+    time: t0 + 6501,
+    quotable: true,
+    ...R,
   },
 ];
 const meeting = {
@@ -177,7 +215,7 @@ const game = {
   spectators: {},
   settings: {
     messageLayout: layout,
-    timestamps: true,
+    timestamps: params.get("ts") !== "0",
     highlightMentions: true,
     roleMentions: false,
   },

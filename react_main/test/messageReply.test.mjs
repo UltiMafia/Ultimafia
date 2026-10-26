@@ -4,6 +4,7 @@ import {
   buildReplyPayload,
   canReplyTo,
   describeQuotedMessage,
+  findMessageRow,
   handleGameEscape,
   makeReplyTarget,
   pairReplies,
@@ -208,6 +209,7 @@ test("a reply right under its quote becomes one row carrying the quote", () => {
   assert.equal(rows.length, 3);
   assert.equal(rows[1].message, reply);
   assert.equal(rows[1].replyQuote, quote);
+  assert.equal(rows[1].replyMerged, true);
   assert.equal(rows[0].replyQuote, undefined);
   assert.equal(rows[2].replyQuote, undefined);
 });
@@ -217,13 +219,24 @@ test("a quote whose reply has not arrived yet is drawn on its own", () => {
   assert.deepEqual(rows, [{ message: other }, { message: quote }]);
 });
 
-test("a reply whose quote is not directly above keeps the old look", () => {
+test("a reply whose quote is not directly above keeps its own row", () => {
+  // It still carries its quote, so it can show what it answers; the quote
+  // keeps its row too.
   const rows = pairReplies([quote, other, reply]);
   assert.deepEqual(rows, [
     { message: quote },
     { message: other },
+    { message: reply, replyQuote: quote, replyMerged: false },
+  ]);
+  // Without its quote in the list it is drawn as before.
+  assert.deepEqual(pairReplies([other, reply]), [
+    { message: other },
     { message: reply },
   ]);
+  // A quote from someone else with the same id does not count.
+  assert.deepEqual(pairReplies([{ ...quote, senderId: "playerC" }, other, reply])[2], {
+    message: reply,
+  });
 });
 
 test("plain quotes and quotes from someone else are not merged", () => {
@@ -253,10 +266,10 @@ test("anonymous replies pair by id and name the quoted sender Anonymous", () => 
     },
   };
   const players = { anonymous: { name: "should not show" } };
-  assert.equal(
-    describeQuotedMessage(anonQuote, state, players, undefined).senderName,
-    "Anonymous"
-  );
+  const described = describeQuotedMessage(anonQuote, state, players, undefined);
+  assert.equal(described.senderName, "Anonymous");
+  // No player to draw: the reference uses the anonymous avatar.
+  assert.equal(described.sender, undefined);
 });
 
 test("the reply preview names the quoted sender, state and text", () => {
@@ -268,7 +281,10 @@ test("the reply preview names the quoted sender, state and text", () => {
   };
   const players = { playerA: { name: "AlageRheba10" } };
   assert.deepEqual(describeQuotedMessage(quote, state, players, {}), {
+    messageId: claim.id,
     senderName: "AlageRheba10",
+    sender: players.playerA,
+    nameColor: undefined,
     fromStateName: "Pregame",
     meetingName: "Village",
     content: claim.content,
@@ -287,4 +303,15 @@ test("the reply preview names the quoted sender, state and text", () => {
     describeQuotedMessage({ ...quote, messageId: "nope" }, state, players, {}),
     null
   );
+});
+
+test("findMessageRow finds the original line in the same chat only", () => {
+  const row = (id) => ({ dataset: { messageId: id } });
+  const original = row("m1");
+  const chat = { querySelectorAll: () => [row("m0"), original] };
+  const reply = { closest: () => chat, parentElement: chat };
+  assert.equal(findMessageRow(reply, "m1"), original);
+  assert.equal(findMessageRow(reply, "missing"), null);
+  assert.equal(findMessageRow(null, "m1"), null);
+  assert.equal(findMessageRow(reply, undefined), null);
 });
