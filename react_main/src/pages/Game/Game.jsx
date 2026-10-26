@@ -2783,7 +2783,7 @@ function Message(props) {
   const { message, stateViewing } = props;
 
   let iWasPinged = false;
-  if (message.content) {
+  if (message.content && props.settings.highlightMentions) {
     const pings = parsePings(message.content);
     iWasPinged =
           pings.indexOf("@" + props.players?.[props.self]?.name) !== -1 || pings.some((p) => p.startsWith(EVERYONE_PING));
@@ -5960,6 +5960,12 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
       value: settings.legacyObituaries,
     },
     {
+      label: "Highlight Mentions",
+      ref: "highlightMentions",
+      type: "boolean",
+      value: settings.highlightMentions,
+    },
+    {
       label: "Voting Log",
       ref: "votingLog",
       type: "boolean",
@@ -6988,6 +6994,7 @@ export function useSettingsReducer() {
     roleMentions: true,
     messageLayout: "default",
     legacyObituaries: false,
+    highlightMentions: true,
   };
 
   function clampVolume(value, fallback = 1) {
