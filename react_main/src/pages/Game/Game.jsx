@@ -148,6 +148,7 @@ import {
   canReplyTo,
   handleGameEscape,
   makeReplyTarget,
+  showPinButton,
 } from "utils/messageReply";
 import RoleMarkerToggle from "./components/RoleMarkerToggle";
 import { playerNameWithAvatarProps } from "./playerDisplay";
@@ -2901,8 +2902,12 @@ const MessageRow = React.memo(function MessageRow(props) {
 
   const useAbsoluteTimestamp =
     (chainToPrevious || isServerMessage) && !isRightAligned && !denseMessages;
-  const showThumbtack =
-    !props.review && !message.isQuote && isHovering && props.stateViewing >= 0;
+  const showThumbtack = showPinButton({
+    review: props.review,
+    isQuote: message.isQuote,
+    isHovering,
+    stateViewing: props.stateViewing,
+  });
   const showReplyButton =
     !!props.onMessageReply &&
     isHovering &&
@@ -3279,13 +3284,25 @@ const MessageRow = React.memo(function MessageRow(props) {
       </div>
       {!isPhoneDevice && !isRightAligned && (
         <div
-          className="pin-button-wrapper"
+          className={
+            showReplyButton
+              ? "pin-button-wrapper with-reply"
+              : "pin-button-wrapper"
+          }
           onClick={() => props.onPinMessage(message)}
         >
           {showThumbtack && (
             <i
               className={thumbtackFaClass}
               style={{ cursor: "pointer", textAlign: "center" }}
+            />
+          )}
+          {showReplyButton && !showThumbtack && (
+            // Holds the pin's slot (pregame has no pin) so the reply button
+            // always sits in the same place, under where the pin goes.
+            <i
+              className="fas fa-thumbtack fa-rotate-270 pin-placeholder"
+              aria-hidden="true"
             />
           )}
           {showReplyButton && (

@@ -2,6 +2,13 @@
 // server as one "reply" event. The server posts them as a normal quote and a
 // normal message marked with the quote's id.
 
+// Whether a hovered chat row shows the pin button. This is the rule master
+// uses; the reply button sits under it and never changes it. Pinning is not
+// offered in pregame (state -1) or on quotes.
+export function showPinButton({ review, isQuote, isHovering, stateViewing }) {
+  return Boolean(!review && !isQuote && isHovering && stateViewing >= 0);
+}
+
 // Whether a chat row can be replied to: the same rule as double-click quoting.
 export function canReplyTo(message, { review, stateViewing } = {}) {
   return Boolean(

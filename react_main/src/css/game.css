@@ -1139,12 +1139,30 @@ html[data-keyboard="open"] .game .meeting-tabs {
 
 /* Reply: hover button under the pin, preview above the chat box, and the
    marker on a reply line (it follows the quote it answers). */
-.game .message .pin-button-wrapper .reply-button {
-  position: absolute;
-  top: 20px;
-  z-index: 1;
+/* With a reply button the wrapper spans the whole row (padding included) and
+   stacks pin over reply inside it, so neither icon spills into the next row
+   or takes that row's hover. Without one it is laid out as before. */
+.game .message .pin-button-wrapper.with-reply {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  align-self: stretch;
 
-  font-size: 0.85em;
+  margin-top: -3px;
+  margin-bottom: -3px;
+}
+
+.game .message .pin-button-wrapper .pin-placeholder {
+  visibility: hidden;
+}
+
+.game .message .pin-button-wrapper .reply-button {
+  /* Tucked under the rotated pin and centred on it. */
+  margin-top: -2px;
+  margin-left: 2px;
+
+  font-size: 0.7em;
+  line-height: 1;
   opacity: 0.75;
   cursor: pointer;
 }

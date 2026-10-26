@@ -5,6 +5,7 @@ import {
   canReplyTo,
   handleGameEscape,
   makeReplyTarget,
+  showPinButton,
 } from "../src/utils/messageReply.js";
 
 const claim = {
@@ -104,4 +105,36 @@ test("one Escape press cancels the reply once, then the next press asks to leave
   assert.equal(reply, null);
   press();
   assert.deepEqual(calls, ["cancelReply", "leave"]);
+});
+
+// The pin rule as it is on master, before the reply button existed.
+function masterShowsPin({ review, isQuote, isHovering, stateViewing }) {
+  return !review && !isQuote && isHovering && stateViewing >= 0;
+}
+
+test("the pin shows exactly where master shows it", () => {
+  for (const review of [false, true])
+    for (const isQuote of [false, true])
+      for (const isHovering of [false, true])
+        for (const stateViewing of [-2, -1, 0, 1, 2]) {
+          const row = { review, isQuote, isHovering, stateViewing };
+          assert.equal(showPinButton(row), masterShowsPin(row), JSON.stringify(row));
+        }
+});
+
+test("a row that can be replied to still shows its pin once the game starts", () => {
+  for (const stateViewing of [0, 1, 2]) {
+    const view = { review: false, stateViewing };
+    assert.equal(canReplyTo(claim, view), true);
+    assert.equal(
+      showPinButton({ ...view, isQuote: false, isHovering: true }),
+      true
+    );
+  }
+});
+
+test("pregame offers reply but no pin, as master has no pin there", () => {
+  const view = { review: false, stateViewing: -1 };
+  assert.equal(canReplyTo(claim, view), true);
+  assert.equal(showPinButton({ ...view, isQuote: false, isHovering: true }), false);
 });
