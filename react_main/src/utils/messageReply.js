@@ -48,3 +48,15 @@ export function buildReplyPayload(target, { meetingId, content, abilityName }) {
     message: { content, meetingId },
   };
 }
+
+// Escape on the game page: with a reply pending it only cancels the reply
+// (the leave dialog stays closed); otherwise it asks to leave, as before.
+export function handleGameEscape(e, { replyPending, cancelReply, leave }) {
+  if (e.key !== "Escape") return;
+  if (replyPending) {
+    e.preventDefault();
+    cancelReply();
+    return;
+  }
+  leave();
+}

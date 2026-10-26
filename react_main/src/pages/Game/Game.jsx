@@ -146,6 +146,7 @@ import { releaseSubscription } from "utils/pushNotifications";
 import {
   buildReplyPayload,
   canReplyTo,
+  handleGameEscape,
   makeReplyTarget,
 } from "utils/messageReply";
 import RoleMarkerToggle from "./components/RoleMarkerToggle";
@@ -500,15 +501,26 @@ export default function Game(props) {
     setLeaveDialogOpen(false);
   }
 
+  // Message the next chat line replies to (shown above the chat box). The ref
+  // lets the window Escape handler see the current value.
+  const [replyTarget, setReplyTarget] = useState(null);
+  const replyTargetRef = useRef(replyTarget);
+  replyTargetRef.current = replyTarget;
+
   useEffect(() => {
     // Only the visible session reacts to Escape. A session retained while the
     // user browses another page must not capture the key.
     if (!active) return;
 
+    // A pending reply takes Escape first: it cancels the reply and the
+    // leave dialog stays closed. The chat box has no Escape handler of its
+    // own, so this is the one place Escape is handled.
     function handleKeyDown(e) {
-      if (e.key === "Escape") {
-        onLeaveGameClick();
-      }
+      handleGameEscape(e, {
+        replyPending: Boolean(replyTargetRef.current),
+        cancelReply: () => setReplyTarget(null),
+        leave: onLeaveGameClick,
+      });
     }
 
     window.addEventListener("keydown", handleKeyDown);
@@ -1387,8 +1399,6 @@ export default function Game(props) {
   }
 
   const quoteMeetingId = history.states[history.currentState]?.selTab;
-  // Message the next chat line replies to (shown above the chat box).
-  const [replyTarget, setReplyTarget] = useState(null);
   const onMessageReply = useCallback((message) => {
     if (!canReplyTo(message, { review, stateViewing })) return;
     setReplyTarget(makeReplyTarget(message, stateViewing));
@@ -3667,11 +3677,6 @@ function SpeechInput(props) {
 
   function onSpeechSubmit(e) {
     if (isSpeakCooldownActive) return;
-
-    if (e.key === "Escape" && replyTarget) {
-      setReplyTarget(null);
-      return;
-    }
 
     if (e.key === "Enter" && selTab && speechInput.length) {
       const abilityInfo = speechDropdownValue.split(":");
