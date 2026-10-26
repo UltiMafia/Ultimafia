@@ -4,7 +4,11 @@ import { usePopover, InfoPopover } from "components/Popover";
 
 import "css/join.css";
 import { Time } from "components/Basic";
-import { lobbyCountFromInfo, displayedLobbyCount } from "shared/lobbyCount";
+import {
+  lobbyCountFromInfo,
+  displayedLobbyCount,
+  lobbyBarValue,
+} from "shared/lobbyCount";
 
 export const PlayerCount = (props) => {
   const game = props.game;
@@ -45,7 +49,10 @@ export const PlayerCount = (props) => {
         aria-haspopup="true"
         onClick={handleClick}
       >
-        <progress value={numSlotsTaken} max={numSlotsTotal} />
+        <progress
+          value={lobbyBarValue(status, numSlotsTaken)}
+          max={numSlotsTotal}
+        />
         <Stack
           direction="row"
           spacing={0.5}
