@@ -2930,9 +2930,13 @@ const MessageRow = React.memo(function MessageRow(props) {
     isHovering,
     stateViewing: props.stateViewing,
   });
-  const showReplyButton =
+  // Whether this row offers a reply button (shown on hover). It does not
+  // depend on hover, so the room the row keeps for it never changes the
+  // layout when the mouse moves.
+  const replyButtonSlot =
     !!props.onMessageReply &&
-    isHovering &&
+    !isPhoneDevice &&
+    !isRightAligned &&
     canReplyTo(message, {
       review: props.review,
       stateViewing: props.stateViewing,
@@ -3149,6 +3153,7 @@ const MessageRow = React.memo(function MessageRow(props) {
   if (message.replyTo && !message.isQuote && !props.replyPreview)
     className += " reply-message";
   if (props.replyPreview) className += " reply-merged";
+  if (replyButtonSlot) className += " with-reply-button";
   
   return (
     <div
@@ -3229,6 +3234,10 @@ const MessageRow = React.memo(function MessageRow(props) {
                   className="reply-quote-preview"
                   title="Replying to this message"
                 >
+                  <i
+                    className="fas fa-reply fa-rotate-180 reply-marker"
+                    aria-hidden="true"
+                  />
                   <span className="quote-info">
                     {`${props.replyPreview.senderName} on ${props.replyPreview.fromStateName}: `}
                   </span>
@@ -3334,11 +3343,7 @@ const MessageRow = React.memo(function MessageRow(props) {
       </div>
       {!isPhoneDevice && !isRightAligned && (
         <div
-          className={
-            showReplyButton
-              ? "pin-button-wrapper with-reply"
-              : "pin-button-wrapper"
-          }
+          className="pin-button-wrapper"
           onClick={() => props.onPinMessage(message)}
         >
           {showThumbtack && (
@@ -3347,28 +3352,22 @@ const MessageRow = React.memo(function MessageRow(props) {
               style={{ cursor: "pointer", textAlign: "center" }}
             />
           )}
-          {showReplyButton && !showThumbtack && (
-            // Holds the pin's slot (pregame has no pin) so the reply button
-            // always sits in the same place, under where the pin goes.
-            <i
-              className="fas fa-thumbtack fa-rotate-270 pin-placeholder"
-              aria-hidden="true"
-            />
-          )}
-          {showReplyButton && (
-            <i
-              className="fas fa-reply reply-button"
-              title="Reply"
-              role="button"
-              aria-label="Reply"
-              onClick={(e) => {
-                e.stopPropagation();
-                props.onMessageReply(message);
-              }}
-              onDoubleClick={(e) => e.stopPropagation()}
-            />
-          )}
         </div>
+      )}
+      {replyButtonSlot && isHovering && (
+        // Bottom-right corner of the row, under the pin (which stays where
+        // it always was, top-right). The row reserves room for both.
+        <i
+          className="fas fa-reply reply-button"
+          title="Reply"
+          role="button"
+          aria-label="Reply"
+          onClick={(e) => {
+            e.stopPropagation();
+            props.onMessageReply(message);
+          }}
+          onDoubleClick={(e) => e.stopPropagation()}
+        />
       )}
     </div>
   );

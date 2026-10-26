@@ -1137,37 +1137,34 @@ html[data-keyboard="open"] .game .meeting-tabs {
   }
 }
 
-/* Reply: hover button under the pin, preview above the chat box, and the
-   marker on a reply line (it follows the quote it answers). */
-/* With a reply button the wrapper spans the whole row (padding included) and
-   stacks pin over reply inside it, so neither icon spills into the next row
-   or takes that row's hover. Without one it is laid out as before. */
-.game .message .pin-button-wrapper.with-reply {
-  display: flex;
-  flex-flow: column nowrap;
-  align-items: flex-start;
-  align-self: stretch;
-
-  margin-top: -3px;
-  margin-bottom: -3px;
+/* Reply: hover button in the row's bottom-right corner, preview above the
+   chat box, and the marker on a reply line (it follows the quote it answers).
+   The pin keeps its usual top-right place. A row that offers a reply keeps
+   room for both whether or not it is hovered, so hovering never moves the
+   layout, and the button is drawn inside the row so it never covers (or
+   takes the hover of) the next one. */
+.game .message.with-reply-button {
+  /* Pin (6px down, 12px tall) + 4px gap + 10px reply. */
+  min-height: 32px;
+  box-sizing: border-box;
 }
 
-.game .message .pin-button-wrapper .pin-placeholder {
-  visibility: hidden;
-}
+.game .message .reply-button {
+  position: absolute;
+  right: 4px;
+  bottom: 0;
+  z-index: 1;
 
-.game .message .pin-button-wrapper .reply-button {
-  /* Tucked under the rotated pin and centred on it. */
-  margin-top: -2px;
-  margin-left: 2px;
-
-  font-size: 0.7em;
+  /* Centred under the pin (whose centre is 12px from the row's right). */
+  width: 16px;
+  text-align: center;
+  font-size: 0.625em;
   line-height: 1;
   opacity: 0.75;
   cursor: pointer;
 }
 
-.game .message .pin-button-wrapper .reply-button:hover {
+.game .message .reply-button:hover {
   opacity: 1;
 }
 
@@ -1237,6 +1234,13 @@ html[data-keyboard="open"] .game .meeting-tabs {
 
 .game .message .reply-quote-preview .quote-content {
   margin-right: 0;
+}
+
+/* A long quoted line is cut off rather than widening the row (which would
+   push the pin and reply buttons out of view). */
+.game .message.reply-merged > div:first-child,
+.game .message.reply-merged .content {
+  min-width: 0;
 }
 
 /* Compact mode keeps the row on one line: name, preview, reply. */

@@ -52,6 +52,7 @@
     "test:lifecycle:browser": "rsbuild build --config rsbuild.lifecycle-test.config.ts && rsbuild preview --config rsbuild.lifecycle-test.config.ts",
     "test:emote-picker:browser": "rsbuild build --config rsbuild.emote-picker-test.config.ts && node test/run-emote-picker.cjs",
     "test:seat-actions:browser": "rsbuild build --config rsbuild.seat-actions-test.config.ts && node test/run-seat-actions.cjs",
+    "test:chat-reply:browser": "rsbuild build --config rsbuild.chat-reply-test.config.ts && node test/run-chat-reply.cjs",
     "perf:chat": "rsbuild build --config rsbuild.chat-perf.config.ts && rsbuild preview --config rsbuild.chat-perf.config.ts",
     "start": "rsbuild dev",
     "build": "rsbuild build",
