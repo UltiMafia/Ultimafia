@@ -1188,6 +1188,7 @@ module.exports = class Meeting {
       abilityTarget: message.abilityTarget,
       anonymous: this.anonymous,
       textEffect: message.textEffect,
+      replyTo: message.replyTo,
     });
 
     message.send();
@@ -1205,7 +1206,7 @@ module.exports = class Meeting {
       quote.messageId.length < 7 ||
       quote.messageId.length > 14
     ) {
-      return;
+      return null;
     }
 
     var quote = new Quote({
@@ -1219,7 +1220,8 @@ module.exports = class Meeting {
       messageContent: quote.messageContent,
     });
 
-    quote.send();
+    // The posted quote, or null when the sender's effects cancelled it.
+    return quote.send() ? quote : null;
   }
 
   typing(playerId, isTyping) {

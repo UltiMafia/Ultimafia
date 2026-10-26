@@ -143,6 +143,11 @@ import UrgencyOverlay from "./components/UrgencyOverlay";
 import ReadyCheckDialog from "./components/ReadyCheck";
 import PushNotificationPrompt from "./components/PushNotificationPrompt";
 import { releaseSubscription } from "utils/pushNotifications";
+import {
+  buildReplyPayload,
+  canReplyTo,
+  makeReplyTarget,
+} from "utils/messageReply";
 import RoleMarkerToggle from "./components/RoleMarkerToggle";
 import { playerNameWithAvatarProps } from "./playerDisplay";
 import {
@@ -1382,6 +1387,13 @@ export default function Game(props) {
   }
 
   const quoteMeetingId = history.states[history.currentState]?.selTab;
+  // Message the next chat line replies to (shown above the chat box).
+  const [replyTarget, setReplyTarget] = useState(null);
+  const onMessageReply = useCallback((message) => {
+    if (!canReplyTo(message, { review, stateViewing })) return;
+    setReplyTarget(makeReplyTarget(message, stateViewing));
+    document.getElementById("speechInput")?.focus();
+  }, [review, stateViewing]);
   const onMessageQuote = useCallback((message) => {
     if (
       !review &&
@@ -1464,6 +1476,9 @@ export default function Game(props) {
       onPinMessage: onPinMessage,
       isMessagePinned: isMessagePinned,
       onMessageQuote: onMessageQuote,
+      onMessageReply: onMessageReply,
+      replyTarget: replyTarget,
+      setReplyTarget: setReplyTarget,
       loadAudioFiles: loadAudioFiles,
       playAudio: playAudio,
       stopAudio: stopAudio,
@@ -2283,6 +2298,18 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     }
   }
 
+  const activeMeeting = selTab ? meetings[selTab] : null;
+
+  // A spectator who cannot talk in the selected meeting talks in spectator
+  // chat instead, which shows inline in the same stream.
+  const speechTarget = pickSpeechTarget({
+    activeMeeting,
+    spectatorMeeting: spectatorChatMeeting,
+    isPregame: history.currentState == -1,
+  });
+  const canSpeak =
+    !!speechTarget.meetingId && stateViewing === history.currentState;
+
   const messages = useMemo(() => {
     var messageData;
     if (singleState) {
@@ -2335,6 +2362,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           meetingState={singleState ? message.fromState : stateViewing}
           key={message.id || message.messageId + message.time || i}
           onMessageQuote={game.onMessageQuote}
+          onMessageReply={canSpeak ? game.onMessageReply : undefined}
           onPinMessage={game.onPinMessage}
           isMessagePinned={game.isMessagePinned}
           settings={settings}
@@ -2361,6 +2389,8 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     isolatedPlayers,
     game.review,
     game.onMessageQuote,
+    game.onMessageReply,
+    canSpeak,
     game.onPinMessage,
     game.isMessagePinned,
     game.self,
@@ -2413,17 +2443,6 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     if (container) container.scrollTo(0, container.scrollHeight);
   }
 
-  const activeMeeting = selTab ? meetings[selTab] : null;
-
-  // A spectator who cannot talk in the selected meeting talks in spectator
-  // chat instead, which shows inline in the same stream.
-  const speechTarget = pickSpeechTarget({
-    activeMeeting,
-    spectatorMeeting: spectatorChatMeeting,
-    isPregame: history.currentState == -1,
-  });
-  const canSpeak =
-    !!speechTarget.meetingId && stateViewing === history.currentState;
   return (
     <>
       <Box
@@ -2874,6 +2893,13 @@ const MessageRow = React.memo(function MessageRow(props) {
     (chainToPrevious || isServerMessage) && !isRightAligned && !denseMessages;
   const showThumbtack =
     !props.review && !message.isQuote && isHovering && props.stateViewing >= 0;
+  const showReplyButton =
+    !!props.onMessageReply &&
+    isHovering &&
+    canReplyTo(message, {
+      review: props.review,
+      stateViewing: props.stateViewing,
+    });
   const thumbtackFaClass = props.pinned
     ? "fas fa-thumbtack"
     : "fas fa-thumbtack fa-rotate-270";
@@ -3083,6 +3109,7 @@ const MessageRow = React.memo(function MessageRow(props) {
   let className = "message";
   if (message.spectatorChat) className += " spectator-chat";
   else if (props.iWasPinged) className += " mention";
+  if (message.replyTo && !message.isQuote) className += " reply-message";
   
   return (
     <div
@@ -3158,6 +3185,12 @@ const MessageRow = React.memo(function MessageRow(props) {
         >
           {!message.isQuote && (
             <>
+              {message.replyTo && (
+                <i
+                  className="fas fa-reply fa-rotate-180 reply-marker"
+                  title="Reply to the quote above"
+                />
+              )}
               {message.spectatorChat && (
                 <span
                   className="spectator-chat-tag"
@@ -3243,6 +3276,19 @@ const MessageRow = React.memo(function MessageRow(props) {
             <i
               className={thumbtackFaClass}
               style={{ cursor: "pointer", textAlign: "center" }}
+            />
+          )}
+          {showReplyButton && (
+            <i
+              className="fas fa-reply reply-button"
+              title="Reply"
+              role="button"
+              aria-label="Reply"
+              onClick={(e) => {
+                e.stopPropagation();
+                props.onMessageReply(message);
+              }}
+              onDoubleClick={(e) => e.stopPropagation()}
             />
           )}
         </div>
@@ -3616,8 +3662,16 @@ function SpeechInput(props) {
     }
   }
 
+  const replyTarget = game.replyTarget;
+  const setReplyTarget = game.setReplyTarget;
+
   function onSpeechSubmit(e) {
     if (isSpeakCooldownActive) return;
+
+    if (e.key === "Escape" && replyTarget) {
+      setReplyTarget(null);
+      return;
+    }
 
     if (e.key === "Enter" && selTab && speechInput.length) {
       const abilityInfo = speechDropdownValue.split(":");
@@ -3644,13 +3698,23 @@ function SpeechInput(props) {
           };
         }
 
-        socket.send("speak", {
-          content: speechInput,
+        const reply = buildReplyPayload(replyTarget, {
           meetingId: selTab,
+          content: speechInput,
           abilityName,
-          abilityTarget,
-          ...checkboxOptions,
         });
+        if (reply) {
+          socket.send("reply", reply);
+          setReplyTarget(null);
+        } else {
+          socket.send("speak", {
+            content: speechInput,
+            meetingId: selTab,
+            abilityName,
+            abilityTarget,
+            ...checkboxOptions,
+          });
+        }
         props.setAutoScroll(true);
 
         if (isCommand) {
@@ -3687,8 +3751,33 @@ function SpeechInput(props) {
     );
   }
 
+  const replyMessage = replyTarget?.message;
+  const replySender =
+    replyMessage &&
+    (replyMessage.senderId === "anonymous"
+      ? "Anonymous"
+      : players[replyMessage.senderId]?.name ||
+        game.spectators?.[replyMessage.senderId]?.name ||
+        "Anonymous");
+
   return (
     <div className="speech-input-area" data-tutorial="chat-input">
+      {replyMessage && (
+        <div className="reply-preview">
+          <i className="fas fa-reply" />
+          <span className="reply-preview-text">
+            Replying to <b>{replySender}</b>: {replyMessage.content}
+          </span>
+          <IconButton
+            size="small"
+            aria-label="Cancel reply"
+            title="Cancel reply (Esc)"
+            onClick={() => setReplyTarget(null)}
+          >
+            <i className="fas fa-times" />
+          </IconButton>
+        </div>
+      )}
       <div className="speech-input-wrapper">
         <Dropdown
           className="speech-dropdown"
