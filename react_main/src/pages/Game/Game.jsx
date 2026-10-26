@@ -143,6 +143,7 @@ import UrgencyOverlay from "./components/UrgencyOverlay";
 import ReadyCheckDialog from "./components/ReadyCheck";
 import PushNotificationPrompt from "./components/PushNotificationPrompt";
 import { releaseSubscription } from "utils/pushNotifications";
+import { buildQuotePayload, findMessageState } from "utils/messageQuote";
 import RoleMarkerToggle from "./components/RoleMarkerToggle";
 import { playerNameWithAvatarProps } from "./playerDisplay";
 import {
@@ -223,6 +224,9 @@ export default function Game(props) {
   const [options, setOptions] = useState({});
   const [emojis, setEmojis] = useState({});
   const [history, updateHistory] = useHistoryReducer();
+  // Read by stable callbacks (quoting) without re-rendering every message.
+  const historyRef = useRef(history);
+  historyRef.current = history;
   const [stateViewing, updateStateViewing] = useStateViewingReducer(history);
   const [players, updatePlayers] = usePlayersReducer();
   const [spectators, setSpectators] = useState();
@@ -646,7 +650,14 @@ export default function Game(props) {
     } else {
       updatePersistentGameData({
         type: "addPinnedMessage",
-        message: message,
+        message: {
+          ...message,
+          fromState: findMessageState(
+            historyRef.current,
+            message,
+            message.fromState
+          ),
+        },
       });
     }
   }, [isMessagePinned]);
@@ -1377,21 +1388,16 @@ export default function Game(props) {
   }
 
   const quoteMeetingId = history.states[history.currentState]?.selTab;
+  // Pinned rows show a stored copy while the current state is on screen, so
+  // the quote has to find the state the original was sent in.
   const onMessageQuote = useCallback((message) => {
-    if (
-      !review &&
-      message.senderId !== "server" &&
-      !message.isQuote &&
-      message.quotable
-    ) {
-      socket.send("quote", {
-        messageId: message.id,
-        toMeetingId: quoteMeetingId,
-        fromMeetingId: message.meetingId,
-        fromState: message.fromState ? message.fromState : stateViewing,
-        messageContent: message.content,
-      });
-    }
+    const quote = buildQuotePayload(message, {
+      review,
+      toMeetingId: quoteMeetingId,
+      history: historyRef.current,
+      stateViewing,
+    });
+    if (quote) socket.send("quote", quote);
   }, [review, socket, quoteMeetingId, stateViewing]);
 
   function getSetupGameSetting(gameSetting) {
