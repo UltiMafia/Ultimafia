@@ -1126,6 +1126,19 @@ async function getGameInfo(gameId, idsOnly) {
   return info;
 }
 
+// User ids that are dead in a game. The game server keeps this set current
+// as deaths and revivals are processed; modules/dmGate.js reads it.
+async function setPlayerDead(gameId, userId, dead) {
+  if (!gameId || !userId) return;
+  if (dead) await client.saddAsync(`game:${gameId}:dead`, userId);
+  else await client.sremAsync(`game:${gameId}:dead`, userId);
+}
+
+async function getDeadPlayers(gameId) {
+  if (!gameId) return [];
+  return (await client.smembersAsync(`game:${gameId}:dead`)) || [];
+}
+
 async function getPlayerGameInfo(playerId) {
   const gameId = await inGame(playerId);
   return await getGameInfo(gameId);
@@ -1408,6 +1421,7 @@ async function deleteGame(gameId, game) {
   await client.delAsync(`game:${gameId}:winnersInfo`);
   await client.delAsync(`game:${gameId}:lobbyName`);
   await client.delAsync(`game:${gameId}:players`);
+  await client.delAsync(`game:${gameId}:dead`);
   await client.delAsync(`game:${gameId}:settings`);
   await client.delAsync(`game:${gameId}:createTime`);
   await client.delAsync(`game:${gameId}:startTime`);
@@ -1712,6 +1726,8 @@ module.exports = {
   setHostingScheduled,
   clearHostingScheduled,
   getGameInfo,
+  setPlayerDead,
+  getDeadPlayers,
   getPlayerGameInfo,
   getGamePort,
   getGameType,

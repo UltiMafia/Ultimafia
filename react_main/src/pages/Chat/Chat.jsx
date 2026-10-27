@@ -45,9 +45,29 @@ import {
   resolveDisplayTextColor,
 } from "../../utils/accessibleNameColors";
 
+import { countUnreadDmChannels } from "../../utils/dmWindow";
+
 import "css/chat.css";
 
-export default function Chat() {
+// The site chatbox. The homepage shows every channel; the floating DM window
+// (components/dms/FloatingDmWindow.jsx) mounts this same component with
+// `directsOnly`, so 1:1 and group DMs use one implementation and one socket
+// protocol (modules/chat.js).
+//   directsOnly    hide public rooms
+//   paused         window collapsed: leave the channel so new messages count
+//                  as unread, and rejoin it when expanded
+//   onUnreadChange called with the number of DM conversations with unread
+//   onLocked       called with { message, gameId } when the server refuses DMs
+//                  (alive in a running ranked/competitive game)
+//   embedded       drop the outer card and the "Chat" label
+export default function Chat({
+  directsOnly = false,
+  paused = false,
+  onUnreadChange,
+  onLocked,
+  embedded = false,
+  height = 480,
+} = {}) {
   const [connected, setConnected] = useState(0);
   const [token, setToken] = useState("");
   const [socket, setSocket] = useState({});
@@ -59,6 +79,7 @@ export default function Chat() {
   const [autoScroll, setAutoScroll] = useState(true);
   const [userSearchVal, setUserSearchVal] = useState("");
   const [newChatDialogOpen, setNewChatDialogOpen] = useState(false);
+  const [dmLocked, setDmLocked] = useState(null);
 
   const messageListRef = useRef();
   const oldScrollHeight = useRef();
@@ -130,7 +151,7 @@ export default function Chat() {
         chatInfo,
       });
 
-      if (chatInfo.rooms && chatInfo.rooms.length > 0) {
+      if (!directsOnly && chatInfo.rooms && chatInfo.rooms.length > 0) {
         if (!currentChannelId) {
           var roomId = chatInfo.rooms[0].id;
           setCurrentChannelId(roomId);
@@ -139,6 +160,7 @@ export default function Chat() {
     });
 
     socket.on("channel", (channel) => {
+      setDmLocked(null);
       updateChannel({
         type: "set",
         channel,
@@ -202,6 +224,19 @@ export default function Chat() {
         document.title = document.title + "🔴";
     });
 
+    // Another of this user's chat windows read a channel.
+    socket.on("notifsRead", (channelId) => {
+      updateChatInfo({ type: "readNotifs", channelId });
+    });
+
+    // The server refused a DM action: the user is alive in a running ranked
+    // or competitive game (modules/dmGate.js).
+    socket.on("dmLocked", (info) => {
+      setDmLocked((info && info.message) || "Direct messages are locked right now.");
+      updateChannel({ type: "clear" });
+      if (onLocked) onLocked(info || {});
+    });
+
     socket.on("messageDeleted", (messageId) => {
       updateChannel({
         type: "deleteMessage",
@@ -226,6 +261,25 @@ export default function Chat() {
       channelId: channel.id,
     });
   }, [channel]);
+
+  useEffect(() => {
+    if (onUnreadChange)
+      onUnreadChange(countUnreadDmChannels(chatInfo.notifs.byChannel));
+  }, [chatInfo.notifs]);
+
+  // Collapsing the floating window leaves the channel on the server (so new
+  // messages raise unread badges); expanding it rejoins.
+  const wasPaused = useRef(paused);
+  useEffect(() => {
+    if (wasPaused.current === paused) return;
+    wasPaused.current = paused;
+    if (!socket || socket.readyState !== 1) return;
+    if (paused) socket.send("closedChat");
+    else if (currentChannelId) {
+      socket.send("getChannel", currentChannelId);
+      setAutoScroll(true);
+    }
+  }, [paused]);
 
   function getToken() {
     const request = tokenRequests.current.begin();
@@ -255,7 +309,7 @@ export default function Chat() {
 
   function onChannelSelect(id, type) {
     if (type !== "users") {
-      socket.send("getChannel", id);
+      if (!paused) socket.send("getChannel", id);
 
       setCurrentChannelId(id);
       setAutoScroll(true);
@@ -380,7 +434,7 @@ export default function Chat() {
 
   const navEntries = useMemo(
     () => [
-      ...rooms.map((channel) => ({ channel, type: "rooms" })),
+      ...(directsOnly ? [] : rooms).map((channel) => ({ channel, type: "rooms" })),
       ...directs.sort(sortDMs).map((channel) => ({
         channel,
         type: "directs",
@@ -493,10 +547,12 @@ export default function Chat() {
 
   return (
     <Paper
-      elevation={4}
+      elevation={embedded ? 0 : 4}
+      data-testid={directsOnly ? "dm-chat" : undefined}
       sx={{
         width: "100%",
         overflow: "hidden",
+        ...(embedded ? { borderRadius: 0 } : {}),
         bgcolor:
           theme.palette.mode === "dark"
             ? theme.palette.background.paper
@@ -509,8 +565,11 @@ export default function Chat() {
         spacing={1.5}
         sx={{
           color: theme.palette.text.primary,
+          ...(embedded ? { px: 1, py: 0.75 } : {}),
         }}
       >
+        {!embedded && (
+        <>
         <Badge
           color="error"
           overlap="circular"
@@ -525,6 +584,8 @@ export default function Chat() {
         <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
           Chat
         </Typography>
+        </>
+        )}
         <Box sx={{ flexGrow: 1 }} />
         <Select
           size="small"
@@ -539,7 +600,7 @@ export default function Chat() {
             if (!entry) {
               return (
                 <Typography variant="body2" color="text.secondary">
-                  No chats available
+                  {directsOnly ? "No conversations" : "No chats available"}
                 </Typography>
               );
             }
@@ -577,7 +638,7 @@ export default function Chat() {
         sx={{
           display: "flex",
           flexDirection: "column",
-          height: 480,
+          height,
           backgroundColor: theme.palette.background.paper,
         }}
       >
@@ -589,7 +650,24 @@ export default function Chat() {
             flexDirection: "column",
           }}
         >
-          {channel.id && (
+          {dmLocked && (
+            <Box
+              data-testid="dm-locked"
+              sx={{ p: 2, textAlign: "center", color: "text.secondary", m: "auto" }}
+            >
+              <i className="fas fa-lock" style={{ fontSize: 20, marginBottom: 8 }} />
+              <Typography variant="body2">{dmLocked}</Typography>
+            </Box>
+          )}
+          {!dmLocked && directsOnly && navEntries.length === 0 && (
+            <Box sx={{ p: 2, textAlign: "center", color: "text.secondary", m: "auto" }}>
+              <Typography variant="body2">
+                No conversations yet. Click New to message someone, or pick
+                several people for a group chat.
+              </Typography>
+            </Box>
+          )}
+          {!dmLocked && channel.id && (
             <>
               <Box
                 className="channel-messages"
@@ -1012,12 +1090,10 @@ function useChatInfoReducer() {
           var channelType =
             action.channelId.length === 32 ? "directs" : "rooms";
           var newAll = chatInfo.notifs.all + 1;
-          var newByChannelType = chatInfo.notifs[channelType]
-            ? chatInfo.notifs[channelType] + 1
-            : 1;
-          var newByChannel = chatInfo.notifs[action.channelId]
-            ? chatInfo.notifs[action.channelId] + 1
-            : 1;
+          var newByChannelType =
+            (chatInfo.notifs.byChannelType[channelType] || 0) + 1;
+          var newByChannel =
+            (chatInfo.notifs.byChannel[action.channelId] || 0) + 1;
 
           newChatInfo = update(chatInfo, {
             notifs: {
@@ -1041,9 +1117,11 @@ function useChatInfoReducer() {
           var amt = chatInfo.notifs.byChannel[action.channelId] || 0;
           var channelType =
             action.channelId.length === 32 ? "directs" : "rooms";
-          var newAll = chatInfo.notifs.all - amt;
-          var newByChannelType =
-            chatInfo.notifs.byChannelType[channelType] - amt;
+          var newAll = Math.max(0, chatInfo.notifs.all - amt);
+          var newByChannelType = Math.max(
+            0,
+            (chatInfo.notifs.byChannelType[channelType] || 0) - amt
+          );
 
           newChatInfo = update(chatInfo, {
             notifs: {

@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import NavDropdown from "../../components/NavDropdown";
 import { SiteInfoContext } from "../../Contexts";
+import DmButton from "../../components/dms/DmButton";
 
 import "css/main.css";
 import exitIcon from "../../images/emotes/exit.png";
@@ -136,6 +137,7 @@ export default function UserNavSection({
       alignItems: "center",
       justifyContent: "end",
     }}>
+      <DmButton />
       <Stack>
         <Box sx={{
           display: "grid",
