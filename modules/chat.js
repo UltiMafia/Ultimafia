@@ -37,6 +37,53 @@ async function refuseIfDmLocked(socket, userId, memberIds) {
   return true;
 }
 
+// Member fields DM clients get: enough for names and avatars, nothing else
+// (sendMessage populates blockedUsers/settings for its own checks).
+function publicMembers(members) {
+  return (members || []).map((m) => ({ id: m.id, name: m.name, avatar: m.avatar }));
+}
+
+// A DM channel as clients see it, with the last-message preview the floating
+// DM window lists conversations by.
+function directForClient(channel, lastMessage) {
+  const json = channel.toJSON ? channel.toJSON() : { ...channel };
+  return {
+    ...json,
+    members: publicMembers(json.members),
+    memberIds: undefined,
+    lastMessage: lastMessage || null,
+  };
+}
+
+function previewOf(message) {
+  if (!message) return null;
+  return {
+    content: String(message.content || "").slice(0, 120),
+    senderId: message.senderId || (message.sender && message.sender.id),
+    date: message.date,
+  };
+}
+
+// Newest message of each channel, keyed by channel id.
+async function lastMessagesFor(channelIds) {
+  const out = {};
+  if (!channelIds.length) return out;
+  const rows = await models.ChatMessage.aggregate([
+    { $match: { channel: { $in: channelIds } } },
+    { $sort: { date: -1 } },
+    {
+      $group: {
+        _id: "$channel",
+        content: { $first: "$content" },
+        senderId: { $first: "$senderId" },
+        date: { $first: "$date" },
+      },
+    },
+  ]);
+  for (const row of rows) out[row._id] = previewOf(row);
+  return out;
+}
+
 async function onlyModsBesides(memberIds, userId) {
   const others = (memberIds || []).filter((id) => id != userId);
   if (others.length === 0) return false;
@@ -197,7 +244,7 @@ async function onlyModsBesides(memberIds, userId) {
               rank: { $lte: permInfo.rank },
             })
               .select("id public memberIds members lastMessageDate -_id")
-              .populate("members", "id name blockedUsers settings -_id");
+              .populate("members", "id name avatar blockedUsers settings -_id");
 
             if (!channel) return;
             else if (channel.public && !permInfo.perms.publicChat) {
@@ -334,9 +381,8 @@ async function onlyModsBesides(memberIds, userId) {
                 if (users[memberId]) {
                   users[memberId].send("newDirectChannel", {
                     channel: {
-                      ...channel.toJSON(),
+                      ...directForClient(channel, previewOf(message)),
                       lastMessageDate: Date.now(),
-                      memberIds: undefined,
                     },
                     focus: false,
                   });
@@ -409,7 +455,7 @@ async function onlyModsBesides(memberIds, userId) {
             var channelId = userIdsToChannelId(userIds);
             var channel = await models.ChatChannel.findOne({ id: channelId })
               .select("id public memberIds members lastMessageDate -_id")
-              .populate("members", "id name -_id");
+              .populate("members", "id name avatar -_id");
 
             if (channel) {
               var channelOpen = await models.ChannelOpen.findOne({
@@ -429,7 +475,10 @@ async function onlyModsBesides(memberIds, userId) {
               await channelOpen.save();
 
               socket.send("newDirectChannel", {
-                channel: { ...channel.toJSON(), memberIds: undefined },
+                channel: directForClient(
+                  channel,
+                  (await lastMessagesFor([channelId]))[channelId]
+                ),
                 focus: true,
               });
               return;
@@ -465,10 +514,10 @@ async function onlyModsBesides(memberIds, userId) {
 
             channel = await models.ChatChannel.findOne({ id: channelId })
               .select("id public memberIds members lastMessageDate -_id")
-              .populate("members", "id name -_id");
+              .populate("members", "id name avatar -_id");
 
             socket.send("newDirectChannel", {
-              channel: { ...channel.toJSON(), memberIds: undefined },
+              channel: directForClient(channel, null),
               focus: true,
             });
           } catch (e) {
@@ -536,6 +585,7 @@ async function onlyModsBesides(memberIds, userId) {
 
             await models.ChatMessage.deleteOne({ id: messageId }).exec();
             broadcastDeletion(messageId, message.channel);
+            await sendPreviewUpdate(message.channel);
           } catch (e) {
             logger.error(e);
           }
@@ -584,7 +634,7 @@ async function sendChatInfo(userId, socket) {
       select: "id public memberIds members lastMessageDate -_id",
       populate: {
         path: "members",
-        select: "id name -_id",
+        select: "id name avatar -_id",
       },
     });
   var notifs = await models.Notification.find({
@@ -593,9 +643,20 @@ async function sendChatInfo(userId, socket) {
   }).select("channelId");
   var users = await redis.getOnlineUsersInfo(constants.chatUserOnlineAmt);
 
+  // Last-message previews, left out while DMs are locked for this user.
+  var previews = {};
+  try {
+    if (!(await dmGate.getDmAccess(userId)).locked)
+      previews = await lastMessagesFor(
+        directs.filter((info) => info.channel).map((info) => info.channel.id)
+      );
+  } catch (e) {
+    logger.error(e);
+  }
+
   directs = directs.reduce((directs, info) => {
     if (info.channel)
-      directs.push({ ...info.channel.toJSON(), memberIds: undefined });
+      directs.push(directForClient(info.channel, previews[info.channel.id]));
 
     return directs;
   }, []);
@@ -626,13 +687,41 @@ async function broadcastMessage(message, channel) {
 
   members = channel.members;
 
+  // dateUpdate reorders every member's conversation list; DM members also
+  // get the preview, unless their DMs are locked right now.
   if (members)
-    for (let member of members)
-      if (users[member.id])
-        users[member.id].send("dateUpdate", {
-          channel: channel.id,
-          date: message.date,
-        });
+    for (let member of members) {
+      if (!users[member.id]) continue;
+      const update = { channel: channel.id, date: message.date };
+      if (!channel.public) {
+        let locked = false;
+        if (member.id != message.sender.id) {
+          try {
+            locked = (await dmGate.getDmAccess(member.id)).locked;
+          } catch (e) {
+            logger.error(e);
+          }
+        }
+        if (!locked) update.lastMessage = previewOf(message);
+      }
+      if (users[member.id]) users[member.id].send("dateUpdate", update);
+    }
+}
+
+// After a DM message is deleted, members' conversation lists show the
+// message before it (or nothing).
+async function sendPreviewUpdate(channelId) {
+  const channel = await models.ChatChannel.findOne({ id: channelId }).select(
+    "public memberIds"
+  );
+  if (!channel || channel.public) return;
+  const lastMessage = (await lastMessagesFor([channelId]))[channelId] || null;
+  for (const memberId of channel.memberIds) {
+    if (!users[memberId]) continue;
+    if ((await dmGate.getDmAccess(memberId)).locked) continue;
+    if (users[memberId])
+      users[memberId].send("previewUpdate", { channel: channelId, lastMessage });
+  }
 }
 
 function broadcastDeletion(messageId, channelId) {

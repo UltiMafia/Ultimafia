@@ -23,12 +23,14 @@ export const DmWindowContext = createContext({
   open: false,
   collapsed: false,
   pos: null,
+  channelId: null,
   access: { locked: false },
   unread: 0,
   toggle: noop,
   close: noop,
   setCollapsed: noop,
   setPos: noop,
+  setChannelId: noop,
   setLiveUnread: noop,
   refreshAccess: noop,
 });
@@ -98,7 +100,7 @@ export function DmWindowProvider({ children }) {
     );
   }, []);
   const close = useCallback(() => {
-    setState((s) => ({ ...s, open: false, collapsed: false }));
+    setState((s) => ({ ...s, open: false, collapsed: false, channelId: null }));
     setLiveUnread(null);
   }, []);
   const setCollapsed = useCallback(
@@ -106,6 +108,13 @@ export function DmWindowProvider({ children }) {
     []
   );
   const setPos = useCallback((pos) => setState((s) => ({ ...s, pos })), []);
+  // The conversation open in the window (null = the list), so it comes back
+  // after a page change or reload.
+  const setChannelId = useCallback(
+    (channelId) =>
+      setState((s) => (s.channelId === channelId ? s : { ...s, channelId: channelId || null })),
+    []
+  );
 
   const value = useMemo(
     () => ({
@@ -116,10 +125,11 @@ export function DmWindowProvider({ children }) {
       close,
       setCollapsed,
       setPos,
+      setChannelId,
       setLiveUnread,
       refreshAccess,
     }),
-    [state, access, liveUnread, polledUnread, toggle, close, setCollapsed, setPos, refreshAccess]
+    [state, access, liveUnread, polledUnread, toggle, close, setCollapsed, setPos, setChannelId, refreshAccess]
   );
 
   return (

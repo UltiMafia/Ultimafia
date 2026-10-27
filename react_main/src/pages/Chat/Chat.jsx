@@ -45,7 +45,8 @@ import {
   resolveDisplayTextColor,
 } from "../../utils/accessibleNameColors";
 
-import { countUnreadDmChannels } from "../../utils/dmWindow";
+import { countUnreadDmChannels, sendErrorText } from "../../utils/dmWindow";
+import DmPanel from "../../components/dms/DmPanel";
 
 import "css/chat.css";
 
@@ -60,6 +61,13 @@ import "css/chat.css";
 //   onLocked       called with { message, gameId } when the server refuses DMs
 //                  (alive in a running ranked/competitive game)
 //   embedded       drop the outer card and the "Chat" label
+//   panel          render the X Chat style DM panel (components/dms/DmPanel)
+//                  instead of the chatbox: conversation list, conversation
+//                  view with a back arrow, and a new-message view. Same
+//                  socket, state and events as the chatbox.
+//   renderTitleBar panel only: ({ left, actions }) => the window's title bar
+//   initialChannelId / onChannelChange
+//                  panel only: the open conversation, kept by the window
 export default function Chat({
   directsOnly = false,
   paused = false,
@@ -67,12 +75,18 @@ export default function Chat({
   onLocked,
   embedded = false,
   height = 480,
+  panel = false,
+  renderTitleBar,
+  initialChannelId = null,
+  onChannelChange,
 } = {}) {
   const [connected, setConnected] = useState(0);
   const [token, setToken] = useState("");
   const [socket, setSocket] = useState({});
   const [chatInfo, updateChatInfo] = useChatInfoReducer();
-  const [currentChannelId, setCurrentChannelId] = useState();
+  const [currentChannelId, setCurrentChannelId] = useState(
+    panel ? initialChannelId || null : undefined
+  );
   const [channel, updateChannel] = useChannelReducer();
   const [newDMUsers, setNewDMUsers] = useState({});
   const [textInput, setTextInput] = useState("");
@@ -80,6 +94,14 @@ export default function Chat({
   const [userSearchVal, setUserSearchVal] = useState("");
   const [newChatDialogOpen, setNewChatDialogOpen] = useState(false);
   const [dmLocked, setDmLocked] = useState(null);
+  // Panel: inline error under the composer / new-message view, and the texts
+  // sent but not yet echoed back, so a refused one can be put back.
+  const [sendError, setSendError] = useState(null);
+  const pendingSends = useRef([]);
+  const currentChannelRef = useRef(currentChannelId);
+  currentChannelRef.current = currentChannelId;
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
 
   const messageListRef = useRef();
   const oldScrollHeight = useRef();
@@ -157,6 +179,11 @@ export default function Chat({
           setCurrentChannelId(roomId);
         }
       }
+
+      // Panel: reopen the conversation that was open (page change, reload
+      // or reconnect).
+      if (panel && currentChannelRef.current && !pausedRef.current)
+        socket.send("getChannel", currentChannelRef.current);
     });
 
     socket.on("channel", (channel) => {
@@ -168,6 +195,10 @@ export default function Chat({
     });
 
     socket.on("message", (message) => {
+      if (panel && message.sender && message.sender.id === user.id) {
+        const i = pendingSends.current.indexOf(message.content);
+        if (i !== -1) pendingSends.current.splice(i, 1);
+      }
       updateChannel({
         type: "message",
         message,
@@ -211,6 +242,16 @@ export default function Chat({
         type: "date",
         channelId: info.channel,
         date: info.date,
+        lastMessage: info.lastMessage,
+      });
+    });
+
+    // A DM's last message was deleted: new preview (or none).
+    socket.on("previewUpdate", (info) => {
+      updateChatInfo({
+        type: "preview",
+        channelId: info.channel,
+        lastMessage: info.lastMessage,
       });
     });
 
@@ -245,6 +286,15 @@ export default function Chat({
     });
 
     socket.on("error", (error) => {
+      // Panel: show it in the window, next to what it is about, and put a
+      // refused message back in the composer (rate limit, blocks, ...).
+      if (panel) {
+        const refused = pendingSends.current.pop();
+        if (refused != null)
+          setTextInput((current) => (current ? current : refused));
+        setSendError(refused != null ? sendErrorText(error) : String(error));
+        return;
+      }
       errorAlert(error);
     });
     }, { replay });
@@ -352,7 +402,7 @@ export default function Chat({
     else {
       setAutoScroll(false);
 
-      if (messageList.scrollTop === 0)
+      if (messageList.scrollTop === 0 && channel.messages.length)
         socket.send("getOldMessages", channel.messages[0].date);
     }
   }
@@ -389,7 +439,7 @@ export default function Chat({
 
     if (userSearchVal.length > 0) {
       axios
-        .get(`/api/user/searchName?query=${userSearchVal}`)
+        .get(`/api/user/searchName?query=${encodeURIComponent(userSearchVal)}`)
         .then((res) => {
           updateChatInfo({
             type: "users",
@@ -409,6 +459,60 @@ export default function Chat({
         .catch(errorAlert);
     }
   }, [newChatDialogOpen, userSearchVal]);
+
+  // ---- Panel actions ----
+  useEffect(() => {
+    if (!panel) return;
+    if (onChannelChange) onChannelChange(currentChannelId || null);
+    // A DM opened (from the list, or by newDMChannel): leave the new view.
+    if (currentChannelId) setNewChatDialogOpen(false);
+    setSendError(null);
+  }, [currentChannelId]);
+
+  function openConversation(id) {
+    onChannelSelect(id, "directs");
+  }
+
+  // Back arrow: leave the channel on the server so new messages in it count
+  // as unread again, and show the list.
+  function backToList() {
+    if (socket && socket.readyState === 1) socket.send("closedChat");
+    setCurrentChannelId(null);
+    updateChannel({ type: "clear" });
+    setDmLocked(null);
+  }
+
+  function openNewConversation() {
+    backToList();
+    setUserSearchVal("");
+    setSendError(null);
+    setNewChatDialogOpen(true);
+  }
+
+  function closeNewConversation() {
+    setNewChatDialogOpen(false);
+    setUserSearchVal("");
+    setSendError(null);
+  }
+
+  // Same server path as the chatbox's "Create DM": newDMChannel opens (or
+  // reuses) the channel for exactly these members plus me, then the server
+  // answers newDirectChannel { focus } or openDM, which opens it here.
+  function startConversation(userIds) {
+    if (!userIds.length) return;
+    setSendError(null);
+    socket.send("newDMChannel", userIds);
+  }
+
+  function sendPanelMessage(text) {
+    if (!text || !text.trim().length || !socket || socket.readyState !== 1) return;
+    pendingSends.current.push(text);
+    if (pendingSends.current.length > 10) pendingSends.current.shift();
+    socket.send("sendMessage", text);
+    setTextInput("");
+    setSendError(null);
+    setAutoScroll(true);
+  }
 
   function onCreateDM() {
     var users = Object.keys(newDMUsers);
@@ -444,6 +548,7 @@ export default function Chat({
   );
 
   useEffect(() => {
+    if (panel) return;
     if (!currentChannelId && navEntries.length > 0) {
       const first = navEntries[0];
       onChannelSelect(first.channel.id, first.type);
@@ -542,6 +647,38 @@ export default function Chat({
   //   setShowChatTab(false);
   //   localStorage.setItem("showChatTab", false);
   // }; // TODO: Remove comments
+
+  if (panel)
+    return (
+      <DmPanel
+        loading={!token}
+        user={user}
+        socket={socket}
+        directs={directs}
+        notifsByChannel={chatInfo.notifs.byChannel}
+        channel={channel}
+        currentChannelId={currentChannelId}
+        composing={newChatDialogOpen}
+        collapsed={paused}
+        dmLocked={dmLocked}
+        sendError={sendError}
+        clearSendError={() => setSendError(null)}
+        textInput={textInput}
+        setTextInput={setTextInput}
+        onSend={sendPanelMessage}
+        onOpen={openConversation}
+        onBack={backToList}
+        onNew={openNewConversation}
+        onCancelNew={closeNewConversation}
+        onStart={startConversation}
+        searchVal={userSearchVal}
+        setSearchVal={setUserSearchVal}
+        searchResults={usersList}
+        messageListRef={messageListRef}
+        onMessagesScroll={onMessagesScroll}
+        renderTitleBar={renderTitleBar}
+      />
+    );
 
   if (!token) return null;
 
@@ -1047,9 +1184,15 @@ function useChatInfoReducer() {
           });
           break;
         case "directs":
+          // Reopened DMs come back through here too: replace, don't duplicate.
           newChatInfo = update(chatInfo, {
             directs: {
-              $unshift: [action.channel],
+              $set: [
+                action.channel,
+                ...(chatInfo.directs || []).filter(
+                  (channel) => channel.id !== action.channel.id
+                ),
+              ],
             },
           });
           break;
@@ -1074,15 +1217,26 @@ function useChatInfoReducer() {
           break;
         case "date":
           var newDirects = chatInfo.directs.map((channel) => {
-            if (channel.id === action.channelId)
-              channel.lastMessageDate = action.date;
-
-            return channel;
+            if (channel.id !== action.channelId) return channel;
+            var updated = { ...channel, lastMessageDate: action.date };
+            if (action.lastMessage) updated.lastMessage = action.lastMessage;
+            return updated;
           });
 
           newChatInfo = update(chatInfo, {
             directs: {
               $set: newDirects,
+            },
+          });
+          break;
+        case "preview":
+          newChatInfo = update(chatInfo, {
+            directs: {
+              $set: chatInfo.directs.map((channel) =>
+                channel.id === action.channelId
+                  ? { ...channel, lastMessage: action.lastMessage }
+                  : channel
+              ),
             },
           });
           break;
