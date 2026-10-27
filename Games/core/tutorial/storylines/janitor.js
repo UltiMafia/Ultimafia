@@ -222,7 +222,7 @@ module.exports = {
           fast: true,
         });
       }
-      // If still not over (too many town left), keep .
+      // If still not over (too many town left), keep condemning.
       await t.advance(k, "Click Continue to see the win.");
     },
 

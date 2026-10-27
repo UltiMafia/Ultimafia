@@ -224,8 +224,8 @@ describe("Tutorial storylines end to end", function () {
   });
 
   for (const [choice, winner] of [["wait", "Village"], ["shootFake", "Village"], ["shootReal", "Mafia"]]) {
-    it(`Sheriff (${choice}) ends in a ${winner} win and never no-lynches Day 1`, function () {
-      const r = sim("sheriff", [{ do: choice }, { do: "noLynch" }, ...go(4)]);
+    it(`Sheriff (${choice}) ends in a ${winner} win and never no-condemns Day 1`, function () {
+      const r = sim("sheriff", [{ do: choice }, { do: "noCondemn" }, ...go(4)]);
       expect(r.branch).to.equal(choice);
       expect(r.winners).to.deep.equal([winner]);
       expect(r.log.some((l) => /@Village -> \*/.test(l))).to.be.false;
