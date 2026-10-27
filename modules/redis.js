@@ -532,6 +532,21 @@ async function getBasicUserInfo(userId, delTemplate) {
   return info;
 }
 
+// The user's custom emotes and stickers, keyed by ":name:" (as remapped by
+// cacheUserInfo). Chat uses these to render a sender's own emotes/stickers.
+async function getUserCustomEmotes(userId) {
+  var exists = await cacheUserInfo(userId);
+  if (!exists) return { customEmotes: {}, customStickers: {} };
+
+  var settings = JSON.parse(
+    (await client.getAsync(`user:${userId}:info:settings`)) || "{}"
+  );
+  return {
+    customEmotes: (settings && settings.customEmotes) || {},
+    customStickers: (settings && settings.customStickers) || {},
+  };
+}
+
 async function getUserName(userId) {
   var exists = await cacheUserInfo(userId);
 
@@ -1701,6 +1716,7 @@ module.exports = {
   getUserInfo,
   getUserInfoBulk,
   getBasicUserInfo,
+  getUserCustomEmotes,
   userInDonorGroup,
   getUserName,
   getUserStatus,

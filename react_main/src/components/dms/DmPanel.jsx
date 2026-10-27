@@ -18,6 +18,7 @@ import { alpha, useTheme } from "@mui/material/styles";
 
 import { Avatar, StatusIcon } from "../../pages/User/UserWidgets";
 import { UserText } from "../Basic";
+import EmotePicker from "../EmotePicker";
 import { MaxChatMessageLength } from "../../Constants";
 import { formatUnreadBadge } from "../../utils/unreadBadge";
 import {
@@ -25,7 +26,9 @@ import {
   dmTitle,
   formatDmTime,
   groupMessages,
+  insertEmote,
   isGroupDm,
+  isStickerOnlyMessage,
   otherMembers,
   sortDirects,
 } from "../../utils/dmWindow";
@@ -484,6 +487,33 @@ function ConversationView(props) {
             sx={{ flex: 1, fontSize: 14, py: 0.75 }}
             disabled={!loaded}
           />
+          {/* Same picker as game chat: site emotes, my custom emotes and
+              my stickers, inserted as ":code:" text. */}
+          <Box
+            data-testid="dm-emote-picker"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              "& .dropdown-control": {
+                minWidth: 0,
+                width: 32,
+                height: "32px !important",
+                p: 0.5,
+                border: "none !important",
+                borderRadius: "50%",
+              },
+              "& .dropdown-control img": { width: 20, height: 20 },
+              opacity: loaded ? 1 : 0.5,
+              pointerEvents: loaded ? "auto" : "none",
+            }}
+          >
+            <EmotePicker
+              onEmoteSelected={(emote) => {
+                setTextInput(insertEmote(textInput, emote));
+                if (sendError) clearSendError();
+              }}
+            />
+          </Box>
           <IconButton
             size="small"
             color="primary"
@@ -505,6 +535,11 @@ function Bubble({ message, mine, first, last, socket }) {
   const user = useContext(UserContext);
   const [menu, setMenu] = useState(null);
   const canDelete = mine || (user.perms && user.perms.deleteChatMessage);
+  // The sender's own custom emotes/stickers, sent by the chat server with
+  // each DM (as game chat does with player settings).
+  const customEmotes = (message.sender && message.sender.customEmotes) || null;
+  const customStickers = (message.sender && message.sender.customStickers) || null;
+  const stickerOnly = isStickerOnlyMessage(message.content, customStickers);
   const r = 18;
   const tight = 4;
   const radius = mine
@@ -515,6 +550,7 @@ function Bubble({ message, mine, first, last, socket }) {
     <>
       <Box
         data-testid="dm-bubble"
+        data-sticker-only={stickerOnly ? "true" : "false"}
         className={mine ? "self" : ""}
         onContextMenu={(e) => {
           if (!canDelete) return;
@@ -522,23 +558,36 @@ function Bubble({ message, mine, first, last, socket }) {
           setMenu({ top: e.clientY, left: e.clientX });
         }}
         sx={{
-          px: 1.5,
-          py: 0.75,
+          px: stickerOnly ? 0 : 1.5,
+          py: stickerOnly ? 0.25 : 0.75,
           borderRadius: radius,
           fontSize: 14,
           lineHeight: 1.35,
           wordBreak: "break-word",
           whiteSpace: "pre-wrap",
-          bgcolor: mine
+          bgcolor: stickerOnly
+            ? "transparent"
+            : mine
             ? "primary.main"
             : theme.palette.mode === "dark"
             ? "rgba(255,255,255,0.1)"
             : "rgba(0,0,0,0.07)",
           color: mine ? "primary.contrastText" : "text.primary",
           "& a": { color: "inherit", textDecoration: "underline" },
+          "& .emote": { verticalAlign: "middle" },
+          // Stickers at 96px fit the 360px window (game chat uses up to 128).
+          "& .sticker": { width: "96px !important", height: "96px !important" },
         }}
       >
-        <UserText text={message.content} settings={user.settings} filterProfanity linkify emotify />
+        <UserText
+          text={message.content}
+          settings={user.settings}
+          filterProfanity
+          linkify
+          emotify
+          customEmotes={customEmotes}
+          customStickers={customStickers}
+        />
       </Box>
       <Menu
         open={Boolean(menu)}
@@ -575,7 +624,12 @@ function NewConversationView(props) {
   }, []);
 
   const selectedIds = selected.map((u) => u.id);
-  const results = (searchResults || []).filter((u) => u && u.id !== user.id);
+  const found = (searchResults || []).filter((u) => u && u.id !== user.id);
+  // With the box empty the list is "Online now"; keep the people already
+  // picked at the top (checked) even when they aren't online.
+  const results = searchVal
+    ? found
+    : [...selected.filter((s) => !found.some((u) => u.id === s.id)), ...found];
 
   function toggle(u) {
     setSelected((cur) =>
@@ -637,7 +691,7 @@ function NewConversationView(props) {
       </Box>
       {sendError && <InlineError text={sendError} />}
       <Typography variant="caption" color="text.secondary" sx={{ px: 2, pt: 1, display: "block" }}>
-        {searchVal ? "People" : "Online now"}
+        {searchVal ? "People" : selected.length ? "Selected and online now" : "Online now"}
       </Typography>
       <Box sx={{ flex: 1, overflowY: "auto" }} data-testid="dm-search-results">
         {results.length === 0 && (

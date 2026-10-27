@@ -17,6 +17,8 @@ import {
   sortDirects,
   groupMessages,
   sendErrorText,
+  isStickerOnlyMessage,
+  insertEmote,
 } from "../src/utils/dmWindow.js";
 
 const md5 = "0123456789abcdef0123456789abcdef";
@@ -135,4 +137,20 @@ test("messages group by sender within 5 minutes", () => {
 test("rate-limit errors read as 'slow down'", () => {
   assert.match(sendErrorText("You are chatting too quickly."), /Slow down/);
   assert.equal(sendErrorText("A user in this channel is only accepting DMs from friends."), "A user in this channel is only accepting DMs from friends.");
+});
+
+test("sticker-only messages are detected from the sender's stickers", () => {
+  const stickers = { ":wave:": { path: "x" }, ":gg:": { path: "y" } };
+  assert.equal(isStickerOnlyMessage(":wave:", stickers), true);
+  assert.equal(isStickerOnlyMessage(":WAVE:  :gg:", stickers), true);
+  assert.equal(isStickerOnlyMessage(":wave: hi", stickers), false);
+  assert.equal(isStickerOnlyMessage(":happy:", stickers), false);
+  assert.equal(isStickerOnlyMessage(":wave:", null), false);
+  assert.equal(isStickerOnlyMessage("", stickers), false);
+});
+
+test("picked emotes are inserted like game chat", () => {
+  assert.equal(insertEmote("", ":happy:"), ":happy: ");
+  assert.equal(insertEmote("hi  ", ":wave:"), "hi :wave: ");
+  assert.equal(insertEmote("hi", "😀"), "hi 😀 ");
 });

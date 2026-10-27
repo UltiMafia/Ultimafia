@@ -177,3 +177,21 @@ export function sendErrorText(error) {
     return "Slow down! That message wasn't sent. Press Enter to try again.";
   return text || "That message wasn't sent.";
 }
+
+// True when a message is only sticker codes (":name:" keys of the sender's
+// customStickers): drawn without a bubble, like X shows images.
+export function isStickerOnlyMessage(content, stickers) {
+  if (!stickers || typeof content !== "string") return false;
+  const words = content.split(" ").filter((w) => w !== "");
+  return (
+    words.length > 0 &&
+    words.every((w) =>
+      Object.prototype.hasOwnProperty.call(stickers, w.toLowerCase())
+    )
+  );
+}
+
+// Emote picker insert: same as game chat (space-separated codes).
+export function insertEmote(text, emote) {
+  return text ? `${text.trimEnd()} ${emote} ` : `${emote} `;
+}

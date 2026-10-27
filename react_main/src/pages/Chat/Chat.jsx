@@ -437,27 +437,29 @@ export default function Chat({
   useEffect(() => {
     if (!newChatDialogOpen) return;
 
-    if (userSearchVal.length > 0) {
-      axios
-        .get(`/api/user/searchName?query=${encodeURIComponent(userSearchVal)}`)
-        .then((res) => {
-          updateChatInfo({
-            type: "users",
-            users: res.data,
-          });
-        })
-        .catch(errorAlert);
-    } else {
-      axios
-        .get("/api/user/online")
-        .then((res) => {
-          updateChatInfo({
-            type: "users",
-            users: res.data,
-          });
-        })
-        .catch(errorAlert);
-    }
+    // Typing fires a request per keystroke and clearing the box fetches the
+    // online list; only the newest answer may fill the list, or a slow one
+    // for an old query lands on top of it.
+    let stale = false;
+    const url =
+      userSearchVal.length > 0
+        ? `/api/user/searchName?query=${encodeURIComponent(userSearchVal)}`
+        : "/api/user/online";
+    axios
+      .get(url)
+      .then((res) => {
+        if (stale) return;
+        updateChatInfo({
+          type: "users",
+          users: res.data,
+        });
+      })
+      .catch((e) => {
+        if (!stale) errorAlert(e);
+      });
+    return () => {
+      stale = true;
+    };
   }, [newChatDialogOpen, userSearchVal]);
 
   // ---- Panel actions ----

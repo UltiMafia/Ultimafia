@@ -178,13 +178,51 @@ describe("Chat server DM previews and group DMs", function () {
     expect(a.events.find(([e, m]) => e === "message" && m.content === "two")).to.equal(undefined);
   });
 
+  it("sends the sender's custom emotes and stickers with DMs, content untouched", async function () {
+    const owner = await models.User.findOne({ id: "pvA" }).select("_id");
+    const emote = await models.CustomEmote.create({ id: "ceTest1", name: "pvwave", creator: owner._id, extension: "webp" });
+    const sticker = await models.CustomSticker.create({ id: "csTest1", name: "pvsticker", creator: owner._id, extension: "png" });
+    await models.User.updateOne({ id: "pvA" }, { $set: { customEmotes: [emote._id], customStickers: [sticker._id] } });
+    await redis.deleteUserInfo("pvA");
+    try {
+      b.clear(); a.clear();
+      await sleep(600);
+      const text = "hi :pvwave: :happy: :pvsticker:";
+      a.send("sendMessage", text);
+      const live = await b.waitFor("message", (m) => m.content === text);
+      expect(live.content).to.equal(text);
+      expect(live.sender.customEmotes[":pvwave:"]).to.include({ name: "pvwave", id: "ceTest1", extension: "webp" });
+      expect(live.sender.customEmotes[":pvwave:"].path).to.match(/pvA_customEmote_ceTest1\.webp$/);
+      expect(live.sender.customStickers[":pvsticker:"]).to.include({ name: "pvsticker", id: "csTest1" });
+      // Only the sender's own: B's messages carry B's (empty) maps.
+      await b.say("no emotes here");
+      const fromB = await a.waitFor("message", (m) => m.content === "no emotes here");
+      expect(fromB.sender.customEmotes).to.deep.equal({});
+
+      // History (getChannel) carries them too.
+      c.clear();
+      c.send("getChannel", groupId);
+      const ch = await c.waitFor("channel");
+      const old = ch.messages.find((m) => m.content === text);
+      expect(old.sender.customStickers).to.have.property(":pvsticker:");
+      expect(old.sender.customEmotes).to.have.property(":pvwave:");
+      const stored = await models.ChatMessage.findOne({ channel: groupId, content: text }).select("content");
+      expect(stored.content).to.equal(text);
+    } finally {
+      await models.CustomEmote.deleteOne({ id: "ceTest1" });
+      await models.CustomSticker.deleteOne({ id: "csTest1" });
+      await models.User.updateOne({ id: "pvA" }, { $set: { customEmotes: [], customStickers: [] } });
+      await redis.deleteUserInfo("pvA");
+    }
+  });
+
   it("updates previews when the last message is deleted", async function () {
     const last = await models.ChatMessage.findOne({ channel: groupId }).sort({ date: -1 }).select("id content");
-    expect(last.content).to.equal("one");
-    b.clear();
-    a.send("deleteMessage", last.id);
-    const pu = await b.waitFor("previewUpdate", (d) => d.channel === groupId);
-    expect(pu.lastMessage).to.include({ content: "carl here", senderId: "pvC" });
+    expect(last.content).to.equal("no emotes here");
+    a.clear();
+    b.send("deleteMessage", last.id);
+    const pu = await a.waitFor("previewUpdate", (d) => d.channel === groupId);
+    expect(pu.lastMessage).to.include({ content: "hi :pvwave: :happy: :pvsticker:", senderId: "pvA" });
     for (const s of [a, b, c]) s.close();
   });
 });

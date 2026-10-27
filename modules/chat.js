@@ -84,6 +84,26 @@ async function lastMessagesFor(channelIds) {
   return out;
 }
 
+// DMs render the sender's own custom emotes and stickers (":name:" codes),
+// the same maps game chat uses (user settings, remapped by redis.cacheUserInfo).
+// Only for DMs, so public room messages stay small.
+async function addSenderEmotes(sender, cache) {
+  if (!sender || !sender.id) return sender;
+  let maps = cache && cache.get(sender.id);
+  if (!maps) {
+    try {
+      maps = await redis.getUserCustomEmotes(sender.id);
+    } catch (e) {
+      logger.error(e);
+      maps = { customEmotes: {}, customStickers: {} };
+    }
+    if (cache) cache.set(sender.id, maps);
+  }
+  sender.customEmotes = maps.customEmotes;
+  sender.customStickers = maps.customStickers;
+  return sender;
+}
+
 async function onlyModsBesides(memberIds, userId) {
   const others = (memberIds || []).filter((id) => id != userId);
   if (others.length === 0) return false;
@@ -161,12 +181,15 @@ async function onlyModsBesides(memberIds, userId) {
               .sort("-date")
               .limit(constants.chatMessagesPerLoad);
 
+            const emoteCache = new Map();
             for (let i in messages) {
               let message = messages[i].toJSON();
               message.sender = await redis.getBasicUserInfo(
                 message.sender.id,
                 true
               );
+              if (!channel.public)
+                await addSenderEmotes(message.sender, emoteCache);
               messages[i] = message;
             }
 
@@ -217,12 +240,15 @@ async function onlyModsBesides(memberIds, userId) {
               .sort("-date")
               .limit(constants.chatMessagesPerLoad);
 
+            const emoteCache = new Map();
             for (let i in messages) {
               let message = messages[i].toJSON();
               message.sender = await redis.getBasicUserInfo(
                 message.sender.id,
                 true
               );
+              if (!channel.public)
+                await addSenderEmotes(message.sender, emoteCache);
               messages[i] = message;
             }
 
@@ -324,6 +350,11 @@ async function onlyModsBesides(memberIds, userId) {
 
             message = message.toJSON();
             message.sender = user;
+            if (!channel.public) {
+              // A copy: `user` is this socket's own session info.
+              message.sender = { ...user };
+              await addSenderEmotes(message.sender);
+            }
             delete message._id;
 
             await broadcastMessage(message, channel);
