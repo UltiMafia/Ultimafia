@@ -1,6 +1,6 @@
 const chatMatch = require("../chatMatch");
 // LAWYER: learn jan codes. Day 1 the Sheriff shoots the Janitor but town
-// mislynches; Night 2 kill; Day 2 a second mislynch gives Mafia the win.
+// miscondemns; Night 2 kill; Day 2 a second miscondemn gives Mafia the win.
 // Night 2 reminds you to Litigate again (optional, not gated).
 // The Lawyer is Loyal: the human's Litigate box lists only Mafia teammates
 // (see litigateTargets / TutorialController.restrictLitigate).
@@ -135,12 +135,12 @@ module.exports = {
         ],
       });
       // Count (9 = 3 Mafia + 6 town): N1 kill -> 8 (3M/5T). D1 the Sheriff
-      // shoots the Janitor -> 7 (2M/5T), town mislynches a Villager -> 6
-      // (2M/4T). N2 kill -> 5 (2M/3T). D2 mislynch -> 4 (2M/2T): Mafia wins.
-      const lynchTarget = ["v1", "v3", "v2"].find(
+      // shoots the Janitor -> 7 (2M/5T), town miscondemns a Villager -> 6
+      // (2M/4T). N2 kill -> 5 (2M/3T). D2 miscondemn -> 4 (2M/2T): Mafia wins.
+      const condemnTarget = ["v1", "v3", "v2"].find(
         (key) => key !== victim && t.player(key) && t.player(key).alive
       ) || "v1";
-      t.data.lynch1 = lynchTarget;
+      t.data.condemn1 = condemnTarget;
       await t.chat("Village", [
         ["sheriff", `${t.nameOf("janitor")}, you're awfully chatty about the weather for someone whose friend just died. Gun's coming out.`],
         ["mafioso", "Wait, Sheriff?!"],
@@ -150,13 +150,13 @@ module.exports = {
       t.guide(`The Sheriff shot ${t.nameOf("janitor")}, your Janitor. The town's gun is spent, but you're down a teammate. Keep your cover: it's you and ${t.nameOf("mafioso")} now.`);
       await t.chat("Village", [
         ["v1", `${t.nameOf("janitor")} was Mafia! Nice shot. Who else?`],
-        ["mafioso", `${t.nameOf(lynchTarget)} was defending them all day. ${t.nameOf(lynchTarget)}.`],
-        ["v3", `Fine, ${t.nameOf(lynchTarget)}.`],
+        ["mafioso", `${t.nameOf(condemnTarget)} was defending them all day. ${t.nameOf(condemnTarget)}.`],
+        ["v3", `Fine, ${t.nameOf(condemnTarget)}.`],
       ], k);
-      await t.expectVote("Village", lynchTarget, {
+      await t.expectVote("Village", condemnTarget, {
         token: k,
-        label: `Vote ${t.nameOf(lynchTarget)}`,
-        text: `${t.nameOf("mafioso")} is steering the town onto ${t.nameOf(lynchTarget)}, a Villager. Vote them in the Village box.`,
+        label: `Vote ${t.nameOf(condemnTarget)}`,
+        text: `${t.nameOf("mafioso")} is steering the town onto ${t.nameOf(condemnTarget)}, a Villager. Vote them in the Village box.`,
         also: [
           {
             id: "voteTeammate",
@@ -164,16 +164,16 @@ module.exports = {
             vote: { meeting: "Village", target: "mafioso" },
             bad: {
               reactions: [["mafioso", "Wait, what? I'm clean!"]],
-              lesson: "Don't vote your teammate here. Stick with the town mislynch.",
+              lesson: "Don't vote your teammate here. Stick with the town miscondemn.",
             },
           },
         ],
         wrongReactions: [
-          ["mafioso", `Huh? We were on ${t.nameOf(lynchTarget)}.`],
+          ["mafioso", `Huh? We were on ${t.nameOf(condemnTarget)}.`],
         ],
       });
-      await t.everyoneVotes(lynchTarget, k);
-      t.guide(`Town lynched ${t.nameOf(lynchTarget)}, a Villager. Two Mafia are left against four town: one more kill and one more mislynch wins it.`);
+      await t.everyoneVotes(condemnTarget, k);
+      t.guide(`Town condemned ${t.nameOf(condemnTarget)}, a Villager. Two Mafia are left against four town: one more kill and one more miscondemn wins it.`);
       await t.advance(k);
     },
 
@@ -198,17 +198,17 @@ module.exports = {
     async Day2(t, k) {
       const dead = t.data.victim2;
       const target = ["v3", "v2", "v1", "journalist", "cop"].find(
-        (key) => key !== t.data.victim && key !== dead && key !== t.data.lynch1 && t.player(key) && t.player(key).alive
+        (key) => key !== t.data.victim && key !== dead && key !== t.data.condemn1 && t.player(key) && t.player(key).alive
       );
-      t.data.lynch2 = target;
+      t.data.condemn2 = target;
       await t.chat("Village", [
         ["v1", `${t.nameOf(dead)} is gone too. We have to get this one right.`],
-        ["mafioso", `${t.nameOf(target)} pushed ${t.nameOf(t.data.lynch1)} yesterday and was wrong. That's a Mafia move.`],
+        ["mafioso", `${t.nameOf(target)} pushed ${t.nameOf(t.data.condemn1)} yesterday and was wrong. That's a Mafia move.`],
       ], k);
       await t.expectVote("Village", target, {
         token: k,
         label: `Vote ${t.nameOf(target)}`,
-        text: `Back ${t.nameOf("mafioso")}: vote ${t.nameOf(target)} in the Village box. If town lynches a Villager now, Mafia reaches half the players and wins.`,
+        text: `Back ${t.nameOf("mafioso")}: vote ${t.nameOf(target)} in the Village box. If town condemns a Villager now, Mafia reaches half the players and wins.`,
         also: [
           {
             id: "voteTeammate",
@@ -223,7 +223,7 @@ module.exports = {
         wrongReactions: [["mafioso", `Stay on ${t.nameOf(target)}.`]],
       });
       await t.everyoneVotes(target, k);
-      t.guide(`Town lynched ${t.nameOf(target)}, another Villager. That leaves two Mafia and two town. Click Continue to end the day.`);
+      t.guide(`Town condemned ${t.nameOf(target)}, another Villager. That leaves two Mafia and two town. Click Continue to end the day.`);
       await t.advance(k);
     },
   },
@@ -235,6 +235,6 @@ module.exports = {
 
   epilogue: (t) => [
     "The Mafia won! When the Mafia equals the town, the Mafia wins.",
-    `Lesson: a jan code passes cleaned roles in plain sight, and you kept your teammate looking innocent with Litigate. Town lost the Janitor to the gun but mislynched twice, and on Day 2 Mafia reached half the players. Always Litigate a teammate when you can, even when the night doesn't force it.`,
+    `Lesson: a jan code passes cleaned roles in plain sight, and you kept your teammate looking innocent with Litigate. Town lost the Janitor to the gun but miscondemned twice, and on Day 2 Mafia reached half the players. Always Litigate a teammate when you can, even when the night doesn't force it.`,
   ],
 };
