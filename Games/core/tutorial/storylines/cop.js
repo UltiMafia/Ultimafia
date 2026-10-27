@@ -176,7 +176,7 @@ module.exports = {
       ], k);
       t.guide(`Because the Journalist was on you, they received your last report after you died: ${t.nameOf("janitor")} is GUILTY.`);
       t.guide(
-        `This is an autowin (the winner is already decided): two of the three Mafia are already dead (${t.nameOf("mafioso")} shot, ${t.nameOf("lawyer")} condemned), and your last report puts the third on ${t.nameOf("janitor")}. Lynching a confirmed guilty who is the last Mafia ends the game.`
+        `This is an autowin (the winner is already decided): two of the three Mafia are already dead (${t.nameOf("mafioso")} shot, ${t.nameOf("lawyer")} condemned), and your last report puts the third on ${t.nameOf("janitor")}. Condemning a confirmed guilty who is the last Mafia ends the game.`
       );
       // Dead Cop can't vote; town finishes it.
       await t.everyoneVotes("janitor", k, "Village", { fast: true });

@@ -195,7 +195,7 @@ module.exports = {
               reactions: [
                 ["v1", "WHAT? I'm town!"],
                 ["sheriff", "That doesn't match anything. {name} is throwing."],
-                ["lawyer", `Lynch the fake Journalist. ${t.human().name} has to go.`],
+                ["lawyer", `Condemn the fake Journalist. ${t.human().name} has to go.`],
                 ["v3", `Yeah, ${t.human().name}.`],
               ],
               consequence: async (t, k) => {

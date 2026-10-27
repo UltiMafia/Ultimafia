@@ -372,7 +372,7 @@ async function day1JannedVillager(t, k) {
   await t.wait(t.timing.beat, k);
   t.guide(`${t.nameOf("cop")} flipped Cop. Town knows you lied — they're condemning you. That's okay: you're about to be bussed.`);
   await t.chat("Village", [
-    ["v3", `Real Cop!! Lynch ${t.human().name}!`],
+    ["v3", `Real Cop!! Condemn ${t.human().name}!`],
     ["v1", `Now.`],
     ["mafioso", `…yeah. ${t.human().name}.`],
     ["lawyer", "Agreed. Start with the liar."],
@@ -417,7 +417,7 @@ async function day1JannedSheriff(t, k) {
   await t.chat("Village", [
     ["cop", `I'm the real Cop!`],
     ["v1", "No Sheriff. We have to condemn a Cop claim."],
-    ["lawyer", `Lynch ${t.nameOf("cop")}.`],
+    ["lawyer", `Condemn ${t.nameOf("cop")}.`],
     ["mafioso", t.nameOf("cop")],
   ], k);
   await t.everyoneVotes("cop", k);

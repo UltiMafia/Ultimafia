@@ -26,7 +26,7 @@ module.exports = {
   userSeat: "sheriff",
   blurb: "Two Cop claims, one gun. Shoot now, or wait for more information?",
   available: true,
-  freeVote: (t, meeting) => meeting.name === "Village" && t.data.freeLynch,
+  freeVote: (t, meeting) => meeting.name === "Village" && t.data.freeCondemn,
   intro:
     "Welcome to the tutorial! You are the Sheriff, on the town side. You have a gun that can kill one player during the day. Nobody's role is known yet. It's Night 1.",
 
@@ -193,7 +193,7 @@ async function shootRealDay1(t, k) {
     ["mafioso", t.nameOf("v1")],
   ], k);
   t.guide("The Mafia is pushing the town onto a Villager. Without the Cop, the town can't tell who's lying. Vote however you like and watch.");
-  t.data.freeLynch = true;
+  t.data.freeCondemn = true;
   await t.everyoneVotes("v1", k, "Village", {
     dissenters: { v1: "mafioso" },
   });
@@ -289,7 +289,7 @@ async function condemnVote(t, k, target, text, fast = true) {
     text: text || `The Cop said ${t.nameOf(target)} is guilty. Vote ${t.nameOf(target)} in the Village box.`,
     also: [
       {
-        id: "noLynch",
+        id: "noCondemn",
         label: "Vote No one",
         vote: { meeting: "Village", target: "*" },
         bad: {
