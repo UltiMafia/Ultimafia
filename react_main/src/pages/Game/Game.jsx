@@ -164,6 +164,7 @@ const emoteMap = {
 const NO_ONE_NAME = "no one";
 const MAGUS_NAME = "Declare Magus Game";
 const UNKNOWN_NAME = "???";
+const EVERYONE_PING = "@every";
 
 function getOrderedPlayers(players) {
   return Object.values(players)
@@ -185,6 +186,10 @@ function getOrderedPlayers(players) {
       return a.index - b.index;
     })
     .map(({ player }) => player);
+}
+
+function parsePings(content) {
+  return content.match(/@[\w-]*/gm) || [];
 }
 
 export const GameTypeContext = createContext({
@@ -1124,15 +1129,15 @@ export default function Game(props) {
         message,
       });
 
-      const pings = message.content.match(/@[\w-]*/gm) || [];
-
+      const pings = parsePings(message.content);
       const iWasPinged =
         pings.indexOf("@" + playersRef?.current?.[selfRef?.current]?.name) !==
         -1;
+
       if (
         selfRef.current &&
         playersRef.current[selfRef.current] &&
-        (iWasPinged || pings.some((p) => p.startsWith("@every")))
+        (iWasPinged || pings.some((p) => p.startsWith(EVERYONE_PING)))
       ) {
         playAudio("ping");
         if (iWasPinged) {
@@ -2328,6 +2333,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           review={game.review}
           history={history}
           players={players}
+          self={game.self}
           spectators={spectators}
           stateViewing={
             singleState && !message.obituaries && !message.winners
@@ -2365,6 +2371,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     game.onMessageQuote,
     game.onPinMessage,
     game.isMessagePinned,
+    game.self,
   ]);
 
   // Typing and unrelated game updates must not repeatedly measure the entire
@@ -2782,6 +2789,14 @@ export function rowStateClass(stateViewing) {
 function Message(props) {
   const { history, isMessagePinned, meetingState, ...rowProps } = props;
   const { message, stateViewing } = props;
+
+  let iWasPinged = false;
+  if (message.content && props.settings.highlightMentions) {
+    const pings = parsePings(message.content);
+    iWasPinged =
+          pings.indexOf("@" + props.players?.[props.self]?.name) !== -1 || pings.some((p) => p.startsWith(EVERYONE_PING));
+  }
+
   if (message.obituaries && props.settings.legacyObituaries) {
     return legacyObituaryMessages(message).map((alert) => (
       <Message
@@ -2799,6 +2814,7 @@ function Message(props) {
   return (
     <MessageRow
       {...rowProps}
+      iWasPinged={iWasPinged}
       pinned={isMessagePinned(message)}
       meetingName={history.states[nameState]?.meetings?.[message.meetingId]?.name}
       quoteState={message.isQuote ? history.states[message.fromState] : undefined}
@@ -3072,9 +3088,13 @@ const MessageRow = React.memo(function MessageRow(props) {
     ? "nameplate-aligned"
     : "nameplate";
 
+  let className = "message";
+  if (message.spectatorChat) className += " spectator-chat";
+  else if (props.iWasPinged) className += " mention";
+  
   return (
     <div
-      className={message.spectatorChat ? "message spectator-chat" : "message"}
+      className={className}
       onDoubleClick={() => props.onMessageQuote(message)}
       style={messageStyle}
       onMouseEnter={messageOnMouseEnter}
@@ -5950,6 +5970,12 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
       value: settings.legacyObituaries,
     },
     {
+      label: "Highlight Mentions",
+      ref: "highlightMentions",
+      type: "boolean",
+      value: settings.highlightMentions,
+    },
+    {
       label: "Voting Log",
       ref: "votingLog",
       type: "boolean",
@@ -6347,6 +6373,7 @@ export function PinnedMessages() {
         review={game.review}
         history={game.history}
         players={game.players}
+        self={game.self}
         spectators={game.spectators}
         stateViewing={game.stateViewing}
         key={message.id || message.messageId + message.time || i}
@@ -6977,6 +7004,7 @@ export function useSettingsReducer() {
     roleMentions: true,
     messageLayout: "default",
     legacyObituaries: false,
+    highlightMentions: true,
   };
 
   function clampVolume(value, fallback = 1) {
