@@ -1,6 +1,6 @@
 // COP: investigate, share a guilty, Sheriff shoots that Mafia, then leads the
 // town onto a second Mafia. Night 2 the Cop dies; the Journalist was reading
-// them and reveals the last guilty. Autowin is taught before the final lynch.
+// them and reveals the last guilty. Autowin is taught before the final condemn.
 
 const CLAIM_REACTIONS = {
   wrongRole: [
@@ -36,7 +36,7 @@ function hints(name) {
   };
 }
 
-async function lynch(t, k, target, text) {
+async function condemn(t, k, target, text) {
   await t.expectVote("Village", target, {
     token: k,
     text,
@@ -140,7 +140,7 @@ module.exports = {
         ["sheriff", "A Cop with a guilty result. That's good enough for me."],
         ["v1", `${t.nameOf("mafioso")} it is.`],
       ], k);
-      t.guide(`The Sheriff believes you. Watch: in Frontier Justice the Sheriff often shoots a confirmed guilty instead of waiting on the lynch.`);
+      t.guide(`The Sheriff believes you. Watch: in Frontier Justice the Sheriff often shoots a confirmed guilty instead of waiting on the condemn.`);
       t.vote("sheriff", "Shoot Gun", "mafioso");
       await t.wait(t.timing.beat, k);
       t.guide(`${t.nameOf("mafioso")} was shot and flipped ${t.constructor.CAST.mafioso.role}: real Mafia. Your report was right.`);
@@ -151,7 +151,7 @@ module.exports = {
         ["lawyer", "This is ridiculous!"],
       ], k);
       t.guide(`The Sheriff is leading the town onto a second Mafia suspect. Vote with them.`);
-      await lynch(t, k, "lawyer", `In the Village box, vote ${t.nameOf("lawyer")}.`);
+      await condemn(t, k, "lawyer", `In the Village box, vote ${t.nameOf("lawyer")}.`);
     },
 
     async Night2(t, k) {
@@ -176,11 +176,11 @@ module.exports = {
       ], k);
       t.guide(`Because the Journalist was on you, they received your last report after you died: ${t.nameOf("janitor")} is GUILTY.`);
       t.guide(
-        `This is an autowin (the winner is already decided): two of the three Mafia are already dead (${t.nameOf("mafioso")} shot, ${t.nameOf("lawyer")} lynched), and your last report puts the third on ${t.nameOf("janitor")}. Lynching a confirmed guilty who is the last Mafia ends the game.`
+        `This is an autowin (the winner is already decided): two of the three Mafia are already dead (${t.nameOf("mafioso")} shot, ${t.nameOf("lawyer")} condemned), and your last report puts the third on ${t.nameOf("janitor")}. Condemning a confirmed guilty who is the last Mafia ends the game.`
       );
       // Dead Cop can't vote; town finishes it.
       await t.everyoneVotes("janitor", k, "Village", { fast: true });
-      await t.advance(k, "The town is lynching the last Mafia. Click Continue.");
+      await t.advance(k, "The town is condemning the last Mafia. Click Continue.");
     },
   },
 

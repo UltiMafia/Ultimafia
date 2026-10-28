@@ -1,6 +1,6 @@
 // JANITOR: set a jan code, clean a kill, then (on the common Villager clean)
-// fake-claim Cop with a guilty on the Lawyer. Cop is shot, you are lynched D1,
-// Sheriff dies N2, town lynches the confirmed Lawyer, final 3-way Mafioso wins.
+// fake-claim Cop with a guilty on the Lawyer. Cop is shot, you are condemned D1,
+// Sheriff dies N2, town condemns the confirmed Lawyer, final 3-way Mafioso wins.
 
 const CODE = {
   Villager: "nice weather",
@@ -162,11 +162,11 @@ module.exports = {
     },
 
     async Day2(t, k) {
-      // Main arc (villager clean, you got bussed): town lynches the Lawyer on the
+      // Main arc (villager clean, you got bussed): town condemns the Lawyer on the
       // Cop's old guilty. Other branches: just push a townie to tighten numbers.
       if (t.branch === "v1" && t.player("lawyer") && t.player("lawyer").alive) {
         t.guide(
-          `The Sheriff is dead. Town still has the Cop's guilty on ${t.nameOf("lawyer")} — they're about to lynch the confirmed Lawyer.`
+          `The Sheriff is dead. Town still has the Cop's guilty on ${t.nameOf("lawyer")} — they're about to condemn the confirmed Lawyer.`
         );
         await t.chat("Village", [
           ["v1", `Sheriff's gone. The Cop said ${t.nameOf("lawyer")} was guilty before dying.`],
@@ -180,7 +180,7 @@ module.exports = {
           (key) => t.player(key) && t.player(key).alive
         );
         if (push) {
-          t.guide(`Town is lost without clear info. They lynch ${t.nameOf(push)}.`);
+          t.guide(`Town is lost without clear info. They condemn ${t.nameOf(push)}.`);
           await t.everyoneVotes(push, k, "Village", {
             dissenters: { [push]: "mafioso" },
             fast: true,
@@ -210,7 +210,7 @@ module.exports = {
       );
       const push = townLeft[0];
       t.guide(
-        "This is a 3-way (or near it). Your Mafioso teammate will win it for Mafia — watch the last lynch."
+        "This is a 3-way (or near it). Your Mafioso teammate will win it for Mafia — watch the last condemn."
       );
       if (push) {
         await t.chat("Village", [
@@ -222,7 +222,7 @@ module.exports = {
           fast: true,
         });
       }
-      // If still not over (too many town left), keep lynching.
+      // If still not over (too many town left), keep condemning.
       await t.advance(k, "Click Continue to see the win.");
     },
 
@@ -255,10 +255,10 @@ module.exports = {
   epilogue: (t) => {
     const role = roleOf(t, t.data.victim);
     const what = {
-      v1: "The Sheriff shot the real Cop, the town lynched you (your team voted with them: bussing), the Sheriff died Night 2, town lynched the Lawyer on the Cop's guilty, and the Mafioso closed it out.",
+      v1: "The Sheriff shot the real Cop, the town condemned you (your team voted with them: bussing), the Sheriff died Night 2, town condemned the Lawyer on the Cop's guilty, and the Mafioso closed it out.",
       cop: "The Journalist was reading you and exposed your clean, so the Sheriff shot you. With the real Cop already gone, your teammates outlasted the town.",
-      journalist: "With the Journalist gone nobody could break the Cop tie, so the Sheriff shot the real Cop and the town lynched you. Your teammates finished the game.",
-      sheriff: "With no gun in town, the town lynched the real Cop instead of you, and your team took it from there.",
+      journalist: "With the Journalist gone nobody could break the Cop tie, so the Sheriff shot the real Cop and the town condemned you. Your teammates finished the game.",
+      sheriff: "With no gun in town, the town condemned the real Cop instead of you, and your team took it from there.",
     }[t.data.victim] || "Your teammates finished the game.";
     return [
       "The Mafia won.",
@@ -370,16 +370,16 @@ async function day1JannedVillager(t, k) {
   await t.wait(t.timing.beat, k);
   t.vote("sheriff", "Shoot Gun", "cop");
   await t.wait(t.timing.beat, k);
-  t.guide(`${t.nameOf("cop")} flipped Cop. Town knows you lied — they're lynching you. That's okay: you're about to be bussed.`);
+  t.guide(`${t.nameOf("cop")} flipped Cop. Town knows you lied — they're condemning you. That's okay: you're about to be bussed.`);
   await t.chat("Village", [
-    ["v3", `Real Cop!! Lynch ${t.human().name}!`],
+    ["v3", `Real Cop!! Condemn ${t.human().name}!`],
     ["v1", `Now.`],
     ["mafioso", `…yeah. ${t.human().name}.`],
     ["lawyer", "Agreed. Start with the liar."],
   ], k);
   await t.everyoneVotes("janitor", k);
   t.data.diedDay1 = true;
-  await t.advance(k, "You've been lynched. Click Continue to watch the rest — system narration will keep teaching.");
+  await t.advance(k, "You've been condemned. Click Continue to watch the rest — system narration will keep teaching.");
 }
 
 async function day1JannedCop(t, k) {
@@ -405,7 +405,7 @@ async function day1JannedJournalist(t, k) {
   ], k);
   t.vote("sheriff", "Shoot Gun", "cop");
   await t.wait(t.timing.beat, k);
-  t.guide("Sheriff shot the real Cop. Town will lynch you next.");
+  t.guide("Sheriff shot the real Cop. Town will condemn you next.");
   await t.everyoneVotes("janitor", k);
   t.data.diedDay1 = true;
   await t.advance(k, "Click Continue.");
@@ -416,8 +416,8 @@ async function day1JannedSheriff(t, k) {
   await claimFakeCopOnLawyer(t, k);
   await t.chat("Village", [
     ["cop", `I'm the real Cop!`],
-    ["v1", "No Sheriff. We have to lynch a Cop claim."],
-    ["lawyer", `Lynch ${t.nameOf("cop")}.`],
+    ["v1", "No Sheriff. We have to condemn a Cop claim."],
+    ["lawyer", `Condemn ${t.nameOf("cop")}.`],
     ["mafioso", t.nameOf("cop")],
   ], k);
   await t.everyoneVotes("cop", k);
