@@ -9,11 +9,107 @@ const redis = require("./redis");
 const constants = require("../data/constants");
 const utils = require("../routes/utils");
 const blocks = require("./blocks");
+const dmGate = require("./dmGate");
+const { addSocket, removeSocket } = require("./socketGroup");
 
 const port = process.env.CHAT_PORT;
 const server = new sockets.SocketServer(port);
+// users[userId] and channelMembers[channelId][userId] are SocketGroups: a
+// user can have several chat sockets open (tabs, or the homepage chatbox and
+// the floating DM window together), each with its own current channel.
 const users = {};
 const channelMembers = {};
+
+function leaveCurrentChannel(channelId, userId, socket) {
+  if (channelId && channelMembers[channelId])
+    removeSocket(channelMembers[channelId], userId, socket);
+}
+
+// DMs are refused while the user is alive in a running ranked/competitive
+// game (modules/dmGate.js). Sends "dmLocked" so clients can show why.
+// A DM whose other members are all moderators stays open, as it did under
+// the old privateChat lock, so a player can still reach a mod mid-game.
+async function refuseIfDmLocked(socket, userId, memberIds) {
+  const access = await dmGate.getDmAccess(userId);
+  if (!access.locked) return false;
+  if (memberIds && (await onlyModsBesides(memberIds, userId))) return false;
+  socket.send("dmLocked", { message: access.message, gameId: access.gameId });
+  return true;
+}
+
+// Member fields DM clients get: enough for names and avatars, nothing else
+// (sendMessage populates blockedUsers/settings for its own checks).
+function publicMembers(members) {
+  return (members || []).map((m) => ({ id: m.id, name: m.name, avatar: m.avatar }));
+}
+
+// A DM channel as clients see it, with the last-message preview the floating
+// DM window lists conversations by.
+function directForClient(channel, lastMessage) {
+  const json = channel.toJSON ? channel.toJSON() : { ...channel };
+  return {
+    ...json,
+    members: publicMembers(json.members),
+    memberIds: undefined,
+    lastMessage: lastMessage || null,
+  };
+}
+
+function previewOf(message) {
+  if (!message) return null;
+  return {
+    content: String(message.content || "").slice(0, 120),
+    senderId: message.senderId || (message.sender && message.sender.id),
+    date: message.date,
+  };
+}
+
+// Newest message of each channel, keyed by channel id.
+async function lastMessagesFor(channelIds) {
+  const out = {};
+  if (!channelIds.length) return out;
+  const rows = await models.ChatMessage.aggregate([
+    { $match: { channel: { $in: channelIds } } },
+    { $sort: { date: -1 } },
+    {
+      $group: {
+        _id: "$channel",
+        content: { $first: "$content" },
+        senderId: { $first: "$senderId" },
+        date: { $first: "$date" },
+      },
+    },
+  ]);
+  for (const row of rows) out[row._id] = previewOf(row);
+  return out;
+}
+
+// DMs render the sender's own custom emotes and stickers (":name:" codes),
+// the same maps game chat uses (user settings, remapped by redis.cacheUserInfo).
+// Only for DMs, so public room messages stay small.
+async function addSenderEmotes(sender, cache) {
+  if (!sender || !sender.id) return sender;
+  let maps = cache && cache.get(sender.id);
+  if (!maps) {
+    try {
+      maps = await redis.getUserCustomEmotes(sender.id);
+    } catch (e) {
+      logger.error(e);
+      maps = { customEmotes: {}, customStickers: {} };
+    }
+    if (cache) cache.set(sender.id, maps);
+  }
+  sender.customEmotes = maps.customEmotes;
+  sender.customStickers = maps.customStickers;
+  return sender;
+}
+
+async function onlyModsBesides(memberIds, userId) {
+  const others = (memberIds || []).filter((id) => id != userId);
+  if (others.length === 0) return false;
+  const modIds = await utils.getModIds();
+  return others.every((id) => modIds.indexOf(id) != -1);
+}
 
 (async function () {
   try {
@@ -44,7 +140,7 @@ const channelMembers = {};
 
             if (!user) return;
 
-            users[user.id] = socket;
+            addSocket(users, user.id, socket);
             sendChatInfo(userId, socket);
           } catch (e) {
             logger.error(e);
@@ -70,18 +166,30 @@ const channelMembers = {};
 
             if (!channel) return;
 
+            if (!channel.public) {
+              if (channel.memberIds.indexOf(user.id) == -1) return;
+              if (await refuseIfDmLocked(socket, user.id, channel.memberIds)) {
+                leaveCurrentChannel(currentChannel, user.id, socket);
+                currentChannel = null;
+                return;
+              }
+            }
+
             var messages = await models.ChatMessage.find({ channel: channelId })
               .select("id senderId sender date channel content -_id")
               .populate("sender", "id -_id")
               .sort("-date")
               .limit(constants.chatMessagesPerLoad);
 
+            const emoteCache = new Map();
             for (let i in messages) {
               let message = messages[i].toJSON();
               message.sender = await redis.getBasicUserInfo(
                 message.sender.id,
                 true
               );
+              if (!channel.public)
+                await addSenderEmotes(message.sender, emoteCache);
               messages[i] = message;
             }
 
@@ -93,12 +201,12 @@ const channelMembers = {};
               messages: messages.reverse(),
             });
 
-            if (currentChannel) delete channelMembers[currentChannel][user.id];
+            leaveCurrentChannel(currentChannel, user.id, socket);
 
             if (!channelMembers[channelId]) channelMembers[channelId] = {};
 
             currentChannel = channelId;
-            channelMembers[channelId][user.id] = socket;
+            addSocket(channelMembers[channelId], user.id, socket);
           } catch (e) {
             logger.error(e);
           }
@@ -114,9 +222,14 @@ const channelMembers = {};
             var channel = await models.ChatChannel.findOne({
               id: currentChannel,
               rank: { $lte: permInfo.rank },
-            }).select("_id");
+            }).select("_id public memberIds");
 
             if (!channel) return;
+            if (
+              !channel.public &&
+              (await refuseIfDmLocked(socket, user.id, channel.memberIds))
+            )
+              return;
 
             var messages = await models.ChatMessage.find({
               channel: currentChannel,
@@ -127,12 +240,15 @@ const channelMembers = {};
               .sort("-date")
               .limit(constants.chatMessagesPerLoad);
 
+            const emoteCache = new Map();
             for (let i in messages) {
               let message = messages[i].toJSON();
               message.sender = await redis.getBasicUserInfo(
                 message.sender.id,
                 true
               );
+              if (!channel.public)
+                await addSenderEmotes(message.sender, emoteCache);
               messages[i] = message;
             }
 
@@ -154,7 +270,7 @@ const channelMembers = {};
               rank: { $lte: permInfo.rank },
             })
               .select("id public memberIds members lastMessageDate -_id")
-              .populate("members", "id name blockedUsers settings -_id");
+              .populate("members", "id name avatar blockedUsers settings -_id");
 
             if (!channel) return;
             else if (channel.public && !permInfo.perms.publicChat) {
@@ -163,7 +279,7 @@ const channelMembers = {};
             } else if (
               !channel.public &&
               (channel.memberIds.indexOf(user.id) == -1 ||
-                !permInfo.perms.privateChat)
+                !(await dmGate.hasPrivateChat(user.id, permInfo)))
             ) {
               var allowed = !(channel.memberIds.indexOf(user.id) == -1);
 
@@ -183,6 +299,11 @@ const channelMembers = {};
                 socket.send("error", "You are unable to use private chat.");
                 return;
               }
+            } else if (
+              !channel.public &&
+              (await refuseIfDmLocked(socket, user.id, channel.memberIds))
+            ) {
+              return;
             } else if (!(await utils.rateLimit(user.id, "sendChatMessage"))) {
               socket.send("error", "You are chatting too quickly.");
               return;
@@ -229,9 +350,14 @@ const channelMembers = {};
 
             message = message.toJSON();
             message.sender = user;
+            if (!channel.public) {
+              // A copy: `user` is this socket's own session info.
+              message.sender = { ...user };
+              await addSenderEmotes(message.sender);
+            }
             delete message._id;
 
-            broadcastMessage(message, channel);
+            await broadcastMessage(message, channel);
 
             await models.ChatChannel.updateOne(
               { id: currentChannel },
@@ -286,9 +412,8 @@ const channelMembers = {};
                 if (users[memberId]) {
                   users[memberId].send("newDirectChannel", {
                     channel: {
-                      ...channel.toJSON(),
+                      ...directForClient(channel, previewOf(message)),
                       lastMessageDate: Date.now(),
-                      memberIds: undefined,
                     },
                     focus: false,
                   });
@@ -357,10 +482,11 @@ const channelMembers = {};
             }).select("id name");
 
             var userIds = users.map((user) => user.id);
+            if (await refuseIfDmLocked(socket, user.id, userIds)) return;
             var channelId = userIdsToChannelId(userIds);
             var channel = await models.ChatChannel.findOne({ id: channelId })
               .select("id public memberIds members lastMessageDate -_id")
-              .populate("members", "id name -_id");
+              .populate("members", "id name avatar -_id");
 
             if (channel) {
               var channelOpen = await models.ChannelOpen.findOne({
@@ -380,7 +506,10 @@ const channelMembers = {};
               await channelOpen.save();
 
               socket.send("newDirectChannel", {
-                channel: { ...channel.toJSON(), memberIds: undefined },
+                channel: directForClient(
+                  channel,
+                  (await lastMessagesFor([channelId]))[channelId]
+                ),
                 focus: true,
               });
               return;
@@ -416,10 +545,10 @@ const channelMembers = {};
 
             channel = await models.ChatChannel.findOne({ id: channelId })
               .select("id public memberIds members lastMessageDate -_id")
-              .populate("members", "id name -_id");
+              .populate("members", "id name avatar -_id");
 
             socket.send("newDirectChannel", {
-              channel: { ...channel.toJSON(), memberIds: undefined },
+              channel: directForClient(channel, null),
               focus: true,
             });
           } catch (e) {
@@ -456,10 +585,14 @@ const channelMembers = {};
           try {
             if (!user) return;
 
+            channelId = String(channelId);
             await models.Notification.deleteMany({
               user: user.id,
               channelId,
             }).exec();
+            // Clear the badge in the user's other chat windows too.
+            if (users[user.id])
+              users[user.id].sendExcept(socket, "notifsRead", channelId);
           } catch (e) {
             logger.error(e);
           }
@@ -483,6 +616,7 @@ const channelMembers = {};
 
             await models.ChatMessage.deleteOne({ id: messageId }).exec();
             broadcastDeletion(messageId, message.channel);
+            await sendPreviewUpdate(message.channel);
           } catch (e) {
             logger.error(e);
           }
@@ -492,7 +626,8 @@ const channelMembers = {};
           try {
             if (!user) return;
 
-            if (currentChannel) delete channelMembers[currentChannel][user.id];
+            leaveCurrentChannel(currentChannel, user.id, socket);
+            currentChannel = null;
           } catch (e) {
             logger.error(e);
           }
@@ -502,9 +637,8 @@ const channelMembers = {};
           try {
             if (!user) return;
 
-            delete users[user.id];
-
-            if (currentChannel) delete channelMembers[currentChannel][user.id];
+            removeSocket(users, user.id, socket);
+            leaveCurrentChannel(currentChannel, user.id, socket);
           } catch (e) {
             logger.error(e);
           }
@@ -531,7 +665,7 @@ async function sendChatInfo(userId, socket) {
       select: "id public memberIds members lastMessageDate -_id",
       populate: {
         path: "members",
-        select: "id name -_id",
+        select: "id name avatar -_id",
       },
     });
   var notifs = await models.Notification.find({
@@ -540,9 +674,20 @@ async function sendChatInfo(userId, socket) {
   }).select("channelId");
   var users = await redis.getOnlineUsersInfo(constants.chatUserOnlineAmt);
 
+  // Last-message previews, left out while DMs are locked for this user.
+  var previews = {};
+  try {
+    if (!(await dmGate.getDmAccess(userId)).locked)
+      previews = await lastMessagesFor(
+        directs.filter((info) => info.channel).map((info) => info.channel.id)
+      );
+  } catch (e) {
+    logger.error(e);
+  }
+
   directs = directs.reduce((directs, info) => {
     if (info.channel)
-      directs.push({ ...info.channel.toJSON(), memberIds: undefined });
+      directs.push(directForClient(info.channel, previews[info.channel.id]));
 
     return directs;
   }, []);
@@ -550,21 +695,64 @@ async function sendChatInfo(userId, socket) {
   socket.send("chatInfo", { rooms, directs, users, notifs });
 }
 
-function broadcastMessage(message, channel) {
+async function broadcastMessage(message, channel) {
   var members = channelMembers[message.channel] || {};
 
-  for (let memberId in members)
-    members[memberId].send("message", { ...message, senderId: undefined });
+  for (let memberId in members) {
+    // A DM member who had the channel open before their game started does
+    // not keep receiving it while locked.
+    if (!channel.public && memberId != message.sender.id) {
+      try {
+        if (
+          (await dmGate.getDmAccess(memberId)).locked &&
+          !(await onlyModsBesides(channel.memberIds, memberId))
+        )
+          continue;
+      } catch (e) {
+        logger.error(e);
+      }
+    }
+    if (members[memberId])
+      members[memberId].send("message", { ...message, senderId: undefined });
+  }
 
   members = channel.members;
 
+  // dateUpdate reorders every member's conversation list; DM members also
+  // get the preview, unless their DMs are locked right now.
   if (members)
-    for (let member of members)
-      if (users[member.id])
-        users[member.id].send("dateUpdate", {
-          channel: channel.id,
-          date: message.date,
-        });
+    for (let member of members) {
+      if (!users[member.id]) continue;
+      const update = { channel: channel.id, date: message.date };
+      if (!channel.public) {
+        let locked = false;
+        if (member.id != message.sender.id) {
+          try {
+            locked = (await dmGate.getDmAccess(member.id)).locked;
+          } catch (e) {
+            logger.error(e);
+          }
+        }
+        if (!locked) update.lastMessage = previewOf(message);
+      }
+      if (users[member.id]) users[member.id].send("dateUpdate", update);
+    }
+}
+
+// After a DM message is deleted, members' conversation lists show the
+// message before it (or nothing).
+async function sendPreviewUpdate(channelId) {
+  const channel = await models.ChatChannel.findOne({ id: channelId }).select(
+    "public memberIds"
+  );
+  if (!channel || channel.public) return;
+  const lastMessage = (await lastMessagesFor([channelId]))[channelId] || null;
+  for (const memberId of channel.memberIds) {
+    if (!users[memberId]) continue;
+    if ((await dmGate.getDmAccess(memberId)).locked) continue;
+    if (users[memberId])
+      users[memberId].send("previewUpdate", { channel: channelId, lastMessage });
+  }
 }
 
 function broadcastDeletion(messageId, channelId) {

@@ -583,7 +583,7 @@ module.exports = class MafiaGame extends Game {
   }
 
   isMustCondemn() {
-    // Town is not forced to lynch on stalemate; meteor is the penalty.
+    // Town is not forced to condemn on stalemate; meteor is the penalty.
     return super.isMustCondemn();
   }
 

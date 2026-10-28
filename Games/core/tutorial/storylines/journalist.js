@@ -1,6 +1,6 @@
 // JOURNALIST: break a Cop counterclaim, then after the Cop dies Night 2 you
 // alone hold their last report. Share it correctly on the next day or town
-// lynches you and loses.
+// condemns you and loses.
 
 const CLAIM_REACTIONS = {
   wrongRole: [
@@ -44,7 +44,7 @@ function mafiaKill(t, target, clean) {
   if (t.player("lawyer") && t.player("lawyer").alive) t.vote("lawyer", "Litigate", "*");
 }
 
-async function lynch(t, k, target, text) {
+async function condemn(t, k, target, text) {
   await t.expectVote("Village", target, {
     token: k,
     text: text || `Vote ${t.nameOf(target)} in the Village box.`,
@@ -134,7 +134,7 @@ module.exports = {
       if (t.branch === "cop") await copDay1(t, k);
       else await janitorDay1(t, k);
       await t.chat("Village", [["cop", `Told you. And ${t.nameOf("mafioso")} is still guilty.`], ["mafioso", "This is a setup!"]], k);
-      await lynch(t, k, "mafioso", `With ${t.nameOf("janitor")} exposed, ${t.nameOf("cop")}'s guilty on ${t.nameOf("mafioso")} stands. Vote ${t.nameOf("mafioso")}.`);
+      await condemn(t, k, "mafioso", `With ${t.nameOf("janitor")} exposed, ${t.nameOf("cop")}'s guilty on ${t.nameOf("mafioso")} stands. Vote ${t.nameOf("mafioso")}.`);
     },
 
     async Night2(t, k) {
@@ -177,7 +177,7 @@ module.exports = {
         token: k,
         meeting: "Village",
         expect: { role: "journalist", target: "lawyer", verdict: "guilty" },
-        text: `Claim Journalist and say ${t.nameOf("lawyer")} is guilty (the Cop's last report). Get this wrong and town lynches you.`,
+        text: `Claim Journalist and say ${t.nameOf("lawyer")} is guilty (the Cop's last report). Get this wrong and town condemns you.`,
         example: `I'm the Journalist. I was on ${t.nameOf("cop")}: their last check was ${t.nameOf("lawyer")}, GUILTY.`,
         reactions: CLAIM_REACTIONS,
         hints: claimHints(t, t.nameOf("lawyer")),
@@ -195,7 +195,7 @@ module.exports = {
               reactions: [
                 ["v1", "WHAT? I'm town!"],
                 ["sheriff", "That doesn't match anything. {name} is throwing."],
-                ["lawyer", `Lynch the fake Journalist. ${t.human().name} has to go.`],
+                ["lawyer", `Condemn the fake Journalist. ${t.human().name} has to go.`],
                 ["v3", `Yeah, ${t.human().name}.`],
               ],
               consequence: async (t, k) => {
@@ -204,7 +204,7 @@ module.exports = {
               },
               fatal: true,
               lesson:
-                "Town lynched you and lost. When the Cop dies, their last report is often the only path to the remaining Mafia — share it exactly (right name, guilty). A wrong report makes you look like Mafia.",
+                "Town condemned you and lost. When the Cop dies, their last report is often the only path to the remaining Mafia — share it exactly (right name, guilty). A wrong report makes you look like Mafia.",
             },
           },
         ],
@@ -214,13 +214,13 @@ module.exports = {
         ["v1", `${t.nameOf("lawyer")} it is.`],
       ], k);
       t.guide("You carried the Cop's report after they died. That's the Journalist's job on the day the Cop is gone.");
-      await lynch(t, k, "lawyer", `Finish it: vote ${t.nameOf("lawyer")}.`);
+      await condemn(t, k, "lawyer", `Finish it: vote ${t.nameOf("lawyer")}.`);
     },
   },
 
   epilogue: (t) => [
     "The town won!",
-    "Lesson: when the Cop dies, a Journalist who was reading them still has the last report. Share it clearly on the next day — a wrong claim gets you lynched and can lose the game.",
+    "Lesson: when the Cop dies, a Journalist who was reading them still has the last report. Share it clearly on the next day — a wrong claim gets you condemned and can lose the game.",
   ],
 };
 

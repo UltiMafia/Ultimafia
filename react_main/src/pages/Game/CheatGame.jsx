@@ -101,7 +101,7 @@ export default function CheatGame() {
   }, []);
 
   useSocketListeners((socket) => {
-    socket.on("state", () => {
+    socket.on("state", (state) => {
       const bell = nextStateBell(playBellRef.current, state);
       playBellRef.current = bell.lastId;
       if (bell.ring) game.playAudio("ping");

@@ -25,7 +25,7 @@ module.exports = class GovernatorFlip extends Achievements {
           labels: ["hidden", "absolute"],
           achievement: this,
           run: function () {
-            let preventedBadLynch = false;
+            let preventedBadCondemn = false;
             for (let action of this.game.actions[0]) {
               if (
                 action.hasLabel("condemn") &&
@@ -34,11 +34,11 @@ module.exports = class GovernatorFlip extends Achievements {
                 action.target.role &&
                 !action.target.isEvil(true)
               ) {
-                preventedBadLynch = true;
+                preventedBadCondemn = true;
                 break;
               }
             }
-            if (!preventedBadLynch) {
+            if (!preventedBadCondemn) {
               return;
             }
             for (let action of this.game.actions[0]) {

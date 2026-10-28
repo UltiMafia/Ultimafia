@@ -257,6 +257,15 @@ html[data-keyboard="open"] .game .meeting-tabs {
   font-style: italic;
 }
 
+.game .message.mention {
+  box-shadow: inset 4px 0 rgba(200, 160, 0, 0.6);
+  background-color: rgba(200, 160, 0, 0.1);
+}
+
+.game .message.mention:hover {
+  background-color: rgba(100, 80, 0, 0.15);
+}
+
 /* Spectator chat shown inline in the game chat (only spectators get it). */
 .game .message.spectator-chat {
   border-left: 2px solid rgba(128, 128, 128, 0.6);

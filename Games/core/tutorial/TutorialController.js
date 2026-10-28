@@ -39,7 +39,7 @@ const WALKTHROUGH = {
   ],
   day: [
     ["chat", "Daytime: everyone talks in the town chat. Type in the chat box at the bottom. That's where you claim your role and share info."],
-    ["actions", "The Village box in Actions is the lynch vote. Whoever has the most votes when the day ends is lynched. You can change your vote until then."],
+    ["actions", "The Village box in Actions is the condemn vote. Whoever has the most votes when the day ends is condemned. You can change your vote until then."],
   ],
 };
 
@@ -470,7 +470,7 @@ class TutorialController {
     }
   }
 
-  // Every living bot casts a Village (or other) vote before the lynch
+  // Every living bot casts a Village (or other) vote before the condemn
   // proceeds, including the player being condemned. dissenters: { key: otherTarget }
   // lets a few vote elsewhere for flavor; everyone still votes.
   async everyoneVotes(target, token, meetingName = "Village", { fast = false, dissenters = {} } = {}) {

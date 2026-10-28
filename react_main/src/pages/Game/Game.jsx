@@ -143,6 +143,7 @@ import UrgencyOverlay from "./components/UrgencyOverlay";
 import ReadyCheckDialog from "./components/ReadyCheck";
 import PushNotificationPrompt from "./components/PushNotificationPrompt";
 import { releaseSubscription } from "utils/pushNotifications";
+import { buildQuotePayload, findMessageState } from "utils/messageQuote";
 import RoleMarkerToggle from "./components/RoleMarkerToggle";
 import { playerNameWithAvatarProps } from "./playerDisplay";
 import {
@@ -164,6 +165,7 @@ const emoteMap = {
 const NO_ONE_NAME = "no one";
 const MAGUS_NAME = "Declare Magus Game";
 const UNKNOWN_NAME = "???";
+const EVERYONE_PING = "@every";
 
 function getOrderedPlayers(players) {
   return Object.values(players)
@@ -185,6 +187,10 @@ function getOrderedPlayers(players) {
       return a.index - b.index;
     })
     .map(({ player }) => player);
+}
+
+function parsePings(content) {
+  return content.match(/@[\w-]*/gm) || [];
 }
 
 export const GameTypeContext = createContext({
@@ -223,6 +229,9 @@ export default function Game(props) {
   const [options, setOptions] = useState({});
   const [emojis, setEmojis] = useState({});
   const [history, updateHistory] = useHistoryReducer();
+  // Read by stable callbacks (quoting) without re-rendering every message.
+  const historyRef = useRef(history);
+  historyRef.current = history;
   const [stateViewing, updateStateViewing] = useStateViewingReducer(history);
   const [players, updatePlayers] = usePlayersReducer();
   const [spectators, setSpectators] = useState();
@@ -414,12 +423,15 @@ export default function Game(props) {
           gameType: gameType,
           setup: setup.id,
           lobby: options.lobby,
-          lobbyName: options.lobbyName,
+          // A default "<host>'s lobby" name becomes the rehoster's default.
+          lobbyName:
+            options.lobbyNameCustom === false ? undefined : options.lobbyName,
           private: options.private,
           spectating: options.spectating,
           guests: options.guests,
-          ranked: options.ranked,
-          competitive: options.competitive,
+          // As the host set them, not as a leaver left them.
+          ranked: options.originalRanked ?? options.ranked,
+          competitive: options.originalCompetitive ?? options.competitive,
           readyCheck: options.readyCheck,
           noVeg: options.noVeg,
           anonymousGame: options.anonymousGame,
@@ -646,7 +658,14 @@ export default function Game(props) {
     } else {
       updatePersistentGameData({
         type: "addPinnedMessage",
-        message: message,
+        message: {
+          ...message,
+          fromState: findMessageState(
+            historyRef.current,
+            message,
+            message.fromState
+          ),
+        },
       });
     }
   }, [isMessagePinned]);
@@ -1121,15 +1140,15 @@ export default function Game(props) {
         message,
       });
 
-      const pings = message.content.match(/@[\w-]*/gm) || [];
-
+      const pings = parsePings(message.content);
       const iWasPinged =
         pings.indexOf("@" + playersRef?.current?.[selfRef?.current]?.name) !==
         -1;
+
       if (
         selfRef.current &&
         playersRef.current[selfRef.current] &&
-        (iWasPinged || pings.some((p) => p.startsWith("@every")))
+        (iWasPinged || pings.some((p) => p.startsWith(EVERYONE_PING)))
       ) {
         playAudio("ping");
         if (iWasPinged) {
@@ -1377,21 +1396,16 @@ export default function Game(props) {
   }
 
   const quoteMeetingId = history.states[history.currentState]?.selTab;
+  // Pinned rows show a stored copy while the current state is on screen, so
+  // the quote has to find the state the original was sent in.
   const onMessageQuote = useCallback((message) => {
-    if (
-      !review &&
-      message.senderId !== "server" &&
-      !message.isQuote &&
-      message.quotable
-    ) {
-      socket.send("quote", {
-        messageId: message.id,
-        toMeetingId: quoteMeetingId,
-        fromMeetingId: message.meetingId,
-        fromState: message.fromState ? message.fromState : stateViewing,
-        messageContent: message.content,
-      });
-    }
+    const quote = buildQuotePayload(message, {
+      review,
+      toMeetingId: quoteMeetingId,
+      history: historyRef.current,
+      stateViewing,
+    });
+    if (quote) socket.send("quote", quote);
   }, [review, socket, quoteMeetingId, stateViewing]);
 
   function getSetupGameSetting(gameSetting) {
@@ -2085,63 +2099,68 @@ function getDefaultSpeechMeetingId(speechMeetings) {
 
 const EMPTY_CHAT_STATE = { meetings: {}, alerts: [], obituaries: {} };
 
-// Pregame "Join open seat" / "Spectate" button. It sits in the chat footer,
-// above the speech input, on every device (compact on a phone). It must stay
-// inside the game layout: the game session is a fixed, viewport-sized box, so
-// anything rendered after the game Stack is off screen and cannot be scrolled to.
-export function PregameSeatActions({ compact = false }) {
+// Pregame seat actions ("Join open seat" and "Spectate") which sits
+// above the chat box on mobile and sits in the player list on desktop
+export function PregameSeatActions() {
+  const isPhoneDevice = useIsPhoneDevice();
   const { review, history, isSpectator, socket, options, gameId } =
     useContext(GameContext);
-
   const action = pregameSeatAction({ review, history, isSpectator, options });
   if (!action) return null;
   const showJoin = action === "join";
 
+  const sx = isPhoneDevice ? {
+      display: "flex",
+      flexShrink: 0,
+      width: "100%",
+      boxSizing: "border-box",
+      px: 1.25,
+      py: 0.5,
+      py: 0.5,
+  } : {
+      display: "flex",
+      flexShrink: 0,
+      boxSizing: "border-box",
+      px: 1.25,
+      py: 0.5,
+      py: 0.5,
+  };
+
   return (
     <Box
-      sx={
-        compact
-          ? {
-              display: "flex",
-              flexShrink: 0,
-              width: "100%",
-              boxSizing: "border-box",
-              px: 1.25,
-              py: 0.5,
-            }
-          : { display: "flex", justifyContent: "center", p: 1 }
-      }
+      sx={sx}
     >
-      {showJoin ? (
-        <Button
-          variant="contained"
-          fullWidth={compact}
-          size={compact ? "small" : "medium"}
-          onClick={() => {
-            if (socket && socket.on) socket.send("takeSeat");
-          }}
-        >
-          Join open seat
-        </Button>
-      ) : (
-        <Button
-          variant="outlined"
-          fullWidth={compact}
-          size={compact ? "small" : "medium"}
-          onClick={() => {
-            window.location.assign(`/game/${gameId}?spectate=true`);
-          }}
-        >
-          Spectate
-        </Button>
-      )}
+    {showJoin ? (
+      <Button
+        variant="contained"
+        fullWidth={true}
+        size={"small"}
+        onClick={() => {
+          if (socket && socket.on) socket.send("takeSeat");
+        }}
+      >
+      Join open seat
+      </Button>
+    ) : (
+      <Button
+        variant="outlined"
+        fullWidth={true}
+        size={"small"}
+        onClick={() => {
+          window.location.assign(`/game/${gameId}?spectate=true`);
+        }}
+      >
+      Spectate
+      </Button>
+    )}
     </Box>
   );
 }
 
-// seatActions: false for a second chat shown at the same time (some board
-// games show the chat in the board panel during pregame), so the button
-// appears once.
+// When seatActions is false, the join spectators/players button is hidden on mobile.
+// This is needed because some minigames show the chat in the board panel
+// during pregame, so without setting seatActions to false, the button
+// would appear twice.
 export function TextMeetingLayout({ seatActions = true } = {}) {
   const game = useContext(GameContext);
   const isPhoneDevice = useIsPhoneDevice();
@@ -2320,6 +2339,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           review={game.review}
           history={history}
           players={players}
+          self={game.self}
           spectators={spectators}
           stateViewing={
             singleState && !message.obituaries && !message.winners
@@ -2357,6 +2377,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     game.onMessageQuote,
     game.onPinMessage,
     game.isMessagePinned,
+    game.self,
   ]);
 
   // Typing and unrelated game updates must not repeatedly measure the entire
@@ -2484,7 +2505,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
               {newMessageCount} new message{newMessageCount === 1 ? "" : "s"}
             </button>
           )}
-          {seatActions && <PregameSeatActions compact={isPhoneDevice} />}
+          {(seatActions && isPhoneDevice) && <PregameSeatActions />}
           <KudosDock onResize={doAutoScroll} />
           {canSpeak && (
             <SpeechInput
@@ -2774,6 +2795,14 @@ export function rowStateClass(stateViewing) {
 function Message(props) {
   const { history, isMessagePinned, meetingState, ...rowProps } = props;
   const { message, stateViewing } = props;
+
+  let iWasPinged = false;
+  if (message.content && props.settings.highlightMentions) {
+    const pings = parsePings(message.content);
+    iWasPinged =
+          pings.indexOf("@" + props.players?.[props.self]?.name) !== -1 || pings.some((p) => p.startsWith(EVERYONE_PING));
+  }
+
   if (message.obituaries && props.settings.legacyObituaries) {
     return legacyObituaryMessages(message).map((alert) => (
       <Message
@@ -2791,6 +2820,7 @@ function Message(props) {
   return (
     <MessageRow
       {...rowProps}
+      iWasPinged={iWasPinged}
       pinned={isMessagePinned(message)}
       meetingName={history.states[nameState]?.meetings?.[message.meetingId]?.name}
       quoteState={message.isQuote ? history.states[message.fromState] : undefined}
@@ -3064,9 +3094,13 @@ const MessageRow = React.memo(function MessageRow(props) {
     ? "nameplate-aligned"
     : "nameplate";
 
+  let className = "message";
+  if (message.spectatorChat) className += " spectator-chat";
+  else if (props.iWasPinged) className += " mention";
+  
   return (
     <div
-      className={message.spectatorChat ? "message spectator-chat" : "message"}
+      className={className}
       onDoubleClick={() => props.onMessageQuote(message)}
       style={messageStyle}
       onMouseEnter={messageOnMouseEnter}
@@ -4122,6 +4156,7 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
 }
 
 export function PlayerList(props) {
+  const isPhoneDevice = useIsPhoneDevice();
   const { renderMarker, renderRowEnd } = props;
   const game = useContext(GameContext);
 
@@ -4162,6 +4197,7 @@ export function PlayerList(props) {
           />
         </Tooltip>
       )}
+      {!isPhoneDevice && <PregameSeatActions />}
       <Box sx={{ marginLeft: "auto !important" }}>
         <PlayerCount
           game={game}
@@ -5940,6 +5976,12 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
       value: settings.legacyObituaries,
     },
     {
+      label: "Highlight Mentions",
+      ref: "highlightMentions",
+      type: "boolean",
+      value: settings.highlightMentions,
+    },
+    {
       label: "Voting Log",
       ref: "votingLog",
       type: "boolean",
@@ -6337,6 +6379,7 @@ export function PinnedMessages() {
         review={game.review}
         history={game.history}
         players={game.players}
+        self={game.self}
         spectators={game.spectators}
         stateViewing={game.stateViewing}
         key={message.id || message.messageId + message.time || i}
@@ -6967,6 +7010,7 @@ export function useSettingsReducer() {
     roleMentions: true,
     messageLayout: "default",
     legacyObituaries: false,
+    highlightMentions: true,
   };
 
   function clampVolume(value, fallback = 1) {
