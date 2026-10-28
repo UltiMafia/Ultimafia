@@ -19,6 +19,8 @@ module.exports = class Message {
     // Chat text effect ("wave", ...). Set only by the server for owners of
     // Advanced Text Effects; content itself is always the plain text.
     this.textEffect = info.textEffect;
+    // Id of the quote this message replies to (sent right before it).
+    this.replyTo = info.replyTo;
     this.anonymous = info.anonymous;
     this.versions = {};
     this.timeSent = info.timeSent;
@@ -167,6 +169,7 @@ module.exports = class Message {
       extraStyle: version.extraStyle,
       tags: version.tags,
       textEffect: textEffect || undefined,
+      replyTo: version.replyTo || undefined,
     };
   }
 };

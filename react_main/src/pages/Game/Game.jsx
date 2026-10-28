@@ -143,6 +143,16 @@ import UrgencyOverlay from "./components/UrgencyOverlay";
 import ReadyCheckDialog from "./components/ReadyCheck";
 import PushNotificationPrompt from "./components/PushNotificationPrompt";
 import { releaseSubscription } from "utils/pushNotifications";
+import {
+  buildReplyPayload,
+  canReplyTo,
+  describeQuotedMessage,
+  findMessageRow,
+  handleGameEscape,
+  makeReplyTarget,
+  pairReplies,
+  showPinButton,
+} from "utils/messageReply";
 import { buildQuotePayload, findMessageState } from "utils/messageQuote";
 import RoleMarkerToggle from "./components/RoleMarkerToggle";
 import { playerNameWithAvatarProps } from "./playerDisplay";
@@ -502,15 +512,26 @@ export default function Game(props) {
     setLeaveDialogOpen(false);
   }
 
+  // Message the next chat line replies to (shown above the chat box). The ref
+  // lets the window Escape handler see the current value.
+  const [replyTarget, setReplyTarget] = useState(null);
+  const replyTargetRef = useRef(replyTarget);
+  replyTargetRef.current = replyTarget;
+
   useEffect(() => {
     // Only the visible session reacts to Escape. A session retained while the
     // user browses another page must not capture the key.
     if (!active) return;
 
+    // A pending reply takes Escape first: it cancels the reply and the
+    // leave dialog stays closed. The chat box has no Escape handler of its
+    // own, so this is the one place Escape is handled.
     function handleKeyDown(e) {
-      if (e.key === "Escape") {
-        onLeaveGameClick();
-      }
+      handleGameEscape(e, {
+        replyPending: Boolean(replyTargetRef.current),
+        cancelReply: () => setReplyTarget(null),
+        leave: onLeaveGameClick,
+      });
     }
 
     window.addEventListener("keydown", handleKeyDown);
@@ -1396,6 +1417,11 @@ export default function Game(props) {
   }
 
   const quoteMeetingId = history.states[history.currentState]?.selTab;
+  const onMessageReply = useCallback((message) => {
+    if (!canReplyTo(message, { review, stateViewing })) return;
+    setReplyTarget(makeReplyTarget(message, stateViewing));
+    document.getElementById("speechInput")?.focus();
+  }, [review, stateViewing]);
   // Pinned rows show a stored copy while the current state is on screen, so
   // the quote has to find the state the original was sent in.
   const onMessageQuote = useCallback((message) => {
@@ -1473,6 +1499,9 @@ export default function Game(props) {
       onPinMessage: onPinMessage,
       isMessagePinned: isMessagePinned,
       onMessageQuote: onMessageQuote,
+      onMessageReply: onMessageReply,
+      replyTarget: replyTarget,
+      setReplyTarget: setReplyTarget,
       loadAudioFiles: loadAudioFiles,
       playAudio: playAudio,
       stopAudio: stopAudio,
@@ -2297,6 +2326,18 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     }
   }
 
+  const activeMeeting = selTab ? meetings[selTab] : null;
+
+  // A spectator who cannot talk in the selected meeting talks in spectator
+  // chat instead, which shows inline in the same stream.
+  const speechTarget = pickSpeechTarget({
+    activeMeeting,
+    spectatorMeeting: spectatorChatMeeting,
+    isPregame: history.currentState == -1,
+  });
+  const canSpeak =
+    !!speechTarget.meetingId && stateViewing === history.currentState;
+
   const messages = useMemo(() => {
     var messageData;
     if (singleState) {
@@ -2319,7 +2360,8 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     }
 
     var previousMessage = null;
-    return messageData.map((message, i) => {
+    // A reply and the quote right above it are drawn as one row.
+    return pairReplies(messageData).map(({ message, replyQuote, replyMerged }, i) => {
       const isNotServerMessage = message.senderId !== "server";
       const unfocusedMessage =
         isolationEnabled &&
@@ -2349,11 +2391,14 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           meetingState={singleState ? message.fromState : stateViewing}
           key={message.id || message.messageId + message.time || i}
           onMessageQuote={game.onMessageQuote}
+          onMessageReply={canSpeak ? game.onMessageReply : undefined}
           onPinMessage={game.onPinMessage}
           isMessagePinned={game.isMessagePinned}
           settings={settings}
           unfocusedMessage={unfocusedMessage}
           chainToPrevious={chainToPrevious}
+          replyQuote={replyQuote}
+          replyMerged={replyMerged}
         />
       );
     });
@@ -2375,6 +2420,8 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     isolatedPlayers,
     game.review,
     game.onMessageQuote,
+    game.onMessageReply,
+    canSpeak,
     game.onPinMessage,
     game.isMessagePinned,
     game.self,
@@ -2427,17 +2474,6 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     if (container) container.scrollTo(0, container.scrollHeight);
   }
 
-  const activeMeeting = selTab ? meetings[selTab] : null;
-
-  // A spectator who cannot talk in the selected meeting talks in spectator
-  // chat instead, which shows inline in the same stream.
-  const speechTarget = pickSpeechTarget({
-    activeMeeting,
-    spectatorMeeting: spectatorChatMeeting,
-    isPregame: history.currentState == -1,
-  });
-  const canSpeak =
-    !!speechTarget.meetingId && stateViewing === history.currentState;
   return (
     <>
       <Box
@@ -2793,7 +2829,14 @@ export function rowStateClass(stateViewing) {
 }
 
 function Message(props) {
-  const { history, isMessagePinned, meetingState, ...rowProps } = props;
+  const {
+    history,
+    isMessagePinned,
+    meetingState,
+    replyQuote,
+    replyMerged,
+    ...rowProps
+  } = props;
   const { message, stateViewing } = props;
 
   let iWasPinged = false;
@@ -2803,6 +2846,22 @@ function Message(props) {
           pings.indexOf("@" + props.players?.[props.self]?.name) !== -1 || pings.some((p) => p.startsWith(EVERYONE_PING));
   }
 
+  // The quoted line shown inside a reply row (see pairReplies).
+  const replyQuoteState = replyQuote
+    ? history.states[replyQuote.fromState]
+    : undefined;
+  const replyPreview = useMemo(
+    () =>
+      replyQuote
+        ? describeQuotedMessage(
+            replyQuote,
+            replyQuoteState,
+            props.players,
+            props.spectators
+          )
+        : null,
+    [replyQuote, replyQuoteState, props.players, props.spectators]
+  );
   if (message.obituaries && props.settings.legacyObituaries) {
     return legacyObituaryMessages(message).map((alert) => (
       <Message
@@ -2822,10 +2881,98 @@ function Message(props) {
       {...rowProps}
       iWasPinged={iWasPinged}
       pinned={isMessagePinned(message)}
+      replyPreview={replyPreview || undefined}
+      replyMerged={!!replyPreview && !!replyMerged}
       meetingName={history.states[nameState]?.meetings?.[message.meetingId]?.name}
       quoteState={message.isQuote ? history.states[message.fromState] : undefined}
       history={message.obituaries || message.winners ? history : undefined}
     />
+  );
+}
+
+// The line above a reply, as in Discord: a curved line from the replier's
+// avatar column to a tiny avatar, the original sender's name and one line of
+// what they said. It never carries a timestamp, so the reply's own header
+// (and its timestamp) is drawn exactly like any other message's. Clicking it
+// jumps to the original line when that is in the same chat.
+function ReplyReference(props) {
+  const { reply, layout, dense, timestamps, players, spectators } = props;
+  const user = useContext(UserContext);
+  const theme = useTheme();
+  const accessibleNameColors = user.settings?.accessibleNameColors;
+  const sender = reply.sender;
+
+  let nameColor = sender && sender.anonId === undefined ? reply.nameColor : "";
+  if (Object.keys(nameColor ?? {}).length === 2)
+    nameColor = nameColor["darkTheme"];
+  const rawNameColor = nameColor && nameColor !== "" ? nameColor : null;
+  const color = resolveDisplayNameColor({
+    accessibleNameColors,
+    ignoreTextColor: user.settings?.ignoreTextColor,
+    rawNameColor,
+    autoContrastColor: user.autoContrastColor.bind(user),
+    theme,
+  });
+
+  function jumpToOriginal(e) {
+    e.stopPropagation();
+    const row = findMessageRow(e.currentTarget.closest(".message"), reply.messageId);
+    if (!row) return;
+    row.scrollIntoView({ block: "center", behavior: "smooth" });
+    row.classList.remove("reply-jump-highlight");
+    // Restart the highlight animation on repeated clicks.
+    void row.offsetWidth;
+    row.classList.add("reply-jump-highlight");
+    setTimeout(() => row.classList.remove("reply-jump-highlight"), 1600);
+  }
+
+  let className = `reply-reference reply-reference-${dense ? "dense" : layout === "defaultLarge" ? "large" : "default"}`;
+  if (dense && timestamps) className += " reply-reference-timestamps";
+
+  return (
+    <div
+      className={className}
+      title={`Replying to ${reply.senderName}`}
+      role="button"
+      tabIndex={-1}
+      onClick={jumpToOriginal}
+      onDoubleClick={(e) => e.stopPropagation()}
+    >
+      <span className="reply-spine" aria-hidden="true" />
+      <span className="reply-reference-sender">
+        {sender ? (
+          <NameWithAvatar
+            id={sender.userId}
+            avatarId={sender.anonId === undefined ? sender.userId : sender.anonId}
+            name={sender.name}
+            avatar={sender.avatar}
+            isSquare={sender.avatarShape === "square"}
+            color={color}
+            nameFont={sender.nameFont}
+            noLink
+            small
+          />
+        ) : (
+          <NameWithAvatar name="Anonymous" noLink small />
+        )}
+      </span>
+      <span className="reply-reference-text">
+        <UserText
+          text={reply.content}
+          settings={user.settings}
+          players={players}
+          spectators={spectators}
+          customEmotes={reply.customEmotes}
+          customStickers={reply.customStickers}
+          filterProfanity
+          linkify={false}
+          emotify
+          slangifySeed={String(reply.time)}
+          iconUsername
+          roleify={props.roleMentions}
+        />
+      </span>
+    </div>
   );
 }
 
@@ -2886,8 +3033,23 @@ const MessageRow = React.memo(function MessageRow(props) {
 
   const useAbsoluteTimestamp =
     (chainToPrevious || isServerMessage) && !isRightAligned && !denseMessages;
-  const showThumbtack =
-    !props.review && !message.isQuote && isHovering && props.stateViewing >= 0;
+  const showThumbtack = showPinButton({
+    review: props.review,
+    isQuote: message.isQuote,
+    isHovering,
+    stateViewing: props.stateViewing,
+  });
+  // Whether this row offers a reply button (shown on hover). It does not
+  // depend on hover, so the room the row keeps for it never changes the
+  // layout when the mouse moves.
+  const replyButtonSlot =
+    !!props.onMessageReply &&
+    !isPhoneDevice &&
+    !isRightAligned &&
+    canReplyTo(message, {
+      review: props.review,
+      stateViewing: props.stateViewing,
+    });
   const thumbtackFaClass = props.pinned
     ? "fas fa-thumbtack"
     : "fas fa-thumbtack fa-rotate-270";
@@ -3097,10 +3259,20 @@ const MessageRow = React.memo(function MessageRow(props) {
   let className = "message";
   if (message.spectatorChat) className += " spectator-chat";
   else if (props.iWasPinged) className += " mention";
+  // A reply shows what it answers above its header (see ReplyReference). One
+  // whose quote cannot be found keeps the indented look.
+  if (message.replyTo && !message.isQuote && !props.replyPreview)
+    className += " reply-message";
+  if (props.replyPreview)
+    className += props.replyMerged
+      ? " reply-merged with-reply-reference"
+      : " with-reply-reference";
+  if (replyButtonSlot) className += " with-reply-button";
   
   return (
     <div
       className={className}
+      data-message-id={message.id ?? undefined}
       onDoubleClick={() => props.onMessageQuote(message)}
       style={messageStyle}
       onMouseEnter={messageOnMouseEnter}
@@ -3109,6 +3281,17 @@ const MessageRow = React.memo(function MessageRow(props) {
       onTouchEnd={messageLongPress.onTouchEnd}
     >
       <div className={innerClassName}>
+        {props.replyPreview && !message.isQuote && (
+          <ReplyReference
+            reply={props.replyPreview}
+            layout={messageLayout}
+            dense={denseMessages}
+            timestamps={!!props.settings.timestamps}
+            players={players}
+            spectators={spectators}
+            roleMentions={props.settings.roleMentions}
+          />
+        )}
         {(!chainToPrevious || denseMessages || isRightAligned) && (
           <div
             className={nameplateClassName}
@@ -3172,6 +3355,12 @@ const MessageRow = React.memo(function MessageRow(props) {
         >
           {!message.isQuote && (
             <>
+              {message.replyTo && !props.replyPreview && (
+                <i
+                  className="fas fa-reply fa-rotate-180 reply-marker"
+                  title="Reply to the quote above"
+                />
+              )}
               {message.spectatorChat && (
                 <span
                   className="spectator-chat-tag"
@@ -3260,6 +3449,21 @@ const MessageRow = React.memo(function MessageRow(props) {
             />
           )}
         </div>
+      )}
+      {replyButtonSlot && isHovering && (
+        // Bottom-right corner of the row, under the pin (which stays where
+        // it always was, top-right). The row reserves room for both.
+        <i
+          className="fas fa-reply reply-button"
+          title="Reply"
+          role="button"
+          aria-label="Reply"
+          onClick={(e) => {
+            e.stopPropagation();
+            props.onMessageReply(message);
+          }}
+          onDoubleClick={(e) => e.stopPropagation()}
+        />
       )}
     </div>
   );
@@ -3630,6 +3834,9 @@ function SpeechInput(props) {
     }
   }
 
+  const replyTarget = game.replyTarget;
+  const setReplyTarget = game.setReplyTarget;
+
   function onSpeechSubmit(e) {
     if (isSpeakCooldownActive) return;
 
@@ -3658,13 +3865,23 @@ function SpeechInput(props) {
           };
         }
 
-        socket.send("speak", {
-          content: speechInput,
+        const reply = buildReplyPayload(replyTarget, {
           meetingId: selTab,
+          content: speechInput,
           abilityName,
-          abilityTarget,
-          ...checkboxOptions,
         });
+        if (reply) {
+          socket.send("reply", reply);
+          setReplyTarget(null);
+        } else {
+          socket.send("speak", {
+            content: speechInput,
+            meetingId: selTab,
+            abilityName,
+            abilityTarget,
+            ...checkboxOptions,
+          });
+        }
         props.setAutoScroll(true);
 
         if (isCommand) {
@@ -3701,8 +3918,33 @@ function SpeechInput(props) {
     );
   }
 
+  const replyMessage = replyTarget?.message;
+  const replySender =
+    replyMessage &&
+    (replyMessage.senderId === "anonymous"
+      ? "Anonymous"
+      : players[replyMessage.senderId]?.name ||
+        game.spectators?.[replyMessage.senderId]?.name ||
+        "Anonymous");
+
   return (
     <div className="speech-input-area" data-tutorial="chat-input">
+      {replyMessage && (
+        <div className="reply-preview">
+          <i className="fas fa-reply" />
+          <span className="reply-preview-text">
+            Replying to <b>{replySender}</b>: {replyMessage.content}
+          </span>
+          <IconButton
+            size="small"
+            aria-label="Cancel reply"
+            title="Cancel reply (Esc)"
+            onClick={() => setReplyTarget(null)}
+          >
+            <i className="fas fa-times" />
+          </IconButton>
+        </div>
+      )}
       <div className="speech-input-wrapper">
         <Dropdown
           className="speech-dropdown"

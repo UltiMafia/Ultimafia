@@ -25,7 +25,7 @@ module.exports = class Quote extends Message {
     if (this.sender) {
       var newVersion = this.sender.speakQuote(this.versions["*"]);
 
-      if (!newVersion) return;
+      if (!newVersion) return false;
 
       if (newVersion.modified) newVersion.modified = false;
 
@@ -43,6 +43,7 @@ module.exports = class Quote extends Message {
     this.game.omniscientSpectatorsHear?.(this);
 
     this.game.events.emit("message", this);
+    return true;
   }
 
   parseMessageInfoObj(version, senderId) {

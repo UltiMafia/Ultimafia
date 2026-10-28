@@ -207,6 +207,95 @@ module.exports = class Player {
       );
     });
 
+    // Spam and typing-speed checks for a chat line. Sends the cooldown and
+    // returns true when the line must not be sent.
+    const speakBlocked = (message) => {
+      if (
+        Spam.rateLimit(
+          speechPast,
+          constants.msgSpamSumLimit,
+          constants.msgSpamRateLimit
+        )
+      ) {
+        const sentAt = Date.now();
+        this.send("speakCooldown", {
+          meetingId: message.meetingId,
+          sentAt,
+          cooldownMs: Spam.getCooldownMs(
+            speechPast,
+            constants.msgSpamSumLimit,
+            constants.msgSpamRateLimit
+          ),
+        });
+        return true;
+      }
+
+      // Same content twice in a row is OK; third consecutive identical paste is blocked.
+      if (
+        this.game.started &&
+        Spam.isRepeatedContentSpam(
+          speechPast,
+          message.content,
+          constants.msgDuplicateMaxConsecutive
+        )
+      ) {
+        lastSpeakContentBlockAt = Date.now();
+        sendSpeakCooldown(
+          message.meetingId,
+          constants.msgDuplicateCooldownMs
+        );
+        return true;
+      }
+
+      // Near-duplicates (same paste block with small edits) only when sending
+      // quickly, or still in the window after a recent content-spam block.
+      if (
+        this.game.started &&
+        Spam.shouldCheckSimilarContent(
+          speechPast,
+          lastSpeakContentBlockAt,
+          Date.now(),
+          constants.msgSimilarQuickWindowMs,
+          constants.msgSimilarAfterBlockWindowMs
+        ) &&
+        Spam.isRepeatedSimilarContentSpam(
+          speechPast,
+          message.content,
+          constants.msgDuplicateMaxConsecutive,
+          constants.msgSimilarThreshold,
+          constants.msgSimilarMinLength
+        )
+      ) {
+        lastSpeakContentBlockAt = Date.now();
+        sendSpeakCooldown(
+          message.meetingId,
+          constants.msgDuplicateCooldownMs
+        );
+        return true;
+      }
+
+      if (isRankedCompetitive()) {
+        const typingCooldownMs = Spam.getTypingSpeedCooldownRemainingMs(
+          speechPast,
+          message.content,
+          constants.rankedCompetitiveTypingWpm,
+          constants.rankedCompetitiveAvgWordLength,
+          Date.now(),
+          {
+            pasteGraceChars: constants.rankedCompetitiveTypingPasteGraceChars,
+            maxIntervalMs: constants.rankedCompetitiveTypingMaxIntervalMs,
+          }
+        );
+
+        if (typingCooldownMs > 0) {
+          sendSpeakCooldown(message.meetingId, typingCooldownMs);
+          return true;
+        }
+      }
+
+      return false;
+    };
+
     socket.on("speak", (message) => {
       try {
         if (typeof message != "object") return;
@@ -233,88 +322,7 @@ module.exports = class Player {
           constants.maxGameMessageLength
         );
 
-        if (
-          Spam.rateLimit(
-            speechPast,
-            constants.msgSpamSumLimit,
-            constants.msgSpamRateLimit
-          )
-        ) {
-          const sentAt = Date.now();
-          this.send("speakCooldown", {
-            meetingId: message.meetingId,
-            sentAt,
-            cooldownMs: Spam.getCooldownMs(
-              speechPast,
-              constants.msgSpamSumLimit,
-              constants.msgSpamRateLimit
-            ),
-          });
-          return;
-        }
-
-        // Same content twice in a row is OK; third consecutive identical paste is blocked.
-        if (
-          this.game.started &&
-          Spam.isRepeatedContentSpam(
-            speechPast,
-            message.content,
-            constants.msgDuplicateMaxConsecutive
-          )
-        ) {
-          lastSpeakContentBlockAt = Date.now();
-          sendSpeakCooldown(
-            message.meetingId,
-            constants.msgDuplicateCooldownMs
-          );
-          return;
-        }
-
-        // Near-duplicates (same paste block with small edits) only when sending
-        // quickly, or still in the window after a recent content-spam block.
-        if (
-          this.game.started &&
-          Spam.shouldCheckSimilarContent(
-            speechPast,
-            lastSpeakContentBlockAt,
-            Date.now(),
-            constants.msgSimilarQuickWindowMs,
-            constants.msgSimilarAfterBlockWindowMs
-          ) &&
-          Spam.isRepeatedSimilarContentSpam(
-            speechPast,
-            message.content,
-            constants.msgDuplicateMaxConsecutive,
-            constants.msgSimilarThreshold,
-            constants.msgSimilarMinLength
-          )
-        ) {
-          lastSpeakContentBlockAt = Date.now();
-          sendSpeakCooldown(
-            message.meetingId,
-            constants.msgDuplicateCooldownMs
-          );
-          return;
-        }
-
-        if (isRankedCompetitive()) {
-          const typingCooldownMs = Spam.getTypingSpeedCooldownRemainingMs(
-            speechPast,
-            message.content,
-            constants.rankedCompetitiveTypingWpm,
-            constants.rankedCompetitiveAvgWordLength,
-            Date.now(),
-            {
-              pasteGraceChars: constants.rankedCompetitiveTypingPasteGraceChars,
-              maxIntervalMs: constants.rankedCompetitiveTypingMaxIntervalMs,
-            }
-          );
-
-          if (typingCooldownMs > 0) {
-            sendSpeakCooldown(message.meetingId, typingCooldownMs);
-            return;
-          }
-        }
+        if (speakBlocked(message)) return;
 
         if (this.applyTextEffect(message)) return;
 
@@ -351,71 +359,135 @@ module.exports = class Player {
       }
     });
 
-    socket.on("quote", (quote) => {
-      try {
-        if (typeof quote != "object") return;
+    // Coerces a client quote payload in place; false when it is malformed.
+    const normalizeQuote = (quote) => {
+      if (typeof quote != "object" || quote === null) return false;
 
-        quote.messageId = String(quote.messageId);
-        quote.toMeetingId = String(quote.toMeetingId);
-        quote.fromMeetingId = String(quote.fromMeetingId);
-        quote.fromState = String(quote.fromState);
-        quote.messageContent = String(quote.messageContent);
+      quote.messageId = String(quote.messageId);
+      quote.toMeetingId = String(quote.toMeetingId);
+      quote.fromMeetingId = String(quote.fromMeetingId);
+      quote.fromState = String(quote.fromState);
+      quote.messageContent = String(quote.messageContent);
 
-        if (!Utils.validProp(quote.messageId)) return;
+      return (
+        Utils.validProp(quote.messageId) &&
+        Utils.validProp(quote.toMeetingId) &&
+        Utils.validProp(quote.fromMeetingId) &&
+        Utils.validProp(quote.fromState)
+      );
+    };
 
-        if (!Utils.validProp(quote.toMeetingId)) return;
-
-        if (!Utils.validProp(quote.fromMeetingId)) return;
-
-        if (!Utils.validProp(quote.fromState)) return;
-
-        if (
-          Spam.rateLimit(
+    // Rate limit and the ranked repeat-quote cooldown. Sends the cooldown and
+    // returns true when the quote must not be sent.
+    const quoteBlocked = (quote) => {
+      if (
+        Spam.rateLimit(speechPast, constants.msgSpamSumLimit, constants.msgSpamRateLimit)
+      ) {
+        const sentAt = Date.now();
+        this.send("speakCooldown", {
+          meetingId: quote.toMeetingId,
+          sentAt,
+          cooldownMs: Spam.getCooldownMs(
             speechPast,
             constants.msgSpamSumLimit,
             constants.msgSpamRateLimit
-          )
-        ) {
-          const sentAt = Date.now();
-          this.send("speakCooldown", {
-            meetingId: quote.toMeetingId,
-            sentAt,
-            cooldownMs: Spam.getCooldownMs(
-              speechPast,
-              constants.msgSpamSumLimit,
-              constants.msgSpamRateLimit
-            ),
-          });
-          return;
-        }
+          ),
+        });
+        return true;
+      }
 
+      if (isRankedCompetitive() && quote.messageId === lastQuoteMessageId) {
+        const elapsed = Date.now() - lastQuoteTime;
+        const quoteCooldownMs = Math.max(
+          0,
+          constants.rankedCompetitiveQuoteCooldownMs - elapsed
+        );
+
+        if (quoteCooldownMs > 0) {
+          sendSpeakCooldown(quote.toMeetingId, quoteCooldownMs);
+          return true;
+        }
+      }
+
+      return false;
+    };
+
+    // Posts the quote; returns the posted Quote, or null if it was refused.
+    const postQuote = (meeting, quote) => {
+      speechPast.push(Date.now());
+      lastQuoteMessageId = quote.messageId;
+      lastQuoteTime = Date.now();
+
+      if (!meeting) return null;
+      return meeting.quote(this, quote) || null;
+    };
+
+    socket.on("quote", (quote) => {
+      try {
+        if (!normalizeQuote(quote)) return;
+
+        if (quoteBlocked(quote)) return;
+
+        postQuote(this.game.getMeeting(quote.toMeetingId), quote);
+      } catch (e) {
+        logger.error(e);
+        // this.handleError(e);
+      }
+    });
+
+    // Reply: a quote of the original message followed by the typed text as
+    // its own message, marked as a reply to that quote. Every check for both
+    // runs first, and the text is only sent if the quote was posted.
+    socket.on("reply", (reply) => {
+      try {
+        if (typeof reply != "object" || reply === null) return;
+
+        const quote = reply.quote;
+        const message = reply.message;
+        if (!normalizeQuote(quote)) return;
+        if (typeof message != "object" || message === null) return;
+
+        message.content = String(message.content);
+        message.meetingId = String(message.meetingId);
+        if (!Utils.validProp(message.meetingId)) return;
+        if (message.meetingId !== quote.toMeetingId) return;
+        if (message.content.length == 0) return;
+        message.content = message.content.slice(
+          0,
+          constants.maxGameMessageLength
+        );
+        // Commands and text effects are not replies.
         if (
-          isRankedCompetitive() &&
-          quote.messageId === lastQuoteMessageId
-        ) {
-          const elapsed = Date.now() - lastQuoteTime;
-          const quoteCooldownMs = Math.max(
-            0,
-            constants.rankedCompetitiveQuoteCooldownMs - elapsed
-          );
+          message.content[0] == "/" &&
+          message.content.slice(0, 4) != "/me "
+        )
+          return;
 
-          if (quoteCooldownMs > 0) {
-            sendSpeakCooldown(quote.toMeetingId, quoteCooldownMs);
-            return;
-          }
-        }
-
-        speechPast.push(Date.now());
-        lastQuoteMessageId = quote.messageId;
-        lastQuoteTime = Date.now();
+        // One reply is one action for the rate limit, checked as a single line.
+        if (quoteBlocked(quote)) return;
+        if (speakBlocked(message)) return;
 
         var meeting = this.game.getMeeting(quote.toMeetingId);
         if (!meeting) return;
 
-        meeting.quote(this, quote);
+        const posted = postQuote(meeting, quote);
+        if (!posted) return;
+
+        speechPast.push({
+          at: Date.now(),
+          content: Spam.normalizeSpeakContent(message.content),
+        });
+
+        meeting.speak({
+          sender: this,
+          content: message.content,
+          replyTo: posted.id,
+        });
+
+        if (this.game.tutorial)
+          this.game.tutorial.onHumanSpeak(this, meeting, message.content);
       } catch (e) {
         logger.error(e);
-        // this.handleError(e);
       }
     });
 

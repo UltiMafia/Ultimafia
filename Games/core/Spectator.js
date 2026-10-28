@@ -62,6 +62,77 @@ module.exports = class Spectator extends Player {
       }
     });
 
+    // Spam checks for a chat line. Sends the cooldown and returns true when
+    // the line must not be sent.
+    const speakBlocked = (message) => {
+      if (
+        Spam.rateLimit(
+          speechPast,
+          constants.msgSpamSumLimit,
+          constants.msgSpamRateLimit
+        )
+      ) {
+        const sentAt = Date.now();
+        this.send("speakCooldown", {
+          meetingId: message.meetingId,
+          sentAt,
+          cooldownMs: Spam.getCooldownMs(
+            speechPast,
+            constants.msgSpamSumLimit,
+            constants.msgSpamRateLimit
+          ),
+        });
+        return true;
+      }
+
+      if (
+        this.game.started &&
+        Spam.isRepeatedContentSpam(
+          speechPast,
+          message.content,
+          constants.msgDuplicateMaxConsecutive
+        )
+      ) {
+        lastSpeakContentBlockAt = Date.now();
+        const sentAt = Date.now();
+        this.send("speakCooldown", {
+          meetingId: message.meetingId,
+          sentAt,
+          cooldownMs: constants.msgDuplicateCooldownMs,
+        });
+        return true;
+      }
+
+      if (
+        this.game.started &&
+        Spam.shouldCheckSimilarContent(
+          speechPast,
+          lastSpeakContentBlockAt,
+          Date.now(),
+          constants.msgSimilarQuickWindowMs,
+          constants.msgSimilarAfterBlockWindowMs
+        ) &&
+        Spam.isRepeatedSimilarContentSpam(
+          speechPast,
+          message.content,
+          constants.msgDuplicateMaxConsecutive,
+          constants.msgSimilarThreshold,
+          constants.msgSimilarMinLength
+        )
+      ) {
+        lastSpeakContentBlockAt = Date.now();
+        const sentAt = Date.now();
+        this.send("speakCooldown", {
+          meetingId: message.meetingId,
+          sentAt,
+          cooldownMs: constants.msgDuplicateCooldownMs,
+        });
+        return true;
+      }
+
+      return false;
+    };
+
     socket.on("speak", (message) => {
       try {
         if (typeof message != "object") return;
@@ -88,70 +159,7 @@ module.exports = class Spectator extends Player {
           constants.maxGameMessageLength
         );
 
-        if (
-          Spam.rateLimit(
-            speechPast,
-            constants.msgSpamSumLimit,
-            constants.msgSpamRateLimit
-          )
-        ) {
-          const sentAt = Date.now();
-          this.send("speakCooldown", {
-            meetingId: message.meetingId,
-            sentAt,
-            cooldownMs: Spam.getCooldownMs(
-              speechPast,
-              constants.msgSpamSumLimit,
-              constants.msgSpamRateLimit
-            ),
-          });
-          return;
-        }
-
-        if (
-          this.game.started &&
-          Spam.isRepeatedContentSpam(
-            speechPast,
-            message.content,
-            constants.msgDuplicateMaxConsecutive
-          )
-        ) {
-          lastSpeakContentBlockAt = Date.now();
-          const sentAt = Date.now();
-          this.send("speakCooldown", {
-            meetingId: message.meetingId,
-            sentAt,
-            cooldownMs: constants.msgDuplicateCooldownMs,
-          });
-          return;
-        }
-
-        if (
-          this.game.started &&
-          Spam.shouldCheckSimilarContent(
-            speechPast,
-            lastSpeakContentBlockAt,
-            Date.now(),
-            constants.msgSimilarQuickWindowMs,
-            constants.msgSimilarAfterBlockWindowMs
-          ) &&
-          Spam.isRepeatedSimilarContentSpam(
-            speechPast,
-            message.content,
-            constants.msgDuplicateMaxConsecutive,
-            constants.msgSimilarThreshold,
-            constants.msgSimilarMinLength
-          )
-        ) {
-          lastSpeakContentBlockAt = Date.now();
-          const sentAt = Date.now();
-          this.send("speakCooldown", {
-            meetingId: message.meetingId,
-            sentAt,
-            cooldownMs: constants.msgDuplicateCooldownMs,
-          });
-          return;
-        }
+        if (speakBlocked(message)) return;
 
         if (this.applyTextEffect(message)) return;
 
@@ -185,43 +193,47 @@ module.exports = class Spectator extends Player {
       }
     });
 
+    const normalizeQuote = (quote) => {
+      if (typeof quote != "object" || quote === null) return false;
+
+      quote.messageId = String(quote.messageId);
+      quote.toMeetingId = String(quote.toMeetingId);
+      quote.fromMeetingId = String(quote.fromMeetingId);
+      quote.fromState = String(quote.fromState);
+      quote.messageContent = String(quote.messageContent);
+
+      return (
+        Utils.validProp(quote.messageId) &&
+        Utils.validProp(quote.toMeetingId) &&
+        Utils.validProp(quote.fromMeetingId) &&
+        Utils.validProp(quote.fromState)
+      );
+    };
+
+    const quoteRateLimited = (quote) => {
+      if (
+        !Spam.rateLimit(speechPast, constants.msgSpamSumLimit, constants.msgSpamRateLimit)
+      )
+        return false;
+
+      const sentAt = Date.now();
+      this.send("speakCooldown", {
+        meetingId: quote.toMeetingId,
+        sentAt,
+        cooldownMs: Spam.getCooldownMs(
+          speechPast,
+          constants.msgSpamSumLimit,
+          constants.msgSpamRateLimit
+        ),
+      });
+      return true;
+    };
+
     socket.on("quote", (quote) => {
       try {
-        if (typeof quote != "object") return;
+        if (!normalizeQuote(quote)) return;
 
-        quote.messageId = String(quote.messageId);
-        quote.toMeetingId = String(quote.toMeetingId);
-        quote.fromMeetingId = String(quote.fromMeetingId);
-        quote.fromState = String(quote.fromState);
-        quote.messageContent = String(quote.messageContent);
-
-        if (!Utils.validProp(quote.messageId)) return;
-
-        if (!Utils.validProp(quote.toMeetingId)) return;
-
-        if (!Utils.validProp(quote.fromMeetingId)) return;
-
-        if (!Utils.validProp(quote.fromState)) return;
-
-        if (
-          Spam.rateLimit(
-            speechPast,
-            constants.msgSpamSumLimit,
-            constants.msgSpamRateLimit
-          )
-        ) {
-          const sentAt = Date.now();
-          this.send("speakCooldown", {
-            meetingId: quote.toMeetingId,
-            sentAt,
-            cooldownMs: Spam.getCooldownMs(
-              speechPast,
-              constants.msgSpamSumLimit,
-              constants.msgSpamRateLimit
-            ),
-          });
-          return;
-        }
+        if (quoteRateLimited(quote)) return;
 
         speechPast.push(Date.now());
 
@@ -232,6 +244,58 @@ module.exports = class Spectator extends Player {
       } catch (e) {
         logger.error(e);
         // this.handleError(e);
+      }
+    });
+
+    // Reply: the quote, then the typed text marked as a reply to it. The
+    // text is only sent if the quote was posted. See Player.js.
+    socket.on("reply", (reply) => {
+      try {
+        if (typeof reply != "object" || reply === null) return;
+
+        const quote = reply.quote;
+        const message = reply.message;
+        if (!normalizeQuote(quote)) return;
+        if (typeof message != "object" || message === null) return;
+
+        message.content = String(message.content);
+        message.meetingId = String(message.meetingId);
+        if (!Utils.validProp(message.meetingId)) return;
+        if (message.meetingId !== quote.toMeetingId) return;
+        if (message.content.length == 0) return;
+        message.content = message.content.slice(
+          0,
+          constants.maxGameMessageLength
+        );
+        if (
+          message.content[0] == "/" &&
+          message.content.slice(0, 4) != "/me "
+        )
+          return;
+
+        // One reply is one action for the rate limit, checked as a single line.
+        if (quoteRateLimited(quote)) return;
+        if (speakBlocked(message)) return;
+
+        var meeting = this.game.getMeeting(quote.toMeetingId);
+        if (!this.canSpeakIn(meeting)) return;
+
+        speechPast.push(Date.now());
+        const posted = meeting.quote(this, quote);
+        if (!posted) return;
+
+        speechPast.push({
+          at: Date.now(),
+          content: Spam.normalizeSpeakContent(message.content),
+        });
+
+        meeting.speak({
+          sender: this,
+          content: message.content,
+          replyTo: posted.id,
+        });
+      } catch (e) {
+        logger.error(e);
       }
     });
 

@@ -1136,3 +1136,227 @@ html[data-keyboard="open"] .game .meeting-tabs {
     padding-left: 0px;
   }
 }
+
+/* Reply: hover button in the row's bottom-right corner, preview above the
+   chat box, and the marker on a reply line (it follows the quote it answers).
+   The pin keeps its usual top-right place. A row that offers a reply keeps
+   room for both whether or not it is hovered, so hovering never moves the
+   layout, and the button is drawn inside the row so it never covers (or
+   takes the hover of) the next one. */
+.game .message.with-reply-button {
+  /* Pin (6px down, 12px tall) + 4px gap + 10px reply. */
+  min-height: 32px;
+  box-sizing: border-box;
+}
+
+/* The chat is a column flexbox. An explicit min-height replaces a row's
+   automatic minimum (its content), so without this a full chat squeezes these
+   rows down to 32px and their text spills over the next row. */
+.game .message.with-reply-button,
+.game .message.with-reply-reference {
+  flex-shrink: 0;
+}
+
+.game .message .reply-button {
+  position: absolute;
+  right: 4px;
+  bottom: 0;
+  z-index: 1;
+
+  /* Centred under the pin (whose centre is 12px from the row's right). */
+  width: 16px;
+  text-align: center;
+  font-size: 0.625em;
+  line-height: 1;
+  opacity: 0.75;
+  cursor: pointer;
+}
+
+.game .message .reply-button:hover {
+  opacity: 1;
+}
+
+.game .message.reply-message {
+  margin-left: 12px;
+  border-left: 2px solid var(--scheme-color-sec);
+}
+
+.game .message .reply-marker {
+  margin-right: 4px;
+  font-size: 0.75em;
+  opacity: 0.6;
+}
+
+.game .speech-input-area {
+  flex-wrap: wrap;
+}
+
+.game .speech-input-area .reply-preview {
+  display: flex;
+  flex-basis: 100%;
+  align-items: center;
+  gap: 6px;
+
+  min-width: 0;
+  margin-bottom: 4px;
+  padding: 2px 4px 2px 8px;
+  border-left: 2px solid var(--scheme-color-sec);
+
+  font-size: 0.85em;
+  opacity: 0.85;
+}
+
+.game .speech-input-area .reply-preview i {
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  font-size: inherit;
+}
+
+.game .speech-input-area .reply-preview-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* The line above a reply (ReplyReference), as in Discord: a curved line
+   from the replier's avatar column up and right to a tiny avatar, the
+   original sender's name and one line of what they said. It is a block above
+   the reply's normal header, so the header and its timestamp are drawn
+   exactly as on any other row. --spine-x is the avatar centre and
+   --spine-drop the distance down to the avatar, both from this line's left
+   edge and vertical centre. */
+.game .message .reply-reference {
+  --spine-x: -15px;
+  --spine-drop: 10px;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  min-width: 0;
+  max-width: 100%;
+  height: 18px;
+  margin-bottom: 1px;
+
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.game .message .reply-reference .reply-spine {
+  position: absolute;
+  left: var(--spine-x);
+  /* From the line's centre, rounded corner, right to just before the tiny
+     avatar, and down to just above the replier's avatar. */
+  box-sizing: border-box;
+  top: calc(50% - 1px);
+  width: calc(-1 * var(--spine-x) - 3px);
+  height: calc(var(--spine-drop) + 1px);
+
+  border-top: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+  border-top-left-radius: 6px;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* Default (large nameplate): 40px avatar. */
+.game .message .reply-reference.reply-reference-large {
+  --spine-x: -29px;
+  --spine-drop: 12px;
+}
+
+/* Compact layouts: there is no avatar column, so the line starts above the
+   inline avatar in the header below and the reference is indented to it. */
+.game .message .reply-reference.reply-reference-dense {
+  --spine-x: -14px;
+  --spine-drop: 10px;
+  margin-left: 27px;
+}
+
+.game .message .reply-reference.reply-reference-dense.reply-reference-timestamps {
+  margin-left: 62px;
+}
+
+.game .message .reply-reference .reply-reference-sender {
+  flex: none;
+  max-width: 40%;
+  overflow: hidden;
+  opacity: 0.85;
+}
+
+.game .message .reply-reference .reply-reference-sender .user-name {
+  font-weight: 600;
+}
+
+.game .message .reply-reference .reply-reference-sender .user-name-text {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.game .message .reply-reference .reply-reference-sender .avatar {
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px;
+  background-size: cover;
+}
+
+.game .message .reply-reference .reply-reference-text {
+  flex: 1 1 auto;
+  min-width: 0;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  opacity: 0.7;
+}
+
+.game .message .reply-reference .reply-reference-text * {
+  white-space: nowrap;
+}
+
+.game .message .reply-reference .reply-reference-text br {
+  display: none;
+}
+
+.game .message .reply-reference .reply-reference-text img {
+  max-height: 16px;
+  vertical-align: middle;
+}
+
+.game .message .reply-reference:hover .reply-reference-text {
+  opacity: 1;
+}
+
+/* A long original line is cut off rather than widening the row (which would
+   push the pin and reply buttons out of view). */
+.game .message.with-reply-reference > div:first-child,
+.game .message.with-reply-reference .content {
+  min-width: 0;
+}
+
+.game .message.with-reply-reference > div:first-child {
+  flex: 1 1 auto;
+}
+
+/* The original line, briefly, after a click on a reply's reference. */
+.game .message.reply-jump-highlight {
+  animation: reply-jump-highlight 1.6s ease-out;
+}
+
+@keyframes reply-jump-highlight {
+  0%,
+  40% {
+    background-color: rgba(88, 101, 242, 0.25);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
