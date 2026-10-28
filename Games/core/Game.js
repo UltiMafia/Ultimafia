@@ -480,6 +480,7 @@ module.exports = class Game {
 
     for (let item of this.deathQueue) {
       this.recordDead(item.player, item.dead);
+      this.syncDeadForDms(item.player);
 
       if (item.dead && !item.player.alive) {
         this.broadcast("death", item.player.id);
@@ -509,6 +510,15 @@ module.exports = class Game {
     }
 
     this.exorciseQueue.empty();
+  }
+
+  // Mirror a player's alive state into Redis so the chat server can tell a
+  // dead player (DMs allowed) from an alive one (DMs locked in ranked and
+  // competitive games). See modules/dmGate.js.
+  syncDeadForDms(player) {
+    const userId = player && player.user && player.user.id;
+    if (!userId) return;
+    redis.setPlayerDead(this.id, userId, !player.alive).catch(() => {});
   }
 
   queueDeath(player) {

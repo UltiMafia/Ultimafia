@@ -6,6 +6,7 @@ const models = require("../db/models");
 const shortid = require("shortid");
 const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
+const dmGate = require("../modules/dmGate");
 const router = express.Router();
 
 router.get("/connect", async function (req, res) {
@@ -22,6 +23,33 @@ router.get("/connect", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Failed to load chat. Please refresh and try again.");
+  }
+});
+
+// Whether the signed-in user may use DMs right now (see modules/dmGate.js),
+// plus how many DM conversations have unread messages (for the header badge
+// while the DM window is closed).
+// { locked: false, unreadChannels } or
+// { locked: true, gameId, message, unreadChannels }. The chat server enforces
+// the same rule; this only lets clients show the locked state.
+router.get("/dmAccess", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req, true);
+    if (!userId) {
+      res.send({ locked: false, unreadChannels: 0 });
+      return;
+    }
+    var access = await dmGate.getDmAccess(userId);
+    var unread = await models.Notification.distinct("channelId", {
+      user: userId,
+      isChat: true,
+    });
+    // DM channel ids are md5 hashes (32 chars); rooms use short ids.
+    var unreadChannels = unread.filter((id) => id && id.length === 32).length;
+    res.send({ ...access, unreadChannels });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Failed to check direct message access.");
   }
 });
 

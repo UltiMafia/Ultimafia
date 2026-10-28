@@ -38,6 +38,8 @@ import { ProfileSheetProvider } from "./components/ProfileSheet";
 import { SheetProvider } from "./components/Sheet";
 import ThemeColorMeta from "./components/ThemeColorMeta";
 import RetainedSiteRoutes from "./components/RetainedSiteRoutes";
+import { DmWindowProvider } from "./components/dms/DmWindowContext";
+import FloatingDmWindow from "./components/dms/FloatingDmWindow";
 import ViewOverlayBoundary from "./components/ViewOverlayBoundary";
 import { AppLocationContext, ViewActivityContext, ViewNavigate } from "./hooks/useViewActivity";
 import { useAppViewport } from "./hooks/useAppViewport";
@@ -279,11 +281,16 @@ function Main(props) {
         <SheetProvider>
           <ProfileSheetProvider>
             <ThemeColorMeta />
+            <DmWindowProvider>
             <InGameContext.Provider value={inGame}>
               <ViewOverlayBoundary active={!inGame}>
                   {siteContent}
               </ViewOverlayBoundary>
             </InGameContext.Provider>
+            {/* Floating DMs follow the user across site pages and are
+                unmounted on game pages (their state is kept). */}
+            {!inGame && !errorContent && <FloatingDmWindow />}
+            </DmWindowProvider>
             <ViewActivityContext.Provider value={inGame}>
               {gameSession}
             </ViewActivityContext.Provider>
