@@ -63,7 +63,7 @@ export default function RecentTradesFeed() {
   }
 
   useEffect(() => {
-    if (!active) return;
+    if (!active || !user.loggedIn) return;
     let cancelled = false;
     function loadRecent() {
       axios
@@ -92,7 +92,7 @@ export default function RecentTradesFeed() {
       cancelled = true;
       clearInterval(interval);
     };
-  }, [active]);
+  }, [active, user.loggedIn]);
 
   function openRespondDialog(trade) {
     setRespondingTo(trade);
@@ -194,7 +194,11 @@ export default function RecentTradesFeed() {
           </>
         )}
 
-        {trades.length === 0 && openTrades.length === 0 ? (
+        {!user.loggedIn ? (
+          <Typography variant="body2" color="textSecondary">
+            Log in to see stamp trades.
+          </Typography>
+        ) : trades.length === 0 && openTrades.length === 0 ? (
           <Typography variant="body2" color="textSecondary">
             No trades yet.
           </Typography>

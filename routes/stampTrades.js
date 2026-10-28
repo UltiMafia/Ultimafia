@@ -129,6 +129,17 @@ async function expireOldTrades() {
   );
 }
 
+// Logged-out visitors (and system accounts) get a 401 instead of the
+// generic 500 the catch blocks below would otherwise send.
+async function requireLoggedIn(req, res) {
+  const userId = await routeUtils.verifyLoggedIn(req, true);
+  if (!userId) {
+    errors.unauthorized(res, "You must be logged in to view stamp trades.");
+    return null;
+  }
+  return userId;
+}
+
 router.get("/incoming", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -168,7 +179,7 @@ router.get("/pending-confirmation", async (req, res) => {
 router.get("/recent", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
-    await routeUtils.verifyLoggedIn(req);
+    if (!(await requireLoggedIn(req, res))) return;
     const trades = await models.StampTrade.find({ status: "COMPLETED" })
       .sort({ completedAt: -1 })
       .limit(10);
@@ -184,8 +195,8 @@ router.get("/recent", async (req, res) => {
 router.get("/open", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
+    if (!(await requireLoggedIn(req, res))) return;
     await expireOldTrades();
-    await routeUtils.verifyLoggedIn(req);
     const trades = await models.StampTrade.find({
       recipientId: null,
       status: "PENDING_RESPONSE",
