@@ -127,6 +127,7 @@ async function leaveGame(userId) {
       const port = await redis.getGamePort(gameId);
 
       if (!port) {
+        await redis.leaveGame(userId);
         res();
         return;
       }
@@ -136,13 +137,29 @@ async function leaveGame(userId) {
         reject: rej,
       };
 
+      const leaveRequest = waiting[userId];
+      const timeout = setTimeout(() => {
+        if (waiting[userId] !== leaveRequest) return;
+        delete waiting[userId];
+        rej(new Error("Timeout leaving game on game server"));
+      }, 10000);
+      leaveRequest.resolve = () => {
+        clearTimeout(timeout);
+        res();
+      };
+      leaveRequest.reject = (error) => {
+        clearTimeout(timeout);
+        rej(error);
+      };
+
       try {
         servers[port].send("leaveGame", {
           userId: userId,
           key: process.env.LOAD_BALANCER_KEY,
         });
       } catch (e) {
-        rej(e);
+        delete waiting[userId];
+        leaveRequest.reject(e);
       }
     } catch (e) {
       logger.error(e);
