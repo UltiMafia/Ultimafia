@@ -1,5 +1,5 @@
-import React, { useContext, useRef, useState } from "react";
-import { Box, Popover, Stack, Typography } from "@mui/material";
+import React, { useRef, useState } from "react";
+import { Box, Stack, Typography } from "@mui/material";
 import { usePopover, InfoPopover } from "components/Popover";
 
 import "css/join.css";
@@ -29,6 +29,8 @@ export const PlayerCount = (props) => {
     type: "game",
     boundingEl: infoRef.current,
     onData: (info) => {
+      // Saved-game info has no status, so its player list is not a live count.
+      if (status !== "Open") return;
       const count = lobbyCountFromInfo(info);
       if (count !== null)
         setLiveCount({ count, listCount: props.numSlotsTaken || 0 });
@@ -45,7 +47,10 @@ export const PlayerCount = (props) => {
         aria-haspopup="true"
         onClick={handleClick}
       >
-        <progress value={numSlotsTaken} max={numSlotsTotal} />
+        <progress
+          value={gameNotFinished ? numSlotsTaken : 0}
+          max={numSlotsTotal}
+        />
         <Stack
           direction="row"
           spacing={0.5}
