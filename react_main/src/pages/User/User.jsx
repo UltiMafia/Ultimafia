@@ -9,11 +9,11 @@ import { UserContext } from "Contexts";
 
 // Shared user widgets (Avatar, NameWithAvatar, MediaEmbed, ...) live in
 // ./UserWidgets so that importing them does not drag this route's page tree
-// (Profile/Settings/Shop/Inbox/Family and their deps) into the initial bundle.
+// (Profile/Settings/Shop/Notifications/Family and their deps) into the initial bundle.
 
 // These five are siblings behind a router, so importing them statically meant
 // viewing a profile also downloaded and evaluated Settings (and firebase/auth
-// with it), Shop, Inbox and Family. Declared at module scope, not in render, so
+// with it), Shop, Notifications and Family. Declared at module scope, not in render, so
 // the component identities stay stable across re-renders.
 const Profile = lazyWithRetry(() => import("./Profile"));
 const Settings = lazyWithRetry(() => import("./Settings"));
@@ -35,7 +35,9 @@ export default function User(props) {
         <Route path="/" element={<Profile />} />
         <Route path="settings/*" element={<Settings />} />
         <Route path="shop" element={<Shop />} />
-        <Route path="inbox" element={<Inbox />} />
+        <Route path="notifications" element={<Inbox />} />
+        {/* Old address for the Notifications page, kept for bookmarks. */}
+        <Route path="inbox" element={<Navigate to="/user/notifications" replace />} />
         <Route path="developer" element={<DeveloperApi />} />
         <Route path="family/:familyId" element={<Family />} />
         <Route path=":userId" element={<Profile />} />

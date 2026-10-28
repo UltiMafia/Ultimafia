@@ -172,7 +172,7 @@ export default function Inbox() {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Typography variant="h2">Inbox</Typography>
+          <Typography variant="h2">Notifications</Typography>
         </Stack>
 
         <Stack direction="row" spacing={2}>

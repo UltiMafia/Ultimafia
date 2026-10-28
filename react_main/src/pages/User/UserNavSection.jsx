@@ -15,6 +15,7 @@ import {
   Box,
 } from "@mui/material";
 import NavDropdown from "../../components/NavDropdown";
+import CountBadge from "../../components/CountBadge";
 import { SiteInfoContext } from "../../Contexts";
 
 import "css/main.css";
@@ -84,11 +85,11 @@ export default function UserNavSection({
         ]
       : []),
     {
-      text: "Inbox",
-      path: "/user/inbox",
+      text: "Notifications",
+      path: "/user/notifications",
       icon: (
         <Badge badgeContent={unreadCount} color="error" max={99}>
-          <i className="fas fa-inbox"/>
+          <i className="fas fa-bell"/>
         </Badge>
       ),
     },
@@ -168,7 +169,11 @@ export default function UserNavSection({
       <NavDropdown
         items={userMenuItems}
         triggerAriaLabel="User menu"
-        customTrigger={<Avatar id={user.id} name={user.name} hasImage={user.avatar} />}
+        customTrigger={
+          <CountBadge count={unreadCount} label="unread notifications">
+            <Avatar id={user.id} name={user.name} hasImage={user.avatar} />
+          </CountBadge>
+        }
       />
     </Stack>
   );
