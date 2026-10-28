@@ -390,9 +390,9 @@ module.exports = class Game {
           "Waited too long to start…This game will be closed in the next 30 seconds."
         );
 
-        this.createTimer("pregameWait", 30 * 1000, () => {
-          for (let p of this.players) {
-            this.kickPlayer(p);
+        this.createTimer("pregameWait", 30 * 1000, async () => {
+          for (let p of Array.from(this.players)) {
+            await this.kickPlayer(p);
           }
         });
       }

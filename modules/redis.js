@@ -1415,7 +1415,9 @@ async function deleteGame(gameId, game) {
 
   game = game || (await getGameInfo(gameId, true));
 
-  for (let playerId of game.players) await leaveGame(playerId);
+  for (let playerId of game.players) {
+    if ((await inGame(playerId)) === gameId) await leaveGame(playerId);
+  }
 
   if (game.settings.scheduled) {
     await client.sremAsync("scheduledGames", gameId);
@@ -1444,9 +1446,23 @@ async function deleteGame(gameId, game) {
 }
 
 async function breakGame(gameId) {
-  if (!(await gameExists(gameId))) return;
+  const game = await getGameInfo(gameId, true);
+  // The player set or game index may already have been removed by cleanup.
+  // Recover accounts using their own membership pointers, even for a missing game.
+  let cursor = "0";
+  do {
+    const reply = await client.scanAsync(
+      cursor, "MATCH", "user:*:game", "COUNT", 100
+    );
+    cursor = reply[0];
+    for (const key of reply[1]) {
+      if ((await client.getAsync(key)) === gameId) {
+        await leaveGame(key.slice(5, -5));
+      }
+    }
+  } while (cursor !== "0");
 
-  var game = await getGameInfo(gameId, true);
+  if (!game) return;
   await deleteGame(gameId);
 
   var setup = await models.Setup.findOne({ id: game.settings.setup });
@@ -1462,7 +1478,7 @@ async function breakGame(gameId) {
     if (user) users.push(user._id);
   }
 
-  game = new models.Game({
+  const brokenGame = new models.Game({
     id: game.id,
     type: game.type,
     setup: setupId,
@@ -1481,7 +1497,7 @@ async function breakGame(gameId) {
     gameTypeOptions: JSON.stringify(game.settings.gameTypeOptions),
     broken: true,
   });
-  await game.save();
+  await brokenGame.save();
 }
 
 async function setSpectatorCount(gameId, spectatorCount) {
