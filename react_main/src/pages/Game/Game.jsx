@@ -2088,63 +2088,68 @@ function getDefaultSpeechMeetingId(speechMeetings) {
 
 const EMPTY_CHAT_STATE = { meetings: {}, alerts: [], obituaries: {} };
 
-// Pregame "Join open seat" / "Spectate" button. It sits in the chat footer,
-// above the speech input, on every device (compact on a phone). It must stay
-// inside the game layout: the game session is a fixed, viewport-sized box, so
-// anything rendered after the game Stack is off screen and cannot be scrolled to.
-export function PregameSeatActions({ compact = false }) {
+// Pregame seat actions ("Join open seat" and "Spectate") which sits
+// above the chat box on mobile and sits in the player list on desktop
+export function PregameSeatActions() {
+  const isPhoneDevice = useIsPhoneDevice();
   const { review, history, isSpectator, socket, options, gameId } =
     useContext(GameContext);
-
   const action = pregameSeatAction({ review, history, isSpectator, options });
   if (!action) return null;
   const showJoin = action === "join";
 
+  const sx = isPhoneDevice ? {
+      display: "flex",
+      flexShrink: 0,
+      width: "100%",
+      boxSizing: "border-box",
+      px: 1.25,
+      py: 0.5,
+      py: 0.5,
+  } : {
+      display: "flex",
+      flexShrink: 0,
+      boxSizing: "border-box",
+      px: 1.25,
+      py: 0.5,
+      py: 0.5,
+  };
+
   return (
     <Box
-      sx={
-        compact
-          ? {
-              display: "flex",
-              flexShrink: 0,
-              width: "100%",
-              boxSizing: "border-box",
-              px: 1.25,
-              py: 0.5,
-            }
-          : { display: "flex", justifyContent: "center", p: 1 }
-      }
+      sx={sx}
     >
-      {showJoin ? (
-        <Button
-          variant="contained"
-          fullWidth={compact}
-          size={compact ? "small" : "medium"}
-          onClick={() => {
-            if (socket && socket.on) socket.send("takeSeat");
-          }}
-        >
-          Join open seat
-        </Button>
-      ) : (
-        <Button
-          variant="outlined"
-          fullWidth={compact}
-          size={compact ? "small" : "medium"}
-          onClick={() => {
-            window.location.assign(`/game/${gameId}?spectate=true`);
-          }}
-        >
-          Spectate
-        </Button>
-      )}
+    {showJoin ? (
+      <Button
+        variant="contained"
+        fullWidth={true}
+        size={"small"}
+        onClick={() => {
+          if (socket && socket.on) socket.send("takeSeat");
+        }}
+      >
+      Join open seat
+      </Button>
+    ) : (
+      <Button
+        variant="outlined"
+        fullWidth={true}
+        size={"small"}
+        onClick={() => {
+          window.location.assign(`/game/${gameId}?spectate=true`);
+        }}
+      >
+      Spectate
+      </Button>
+    )}
     </Box>
   );
 }
 
-// seatActions: false for a second chat shown at the same time (some board
-// games show the chat in the board panel during pregame), so the button
-// appears once.
+// When seatActions is false, the join spectators/players button is hidden on mobile.
+// This is needed because some minigames show the chat in the board panel
+// during pregame, so without setting seatActions to false, the button
+// would appear twice.
 export function TextMeetingLayout({ seatActions = true } = {}) {
   const game = useContext(GameContext);
   const isPhoneDevice = useIsPhoneDevice();
@@ -2487,7 +2492,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
               {newMessageCount} new message{newMessageCount === 1 ? "" : "s"}
             </button>
           )}
-          {seatActions && <PregameSeatActions compact={isPhoneDevice} />}
+          {(seatActions && isPhoneDevice) && <PregameSeatActions />}
           <KudosDock onResize={doAutoScroll} />
           {canSpeak && (
             <SpeechInput
@@ -4125,6 +4130,7 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
 }
 
 export function PlayerList(props) {
+  const isPhoneDevice = useIsPhoneDevice();
   const { renderMarker, renderRowEnd } = props;
   const game = useContext(GameContext);
 
@@ -4165,6 +4171,7 @@ export function PlayerList(props) {
           />
         </Tooltip>
       )}
+      {!isPhoneDevice && <PregameSeatActions />}
       <Box sx={{ marginLeft: "auto !important" }}>
         <PlayerCount
           game={game}
