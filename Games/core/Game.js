@@ -82,6 +82,12 @@ module.exports = class Game {
     this.hasIntegrity = true;
     this.ranked = options.settings.ranked;
     this.competitive = options.settings.competitive;
+    // As the host set them. A leaver or veg makes the game unranked and
+    // uncompetitive (makeUnranked); a rehost still uses these.
+    this.originalRanked = Boolean(options.settings.ranked);
+    this.originalCompetitive = Boolean(options.settings.competitive);
+    // false when the lobby got the default "<host>'s lobby" name.
+    this.lobbyNameCustom = options.settings.lobbyNameCustom;
     // Strictly true: the string "false" must not turn spectating on.
     this.spectating =
       options.settings.spectating === true ||
@@ -212,10 +218,13 @@ module.exports = class Game {
           setup: this.setup.id,
           total: this.setup.total,
           lobbyName: this.lobbyName,
+          lobbyNameCustom: this.lobbyNameCustom,
           private: this.private,
           guests: this.guests,
           ranked: this.ranked,
           competitive: this.competitive,
+          originalRanked: this.originalRanked,
+          originalCompetitive: this.originalCompetitive,
           rehostId: this.rehostId,
           scheduled: this.scheduled,
           spectating: this.spectating,
@@ -471,6 +480,7 @@ module.exports = class Game {
 
     for (let item of this.deathQueue) {
       this.recordDead(item.player, item.dead);
+      this.syncDeadForDms(item.player);
 
       if (item.dead && !item.player.alive) {
         this.broadcast("death", item.player.id);
@@ -500,6 +510,15 @@ module.exports = class Game {
     }
 
     this.exorciseQueue.empty();
+  }
+
+  // Mirror a player's alive state into Redis so the chat server can tell a
+  // dead player (DMs allowed) from an alive one (DMs locked in ranked and
+  // competitive games). See modules/dmGate.js.
+  syncDeadForDms(player) {
+    const userId = player && player.user && player.user.id;
+    if (!userId) return;
+    redis.setPlayerDead(this.id, userId, !player.alive).catch(() => {});
   }
 
   queueDeath(player) {
@@ -653,8 +672,13 @@ module.exports = class Game {
       if (spectator) {
         spectator.setUser(user);
         spectator.omniscient = omniscient;
+        this.restoreSpectatorMeetings(spectator);
         this.sendAllGameInfo(spectator);
-        if (omniscient) spectator.sendMeetings();
+        // The history above is the shared spectator view, which is not a
+        // member of any meeting, so it never says this spectator can talk.
+        // Send their own Pregame / Spectator Meeting info too, or the chat
+        // box is gone after a refresh.
+        spectator.sendMeetings();
         spectator.send("loaded");
         return;
       }
@@ -925,6 +949,25 @@ module.exports = class Game {
     redis.setSpectatorCount(this.id, this.spectators.length);
     this.broadcastSpectators();
     return spectator;
+  }
+
+  // A reconnecting spectator talks where a new one would: Pregame before the
+  // start, the spectator meeting after it.
+  restoreSpectatorMeetings(spectator) {
+    if (
+      !this.started &&
+      this.pregame &&
+      !this.pregame.finished &&
+      !this.pregame.members[spectator.id]
+    )
+      this.pregame.join(spectator);
+
+    if (
+      this.spectatorMeeting &&
+      !this.spectatorMeeting.finished &&
+      !this.spectatorMeeting.members[spectator.id]
+    )
+      this.spectatorMeeting.join(spectator);
   }
 
   // Someone who spectated this game before (a refresh after the reconnect
@@ -1739,6 +1782,9 @@ module.exports = class Game {
       anonymousDeck: this.anonymousDeck,
       graveyardParticipation: this.graveyardParticipation,
       lobbyName: this.lobbyName,
+      lobbyNameCustom: this.lobbyNameCustom,
+      originalRanked: this.originalRanked,
+      originalCompetitive: this.originalCompetitive,
       readyCheck: this.readyCheck,
       noVeg: this.noVeg,
     };
@@ -5402,6 +5448,9 @@ module.exports = class Game {
           endTime: Date.now(),
           ranked: this.ranked,
           competitive: this.competitive,
+          originalRanked: this.originalRanked,
+          originalCompetitive: this.originalCompetitive,
+          lobbyNameCustom: this.lobbyNameCustom,
           private: this.private,
           guests: this.guests,
           spectating: this.spectating,

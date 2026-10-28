@@ -1,7 +1,7 @@
 // SHERIFF: Z is always the real Cop; Gauss is the Janitor fake-claiming Cop.
 // Shoot Gauss → Z flexes (EZ Clap, Jerry sticker, LMAO!). Shoot the Lawyer Z
-// reported guilty → the flip proves Z and the town lynches Gauss. Hold the
-// shot and the lynch flip proves Z. If Z survives Day 1, Mafia kills Z Night 2 and the
+// reported guilty → the flip proves Z and the town condemns Gauss. Hold the
+// shot and the condemn flip proves Z. If Z survives Day 1, Mafia kills Z Night 2 and the
 // Journalist (who was on Z) shares Z's final guilty.
 
 const WAIT_LESSON = "As Sheriff, waiting to gather info can be better than shooting early.";
@@ -26,7 +26,7 @@ module.exports = {
   userSeat: "sheriff",
   blurb: "Two Cop claims, one gun. Shoot now, or wait for more information?",
   available: true,
-  freeVote: (t, meeting) => meeting.name === "Village" && t.data.freeLynch,
+  freeVote: (t, meeting) => meeting.name === "Village" && t.data.freeCondemn,
   intro:
     "Welcome to the tutorial! You are the Sheriff, on the town side. You have a gun that can kill one player during the day. Nobody's role is known yet. It's Night 1.",
 
@@ -55,7 +55,7 @@ module.exports = {
       t.guide("Right now it's one word against another. Nothing proves either claim yet.");
       const choice = await t.decide({
         token: k,
-        text: `Your choice. Your gun is in your Inventory: click it to open Shoot Gun. Shoot one of the Cop claims (${copN} or ${janN}), or shoot ${lawN}, the player ${copN} reported guilty. OR hold your shot: vote ${lawN} in the Village box to test ${copN}'s claim with a lynch.`,
+        text: `Your choice. Your gun is in your Inventory: click it to open Shoot Gun. Shoot one of the Cop claims (${copN} or ${janN}), or shoot ${lawN}, the player ${copN} reported guilty. OR hold your shot: vote ${lawN} in the Village box to test ${copN}'s claim with a condemn.`,
         idleHint: GUN_HINT,
         options: [
           { id: "shootFake", label: `Shoot ${janN}`, vote: { meeting: "Shoot Gun", target: "janitor" } },
@@ -117,7 +117,7 @@ module.exports = {
       if (t.branch === "wait") return waitDay2(t, k);
       if (t.branch === "shootFake" || t.branch === "shootGuilty") {
         if (t.data.copDiedN2) return afterCopDiedDay2(t, k, "mafioso");
-        return lynchDay(t, k, "mafioso", 2);
+        return condemnDay(t, k, "mafioso", 2);
       }
     },
 
@@ -127,7 +127,7 @@ module.exports = {
     },
 
     async Day3(t, k) {
-      return lynchDay(t, k, "mafioso", 3);
+      return condemnDay(t, k, "mafioso", 3);
     },
   },
 
@@ -135,11 +135,11 @@ module.exports = {
     t.branch === "shootReal"
       ? [
           "The Mafia won. You shot the real Cop, so the town lost its best information and the Mafia took over.",
-          `Lesson: ${WAIT_LESSON} With one more day, the lynch flip and the real Cop's next report would have shown you who to shoot.`,
+          `Lesson: ${WAIT_LESSON} With one more day, the condemn flip and the real Cop's next report would have shown you who to shoot.`,
         ]
       : t.branch === "shootGuilty"
       ? [
-          "The town won! You shot on the Cop's guilty: the Lawyer flip proved the real Cop and exposed the fake Cop claim, and the town lynched them.",
+          "The town won! You shot on the Cop's guilty: the Lawyer flip proved the real Cop and exposed the fake Cop claim, and the town condemned them.",
           `A guilty from a Cop claim is a fair reason to shoot, though you were still trusting one claim over another. ${WAIT_LESSON}`,
         ]
       : t.branch === "wait"
@@ -164,7 +164,7 @@ async function shootFakeDay1(t, k) {
     ["cop", `Told you. ${t.nameOf("lawyer")} is guilty.`],
     ["lawyer", "This is a setup!"],
   ], k);
-  await lynchVote(t, k, "lawyer");
+  await condemnVote(t, k, "lawyer");
 }
 
 async function shootGuiltyDay1(t, k) {
@@ -179,7 +179,7 @@ async function shootGuiltyDay1(t, k) {
     ["janitor", "Hold on, I can explain..."],
     ["v3", `Explain to the noose. ${janN}.`],
   ], k);
-  await lynchVote(t, k, "janitor", `${janN} fake-claimed Cop, so they're Mafia. Vote ${janN} in the Village box.`);
+  await condemnVote(t, k, "janitor", `${janN} fake-claimed Cop, so they're Mafia. Vote ${janN} in the Village box.`);
 }
 
 async function shootRealDay1(t, k) {
@@ -193,7 +193,7 @@ async function shootRealDay1(t, k) {
     ["mafioso", t.nameOf("v1")],
   ], k);
   t.guide("The Mafia is pushing the town onto a Villager. Without the Cop, the town can't tell who's lying. Vote however you like and watch.");
-  t.data.freeLynch = true;
+  t.data.freeCondemn = true;
   await t.everyoneVotes("v1", k, "Village", {
     dissenters: { v1: "mafioso" },
   });
@@ -201,9 +201,9 @@ async function shootRealDay1(t, k) {
 }
 
 async function waitDay1(t, k) {
-  t.guide("You held your shot. The town still lynches today; the result is new information.");
+  t.guide("You held your shot. The town still condemns today; the result is new information.");
   await t.chat("Village", [
-    ["v1", `Sheriff's not shooting yet. Then let's lynch ${t.nameOf("lawyer")} and see what flips.`],
+    ["v1", `Sheriff's not shooting yet. Then let's condemn ${t.nameOf("lawyer")} and see what flips.`],
     ["journalist", `Agreed. If ${t.nameOf("lawyer")} flips Mafia, ${t.nameOf("cop")} is real.`],
     ["janitor", `Fine, but when ${t.nameOf("lawyer")} flips town, ${t.nameOf("cop")}'s next.`],
   ], k);
@@ -266,7 +266,7 @@ async function waitDay2(t, k) {
   await t.wait(t.timing.beat, k);
   const janRole = t.constructor.CAST.janitor.role;
   t.guide(`${t.nameOf("janitor")} flipped ${janRole}, Mafia. ${WAIT_LESSON} You shot with proof instead of a guess.`);
-  await lynchVote(t, k, "mafioso");
+  await condemnVote(t, k, "mafioso");
 }
 
 // Shoot-fake path after Mafia killed Z Night 2: Journalist carries the last guilty.
@@ -279,22 +279,22 @@ async function afterCopDiedDay2(t, k, target) {
   t.guide(
     `Mafia killed ${t.nameOf("cop")} last night. ${t.nameOf("journalist")} was reading them and still has the final report: ${t.nameOf(target)} is guilty.`
   );
-  await lynchVote(t, k, target, `Vote ${t.nameOf(target)} — the Cop's last guilty, carried by the Journalist.`);
+  await condemnVote(t, k, target, `Vote ${t.nameOf(target)} — the Cop's last guilty, carried by the Journalist.`);
 }
 
-async function lynchVote(t, k, target, text, fast = true) {
+async function condemnVote(t, k, target, text, fast = true) {
   await t.expectVote("Village", target, {
     token: k,
     label: `Vote ${t.nameOf(target)}`,
     text: text || `The Cop said ${t.nameOf(target)} is guilty. Vote ${t.nameOf(target)} in the Village box.`,
     also: [
       {
-        id: "noLynch",
+        id: "noCondemn",
         label: "Vote No one",
         vote: { meeting: "Village", target: "*" },
         bad: {
-          reactions: [["cop", "No lynch while we have a guilty? Come on, Sheriff."]],
-          lesson: "With the Sheriff alive the town almost never skips a lynch: every lynch flips a role and gives information. Vote the guilty.",
+          reactions: [["cop", "No condemn while we have a guilty? Come on, Sheriff."]],
+          lesson: "With the Sheriff alive the town almost never skips a condemn: every condemn flips a role and gives information. Vote the guilty.",
         },
       },
     ],
@@ -307,9 +307,9 @@ async function lynchVote(t, k, target, text, fast = true) {
   await t.advance(k);
 }
 
-async function lynchDay(t, k, target, day) {
+async function condemnDay(t, k, target, day) {
   await t.chat("Village", [
     ["cop", day === 2 ? `Checked ${t.nameOf("mafioso")} last night: GUILTY.` : `Only ${t.nameOf(target)} left.`],
   ], k);
-  await lynchVote(t, k, target);
+  await condemnVote(t, k, target);
 }

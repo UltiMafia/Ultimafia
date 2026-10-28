@@ -4,8 +4,9 @@ const {
   pregameSeatAction,
 } = require("../react_main/src/shared/pregameSeatAction");
 
-// The pregame seat button in the game chat footer (PregameSeatActions). The
-// layout itself is covered by react_main/test/run-seat-actions.cjs.
+// The pregame seat action logic (PregameSeatActions), rendered in the player
+// list on desktop and in the game chat footer on mobile. The layout itself is
+// covered by react_main/test/run-seat-actions.cjs.
 describe("Pregame seat action", function () {
   const pregame = { currentState: -1, states: { [-1]: {} } };
   const started = { currentState: 1, states: { [-1]: {}, 1: {} } };

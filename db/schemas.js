@@ -442,6 +442,11 @@ var schemas = {
     endTime: { type: Number, index: true },
     ranked: Boolean,
     competitive: Boolean,
+    // As the host set them, before a leaver made the game unranked.
+    originalRanked: Boolean,
+    originalCompetitive: Boolean,
+    // false: the lobby had the default "<host>'s lobby" name.
+    lobbyNameCustom: Boolean,
     private: Boolean,
     guests: Boolean,
     spectating: Boolean,
