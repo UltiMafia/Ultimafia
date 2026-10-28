@@ -82,6 +82,12 @@ module.exports = class Game {
     this.hasIntegrity = true;
     this.ranked = options.settings.ranked;
     this.competitive = options.settings.competitive;
+    // As the host set them. A leaver or veg makes the game unranked and
+    // uncompetitive (makeUnranked); a rehost still uses these.
+    this.originalRanked = Boolean(options.settings.ranked);
+    this.originalCompetitive = Boolean(options.settings.competitive);
+    // false when the lobby got the default "<host>'s lobby" name.
+    this.lobbyNameCustom = options.settings.lobbyNameCustom;
     // Strictly true: the string "false" must not turn spectating on.
     this.spectating =
       options.settings.spectating === true ||
@@ -212,10 +218,13 @@ module.exports = class Game {
           setup: this.setup.id,
           total: this.setup.total,
           lobbyName: this.lobbyName,
+          lobbyNameCustom: this.lobbyNameCustom,
           private: this.private,
           guests: this.guests,
           ranked: this.ranked,
           competitive: this.competitive,
+          originalRanked: this.originalRanked,
+          originalCompetitive: this.originalCompetitive,
           rehostId: this.rehostId,
           scheduled: this.scheduled,
           spectating: this.spectating,
@@ -1763,6 +1772,9 @@ module.exports = class Game {
       anonymousDeck: this.anonymousDeck,
       graveyardParticipation: this.graveyardParticipation,
       lobbyName: this.lobbyName,
+      lobbyNameCustom: this.lobbyNameCustom,
+      originalRanked: this.originalRanked,
+      originalCompetitive: this.originalCompetitive,
       readyCheck: this.readyCheck,
       noVeg: this.noVeg,
     };
@@ -5426,6 +5438,9 @@ module.exports = class Game {
           endTime: Date.now(),
           ranked: this.ranked,
           competitive: this.competitive,
+          originalRanked: this.originalRanked,
+          originalCompetitive: this.originalCompetitive,
+          lobbyNameCustom: this.lobbyNameCustom,
           private: this.private,
           guests: this.guests,
           spectating: this.spectating,

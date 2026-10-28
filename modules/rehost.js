@@ -3,6 +3,7 @@
 const models = require("../db/models");
 const crypto = require("crypto");
 const redis = require("./redis");
+const { rehostLobbyNameIsCustom } = require("./lobbyName");
 
 // Body fields of POST /api/game/host that describe the lobby. Everything here
 // is taken from the old game when a participant rehosts it. Not carried:
@@ -39,9 +40,14 @@ function parseJSON(value, fallback) {
 
 /**
  * Pure: turns a game's stored settings into the /api/game/host body that
- * recreates it. `source` = { setupId, lobby, lobbyName, private, guests,
- * ranked, competitive, spectating, readyCheck, noVeg, stateLengths (ms),
+ * recreates it. `source` = { setupId, lobby, lobbyName, lobbyNameCustom,
+ * hostNames, private, guests, ranked, competitive, originalRanked,
+ * originalCompetitive, spectating, readyCheck, noVeg, stateLengths (ms),
  * anonymousGame, anonymousDeck ([{id}] or ids), gameTypeOptions (obj|JSON) }.
+ *
+ * Ranked and competitive are taken as the host set them: someone leaving makes
+ * the game itself unranked, but the rehost is the lobby the host made. A
+ * default lobby name is left out so the new lobby gets the rehoster's default.
  */
 function buildRehostBody(source) {
   const gameTypeOptions = parseJSON(source.gameTypeOptions, {}) || {};
@@ -60,11 +66,11 @@ function buildRehostBody(source) {
     ...gameTypeOptions,
     setup: source.setupId,
     lobby: source.lobby,
-    lobbyName: source.lobbyName || undefined,
+    lobbyName: rehostLobbyNameIsCustom(source) ? source.lobbyName : undefined,
     private: Boolean(source.private),
     guests: Boolean(source.guests),
-    ranked: Boolean(source.ranked),
-    competitive: Boolean(source.competitive),
+    ranked: Boolean(source.originalRanked ?? source.ranked),
+    competitive: Boolean(source.originalCompetitive ?? source.competitive),
     spectating: Boolean(source.spectating),
     readyCheck: Boolean(source.readyCheck),
     noVeg: Boolean(source.noVeg),
@@ -86,16 +92,21 @@ async function getRehostSource(rehostId, userId) {
   const live = await redis.getGameInfo(rehostId, true);
   const record = await models.Game.findOne({ id: rehostId, broken: { $ne: true } })
     .select(
-      "type lobby lobbyName setup users private guests ranked competitive spectating readyCheck noVeg stateLengths gameTypeOptions anonymousGame anonymousDeck"
+      "type lobby lobbyName lobbyNameCustom setup users private guests ranked competitive originalRanked originalCompetitive spectating readyCheck noVeg stateLengths gameTypeOptions anonymousGame anonymousDeck"
     )
     .populate("setup", "id")
+    .populate("users", "id name")
     .lean();
 
   const user = record
     ? await models.User.findOne({ id: userId }).select("_id").lean()
     : null;
   const inRecord = Boolean(
-    record && user && (record.users || []).some((u) => u && String(u) === String(user._id))
+    record &&
+      user &&
+      (record.users || []).some(
+        (u) => u && String(u._id || u) === String(user._id)
+      )
   );
   const inLive = Boolean(
     live && (live.hostId === userId || (live.players || []).includes(userId))
@@ -104,17 +115,26 @@ async function getRehostSource(rehostId, userId) {
 
   if (live && live.settings && live.settings.setup) {
     const s = live.settings;
+    let hostNames = [];
+    if (typeof s.lobbyNameCustom !== "boolean" && live.hostId) {
+      const host = await models.User.findOne({ id: live.hostId }).select("name").lean();
+      if (host) hostNames = [host.name];
+    }
     return {
       gameType: live.type,
       hostId: live.hostId,
-      body: buildRehostBody({ ...s, setupId: s.setup, lobby: live.lobby }),
+      body: buildRehostBody({ ...s, setupId: s.setup, lobby: live.lobby, hostNames }),
     };
   }
   if (record && record.setup) {
     return {
       gameType: record.type,
       hostId: null,
-      body: buildRehostBody({ ...record, setupId: record.setup.id }),
+      body: buildRehostBody({
+        ...record,
+        setupId: record.setup.id,
+        hostNames: (record.users || []).map((u) => u && u.name),
+      }),
     };
   }
   return null;

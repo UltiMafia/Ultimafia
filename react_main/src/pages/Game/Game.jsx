@@ -414,12 +414,15 @@ export default function Game(props) {
           gameType: gameType,
           setup: setup.id,
           lobby: options.lobby,
-          lobbyName: options.lobbyName,
+          // A default "<host>'s lobby" name becomes the rehoster's default.
+          lobbyName:
+            options.lobbyNameCustom === false ? undefined : options.lobbyName,
           private: options.private,
           spectating: options.spectating,
           guests: options.guests,
-          ranked: options.ranked,
-          competitive: options.competitive,
+          // As the host set them, not as a leaver left them.
+          ranked: options.originalRanked ?? options.ranked,
+          competitive: options.originalCompetitive ?? options.competitive,
           readyCheck: options.readyCheck,
           noVeg: options.noVeg,
           anonymousGame: options.anonymousGame,
