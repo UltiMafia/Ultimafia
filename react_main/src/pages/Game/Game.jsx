@@ -2850,6 +2850,8 @@ function Message(props) {
   const replyQuoteState = replyQuote
     ? history.states[replyQuote.fromState]
     : undefined;
+  // Render the reply message as a new block, like on Discord
+  if (replyQuoteState) rowProps.chainToPrevious = false;
   const replyPreview = useMemo(
     () =>
       replyQuote
