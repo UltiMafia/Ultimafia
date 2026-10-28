@@ -50,6 +50,8 @@ export function emotify(text, customEmotes, customStickers, options) {
   if (text == null) return;
 
   const isSystem = Boolean(options && options.system);
+  const collapseStickers = Boolean(options && options.collapseStickers);
+  const isReply = Boolean(options && options.isReply);
   // System/game text never uses player stickers or custom emotes.
   const stickers = isSystem ? null : customStickers;
   const emotes = isSystem ? null : customEmotes;
@@ -77,7 +79,11 @@ export function emotify(text, customEmotes, customStickers, options) {
         words[j] = <Emote emote={word} />;
         stickerOnlyText = false;
       } else if (hasSticker) {
-        words[j] = <CustomSticker sticker={stickers[word]} />;
+        if (collapseStickers) {
+          words[j] = <span className="collapsed-sticker-label">Click to see sticker </span>
+        } else {
+          words[j] = <CustomSticker sticker={stickers[word]} />;
+        }
         emoteOnlyText = false;
       } else if (hasEmote) {
         words[j] = <CustomEmote emote={emotes[word]} />;
@@ -117,7 +123,7 @@ export function emotify(text, customEmotes, customStickers, options) {
         segment
       )
     );
-  } else if (emoteOnlyText) {
+  } else if (emoteOnlyText && !isReply) {
     // if the entire text is only emotes, make them larger
     text = text.map((segment, i) =>
       React.isValidElement(segment) ? (

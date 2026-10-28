@@ -35,3 +35,8 @@
   background-repeat: no-repeat;
   background-position: center;
 }
+
+.collapsed-sticker-label {
+  font-style: italic;
+  opacity: 0.8;
+}

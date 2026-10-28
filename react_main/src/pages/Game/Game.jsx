@@ -2319,6 +2319,10 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
       return false;
     }
 
+    if (message.replyTo) {
+      return false;
+    }
+
     if (message.senderId === previousMessage.senderId) {
       return true;
     } else {
@@ -2850,8 +2854,6 @@ function Message(props) {
   const replyQuoteState = replyQuote
     ? history.states[replyQuote.fromState]
     : undefined;
-  // Render the reply message as a new block, like on Discord
-  if (replyQuoteState) rowProps.chainToPrevious = false;
   const replyPreview = useMemo(
     () =>
       replyQuote
@@ -2966,6 +2968,7 @@ function ReplyReference(props) {
           spectators={spectators}
           customEmotes={reply.customEmotes}
           customStickers={reply.customStickers}
+          collapseStickers={true}
           filterProfanity
           linkify={false}
           emotify
