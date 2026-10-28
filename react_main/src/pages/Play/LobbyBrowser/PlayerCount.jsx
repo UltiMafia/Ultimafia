@@ -4,7 +4,11 @@ import { usePopover, InfoPopover } from "components/Popover";
 
 import "css/join.css";
 import { Time } from "components/Basic";
-import { lobbyCountFromInfo, displayedLobbyCount } from "shared/lobbyCount";
+import {
+  lobbyCountFromInfo,
+  displayedLobbyCount,
+  lobbyBarValue,
+} from "shared/lobbyCount";
 
 export const PlayerCount = (props) => {
   const game = props.game;
@@ -48,7 +52,7 @@ export const PlayerCount = (props) => {
         onClick={handleClick}
       >
         <progress
-          value={gameNotFinished ? numSlotsTaken : 0}
+          value={lobbyBarValue(status, numSlotsTaken)}
           max={numSlotsTotal}
         />
         <Stack
