@@ -1494,16 +1494,6 @@ function sortRoles(gameType) {
   };
 }
 
-function hasOpenRole(roles, roleName) {
-  roles = Object.keys(roles);
-  roleName = utils.strParseAlphaNum(roleName);
-  var regex = new RegExp(`${roleName}:`);
-
-  for (let role of roles) if (role.match(regex)) return true;
-
-  return false;
-}
-
 const countChecks = {
   Mafia: (roles, count, total, closed, unique, uniqueWithoutModifier) => {
     if (total < 3 || total > constants.maxPlayers)

@@ -17,19 +17,6 @@ export function ItemList(props) {
   return <div className={`item-list ${props.className || ""}`}>{itemRows}</div>;
 }
 
-export function PanelGrid(props) {
-  const panels = props.panels.map((panel, i) => (
-    <div className="box-panel" key={i}>
-      <div className="heading">
-        {panel.icon}
-        <div className="heading-text">{panel.name}</div>
-      </div>
-      <div className="content">{panel.text}</div>
-    </div>
-  ));
-  return <div className="panel-grid">{panels}</div>;
-}
-
 export function Time(props) {
   let unit = "millisecond";
   let value = props.millisec;
@@ -93,31 +80,6 @@ export function Time(props) {
     if (value > 1) unit += "s";
     return `${value} ${unit}${suffix}`;
   }
-}
-
-export function NotificationHolder(props) {
-  const notifCount = props.notifCount;
-  const onClick = props.onClick;
-  const lOffset = props.lOffset;
-
-  return (
-    <div
-      className={`notif-bound ${props.className || ""}`}
-      onClick={onClick}
-      ref={props.fwdRef}
-    >
-      {notifCount > 0 && (
-        <>
-          <i
-            className={`fas fa-circle notif-icon ${lOffset ? "l-offset" : ""}`}
-          >
-            <div className="notif-count">{notifCount}</div>
-          </i>
-        </>
-      )}
-      {props.children}
-    </div>
-  );
 }
 
 function escapeRegex(s) {

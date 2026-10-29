@@ -32,10 +32,6 @@ module.exports = class Queue {
     return this.items.splice(index, 1)[0];
   }
 
-  removeIndex(i) {
-    return this.items.splice(i, 1)[0];
-  }
-
   empty() {
     this.items = [];
   }

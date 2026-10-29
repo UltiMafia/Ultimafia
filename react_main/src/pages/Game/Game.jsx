@@ -4536,55 +4536,6 @@ function PregameSpectatorRows() {
   );
 }
 
-export function OptionsList() {
-  const game = useContext(GameContext);
-  const gameOptions = game.options.gameTypeOptions;
-
-  if (game.history.currentState !== -1) {
-    return <></>;
-  }
-
-  const formatOptionName = (optionName) => {
-    const words = optionName.split(/(?=[A-Z])/);
-    const formattedWords = words.map((word, index) => {
-      if (index === 0) {
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      } else {
-        return ` ${word.charAt(0).toUpperCase() + word.slice(1)}`;
-      }
-    });
-    return formattedWords.join("");
-  };
-
-  const formatOptionValue = (optionValue) => {
-    if (typeof optionValue === "boolean") {
-      return optionValue ? "Enabled" : "Disabled";
-    }
-    return optionValue;
-  };
-
-  return (
-    <SideMenu
-      title="Options"
-      scrollable
-      content={
-        <table className="options-table">
-          <tbody>
-            {Object.entries(gameOptions).map(([optionName, optionValue]) => (
-              <tr key={optionName}>
-                <td className="option-name">{formatOptionName(optionName)}:</td>
-                <td className="option-value">
-                  {formatOptionValue(optionValue)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      }
-    />
-  );
-}
-
 function createActionDescriptor(meeting, baseProps, style) {
   if (!meeting) return null;
 

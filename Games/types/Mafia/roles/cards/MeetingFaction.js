@@ -203,28 +203,3 @@ module.exports = class MeetingFaction extends Card {
     };
   }
 };
-
-function excludeMafiaOnlyIfNotAnonymous(player) {
-  let mafiaMeeting = player.game.getMeetingByName("Faction Kill");
-
-  for (let person of player.game.alivePlayers()) {
-    if (
-      player.game
-        .getRoleTags(person.role.name)
-        .includes("Faction Meeting Interaction")
-    ) {
-      return false;
-    }
-  }
-  if (
-    mafiaMeeting &&
-    mafiaMeeting.anonymous &&
-    FACTION_KILL.includes(player.faction)
-  ) {
-    return false;
-  }
-
-  if (player.faction && FACTION_KILL.includes(player.faction)) {
-    return true;
-  }
-}

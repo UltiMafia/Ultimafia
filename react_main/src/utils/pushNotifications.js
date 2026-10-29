@@ -170,28 +170,6 @@ function keysMatch(existing, wanted) {
   return a.every((byte, i) => byte === wanted[i]);
 }
 
-/**
- * Returns the endpoint that was dropped so the caller can tell the server which
- * target to forget, or null if there was nothing to unsubscribe.
- */
-export async function unsubscribeFromPush() {
-  const subscription = activeSubscription;
-  activeSubscription = null;
-
-  if (!subscription) return null;
-
-  const { endpoint } = subscription;
-
-  try {
-    await subscription.unsubscribe();
-  } catch (e) {
-    // Already gone, or the browser cleared it. The server prunes on its own when
-    // the push service reports the endpoint as expired, so this is not fatal.
-  }
-
-  return endpoint;
-}
-
 /** Forget the local handle without revoking the browser subscription. */
 export function releaseSubscription() {
   const endpoint = activeSubscription?.endpoint || null;
