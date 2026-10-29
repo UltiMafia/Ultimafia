@@ -26,6 +26,8 @@ const fortunePoints = require("../modules/fortunePoints");
 const errors = require("../lib/errors");
 const skillRating = require("../modules/skillRating");
 const blocks = require("../modules/blocks");
+const banAppeals = require("../modules/banAppeals");
+const plotArmor = require("../modules/plotArmor");
 const router = express.Router();
 
 router.get("/groups", async function (req, res) {
@@ -547,6 +549,39 @@ router.post("/roleIconCredit", async function (req, res) {
   }
 });
 
+// Ban/unban scope. "linked" (the default, also when the field is missing)
+// applies the ban or unban to every account linked to the user by a shared IP
+// or device fingerprint (routeUtils.getAltAccountIds), as it always has.
+// "single" applies it to the chosen account only. Returns null for any other
+// value.
+const BAN_SCOPES = ["linked", "single"];
+const BAN_SCOPE_LOG_LABELS = {
+  linked: "All linked accounts",
+  single: "This account only",
+};
+
+function parseBanScope(value) {
+  if (value == null) return "linked";
+  return typeof value === "string" && BAN_SCOPES.includes(value)
+    ? value
+    : null;
+}
+
+// The mod log text for a scope, e.g. "All linked accounts (3 accounts)",
+// plus a Plot Armor note when armored linked accounts were skipped.
+function banScopeLogLabel(scope, accountIds, armorSkipped = []) {
+  const armorNote = plotArmor.plotArmorLogNote(armorSkipped);
+  if (scope === "single") return BAN_SCOPE_LOG_LABELS.single;
+  const count = accountIds.length;
+  const label = `${BAN_SCOPE_LOG_LABELS.linked} (${count} account${
+    count === 1 ? "" : "s"
+  })`;
+  return armorNote ? `${label}; ${armorNote}` : label;
+}
+
+const plotArmorWarning = plotArmor.plotArmorStartupWarning();
+if (plotArmorWarning) logger.warn(plotArmorWarning);
+
 // Unified ban endpoint
 router.post("/ban", async (req, res) => {
   try {
@@ -556,6 +591,33 @@ router.post("/ban", async (req, res) => {
     var banType = String(req.body.banType);
     var perm = "ban";
     var banRank = await redis.getUserRank(userIdToBan);
+    // Shown to the user on the ban page, so a site ban needs one.
+    var reason = banAppeals.normalizeBanReason(req.body.reason);
+    var scope = parseBanScope(req.body.scope);
+
+    if (!scope) {
+      errors.badRequest(
+        res,
+        "Invalid ban scope. Use 'single' (this account only) or 'linked' (all linked accounts)."
+      );
+      return;
+    }
+
+    if (req.body.reason != null && String(req.body.reason).trim() && !reason) {
+      errors.badRequest(
+        res,
+        `The reason can be at most ${banAppeals.MAX_BAN_REASON_LENGTH} characters.`
+      );
+      return;
+    }
+
+    if (banType === "site" && !reason) {
+      errors.badRequest(
+        res,
+        "A reason is required for a site ban. The user sees it on the ban page."
+      );
+      return;
+    }
 
     if (banRank == null && banType !== "site") {
       errors.notFound(res, "User does not exist.");
@@ -629,8 +691,12 @@ router.post("/ban", async (req, res) => {
       site: "site",
     };
 
-    // Get all alt account IDs (accounts sharing IPs or exact fingerprints)
-    const allAltAccountIds = await routeUtils.getAltAccountIds(userIdToBan);
+    // Get all alt account IDs (accounts sharing IPs or exact fingerprints).
+    // With scope "single" only the chosen account is banned.
+    const allAltAccountIds =
+      scope === "single"
+        ? [userIdToBan]
+        : await routeUtils.getAltAccountIds(userIdToBan);
 
     // Get mod's rank to validate which alt accounts can be banned
     const modRank = await redis.getUserRank(userId);
@@ -639,10 +705,14 @@ router.post("/ban", async (req, res) => {
       return;
     }
 
+    // Plot Armor (dev/QA): never ban an armored account just because it is
+    // linked; the target itself is always kept.
+    const armor = plotArmor.splitArmored(allAltAccountIds, userIdToBan);
+
     // Filter alt accounts to only include those the mod has permission to ban
     // (only ban accounts with same or lower rank)
     const altAccountIds = [];
-    for (const altUserId of allAltAccountIds) {
+    for (const altUserId of armor.kept) {
       const altRank = await redis.getUserRank(altUserId);
       // If alt account rank is null, treat it as 0 (lowest rank)
       const altRankValue = altRank == null ? 0 : altRank;
@@ -660,7 +730,9 @@ router.post("/ban", async (req, res) => {
         length,
         banPermissions[banType],
         banDbTypes[banType],
-        userId
+        userId,
+        reason,
+        { scope }
       )
     );
     await Promise.all(banPromises);
@@ -670,16 +742,17 @@ router.post("/ban", async (req, res) => {
         { id: { $in: altAccountIds } },
         { $set: { banned: true } }
       ).exec();
-      await models.Session.deleteMany({
-        "session.user.id": { $in: altAccountIds },
-      }).exec();
+      // Signed out, but a reload of an open tab shows the ban page.
+      await banAppeals.signOutToBanPage(altAccountIds);
     }
 
     await routeUtils.createNotification(
       {
         content: `You have received a violation. Your ${
           banTypeLabels[banType]
-        } ban expires on ${banExpires.toLocaleString()}.`,
+        } ban expires on ${banExpires.toLocaleString()}.${
+          reason ? ` Reason: ${reason}` : ""
+        }`,
         icon: "ban",
       },
       altAccountIds // Notify only banned alt accounts
@@ -694,10 +767,16 @@ router.post("/ban", async (req, res) => {
       site: "Site Ban",
     };
 
-    routeUtils.createModAction(userId, modActionNames[banType], [
-      userIdToBan,
-      lengthStr,
-    ]);
+    routeUtils.createModAction(
+      userId,
+      modActionNames[banType],
+      [
+        userIdToBan,
+        lengthStr,
+        banScopeLogLabel(scope, altAccountIds, armor.skipped),
+      ],
+      reason
+    );
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
@@ -792,6 +871,219 @@ router.post("/clearleavepenalty", async (req, res) => {
   }
 });
 
+// Ban-page appeals: admins vote; the appeal is decided at
+// banAppeals.APPEAL_VOTES_REQUIRED votes for one side. Deciding never unbans;
+// lifting the ban is a separate site /unban.
+async function verifyAppealAdmin(req, res) {
+  var userId = await routeUtils.verifyLoggedIn(req, true);
+  if (!userId) {
+    errors.unauthorized(res, "You must be signed in.");
+    return null;
+  }
+  var userIdToActOn = String(req.body.userId || req.query.userId || "");
+  var rank = await redis.getUserRank(userIdToActOn);
+
+  if (rank == null) {
+    errors.notFound(res, "User does not exist.");
+    return null;
+  }
+
+  if (!(await routeUtils.verifyPermission(res, userId, "unban", rank + 1)))
+    return null;
+
+  // Appeals go to the admins (narrowed by BAN_APPEAL_VOTER_ALLOWLIST when it
+  // is set), so only they vote on them.
+  if (!(await banAppeals.getAdminIds()).includes(userId)) {
+    errors.forbidden(res, "Only admins can vote on ban appeals.");
+    return null;
+  }
+
+  return { userId, userIdToActOn };
+}
+
+// The public mod log never shows a ban appeal vote's justification.
+function hideAppealVoteReason(action) {
+  if (!action || action.name !== "Vote On Ban Appeal") return action;
+  const plain =
+    typeof action.toJSON === "function" ? action.toJSON() : { ...action };
+  delete plain.reason;
+  return plain;
+}
+
+// The admins' Ban Appeals page. Only the admins who get appeals (Owner/Admin,
+// narrowed by BAN_APPEAL_VOTER_ALLOWLIST) with the unban permission may use
+// it; for one case they must also outrank the banned user, like the vote
+// command.
+async function verifyAppealPageAdmin(req, res) {
+  var userId = await routeUtils.verifyLoggedIn(req, true);
+  if (!userId) {
+    errors.unauthorized(res, "You must be signed in.");
+    return null;
+  }
+  if (!(await routeUtils.verifyPermission(res, userId, "unban"))) return null;
+  if (!(await banAppeals.isAppealAdmin(userId))) {
+    errors.forbidden(res, "Only admins can view ban appeals.");
+    return null;
+  }
+  return userId;
+}
+
+async function verifyAppealCaseAdmin(req, res) {
+  var userId = await verifyAppealPageAdmin(req, res);
+  if (!userId) return null;
+  var appeal = await models.SiteBanAppeal.findOne({
+    id: String(req.params.appealId || ""),
+  }).select("id userId");
+  if (!appeal) {
+    errors.notFound(res, "This appeal does not exist.");
+    return null;
+  }
+  var rank = await redis.getUserRank(appeal.userId);
+  if (
+    !(await routeUtils.verifyPermission(
+      res,
+      userId,
+      "unban",
+      (rank == null ? 0 : rank) + 1
+    ))
+  )
+    return null;
+  return { userId, appeal };
+}
+
+// Whether to show the Ban Appeals tab. Never an error, so the client can ask
+// for anyone.
+router.get("/banAppeals/access", async (req, res) => {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req, true);
+    var allowed =
+      !!userId &&
+      (await routeUtils.verifyPermission(userId, "unban")) &&
+      (await banAppeals.isAppealAdmin(userId));
+    res.send({ allowed: !!allowed });
+  } catch (e) {
+    logger.error(e);
+    res.send({ allowed: false });
+  }
+});
+
+router.get("/banAppeals", async (req, res) => {
+  try {
+    var userId = await verifyAppealPageAdmin(req, res);
+    if (!userId) return;
+    var filter = ["pending", "resolved", "all"].includes(req.query.filter)
+      ? req.query.filter
+      : "pending";
+    res.send(
+      await banAppeals.listAppealsForAdmins({ filter, viewerId: userId })
+    );
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not load ban appeals. Please try again.");
+  }
+});
+
+router.get("/banAppeals/:appealId", async (req, res) => {
+  try {
+    var ids = await verifyAppealCaseAdmin(req, res);
+    if (!ids) return;
+    res.send(
+      await banAppeals.getAppealCaseForAdmins(ids.appeal.id, ids.userId)
+    );
+  } catch (e) {
+    if (e instanceof banAppeals.AppealError) {
+      res.status(e.status).send(e.message);
+      return;
+    }
+    logger.error(e);
+    errors.serverError(res, "Could not load the appeal. Please try again.");
+  }
+});
+
+// Same vote model as /banAppeal/vote (and the DM / command path): one vote
+// per admin, changeable while pending, with a required justification.
+router.post("/banAppeals/:appealId/vote", async (req, res) => {
+  try {
+    var ids = await verifyAppealCaseAdmin(req, res);
+    if (!ids) return;
+    var vote = String(req.body.vote || "").toLowerCase();
+    var result = await banAppeals.voteOnAppeal({
+      modId: ids.userId,
+      appealId: ids.appeal.id,
+      vote,
+      notes: req.body.justification,
+    });
+    await recordAppealVoteActions(ids.userId, ids.appeal.userId, result, vote);
+    res.send(
+      await banAppeals.getAppealCaseForAdmins(ids.appeal.id, ids.userId)
+    );
+  } catch (e) {
+    if (e instanceof banAppeals.AppealError) {
+      res.status(e.status).send(e.message);
+      return;
+    }
+    logger.error(e);
+    errors.serverError(res, "Could not record the vote. Please try again.");
+  }
+});
+
+// No reason on the vote entry: the mod log is public and the justification
+// is for the admins only.
+async function recordAppealVoteActions(modId, bannedUserId, result, vote) {
+  await routeUtils.createModAction(modId, "Vote On Ban Appeal", [
+    bannedUserId,
+    result.appeal.id,
+    vote,
+  ]);
+  if (result.decided)
+    await routeUtils.createModAction(
+      modId,
+      result.status === "accepted" ? "Accept Ban Appeal" : "Deny Ban Appeal",
+      [bannedUserId, result.appeal.id]
+    );
+}
+
+router.get("/banAppeal", async (req, res) => {
+  try {
+    var ids = await verifyAppealAdmin(req, res);
+    if (!ids) return;
+    res.send(await banAppeals.getAppealForAdmins(ids.userIdToActOn));
+  } catch (e) {
+    if (e instanceof banAppeals.AppealError) {
+      res.status(e.status).send(e.message);
+      return;
+    }
+    logger.error(e);
+    errors.serverError(res, "Could not load the appeal. Please try again.");
+  }
+});
+
+router.post("/banAppeal/vote", async (req, res) => {
+  try {
+    var ids = await verifyAppealAdmin(req, res);
+    if (!ids) return;
+    var vote = String(req.body.vote || "").toLowerCase();
+
+    var result = await banAppeals.voteOnAppeal({
+      modId: ids.userId,
+      userId: ids.userIdToActOn,
+      vote,
+      notes: req.body.notes,
+    });
+
+    await recordAppealVoteActions(ids.userId, ids.userIdToActOn, result, vote);
+
+    res.send({ status: result.status, tally: result.tally });
+  } catch (e) {
+    if (e instanceof banAppeals.AppealError) {
+      res.status(e.status).send(e.message);
+      return;
+    }
+    logger.error(e);
+    errors.serverError(res, "Could not record the vote. Please try again.");
+  }
+});
+
 // Unified unban endpoint
 router.post("/unban", async (req, res) => {
   try {
@@ -799,7 +1091,16 @@ router.post("/unban", async (req, res) => {
     var userIdToActOn = String(req.body.userId);
     var banType = String(req.body.banType);
     var perm = "unban";
+    var scope = parseBanScope(req.body.scope);
     var rank = await redis.getUserRank(userIdToActOn);
+
+    if (!scope) {
+      errors.badRequest(
+        res,
+        "Invalid unban scope. Use 'single' (this account only) or 'linked' (all linked accounts)."
+      );
+      return;
+    }
 
     if (rank == null) {
       errors.notFound(res, "User does not exist.");
@@ -834,7 +1135,15 @@ router.post("/unban", async (req, res) => {
       site: "site",
     };
 
-    const altAccountIds = await routeUtils.getAltAccountIds(userIdToActOn);
+    // Plot Armor (dev/QA): a linked unban leaves armored accounts' own bans
+    // alone; the target itself is always unbanned.
+    const armor = plotArmor.splitArmored(
+      scope === "single"
+        ? [userIdToActOn]
+        : await routeUtils.getAltAccountIds(userIdToActOn),
+      userIdToActOn
+    );
+    const altAccountIds = armor.kept;
 
     await models.Ban.deleteMany({
       userId: { $in: altAccountIds },
@@ -864,6 +1173,7 @@ router.post("/unban", async (req, res) => {
 
     routeUtils.createModAction(userId, modActionNames[banType], [
       userIdToActOn,
+      banScopeLogLabel(scope, altAccountIds, armor.skipped),
     ]);
     res.sendStatus(200);
   } catch (e) {
@@ -2763,7 +3073,10 @@ router.get("/actions", async function (req, res) {
       ["mod", "id name avatar -_id"]
     );
 
-    res.send(actions);
+    // The mod log is public. Ban appeal vote justifications are for the
+    // admins only, so older vote entries that stored one as the reason
+    // don't show it.
+    res.send(actions.map(hideAppealVoteReason));
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not load mod actions. Please refresh and try again.");
@@ -3504,10 +3817,14 @@ router.post("/reports/:id/complete", async (req, res) => {
         return;
       }
 
-      // Get all alt account IDs (accounts sharing IPs or exact fingerprints)
-      const altAccountIds = await routeUtils.getAltAccountIds(
+      // Get all alt account IDs (accounts sharing IPs or exact fingerprints).
+      // Plot Armor (dev/QA) skips armored linked accounts (no ban, ticket or
+      // notification); the reported user is always kept.
+      const rulingArmor = plotArmor.splitArmored(
+        await routeUtils.getAltAccountIds(report.reportedUserId),
         report.reportedUserId
       );
+      const altAccountIds = rulingArmor.kept;
 
       const offenseNumber = finalRuling.offenseNumber;
 
@@ -3614,6 +3931,13 @@ router.post("/reports/:id/complete", async (req, res) => {
         return;
       }
 
+      // The violation's justification is the ban's reason (shown on the ban
+      // page for site bans).
+      const violationBanReason = `${violationName}: ${finalRuling.notes.trim()}`.slice(
+        0,
+        banAppeals.MAX_BAN_REASON_LENGTH
+      );
+
       // Get all alt account IDs (accounts sharing IPs or exact fingerprints) - already fetched above
       // Create ban for all alt accounts if ban length > 0 (or permanent)
       if (banLengthMs >= 0 && permissions.length > 0) {
@@ -3624,7 +3948,9 @@ router.post("/reports/:id/complete", async (req, res) => {
             banLengthMs,
             permissions,
             banDbType,
-            userId
+            userId,
+            violationBanReason,
+            { scope: "linked", reportIds: [report.id] }
           )
         );
         bans = await Promise.all(banPromises);
@@ -3643,7 +3969,11 @@ router.post("/reports/:id/complete", async (req, res) => {
         await routeUtils.createModAction(
           userId,
           modActionNames[finalRuling.banType],
-          [report.reportedUserId, banLengthStr]
+          [
+            report.reportedUserId,
+            banLengthStr,
+            banScopeLogLabel("linked", altAccountIds, rulingArmor.skipped),
+          ]
         );
 
         // Update user banned flag for site bans on all alt accounts
@@ -3652,9 +3982,8 @@ router.post("/reports/:id/complete", async (req, res) => {
             { id: { $in: altAccountIds } },
             { $set: { banned: true } }
           ).exec();
-          await models.Session.deleteMany({
-            "session.user.id": { $in: altAccountIds },
-          }).exec();
+          // Signed out, but a reload of an open tab shows the ban page.
+          await banAppeals.signOutToBanPage(altAccountIds);
         }
       }
 

@@ -70,3 +70,30 @@ VAPID_SUBJECT=
 # (POST /api/auth/apple/notifications). Comma-separated list of allowed "aud"
 # values: the iOS bundle ID and/or web Services ID. Unset = all rejected (400).
 APPLE_SIWA_AUDIENCE=VCCCLLC.Ultimafia
+
+# optional - dev/QA testing only. Comma-separated user ids, e.g.
+# BAN_APPEAL_VOTER_ALLOWLIST=laJoqacXr,AbC123xyz
+# When set, a site-ban appeal goes only to the listed users who are also in the
+# Owner or Admin group: only they count toward the admin total N, get the appeal
+# DM and inbox notification, and can view or vote on it. Accepting still needs
+# min(2, N) accept votes. If none of the listed users is an Owner or Admin,
+# N = 0 and appeals stay pending. Unset or empty = every Owner and Admin, as in
+# production. Read at startup. Leave it unset in production.
+BAN_APPEAL_VOTER_ALLOWLIST=
+
+# optional - dev/QA testing only ("Plot Armor"). Comma-separated user ids, e.g.
+# PLOT_ARMOR_USER_IDS=laJoqacXr,Or7_sztgH
+# Parsed like BAN_APPEAL_VOTER_ALLOWLIST (trimmed, blanks skipped, exact match).
+# Listed accounts are never banned just because they are linked (shared IP or
+# device fingerprint) to a banned account, or automatically: the mod Ban "All
+# linked accounts" cascade, the report-ruling cascade and the ban for signing
+# in to a banned account's email while signed in all skip them, and a linked
+# Unban leaves their own bans alone. The mod log notes each skip ("Plot Armor:
+# skipped N linked accounts"). A ban that names a listed account directly still
+# applies. A new sign-up whose IP or device (platform + stable fingerprint) is
+# also used by a listed account skips the sign-up ban-evasion checks (banned-
+# user IP, exact banned fingerprint, partial-match flag), with a warning each
+# time; a sign-up matching a banned user but no listed account is still
+# blocked or flagged. Unset or empty = off, as in production. Read at startup; the server
+# logs a warning when it is set. Leave it unset in production.
+PLOT_ARMOR_USER_IDS=

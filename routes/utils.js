@@ -243,7 +243,16 @@ async function createNotification(info, recipients, sockets) {
   }
 }
 
-async function banUser(userId, length, permissions, type, modId) {
+// extra: { scope, reportIds } recorded on the ban (see the Ban schema).
+async function banUser(
+  userId,
+  length,
+  permissions,
+  type,
+  modId,
+  reason,
+  extra = {}
+) {
   var ban = new models.Ban({
     id: shortid.generate(),
     userId,
@@ -252,6 +261,11 @@ async function banUser(userId, length, permissions, type, modId) {
     permissions,
     type,
     auto: modId == null,
+    reason: reason || undefined,
+    createdAt: Date.now(),
+    scope: extra.scope || undefined,
+    reportIds:
+      extra.reportIds && extra.reportIds.length ? extra.reportIds : undefined,
   });
   await ban.save();
   await redis.cacheUserPermissions(userId);
@@ -338,12 +352,13 @@ async function modelPageQuery(
   return result;
 }
 
-async function createModAction(modId, name, args) {
+async function createModAction(modId, name, args, reason) {
   var modAction = new models.ModAction({
     id: shortid.generate(),
     modId,
     name,
     args,
+    reason: reason || undefined,
     date: Date.now(),
   });
   await modAction.save();

@@ -11,7 +11,7 @@ const competitive = require("./competitive");
 const logger = require("./logging")(".");
 const routeUtils = require("../routes/utils");
 
-module.exports = function () {
+function createJobs() {
   const jobs = {
     recordLastActive: {
       run: async function () {
@@ -49,8 +49,18 @@ module.exports = function () {
 
           if (unbanUserIds.length == 0) return;
 
+          // Clear users.banned only when no other site ban outlives this
+          // run: a user can have an earlier site ban end while a later one is
+          // still running. (Bans matched above are deleted below.)
           for (let ban of bans)
-            if (ban.type == "site")
+            if (
+              ban.type == "site" &&
+              !(await models.Ban.exists({
+                userId: ban.userId,
+                type: "site",
+                $or: [{ expires: { $gte: now } }, { expires: 0, auto: { $ne: false } }],
+              }))
+            )
               await models.User.updateOne(
                 { id: ban.userId },
                 { banned: false }
@@ -342,9 +352,14 @@ module.exports = function () {
       interval: 1000 * 300,
     },
   };
+  return jobs;
+}
 
+module.exports = function () {
+  const jobs = createJobs();
   for (let jobName in jobs) {
     jobs[jobName].run();
     setInterval(jobs[jobName].run, jobs[jobName].interval);
   }
 };
+module.exports.createJobs = createJobs;

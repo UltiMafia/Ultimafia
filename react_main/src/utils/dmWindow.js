@@ -95,16 +95,27 @@ export function otherMembers(channel, selfId) {
   return others.length ? others : members.slice(0, 1);
 }
 
-// "Alice", or "Alice, Bob and Carl" style for groups.
+// The site's own conversations (the admins' "Ban Appeals") carry a name and
+// show it, with the site icon, instead of their members.
+export const SITE_CONVERSATION_ICON = "/images/icon-192.png";
+
+export function isNamedDm(channel) {
+  return !!(channel && channel.name);
+}
+
+// "Alice", or "Alice, Bob and Carl" style for groups; a named conversation
+// shows its name.
 export function dmTitle(channel, selfId) {
+  if (isNamedDm(channel)) return channel.name;
   const names = otherMembers(channel, selfId).map((m) => m.name);
   if (names.length <= 1) return names[0] || "Conversation";
   if (names.length === 2) return `${names[0]} and ${names[1]}`;
   return `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
 }
 
+// Groups, and named conversations whatever their size, show who wrote what.
 export function isGroupDm(channel) {
-  return ((channel && channel.members) || []).length > 2;
+  return isNamedDm(channel) || ((channel && channel.members) || []).length > 2;
 }
 
 // One-line preview of the last message: "You: hi", "Bob: hi" in groups,

@@ -12,6 +12,14 @@ import {
 import { lobbies } from "../../../constants/lobbies";
 import { BlockRequests } from "./BlockRequests";
 
+// "3 admins: accept 1 of 2 needed, deny 0 of 2 needed" for a ban appeal
+// tally from the server: votes so far against the votes that decide it.
+export function formatAppealTally(tally) {
+  if (!tally.admins) return "0 admins: nobody can vote";
+  const admins = `${tally.admins} admin${tally.admins === 1 ? "" : "s"}`;
+  return `${admins}: accept ${tally.accept} of ${tally.acceptAt} needed, deny ${tally.deny} of ${tally.denyAt} needed`;
+}
+
 export const COMMAND_GROUP_ORDER = {
   "User Management": 1, // the lower the number, the higher it appears
   "Setup Management": 2,
@@ -476,9 +484,32 @@ export function useModCommands(argValues, commandRan, setResults) {
           ],
         },
         {
+          // Accounts linked by a shared IP or device fingerprint (see Alts).
+          // The server also defaults to "linked" when this is missing.
+          label: "Ban Scope",
+          name: "scope",
+          type: "select",
+          options: [
+            {
+              value: "linked",
+              label: "All linked accounts (shared IP or fingerprint)",
+            },
+            { value: "single", label: "This account only" },
+          ],
+          default: "linked",
+        },
+        {
           label: "Length",
           name: "length",
           type: "text",
+        },
+        {
+          // Shown to the user on the ban page; the server requires it for
+          // site bans.
+          label: "Reason (required for site bans)",
+          name: "reason",
+          type: "text",
+          optional: true,
         },
       ],
       run: function () {
@@ -486,6 +517,78 @@ export function useModCommands(argValues, commandRan, setResults) {
           .post("/api/mod/ban", argValues)
           .then(() => {
             siteInfo.showAlert("User banned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    // Ban-page appeals: each admin the appeal went to (N) has one vote,
+    // changeable while pending. min(2, N) accepts -> ACCEPTED; DENIED once
+    // that is out of reach (denies > N - min(2, N)). Lifting the ban is a
+    // separate Unban (Site).
+    "Ban Appeal Vote": {
+      perm: "unban",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Vote",
+          name: "vote",
+          type: "select",
+          options: [
+            { value: "accept", label: "Accept" },
+            { value: "deny", label: "Deny" },
+          ],
+        },
+        {
+          // Required. Only the eligible admins see it (Ban Appeals page).
+          label: "Justification (required, admins only)",
+          name: "notes",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/banAppeal/vote", argValues)
+          .then((res) => {
+            const { status, tally } = res.data;
+            siteInfo.showAlert(
+              `Vote recorded. Appeal ${status.toUpperCase()}. ${formatAppealTally(tally)}.`,
+              "success"
+            );
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Ban Appeal Tally": {
+      perm: "unban",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .get("/api/mod/banAppeal", { params: { userId: argValues.userId } })
+          .then((res) => {
+            const { status, tally, votes } = res.data;
+            const voteList = votes.length
+              ? votes
+                  .map((vote) => `${vote.voterName}: ${vote.vote.toUpperCase()}`)
+                  .join(", ")
+              : "no votes yet";
+            siteInfo.showAlert(
+              `Appeal ${status.toUpperCase()}. ${formatAppealTally(tally)} (${voteList}).`,
+              "info"
+            );
             commandRan();
           })
           .catch(errorAlert);
@@ -558,6 +661,21 @@ export function useModCommands(argValues, commandRan, setResults) {
             { value: "competitive", label: "Competitive" },
             { value: "site", label: "Site" },
           ],
+        },
+        {
+          // Accounts linked by a shared IP or device fingerprint (see Alts).
+          // The server also defaults to "linked" when this is missing.
+          label: "Unban Scope",
+          name: "scope",
+          type: "select",
+          options: [
+            {
+              value: "linked",
+              label: "All linked accounts (shared IP or fingerprint)",
+            },
+            { value: "single", label: "This account only" },
+          ],
+          default: "linked",
         },
       ],
       run: function () {
@@ -1676,9 +1794,11 @@ export function useModCommands(argValues, commandRan, setResults) {
     "Competitive Ban",
     "Site Ban",
   ];
+  // Older log entries have no scope; those bans included linked accounts.
   const banActionArgs = [
     { label: "User", name: "userId", type: "user_search" },
     { label: "Length", name: "length", type: "text" },
+    { label: "Scope", name: "scope", type: "text" },
   ];
   banActionNames.forEach((actionName) => {
     commands[actionName] = {
@@ -1690,6 +1810,23 @@ export function useModCommands(argValues, commandRan, setResults) {
     };
   });
 
+  // Mod-action log entries written by /mod/banAppeal/rule.
+  ["Accept Ban Appeal", "Deny Ban Appeal", "Vote On Ban Appeal"].forEach(
+    (actionName) => {
+      commands[actionName] = {
+        perm: "unban",
+        category: "User Management",
+        hidden: true,
+        args: [
+          { label: "User", name: "userId", type: "user_search" },
+          { label: "Appeal Id", name: "appealId", type: "text" },
+          { label: "Vote", name: "vote", type: "text", optional: true },
+        ],
+        run: () => {},
+      };
+    }
+  );
+
   const unbanActionNames = [
     "Forum Unban",
     "Chat Unban",
@@ -1700,6 +1837,7 @@ export function useModCommands(argValues, commandRan, setResults) {
   ];
   const unbanActionArgs = [
     { label: "User", name: "userId", type: "user_search" },
+    { label: "Scope", name: "scope", type: "text" },
   ];
   unbanActionNames.forEach((actionName) => {
     commands[actionName] = {

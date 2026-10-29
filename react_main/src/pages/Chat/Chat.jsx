@@ -1016,13 +1016,14 @@ function Message(props) {
           id={message.sender.id}
           name={message.sender.name}
           avatar={message.sender.avatar}
+          avatarUrl={message.sender.avatarUrl}
           color={nameColorOverride || ""}
           nameColorSwatch={
             accessibleNameColors && rawNameColor ? rawNameColor : undefined
           }
           groups={message.sender.groups}
           vanityUrl={message.sender.vanityUrl}
-          noLink={isSelf}
+          noLink={isSelf || message.sender.site}
         />
         <Typography
           variant="body2"
@@ -1094,6 +1095,17 @@ function ChannelName(props) {
         </Typography>
       );
     case "directs":
+      // A named DM (the admins' "Ban Appeals" channel) shows its name.
+      if (channel.name)
+        return (
+          <Typography
+            variant={short ? "body2" : "subtitle1"}
+            noWrap={short}
+            sx={{ fontWeight: short ? 500 : 600 }}
+          >
+            {channel.name}
+          </Typography>
+        );
       if (short) {
         var memberNames = channel.members
           .filter((m) => m.id !== user.id)

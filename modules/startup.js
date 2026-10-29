@@ -42,4 +42,12 @@ module.exports = async function () {
       await models.Group.updateOne({ _id: group._id }, update).exec();
     }
   }
+
+  // Give back their own names to admin DMs an earlier build named "Ban
+  // Appeals" (modules/banAppeals.js). Never blocks startup.
+  try {
+    await require("./banAppeals").releaseAppealNameFromOtherDms();
+  } catch (e) {
+    require("./logging")(".").error(e);
+  }
 };
