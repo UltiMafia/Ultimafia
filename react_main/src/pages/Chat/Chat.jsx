@@ -799,6 +799,7 @@ function Message(props) {
           id={message.sender.id}
           name={message.sender.name}
           avatar={message.sender.avatar}
+          avatarUrl={message.sender.avatarUrl}
           color={nameColorOverride || ""}
           nameColorSwatch={
             accessibleNameColors && rawNameColor ? rawNameColor : undefined

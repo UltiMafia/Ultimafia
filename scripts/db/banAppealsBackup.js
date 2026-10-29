@@ -10,6 +10,7 @@
  *                        for bans that have any of them
  *   sitebanappeals.json  every ban appeal, with its votes and justifications
  *   sitemessages.json    appeal and vote messages posted by the site sender
+ *   appealchannel.json   the admins' "Ban Appeals" conversation and its opens
  */
 require("dotenv").config();
 const fs = require("fs");
@@ -19,6 +20,8 @@ const {
   banQuery,
   banProjection,
   siteMessageQuery,
+  appealChannelQuery,
+  appealChannelOpenQuery,
   collection,
   writeJson,
 } = require("./banAppealsData");
@@ -44,11 +47,18 @@ const dir =
     .toArray();
   writeJson(dir, "sitebanappeals", appeals);
   writeJson(dir, "sitemessages", messages);
+  const channel = {
+    channels: await collection("chatchannels").find(appealChannelQuery).toArray(),
+    opens: await collection("channelopens").find(appealChannelOpenQuery).toArray(),
+  };
+  writeJson(dir, "appealchannel", channel);
   const manifest = {
     createdAt: new Date().toISOString(),
     bansWithFields: bans.length,
     appeals: appeals.length,
     siteMessages: messages.length,
+    appealChannel: channel.channels.length,
+    appealChannelOpens: channel.opens.length,
   };
   fs.writeFileSync(
     path.join(dir, "manifest.json"),

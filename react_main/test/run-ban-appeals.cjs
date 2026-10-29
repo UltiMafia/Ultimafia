@@ -147,7 +147,7 @@ async function main() {
     await page.getByTestId("ban-appeal-row").first().waitFor({ timeout: 8000 });
     let rows = await page.getByTestId("ban-appeal-row").allInnerTexts();
     check(rows.length === 1 && rows[0].includes("BadPlayer") && rows[0].includes("Site ban"), "pending list shows the pending appeal", rows);
-    check(rows[0].includes("Accept 1 of 2 needed, deny 0 of 2 needed") && rows[0].includes("PENDING"), "row shows the tally and status");
+    check(rows[0].includes("3 admins: accept 1 of 2 needed, deny 0 of 2 needed") && rows[0].includes("PENDING"), "row shows the tally and status", rows);
     if (shots) await page.screenshot({ path: path.join(shots, "LOCAL-ban-appeals-list.png"), fullPage: true });
     await page.getByRole("button", { name: "All" }).click();
     await page.waitForFunction(() => document.querySelectorAll('[data-testid="ban-appeal-row"]').length === 2);
@@ -159,9 +159,32 @@ async function main() {
     await page.getByRole("button", { name: "Pending" }).click();
     await page.waitForFunction(() => document.body.innerText.includes("BadPlayer"));
 
-    await page.getByTestId("ban-appeal-row").first().click();
+    // Every part of the row opens the case: the name, the tally, the status
+    // chip, and the row's padding.
+    const listUrl = page.url();
+    const firstRow = page.getByTestId("ban-appeal-row").first();
+    const targets = [
+      ["the username", () => firstRow.getByText("BadPlayer", { exact: true }).click()],
+      ["the tally", () => firstRow.getByText("3 admins: accept 1 of 2 needed", { exact: false }).click()],
+      ["the status chip", () => firstRow.getByText("PENDING", { exact: true }).click()],
+      ["the date cell", () => firstRow.locator("td").nth(2).click()],
+      ["the row edge", () => firstRow.locator("td").first().click({ position: { x: 2, y: 2 } })],
+    ];
+    for (const [name, click] of targets) {
+      await click();
+      await page.getByTestId("ban-appeal-case").waitFor({ timeout: 8000 });
+      check(page.url().endsWith("/policy/moderation/ban-appeals/case1"), `clicking ${name} opens the case`, page.url());
+      await page.goBack();
+      await page.getByTestId("ban-appeal-row").first().waitFor({ timeout: 8000 });
+      check(page.url() === listUrl, `back returns to the queue after ${name}`, page.url());
+    }
+    const cellHref = await firstRow.locator("a").first().getAttribute("href");
+    check(cellHref === "/policy/moderation/ban-appeals/case1", "queue cells are real links (open in a new tab)", cellHref);
+
+    await firstRow.getByText("BadPlayer", { exact: true }).click();
     await page.getByTestId("ban-appeal-case").waitFor({ timeout: 8000 });
-    check(page.url().endsWith("/policy/moderation/ban-appeals/case1"), "clicking a row opens its case", page.url());
+    const caseTally = await page.getByTestId("case-tally").innerText();
+    check(/^3 admins: accept 1 of 2 needed, deny 0 of 2 needed\. Deciding does not lift the ban/.test(caseTally), "case tally starts with N admins and keeps the note", caseTally);
     const text = await page.locator("body").innerText();
     for (const [name, needle] of [
       ["appeal text", "I did not harass anyone"],

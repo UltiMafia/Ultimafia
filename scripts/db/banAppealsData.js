@@ -34,6 +34,14 @@ const banSessionQuery = {
 // without that module can't load a channel holding them.
 const siteMessageQuery = { senderId: "site:ban-appeals" };
 
+// The admins' "Ban Appeals" conversation: its own fixed id (md5 of
+// "site:ban-appeals", modules/banAppeals.js APPEAL_CHANNEL_ID), with the
+// members' opens and unread chat notifications.
+const appealChannelId = require("md5")("site:ban-appeals");
+const appealChannelQuery = { id: appealChannelId };
+const appealChannelOpenQuery = { channelId: appealChannelId };
+const appealChannelNotifQuery = { channelId: appealChannelId, isChat: true };
+
 function collection(name) {
   return mongoose.connection.db.collection(name);
 }
@@ -58,6 +66,10 @@ module.exports = {
   banProjection,
   banSessionQuery,
   siteMessageQuery,
+  appealChannelId,
+  appealChannelQuery,
+  appealChannelOpenQuery,
+  appealChannelNotifQuery,
   collection,
   writeJson,
   readJson,

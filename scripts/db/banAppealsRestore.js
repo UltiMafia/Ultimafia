@@ -44,8 +44,27 @@ const dir = process.argv[2];
     );
     restoredMessages += r.upsertedCount;
   }
+  // The "Ban Appeals" conversation and the admins' opens of it. The next
+  // appeal or vote also brings its members in line with the current admins.
+  const channel = readJson(dir, "appealchannel") || { channels: [], opens: [] };
+  let restoredChannel = 0;
+  for (const doc of channel.channels) {
+    const r = await collection("chatchannels").updateOne(
+      { id: doc.id },
+      { $setOnInsert: doc },
+      { upsert: true },
+    );
+    restoredChannel += r.upsertedCount;
+  }
+  for (const open of channel.opens) {
+    await collection("channelopens").updateOne(
+      { user: open.user, channelId: open.channelId },
+      { $setOnInsert: open },
+      { upsert: true },
+    );
+  }
   console.log(
-    `Restored reasons on ${restoredBans} bans, ${restoredAppeals} appeals and ${restoredMessages} site messages.`,
+    `Restored reasons on ${restoredBans} bans, ${restoredAppeals} appeals, ${restoredMessages} site messages and ${restoredChannel} Ban Appeals channel.`,
   );
   process.exit(0);
 })().catch((e) => {

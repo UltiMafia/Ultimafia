@@ -2,8 +2,8 @@
 
 A site-banned user who signs in now sees a full "YOU ARE BANNED" page with the
 reason, the ban dates and a one-time appeal form, instead of a snackbar on the
-home screen. The appeal goes to an admins-only group DM and to each admin's
-inbox. One appeal per person, counting linked (alt) accounts. Site bans need a
+home screen. The appeal goes to the admins' "Ban Appeals" conversation and
+to each admin's inbox. One appeal per person, counting linked (alt) accounts. Site bans need a
 reason.
 
 ## How it works
@@ -38,12 +38,18 @@ reason.
   user ids, see `docs/server_env`) narrows this to the listed Owners/Admins, so
   test appeals don't reach real staff. It is unset in production, which keeps
   every Owner and Admin.
-- **Appeal message.** It goes into the group DM of every admin. The banned
-  user is not a member, so they can't read it or the votes. The channel id is
-  the one the chat panel uses for that member set, so all appeals share one
-  admins-only DM. The message is posted by a site sender
-  (`site:ban-appeals`, shown as "Ban Appeals", `modules/siteSender.js`), not
-  a user account. `modules/chat.js` renders that sender when it loads
+- **Appeal message.** It goes into the admins' "Ban Appeals" conversation,
+  shared by all appeals. The banned user is never a member and gets no DM, so
+  they can't read it or the votes; they see their appeal's status on the ban
+  page only. The conversation has its own fixed id (md5 of
+  `site:ban-appeals`), so it is never the 1:1 or group DM the admins already
+  share, and it is titled "Ban Appeals" for every admin. Its members follow
+  the current admins (and `BAN_APPEAL_VOTER_ALLOWLIST`) each time an appeal
+  or vote is posted: new admins get it, removed ones lose it. An earlier
+  build posted into the admins' shared DM and named it "Ban Appeals"; that
+  name is taken off again (the DM's messages stay). The message is posted by
+  a site sender (`site:ban-appeals`, shown as "Ban Appeals" with the site
+  icon, `modules/siteSender.js`), not a user account. `modules/chat.js` renders that sender when it loads
   messages. The text is exactly
   `BAN-APPEAL: <USERNAME> - BAN REASON: <reason> , APPEAL: <text>`.
 - **Admin notifications.** Each admin gets the DM opened, an unread chat
@@ -110,7 +116,7 @@ reason.
   - To change the cap of 2, edit `ACCEPT_VOTES_REQUIRED` in
     `modules/banAppeals.js`.
   - Once decided, votes are closed (409).
-  - Each vote also posts the tally into the appeal's group DM, e.g.
+  - Each vote also posts the tally into the "Ban Appeals" conversation, e.g.
     `BAN-APPEAL VOTE: AdminBob voted ACCEPT - 3 admins: accept 1 of 2 needed, deny 0 of 2 needed - still PENDING`.
   - "Ban Appeal Tally" (`GET /mod/banAppeal?userId=`) shows the status, N,
     the accept and deny counts and who voted what.
@@ -192,7 +198,7 @@ reason.
 |--------|-----------------|
 | `bans.reason` (String), `bans.createdAt` (Number) | On every new ban. Old bans have neither; the page shows "No reason was recorded for this ban." and the ObjectId time as the ban date. |
 | New collection `sitebanappeals` (unique `id`, unique `banId`; `votes` array) | When a banned user appeals, and on each admin vote. Mongoose builds the indexes on startup. |
-| `chatchannels` / `chatmessages` / `channelopens` / `notifications` | One admins-only group DM named "Ban Appeals" (shared by all appeals), one message per appeal from the site sender (`senderId: "site:ban-appeals"`, no user document), the admins' opens, an unread chat notification and a "Ban appeal pending" inbox notification per admin, plus one tally message per vote (also from the site sender; the text names the voter). |
+| `chatchannels` / `chatmessages` / `channelopens` / `notifications` | One admins-only conversation named "Ban Appeals" (fixed id md5("site:ban-appeals"), shared by all appeals; members follow the admins), one message per appeal from the site sender (`senderId: "site:ban-appeals"`, no user document), the admins' opens, an unread chat notification and a "Ban appeal pending" inbox notification per admin, plus one tally message per vote (also from the site sender; the text names the voter). |
 | `bans.scope` (String), `bans.reportIds` ([String]) | On every new ban: the scope ("linked"/"single"), and for report rulings the report id. Old bans have neither; the Ban Appeals page falls back as described above. |
 | `sitebanappeals.votes.notes` | Now required (the vote justification, up to 1,000 characters). Same field as before. |
 | `sessions` with `session.siteBan` | When a site-banned user signs in, and when a site ban signs a user's open sessions out (those sessions become ban sessions instead of being deleted). Expire with the normal session TTL. |
@@ -207,8 +213,9 @@ node scripts/db/banAppealsBackup.js backups/ban-appeals-pre-deploy
 
 It writes `bans.json` (bans with `reason`/`createdAt`/`scope`/`reportIds`,
 normally none before the first deploy), `sitebanappeals.json` (appeals with
-their votes and justifications) and `sitemessages.json` (the site sender's
-appeal and vote messages). The folder holds justifications: keep it private
+their votes and justifications), `sitemessages.json` (the site sender's
+appeal and vote messages) and `appealchannel.json` (the "Ban Appeals"
+conversation and the admins' opens of it). The folder holds justifications: keep it private
 (files are written mode 600).
 
 ## Rollback
@@ -219,7 +226,7 @@ appeal and vote messages). The folder holds justifications: keep it private
    unsets `bans.reason`/`createdAt`/`scope`/`reportIds`, drops
    `sitebanappeals` with the votes and justifications (`--keep-appeals`
    keeps it), deletes ban page sessions and deletes the site sender's appeal
-   and vote messages. Do that last one in the same window as the code rollback: the
+   and vote messages, and the "Ban Appeals" conversation with its opens and unread markers. Do that in the same window as the code rollback: the
    old `modules/chat.js` can't load a channel holding a message with no user
    behind it, so the admins' DM would fail to open. Older admin-sent vote
    messages and inbox notifications stay (the notification links point to the

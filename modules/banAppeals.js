@@ -27,6 +27,13 @@ const MIN_APPEAL_LENGTH = 10;
 // The admins' appeal DM is shown under this name in the chat panel (the same
 // name as the site sender in modules/siteSender.js).
 const APPEAL_CHANNEL_NAME = "Ban Appeals";
+// The admins' "Ban Appeals" conversation has its own fixed id, so it is never
+// the DM or group DM the admins already share. DM ids are md5 of the sorted
+// member ids (modules/chat.js) and user ids never contain a colon, so md5 of
+// this key can't be any member set's id. 32 hex characters, like every DM id,
+// so the chat panels list it with the DMs.
+const APPEAL_CHANNEL_KEY = "site:ban-appeals";
+const APPEAL_CHANNEL_ID = md5(APPEAL_CHANNEL_KEY);
 
 // Members of these groups receive appeals and vote on them.
 const APPEAL_RECIPIENT_GROUPS = ["Owner", "Admin"];
@@ -355,46 +362,74 @@ async function getBanPageInfo(userId) {
   };
 }
 
-// Writes the appeal into the admins' group DM, posted by the site sender, so
-// the banned user is not a member and can't read the votes. The chat server
-// reads channels and messages from Mongo, so admins see it in their DM list
-// the next time the chat panel loads. Each admin also gets an unread chat
-// notification and an inbox notification. There is no live push: the www
-// process has no sockets to the chat server or the clients.
-async function sendAppealMessage({ recipientIds, content, username, link }) {
-  const memberIds = [...new Set(recipientIds)];
-  const channelId = userIdsToChannelId(memberIds);
-  const now = Date.now();
-
+// Makes the "Ban Appeals" conversation exist with exactly these members:
+// admins who join get it in their DM list, admins who left lose it (and its
+// unread marker). Also takes the "Ban Appeals" name off any other DM: an
+// earlier build posted appeals into the DM the admins already shared and
+// named it, so that 1:1 or group DM goes back to showing its members' names.
+// Its messages are left as they are.
+async function syncAppealChannel(memberIds, lastMessageDate) {
+  const members = [...new Set(memberIds)].sort();
   await models.ChatChannel.updateOne(
-    { id: channelId },
+    { id: APPEAL_CHANNEL_ID },
     {
-      $setOnInsert: { id: channelId, public: false, memberIds },
-      // Named so the chat panel lists it as "Ban Appeals", not by the other
-      // admins' names, which made it look like a DM from one of them.
-      $set: { lastMessageDate: now, name: APPEAL_CHANNEL_NAME },
+      $setOnInsert: { id: APPEAL_CHANNEL_ID, public: false },
+      $set: {
+        name: APPEAL_CHANNEL_NAME,
+        memberIds: members,
+        ...(lastMessageDate ? { lastMessageDate } : {}),
+      },
     },
     { upsert: true },
   ).exec();
+  for (const memberId of members) {
+    await models.ChannelOpen.updateOne(
+      { user: memberId, channelId: APPEAL_CHANNEL_ID },
+      { $setOnInsert: { user: memberId, channelId: APPEAL_CHANNEL_ID } },
+      { upsert: true },
+    ).exec();
+  }
+  await models.ChannelOpen.deleteMany({
+    channelId: APPEAL_CHANNEL_ID,
+    user: { $nin: members },
+  }).exec();
+  await models.Notification.deleteMany({
+    channelId: APPEAL_CHANNEL_ID,
+    isChat: true,
+    user: { $nin: members },
+  }).exec();
+  await models.ChatChannel.updateMany(
+    {
+      id: { $ne: APPEAL_CHANNEL_ID },
+      public: false,
+      name: APPEAL_CHANNEL_NAME,
+    },
+    { $unset: { name: 1 } },
+  ).exec();
+  return members;
+}
+
+// Writes the appeal into the admins' "Ban Appeals" conversation, posted by
+// the site sender. The banned user is never a member and gets no DM: they see
+// their appeal's status on the ban page only. The chat server reads channels
+// and messages from Mongo, so admins see it in their DM list the next time
+// the chat panel loads. Each admin also gets an unread chat notification and
+// an inbox notification. There is no live push: the www process has no
+// sockets to the chat server or the clients.
+async function sendAppealMessage({ recipientIds, content, username, link }) {
+  const now = Date.now();
+  const memberIds = await syncAppealChannel(recipientIds, now);
 
   await new models.ChatMessage({
     id: shortid.generate(),
     senderId: SITE_SENDER_ID,
     date: now,
-    channel: channelId,
+    channel: APPEAL_CHANNEL_ID,
     content,
   }).save();
 
-  for (const recipientId of memberIds) {
-    await models.ChannelOpen.updateOne(
-      { user: recipientId, channelId },
-      { $setOnInsert: { user: recipientId, channelId } },
-      { upsert: true },
-    ).exec();
-  }
-
   await routeUtils.createNotification(
-    { channel: channelId, isChat: true },
+    { channel: APPEAL_CHANNEL_ID, isChat: true },
     memberIds,
   );
   await routeUtils.createNotification(
@@ -406,7 +441,7 @@ async function sendAppealMessage({ recipientIds, content, username, link }) {
     memberIds,
   );
 
-  return channelId;
+  return APPEAL_CHANNEL_ID;
 }
 
 async function submitAppeal(userId, rawText) {
@@ -639,8 +674,10 @@ async function voteOnAppeal({ modId, userId, appealId, vote, notes }) {
     tally = tallyVotes(current.votes, current.recipientIds);
   }
 
-  // Show the tally to the admins in the appeal's group DM. Posted by the
-  // site sender like the appeal itself; the message names the voter.
+  // Show the tally to the admins in the "Ban Appeals" conversation, posted by
+  // the site sender like the appeal; the message names the voter. Always that
+  // conversation, also for appeals an earlier build filed into the admins'
+  // own DM, which gets nothing more. Members follow the current admin set.
   if (current.channelId) {
     const voter = await models.User.findOne({ id: modId }).select("name");
     const content = formatVoteMessage({
@@ -650,17 +687,17 @@ async function voteOnAppeal({ modId, userId, appealId, vote, notes }) {
       status: current.status,
       appealId: current.id,
     });
+    const now = Date.now();
+    // The banned user is never a member, even if they are an admin.
+    const admins = (await getAdminIds()).filter((id) => id !== current.userId);
+    await syncAppealChannel(admins.length ? admins : current.recipientIds, now);
     await new models.ChatMessage({
       id: shortid.generate(),
       senderId: SITE_SENDER_ID,
-      date: Date.now(),
-      channel: current.channelId,
+      date: now,
+      channel: APPEAL_CHANNEL_ID,
       content,
     }).save();
-    await models.ChatChannel.updateOne(
-      { id: current.channelId },
-      { $set: { lastMessageDate: Date.now() } },
-    ).exec();
   }
 
   return { appeal: current, tally, status: current.status, decided };
@@ -956,6 +993,9 @@ module.exports = {
   normalizeBanReason,
   formatAppealMessage,
   userIdsToChannelId,
+  APPEAL_CHANNEL_ID,
+  APPEAL_CHANNEL_NAME,
+  syncAppealChannel,
   BAN_TYPE_LABELS,
   findActiveSiteBan,
   findActiveBans,

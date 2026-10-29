@@ -64,10 +64,35 @@ function formatDuration(ms) {
   return `${hours} hour${hours === 1 ? "" : "s"}`;
 }
 
-// "Accept 1 of 2 needed, deny 0 of 1 needed".
+// "2 admins: accept 1 of 2 needed, deny 0 of 1 needed", the same wording as
+// the appeal DM and the vote command.
 export function tallyText(tally) {
   if (!tally || !tally.admins) return "No admins can vote";
-  return `Accept ${tally.accept} of ${tally.acceptAt} needed, deny ${tally.deny} of ${tally.denyAt} needed`;
+  const admins = `${tally.admins} admin${tally.admins === 1 ? "" : "s"}`;
+  return `${admins}: accept ${tally.accept} of ${tally.acceptAt} needed, deny ${tally.deny} of ${tally.denyAt} needed`;
+}
+
+// A queue cell that is a link to the case, filling the cell, so a click
+// anywhere in the row (the name included) opens it, and it can be opened in
+// a new tab.
+function CaseCell({ to, children, sx }) {
+  return (
+    <TableCell sx={{ p: 0, ...sx }}>
+      <Box
+        component={RouterLink}
+        to={to}
+        sx={{
+          display: "block",
+          px: 2,
+          py: "6px",
+          color: "inherit",
+          textDecoration: "none",
+        }}
+      >
+        {children}
+      </Box>
+    </TableCell>
+  );
 }
 
 function StatusChip({ status }) {
@@ -93,6 +118,10 @@ function UserLink({ id, name }) {
 function errorText(err, fallback) {
   return (typeof err?.response?.data === "string" && err.response.data) ||
     fallback;
+}
+
+function caseLink(row) {
+  return `${BAN_APPEALS_PATH}/${row.id}`;
 }
 
 export default function BanAppeals() {
@@ -183,34 +212,42 @@ function AppealList() {
                   hover
                   data-testid="ban-appeal-row"
                   sx={{ cursor: "pointer" }}
-                  onClick={() => navigate(`${BAN_APPEALS_PATH}/${row.id}`)}
+                  onClick={(e) => {
+                    // The cell links navigate themselves.
+                    if (e.target.closest("a")) return;
+                    navigate(caseLink(row));
+                  }}
                 >
-                  <TableCell sx={{ fontWeight: 600 }}>{row.username}</TableCell>
-                  <TableCell>
+                  <CaseCell to={caseLink(row)} sx={{ fontWeight: 600 }}>
+                    {row.username}
+                  </CaseCell>
+                  <CaseCell to={caseLink(row)}>
                     {row.ban
                       ? `${row.ban.label}${row.ban.active ? "" : " (ended)"}`
                       : "Ban removed"}
-                  </TableCell>
-                  <TableCell>{formatDate(row.ban?.issuedAt)}</TableCell>
-                  <TableCell>
+                  </CaseCell>
+                  <CaseCell to={caseLink(row)}>
+                    {formatDate(row.ban?.issuedAt)}
+                  </CaseCell>
+                  <CaseCell to={caseLink(row)}>
                     {!row.ban
                       ? "-"
                       : row.ban.permanent
                         ? "Never (permanent)"
                         : formatDate(row.ban.expires)}
-                  </TableCell>
-                  <TableCell>{formatDate(row.filedAt)}</TableCell>
-                  <TableCell>
+                  </CaseCell>
+                  <CaseCell to={caseLink(row)}>{formatDate(row.filedAt)}</CaseCell>
+                  <CaseCell to={caseLink(row)}>
                     {tallyText(row.tally)}
                     {row.myVote && (
                       <Typography variant="caption" display="block" color="text.secondary">
                         You voted {row.myVote}
                       </Typography>
                     )}
-                  </TableCell>
-                  <TableCell>
+                  </CaseCell>
+                  <CaseCell to={caseLink(row)}>
                     <StatusChip status={row.status} />
-                  </TableCell>
+                  </CaseCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -342,9 +379,8 @@ function AppealCase({ appealId }) {
         <StatusChip status={data.status} />
       </Stack>
       <Typography color="text.secondary" data-testid="case-tally">
-        {tallyText(data.tally)} ({data.voters} admin
-        {data.voters === 1 ? "" : "s"} can vote). Deciding does not lift the
-        ban; an accepted appeal still needs a site Unban.
+        {tallyText(data.tally)}. Deciding does not lift the ban; an accepted
+        appeal still needs a site Unban.
       </Typography>
 
       <Section title="Appeal" testId="case-appeal">

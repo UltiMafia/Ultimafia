@@ -578,7 +578,9 @@ describe("site ban page and appeals", function () {
       channel.name.should.equal("Ban Appeals");
       [...channel.memberIds].sort().should.deep.equal(admins);
       channel.memberIds.should.not.include("target");
-      channel.id.should.equal(loaded.banAppeals.userIdsToChannelId(admins));
+      // Its own conversation, never the DM the admins already share.
+      channel.id.should.equal(loaded.banAppeals.APPEAL_CHANNEL_ID);
+      channel.id.should.not.equal(loaded.banAppeals.userIdsToChannelId(admins));
 
       const opens = await models.ChannelOpen.find({}).lean();
       opens
@@ -917,6 +919,11 @@ describe("site ban page and appeals", function () {
       down.should.contain('scope: ""').and.contain('reportIds: ""');
       const restore = fs.readFileSync(require.resolve("../scripts/db/banAppealsRestore.js"), "utf8");
       restore.should.contain("set.scope").and.contain("set.reportIds");
+      // The "Ban Appeals" conversation is found by its fixed id.
+      data.appealChannelId.should.equal(loaded.banAppeals.APPEAL_CHANNEL_ID);
+      down.should.contain("appealChannelQuery").and.contain("appealChannelOpenQuery").and.contain("appealChannelNotifQuery");
+      restore.should.contain('"appealchannel"');
+      fs.readFileSync(require.resolve("../scripts/db/banAppealsBackup.js"), "utf8").should.contain('"appealchannel"');
     });
 
     it("an admin added after the appeal was filed can view it but not vote", async function () {
@@ -1235,6 +1242,75 @@ describe("site ban page and appeals", function () {
       (await vote("otherAdmin", "maybe")).statusCode.should.equal(400);
       await models.SiteBanAppeal.deleteMany({}).exec();
       (await vote("otherAdmin", "accept")).statusCode.should.equal(404);
+    });
+
+    it("uses its own Ban Appeals conversation even when the admins already share a DM", async function () {
+      const { userIdsToChannelId, APPEAL_CHANNEL_ID } = loaded.banAppeals;
+      const admins = ["banningAdmin", "otherAdmin", "owner"];
+      // The admins' existing group DM, and a 1:1 between two of them, the way
+      // the chat server creates them (id = md5 of the sorted member ids). An
+      // earlier build posted into the shared DM and named it "Ban Appeals".
+      const shared = userIdsToChannelId(admins);
+      const oneToOne = userIdsToChannelId(["banningAdmin", "otherAdmin"]);
+      await models.ChatChannel.create([
+        { id: shared, public: false, memberIds: admins, lastMessageDate: 1, name: "Ban Appeals" },
+        { id: oneToOne, public: false, memberIds: ["banningAdmin", "otherAdmin"], lastMessageDate: 2 },
+      ]);
+      await models.ChatMessage.create([
+        { id: "old1", senderId: "otherAdmin", date: 1, channel: shared, content: "group hi" },
+        { id: "old2", senderId: "site:ban-appeals", date: 2, channel: shared, content: "BAN-APPEAL: an old one" },
+        { id: "old3", senderId: "banningAdmin", date: 3, channel: oneToOne, content: "1:1 hi" },
+      ]);
+
+      await siteBan();
+      (await appeal(appealText)).statusCode.should.equal(200);
+      await vote("otherAdmin", "deny");
+
+      // Nothing new in either existing DM; their old messages are untouched.
+      (await models.ChatMessage.find({ channel: shared }).sort({ date: 1 }).lean())
+        .map((m) => m.id).should.deep.equal(["old1", "old2"]);
+      (await models.ChatMessage.find({ channel: oneToOne }).lean())
+        .map((m) => m.id).should.deep.equal(["old3"]);
+      // The shared DM is listed by its members' names again.
+      should.not.exist((await models.ChatChannel.findOne({ id: shared }).lean()).name);
+      should.not.exist((await models.ChatChannel.findOne({ id: oneToOne }).lean()).name);
+
+      const appealMessages = await models.ChatMessage.find({ channel: APPEAL_CHANNEL_ID }).sort({ date: 1 }).lean();
+      appealMessages.map((m) => m.content.split(":")[0]).should.deep.equal(["BAN-APPEAL", "BAN-APPEAL VOTE"]);
+      const channel = await models.ChatChannel.findOne({ id: APPEAL_CHANNEL_ID }).lean();
+      channel.name.should.equal("Ban Appeals");
+      [...channel.memberIds].sort().should.deep.equal(admins);
+      (await stored()).channelId.should.equal(APPEAL_CHANNEL_ID);
+      (await models.ChatChannel.countDocuments({ name: "Ban Appeals" })).should.equal(1);
+    });
+
+    it("never DMs the banned user", async function () {
+      await siteBan();
+      (await appeal(appealText)).statusCode.should.equal(200);
+      await vote("otherAdmin", "deny");
+      const { APPEAL_CHANNEL_ID } = loaded.banAppeals;
+      const channel = await models.ChatChannel.findOne({ id: APPEAL_CHANNEL_ID }).lean();
+      channel.memberIds.should.not.include("target");
+      (await models.ChatChannel.countDocuments({ memberIds: "target" })).should.equal(0);
+      (await models.ChannelOpen.countDocuments({ user: "target" })).should.equal(0);
+      (await models.Notification.countDocuments({ user: "target", isChat: true })).should.equal(0);
+      (await models.ChatMessage.countDocuments({ senderId: "target" })).should.equal(0);
+    });
+
+    it("keeps the Ban Appeals members in step with the admins", async function () {
+      const { APPEAL_CHANNEL_ID } = loaded.banAppeals;
+      await submit();
+      // owner leaves the Admin and Owner groups; newAdmin joins.
+      const owner = await models.User.findOne({ id: "owner" });
+      await models.InGroup.deleteMany({ user: owner._id });
+      await addAdmins(["newAdmin"]);
+      await vote("otherAdmin", "deny");
+      const channel = await models.ChatChannel.findOne({ id: APPEAL_CHANNEL_ID }).lean();
+      [...channel.memberIds].sort().should.deep.equal(["banningAdmin", "newAdmin", "otherAdmin"]);
+      (await models.ChannelOpen.find({ channelId: APPEAL_CHANNEL_ID }).lean())
+        .map((open) => open.user).sort()
+        .should.deep.equal(["banningAdmin", "newAdmin", "otherAdmin"]);
+      (await models.Notification.countDocuments({ channelId: APPEAL_CHANNEL_ID, isChat: true, user: "owner" })).should.equal(0);
     });
 
     it("posts each vote and the tally into the appeal's group DM", async function () {
