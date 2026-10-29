@@ -1284,6 +1284,23 @@ describe("site ban page and appeals", function () {
       (await models.ChatChannel.countDocuments({ name: "Ban Appeals" })).should.equal(1);
     });
 
+    it("at startup, gives a DM an earlier build named Ban Appeals its own name back", async function () {
+      const { userIdsToChannelId, APPEAL_CHANNEL_ID, releaseAppealNameFromOtherDms } = loaded.banAppeals;
+      const oneToOne = userIdsToChannelId(["banningAdmin", "otherAdmin"]);
+      await models.ChatChannel.create([
+        { id: oneToOne, public: false, memberIds: ["banningAdmin", "otherAdmin"], name: "Ban Appeals" },
+        { id: APPEAL_CHANNEL_ID, public: false, memberIds: ["banningAdmin", "otherAdmin"], name: "Ban Appeals" },
+        { id: "room", public: true, name: "Ban Appeals" },
+      ]);
+      await models.ChatMessage.create({ id: "keep", senderId: "site:ban-appeals", date: 1, channel: oneToOne, content: "BAN-APPEAL: old" });
+      (await releaseAppealNameFromOtherDms()).should.equal(1);
+      should.not.exist((await models.ChatChannel.findOne({ id: oneToOne }).lean()).name);
+      (await models.ChatChannel.findOne({ id: APPEAL_CHANNEL_ID }).lean()).name.should.equal("Ban Appeals");
+      (await models.ChatChannel.findOne({ id: "room" }).lean()).name.should.equal("Ban Appeals");
+      (await models.ChatMessage.countDocuments({ channel: oneToOne })).should.equal(1);
+      require("fs").readFileSync(require.resolve("../modules/startup.js"), "utf8").should.contain("releaseAppealNameFromOtherDms()");
+    });
+
     it("never DMs the banned user", async function () {
       await siteBan();
       (await appeal(appealText)).statusCode.should.equal(200);

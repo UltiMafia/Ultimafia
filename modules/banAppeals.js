@@ -398,7 +398,15 @@ async function syncAppealChannel(memberIds, lastMessageDate) {
     isChat: true,
     user: { $nin: members },
   }).exec();
-  await models.ChatChannel.updateMany(
+  await releaseAppealNameFromOtherDms();
+  return members;
+}
+
+// An earlier build posted appeals into the DM the admins already shared and
+// named it "Ban Appeals". Take that name off every DM but the real one, so it
+// is listed by its members again; its messages stay. Also run at www startup.
+async function releaseAppealNameFromOtherDms() {
+  const result = await models.ChatChannel.updateMany(
     {
       id: { $ne: APPEAL_CHANNEL_ID },
       public: false,
@@ -406,7 +414,7 @@ async function syncAppealChannel(memberIds, lastMessageDate) {
     },
     { $unset: { name: 1 } },
   ).exec();
-  return members;
+  return result.modifiedCount || 0;
 }
 
 // Writes the appeal into the admins' "Ban Appeals" conversation, posted by
@@ -996,6 +1004,7 @@ module.exports = {
   APPEAL_CHANNEL_ID,
   APPEAL_CHANNEL_NAME,
   syncAppealChannel,
+  releaseAppealNameFromOtherDms,
   BAN_TYPE_LABELS,
   findActiveSiteBan,
   findActiveBans,

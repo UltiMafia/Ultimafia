@@ -47,7 +47,8 @@ reason.
   the current admins (and `BAN_APPEAL_VOTER_ALLOWLIST`) each time an appeal
   or vote is posted: new admins get it, removed ones lose it. An earlier
   build posted into the admins' shared DM and named it "Ban Appeals"; that
-  name is taken off again (the DM's messages stay). The message is posted by
+  name is taken off again at www startup and on each appeal or vote (the
+  DM's messages stay). The message is posted by
   a site sender (`site:ban-appeals`, shown as "Ban Appeals" with the site
   icon, `modules/siteSender.js`), not a user account. `modules/chat.js` renders that sender when it loads
   messages. The text is exactly
