@@ -39,4 +39,11 @@
 .collapsed-sticker-label {
   font-style: italic;
   opacity: 0.8;
+  display: flex;
+  align-items: center;
+  margin: 0 4px;
+}
+
+.collapsed-sticker-label > .emote {
+  margin-right: 4px;
 }

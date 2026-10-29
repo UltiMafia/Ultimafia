@@ -80,7 +80,10 @@ export function emotify(text, customEmotes, customStickers, options) {
         stickerOnlyText = false;
       } else if (hasSticker) {
         if (collapseStickers) {
-          words[j] = <span className="collapsed-sticker-label">Click to see sticker </span>
+          words[j] = <span className="collapsed-sticker-label">
+            <CustomEmote emote={stickers[word]} />
+            Click to see sticker
+          </span>;
         } else {
           words[j] = <CustomSticker sticker={stickers[word]} />;
         }
