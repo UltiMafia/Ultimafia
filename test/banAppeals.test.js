@@ -996,6 +996,177 @@ describe("site ban page and appeals", function () {
     });
   });
 
+  describe("BAN_APPEAL_VOTER_ALLOWLIST", function () {
+    const appealText = "I was arguing, but I did not harass anyone.";
+    let previousEnv;
+    let allowLoaded;
+    let allow;
+
+    // Reloads the real routers and banAppeals with the env value set, since it
+    // is read once at load.
+    function loadWith(value) {
+      if (allowLoaded) allowLoaded.restore();
+      if (value === undefined) delete process.env.BAN_APPEAL_VOTER_ALLOWLIST;
+      else process.env.BAN_APPEAL_VOTER_ALLOWLIST = value;
+      allowLoaded = loadRouters(models, {
+        async getUserRank(id) {
+          return ranks.get(id);
+        },
+        async hasPermission(id, permission, rank) {
+          return (
+            allowed.has(`${id}:${permission || "*"}`) &&
+            (rank == null || (ranks.get(id) || 0) >= rank)
+          );
+        },
+        async hasPermissions() {
+          return false;
+        },
+        async cacheUserPermissions() {},
+        async cacheUserInfo() {},
+        async getUserStatus() {
+          return "offline";
+        },
+        async getBasicUserInfo() {
+          return null;
+        },
+      });
+      allow = {
+        vote: findHandler(allowLoaded.modRouter, "post", "/banAppeal/vote"),
+        tally: findHandler(allowLoaded.modRouter, "get", "/banAppeal"),
+        info: findHandler(allowLoaded.banPageRouter, "get", "/"),
+        appeal: findHandler(allowLoaded.banPageRouter, "post", "/appeal"),
+      };
+    }
+
+    before(function () {
+      previousEnv = process.env.BAN_APPEAL_VOTER_ALLOWLIST;
+    });
+
+    after(function () {
+      if (allowLoaded) allowLoaded.restore();
+      if (previousEnv === undefined)
+        delete process.env.BAN_APPEAL_VOTER_ALLOWLIST;
+      else process.env.BAN_APPEAL_VOTER_ALLOWLIST = previousEnv;
+    });
+
+    beforeEach(async function () {
+      ranks.set("owner", 20);
+      allowed.add("owner:unban");
+      await siteBan();
+    });
+
+    async function submitWith() {
+      const res = response();
+      await allow.appeal(
+        banRequest(session, { appeal: appealText }, { "x-csrf": csrf }),
+        res,
+      );
+      return res;
+    }
+
+    async function voteWith(modId, value) {
+      const res = response();
+      await allow.vote(modRequest(modId, { userId: "target", vote: value }), res);
+      return res;
+    }
+
+    async function tallyWith(modId) {
+      const res = response();
+      const req = modRequest(modId);
+      req.query = { userId: "target" };
+      await allow.tally(req, res);
+      return res;
+    }
+
+    async function notifiedUsers() {
+      return (await models.Notification.distinct("user")).filter(
+        (id) => id !== "target",
+      );
+    }
+
+    it("unset or empty: every Owner and Admin counts, gets it and can vote", async function () {
+      for (const value of [undefined, "", " , ,"]) {
+        loadWith(value);
+        (await allowLoaded.banAppeals.getAdminIds()).should.deep.equal([
+          "banningAdmin",
+          "otherAdmin",
+          "owner",
+        ]);
+      }
+      const page = response();
+      await allow.info(banRequest(session), page);
+      page.body.votesRequired.should.equal(2);
+      (await submitWith()).statusCode.should.equal(200);
+      const doc = await models.SiteBanAppeal.findOne({}).lean();
+      doc.recipientIds.should.deep.equal(["banningAdmin", "otherAdmin", "owner"]);
+      (await notifiedUsers())
+        .sort()
+        .should.deep.equal(["banningAdmin", "otherAdmin", "owner"]);
+      (await voteWith("banningAdmin", "accept")).statusCode.should.equal(200);
+    });
+
+    it("set: only listed Owners/Admins count toward N, get the DM and notifications, and vote", async function () {
+      // mod is listed but is not an Owner or Admin; ghost is not a user.
+      loadWith(" otherAdmin , mod,ghost,,");
+      (await allowLoaded.banAppeals.getAdminIds()).should.deep.equal([
+        "otherAdmin",
+      ]);
+      const page = response();
+      await allow.info(banRequest(session), page);
+      page.body.votesRequired.should.equal(1);
+
+      (await submitWith()).statusCode.should.equal(200);
+      const doc = await models.SiteBanAppeal.findOne({}).lean();
+      doc.recipientIds.should.deep.equal(["otherAdmin"]);
+      const channel = await models.ChatChannel.findOne({
+        id: doc.channelId,
+      }).lean();
+      channel.memberIds.should.deep.equal(["otherAdmin"]);
+      (await notifiedUsers()).should.deep.equal(["otherAdmin"]);
+      (await models.ChannelOpen.distinct("user")).should.deep.equal([
+        "otherAdmin",
+      ]);
+
+      // Unlisted admins can't see or vote on it.
+      (await tallyWith("banningAdmin")).statusCode.should.equal(403);
+      (await voteWith("banningAdmin", "accept")).statusCode.should.equal(403);
+      (await voteWith("owner", "deny")).statusCode.should.equal(403);
+
+      // N = 1, so min(2, 1) = 1 accept decides it.
+      (await tallyWith("otherAdmin")).statusCode.should.equal(200);
+      const res = await voteWith("otherAdmin", "accept");
+      res.body.should.deep.equal({
+        status: "accepted",
+        tally: { admins: 1, accept: 1, deny: 0, acceptAt: 1, denyAt: 1 },
+      });
+    });
+
+    it("set with two admins: needs 2 accepts, and 1 deny makes it unreachable", async function () {
+      loadWith("otherAdmin,owner");
+      (await submitWith()).statusCode.should.equal(200);
+      (await models.SiteBanAppeal.findOne({}).lean()).recipientIds.should.deep.equal(
+        ["otherAdmin", "owner"],
+      );
+      (await voteWith("banningAdmin", "deny")).statusCode.should.equal(403);
+      const res = await voteWith("owner", "deny");
+      res.body.should.deep.equal({
+        status: "denied",
+        tally: { admins: 2, accept: 0, deny: 1, acceptAt: 2, denyAt: 1 },
+      });
+    });
+
+    it("set with no Owner/Admin listed: N = 0, nobody is told, it stays pending", async function () {
+      loadWith("mod,ghost");
+      (await submitWith()).statusCode.should.equal(200);
+      const doc = await models.SiteBanAppeal.findOne({}).lean();
+      doc.status.should.equal("pending");
+      doc.recipientIds.should.deep.equal([]);
+      should.not.exist(doc.channelId);
+      (await notifiedUsers()).should.deep.equal([]);
+      (await voteWith("otherAdmin", "accept")).statusCode.should.equal(403);
+    });
+  });
+
   describe("logout", function () {
     it("ends the ban session", async function () {
       await siteBan();

@@ -70,3 +70,13 @@ VAPID_SUBJECT=
 # (POST /api/auth/apple/notifications). Comma-separated list of allowed "aud"
 # values: the iOS bundle ID and/or web Services ID. Unset = all rejected (400).
 APPLE_SIWA_AUDIENCE=VCCCLLC.Ultimafia
+
+# optional - dev/QA testing only. Comma-separated user ids, e.g.
+# BAN_APPEAL_VOTER_ALLOWLIST=laJoqacXr,AbC123xyz
+# When set, a site-ban appeal goes only to the listed users who are also in the
+# Owner or Admin group: only they count toward the admin total N, get the appeal
+# DM and inbox notification, and can view or vote on it. Accepting still needs
+# min(2, N) accept votes. If none of the listed users is an Owner or Admin,
+# N = 0 and appeals stay pending. Unset or empty = every Owner and Admin, as in
+# production. Read at startup. Leave it unset in production.
+BAN_APPEAL_VOTER_ALLOWLIST=

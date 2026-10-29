@@ -27,7 +27,10 @@ reason.
   client sends the user to `/banned`.
 - **Admins.** Members of the `Owner` and `Admin` groups who aren't deleted
   (`APPEAL_RECIPIENT_GROUPS` in `modules/banAppeals.js`). The admin who issued
-  the ban is included.
+  the ban is included. On dev/QA, `BAN_APPEAL_VOTER_ALLOWLIST` (comma-separated
+  user ids, see `docs/server_env`) narrows this to the listed Owners/Admins, so
+  test appeals don't reach real staff. It is unset in production, which keeps
+  every Owner and Admin.
 - **Appeal message.** It goes into the group DM of every admin. The banned
   user is not a member, so they can't read it or the votes. The channel id is
   the one the chat panel uses for that member set, so all appeals share one

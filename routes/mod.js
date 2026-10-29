@@ -836,7 +836,8 @@ async function verifyAppealAdmin(req, res) {
   if (!(await routeUtils.verifyPermission(res, userId, "unban", rank + 1)))
     return null;
 
-  // Appeals go to the admins, so only they vote on them.
+  // Appeals go to the admins (narrowed by BAN_APPEAL_VOTER_ALLOWLIST when it
+  // is set), so only they vote on them.
   if (!(await banAppeals.getAdminIds()).includes(userId)) {
     errors.forbidden(res, "Only admins can vote on ban appeals.");
     return null;

@@ -8,6 +8,9 @@ const banAppeals = require("../modules/banAppeals");
 
 const router = express.Router();
 
+const voterAllowlistWarning = banAppeals.voterAllowlistStartupWarning();
+if (voterAllowlistWarning) logger.warn(voterAllowlistWarning);
+
 function banSession(req) {
   const siteBan = req.session && req.session.siteBan;
   return siteBan && siteBan.userId ? siteBan : null;

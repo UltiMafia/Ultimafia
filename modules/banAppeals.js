@@ -24,6 +24,39 @@ const MIN_APPEAL_LENGTH = 10;
 // Members of these groups receive appeals and vote on them.
 const APPEAL_RECIPIENT_GROUPS = ["Owner", "Admin"];
 
+// BAN_APPEAL_VOTER_ALLOWLIST (server env, read once at startup): a
+// comma-separated list of user ids. Unset or empty (only spaces and commas):
+// every Owner and Admin gets appeals and votes, as on prod. Set: only the
+// listed users who are also an Owner or Admin count toward N, get the appeal
+// DM and notification, and can vote; nobody else is told about appeals. If
+// none of them is an Owner or Admin, N = 0 and appeals stay PENDING. For
+// dev/QA testing with test admin accounts only; leave it unset in production.
+function parseVoterAllowlist(value) {
+  if (value == null) return null;
+  const ids = String(value)
+    .split(",")
+    .map((id) => id.trim())
+    .filter(Boolean);
+  return ids.length > 0 ? new Set(ids) : null;
+}
+
+const VOTER_ALLOWLIST = parseVoterAllowlist(
+  process.env.BAN_APPEAL_VOTER_ALLOWLIST,
+);
+
+function voterAllowlistStartupWarning(allowlist = VOTER_ALLOWLIST) {
+  return allowlist
+    ? `BAN_APPEAL_VOTER_ALLOWLIST is set: ban appeals go only to ${allowlist.size} listed user id(s) who are Owner or Admin. Dev/QA only, never set this in production.`
+    : null;
+}
+
+// The admin ids that receive appeals and vote on them: the Owner/Admin ids,
+// narrowed to the allowlist when one is set.
+function applyVoterAllowlist(adminIds, allowlist = VOTER_ALLOWLIST) {
+  if (!allowlist) return adminIds;
+  return adminIds.filter((id) => allowlist.has(id));
+}
+
 // Where the inbox notification goes: the mod panel, which has the "Ban Appeal
 // Tally" and "Ban Appeal Vote" commands.
 const APPEAL_NOTIFICATION_LINK = "/policy/moderation";
@@ -110,7 +143,10 @@ function displayReason(ban) {
   return ban.reason || "No reason was recorded for this ban.";
 }
 
-async function getAdminIds() {
+// Every place that needs "the admins" for appeals (N on the ban page, the
+// recipients snapshotted at submission, who may view and vote) uses this, so
+// BAN_APPEAL_VOTER_ALLOWLIST applies everywhere.
+async function getAdminIds(allowlist = VOTER_ALLOWLIST) {
   const groups = await models.Group.find({
     name: { $in: APPEAL_RECIPIENT_GROUPS },
   }).select("_id");
@@ -122,7 +158,10 @@ async function getAdminIds() {
     _id: { $in: inGroups.map((inGroup) => inGroup.user) },
     deleted: false,
   }).select("id");
-  return [...new Set(users.map((user) => user.id))].sort();
+  return applyVoterAllowlist(
+    [...new Set(users.map((user) => user.id))].sort(),
+    allowlist,
+  );
 }
 
 function appealView(appeal, { linked = false } = {}) {
@@ -514,6 +553,9 @@ module.exports = {
   findActiveSiteBan,
   findLinkedAppeal,
   getAdminIds,
+  parseVoterAllowlist,
+  applyVoterAllowlist,
+  voterAllowlistStartupWarning,
   getBanPageInfo,
   submitAppeal,
   sendAppealMessage,
