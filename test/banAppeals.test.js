@@ -487,6 +487,8 @@ describe("site ban page and appeals", function () {
         id: messages[0].channel,
       }).lean();
       channel.public.should.equal(false);
+      // Listed as "Ban Appeals" in the chat panel, not by the admins' names.
+      channel.name.should.equal("Ban Appeals");
       [...channel.memberIds].sort().should.deep.equal(admins);
       channel.memberIds.should.not.include("target");
       channel.id.should.equal(loaded.banAppeals.userIdsToChannelId(admins));
@@ -821,7 +823,7 @@ describe("site ban page and appeals", function () {
         content: /^BAN-APPEAL VOTE/,
       }).lean();
       message.content.should.equal(
-        "BAN-APPEAL VOTE: OtherAdmin voted DENY - 1 admin: accept 0/1, deny 1/1 - appeal DENIED",
+        "BAN-APPEAL VOTE: OtherAdmin voted DENY - 1 admin: accept 0 of 1 needed, deny 1 of 1 needed - appeal DENIED",
       );
     });
 
@@ -864,10 +866,14 @@ describe("site ban page and appeals", function () {
         .map((m) => m.content)
         .slice(1)
         .should.deep.equal([
-          "BAN-APPEAL VOTE: OtherAdmin voted DENY - 3 admins: accept 0/2, deny 1/2 - still PENDING",
-          "BAN-APPEAL VOTE: BanningAdmin voted ACCEPT - 3 admins: accept 1/2, deny 1/2 - still PENDING",
-          "BAN-APPEAL VOTE: Owner voted ACCEPT - 3 admins: accept 2/2, deny 1/2 - appeal ACCEPTED",
+          "BAN-APPEAL VOTE: OtherAdmin voted DENY - 3 admins: accept 0 of 2 needed, deny 1 of 2 needed - still PENDING",
+          "BAN-APPEAL VOTE: BanningAdmin voted ACCEPT - 3 admins: accept 1 of 2 needed, deny 1 of 2 needed - still PENDING",
+          "BAN-APPEAL VOTE: Owner voted ACCEPT - 3 admins: accept 2 of 2 needed, deny 1 of 2 needed - appeal ACCEPTED",
         ]);
+      // Every message comes from the site sender, never from an admin account.
+      [...new Set(messages.map((m) => m.senderId))].should.deep.equal([
+        "site:ban-appeals",
+      ]);
     });
 
     it("shows admins N, the tally and who voted", async function () {

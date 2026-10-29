@@ -23,6 +23,10 @@ const MAX_BAN_REASON_LENGTH = 300;
 const MAX_APPEAL_LENGTH = 1000;
 const MIN_APPEAL_LENGTH = 10;
 
+// The admins' appeal DM is shown under this name in the chat panel (the same
+// name as the site sender in modules/siteSender.js).
+const APPEAL_CHANNEL_NAME = "Ban Appeals";
+
 // Members of these groups receive appeals and vote on them.
 const APPEAL_RECIPIENT_GROUPS = ["Owner", "Admin"];
 
@@ -337,7 +341,9 @@ async function sendAppealMessage({ recipientIds, content, username }) {
     { id: channelId },
     {
       $setOnInsert: { id: channelId, public: false, memberIds },
-      $set: { lastMessageDate: now },
+      // Named so the chat panel lists it as "Ban Appeals", not by the other
+      // admins' names, which made it look like a DM from one of them.
+      $set: { lastMessageDate: now, name: APPEAL_CHANNEL_NAME },
     },
     { upsert: true },
   ).exec();
@@ -486,9 +492,11 @@ function decidedStatus(tally) {
   return STATUS.PENDING;
 }
 
+// "3 admins: accept 1 of 2 needed, deny 0 of 2 needed": votes so far
+// against the votes that decide the appeal each way.
 function formatTally(tally) {
   if (!tally.admins) return "0 admins: nobody can vote";
-  return `${adminsLabel(tally.admins)}: accept ${tally.accept}/${tally.acceptAt}, deny ${tally.deny}/${tally.denyAt}`;
+  return `${adminsLabel(tally.admins)}: accept ${tally.accept} of ${tally.acceptAt} needed, deny ${tally.deny} of ${tally.denyAt} needed`;
 }
 
 function formatVoteMessage({ voterName, vote, tally, status }) {
@@ -588,7 +596,8 @@ async function voteOnAppeal({ modId, userId, vote, notes }) {
     tally = tallyVotes(current.votes, current.recipientIds);
   }
 
-  // Show the tally to the admins in the appeal's group DM.
+  // Show the tally to the admins in the appeal's group DM. Posted by the
+  // site sender like the appeal itself; the message names the voter.
   if (current.channelId) {
     const voter = await models.User.findOne({ id: modId }).select("name");
     const content = formatVoteMessage({
@@ -599,7 +608,7 @@ async function voteOnAppeal({ modId, userId, vote, notes }) {
     });
     await new models.ChatMessage({
       id: shortid.generate(),
-      senderId: modId,
+      senderId: SITE_SENDER_ID,
       date: Date.now(),
       channel: current.channelId,
       content,

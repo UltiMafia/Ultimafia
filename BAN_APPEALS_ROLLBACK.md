@@ -106,7 +106,7 @@ reason.
     `modules/banAppeals.js`.
   - Once decided, votes are closed (409).
   - Each vote also posts the tally into the appeal's group DM, e.g.
-    `BAN-APPEAL VOTE: AdminBob voted ACCEPT - 3 admins: accept 1/2, deny 0/2 - still PENDING`.
+    `BAN-APPEAL VOTE: AdminBob voted ACCEPT - 3 admins: accept 1 of 2 needed, deny 0 of 2 needed - still PENDING`.
   - "Ban Appeal Tally" (`GET /mod/banAppeal?userId=`) shows the status, N,
     the accept and deny counts and who voted what.
   - The banned user sees only the status, not the votes.
@@ -150,7 +150,7 @@ reason.
 |--------|-----------------|
 | `bans.reason` (String), `bans.createdAt` (Number) | On every new ban. Old bans have neither; the page shows "No reason was recorded for this ban." and the ObjectId time as the ban date. |
 | New collection `sitebanappeals` (unique `id`, unique `banId`; `votes` array) | When a banned user appeals, and on each admin vote. Mongoose builds the indexes on startup. |
-| `chatchannels` / `chatmessages` / `channelopens` / `notifications` | One admins-only group DM (shared by all appeals), one message per appeal from the site sender (`senderId: "site:ban-appeals"`, no user document), the admins' opens, an unread chat notification and a "Ban appeal pending" inbox notification per admin, plus one tally message per vote (sent by the voting admin). |
+| `chatchannels` / `chatmessages` / `channelopens` / `notifications` | One admins-only group DM named "Ban Appeals" (shared by all appeals), one message per appeal from the site sender (`senderId: "site:ban-appeals"`, no user document), the admins' opens, an unread chat notification and a "Ban appeal pending" inbox notification per admin, plus one tally message per vote (also from the site sender; the text names the voter). |
 | `sessions` with `session.siteBan` | When a site-banned user signs in, and when a site ban signs a user's open sessions out (those sessions become ban sessions instead of being deleted). Expire with the normal session TTL. |
 
 No startup migration and no change to existing documents.

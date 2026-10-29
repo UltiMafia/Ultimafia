@@ -8,6 +8,8 @@ const SITE_SENDER_INFO = {
   id: SITE_SENDER_ID,
   name: "Ban Appeals",
   avatar: false,
+  // Not a user: the chat panel doesn't link the name to a profile.
+  site: true,
   status: "offline",
   groups: [],
   settings: {},

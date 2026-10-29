@@ -12,11 +12,12 @@ import {
 import { lobbies } from "../../../constants/lobbies";
 import { BlockRequests } from "./BlockRequests";
 
-// "N admins: accept a/k, deny d/j" for a ban appeal tally from the server.
-function formatAppealTally(tally) {
+// "3 admins: accept 1 of 2 needed, deny 0 of 2 needed" for a ban appeal
+// tally from the server: votes so far against the votes that decide it.
+export function formatAppealTally(tally) {
   if (!tally.admins) return "0 admins: nobody can vote";
   const admins = `${tally.admins} admin${tally.admins === 1 ? "" : "s"}`;
-  return `${admins}: accept ${tally.accept}/${tally.acceptAt}, deny ${tally.deny}/${tally.denyAt}`;
+  return `${admins}: accept ${tally.accept} of ${tally.acceptAt} needed, deny ${tally.deny} of ${tally.denyAt} needed`;
 }
 
 export const COMMAND_GROUP_ORDER = {
@@ -556,7 +557,7 @@ export function useModCommands(argValues, commandRan, setResults) {
           .then((res) => {
             const { status, tally } = res.data;
             siteInfo.showAlert(
-              `Vote recorded. ${formatAppealTally(tally)}: ${status.toUpperCase()}.`,
+              `Vote recorded. Appeal ${status.toUpperCase()}. ${formatAppealTally(tally)}.`,
               "success"
             );
             commandRan();
@@ -585,7 +586,7 @@ export function useModCommands(argValues, commandRan, setResults) {
                   .join(", ")
               : "no votes yet";
             siteInfo.showAlert(
-              `${status.toUpperCase()}. ${formatAppealTally(tally)} (${voteList}).`,
+              `Appeal ${status.toUpperCase()}. ${formatAppealTally(tally)} (${voteList}).`,
               "info"
             );
             commandRan();
@@ -659,6 +660,8 @@ export function useModCommands(argValues, commandRan, setResults) {
             { value: "ranked", label: "Ranked" },
             { value: "competitive", label: "Competitive" },
             { value: "site", label: "Site" },
+          ],
+        },
         {
           // Accounts linked by a shared IP or device fingerprint (see Alts).
           // The server also defaults to "linked" when this is missing.
@@ -673,8 +676,6 @@ export function useModCommands(argValues, commandRan, setResults) {
             { value: "single", label: "This account only" },
           ],
           default: "linked",
-        },
-          ],
         },
       ],
       run: function () {

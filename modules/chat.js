@@ -533,7 +533,7 @@ async function sendChatInfo(userId, socket) {
     .select("channelId channel -_id")
     .populate({
       path: "channel",
-      select: "id public memberIds members lastMessageDate -_id",
+      select: "id name public memberIds members lastMessageDate -_id",
       populate: {
         path: "members",
         select: "id name -_id",
