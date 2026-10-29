@@ -305,6 +305,10 @@ var deprecated = false;
             // Reply once the leave is done, so the site never sees the
             // player still in this game right after "left" (Play again).
             await game.userLeave(data.userId);
+            // userLeave can be a no-op when Redis still lists a player that
+            // the in-memory game no longer knows about.
+            if ((await redis.inGame(data.userId)) === gameId)
+              await redis.leaveGame(data.userId);
             socket.send("gameLeft", data.userId);
           } catch (e) {
             logger.error(e);

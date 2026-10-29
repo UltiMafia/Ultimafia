@@ -6,6 +6,7 @@ const crypto = require("crypto");
 const constants = require("../data/constants");
 const routeUtils = require("../routes/utils");
 const models = require("../db/models");
+const redis = require("../modules/redis");
 const fbServiceAccount = require("../" + process.env.FIREBASE_JSON_FILE);
 const logger = require("../modules/logging")(".");
 const {
@@ -14,6 +15,10 @@ const {
 const { sendFlaggedUserDiscordAlert } = require("./report");
 const { normalizeFingerprint, checkFingerprintBan } = require("../modules/fingerprintBan");
 const { recordLoginFingerprint } = require("../modules/fingerprintLogin");
+const {
+  isArmored,
+  sharesSignupEvidenceWithArmor,
+} = require("../modules/plotArmor");
 const router = express.Router();
 const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
@@ -132,6 +137,7 @@ router.post("/", async function (req, res) {
         JSON.stringify({
           siteBanned: true,
           banExpires: e.banExpires,
+          banPage: "/banned",
         })
       );
     } else if (e.banEvasion) {
@@ -160,6 +166,10 @@ router.get("/discord", passport.authenticate("discord"));
 
 router.get("/discord/redirect", (req, res, next) => {
   passport.authenticate("discord", { session: false }, (err, user, info) => {
+    if (err && err.siteBanned && req.session.siteBan) {
+      res.redirect("/banned");
+      return;
+    }
     if (err) {
       logger.warn(`Discord authentication error: ${err.message}`);
       res.status(403);
@@ -300,6 +310,15 @@ router.post("/resendVerification", async function (req, res) {
   }
 });
 
+// Bans still running: permanent (expires 0) or expiring later.
+function activeBanQuery(userId, extra = {}, now = Date.now()) {
+  return {
+    userId,
+    ...extra,
+    $or: [{ expires: 0 }, { expires: { $gt: now } }],
+  };
+}
+
 async function authSuccess(req, uid, email, discordProfile, fingerprint, provider) {
   try {
     /* *** Scenarios ***
@@ -322,7 +341,7 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint, provide
       "id deleted discordId fbUid"
     );
     var bannedUser = await models.User.findOne({ email, banned: true }).select(
-      "id discordId"
+      "id discordId fbUid"
     );
     var deletedUser = await models.User.findOne({
       email,
@@ -356,6 +375,67 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint, provide
       }
     }
 
+    if (!id) {
+      // Signing in to an account with a running site ban (8) (9): the user
+      // gets the ban page session and nothing else. Decided by the account's
+      // Ban rows, not only by users.banned, which can be cleared while a
+      // later site ban is still running (expireBans clears it when any one
+      // site ban ends) or still be set after the last one ended.
+      var banAccount = bannedUser || user;
+      var activeSiteBan = banAccount
+        ? await models.Ban.findOne(activeBanQuery(banAccount.id, { type: "site" }))
+            .sort({ expires: -1 })
+            .select("expires")
+        : null;
+      if (activeSiteBan) {
+        // The same Firebase account check as a normal sign-in (7).
+        if (uid && banAccount.fbUid && banAccount.fbUid !== uid) {
+          logger.warn(`Firebase UID mismatch for banned user ${banAccount.id}: stored=${banAccount.fbUid}, provided=${uid}`);
+          return;
+        }
+        // Unchanged from before the ban page: the attempt is recorded on the
+        // banned account only (it blocks sign-ups from this network and
+        // device); no other account is touched or banned.
+        await models.User.updateOne(
+          { id: banAccount.id },
+          { $addToSet: { ip: ip } }
+        );
+        await recordLoginFingerprint(banAccount.id, fingerprint);
+        // A restricted session that only the ban page endpoints read
+        // (routes/banPage.js, gated in app.js by modules/banSessionGate.js);
+        // the user is still signed out everywhere else.
+        delete req.session.user;
+        req.session.siteBan = {
+          userId: banAccount.id,
+          csrf: crypto.randomBytes(24).toString("hex"),
+        };
+        throw {
+          siteBanned: true,
+          banExpires: activeSiteBan.expires,
+        };
+      }
+
+      // users.banned is set but the site ban has ended and the periodic
+      // cleanup has not run yet: sign in normally, as the cleanup would let
+      // them. Any other running ban that takes signIn away still refuses.
+      if (
+        bannedUser &&
+        user &&
+        user.id === bannedUser.id &&
+        (await models.Ban.exists({ userId: bannedUser.id, type: "site" })) &&
+        !(await models.Ban.exists(
+          activeBanQuery(bannedUser.id, { permissions: "signIn" })
+        ))
+      ) {
+        await models.User.updateOne(
+          { id: bannedUser.id },
+          { $set: { banned: false } }
+        ).exec();
+        await redis.cacheUserPermissions(bannedUser.id);
+        bannedUser = null;
+      }
+    }
+
     if (!user && !bannedUser && !deletedUser) {
       //Create new account (5) (6)
       var bannedSameIP = await models.User.find({
@@ -363,12 +443,38 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint, provide
         banned: true,
       }).select("_id");
 
-      if (bannedSameIP.length > 0) return;
+      // Plot Armor (dev/QA): a sign-up from the armored accounts' own network
+      // or device skips the ban-evasion checks below. Looked up once, only
+      // when one of them matches.
+      var armorShared = null;
+      var signupSharesArmor = async () => {
+        if (armorShared === null)
+          armorShared = await sharesSignupEvidenceWithArmor({
+            ip,
+            fingerprint: fingerprintMatch,
+          });
+        return armorShared;
+      };
+
+      if (bannedSameIP.length > 0) {
+        if (!(await signupSharesArmor())) return;
+        logger.warn(
+          `Plot Armor: allowed a sign-up from an IP shared with ${bannedSameIP.length} banned user(s), because it shares an IP or device with an armored account.`
+        );
+      }
 
       var aliasAccount = await findAliasAccount(email);
       if (aliasAccount) throw { emailAliasInUse: true };
 
       var fingerprintBan = fingerprintMatch ? await checkFingerprintBan(fingerprintMatch) : null;
+      if (fingerprintBan && (await signupSharesArmor())) {
+        logger.warn(
+          `Plot Armor: allowed a sign-up whose device fingerprint ${
+            fingerprintBan === "block" ? "exactly matches" : "partly matches"
+          } a banned user's, because it shares an IP or device with an armored account.`
+        );
+        fingerprintBan = null;
+      }
       if (fingerprintBan === "block") throw { banEvasion: true };
 
       // Apple's private relay addresses are allowed for Apple sign-ins.
@@ -495,7 +601,8 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint, provide
         await syncRankedCompetitiveAccess(id);
       }
     } else if (!id && bannedUser) {
-      //(8) (9)
+      //(8) (9) with no running site ban (that case is handled above): another
+      // ban takes sign-in away, so the sign-in is refused as before.
       await models.User.updateOne(
         { id: bannedUser.id },
         {
@@ -505,22 +612,18 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint, provide
 
       await recordLoginFingerprint(bannedUser.id, fingerprint);
 
-      // Get site ban information to return to frontend
-      var siteBan = await models.Ban.findOne({
-        userId: bannedUser.id,
-        type: "site",
-      }).select("expires");
-
-      if (siteBan) {
-        throw {
-          siteBanned: true,
-          banExpires: siteBan.expires,
-        };
-      }
-
       return;
     } else if (id && bannedUser) {
       //(3)
+      // Plot Armor (dev/QA): an armored account that signs in to a banned
+      // account's email is not banned for it; it just stays signed in as
+      // itself.
+      if (isArmored(id)) {
+        logger.warn(
+          `Plot Armor: did not ban ${id} for signing in to banned account ${bannedUser.id}.`
+        );
+        return;
+      }
       await routeUtils.banUser(id, 0, ["signIn"], "bannedUser");
 
       await models.User.updateOne(
@@ -572,6 +675,7 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint, provide
       await syncRankedCompetitiveAccess(id);
     }
 
+    delete req.session.siteBan;
     req.session.user = {
       id,
       fbUid: uid,

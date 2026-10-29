@@ -168,7 +168,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
                 ? JSON.parse(err.response.data)
                 : err.response.data;
             if (data.siteBanned) {
-              snackbarHook.popSiteBanned(data.banExpires);
+              window.location.assign(data.banPage || "/banned");
               setLoading(false);
               return;
             }
@@ -258,7 +258,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
                 ? JSON.parse(err.response.data)
                 : err.response.data;
             if (data.siteBanned) {
-              snackbarHook.popSiteBanned(data.banExpires);
+              window.location.assign(data.banPage || "/banned");
               setLoading(false);
               return;
             }

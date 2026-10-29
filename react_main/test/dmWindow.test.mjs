@@ -12,6 +12,8 @@ import {
   otherMembers,
   dmTitle,
   isGroupDm,
+  isNamedDm,
+  SITE_CONVERSATION_ICON,
   dmPreviewText,
   formatDmTime,
   sortDirects,
@@ -96,6 +98,18 @@ test("conversation names are the other members", () => {
   assert.deepEqual(otherMembers({ members: [me, alice] }, "me"), [alice]);
   assert.equal(isGroupDm({ members: [me, alice] }), false);
   assert.equal(isGroupDm({ members: [me, alice, bob] }), true);
+});
+
+test("a named site conversation (Ban Appeals) shows its name, not its members", () => {
+  const appeals = { id: "c", name: "Ban Appeals", members: [me, alice] };
+  // Two admins: still titled "Ban Appeals" for both, never "Alice" or "Me".
+  assert.equal(dmTitle(appeals, "me"), "Ban Appeals");
+  assert.equal(dmTitle(appeals, "alice"), "Ban Appeals");
+  assert.equal(isNamedDm(appeals), true);
+  assert.equal(isNamedDm({ members: [me, alice] }), false);
+  // Shows who wrote each message, like a group.
+  assert.equal(isGroupDm(appeals), true);
+  assert.equal(SITE_CONVERSATION_ICON, "/images/icon-192.png");
 });
 
 test("previews say who wrote the last message", () => {

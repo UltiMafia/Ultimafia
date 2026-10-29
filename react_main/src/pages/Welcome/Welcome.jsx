@@ -64,7 +64,7 @@ export const Welcome = () => {
                     ? JSON.parse(err.response.data)
                     : err.response.data;
                 if (data.siteBanned) {
-                  snackbarHook.popSiteBanned(data.banExpires);
+                  window.location.assign(data.banPage || "/banned");
                   setIsLoading(false);
                   return;
                 }

@@ -14,6 +14,7 @@ import StaffHandbook from "./Moderation/StaffHandbook";
 import FlaggedIntake from "./Moderation/FlaggedIntake";
 import GithubLinks from "./Moderation/GithubLinks";
 import Volunteer from "./Moderation/Volunteer";
+import BanAppeals from "./Moderation/BanAppeals";
 import Invoices from "./Invoices";
 
 function ReportsRedirect() {
@@ -50,6 +51,8 @@ export default function Policy() {
           <Route path="flagged-intake" element={<FlaggedIntake />} />
           <Route path="github-links" element={<GithubLinks />} />
           <Route path="volunteer" element={<Volunteer />} />
+          <Route path="ban-appeals" element={<BanAppeals />} />
+          <Route path="ban-appeals/:appealId" element={<BanAppeals />} />
         </Route>
         <Route path="reports/*" element={<ReportsRedirect />} />
         <Route path="*" element={<Navigate to="rules" />} />
