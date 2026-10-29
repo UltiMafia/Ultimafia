@@ -48,6 +48,7 @@ const db = require("./db/db");
 
 const session = require("./modules/session");
 const csrf = require("./modules/csrf");
+const { banSessionGate } = require("./modules/banSessionGate");
 const devApiBearer = require("./modules/devApi/bearer");
 const devApiRouter = require("./routes/devApi");
 const { devApiEnabled } = require("./modules/devApi/policy");
@@ -83,6 +84,8 @@ app.use(
 
 const apiRouter = express.Router();
 
+// A site-banned user's ban page session reaches only the ban page's APIs.
+apiRouter.use(banSessionGate);
 apiRouter.use("/", indexRouter);
 apiRouter.use("/auth/apple", appleNotificationsRouter);
 apiRouter.use("/auth/ban", banPageRouter);
