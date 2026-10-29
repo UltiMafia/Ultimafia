@@ -224,13 +224,32 @@ const game = {
   isolatedPlayers: new Set(),
   getSetupGameSetting: () => undefined,
   setup: { gameSettings: [] },
-  onMessageQuote: () => {},
-  onMessageReply: params.get("noreply") === "1" ? undefined : () => {},
-  onPinMessage: () => {},
+  onMessageQuote: (m) => window.__quotes.push(m.id),
+  onMessageReply:
+    params.get("noreply") === "1"
+      ? undefined
+      : (m) => window.__replies.push(m.id),
+  onPinMessage: (m) => window.__pins.push(m.id),
   isMessagePinned: () => false,
 };
+// Click to reply. Query: link=1 (a link in Bob's plain line), sys=1 (adds a
+// server line). Replies, quotes and pins are recorded in window.__replies,
+// __quotes and __pins; window.__unmount() removes the chat.
+if (params.get("link") === "1") msgs[1].content += " https://example.com/x";
+if (params.get("sys") === "1")
+  msgs.push({
+    id: "s1aaaaaa",
+    senderId: "server",
+    meetingId: "v1",
+    content: "Bob has been lynched.",
+    time: t0 + 7000,
+  });
+window.__replies = [];
+window.__quotes = [];
+window.__pins = [];
 const root = document.createElement("div");
 document.body.append(root);
+window.__unmount = () => ReactDOM.unmountComponentAtNode(root);
 ReactDOM.render(
   <BrowserRouter>
     <ThemeProvider theme={theme}>

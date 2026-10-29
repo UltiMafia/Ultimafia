@@ -147,6 +147,9 @@ import {
   buildReplyPayload,
   canReplyTo,
   describeQuotedMessage,
+  isReplyClick,
+  hasSelectionIn,
+  REPLY_CLICK_DELAY_MS,
   findMessageRow,
   handleGameEscape,
   makeReplyTarget,
@@ -2982,6 +2985,14 @@ const MessageRow = React.memo(function MessageRow(props) {
   const theme = useTheme();
   const [isHovering, setIsHovering] = useState(false);
   const accessibleNameColors = user.settings?.accessibleNameColors;
+  // Click to reply: the pending single click, cleared by a double-click, by
+  // another click and on unmount.
+  const replyClickTimer = useRef(null);
+  const cancelReplyClick = useCallback(() => {
+    clearTimeout(replyClickTimer.current);
+    replyClickTimer.current = null;
+  }, []);
+  useEffect(() => cancelReplyClick, [cancelReplyClick]);
 
   // Mobile only - users pin message by long pressing them
   const onPinMessage = props.onPinMessage;
@@ -3039,10 +3050,9 @@ const MessageRow = React.memo(function MessageRow(props) {
     isHovering,
     stateViewing: props.stateViewing,
   });
-  // Whether this row offers a reply button (shown on hover). It does not
-  // depend on hover, so the room the row keeps for it never changes the
-  // layout when the mouse moves.
-  const replyButtonSlot =
+  // Whether clicking this row starts a reply (the rows that used to show the
+  // reply button).
+  const clickToReply =
     !!props.onMessageReply &&
     !isPhoneDevice &&
     !isRightAligned &&
@@ -3267,13 +3277,49 @@ const MessageRow = React.memo(function MessageRow(props) {
     className += props.replyMerged
       ? " reply-merged with-reply-reference"
       : " with-reply-reference";
-  if (replyButtonSlot) className += " with-reply-button";
-  
+  if (clickToReply) className += " click-to-reply";
+
+  function startReply() {
+    props.onMessageReply(message);
+    document.getElementById("speechInput")?.focus();
+  }
+
+  // One click starts a reply after REPLY_CLICK_DELAY_MS, so that a
+  // double-click can still quote without starting one.
+  function onRowClick(e) {
+    cancelReplyClick();
+    if (!clickToReply) return;
+    const row = e.currentTarget;
+    const env = {
+      selection: window.getSelection(),
+      getComputedStyle: (el) => window.getComputedStyle(el),
+    };
+    if (!isReplyClick(e, row, env)) return;
+    replyClickTimer.current = setTimeout(() => {
+      replyClickTimer.current = null;
+      if (hasSelectionIn(row, window.getSelection())) return;
+      startReply();
+    }, REPLY_CLICK_DELAY_MS);
+  }
+
+  function onRowKeyDown(e) {
+    if (e.key !== "Enter" || e.target !== e.currentTarget) return;
+    e.preventDefault();
+    startReply();
+  }
+
   return (
     <div
       className={className}
       data-message-id={message.id ?? undefined}
-      onDoubleClick={() => props.onMessageQuote(message)}
+      onClick={clickToReply ? onRowClick : undefined}
+      onKeyDown={clickToReply ? onRowKeyDown : undefined}
+      tabIndex={clickToReply ? 0 : undefined}
+      aria-keyshortcuts={clickToReply ? "Enter" : undefined}
+      onDoubleClick={() => {
+        cancelReplyClick();
+        props.onMessageQuote(message);
+      }}
       style={messageStyle}
       onMouseEnter={messageOnMouseEnter}
       onMouseLeave={messageOnMouseLeave}
@@ -3449,21 +3495,6 @@ const MessageRow = React.memo(function MessageRow(props) {
             />
           )}
         </div>
-      )}
-      {replyButtonSlot && isHovering && (
-        // Bottom-right corner of the row, under the pin (which stays where
-        // it always was, top-right). The row reserves room for both.
-        <i
-          className="fas fa-reply reply-button"
-          title="Reply"
-          role="button"
-          aria-label="Reply"
-          onClick={(e) => {
-            e.stopPropagation();
-            props.onMessageReply(message);
-          }}
-          onDoubleClick={(e) => e.stopPropagation()}
-        />
       )}
     </div>
   );
