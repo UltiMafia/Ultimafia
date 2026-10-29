@@ -5,7 +5,9 @@
 // Query: layout (messageLayout setting), st (state; -1 is pregame), anon=1
 // (anonymous senders), noreply=1 (no reply handler, so rows are drawn exactly
 // as without the reply feature), spec=1 (replies are spectator chat), dead=1
-// (repliers are dead), ts=0 (timestamps off).
+// (repliers are dead), ts=0 (timestamps off), styled=1 (AlageRheba10 and Bob
+// have their own name colour, animated name, name font and text colour, so a
+// reply's reference can be checked against the original line's row).
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
@@ -33,7 +35,13 @@ const dead = params.get("dead") === "1";
 // Extra flags for the reply lines (spectator chat, dead sender).
 const R = { ...(spec ? { spectatorChat: true } : {}), ...(dead ? { alive: false } : {}) };
 const t0 = 1761500000000;
-const msgs = [
+const styled = params.get("styled") === "1";
+// Per-message colours, as the server stamps them on every line.
+const COLORS = {
+  pA: { nameColor: "#1f9d55", textColor: "#c2185b" },
+  pB: { nameColor: "#1565c0", textColor: "#e65100" },
+};
+const msgs0 = [
   {
     id: "m1aaaaaa",
     senderId: S("pA"),
@@ -177,6 +185,11 @@ const msgs = [
     ...R,
   },
 ];
+const msgs = msgs0.map((m) =>
+  styled && !m.isQuote && COLORS[m.senderId]
+    ? { ...m, ...COLORS[m.senderId] }
+    : m
+);
 const meeting = {
   id: "v1",
   name: stName === "Pregame" ? "Pregame" : "Village",
@@ -187,9 +200,18 @@ const meeting = {
   members: [{ id: "pA" }, { id: "pB" }, { id: "pC" }],
   votes: {},
 };
+const STYLES = {
+  pA: {
+    nameFont: "georgia",
+    animatedNameColor: "gradient",
+    nameGradientColorA: "#ff0080",
+    nameGradientColorB: "#00e5ff",
+  },
+  pB: { nameFont: "mono", animatedNameColor: "pulse" },
+};
 const players = {
-  pA: { id: "pA", name: "AlageRheba10", userId: "uA" },
-  pB: { id: "pB", name: "Bob", userId: "uB" },
+  pA: { id: "pA", name: "AlageRheba10", userId: "uA", ...(styled ? STYLES.pA : {}) },
+  pB: { id: "pB", name: "Bob", userId: "uB", ...(styled ? STYLES.pB : {}) },
   pC: { id: "pC", name: "Vinman", userId: "uC" },
 };
 const game = {
