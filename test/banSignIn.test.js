@@ -49,7 +49,7 @@ describe("Signing in to a site-banned account", function () {
     replace("../modules/logging", () => ({ error() {}, warn() {}, info() {} }));
     replace("../modules/userEligibility", { async syncRankedCompetitiveAccess() {} });
     replace("../routes/report", { sendFlaggedUserDiscordAlert() {} });
-    replace("../modules/emailAlias", { async findAliasAccount() { return null; } });
+    replace("../modules/emailAlias", { async findAliasAccount() { return null; }, async findSignupBlockingAccount() { return null; }, plusAliasesStartupWarning() { return null; } });
     replace("firebase-admin", {
       initializeApp() {}, credential: { cert() { return {}; } },
       auth() { return { async verifyIdToken() { return { ...identity, email_verified: true }; } }; },
