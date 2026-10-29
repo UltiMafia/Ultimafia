@@ -196,7 +196,7 @@ export function UserText(props) {
     // throughout this useEffect function
     if (props.emotify) {
       let options = { 
-        system: Boolean(props.systemMessage),
+        system: props.systemMessage,
         collapseStickers: props.collapseStickers,
         // TODO: give this its own property
         isReply: props.collapseStickers,
