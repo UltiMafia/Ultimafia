@@ -20,6 +20,9 @@ const dir = process.argv[2];
     const set = {};
     if (ban.reason != null) set.reason = ban.reason;
     if (ban.createdAt != null) set.createdAt = ban.createdAt;
+    if (ban.scope != null) set.scope = ban.scope;
+    if (ban.reportIds != null) set.reportIds = ban.reportIds;
+    if (Object.keys(set).length === 0) continue;
     const r = await collection("bans").updateOne({ id: ban.id }, { $set: set });
     restoredBans += r.modifiedCount;
   }

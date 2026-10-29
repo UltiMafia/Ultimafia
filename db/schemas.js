@@ -940,6 +940,11 @@ var schemas = {
       // page); optional for the other ban types.
       reason: String,
       createdAt: Number,
+      // Set on bans issued from now on. scope: "linked" or "single" (the
+      // ban command's scope; report rulings are "linked"). reportIds: the
+      // report(s) whose ruling issued the ban. Older bans have neither.
+      scope: String,
+      reportIds: { type: [String], default: undefined },
     },
     {
       toObject: { virtuals: true },

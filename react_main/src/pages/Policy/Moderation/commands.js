@@ -545,10 +545,10 @@ export function useModCommands(argValues, commandRan, setResults) {
           ],
         },
         {
-          label: "Notes",
+          // Required. Only the eligible admins see it (Ban Appeals page).
+          label: "Justification (required, admins only)",
           name: "notes",
           type: "text",
-          optional: true,
         },
       ],
       run: function () {

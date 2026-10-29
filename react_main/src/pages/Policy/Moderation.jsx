@@ -7,6 +7,8 @@ import {
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import { Box, Grid, Stack, Tab, Tabs, Typography } from "@mui/material";
 
+import axios from "axios";
+
 import { UserContext } from "Contexts";
 
 import { ModCommands } from "./Moderation/ModCommands";
@@ -63,6 +65,7 @@ function getTabValue(pathname) {
   if (pathname.includes("/flagged-intake")) return "flagged-intake";
   if (pathname.includes("/github-links")) return "github-links";
   if (pathname.includes("/volunteer")) return "volunteer";
+  if (pathname.includes("/ban-appeals")) return "ban-appeals";
   return "log";
 }
 
@@ -73,6 +76,30 @@ export default function Moderation() {
   const navigate = useNavigate();
 
   const tabValue = getTabValue(location.pathname);
+
+  // The Ban Appeals tab is for the admins who get appeals; the server
+  // decides (it also guards every Ban Appeals endpoint).
+  const [banAppealsAccess, setBanAppealsAccess] = useState(null);
+  useEffect(() => {
+    if (!user.loaded) return;
+    if (!user?.perms?.unban) {
+      setBanAppealsAccess(false);
+      return;
+    }
+    let cancelled = false;
+    axios
+      .get("/api/mod/banAppeals/access")
+      .then((res) => !cancelled && setBanAppealsAccess(!!res.data.allowed))
+      .catch(() => !cancelled && setBanAppealsAccess(false));
+    return () => {
+      cancelled = true;
+    };
+  }, [user.loaded, user?.perms?.unban]);
+
+  useEffect(() => {
+    if (banAppealsAccess === false && location.pathname.includes("/ban-appeals"))
+      navigate("/policy/moderation", { replace: true });
+  }, [banAppealsAccess, location.pathname, navigate]);
 
   useEffect(() => {
     document.title = "Moderation | UltiMafia";
@@ -121,6 +148,7 @@ export default function Moderation() {
     else if (newValue === "flagged-intake") navigate(`${base}/flagged-intake`);
     else if (newValue === "volunteer") navigate(`${base}/volunteer`);
     else if (newValue === "github-links") navigate(`${base}/github-links`);
+    else if (newValue === "ban-appeals") navigate(`${base}/ban-appeals`);
   };
 
   return (
@@ -152,6 +180,7 @@ export default function Moderation() {
         {user?.perms?.approveGithubLinks && (
           <Tab label="GitHub Links" value="github-links" />
         )}
+        {banAppealsAccess && <Tab label="Ban Appeals" value="ban-appeals" />}
       </Tabs>
 
       <Outlet

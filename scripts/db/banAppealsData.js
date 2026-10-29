@@ -7,7 +7,12 @@ const { EJSON } = mongoose.mongo.BSON;
 
 // Ban fields this feature adds.
 const banQuery = {
-  $or: [{ reason: { $exists: true } }, { createdAt: { $exists: true } }],
+  $or: [
+    { reason: { $exists: true } },
+    { createdAt: { $exists: true } },
+    { scope: { $exists: true } },
+    { reportIds: { $exists: true } },
+  ],
 };
 const banProjection = {
   _id: 0,
@@ -16,6 +21,8 @@ const banProjection = {
   type: 1,
   reason: 1,
   createdAt: 1,
+  scope: 1,
+  reportIds: 1,
 };
 // A site-banned user's restricted ban page session, with no normal sign-in.
 const banSessionQuery = {

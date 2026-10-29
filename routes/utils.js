@@ -243,7 +243,16 @@ async function createNotification(info, recipients, sockets) {
   }
 }
 
-async function banUser(userId, length, permissions, type, modId, reason) {
+// extra: { scope, reportIds } recorded on the ban (see the Ban schema).
+async function banUser(
+  userId,
+  length,
+  permissions,
+  type,
+  modId,
+  reason,
+  extra = {}
+) {
   var ban = new models.Ban({
     id: shortid.generate(),
     userId,
@@ -254,6 +263,9 @@ async function banUser(userId, length, permissions, type, modId, reason) {
     auto: modId == null,
     reason: reason || undefined,
     createdAt: Date.now(),
+    scope: extra.scope || undefined,
+    reportIds:
+      extra.reportIds && extra.reportIds.length ? extra.reportIds : undefined,
   });
   await ban.save();
   await redis.cacheUserPermissions(userId);

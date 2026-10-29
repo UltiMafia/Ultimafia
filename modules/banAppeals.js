@@ -56,9 +56,16 @@ function applyVoterAllowlist(adminIds, allowlist = VOTER_ALLOWLIST) {
   return adminIds.filter((id) => allowlist.has(id));
 }
 
-// Where the inbox notification goes: the mod panel, which has the "Ban Appeal
-// Tally" and "Ban Appeal Vote" commands.
-const APPEAL_NOTIFICATION_LINK = "/policy/moderation";
+// The admins' Ban Appeals page and one appeal's case on it. The inbox
+// notification and the DM vote messages link to the case.
+const APPEALS_PAGE_PATH = "/policy/moderation/ban-appeals";
+function appealCasePath(appealId) {
+  return `${APPEALS_PAGE_PATH}/${appealId}`;
+}
+
+// Every vote needs a justification. Only eligible admins see it: it is never
+// put in the DM, the public mod log, or anything the banned user can load.
+const MAX_JUSTIFICATION_LENGTH = 1000;
 
 // Deciding an appeal. N is the number of admins the appeal was sent to
 // (recipientIds, snapshotted at submission), D the deny votes, and
@@ -332,7 +339,7 @@ async function getBanPageInfo(userId) {
 // the next time the chat panel loads. Each admin also gets an unread chat
 // notification and an inbox notification. There is no live push: the www
 // process has no sockets to the chat server or the clients.
-async function sendAppealMessage({ recipientIds, content, username }) {
+async function sendAppealMessage({ recipientIds, content, username, link }) {
   const memberIds = [...new Set(recipientIds)];
   const channelId = userIdsToChannelId(memberIds);
   const now = Date.now();
@@ -372,7 +379,7 @@ async function sendAppealMessage({ recipientIds, content, username }) {
     {
       content: `Ban appeal pending: ${username}`,
       icon: "gavel",
-      link: APPEAL_NOTIFICATION_LINK,
+      link: link || APPEALS_PAGE_PATH,
     },
     memberIds,
   );
@@ -455,6 +462,7 @@ async function submitAppeal(userId, rawText) {
       recipientIds,
       content,
       username: user.name,
+      link: appealCasePath(appeal.id),
     });
     await appeal.save();
   } catch (e) {
@@ -499,12 +507,15 @@ function formatTally(tally) {
   return `${adminsLabel(tally.admins)}: accept ${tally.accept} of ${tally.acceptAt} needed, deny ${tally.deny} of ${tally.denyAt} needed`;
 }
 
-function formatVoteMessage({ voterName, vote, tally, status }) {
+// The DM line for a vote. Never includes the justification; the case page
+// shows it to the admins.
+function formatVoteMessage({ voterName, vote, tally, status, appealId }) {
   const result =
     status === STATUS.PENDING
       ? "still PENDING"
       : `appeal ${status.toUpperCase()}`;
-  return `BAN-APPEAL VOTE: ${voterName} voted ${vote.toUpperCase()} - ${formatTally(tally)} - ${result}`;
+  const review = appealId ? ` - case: ${appealCasePath(appealId)}` : "";
+  return `BAN-APPEAL VOTE: ${voterName} voted ${vote.toUpperCase()} - ${formatTally(tally)} - ${result}${review}`;
 }
 
 async function findLatestAppeal(userId) {
@@ -541,11 +552,21 @@ async function getAppealForAdmins(userId) {
 // vote; see ACCEPT_VOTES_REQUIRED for when the appeal is decided. Only the
 // admins the appeal was sent to may vote.
 // Deciding never unbans: lifting the ban is a separate site Unban.
-async function voteOnAppeal({ modId, userId, vote, notes }) {
+async function voteOnAppeal({ modId, userId, appealId, vote, notes }) {
   if (!VOTES.includes(vote))
     throw new AppealError(400, "Vote must be accept or deny.");
+  const justification = cleanText(notes);
+  if (!justification)
+    throw new AppealError(400, "Give a justification with your vote.");
+  if (justification.length > MAX_JUSTIFICATION_LENGTH)
+    throw new AppealError(
+      400,
+      `The justification can be at most ${MAX_JUSTIFICATION_LENGTH} characters.`,
+    );
 
-  const appeal = await findLatestAppeal(userId);
+  const appeal = appealId
+    ? await models.SiteBanAppeal.findOne({ id: String(appealId) })
+    : await findLatestAppeal(userId);
   if (!appeal) throw new AppealError(404, "This user has no ban appeal.");
   if (!(appeal.recipientIds || []).includes(modId))
     throw new AppealError(
@@ -562,7 +583,7 @@ async function voteOnAppeal({ modId, userId, vote, notes }) {
     voterId: modId,
     vote,
     at: Date.now(),
-    notes: cleanText(notes).slice(0, MAX_BAN_REASON_LENGTH),
+    notes: justification,
   };
   // Replace this admin's vote: drop the old one, then add the new one, both
   // only while the appeal is pending.
@@ -605,6 +626,7 @@ async function voteOnAppeal({ modId, userId, vote, notes }) {
       vote,
       tally,
       status: current.status,
+      appealId: current.id,
     });
     await new models.ChatMessage({
       id: shortid.generate(),
@@ -620,6 +642,284 @@ async function voteOnAppeal({ modId, userId, vote, notes }) {
   }
 
   return { appeal: current, tally, status: current.status, decided };
+}
+
+// ---- Admin Ban Appeals page ----------------------------------------------
+
+// Mod log names of the ban command / report ruling for each stored ban type.
+const BAN_ACTION_NAMES = {
+  site: "Site Ban",
+  forum: "Forum Ban",
+  chat: "Chat Ban",
+  game: "Game Ban",
+  playRanked: "Ranked Ban",
+  playCompetitive: "Competitive Ban",
+};
+const BAN_SCOPE_LABELS = {
+  linked: "All linked accounts",
+  single: "This account only",
+};
+// For an older ban with no stored report link: reports against the user
+// filed in this window before the ban (and up to an hour after).
+const NEARBY_REPORT_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+const MAX_LISTED_APPEALS = 200;
+
+// Who may open the Ban Appeals page: the admins who get appeals
+// (getAdminIds, narrowed by BAN_APPEAL_VOTER_ALLOWLIST).
+async function isAppealAdmin(userId) {
+  return !!userId && (await getAdminIds()).includes(userId);
+}
+
+async function namesById(ids) {
+  const unique = [...new Set(ids.filter(Boolean))];
+  if (unique.length === 0) return {};
+  const users = await models.User.find({ id: { $in: unique } }).select(
+    "id name",
+  );
+  return Object.fromEntries(users.map((user) => [user.id, user.name]));
+}
+
+function banSummary(ban) {
+  if (!ban) return null;
+  const now = Date.now();
+  return {
+    type: ban.type,
+    label: BAN_TYPE_LABELS[ban.type] || ban.type,
+    issuedAt: banIssuedAt(ban),
+    expires: ban.expires || 0,
+    permanent: !ban.expires,
+    active: !ban.expires || ban.expires > now,
+  };
+}
+
+// The list on the Ban Appeals page. filter: "pending" (default), "resolved"
+// or "all". Pending appeals come first, newest first within each group.
+async function listAppealsForAdmins({ filter = "pending", viewerId } = {}) {
+  const query =
+    filter === "resolved"
+      ? { status: { $in: [STATUS.ACCEPTED, STATUS.DENIED] } }
+      : filter === "all"
+        ? {}
+        : { status: STATUS.PENDING };
+  const appeals = await models.SiteBanAppeal.find(query)
+    .sort({ createdAt: -1 })
+    .limit(MAX_LISTED_APPEALS);
+  const [names, bans] = await Promise.all([
+    namesById(appeals.map((appeal) => appeal.userId)),
+    models.Ban.find({ id: { $in: appeals.map((appeal) => appeal.banId) } }),
+  ]);
+  const bansById = Object.fromEntries(bans.map((ban) => [ban.id, ban]));
+  const rows = appeals.map((appeal) => {
+    const mine = (appeal.votes || []).find((vote) => vote.voterId === viewerId);
+    return {
+      id: appeal.id,
+      userId: appeal.userId,
+      username: names[appeal.userId] || appeal.userId,
+      ban: banSummary(bansById[appeal.banId]),
+      filedAt: appeal.createdAt,
+      status: appeal.status,
+      tally: tallyVotes(appeal.votes, appeal.recipientIds),
+      myVote: mine ? mine.vote : null,
+      canVote:
+        appeal.status === STATUS.PENDING &&
+        (appeal.recipientIds || []).includes(viewerId),
+    };
+  });
+  const pendingFirst = (row) => (row.status === STATUS.PENDING ? 0 : 1);
+  return rows.sort(
+    (a, b) => pendingFirst(a) - pendingFirst(b) || b.filedAt - a.filedAt,
+  );
+}
+
+function reportView(report, linkedBy) {
+  const ruling = report.finalRuling || {};
+  return {
+    id: report.id,
+    linkedBy,
+    reportedUserId: report.reportedUserId,
+    rule: report.rule,
+    description: report.description || "",
+    gameId: report.gameId || null,
+    reporterCount: (report.reporters || []).length || 1,
+    status: report.status,
+    createdAt: report.createdAt,
+    completedAt: report.completedAt || null,
+    completedBy: report.completedBy || null,
+    ruling: ruling.violationName
+      ? {
+          violationName: ruling.violationName,
+          banType: ruling.banType || null,
+          banLength: ruling.banLength || null,
+          notes: ruling.notes || "",
+        }
+      : ruling.notes
+        ? { violationName: null, notes: ruling.notes }
+        : null,
+  };
+}
+
+// The report(s) that led to the ban, best link first:
+// - "ban": report ids stored on the ban (bans from report rulings, from now on);
+// - "report": the report's linkedBanId (the ruled-on user's own ban);
+// - "violation": the violation ticket for this ban (also for linked accounts
+//   banned by the same ruling) and the report with that violation;
+// - "nearby": no stored link, so reports against the user filed in the 30
+//   days before the ban.
+async function findBanReports({ ban, banId, userId, aroundTime }) {
+  if (ban && ban.reportIds && ban.reportIds.length) {
+    const reports = await models.Report.find({ id: { $in: ban.reportIds } });
+    if (reports.length) return reports.map((r) => reportView(r, "ban"));
+  }
+  if (banId) {
+    const reports = await models.Report.find({ linkedBanId: banId });
+    if (reports.length) return reports.map((r) => reportView(r, "report"));
+    const ticket = await models.ViolationTicket.findOne({
+      linkedBanId: banId,
+    }).select("violationId");
+    if (ticket && ticket.violationId) {
+      const byViolation = await models.Report.find({
+        "finalRuling.violationId": ticket.violationId,
+      });
+      if (byViolation.length)
+        return byViolation.map((r) => reportView(r, "violation"));
+    }
+  }
+  if (!aroundTime) return [];
+  const nearby = await models.Report.find({
+    reportedUserId: userId,
+    createdAt: {
+      $gte: aroundTime - NEARBY_REPORT_WINDOW_MS,
+      $lte: aroundTime + 60 * 60 * 1000,
+    },
+  })
+    .sort({ createdAt: -1 })
+    .limit(20);
+  return nearby.map((r) => reportView(r, "nearby"));
+}
+
+// The mod log entry that issued the ban: same moderator and type, within two
+// minutes of the ban. Gives the scope and length text for older bans, and
+// the account the ban was issued against (another account when this one was
+// banned as a linked account).
+async function findBanModAction(ban) {
+  const at = banIssuedAt(ban);
+  if (!at || !BAN_ACTION_NAMES[ban.type]) return null;
+  return models.ModAction.findOne({
+    name: BAN_ACTION_NAMES[ban.type],
+    modId: ban.modId,
+    date: { $gte: at - 2 * 60 * 1000, $lte: at + 2 * 60 * 1000 },
+  }).sort({ date: 1 });
+}
+
+// One case on the Ban Appeals page, for an eligible admin.
+async function getAppealCaseForAdmins(appealId, viewerId) {
+  const appeal = await models.SiteBanAppeal.findOne({ id: String(appealId) });
+  if (!appeal) throw new AppealError(404, "This appeal does not exist.");
+  const ban = await models.Ban.findOne({ id: appeal.banId });
+  const banAction = ban ? await findBanModAction(ban) : null;
+  const issuedAt = ban ? banIssuedAt(ban) : null;
+
+  const [reports, modActions] = await Promise.all([
+    findBanReports({
+      ban,
+      banId: appeal.banId,
+      userId: appeal.userId,
+      aroundTime: issuedAt || appeal.createdAt,
+    }),
+    models.ModAction.find({ "args.0": appeal.userId })
+      .sort({ date: -1 })
+      .limit(50),
+  ]);
+  if (
+    banAction &&
+    !modActions.some((action) => action.id === banAction.id)
+  )
+    modActions.unshift(banAction);
+
+  const bannedAs =
+    banAction && banAction.args && banAction.args[0] !== appeal.userId
+      ? banAction.args[0]
+      : null;
+  const names = await namesById([
+    appeal.userId,
+    ban && ban.modId,
+    bannedAs,
+    ...reports.map((r) => r.completedBy),
+    ...reports.map((r) => r.reportedUserId),
+    ...modActions.map((action) => action.modId),
+    ...(appeal.votes || []).map((vote) => vote.voterId),
+  ]);
+
+  let scope = null;
+  if (ban && ban.scope)
+    scope = { value: ban.scope, label: BAN_SCOPE_LABELS[ban.scope] || ban.scope };
+  else if (banAction && banAction.args && banAction.args[2])
+    scope = { value: null, label: banAction.args[2] };
+  else if (banAction) scope = { value: "linked", label: "All linked accounts" };
+
+  const mine = (appeal.votes || []).find((vote) => vote.voterId === viewerId);
+  return {
+    id: appeal.id,
+    userId: appeal.userId,
+    username: names[appeal.userId] || appeal.userId,
+    status: appeal.status,
+    text: appeal.text,
+    filedAt: appeal.createdAt,
+    reviewedAt: appeal.reviewedAt || null,
+    reviewedBy: appeal.reviewedBy
+      ? { id: appeal.reviewedBy, name: names[appeal.reviewedBy] || appeal.reviewedBy }
+      : null,
+    channelId: appeal.channelId || null,
+    ban: ban
+      ? {
+          id: ban.id,
+          ...banSummary(ban),
+          reason: displayReason(ban),
+          scope,
+          lengthText:
+            (banAction && banAction.args && banAction.args[1]) || null,
+          lengthMs: ban.expires && issuedAt ? ban.expires - issuedAt : null,
+          bannedBy: ban.modId
+            ? { id: ban.modId, name: names[ban.modId] || ban.modId }
+            : null,
+          bannedAs: bannedAs
+            ? { id: bannedAs, name: names[bannedAs] || bannedAs }
+            : null,
+        }
+      : { id: appeal.banId, removed: true, reason: appeal.banReason },
+    reports: reports.map((report) => ({
+      ...report,
+      reportedUserName: names[report.reportedUserId] || report.reportedUserId,
+      completedByName: report.completedBy
+        ? names[report.completedBy] || report.completedBy
+        : null,
+    })),
+    modActions: modActions.map((action) => ({
+      id: action.id,
+      name: action.name,
+      args: action.args || [],
+      date: action.date,
+      modId: action.modId,
+      modName: names[action.modId] || action.modId,
+      issuedThisBan: !!banAction && action.id === banAction.id,
+    })),
+    tally: tallyVotes(appeal.votes, appeal.recipientIds),
+    votes: (appeal.votes || []).map((vote) => ({
+      voterId: vote.voterId,
+      voterName: names[vote.voterId] || vote.voterId,
+      vote: vote.vote,
+      justification: vote.notes || "",
+      at: vote.at,
+    })),
+    voters: (appeal.recipientIds || []).length,
+    myVote: mine
+      ? { vote: mine.vote, justification: mine.notes || "", at: mine.at }
+      : null,
+    canVote:
+      appeal.status === STATUS.PENDING &&
+      (appeal.recipientIds || []).includes(viewerId),
+    maxJustificationLength: MAX_JUSTIFICATION_LENGTH,
+  };
 }
 
 module.exports = {
@@ -652,4 +952,11 @@ module.exports = {
   formatVoteMessage,
   getAppealForAdmins,
   voteOnAppeal,
+  MAX_JUSTIFICATION_LENGTH,
+  APPEALS_PAGE_PATH,
+  appealCasePath,
+  isAppealAdmin,
+  listAppealsForAdmins,
+  getAppealCaseForAdmins,
+  findBanReports,
 };

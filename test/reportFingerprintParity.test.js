@@ -99,6 +99,12 @@ describe("report workflow fingerprint/IP parity", function () {
     for (const ticket of tickets) assert.equal(ticket.linkedBanId, bans.find((ban) => ban.userId === ticket.userId).id);
     // The violation's decision summary becomes the ban reason shown on the ban page.
     for (const ban of bans) assert.equal(ban.reason, `${violationDefinitions[0].name} (1st Offense): Fixture decision`);
+    // Each ban records the report whose ruling issued it, and its scope, so
+    // the admins' Ban Appeals page can show the original report.
+    for (const ban of bans) {
+      assert.deepEqual(ban.reportIds, ["case"]);
+      assert.equal(ban.scope, "linked");
+    }
     assert.deepEqual((await models.User.find({ banned: true }).lean()).map((user) => user.id).sort(), ["fp-alt", "ip-alt", "target"]);
   });
 

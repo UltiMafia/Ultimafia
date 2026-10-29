@@ -184,6 +184,11 @@ describe("site ban page and appeals", function () {
       info: findHandler(loaded.banPageRouter, "get", "/"),
       appeal: findHandler(loaded.banPageRouter, "post", "/appeal"),
       logout: findHandler(loaded.banPageRouter, "post", "/logout"),
+      pageAccess: findHandler(loaded.modRouter, "get", "/banAppeals/access"),
+      pageList: findHandler(loaded.modRouter, "get", "/banAppeals"),
+      pageCase: findHandler(loaded.modRouter, "get", "/banAppeals/:appealId"),
+      pageVote: findHandler(loaded.modRouter, "post", "/banAppeals/:appealId/vote"),
+      modLog: findHandler(loaded.modRouter, "get", "/actions"),
     };
   });
 
@@ -526,7 +531,10 @@ describe("site ban page and appeals", function () {
         .should.deep.equal(["banningAdmin", "otherAdmin", "owner"]);
       for (const notif of notifs) {
         notif.content.should.equal("Ban appeal pending: BadPlayer");
-        notif.link.should.equal("/policy/moderation");
+        // Opens the appeal's case on the admins' Ban Appeals page.
+        notif.link.should.equal(
+          `/policy/moderation/ban-appeals/${(await models.SiteBanAppeal.findOne({}).lean()).id}`,
+        );
         notif.icon.should.equal("gavel");
         notif.read.should.equal(false);
       }
@@ -596,10 +604,304 @@ describe("site ban page and appeals", function () {
     });
   });
 
+  describe("admin Ban Appeals page", function () {
+    const appealText = "I was arguing, but I did not harass anyone.";
+    const SECRET = "SECRET-JUSTIFICATION-only-for-admins";
+
+    beforeEach(async function () {
+      ranks.set("owner", 20);
+      allowed.add("owner:unban");
+      allowed.add("mod:unban");
+    });
+
+    async function call(handler, userId, { params = {}, query = {}, body = {} } = {}) {
+      const res = response();
+      const req = userId ? modRequest(userId, body) : { ...modRequest(null, body), session: {} };
+      req.params = params;
+      req.query = query;
+      await handler(req, res);
+      return res;
+    }
+
+    async function filed() {
+      (await siteBan()).statusCode.should.equal(200);
+      (await appeal(appealText)).statusCode.should.equal(200);
+      return (await models.SiteBanAppeal.findOne({}).lean()).id;
+    }
+
+    function pageVote(userId, appealId, vote, justification) {
+      return call(handlers.pageVote, userId, {
+        params: { appealId },
+        body: { vote, justification },
+      });
+    }
+
+    it("is open only to the admins who get appeals", async function () {
+      const appealId = await filed();
+      (await call(handlers.pageAccess, "banningAdmin")).body.should.deep.equal({ allowed: true });
+      (await call(handlers.pageAccess, "mod")).body.should.deep.equal({ allowed: false });
+      (await call(handlers.pageAccess, "target")).body.should.deep.equal({ allowed: false });
+      (await call(handlers.pageAccess, null)).body.should.deep.equal({ allowed: false });
+
+      (await call(handlers.pageList, null)).statusCode.should.equal(401);
+      // A moderator with the unban permission who isn't an admin.
+      (await call(handlers.pageList, "mod")).statusCode.should.equal(403);
+      (await call(handlers.pageCase, "mod", { params: { appealId } })).statusCode.should.equal(403);
+      (await pageVote("mod", appealId, "accept", "x")).statusCode.should.equal(403);
+      (await call(handlers.pageList, "target")).statusCode.should.equal(403);
+      (await call(handlers.pageList, "banningAdmin")).statusCode.should.equal(200);
+    });
+
+    it("lists appeals with user, ban type, dates, tally and status, pending first, with a resolved filter", async function () {
+      const appealId = await filed();
+      const now = Date.now();
+      await models.User.create({ id: "old", name: "OldCase", deleted: false });
+      await models.SiteBanAppeal.create({
+        id: "resolved1",
+        banId: "goneBan",
+        userId: "old",
+        text: "Old appeal text here",
+        status: "denied",
+        recipientIds: ["banningAdmin", "otherAdmin"],
+        createdAt: now + 1000,
+        votes: [],
+      });
+
+      const all = (await call(handlers.pageList, "banningAdmin", { query: { filter: "all" } })).body;
+      all.map((row) => row.id).should.deep.equal([appealId, "resolved1"]);
+      const row = all[0];
+      row.username.should.equal("BadPlayer");
+      row.ban.label.should.equal("Site ban");
+      row.ban.permanent.should.equal(false);
+      row.ban.expires.should.be.greaterThan(now);
+      should.exist(row.ban.issuedAt);
+      should.exist(row.filedAt);
+      row.status.should.equal("pending");
+      row.tally.should.include({ admins: 3, accept: 0, deny: 0, acceptAt: 2, denyAt: 2 });
+      row.canVote.should.equal(true);
+      should.equal(all[1].ban, null);
+
+      (await call(handlers.pageList, "banningAdmin")).body.map((r) => r.id).should.deep.equal([appealId]);
+      (await call(handlers.pageList, "banningAdmin", { query: { filter: "resolved" } })).body
+        .map((r) => r.id)
+        .should.deep.equal(["resolved1"]);
+    });
+
+    it("shows the case: appeal text, ban record with scope, banner, reason and length, and the mod log", async function () {
+      const appealId = await filed();
+      const res = await call(handlers.pageCase, "otherAdmin", { params: { appealId } });
+      res.statusCode.should.equal(200);
+      const c = res.body;
+      c.text.should.equal(appealText);
+      c.username.should.equal("BadPlayer");
+      c.ban.label.should.equal("Site ban");
+      c.ban.scope.should.deep.equal({ value: "linked", label: "All linked accounts" });
+      c.ban.bannedBy.should.deep.equal({ id: "banningAdmin", name: "BanningAdmin" });
+      c.ban.reason.should.equal("Repeated harassment in lobby chat");
+      c.ban.lengthText.should.equal("30 days");
+      c.ban.lengthMs.should.be.closeTo(30 * 24 * 60 * 60 * 1000, 5000);
+      const issued = c.modActions.find((action) => action.issuedThisBan);
+      issued.name.should.equal("Site Ban");
+      issued.modName.should.equal("BanningAdmin");
+      c.canVote.should.equal(true);
+      should.equal(c.myVote, null);
+    });
+
+    it("records the scope on new bans", async function () {
+      const res = response();
+      await handlers.ban(
+        modRequest("banningAdmin", {
+          userId: "target",
+          banType: "chat",
+          length: "1 day",
+          scope: "single",
+        }),
+        res,
+      );
+      res.statusCode.should.equal(200);
+      (await models.Ban.findOne({ type: "chat" }).lean()).scope.should.equal("single");
+    });
+
+    describe("original report(s)", function () {
+      const at = Date.now() - 60 * 60 * 1000;
+      async function banFor(fields = {}) {
+        return models.Ban.create({
+          id: "b1",
+          userId: "target",
+          modId: "banningAdmin",
+          type: "site",
+          expires: 0,
+          createdAt: at,
+          reason: "r",
+          ...fields,
+        });
+      }
+      async function reports(ban) {
+        return loaded.banAppeals.findBanReports({
+          ban,
+          banId: ban.id,
+          userId: "target",
+          aroundTime: at,
+        });
+      }
+
+      it("uses the report ids stored on the ban", async function () {
+        await models.Report.create([
+          { id: "r1", reportedUserId: "target", rule: "Harassment", createdAt: at - 5000, status: "complete" },
+          { id: "r2", reportedUserId: "target", rule: "Spam", createdAt: at - 4000, status: "open" },
+        ]);
+        const found = await reports(await banFor({ reportIds: ["r1"] }));
+        found.map((r) => [r.id, r.linkedBy]).should.deep.equal([["r1", "ban"]]);
+      });
+
+      it("falls back to the report's linkedBanId, then the violation ticket", async function () {
+        const ban = await banFor();
+        await models.Report.create({ id: "r3", reportedUserId: "target", linkedBanId: "b1", createdAt: at - 9000 });
+        (await reports(ban)).map((r) => [r.id, r.linkedBy]).should.deep.equal([["r3", "report"]]);
+        await models.Report.deleteMany({});
+        await models.ViolationTicket.create({ id: "t1", userId: "target", linkedBanId: "b1", violationId: "v1" });
+        await models.Report.create({
+          id: "r4",
+          reportedUserId: "mainAccount",
+          linkedBanId: "otherBan",
+          createdAt: at - 9000,
+          finalRuling: { violationId: "v1", violationName: "Harassment (1st Offense)", notes: "n" },
+        });
+        const found = await reports(ban);
+        found.map((r) => [r.id, r.linkedBy]).should.deep.equal([["r4", "violation"]]);
+        found[0].ruling.violationName.should.equal("Harassment (1st Offense)");
+      });
+
+      it("for older bans with no link, lists reports against the user from the 30 days before the ban", async function () {
+        const ban = await banFor();
+        await models.Report.create([
+          { id: "near", reportedUserId: "target", createdAt: at - 2 * 24 * 60 * 60 * 1000 },
+          { id: "tooOld", reportedUserId: "target", createdAt: at - 40 * 24 * 60 * 60 * 1000 },
+          { id: "someoneElse", reportedUserId: "otherAdmin", createdAt: at - 1000 },
+        ]);
+        (await reports(ban)).map((r) => [r.id, r.linkedBy]).should.deep.equal([["near", "nearby"]]);
+      });
+    });
+
+    it("votes need a justification, can be changed while pending, and every eligible admin sees them", async function () {
+      const appealId = await filed();
+      (await pageVote("otherAdmin", appealId, "deny", "   ")).statusCode.should.equal(400);
+      (await pageVote("otherAdmin", appealId, "maybe", "why")).statusCode.should.equal(400);
+      (await pageVote("otherAdmin", appealId, "deny", "x".repeat(1001))).statusCode.should.equal(400);
+
+      let res = await pageVote("otherAdmin", appealId, "deny", "Logs show harassment.");
+      res.statusCode.should.equal(200);
+      res.body.myVote.should.include({ vote: "deny", justification: "Logs show harassment." });
+      res = await pageVote("otherAdmin", appealId, "accept", "On reflection, first offense.");
+      res.body.votes.length.should.equal(1);
+      res.body.tally.should.include({ accept: 1, deny: 0 });
+
+      const seen = (await call(handlers.pageCase, "owner", { params: { appealId } })).body;
+      seen.votes.should.have.length(1);
+      seen.votes[0].should.include({
+        voterId: "otherAdmin",
+        voterName: "OtherAdmin",
+        vote: "accept",
+        justification: "On reflection, first offense.",
+      });
+      should.exist(seen.votes[0].at);
+
+      res = await pageVote("owner", appealId, "accept", "Agreed.");
+      res.body.status.should.equal("accepted");
+      (await pageVote("otherAdmin", appealId, "deny", "Changed my mind")).statusCode.should.equal(409);
+      // The DM/command path uses the same appeal and votes.
+      const tally = response();
+      await handlers.tally({ ...modRequest("banningAdmin"), query: { userId: "target" } }, tally);
+      tally.body.votes.map((v) => `${v.voterName}:${v.vote}:${v.notes}`).should.deep.equal([
+        "OtherAdmin:accept:On reflection, first offense.",
+        "Owner:accept:Agreed.",
+      ]);
+    });
+
+    it("the backup, restore and rollback scripts cover the new ban fields", async function () {
+      const data = require("../scripts/db/banAppealsData");
+      const fs = require("fs");
+      await models.Ban.create([
+        { id: "plain", userId: "u1", type: "chat", expires: 0 },
+        { id: "scoped", userId: "u2", type: "chat", expires: 0, scope: "single" },
+        { id: "reported", userId: "u3", type: "site", expires: 0, reportIds: ["r1"] },
+      ]);
+      (await models.Ban.find(data.banQuery).lean())
+        .map((ban) => ban.id)
+        .sort()
+        .should.deep.equal(["reported", "scoped"]);
+      data.banProjection.should.include({ scope: 1, reportIds: 1 });
+      const down = fs.readFileSync(require.resolve("../migrations/down/banAppeals.js"), "utf8");
+      down.should.contain('scope: ""').and.contain('reportIds: ""');
+      const restore = fs.readFileSync(require.resolve("../scripts/db/banAppealsRestore.js"), "utf8");
+      restore.should.contain("set.scope").and.contain("set.reportIds");
+    });
+
+    it("an admin added after the appeal was filed can view it but not vote", async function () {
+      const appealId = await filed();
+      const group = await models.Group.findOne({ name: "Admin" });
+      const late = await models.User.create({ id: "lateAdmin", name: "LateAdmin", deleted: false });
+      await models.InGroup.create({ user: late._id, group: group._id });
+      ranks.set("lateAdmin", 10);
+      allowed.add("lateAdmin:unban");
+      const c = (await call(handlers.pageCase, "lateAdmin", { params: { appealId } })).body;
+      c.canVote.should.equal(false);
+      (await pageVote("lateAdmin", appealId, "accept", "ok")).statusCode.should.equal(403);
+    });
+
+    it("never shows a justification to the banned user: ban page, appeal, DMs, notifications or the public mod log", async function () {
+      const appealId = await filed();
+      (await pageVote("otherAdmin", appealId, "deny", SECRET)).statusCode.should.equal(200);
+      const cmd = response();
+      await handlers.vote(
+        modRequest("banningAdmin", { userId: "target", vote: "accept", notes: `${SECRET}-cmd` }),
+        cmd,
+      );
+      cmd.statusCode.should.equal(200);
+      // A vote entry written by older code with the justification as its reason.
+      await models.ModAction.create({
+        id: "legacyVote",
+        modId: "owner",
+        name: "Vote On Ban Appeal",
+        args: ["target", appealId, "deny"],
+        reason: `${SECRET}-legacy`,
+        date: Date.now(),
+      });
+
+      // Every endpoint the banned user's ban session can reach.
+      const page = await info();
+      JSON.stringify(page.body).should.not.contain(SECRET);
+      page.body.appeal.should.not.have.property("votes");
+      const again = await appeal("Another appeal attempt, please.");
+      JSON.stringify(again.body || "").should.not.contain(SECRET);
+      const logout = response();
+      await handlers.logout(banRequest(session, {}, { "x-csrf": csrf }), logout);
+      JSON.stringify(logout.body || "").should.not.contain(SECRET);
+
+      // Nothing the user (or anyone) receives carries it.
+      for (const notif of await models.Notification.find({}).lean())
+        JSON.stringify(notif).should.not.contain(SECRET);
+      for (const message of await models.ChatMessage.find({}).lean())
+        message.content.should.not.contain(SECRET);
+      for (const action of await models.ModAction.find({ name: "Vote On Ban Appeal", id: { $ne: "legacyVote" } }).lean())
+        should.not.exist(action.reason);
+
+      // The public mod log, signed out.
+      const log = await call(handlers.modLog, null);
+      log.statusCode.should.equal(200);
+      log.body.some((action) => action.name === "Vote On Ban Appeal").should.equal(true);
+      JSON.stringify(log.body).should.not.contain(SECRET);
+
+      // The admins still see both justifications on the case.
+      const c = (await call(handlers.pageCase, "owner", { params: { appealId } })).body;
+      c.votes.map((v) => v.justification).sort().should.deep.equal([SECRET, `${SECRET}-cmd`]);
+    });
+  });
+
   describe("voting", function () {
     const appealText = "I was arguing, but I did not harass anyone.";
 
-    async function vote(modId, value, notes) {
+    async function vote(modId, value, notes = `${modId} says ${value}`) {
       const res = response();
       await handlers.vote(
         modRequest(modId, { userId: "target", vote: value, notes }),
@@ -823,7 +1125,7 @@ describe("site ban page and appeals", function () {
         content: /^BAN-APPEAL VOTE/,
       }).lean();
       message.content.should.equal(
-        "BAN-APPEAL VOTE: OtherAdmin voted DENY - 1 admin: accept 0 of 1 needed, deny 1 of 1 needed - appeal DENIED",
+        `BAN-APPEAL VOTE: OtherAdmin voted DENY - 1 admin: accept 0 of 1 needed, deny 1 of 1 needed - appeal DENIED - case: /policy/moderation/ban-appeals/${(await stored()).id}`,
       );
     });
 
@@ -866,9 +1168,9 @@ describe("site ban page and appeals", function () {
         .map((m) => m.content)
         .slice(1)
         .should.deep.equal([
-          "BAN-APPEAL VOTE: OtherAdmin voted DENY - 3 admins: accept 0 of 2 needed, deny 1 of 2 needed - still PENDING",
-          "BAN-APPEAL VOTE: BanningAdmin voted ACCEPT - 3 admins: accept 1 of 2 needed, deny 1 of 2 needed - still PENDING",
-          "BAN-APPEAL VOTE: Owner voted ACCEPT - 3 admins: accept 2 of 2 needed, deny 1 of 2 needed - appeal ACCEPTED",
+          `BAN-APPEAL VOTE: OtherAdmin voted DENY - 3 admins: accept 0 of 2 needed, deny 1 of 2 needed - still PENDING - case: /policy/moderation/ban-appeals/${doc.id}`,
+          `BAN-APPEAL VOTE: BanningAdmin voted ACCEPT - 3 admins: accept 1 of 2 needed, deny 1 of 2 needed - still PENDING - case: /policy/moderation/ban-appeals/${doc.id}`,
+          `BAN-APPEAL VOTE: Owner voted ACCEPT - 3 admins: accept 2 of 2 needed, deny 1 of 2 needed - appeal ACCEPTED - case: /policy/moderation/ban-appeals/${doc.id}`,
         ]);
       // Every message comes from the site sender, never from an admin account.
       [...new Set(messages.map((m) => m.senderId))].should.deep.equal([
@@ -968,7 +1270,7 @@ describe("site ban page and appeals", function () {
       for (const admin of ["otherAdmin", "owner"]) {
         const res = response();
         await handlers.vote(
-          modRequest(admin, { userId: "altDevice", vote: "deny" }),
+          modRequest(admin, { userId: "altDevice", vote: "deny", notes: "No." }),
           res,
         );
         res.statusCode.should.equal(200);
@@ -1512,7 +1814,10 @@ describe("site ban page and appeals", function () {
 
     async function voteWith(modId, value) {
       const res = response();
-      await allow.vote(modRequest(modId, { userId: "target", vote: value }), res);
+      await allow.vote(
+        modRequest(modId, { userId: "target", vote: value, notes: "Reviewed." }),
+        res,
+      );
       return res;
     }
 

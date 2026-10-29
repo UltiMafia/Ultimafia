@@ -4,14 +4,17 @@
  *
  *   node migrations/down/banAppeals.js --dry-run|--confirm [--keep-appeals]
  *
- * - Removes reason and createdAt from bans (the bans themselves stay).
+ * - Removes reason, createdAt, scope and reportIds from bans (the bans
+ *   themselves stay).
  * - Drops the sitebanappeals collection (unless --keep-appeals).
  * - Deletes ban page sessions (sessions with siteBan and no signed-in user);
  *   the old code treats them as signed out anyway.
- * - Deletes the appeal messages posted by the site sender: the old chat code
- *   can't load a channel holding a message with no user behind it. The vote
- *   messages (sent by admins) and the "Ban appeal pending" inbox
- *   notifications stay; they work with the old code.
+ * - Deletes the appeal and vote messages posted by the site sender: the old
+ *   chat code can't load a channel holding a message with no user behind it.
+ *   Older vote messages sent by admins, the "Ban Appeals" channel name and
+ *   the "Ban appeal pending" inbox notifications stay; they work with the
+ *   old code. Vote justifications live on the appeals (votes.notes), so
+ *   --keep-appeals keeps them and dropping the collection removes them.
  */
 require("dotenv").config();
 const db = require("../../db/db");
@@ -42,12 +45,12 @@ const keepAppeals = args.includes("--keep-appeals");
   const messages =
     await collection("chatmessages").countDocuments(siteMessageQuery);
   console.log(
-    `Bans with reason/createdAt ${bans}, appeals ${appeals}${keepAppeals ? " (kept)" : ""}, ban page sessions ${sessions}, site appeal messages ${messages}`,
+    `Bans with reason/createdAt/scope/reportIds ${bans}, appeals ${appeals}${keepAppeals ? " (kept)" : ""}, ban page sessions ${sessions}, site appeal messages ${messages}`,
   );
 
   if (!dryRun) {
     await collection("bans").updateMany(banQuery, {
-      $unset: { reason: "", createdAt: "" },
+      $unset: { reason: "", createdAt: "", scope: "", reportIds: "" },
     });
     if (exists && !keepAppeals) await collection("sitebanappeals").drop();
     await collection("sessions").deleteMany(banSessionQuery);

@@ -731,7 +731,8 @@ router.post("/ban", async (req, res) => {
         banPermissions[banType],
         banDbTypes[banType],
         userId,
-        reason
+        reason,
+        { scope }
       )
     );
     await Promise.all(banPromises);
@@ -900,6 +901,148 @@ async function verifyAppealAdmin(req, res) {
   return { userId, userIdToActOn };
 }
 
+// The public mod log never shows a ban appeal vote's justification.
+function hideAppealVoteReason(action) {
+  if (!action || action.name !== "Vote On Ban Appeal") return action;
+  const plain =
+    typeof action.toJSON === "function" ? action.toJSON() : { ...action };
+  delete plain.reason;
+  return plain;
+}
+
+// The admins' Ban Appeals page. Only the admins who get appeals (Owner/Admin,
+// narrowed by BAN_APPEAL_VOTER_ALLOWLIST) with the unban permission may use
+// it; for one case they must also outrank the banned user, like the vote
+// command.
+async function verifyAppealPageAdmin(req, res) {
+  var userId = await routeUtils.verifyLoggedIn(req, true);
+  if (!userId) {
+    errors.unauthorized(res, "You must be signed in.");
+    return null;
+  }
+  if (!(await routeUtils.verifyPermission(res, userId, "unban"))) return null;
+  if (!(await banAppeals.isAppealAdmin(userId))) {
+    errors.forbidden(res, "Only admins can view ban appeals.");
+    return null;
+  }
+  return userId;
+}
+
+async function verifyAppealCaseAdmin(req, res) {
+  var userId = await verifyAppealPageAdmin(req, res);
+  if (!userId) return null;
+  var appeal = await models.SiteBanAppeal.findOne({
+    id: String(req.params.appealId || ""),
+  }).select("id userId");
+  if (!appeal) {
+    errors.notFound(res, "This appeal does not exist.");
+    return null;
+  }
+  var rank = await redis.getUserRank(appeal.userId);
+  if (
+    !(await routeUtils.verifyPermission(
+      res,
+      userId,
+      "unban",
+      (rank == null ? 0 : rank) + 1
+    ))
+  )
+    return null;
+  return { userId, appeal };
+}
+
+// Whether to show the Ban Appeals tab. Never an error, so the client can ask
+// for anyone.
+router.get("/banAppeals/access", async (req, res) => {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req, true);
+    var allowed =
+      !!userId &&
+      (await routeUtils.verifyPermission(userId, "unban")) &&
+      (await banAppeals.isAppealAdmin(userId));
+    res.send({ allowed: !!allowed });
+  } catch (e) {
+    logger.error(e);
+    res.send({ allowed: false });
+  }
+});
+
+router.get("/banAppeals", async (req, res) => {
+  try {
+    var userId = await verifyAppealPageAdmin(req, res);
+    if (!userId) return;
+    var filter = ["pending", "resolved", "all"].includes(req.query.filter)
+      ? req.query.filter
+      : "pending";
+    res.send(
+      await banAppeals.listAppealsForAdmins({ filter, viewerId: userId })
+    );
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Could not load ban appeals. Please try again.");
+  }
+});
+
+router.get("/banAppeals/:appealId", async (req, res) => {
+  try {
+    var ids = await verifyAppealCaseAdmin(req, res);
+    if (!ids) return;
+    res.send(
+      await banAppeals.getAppealCaseForAdmins(ids.appeal.id, ids.userId)
+    );
+  } catch (e) {
+    if (e instanceof banAppeals.AppealError) {
+      res.status(e.status).send(e.message);
+      return;
+    }
+    logger.error(e);
+    errors.serverError(res, "Could not load the appeal. Please try again.");
+  }
+});
+
+// Same vote model as /banAppeal/vote (and the DM / command path): one vote
+// per admin, changeable while pending, with a required justification.
+router.post("/banAppeals/:appealId/vote", async (req, res) => {
+  try {
+    var ids = await verifyAppealCaseAdmin(req, res);
+    if (!ids) return;
+    var vote = String(req.body.vote || "").toLowerCase();
+    var result = await banAppeals.voteOnAppeal({
+      modId: ids.userId,
+      appealId: ids.appeal.id,
+      vote,
+      notes: req.body.justification,
+    });
+    await recordAppealVoteActions(ids.userId, ids.appeal.userId, result, vote);
+    res.send(
+      await banAppeals.getAppealCaseForAdmins(ids.appeal.id, ids.userId)
+    );
+  } catch (e) {
+    if (e instanceof banAppeals.AppealError) {
+      res.status(e.status).send(e.message);
+      return;
+    }
+    logger.error(e);
+    errors.serverError(res, "Could not record the vote. Please try again.");
+  }
+});
+
+// No reason on the vote entry: the mod log is public and the justification
+// is for the admins only.
+async function recordAppealVoteActions(modId, bannedUserId, result, vote) {
+  await routeUtils.createModAction(modId, "Vote On Ban Appeal", [
+    bannedUserId,
+    result.appeal.id,
+    vote,
+  ]);
+  if (result.decided)
+    await routeUtils.createModAction(
+      modId,
+      result.status === "accepted" ? "Accept Ban Appeal" : "Deny Ban Appeal",
+      [bannedUserId, result.appeal.id]
+    );
+}
+
 router.get("/banAppeal", async (req, res) => {
   try {
     var ids = await verifyAppealAdmin(req, res);
@@ -928,18 +1071,7 @@ router.post("/banAppeal/vote", async (req, res) => {
       notes: req.body.notes,
     });
 
-    await routeUtils.createModAction(
-      ids.userId,
-      "Vote On Ban Appeal",
-      [ids.userIdToActOn, result.appeal.id, vote],
-      req.body.notes ? String(req.body.notes).slice(0, 300) : undefined
-    );
-    if (result.decided)
-      await routeUtils.createModAction(
-        ids.userId,
-        result.status === "accepted" ? "Accept Ban Appeal" : "Deny Ban Appeal",
-        [ids.userIdToActOn, result.appeal.id]
-      );
+    await recordAppealVoteActions(ids.userId, ids.userIdToActOn, result, vote);
 
     res.send({ status: result.status, tally: result.tally });
   } catch (e) {
@@ -2941,7 +3073,10 @@ router.get("/actions", async function (req, res) {
       ["mod", "id name avatar -_id"]
     );
 
-    res.send(actions);
+    // The mod log is public. Ban appeal vote justifications are for the
+    // admins only, so older vote entries that stored one as the reason
+    // don't show it.
+    res.send(actions.map(hideAppealVoteReason));
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not load mod actions. Please refresh and try again.");
@@ -3814,7 +3949,8 @@ router.post("/reports/:id/complete", async (req, res) => {
             permissions,
             banDbType,
             userId,
-            violationBanReason
+            violationBanReason,
+            { scope: "linked", reportIds: [report.id] }
           )
         );
         bans = await Promise.all(banPromises);

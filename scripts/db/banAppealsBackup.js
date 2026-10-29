@@ -6,9 +6,10 @@
  *   node scripts/db/banAppealsBackup.js [backupDir]
  *
  * Writes:
- *   bans.json            { id, userId, type, reason, createdAt } for bans that have them
- *   sitebanappeals.json  every ban appeal
- *   sitemessages.json    appeal messages posted by the site sender
+ *   bans.json            { id, userId, type, reason, createdAt, scope, reportIds }
+ *                        for bans that have any of them
+ *   sitebanappeals.json  every ban appeal, with its votes and justifications
+ *   sitemessages.json    appeal and vote messages posted by the site sender
  */
 require("dotenv").config();
 const fs = require("fs");
