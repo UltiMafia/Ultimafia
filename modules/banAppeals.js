@@ -12,6 +12,7 @@ const md5 = require("md5");
 const models = require("../db/models");
 const routeUtils = require("../routes/utils");
 const { SITE_SENDER_ID } = require("./siteSender");
+const { parseUserIdList } = require("../lib/userIdList");
 
 const MAX_BAN_REASON_LENGTH = 300;
 // The DM message is "BAN-APPEAL: <name> - BAN REASON: <reason> , APPEAL:
@@ -31,14 +32,7 @@ const APPEAL_RECIPIENT_GROUPS = ["Owner", "Admin"];
 // DM and notification, and can vote; nobody else is told about appeals. If
 // none of them is an Owner or Admin, N = 0 and appeals stay PENDING. For
 // dev/QA testing with test admin accounts only; leave it unset in production.
-function parseVoterAllowlist(value) {
-  if (value == null) return null;
-  const ids = String(value)
-    .split(",")
-    .map((id) => id.trim())
-    .filter(Boolean);
-  return ids.length > 0 ? new Set(ids) : null;
-}
+const parseVoterAllowlist = parseUserIdList;
 
 const VOTER_ALLOWLIST = parseVoterAllowlist(
   process.env.BAN_APPEAL_VOTER_ALLOWLIST,

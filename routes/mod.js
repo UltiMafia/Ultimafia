@@ -27,6 +27,7 @@ const errors = require("../lib/errors");
 const skillRating = require("../modules/skillRating");
 const blocks = require("../modules/blocks");
 const banAppeals = require("../modules/banAppeals");
+const plotArmor = require("../modules/plotArmor");
 const router = express.Router();
 
 router.get("/groups", async function (req, res) {
@@ -566,14 +567,20 @@ function parseBanScope(value) {
     : null;
 }
 
-// The mod log text for a scope, e.g. "All linked accounts (3 accounts)".
-function banScopeLogLabel(scope, accountIds) {
+// The mod log text for a scope, e.g. "All linked accounts (3 accounts)",
+// plus a Plot Armor note when armored linked accounts were skipped.
+function banScopeLogLabel(scope, accountIds, armorSkipped = []) {
+  const armorNote = plotArmor.plotArmorLogNote(armorSkipped);
   if (scope === "single") return BAN_SCOPE_LOG_LABELS.single;
   const count = accountIds.length;
-  return `${BAN_SCOPE_LOG_LABELS.linked} (${count} account${
+  const label = `${BAN_SCOPE_LOG_LABELS.linked} (${count} account${
     count === 1 ? "" : "s"
   })`;
+  return armorNote ? `${label}; ${armorNote}` : label;
 }
+
+const plotArmorWarning = plotArmor.plotArmorStartupWarning();
+if (plotArmorWarning) logger.warn(plotArmorWarning);
 
 // Unified ban endpoint
 router.post("/ban", async (req, res) => {
@@ -698,10 +705,14 @@ router.post("/ban", async (req, res) => {
       return;
     }
 
+    // Plot Armor (dev/QA): never ban an armored account just because it is
+    // linked; the target itself is always kept.
+    const armor = plotArmor.splitArmored(allAltAccountIds, userIdToBan);
+
     // Filter alt accounts to only include those the mod has permission to ban
     // (only ban accounts with same or lower rank)
     const altAccountIds = [];
-    for (const altUserId of allAltAccountIds) {
+    for (const altUserId of armor.kept) {
       const altRank = await redis.getUserRank(altUserId);
       // If alt account rank is null, treat it as 0 (lowest rank)
       const altRankValue = altRank == null ? 0 : altRank;
@@ -759,7 +770,11 @@ router.post("/ban", async (req, res) => {
     routeUtils.createModAction(
       userId,
       modActionNames[banType],
-      [userIdToBan, lengthStr, banScopeLogLabel(scope, altAccountIds)],
+      [
+        userIdToBan,
+        lengthStr,
+        banScopeLogLabel(scope, altAccountIds, armor.skipped),
+      ],
       reason
     );
     res.sendStatus(200);
@@ -989,10 +1004,15 @@ router.post("/unban", async (req, res) => {
       site: "site",
     };
 
-    const altAccountIds =
+    // Plot Armor (dev/QA): a linked unban leaves armored accounts' own bans
+    // alone; the target itself is always unbanned.
+    const armor = plotArmor.splitArmored(
       scope === "single"
         ? [userIdToActOn]
-        : await routeUtils.getAltAccountIds(userIdToActOn);
+        : await routeUtils.getAltAccountIds(userIdToActOn),
+      userIdToActOn
+    );
+    const altAccountIds = armor.kept;
 
     await models.Ban.deleteMany({
       userId: { $in: altAccountIds },
@@ -1022,7 +1042,7 @@ router.post("/unban", async (req, res) => {
 
     routeUtils.createModAction(userId, modActionNames[banType], [
       userIdToActOn,
-      banScopeLogLabel(scope, altAccountIds),
+      banScopeLogLabel(scope, altAccountIds, armor.skipped),
     ]);
     res.sendStatus(200);
   } catch (e) {
@@ -3663,10 +3683,14 @@ router.post("/reports/:id/complete", async (req, res) => {
         return;
       }
 
-      // Get all alt account IDs (accounts sharing IPs or exact fingerprints)
-      const altAccountIds = await routeUtils.getAltAccountIds(
+      // Get all alt account IDs (accounts sharing IPs or exact fingerprints).
+      // Plot Armor (dev/QA) skips armored linked accounts (no ban, ticket or
+      // notification); the reported user is always kept.
+      const rulingArmor = plotArmor.splitArmored(
+        await routeUtils.getAltAccountIds(report.reportedUserId),
         report.reportedUserId
       );
+      const altAccountIds = rulingArmor.kept;
 
       const offenseNumber = finalRuling.offenseNumber;
 
@@ -3813,7 +3837,7 @@ router.post("/reports/:id/complete", async (req, res) => {
           [
             report.reportedUserId,
             banLengthStr,
-            banScopeLogLabel("linked", altAccountIds),
+            banScopeLogLabel("linked", altAccountIds, rulingArmor.skipped),
           ]
         );
 

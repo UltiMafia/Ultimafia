@@ -31,6 +31,7 @@ function loadRouters(models, redis) {
     "firebase-admin": {},
   };
   const reloaded = [
+    "../modules/plotArmor",
     "../modules/accountLinkage",
     "../routes/utils",
     "../modules/banAppeals",
@@ -1156,6 +1157,177 @@ describe("site ban page and appeals", function () {
       res.statusCode.should.equal(400);
       res.body.should.contain("Invalid unban scope");
       (await bannedIds()).length.should.equal(3);
+    });
+  });
+
+  describe("Plot Armor on the mod Ban and Unban cascades", function () {
+    let previousEnv;
+    let armorLoaded;
+    let armored;
+
+    // Reloads the real routers with PLOT_ARMOR_USER_IDS set (read at load).
+    function loadWith(value) {
+      if (armorLoaded) armorLoaded.restore();
+      if (value === undefined) delete process.env.PLOT_ARMOR_USER_IDS;
+      else process.env.PLOT_ARMOR_USER_IDS = value;
+      armorLoaded = loadRouters(models, {
+        async getUserRank(id) {
+          return ranks.get(id);
+        },
+        async hasPermission(id, permission, rank) {
+          return (
+            allowed.has(`${id}:${permission || "*"}`) &&
+            (rank == null || (ranks.get(id) || 0) >= rank)
+          );
+        },
+        async hasPermissions() {
+          return false;
+        },
+        async cacheUserPermissions() {},
+        async cacheUserInfo() {},
+        async getUserStatus() {
+          return "offline";
+        },
+        async getBasicUserInfo() {
+          return null;
+        },
+      });
+      armored = {
+        ban: findHandler(armorLoaded.modRouter, "post", "/ban"),
+        unban: findHandler(armorLoaded.modRouter, "post", "/unban"),
+      };
+    }
+
+    before(function () {
+      previousEnv = process.env.PLOT_ARMOR_USER_IDS;
+    });
+
+    after(function () {
+      if (armorLoaded) armorLoaded.restore();
+      if (previousEnv === undefined) delete process.env.PLOT_ARMOR_USER_IDS;
+      else process.env.PLOT_ARMOR_USER_IDS = previousEnv;
+    });
+
+    // Like Pranay and ZXHydra on QA: two staff accounts sharing the test
+    // account's IP, below the banning admin's rank so it can also ban them
+    // directly.
+    beforeEach(async function () {
+      await models.User.create([
+        { id: "staffA", name: "StaffA", deleted: false, ip: ["203.0.113.9"] },
+        { id: "staffB", name: "StaffB", deleted: false, ip: ["203.0.113.9"] },
+        { id: "altLow", name: "AltLow", deleted: false, ip: ["203.0.113.9"] },
+      ]);
+      ranks.set("staffA", 5);
+      ranks.set("staffB", 5);
+      ranks.set("altLow", 0);
+      ranks.set("target", 0);
+      await models.Session.create([
+        { session: { user: { id: "staffA" } } },
+        { session: { user: { id: "staffB" } } },
+      ]);
+    });
+
+    async function ban(userId = "target", fields = {}) {
+      const res = response();
+      await armored.ban(
+        modRequest("banningAdmin", {
+          userId,
+          banType: "site",
+          length: "30 days",
+          reason: "Repeated harassment in lobby chat",
+          ...fields,
+        }),
+        res,
+      );
+      return res;
+    }
+
+    async function unban(userId = "target", fields = {}) {
+      const res = response();
+      await armored.unban(
+        modRequest("banningAdmin", { userId, banType: "site", ...fields }),
+        res,
+      );
+      return res;
+    }
+
+    async function bannedIds() {
+      return (await models.Ban.find({ type: "site" }).lean())
+        .map((b) => b.userId)
+        .sort();
+    }
+
+    async function lastArgs(name) {
+      return (await models.ModAction.findOne({ name }).sort({ date: -1 }).lean())
+        .args;
+    }
+
+    it("unset: the linked cascade bans the staff accounts too, as before", async function () {
+      loadWith(undefined);
+      (await ban()).statusCode.should.equal(200);
+      (await bannedIds()).should.deep.equal([
+        "altLow",
+        "staffA",
+        "staffB",
+        "target",
+      ]);
+      (await lastArgs("Site Ban"))[2].should.equal(
+        "All linked accounts (4 accounts)",
+      );
+    });
+
+    it("set: armored linked accounts are skipped (not banned, flagged, signed out or notified) and the log says so", async function () {
+      loadWith("staffA, staffB");
+      (await ban()).statusCode.should.equal(200);
+      (await bannedIds()).should.deep.equal(["altLow", "target"]);
+      (
+        await models.User.find({ banned: true }).lean()
+      ).map((u) => u.id).sort().should.deep.equal(["altLow", "target"]);
+      (
+        await models.Session.countDocuments({
+          "session.user.id": { $in: ["staffA", "staffB"] },
+        })
+      ).should.equal(2);
+      (
+        await models.Notification.countDocuments({
+          user: { $in: ["staffA", "staffB"] },
+        })
+      ).should.equal(0);
+      (await lastArgs("Site Ban"))[2].should.equal(
+        "All linked accounts (2 accounts); Plot Armor: skipped 2 linked accounts",
+      );
+    });
+
+    it("set: a direct ban of an armored account still applies (and its armored links are skipped)", async function () {
+      loadWith("staffA,staffB");
+      (await ban("staffA")).statusCode.should.equal(200);
+      (await bannedIds()).should.deep.equal(["altLow", "staffA", "target"]);
+      (await lastArgs("Site Ban"))[2].should.equal(
+        "All linked accounts (3 accounts); Plot Armor: skipped 1 linked account",
+      );
+      await models.Ban.deleteMany({}).exec();
+      (await ban("staffB", { scope: "single" })).statusCode.should.equal(200);
+      (await bannedIds()).should.deep.equal(["staffB"]);
+    });
+
+    it("set: a linked unban leaves armored accounts' own bans alone and logs it", async function () {
+      loadWith("staffA");
+      (await ban("staffA", { scope: "single" })).statusCode.should.equal(200);
+      (await ban()).statusCode.should.equal(200);
+      (await bannedIds()).should.deep.equal([
+        "altLow",
+        "staffA",
+        "staffB",
+        "target",
+      ]);
+      (await unban()).statusCode.should.equal(200);
+      (await bannedIds()).should.deep.equal(["staffA"]);
+      (await lastArgs("Site Unban"))[1].should.equal(
+        "All linked accounts (3 accounts); Plot Armor: skipped 1 linked account",
+      );
+      // Unbanning the armored account directly still works.
+      (await unban("staffA", { scope: "single" })).statusCode.should.equal(200);
+      (await bannedIds()).should.deep.equal([]);
     });
   });
 

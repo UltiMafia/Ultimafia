@@ -109,6 +109,28 @@ reason.
   Unban (Site). After that, the ban page says the ban has ended and the user
   can sign in normally.
 
+## Ban scope and Plot Armor
+
+- **Ban scope.** Ban and Unban have a "Ban Scope" / "Unban Scope" select:
+  "All linked accounts (shared IP or fingerprint)" (`scope: "linked"`, the
+  default, also when the field is missing) or "This account only"
+  (`scope: "single"`). Any other value is refused with 400. The mod log
+  records it as an extra argument ("This account only" or "All linked
+  accounts (N accounts)").
+- **Plot Armor (dev/QA only).** `PLOT_ARMOR_USER_IDS` (comma-separated user
+  ids, see `docs/server_env`) lists accounts that are never banned through a
+  linked account or automatically. The mod Ban "All linked accounts" cascade,
+  the report-ruling cascade (no ban, ticket or notification for them) and the
+  ban of a signed-in account that signs in to a banned account's email all
+  skip them, and a linked Unban leaves their own bans alone. The mod log adds
+  "Plot Armor: skipped N linked accounts". A ban that names an armored
+  account directly still applies. Signing in to an existing account never
+  checks linked bans, so armored accounts can sign in while a linked account
+  is banned. The server logs a warning at startup when it is set. Leave it
+  unset in production: unset or empty changes nothing.
+- Neither changes the database. Rolling back the code removes both; bans
+  already issued stay as they are.
+
 ## What changes in the database
 
 | Change | When it happens |

@@ -14,6 +14,7 @@ const {
 const { sendFlaggedUserDiscordAlert } = require("./report");
 const { normalizeFingerprint, checkFingerprintBan } = require("../modules/fingerprintBan");
 const { recordLoginFingerprint } = require("../modules/fingerprintLogin");
+const { isArmored } = require("../modules/plotArmor");
 const router = express.Router();
 const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
@@ -532,6 +533,15 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint, provide
       return;
     } else if (id && bannedUser) {
       //(3)
+      // Plot Armor (dev/QA): an armored account that signs in to a banned
+      // account's email is not banned for it; it just stays signed in as
+      // itself.
+      if (isArmored(id)) {
+        logger.warn(
+          `Plot Armor: did not ban ${id} for signing in to banned account ${bannedUser.id}.`
+        );
+        return;
+      }
       await routeUtils.banUser(id, 0, ["signIn"], "bannedUser");
 
       await models.User.updateOne(
