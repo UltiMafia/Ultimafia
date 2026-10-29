@@ -412,6 +412,88 @@ describe("site ban page and appeals", function () {
       res.body.csrf.should.equal(docs[0].session.siteBan.csrf);
     });
 
+    // The real store (connect-mongo) keys each session by the express-session
+    // sid, a 32-character string, not an ObjectId.
+    function realSessionStore() {
+      const expressSession = require("express-session");
+      const MongoStore = require("connect-mongo")(expressSession);
+      return new MongoStore({
+        mongooseConnection: connection,
+        collection: models.Session.collection.name,
+        ttl: 14 * 24 * 60 * 60,
+        touchAfter: 24 * 60 * 60,
+        stringify: false,
+      });
+    }
+
+    function storeCall(store, method, ...args) {
+      return new Promise((resolve, reject) =>
+        store[method](...args, (err, value) => (err ? reject(err) : resolve(value))),
+      );
+    }
+
+    function sid() {
+      // Same as express-session: uid-safe(24), base64url.
+      return crypto.randomBytes(24).toString("base64url");
+    }
+
+    it("a site ban converts sessions saved by the real session store (string sids)", async function () {
+      const store = realSessionStore();
+      const cookie = { originalMaxAge: 1209600000, expires: new Date(Date.now() + 1209600000), httpOnly: true, path: "/" };
+      const openTab = sid();
+      const otherDevice = sid();
+      const bystander = sid();
+      await storeCall(store, "set", openTab, { cookie, user: { id: "target", name: "BadPlayer" }, passport: { user: "x" } });
+      await storeCall(store, "set", otherDevice, { cookie, user: { id: "target" } });
+      await storeCall(store, "set", bystander, { cookie, user: { id: "otherAdmin" } });
+      const raw = await models.Session.collection.findOne({ _id: openTab });
+      raw._id.should.be.a("string").with.length(32);
+
+      const res = await siteBan();
+      res.statusCode.should.equal(200);
+      (await models.Ban.countDocuments({ userId: "target", type: "site" })).should.equal(1);
+      should.exist(await models.ModAction.findOne({ name: "Site Ban" }).lean());
+
+      // The open tab's session is now a ban-page session, read back by the store.
+      for (const id of [openTab, otherDevice]) {
+        const saved = await storeCall(store, "get", id);
+        // lastModified is added by the store on read (touchAfter).
+        Object.keys(saved).filter((key) => key !== "lastModified").sort().should.deep.equal(["cookie", "siteBan"]);
+        saved.siteBan.userId.should.equal("target");
+      }
+      const banned = await storeCall(store, "get", openTab);
+      session = banned;
+      const page = await info();
+      page.body.banned.should.equal(true);
+      page.body.csrf.should.equal(banned.siteBan.csrf);
+      (await storeCall(store, "get", bystander)).user.id.should.equal("otherAdmin");
+    });
+
+    it("a failed session swap still bans, logs the mod action and signs the user out", async function () {
+      const store = realSessionStore();
+      await storeCall(store, "set", sid(), { cookie: { path: "/" }, user: { id: "target" } });
+      await storeCall(store, "set", sid(), { cookie: { path: "/" }, user: { id: "otherAdmin" } });
+      const collection = models.Session.collection;
+      const updateOne = collection.updateOne;
+      collection.updateOne = async () => {
+        throw new Error("simulated session store failure");
+      };
+      let res;
+      try {
+        res = await siteBan();
+      } finally {
+        collection.updateOne = updateOne;
+      }
+      res.statusCode.should.equal(200);
+      (await models.Ban.countDocuments({ userId: "target", type: "site" })).should.equal(1);
+      should.exist(await models.ModAction.findOne({ name: "Site Ban" }).lean());
+      (await models.User.findOne({ id: "target" }).lean()).banned.should.equal(true);
+      // Fallback: signed out the old way, with no ban-page session left behind.
+      (await models.Session.countDocuments({ "session.user.id": "target" })).should.equal(0);
+      (await models.Session.countDocuments({ "session.siteBan": { $exists: true } })).should.equal(0);
+      (await models.Session.countDocuments({ "session.user.id": "otherAdmin" })).should.equal(1);
+    });
+
     it("other ban types leave the user's sessions signed in", async function () {
       await models.Session.create({ session: { cookie: {}, user: { id: "target" } } });
       const res = response();

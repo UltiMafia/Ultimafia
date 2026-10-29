@@ -11,6 +11,7 @@ const crypto = require("crypto");
 const shortid = require("shortid");
 const md5 = require("md5");
 const models = require("../db/models");
+const logger = require("./logging")(".");
 const routeUtils = require("../routes/utils");
 const { SITE_SENDER_ID } = require("./siteSender");
 const { parseUserIdList } = require("../lib/userIdList");
@@ -185,33 +186,54 @@ function banListView(ban) {
 // so a tab that was open when the ban landed reloads into /banned instead of
 // the login page. Nothing of the signed-in session is kept but its cookie
 // settings. Any session still signed in afterwards is deleted.
+//
+// The session store (connect-mongo) keys each document by the express-session
+// sid, a plain string, while the Session model declares the default ObjectId
+// _id, so the documents are read and written through the native collection to
+// keep Mongoose from casting the sid.
+//
+// Never throws: the ban has already been applied by the caller, so if the
+// swap fails the error is logged and the users' sessions are deleted instead,
+// as before ban-page sessions existed.
 async function signOutToBanPage(userIds) {
   const ids = [...new Set((userIds || []).map(String))];
   if (ids.length === 0) return;
-  const sessions = await models.Session.find({
-    "session.user.id": { $in: ids },
-  })
-    .select("_id session")
-    .lean();
-  await Promise.all(
-    sessions.map((doc) =>
-      models.Session.updateOne(
-        { _id: doc._id, "session.user.id": doc.session.user.id },
-        {
-          $set: {
-            session: {
-              cookie: doc.session.cookie,
-              siteBan: {
-                userId: doc.session.user.id,
-                csrf: crypto.randomBytes(24).toString("hex"),
+  try {
+    const sessions = models.Session.collection;
+    const docs = await sessions
+      .find(
+        { "session.user.id": { $in: ids } },
+        { projection: { _id: 1, "session.cookie": 1, "session.user.id": 1 } },
+      )
+      .toArray();
+    await Promise.all(
+      docs.map((doc) =>
+        sessions.updateOne(
+          { _id: doc._id, "session.user.id": doc.session.user.id },
+          {
+            $set: {
+              session: {
+                cookie: doc.session.cookie,
+                siteBan: {
+                  userId: doc.session.user.id,
+                  csrf: crypto.randomBytes(24).toString("hex"),
+                },
               },
             },
           },
-        },
-      ).exec(),
-    ),
-  );
-  await models.Session.deleteMany({ "session.user.id": { $in: ids } }).exec();
+        ),
+      ),
+    );
+  } catch (e) {
+    logger.error(e);
+  }
+  try {
+    await models.Session.collection.deleteMany({
+      "session.user.id": { $in: ids },
+    });
+  } catch (e) {
+    logger.error(e);
+  }
 }
 
 function banIssuedAt(ban) {
