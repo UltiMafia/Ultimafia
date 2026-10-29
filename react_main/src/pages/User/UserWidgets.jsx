@@ -612,6 +612,8 @@ export function NameWithAvatar(props) {
   const id = props.id;
   const name = props.name || "[deleted]";
   const avatar = props.avatar;
+  // A fixed image instead of the user's upload (the site sender's icon).
+  const avatarUrl = props.avatarUrl;
   const noLink = props.name ? props.noLink : true;
   const color = props.color;
   const newTab = props.newTab;
@@ -743,7 +745,8 @@ export function NameWithAvatar(props) {
         />
       ) : (
         <Avatar
-          hasImage={avatar}
+          hasImage={avatarUrl ? true : avatar}
+          imageUrl={avatarUrl}
           id={id}
           avatarId={avatarId}
           name={name}

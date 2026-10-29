@@ -1272,6 +1272,11 @@ export function UserSearchSelect(props) {
   const [idMap, setIdMap] = useState({});
   const [query, setQuery] = useState("");
   const [inputValue, setInputValue] = useState("");
+  // Callers that don't pass `value` (e.g. the mod commands form) still need
+  // the picked name kept as the Autocomplete's value; otherwise MUI resets
+  // the input to the empty value on blur and the reset clears the selection.
+  const [pickedName, setPickedName] = useState("");
+  const controlled = props.value !== undefined;
 
   const matchingOptions = options.filter((option) =>
     option.toLowerCase().includes(inputValue.toLowerCase())
@@ -1294,6 +1299,8 @@ export function UserSearchSelect(props) {
   }, [query]);
 
   function onChange(event, value) {
+    if (!controlled)
+      setPickedName(value != null && idMap[value] != null ? value : "");
     if (props.onChange) {
       if (value != null) {
         const id = idMap[value];
@@ -1305,7 +1312,7 @@ export function UserSearchSelect(props) {
     setInputValue(value ?? "");
   }
 
-  const selectedName = props.value ?? "";
+  const selectedName = controlled ? props.value ?? "" : pickedName;
   const displayInputValue = selectedName !== "" ? selectedName : inputValue;
 
   return (
@@ -1316,8 +1323,10 @@ export function UserSearchSelect(props) {
         if (reason === "reset" && selectedName) return;
         setInputValue(newInputValue);
         setQuery(newInputValue);
-        if (newInputValue !== selectedName && props.onChange)
-          props.onChange(null, null);
+        if (newInputValue !== selectedName) {
+          if (!controlled) setPickedName("");
+          if (props.onChange) props.onChange(null, null);
+        }
       }}
       options={matchingOptions}
       onChange={onChange}

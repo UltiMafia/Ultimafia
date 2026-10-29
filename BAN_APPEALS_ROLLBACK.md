@@ -1,0 +1,256 @@
+# Deploy and rollback: ban page and ban appeals
+
+A site-banned user who signs in now sees a full "YOU ARE BANNED" page with the
+reason, the ban dates and a one-time appeal form, instead of a snackbar on the
+home screen. The appeal goes to the admins' "Ban Appeals" conversation and
+to each admin's inbox. One appeal per person, counting linked (alt) accounts. Site bans need a
+reason.
+
+## How it works
+
+- **Reason.** `/mod/ban` refuses a site ban without a `reason` (1 to 300
+  characters) and stores it on the ban (`bans.reason`). Other ban types accept
+  an optional reason. A ban from a completed report gets
+  `"<violation> (<n> Offense): <decision summary>"` as its reason, since the
+  decision summary is already required there.
+- **Ban session.** On sign-in, a site-banned account gets
+  `req.session.siteBan = { userId, csrf }` and no `req.session.user`. Every
+  existing endpoint still sees a signed-out visitor. Only these read the ban
+  session:
+  - `GET /api/auth/ban`: ban page data (reason, issued/expiry dates, account
+    name, ban type as `banType`/`banTypeLabel`, appeal status, and `bans`:
+    every active site, forum, chat, game, ranked or competitive ban on the
+    account with its type and dates; never the scope or the moderator)
+  - `POST /api/auth/ban/appeal`: the one appeal (needs the `x-csrf` header
+    from `GET /api/auth/ban`)
+  - `POST /api/auth/ban/logout`: ends the ban session
+
+  `/api/user/info` answers `{ siteBanned: true }` for a ban session, so the
+  client sends the user to `/banned`.
+- **Signed-in tabs.** A site ban (ban command or report ruling) signs the
+  account out of every session as before, but instead of deleting each
+  session it replaces it with a ban session (only the cookie settings and a
+  new `siteBan` are kept), so an open tab that reloads lands on `/banned`
+  rather than the login page.
+- **Admins.** Members of the `Owner` and `Admin` groups who aren't deleted
+  (`APPEAL_RECIPIENT_GROUPS` in `modules/banAppeals.js`). The admin who issued
+  the ban is included. On dev/QA, `BAN_APPEAL_VOTER_ALLOWLIST` (comma-separated
+  user ids, see `docs/server_env`) narrows this to the listed Owners/Admins, so
+  test appeals don't reach real staff. It is unset in production, which keeps
+  every Owner and Admin.
+- **Appeal message.** It goes into the admins' "Ban Appeals" conversation,
+  shared by all appeals. The banned user is never a member and gets no DM, so
+  they can't read it or the votes; they see their appeal's status on the ban
+  page only. The conversation has its own fixed id (md5 of
+  `site:ban-appeals`), so it is never the 1:1 or group DM the admins already
+  share, and it is titled "Ban Appeals" for every admin. Its members follow
+  the current admins (and `BAN_APPEAL_VOTER_ALLOWLIST`) each time an appeal
+  or vote is posted: new admins get it, removed ones lose it. An earlier
+  build posted into the admins' shared DM and named it "Ban Appeals"; that
+  name is taken off again at www startup and on each appeal or vote (the
+  DM's messages stay). The message is posted by
+  a site sender (`site:ban-appeals`, shown as "Ban Appeals" with the site
+  icon, `modules/siteSender.js`), not a user account. `modules/chat.js` renders that sender when it loads
+  messages. The text is exactly
+  `BAN-APPEAL: <USERNAME> - BAN REASON: <reason> , APPEAL: <text>`.
+- **Admin notifications.** Each admin gets the DM opened, an unread chat
+  notification, and an inbox notification "Ban appeal pending: <USERNAME>"
+  (gavel icon) that opens the appeal's case on the admins' Ban Appeals page
+  (`/policy/moderation/ban-appeals/<appealId>`). The Ban Appeal Tally and
+  Ban Appeal Vote mod commands still work on the same appeal. The chat server and the
+  inbox read from Mongo, so admins see both the next time the chat panel or
+  notifications load. There's no live push: the www process has no socket to
+  the chat server or the clients (`createNotification` only pushes when it is
+  given sockets, which www doesn't have).
+- **Message length.** Typed chat messages are cut to 240 characters
+  (`maxChatMessageLength`, applied in `modules/chat.js` when a user sends).
+  The appeal message is written server-side, so that limit doesn't apply, and
+  the message is never cut. It is bounded instead: the reason is at most 300
+  characters and the appeal 1,000 (`MAX_BAN_REASON_LENGTH`,
+  `MAX_APPEAL_LENGTH`, enforced by the server and the form), so a message is
+  at most about 1,350 characters. The chat panel wraps it.
+- **Once only, per ban.** `sitebanappeals.banId` is unique: one appeal per
+  ban, enforced by the database, so even concurrent submits produce one
+  appeal.
+- **Once only, per person (alts).** A banned account can't appeal if a linked
+  account already has an appeal that counts, whatever its status. Instead the
+  ban page shows that appeal's status, marked as from a linked account
+  (without its text or account name, since a link can be a shared network).
+  - **Linked** means the same thing as the mod "Alts" command and the alt
+    bans `/mod/ban` already applies (`getAltAccountIds` →
+    `modules/accountLinkage.js` `getDirectLinkedAccountIds`): the two
+    accounts share at least one IP in `users.ip`, or an identical device
+    fingerprint (platform, stable and unstable values) in
+    `users.fingerprints`. Links are direct, not chained: if A shares an IP
+    with B and B with C, but A and C share nothing, A and C are not linked.
+    "Unlink Accounts" removes the shared evidence, and with it the link.
+  - **Counts** means the linked appeal's ban is still an active site ban, or
+    the appeal was filed after this account's ban was issued. An old appeal
+    for a ban that has ended doesn't block appealing a new ban.
+  - Enforced on submit (409), and again after saving: if linked accounts
+    submit at the same moment, the later one (by time, then id) deletes its
+    own appeal and gets 409 before anything is sent.
+  - Accepting one linked account's appeal doesn't unban the others. Each
+    account's ban is lifted with its own Unban (Site).
+- **Voting.** Admins vote on the Ban Appeals page
+  (`POST /mod/banAppeals/<appealId>/vote` with `vote: accept|deny` and
+  `justification`) or with the mod command "Ban Appeal Vote"
+  (`POST /mod/banAppeal/vote` with `vote` and `notes`). Both use
+  `voteOnAppeal`, the same votes and the same thresholds. A justification
+  (1 to 1,000 characters) is required with every vote. The caller needs the
+  `unban` permission above the target's rank and must be an admin as defined
+  above, so mods can't vote. Each admin has one vote per appeal, stored in
+  `sitebanappeals.votes` as `{ voterId, vote, at, notes }`. Voting again
+  replaces that admin's earlier vote while the appeal is PENDING.
+  - N is the number of admins the appeal was sent to. It's snapshotted at
+    submission in `sitebanappeals.recipientIds`, so admins added or removed
+    later don't change N. Only those N admins can vote, and they must still
+    be admins when they vote.
+  - Accepts needed: acceptAt = min(2, N). The appeal becomes ACCEPTED at
+    acceptAt accept votes, checked first after each vote.
+  - It becomes DENIED once that is out of reach: with D deny votes, DENIED
+    when D > N - acceptAt. For example, N = 5 is denied at 4 denies, N = 3 at
+    2, N = 2 at 1, and N = 1 at 1 (one admin decides alone either way).
+  - With N = 0 (no admins when it was submitted) the appeal is stored as
+    PENDING, no DM or notification is sent, and nobody can vote on it (open
+    question).
+  - To change the cap of 2, edit `ACCEPT_VOTES_REQUIRED` in
+    `modules/banAppeals.js`.
+  - Once decided, votes are closed (409).
+  - Each vote also posts the tally into the "Ban Appeals" conversation, e.g.
+    `BAN-APPEAL VOTE: AdminBob voted ACCEPT - 3 admins: accept 1 of 2 needed, deny 0 of 2 needed - still PENDING`.
+  - "Ban Appeal Tally" (`GET /mod/banAppeal?userId=`) shows the status, N,
+    the accept and deny counts and who voted what.
+  - The banned user sees only the status, not the votes.
+  - Mod actions: "Vote On Ban Appeal" for each vote, plus "Accept Ban Appeal"
+    / "Deny Ban Appeal" when the appeal is decided.
+- **Accepting does not unban.** Lifting the ban is a separate, explicit
+  Unban (Site). After that, the ban page says the ban has ended and the user
+  can sign in normally.
+
+## Admin Ban Appeals page
+
+- **Where.** Moderation > "Ban Appeals" tab (`/policy/moderation/ban-appeals`,
+  one case at `/policy/moderation/ban-appeals/<appealId>`). The tab shows
+  only when `GET /mod/banAppeals/access` says so.
+- **Who.** Every endpoint checks, server-side, that the caller is signed in,
+  has the `unban` permission and is one of the admins who get appeals
+  (`getAdminIds`, narrowed by `BAN_APPEAL_VOTER_ALLOWLIST`). Opening or
+  voting on one case also needs `unban` above the banned user's rank. Only
+  the admins an appeal was sent to (`recipientIds`) can vote on it; an admin
+  added later can read it.
+- **List.** `GET /mod/banAppeals?filter=pending|resolved|all` (pending by
+  default): banned user, ban type, ban and expiry dates, when the appeal was
+  filed, the tally ("Accept 1 of 2 needed, deny 0 of 2 needed") and status,
+  pending first.
+- **Case.** `GET /mod/banAppeals/<appealId>`: the appeal text; the ban (type,
+  scope, who banned, reason, length, dates, and the account it was issued
+  against when this one was banned as a linked account); the original
+  report(s); the user's mod log entries (the one that issued the ban is
+  marked); and every vote with voter, vote, justification and time.
+- **Original reports.** In order: report ids stored on the ban
+  (`bans.reportIds`, set by report rulings from now on); the report whose
+  `linkedBanId` is the ban; the violation ticket for the ban and the report
+  with that violation (covers linked accounts banned by the same ruling);
+  otherwise, for older bans, reports against the user filed in the 30 days
+  before the ban, labelled as having no stored link.
+- **Scope.** `bans.scope` on new bans; for older bans, the third argument of
+  the mod log entry that issued the ban (same moderator and type, within two
+  minutes), else "Not recorded (older ban)".
+- **Justifications stay with the admins.** They are stored only in
+  `sitebanappeals.votes.notes` and returned only by the admin endpoints
+  above and the Ban Appeal Tally command. They are not in the DM vote lines,
+  any notification, the ban page (`/auth/ban`, which returns only the appeal
+  status, text and dates), or the mod log: new "Vote On Ban Appeal" entries
+  have no reason, and `GET /mod/actions` (public) drops the reason from older
+  vote entries.
+
+## Ban scope and Plot Armor
+
+- **Ban scope.** Ban and Unban have a "Ban Scope" / "Unban Scope" select:
+  "All linked accounts (shared IP or fingerprint)" (`scope: "linked"`, the
+  default, also when the field is missing) or "This account only"
+  (`scope: "single"`). Any other value is refused with 400. The mod log
+  records it as an extra argument ("This account only" or "All linked
+  accounts (N accounts)").
+- **Plot Armor (dev/QA only).** `PLOT_ARMOR_USER_IDS` (comma-separated user
+  ids, see `docs/server_env`) lists accounts that are never banned through a
+  linked account or automatically. The mod Ban "All linked accounts" cascade,
+  the report-ruling cascade (no ban, ticket or notification for them) and the
+  ban of a signed-in account that signs in to a banned account's email all
+  skip them, and a linked Unban leaves their own bans alone. The mod log adds
+  "Plot Armor: skipped N linked accounts". A ban that names an armored
+  account directly still applies. A new sign-up whose IP or device
+  (platform + stable fingerprint) is also used by an armored account skips
+  the sign-up ban-evasion checks (banned-user IP: silent refusal; exact
+  banned fingerprint: "ban evasion" refusal; partial match: flag and
+  restrict), with a warning for each skip, so test accounts can be made on
+  the same network or device. A sign-up that matches a banned user but no
+  armored account is still blocked or flagged. Signing in to an existing account never
+  checks linked bans, so armored accounts can sign in while a linked account
+  is banned. The server logs a warning at startup when it is set. Leave it
+  unset in production: unset or empty changes nothing.
+- Neither changes the database. Rolling back the code removes both; bans
+  already issued stay as they are.
+
+## What changes in the database
+
+| Change | When it happens |
+|--------|-----------------|
+| `bans.reason` (String), `bans.createdAt` (Number) | On every new ban. Old bans have neither; the page shows "No reason was recorded for this ban." and the ObjectId time as the ban date. |
+| New collection `sitebanappeals` (unique `id`, unique `banId`; `votes` array) | When a banned user appeals, and on each admin vote. Mongoose builds the indexes on startup. |
+| `chatchannels` / `chatmessages` / `channelopens` / `notifications` | One admins-only conversation named "Ban Appeals" (fixed id md5("site:ban-appeals"), shared by all appeals; members follow the admins), one message per appeal from the site sender (`senderId: "site:ban-appeals"`, no user document), the admins' opens, an unread chat notification and a "Ban appeal pending" inbox notification per admin, plus one tally message per vote (also from the site sender; the text names the voter). |
+| `bans.scope` (String), `bans.reportIds` ([String]) | On every new ban: the scope ("linked"/"single"), and for report rulings the report id. Old bans have neither; the Ban Appeals page falls back as described above. |
+| `sitebanappeals.votes.notes` | Now required (the vote justification, up to 1,000 characters). Same field as before. |
+| `sessions` with `session.siteBan` | When a site-banned user signs in, and when a site ban signs a user's open sessions out (those sessions become ban sessions instead of being deleted). Expire with the normal session TTL. |
+
+No startup migration and no change to existing documents.
+
+## Before deploying
+
+```
+node scripts/db/banAppealsBackup.js backups/ban-appeals-pre-deploy
+```
+
+It writes `bans.json` (bans with `reason`/`createdAt`/`scope`/`reportIds`,
+normally none before the first deploy), `sitebanappeals.json` (appeals with
+their votes and justifications), `sitemessages.json` (the site sender's
+appeal and vote messages) and `appealchannel.json` (the "Ban Appeals"
+conversation and the admins' opens of it). The folder holds justifications: keep it private
+(files are written mode 600).
+
+## Rollback
+
+1. Back up the current state: `node scripts/db/banAppealsBackup.js backups/ban-appeals-pre-rollback`
+2. Roll the code back.
+3. `node migrations/down/banAppeals.js --dry-run`, then `--confirm`. This
+   unsets `bans.reason`/`createdAt`/`scope`/`reportIds`, drops
+   `sitebanappeals` with the votes and justifications (`--keep-appeals`
+   keeps it), deletes ban page sessions and deletes the site sender's appeal
+   and vote messages, and the "Ban Appeals" conversation with its opens and unread markers. Do that in the same window as the code rollback: the
+   old `modules/chat.js` can't load a channel holding a message with no user
+   behind it, so the admins' DM would fail to open. Older admin-sent vote
+   messages and inbox notifications stay (the notification links point to the
+   Ban Appeals page, which the old code doesn't have). Bans themselves are untouched.
+4. Restart www and the chat server (no game restart needed).
+
+## Re-applying after a rollback
+
+1. Deploy the code again.
+2. `node scripts/db/banAppealsRestore.js backups/ban-appeals-pre-rollback`
+
+## Prod impact
+
+- Site bans from the Ban command now fail without a reason. Mods need to fill
+  in the new "Reason" field.
+- A banned sign-in now creates a small session document (it used to create
+  none). Repeated sign-in attempts each add one until the TTL expires.
+- The ban page makes 1 query for the ban and a few small ones (user, appeal,
+  the linked-account lookup the Alts command uses). An appeal does one group
+  lookup, the linked-account lookup twice and a handful of writes.
+- `modules/chat.js` changes slightly: it renders the site sender, and a
+  message whose sender no longer has a user document shows as "[deleted]"
+  instead of failing the whole channel load. Deploy www and chat together. Nothing runs for users
+  who aren't banned, beyond one extra `delete req.session.siteBan` on sign-in.
+- Clients that only read `siteBanned`/`banExpires` from the 403 still work.
+  The response adds `banPage: "/banned"`.

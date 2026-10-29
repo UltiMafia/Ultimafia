@@ -168,6 +168,10 @@ export function UserProvider({
         } else {
           clear();
           setCaptchaVisible(true);
+          // A site-banned user's session only opens the ban page.
+          if (res.data.siteBanned && window.location.pathname !== "/banned") {
+            window.location.replace("/banned");
+          }
         }
 
         if (res.data.nameChanged === false) {

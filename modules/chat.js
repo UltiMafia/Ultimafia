@@ -11,6 +11,7 @@ const utils = require("../routes/utils");
 const blocks = require("./blocks");
 const dmGate = require("./dmGate");
 const { addSocket, removeSocket } = require("./socketGroup");
+const siteSender = require("./siteSender");
 
 const port = process.env.CHAT_PORT;
 const server = new sockets.SocketServer(port);
@@ -184,11 +185,8 @@ async function onlyModsBesides(memberIds, userId) {
             const emoteCache = new Map();
             for (let i in messages) {
               let message = messages[i].toJSON();
-              message.sender = await redis.getBasicUserInfo(
-                message.sender.id,
-                true
-              );
-              if (!channel.public)
+              message.sender = await messageSenderInfo(message);
+              if (!channel.public && !siteSender.isSiteSender(message.senderId))
                 await addSenderEmotes(message.sender, emoteCache);
               messages[i] = message;
             }
@@ -243,11 +241,8 @@ async function onlyModsBesides(memberIds, userId) {
             const emoteCache = new Map();
             for (let i in messages) {
               let message = messages[i].toJSON();
-              message.sender = await redis.getBasicUserInfo(
-                message.sender.id,
-                true
-              );
-              if (!channel.public)
+              message.sender = await messageSenderInfo(message);
+              if (!channel.public && !siteSender.isSiteSender(message.senderId))
                 await addSenderEmotes(message.sender, emoteCache);
               messages[i] = message;
             }
@@ -652,6 +647,16 @@ async function onlyModsBesides(memberIds, userId) {
   }
 })();
 
+// Site messages (e.g. ban appeals) have no user account behind them.
+async function messageSenderInfo(message) {
+  if (siteSender.isSiteSender(message.senderId))
+    return siteSender.SITE_SENDER_INFO;
+  return redis.getBasicUserInfo(
+    message.sender ? message.sender.id : message.senderId,
+    true
+  );
+}
+
 async function sendChatInfo(userId, socket) {
   var permInfo = await redis.getUserPermissions(userId);
   var rooms = await models.ChatChannel.find({
@@ -662,7 +667,7 @@ async function sendChatInfo(userId, socket) {
     .select("channelId channel -_id")
     .populate({
       path: "channel",
-      select: "id public memberIds members lastMessageDate -_id",
+      select: "id name public memberIds members lastMessageDate -_id",
       populate: {
         path: "members",
         select: "id name avatar -_id",

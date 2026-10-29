@@ -52,6 +52,11 @@ describe("report workflow fingerprint/IP parity", function () {
     ["../modules/gameLoadBalancer", "../modules/roleIconCreditUtils", "../modules/fortunePoints", "../modules/skillRating", "../lib/StockMarket", "firebase-admin"].forEach((name) => replace(name, {}));
     reload("../modules/accountLinkage");
     reload("../routes/utils");
+    // Bound to these models too: the mod routes call it (site bans sign
+    // users out through it), and another file in the same worker may have
+    // loaded it with different ones.
+    reload("../modules/plotArmor");
+    reload("../modules/banAppeals");
     modRouter = reload("../routes/mod");
     userRouter = reload("../routes/user");
   });
@@ -97,6 +102,14 @@ describe("report workflow fingerprint/IP parity", function () {
     const bans = await models.Ban.find({}).lean();
     assert.deepEqual(bans.map((ban) => ban.userId).sort(), ["fp-alt", "ip-alt", "target"]);
     for (const ticket of tickets) assert.equal(ticket.linkedBanId, bans.find((ban) => ban.userId === ticket.userId).id);
+    // The violation's decision summary becomes the ban reason shown on the ban page.
+    for (const ban of bans) assert.equal(ban.reason, `${violationDefinitions[0].name} (1st Offense): Fixture decision`);
+    // Each ban records the report whose ruling issued it, and its scope, so
+    // the admins' Ban Appeals page can show the original report.
+    for (const ban of bans) {
+      assert.deepEqual(ban.reportIds, ["case"]);
+      assert.equal(ban.scope, "linked");
+    }
     assert.deepEqual((await models.User.find({ banned: true }).lean()).map((user) => user.id).sort(), ["fp-alt", "ip-alt", "target"]);
   });
 

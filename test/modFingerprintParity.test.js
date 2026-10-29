@@ -18,6 +18,8 @@ function loadModerationRouter(models, redis) {
     "firebase-admin",
     "../modules/accountLinkage",
     "../routes/utils",
+    "../modules/plotArmor",
+    "../modules/banAppeals",
     "../routes/mod",
   ].map(require.resolve);
   const previous = new Map(paths.map((path) => [path, require.cache[path]]));
@@ -36,6 +38,10 @@ function loadModerationRouter(models, redis) {
   put("firebase-admin", {});
   delete require.cache[require.resolve("../modules/accountLinkage")];
   delete require.cache[require.resolve("../routes/utils")];
+  // The mod routes sign site-banned users out through banAppeals, so it must
+  // use these models too, even if another file in this worker loaded it.
+  delete require.cache[require.resolve("../modules/plotArmor")];
+  delete require.cache[require.resolve("../modules/banAppeals")];
   delete require.cache[require.resolve("../routes/mod")];
   const router = require("../routes/mod");
 
@@ -167,7 +173,7 @@ describe("moderation fingerprint parity endpoints", function () {
         { session: { user: { id: "fingerprint-alt" } } },
       ]);
       const res = response();
-      await handlers.ban(request({ body: { userId: "target", length: "1 hour", banType } }), res);
+      await handlers.ban(request({ body: { userId: "target", length: "1 hour", banType, reason: "Test reason" } }), res);
 
       res.statusCode.should.equal(200);
       const bans = await models.Ban.find({ type: storedType, auto: false }).lean();
@@ -175,7 +181,9 @@ describe("moderation fingerprint parity endpoints", function () {
       if (banType === "site") {
         const banned = await models.User.find({ banned: true }).select("id -_id").lean();
         banned.map((user) => user.id).sort().should.deep.equal(["fingerprint-alt", "ip-alt", "target"]);
-        (await models.Session.countDocuments({})).should.equal(0);
+        // Signed out everywhere; each session now only opens the ban page.
+        (await models.Session.countDocuments({ "session.user": { $exists: true } })).should.equal(0);
+        (await models.Session.distinct("session.siteBan.userId")).sort().should.deep.equal(["fingerprint-alt", "ip-alt", "target"]);
       }
     });
   });
@@ -188,7 +196,7 @@ describe("moderation fingerprint parity endpoints", function () {
     ]);
     ["target", "ip-alt", "fingerprint-alt"].forEach((id) => ranks.set(id, 2));
     const banRes = response();
-    await handlers.ban(request({ body: { userId: "target", length: "1 hour", banType: "site" } }), banRes);
+    await handlers.ban(request({ body: { userId: "target", length: "1 hour", banType: "site", reason: "Test reason" } }), banRes);
     await models.Ban.create({ id: "automatic", userId: "fingerprint-alt", type: "site", auto: true, expires: 0, permissions: ["signIn"] });
     const res = response();
     await handlers.unban(request({ body: { userId: "target", banType: "site" } }), res);
@@ -203,7 +211,7 @@ describe("moderation fingerprint parity endpoints", function () {
     await users([{ id: "equal-rank", name: "Equal", fingerprints: [fingerprint("rank")]}]);
     ranks.set("equal-rank", 10);
     const res = response();
-    await handlers.ban(request({ body: { userId: "equal-rank", length: "1 hour", banType: "site" } }), res);
+    await handlers.ban(request({ body: { userId: "equal-rank", length: "1 hour", banType: "site", reason: "Test reason" } }), res);
     res.statusCode.should.equal(403);
     (await models.Ban.countDocuments({})).should.equal(0);
   });
