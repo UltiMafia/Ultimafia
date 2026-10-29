@@ -14,7 +14,10 @@ const {
 const { sendFlaggedUserDiscordAlert } = require("./report");
 const { normalizeFingerprint, checkFingerprintBan } = require("../modules/fingerprintBan");
 const { recordLoginFingerprint } = require("../modules/fingerprintLogin");
-const { isArmored } = require("../modules/plotArmor");
+const {
+  isArmored,
+  sharesSignupEvidenceWithArmor,
+} = require("../modules/plotArmor");
 const router = express.Router();
 const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
@@ -369,12 +372,38 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint, provide
         banned: true,
       }).select("_id");
 
-      if (bannedSameIP.length > 0) return;
+      // Plot Armor (dev/QA): a sign-up from the armored accounts' own network
+      // or device skips the ban-evasion checks below. Looked up once, only
+      // when one of them matches.
+      var armorShared = null;
+      var signupSharesArmor = async () => {
+        if (armorShared === null)
+          armorShared = await sharesSignupEvidenceWithArmor({
+            ip,
+            fingerprint: fingerprintMatch,
+          });
+        return armorShared;
+      };
+
+      if (bannedSameIP.length > 0) {
+        if (!(await signupSharesArmor())) return;
+        logger.warn(
+          `Plot Armor: allowed a sign-up from an IP shared with ${bannedSameIP.length} banned user(s), because it shares an IP or device with an armored account.`
+        );
+      }
 
       var aliasAccount = await findAliasAccount(email);
       if (aliasAccount) throw { emailAliasInUse: true };
 
       var fingerprintBan = fingerprintMatch ? await checkFingerprintBan(fingerprintMatch) : null;
+      if (fingerprintBan && (await signupSharesArmor())) {
+        logger.warn(
+          `Plot Armor: allowed a sign-up whose device fingerprint ${
+            fingerprintBan === "block" ? "exactly matches" : "partly matches"
+          } a banned user's, because it shares an IP or device with an armored account.`
+        );
+        fingerprintBan = null;
+      }
       if (fingerprintBan === "block") throw { banEvasion: true };
 
       // Apple's private relay addresses are allowed for Apple sign-ins.

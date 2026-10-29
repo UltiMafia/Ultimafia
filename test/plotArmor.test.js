@@ -52,7 +52,7 @@ describe("PLOT_ARMOR_USER_IDS (Plot Armor)", function () {
     });
 
     it("logs one startup warning naming how many accounts are armored", function () {
-      assert.match(load("laJoqacXr,Or7_sztgH").plotArmorStartupWarning(), /PLOT_ARMOR_USER_IDS is set: 2 accounts are never banned/);
+      assert.match(load("laJoqacXr,Or7_sztgH").plotArmorStartupWarning(), /PLOT_ARMOR_USER_IDS is set: 2 accounts are never banned.*sign-ups sharing their IP or device skip the ban-evasion checks/);
       assert.match(load("laJoqacXr").plotArmorStartupWarning(), /: 1 account is never banned/);
     });
 
@@ -264,6 +264,93 @@ describe("PLOT_ARMOR_USER_IDS (Plot Armor)", function () {
       assert.equal(await models.Ban.countDocuments({ userId: "armored" }), 0);
       assert.notEqual((await models.User.findOne({ id: "armored" }).lean()).banned, true);
       assert.equal(await models.Session.countDocuments({ "session.user.id": "armored" }), 1);
+    });
+
+    describe("sign-up ban-evasion checks", function () {
+      const signupEmail = "new@example.test";
+      const requestIp = "198.51.100.20";
+      // The banned user each check matches: same IP, exact device, or the same
+      // device with a different unstable part (partial match).
+      const bannedFor = {
+        ip: { ip: [requestIp] },
+        exact: { ip: ["192.0.2.1"], fingerprints: [fp] },
+        partial: { ip: ["192.0.2.1"], fingerprints: [{ ...fp, unstable: "other" }] },
+      };
+
+      async function setup(kind, armoredFields) {
+        identity = { uid: "uid-new", email: signupEmail };
+        await models.User.create({ id: "bannedZ", name: "bannedZ", email: ["z@example.test"], banned: true, deleted: false, ...bannedFor[kind] });
+        await models.User.create({ id: "armored", name: "armored", email: ["armored@example.test"], deleted: false, ...armoredFields });
+      }
+
+      async function signUp() {
+        const { req, res } = await signInAs(null);
+        const user = await models.User.findOne({ email: signupEmail }).lean();
+        return { req, res, user };
+      }
+
+      async function expectToday(kind) {
+        const { req, res, user } = await signUp();
+        if (kind === "ip") {
+          assert.equal(res.statusCode, 403);
+          assert.equal(res.body, "Authentication failed.");
+          assert.equal(user, null);
+        } else if (kind === "exact") {
+          assert.equal(res.statusCode, 403);
+          assert.deepEqual(JSON.parse(res.body), { signupBlocked: true });
+          assert.equal(user, null);
+        } else {
+          assert.equal(res.statusCode, 200);
+          assert.equal(user.flagged, true);
+          assert.equal(req.session.user.id, user.id);
+          assert.equal(await models.Ban.countDocuments({ userId: user.id, type: "ipFlag" }), 1);
+        }
+      }
+
+      async function expectAllowed() {
+        const { req, res, user } = await signUp();
+        assert.equal(res.statusCode, 200, String(res.body));
+        assert.ok(user, "account created");
+        assert.equal(req.session.user.id, user.id);
+        assert.notEqual(user.flagged, true);
+        assert.equal(await models.Ban.countDocuments({ userId: user.id }), 0);
+      }
+
+      const sharesIp = { ip: [requestIp] };
+      const sharesDevice = { ip: ["203.0.113.50"], fingerprints: [{ ...fp, unstable: "another-browser" }] };
+      const sharesNothing = { ip: ["203.0.113.50"], fingerprints: [{ ...fp, stable: "other-device" }] };
+
+      for (const kind of ["ip", "exact", "partial"]) {
+        it(`${kind} match, armor unset: behaves as today even next to a would-be armored account`, async function () {
+          loadRouters(undefined);
+          await setup(kind, sharesIp);
+          await expectToday(kind);
+        });
+
+        it(`${kind} match, armor set and the sign-up shares an IP with an armored account: allowed and unflagged`, async function () {
+          loadRouters("armored");
+          await setup(kind, sharesIp);
+          await expectAllowed();
+        });
+
+        it(`${kind} match, armor set and the sign-up shares a device with an armored account: allowed and unflagged`, async function () {
+          loadRouters("armored");
+          await setup(kind, sharesDevice);
+          await expectAllowed();
+        });
+
+        it(`${kind} match, armor set but nothing shared with an armored account: still blocked or flagged`, async function () {
+          loadRouters("armored");
+          await setup(kind, sharesNothing);
+          await expectToday(kind);
+        });
+      }
+
+      it("an account sharing an IP that is not on the armor list doesn't help", async function () {
+        loadRouters("someoneElse");
+        await setup("exact", sharesIp);
+        await expectToday("exact");
+      });
     });
 
     it("set: an armored account that shares an IP and device with a banned user still signs in", async function () {

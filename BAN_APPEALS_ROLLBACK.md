@@ -124,7 +124,13 @@ reason.
   ban of a signed-in account that signs in to a banned account's email all
   skip them, and a linked Unban leaves their own bans alone. The mod log adds
   "Plot Armor: skipped N linked accounts". A ban that names an armored
-  account directly still applies. Signing in to an existing account never
+  account directly still applies. A new sign-up whose IP or device
+  (platform + stable fingerprint) is also used by an armored account skips
+  the sign-up ban-evasion checks (banned-user IP: silent refusal; exact
+  banned fingerprint: "ban evasion" refusal; partial match: flag and
+  restrict), with a warning for each skip, so test accounts can be made on
+  the same network or device. A sign-up that matches a banned user but no
+  armored account is still blocked or flagged. Signing in to an existing account never
   checks linked bans, so armored accounts can sign in while a linked account
   is banned. The server logs a warning at startup when it is set. Leave it
   unset in production: unset or empty changes nothing.

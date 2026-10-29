@@ -90,6 +90,10 @@ BAN_APPEAL_VOTER_ALLOWLIST=
 # in to a banned account's email while signed in all skip them, and a linked
 # Unban leaves their own bans alone. The mod log notes each skip ("Plot Armor:
 # skipped N linked accounts"). A ban that names a listed account directly still
-# applies. Unset or empty = off, as in production. Read at startup; the server
+# applies. A new sign-up whose IP or device (platform + stable fingerprint) is
+# also used by a listed account skips the sign-up ban-evasion checks (banned-
+# user IP, exact banned fingerprint, partial-match flag), with a warning each
+# time; a sign-up matching a banned user but no listed account is still
+# blocked or flagged. Unset or empty = off, as in production. Read at startup; the server
 # logs a warning when it is set. Leave it unset in production.
 PLOT_ARMOR_USER_IDS=

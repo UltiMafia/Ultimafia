@@ -9,7 +9,10 @@
 // - the report-ruling cascade (routes/mod.js /reports/:id/complete);
 // - the ban of a signed-in account that signs in to a banned account's email
 //   (routes/auth.js authSuccess);
-// and a linked Unban leaves their own bans alone.
+// and a linked Unban leaves their own bans alone. A new sign-up whose IP or
+// device fingerprint is also used by an armored account (our own test network
+// or devices) skips the sign-up ban-evasion checks (see
+// sharesSignupEvidenceWithArmor).
 // A ban that names an armored account directly as its target still applies,
 // so staff can test banning one on purpose.
 const { parseUserIdList } = require("../lib/userIdList");
@@ -33,6 +36,37 @@ function splitArmored(userIds, targetId, armor = PLOT_ARMOR) {
   return { kept, skipped };
 }
 
+// Whether a new sign-up's IP, or its device (same platform and stable
+// fingerprint), is also used by an armored account. routes/auth.js uses it to
+// let sign-ups from the armored accounts' own network or devices skip the
+// ban-evasion checks (banned-user IP, exact and partial banned fingerprint).
+// A sign-up that matches a banned user but no armored account is still
+// blocked or flagged as before. Always false when armor is off.
+async function sharesSignupEvidenceWithArmor(
+  { ip, fingerprint } = {},
+  armor = PLOT_ARMOR
+) {
+  if (!armor) return false;
+  const clauses = [];
+  if (typeof ip === "string" && ip) clauses.push({ ip });
+  if (fingerprint && fingerprint.platform && fingerprint.stable)
+    clauses.push({
+      fingerprints: {
+        $elemMatch: {
+          platform: fingerprint.platform,
+          stable: fingerprint.stable,
+        },
+      },
+    });
+  if (clauses.length === 0) return false;
+  // Loaded here so the env parsing above has no database dependency.
+  const models = require("../db/models");
+  return !!(await models.User.exists({
+    id: { $in: [...armor] },
+    $or: clauses,
+  }));
+}
+
 // Mod log text when armor skipped linked accounts, else null.
 function plotArmorLogNote(skipped) {
   const count = (skipped || []).length;
@@ -44,13 +78,14 @@ function plotArmorStartupWarning(armor = PLOT_ARMOR) {
   return armor
     ? `PLOT_ARMOR_USER_IDS is set: ${armor.size} account${
         armor.size === 1 ? " is" : "s are"
-      } never banned through linked accounts or automatically. Dev/QA only, never set this in production.`
+      } never banned through linked accounts or automatically, and sign-ups sharing their IP or device skip the ban-evasion checks. Dev/QA only, never set this in production.`
     : null;
 }
 
 module.exports = {
   isArmored,
   splitArmored,
+  sharesSignupEvidenceWithArmor,
   plotArmorLogNote,
   plotArmorStartupWarning,
 };
