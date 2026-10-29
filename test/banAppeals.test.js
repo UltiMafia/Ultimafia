@@ -978,6 +978,24 @@ describe("site ban page and appeals", function () {
     });
   });
 
+  describe("signed out", function () {
+    function signedOut(body = {}, query = {}) {
+      return { session: {}, body, query, headers: {}, connection: {} };
+    }
+
+    it("returns 401, not 500, for the appeal tally and vote", async function () {
+      const tally = response();
+      await handlers.tally(signedOut({}, { userId: "target" }), tally);
+      tally.statusCode.should.equal(401);
+      const vote = response();
+      await handlers.vote(
+        signedOut({ userId: "target", vote: "accept" }),
+        vote,
+      );
+      vote.statusCode.should.equal(401);
+    });
+  });
+
   describe("logout", function () {
     it("ends the ban session", async function () {
       await siteBan();

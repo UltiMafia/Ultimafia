@@ -820,7 +820,11 @@ router.post("/clearleavepenalty", async (req, res) => {
 // banAppeals.APPEAL_VOTES_REQUIRED votes for one side. Deciding never unbans;
 // lifting the ban is a separate site /unban.
 async function verifyAppealAdmin(req, res) {
-  var userId = await routeUtils.verifyLoggedIn(req);
+  var userId = await routeUtils.verifyLoggedIn(req, true);
+  if (!userId) {
+    errors.unauthorized(res, "You must be signed in.");
+    return null;
+  }
   var userIdToActOn = String(req.body.userId || req.query.userId || "");
   var rank = await redis.getUserRank(userIdToActOn);
 
