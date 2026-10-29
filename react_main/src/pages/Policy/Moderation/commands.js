@@ -483,6 +483,21 @@ export function useModCommands(argValues, commandRan, setResults) {
           ],
         },
         {
+          // Accounts linked by a shared IP or device fingerprint (see Alts).
+          // The server also defaults to "linked" when this is missing.
+          label: "Ban Scope",
+          name: "scope",
+          type: "select",
+          options: [
+            {
+              value: "linked",
+              label: "All linked accounts (shared IP or fingerprint)",
+            },
+            { value: "single", label: "This account only" },
+          ],
+          default: "linked",
+        },
+        {
           label: "Length",
           name: "length",
           type: "text",
@@ -644,6 +659,21 @@ export function useModCommands(argValues, commandRan, setResults) {
             { value: "ranked", label: "Ranked" },
             { value: "competitive", label: "Competitive" },
             { value: "site", label: "Site" },
+        {
+          // Accounts linked by a shared IP or device fingerprint (see Alts).
+          // The server also defaults to "linked" when this is missing.
+          label: "Unban Scope",
+          name: "scope",
+          type: "select",
+          options: [
+            {
+              value: "linked",
+              label: "All linked accounts (shared IP or fingerprint)",
+            },
+            { value: "single", label: "This account only" },
+          ],
+          default: "linked",
+        },
           ],
         },
       ],
@@ -1763,9 +1793,11 @@ export function useModCommands(argValues, commandRan, setResults) {
     "Competitive Ban",
     "Site Ban",
   ];
+  // Older log entries have no scope; those bans included linked accounts.
   const banActionArgs = [
     { label: "User", name: "userId", type: "user_search" },
     { label: "Length", name: "length", type: "text" },
+    { label: "Scope", name: "scope", type: "text" },
   ];
   banActionNames.forEach((actionName) => {
     commands[actionName] = {
@@ -1804,6 +1836,7 @@ export function useModCommands(argValues, commandRan, setResults) {
   ];
   const unbanActionArgs = [
     { label: "User", name: "userId", type: "user_search" },
+    { label: "Scope", name: "scope", type: "text" },
   ];
   unbanActionNames.forEach((actionName) => {
     commands[actionName] = {

@@ -978,6 +978,187 @@ describe("site ban page and appeals", function () {
     });
   });
 
+  describe("ban scope (this account only vs all linked accounts)", function () {
+    const appealText = "I was arguing, but I did not harass anyone.";
+
+    // altLow shares the target's IP; linkedAdmin shares it too and has the
+    // banning admin's rank (so a linked ban reaches it); linkedOwner shares it
+    // with a higher rank (never banned by an Admin).
+    beforeEach(async function () {
+      await models.User.create([
+        { id: "altLow", name: "AltLow", deleted: false, ip: ["203.0.113.9"] },
+        {
+          id: "linkedAdmin",
+          name: "LinkedAdmin",
+          deleted: false,
+          ip: ["203.0.113.9", "198.51.100.1"],
+        },
+        {
+          id: "linkedOwner",
+          name: "LinkedOwner",
+          deleted: false,
+          ip: ["203.0.113.9"],
+        },
+      ]);
+      ranks.set("altLow", 0);
+      ranks.set("linkedAdmin", 10);
+      ranks.set("linkedOwner", 20);
+      await models.Session.create([
+        { session: { user: { id: "target" } } },
+        { session: { user: { id: "altLow" } } },
+        { session: { user: { id: "linkedAdmin" } } },
+      ]);
+    });
+
+    async function ban(fields = {}) {
+      const res = response();
+      await handlers.ban(
+        modRequest("banningAdmin", {
+          userId: "target",
+          banType: "site",
+          length: "30 days",
+          reason: "Repeated harassment in lobby chat",
+          ...fields,
+        }),
+        res,
+      );
+      return res;
+    }
+
+    async function unban(fields = {}) {
+      const res = response();
+      await handlers.unban(
+        modRequest("banningAdmin", {
+          userId: "target",
+          banType: "site",
+          ...fields,
+        }),
+        res,
+      );
+      return res;
+    }
+
+    async function bannedIds(type = "site") {
+      return (await models.Ban.find({ type }).lean()).map((b) => b.userId).sort();
+    }
+
+    async function flagged() {
+      return (await models.User.find({ banned: true }).lean())
+        .map((u) => u.id)
+        .sort();
+    }
+
+    async function sessions() {
+      return (await models.Session.find({}).lean())
+        .map((doc) => doc.session.user.id)
+        .sort();
+    }
+
+    async function lastAction(name) {
+      return models.ModAction.findOne({ name }).sort({ date: -1 }).lean();
+    }
+
+    it("single: bans only the target, and the log says so", async function () {
+      (await ban({ scope: "single" })).statusCode.should.equal(200);
+      (await bannedIds()).should.deep.equal(["target"]);
+      (await flagged()).should.deep.equal(["target"]);
+      (await sessions()).should.deep.equal(["altLow", "linkedAdmin"]);
+      (await models.Notification.distinct("user")).should.deep.equal(["target"]);
+      (await lastAction("Site Ban")).args.should.deep.equal([
+        "target",
+        "30 days",
+        "This account only",
+      ]);
+    });
+
+    it("single works for other ban types too", async function () {
+      (
+        await ban({ banType: "chat", length: "1 day", scope: "single" })
+      ).statusCode.should.equal(200);
+      (await bannedIds("chat")).should.deep.equal(["target"]);
+      (await flagged()).should.deep.equal([]);
+    });
+
+    it("linked: cascades to linked accounts up to the banner's rank, as before", async function () {
+      (await ban({ scope: "linked" })).statusCode.should.equal(200);
+      (await bannedIds()).should.deep.equal(["altLow", "linkedAdmin", "target"]);
+      (await flagged()).should.deep.equal(["altLow", "linkedAdmin", "target"]);
+      (await sessions()).should.deep.equal([]);
+      (await lastAction("Site Ban")).args.should.deep.equal([
+        "target",
+        "30 days",
+        "All linked accounts (3 accounts)",
+      ]);
+    });
+
+    it("scope omitted: same as linked", async function () {
+      (await ban()).statusCode.should.equal(200);
+      (await bannedIds()).should.deep.equal(["altLow", "linkedAdmin", "target"]);
+      (await lastAction("Site Ban")).args[2].should.equal(
+        "All linked accounts (3 accounts)",
+      );
+    });
+
+    it("rejects an invalid scope and writes nothing", async function () {
+      for (const scope of ["", "all", "SINGLE", "linked ", ["single"], 1]) {
+        const res = await ban({ scope });
+        res.statusCode.should.equal(400, JSON.stringify(scope));
+        res.body.should.contain("Invalid ban scope");
+      }
+      (await models.Ban.countDocuments({})).should.equal(0);
+      (await flagged()).should.deep.equal([]);
+      (await models.ModAction.countDocuments({})).should.equal(0);
+    });
+
+    it("single: the ban page and appeal work without any linked bans", async function () {
+      await ban({ scope: "single" });
+      const page = await info();
+      page.body.banned.should.equal(true);
+      page.body.appeal.status.should.equal("not_submitted");
+      (await appeal(appealText)).statusCode.should.equal(200);
+      (await info()).body.appeal.status.should.equal("pending");
+      // A linked account that isn't banned has no ban page.
+      session = { siteBan: { userId: "altLow", csrf } };
+      (await info()).body.should.deep.equal({
+        banned: false,
+        banEnded: true,
+      });
+    });
+
+    it("unban single lifts only the target; unban linked (or omitted) lifts every linked account", async function () {
+      await ban();
+      (await unban({ scope: "single" })).statusCode.should.equal(200);
+      (await bannedIds()).should.deep.equal(["altLow", "linkedAdmin"]);
+      (await flagged()).should.deep.equal(["altLow", "linkedAdmin"]);
+      (await lastAction("Site Unban")).args.should.deep.equal([
+        "target",
+        "This account only",
+      ]);
+
+      (await unban()).statusCode.should.equal(200);
+      (await bannedIds()).should.deep.equal([]);
+      (await flagged()).should.deep.equal([]);
+      (await lastAction("Site Unban")).args[1].should.equal(
+        "All linked accounts (4 accounts)",
+      );
+    });
+
+    it("unban after a single ban works with either scope", async function () {
+      await ban({ scope: "single" });
+      (await unban({ scope: "linked" })).statusCode.should.equal(200);
+      (await bannedIds()).should.deep.equal([]);
+      (await flagged()).should.deep.equal([]);
+    });
+
+    it("rejects an invalid unban scope", async function () {
+      await ban();
+      const res = await unban({ scope: "everyone" });
+      res.statusCode.should.equal(400);
+      res.body.should.contain("Invalid unban scope");
+      (await bannedIds()).length.should.equal(3);
+    });
+  });
+
   describe("signed out", function () {
     function signedOut(body = {}, query = {}) {
       return { session: {}, body, query, headers: {}, connection: {} };

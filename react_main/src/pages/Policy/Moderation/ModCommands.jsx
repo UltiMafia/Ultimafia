@@ -258,7 +258,7 @@ export function ModCommands(props) {
           <FormControl key={arg.name} sx={{ width: "100%" }}>
             <InputLabel>{arg.label}</InputLabel>
             <Select
-              value={argValue || ""}
+              value={argValue ?? arg.default ?? ""}
               label={arg.label}
               onChange={(e) =>
                 updateArgValue(arg.name, e.target.value, arg.isArray)

@@ -548,6 +548,33 @@ router.post("/roleIconCredit", async function (req, res) {
   }
 });
 
+// Ban/unban scope. "linked" (the default, also when the field is missing)
+// applies the ban or unban to every account linked to the user by a shared IP
+// or device fingerprint (routeUtils.getAltAccountIds), as it always has.
+// "single" applies it to the chosen account only. Returns null for any other
+// value.
+const BAN_SCOPES = ["linked", "single"];
+const BAN_SCOPE_LOG_LABELS = {
+  linked: "All linked accounts",
+  single: "This account only",
+};
+
+function parseBanScope(value) {
+  if (value == null) return "linked";
+  return typeof value === "string" && BAN_SCOPES.includes(value)
+    ? value
+    : null;
+}
+
+// The mod log text for a scope, e.g. "All linked accounts (3 accounts)".
+function banScopeLogLabel(scope, accountIds) {
+  if (scope === "single") return BAN_SCOPE_LOG_LABELS.single;
+  const count = accountIds.length;
+  return `${BAN_SCOPE_LOG_LABELS.linked} (${count} account${
+    count === 1 ? "" : "s"
+  })`;
+}
+
 // Unified ban endpoint
 router.post("/ban", async (req, res) => {
   try {
@@ -559,6 +586,15 @@ router.post("/ban", async (req, res) => {
     var banRank = await redis.getUserRank(userIdToBan);
     // Shown to the user on the ban page, so a site ban needs one.
     var reason = banAppeals.normalizeBanReason(req.body.reason);
+    var scope = parseBanScope(req.body.scope);
+
+    if (!scope) {
+      errors.badRequest(
+        res,
+        "Invalid ban scope. Use 'single' (this account only) or 'linked' (all linked accounts)."
+      );
+      return;
+    }
 
     if (req.body.reason != null && String(req.body.reason).trim() && !reason) {
       errors.badRequest(
@@ -648,8 +684,12 @@ router.post("/ban", async (req, res) => {
       site: "site",
     };
 
-    // Get all alt account IDs (accounts sharing IPs or exact fingerprints)
-    const allAltAccountIds = await routeUtils.getAltAccountIds(userIdToBan);
+    // Get all alt account IDs (accounts sharing IPs or exact fingerprints).
+    // With scope "single" only the chosen account is banned.
+    const allAltAccountIds =
+      scope === "single"
+        ? [userIdToBan]
+        : await routeUtils.getAltAccountIds(userIdToBan);
 
     // Get mod's rank to validate which alt accounts can be banned
     const modRank = await redis.getUserRank(userId);
@@ -719,7 +759,7 @@ router.post("/ban", async (req, res) => {
     routeUtils.createModAction(
       userId,
       modActionNames[banType],
-      [userIdToBan, lengthStr],
+      [userIdToBan, lengthStr, banScopeLogLabel(scope, altAccountIds)],
       reason
     );
     res.sendStatus(200);
@@ -905,7 +945,16 @@ router.post("/unban", async (req, res) => {
     var userIdToActOn = String(req.body.userId);
     var banType = String(req.body.banType);
     var perm = "unban";
+    var scope = parseBanScope(req.body.scope);
     var rank = await redis.getUserRank(userIdToActOn);
+
+    if (!scope) {
+      errors.badRequest(
+        res,
+        "Invalid unban scope. Use 'single' (this account only) or 'linked' (all linked accounts)."
+      );
+      return;
+    }
 
     if (rank == null) {
       errors.notFound(res, "User does not exist.");
@@ -940,7 +989,10 @@ router.post("/unban", async (req, res) => {
       site: "site",
     };
 
-    const altAccountIds = await routeUtils.getAltAccountIds(userIdToActOn);
+    const altAccountIds =
+      scope === "single"
+        ? [userIdToActOn]
+        : await routeUtils.getAltAccountIds(userIdToActOn);
 
     await models.Ban.deleteMany({
       userId: { $in: altAccountIds },
@@ -970,6 +1022,7 @@ router.post("/unban", async (req, res) => {
 
     routeUtils.createModAction(userId, modActionNames[banType], [
       userIdToActOn,
+      banScopeLogLabel(scope, altAccountIds),
     ]);
     res.sendStatus(200);
   } catch (e) {
@@ -3757,7 +3810,11 @@ router.post("/reports/:id/complete", async (req, res) => {
         await routeUtils.createModAction(
           userId,
           modActionNames[finalRuling.banType],
-          [report.reportedUserId, banLengthStr]
+          [
+            report.reportedUserId,
+            banLengthStr,
+            banScopeLogLabel("linked", altAccountIds),
+          ]
         );
 
         // Update user banned flag for site bans on all alt accounts
