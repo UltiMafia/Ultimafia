@@ -342,6 +342,83 @@ describe("site ban page and appeals", function () {
       res.body.csrf.should.equal(csrf);
     });
 
+    it("returns the ban type in plain words", async function () {
+      await siteBan();
+      const res = await info();
+      res.body.banType.should.equal("site");
+      res.body.banTypeLabel.should.equal("Site ban");
+      res.body.bans.should.have.length(1);
+      res.body.bans[0].should.include({
+        type: "site",
+        label: "Site ban",
+        permanent: false,
+        expires: res.body.expires,
+      });
+    });
+
+    it("lists every active ban with its type and expiry, without the scope or who issued it", async function () {
+      await siteBan();
+      const now = Date.now();
+      await models.Ban.create([
+        { id: "chat1", userId: "target", modId: "banningAdmin", type: "chat", expires: now + 86400000, permissions: ["publicChat"], createdAt: now },
+        { id: "ranked1", userId: "target", modId: "banningAdmin", type: "playRanked", expires: 0, permissions: ["playRanked"], createdAt: now },
+        { id: "forumOld", userId: "target", modId: "banningAdmin", type: "forum", expires: now - 1000, permissions: ["vote"], createdAt: now - 5000 },
+        { id: "auto1", userId: "target", type: "gameAuto", auto: true, expires: 0, permissions: ["publicChat"] },
+        { id: "flag1", userId: "target", type: "ipFlag", auto: true, expires: 0, permissions: ["playGame"] },
+        { id: "other", userId: "otherAdmin", modId: "owner", type: "game", expires: 0, permissions: ["playGame"] },
+      ]);
+      const res = await info();
+      res.body.bans
+        .map((ban) => [ban.label, ban.permanent])
+        .should.deep.equal([
+          ["Site ban", false],
+          ["Chat ban", false],
+          ["Ranked ban", true],
+        ]);
+      res.body.bans[1].expires.should.equal(now + 86400000);
+      for (const ban of res.body.bans)
+        Object.keys(ban).sort().should.deep.equal(["expires", "issuedAt", "label", "permanent", "type"]);
+      JSON.stringify(res.body).should.not.match(/scope|linked accounts|banningAdmin/i);
+    });
+
+    it("a site ban turns the user's open sessions into ban-page sessions, so a reload shows the ban page", async function () {
+      await models.Session.create([
+        { session: { cookie: { path: "/", httpOnly: true }, user: { id: "target", name: "BadPlayer" }, csrf: "old" } },
+        { session: { cookie: { path: "/" }, user: { id: "target" } } },
+        { session: { cookie: { path: "/" }, user: { id: "otherAdmin" } } },
+      ]);
+      (await siteBan()).statusCode.should.equal(200);
+      const docs = await models.Session.find({ "session.siteBan.userId": "target" }).lean();
+      docs.should.have.length(2);
+      for (const doc of docs) {
+        // Fully signed out: only the cookie settings and the ban-page marker remain.
+        Object.keys(doc.session).sort().should.deep.equal(["cookie", "siteBan"]);
+        doc.session.siteBan.csrf.should.match(/^[0-9a-f]{48}$/);
+      }
+      docs[0].session.siteBan.csrf.should.not.equal(docs[1].session.siteBan.csrf);
+      (await models.Session.countDocuments({ "session.user.id": "target" })).should.equal(0);
+      (await models.Session.countDocuments({ "session.user.id": "otherAdmin" })).should.equal(1);
+
+      // The converted session opens the ban page and nothing else.
+      session = docs[0].session;
+      const res = await info();
+      res.body.banned.should.equal(true);
+      res.body.banTypeLabel.should.equal("Site ban");
+      res.body.csrf.should.equal(docs[0].session.siteBan.csrf);
+    });
+
+    it("other ban types leave the user's sessions signed in", async function () {
+      await models.Session.create({ session: { cookie: {}, user: { id: "target" } } });
+      const res = response();
+      await handlers.ban(
+        modRequest("banningAdmin", { userId: "target", banType: "chat", length: "1 day" }),
+        res,
+      );
+      res.statusCode.should.equal(200);
+      (await models.Session.countDocuments({ "session.user.id": "target" })).should.equal(1);
+      (await models.Session.countDocuments({ "session.siteBan": { $exists: true } })).should.equal(0);
+    });
+
     it("clears the ban session once the ban is gone", async function () {
       await siteBan();
       await models.Ban.deleteMany({}).exec();
@@ -1049,9 +1126,17 @@ describe("site ban page and appeals", function () {
         .sort();
     }
 
+    // Sessions still signed in, by user id.
     async function sessions() {
-      return (await models.Session.find({}).lean())
+      return (await models.Session.find({ "session.user": { $exists: true } }).lean())
         .map((doc) => doc.session.user.id)
+        .sort();
+    }
+
+    // Sessions a site ban turned into ban-page sessions, by user id.
+    async function banPageSessions() {
+      return (await models.Session.find({ "session.siteBan": { $exists: true } }).lean())
+        .map((doc) => doc.session.siteBan.userId)
         .sort();
     }
 
@@ -1064,6 +1149,7 @@ describe("site ban page and appeals", function () {
       (await bannedIds()).should.deep.equal(["target"]);
       (await flagged()).should.deep.equal(["target"]);
       (await sessions()).should.deep.equal(["altLow", "linkedAdmin"]);
+      (await banPageSessions()).should.deep.equal(["target"]);
       (await models.Notification.distinct("user")).should.deep.equal(["target"]);
       (await lastAction("Site Ban")).args.should.deep.equal([
         "target",
@@ -1085,6 +1171,7 @@ describe("site ban page and appeals", function () {
       (await bannedIds()).should.deep.equal(["altLow", "linkedAdmin", "target"]);
       (await flagged()).should.deep.equal(["altLow", "linkedAdmin", "target"]);
       (await sessions()).should.deep.equal([]);
+      (await banPageSessions()).should.deep.equal(["altLow", "linkedAdmin", "target"]);
       (await lastAction("Site Ban")).args.should.deep.equal([
         "target",
         "30 days",

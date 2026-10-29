@@ -175,7 +175,9 @@ describe("moderation fingerprint parity endpoints", function () {
       if (banType === "site") {
         const banned = await models.User.find({ banned: true }).select("id -_id").lean();
         banned.map((user) => user.id).sort().should.deep.equal(["fingerprint-alt", "ip-alt", "target"]);
-        (await models.Session.countDocuments({})).should.equal(0);
+        // Signed out everywhere; each session now only opens the ban page.
+        (await models.Session.countDocuments({ "session.user": { $exists: true } })).should.equal(0);
+        (await models.Session.distinct("session.siteBan.userId")).sort().should.deep.equal(["fingerprint-alt", "ip-alt", "target"]);
       }
     });
   });

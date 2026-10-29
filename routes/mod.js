@@ -741,9 +741,8 @@ router.post("/ban", async (req, res) => {
         { id: { $in: altAccountIds } },
         { $set: { banned: true } }
       ).exec();
-      await models.Session.deleteMany({
-        "session.user.id": { $in: altAccountIds },
-      }).exec();
+      // Signed out, but a reload of an open tab shows the ban page.
+      await banAppeals.signOutToBanPage(altAccountIds);
     }
 
     await routeUtils.createNotification(
@@ -3847,9 +3846,8 @@ router.post("/reports/:id/complete", async (req, res) => {
             { id: { $in: altAccountIds } },
             { $set: { banned: true } }
           ).exec();
-          await models.Session.deleteMany({
-            "session.user.id": { $in: altAccountIds },
-          }).exec();
+          // Signed out, but a reload of an open tab shows the ban page.
+          await banAppeals.signOutToBanPage(altAccountIds);
         }
       }
 

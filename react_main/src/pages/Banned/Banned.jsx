@@ -46,6 +46,15 @@ function formatDate(ms) {
   return new Date(ms).toLocaleString();
 }
 
+// Older servers sent no ban type; every ban that opens this page is a site ban.
+function banTypeLabel(info) {
+  return info.banTypeLabel || "Site ban";
+}
+
+function banExpiryText(ban) {
+  return ban.permanent ? "Never (permanent)" : formatDate(ban.expires);
+}
+
 // The full-page screen a site-banned user sees after signing in.
 export default function Banned() {
   const [info, setInfo] = useState(null);
@@ -143,6 +152,9 @@ export default function Banned() {
         >
           Reason: {info.reason}
         </Typography>
+        <Typography data-testid="ban-type">
+          Ban type: {banTypeLabel(info)}
+        </Typography>
         <Stack
           direction={{ xs: "column", sm: "row" }}
           spacing={{ xs: 1, sm: 4 }}
@@ -159,9 +171,7 @@ export default function Banned() {
             <Typography variant="overline" color="text.secondary">
               Expires
             </Typography>
-            <Typography>
-              {info.permanent ? "Never (permanent)" : formatDate(info.expires)}
-            </Typography>
+            <Typography>{banExpiryText(info)}</Typography>
           </Box>
           {info.username && (
             <Box>
@@ -172,6 +182,21 @@ export default function Banned() {
             </Box>
           )}
         </Stack>
+        {info.bans?.length > 1 && (
+          <Box data-testid="active-bans">
+            <Typography variant="overline" color="text.secondary">
+              Active bans on this account
+            </Typography>
+            {info.bans.map((ban, index) => (
+              <Typography key={index}>
+                {ban.label}:{" "}
+                {ban.permanent
+                  ? "permanent"
+                  : `expires ${formatDate(ban.expires)}`}
+              </Typography>
+            ))}
+          </Box>
+        )}
 
         <Divider />
 

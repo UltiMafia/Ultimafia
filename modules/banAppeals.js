@@ -7,6 +7,7 @@
 // is not a member), posted by the site sender, in the format staff asked for.
 // One appeal per person: an appeal from any account linked to this one (the
 // mod "alts" links: a shared IP or device fingerprint) counts.
+const crypto = require("crypto");
 const shortid = require("shortid");
 const md5 = require("md5");
 const models = require("../db/models");
@@ -127,6 +128,81 @@ async function findActiveSiteBan(userId) {
     .select("id userId modId expires reason createdAt auto _id");
 }
 
+// Ban types a moderator can issue, in the words the ban page uses. Other
+// stored types (the automatic in-game restriction, IP flags, the ban for
+// signing in to a banned account's email) are not shown.
+const BAN_TYPE_LABELS = {
+  site: "Site ban",
+  forum: "Forum ban",
+  chat: "Chat ban",
+  game: "Game ban",
+  playRanked: "Ranked ban",
+  playCompetitive: "Competitive ban",
+};
+const BAN_TYPE_ORDER = Object.keys(BAN_TYPE_LABELS);
+
+// Every active ban of a shown type, site bans first, then by type, then
+// soonest to expire (permanent last).
+async function findActiveBans(userId, now = Date.now()) {
+  const bans = await models.Ban.find({
+    userId,
+    type: { $in: BAN_TYPE_ORDER },
+    $or: [{ expires: 0 }, { expires: { $gt: now } }],
+  }).select("type expires createdAt _id");
+  const expiryRank = (ban) => (ban.expires ? ban.expires : Infinity);
+  return bans.sort(
+    (a, b) =>
+      BAN_TYPE_ORDER.indexOf(a.type) - BAN_TYPE_ORDER.indexOf(b.type) ||
+      expiryRank(a) - expiryRank(b),
+  );
+}
+
+// What the banned user sees of a ban: its type and dates. Never the scope
+// (single or linked accounts), the moderator or the ban id.
+function banListView(ban) {
+  return {
+    type: ban.type,
+    label: BAN_TYPE_LABELS[ban.type],
+    issuedAt: banIssuedAt(ban),
+    expires: ban.expires || 0,
+    permanent: !ban.expires,
+  };
+}
+
+// Signs these users out of every session and leaves each of those sessions a
+// restricted ban-page session (the one a site-banned user gets on sign-in),
+// so a tab that was open when the ban landed reloads into /banned instead of
+// the login page. Nothing of the signed-in session is kept but its cookie
+// settings. Any session still signed in afterwards is deleted.
+async function signOutToBanPage(userIds) {
+  const ids = [...new Set((userIds || []).map(String))];
+  if (ids.length === 0) return;
+  const sessions = await models.Session.find({
+    "session.user.id": { $in: ids },
+  })
+    .select("_id session")
+    .lean();
+  await Promise.all(
+    sessions.map((doc) =>
+      models.Session.updateOne(
+        { _id: doc._id, "session.user.id": doc.session.user.id },
+        {
+          $set: {
+            session: {
+              cookie: doc.session.cookie,
+              siteBan: {
+                userId: doc.session.user.id,
+                csrf: crypto.randomBytes(24).toString("hex"),
+              },
+            },
+          },
+        },
+      ).exec(),
+    ),
+  );
+  await models.Session.deleteMany({ "session.user.id": { $in: ids } }).exec();
+}
+
 function banIssuedAt(ban) {
   if (ban.createdAt) return ban.createdAt;
   if (ban._id && ban._id.getTimestamp) return ban._id.getTimestamp().getTime();
@@ -219,9 +295,10 @@ async function findAppealForBan(userId, ban) {
 async function getBanPageInfo(userId) {
   const ban = await findActiveSiteBan(userId);
   if (!ban) return null;
-  const [user, found] = await Promise.all([
+  const [user, found, activeBans] = await Promise.all([
     models.User.findOne({ id: userId }).select("id name"),
     findAppealForBan(userId, ban),
+    findActiveBans(userId),
   ]);
   const adminCount = found
     ? (found.appeal.recipientIds || []).length
@@ -233,6 +310,10 @@ async function getBanPageInfo(userId) {
     issuedAt: banIssuedAt(ban),
     expires: ban.expires || 0,
     permanent: !ban.expires,
+    banType: "site",
+    banTypeLabel: BAN_TYPE_LABELS.site,
+    // Every active ban on the account (this site ban included).
+    bans: activeBans.map(banListView),
     appealLimit: 1,
     votesRequired: acceptVotesNeeded(adminCount),
     appeal: found
@@ -544,7 +625,10 @@ module.exports = {
   normalizeBanReason,
   formatAppealMessage,
   userIdsToChannelId,
+  BAN_TYPE_LABELS,
   findActiveSiteBan,
+  findActiveBans,
+  signOutToBanPage,
   findLinkedAppeal,
   getAdminIds,
   parseVoterAllowlist,

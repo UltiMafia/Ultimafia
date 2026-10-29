@@ -53,6 +53,7 @@
     "test:emote-picker:browser": "rsbuild build --config rsbuild.emote-picker-test.config.ts && node test/run-emote-picker.cjs",
     "test:seat-actions:browser": "rsbuild build --config rsbuild.seat-actions-test.config.ts && node test/run-seat-actions.cjs",
     "test:user-search:browser": "rsbuild build --config rsbuild.user-search-test.config.ts && node test/run-user-search.cjs",
+    "test:banned:browser": "rsbuild build --config rsbuild.banned-test.config.ts && node test/run-banned.cjs",
     "perf:chat": "rsbuild build --config rsbuild.chat-perf.config.ts && rsbuild preview --config rsbuild.chat-perf.config.ts",
     "start": "rsbuild dev",
     "build": "rsbuild build",

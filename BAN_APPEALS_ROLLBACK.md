@@ -18,13 +18,20 @@ reason.
   existing endpoint still sees a signed-out visitor. Only these read the ban
   session:
   - `GET /api/auth/ban`: ban page data (reason, issued/expiry dates, account
-    name, appeal status)
+    name, ban type as `banType`/`banTypeLabel`, appeal status, and `bans`:
+    every active site, forum, chat, game, ranked or competitive ban on the
+    account with its type and dates; never the scope or the moderator)
   - `POST /api/auth/ban/appeal`: the one appeal (needs the `x-csrf` header
     from `GET /api/auth/ban`)
   - `POST /api/auth/ban/logout`: ends the ban session
 
   `/api/user/info` answers `{ siteBanned: true }` for a ban session, so the
   client sends the user to `/banned`.
+- **Signed-in tabs.** A site ban (ban command or report ruling) signs the
+  account out of every session as before, but instead of deleting each
+  session it replaces it with a ban session (only the cookie settings and a
+  new `siteBan` are kept), so an open tab that reloads lands on `/banned`
+  rather than the login page.
 - **Admins.** Members of the `Owner` and `Admin` groups who aren't deleted
   (`APPEAL_RECIPIENT_GROUPS` in `modules/banAppeals.js`). The admin who issued
   the ban is included. On dev/QA, `BAN_APPEAL_VOTER_ALLOWLIST` (comma-separated
@@ -144,7 +151,7 @@ reason.
 | `bans.reason` (String), `bans.createdAt` (Number) | On every new ban. Old bans have neither; the page shows "No reason was recorded for this ban." and the ObjectId time as the ban date. |
 | New collection `sitebanappeals` (unique `id`, unique `banId`; `votes` array) | When a banned user appeals, and on each admin vote. Mongoose builds the indexes on startup. |
 | `chatchannels` / `chatmessages` / `channelopens` / `notifications` | One admins-only group DM (shared by all appeals), one message per appeal from the site sender (`senderId: "site:ban-appeals"`, no user document), the admins' opens, an unread chat notification and a "Ban appeal pending" inbox notification per admin, plus one tally message per vote (sent by the voting admin). |
-| `sessions` with `session.siteBan` | When a site-banned user signs in. Expire with the normal 14-day session TTL. |
+| `sessions` with `session.siteBan` | When a site-banned user signs in, and when a site ban signs a user's open sessions out (those sessions become ban sessions instead of being deleted). Expire with the normal session TTL. |
 
 No startup migration and no change to existing documents.
 
