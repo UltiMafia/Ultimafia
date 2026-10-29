@@ -18,6 +18,8 @@ function loadModerationRouter(models, redis) {
     "firebase-admin",
     "../modules/accountLinkage",
     "../routes/utils",
+    "../modules/plotArmor",
+    "../modules/banAppeals",
     "../routes/mod",
   ].map(require.resolve);
   const previous = new Map(paths.map((path) => [path, require.cache[path]]));
@@ -36,6 +38,10 @@ function loadModerationRouter(models, redis) {
   put("firebase-admin", {});
   delete require.cache[require.resolve("../modules/accountLinkage")];
   delete require.cache[require.resolve("../routes/utils")];
+  // The mod routes sign site-banned users out through banAppeals, so it must
+  // use these models too, even if another file in this worker loaded it.
+  delete require.cache[require.resolve("../modules/plotArmor")];
+  delete require.cache[require.resolve("../modules/banAppeals")];
   delete require.cache[require.resolve("../routes/mod")];
   const router = require("../routes/mod");
 

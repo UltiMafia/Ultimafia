@@ -52,6 +52,11 @@ describe("report workflow fingerprint/IP parity", function () {
     ["../modules/gameLoadBalancer", "../modules/roleIconCreditUtils", "../modules/fortunePoints", "../modules/skillRating", "../lib/StockMarket", "firebase-admin"].forEach((name) => replace(name, {}));
     reload("../modules/accountLinkage");
     reload("../routes/utils");
+    // Bound to these models too: the mod routes call it (site bans sign
+    // users out through it), and another file in the same worker may have
+    // loaded it with different ones.
+    reload("../modules/plotArmor");
+    reload("../modules/banAppeals");
     modRouter = reload("../routes/mod");
     userRouter = reload("../routes/user");
   });
