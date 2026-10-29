@@ -2319,6 +2319,10 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
       return false;
     }
 
+    if (message.replyTo) {
+      return false;
+    }
+
     if (message.senderId === previousMessage.senderId) {
       return true;
     } else {
@@ -2964,6 +2968,7 @@ function ReplyReference(props) {
           spectators={spectators}
           customEmotes={reply.customEmotes}
           customStickers={reply.customStickers}
+          collapseStickers={true}
           filterProfanity
           linkify={false}
           emotify
