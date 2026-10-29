@@ -13,6 +13,9 @@
 // when long, inside its row, with the curved line starting over the avatar.
 // Every row's timestamp sits the same distance from the name, with the same
 // style, as on plain rows. A reply that cannot find it shows the reply arrow.
+// With two senders who have their own name colour, animated name, name font
+// and text colour (styled=1), each reference draws the original sender's name
+// as their own row does and the original line in their text colour.
 // SCREENSHOT_DIR, if set, receives a screenshot per layout.
 const fs = require("node:fs");
 const http = require("node:http");
@@ -331,6 +334,98 @@ async function main() {
             on.rows.some((r) => r.pin && r.reply),
             `${query}: some row shows pin and reply`,
           );
+        if (shots) {
+          fs.mkdirSync(shots, { recursive: true });
+          await page.screenshot({
+            path: path.join(shots, `${query.replace(/[=&]/g, "_")}.png`),
+          });
+        }
+      }
+    }
+    // A reference draws the original sender's name exactly as their own row
+    // does (colour, animated name, gradient, font) and the original line in
+    // their text colour.
+    for (const layout of LAYOUTS) {
+      for (const extra of ["", "&anon=1"]) {
+        const query = `layout=${layout}&st=1&styled=1${extra}`;
+        await page.goto(url + "?" + query);
+        await page.waitForFunction(() => window.__ready, null, { timeout: 15000 });
+        const refs = await page.evaluate(() => {
+          const nameOf = (el) => {
+            const n = el && el.querySelector(".user-name");
+            if (!n) return null;
+            const t = n.querySelector(".user-name-text") || n;
+            const cs = getComputedStyle(t);
+            return {
+              name: n.innerText.trim(),
+              classes: [...n.classList, ...t.classList]
+                .filter((c) => /^name-(font|anim)-/.test(c))
+                .sort()
+                .join(" "),
+              color: cs.color,
+              font: cs.fontFamily,
+              gradA: n.style.getPropertyValue("--name-grad-a") || t.style.getPropertyValue("--name-grad-a"),
+              gradB: n.style.getPropertyValue("--name-grad-b") || t.style.getPropertyValue("--name-grad-b"),
+            };
+          };
+          const rows = [...document.querySelectorAll(".game .message")];
+          // The original row for each sender name, with a header.
+          const originals = {};
+          for (const m of rows) {
+            if (m.querySelector(".reply-reference")) continue;
+            const np = m.querySelector(
+              ":scope > div > .nameplate, :scope > div > .nameplate-aligned",
+            );
+            const n = nameOf(np);
+            const c = m.querySelector(":scope > div > .content");
+            if (n && c && !originals[n.name])
+              originals[n.name] = { name: n, text: getComputedStyle(c).color };
+          }
+          return rows
+            .filter((m) => m.querySelector(".reply-reference"))
+            .map((m) => {
+              const ref = m.querySelector(".reply-reference");
+              return {
+                row: m.innerText.replace(/\s+/g, " ").trim().slice(0, 40),
+                name: nameOf(ref.querySelector(".reply-reference-sender")),
+                text: getComputedStyle(ref.querySelector(".reply-reference-text")).color,
+                originals,
+              };
+            });
+        });
+        check(refs.length >= 3, `${query}: replies show their reference`);
+        const expected = {
+          AlageRheba10: {
+            classes: "name-anim-gradient name-font-georgia",
+            text: "rgb(194, 24, 91)",
+          },
+          Bob: { classes: "name-anim-pulse name-font-mono", text: "rgb(230, 81, 0)" },
+        };
+        for (const r of refs) {
+          const label = `${query} (${r.row})`;
+          const name = r.name && r.name.name;
+          if (extra) {
+            check(name === "Anonymous", `${label}: anonymous original`);
+            check(!r.name.classes, `${label}: anonymous original has no name styling`);
+            continue;
+          }
+          const o = r.originals[name];
+          check(!!o, `${label}: original row for ${name} found`);
+          if (!o) continue;
+          check(
+            r.name.classes === o.name.classes &&
+              r.name.color === o.name.color &&
+              r.name.font === o.name.font &&
+              r.name.gradA === o.name.gradA &&
+              r.name.gradB === o.name.gradB,
+            `${label}: ${name} drawn as on their own row (${JSON.stringify(r.name)} vs ${JSON.stringify(o.name)})`,
+          );
+          check(r.text === o.text, `${label}: text in ${name}'s text colour (${r.text} vs ${o.text})`);
+          if (expected[name]) {
+            check(r.name.classes === expected[name].classes, `${label}: ${name} has their font and animation`);
+            check(r.text === expected[name].text, `${label}: ${name}'s text colour`);
+          }
+        }
         if (shots) {
           fs.mkdirSync(shots, { recursive: true });
           await page.screenshot({
