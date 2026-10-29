@@ -28,6 +28,8 @@ import {
   groupMessages,
   insertEmote,
   isGroupDm,
+  isNamedDm,
+  SITE_CONVERSATION_ICON,
   isStickerOnlyMessage,
   otherMembers,
   sortDirects,
@@ -185,6 +187,15 @@ export function ConversationAvatar({ channel, selfId, size = 40 }) {
     lineHeight: 0,
     "& .avatar": { width: `${px}px !important`, height: `${px}px !important` },
   });
+
+  // A named site conversation ("Ban Appeals") shows the site icon.
+  if (isNamedDm(channel)) {
+    return (
+      <Box data-testid="dm-site-avatar" sx={{ ...sized(size), flexShrink: 0 }}>
+        <Avatar id={channel.id} name={channel.name} hasImage imageUrl={SITE_CONVERSATION_ICON} />
+      </Box>
+    );
+  }
 
   if (others.length <= 1) {
     const m = others[0] || {};
@@ -431,7 +442,12 @@ function ConversationView(props) {
               <Stack direction="row" alignItems="flex-end" spacing={0.75} sx={{ maxWidth: "100%" }}>
                 {!mine && (
                   <Box sx={{ lineHeight: 0, "& .avatar": { width: "28px !important", height: "28px !important" } }}>
-                    <Avatar id={g.sender.id} name={g.sender.name} hasImage={g.sender.avatar} />
+                    <Avatar
+                      id={g.sender.id}
+                      name={g.sender.name}
+                      hasImage={g.sender.avatarUrl ? true : g.sender.avatar}
+                      imageUrl={g.sender.avatarUrl}
+                    />
                   </Box>
                 )}
                 <Stack spacing={0.25} alignItems={mine ? "flex-end" : "flex-start"} sx={{ maxWidth: 250 }}>
