@@ -11,7 +11,30 @@ const {
 const blocks = require("../modules/blocks");
 const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
+const {
+  parseCommentForm, normalizeCommentImage, appendCommentImage,
+} = require("../modules/commentImage");
 const router = express.Router();
+
+router.get("/:id/image", async function (req, res) {
+  res.set("Cache-Control", "private, no-store");
+  res.set("X-Content-Type-Options", "nosniff");
+  try {
+    if (!/^[A-Za-z0-9_-]{1,20}$/.test(req.params.id))
+      return errors.notFound(res, "Comment image not found.");
+    // Comment walls are public, as in GET /. Deleted images remain hidden even
+    // from viewers who can inspect deleted text; restore makes them visible again.
+    const comment = await models.Comment.findOne({
+      id: req.params.id, deleted: false, pending: false,
+    }).select("+image");
+    if (!comment?.image?.length)
+      return errors.notFound(res, "Comment image not found.");
+    res.type("image/webp").send(comment.image);
+  } catch (error) {
+    logger.error(error);
+    errors.serverError(res, "Could not load comment image.");
+  }
+});
 
 router.get("/", async function (req, res) {
   try {
@@ -113,12 +136,18 @@ router.post("/", async function (req, res) {
 
     if (!(await routeUtils.rateLimit(userId, "postComment", res))) return;
 
-    var content = String(req.body.content);
-    var location = String(req.body.location).slice(
+    const multipart = /^multipart\/form-data\b/i.test(req.headers?.["content-type"] || "");
+    if (multipart && !(await routeUtils.rateLimit(userId, "postCommentImage", res))) return;
+    const upload = multipart ? await parseCommentForm(req) : null;
+    const fields = upload ? upload.fields : req.body;
+    var content = String(fields.content ?? "");
+    var location = String(fields.location ?? "").slice(
       0,
       constants.maxCommentLocationLength
     );
 
+    const commentId = shortid.generate();
+    if (upload) content = appendCommentImage(content, commentId);
     let useLargeCommentLength = location.startsWith("setup");
     let maxLength = useLargeCommentLength
       ? constants.maxLargeCommentLength
@@ -147,8 +176,11 @@ router.post("/", async function (req, res) {
       }
     }
 
+    const image = upload ? await normalizeCommentImage(upload.image) : undefined;
+    if (req.aborted) return;
     var comment = new models.Comment({
-      id: shortid.generate(),
+      id: commentId,
+      image,
       author: req.session.user._id,
       date: Date.now(),
       location,
@@ -159,7 +191,9 @@ router.post("/", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    errors.serverError(res, "Error posting comment. Please try again.");
+    if (e.status === 400 || e.status === 413 || e.status === 422)
+      res.status(e.status).send(e.message);
+    else errors.serverError(res, "Error posting comment. Please try again.");
   }
 });
 

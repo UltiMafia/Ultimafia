@@ -114,6 +114,28 @@ Once you log in, you should be redirected to the lobby page and the site should 
 
 More local troubleshooting is in the [Local Setup Guide](/docs/setup-local-guide.md#troubleshooting).
 
+## Pasting images in comments
+
+Open **Post Comment**, then paste one image into the text editor. Its preview appears
+below the editor; use **Remove image** to replace it. Cancel discards the image
+but keeps your text draft in the same comment wall.
+The image is uploaded only when you press **Post**, and appears below your text.
+Text and URL paste still work normally. Other editors do not accept image pastes.
+
+PNG, JPEG and WebP are supported; animated images and SVG are not. The input limit
+is 5 MiB, 16 million pixels and 8192 pixels per side. Images are resized to fit
+1024 by 1024 pixels without enlargement and reencoded as WebP (at most 1 MiB).
+The final Markdown, including the image link, must fit the existing 500-character
+limit (2000 for setup comments). The default image-post cooldown is 60 seconds
+in production (6 seconds in development); the existing cooldown-bypass permission
+still applies.
+
+Images are public with their comments. Deleting a comment hides its image URL;
+restoring the comment restores that URL. Soft deletion retains the image for
+restoration and cannot remove copies someone already downloaded. Images are stored
+in the owning MongoDB comment, not the public uploads directory. Each comment
+stores at most 1 MiB of image data, which replication and backups also include.
+
 ## Contributing
 
 1. Fork the repository

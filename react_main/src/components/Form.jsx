@@ -1352,6 +1352,8 @@ export function TextEditor(props) {
       }
       suggestionTriggerCharacters={props.suggestionTriggerCharacters}
       loadSuggestions={props.loadSuggestions}
+      childProps={{ textArea: { onPaste: props.onPaste } }}
+      readOnly={props.readOnly}
     />
   );
 }
