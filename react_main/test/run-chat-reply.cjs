@@ -1,4 +1,4 @@
-// Browser regression: the chat reply button and reply rows, with the real
+// Browser regression: click to reply and reply rows, with the real
 // stylesheets and Font Awesome.
 //
 //   npx rsbuild build --config rsbuild.chat-reply-test.config.ts
@@ -6,9 +6,11 @@
 //
 // For every row in each message layout it hovers the row and checks that:
 // the pin sits exactly where it does without the reply feature (top-right),
-// the reply button sits below it (bottom-right) with a clear gap, both stay
-// inside their own row and can be clicked there, and hovering does not change
-// any row's height. A reply that can find the line it answers shows the
+// stays inside its row and can be clicked there, there is no reply button,
+// every row is as tall as without the reply feature, and hovering does not
+// change any row's height. Then it clicks: one click starts a reply after the
+// delay, a double-click quotes without starting one, and selecting text,
+// clicking a name, the pin or a reply reference does not start one. A reply that can find the line it answers shows the
 // Discord-style reference above its header: one line, no timestamp, cut off
 // when long, inside its row, with the curved line starting over the avatar.
 // Every row's timestamp sits the same distance from the name, with the same
@@ -21,7 +23,8 @@ const path = require("node:path");
 const LAYOUTS = ["default", "defaultLarge", "compactInline", "compactAligned"];
 // Extra variants, each checked in every layout on Day 1.
 const VARIANTS = ["anon=1", "spec=1", "dead=1", "ts=0"];
-const MIN_GAP = 3;
+// REPLY_CLICK_DELAY_MS in src/utils/messageReply.js.
+const REPLY_DELAY = 250;
 
 async function main() {
   if (!process.env.PLAYWRIGHT_MODULE)
@@ -184,7 +187,8 @@ async function main() {
               pinInRow: offset(box(pin)),
               reply: box(reply),
               pinHit: pin ? hit(pin.parentElement) : null,
-              replyHit: hit(reply),
+              clickable: m.classList.contains("click-to-reply"),
+              tabIndex: m.tabIndex,
             };
           }, i),
         );
@@ -212,6 +216,24 @@ async function main() {
         check(
           on.rows.length === off.rows.length,
           `${query}: same rows with and without replies`,
+        );
+        check(
+          on.before.every((h, i) => Math.abs(h - off.before[i]) < 0.01),
+          `${query}: rows as tall as without the reply feature`,
+        );
+        check(
+          on.rows.every((r) => !r.reply),
+          `${query}: no reply button on any row`,
+        );
+        check(
+          on.rows.filter((r) => r.clickable).every((r) => r.tabIndex === 0) &&
+            off.rows.every((r) => r.tabIndex === -1),
+          `${query}: replyable rows (only) are keyboard focusable`,
+        );
+        check(
+          on.rows.filter((r) => r.clickable).length >= 5 &&
+            off.rows.every((r) => !r.clickable),
+          `${query}: rows are click-to-reply only with a reply handler`,
         );
         on.rows.forEach((r, i) => {
           const name = `${query} row ${i} (${r.text})`;
@@ -261,29 +283,12 @@ async function main() {
             }
           }
           if (r.fallback) check(r.arrow, `${name}: reply arrow`);
-          for (const k of ["pin", "reply"]) {
-            const b = r[k];
-            if (!b) continue;
+          if (r.pin)
             check(
-              b.y >= r.row.y - 0.5 &&
-                b.y + b.h <= r.row.y + r.row.h + 0.5 &&
-                b.x + b.w <= r.row.x + r.row.w + 0.5,
-              `${name}: ${k} inside its row`,
-            );
-          }
-          if (r.reply) {
-            check(r.replyHit, `${name}: reply clickable`);
-            check(
-              Math.abs(r.reply.y + r.reply.h - (r.row.y + r.row.h)) < 1.5,
-              `${name}: reply at the bottom of the row`,
-            );
-          }
-          if (r.pin && r.reply)
-            check(
-              r.reply.y - (r.pin.y + r.pin.h) >= MIN_GAP &&
-                Math.abs(r.reply.x + r.reply.w / 2 - (r.pin.x + r.pin.w / 2)) <
-                  1,
-              `${name}: reply under the pin with a ${MIN_GAP}px gap`,
+              r.pin.y >= r.row.y - 0.5 &&
+                r.pin.y + r.pin.h <= r.row.y + r.row.h + 0.5 &&
+                r.pin.x + r.pin.w <= r.row.x + r.row.w + 0.5,
+              `${name}: pin inside its row`,
             );
         });
         // Timestamps: same place next to the name, same vertical centre and
@@ -319,17 +324,13 @@ async function main() {
           }
         }
         check(
-          on.rows.some((r) => r.reply),
-          `${query}: some row offers a reply`,
-        );
-        check(
           on.rows.filter((r) => r.ref).length >= 3,
           `${query}: replies show their reference`,
         );
         if (st === 1)
           check(
-            on.rows.some((r) => r.pin && r.reply),
-            `${query}: some row shows pin and reply`,
+            on.rows.some((r) => r.pin),
+            `${query}: hovered rows show the pin`,
           );
         if (shots) {
           fs.mkdirSync(shots, { recursive: true });
@@ -351,6 +352,259 @@ async function main() {
             ?.classList.contains("reply-jump-highlight") ?? false,
       );
       check(jumped, "clicking a reference highlights the original line");
+    }
+    // Click to reply.
+    {
+      const open = async (query) => {
+        await page.goto(url + "?" + query);
+        await page.waitForFunction(() => window.__ready, null, {
+          timeout: 15000,
+        });
+        await page.evaluate(() => document.fonts.ready);
+      };
+      const calls = () =>
+        page.evaluate(() => ({
+          replies: window.__replies.slice(),
+          quotes: window.__quotes.slice(),
+        }));
+      const reset = () =>
+        page.evaluate(() => {
+          window.__replies.length = 0;
+          window.__quotes.length = 0;
+          window.getSelection().removeAllRanges();
+        });
+      const row = (id) => `.message[data-message-id="${id}"]`;
+      // The text of plain line m2 (not its name or timestamp).
+      const textOf = (id) => `${row(id)} .md-paragraph, ${row(id)} .content`;
+      for (const layout of LAYOUTS) {
+        await open(`layout=${layout}&st=1`);
+        const tag = `click (${layout})`;
+
+        await reset();
+        await page.click(textOf("m2aaaaaa"));
+        await page.waitForTimeout(REPLY_DELAY - 150);
+        const early = await calls();
+        check(early.replies.length === 0, `${tag}: no reply before the delay`);
+        await page.waitForTimeout(300);
+        const late = await calls();
+        check(
+          late.replies.join() === "m2aaaaaa" && late.quotes.length === 0,
+          `${tag}: one click starts a reply after the delay`,
+        );
+        check(
+          await page.evaluate(
+            () => document.activeElement?.id === "speechInput",
+          ),
+          `${tag}: the chat box has focus after a click reply`,
+        );
+
+        await reset();
+        await page.dblclick(textOf("m2aaaaaa"));
+        await page.waitForTimeout(REPLY_DELAY + 300);
+        const dbl = await calls();
+        check(
+          dbl.quotes.join() === "m2aaaaaa" && dbl.replies.length === 0,
+          `${tag}: double-click quotes and does not start a reply`,
+        );
+
+        // Two clicks with more than the delay between them: two replies, no
+        // quote (the delay is the only window for a double-click).
+        await reset();
+        await page.click(textOf("m1aaaaaa"));
+        await page.waitForTimeout(REPLY_DELAY + 150);
+        await page.click(textOf("m1aaaaaa"));
+        await page.waitForTimeout(REPLY_DELAY + 150);
+        const slow = await calls();
+        check(
+          slow.replies.join() === "m1aaaaaa,m1aaaaaa" && slow.quotes.length === 0,
+          `${tag}: slow clicks each start a reply`,
+        );
+
+        // Drag-select some text in a row: no reply.
+        await reset();
+        const box = await page.$eval(textOf("m5aaaaaa"), (e) => {
+          const r = e.getBoundingClientRect();
+          return { x: r.x, y: r.y, w: r.width, h: r.height };
+        });
+        await page.mouse.move(box.x + 2, box.y + 6);
+        await page.mouse.down();
+        await page.mouse.move(box.x + box.w / 2, box.y + 6, { steps: 8 });
+        await page.mouse.up();
+        await page.waitForTimeout(REPLY_DELAY + 300);
+        const sel = await calls();
+        const selected = await page.evaluate(() =>
+          String(window.getSelection()).trim(),
+        );
+        check(
+          selected.length > 0 && sel.replies.length === 0,
+          `${tag}: selecting text does not start a reply`,
+        );
+
+        // A quick drag (one jump of the pointer, as xdotool does) over text:
+        // no reply, and whatever got selected stays selected.
+        await reset();
+        const box2 = await page.$eval(textOf("m2aaaaaa"), (e) => {
+          const r = e.getBoundingClientRect();
+          return { x: r.x, y: r.y, w: r.width, h: r.height };
+        });
+        await page.mouse.move(box2.x + 3, box2.y + 6);
+        await page.mouse.down();
+        await page.mouse.move(box2.x + 53, box2.y + 6);
+        await page.mouse.up();
+        const selNow = await page.evaluate(() => String(window.getSelection()));
+        await page.waitForTimeout(REPLY_DELAY + 300);
+        const selLater = await page.evaluate(() => String(window.getSelection()));
+        check(
+          (await calls()).replies.length === 0,
+          `${tag}: a 50px drag does not start a reply`,
+        );
+        check(
+          selNow.trim().length > 0 && selLater === selNow,
+          `${tag}: text selected by a drag stays selected`,
+        );
+        // A small wobble (2px, selecting nothing) while clicking is still a click.
+        await reset();
+        await page.mouse.move(box2.x + 10, box2.y + 6);
+        await page.mouse.down();
+        await page.mouse.move(box2.x + 10, box2.y + 8);
+        await page.mouse.up();
+        await page.waitForTimeout(REPLY_DELAY + 300);
+        check(
+          (await calls()).replies.join() === "m2aaaaaa",
+          `${tag}: a 2px wobble still starts a reply`,
+        );
+
+        // Keyboard from the chat box: Shift+Tab reaches the messages (the
+        // type-to-chat handler does not pull focus back), Tab and Shift+Tab
+        // move between them, Enter replies, and typing goes to the chat box.
+        await reset();
+        await page.focus("#speechInput");
+        let reached = null;
+        for (let k = 0; k < 6 && !reached; k++) {
+          await page.keyboard.press("Shift+Tab");
+          reached = await page.evaluate(() =>
+            document.activeElement?.classList.contains("click-to-reply")
+              ? document.activeElement.dataset.messageId
+              : null,
+          );
+        }
+        check(!!reached, `${tag}: Shift+Tab from the chat box reaches a message`);
+        await page.keyboard.press("Shift+Tab");
+        const prev = await page.evaluate(
+          () => document.activeElement?.dataset?.messageId || null,
+        );
+        check(
+          !!prev && prev !== reached,
+          `${tag}: Shift+Tab moves to the previous message`,
+        );
+        await page.keyboard.press("Tab");
+        check(
+          (await page.evaluate(() => document.activeElement?.dataset?.messageId)) ===
+            reached,
+          `${tag}: Tab moves to the next message`,
+        );
+        await page.keyboard.press("Enter");
+        check(
+          (await calls()).replies.join() === reached,
+          `${tag}: Enter on a message reached by keyboard replies to it`,
+        );
+        await page.focus(row("m2aaaaaa"));
+        await page.keyboard.press("h");
+        check(
+          await page.evaluate(() => document.activeElement?.id === "speechInput"),
+          `${tag}: typing on a focused message goes to the chat box`,
+        );
+
+        // A name, the pin and a reply reference do their own thing only.
+        await reset();
+        const name = await page.$(`${row("m2aaaaaa")} .user-name, ${row("m2aaaaaa")} .name-with-avatar`);
+        if (name) {
+          await name.click();
+          await page.waitForTimeout(REPLY_DELAY + 300);
+          check(
+            (await calls()).replies.length === 0,
+            `${tag}: clicking a name does not start a reply`,
+          );
+        }
+        await reset();
+        await page.hover(row("m2aaaaaa"));
+        await page.click(`${row("m2aaaaaa")} .pin-button-wrapper`);
+        await page.waitForTimeout(REPLY_DELAY + 300);
+        const pinned = await page.evaluate(() => window.__pins.slice());
+        check(
+          (await calls()).replies.length === 0 && pinned.includes("m2aaaaaa"),
+          `${tag}: clicking the pin pins and does not start a reply`,
+        );
+        await reset();
+        await page.click(".message.reply-merged .reply-reference");
+        await page.waitForTimeout(REPLY_DELAY + 300);
+        check(
+          (await calls()).replies.length === 0,
+          `${tag}: clicking a reply reference does not start a reply`,
+        );
+
+        // Keyboard: Enter on a focused row replies at once.
+        await reset();
+        await page.focus(row("m4aaaaaa"));
+        await page.keyboard.press("Enter");
+        check(
+          (await calls()).replies.join() === "m4aaaaaa",
+          `${tag}: Enter on a focused row starts a reply`,
+        );
+
+        // Leaving the page with a reply pending does not fire it later.
+        await reset();
+        await page.click(textOf("m1aaaaaa"));
+        await page.evaluate(() => window.__unmount());
+        await page.waitForTimeout(REPLY_DELAY + 300);
+        check(
+          (await calls()).replies.length === 0,
+          `${tag}: a pending reply is dropped on unmount`,
+        );
+      }
+
+      // Without a reply handler (no speaking), a click does nothing.
+      await open("layout=default&st=1&noreply=1");
+      await page.click(textOf("m2aaaaaa"));
+      await page.waitForTimeout(REPLY_DELAY + 300);
+      check(
+        (await calls()).replies.length === 0 &&
+          (await page.$$("[tabindex].message")).length === 0,
+        "no reply handler: clicks do nothing, rows take no focus",
+      );
+
+      // Server lines cannot be replied to.
+      await open("layout=default&st=1&sys=1");
+      await reset();
+      await page.click(row("s1aaaaaa"));
+      await page.waitForTimeout(REPLY_DELAY + 300);
+      check(
+        (await calls()).replies.length === 0 &&
+          !(await page.$eval(row("s1aaaaaa"), (e) =>
+            e.classList.contains("click-to-reply"),
+          )),
+        "server lines cannot be replied to",
+      );
+      // A link opens (after its confirm) and does not start a reply.
+      await open("layout=default&st=1&link=1");
+      await reset();
+      const link = await page.$(`${row("m2aaaaaa")} a[href^="https://example.com"]`);
+      check(!!link, "link fixture renders a link");
+      if (link) {
+        page.once("dialog", (d) => d.accept());
+        await link.click();
+        await page.waitForTimeout(REPLY_DELAY + 300);
+        check(
+          (await calls()).replies.length === 0,
+          "clicking a link does not start a reply",
+        );
+      }
+      if (shots) {
+        await open("layout=default&st=1");
+        await page.click(textOf("m2aaaaaa"));
+        await page.waitForTimeout(REPLY_DELAY + 200);
+        await page.screenshot({ path: path.join(shots, "click-to-reply.png") });
+      }
     }
   } finally {
     await browser.close();

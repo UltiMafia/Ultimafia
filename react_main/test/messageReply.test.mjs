@@ -6,7 +6,15 @@ import {
   describeQuotedMessage,
   findMessageRow,
   handleGameEscape,
+  hasSelectionIn,
+  isDrag,
+  isReplyClick,
+  isTypingKey,
+  redirectTypingToChat,
+  REPLY_CLICK_MOVE_PX,
   makeReplyTarget,
+  REPLY_CLICK_DELAY_MS,
+  REPLY_CLICK_IGNORE_SELECTOR,
   pairReplies,
   showPinButton,
 } from "../src/utils/messageReply.js";
@@ -314,4 +322,152 @@ test("findMessageRow finds the original line in the same chat only", () => {
   assert.equal(findMessageRow(reply, "missing"), null);
   assert.equal(findMessageRow(null, "m1"), null);
   assert.equal(findMessageRow(reply, undefined), null);
+});
+
+// Click to reply. A tiny DOM stand-in: elements with a parent, the classes
+// or tags they match, and an optional cursor.
+function el(
+  name,
+  parent,
+  { matches = [], cursor = "auto", classes = [], inline = "" } = {},
+) {
+  const node = {
+    name,
+    parentElement: parent || null,
+    cursor,
+    style: { cursor: inline },
+    classList: { contains: (c) => classes.includes(c) },
+    matches: (selector) =>
+      matches.some((m) => selector.split(", ").includes(m)),
+    contains(other) {
+      for (let n = other; n; n = n.parentElement) if (n === node) return true;
+      return false;
+    },
+  };
+  return node;
+}
+const env = (extra = {}) => ({
+  getComputedStyle: (n) => ({ cursor: n.cursor }),
+  selection: null,
+  ...extra,
+});
+const row = el("row");
+const content = el("content", row);
+const text = el("text", content);
+const click = (target, extra = {}) => ({ button: 0, detail: 1, target, ...extra });
+
+test("the reply delay is short enough to feel instant and leaves room for a double-click", () => {
+  assert.equal(REPLY_CLICK_DELAY_MS, 250);
+});
+
+test("a plain click on a row's text or empty space starts a reply", () => {
+  assert.equal(isReplyClick(click(text), row, env()), true);
+  assert.equal(isReplyClick(click(row), row, env()), true);
+});
+
+test("the second click of a double-click never starts a reply", () => {
+  assert.equal(isReplyClick(click(text, { detail: 2 }), row, env()), false);
+  assert.equal(isReplyClick(click(text, { detail: 3 }), row, env()), false);
+});
+
+test("right, middle and modified clicks do not start a reply", () => {
+  assert.equal(isReplyClick(click(text, { button: 1 }), row, env()), false);
+  assert.equal(isReplyClick(click(text, { shiftKey: true }), row, env()), false);
+  assert.equal(isReplyClick(click(text, { ctrlKey: true }), row, env()), false);
+  assert.equal(isReplyClick(click(text, { metaKey: true }), row, env()), false);
+});
+
+test("clicks on links, names, avatars, emotes, stickers, the pin and the reference do not reply", () => {
+  for (const m of [
+    "a",
+    "img",
+    ".name-with-avatar",
+    ".avatar",
+    ".user-name",
+    ".emote",
+    ".sticker",
+    ".role",
+    ".pin-button-wrapper",
+    ".reply-reference",
+    "[role='button']",
+  ]) {
+    assert.ok(REPLY_CLICK_IGNORE_SELECTOR.split(", ").includes(m), m);
+    const inner = el("inner", el("wrap", content, { matches: [m] }));
+    assert.equal(isReplyClick(click(inner), row, env()), false, m);
+  }
+});
+
+test("a part with its own pointer cursor (a spoiler) does not reply", () => {
+  const spoiler = el("spoiler", content, { cursor: "pointer" });
+  assert.equal(isReplyClick(click(el("t", spoiler)), row, env()), false);
+  // Inside text that is already a pointer (a quotable line), a spoiler sets
+  // its pointer inline.
+  const body = el("body", row, { cursor: "pointer", classes: ["content"] });
+  const words = el("words", body, { cursor: "pointer" });
+  assert.equal(isReplyClick(click(words), row, env()), true);
+  const inline = el("inline", body, { cursor: "pointer", inline: "pointer" });
+  assert.equal(isReplyClick(click(el("t", inline)), row, env()), false);
+});
+
+test("a role mention (it opens a popover) does not reply", () => {
+  const mention = el("mention", content, { matches: ["[aria-haspopup]"] });
+  assert.equal(isReplyClick(click(mention), row, env()), false);
+});
+
+test("a click bubbled from a popover outside the row does not reply", () => {
+  const popover = el("popover", el("body"));
+  assert.equal(isReplyClick(click(popover), row, env()), false);
+});
+
+test("a click that ends a text selection in the row does not reply", () => {
+  const selection = {
+    isCollapsed: false,
+    anchorNode: text,
+    focusNode: text,
+    toString: () => "cop",
+  };
+  assert.equal(hasSelectionIn(row, selection), true);
+  assert.equal(isReplyClick(click(text), row, env({ selection })), false);
+});
+
+test("an empty or elsewhere selection does not block a reply", () => {
+  const collapsed = { isCollapsed: true, anchorNode: text, focusNode: text, toString: () => "" };
+  assert.equal(isReplyClick(click(text), row, env({ selection: collapsed })), true);
+  const other = el("other");
+  const elsewhere = { isCollapsed: false, anchorNode: other, focusNode: other, toString: () => "hi" };
+  assert.equal(isReplyClick(click(text), row, env({ selection: elsewhere })), true);
+});
+
+test("a press that moves more than a few pixels before the click is a drag, not a reply", () => {
+  assert.equal(REPLY_CLICK_MOVE_PX, 4);
+  const down = { x: 100, y: 50 };
+  assert.equal(isDrag(down, { clientX: 103, clientY: 52 }), false);
+  assert.equal(isDrag(down, { clientX: 150, clientY: 50 }), true);
+  assert.equal(isDrag(null, { clientX: 150, clientY: 50 }), false);
+  const at = (x, y) => click(text, { clientX: x, clientY: y });
+  assert.equal(isReplyClick(at(150, 50), row, env({ pointerDown: down })), false);
+  assert.equal(isReplyClick(at(101, 51), row, env({ pointerDown: down })), true);
+});
+
+test("only typing keys jump to the chat box; Tab, Enter, arrows and shortcuts do not", () => {
+  for (const key of ["a", "Z", "1", " ", "?", "Backspace"])
+    assert.equal(isTypingKey({ key }), true, key);
+  for (const key of ["Tab", "Enter", "Escape", "ArrowUp", "Shift", "F5"])
+    assert.equal(isTypingKey({ key }), false, key);
+  assert.equal(isTypingKey({ key: "c", ctrlKey: true }), false);
+  assert.equal(isTypingKey({ key: "c", metaKey: true }), false);
+});
+
+test("typing outside a text field moves focus to the chat box, Tab does not", () => {
+  let focused = 0;
+  const doc = (tag) => ({
+    activeElement: { tagName: tag },
+    getElementById: (id) => (id === "speechInput" ? { focus: () => focused++ } : null),
+  });
+  redirectTypingToChat({ key: "h" }, doc("DIV"));
+  assert.equal(focused, 1);
+  redirectTypingToChat({ key: "Tab" }, doc("DIV"));
+  redirectTypingToChat({ key: "Enter" }, doc("DIV"));
+  redirectTypingToChat({ key: "h" }, doc("INPUT"));
+  assert.equal(focused, 1);
 });
