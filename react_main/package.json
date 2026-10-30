@@ -63,7 +63,8 @@
     "start": "rsbuild dev",
     "build": "rsbuild build",
     "preview": "rsbuild preview",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "test:strategy-windows:browser": "rsbuild build --config rsbuild.strategy-windows-test.config.ts && node test/run-strategy-windows.cjs"
   },
   "eslintConfig": {
     "extends": [

@@ -1979,7 +1979,15 @@ export function MobileLayout({
         {outerLeftContent}
       </Stack>
       {!hideInfoTab && (
-        <Box sx={{ display: selectedPanel === "info" ? undefined : "none" }}>
+        <Box
+          sx={{
+            display: selectedPanel === "info" ? undefined : "none",
+            flex: "1",
+            minHeight: 0,
+            flexDirection: "column",
+            overflow: "hidden",
+          }}
+        >
           {/* The additionalInfoContent displays after the mobile version of TopBar */}
           {additionalInfoContent}
         </Box>

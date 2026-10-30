@@ -164,6 +164,7 @@ export default function MafiaGame() {
   const isLiveState = history.currentState >= 0;
   const isViewingPregame = game.stateViewing === -1;
   const setupId = game.setup?.id;
+  const setupTitle = game.setup?.name || "";
   const showInventory =
     game.gameType === gameType && Boolean(game.self) && isLiveState;
   const inventoryItems =
@@ -534,7 +535,11 @@ export default function MafiaGame() {
                     descriptors={actionDescriptorData.regularActionDescriptors}
                   />
                 )}
-                <StrategiesPanel setupId={setupId} visible={Boolean(setupId)} />
+                <StrategiesPanel
+                  setupId={setupId}
+                  visible={Boolean(setupId)}
+                  title={setupTitle}
+                />
               </>
             ) : (
               <ActionList
@@ -562,22 +567,26 @@ export default function MafiaGame() {
             <Notes />
           </>
         }
+        // Guides live in the Info tab, which is on screen in every phase of
+        // the game, instead of only while the pregame screen is up.
+        additionalInfoContent={
+          <StrategiesSection
+            setupId={setupId}
+            visible={Boolean(setupId)}
+            title={setupTitle}
+            variant="fill"
+          />
+        }
         innerRightContent={
           <>
             <MissionScoreKeeper />
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             {isViewingPregame ? (
-              <>
-                {actionDescriptorData.regularActionDescriptors.length > 0 && (
-                  <ActionList
-                    descriptors={actionDescriptorData.regularActionDescriptors}
-                  />
-                )}
-                <StrategiesSection
-                  setupId={setupId}
-                  visible={Boolean(setupId)}
+              actionDescriptorData.regularActionDescriptors.length > 0 && (
+                <ActionList
+                  descriptors={actionDescriptorData.regularActionDescriptors}
                 />
-              </>
+              )
             ) : (
               <ActionList
                 descriptors={actionDescriptorData.regularActionDescriptors}

@@ -27,6 +27,8 @@ import CustomMarkdown from "components/CustomMarkdown";
 import { VoteWidget } from "components/VoteWidget";
 import { NameWithAvatar } from "pages/User/UserWidgets";
 import { Loading } from "components/Loading";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { useStrategyWindows } from "components/strategyWindows/StrategyWindowsContext";
 import surprisedFace from "images/emotes/surprised.webp";
 import sadFace from "images/emotes/sad.webp";
 
@@ -51,12 +53,20 @@ function StrategiesBase({
   setupId,
   variant = "panel",
   visible = true,
+  title = "",
+  hideTitle = false,
   maxTitleLength = 80,
   maxContentLength = 4000,
 }) {
   const user = useContext(UserContext);
   const theme = useTheme();
   const errorAlert = useErrorAlert();
+  const strategyWindows = useStrategyWindows();
+  const isPhoneDevice = useIsPhoneDevice();
+  // The pop-out button only makes sense where the app shell can actually
+  // host windows (Main.jsx) and where there is a mouse to drag them with.
+  const canPopout =
+    Boolean(strategyWindows.enabled) && !isPhoneDevice && !hideTitle;
 
   const [strategies, setStrategies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -191,20 +201,42 @@ function StrategiesBase({
       .finally(() => setSubmitting(false));
   };
 
-  const renderHeader = () => (
-    <Stack
-      direction="row"
-      spacing={1}
-      sx={{ alignItems: "center", width: "100%" }}
-    >
-      <Typography sx={{ flexGrow: 1 }}>Strategies</Typography>
-      {canCreate && (
-        <IconButton size="small" onClick={openCreateDialog}>
-          <i className="fas fa-plus" />
-        </IconButton>
-      )}
-    </Stack>
-  );
+  const renderHeader = () => {
+    // Inside a floating window the title bar already names the guide, so the
+    // body only carries the actions.
+    if (hideTitle && !canCreate) return null;
+
+    return (
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{ alignItems: "center", width: "100%" }}
+      >
+        {hideTitle ? (
+          <Box sx={{ flexGrow: 1 }} />
+        ) : (
+          <Typography sx={{ flexGrow: 1 }}>Strategies</Typography>
+        )}
+        {canPopout && (
+          <Tooltip title="Open guides in a floating window">
+            <IconButton
+              size="small"
+              data-testid="strategy-popout"
+              aria-label="Open guides in a floating window"
+              onClick={() => strategyWindows.openStrategyWindow(setupId, { title })}
+            >
+              <i className="fas fa-external-link-alt" />
+            </IconButton>
+          </Tooltip>
+        )}
+        {canCreate && (
+          <IconButton size="small" onClick={openCreateDialog}>
+            <i className="fas fa-plus" />
+          </IconButton>
+        )}
+      </Stack>
+    );
+  };
 
   const voteAwareSetter = (updated) => {
     if (typeof updated === "function") {
@@ -500,6 +532,46 @@ function StrategiesBase({
     return null;
   }
 
+  // "fill" covers the containers that give the list its own scroll area: the
+  // floating window and the mobile game's Info tab.
+  if (variant === "fill") {
+    return (
+      <>
+        <Stack
+          sx={{
+            flex: 1,
+            minHeight: 0,
+            width: "100%",
+            flexDirection: "column",
+          }}
+        >
+          {header && (
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                alignItems: "center",
+                px: 1,
+                py: 0.5,
+                flexShrink: 0,
+                bgcolor: "var(--scheme-color-background)",
+              }}
+            >
+              {header}
+            </Stack>
+          )}
+          <Box
+            data-testid="strategy-list-scroll"
+            sx={{ flex: 1, minHeight: 0, overflowY: "auto", px: 1, pb: 1 }}
+          >
+            {listContent}
+          </Box>
+        </Stack>
+        {dialog}
+      </>
+    );
+  }
+
   const sideMenu = (
     <div
       className="side-menu scrollable"
@@ -534,7 +606,7 @@ export function StrategiesPanel(props) {
 }
 
 export function StrategiesSection(props) {
-  return <StrategiesBase {...props} variant="section" />;
+  return <StrategiesBase variant="section" {...props} />;
 }
 
 export const SetupStrategiesSection = StrategiesSection;
