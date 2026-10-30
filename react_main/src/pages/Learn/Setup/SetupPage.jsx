@@ -868,7 +868,7 @@ export function SetupPage() {
                   </div>
                 </div>
               )}
-              <SetupStrategiesSection setupId={setupId} />
+              <SetupStrategiesSection setupId={setupId} title={setup?.name} />
             </>
           }
         />
