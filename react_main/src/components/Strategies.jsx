@@ -67,6 +67,9 @@ function StrategiesBase({
   // host windows (Main.jsx) and where there is a mouse to drag them with.
   const canPopout =
     Boolean(strategyWindows.enabled) && !isPhoneDevice && !hideTitle;
+  // On a phone a guide opens full screen (the reader below) instead of
+  // expanding into the short space a row in the panel leaves.
+  const readerMode = Boolean(isPhoneDevice);
 
   const [strategies, setStrategies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -76,6 +79,8 @@ function StrategiesBase({
   const [contentInput, setContentInput] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [expandedIds, setExpandedIds] = useState(() => new Set());
+  // A phone opens a guide full screen instead of expanding it in the list.
+  const [readerId, setReaderId] = useState(null);
 
   const hasUser = Boolean(user && user.id);
   const allowDeleted = Boolean(user.perms?.viewDeleted);
@@ -127,6 +132,14 @@ function StrategiesBase({
       mounted = false;
     };
   }, [setupId, visible, user.loaded, user.id, allowDeleted]);
+
+  // A guide can vanish from the list (deleted, filtered out) while it is open
+  // full screen; close the reader instead of showing a stale copy.
+  useEffect(() => {
+    if (readerId && !strategies.some((strategy) => strategy.id === readerId)) {
+      setReaderId(null);
+    }
+  }, [readerId, strategies]);
 
   const handleDialogClose = () => {
     if (submitting) return;
@@ -340,6 +353,7 @@ function StrategiesBase({
         }}
       >
         <AccordionSummary
+          data-testid="strategy-row"
           expandIcon={
             <img
               src={isExpanded ? surprisedFace : sadFace}
@@ -445,6 +459,18 @@ function StrategiesBase({
         </AccordionSummary>
         <AccordionDetails>
           <Stack spacing={1}>
+            {readerMode && (
+              <Button
+                size="small"
+                variant="outlined"
+                aria-label="Read full screen"
+                startIcon={<i className="fas fa-expand-alt" />}
+                onClick={() => setReaderId(strategy.id)}
+                sx={{ alignSelf: "flex-start" }}
+              >
+                Read full screen
+              </Button>
+            )}
             <Box
               className="md-content"
               sx={{
@@ -465,6 +491,10 @@ function StrategiesBase({
       </Accordion>
     );
   };
+
+  const readerStrategy = readerId
+    ? strategies.find((strategy) => strategy.id === readerId) || null
+    : null;
 
   const header = renderHeader();
   const listContent = loading ? (
@@ -528,6 +558,126 @@ function StrategiesBase({
     </Dialog>
   );
 
+  // Full-screen reader for phones: the guide gets the whole screen and its own
+  // scroll area, instead of the few centimetres a row in the panel leaves.
+  const reader =
+    readerStrategy ? (
+      <Dialog
+        open
+        fullScreen={readerMode}
+        onClose={() => setReaderId(null)}
+        aria-labelledby="strategy-reader-title"
+        PaperProps={{ "data-testid": "strategy-reader" }}
+      >
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            alignItems: "center",
+            px: 1,
+            py: 0.5,
+            flexShrink: 0,
+            borderBottom: "1px solid",
+            borderColor: "divider",
+          }}
+        >
+          <IconButton
+            size="small"
+            data-testid="strategy-reader-close"
+            aria-label="Close full-screen guide"
+            onClick={() => setReaderId(null)}
+          >
+            <i className="fas fa-times" />
+          </IconButton>
+          <Typography
+            variant="subtitle1"
+            id="strategy-reader-title"
+            data-testid="strategy-reader-title"
+            sx={{ flexGrow: 1, minWidth: 0, fontWeight: 600 }}
+          >
+            {readerStrategy.title}
+          </Typography>
+          {readerStrategy.canEdit && !readerStrategy.deleted && (
+            <IconButton
+              size="small"
+              aria-label="Edit guide"
+              onClick={() => {
+                const strategy = readerStrategy;
+                setReaderId(null);
+                openEditDialog(strategy);
+              }}
+            >
+              <i className="fas fa-edit" />
+            </IconButton>
+          )}
+          {readerStrategy.canDelete && !readerStrategy.deleted && (
+            <IconButton
+              size="small"
+              aria-label="Delete guide"
+              onClick={() => handleDeleteToggle(readerStrategy, true)}
+            >
+              <i className="fas fa-trash" />
+            </IconButton>
+          )}
+        </Stack>
+        <Box
+          data-testid="strategy-reader-scroll"
+          sx={{ flex: 1, minHeight: 0, overflowY: "auto", px: 2, py: 1.5 }}
+        >
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ alignItems: "center", flexWrap: "wrap", mb: 0.5 }}
+          >
+            <VoteWidget
+              item={readerStrategy}
+              itemHolder={strategies}
+              setItemHolder={voteAwareSetter}
+              itemType="strategy"
+            />
+            {readerStrategy.author && (
+              <a
+                href={
+                  readerStrategy.author.vanityUrl
+                    ? `/${readerStrategy.author.vanityUrl}`
+                    : `/user/${readerStrategy.author.id}`
+                }
+              >
+                <NameWithAvatar
+                  small
+                  id={readerStrategy.author.id}
+                  name={readerStrategy.author.name || " "}
+                  avatar={readerStrategy.author.avatar}
+                  groups={readerStrategy.author.groups}
+                  vanityUrl={readerStrategy.author.vanityUrl}
+                />
+              </a>
+            )}
+          </Stack>
+          <Typography
+            variant="caption"
+            sx={{ display: "block", opacity: 0.7, mb: 1.5 }}
+          >
+            {readerStrategy.createdAt != null
+              ? new Date(readerStrategy.createdAt).toLocaleString()
+              : null}
+          </Typography>
+          <Box
+            className="md-content"
+            sx={{
+              backgroundColor: "transparent !important",
+              color: `${theme.palette.text.primary} !important`,
+              wordBreak: "break-word",
+              fontSize: "1.05rem",
+              lineHeight: 1.65,
+            }}
+          >
+            <CustomMarkdown>{readerStrategy.content}</CustomMarkdown>
+          </Box>
+        </Box>
+      </Dialog>
+    ) : null;
+
   if (!visible || !setupId) {
     return null;
   }
@@ -568,6 +718,7 @@ function StrategiesBase({
           </Box>
         </Stack>
         {dialog}
+        {reader}
       </>
     );
   }
@@ -597,6 +748,7 @@ function StrategiesBase({
     <>
       {sideMenu}
       {dialog}
+      {reader}
     </>
   );
 }

@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
+import { mobileInfoTabSx } from "../src/pages/Game/mobileInfoTab.js";
 import {
   bringToFront,
   cascadePos,
@@ -205,6 +206,20 @@ test("a stored window is pulled into a smaller screen", () => {
   assert.equal(win.height, 592);
   assert.equal(win.x, 800 - 700 - 4);
   assert.equal(win.y, 4);
+});
+
+test("the mobile Info tab body is a flex column, not a clipping box", () => {
+  // The guide list inside it is a filling child. In a non-flex box it grows to
+  // its content height, so the list looked cut off and would not scroll.
+  const open = mobileInfoTabSx("info");
+  assert.equal(open.display, "flex");
+  assert.equal(open.flexDirection, "column");
+  assert.equal(open.minHeight, 0);
+  assert.equal(open.overflow, "hidden");
+  assert.equal(open.flex, "1");
+
+  assert.equal(mobileInfoTabSx("chat").display, "none");
+  assert.equal(mobileInfoTabSx("menu").display, "none");
 });
 
 test("the title bar falls back to the feature label", () => {

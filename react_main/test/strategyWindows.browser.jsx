@@ -1,7 +1,7 @@
 // Real StrategiesPanel / StrategiesSection / floating-window layer, with the
 // strategy API answered from fixtures. Open with ?mode=desktop (default) or
 // ?mode=mobile; the runner (test/run-strategy-windows.cjs) drives both.
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import {
@@ -17,7 +17,8 @@ import axios from "axios";
 import { StrategiesPanel, StrategiesSection } from "../src/components/Strategies";
 import { StrategyWindowsProvider } from "../src/components/strategyWindows/StrategyWindowsContext";
 import FloatingStrategyWindows from "../src/components/strategyWindows/FloatingStrategyWindows";
-import { SiteInfoContext, UserContext } from "../src/Contexts";
+import { GameContext, SiteInfoContext, UserContext } from "../src/Contexts";
+import { MobileLayout, GameTypeContext } from "../src/pages/Game/Game";
 
 function guide(id, title, content, minutesAgo) {
   return {
@@ -45,7 +46,7 @@ const FIXTURES = {
     guide(
       `guide-mobile-${index + 1}`,
       `Info tab guide ${index + 1}`,
-      `Body of guide ${index + 1}. Read it while the game runs.`,
+      `Body of guide ${index + 1}. Read it while the game runs.\n\n` + "A long strategy paragraph with useful advice.\n\n".repeat(50) + "END OF GUIDE",
       index
     )
   ),
@@ -93,39 +94,32 @@ function DesktopRig() {
   );
 }
 
-// The container the game's Info tab gives its content on a phone.
+// Exercise the real Info-tab wrapper, not a stand-in with different CSS.
 function MobileRig() {
+  const [selectedPanel, setSelectedPanel] = useState("info");
+  const game = {
+    selectedPanel, setSelectedPanel, settings: {}, updateSettings: () => {},
+    onLeaveGameClick: () => {},
+  };
   return (
-    <Box
-      sx={{
-        width: 390,
-        height: 700,
-        display: "flex",
-        flexDirection: "column",
-        bgcolor: "background.default",
-      }}
-      data-testid="phone"
-    >
-      <div style={{ height: 64, background: "#333", color: "#fff", padding: 8 }}>
-        TopBar stand-in
-      </div>
-      <Box
-        data-testid="info-tab"
-        sx={{
-          display: "flex",
-          flex: "1",
-          minHeight: 0,
-          flexDirection: "column",
-          overflow: "hidden",
-        }}
-      >
-        <StrategiesSection
-          setupId="setupMobile"
-          title="Open Roles 12P"
-          variant="fill"
-        />
-      </Box>
-    </Box>
+    <GameContext.Provider value={game}>
+      <GameTypeContext.Provider value={{ singleState: true }}>
+        <Stack sx={{ width: "100%", height: "100dvh", overflow: "hidden" }} data-testid="phone">
+          <Box sx={{ height: 260, flexShrink: 0, p: 1, bgcolor: "background.paper" }}>
+            Setup details (space used by the game's TopBar)
+          </Box>
+          <MobileLayout
+            chatTab
+            outerLeftContent={<div>Players</div>}
+            centerContent={<div>Chat</div>}
+            innerRightContent={<div>Actions</div>}
+            additionalInfoContent={
+              <StrategiesSection setupId="setupMobile" title="Open Roles 12P" variant="fill" />
+            }
+          />
+        </Stack>
+      </GameTypeContext.Provider>
+    </GameContext.Provider>
   );
 }
 

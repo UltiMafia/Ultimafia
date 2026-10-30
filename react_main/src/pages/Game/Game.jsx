@@ -50,6 +50,7 @@ import BattleshipGame from "./BattleshipGame";
 import SpotItGame from "./SpotItGame";
 import ChessGame from "./ChessGame";
 import { GameContext, SiteInfoContext, UserContext } from "Contexts";
+import { mobileInfoTabSx } from "./mobileInfoTab";
 import Dropdown from "../../components/Dropdown";
 import Setup from "../../components/Setup";
 import { NameWithAvatar } from "../User/UserWidgets";
@@ -1979,15 +1980,7 @@ export function MobileLayout({
         {outerLeftContent}
       </Stack>
       {!hideInfoTab && (
-        <Box
-          sx={{
-            display: selectedPanel === "info" ? undefined : "none",
-            flex: "1",
-            minHeight: 0,
-            flexDirection: "column",
-            overflow: "hidden",
-          }}
-        >
+        <Box data-testid="game-info-tab" sx={mobileInfoTabSx(selectedPanel)}>
           {/* The additionalInfoContent displays after the mobile version of TopBar */}
           {additionalInfoContent}
         </Box>

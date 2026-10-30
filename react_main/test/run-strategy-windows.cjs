@@ -287,6 +287,12 @@ async function main() {
             ? route.continue()
             : route.abort()
         );
+        // Font Awesome glyphs are CSS generated content, so they join a tab
+        // button's accessible name; find the tab by its label instead.
+        const navButton = (label) =>
+          phone.locator(
+            `button:has(span.MuiBottomNavigationAction-label:text-is("${label}"))`
+          );
         await phone.goto(url + "?mode=mobile");
         await phone.waitForFunction(() => window.__strategyWindowsReady);
         await phone.evaluate(() => sessionStorage.clear());
@@ -297,9 +303,9 @@ async function main() {
           0,
           "mobile: no pop-out button on a phone"
         );
-        const infoTab = phone.locator("[data-testid=info-tab]");
+        const infoTab = phone.locator("[data-testid=strategy-list-scroll]").locator("../..");
         const tabBox = await infoTab.boundingBox();
-        assert.ok(tabBox.height > 400, `mobile: the Info tab has room (${tabBox.height}px)`);
+        assert.ok(tabBox.height > 200, `mobile: the Info tab has room (${tabBox.height}px)`);
         await infoTab.getByText("Info tab guide 1").waitFor();
         checks += 3;
 
@@ -309,17 +315,60 @@ async function main() {
           clientHeight: el.clientHeight,
           scrollHeight: el.scrollHeight,
         }));
-        assert.ok(metrics.clientHeight > 200, "mobile: the guide list has a real height");
+        assert.ok(metrics.clientHeight > 100, "mobile: the guide list has a real height");
+        assert.ok(metrics.clientHeight < 500, "mobile: the guide list stays inside the available tab space");
         assert.ok(
           metrics.scrollHeight > metrics.clientHeight,
           "mobile: a longer guide list scrolls inside the tab"
         );
-        checks += 2;
+        checks += 3;
 
         // A guide can be opened while the game runs (the tab is not pregame-only).
         await infoTab.getByText("Info tab guide 3").click();
-        await infoTab.getByText("Body of guide 3.").waitFor();
-        checks += 1;
+        await infoTab.getByText("Body of guide 3.", { exact: false }).waitFor();
+        await scroller.evaluate(el => { el.scrollTop = el.scrollHeight; });
+        assert.ok(await scroller.evaluate(el => el.scrollTop > 0), "mobile: can scroll an expanded long guide");
+        await scroller.evaluate(el => { el.scrollTop = 0; });
+        checks += 2;
+
+        await infoTab.getByRole("button", { name: "Read full screen" }).click({ timeout: 3000 });
+        const reader = phone.getByRole("dialog", { name: "Info tab guide 3" });
+        await reader.waitFor();
+        const readerScroll = reader.locator("[data-testid=strategy-reader-scroll]");
+        for (const viewport of [{ width: 320, height: 640 }, { width: 495, height: 847 }, { width: 740, height: 390 }, { width: 390, height: 800 }]) {
+          await phone.setViewportSize(viewport);
+          const bounds = await reader.boundingBox();
+          near(bounds.width, viewport.width, 1, "mobile: reader uses full viewport width");
+          near(bounds.height, viewport.height, 1, "mobile: reader uses full viewport height");
+          assert.ok(await readerScroll.evaluate(el => el.scrollHeight > el.clientHeight), "mobile: long reader body overflows");
+          checks += 3;
+        }
+        const scrollBox = await readerScroll.boundingBox();
+        await phone.mouse.move(scrollBox.x + scrollBox.width / 2, scrollBox.y + scrollBox.height / 2);
+        await phone.mouse.wheel(0, 600);
+        await phone.waitForFunction(() => document.querySelector("[data-testid=strategy-reader-scroll]").scrollTop > 0);
+        await reader.getByText("END OF GUIDE", { exact: true }).scrollIntoViewIfNeeded();
+        const ending = await reader.getByText("END OF GUIDE", { exact: true }).boundingBox();
+        assert.ok(ending.y >= 0 && ending.y + ending.height <= 800, "mobile: final paragraph is reachable");
+        const close = reader.getByRole("button", { name: "Close full-screen guide" });
+        assert.ok(await close.isVisible(), "mobile: close button stays visible after scrolling");
+        checks += 3;
+        if (process.env.SCREENSHOT_DIR) {
+          await readerScroll.evaluate(el => { el.scrollTop = 0; });
+          await phone.screenshot({ path: path.join(process.env.SCREENSHOT_DIR, `strategies-reader-${engine}.png`) });
+        }
+        await close.click();
+        await reader.waitFor({ state: "hidden" });
+        assert.ok(await infoTab.getByText("Body of guide 3.", { exact: false }).isVisible(), "mobile: closing preserves the expanded guide");
+        await infoTab.getByRole("button", { name: "Read full screen" }).click();
+        await reader.waitFor();
+        await phone.keyboard.press("Escape");
+        await reader.waitFor({ state: "hidden" });
+        await navButton("Chat").click();
+        assert.equal(await scroller.isVisible(), false, "mobile: Info content hides on other tabs");
+        await navButton("Info").click();
+        assert.ok(await scroller.isVisible(), "mobile: Info content returns when selected");
+        checks += 4;
 
         if (process.env.SCREENSHOT_DIR) {
           await phone.screenshot({
