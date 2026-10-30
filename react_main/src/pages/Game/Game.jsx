@@ -148,6 +148,7 @@ import {
   canReplyTo,
   describeQuotedMessage,
   isReplyClick,
+  redirectTypingToChat,
   hasSelectionIn,
   REPLY_CLICK_DELAY_MS,
   findMessageRow,
@@ -769,17 +770,9 @@ export default function Game(props) {
     if (!review) {
       loadAudioFiles(coreAudioConfig);
 
-      function onKeydown() {
+      function onKeydown(e) {
         if (!activeRef.current) return;
-        var speechInput = document.getElementById("speechInput");
-        var activeElName = document.activeElement.tagName;
-
-        if (
-          speechInput &&
-          activeElName !== "INPUT" &&
-          activeElName !== "TEXTAREA"
-        )
-          speechInput.focus();
+        redirectTypingToChat(e);
       }
 
       window.addEventListener("keydown", onKeydown);
@@ -2988,6 +2981,8 @@ const MessageRow = React.memo(function MessageRow(props) {
   // Click to reply: the pending single click, cleared by a double-click, by
   // another click and on unmount.
   const replyClickTimer = useRef(null);
+  // Where the last left press on the row started (a drag is not a reply).
+  const pointerDownAt = useRef(null);
   const cancelReplyClick = useCallback(() => {
     clearTimeout(replyClickTimer.current);
     replyClickTimer.current = null;
@@ -3281,7 +3276,15 @@ const MessageRow = React.memo(function MessageRow(props) {
 
   function startReply() {
     props.onMessageReply(message);
+    // Focusing the chat box would drop a text selection; leave it alone then.
+    const selection = window.getSelection();
+    if (selection && !selection.isCollapsed && String(selection).trim()) return;
     document.getElementById("speechInput")?.focus();
+  }
+
+  function onRowPointerDown(e) {
+    pointerDownAt.current =
+      e.button === 0 ? { x: e.clientX, y: e.clientY } : null;
   }
 
   // One click starts a reply after REPLY_CLICK_DELAY_MS, so that a
@@ -3293,7 +3296,9 @@ const MessageRow = React.memo(function MessageRow(props) {
     const env = {
       selection: window.getSelection(),
       getComputedStyle: (el) => window.getComputedStyle(el),
+      pointerDown: pointerDownAt.current,
     };
+    pointerDownAt.current = null;
     if (!isReplyClick(e, row, env)) return;
     replyClickTimer.current = setTimeout(() => {
       replyClickTimer.current = null;
@@ -3312,6 +3317,7 @@ const MessageRow = React.memo(function MessageRow(props) {
     <div
       className={className}
       data-message-id={message.id ?? undefined}
+      onPointerDown={clickToReply ? onRowPointerDown : undefined}
       onClick={clickToReply ? onRowClick : undefined}
       onKeyDown={clickToReply ? onRowKeyDown : undefined}
       tabIndex={clickToReply ? 0 : undefined}
@@ -3919,7 +3925,9 @@ function SpeechInput(props) {
           setSpeechInput("");
         }
       }
-    } else if (e.key === "Tab") {
+    } else if (e.key === "Tab" && !e.shiftKey) {
+      // Tab completes a name; Shift+Tab leaves the chat box as usual (back
+      // to the messages, which can be replied to with Enter).
       e.preventDefault();
       const words = speechInput.split(" ");
       const word = words.pop();

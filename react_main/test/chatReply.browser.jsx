@@ -12,6 +12,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Box, createTheme, ThemeProvider } from "@mui/material";
 import { GameTypeContext, TextMeetingLayout } from "../src/pages/Game/Game";
 import { GameContext, SiteInfoContext, UserContext } from "../src/Contexts";
+import { redirectTypingToChat } from "../src/utils/messageReply";
 import "../src/css/main.css";
 import "../src/css/game.css";
 
@@ -250,6 +251,8 @@ window.__pins = [];
 const root = document.createElement("div");
 document.body.append(root);
 window.__unmount = () => ReactDOM.unmountComponentAtNode(root);
+// The game page's own "type to chat" keydown handler (Game.jsx).
+window.addEventListener("keydown", (e) => redirectTypingToChat(e));
 ReactDOM.render(
   <BrowserRouter>
     <ThemeProvider theme={theme}>

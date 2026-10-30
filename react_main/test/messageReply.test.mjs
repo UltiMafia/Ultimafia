@@ -7,7 +7,11 @@ import {
   findMessageRow,
   handleGameEscape,
   hasSelectionIn,
+  isDrag,
   isReplyClick,
+  isTypingKey,
+  redirectTypingToChat,
+  REPLY_CLICK_MOVE_PX,
   makeReplyTarget,
   REPLY_CLICK_DELAY_MS,
   REPLY_CLICK_IGNORE_SELECTOR,
@@ -432,4 +436,38 @@ test("an empty or elsewhere selection does not block a reply", () => {
   const other = el("other");
   const elsewhere = { isCollapsed: false, anchorNode: other, focusNode: other, toString: () => "hi" };
   assert.equal(isReplyClick(click(text), row, env({ selection: elsewhere })), true);
+});
+
+test("a press that moves more than a few pixels before the click is a drag, not a reply", () => {
+  assert.equal(REPLY_CLICK_MOVE_PX, 4);
+  const down = { x: 100, y: 50 };
+  assert.equal(isDrag(down, { clientX: 103, clientY: 52 }), false);
+  assert.equal(isDrag(down, { clientX: 150, clientY: 50 }), true);
+  assert.equal(isDrag(null, { clientX: 150, clientY: 50 }), false);
+  const at = (x, y) => click(text, { clientX: x, clientY: y });
+  assert.equal(isReplyClick(at(150, 50), row, env({ pointerDown: down })), false);
+  assert.equal(isReplyClick(at(101, 51), row, env({ pointerDown: down })), true);
+});
+
+test("only typing keys jump to the chat box; Tab, Enter, arrows and shortcuts do not", () => {
+  for (const key of ["a", "Z", "1", " ", "?", "Backspace"])
+    assert.equal(isTypingKey({ key }), true, key);
+  for (const key of ["Tab", "Enter", "Escape", "ArrowUp", "Shift", "F5"])
+    assert.equal(isTypingKey({ key }), false, key);
+  assert.equal(isTypingKey({ key: "c", ctrlKey: true }), false);
+  assert.equal(isTypingKey({ key: "c", metaKey: true }), false);
+});
+
+test("typing outside a text field moves focus to the chat box, Tab does not", () => {
+  let focused = 0;
+  const doc = (tag) => ({
+    activeElement: { tagName: tag },
+    getElementById: (id) => (id === "speechInput" ? { focus: () => focused++ } : null),
+  });
+  redirectTypingToChat({ key: "h" }, doc("DIV"));
+  assert.equal(focused, 1);
+  redirectTypingToChat({ key: "Tab" }, doc("DIV"));
+  redirectTypingToChat({ key: "Enter" }, doc("DIV"));
+  redirectTypingToChat({ key: "h" }, doc("INPUT"));
+  assert.equal(focused, 1);
 });

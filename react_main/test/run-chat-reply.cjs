@@ -188,6 +188,7 @@ async function main() {
               reply: box(reply),
               pinHit: pin ? hit(pin.parentElement) : null,
               clickable: m.classList.contains("click-to-reply"),
+              tabIndex: m.tabIndex,
             };
           }, i),
         );
@@ -223,6 +224,11 @@ async function main() {
         check(
           on.rows.every((r) => !r.reply),
           `${query}: no reply button on any row`,
+        );
+        check(
+          on.rows.filter((r) => r.clickable).every((r) => r.tabIndex === 0) &&
+            off.rows.every((r) => r.tabIndex === -1),
+          `${query}: replyable rows (only) are keyboard focusable`,
         );
         check(
           on.rows.filter((r) => r.clickable).length >= 5 &&
@@ -432,6 +438,81 @@ async function main() {
         check(
           selected.length > 0 && sel.replies.length === 0,
           `${tag}: selecting text does not start a reply`,
+        );
+
+        // A quick drag (one jump of the pointer, as xdotool does) over text:
+        // no reply, and whatever got selected stays selected.
+        await reset();
+        const box2 = await page.$eval(textOf("m2aaaaaa"), (e) => {
+          const r = e.getBoundingClientRect();
+          return { x: r.x, y: r.y, w: r.width, h: r.height };
+        });
+        await page.mouse.move(box2.x + 3, box2.y + 6);
+        await page.mouse.down();
+        await page.mouse.move(box2.x + 53, box2.y + 6);
+        await page.mouse.up();
+        const selNow = await page.evaluate(() => String(window.getSelection()));
+        await page.waitForTimeout(REPLY_DELAY + 300);
+        const selLater = await page.evaluate(() => String(window.getSelection()));
+        check(
+          (await calls()).replies.length === 0,
+          `${tag}: a 50px drag does not start a reply`,
+        );
+        check(
+          selNow.trim().length > 0 && selLater === selNow,
+          `${tag}: text selected by a drag stays selected`,
+        );
+        // A small wobble (2px, selecting nothing) while clicking is still a click.
+        await reset();
+        await page.mouse.move(box2.x + 10, box2.y + 6);
+        await page.mouse.down();
+        await page.mouse.move(box2.x + 10, box2.y + 8);
+        await page.mouse.up();
+        await page.waitForTimeout(REPLY_DELAY + 300);
+        check(
+          (await calls()).replies.join() === "m2aaaaaa",
+          `${tag}: a 2px wobble still starts a reply`,
+        );
+
+        // Keyboard from the chat box: Shift+Tab reaches the messages (the
+        // type-to-chat handler does not pull focus back), Tab and Shift+Tab
+        // move between them, Enter replies, and typing goes to the chat box.
+        await reset();
+        await page.focus("#speechInput");
+        let reached = null;
+        for (let k = 0; k < 6 && !reached; k++) {
+          await page.keyboard.press("Shift+Tab");
+          reached = await page.evaluate(() =>
+            document.activeElement?.classList.contains("click-to-reply")
+              ? document.activeElement.dataset.messageId
+              : null,
+          );
+        }
+        check(!!reached, `${tag}: Shift+Tab from the chat box reaches a message`);
+        await page.keyboard.press("Shift+Tab");
+        const prev = await page.evaluate(
+          () => document.activeElement?.dataset?.messageId || null,
+        );
+        check(
+          !!prev && prev !== reached,
+          `${tag}: Shift+Tab moves to the previous message`,
+        );
+        await page.keyboard.press("Tab");
+        check(
+          (await page.evaluate(() => document.activeElement?.dataset?.messageId)) ===
+            reached,
+          `${tag}: Tab moves to the next message`,
+        );
+        await page.keyboard.press("Enter");
+        check(
+          (await calls()).replies.join() === reached,
+          `${tag}: Enter on a message reached by keyboard replies to it`,
+        );
+        await page.focus(row("m2aaaaaa"));
+        await page.keyboard.press("h");
+        check(
+          await page.evaluate(() => document.activeElement?.id === "speechInput"),
+          `${tag}: typing on a focused message goes to the chat box`,
         );
 
         // A name, the pin and a reply reference do their own thing only.
