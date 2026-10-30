@@ -19,6 +19,7 @@ import { StrategyWindowsProvider } from "../src/components/strategyWindows/Strat
 import FloatingStrategyWindows from "../src/components/strategyWindows/FloatingStrategyWindows";
 import { GameContext, SiteInfoContext, UserContext } from "../src/Contexts";
 import { MobileLayout, GameTypeContext } from "../src/pages/Game/Game";
+import { GuidesMovedHint } from "../src/pages/Game/MafiaGame";
 
 function guide(id, title, content, minutesAgo) {
   return {
@@ -104,7 +105,13 @@ function MobileRig() {
   return (
     <GameContext.Provider value={game}>
       <GameTypeContext.Provider value={{ singleState: true }}>
-        <Stack sx={{ width: "100%", height: "100dvh", overflow: "hidden" }} data-testid="phone">
+        {/* className="game" so the game's panel styles apply, as on the real
+            game page. */}
+        <Stack
+          className="game"
+          sx={{ width: "100%", height: "100dvh", overflow: "hidden" }}
+          data-testid="phone"
+        >
           <Box sx={{ height: 260, flexShrink: 0, p: 1, bgcolor: "background.paper" }}>
             Setup details (space used by the game's TopBar)
           </Box>
@@ -112,7 +119,9 @@ function MobileRig() {
             chatTab
             outerLeftContent={<div>Players</div>}
             centerContent={<div>Chat</div>}
-            innerRightContent={<div>Actions</div>}
+            innerRightContent={
+              <GuidesMovedHint onOpenGuides={() => setSelectedPanel("info")} />
+            }
             additionalInfoContent={
               <StrategiesSection setupId="setupMobile" title="Open Roles 12P" variant="fill" />
             }

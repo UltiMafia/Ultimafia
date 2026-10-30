@@ -23,6 +23,7 @@ import { nextStateBell } from "shared/stateBell";
 import { GameContext, SiteInfoContext } from "../../Contexts";
 import { mafiaAudioConfig } from "../../audio/audioConfigs";
 import { SideMenu } from "./Game";
+import { Button, Stack, Typography } from "@mui/material";
 
 function MissionScoreKeeper() {
   const game = useContext(GameContext);
@@ -115,6 +116,38 @@ function MissionHistoryPanel(props) {
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { StrategiesPanel, StrategiesSection } from "components/Strategies";
 import TutorialOverlay from "components/TutorialOverlay";
+
+// The guides sat in this tab during pregame. Rather than render the list twice
+// — two fetches, and two vote states that can disagree — point at where it
+// lives now. Only shown during pregame, when this tab is otherwise empty.
+export function GuidesMovedHint({ onOpenGuides }) {
+  return (
+    <SideMenu
+      title="Guides"
+      content={
+        <Stack spacing={1} sx={{ p: 1, alignItems: "flex-start" }}>
+          <Typography
+            variant="body2"
+            data-testid="guides-moved-hint"
+            sx={{ opacity: 0.85 }}
+          >
+            Guides moved to the Info tab, where they stay on screen for the
+            whole game.
+          </Typography>
+          <Button
+            size="small"
+            variant="outlined"
+            data-testid="guides-moved-open"
+            startIcon={<i className="fas fa-book-open" />}
+            onClick={onOpenGuides}
+          >
+            Open guides
+          </Button>
+        </Stack>
+      }
+    />
+  );
+}
 
 export default function MafiaGame() {
   const game = useContext(GameContext);
@@ -590,6 +623,11 @@ export default function MafiaGame() {
             ) : (
               <ActionList
                 descriptors={actionDescriptorData.regularActionDescriptors}
+              />
+            )}
+            {isViewingPregame && setupId && (
+              <GuidesMovedHint
+                onOpenGuides={() => game.setSelectedPanel("info")}
               />
             )}
             <InventoryPanel

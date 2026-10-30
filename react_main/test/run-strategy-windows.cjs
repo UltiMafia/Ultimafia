@@ -370,7 +370,31 @@ async function main() {
         assert.ok(await scroller.isVisible(), "mobile: Info content returns when selected");
         checks += 4;
 
+        // The pregame Actions tab points at where the guides went, instead of
+        // keeping a second copy of the list.
+        await navButton("Actions").click();
+        await phone.getByTestId("guides-moved-hint").waitFor();
+        assert.ok(
+          await phone.getByTestId("guides-moved-open").isVisible(),
+          "mobile: the Actions tab offers a way to the guides"
+        );
         if (process.env.SCREENSHOT_DIR) {
+          // Let the tab-colour transition finish so the shot shows the tab that
+          // is actually selected.
+          await phone.waitForTimeout(350);
+          await phone.screenshot({
+            path: path.join(process.env.SCREENSHOT_DIR, `strategies-actions-hint-${engine}.png`),
+          });
+        }
+        await phone.getByTestId("guides-moved-open").click();
+        assert.ok(
+          await scroller.isVisible(),
+          "mobile: the hint opens the guide list in the Info tab"
+        );
+        checks += 3;
+
+        if (process.env.SCREENSHOT_DIR) {
+          await phone.waitForTimeout(350);
           await phone.screenshot({
             path: path.join(process.env.SCREENSHOT_DIR, `strategies-mobile-${engine}.png`),
           });
