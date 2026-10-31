@@ -541,7 +541,7 @@ function Header({ setShowAnnouncementTemporarily }) {
   );
 }
 
-function InGameWarning() {
+export function InGameWarning() {
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
