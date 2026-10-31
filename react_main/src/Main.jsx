@@ -162,7 +162,7 @@ function Main(props) {
     else root.setAttribute("data-bottom-inset", "page");
     return () => root.removeAttribute("data-bottom-inset");
   }, []);
-  const { inGame, hostedGameId, hostedGameSearch, leaveGameSession } = useHostedGameSession();
+  const { inGame, hostedGameId, hostedGameSearch, hostedGameKey, leaveGameSession } = useHostedGameSession();
 
   useEffect(() => {
     const root = document.documentElement;
@@ -265,7 +265,7 @@ function Main(props) {
         style={{ display: inGame ? undefined : "none" }}
       >
         <Game
-          key={hostedGameId}
+          key={hostedGameKey}
           gameId={hostedGameId}
           joinSearch={hostedGameSearch}
           active={inGame}

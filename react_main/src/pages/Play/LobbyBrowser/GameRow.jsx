@@ -20,10 +20,11 @@ import {
   Typography,
 } from "@mui/material";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { FRESH_GAME_SESSION_STATE } from "shared/hostedGameSession";
 import { getRowColor, getSetupBackgroundColor } from "./gameRowColors.js";
 import StateIcon from "components/StateIcon";
 
-const GameStatus = (props) => {
+export const GameStatus = (props) => {
   const navigate = useNavigate();
   const user = useContext(UserContext);
   const isPhoneDevice = useIsPhoneDevice();
@@ -78,16 +79,26 @@ const GameStatus = (props) => {
 
   const isRankedJoin =
     props.game.status === "Open" && (props.game.ranked || props.game.competitive);
-  const tutorialGate = useRankedTutorialGate(() => navigate(buttonUrl));
+  // Join and Spectate both establish server membership, so the same game may
+  // need a new session even when it is already hosted (for example, leaving a
+  // seat to spectate from the lobby). Mark those navigations so
+  // useHostedGameSession replaces the session instead of revealing the old one.
+  const freshSessionState =
+    buttonText === "Join" || buttonText === "Spectate"
+      ? FRESH_GAME_SESSION_STATE
+      : undefined;
+  const tutorialGate = useRankedTutorialGate(() =>
+    freshSessionState
+      ? navigate(buttonUrl, { state: freshSessionState })
+      : navigate(buttonUrl)
+  );
 
   const GameButton = (
     <Button
       component={Link}
       to={buttonUrl}
+      state={freshSessionState}
       onClick={isRankedJoin ? tutorialGate.guard : undefined}
-      // Spectate changes server membership. A client-side route change would
-      // merely reveal the same retained, possibly seated game session.
-      reloadDocument={buttonText === "Spectate"}
       variant={buttonVariant}
       color={buttonColor}
       disabled={buttonDisabled}
@@ -105,7 +116,7 @@ const GameStatus = (props) => {
     <Button
       component={Link}
       to={`/game/${props.game.id}?spectate=true`}
-      reloadDocument
+      state={FRESH_GAME_SESSION_STATE}
       variant="outlined"
       color="inherit"
       sx={{
