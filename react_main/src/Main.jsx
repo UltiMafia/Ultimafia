@@ -423,6 +423,8 @@ function Header({ setShowAnnouncementTemporarily }) {
                 items: [
                   { text: "Rules", path: "/policy/rules" },
                   { text: "Moderation", path: "/policy/moderation" },
+                  { text: "Terms of Service", path: "/policy/tos" },
+                  { text: "Privacy Policy", path: "/policy/privacy" },
                   { text: "Invoices", path: "/policy/invoices", hide: !(user.groups || []).some((g) => g && g.name === "Owner") },
                 ],
               },
