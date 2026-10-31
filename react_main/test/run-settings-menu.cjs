@@ -138,19 +138,27 @@ async function main() {
     const collapsed = await menu();
     check(!collapsed.save || !collapsed.saveReachable, "collapsed: form hidden", collapsed.settings);
 
-    // Opening: sample the real MUI Collapse height while it animates.
-    await header.click();
-    const samples = [];
-    for (const t of [40, 80, 120, 160, 200, 300, 400]) {
-      await page.waitForTimeout(t - (samples.length ? [40, 80, 120, 160, 200, 300, 400][samples.length - 1] : 0));
-      samples.push(
-        await page.evaluate(() => {
-          const c = [...document.querySelectorAll(".side-menu .MuiCollapse-root")].pop();
-          return c ? Math.round(c.getBoundingClientRect().height) : null;
+    // Opening: click inside the page and sample the real MUI Collapse height on
+    // every frame while it animates.
+    const samples = await page.evaluate(
+      () =>
+        new Promise((resolve) => {
+          const settings = [...document.querySelectorAll(".side-menu")].find(
+            (m) => /Settings/.test(m.querySelector(".MuiAccordionSummary-root")?.textContent || ""),
+          );
+          settings.querySelector(".MuiAccordionSummary-root").click();
+          const heights = [];
+          const start = performance.now();
+          const frame = () => {
+            const c = settings.querySelector(".MuiCollapse-root");
+            heights.push(c ? Math.round(c.getBoundingClientRect().height) : null);
+            if (performance.now() - start < 600) requestAnimationFrame(frame);
+            else resolve(heights);
+          };
+          requestAnimationFrame(frame);
         }),
-      );
-    }
-    await page.waitForTimeout(400);
+    );
+    await page.waitForTimeout(200);
     const entered = await page.evaluate(() => {
       const c = [...document.querySelectorAll(".side-menu .MuiCollapse-root")].pop();
       return { height: Math.round(c.getBoundingClientRect().height), entered: c.classList.contains("MuiCollapse-entered") };
@@ -158,7 +166,7 @@ async function main() {
     check(
       entered.entered && entered.height > 0 && samples.some((h) => h > 0 && h < entered.height - 1),
       "open: Collapse animates through a smaller height, then ends entered",
-      { samples, final: entered },
+      { frames: samples.length, heights: [...new Set(samples)], final: entered },
     );
     const opened = await menu();
     check(opened.saveReachable, "1180x557 open: Save reachable", opened);
