@@ -215,7 +215,8 @@ export default function Game(props) {
   const user = useContext(UserContext);
   // HTTP connect, socket join and reconnect all belong to the same entry URL,
   // even while this session is retained behind an unrelated site page. Only a
-  // server-confirmed membership change may replace the spectator join mode.
+  // server-confirmed membership change may replace the spectator join mode
+  // within a hosted session; a new lobby entry mounts a new session.
   const joinOptionsRef = useRef(null);
   if (!joinOptionsRef.current) {
     const search = props.joinSearch ?? window.location.search;
@@ -2132,7 +2133,7 @@ const EMPTY_CHAT_STATE = { meetings: {}, alerts: [], obituaries: {} };
 // above the chat box on mobile and sits in the player list on desktop
 export function PregameSeatActions() {
   const isPhoneDevice = useIsPhoneDevice();
-  const { review, history, isSpectator, socket, options, gameId } =
+  const { review, history, isSpectator, socket, options } =
     useContext(GameContext);
   const action = pregameSeatAction({ review, history, isSpectator, options });
   if (!action) return null;
@@ -2176,7 +2177,7 @@ export function PregameSeatActions() {
         fullWidth={true}
         size={"small"}
         onClick={() => {
-          window.location.assign(`/game/${gameId}?spectate=true`);
+          if (socket && socket.on) socket.send("spectate");
         }}
       >
       Spectate
