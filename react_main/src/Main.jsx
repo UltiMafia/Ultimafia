@@ -336,7 +336,7 @@ function Main(props) {
   );
 }
 
-function Header({ setShowAnnouncementTemporarily }) {
+export function Header({ setShowAnnouncementTemporarily }) {
   const user = useContext(UserContext);
   const isPhoneDevice = useIsPhoneDevice();
   const location = useLocation();
@@ -435,7 +435,7 @@ function Header({ setShowAnnouncementTemporarily }) {
               },
             ]}
           />
-          <SiteLogo small />
+          <SiteLogo small flexible />
           {/* User section */}
           <div style={{ flex: "1 0" }}>
             {/* Signed-out auth lives in the phone bottom navigation; the header

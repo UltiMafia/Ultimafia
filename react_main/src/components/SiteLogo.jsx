@@ -19,6 +19,7 @@ export default function SiteLogo({
   small = false,
   large = false,
   newTab = false,
+  flexible = false,
 }) {
   const user = useContext(UserContext);
 
@@ -48,12 +49,25 @@ export default function SiteLogo({
   }
 
   return (
-    <Link to="/play" {...linkProps} style={{ lineHeight: 0 }}>
+    <Link
+      to="/play"
+      {...linkProps}
+      style={{
+        lineHeight: 0,
+        // The phone header shares one row with the menu, DM button, hearts and
+        // avatar. Let the logo give up width there instead of pushing the
+        // avatar off the screen edge.
+        ...(flexible
+          ? { display: "inline-flex", flexShrink: 1, minWidth: 0, maxWidth: "100%" }
+          : {}),
+      }}
+    >
       <img
         height={height}
         width={width}
         alt="Site logo"
         src={getLogoSrc()}
+        style={flexible ? { maxWidth: "100%", height: "auto" } : undefined}
       />
     </Link>
   );
