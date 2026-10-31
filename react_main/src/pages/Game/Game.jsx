@@ -6423,6 +6423,7 @@ export function SettingsMenu() {
     <SideMenu
       title="Settings"
       isAccordionMenu
+      scrollable={expanded}
       content={<SettingsForm handleClose={handleClose} />}
       expanded={expanded}
       onChange={handleToggle}
