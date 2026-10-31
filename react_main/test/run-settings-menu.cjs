@@ -1,7 +1,7 @@
 // Browser regression: the expanded in-game Settings menu must keep its Save
 // button reachable in the real game layout on short windows, through opening,
 // closing and reopening, a window resize and a larger root font size, and by
-// keyboard.
+// keyboard, and the menu must still animate open.
 //
 //   npx rsbuild build --config rsbuild.settings-menu-test.config.ts
 //   PLAYWRIGHT_MODULE=/path/to/playwright node test/run-settings-menu.cjs
@@ -121,10 +121,15 @@ async function main() {
           const visible = save.offsetParent !== null && box(save).height > 0;
           save.scrollIntoView({ block: "nearest" });
           const r = save.getBoundingClientRect();
+          const p = panel.getBoundingClientRect();
           const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
           out.save = box(save);
           out.saveReachable =
-            visible && r.bottom <= window.innerHeight && r.bottom <= panel.getBoundingClientRect().bottom + 1 && !!hit && save.contains(hit);
+            visible &&
+            r.top >= Math.max(0, p.top) - 1 &&
+            r.bottom <= Math.min(window.innerHeight, p.bottom) + 1 &&
+            !!hit &&
+            save.contains(hit);
         }
         return out;
       });
@@ -145,8 +150,16 @@ async function main() {
         }),
       );
     }
-    console.log("open animation, collapse height at 40-400 ms:", samples.join(", "));
     await page.waitForTimeout(400);
+    const entered = await page.evaluate(() => {
+      const c = [...document.querySelectorAll(".side-menu .MuiCollapse-root")].pop();
+      return { height: Math.round(c.getBoundingClientRect().height), entered: c.classList.contains("MuiCollapse-entered") };
+    });
+    check(
+      entered.entered && entered.height > 0 && samples.some((h) => h > 0 && h < entered.height - 1),
+      "open: Collapse animates through a smaller height, then ends entered",
+      { samples, final: entered },
+    );
     const opened = await menu();
     check(opened.saveReachable, "1180x557 open: Save reachable", opened);
 
@@ -160,8 +173,17 @@ async function main() {
     const focused = reached
       ? await page.evaluate(() => {
           const r = document.activeElement.getBoundingClientRect();
+          const p = document.activeElement.closest(".side-menu").parentElement.getBoundingClientRect();
           const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
-          return { top: Math.round(r.top), bottom: Math.round(r.bottom), onScreen: r.bottom <= window.innerHeight && !!hit && document.activeElement.contains(hit) };
+          return {
+            top: Math.round(r.top),
+            bottom: Math.round(r.bottom),
+            onScreen:
+              r.top >= Math.max(0, p.top) - 1 &&
+              r.bottom <= Math.min(window.innerHeight, p.bottom) + 1 &&
+              !!hit &&
+              document.activeElement.contains(hit),
+          };
         })
       : null;
     check(reached && focused.onScreen, "keyboard: Tab reaches Save on screen", focused);
