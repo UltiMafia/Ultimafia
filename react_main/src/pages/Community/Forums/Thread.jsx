@@ -13,6 +13,8 @@ import { TextEditor } from "components/Form";
 import { UserContext } from "Contexts";
 import { ThreadSkeleton } from "components/Skeletons";
 import { ThreadPoll } from "components/Poll";
+import { appendForumQuote, canComposeForumReply } from "./forumReplyComposer.mjs";
+import { pastedForumReplyImage } from "./forumReplyImagePaste.mjs";
 
 import { VoteWidget } from "components/VoteWidget";
 import { EmoteReactions } from "components/EmoteReactions";
@@ -38,7 +40,7 @@ function getFirstDateValue(author, keys) {
   return null;
 }
 
-function MentionEditor({ value, onChange, rosterUsers, mentionTagMap }) {
+function MentionEditor({ value, onChange, onPaste, readOnly, rosterUsers, mentionTagMap }) {
   const editorRef = useRef(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerQuery, setPickerQuery] = useState("");
@@ -57,6 +59,7 @@ function MentionEditor({ value, onChange, rosterUsers, mentionTagMap }) {
     : allCandidates;
 
   function insertAtCursor(text) {
+    if (readOnly) return;
     const ta = editorRef.current?.querySelector("textarea");
     const pos = ta ? ta.selectionStart : value.length;
     const next = value.slice(0, pos) + text + " " + value.slice(pos);
@@ -73,6 +76,7 @@ function MentionEditor({ value, onChange, rosterUsers, mentionTagMap }) {
   }
 
   function onSelect(candidate) {
+    if (readOnly) return;
     if (candidate.type === "tag") {
       insertAtCursor(`@!${candidate.name}`);
     } else {
@@ -82,7 +86,7 @@ function MentionEditor({ value, onChange, rosterUsers, mentionTagMap }) {
 
   return (
     <div className="mention-autocomplete-wrapper" ref={editorRef}>
-      <TextEditor value={value} onChange={onChange} />
+      <TextEditor value={value} onChange={onChange} onPaste={onPaste} readOnly={readOnly} />
       <div className="mention-picker-row">
         <button
           className="mention-ping-btn"
@@ -134,6 +138,9 @@ export default function Thread(props) {
   const [redirect, setRedirect] = useState();
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [replyContent, setReplyContent] = useState("");
+  const [replyTarget, setReplyTarget] = useState(null);
+  const [replyFocusRequest, setReplyFocusRequest] = useState(0);
+  const [postingReply, setPostingReply] = useState(false);
   const [page, setPage] = useState(1);
   const [scrolled, setScrolled] = useState(false);
   const [newRosterUsername, setNewRosterUsername] = useState("");
@@ -145,8 +152,16 @@ export default function Thread(props) {
   const [petitionEditTitle, setPetitionEditTitle] = useState("");
   const [petitionEditBody, setPetitionEditBody] = useState("");
 
+  const [replyImage, setReplyImage] = useState(null);
+  const [replyImagePreview, setReplyImagePreview] = useState("");
   const replyFormRef = useRef();
   const { threadId } = useParams();
+  const threadIdRef = useRef(threadId);
+  threadIdRef.current = threadId;
+  const mountedRef = useRef(true);
+  const draftGenerationRef = useRef(0);
+  const loadGenerationRef = useRef(0);
+  const postingReplyRef = useRef(false);
   const location = useLocation();
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
@@ -157,7 +172,17 @@ export default function Thread(props) {
     document.title = "Forums | UltiMafia";
   }, []);
 
+  useEffect(() => () => {
+    mountedRef.current = false;
+    draftGenerationRef.current += 1;
+    loadGenerationRef.current += 1;
+  }, []);
+
   useEffect(() => {
+    const request = ++loadGenerationRef.current;
+    resetReplyForm();
+    setLoaded(false);
+    setScrolled(false);
     // If there's a specific reply to view, load that; otherwise load the last page
     const replyParam = params.get("reply") || "";
     const url = replyParam
@@ -167,6 +192,7 @@ export default function Thread(props) {
     axios
       .get(url)
       .then((res) => {
+        if (!mountedRef.current || request !== loadGenerationRef.current || threadIdRef.current !== threadId) return;
         res.data.content = filterProfanity(
           res.data.content,
           user.settings,
@@ -189,6 +215,7 @@ export default function Thread(props) {
         });
       })
       .catch((e) => {
+        if (!mountedRef.current || request !== loadGenerationRef.current || threadIdRef.current !== threadId) return;
         errorAlert(e);
         setRedirect("/community/forums");
       });
@@ -214,56 +241,107 @@ export default function Thread(props) {
   }, [loaded, threadInfo]);
 
   useEffect(() => {
-    if (showReplyForm) replyFormRef.current.scrollIntoView();
-  }, [showReplyForm]);
+    if (!showReplyForm) return;
+    const form = replyFormRef.current;
+    form?.scrollIntoView({ block: "nearest" });
+    const textarea = form?.querySelector("textarea");
+    textarea?.focus({ preventScroll: true });
+    textarea?.setSelectionRange(textarea.value.length, textarea.value.length);
+  }, [showReplyForm, replyTarget, replyFocusRequest]);
 
-  function onReplyClick(reply) {
-    if (threadInfo.locked && !user.perms.postInLocked) return;
-
-    setShowReplyForm(true);
-
-    if (reply) {
-      const profilePath = reply.author.vanityUrl
-        ? `/user/${reply.author.vanityUrl}`
-        : `/user/${reply.author.id}`;
-      var newContent = `${replyContent}\n\n> ##### [${reply.author.name}](${profilePath}) said: [↻](/community/forums/thread/${threadId}?reply=${reply.id})\n`;
-      var quotedContent = reply.content.split("\n");
-
-      for (let i = 0; i < quotedContent.length; i++)
-        quotedContent[i] = `> ${quotedContent[i]}`;
-
-      newContent = `${newContent}${quotedContent.join("\n")}\n\n`;
-      setReplyContent(newContent);
+  useEffect(() => {
+    if (!replyImage) {
+      setReplyImagePreview("");
+      return;
     }
+    const url = URL.createObjectURL(replyImage);
+    setReplyImagePreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [replyImage]);
 
-    if (showReplyForm) replyFormRef.current.scrollIntoView();
+  function onReplyPaste(event) {
+    try {
+      const image = pastedForumReplyImage(event.clipboardData?.items);
+      if (!image) return;
+      event.preventDefault();
+      if (postingReplyRef.current) return;
+      if (replyImage) {
+        errorAlert(new Error("Remove the current image before pasting another."));
+        return;
+      }
+      setReplyImage(image);
+    } catch (error) {
+      event.preventDefault();
+      errorAlert(error);
+    }
+  }
+
+  function resetReplyForm() {
+    draftGenerationRef.current += 1;
+    setShowReplyForm(false);
+    setReplyTarget(null);
+    setReplyContent("");
+    setReplyImage(null);
+  }
+
+  function onReplyClick(reply, placement = "thread") {
+    if (postingReplyRef.current || threadInfo.id !== threadId ||
+        !canComposeForumReply(threadInfo, user)) return;
+
+    setReplyTarget(reply ? `reply:${reply.id}` : placement);
+    setReplyContent((content) => appendForumQuote(content, reply, threadId));
+    setShowReplyForm(true);
+    setReplyFocusRequest((request) => request + 1);
   }
 
   function onPostReply() {
+    if (postingReplyRef.current || threadInfo.id !== threadId ||
+        !canComposeForumReply(threadInfo, user)) return;
+    const draft = draftGenerationRef.current;
+    const submittedThread = threadId;
+    postingReplyRef.current = true;
+    setPostingReply(true);
+    let body = { thread: threadInfo.id, content: replyContent };
+    if (replyImage) {
+      body = new FormData();
+      body.append("thread", threadInfo.id);
+      body.append("content", replyContent);
+      body.append("image", replyImage, "pasted-image");
+    }
     axios
-      .post(`/api/forums/reply`, {
-        thread: threadInfo.id,
-        content: replyContent,
-      })
+      .post("/api/forums/reply", body)
       .then((res) => {
-        onThreadPageNav(Number(res.data));
-        setReplyContent("");
-        setShowReplyForm(false);
-
+        if (!mountedRef.current || draft !== draftGenerationRef.current ||
+            threadIdRef.current !== submittedThread) return;
+        onThreadPageNav(Number(res.data), true);
         document.body.scrollTop = document.body.scrollHeight;
       })
-      .catch(errorAlert);
+      .catch((error) => {
+        if (mountedRef.current && draft === draftGenerationRef.current &&
+            threadIdRef.current === submittedThread) errorAlert(error);
+      })
+      .finally(() => {
+        postingReplyRef.current = false;
+        if (mountedRef.current) setPostingReply(false);
+      });
   }
 
   function onPostCancel() {
-    setShowReplyForm(false);
-    setReplyContent("");
+    if (!postingReplyRef.current) resetReplyForm();
   }
 
-  function onThreadPageNav(page) {
+  function onThreadPageNav(page, clearDraft = false) {
+    const request = ++loadGenerationRef.current;
+    if (clearDraft) resetReplyForm();
+    else {
+      draftGenerationRef.current += 1;
+      setReplyTarget("bottom");
+    }
+    setLoaded(false);
     axios
       .get(`/api/forums/thread/${threadId}?page=${page}`)
       .then((res) => {
+        if (!mountedRef.current || request !== loadGenerationRef.current || threadIdRef.current !== threadId) return;
         res.data.content = filterProfanity(
           res.data.content,
           user.settings,
@@ -275,8 +353,13 @@ export default function Thread(props) {
 
         setPage(page);
         setThreadInfo(res.data);
+        setLoaded(true);
       })
-      .catch(errorAlert);
+      .catch((error) => {
+        if (!mountedRef.current || request !== loadGenerationRef.current || threadIdRef.current !== threadId) return;
+        setLoaded(true);
+        errorAlert(error);
+      });
   }
 
   function onThreadDeleted() {
@@ -621,7 +704,46 @@ function onAddTag(targetUserId) {
     !isMuted &&
     (!threadInfo.restricted || isAuthor || threadInfo.isAllowedPoster);
 
+  const replyForm = showReplyForm && canComposeForumReply(threadInfo, user) && (
+    <div className="reply-form-wrapper" ref={replyFormRef}
+      role="group" aria-label="Forum reply composer" data-reply-target={replyTarget}>
+      <fieldset className="reply-form span-panel" disabled={postingReply}
+        style={{ border: 0, margin: 0, minWidth: 0 }} aria-busy={postingReply}>
+        <MentionEditor
+          value={replyContent}
+          onChange={setReplyContent}
+          onPaste={onReplyPaste}
+          readOnly={postingReply}
+          rosterUsers={threadInfo.rosterUsers}
+          mentionTagMap={mentionTagMap}
+        />
+        <div className="reply-image-help">
+          Paste one still PNG, JPEG or WebP (up to 5 MiB; resized to fit 1024 × 1024).
+        </div>
+        {replyImage && (
+          <div className="reply-image-preview">
+            {replyImagePreview && <img src={replyImagePreview} alt="Pasted attachment preview"
+              style={{ maxWidth: "100%", maxHeight: 240 }} />}
+            <button type="button" className="btn btn-theme-sec" disabled={postingReply}
+              onClick={() => setReplyImage(null)}>Remove image</button>
+          </div>
+        )}
+        <div className="post-btn-wrapper">
+          <button type="button" className="post-reply btn btn-theme"
+            disabled={postingReply} onClick={onPostReply}>
+            {postingReply ? "Posting..." : "Post"}
+          </button>
+          <button type="button" className="btn btn-theme-sec"
+            disabled={postingReply} onClick={onPostCancel}>
+            Cancel
+          </button>
+        </div>
+      </fieldset>
+    </div>
+  );
+
   const replies = threadInfo.replies.map((reply) => (
+    <React.Fragment key={reply.id}>
     <Post
       className={`reply ${reply.id === params.get("reply") ? "sel" : ""}`}
       id={`reply-${reply.id}`}
@@ -641,6 +763,8 @@ function onAddTag(targetUserId) {
       onEdit={() => onThreadPageNav(page)}
       mentionTags={mentionTagMap}
     />
+    {replyTarget === `reply:${reply.id}` && replyForm}
+    </React.Fragment>
   ));
 
   return (
@@ -665,6 +789,7 @@ function onAddTag(targetUserId) {
             mentionTags={mentionTagMap}
             hasTitle
           />
+          {replyTarget === "thread" && replyForm}
         </div>
         {(((threadInfo.rosterUsers || []).length > 0 || threadInfo.restricted) ||
           threadInfo.petition) && (
@@ -970,26 +1095,6 @@ function onAddTag(targetUserId) {
         )}
       </div>
       <ThreadPoll threadId={threadId} locked={threadInfo.locked} />
-      <div className="reply-form-wrapper" ref={replyFormRef}>
-        {showReplyForm && (
-          <div className="reply-form span-panel">
-            <MentionEditor
-              value={replyContent}
-              onChange={setReplyContent}
-              rosterUsers={threadInfo.rosterUsers}
-              mentionTagMap={mentionTagMap}
-            />
-            <div className="post-btn-wrapper">
-              <div className="post-reply btn btn-theme" onClick={onPostReply}>
-                Post
-              </div>
-              <div className="btn btn-theme-sec" onClick={onPostCancel}>
-                Cancel
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
       <div className="replies-wrapper">
         <PageNav
           inverted
@@ -1014,13 +1119,14 @@ function onAddTag(targetUserId) {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => onReplyClick()}
+                onClick={() => onReplyClick(null, "bottom")}
                 sx={{ minWidth: "120px" }}
               >
                 Reply
               </Button>
             </div>
           )}
+        {replyTarget === "bottom" && replyForm}
         {isMuted && (
           <div className="restricted-notice muted-notice">
             <i className="fas fa-volume-mute" /> You have been muted in this thread.

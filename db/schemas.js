@@ -651,6 +651,7 @@ var schemas = {
       index: true,
     },
     page: { type: Number, index: true },
+    image: { type: Buffer, select: false },
     content: String,
     postDate: { type: Number, index: true },
     voteCount: { type: Number, default: 0 },
