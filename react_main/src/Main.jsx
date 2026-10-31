@@ -2,6 +2,7 @@ import React, {
   useState,
   useContext,
   useEffect,
+  useRef,
   Suspense,
 } from "react";
 import { lazyWithRetry, clearChunkReloadFlag } from "./lib/lazyWithRetry";
@@ -545,10 +546,29 @@ function InGameWarning() {
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const warningRef = useRef(null);
+  const [warningHeight, setWarningHeight] = useState(0);
+  const open = user.inGame !== null;
 
   useEffect(() => {
     setLeaveDialogOpen(false);
   }, [user.inGame]);
+
+  // On phones the warning floats over the end of the scrolling content, so
+  // reserve its measured height there; it changes with wrapping and font size.
+  useEffect(() => {
+    const node = warningRef.current;
+    if (!open || !isPhoneDevice || !node) {
+      setWarningHeight(0);
+      return;
+    }
+    const measure = () => setWarningHeight(node.offsetHeight);
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [open, isPhoneDevice]);
 
   function onGameLeave() {
     setLeaveDialogOpen(false);
@@ -562,8 +582,12 @@ function InGameWarning() {
 
   return (
     <>
+      {warningHeight > 0 && (
+        <Box aria-hidden sx={{ flexShrink: 0, height: warningHeight }} />
+      )}
       <Snackbar
-        open={user.inGame !== null}
+        ref={warningRef}
+        open={open}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: isPhoneDevice ? "center" : "left",
