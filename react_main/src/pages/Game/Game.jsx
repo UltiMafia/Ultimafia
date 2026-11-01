@@ -374,6 +374,24 @@ export default function Game(props) {
     if (!active) stopDeathSounds();
   }, [active, stopDeathSounds]);
   const navigate = useNavigate();
+
+  // Keep the URL equal to the role the server confirmed. Otherwise a stale
+  // ?join=true would take a seat when a spectator reloads, and a stale
+  // ?spectate=true would put a seated player back into spectators. The
+  // membershipUpdate navigation changes the hosted search without changing the
+  // session key, so it does not remount the game. A bot tab has no URL state.
+  useEffect(() => {
+    if (!active || !loaded || joinOptionsRef.current.isBot) return;
+    const target = `/game/${gameId}${isSpectator ? "?spectate=true" : ""}`;
+    const current = window.location.pathname + window.location.search;
+    if (current !== target) {
+      navigate(target, {
+        replace: true,
+        state: { membershipUpdate: true },
+      });
+    }
+  }, [active, loaded, isSpectator, gameId, navigate]);
+
   const [selectedPanel, setSelectedPanel] = useState("chat");
   const isPhoneDeviceRef = useRef(false);
   isPhoneDeviceRef.current = isPhoneDevice;
@@ -1240,22 +1258,6 @@ export default function Game(props) {
       props.onMembershipChange?.(
         spectatingNow ? "spectator" : "player"
       );
-
-      // Keep the URL equal to the confirmed role, so a reload cannot take a
-      // seat for a spectator or move a seated player back to spectators. A
-      // bot tab has no URL state to keep.
-      if (activeRef.current && !joinOptionsRef.current.isBot) {
-        const target = `/game/${gameId}${
-          spectatingNow ? "?spectate=true" : ""
-        }`;
-        const current = window.location.pathname + window.location.search;
-        if (current !== target) {
-          navigate(target, {
-            replace: true,
-            state: { membershipUpdate: true },
-          });
-        }
-      }
     });
 
     socket.on("omniscientSpectator", () => {
