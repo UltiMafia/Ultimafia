@@ -40,6 +40,8 @@ import ThemeColorMeta from "./components/ThemeColorMeta";
 import RetainedSiteRoutes from "./components/RetainedSiteRoutes";
 import { DmWindowProvider } from "./components/dms/DmWindowContext";
 import FloatingDmWindow from "./components/dms/FloatingDmWindow";
+import { StrategyWindowsProvider } from "./components/strategyWindows/StrategyWindowsContext";
+import FloatingStrategyWindows from "./components/strategyWindows/FloatingStrategyWindows";
 import ViewOverlayBoundary from "./components/ViewOverlayBoundary";
 import { AppLocationContext, ViewActivityContext, ViewNavigate } from "./hooks/useViewActivity";
 import { useAppViewport } from "./hooks/useAppViewport";
@@ -279,6 +281,10 @@ function Main(props) {
       {loading && <Loading />}
       {!loading && (
         <AppLocationContext.Provider value={location}>
+        {/* Guide windows are hosted here rather than inside the game page, so a
+            popped-out guide stays on screen while the user plays and while
+            they browse setups. */}
+        <StrategyWindowsProvider>
         <SheetProvider>
           <ProfileSheetProvider>
             <ThemeColorMeta />
@@ -297,8 +303,10 @@ function Main(props) {
             </ViewActivityContext.Provider>
             <AlertList />
             <ConnectionBanner />
+            <FloatingStrategyWindows />
           </ProfileSheetProvider>
         </SheetProvider>
+        </StrategyWindowsProvider>
         </AppLocationContext.Provider>
       )}
     </SiteInfoProvider>
