@@ -1137,43 +1137,25 @@ html[data-keyboard="open"] .game .meeting-tabs {
   }
 }
 
-/* Reply: hover button in the row's bottom-right corner, preview above the
-   chat box, and the marker on a reply line (it follows the quote it answers).
-   The pin keeps its usual top-right place. A row that offers a reply keeps
-   room for both whether or not it is hovered, so hovering never moves the
-   layout, and the button is drawn inside the row so it never covers (or
-   takes the hover of) the next one. */
-.game .message.with-reply-button {
-  /* Pin (6px down, 12px tall) + 4px gap + 10px reply. */
-  min-height: 32px;
-  box-sizing: border-box;
-}
+/* Reply: clicking a row starts a reply (see MessageRow); the preview sits
+   above the chat box, and a reply line carries a marker (it follows the
+   quote it answers). The pin keeps its usual top-right place. */
 
-/* The chat is a column flexbox. An explicit min-height replaces a row's
-   automatic minimum (its content), so without this a full chat squeezes these
-   rows down to 32px and their text spills over the next row. */
-.game .message.with-reply-button,
+/* The chat is a column flexbox. A row with a reply reference must keep its
+   full height, or a full chat squeezes it and its text spills over the next
+   row. */
 .game .message.with-reply-reference {
   flex-shrink: 0;
 }
 
-.game .message .reply-button {
-  position: absolute;
-  right: 4px;
-  bottom: 0;
-  z-index: 1;
-
-  /* Centred under the pin (whose centre is 12px from the row's right). */
-  width: 16px;
-  text-align: center;
-  font-size: 0.625em;
-  line-height: 1;
-  opacity: 0.75;
-  cursor: pointer;
+/* Rows that can be replied to take keyboard focus (Enter replies). */
+.game .message.click-to-reply:focus {
+  outline: none;
 }
 
-.game .message .reply-button:hover {
-  opacity: 1;
+.game .message.click-to-reply:focus-visible {
+  outline: 1px solid var(--scheme-color-sec);
+  outline-offset: -1px;
 }
 
 .game .message.reply-message {
