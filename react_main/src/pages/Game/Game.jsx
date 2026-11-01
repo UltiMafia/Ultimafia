@@ -86,7 +86,6 @@ import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { hyphenDelimit } from "../../utils";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { pregameSeatAction } from "shared/pregameSeatAction";
-import { membershipSwitch } from "shared/hostedGameSession";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
 import {
   Accordion,
@@ -394,19 +393,16 @@ export default function Game(props) {
 
   // A lobby Join/Spectate click for the game already hosted asks for the other
   // role. Send that over the existing socket instead of replacing the session
-  // and reconnecting. The request is one shot per navigation.
+  // and reconnecting. Each navigation is applied once.
   const appliedMembershipRequestRef = useRef(null);
   useEffect(() => {
     if (!active || !loaded || leave || !props.membershipRequest) return;
-    const { nonce, membership } = props.membershipRequest;
-    if (appliedMembershipRequestRef.current === nonce) return;
-    appliedMembershipRequestRef.current = nonce;
-    const action = membershipSwitch(
-      isSpectator ? "spectator" : "player",
-      membership
-    );
-    if (action && socket && socket.send) socket.send(action);
-    props.onMembershipRequestSent?.(nonce);
+    const { key, membership } = props.membershipRequest;
+    if (appliedMembershipRequestRef.current === key) return;
+    appliedMembershipRequestRef.current = key;
+    if (membership === (isSpectator ? "spectator" : "player")) return;
+    const action = membership === "spectator" ? "spectate" : "takeSeat";
+    if (socket && socket.send) socket.send(action);
   }, [active, loaded, leave, isSpectator, props.membershipRequest, socket]);
 
   const [selectedPanel, setSelectedPanel] = useState("chat");
@@ -1266,8 +1262,6 @@ export default function Game(props) {
       joinOptionsRef.current.spectate = spectatingNow;
       setIsSpectator(spectatingNow);
       if (!spectatingNow) stopReadyBellRepeatRef.current();
-
-      props.onMembershipChange?.(spectatingNow ? "spectator" : "player");
     });
 
     socket.on("omniscientSpectator", () => {

@@ -1,14 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 
-import {
-  hostedGameKey,
-  isFreshGameSession,
-  isMembershipUpdate,
-  nextHostedGame,
-  requestedMembership,
-} from "../shared/hostedGameSession";
-
 export function gameIdAt(pathname) {
   return matchPath({ path: "/game/:gameId", end: false }, pathname)?.params.gameId || null;
 }
@@ -34,59 +26,19 @@ export function useHostedGameSession() {
   const activeRef = useRef(inGame);
   activeRef.current = inGame;
   const [hostedGame, setHostedGame] = useState(null);
-  const freshSession = isFreshGameSession(location.state);
-  const requested = requestedMembership(location.state);
-  const updateMembership = isMembershipUpdate(location.state);
 
   useEffect(() => {
     if (!routeGameId) return;
     // Capture the entry URL before the lazy game mounts or authenticates. Site
     // navigation must not change whether this session joins as a spectator/bot.
-    // A lobby row click can explicitly request a fresh session, which is how
-    // the same game is entered again with the other join intent without a
-    // document reload. Returning to the same game entry keeps its state.
+    // Returning to the same game keeps its state and socket; a different game
+    // starts a new session.
     setHostedGame(current =>
-      nextHostedGame(current, {
-        gameId: routeGameId,
-        search: location.search,
-        entryKey: location.key,
-        fresh: freshSession,
-        requested,
-        membershipUpdate: updateMembership,
-      })
+      current?.id === routeGameId
+        ? current
+        : { id: routeGameId, search: location.search }
     );
-  }, [
-    routeGameId,
-    location.search,
-    location.key,
-    freshSession,
-    requested,
-    updateMembership,
-  ]);
-
-  // The Game reports the role the server actually confirmed. This does not
-  // change the session key, so a confirmed role never remounts the game. A
-  // matching pending request is finished.
-  const setHostedGameMembership = useCallback((membership) => {
-    setHostedGame(current => {
-      if (!current) return current;
-      const request =
-        current.request && current.request.membership === membership
-          ? null
-          : current.request;
-      if (current.membership === membership && current.request === request)
-        return current;
-      return { ...current, membership, request };
-    });
-  }, []);
-
-  const clearMembershipRequest = useCallback((nonce) => {
-    setHostedGame(current =>
-      current && current.request && current.request.nonce === nonce
-        ? { ...current, request: null }
-        : current
-    );
-  }, []);
+  }, [routeGameId, location.search]);
 
   const leaveGameSession = useCallback(() => {
     setHostedGame(null);
@@ -103,11 +55,6 @@ export function useHostedGameSession() {
     inGame,
     hostedGameId: hostedGame?.id || null,
     hostedGameSearch: hostedGame?.search || "",
-    hostedGameKey: hostedGameKey(hostedGame),
-    hostedGameMembership: hostedGame?.membership || null,
-    membershipRequest: hostedGame?.request || null,
-    setHostedGameMembership,
-    clearMembershipRequest,
     leaveGameSession,
   };
 }

@@ -20,10 +20,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
-import {
-  joinGameSessionState,
-  spectateGameSessionState,
-} from "shared/hostedGameSession";
 import { getRowColor, getSetupBackgroundColor } from "./gameRowColors.js";
 import StateIcon from "components/StateIcon";
 
@@ -85,19 +81,18 @@ export const GameStatus = (props) => {
 
   const isRankedJoin =
     props.game.status === "Open" && (props.game.ranked || props.game.competitive);
-  // Join and Spectate both establish server membership, so the same game may
-  // need a new session even when it is already hosted (for example, leaving a
-  // seat to spectate from the lobby). Mark those navigations so
-  // useHostedGameSession replaces the session instead of revealing the old one.
-  const freshSessionState =
+  // The requested role travels in navigation state; the URL describes only
+  // the confirmed role. The mounted game applies a different role over its
+  // existing socket.
+  const membershipState =
     buttonText === "Join"
-      ? joinGameSessionState()
+      ? { requestedMembership: "player" }
       : buttonText === "Spectate"
-        ? spectateGameSessionState()
+        ? { requestedMembership: "spectator" }
         : undefined;
   const tutorialGate = useRankedTutorialGate(() =>
-    freshSessionState
-      ? navigate(buttonUrl, { state: freshSessionState })
+    membershipState
+      ? navigate(buttonUrl, { state: membershipState })
       : navigate(buttonUrl)
   );
 
@@ -105,7 +100,7 @@ export const GameStatus = (props) => {
     <Button
       component={Link}
       to={buttonUrl}
-      state={freshSessionState}
+      state={membershipState}
       onClick={isRankedJoin ? tutorialGate.guard : undefined}
       variant={buttonVariant}
       color={buttonColor}
@@ -124,7 +119,7 @@ export const GameStatus = (props) => {
     <Button
       component={Link}
       to={`/game/${props.game.id}?spectate=true`}
-      state={spectateGameSessionState()}
+      state={{ requestedMembership: "spectator" }}
       variant="outlined"
       color="inherit"
       sx={{

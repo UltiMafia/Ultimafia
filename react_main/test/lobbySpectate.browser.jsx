@@ -1,6 +1,6 @@
 // Browser fixture for test/run-lobby-spectate.cjs: the real lobby row buttons.
 // Spectate and Join must navigate client-side (no document reload) and carry
-// the fresh-session state the hosted game session uses to replace itself.
+// the requested role for the hosted game session to apply over its socket.
 import React from "react";
 import ReactDOM from "react-dom";
 import {
@@ -11,6 +11,7 @@ import {
 } from "react-router-dom";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { GameStatus } from "../src/pages/Play/LobbyBrowser/GameRow";
+import { useHostedGameSession } from "../src/hooks/useHostedGameSession";
 import { SheetProvider } from "../src/components/Sheet";
 import { SiteInfoContext, UserContext } from "../src/Contexts";
 import "../src/css/main.css";
@@ -41,12 +42,17 @@ const game = {
 
 function GamePage() {
   const location = useLocation();
+  const { hostedGameId, leaveGameSession } = useHostedGameSession();
   return (
-    <div data-testid="game-page">
-      {location.pathname}
-      {location.search}
-      {"|fresh="}
-      {String(Boolean(location.state && location.state.freshGameSession))}
+    <div>
+      <div data-testid="game-page">
+        {location.pathname}
+        {location.search}
+        {"|role="}
+        {location.state?.requestedMembership || ""}
+      </div>
+      <div data-testid="session">{hostedGameId || ""}</div>
+      <button onClick={leaveGameSession}>Leave</button>
     </div>
   );
 }
