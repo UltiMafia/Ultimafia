@@ -31,24 +31,34 @@ function establishGameConn(port) {
 
   let socket = new sockets.ClientSocket(`ws://localhost:${port}`, true);
   servers[port] = socket;
+  socket.canCreateGames = false;
+  socket.deprecated = false;
 
   socket.on("connected", () => {
+    socket.canCreateGames = false;
     socket.send("authAsServer", process.env.LOAD_BALANCER_KEY);
+  });
+
+  socket.on("serverAuthenticated", () => {
+    if (servers[port] === socket && !socket.deprecated)
+      socket.canCreateGames = true;
+  });
+
+  socket.on("disconnected", () => {
+    socket.canCreateGames = false;
   });
 
   socket.on("gameCreated", (gameId) => {
     const gameResults = waiting[gameId];
-    if (!gameResults) return;
+    if (!gameResults || gameResults.socket !== socket) return;
 
-    delete waiting[gameId];
     gameResults.resolve(gameId);
   });
 
   socket.on("gameCreateError", (info) => {
     const gameResults = waiting[info.gameId];
-    if (!gameResults) return;
+    if (!gameResults || gameResults.socket !== socket) return;
 
-    delete waiting[info.gameId];
     gameResults.reject(new Error(info.error));
   });
 
@@ -78,38 +88,49 @@ function establishGameConn(port) {
   });
 }
 
-function createGame(hostId, gameType, settings) {
-  return new Promise(async (res, rej) => {
+async function createGame(hostId, gameType, settings) {
+  const preferredPort = await redis.getNextGameServerPort();
+  const ready = (socket) =>
+    socket && socket.readyState === 1 && socket.canCreateGames && !socket.deprecated;
+  const socket = ready(servers[preferredPort])
+    ? servers[preferredPort]
+    : Object.values(servers).find(ready);
+
+  if (!socket) throw new Error("No game server is ready to host a game.");
+
+  const gameId = shortid.generate();
+  return new Promise((resolve, reject) => {
+    let timeout;
+    const finish = (error) => {
+      if (waiting[gameId] !== request) return;
+      delete waiting[gameId];
+      clearTimeout(timeout);
+      if (error) reject(error);
+      else resolve(gameId);
+    };
+    const request = {
+      socket,
+      resolve: () => finish(),
+      reject: finish,
+    };
+    waiting[gameId] = request;
+    timeout = setTimeout(
+      () => finish(new Error("Timeout creating game on game server")),
+      Number(process.env.GAME_CREATION_TIMEOUT)
+    );
+
     try {
-      const gameId = shortid.generate();
-      let portForNextGame = await redis.getNextGameServerPort();
-
-      if (isNaN(portForNextGame) || portForNextGame === null || portForNextGame === undefined) {
-        portForNextGame = Number(3010);
-      }
-
-      waiting[gameId] = {
-        resolve: res,
-        reject: rej,
-      };
-
-      servers[portForNextGame].send("createGame", {
-        gameId: gameId,
+      // Never queue creation across reconnect or retry after a possible delivery.
+      if (!ready(socket)) throw new Error("Game server disconnected before hosting.");
+      socket.send("createGame", {
+        gameId,
         key: process.env.LOAD_BALANCER_KEY,
-        hostId: hostId,
-        gameType: gameType,
-        settings: settings,
+        hostId,
+        gameType,
+        settings,
       });
-
-      setTimeout(() => {
-        if (!waiting[gameId]) return;
-
-        rej(new Error("Timeout creating game on game server"));
-        delete waiting[gameId];
-      }, Number(process.env.GAME_CREATION_TIMEOUT));
-    } catch (e) {
-      logger.error(e);
-      rej(e);
+    } catch (error) {
+      finish(error);
     }
   });
 }
@@ -224,6 +245,10 @@ async function notifyRehost(oldGameId, newGameId, { hostId, hostName, setup } = 
 }
 
 async function deprecateServer(port) {
+  if (servers[port]) {
+    servers[port].deprecated = true;
+    servers[port].canCreateGames = false;
+  }
   await redis.removeGameServer(port);
   servers[port].send("deprecated", {
     key: process.env.LOAD_BALANCER_KEY,

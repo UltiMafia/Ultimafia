@@ -256,7 +256,10 @@ var deprecated = false;
         // The main server authenticating as a server
         socket.on("authAsServer", async (token) => {
           try {
-            if (token == process.env.LOAD_BALANCER_KEY) socket.isServer = true;
+            if (token == process.env.LOAD_BALANCER_KEY) {
+              socket.isServer = true;
+              socket.send("serverAuthenticated");
+            }
           } catch (e) {
             logger.error(e);
           }
