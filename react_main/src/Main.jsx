@@ -169,7 +169,9 @@ function Main(props) {
     hostedGameId,
     hostedGameSearch,
     hostedGameKey,
+    membershipRequest,
     setHostedGameMembership,
+    clearMembershipRequest,
     leaveGameSession,
   } = useHostedGameSession();
 
@@ -278,7 +280,9 @@ function Main(props) {
           gameId={hostedGameId}
           joinSearch={hostedGameSearch}
           active={inGame}
+          membershipRequest={membershipRequest}
           onMembershipChange={setHostedGameMembership}
+          onMembershipRequestSent={clearMembershipRequest}
           onLeave={leaveGameSession}
         />
       </div>

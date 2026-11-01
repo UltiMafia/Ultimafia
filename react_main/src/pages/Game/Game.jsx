@@ -86,6 +86,7 @@ import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { hyphenDelimit } from "../../utils";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { pregameSeatAction } from "shared/pregameSeatAction";
+import { membershipSwitch } from "shared/hostedGameSession";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
 import {
   Accordion,
@@ -391,6 +392,23 @@ export default function Game(props) {
       });
     }
   }, [active, loaded, isSpectator, gameId, navigate]);
+
+  // A lobby Join/Spectate click for the game already hosted asks for the other
+  // role. Send that over the existing socket instead of replacing the session
+  // and reconnecting. The request is one shot per navigation.
+  const appliedMembershipRequestRef = useRef(null);
+  useEffect(() => {
+    if (!active || !loaded || !props.membershipRequest) return;
+    const { nonce, membership } = props.membershipRequest;
+    if (appliedMembershipRequestRef.current === nonce) return;
+    appliedMembershipRequestRef.current = nonce;
+    const action = membershipSwitch(
+      isSpectator ? "spectator" : "player",
+      membership
+    );
+    if (action && socket && socket.send) socket.send(action);
+    props.onMembershipRequestSent?.(nonce);
+  }, [active, loaded, isSpectator, props.membershipRequest, socket]);
 
   const [selectedPanel, setSelectedPanel] = useState("chat");
   const isPhoneDeviceRef = useRef(false);

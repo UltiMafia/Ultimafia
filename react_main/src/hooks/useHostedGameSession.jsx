@@ -65,11 +65,25 @@ export function useHostedGameSession() {
   ]);
 
   // The Game reports the role the server actually confirmed. This does not
-  // change the session key, so a confirmed role never remounts the game.
+  // change the session key, so a confirmed role never remounts the game. A
+  // matching pending request is finished.
   const setHostedGameMembership = useCallback((membership) => {
+    setHostedGame(current => {
+      if (!current) return current;
+      const request =
+        current.request && current.request.membership === membership
+          ? null
+          : current.request;
+      if (current.membership === membership && current.request === request)
+        return current;
+      return { ...current, membership, request };
+    });
+  }, []);
+
+  const clearMembershipRequest = useCallback((nonce) => {
     setHostedGame(current =>
-      current && current.membership !== membership
-        ? { ...current, membership }
+      current && current.request && current.request.nonce === nonce
+        ? { ...current, request: null }
         : current
     );
   }, []);
@@ -91,7 +105,9 @@ export function useHostedGameSession() {
     hostedGameSearch: hostedGame?.search || "",
     hostedGameKey: hostedGameKey(hostedGame),
     hostedGameMembership: hostedGame?.membership || null,
+    membershipRequest: hostedGame?.request || null,
     setHostedGameMembership,
+    clearMembershipRequest,
     leaveGameSession,
   };
 }

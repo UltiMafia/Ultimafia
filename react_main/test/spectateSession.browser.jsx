@@ -1,8 +1,8 @@
 // Browser fixture for test/run-spectate-session.cjs: the real
 // useHostedGameSession hook plus a fake Game keyed the way Main keys it.
 // Buttons simulate the lobby's Join/Spectate links (fresh session state),
-// ordinary in-app links to the same game (no state), and a server-confirmed
-// membership update that rewrites the URL without remounting.
+// ordinary in-app links to the same game (no state), and a confirmed role
+// switch that rewrites the URL without remounting.
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, useNavigate } from "react-router-dom";
@@ -35,15 +35,20 @@ function Harness() {
     hostedGameSearch,
     hostedGameKey,
     hostedGameMembership,
+    membershipRequest,
     setHostedGameMembership,
+    clearMembershipRequest,
   } = useHostedGameSession();
 
-  function confirmMembership(membership) {
+  function applyRequest() {
+    if (!membershipRequest) return;
+    const membership = membershipRequest.membership;
     setHostedGameMembership(membership);
-    navigate(
-      `/game/g1${membership === "spectator" ? "?spectate=true" : ""}`,
-      { replace: true, state: { membershipUpdate: true } }
-    );
+    clearMembershipRequest(membershipRequest.nonce);
+    navigate(`/game/g1${membership === "spectator" ? "?spectate=true" : ""}`, {
+      replace: true,
+      state: { membershipUpdate: true },
+    });
   }
 
   return (
@@ -69,14 +74,14 @@ function Harness() {
       <button onClick={() => navigate("/game/g1?spectate=true")}>
         Plain spectate link g1
       </button>
-      <button onClick={() => confirmMembership("spectator")}>
-        Confirm spectating
-      </button>
-      <button onClick={() => confirmMembership("player")}>
-        Confirm seated
-      </button>
+      <button onClick={applyRequest}>Apply request</button>
       <div data-testid="in-game">{String(inGame)}</div>
       <div data-testid="membership">{hostedGameMembership || ""}</div>
+      <div data-testid="request">
+        {membershipRequest
+          ? `${membershipRequest.membership}:${membershipRequest.nonce}`
+          : ""}
+      </div>
       {hostedGameId && (
         <FakeGame
           key={hostedGameKey}

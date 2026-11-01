@@ -2,11 +2,12 @@
 //
 // Main keeps one game session mounted across site navigation. The session's
 // join intent (?spectate=true / ?bot) is captured when it is first mounted, so
-// entering the same game again with a different membership target must replace
-// it. A lobby row click says so explicitly through navigation state; ordinary
-// links to the same game (reports, the in-game warning) keep the current
-// session. A membership update from the server changes the URL without
-// replacing the session.
+// entering a different game replaces it. A lobby Join/Spectate click for the
+// game already hosted does not replace it: it records a role-change request
+// that the mounted Game sends over its existing socket. Ordinary links to the
+// same game (reports, the in-game warning) keep the current session. A
+// server-confirmed membership change rewrites the URL without replacing the
+// session either.
 export function freshGameSessionState(membership) {
   return { freshGameSession: true, requestedMembership: membership };
 }
@@ -41,11 +42,18 @@ export function membershipFromSearch(search) {
     : "player";
 }
 
+// Which socket action changes the confirmed role to the requested one.
+export function membershipSwitch(current, requested) {
+  if (!requested || current === requested) return null;
+  return requested === "spectator" ? "spectate" : "takeSeat";
+}
+
 // Returns the session that should be hosted for the current game route.
-// entryKey is the router history key: a fresh intent replaces the session once
-// for that entry, and going Back to an already-hosted entry does not replace
-// it again. A requested membership that the server already confirmed keeps the
-// mounted session and only records the new URL search.
+// entryKey is the router history key. A fresh click for a different game
+// replaces the session. A fresh click for the game already hosted either keeps
+// it (the requested role already matches) or records a pending role switch for
+// the mounted Game. A membership update from the server changes only the
+// stored search, so neither path changes the session key or remounts Game.
 export function nextHostedGame(
   current,
   {
@@ -69,18 +77,29 @@ export function nextHostedGame(
       search,
       entryKey,
       membership: requested || membershipFromSearch(search),
+      request: null,
     };
   }
 
   if (fresh && current.entryKey !== entryKey) {
     if (requested && current.membership === requested) {
-      return current.search === search ? current : { ...current, search };
+      return current.search === search && !current.request
+        ? current
+        : { ...current, search, request: null };
+    }
+    if (requested) {
+      return {
+        ...current,
+        search,
+        request: { membership: requested, nonce: entryKey },
+      };
     }
     return {
       id: gameId,
       search,
       entryKey,
-      membership: requested || membershipFromSearch(search),
+      membership: membershipFromSearch(search),
+      request: null,
     };
   }
 

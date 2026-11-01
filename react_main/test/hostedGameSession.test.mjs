@@ -7,10 +7,19 @@ import {
   isMembershipUpdate,
   joinGameSessionState,
   membershipFromSearch,
+  membershipSwitch,
   nextHostedGame,
   requestedMembership,
   spectateGameSessionState,
 } from "../src/shared/hostedGameSession.js";
+
+const playerSession = {
+  id: "game-1",
+  search: "?join=true",
+  entryKey: "entry-a",
+  membership: "player",
+  request: null,
+};
 
 test("first entry creates a session with its join search and role", () => {
   assert.deepEqual(
@@ -24,20 +33,15 @@ test("first entry creates a session with its join search and role", () => {
       search: "?spectate=true",
       entryKey: "entry-a",
       membership: "spectator",
+      request: null,
     }
   );
   assert.equal(membershipFromSearch(""), "player");
 });
 
 test("a different game replaces the session", () => {
-  const current = {
-    id: "game-1",
-    search: "",
-    entryKey: "entry-a",
-    membership: "player",
-  };
   assert.deepEqual(
-    nextHostedGame(current, {
+    nextHostedGame(playerSession, {
       gameId: "game-2",
       search: "?spectate=true",
       entryKey: "entry-b",
@@ -47,36 +51,25 @@ test("a different game replaces the session", () => {
       search: "?spectate=true",
       entryKey: "entry-b",
       membership: "spectator",
+      request: null,
     }
   );
 });
 
 test("returning to the same game without a fresh request keeps the session", () => {
-  const current = {
-    id: "game-1",
-    search: "",
-    entryKey: "entry-a",
-    membership: "player",
-  };
   assert.equal(
-    nextHostedGame(current, {
+    nextHostedGame(playerSession, {
       gameId: "game-1",
       search: "?spectate=true",
       entryKey: "entry-b",
       fresh: false,
     }),
-    current
+    playerSession
   );
 });
 
-test("clicking the action matching the confirmed role keeps the mounted session", () => {
-  const current = {
-    id: "game-1",
-    search: "",
-    entryKey: "entry-a",
-    membership: "player",
-  };
-  const kept = nextHostedGame(current, {
+test("clicking the action matching the confirmed role keeps the session", () => {
+  const kept = nextHostedGame(playerSession, {
     gameId: "game-1",
     search: "?join=true",
     entryKey: "entry-b",
@@ -85,75 +78,63 @@ test("clicking the action matching the confirmed role keeps the mounted session"
   });
   assert.equal(kept.entryKey, "entry-a");
   assert.equal(kept.membership, "player");
-  assert.equal(kept.search, "?join=true");
+  assert.equal(kept.request, null);
   assert.equal(hostedGameKey(kept), "game-1:entry-a");
 });
 
-test("a lobby click for the other role replaces the session", () => {
-  const current = {
-    id: "game-1",
-    search: "?join=true",
-    entryKey: "entry-a",
-    membership: "player",
-  };
-  assert.deepEqual(
-    nextHostedGame(current, {
-      gameId: "game-1",
-      search: "?spectate=true",
-      entryKey: "entry-b",
-      fresh: true,
-      requested: "spectator",
-    }),
-    {
-      id: "game-1",
-      search: "?spectate=true",
-      entryKey: "entry-b",
-      membership: "spectator",
-    }
-  );
-});
-
-test("a membership update changes the search without remounting", () => {
-  const current = {
-    id: "game-1",
-    search: "?join=true",
-    entryKey: "entry-a",
-    membership: "player",
-  };
-  const updated = nextHostedGame(current, {
+test("a lobby click for the other role requests a socket switch without remounting", () => {
+  const switching = nextHostedGame(playerSession, {
     gameId: "game-1",
     search: "?spectate=true",
     entryKey: "entry-b",
+    fresh: true,
+    requested: "spectator",
+  });
+  assert.deepEqual(switching, {
+    ...playerSession,
+    search: "?spectate=true",
+    request: { membership: "spectator", nonce: "entry-b" },
+  });
+  assert.equal(hostedGameKey(switching), "game-1:entry-a");
+});
+
+test("a membership update changes the search without remounting or losing a request", () => {
+  const switching = {
+    ...playerSession,
+    request: { membership: "spectator", nonce: "entry-b" },
+  };
+  const updated = nextHostedGame(switching, {
+    gameId: "game-1",
+    search: "?spectate=true",
+    entryKey: "entry-c",
     membershipUpdate: true,
   });
   assert.deepEqual(updated, {
-    id: "game-1",
+    ...switching,
     search: "?spectate=true",
-    entryKey: "entry-a",
-    membership: "player",
   });
   assert.equal(hostedGameKey(updated), "game-1:entry-a");
 });
 
+test("membershipSwitch picks the in-place socket action", () => {
+  assert.equal(membershipSwitch("player", "spectator"), "spectate");
+  assert.equal(membershipSwitch("spectator", "player"), "takeSeat");
+  assert.equal(membershipSwitch("player", "player"), null);
+  assert.equal(membershipSwitch("spectator", "spectator"), null);
+  assert.equal(membershipSwitch("player", null), null);
+});
+
 test("the game key changes only when the session is replaced", () => {
-  const current = {
-    id: "game-1",
-    search: "?spectate=true",
-    entryKey: "entry-b",
-    membership: "spectator",
-  };
-  assert.equal(hostedGameKey(current), "game-1:entry-b");
+  assert.equal(hostedGameKey(playerSession), "game-1:entry-a");
   assert.equal(
     hostedGameKey(
-      nextHostedGame(current, {
-        gameId: "game-1",
+      nextHostedGame(playerSession, {
+        gameId: "game-2",
         search: "",
         entryKey: "entry-c",
-        fresh: true,
-        requested: "player",
       })
     ),
-    "game-1:entry-c"
+    "game-2:entry-c"
   );
   assert.equal(hostedGameKey(null), null);
 });
