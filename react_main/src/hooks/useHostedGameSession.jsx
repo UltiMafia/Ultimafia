@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 
+import {
+  hostedGameKey,
+  isFreshGameSession,
+  nextHostedGame,
+} from "../shared/hostedGameSession";
+
 export function gameIdAt(pathname) {
   return matchPath({ path: "/game/:gameId", end: false }, pathname)?.params.gameId || null;
 }
@@ -26,17 +32,24 @@ export function useHostedGameSession() {
   const activeRef = useRef(inGame);
   activeRef.current = inGame;
   const [hostedGame, setHostedGame] = useState(null);
+  const freshSession = isFreshGameSession(location.state);
 
   useEffect(() => {
     if (!routeGameId) return;
     // Capture the entry URL before the lazy game mounts or authenticates. Site
     // navigation must not change whether this session joins as a spectator/bot.
-    // Returning to the same game keeps both its state and its original intent.
-    setHostedGame(current => current?.id === routeGameId ? current : {
-      id: routeGameId,
-      search: location.search,
-    });
-  }, [routeGameId, location.search]);
+    // A lobby row click can explicitly request a fresh session, which is how
+    // the same game is entered again with the other join intent without a
+    // document reload. Returning to the same game entry keeps its state.
+    setHostedGame(current =>
+      nextHostedGame(current, {
+        gameId: routeGameId,
+        search: location.search,
+        entryKey: location.key,
+        fresh: freshSession,
+      })
+    );
+  }, [routeGameId, location.search, location.key, freshSession]);
 
   const leaveGameSession = useCallback(() => {
     setHostedGame(null);
@@ -53,6 +66,7 @@ export function useHostedGameSession() {
     inGame,
     hostedGameId: hostedGame?.id || null,
     hostedGameSearch: hostedGame?.search || "",
+    hostedGameKey: hostedGameKey(hostedGame),
     leaveGameSession,
   };
 }

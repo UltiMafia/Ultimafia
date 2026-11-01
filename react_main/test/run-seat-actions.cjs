@@ -102,10 +102,7 @@ async function main() {
         errors.push("blocked external request " + u.origin);
         return route.abort();
       });
-      // The Spectate button does a full-page navigation into the game.
-      await page.route("**/game/**", (route) =>
-        route.fulfill({ contentType: "text/html", body: "<p>spectating</p>" }),
-      );
+      // Spectate is an in-place socket action; it must not navigate or reload.
       const open = async (query) => {
         await page.goto(url + "?" + query);
         await page.waitForFunction(() => window.__seatActionsReady);
@@ -172,16 +169,30 @@ async function main() {
         (await count("Join open seat")) === 0,
         `${name}: no Join button when seated`,
       );
-      await Promise.all([
-        page
-          .waitForURL("**/game/fixture?spectate=true", { timeout: 5000 })
-          .catch(() => {}),
-        page.getByRole("button", { name: "Spectate" }).click(),
-      ]);
+      const beforeSpectateUrl = page.url();
+      const marker = await page.evaluate(() => {
+        window.__seatActionsMarker = Math.random().toString(36);
+        return window.__seatActionsMarker;
+      });
+      await page.getByRole("button", { name: "Spectate" }).click();
+      await page.waitForTimeout(200);
+      const spectateState = await page.evaluate(() => ({
+        sent: window.__sent,
+        marker: window.__seatActionsMarker,
+      }));
       check(
-        page.url().endsWith("/game/fixture?spectate=true"),
-        `${name}: Spectate reloads into the game as a spectator`,
-        page.url(),
+        spectateState.sent.some((args) => args[0] === "spectate"),
+        `${name}: Spectate sends the socket event`,
+        spectateState.sent,
+      );
+      check(
+        page.url() === beforeSpectateUrl,
+        `${name}: Spectate does not navigate`,
+        { before: beforeSpectateUrl, after: page.url() },
+      );
+      check(
+        spectateState.marker === marker,
+        `${name}: Spectate does not reload the document`,
       );
 
       await open("case=spectator");

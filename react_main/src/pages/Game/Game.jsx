@@ -220,12 +220,15 @@ export default function Game(props) {
   const user = useContext(UserContext);
   // HTTP connect, socket join and reconnect all belong to the same entry URL,
   // even while this session is retained behind an unrelated site page. Only a
-  // server-confirmed membership change may replace the spectator join mode.
+  // server-confirmed membership change may replace the spectator join mode
+  // within a hosted session; a new lobby entry mounts a new session.
   const joinOptionsRef = useRef(null);
   if (!joinOptionsRef.current) {
     const search = props.joinSearch ?? window.location.search;
+    const params = new URLSearchParams(search);
     joinOptionsRef.current = {
-      spectate: new URLSearchParams(search).get("spectate") === "true",
+      spectate: params.get("spectate") === "true",
+      join: params.get("join") === "true",
       isBot: search === "?bot",
     };
   }
@@ -943,6 +946,7 @@ export default function Game(props) {
         gameId,
         guestId: window.localStorage.getItem("cacheVal"),
         spectate: joinOptionsRef.current.spectate,
+        join: joinOptionsRef.current.join,
       });
 
     const replay = registeredSocketRef.current !== socket;
@@ -953,6 +957,7 @@ export default function Game(props) {
         gameId,
         isBot: joinOptionsRef.current.isBot,
         spectate: joinOptionsRef.current.spectate,
+        join: joinOptionsRef.current.join,
       });
     });
 
@@ -1226,6 +1231,9 @@ export default function Game(props) {
     socket.on("isSpectator", (value) => {
       const spectatingNow = value !== false;
       joinOptionsRef.current.spectate = spectatingNow;
+      // The join intent is one shot: a later reconnect follows the
+      // membership the server actually confirmed.
+      joinOptionsRef.current.join = false;
       setIsSpectator(spectatingNow);
       if (!spectatingNow) stopReadyBellRepeatRef.current();
     });
@@ -1252,6 +1260,7 @@ export default function Game(props) {
     });
 
     socket.on("takeSeatFailed", (message) => {
+      joinOptionsRef.current.join = false;
       errorAlert(message);
     });
 
@@ -2129,7 +2138,7 @@ const EMPTY_CHAT_STATE = { meetings: {}, alerts: [], obituaries: {} };
 // above the chat box on mobile and sits in the player list on desktop
 export function PregameSeatActions() {
   const isPhoneDevice = useIsPhoneDevice();
-  const { review, history, isSpectator, socket, options, gameId } =
+  const { review, history, isSpectator, socket, options } =
     useContext(GameContext);
   const action = pregameSeatAction({ review, history, isSpectator, options });
   if (!action) return null;
@@ -2173,7 +2182,7 @@ export function PregameSeatActions() {
         fullWidth={true}
         size={"small"}
         onClick={() => {
-          window.location.assign(`/game/${gameId}?spectate=true`);
+          if (socket && socket.on) socket.send("spectate");
         }}
       >
       Spectate
