@@ -52,9 +52,11 @@
     "test:lifecycle:browser": "rsbuild build --config rsbuild.lifecycle-test.config.ts && rsbuild preview --config rsbuild.lifecycle-test.config.ts",
     "test:emote-picker:browser": "rsbuild build --config rsbuild.emote-picker-test.config.ts && node test/run-emote-picker.cjs",
     "test:seat-actions:browser": "rsbuild build --config rsbuild.seat-actions-test.config.ts && node test/run-seat-actions.cjs",
+    "test:lobby-spectate:browser": "rsbuild build --config rsbuild.lobby-spectate-test.config.ts && node test/run-lobby-spectate.cjs",
     "test:chat-reply:browser": "rsbuild build --config rsbuild.chat-reply-test.config.ts && node test/run-chat-reply.cjs",
     "test:dm-panel-site:browser": "rsbuild build --config rsbuild.dm-panel-site-test.config.ts && node test/run-dm-panel-site.cjs",
     "test:lobby-count:browser": "rsbuild build --config rsbuild.lobby-count-test.config.ts && node test/run-lobby-count.cjs",
+    "test:mobile-header:browser": "rsbuild build --config rsbuild.mobile-header-test.config.ts && node test/run-mobile-header.cjs",
     "test:user-search:browser": "rsbuild build --config rsbuild.user-search-test.config.ts && node test/run-user-search.cjs",
     "test:banned:browser": "rsbuild build --config rsbuild.banned-test.config.ts && node test/run-banned.cjs",
     "test:mod-commands:browser": "rsbuild build --config rsbuild.mod-commands-test.config.ts && node test/run-mod-commands.cjs",
@@ -63,7 +65,8 @@
     "start": "rsbuild dev",
     "build": "rsbuild build",
     "preview": "rsbuild preview",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "test:strategy-windows:browser": "rsbuild build --config rsbuild.strategy-windows-test.config.ts && node test/run-strategy-windows.cjs"
   },
   "eslintConfig": {
     "extends": [

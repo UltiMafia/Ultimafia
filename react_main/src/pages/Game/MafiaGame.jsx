@@ -23,6 +23,7 @@ import { nextStateBell } from "shared/stateBell";
 import { GameContext, SiteInfoContext } from "../../Contexts";
 import { mafiaAudioConfig } from "../../audio/audioConfigs";
 import { SideMenu } from "./Game";
+import { Button, Stack, Typography } from "@mui/material";
 
 function MissionScoreKeeper() {
   const game = useContext(GameContext);
@@ -116,6 +117,38 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { StrategiesPanel, StrategiesSection } from "components/Strategies";
 import TutorialOverlay from "components/TutorialOverlay";
 
+// The guides sat in this tab during pregame. Rather than render the list twice
+// — two fetches, and two vote states that can disagree — point at where it
+// lives now. Only shown during pregame, when this tab is otherwise empty.
+export function GuidesMovedHint({ onOpenGuides }) {
+  return (
+    <SideMenu
+      title="Guides"
+      content={
+        <Stack spacing={1} sx={{ p: 1, alignItems: "flex-start" }}>
+          <Typography
+            variant="body2"
+            data-testid="guides-moved-hint"
+            sx={{ opacity: 0.85 }}
+          >
+            Guides moved to the Info tab, where they stay on screen for the
+            whole game.
+          </Typography>
+          <Button
+            size="small"
+            variant="outlined"
+            data-testid="guides-moved-open"
+            startIcon={<i className="fas fa-book-open" />}
+            onClick={onOpenGuides}
+          >
+            Open guides
+          </Button>
+        </Stack>
+      }
+    />
+  );
+}
+
 export default function MafiaGame() {
   const game = useContext(GameContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -164,6 +197,7 @@ export default function MafiaGame() {
   const isLiveState = history.currentState >= 0;
   const isViewingPregame = game.stateViewing === -1;
   const setupId = game.setup?.id;
+  const setupTitle = game.setup?.name || "";
   const showInventory =
     game.gameType === gameType && Boolean(game.self) && isLiveState;
   const inventoryItems =
@@ -534,7 +568,11 @@ export default function MafiaGame() {
                     descriptors={actionDescriptorData.regularActionDescriptors}
                   />
                 )}
-                <StrategiesPanel setupId={setupId} visible={Boolean(setupId)} />
+                <StrategiesPanel
+                  setupId={setupId}
+                  visible={Boolean(setupId)}
+                  title={setupTitle}
+                />
               </>
             ) : (
               <ActionList
@@ -562,25 +600,34 @@ export default function MafiaGame() {
             <Notes />
           </>
         }
+        // Guides live in the Info tab, which is on screen in every phase of
+        // the game, instead of only while the pregame screen is up.
+        additionalInfoContent={
+          <StrategiesSection
+            setupId={setupId}
+            visible={Boolean(setupId)}
+            title={setupTitle}
+            variant="fill"
+          />
+        }
         innerRightContent={
           <>
             <MissionScoreKeeper />
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             {isViewingPregame ? (
-              <>
-                {actionDescriptorData.regularActionDescriptors.length > 0 && (
-                  <ActionList
-                    descriptors={actionDescriptorData.regularActionDescriptors}
-                  />
-                )}
-                <StrategiesSection
-                  setupId={setupId}
-                  visible={Boolean(setupId)}
+              actionDescriptorData.regularActionDescriptors.length > 0 && (
+                <ActionList
+                  descriptors={actionDescriptorData.regularActionDescriptors}
                 />
-              </>
+              )
             ) : (
               <ActionList
                 descriptors={actionDescriptorData.regularActionDescriptors}
+              />
+            )}
+            {isViewingPregame && setupId && (
+              <GuidesMovedHint
+                onOpenGuides={() => game.setSelectedPanel("info")}
               />
             )}
             <InventoryPanel
