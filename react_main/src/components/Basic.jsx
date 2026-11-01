@@ -194,13 +194,20 @@ export function UserText(props) {
 
     // Any effects that inject elements need to be added after this point because the text property changes
     // throughout this useEffect function
-    if (props.emotify)
+    if (props.emotify) {
+      let options = { 
+        system: props.systemMessage,
+        collapseStickers: props.collapseStickers,
+        // TODO: give this its own property
+        isReply: props.collapseStickers,
+      };
       text = emotify(
         text,
         props.systemMessage ? null : props.customEmotes,
         props.systemMessage ? null : props.customStickers,
-        props.systemMessage ? { system: true } : undefined
+        options
       );
+    }
 
     if (props.slangify)
       text = slangify({
