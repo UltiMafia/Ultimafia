@@ -20,7 +20,10 @@ import {
   Typography,
 } from "@mui/material";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
-import { FRESH_GAME_SESSION_STATE } from "shared/hostedGameSession";
+import {
+  joinGameSessionState,
+  spectateGameSessionState,
+} from "shared/hostedGameSession";
 import { getRowColor, getSetupBackgroundColor } from "./gameRowColors.js";
 import StateIcon from "components/StateIcon";
 
@@ -86,9 +89,11 @@ export const GameStatus = (props) => {
   // seat to spectate from the lobby). Mark those navigations so
   // useHostedGameSession replaces the session instead of revealing the old one.
   const freshSessionState =
-    buttonText === "Join" || buttonText === "Spectate"
-      ? FRESH_GAME_SESSION_STATE
-      : undefined;
+    buttonText === "Join"
+      ? joinGameSessionState()
+      : buttonText === "Spectate"
+        ? spectateGameSessionState()
+        : undefined;
   const tutorialGate = useRankedTutorialGate(() =>
     freshSessionState
       ? navigate(buttonUrl, { state: freshSessionState })
@@ -118,7 +123,7 @@ export const GameStatus = (props) => {
     <Button
       component={Link}
       to={`/game/${props.game.id}?spectate=true`}
-      state={FRESH_GAME_SESSION_STATE}
+      state={spectateGameSessionState()}
       variant="outlined"
       color="inherit"
       sx={{

@@ -93,6 +93,7 @@ async function main() {
           mounts: window.__sessionMounts || 0,
           url: window.location.pathname + window.location.search,
           inGame: document.querySelector('[data-testid="in-game"]').textContent,
+          membership: document.querySelector('[data-testid="membership"]').textContent,
         };
       });
     const waitForSession = (text, mounts) =>
@@ -117,7 +118,11 @@ async function main() {
     await waitForUrl("/game/g1?join=true");
     await waitForSession("g1|?join=true|1", 1);
     state = await session();
-    check(state.inGame === "true", "Join mounts the game session", state);
+    check(
+      state.inGame === "true" && state.membership === "player",
+      "Join mounts the game session as a player",
+      state,
+    );
 
     await click("Play");
     await waitForUrl("/play");
@@ -128,10 +133,32 @@ async function main() {
       state,
     );
 
+    await click("Join g1");
+    await waitForUrl("/game/g1?join=true");
+    await waitForSession("g1|?join=true|1", 1);
+    state = await session();
+    check(
+      state.mounts === 1,
+      "Join again while already seated does not remount (no loading)",
+      state,
+    );
+
+    await click("Play");
     await click("Spectate g1");
     await waitForUrl("/game/g1?spectate=true");
     await waitForSession("g1|?spectate=true|2", 2);
-    check(true, "Spectate replaces the seated session with a spectate session");
+    state = await session();
+    check(
+      state.membership === "spectator",
+      "Spectate replaces the seated session with a spectate session",
+      state,
+    );
+
+    await click("Play");
+    await click("Spectate g1");
+    await waitForUrl("/game/g1?spectate=true");
+    await waitForSession("g1|?spectate=true|2", 2);
+    check(true, "Spectate again while spectating does not remount");
 
     await click("Play");
     await click("Join g1");
@@ -139,12 +166,28 @@ async function main() {
     await waitForSession("g1|?join=true|3", 3);
     check(true, "Join replaces the spectate session with a seated session");
 
+    await click("Confirm spectating");
+    await waitForUrl("/game/g1?spectate=true");
+    await waitForSession("g1|?spectate=true|3", 3);
+    state = await session();
+    check(
+      state.mounts === 3 && state.membership === "spectator",
+      "a confirmed spectator updates the URL without remounting",
+      state,
+    );
+
+    await click("Play");
+    await click("Join g1");
+    await waitForUrl("/game/g1?join=true");
+    await waitForSession("g1|?join=true|4", 4);
+    check(true, "Join replaces the confirmed spectate session");
+
     await click("Play");
     await click("Plain spectate link g1");
     await waitForUrl("/game/g1?spectate=true");
     state = await session();
     check(
-      state.text === "g1|?join=true|3" && state.mounts === 3,
+      state.text === "g1|?join=true|4" && state.mounts === 4,
       "an ordinary link to the same game keeps the session",
       state,
     );
@@ -152,7 +195,7 @@ async function main() {
     await click("Play");
     await click("Join g2");
     await waitForUrl("/game/g2");
-    await waitForSession("g2||4", 4);
+    await waitForSession("g2||5", 5);
     check(true, "a different game replaces the session");
 
     await click("Play");
@@ -160,7 +203,7 @@ async function main() {
     await waitForUrl("/game/g2");
     state = await session();
     check(
-      state.text === "g2||4" && state.mounts === 4,
+      state.text === "g2||5" && state.mounts === 5,
       "Back to the same game entry does not replace it again",
       state,
     );

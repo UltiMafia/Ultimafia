@@ -1236,6 +1236,26 @@ export default function Game(props) {
       joinOptionsRef.current.join = false;
       setIsSpectator(spectatingNow);
       if (!spectatingNow) stopReadyBellRepeatRef.current();
+
+      props.onMembershipChange?.(
+        spectatingNow ? "spectator" : "player"
+      );
+
+      // Keep the URL equal to the confirmed role, so a reload cannot take a
+      // seat for a spectator or move a seated player back to spectators. A
+      // bot tab has no URL state to keep.
+      if (activeRef.current && !joinOptionsRef.current.isBot) {
+        const target = `/game/${gameId}${
+          spectatingNow ? "?spectate=true" : ""
+        }`;
+        const current = window.location.pathname + window.location.search;
+        if (current !== target) {
+          navigate(target, {
+            replace: true,
+            state: { membershipUpdate: true },
+          });
+        }
+      }
     });
 
     socket.on("omniscientSpectator", () => {

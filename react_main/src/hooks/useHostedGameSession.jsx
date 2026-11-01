@@ -4,7 +4,9 @@ import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import {
   hostedGameKey,
   isFreshGameSession,
+  isMembershipUpdate,
   nextHostedGame,
+  requestedMembership,
 } from "../shared/hostedGameSession";
 
 export function gameIdAt(pathname) {
@@ -33,6 +35,8 @@ export function useHostedGameSession() {
   activeRef.current = inGame;
   const [hostedGame, setHostedGame] = useState(null);
   const freshSession = isFreshGameSession(location.state);
+  const requested = requestedMembership(location.state);
+  const updateMembership = isMembershipUpdate(location.state);
 
   useEffect(() => {
     if (!routeGameId) return;
@@ -47,9 +51,28 @@ export function useHostedGameSession() {
         search: location.search,
         entryKey: location.key,
         fresh: freshSession,
+        requested,
+        membershipUpdate: updateMembership,
       })
     );
-  }, [routeGameId, location.search, location.key, freshSession]);
+  }, [
+    routeGameId,
+    location.search,
+    location.key,
+    freshSession,
+    requested,
+    updateMembership,
+  ]);
+
+  // The Game reports the role the server actually confirmed. This does not
+  // change the session key, so a confirmed role never remounts the game.
+  const setHostedGameMembership = useCallback((membership) => {
+    setHostedGame(current =>
+      current && current.membership !== membership
+        ? { ...current, membership }
+        : current
+    );
+  }, []);
 
   const leaveGameSession = useCallback(() => {
     setHostedGame(null);
@@ -67,6 +90,8 @@ export function useHostedGameSession() {
     hostedGameId: hostedGame?.id || null,
     hostedGameSearch: hostedGame?.search || "",
     hostedGameKey: hostedGameKey(hostedGame),
+    hostedGameMembership: hostedGame?.membership || null,
+    setHostedGameMembership,
     leaveGameSession,
   };
 }
