@@ -27,6 +27,14 @@ module.exports = class Bleeding extends Effect {
         if (!this.target.hasEffect("Bleeding")) {
           return;
         }
+        // Conversion subphases must not consume the next ordinary night.
+        if (this.game.isConversionNightPhase(this.game.getStateName())) {
+          // queueAction adds one slot while processing, so delay 0 resumes
+          // on the next phase rather than skipping an additional phase.
+          this.delay = 0;
+          this.game.queueAction(this);
+          return;
+        }
         if (this.dominates()) {
           this.target.kill("bleed", this.actor);
         }
