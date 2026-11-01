@@ -2913,6 +2913,18 @@ function ReplyReference(props) {
     autoContrastColor: user.autoContrastColor.bind(user),
     theme,
   });
+  // The original line in its sender's text colour, resolved the same way its
+  // own row does (accessible colours, "ignore text colours", auto contrast).
+  let textColor = sender ? reply.textColor : undefined;
+  if (Object.keys(textColor ?? {}).length === 2)
+    textColor = textColor["darkTheme"];
+  const resolvedTextColor = resolveDisplayTextColor({
+    accessibleNameColors,
+    ignoreTextColor: user.settings?.ignoreTextColor,
+    rawTextColor: textColor && textColor !== "" ? textColor : null,
+    autoContrastColor: user.autoContrastColor.bind(user),
+    theme,
+  });
 
   function jumpToOriginal(e) {
     e.stopPropagation();
@@ -2948,7 +2960,14 @@ function ReplyReference(props) {
             avatar={sender.avatar}
             isSquare={sender.avatarShape === "square"}
             color={color}
+            nameColorSwatch={
+              accessibleNameColors && rawNameColor ? rawNameColor : undefined
+            }
             nameFont={sender.nameFont}
+            animatedNameColor={sender.animatedNameColor}
+            nameGradientColorA={sender.nameGradientColorA}
+            nameGradientColorB={sender.nameGradientColorB}
+            nameGradientColorC={sender.nameGradientColorC}
             noLink
             small
           />
@@ -2956,7 +2975,10 @@ function ReplyReference(props) {
           <NameWithAvatar name="Anonymous" noLink small />
         )}
       </span>
-      <span className="reply-reference-text">
+      <span
+        className="reply-reference-text"
+        style={resolvedTextColor ? { color: resolvedTextColor } : undefined}
+      >
         <UserText
           text={reply.content}
           settings={user.settings}

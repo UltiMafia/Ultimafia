@@ -285,6 +285,7 @@ test("the reply preview names the quoted sender, state and text", () => {
     senderName: "AlageRheba10",
     sender: players.playerA,
     nameColor: undefined,
+    textColor: undefined,
     fromStateName: "Pregame",
     meetingName: "Village",
     content: claim.content,
@@ -303,6 +304,50 @@ test("the reply preview names the quoted sender, state and text", () => {
     describeQuotedMessage({ ...quote, messageId: "nope" }, state, players, {}),
     null
   );
+});
+
+test("the reply preview carries the original line's name and text colours", () => {
+  const state = {
+    name: "Day 1",
+    meetings: {
+      village1: {
+        name: "Village",
+        messages: [
+          { ...claim, time: 9, nameColor: "#00ff88", textColor: "#ff66cc" },
+        ],
+      },
+    },
+  };
+  const players = {
+    playerA: { name: "ZXHydra", nameFont: "gothic", animatedNameColor: "rainbow" },
+  };
+  const described = describeQuotedMessage(quote, state, players, {});
+  assert.equal(described.nameColor, "#00ff88");
+  assert.equal(described.textColor, "#ff66cc");
+  // Font and animated name come from the player, as on the original row.
+  assert.equal(described.sender.nameFont, "gothic");
+  assert.equal(described.sender.animatedNameColor, "rainbow");
+  // An anonymous original shows no colours of the real sender.
+  const anon = {
+    ...state,
+    meetings: {
+      village1: {
+        name: "Village",
+        messages: [
+          {
+            ...claim,
+            senderId: "anonymous",
+            time: 9,
+            nameColor: "#00ff88",
+            textColor: "#ff66cc",
+          },
+        ],
+      },
+    },
+  };
+  const a = describeQuotedMessage(quote, anon, players, {});
+  assert.equal(a.nameColor, undefined);
+  assert.equal(a.textColor, undefined);
 });
 
 test("findMessageRow finds the original line in the same chat only", () => {

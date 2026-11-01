@@ -133,7 +133,11 @@ export function describeQuotedMessage(quote, state, players, spectators) {
     messageId: msg.id,
     senderName: sender ? sender.name : "Anonymous",
     sender,
+    // The original line's own colours, as its row draws them (the sender's
+    // name colour and text colour when they sent it; font and animated name
+    // come from `sender`, as on that row).
     nameColor: sender ? msg.nameColor : undefined,
+    textColor: sender ? msg.textColor : undefined,
     fromStateName: state.name,
     meetingName: meeting.name,
     content: msg.content,
