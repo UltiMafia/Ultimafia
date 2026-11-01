@@ -110,14 +110,14 @@ async function main() {
     await page.getByRole("link", { name: "Join" }).waitFor();
     before = await marker();
     await page.getByRole("link", { name: "Join" }).click();
-    await page.waitForURL("**/game/g1?join=true");
+    await page.waitForURL("**/game/g1");
     text = await gamePageText();
     check(
       (await page.evaluate(() => window.__pageMarker)) === before,
       "Join does not reload the document",
     );
     check(
-      text === "/game/g1?join=true|fresh=true",
+      text === "/game/g1|fresh=true",
       "Join navigates client-side with fresh-session state",
       text,
     );

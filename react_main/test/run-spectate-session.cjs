@@ -97,6 +97,14 @@ async function main() {
           request: document.querySelector('[data-testid="request"]').textContent,
         };
       });
+    const waitForRequest = (prefix) =>
+      page.waitForFunction(
+        (prefix) =>
+          document.querySelector('[data-testid="request"]').textContent.startsWith(
+            prefix
+          ),
+        prefix,
+      );
     const waitForSession = (text, mounts) =>
       page.waitForFunction(
         ({ text, mounts }) => {
@@ -116,8 +124,9 @@ async function main() {
     check(state.text === null, "no session while browsing the lobby", state);
 
     await click("Join g1");
-    await waitForUrl("/game/g1?join=true");
-    await waitForSession("g1|?join=true|1", 1);
+    await waitForUrl("/game/g1");
+    await waitForSession("g1||1", 1);
+    await waitForRequest("");
     state = await session();
     check(
       state.inGame === "true" &&
@@ -131,14 +140,15 @@ async function main() {
     await waitForUrl("/play");
     state = await session();
     check(
-      state.text === "g1|?join=true|1" && state.mounts === 1,
+      state.text === "g1||1" && state.mounts === 1,
       "leaving the game keeps the session mounted",
       state,
     );
 
     await click("Join g1");
-    await waitForUrl("/game/g1?join=true");
-    await waitForSession("g1|?join=true|1", 1);
+    await waitForUrl("/game/g1");
+    await waitForSession("g1||1", 1);
+    await waitForRequest("");
     state = await session();
     check(
       state.mounts === 1 && state.request === "",
@@ -180,8 +190,8 @@ async function main() {
 
     await click("Play");
     await click("Join g1");
-    await waitForUrl("/game/g1?join=true");
-    await waitForSession("g1|?join=true|1", 1);
+    await waitForUrl("/game/g1");
+    await waitForSession("g1||1", 1);
     state = await session();
     check(
       state.mounts === 1 && state.request.startsWith("player:"),
@@ -225,6 +235,21 @@ async function main() {
       "Back to the same game entry does not replace it again",
       state,
     );
+
+    await click("Leave");
+    await waitForUrl("/play");
+    state = await session();
+    check(
+      state.text === null && state.inGame === "false",
+      "Leave tears down the session and returns to the previous site page",
+      state,
+    );
+
+    await click("Join g1");
+    await waitForUrl("/game/g1");
+    await waitForSession("g1||3", 3);
+    await waitForRequest("");
+    check(true, "Join works again after leaving");
 
     check(errors.length === 0, "no page errors", errors);
     await page.close();

@@ -38,7 +38,21 @@ function Harness() {
     membershipRequest,
     setHostedGameMembership,
     clearMembershipRequest,
+    leaveGameSession,
   } = useHostedGameSession();
+
+  useEffect(() => {
+    if (
+      membershipRequest &&
+      membershipRequest.membership === hostedGameMembership
+    ) {
+      clearMembershipRequest(membershipRequest.nonce);
+    }
+  }, [
+    membershipRequest,
+    hostedGameMembership,
+    clearMembershipRequest,
+  ]);
 
   function applyRequest() {
     if (!membershipRequest) return;
@@ -56,7 +70,7 @@ function Harness() {
       <button onClick={() => navigate("/play")}>Play</button>
       <button
         onClick={() =>
-          navigate("/game/g1?join=true", { state: joinGameSessionState() })
+          navigate("/game/g1", { state: joinGameSessionState() })
         }
       >
         Join g1
@@ -75,6 +89,7 @@ function Harness() {
         Plain spectate link g1
       </button>
       <button onClick={applyRequest}>Apply request</button>
+      <button onClick={leaveGameSession}>Leave</button>
       <div data-testid="in-game">{String(inGame)}</div>
       <div data-testid="membership">{hostedGameMembership || ""}</div>
       <div data-testid="request">

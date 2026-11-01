@@ -15,7 +15,7 @@ import {
 
 const playerSession = {
   id: "game-1",
-  search: "?join=true",
+  search: "",
   entryKey: "entry-a",
   membership: "player",
   request: null,
@@ -71,7 +71,7 @@ test("returning to the same game without a fresh request keeps the session", () 
 test("clicking the action matching the confirmed role keeps the session", () => {
   const kept = nextHostedGame(playerSession, {
     gameId: "game-1",
-    search: "?join=true",
+    search: "",
     entryKey: "entry-b",
     fresh: true,
     requested: "player",

@@ -52,9 +52,10 @@ export const GameStatus = (props) => {
   let buttonUrl, buttonText, buttonVariant, buttonColor, buttonDisabled;
   let showSpectate = false;
   if (props.game.status === "Open") {
-    // join=true asks the server to take an open seat even when this account is
-    // already spectating the same game; a plain reconnect would stay watching.
-    buttonUrl = `/game/${props.game.id}?join=true`;
+    // The requested role travels in navigation state; the URL only describes
+    // the confirmed role. A spectator who clicks Join is seated over the
+    // existing socket (or by the new session's role request).
+    buttonUrl = `/game/${props.game.id}`;
     buttonText = "Join";
     buttonColor = "primary";
     buttonVariant = "contained";

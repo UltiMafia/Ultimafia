@@ -77,7 +77,10 @@ export function nextHostedGame(
       search,
       entryKey,
       membership: requested || membershipFromSearch(search),
-      request: null,
+      request:
+        fresh && requested
+          ? { membership: requested, nonce: entryKey }
+          : null,
     };
   }
 
