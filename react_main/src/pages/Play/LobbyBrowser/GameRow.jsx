@@ -49,7 +49,9 @@ export const GameStatus = (props) => {
   let buttonUrl, buttonText, buttonVariant, buttonColor, buttonDisabled;
   let showSpectate = false;
   if (props.game.status === "Open") {
-    buttonUrl = `/game/${props.game.id}`;
+    // join=true asks the server to take an open seat even when this account is
+    // already spectating the same game; a plain reconnect would stay watching.
+    buttonUrl = `/game/${props.game.id}?join=true`;
     buttonText = "Join";
     buttonColor = "primary";
     buttonVariant = "contained";

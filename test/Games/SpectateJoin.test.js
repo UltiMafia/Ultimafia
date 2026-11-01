@@ -130,6 +130,44 @@ describe("Games/SpectateJoin", function () {
     heardBySpec[0].data.content.should.equal("hello from spec");
   });
 
+  it("join intent takes a seat instead of reconnecting as a spectator", async function () {
+    const game = await openGame.call(this, { total: 3 });
+    const host = makeUser(game.hostId, "host");
+    const spectatorUser = makeUser(null, "spec");
+
+    await game.userJoin(host);
+    await game.userJoin(spectatorUser, { spectate: true });
+    game.players.should.have.lengthOf(1);
+    game.spectators.should.have.lengthOf(1);
+
+    const joinUser = makeUser(spectatorUser.id, "spec");
+    await game.userJoin(joinUser, { join: true });
+
+    game.players.should.have.lengthOf(2);
+    game.spectators.should.have.lengthOf(0);
+    (await redis.inGame(spectatorUser.id)).should.equal(game.id);
+    events(joinUser.socket, "isSpectator").map((e) => e.data).should.include(false);
+  });
+
+  it("join intent with no open seat stays a spectator and loads the game", async function () {
+    const game = await openGame.call(this, { total: 1 });
+    const host = makeUser(game.hostId, "host");
+    const spectatorUser = makeUser(null, "spec");
+
+    await game.userJoin(host);
+    await game.userJoin(spectatorUser, { spectate: true });
+
+    const joinUser = makeUser(spectatorUser.id, "spec");
+    await game.userJoin(joinUser, { join: true });
+
+    game.players.should.have.lengthOf(1);
+    game.spectators.should.have.lengthOf(1);
+    expect(await redis.inGame(spectatorUser.id)).to.equal(false);
+    events(joinUser.socket, "takeSeatFailed").should.have.lengthOf(1);
+    events(joinUser.socket, "loaded").should.have.lengthOf(1);
+    events(joinUser.socket, "isSpectator").should.not.have.lengthOf(0);
+  });
+
   it("sends each typing action once to players and spectators", async function () {
     const Meeting = require("../../Games/core/Meeting");
     const game = await openGame.call(this, { total: 3 });

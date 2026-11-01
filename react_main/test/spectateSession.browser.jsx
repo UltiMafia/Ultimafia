@@ -36,7 +36,7 @@ function Harness() {
     <div>
       <button onClick={() => navigate("/play")}>Play</button>
       <button
-        onClick={() => navigate("/game/g1", { state: FRESH_GAME_SESSION_STATE })}
+        onClick={() => navigate("/game/g1?join=true", { state: FRESH_GAME_SESSION_STATE })}
       >
         Join g1
       </button>

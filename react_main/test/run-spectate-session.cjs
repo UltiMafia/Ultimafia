@@ -114,8 +114,8 @@ async function main() {
     check(state.text === null, "no session while browsing the lobby", state);
 
     await click("Join g1");
-    await waitForUrl("/game/g1");
-    await waitForSession("g1||1", 1);
+    await waitForUrl("/game/g1?join=true");
+    await waitForSession("g1|?join=true|1", 1);
     state = await session();
     check(state.inGame === "true", "Join mounts the game session", state);
 
@@ -123,7 +123,7 @@ async function main() {
     await waitForUrl("/play");
     state = await session();
     check(
-      state.text === "g1||1" && state.mounts === 1,
+      state.text === "g1|?join=true|1" && state.mounts === 1,
       "leaving the game keeps the session mounted",
       state,
     );
@@ -135,8 +135,8 @@ async function main() {
 
     await click("Play");
     await click("Join g1");
-    await waitForUrl("/game/g1");
-    await waitForSession("g1||3", 3);
+    await waitForUrl("/game/g1?join=true");
+    await waitForSession("g1|?join=true|3", 3);
     check(true, "Join replaces the spectate session with a seated session");
 
     await click("Play");
@@ -144,7 +144,7 @@ async function main() {
     await waitForUrl("/game/g1?spectate=true");
     state = await session();
     check(
-      state.text === "g1||3" && state.mounts === 3,
+      state.text === "g1|?join=true|3" && state.mounts === 3,
       "an ordinary link to the same game keeps the session",
       state,
     );
