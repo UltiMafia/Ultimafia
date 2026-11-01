@@ -334,7 +334,7 @@ export default function Thread(props) {
     const request = ++loadGenerationRef.current;
     if (clearDraft) resetReplyForm();
     else {
-      draftGenerationRef.current += 1;
+      // Pagination keeps the same draft, including an in-flight submission.
       setReplyTarget("bottom");
     }
     setLoaded(false);

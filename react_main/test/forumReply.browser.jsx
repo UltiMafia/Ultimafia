@@ -21,7 +21,7 @@ let delay = 0;
 let locked = false;
 let muted = false;
 let restricted = false;
-window.__forumReply = { requests: [], alerts: [] };
+window.__forumReply = { requests: [], alerts: [], getDelays: [] };
 function threadData(id, page = 1) {
   return {
     id, title: "Forum inline reply fixture " + id, content: "Original post. Reply below the selected post.",
@@ -41,7 +41,10 @@ axios.get = async (url) => {
     const parsed = new URL(url, window.location.origin);
     const id = parsed.pathname.split("/").pop();
     const requested = parsed.searchParams.get("page");
-    return { data: threadData(id, requested === "2" ? 2 : 1) };
+    const data = threadData(id, requested === "2" ? 2 : 1);
+    const getDelay = window.__forumReply.getDelays.shift() || 0;
+    if (getDelay) await new Promise((resolve) => setTimeout(resolve, getDelay));
+    return { data };
   }
   return { data: [] };
 };
