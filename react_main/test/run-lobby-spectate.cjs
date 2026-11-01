@@ -100,8 +100,8 @@ async function main() {
       "Spectate does not reload the document",
     );
     check(
-      text === "/game/g1?spectate=true|fresh=true",
-      "Spectate navigates client-side with fresh-session state",
+      text === "/game/g1?spectate=true|role=spectator",
+      "Spectate navigates client-side with the requested spectator role",
       text,
     );
 
@@ -110,16 +110,29 @@ async function main() {
     await page.getByRole("link", { name: "Join" }).waitFor();
     before = await marker();
     await page.getByRole("link", { name: "Join" }).click();
-    await page.waitForURL("**/game/g1?join=true");
+    await page.waitForURL("**/game/g1");
     text = await gamePageText();
     check(
       (await page.evaluate(() => window.__pageMarker)) === before,
       "Join does not reload the document",
     );
     check(
-      text === "/game/g1?join=true|fresh=true",
-      "Join navigates client-side with fresh-session state",
+      text === "/game/g1|role=player",
+      "Join navigates client-side with the requested player role",
       text,
+    );
+
+    await page.waitForFunction(
+      () => document.querySelector('[data-testid="session"]').textContent === "g1",
+    );
+    await page.getByRole("button", { name: "Leave" }).click();
+    await page.waitForURL("**/play");
+    const sessionGone =
+      (await page.locator('[data-testid="session"]').count()) === 0;
+    check(
+      sessionGone,
+      "Leave tears down the game view and returns to the lobby",
+      sessionGone,
     );
 
     check(errors.length === 0, "no page errors", errors);

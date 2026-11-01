@@ -578,14 +578,6 @@ module.exports = class Game {
       joinOptions !== true &&
       (joinOptions.spectate === true || joinOptions.spectate === "true")
     );
-    // An explicit "Join" from the lobby asks for a seat. Without it, an
-    // existing spectator reconnects as a spectator (a refresh must not take a
-    // seat), so the lobby's Join button would do nothing.
-    const joinSeat = !!(
-      joinOptions &&
-      joinOptions !== true &&
-      (joinOptions.join === true || joinOptions.join === "true")
-    );
 
     try {
       var currentGame;
@@ -674,22 +666,6 @@ module.exports = class Game {
       }
 
       const omniscient = await this.canSpectateOmnisciently(user);
-
-      // Lobby Join while already spectating: reuse this connection for the
-      // seat. A plain reconnect (refresh, network recovery) has no join
-      // intent and stays a spectator.
-      if (spectator && !spectate && joinSeat && !this.started) {
-        spectator.setUser(user);
-        const seated = await this.takeSeat(spectator);
-        if (!seated) {
-          spectator.omniscient = omniscient;
-          this.restoreSpectatorMeetings(spectator);
-          this.sendAllGameInfo(spectator);
-          spectator.sendMeetings();
-          spectator.send("loaded");
-        }
-        return;
-      }
 
       // Reconnect if already a spectator. Do this before seating so a refresh
       // during pregame cannot take an open seat.

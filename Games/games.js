@@ -222,7 +222,6 @@ var deprecated = false;
             game.userJoin(user, {
               isBot: isBot,
               spectate: info.spectate === true || info.spectate === "true",
-              join: info.join === true || info.join === "true",
             });
           } catch (e) {
             logger.error(e);

@@ -164,7 +164,15 @@ function Main(props) {
     else root.setAttribute("data-bottom-inset", "page");
     return () => root.removeAttribute("data-bottom-inset");
   }, []);
-  const { inGame, hostedGameId, hostedGameSearch, hostedGameKey, leaveGameSession } = useHostedGameSession();
+  const { inGame, hostedGameId, hostedGameSearch, leaveGameSession } = useHostedGameSession();
+  // A lobby Join/Spectate click carries the requested role in navigation
+  // state. The mounted Game applies it over its existing socket.
+  const membershipRequest = location.state?.requestedMembership
+    ? {
+        membership: location.state.requestedMembership,
+        key: location.key,
+      }
+    : null;
 
   useEffect(() => {
     const root = document.documentElement;
@@ -267,10 +275,11 @@ function Main(props) {
         style={{ display: inGame ? undefined : "none" }}
       >
         <Game
-          key={hostedGameKey}
+          key={hostedGameId}
           gameId={hostedGameId}
           joinSearch={hostedGameSearch}
           active={inGame}
+          membershipRequest={membershipRequest}
           onLeave={leaveGameSession}
         />
       </div>

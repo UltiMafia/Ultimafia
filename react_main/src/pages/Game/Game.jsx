@@ -228,7 +228,6 @@ export default function Game(props) {
     const params = new URLSearchParams(search);
     joinOptionsRef.current = {
       spectate: params.get("spectate") === "true",
-      join: params.get("join") === "true",
       isBot: search === "?bot",
     };
   }
@@ -374,6 +373,38 @@ export default function Game(props) {
     if (!active) stopDeathSounds();
   }, [active, stopDeathSounds]);
   const navigate = useNavigate();
+
+  // Keep the URL equal to the role the server confirmed. Otherwise a stale
+  // ?spectate=true would move a newly seated player back to spectators on
+  // reload. The membershipUpdate navigation changes the hosted search without
+  // changing the session key, so it does not remount the game. A bot tab has
+  // no URL state.
+  useEffect(() => {
+    if (!active || !loaded || leave || joinOptionsRef.current.isBot) return;
+    const target = `/game/${gameId}${isSpectator ? "?spectate=true" : ""}`;
+    const current = window.location.pathname + window.location.search;
+    if (current !== target) {
+      navigate(target, {
+        replace: true,
+        state: { membershipUpdate: true },
+      });
+    }
+  }, [active, loaded, leave, isSpectator, gameId, navigate]);
+
+  // A lobby Join/Spectate click for the game already hosted asks for the other
+  // role. Send that over the existing socket instead of replacing the session
+  // and reconnecting. Each navigation is applied once.
+  const appliedMembershipRequestRef = useRef(null);
+  useEffect(() => {
+    if (!active || !loaded || leave || !props.membershipRequest) return;
+    const { key, membership } = props.membershipRequest;
+    if (appliedMembershipRequestRef.current === key) return;
+    appliedMembershipRequestRef.current = key;
+    if (membership === (isSpectator ? "spectator" : "player")) return;
+    const action = membership === "spectator" ? "spectate" : "takeSeat";
+    if (socket && socket.send) socket.send(action);
+  }, [active, loaded, leave, isSpectator, props.membershipRequest, socket]);
+
   const [selectedPanel, setSelectedPanel] = useState("chat");
   const isPhoneDeviceRef = useRef(false);
   isPhoneDeviceRef.current = isPhoneDevice;
@@ -946,7 +977,6 @@ export default function Game(props) {
         gameId,
         guestId: window.localStorage.getItem("cacheVal"),
         spectate: joinOptionsRef.current.spectate,
-        join: joinOptionsRef.current.join,
       });
 
     const replay = registeredSocketRef.current !== socket;
@@ -957,7 +987,6 @@ export default function Game(props) {
         gameId,
         isBot: joinOptionsRef.current.isBot,
         spectate: joinOptionsRef.current.spectate,
-        join: joinOptionsRef.current.join,
       });
     });
 
@@ -1231,9 +1260,6 @@ export default function Game(props) {
     socket.on("isSpectator", (value) => {
       const spectatingNow = value !== false;
       joinOptionsRef.current.spectate = spectatingNow;
-      // The join intent is one shot: a later reconnect follows the
-      // membership the server actually confirmed.
-      joinOptionsRef.current.join = false;
       setIsSpectator(spectatingNow);
       if (!spectatingNow) stopReadyBellRepeatRef.current();
     });
@@ -1260,7 +1286,6 @@ export default function Game(props) {
     });
 
     socket.on("takeSeatFailed", (message) => {
-      joinOptionsRef.current.join = false;
       errorAlert(message);
     });
 
