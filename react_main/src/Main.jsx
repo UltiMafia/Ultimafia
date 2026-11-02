@@ -577,57 +577,69 @@ function InGameWarning() {
       .catch(errorAlert);
   }
 
+  const warning = (
+    <Alert
+      severity="warning"
+      variant="outlined"
+      sx={{
+        width: "100%",
+        backgroundColor: "background.paper",
+        alignItems: "center",
+        py: 0.5,
+      }}
+      slotProps={{
+        message: {
+          sx: {
+            flex: "1",
+          },
+        },
+      }}
+    >
+      <AlertTitle sx={{ mb: 0.5, fontSize: "0.9rem" }}>
+        You are in a game in progress.
+      </AlertTitle>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Button
+          component={Link}
+          to={`/game/${user.inGame}`}
+          size="small"
+          sx={{ flex: "1" }}
+        >
+          Return
+        </Button>
+        <Button onClick={() => setLeaveDialogOpen(true)} size="small" sx={{ flex: "1" }}>
+          Leave
+        </Button>
+      </Stack>
+    </Alert>
+  );
+
   return (
     <>
-      <Snackbar
-        open={user.inGame !== null}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: isPhoneDevice ? "center" : "left",
-        }}
-        sx={{
-          maxWidth: "calc(100vw - 16px)",
-          // Sit above the phone bottom navigation instead of over it.
-          bottom: isPhoneDevice
-            ? "calc(60px + env(safe-area-inset-bottom, 0px))"
-            : undefined,
-        }}
-      >
-        <Alert
-          severity="warning"
-          variant="outlined"
-          sx={{
-            width: "100%",
-            backgroundColor: "background.paper",
-            alignItems: "center",
-            py: 0.5,
-          }}
-          slotProps={{
-            message: {
-              sx: {
-                flex: "1",
-              },
-            },
-          }}
+      {isPhoneDevice ? (
+        // In the page flow, so it takes its own space at the end of the
+        // scrolling column and never covers the last row.
+        user.inGame !== null && (
+          <Box
+            sx={{
+              position: "sticky",
+              bottom: 0,
+              mt: "auto !important",
+              zIndex: "snackbar",
+            }}
+          >
+            {warning}
+          </Box>
+        )
+      ) : (
+        <Snackbar
+          open={user.inGame !== null}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          sx={{ maxWidth: "calc(100vw - 16px)" }}
         >
-          <AlertTitle sx={{ mb: 0.5, fontSize: "0.9rem" }}>
-            You are in a game in progress.
-          </AlertTitle>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Button
-              component={Link}
-              to={`/game/${user.inGame}`}
-              size="small"
-              sx={{ flex: "1" }}
-            >
-              Return
-            </Button>
-            <Button onClick={() => setLeaveDialogOpen(true)} size="small" sx={{ flex: "1" }}>
-              Leave
-            </Button>
-          </Stack>
-        </Alert>
-      </Snackbar>
+          {warning}
+        </Snackbar>
+      )}
       <LeaveGameDialog
         open={leaveDialogOpen && user.inGame !== null}
         onClose={() => setLeaveDialogOpen(false)}
