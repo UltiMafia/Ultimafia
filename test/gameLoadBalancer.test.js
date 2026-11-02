@@ -3,12 +3,17 @@ const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
 
-async function fixture(preferred = 3010) {
+async function fixture(preferred = 3010, registered = new Set([3010, 3011])) {
   const connections = [];
   const timers = new Map();
-  const subscriber = { subscribe() {}, on() {} };
+  const errors = [];
+  const subscriber = {
+    subscribe() {},
+    on(name, handler) { this[name] = handler; },
+  };
   class ClientSocket {
-    constructor() {
+    constructor(url) {
+      this.url = url;
       this.readyState = 1;
       this.handlers = {};
       this.messages = [];
@@ -25,9 +30,10 @@ async function fixture(preferred = 3010) {
   let nextId = 0;
   const redis = {
     client: { duplicate: () => subscriber },
-    getAllGameServerPorts: async () => [3010, 3011],
+    getAllGameServerPorts: async () => [...registered],
     getNextGameServerPort: async () => preferred,
-    removeGameServer: async () => {},
+    registerGameServer: async (port) => { registered.add(Number(port)); },
+    removeGameServer: async (port) => { registered.delete(Number(port)); },
   };
   const context = {
     module: { exports: {} },
@@ -36,7 +42,7 @@ async function fixture(preferred = 3010) {
       if (name === "shortid") return { generate: () => `game-${++nextId}` };
       if (name === "../lib/sockets") return { ClientSocket };
       if (name === "./redis") return redis;
-      if (name === "./logging") return () => ({ error() {} });
+      if (name === "./logging") return () => ({ error(error) { errors.push(error); } });
       throw new Error(`Unexpected dependency: ${name}`);
     },
     setTimeout(fn) { const id = {}; timers.set(id, fn); return id; },
@@ -64,10 +70,98 @@ async function fixture(preferred = 3010) {
     await settle();
     return { result };
   };
-  return { api: context.module.exports, connections, timers, context, authenticate, start };
+  return { api: context.module.exports, connections, timers, context, authenticate,
+    start, registered, redis, subscriber, errors, settle };
 }
 
 describe("Game hosting server selection and request cleanup", function () {
+  it("removes a disconnected authenticated server from discovery", async function () {
+    const f = await fixture();
+    f.authenticate(f.connections[0]);
+    f.connections[0].terminate();
+    await f.settle();
+    assert.equal(f.registered.has(3010), false);
+    assert.equal(f.registered.has(3011), true);
+  });
+
+  it("removes a refused connection even if it never authenticated", async function () {
+    const f = await fixture();
+    f.connections[0].terminate();
+    await f.settle();
+    assert.equal(f.registered.has(3010), false);
+    const restarted = await fixture(3010, f.registered);
+    assert.deepEqual(restarted.connections.map((socket) => socket.url), ["ws://localhost:3011"]);
+  });
+
+  it("restores discovery only after a reconnected server authenticates", async function () {
+    const f = await fixture();
+    const socket = f.connections[0];
+    f.authenticate(socket);
+    socket.terminate();
+    await f.settle();
+    assert.equal(f.registered.has(3010), false);
+    socket.readyState = 1;
+    socket.emit("connected");
+    assert.equal(f.registered.has(3010), false);
+    socket.emit("serverAuthenticated");
+    await f.settle();
+    assert.equal(f.registered.has(3010), true);
+    const restarted = await fixture(3010, f.registered);
+    assert.ok(restarted.connections.some((connection) => connection.url === "ws://localhost:3010"));
+    restarted.authenticate(restarted.context.servers[3010]);
+    const { result } = await restarted.start();
+    const sent = restarted.context.servers[3010].messages.find((message) => message.name === "createGame");
+    restarted.context.servers[3010].emit("gameCreated", sent.data.gameId);
+    assert.equal((await result).value, sent.data.gameId);
+  });
+
+  it("does not remove a replacement when terminating the old connection", async function () {
+    const f = await fixture();
+    const old = f.connections[0];
+    f.authenticate(old);
+    f.subscriber.message("gamePorts", "3010");
+    await f.settle();
+    assert.notEqual(f.context.servers[3010], old);
+    assert.equal(f.registered.has(3010), true);
+    old.emit("disconnected");
+    await f.settle();
+    assert.equal(f.registered.has(3010), true);
+    f.context.servers[3010].terminate();
+    await f.settle();
+    assert.equal(f.registered.has(3010), false);
+    old.readyState = 1;
+    f.authenticate(old);
+    await f.settle();
+    assert.equal(f.registered.has(3010), false);
+  });
+
+  it("does not restore a deprecated server or accept auth after close", async function () {
+    const f = await fixture();
+    const socket = f.connections[0];
+    f.authenticate(socket);
+    await f.api.deprecateServer(3010);
+    socket.terminate();
+    socket.readyState = 1;
+    f.authenticate(socket);
+    await f.settle();
+    assert.equal(f.registered.has(3010), false);
+    const other = f.connections[1];
+    other.terminate();
+    other.emit("serverAuthenticated");
+    await f.settle();
+    assert.equal(f.registered.has(3011), false);
+  });
+
+  it("logs Redis update failures without an unhandled rejection", async function () {
+    const f = await fixture();
+    f.redis.registerGameServer = async () => { throw new Error("register failed"); };
+    f.redis.removeGameServer = async () => { throw new Error("remove failed"); };
+    f.authenticate(f.connections[0]);
+    f.connections[0].terminate();
+    await f.settle();
+    assert.deepEqual(f.errors.map((error) => error.message), ["register failed", "remove failed"]);
+  });
+
   it("does not send creation before authentication", async function () {
     const f = await fixture();
     const { result } = await f.start();

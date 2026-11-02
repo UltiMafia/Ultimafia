@@ -27,12 +27,13 @@ var waiting = {};
 })();
 
 function establishGameConn(port) {
-  if (servers[port]) servers[port].terminate();
-
+  const previousSocket = servers[port];
   let socket = new sockets.ClientSocket(`ws://localhost:${port}`, true);
   servers[port] = socket;
   socket.canCreateGames = false;
   socket.deprecated = false;
+  // An old connection closing must not unregister its replacement.
+  if (previousSocket) previousSocket.terminate();
 
   socket.on("connected", () => {
     socket.canCreateGames = false;
@@ -40,12 +41,17 @@ function establishGameConn(port) {
   });
 
   socket.on("serverAuthenticated", () => {
-    if (servers[port] === socket && !socket.deprecated)
+    if (servers[port] === socket && !socket.deprecated && socket.readyState === 1) {
       socket.canCreateGames = true;
+      // Restore discovery after a temporary disconnect, including after www restarts.
+      redis.registerGameServer(port).catch((error) => logger.error(error));
+    }
   });
 
   socket.on("disconnected", () => {
     socket.canCreateGames = false;
+    if (servers[port] === socket && !socket.deprecated)
+      redis.removeGameServer(port).catch((error) => logger.error(error));
   });
 
   socket.on("gameCreated", (gameId) => {
