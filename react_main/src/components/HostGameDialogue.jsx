@@ -44,6 +44,19 @@ import { getSetupBackgroundColor } from "pages/Play/LobbyBrowser/gameRowColors";
 export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck, defaultLobby }) {
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
+  const [hostError, setHostError] = useState("");
+
+  useEffect(() => {
+    setHostError("");
+  }, [open]);
+
+  function showHostError(error) {
+    errorAlert(error);
+    const message = error?.response?.data || error?.message || error;
+    setHostError(typeof message === "string" && message.length <= 200
+      ? message
+      : "Could not host game. Please try again.");
+  }
   const isPhoneDevice = useIsPhoneDevice();
   const navigate = useNavigate();
 
@@ -121,8 +134,9 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
   }
 
   const onHostGameWrapper = () => {
+    setHostError("");
     if (!supportsGameType) {
-      errorAlert("This setup cannot be hosted right now. Please refresh and try again.");
+      showHostError("This setup cannot be hosted right now. Please refresh and try again.");
       return;
     }
     onHostGame(setup.id, getFormFieldValue)
@@ -133,7 +147,7 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
         user.refreshGameMembership();
         navigate(`/game/${res.data}`);
       })
-      .catch(errorAlert);
+      .catch(showHostError);
   };
 
   const lobby = getFormFieldValue("lobby");
@@ -203,6 +217,7 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
                 true
               )}
             />
+            {hostError && <Alert severity="error">{hostError}</Alert>}
             {alertText && <Alert severity="warning">{alertText}</Alert>}
             <Form compact fields={formFields} onChange={updateFormFields} />
           </Stack>
