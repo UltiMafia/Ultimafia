@@ -43,7 +43,8 @@ function establishGameConn(port) {
   socket.on("serverAuthenticated", () => {
     if (servers[port] === socket && !socket.deprecated && socket.readyState === 1) {
       socket.canCreateGames = true;
-      // Restore discovery after a temporary disconnect, including after www restarts.
+      // Restore discovery after a temporary disconnect. A www restart while the port
+      // is removed still loses it until that game server registers again.
       redis.registerGameServer(port).catch((error) => logger.error(error));
     }
   });
