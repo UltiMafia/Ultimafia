@@ -86,7 +86,7 @@ import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { hyphenDelimit } from "../../utils";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { pregameSeatAction } from "shared/pregameSeatAction";
-import { useLongPress } from "../../hooks/useLongPress.jsx";
+import { bindMessageTouch } from "../../utils/messageTouch";
 import {
   Accordion,
   AccordionSummary,
@@ -3051,15 +3051,13 @@ const MessageRow = React.memo(function MessageRow(props) {
   }, []);
   useEffect(() => cancelReplyClick, [cancelReplyClick]);
 
-  // Mobile only - users pin message by long pressing them
-  const onPinMessage = props.onPinMessage;
   const messageObj = props.message;
-  const messageLongPress = useLongPress(
-    // Stable identity: useLongPress keys its effect on the callback, so a fresh
-    // arrow here re-runs that effect for every message on every render pass.
-    useCallback(() => onPinMessage(messageObj), [onPinMessage, messageObj]),
-    600
-  );
+  const rowRef = useRef(null);
+  const touchCallbacks = useRef(null);
+  touchCallbacks.current = {
+    onReply: startReply,
+    onPin: () => props.onPinMessage(messageObj),
+  };
   // Chat text effect (/wave etc.), attached by the server for item owners.
   // Plays once when the message first appears; pinned and review rows stay plain.
   const textEffect = useTextEffect(
@@ -3109,14 +3107,23 @@ const MessageRow = React.memo(function MessageRow(props) {
   });
   // Whether clicking this row starts a reply (the rows that used to show the
   // reply button).
-  const clickToReply =
+  const replyable =
     !!props.onMessageReply &&
-    !isPhoneDevice &&
     !isRightAligned &&
     canReplyTo(message, {
       review: props.review,
       stateViewing: props.stateViewing,
     });
+  const clickToReply = replyable && !isPhoneDevice;
+  const swipeToReply = replyable && isPhoneDevice;
+  useEffect(() => {
+    if (!isPhoneDevice || !rowRef.current) return;
+    return bindMessageTouch(rowRef.current, {
+      canReply: swipeToReply,
+      onReply: () => touchCallbacks.current.onReply(),
+      onPin: () => touchCallbacks.current.onPin(),
+    });
+  }, [isPhoneDevice, swipeToReply, messageObj, props.stateViewing]);
   const thumbtackFaClass = props.pinned
     ? "fas fa-thumbtack"
     : "fas fa-thumbtack fa-rotate-270";
@@ -3335,6 +3342,7 @@ const MessageRow = React.memo(function MessageRow(props) {
       ? " reply-merged with-reply-reference"
       : " with-reply-reference";
   if (clickToReply) className += " click-to-reply";
+  if (swipeToReply) className += " swipe-to-reply";
 
   function startReply() {
     props.onMessageReply(message);
@@ -3377,6 +3385,7 @@ const MessageRow = React.memo(function MessageRow(props) {
 
   return (
     <div
+      ref={rowRef}
       className={className}
       data-message-id={message.id ?? undefined}
       onPointerDown={clickToReply ? onRowPointerDown : undefined}
@@ -3391,8 +3400,6 @@ const MessageRow = React.memo(function MessageRow(props) {
       style={messageStyle}
       onMouseEnter={messageOnMouseEnter}
       onMouseLeave={messageOnMouseLeave}
-      onTouchStart={messageLongPress.onTouchStart}
-      onTouchEnd={messageLongPress.onTouchEnd}
     >
       <div className={innerClassName}>
         {props.replyPreview && !message.isQuote && (

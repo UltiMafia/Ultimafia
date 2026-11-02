@@ -36,7 +36,7 @@ async function main() {
     );
   const { chromium } = require(process.env.PLAYWRIGHT_MODULE);
   const directory = path.resolve(
-    process.argv[2] || "/tmp/ultimafia-chat-reply-browser",
+    process.argv[2] || process.env.CHAT_REPLY_DIST || "/tmp/ultimafia-chat-reply-browser",
   );
   if (!fs.existsSync(path.join(directory, "index.html")))
     throw new Error("Build the chat reply fixture first.");

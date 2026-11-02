@@ -1148,6 +1148,41 @@ html[data-keyboard="open"] .game .meeting-tabs {
   flex-shrink: 0;
 }
 
+/* A left swipe reveals the reply cue without adding height or changing chat
+   layout. The transcript clips the translated row at its horizontal edges. */
+.game .message.swipe-to-reply {
+  touch-action: pan-y pinch-zoom;
+}
+
+.game .message.reply-swiping {
+  transform: translateX(var(--reply-swipe-offset, 0px));
+}
+
+.game .message.swipe-to-reply.reply-swiping::after {
+  content: "\f3e5";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  position: absolute;
+  right: -52px;
+  top: 50%;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  color: var(--scheme-color-text);
+  background: var(--scheme-color-background);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.game .message.reply-swiping.reply-swipe-ready::after {
+  opacity: 1;
+  color: white;
+  background: var(--scheme-color-sec);
+}
+
 /* Rows that can be replied to take keyboard focus (Enter replies). */
 .game .message.click-to-reply:focus {
   outline: none;

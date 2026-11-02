@@ -12,9 +12,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import { Box, createTheme, ThemeProvider } from "@mui/material";
-import { GameTypeContext, TextMeetingLayout } from "../src/pages/Game/Game";
+import { GameTypeContext, IsPhoneDeviceContext, TextMeetingLayout } from "../src/pages/Game/Game";
 import { GameContext, SiteInfoContext, UserContext } from "../src/Contexts";
-import { redirectTypingToChat } from "../src/utils/messageReply";
+import { makeReplyTarget, redirectTypingToChat } from "../src/utils/messageReply";
 import "../src/css/main.css";
 import "../src/css/game.css";
 
@@ -251,7 +251,10 @@ const game = {
   onMessageReply:
     params.get("noreply") === "1"
       ? undefined
-      : (m) => window.__replies.push(m.id),
+      : (m) => {
+          window.__replies.push(m.id);
+          window.__setReplyTarget(makeReplyTarget(m, st));
+        },
   onPinMessage: (m) => window.__pins.push(m.id),
   isMessagePinned: () => false,
 };
@@ -270,23 +273,44 @@ if (params.get("sys") === "1")
 window.__replies = [];
 window.__quotes = [];
 window.__pins = [];
-const root = document.createElement("div");
-document.body.append(root);
+const root = document.getElementById("root") || document.createElement("div");
+if (!root.isConnected) document.body.append(root);
 window.__unmount = () => ReactDOM.unmountComponentAtNode(root);
 // The game page's own "type to chat" keydown handler (Game.jsx).
 window.addEventListener("keydown", (e) => redirectTypingToChat(e));
+const mobile = params.get("mobile") === "1";
+if (mobile) {
+  document.documentElement.style.height = "100%";
+  document.body.style.cssText = "margin: 0; height: 100%; overflow: hidden";
+}
+window.__sent = [];
+// Stub transport only: the real SpeechInput builds and sends the reply payload.
+game.socket.send = (type, payload) => window.__sent.push({ type, payload });
+function FixtureGame({ children }) {
+  const [replyTarget, setReplyTarget] = React.useState(null);
+  window.__setReplyTarget = setReplyTarget;
+  return (
+    <IsPhoneDeviceContext.Provider value={mobile}>
+      <GameContext.Provider value={{ ...game, replyTarget, setReplyTarget }}>
+        {children}
+      </GameContext.Provider>
+    </IsPhoneDeviceContext.Provider>
+  );
+}
 ReactDOM.render(
   <BrowserRouter>
     <ThemeProvider theme={theme}>
       <UserContext.Provider value={user}>
         <SiteInfoContext.Provider value={{ showAlert: () => {} }}>
-          <GameContext.Provider value={game}>
+          <FixtureGame>
             <GameTypeContext.Provider value={{ singleState: false }}>
               <Box
                 className="game"
                 sx={{
-                  width: 640,
-                  height: 700,
+                  width: mobile ? "100%" : 640,
+                  height: mobile ? "100dvh" : 700,
+                  minHeight: 0,
+                  boxSizing: "border-box",
                   backgroundColor: "background.paper",
                   display: "flex",
                   flexDirection: "column",
@@ -295,7 +319,7 @@ ReactDOM.render(
                 <TextMeetingLayout seatActions={false} />
               </Box>
             </GameTypeContext.Provider>
-          </GameContext.Provider>
+          </FixtureGame>
         </SiteInfoContext.Provider>
       </UserContext.Provider>
     </ThemeProvider>

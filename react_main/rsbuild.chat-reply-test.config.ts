@@ -23,7 +23,7 @@ export default defineConfig({
     ],
   },
   output: {
-    distPath: { root: "/tmp/ultimafia-chat-reply-browser" },
+    distPath: { root: process.env.CHAT_REPLY_DIST || "/tmp/ultimafia-chat-reply-browser" },
     cleanDistPath: true,
   },
 });
