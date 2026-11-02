@@ -1801,7 +1801,7 @@ export function TopBar({ forceShow = false } = {}) {
 
   const logo = (
     <Stack direction="row" sx={{
-      flex: "1",
+      flex: isPhoneDevice ? "1" : "1 1 14rem",
       alignItems: "center",
     }}>
       <SiteLogo />
@@ -1873,9 +1873,11 @@ export function TopBar({ forceShow = false } = {}) {
       <Stack
         direction="row"
         spacing={1}
+        useFlexGap
         sx={{
           px: 1,
           pb: 1,
+          flexWrap: "wrap",
           alignItems: "center",
         }}
       >
@@ -1888,7 +1890,7 @@ export function TopBar({ forceShow = false } = {}) {
           ref={game.scrollDownTriggerRef}
           sx={{
             alignItems: "center",
-            flex: "1",
+            flex: "1 1 22rem",
             minWidth: "0px",
           }}
         >
@@ -4544,8 +4546,10 @@ export function PlayerList(props) {
     <Stack
       direction="row"
       spacing={1}
+      useFlexGap
       sx={{
         width: "100%",
+        flexWrap: "wrap",
         alignItems: "center",
       }}
     >
