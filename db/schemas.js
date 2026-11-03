@@ -764,7 +764,6 @@ var schemas = {
     voteCount: { type: Number, default: 0 },
     deleted: { type: Boolean, default: false },
     pending: { type: Boolean, default: false },
-    image: { type: Buffer, select: false },
     board: { type: mongoose.Schema.Types.ObjectId, ref: "ForumBoard" },
     thread: { type: mongoose.Schema.Types.ObjectId, ref: "ForumThread" },
   }),

@@ -12,7 +12,6 @@ import "css/comments.css";
 import { Loading } from "../../components/Loading";
 import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import { Comment } from "./Comment";
-import { pastedCommentImage } from "./commentImagePaste.mjs";
 
 export default function Comments(props) {
   const location = props.location;
@@ -25,23 +24,10 @@ export default function Comments(props) {
   const [comments, setComments] = useState([]);
   const [showInput, setShowInput] = useState(false);
   const [postContent, setPostContent] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const imageUploads = useRef(0);
   const [loaded, setLoaded] = useState(false);
-  const [image, setImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState("");
-  const [posting, setPosting] = useState(false);
-  const postingRef = useRef(false);
-  const draftRef = useRef(0);
   const isMountedRef = useRef(true);
-
-  useEffect(() => {
-    if (!image) {
-      setImagePreview("");
-      return;
-    }
-    const url = URL.createObjectURL(image);
-    setImagePreview(url);
-    return () => URL.revokeObjectURL(url);
-  }, [image]);
 
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
@@ -50,11 +36,8 @@ export default function Comments(props) {
     setComments([]);
     setLoaded(false);
     setShowInput(false);
-    setPostContent("");
-    setImage(null);
-    draftRef.current += 1;
     onCommentsPageNav(1);
-  }, [locationKey, postLocation]);
+  }, [locationKey]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -104,58 +87,37 @@ export default function Comments(props) {
       });
   }
 
-  function onImagePaste(event) {
-    if (postingRef.current) return;
-    try {
-      const file = pastedCommentImage(event.clipboardData?.items);
-      if (!file) return; // Keep ordinary text and URL paste unchanged.
-      event.preventDefault();
-      if (image) {
-        errorAlert("Remove the attached image before pasting another.");
-        return;
-      }
-      setImage(file);
-    } catch (error) {
-      event.preventDefault();
-      errorAlert(error);
-    }
+  function onImageUploadStart() {
+    imageUploads.current++;
+    setUploadingImage(true);
+    return (discardedMarker) => {
+      if (isMountedRef.current && discardedMarker)
+        setPostContent((content) => content.split(discardedMarker).join(""));
+      imageUploads.current--;
+      if (isMountedRef.current)
+        setUploadingImage(imageUploads.current > 0);
+    };
   }
 
   function onPostSubmit() {
-    if (!postLocation || postingRef.current) return;
-    const draft = draftRef.current;
-    let body = { content: postContent, location: postLocation };
-    if (image) {
-      body = new FormData();
-      body.append("content", postContent);
-      body.append("location", postLocation);
-      body.append("image", image);
-    }
-    postingRef.current = true;
-    setPosting(true);
+    if (!postLocation || imageUploads.current > 0) return;
     axios
-      .post("/api/comment", body)
+      .post("/api/comment", { content: postContent, location: postLocation })
       .then(() => {
-        if (isMountedRef.current && draft === draftRef.current) {
+        if (isMountedRef.current) {
           onCommentsPageNav(1);
           setPostContent("");
-          setImage(null);
           setShowInput(false);
         }
       })
       .catch((err) => {
-        if (isMountedRef.current && draft === draftRef.current) errorAlert(err);
-      })
-      .finally(() => {
-        postingRef.current = false;
-        if (isMountedRef.current) setPosting(false);
+        if (isMountedRef.current) {
+          errorAlert(err);
+        }
       });
   }
 
   function onPostCancel() {
-    if (postingRef.current) return;
-    draftRef.current += 1;
-    setImage(null);
     setShowInput(false);
   }
 
@@ -245,34 +207,12 @@ export default function Comments(props) {
             }}
           >
             <Stack direction="column" spacing={1} sx={{ flex: "1" }}>
-              <TextEditor
-                value={postContent}
-                onChange={setPostContent}
-                onPaste={onImagePaste}
-                readOnly={posting}
-              />
-              <Typography variant="caption">
-                Paste one still PNG, JPEG or WebP image (up to 5 MiB).
-                Images are resized to fit 1024 by 1024 pixels and added below your text.
-              </Typography>
-              {image && (
-                <Stack spacing={1}>
-                  <Box
-                    component="img"
-                    src={imagePreview}
-                    alt="Attached image preview"
-                    sx={{ maxWidth: "100%", maxHeight: 240, objectFit: "contain" }}
-                  />
-                  <Button disabled={posting} onClick={() => setImage(null)}>
-                    Remove image
-                  </Button>
-                </Stack>
-              )}
+              <TextEditor value={postContent} onChange={setPostContent} pasteImages
+                onImageUploadStart={onImageUploadStart} />
               <Stack direction="row" spacing={1}>
                 <Button
                   variant="outlined"
                   onClick={onPostCancel}
-                  disabled={posting}
                   sx={{ flex: "1" }}
                 >
                   Cancel
@@ -280,10 +220,10 @@ export default function Comments(props) {
                 <div style={{ flex: "1" }} />
                 <Button
                   onClick={onPostSubmit}
-                  disabled={posting || (!postContent.length && !image)}
+                  disabled={uploadingImage}
                   sx={{ flex: "1", marginLeft: "auto !important" }}
                 >
-                  Post
+                  {uploadingImage ? "Uploading image..." : "Post"}
                 </Button>
               </Stack>
             </Stack>

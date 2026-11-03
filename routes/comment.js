@@ -1,4 +1,11 @@
 const express = require("express");
+const bluebird = require("bluebird");
+const formidable = bluebird.promisifyAll(require("formidable"), {
+  multiArgs: true,
+});
+const fs = require("fs");
+const path = require("path");
+const sharp = require("sharp");
 const shortid = require("shortid");
 const constants = require("../data/constants");
 const models = require("../db/models");
@@ -11,30 +18,7 @@ const {
 const blocks = require("../modules/blocks");
 const logger = require("../modules/logging")(".");
 const errors = require("../lib/errors");
-const {
-  parseCommentForm, normalizeCommentImage, appendCommentImage,
-} = require("../modules/commentImage");
 const router = express.Router();
-
-router.get("/:id/image", async function (req, res) {
-  res.set("Cache-Control", "private, no-store");
-  res.set("X-Content-Type-Options", "nosniff");
-  try {
-    if (!/^[A-Za-z0-9_-]{1,20}$/.test(req.params.id))
-      return errors.notFound(res, "Comment image not found.");
-    // Comment walls are public, as in GET /. Deleted images remain hidden even
-    // from viewers who can inspect deleted text; restore makes them visible again.
-    const comment = await models.Comment.findOne({
-      id: req.params.id, deleted: false, pending: false,
-    }).select("+image");
-    if (!comment?.image?.length)
-      return errors.notFound(res, "Comment image not found.");
-    res.type("image/webp").send(comment.image);
-  } catch (error) {
-    logger.error(error);
-    errors.serverError(res, "Could not load comment image.");
-  }
-});
 
 router.get("/", async function (req, res) {
   try {
@@ -128,6 +112,72 @@ router.get("/", async function (req, res) {
   }
 });
 
+// Pasted images upload on paste. The editor embeds the returned path as
+// ordinary markdown, so the post itself stays plain text.
+router.post("/image", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+
+    if (!(await routeUtils.verifyPermission(res, userId, "postReply"))) return;
+    if (!(await routeUtils.rateLimit(userId, "postPastedImage", res))) return;
+
+    var form = new formidable();
+    form.maxFileSize = 5 * 1024 * 1024;
+    form.maxFields = 1;
+    form.maxFieldsSize = 8192;
+    const temporaryPaths = [];
+    form.on("file", (name, file) => temporaryPaths.push(file.path));
+    let parsed = false;
+
+    const uploadDir = process.env.UPLOAD_PATH;
+    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+    const fileName = `pasted_${shortid.generate()}.webp`;
+
+    try {
+      var [fields, files] = await form.parseAsync(req);
+      parsed = true;
+
+      const image = sharp(files.image.path, { limitInputPixels: 16 * 1000 * 1000 });
+      const metadata = await image.metadata();
+      if (!["png", "jpeg", "webp"].includes(metadata.format))
+        throw new Error("Unsupported pasted image format.");
+
+      await image
+        .rotate()
+        .webp({ quality: 85 })
+        .resize({
+          width: 1024,
+          height: 1024,
+          fit: sharp.fit.inside,
+          withoutEnlargement: true,
+          kernel: sharp.kernel.lanczos3,
+        })
+        .toFile(path.join(uploadDir, fileName));
+    } catch (e) {
+      logger.warn(e);
+      errors.unprocessable(res, "Images must be readable PNG, JPEG or WebP and up to 5 MiB.");
+      return;
+    } finally {
+      // Formidable owns cleanup while a failed parse may still have open files.
+      if (parsed) {
+        for (const temporaryPath of temporaryPaths) {
+          try {
+            await fs.promises.unlink(temporaryPath);
+          } catch (e) {
+            if (e.code !== "ENOENT")
+              logger.warn("Could not remove temporary pasted image:", e);
+          }
+        }
+      }
+    }
+
+    res.send(`/uploads/${fileName}`);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Error uploading image. Please try again.");
+  }
+});
+
 router.post("/", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
@@ -136,18 +186,12 @@ router.post("/", async function (req, res) {
 
     if (!(await routeUtils.rateLimit(userId, "postComment", res))) return;
 
-    const multipart = /^multipart\/form-data\b/i.test(req.headers?.["content-type"] || "");
-    if (multipart && !(await routeUtils.rateLimit(userId, "postCommentImage", res))) return;
-    const upload = multipart ? await parseCommentForm(req) : null;
-    const fields = upload ? upload.fields : req.body;
-    var content = String(fields.content ?? "");
-    var location = String(fields.location ?? "").slice(
+    var content = String(req.body.content);
+    var location = String(req.body.location).slice(
       0,
       constants.maxCommentLocationLength
     );
 
-    const commentId = shortid.generate();
-    if (upload) content = appendCommentImage(content, commentId);
     let useLargeCommentLength = location.startsWith("setup");
     let maxLength = useLargeCommentLength
       ? constants.maxLargeCommentLength
@@ -176,11 +220,8 @@ router.post("/", async function (req, res) {
       }
     }
 
-    const image = upload ? await normalizeCommentImage(upload.image) : undefined;
-    if (req.aborted) return;
     var comment = new models.Comment({
-      id: commentId,
-      image,
+      id: shortid.generate(),
       author: req.session.user._id,
       date: Date.now(),
       location,
@@ -191,9 +232,7 @@ router.post("/", async function (req, res) {
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    if (e.status === 400 || e.status === 413 || e.status === 422)
-      res.status(e.status).send(e.message);
-    else errors.serverError(res, "Error posting comment. Please try again.");
+    errors.serverError(res, "Error posting comment. Please try again.");
   }
 });
 
