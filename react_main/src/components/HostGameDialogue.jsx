@@ -140,9 +140,7 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
     if (hosting) return;
     setHostError("");
     if (!supportsGameType) {
-      const text = "This setup cannot be hosted right now. Please refresh and try again.";
-      errorAlert(text);
-      setHostError(text);
+      setHostError("This setup cannot be hosted right now. Please refresh and try again.");
       return;
     }
     // Cancelling makes this attempt's result ineligible for the dialog and the
@@ -160,8 +158,10 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
       })
       .catch((error) => {
         const text = hostErrorText(error);
-        errorAlert(text);
+        // A site alert would cover the Cancel and Host buttons on phones, so it
+        // is only for an attempt the dialog can no longer show.
         if (request.isCurrent()) setHostError(text);
+        else errorAlert(text);
       })
       .finally(() => setHosting(false));
   };
