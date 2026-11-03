@@ -55,11 +55,26 @@ async function main(){
      if(state.native<=1){edge=state;break}
      velocity=Math.max(130,velocity*.96);
     }
-    const interrupted=!warm&&process.env.FLING_INTERRUPT==='1';
+    const releaseOnly=process.env.FLING_REVERSE_RELEASE==='1';
+    const reverse=releaseOnly||process.env.FLING_REVERSE==='1';
+    const interrupted=reverse||!warm&&process.env.FLING_INTERRUPT==='1';
     if(interrupted){
-     await page.evaluate(()=>{const{s}=window.__flingProbe;s.dispatchEvent(new Event('touchstart',{bubbles:true}));s.scrollTop+=240});
+     await page.evaluate(()=>window.__flingProbe.s.dispatchEvent(new Event('touchstart',{bubbles:true})));
+     if(reverse){
+      // UIKit bounce can deliver another top scroll after touchstart canceled
+      // the old completion. Exercise that re-arm before dragging back down.
+      await page.evaluate(()=>window.__flingProbe.s.dispatchEvent(new Event('scroll')));
+      await tick();
+     }
+     if(releaseOnly)await page.evaluate(()=>{
+      const{s}=window.__flingProbe;
+      const block=e=>{if(e.target===s)e.stopImmediatePropagation()};
+      document.addEventListener('scroll',block,true);window.__flingProbe.unblock=()=>document.removeEventListener('scroll',block,true);
+     });
+     await page.evaluate(()=>{window.__flingProbe.s.scrollTop+=240});
      await tick();
      await page.evaluate(()=>window.__flingProbe.s.dispatchEvent(new Event('touchend',{bubbles:true})));
+     if(releaseOnly)await page.evaluate(()=>{const{s,unblock}=window.__flingProbe;unblock();s.dispatchEvent(new Event('scroll'))});
     }
     let landed=false;
     for(let i=0;i<100;i++){
@@ -67,7 +82,7 @@ async function main(){
      if(state.firstGap!==null&&Math.abs(state.firstGap)<2&&state.native<2){landed=true;break}
     }
     const calls=await page.evaluate(()=>window.__flingProbe.calls);
-    const result={warm,...prepared,edge,interrupted,landed,final:await snapshot(),calls,samples,errors};results.push(result);console.log(JSON.stringify(result));
+    const result={warm,...prepared,edge,interrupted,releaseOnly,landed,final:await snapshot(),calls,samples,errors};results.push(result);console.log(JSON.stringify(result));
    }finally{await context.close()}
   }
   if(process.env.FLING_OUTPUT)fs.writeFileSync(process.env.FLING_OUTPUT,JSON.stringify({engine:await browser.version(),results},null,2));
@@ -80,7 +95,9 @@ async function main(){
    assert(results[0].landed,'cold fling stopped at a fake top: oldest message requires another gesture');
    assert.equal(results[0].calls.filter(c=>c.index===0).length,1,'fake edge should reconcile only once');
   }
-  assert(results[1].landed,'warm-cache fling must still land at true top');
+  if(results[1].interrupted){
+   assert(!results[1].landed&&results[1].final.native>1,'downward reversal from a real top must retain the new reading position');
+  }else assert(results[1].landed,'warm-cache fling must still land at true top');
   assert.equal(results[1].calls.length,0,'a real top must not start extra navigation');
   assert(results.every(r=>r.errors.length===0),'no browser exceptions');
  }finally{await browser.close();server.close()}

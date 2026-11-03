@@ -145,15 +145,32 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
   }, [virtualizer]);
   const handleTouchEnd = useCallback(() => {
     touchDown.current = false;
+    // A bounce may re-arm the edge after touchstart canceled the old fling.
+    // If this drag has left the top, it replaces that intent; do not complete
+    // the old upward navigation when the finger releases (even if scroll events
+    // for the downward movement have not been delivered yet).
+    if (pendingTop.current && speechDisplayRef.current?.scrollTop > 1) {
+      touched.current = false;
+      pendingTop.current = false;
+      edgeDeadline.current = 0;
+      cancelAnimationFrame(edgeFrame.current);
+    }
     if (pendingTop.current) checkTopEdge();
-  }, [checkTopEdge]);
+  }, [checkTopEdge, speechDisplayRef]);
   const handleScroll = useCallback((event) => {
     const scroller = speechDisplayRef.current;
     if (initializing.current) {
       if (!scroller || scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop >= 10) return;
       initializing.current = false;
     }
-    if (touched.current && scroller?.scrollTop <= 1 && !bridgingTop.current) {
+    if (touchDown.current && pendingTop.current && scroller?.scrollTop > 1) {
+      // Reversal during the bounce invalidates top completion for the remainder
+      // of this gesture, not just until the next bounce-generated scroll event.
+      touched.current = false;
+      pendingTop.current = false;
+      edgeDeadline.current = 0;
+      cancelAnimationFrame(edgeFrame.current);
+    } else if (touched.current && scroller?.scrollTop <= 1 && !bridgingTop.current) {
       pendingTop.current = true;
       if (!touchDown.current) checkTopEdge();
     }
@@ -180,7 +197,7 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     <div
       className="speech-display"
       data-name-animation-viewport
-      data-transcript-window="anchored-v5"
+      data-transcript-window="anchored-v6"
       style={{ display: "block", position: "relative", overflowAnchor: "none" }}
       ref={setScroller}
       onScroll={handleScroll}

@@ -37,6 +37,11 @@ bounded, cancelable completion after release handles native zero reached before
 logical history ends. This completion is navigation, not reconstructed UIKit
 inertia. A new touch cancels it.
 
+Bounce-generated scroll events can arrive after that new touch. If the reader
+then drags down away from the edge, that gesture invalidates the pending top
+completion, including when the native position updates before its scroll event
+is delivered. Releasing the finger must not revive the earlier upward intent.
+
 Virtual wrappers make each message a CSS last child. Only the actual final
 non-empty row keeps the transcript's extra trailing padding; the other rows keep
 their original density. Empty trailing quotes are accounted for after measurement.
@@ -62,6 +67,8 @@ ENGINE=webkit EDGE_RELEASE_EARLY=1 node perf/windowing-touch-edge.test.cjs build
 ENGINE=webkit node perf/windowing-fling.test.cjs build-chat-perf
 ENGINE=webkit IOS_LEGACY_WRITES=1 node perf/windowing-fling.test.cjs build-chat-perf
 ENGINE=webkit FLING_INTERRUPT=1 node perf/windowing-fling.test.cjs build-chat-perf
+ENGINE=webkit FLING_REVERSE=1 node perf/windowing-fling.test.cjs build-chat-perf
+ENGINE=webkit FLING_REVERSE_RELEASE=1 node perf/windowing-fling.test.cjs build-chat-perf
 ```
 
 Open the perf fixture with
