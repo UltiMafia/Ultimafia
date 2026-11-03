@@ -23,7 +23,7 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { getRowColor, getSetupBackgroundColor } from "./gameRowColors.js";
 import StateIcon from "components/StateIcon";
 
-const GameStatus = (props) => {
+export const GameStatus = (props) => {
   const navigate = useNavigate();
   const user = useContext(UserContext);
   const isPhoneDevice = useIsPhoneDevice();
@@ -48,6 +48,9 @@ const GameStatus = (props) => {
   let buttonUrl, buttonText, buttonVariant, buttonColor, buttonDisabled;
   let showSpectate = false;
   if (props.game.status === "Open") {
+    // The requested role travels in navigation state; the URL only describes
+    // the confirmed role. A spectator who clicks Join is seated over the
+    // existing socket (or by the new session's role request).
     buttonUrl = `/game/${props.game.id}`;
     buttonText = "Join";
     buttonColor = "primary";
@@ -78,16 +81,27 @@ const GameStatus = (props) => {
 
   const isRankedJoin =
     props.game.status === "Open" && (props.game.ranked || props.game.competitive);
-  const tutorialGate = useRankedTutorialGate(() => navigate(buttonUrl));
+  // The requested role travels in navigation state; the URL describes only
+  // the confirmed role. The mounted game applies a different role over its
+  // existing socket.
+  const membershipState =
+    buttonText === "Join"
+      ? { requestedMembership: "player" }
+      : buttonText === "Spectate"
+        ? { requestedMembership: "spectator" }
+        : undefined;
+  const tutorialGate = useRankedTutorialGate(() =>
+    membershipState
+      ? navigate(buttonUrl, { state: membershipState })
+      : navigate(buttonUrl)
+  );
 
   const GameButton = (
     <Button
       component={Link}
       to={buttonUrl}
+      state={membershipState}
       onClick={isRankedJoin ? tutorialGate.guard : undefined}
-      // Spectate changes server membership. A client-side route change would
-      // merely reveal the same retained, possibly seated game session.
-      reloadDocument={buttonText === "Spectate"}
       variant={buttonVariant}
       color={buttonColor}
       disabled={buttonDisabled}
@@ -105,7 +119,7 @@ const GameStatus = (props) => {
     <Button
       component={Link}
       to={`/game/${props.game.id}?spectate=true`}
-      reloadDocument
+      state={{ requestedMembership: "spectator" }}
       variant="outlined"
       color="inherit"
       sx={{
