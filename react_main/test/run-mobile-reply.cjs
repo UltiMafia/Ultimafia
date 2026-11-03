@@ -29,6 +29,11 @@ async function run(engine, url) {
   try {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
     const page = await context.newPage();
+    // Record requests only; browser automation cannot verify motor hardware.
+    await page.addInitScript(() => {
+      window.__vibrations = [];
+      Object.defineProperty(navigator, "vibrate", { configurable: true, value: (ms) => { window.__vibrations.push(ms); return true; } });
+    });
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
     page.on("console", (m) => { if (m.type() === "error" && !m.text().includes("Failed to load resource")) errors.push(m.text()); });
@@ -87,11 +92,33 @@ async function run(engine, url) {
       const p = await start();
       await move(p, -90);
       check((await calls()).length === 0, `${engine}/${layout}: no reply before release`);
-      check(await page.locator(row()).evaluate((el) => el.classList.contains("reply-swipe-ready") && getComputedStyle(el).transform.includes("-88")), `${engine}/${layout}: row follows the swipe and arms the reply cue`);
+      check(await page.locator(row()).evaluate((el) => {
+        const offset = -new DOMMatrixReadOnly(getComputedStyle(el).transform).m41;
+        return el.classList.contains("reply-swipe-ready") && offset > 64 && offset < 90;
+      }), `${engine}/${layout}: row follows the swipe with resistance and arms the reply cue`);
+      check(await page.locator(row()).evaluate((el) => {
+        const backdrop = getComputedStyle(el, "::before");
+        return backdrop.content !== "none" && backdrop.backgroundColor === getComputedStyle(document.querySelector(".meeting-tabs")).backgroundColor && parseFloat(backdrop.width) > 64 && backdrop.pointerEvents === "none";
+      }), `${engine}/${layout}: a theme-matched non-interactive backdrop fills the revealed strip`);
       if (layout === "default") {
         check(await page.locator(row()).evaluate((el) => getComputedStyle(el, "::after").content.includes("\uf3e5") && getComputedStyle(el, "::after").opacity === "1"), `${engine}: visible reply glyph at the threshold`);
+        const scales = await page.locator(row()).evaluate((el) => {
+          const pop = el.getAnimations({ subtree: true }).find((a) => a.animationName === "reply-cue-pop");
+          if (!pop) return null;
+          pop.pause();
+          const duration = pop.effect.getTiming().duration;
+          const values = [0, 0.5, 1].map((progress) => {
+            pop.currentTime = duration * progress;
+            const m = new DOMMatrixReadOnly(getComputedStyle(el, "::after").transform);
+            return Math.hypot(m.a, m.b);
+          });
+          pop.finish();
+          return values;
+        });
+        check(scales && scales[0] < scales[2] && scales[1] > scales[2] + 0.1 && scales[2] > 1.1 && scales[2] < 1.25, `${engine}: cue pops beyond its larger final size then settles`);
         await shot("swipe-held");
       }
+      check(await page.evaluate(() => window.__vibrations.join() === "10"), `${engine}/${layout}: threshold requests one short haptic pulse`);
       await end(p, -90);
       check((await calls()).join() === "m2aaaaaa", `${engine}/${layout}: left swipe replies once on release`);
       check(await page.locator(".reply-preview").innerText().then((t) => t.includes("Replying to Bob")), `${engine}/${layout}: real composer shows target`);
@@ -108,6 +135,48 @@ async function run(engine, url) {
       check(sent.length === 1 && sent[0].payload.quote.messageId === "m2aaaaaa" && sent[0].payload.message.content === "I agree with Bob.", `${engine}/${layout}: real composer sends reply payload`);
       check(await page.locator(".reply-preview").count() === 0, `${engine}/${layout}: sending clears target`);
     }
+    // Explicit selection must win over the opposite OS preference. Auto mode
+    // must follow the OS. Verify real colors, not merely a CSS class/token.
+    for (const [theme, os, background, foreground] of [
+      ["light", "dark", "rgb(224, 224, 224)", "rgb(0, 0, 0)"],
+      ["dark", "light", "rgb(59, 59, 59)", "rgb(255, 255, 255)"],
+      ["auto", "light", "rgb(243, 243, 243)", "rgb(0, 0, 0)"],
+      ["auto", "dark", "rgb(59, 59, 59)", "rgb(255, 255, 255)"],
+    ]) {
+      await page.emulateMedia({ colorScheme: os });
+      await open(`theme=${theme}`);
+      const p = await start(); await move(p, -90);
+      const colors = await page.locator(row()).evaluate((el) => ({
+        backdrop: getComputedStyle(el, "::before").backgroundColor,
+        icon: getComputedStyle(el, "::after").color,
+      }));
+      check(colors.backdrop === background, `${engine}/${theme}/${os}: revealed background matches the active theme`);
+      check(colors.icon === foreground, `${engine}/${theme}/${os}: armed icon retains theme-appropriate contrast`);
+      if (theme !== "auto") await shot(`${theme}-swipe-held`);
+      await end(p, -90);
+      check((await calls()).join() === "m2aaaaaa", `${engine}/${theme}/${os}: themed gesture still replies`);
+    }
+    await page.emulateMedia({ colorScheme: "light" });
+    await open();
+    {
+      const p = await start();
+      const offsets = [];
+      for (const distance of [100, 170, 240]) {
+        await touch("touchMove", p.x - distance, p.y);
+        offsets.push(await page.locator(row()).evaluate((el) => -new DOMMatrixReadOnly(getComputedStyle(el).transform).m41));
+      }
+      check(offsets[0] < offsets[1] && offsets[1] < offsets[2] && offsets[2] < 112 && offsets[2] - offsets[1] < offsets[1] - offsets[0], `${engine}: continued dragging has smoothly diminishing returns, not a hard stop`);
+      check(await page.evaluate(() => window.__vibrations.join() === "10"), `${engine}: continued dragging does not repeat haptic feedback`);
+      await end(p, -240);
+    }
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await open();
+    {
+      const p = await start(); await move(p, -90);
+      check(await page.locator(row()).evaluate((el) => getComputedStyle(el, "::after").animationName === "none" && new DOMMatrixReadOnly(getComputedStyle(el, "::after").transform).a > 1.1), `${engine}: reduced motion keeps the larger ready cue without a pop`);
+      await end(p, -90);
+    }
+    await page.emulateMedia({ reducedMotion: null });
     for (const [name, dx, dy, cancel] of [["short", -25, 0, false], ["right", 65, 0, false], ["vertical", -12, -90, false], ["cancelled", -90, 0, true]]) {
       await open(); const p = await start(); await move(p, dx, dy);
       if (name === "short") check(await page.locator(row()).evaluate((el) => getComputedStyle(el, "::after").backgroundColor !== "rgba(0, 0, 0, 0)"), `${engine}: unarmed reply cue has a theme background`);

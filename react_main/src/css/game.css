@@ -1158,6 +1158,19 @@ html[data-keyboard="open"] .game .meeting-tabs {
   transform: translateX(var(--reply-swipe-offset, 0px));
 }
 
+/* The row moves left; this strip extends from its shifted right edge back
+   to the original edge, exposing the theme's recessed surface behind it. */
+.game .message.reply-swiping::before {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: 0;
+  bottom: 0;
+  width: calc(-1 * var(--reply-swipe-offset));
+  background: var(--scheme-color-background);
+  pointer-events: none;
+}
+
 .game .message.swipe-to-reply.reply-swiping::after {
   content: "\f3e5";
   font-family: "Font Awesome 5 Free";
@@ -1179,8 +1192,23 @@ html[data-keyboard="open"] .game .meeting-tabs {
 
 .game .message.reply-swiping.reply-swipe-ready::after {
   opacity: 1;
-  color: white;
+  color: var(--scheme-color-text);
   background: var(--scheme-color-sec);
+  transform: translateY(-50%) scale(1.15);
+  animation: reply-cue-pop 260ms ease-out;
+}
+
+@keyframes reply-cue-pop {
+  0% { transform: translateY(-50%) scale(1); }
+  50% { transform: translateY(-50%) scale(1.4); }
+  75% { transform: translateY(-50%) scale(1.08); }
+  100% { transform: translateY(-50%) scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game .message.reply-swiping.reply-swipe-ready::after {
+    animation: none;
+  }
 }
 
 /* Rows that can be replied to take keyboard focus (Enter replies). */

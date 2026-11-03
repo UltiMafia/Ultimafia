@@ -23,7 +23,13 @@ const layout = params.get("layout") || "default";
 const anon = params.get("anon") === "1";
 const st = Number(params.get("st") || -1);
 const stName = st === -1 ? "Pregame" : "Day 1";
-const theme = createTheme();
+const themeMode = params.get("theme");
+if (themeMode === "light" || themeMode === "dark") {
+  document.documentElement.classList.add(`${themeMode}-mode`);
+}
+const theme = createTheme({ palette: {
+  mode: themeMode === "dark" || (themeMode === "auto" && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light",
+} });
 const user = {
   id: "u1",
   loggedIn: true,

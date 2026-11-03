@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { bindMessageTouch } from "../src/utils/messageTouch.js";
 
-function fixture(canReply = true) {
+function fixture(canReply = true, options = {}) {
   const row = new EventTarget();
   row.contains = (el) => el === row;
   const classes = new Set();
@@ -19,6 +19,7 @@ function fixture(canReply = true) {
     getSelection: () => null,
     setTimer: (fn) => { timer = fn; return 1; },
     clearTimer: () => { timer = undefined; },
+    ...options,
   });
   const event = (name, x, y = 100, count = 1) => {
     const e = new Event(name, { cancelable: true });
@@ -136,4 +137,62 @@ test("a non-replyable row keeps scrolling and never replies", () => {
   assert.equal(f.event("touchmove", 150).defaultPrevented, false);
   f.event("touchend", 150);
   assert.equal(f.replies(), 0);
+});
+
+test("drag follows the finger to the threshold then approaches its limit smoothly", () => {
+  const offset = (distance) => {
+    const f = fixture();
+    f.event("touchstart", 400);
+    f.event("touchmove", 400 - distance);
+    return -parseFloat(f.styles.get("--reply-swipe-offset"));
+  };
+  assert.equal(offset(32), 32);
+  assert.equal(offset(64), 64);
+  const pulls = [80, 120, 160, 200].map(offset);
+  assert.ok(pulls.every((value, i) => value > 64 && value < 112 && (!i || value > pulls[i - 1])), "no hard stop: further movement still increases the offset");
+  assert.ok(pulls[3] - pulls[2] < pulls[2] - pulls[1], "equal finger travel produces diminishing row travel");
+});
+
+test("haptic feedback is requested once per swipe on first reaching the threshold", () => {
+  const pulses = [];
+  const f = fixture(true, { vibrate: (duration) => pulses.push(duration) });
+  f.event("touchstart", 240);
+  f.event("touchmove", 200);
+  assert.deepEqual(pulses, []);
+  f.event("touchmove", 176);
+  f.event("touchmove", 150);
+  f.event("touchmove", 200);
+  f.event("touchmove", 150);
+  assert.deepEqual(pulses, [10], "neither continued dragging nor threshold jitter should buzz repeatedly");
+  f.event("touchend", 150);
+  f.event("touchstart", 240);
+  f.event("touchmove", 150);
+  assert.deepEqual(pulses, [10, 10], "a new gesture may provide feedback again");
+});
+
+for (const [name, vibrate] of [["unavailable", undefined], ["refused", () => false], ["throws", () => { throw new Error("Vibration blocked"); }]]) {
+  test(`reply still works when optional haptics are ${name}`, () => {
+    const f = fixture(true, { vibrate });
+    f.event("touchstart", 240);
+    f.event("touchmove", 150);
+    assert.ok(f.classes.has("reply-swipe-ready"));
+    assert.ok(Number.isFinite(parseFloat(f.styles.get("--reply-swipe-offset"))));
+    f.event("touchend", 150);
+    assert.equal(f.replies(), 1);
+  });
+}
+
+test("short, vertical, cancelled and non-replyable gestures do not request haptics", () => {
+  const pulses = [];
+  for (const [canReply, dx, dy] of [[true, -30, 0], [true, -30, 90], [false, -90, 0]]) {
+    const f = fixture(canReply, { vibrate: (ms) => pulses.push(ms) });
+    f.event("touchstart", 240);
+    f.event("touchmove", 240 + dx, 100 + dy);
+    f.event("touchend", 240 + dx, 100 + dy);
+  }
+  const f = fixture(true, { vibrate: (ms) => pulses.push(ms) });
+  f.event("touchstart", 240);
+  f.event("touchcancel", 240);
+  f.event("touchmove", 150);
+  assert.deepEqual(pulses, []);
 });

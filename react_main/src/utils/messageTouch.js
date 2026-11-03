@@ -14,6 +14,7 @@ export function bindMessageTouch(row, {
   getStyle = (el) => window.getComputedStyle(el),
   setTimer = setTimeout,
   clearTimer = clearTimeout,
+  vibrate = (duration) => typeof navigator !== "undefined" && navigator.vibrate?.(duration),
 }) {
   let gesture = null;
   let pinTimer;
@@ -36,7 +37,7 @@ export function bindMessageTouch(row, {
       selection: getSelection(), getComputedStyle: getStyle,
     })) return;
     const t = e.touches[0];
-    gesture = { id: t.identifier, x: t.clientX, y: t.clientY, swiping: false };
+    gesture = { id: t.identifier, x: t.clientX, y: t.clientY, swiping: false, didHaptic: false };
     pinTimer = setTimer(() => {
       // A held line pins, never also replies if the finger subsequently moves.
       gesture = null;
@@ -64,9 +65,22 @@ export function bindMessageTouch(row, {
     gesture.swiping = true;
     if (e.cancelable) e.preventDefault();
     row.classList.add("reply-swiping");
-    if (-dx >= REPLY_DISTANCE) row.classList.add("reply-swipe-ready");
-    else row.classList.remove("reply-swipe-ready");
-    row.style.setProperty("--reply-swipe-offset", `${Math.max(-88, dx)}px`);
+    if (-dx >= REPLY_DISTANCE) {
+      row.classList.add("reply-swipe-ready");
+      if (!gesture.didHaptic) {
+        gesture.didHaptic = true;
+        // Optional browser feedback, not a requirement for replying. Safari
+        // has no Vibration API; devices/policies may also refuse the request.
+        try { vibrate(10); } catch { /* Keep the gesture working without haptics. */ }
+      }
+    } else row.classList.remove("reply-swipe-ready");
+    // Follow directly up to the reply threshold, then smoothly approach a
+    // further 48px of travel. The slope is continuous at the threshold and
+    // keeps decreasing instead of running into a hard clamp.
+    const distance = -dx;
+    const offset = distance <= REPLY_DISTANCE ? distance :
+      REPLY_DISTANCE + 48 * (1 - Math.exp(-(distance - REPLY_DISTANCE) / 48));
+    row.style.setProperty("--reply-swipe-offset", `${-offset}px`);
   }
   function end(e) {
     const t = point(e.changedTouches);
