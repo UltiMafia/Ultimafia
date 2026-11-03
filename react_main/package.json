@@ -11,6 +11,7 @@
     "@iconify/react": "^4.1.1",
     "@mui/icons-material": "^6.5.0",
     "@mui/material": "^6.5.0",
+    "@tanstack/react-virtual": "3.14.26",
     "axios": ">=0.21.2",
     "chess.js": "^1.4.0",
     "color": "3.2.1",

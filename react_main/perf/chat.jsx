@@ -8,6 +8,7 @@ import {
   TextMeetingLayout,
   ThreePanelLayout,
   SideMenu,
+  SettingsMenu,
   useHistoryReducer,
   useSettingsReducer,
 } from "../src/pages/Game/Game";
@@ -84,7 +85,8 @@ function ChatPerformance() {
 
   useEffect(() => {
     updateHistory({ type: "set", history: makeState(initialCount) });
-  }, [updateHistory]);
+    if (params.has("settingsIntegration")) updateSettings({ type: "load" });
+  }, [updateHistory, updateSettings]);
 
   // This replaces only the transport. The real reducer, transcript, text input,
   // echo-to-clear behavior, formatting, and scroll handling run unchanged.
@@ -132,7 +134,11 @@ function ChatPerformance() {
   const state = history.states[0];
   const count = state?.meetings.village.messages.length || 0;
   const game = {
-    history, updateHistory, players, spectators, settings, options,
+    ...(params.has("virtual") || !params.has("settingsIntegration")
+      ? { transcriptWindowing: params.get("virtual") === "1" } : {}),
+    history, updateHistory, players, spectators, settings: params.has("partialSettings")
+      ? Object.fromEntries(Object.entries(settings).filter(([key]) => key !== "virtualizeTranscript"))
+      : settings, updateSettings, options,
     stateViewing: 0, self: "test-0", socket, review: false,
     isolationEnabled: false, isolatedPlayers, isSpectator: false,
     pinnedMessages, isMessagePinned, onPinMessage, onMessageQuote,
@@ -147,14 +153,21 @@ function ChatPerformance() {
   }, [updateHistory]);
 
   useEffect(() => {
-    window.chatPerf = { load, append: () => append(makeMessage()), setStreaming };
+    window.chatPerf = { load, settings, updateSettings,
+      append: (message) => append(message || makeMessage()), setStreaming,
+      replyTo: (id) => {
+        append({ ...makeMessage("quote", "test-0"), id: "perf-quote", isQuote: true,
+          fromState: 0, fromMeetingId: "village", messageId: id });
+        append({ ...makeMessage("a reply that jumps to old history", "test-0"), id: "perf-reply", replyTo: "perf-quote" });
+      },
+    };
     return () => { delete window.chatPerf; };
-  }, [load, append]);
+  }, [load, append, settings, updateSettings]);
 
   return (
-    <main className="chat-perf dark-mode">
+    <main className={`chat-perf ${params.get("theme") === "light" ? "light-mode" : "dark-mode"} ${params.get("sweep") === "off" ? "perf-sweep-off" : ""}`}>
       <div className="perf-controls">
-        <strong>Chat test · {count.toLocaleString()} messages</strong>
+        <strong>Chat test · {count.toLocaleString()} messages{params.get("virtual") === "1" ? " · anchored v5" : ""}</strong>
         <div className="perf-buttons">
           {[0, 100, 1000, 5000, 10000].map((size) => (
             <button key={size} onClick={() => load(size)}>Load {size.toLocaleString()}</button>
@@ -174,6 +187,11 @@ function ChatPerformance() {
         <small>Local simulation. Frame timing includes rendering and frame waits, not server/network latency. Reload to reset.</small>
       </div>
       <GameContext.Provider value={game}>
+        {params.has("settingsIntegration") && <div data-testid="settings-integration"
+          style={{ position: "fixed", right: 0, top: 0, zIndex: 100, width: 340,
+            maxHeight: "75vh", overflowY: "auto", background: theme.palette.background.paper }}>
+          <SettingsMenu />
+        </div>}
         <IsPhoneDeviceContext.Provider value={isPhone}>
           <div className="game perf-game">
             {state && (params.get("panels") === "flat" || isPhone ? <TextMeetingLayout /> :
@@ -194,7 +212,7 @@ function ChatPerformance() {
 
 ReactDOM.render(
   <BrowserRouter>
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme} defaultMode={params.get("theme") || "dark"}>
       <CssBaseline />
       <SiteInfoContext.Provider value={siteInfo}>
         <UserContext.Provider value={user}>
