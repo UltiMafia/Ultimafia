@@ -2426,6 +2426,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           history={history}
           players={players}
           self={game.self}
+          isSpectator={game.isSpectator}
           spectators={spectators}
           stateViewing={
             singleState && !message.obituaries && !message.winners
@@ -2469,6 +2470,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     game.onPinMessage,
     game.isMessagePinned,
     game.self,
+    game.isSpectator,
   ]);
 
   // Typing and unrelated game updates must not repeatedly measure the entire
@@ -2879,10 +2881,10 @@ function Message(props) {
     meetingState,
     replyQuote,
     replyMerged,
+    isSpectator,
     ...rowProps
   } = props;
   const { message, stateViewing } = props;
-  const { isSpectator } = useContext(GameContext);
 
   let iWasPinged = false;
   if (message.content && props.settings.highlightMentions) {
@@ -6735,6 +6737,7 @@ export function PinnedMessages() {
         history={game.history}
         players={game.players}
         self={game.self}
+        isSpectator={game.isSpectator}
         spectators={game.spectators}
         stateViewing={game.stateViewing}
         key={message.id || message.messageId + message.time || i}
