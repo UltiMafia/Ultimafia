@@ -2,6 +2,23 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
+// Measured row heights survive remounts (switching tabs, leaving and
+// re-entering a game), so a transcript that has been read once starts from
+// real sizes instead of estimates.
+const measuredHeights = new Map();
+const MAX_CACHED_HEIGHTS = 8000;
+
+// Only iOS defers corrections through a gesture (the library's own check):
+// writes would cancel momentum there, so a wrong height becomes unreachable
+// history rather than a written correction. Elsewhere the constant the
+// window was tuned with stays in place.
+const iOSDefersCorrections = (() => {
+  if (typeof navigator === "undefined") return false;
+  if (/iP(hone|od|ad)/.test(navigator.userAgent)) return true;
+  return navigator.platform === "MacIntel" && (navigator.maxTouchPoints ?? 0) > 0;
+})();
+const UNSEEN_ROW_ESTIMATE = iOSDefersCorrections ? 150 : 60;
+
 export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScroll }) {
   const initializing = useRef(true);
   const jumpFrame = useRef(null);
@@ -14,17 +31,31 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
   const bridgingTop = useRef(false);
   const edgeDeadline = useRef(0);
   const keys = useMemo(() => rows.map((row, index) => row.key ?? index), [rows]);
+  // Heights may only be shared under a key that identifies the message across
+  // mounts; an index fallback would mix different games' rows.
+  const stableKeys = useMemo(() => rows.map((row) => row.key ?? null), [rows]);
   const getItemKey = useCallback((index) => keys[index], [keys]);
+  // Every row measured during an iOS fling adds its estimate error to the held
+  // offset; a held positive offset is scrollable history the element cannot
+  // reach, so the fling stops early at a false top. Underestimating row height
+  // feeds that exactly, while overestimating only trims space that measuring
+  // the row then restores.
+  const estimateSize = useCallback((index) => {
+    const key = stableKeys[index];
+    return (key == null ? undefined : measuredHeights.get(key)) ?? UNSEEN_ROW_ESTIMATE;
+  }, [stableKeys]);
+  const virtualizerRef = useRef(null);
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => speechDisplayRef.current,
     getItemKey,
-    estimateSize: () => 60,
+    estimateSize,
     overscan: 8,
     anchorTo: "end",
     followOnAppend: autoScroll,
     scrollEndThreshold: 10,
   });
+  virtualizerRef.current = virtualizer;
 
   // All deltas above the first visible item must be compensated, in either
   // direction. A re-measured item spanning the fold grows below the reading
@@ -47,9 +78,26 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     return index;
   }, [rows]);
 
+  const recordMeasured = useCallback(() => {
+    for (const [key, size] of virtualizerRef.current.itemSizeCache) {
+      // Index fallbacks are numbers; only message-identity keys are portable.
+      if (size > 0 && typeof key === "string") measuredHeights.set(key, size);
+    }
+    if (measuredHeights.size > MAX_CACHED_HEIGHTS) {
+      const excess = measuredHeights.size - MAX_CACHED_HEIGHTS;
+      let index = 0;
+      for (const key of measuredHeights.keys()) {
+        if (index++ >= excess) break;
+        measuredHeights.delete(key);
+      }
+    }
+  }, []);
+
   useLayoutEffect(() => {
     virtualizer.scrollToEnd();
-  }, [virtualizer]);
+    const timer = setTimeout(recordMeasured, 200);
+    return () => clearTimeout(timer);
+  }, [virtualizer, recordMeasured]);
 
   // A keyboard changes the viewport without appending data. Keep an already
   // following reader pinned, but never pull someone away from older messages.
@@ -74,7 +122,8 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     cancelAnimationFrame(jumpFrame.current);
     cancelAnimationFrame(edgeFrame.current);
     clearTimeout(highlightTimer.current);
-  }, []);
+    recordMeasured();
+  }, [recordMeasured]);
 
   useEffect(() => {
     const scroller = speechDisplayRef.current;
@@ -222,7 +271,7 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     <div
       className="speech-display"
       data-name-animation-viewport
-      data-transcript-window="anchored-v7"
+      data-transcript-window="anchored-v8"
       style={{ display: "block", position: "relative", overflowAnchor: "none" }}
       ref={setScroller}
       onScroll={handleScroll}

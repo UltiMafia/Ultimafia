@@ -37,6 +37,18 @@ bounded, cancelable completion after release handles native zero reached before
 logical history ends. This completion is navigation, not reconstructed UIKit
 inertia. A new touch cancels it.
 
+Unseen rows are sized high (150px on iOS, the tuned 60px elsewhere) and measured
+heights are cached by message key across remounts. iOS holds every correction
+made during a finger or fling, so each row measured mid-fling adds its estimate
+error to a held offset; at native scrollTop 0 that positive offset is history the
+element cannot scroll to, and the fling stops at a false top. Underestimating
+height feeds that directly, while overestimating only removes space that
+measuring the row restores. With the constant 60px estimate a 100-row fixture
+left 1,144px unreachable and a 300-row reference left 6,811px; sizing unseen
+rows high leaves row zero aligned at the native top. Recalibrating mid-mount is
+not an option: `virtualizer.measure()` clears `itemSizeCache` and re-lays the
+list from index 0, which moved the reader and broke visible spacing.
+
 Bounce-generated scroll events can arrive after that new touch. If the reader
 then drags down away from the edge, that gesture invalidates the pending top
 completion, including when the native position updates before its scroll event

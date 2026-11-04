@@ -79,6 +79,7 @@ function ChatPerformance() {
   const [history, updateHistory] = useHistoryReducer();
   const [settings, updateSettings] = useSettingsReducer();
   const [pinnedMessages, setPinnedMessages] = useState({});
+  const [transcriptVersion, setTranscriptVersion] = useState("");
   const [streaming, setStreaming] = useState(false);
   const status = useRef();
   const isPhone = useIsPhoneDevice();
@@ -133,6 +134,15 @@ function ChatPerformance() {
 
   const state = history.states[0];
   const count = state?.meetings.village.messages.length || 0;
+
+  // Read the renderer version from the DOM so the harness names the build it is
+  // actually running, not a hard-coded label.
+  useEffect(() => {
+    if (params.get("virtual") !== "1") return undefined;
+    const timer = setTimeout(() => setTranscriptVersion(
+      document.querySelector("[data-transcript-window]")?.dataset.transcriptWindow || ""), 0);
+    return () => clearTimeout(timer);
+  }, [count]);
   const game = {
     ...(params.has("virtual") || !params.has("settingsIntegration")
       ? { transcriptWindowing: params.get("virtual") === "1" } : {}),
@@ -167,7 +177,7 @@ function ChatPerformance() {
   return (
     <main className={`chat-perf ${params.get("theme") === "light" ? "light-mode" : "dark-mode"} ${params.get("sweep") === "off" ? "perf-sweep-off" : ""}`}>
       <div className="perf-controls">
-        <strong>Chat test · {count.toLocaleString()} messages{params.get("virtual") === "1" ? " · anchored v7" : ""}</strong>
+        <strong>Chat test · {count.toLocaleString()} messages{params.get("virtual") === "1" ? ` · ${transcriptVersion || "virtualized"}` : " · full DOM"}</strong>
         <div className="perf-buttons">
           {[0, 100, 1000, 5000, 10000].map((size) => (
             <button key={size} onClick={() => load(size)}>Load {size.toLocaleString()}</button>
