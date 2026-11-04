@@ -2591,6 +2591,8 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
               setAutoScroll={setAutoScroll}
               speechInput={speechInput}
               setSpeechInput={setSpeechInput}
+              self={game.self}
+              updateHistory={updateHistory}
               whispersEnabled={game.getSetupGameSetting("Whispers")}
             />
           )}
@@ -2839,7 +2841,11 @@ function getContentClasses(message) {
   else if (isVoteMessage) contentClasses.push("vote-record");
 
   // Make content clickable if it's quotable
-  if ((isPlayerMessage || isAnonymousMessage) && !message.isQuote) {
+  if (
+    (isPlayerMessage || isAnonymousMessage) &&
+    !message.isQuote &&
+    !message.pending
+  ) {
     contentClasses.push("clickable");
   }
 
@@ -3325,6 +3331,7 @@ const MessageRow = React.memo(function MessageRow(props) {
     : "nameplate";
 
   let className = "message";
+  if (message.pending) className += " pending";
   if (message.spectatorChat) className += " spectator-chat";
   else if (props.iWasPinged) className += " mention";
   // A reply shows what it answers above its header (see ReplyReference). One
@@ -3335,7 +3342,7 @@ const MessageRow = React.memo(function MessageRow(props) {
     className += props.replyMerged
       ? " reply-merged with-reply-reference"
       : " with-reply-reference";
-  if (clickToReply) className += " click-to-reply";
+  if (clickToReply && !message.pending) className += " click-to-reply";
 
   function startReply() {
     props.onMessageReply(message);
@@ -3354,7 +3361,7 @@ const MessageRow = React.memo(function MessageRow(props) {
   // double-click can still quote without starting one.
   function onRowClick(e) {
     cancelReplyClick();
-    if (!clickToReply) return;
+    if (!clickToReply || message.pending) return;
     const row = e.currentTarget;
     const env = {
       selection: window.getSelection(),
@@ -3698,7 +3705,18 @@ function SpeechInput(props) {
 
   const speechInput = props.speechInput;
   const setSpeechInput = props.setSpeechInput;
+  const self = props.self;
+  const updateHistory = props.updateHistory;
   const pendingSpeechRef = useRef(null);
+  // Optimistic rows: shown immediately, replaced by the server's message.
+  const pendingRowsRef = useRef(new Map());
+  useEffect(
+    () => () => {
+      pendingRowsRef.current.forEach((entry) => clearTimeout(entry.timer));
+      pendingRowsRef.current.clear();
+    },
+    []
+  );
   const [speechDropdownOptions, setSpeechDropdownOptions] = useState([]);
   const [speechDropdownValue, setSpeechDropdownValue] = useState("Say");
   const [lastTyped, setLastTyped] = useState(0);
@@ -3815,7 +3833,11 @@ function SpeechInput(props) {
     if (!meeting?.messages?.length) return;
 
     const pending = pendingSpeechRef.current;
-    const lastMessage = meeting.messages[meeting.messages.length - 1];
+    let lastIndex = meeting.messages.length - 1;
+    while (lastIndex >= 0 && meeting.messages[lastIndex].pending) lastIndex--;
+    if (lastIndex < 0) return;
+
+    const lastMessage = meeting.messages[lastIndex];
     const matchesSender =
       lastMessage.senderId === game.self ||
       (pending.anonymous && lastMessage.senderId === "anonymous");
@@ -3846,6 +3868,18 @@ function SpeechInput(props) {
 
       const cooldownMs = Math.max(Number(info.cooldownMs) || 0, 0);
       if (!cooldownMs) return;
+
+      // A cooldown means the server refused the message: take the optimistic
+      // row back and put its text in the box instead of losing it.
+      let newestId = null;
+      pendingRowsRef.current.forEach((entry, id) => {
+        if (entry.meetingId === selTab) newestId = id;
+      });
+      if (newestId) {
+        const entry = pendingRowsRef.current.get(newestId);
+        setSpeechInput(entry.content);
+        removePendingRow(newestId);
+      }
 
       const now = Date.now();
       setSpeakCooldown((prev) => {
@@ -3956,6 +3990,36 @@ function SpeechInput(props) {
   const replyTarget = game.replyTarget;
   const setReplyTarget = game.setReplyTarget;
 
+  function removePendingRow(id) {
+    const entry = pendingRowsRef.current.get(id);
+    if (!entry) return;
+    clearTimeout(entry.timer);
+    pendingRowsRef.current.delete(id);
+    updateHistory({
+      type: "removePendingMessage",
+      meetingId: entry.meetingId,
+      id,
+    });
+  }
+
+  function addPendingRow({ id, meetingId, senderId, content }) {
+    updateHistory({
+      type: "addPendingMessage",
+      message: {
+        id,
+        meetingId,
+        senderId,
+        content,
+        time: Date.now(),
+        pending: true,
+      },
+    });
+    // If the server never confirms (mute, dropped socket), take the row back.
+    const timer = setTimeout(() => removePendingRow(id), 15000);
+    pendingRowsRef.current.set(id, { meetingId, content, timer });
+  }
+
+
   function onSpeechSubmit(e) {
     if (isSpeakCooldownActive) return;
 
@@ -3980,6 +4044,34 @@ function SpeechInput(props) {
           content,
           abilityName,
         });
+
+        // A second Enter while a check is in flight, or while a warning is
+        // open, must not leave a row that nobody is going to send.
+        if (!isCommand && (ruleWarning || ruleCheckBusy.current)) return;
+
+        const anonymous =
+          Boolean(abilityName) || Boolean(meetings[selTab]?.anonymous);
+
+        // Replies quote a server-side message the client cannot fabricate, so
+        // they keep the plain send path. Ordinary speech gets an optimistic row
+        // that the server's own message replaces on arrival.
+        const pendingId =
+          !isCommand && !reply && !abilityName && (anonymous || Boolean(self))
+            ? `pending:${Date.now().toString(36)}${Math.random()
+                .toString(36)
+                .slice(2, 8)}`
+            : null;
+
+        if (pendingId) {
+          addPendingRow({
+            id: pendingId,
+            meetingId: selTab,
+            senderId: anonymous ? "anonymous" : self,
+            content,
+          });
+          setSpeechInput("");
+          props.setAutoScroll(true);
+        }
 
         const deliver = () => {
           if (isCommand) {
@@ -4015,10 +4107,6 @@ function SpeechInput(props) {
         // filter first; a flagged message still sends after confirmation.
         if (isCommand) {
           deliver();
-        } else if (ruleWarning) {
-          return;
-        } else if (ruleCheckBusy.current) {
-          return;
         } else {
           ruleCheckBusy.current = true;
           axios
@@ -4026,7 +4114,7 @@ function SpeechInput(props) {
             .then((res) => {
               const flagged = res.data;
               if (flagged && flagged.flagged) {
-                const warning = { ...flagged, deliver };
+                const warning = { ...flagged, deliver, pendingId, content };
                 ruleWarningRef.current = warning;
                 setRuleWarning(warning);
               } else {
@@ -4074,6 +4162,14 @@ function SpeechInput(props) {
   function closeRuleWarning() {
     ruleWarningRef.current = null;
     setRuleWarning(null);
+  }
+
+  function editRuleWarning() {
+    const warning = ruleWarningRef.current;
+    closeRuleWarning();
+    if (!warning) return;
+    if (warning.pendingId) removePendingRow(warning.pendingId);
+    setSpeechInput(warning.content || "");
   }
 
   function confirmRuleWarning() {
@@ -4189,7 +4285,7 @@ function SpeechInput(props) {
       </div>
       <Dialog
         open={Boolean(ruleWarning)}
-        onClose={closeRuleWarning}
+        onClose={editRuleWarning}
         maxWidth="xs"
         fullWidth
         data-testid="rule-warning-dialog"
@@ -4224,7 +4320,7 @@ function SpeechInput(props) {
           </div>
         </DialogTitle>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={closeRuleWarning}>Edit</Button>
+          <Button onClick={editRuleWarning}>Edit</Button>
           <Button
             variant="contained"
             color="warning"
@@ -7071,6 +7167,52 @@ export function useHistoryReducer() {
           }
           break;
         }
+        case "addPendingMessage": {
+          const pendingStateData = history.states[history.currentState];
+          const pendingMeeting =
+            pendingStateData &&
+            pendingStateData.meetings[action.message.meetingId];
+          if (!pendingMeeting) break;
+
+          return update(history, {
+            states: {
+              [history.currentState]: {
+                meetings: {
+                  [action.message.meetingId]: {
+                    messages: { $push: [action.message] },
+                  },
+                },
+              },
+            },
+          });
+        }
+        case "removePendingMessage": {
+          // The state can advance while a message is unconfirmed, so look in
+          // every state rather than only the one that is on screen.
+          const pendingStates = {};
+          Object.keys(history.states).forEach((stateId) => {
+            const meeting =
+              history.states[stateId].meetings &&
+              history.states[stateId].meetings[action.meetingId];
+            if (
+              meeting &&
+              (meeting.messages || []).some((m) => m.id === action.id)
+            ) {
+              pendingStates[stateId] = {
+                meetings: {
+                  [action.meetingId]: {
+                    messages: {
+                      $set: meeting.messages.filter((m) => m.id !== action.id),
+                    },
+                  },
+                },
+              };
+            }
+          });
+          if (!Object.keys(pendingStates).length) break;
+
+          return update(history, { states: pendingStates });
+        }
         case "addMessage": {
           const currentStateData = history.states[history.currentState];
           if (currentStateData) {
@@ -7080,6 +7222,32 @@ export function useHistoryReducer() {
             if (message.meetingId) {
               const meeting = currentStateData.meetings[message.meetingId];
               if (meeting) {
+                // An optimistic row for this message is already on screen:
+                // replace it in place so the line does not jump to the end
+                // when the server confirms it.
+                const pendingIndex = (meeting.messages || []).findIndex(
+                  (m) =>
+                    m.pending &&
+                    m.senderId === message.senderId &&
+                    String(m.content || "").trim() ===
+                      String(message.content || "").trim()
+                );
+                if (pendingIndex !== -1) {
+                  const messages = meeting.messages.slice();
+                  messages[pendingIndex] = message;
+                  return update(history, {
+                    states: {
+                      [history.currentState]: {
+                        meetings: {
+                          [message.meetingId]: {
+                            messages: { $set: messages },
+                          },
+                        },
+                      },
+                    },
+                  });
+                }
+
                 // Pure duplicate check: a repeated delivery or a replay of
                 // history after reconnecting must not add a second row. The
                 // reducer must not mutate anything, because React may call it
