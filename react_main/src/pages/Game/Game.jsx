@@ -3728,6 +3728,14 @@ function SpeechInput(props) {
   const setSpeechInput = props.setSpeechInput;
   const self = props.self;
   const updateHistory = props.updateHistory;
+  const user = useContext(UserContext);
+
+  // Same defaults the server applies: OGI warns unless switched off, abuse
+  // warns only when the account has it enabled (a violation on record does
+  // that when /api/user/info is loaded). With both off there is nothing to
+  // ask the server, so skip the round trip before sending.
+  const rulesEnabled =
+    user?.settings?.ogiFilter !== false || user?.settings?.abuseFilter === true;
   const pendingSpeechRef = useRef(null);
   // Optimistic rows: shown immediately, replaced by the server's message.
   const pendingRowsRef = useRef(new Map());
@@ -4126,7 +4134,7 @@ function SpeechInput(props) {
 
         // Commands are not chat content. Everything else is scored by the rule
         // filter first; a flagged message still sends after confirmation.
-        if (isCommand) {
+        if (isCommand || !rulesEnabled) {
           deliver();
         } else {
           ruleCheckBusy.current = true;
