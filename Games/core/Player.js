@@ -691,6 +691,17 @@ module.exports = class Player {
       }
     });
 
+    socket.on("extendPregameWait", () => {
+      try {
+        if (this.user.id != this.game.hostId) return;
+        if (!this.game.canExtendPregameWait()) return;
+
+        this.game.extendPregameWait();
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
     socket.on("slurDetected", () => {
       this.sendAlert(
         "Warning: Your message contains inappropriate language. Please revise your message without using offensive terms."
