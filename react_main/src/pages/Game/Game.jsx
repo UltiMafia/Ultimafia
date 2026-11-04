@@ -3876,10 +3876,21 @@ function SpeechInput(props) {
       lastMessage.content === pending.content &&
       matchesSender
     ) {
-      setSpeechInput("");
+      // The box is cleared when the message is submitted, so only clear it
+      // here if it still holds that same message. Otherwise the player has
+      // already started typing the next one and this would wipe it.
+      if (speechInput === pending.content) setSpeechInput("");
       pendingSpeechRef.current = null;
     }
-  }, [game.history, game.self, selTab, isCurrentState, meetings, setSpeechInput]);
+  }, [
+    game.history,
+    game.self,
+    selTab,
+    isCurrentState,
+    meetings,
+    setSpeechInput,
+    speechInput,
+  ]);
 
   useEffect(() => {
     if (!socket.on) return;
