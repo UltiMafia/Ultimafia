@@ -11,6 +11,7 @@ const color = require("color");
 const axios = require("axios");
 const models = require("../db/models");
 const routeUtils = require("./utils");
+const ruleViolationHistory = require("../modules/ruleViolationHistory");
 const utils = require("../lib/Utils");
 const dateOnly = require("../lib/dateOnly");
 const redis = require("../modules/redis");
@@ -107,6 +108,25 @@ router.get("/info", async function (req, res) {
     if (!user) {
       res.send({});
       return;
+    }
+
+    // Chat rule filter defaults for accounts created before the settings
+    // existed: OGI warnings are on, abuse warnings are off unless the account
+    // has an abuse violation on record. Materialise the abuse flag once so the
+    // client and the settings page read a plain boolean; an explicit user
+    // choice is never overwritten.
+    if (user.settings && user.settings.ogiFilter === undefined) {
+      user.settings.ogiFilter = true;
+    }
+    if (user.settings && user.settings.abuseFilter === undefined) {
+      if (await ruleViolationHistory.hasAbuseViolation(userId)) {
+        user.settings.abuseFilter = true;
+        models.User.updateOne(
+          { id: userId },
+          { $set: { "settings.abuseFilter": true } }
+        ).catch(() => {});
+        redis.cacheUserInfo(userId, true).catch(() => {});
+      }
     }
 
     // These four are independent of each other, so issue them together rather
@@ -2595,6 +2615,8 @@ router.post("/settings/update", async function (req, res) {
       "accessibleNameColors",
       "ignoreNameFonts",
       "ignoreDeathSounds",
+      "ogiFilter",
+      "abuseFilter",
     ]);
     if (BOOLEAN_SETTINGS.has(prop)) {
       value = value === true || value === "true";
