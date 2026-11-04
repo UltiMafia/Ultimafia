@@ -124,6 +124,11 @@ var schemas = {
       nameGradientColorC: { type: String, default: "#3dff6a" },
       onlyFriendDMs: { type: Boolean, default: false },
       disablePg13Censor: { type: Boolean, default: false },
+      // Chat rule filter: ask the author before sending a message the
+      // classifier flags. OGI is on by default; abuse starts off and the server
+      // switches it on once the account has an abuse violation on record.
+      ogiFilter: { type: Boolean, default: true },
+      abuseFilter: { type: Boolean },
       disableAllCensors: { type: Boolean, default: false },
       hideDeleted: Boolean,
       fontSize: { type: String, default: "system" },

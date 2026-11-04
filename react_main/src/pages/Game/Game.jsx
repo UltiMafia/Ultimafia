@@ -128,6 +128,7 @@ import {
 import lore from "images/emotes/lore.webp";
 import poison from "images/emotes/poison.webp";
 import exit from "images/emotes/exit.png";
+import jailerIcon from "images/roles/village/jailer-vivid.png";
 import { usePopover, InfoPopover, SetupInfo } from "components/Popover";
 
 import dice1 from "images/emotes/dice1.webp";
@@ -3711,6 +3712,25 @@ function SpeechInput(props) {
   });
   const [speakCooldownRemainingMs, setSpeakCooldownRemainingMs] = useState(0);
   const lastSpeakCooldownEventAtRef = useRef(0);
+  const ruleCheckBusy = useRef(false);
+  const ruleWarningRef = useRef(null);
+  const [ruleWarning, setRuleWarning] = useState(null);
+  const confirmRuleWarningRef = useRef(null);
+
+  // Enter confirms while the warning is open. A document listener is used
+  // because MUI moves focus inside the modal; the ref guard makes a second
+  // Enter (or the focused button's own click) a no-op.
+  useEffect(() => {
+    if (!ruleWarning) return undefined;
+    const onKeyDown = (e) => {
+      if (e.key !== "Enter" || e.repeat) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (confirmRuleWarningRef.current) confirmRuleWarningRef.current();
+    };
+    document.addEventListener("keydown", onKeyDown, true);
+    return () => document.removeEventListener("keydown", onKeyDown, true);
+  }, [ruleWarning]);
 
   var placeholder = "";
 
@@ -3954,37 +3974,69 @@ function SpeechInput(props) {
         pendingSpeechRef.current = null;
         setSpeechInput("");
       } else {
-        if (isCommand) {
-          pendingSpeechRef.current = null;
-        } else {
-          pendingSpeechRef.current = {
-            content: speechInput,
-            anonymous:
-              Boolean(abilityName) || Boolean(meetings[selTab]?.anonymous),
-          };
-        }
-
+        const content = speechInput;
         const reply = buildReplyPayload(replyTarget, {
           meetingId: selTab,
-          content: speechInput,
+          content,
           abilityName,
         });
-        if (reply) {
-          socket.send("reply", reply);
-          setReplyTarget(null);
-        } else {
-          socket.send("speak", {
-            content: speechInput,
-            meetingId: selTab,
-            abilityName,
-            abilityTarget,
-            ...checkboxOptions,
-          });
-        }
-        props.setAutoScroll(true);
 
+        const deliver = () => {
+          if (isCommand) {
+            pendingSpeechRef.current = null;
+          } else {
+            pendingSpeechRef.current = {
+              content,
+              anonymous:
+                Boolean(abilityName) || Boolean(meetings[selTab]?.anonymous),
+            };
+          }
+
+          if (reply) {
+            socket.send("reply", reply);
+            setReplyTarget(null);
+          } else {
+            socket.send("speak", {
+              content,
+              meetingId: selTab,
+              abilityName,
+              abilityTarget,
+              ...checkboxOptions,
+            });
+          }
+          props.setAutoScroll(true);
+
+          if (isCommand) {
+            setSpeechInput("");
+          }
+        };
+
+        // Commands are not chat content. Everything else is scored by the rule
+        // filter first; a flagged message still sends after confirmation.
         if (isCommand) {
-          setSpeechInput("");
+          deliver();
+        } else if (ruleWarning) {
+          return;
+        } else if (ruleCheckBusy.current) {
+          return;
+        } else {
+          ruleCheckBusy.current = true;
+          axios
+            .post("/api/rules/check", { content }, { timeout: 3000 })
+            .then((res) => {
+              const flagged = res.data;
+              if (flagged && flagged.flagged) {
+                const warning = { ...flagged, deliver };
+                ruleWarningRef.current = warning;
+                setRuleWarning(warning);
+              } else {
+                deliver();
+              }
+            })
+            .catch(() => deliver())
+            .finally(() => {
+              ruleCheckBusy.current = false;
+            });
         }
       }
     } else if (e.key === "Tab" && !e.shiftKey) {
@@ -4018,6 +4070,27 @@ function SpeechInput(props) {
       speechInput ? `${speechInput.trimRight()} ${emote} ` : `${emote} `
     );
   }
+
+  function closeRuleWarning() {
+    ruleWarningRef.current = null;
+    setRuleWarning(null);
+  }
+
+  function confirmRuleWarning() {
+    const warning = ruleWarningRef.current;
+    closeRuleWarning();
+    if (!warning) return;
+
+    // Confirming an abuse warning means the account now has a flagged message;
+    // keep the warning on for the next one (the setting can still be turned off).
+    if (warning.category === "abuse") {
+      axios.post("/api/rules/ack", { category: "abuse" }).catch(() => {});
+    }
+    warning.deliver();
+  }
+
+  // Keep the Enter handler pointed at the latest confirm function.
+  confirmRuleWarningRef.current = confirmRuleWarning;
 
   const replyMessage = replyTarget?.message;
   const replySender =
@@ -4114,6 +4187,54 @@ function SpeechInput(props) {
           onEmoteSelected={onEmoteSelected}
         />
       </div>
+      <Dialog
+        open={Boolean(ruleWarning)}
+        onClose={closeRuleWarning}
+        maxWidth="xs"
+        fullWidth
+        data-testid="rule-warning-dialog"
+      >
+        <DialogTitle
+          component="div"
+          sx={{ display: "flex", gap: 2, alignItems: "flex-start", pr: 3 }}
+        >
+          <img
+            src={jailerIcon}
+            alt=""
+            aria-hidden="true"
+            width={72}
+            height={72}
+            style={{ flexShrink: 0, imageRendering: "pixelated", marginTop: 2 }}
+          />
+          <div>
+            <Typography
+              variant="h6"
+              component="h2"
+              sx={{ fontSize: "1.1rem", lineHeight: 1.3 }}
+            >
+              Send this message?
+            </Typography>
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              {ruleWarning &&
+              ruleWarning.category === "outside_game_influence"
+                ? "This reads like outside game influence, such as accusing someone of breaking a rule or implying a report."
+                : "This reads like abuse, a personal attack on another player or group."}{" "}
+              You can still send it.
+            </Typography>
+          </div>
+        </DialogTitle>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={closeRuleWarning}>Edit</Button>
+          <Button
+            variant="contained"
+            color="warning"
+            onClick={confirmRuleWarning}
+            data-testid="rule-warning-send"
+          >
+            Send anyway
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
