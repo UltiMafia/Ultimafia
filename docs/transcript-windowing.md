@@ -41,6 +41,13 @@ Bounce-generated scroll events can arrive after that new touch. If the reader
 then drags down away from the edge, that gesture invalidates the pending top
 completion, including when the native position updates before its scroll event
 is delivered. Releasing the finger must not revive the earlier upward intent.
+Finger direction is tracked independently of native position: while overscrolling,
+the finger can already be moving toward later messages even though scrollTop has
+not become positive. That reversal cancels completion before release.
+
+Entering bottom-follow mode does not itself issue navigation. The viewport resize
+observer ignores its initial notification and only re-pins for an actual nonzero
+size change, avoiding an unnecessary momentum-stop at the native bottom edge.
 
 Virtual wrappers make each message a CSS last child. Only the actual final
 non-empty row keeps the transcript's extra trailing padding; the other rows keep
@@ -69,6 +76,8 @@ ENGINE=webkit IOS_LEGACY_WRITES=1 node perf/windowing-fling.test.cjs build-chat-
 ENGINE=webkit FLING_INTERRUPT=1 node perf/windowing-fling.test.cjs build-chat-perf
 ENGINE=webkit FLING_REVERSE=1 node perf/windowing-fling.test.cjs build-chat-perf
 ENGINE=webkit FLING_REVERSE_RELEASE=1 node perf/windowing-fling.test.cjs build-chat-perf
+ENGINE=webkit FLING_REVERSE_TOUCH=1 node perf/windowing-fling.test.cjs build-chat-perf
+ENGINE=webkit node perf/windowing-bottom.test.cjs build-chat-perf
 ```
 
 Open the perf fixture with

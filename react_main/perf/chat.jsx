@@ -167,7 +167,7 @@ function ChatPerformance() {
   return (
     <main className={`chat-perf ${params.get("theme") === "light" ? "light-mode" : "dark-mode"} ${params.get("sweep") === "off" ? "perf-sweep-off" : ""}`}>
       <div className="perf-controls">
-        <strong>Chat test · {count.toLocaleString()} messages{params.get("virtual") === "1" ? " · anchored v6" : ""}</strong>
+        <strong>Chat test · {count.toLocaleString()} messages{params.get("virtual") === "1" ? " · anchored v7" : ""}</strong>
         <div className="perf-buttons">
           {[0, 100, 1000, 5000, 10000].map((size) => (
             <button key={size} onClick={() => load(size)}>Load {size.toLocaleString()}</button>

@@ -56,10 +56,15 @@ async function main(){
      velocity=Math.max(130,velocity*.96);
     }
     const releaseOnly=process.env.FLING_REVERSE_RELEASE==='1';
-    const reverse=releaseOnly||process.env.FLING_REVERSE==='1';
+    const touchReverse=process.env.FLING_REVERSE_TOUCH==='1';
+    const reverse=touchReverse||releaseOnly||process.env.FLING_REVERSE==='1';
     const interrupted=reverse||!warm&&process.env.FLING_INTERRUPT==='1';
     if(interrupted){
-     await page.evaluate(()=>window.__flingProbe.s.dispatchEvent(new Event('touchstart',{bubbles:true})));
+     await page.evaluate(coords=>{
+      const e=new Event('touchstart',{bubbles:true});
+      if(coords)Object.defineProperty(e,'touches',{value:[{clientY:500}]});
+      window.__flingProbe.s.dispatchEvent(e);
+     },touchReverse);
      if(reverse){
       // UIKit bounce can deliver another top scroll after touchstart canceled
       // the old completion. Exercise that re-arm before dragging back down.
@@ -71,9 +76,18 @@ async function main(){
       const block=e=>{if(e.target===s)e.stopImmediatePropagation()};
       document.addEventListener('scroll',block,true);window.__flingProbe.unblock=()=>document.removeEventListener('scroll',block,true);
      });
-     await page.evaluate(()=>{window.__flingProbe.s.scrollTop+=240});
-     await tick();
+     if(touchReverse){
+      // While rubber-banding, the finger can reverse direction before native
+      // scrollTop becomes positive. Scrolling below the edge reports only after
+      // release in this controlled event-order arm; coordinates carry intent.
+      await page.evaluate(()=>{const e=new Event('touchmove',{bubbles:true});Object.defineProperty(e,'touches',{value:[{clientY:460}]});window.__flingProbe.s.dispatchEvent(e)});
+      await tick();
+     }else{
+      await page.evaluate(()=>{window.__flingProbe.s.scrollTop+=240});
+      await tick();
+     }
      await page.evaluate(()=>window.__flingProbe.s.dispatchEvent(new Event('touchend',{bubbles:true})));
+     if(touchReverse){await page.evaluate(()=>{window.__flingProbe.s.scrollTop+=240});await tick()}
      if(releaseOnly)await page.evaluate(()=>{const{s,unblock}=window.__flingProbe;unblock();s.dispatchEvent(new Event('scroll'))});
     }
     let landed=false;
@@ -82,7 +96,7 @@ async function main(){
      if(state.firstGap!==null&&Math.abs(state.firstGap)<2&&state.native<2){landed=true;break}
     }
     const calls=await page.evaluate(()=>window.__flingProbe.calls);
-    const result={warm,...prepared,edge,interrupted,releaseOnly,landed,final:await snapshot(),calls,samples,errors};results.push(result);console.log(JSON.stringify(result));
+    const result={warm,...prepared,edge,interrupted,releaseOnly,touchReverse,landed,final:await snapshot(),calls,samples,errors};results.push(result);console.log(JSON.stringify(result));
    }finally{await context.close()}
   }
   if(process.env.FLING_OUTPUT)fs.writeFileSync(process.env.FLING_OUTPUT,JSON.stringify({engine:await browser.version(),results},null,2));

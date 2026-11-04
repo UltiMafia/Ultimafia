@@ -8,6 +8,7 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
   const highlightTimer = useRef(null);
   const edgeFrame = useRef(null);
   const touchDown = useRef(false);
+  const touchPeakY = useRef(null);
   const touched = useRef(false);
   const pendingTop = useRef(false);
   const bridgingTop = useRef(false);
@@ -55,7 +56,16 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
   useEffect(() => {
     const scroller = speechDisplayRef.current;
     if (!autoScroll || !scroller) return;
-    const observer = new ResizeObserver(() => virtualizer.scrollToEnd());
+    let width = scroller.clientWidth;
+    let height = scroller.clientHeight;
+    const observer = new ResizeObserver(() => {
+      const nextWidth = scroller.clientWidth;
+      const nextHeight = scroller.clientHeight;
+      if (nextWidth === width && nextHeight === height) return;
+      width = nextWidth;
+      height = nextHeight;
+      if (width > 0 && height > 0) virtualizer.scrollToEnd();
+    });
     observer.observe(scroller);
     return () => observer.disconnect();
   }, [autoScroll, speechDisplayRef, virtualizer]);
@@ -134,8 +144,9 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
       virtualizer.scrollToIndex(0, { align: "start", behavior: "smooth" });
     });
   }, [speechDisplayRef, virtualizer]);
-  const handleTouchStart = useCallback(() => {
+  const handleTouchStart = useCallback((event) => {
     touchDown.current = true;
+    touchPeakY.current = event.touches?.[0]?.clientY ?? null;
     touched.current = true;
     pendingTop.current = false;
     edgeDeadline.current = 0;
@@ -143,6 +154,20 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     if (bridgingTop.current) virtualizer.cancelScroll();
     bridgingTop.current = false;
   }, [virtualizer]);
+  const handleTouchMove = useCallback((event) => {
+    const y = event.touches?.length === 1 ? event.touches[0].clientY : null;
+    if (y == null || touchPeakY.current == null) return;
+    touchPeakY.current = Math.max(touchPeakY.current, y);
+    // Finger-up means reading downward, even while rubber-banding keeps the
+    // native scroll position at/below zero. Do not infer that intent from
+    // scrollTop becoming positive: it may not do so until after touchend.
+    if (touched.current && y < touchPeakY.current - 4) {
+      touched.current = false;
+      pendingTop.current = false;
+      edgeDeadline.current = 0;
+      cancelAnimationFrame(edgeFrame.current);
+    }
+  }, []);
   const handleTouchEnd = useCallback(() => {
     touchDown.current = false;
     // A bounce may re-arm the edge after touchstart canceled the old fling.
@@ -197,11 +222,12 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     <div
       className="speech-display"
       data-name-animation-viewport
-      data-transcript-window="anchored-v6"
+      data-transcript-window="anchored-v7"
       style={{ display: "block", position: "relative", overflowAnchor: "none" }}
       ref={setScroller}
       onScroll={handleScroll}
       onTouchStartCapture={handleTouchStart}
+      onTouchMoveCapture={handleTouchMove}
       onTouchEndCapture={handleTouchEnd}
       onTouchCancelCapture={handleTouchEnd}
     >
