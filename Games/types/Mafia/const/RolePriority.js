@@ -204,10 +204,6 @@ const Nightdata = {
       ActionNames: ["Learn Evil Pairs"],
       ActionValues: [PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10],
     },
-    Bloodhound: {
-      ActionNames: ["Track"],
-      ActionValues: [PRIORITY_INVESTIGATIVE_DEFAULT],
-    },
     Housekeeper: {
       ActionNames: ["Track and Check for Reports"],
       ActionValues: [PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1],
