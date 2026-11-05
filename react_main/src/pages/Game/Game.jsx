@@ -4351,10 +4351,17 @@ function SpeechInput(props) {
               Send this message?
             </Typography>
             <Typography variant="body2" sx={{ mt: 1 }}>
+              This reads like{" "}
+              <strong>
+                {ruleWarning &&
+                ruleWarning.category === "outside_game_influence"
+                  ? "outside game influence"
+                  : "personal attacks"}
+              </strong>
               {ruleWarning &&
               ruleWarning.category === "outside_game_influence"
-                ? "This reads like outside game influence, such as accusing someone of breaking a rule or implying a report."
-                : "This reads like abuse, a personal attack on another player or group."}{" "}
+                ? " — accusing someone of breaking a rule, or implying a report."
+                : " — an attack on another player or group."}{" "}
               You can still send it.
             </Typography>
           </div>
