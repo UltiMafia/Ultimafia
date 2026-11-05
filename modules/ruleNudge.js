@@ -5,16 +5,15 @@
 // that never sends leaves the token unused and uncounted.
 const crypto = require("crypto");
 const redis = require("./redis");
+const {
+  FLAG_THRESHOLD,
+  ABUSE_PROBABILITY,
+  NUDGE_TEXT,
+  noteVerdict: decide,
+} = require("./ruleNudgePolicy");
 
-const FLAG_THRESHOLD = 5;
-const ABUSE_PROBABILITY = 0.8;
 const TOKEN_TTL_SECONDS = 600;
 const COUNTER_TTL_SECONDS = 12 * 60 * 60;
-
-const NUDGE_TEXT =
-  `Automated warning: ${FLAG_THRESHOLD} of your messages this game read as personal attacks. ` +
-  "Nobody has been notified; if another player reports you, moderators will review them. " +
-  "Please be respectful of other players.";
 
 async function issueToken({ userId, gameId, category, prob, abusePrompt }) {
   if (!userId || !gameId) return null;
@@ -77,26 +76,9 @@ async function claimNudge(gameId, userId) {
   return result === "OK";
 }
 
-// Pure decision for one accepted message: consume the token, count it if it
-// qualifies, and report whether this message should trigger the nudge.
-async function noteVerdict({ gameId, userId, token }) {
-  const verdict = await takeToken(token);
-  if (!verdict || !userId) return { counted: false, nudge: false, reason: "no-token" };
-  if (verdict.u !== userId || verdict.g !== gameId) {
-    return { counted: false, nudge: false, reason: "mismatch" };
-  }
-  if (verdict.e) return { counted: false, nudge: false, reason: "prompt-on" };
-  if (verdict.c !== "abuse" || !(verdict.p >= ABUSE_PROBABILITY)) {
-    return { counted: false, nudge: false, reason: "not-abuse" };
-  }
-
-  const count = await countFlag(gameId, userId);
-  if (count < FLAG_THRESHOLD) return { counted: true, count, nudge: false };
-  if (!(await claimNudge(gameId, userId))) {
-    return { counted: true, count, nudge: false, reason: "already" };
-  }
-
-  return { counted: true, count, nudge: true };
+// Redis-backed store for the policy in ruleNudgePolicy.js.
+function noteVerdict(input) {
+  return decide(input, { takeToken, countFlag, claimNudge });
 }
 
 module.exports = {
