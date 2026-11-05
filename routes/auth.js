@@ -25,6 +25,10 @@ const DiscordStrategy = require("passport-discord").Strategy;
 const errors = require("../lib/errors");
 const { findAliasAccount } = require("../modules/emailAlias");
 const {
+  stash: stashDiscordFingerprint,
+  take: takeDiscordFingerprint,
+} = require("../modules/discordFingerprint");
+const {
   signInProvider,
   isAllowedSignupEmail,
 } = require("../modules/authProviders");
@@ -51,7 +55,13 @@ passport.use(
       try {
         if (profile) {
           if (profile.email) {
-            await authSuccess(req, null, profile.email, profile, null);
+            await authSuccess(
+              req,
+              null,
+              profile.email,
+              profile,
+              takeDiscordFingerprint(req)
+            );
             // Verify that authSuccess actually created a session
             if (req.session.user) {
               done(null, profile);
@@ -162,7 +172,18 @@ router.post("/", async function (req, res) {
   }
 });
 
-router.get("/discord", passport.authenticate("discord"));
+router.get(
+  "/discord",
+  // The client sets a short-lived first-party cookie before leaving the site
+  // (query strings end up in access logs); keep the value in the session until
+  // the Discord callback reads it.
+  (req, res, next) => {
+    stashDiscordFingerprint(req, req.cookies && req.cookies.fp);
+    res.clearCookie("fp", { path: "/" });
+    next();
+  },
+  passport.authenticate("discord")
+);
 
 router.get("/discord/redirect", (req, res, next) => {
   passport.authenticate("discord", { session: false }, (err, user, info) => {
