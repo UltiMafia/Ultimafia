@@ -1500,10 +1500,6 @@
   background-image: url("/src/images/roles/mafia/assassin-vivid.png");
 }
 
-.role-icon-old-Mafia-Assassin {
-  background-image: url("/src/images/roles/mafia/skins/assassin-old.png");
-}
-
 .role-icon-vivid-Mafia-Suborner {
   background-image: url("/src/images/roles/mafia/suborner-vivid.png");
 }
@@ -1812,10 +1808,6 @@
 
 .role-icon-vivid-Mafia-Clown {
   background-image: url("/src/images/roles/independent/clown-vivid.png");
-}
-
-.role-icon-goofy-Mafia-Hellhound {
-  background-image: url("/src/images/roles/independent/skins/hellhound-goofy.png");
 }
 
 .role-icon-old-Mafia-Hellhound {
