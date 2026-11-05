@@ -4,6 +4,7 @@ const models = require("../db/models");
 const redis = require("../modules/redis");
 const routeUtils = require("./utils");
 const ruleFilter = require("../modules/ruleFilter");
+const ruleNudge = require("../modules/ruleNudge");
 const logger = require("../modules/logging")(".");
 
 const {
@@ -56,11 +57,27 @@ router.post("/check", async function (req, res) {
       return;
     }
 
+    // A token carries this verdict to the games process, which counts it only
+    // if the message is actually accepted. Issued before the enabled check so
+    // an abuse-flagged message still counts when the abuse prompt is off.
+    let token = null;
+    try {
+      token = await ruleNudge.issueToken({
+        userId,
+        gameId: String(req.body.gameId || ""),
+        category: result.category,
+        prob: result.prob,
+        abusePrompt: abuse,
+      });
+    } catch (e) {
+      logger.error(e);
+    }
+
     const enabled =
       (result.category === "outside_game_influence" && ogi) ||
       (result.category === "abuse" && abuse);
     if (!enabled) {
-      res.send({ flagged: false });
+      res.send({ flagged: false, token });
       return;
     }
 
@@ -68,6 +85,7 @@ router.post("/check", async function (req, res) {
       flagged: true,
       category: result.category,
       prob: Math.round(result.prob * 1000) / 1000,
+      token,
     });
   } catch (e) {
     logger.error(e);
