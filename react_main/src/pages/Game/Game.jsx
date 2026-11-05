@@ -28,6 +28,7 @@ import {
   pregameSpectatorList,
 } from "shared/spectatorChat";
 import { completePlayerName, tabCompleteNames } from "shared/tabComplete";
+import { isSpectatorPing } from "shared/spectatorPing";
 import Newspaper, {
   ObituariesMessage,
 } from "../../components/gameComponents/Newspaper";
@@ -254,6 +255,7 @@ export default function Game(props) {
   const [spectators, setSpectators] = useState();
   const [spectatorCount, setSpectatorCount] = useState(0);
   const [isSpectator, setIsSpectator] = useState(false);
+  const isSpectatorRef = useRef(false);
   const [isOmniscientSpectator, setIsOmniscientSpectator] = useState(false);
   const [self, setSelf] = useState();
   const [voteKickUrgency, setVoteKickUrgency] = useState(false);
@@ -1197,10 +1199,15 @@ export default function Game(props) {
         pings.indexOf("@" + playersRef?.current?.[selfRef?.current]?.name) !==
         -1;
 
+      const spectatorWasPinged = isSpectatorPing(
+        message.content,
+        isSpectatorRef.current
+      );
       if (
-        selfRef.current &&
-        playersRef.current[selfRef.current] &&
-        (iWasPinged || pings.some((p) => p.startsWith(EVERYONE_PING)))
+        spectatorWasPinged ||
+        (selfRef.current &&
+          playersRef.current[selfRef.current] &&
+          (iWasPinged || pings.some((p) => p.startsWith(EVERYONE_PING))))
       ) {
         playAudio("ping");
         if (iWasPinged) {
@@ -1260,6 +1267,7 @@ export default function Game(props) {
     socket.on("isSpectator", (value) => {
       const spectatingNow = value !== false;
       joinOptionsRef.current.spectate = spectatingNow;
+      isSpectatorRef.current = spectatingNow;
       setIsSpectator(spectatingNow);
       if (!spectatingNow) stopReadyBellRepeatRef.current();
     });
@@ -1269,6 +1277,7 @@ export default function Game(props) {
     });
 
     socket.on("left", (data) => {
+      isSpectatorRef.current = false;
       stopReadyBellRepeatRef.current();
       if (!noLeaveRef.current) {
         setLeave(true);
@@ -2417,6 +2426,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           history={history}
           players={players}
           self={game.self}
+          isSpectator={game.isSpectator}
           spectators={spectators}
           stateViewing={
             singleState && !message.obituaries && !message.winners
@@ -2460,6 +2470,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     game.onPinMessage,
     game.isMessagePinned,
     game.self,
+    game.isSpectator,
   ]);
 
   // Typing and unrelated game updates must not repeatedly measure the entire
@@ -2870,6 +2881,7 @@ function Message(props) {
     meetingState,
     replyQuote,
     replyMerged,
+    isSpectator,
     ...rowProps
   } = props;
   const { message, stateViewing } = props;
@@ -2878,7 +2890,9 @@ function Message(props) {
   if (message.content && props.settings.highlightMentions) {
     const pings = parsePings(message.content);
     iWasPinged =
-          pings.indexOf("@" + props.players?.[props.self]?.name) !== -1 || pings.some((p) => p.startsWith(EVERYONE_PING));
+      pings.indexOf("@" + props.players?.[props.self]?.name) !== -1 ||
+      pings.some((p) => p.startsWith(EVERYONE_PING)) ||
+      isSpectatorPing(message.content, isSpectator);
   }
 
   // The quoted line shown inside a reply row (see pairReplies).
@@ -6724,6 +6738,7 @@ export function PinnedMessages() {
         history={game.history}
         players={game.players}
         self={game.self}
+        isSpectator={game.isSpectator}
         spectators={game.spectators}
         stateViewing={game.stateViewing}
         key={message.id || message.messageId + message.time || i}
