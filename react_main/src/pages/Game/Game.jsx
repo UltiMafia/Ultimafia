@@ -28,6 +28,7 @@ import {
   pregameSpectatorList,
 } from "shared/spectatorChat";
 import { completePlayerName, tabCompleteNames } from "shared/tabComplete";
+import { isSpectatorPing } from "shared/spectatorPing";
 import Newspaper, {
   ObituariesMessage,
 } from "../../components/gameComponents/Newspaper";
@@ -91,7 +92,7 @@ import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { hyphenDelimit } from "../../utils";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { pregameSeatAction } from "shared/pregameSeatAction";
-import { useLongPress } from "../../hooks/useLongPress.jsx";
+import { bindMessageTouch } from "../../utils/messageTouch";
 import {
   Accordion,
   AccordionSummary,
@@ -261,6 +262,7 @@ export default function Game(props) {
   const [spectators, setSpectators] = useState();
   const [spectatorCount, setSpectatorCount] = useState(0);
   const [isSpectator, setIsSpectator] = useState(false);
+  const isSpectatorRef = useRef(false);
   const [isOmniscientSpectator, setIsOmniscientSpectator] = useState(false);
   const [self, setSelf] = useState();
   const [voteKickUrgency, setVoteKickUrgency] = useState(false);
@@ -1204,10 +1206,15 @@ export default function Game(props) {
         pings.indexOf("@" + playersRef?.current?.[selfRef?.current]?.name) !==
         -1;
 
+      const spectatorWasPinged = isSpectatorPing(
+        message.content,
+        isSpectatorRef.current
+      );
       if (
-        selfRef.current &&
-        playersRef.current[selfRef.current] &&
-        (iWasPinged || pings.some((p) => p.startsWith(EVERYONE_PING)))
+        spectatorWasPinged ||
+        (selfRef.current &&
+          playersRef.current[selfRef.current] &&
+          (iWasPinged || pings.some((p) => p.startsWith(EVERYONE_PING))))
       ) {
         playAudio("ping");
         if (iWasPinged) {
@@ -1267,6 +1274,7 @@ export default function Game(props) {
     socket.on("isSpectator", (value) => {
       const spectatingNow = value !== false;
       joinOptionsRef.current.spectate = spectatingNow;
+      isSpectatorRef.current = spectatingNow;
       setIsSpectator(spectatingNow);
       if (!spectatingNow) stopReadyBellRepeatRef.current();
     });
@@ -1276,6 +1284,7 @@ export default function Game(props) {
     });
 
     socket.on("left", (data) => {
+      isSpectatorRef.current = false;
       stopReadyBellRepeatRef.current();
       if (!noLeaveRef.current) {
         setLeave(true);
@@ -2424,6 +2433,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           history={history}
           players={players}
           self={game.self}
+          isSpectator={game.isSpectator}
           spectators={spectators}
           stateViewing={
             singleState && !message.obituaries && !message.winners
@@ -2467,6 +2477,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     game.onPinMessage,
     game.isMessagePinned,
     game.self,
+    game.isSpectator,
   ]);
 
   // Typing and unrelated game updates must not repeatedly measure the entire
@@ -2883,6 +2894,7 @@ function Message(props) {
     meetingState,
     replyQuote,
     replyMerged,
+    isSpectator,
     ...rowProps
   } = props;
   const { message, stateViewing } = props;
@@ -2891,7 +2903,9 @@ function Message(props) {
   if (message.content && props.settings.highlightMentions) {
     const pings = parsePings(message.content);
     iWasPinged =
-          pings.indexOf("@" + props.players?.[props.self]?.name) !== -1 || pings.some((p) => p.startsWith(EVERYONE_PING));
+      pings.indexOf("@" + props.players?.[props.self]?.name) !== -1 ||
+      pings.some((p) => p.startsWith(EVERYONE_PING)) ||
+      isSpectatorPing(message.content, isSpectator);
   }
 
   // The quoted line shown inside a reply row (see pairReplies).
@@ -3064,15 +3078,13 @@ const MessageRow = React.memo(function MessageRow(props) {
   }, []);
   useEffect(() => cancelReplyClick, [cancelReplyClick]);
 
-  // Mobile only - users pin message by long pressing them
-  const onPinMessage = props.onPinMessage;
   const messageObj = props.message;
-  const messageLongPress = useLongPress(
-    // Stable identity: useLongPress keys its effect on the callback, so a fresh
-    // arrow here re-runs that effect for every message on every render pass.
-    useCallback(() => onPinMessage(messageObj), [onPinMessage, messageObj]),
-    600
-  );
+  const rowRef = useRef(null);
+  const touchCallbacks = useRef(null);
+  touchCallbacks.current = {
+    onReply: startReply,
+    onPin: () => props.onPinMessage(messageObj),
+  };
   // Chat text effect (/wave etc.), attached by the server for item owners.
   // Plays once when the message first appears; pinned and review rows stay plain.
   const textEffect = useTextEffect(
@@ -3122,14 +3134,23 @@ const MessageRow = React.memo(function MessageRow(props) {
   });
   // Whether clicking this row starts a reply (the rows that used to show the
   // reply button).
-  const clickToReply =
+  const replyable =
     !!props.onMessageReply &&
-    !isPhoneDevice &&
     !isRightAligned &&
     canReplyTo(message, {
       review: props.review,
       stateViewing: props.stateViewing,
     });
+  const clickToReply = replyable && !isPhoneDevice;
+  const swipeToReply = replyable && isPhoneDevice;
+  useEffect(() => {
+    if (!isPhoneDevice || !rowRef.current) return;
+    return bindMessageTouch(rowRef.current, {
+      canReply: swipeToReply,
+      onReply: () => touchCallbacks.current.onReply(),
+      onPin: () => touchCallbacks.current.onPin(),
+    });
+  }, [isPhoneDevice, swipeToReply, messageObj, props.stateViewing]);
   const thumbtackFaClass = props.pinned
     ? "fas fa-thumbtack"
     : "fas fa-thumbtack fa-rotate-270";
@@ -3349,6 +3370,7 @@ const MessageRow = React.memo(function MessageRow(props) {
       ? " reply-merged with-reply-reference"
       : " with-reply-reference";
   if (clickToReply && !message.pending) className += " click-to-reply";
+  if (swipeToReply) className += " swipe-to-reply";
 
   function startReply() {
     props.onMessageReply(message);
@@ -3391,6 +3413,7 @@ const MessageRow = React.memo(function MessageRow(props) {
 
   return (
     <div
+      ref={rowRef}
       className={className}
       data-message-id={message.id ?? undefined}
       onPointerDown={clickToReply ? onRowPointerDown : undefined}
@@ -3405,8 +3428,6 @@ const MessageRow = React.memo(function MessageRow(props) {
       style={messageStyle}
       onMouseEnter={messageOnMouseEnter}
       onMouseLeave={messageOnMouseLeave}
-      onTouchStart={messageLongPress.onTouchStart}
-      onTouchEnd={messageLongPress.onTouchEnd}
     >
       <div className={innerClassName}>
         {props.replyPreview && !message.isQuote && (
@@ -6807,6 +6828,7 @@ export function SettingsMenu() {
     <SideMenu
       title="Settings"
       isAccordionMenu
+      scrollable={expanded}
       content={<SettingsForm handleClose={handleClose} />}
       expanded={expanded}
       onChange={handleToggle}
@@ -7006,6 +7028,7 @@ export function PinnedMessages() {
         history={game.history}
         players={game.players}
         self={game.self}
+        isSpectator={game.isSpectator}
         spectators={game.spectators}
         stateViewing={game.stateViewing}
         key={message.id || message.messageId + message.time || i}

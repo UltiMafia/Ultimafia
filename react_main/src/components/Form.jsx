@@ -608,9 +608,21 @@ export default function Form({
                     min={field.min}
                     max={field.max}
                     step={field.step}
-                    value={field.value}
+                    value={
+                      Number.isFinite(Number(field.value))
+                        ? Number(field.value)
+                        : 0
+                    }
+                    {...(field.valueLabelDisplay
+                      ? { valueLabelDisplay: field.valueLabelDisplay }
+                      : {})}
+                    {...(field.valueLabelFormat
+                      ? { valueLabelFormat: field.valueLabelFormat }
+                      : {})}
                     disabled={disabled}
-                    onChange={(e) => onFieldChange(e, field)}
+                    onChange={(e, value) =>
+                      onFieldChange({ target: { value } }, field)
+                    }
                     helperText={field.extraInfo}
                     label={compact ? field.label : undefined}
                   />
@@ -1352,6 +1364,8 @@ export function TextEditor(props) {
       }
       suggestionTriggerCharacters={props.suggestionTriggerCharacters}
       loadSuggestions={props.loadSuggestions}
+      childProps={{ textArea: { onPaste: props.onPaste } }}
+      readOnly={props.readOnly}
     />
   );
 }

@@ -121,6 +121,37 @@ More local troubleshooting is in the [Local Setup Guide](/docs/setup-local-guide
 3. Open a pull request on the master branch of this repository
 4. Perform a final test on the main site after merge into master
 
+## Forum replies
+
+Click a post's Reply arrow to open the composer beneath that post. Selecting
+another post moves the same draft and appends its quote, preserving the existing
+profile and original-post links. Page navigation keeps the draft at the footer;
+Cancel or switching threads clears it.
+
+Paste one still PNG, JPEG or WebP into the reply editor to preview it, and use
+Remove image to discard only the attachment. Nothing uploads until Post.
+The server accepts at most 5 MiB of image input, rejects animations (including
+APNG), SVG, mismatched content types and images over 16 million pixels or an
+8192-pixel side, and normalizes to WebP fitting 1024 × 1024 with a 1 MiB output
+cap. The final Markdown, including its generated image URL, must fit the existing
+20,000-character reply limit. Thread starters are unchanged.
+
+The image is stored on its owning reply, not in public uploads. Image reads
+require the category's viewing rank and hide deleted or pending replies and
+parent threads, even from deleted-text viewers. Removing the exact generated
+Markdown through Edit hides the image; restoring it restores access subject to
+those same checks. Quotes reference the original image and its visibility.
+Each reply stores at most 1 MiB of image data, which replication and backups
+also include. No new storage service or credentials are required.
+
+Focused checks: `npx mocha test/forumReplyImage.test.js test/forumReplyImageProjection.test.js`
+and `node --test react_main/test/forumReplyComposer.test.mjs`. The route checks
+mock persistence and permissions; the projection check uses the real schema with
+a driver stub, not MongoDB. The browser fixture builds with
+`cd react_main && npx rsbuild build --config rsbuild.forum-reply-test.config.ts`;
+it mocks requests and uses sessionStorage, so it does not prove durable backend
+storage. Run local MongoDB/Redis integration and deployment checks separately.
+
 ## Running the site on codespaces
 
 ### If you are a beginner, please follow [the easy setup guide](/docs/setup-EZ-guide.md) and ask in [Discord](https://discord.gg/C5WMFpYRHQ) if you are stuck at any step.

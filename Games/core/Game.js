@@ -2447,7 +2447,58 @@ module.exports = class Game {
     return;
   }
 
+  // "No Event" used to be a blank entry in the event pool. Setups that still
+  // include it get the same per-slot skip chance, then the role is dropped.
+  applyNoEventChanceFromRetiredRole() {
+    if (this.type !== "Mafia") return;
+    const groups = this.setup && this.setup.roles;
+    if (!Array.isArray(groups)) return;
+
+    let noEvent = 0;
+    let events = 0;
+    for (const roleset of groups) {
+      if (!roleset || typeof roleset !== "object") continue;
+      let setNoEvent = 0;
+      let setEvents = 0;
+      for (const key of Object.keys(roleset)) {
+        const name = key.split(":")[0];
+        const mods = key.split(":")[1] || "";
+        const banished = mods.toLowerCase().includes("banished");
+        const count = Number(roleset[key]) || 0;
+        if (name === "No Event") {
+          if (!banished) {
+            setNoEvent += count;
+            setEvents += count;
+          }
+          delete roleset[key];
+          continue;
+        }
+        const alignment =
+          roleData[this.type] &&
+          roleData[this.type][name] &&
+          roleData[this.type][name].alignment;
+        if (alignment === "Event" && !banished) setEvents += count;
+      }
+      if (setNoEvent > 0) {
+        noEvent += setNoEvent;
+        events += setEvents;
+      }
+    }
+
+    if (
+      (this.setup.NoEventChance === undefined ||
+        this.setup.NoEventChance === null) &&
+      noEvent > 0 &&
+      events > 0
+    ) {
+      const chance = Math.round((100 * noEvent) / events);
+      this.NoEventChance = chance;
+      this.setup.NoEventChance = chance;
+    }
+  }
+
   generateRoleset() {
+    this.applyNoEventChanceFromRetiredRole();
     this.patchRenamedRoles();
     var roleset;
     this.PossibleRoles = [];
@@ -4585,6 +4636,13 @@ module.exports = class Game {
         this.noDeathLimit = this.setup.noDeathLimit;
         this.ForceMustAct = this.setup.ForceMustAct;
         this.EventsPerNight = this.setup.EventsPerNight;
+        this.NoEventChance = Math.min(
+          100,
+          Math.max(
+            0,
+            Math.round(Number(this.setup && this.setup.NoEventChance) || 0)
+          )
+        );
         this.GameEndEvent = this.setup.GameEndEvent;
         //Timer Stuff
     this.TimerDecayAmount = this.getTimerDecayAmount() * 1000 * 60;
