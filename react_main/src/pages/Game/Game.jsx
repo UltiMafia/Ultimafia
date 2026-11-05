@@ -160,6 +160,7 @@ import {
   pairReplies,
   showPinButton,
 } from "utils/messageReply";
+import { buildNameMasker, collectPlayerNames } from "utils/nameMasking";
 import { buildQuotePayload, findMessageState } from "utils/messageQuote";
 import RoleMarkerToggle from "./components/RoleMarkerToggle";
 import { playerNameWithAvatarProps } from "./playerDisplay";
@@ -3736,6 +3737,14 @@ function SpeechInput(props) {
   // ask the server, so skip the round trip before sending.
   const rulesEnabled =
     user?.settings?.ogiFilter !== false || user?.settings?.abuseFilter === true;
+
+  // Player names read as ordinary words to the classifier: a user called
+  // "worstplayer" made "@worstplayer" score 0.98 as abuse. Mask names in the
+  // text sent for scoring only; the message that is sent stays untouched.
+  const maskNamesForRules = useMemo(
+    () => buildNameMasker(collectPlayerNames(players, game.spectators)),
+    [players, game.spectators]
+  );
   const pendingSpeechRef = useRef(null);
   // Optimistic rows: shown immediately, replaced by the server's message.
   const pendingRowsRef = useRef(new Map());
@@ -4150,7 +4159,11 @@ function SpeechInput(props) {
         } else {
           ruleCheckBusy.current = true;
           axios
-            .post("/api/rules/check", { content }, { timeout: 3000 })
+            .post(
+              "/api/rules/check",
+              { content: maskNamesForRules(content) },
+              { timeout: 3000 }
+            )
             .then((res) => {
               const flagged = res.data;
               if (flagged && flagged.flagged) {
