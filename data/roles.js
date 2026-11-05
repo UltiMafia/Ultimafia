@@ -6003,13 +6003,6 @@ const roleData = {
     },
 
     //Events
-    "No Event": {
-      alignment: "Event",
-      tags: ["Event"],
-      description: [
-        "Put this in a setup with other Events to have a chance for no Events to occur.",
-      ],
-    },
     Airdrop: {
       alignment: "Event",
       tags: ["Event", "Items"],

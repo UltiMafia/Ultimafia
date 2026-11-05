@@ -320,6 +320,7 @@ var schemas = {
       startState: { type: String, default: "Night" },
       gameStartPrompt: { type: String, default: undefined },
       EventsPerNight: Number,
+      NoEventChance: Number,
       noDeathLimit: Number,
       ForceMustAct: { type: Boolean, default: true },
       GameEndEvent: { type: String, default: "Meteor" },
