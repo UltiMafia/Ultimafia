@@ -1,6 +1,6 @@
 import React, { useState, useReducer, useRef, useEffect } from "react";
 import { ChromePicker } from "react-color";
-import ReactMde from "react-mde";
+import ReactMde, { getDefaultCommandMap, MarkdownUtil } from "react-mde";
 import axios from "axios";
 
 import CustomMarkdown from "components/CustomMarkdown";
@@ -1349,8 +1349,100 @@ export function UserSearchSelect(props) {
   );
 }
 
+let nextEditorUpload = 0;
+
 export function TextEditor(props) {
   const [tab, setTab] = useState("write");
+  const errorAlert = useErrorAlert();
+  const current = useRef();
+  current.current = { props, errorAlert };
+  const mounted = useRef(true);
+  const pendingUploads = useRef(new Set());
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      for (const finishUpload of pendingUploads.current) finishUpload(true);
+    };
+  }, []);
+
+  // react-mde retains commands and paste options from its constructor.
+  const [uploadOptions] = useState(() => ({
+    command: "upload-image",
+    accept: "image/*",
+    multiple: false,
+    // Required by the public PasteOptions contract; the command owns saving.
+    saveImage: async function* () { yield ""; },
+  }));
+  const [commands] = useState(() => ({
+    ...getDefaultCommandMap(),
+    "upload-image": {
+      async execute({ textApi, context, l18n }) {
+        const { props } = current.current;
+        if (!mounted.current || !props.pasteImages) return;
+        const event = context.event;
+        const transfer = event.clipboardData || event.dataTransfer;
+        const files = transfer
+          ? Array.from(transfer.items)
+              .filter((item) => item.kind === "file")
+              .map((item) => item.getAsFile())
+          : Array.from(event.target.files || []);
+        // Match this editor's existing single-image, image/* upload options.
+        const file = files[0];
+        if (!file || !file.type.startsWith("image/")) return;
+
+        let placeholder;
+        const releaseUpload = props.onImageUploadStart?.();
+        const finishUpload = (discarded = false) => {
+          if (pendingUploads.current.delete(finishUpload))
+            releaseUpload?.(discarded ? placeholder : undefined);
+        };
+        pendingUploads.current.add(finishUpload);
+        try {
+          const state = textApi.getState();
+          do {
+            placeholder = `![${l18n.uploadingImage} (${++nextEditorUpload})]()`;
+          } while (state.text.includes(placeholder));
+          const breaks = "\n".repeat(
+            MarkdownUtil.getBreaksNeededForEmptyLineBefore(
+              state.text, state.selection.start
+            )
+          );
+          textApi.replaceSelection(breaks + placeholder);
+
+          let imageUrl;
+          try {
+            const body = new FormData();
+            body.append("image", file);
+            const res = await axios.post("/api/comment/image", body);
+            imageUrl = res.data;
+          } catch (e) {
+            if (mounted.current) current.current.errorAlert(e);
+          }
+          if (!mounted.current) return;
+
+          const latest = textApi.getState();
+          const start = latest.text.indexOf(placeholder);
+          // Editing/deleting the marker discards it. A copied marker is ambiguous.
+          if (start < 0 || latest.text.indexOf(placeholder, start + 1) >= 0) return;
+          const end = start + placeholder.length;
+          const replacement = imageUrl ? `![image](${imageUrl})` : "";
+          const mapPosition = (position) =>
+            position <= start ? position :
+            position >= end ? position + replacement.length - placeholder.length :
+            start + Math.min(position - start, replacement.length);
+          textApi.setSelectionRange({ start, end });
+          textApi.replaceSelection(replacement);
+          textApi.setSelectionRange({
+            start: mapPosition(latest.selection.start),
+            end: mapPosition(latest.selection.end),
+          });
+        } finally {
+          finishUpload?.();
+        }
+      },
+    },
+  }));
 
   return (
     <ReactMde
@@ -1364,6 +1456,8 @@ export function TextEditor(props) {
       }
       suggestionTriggerCharacters={props.suggestionTriggerCharacters}
       loadSuggestions={props.loadSuggestions}
+      commands={commands}
+      paste={props.pasteImages ? uploadOptions : undefined}
     />
   );
 }

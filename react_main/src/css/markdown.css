@@ -35,6 +35,12 @@
   background-color: var(--scheme-color-sec);
 }
 
+.react-mde label.image-tip {
+  border-top: 1px solid var(--scheme-color-border);
+  color: var(--scheme-color-text);
+  background-color: var(--scheme-color-sec);
+}
+
 .mde-preview.md-content {
   padding: 5px;
 
