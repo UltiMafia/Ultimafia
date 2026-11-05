@@ -7333,13 +7333,27 @@ export function useHistoryReducer() {
                 ) {
                   break;
                 }
+                // Optimistic rows are always the tail of the list. A message
+                // that arrives while one is unconfirmed is inserted before
+                // it, so the settled order matches the server's rather than
+                // putting the confirmed message above one that came earlier.
+                let insertAt = meeting.messages.length;
+                while (
+                  insertAt > 0 &&
+                  meeting.messages[insertAt - 1].pending
+                ) {
+                  insertAt--;
+                }
+                const messages = meeting.messages.slice();
+                messages.splice(insertAt, 0, message);
+
                 return update(history, {
                   states: {
                     [history.currentState]: {
                       meetings: {
                         [message.meetingId]: {
                           messages: {
-                            $push: [message],
+                            $set: messages,
                           },
                         },
                       },
