@@ -1,4 +1,11 @@
 const express = require("express");
+const bluebird = require("bluebird");
+const formidable = bluebird.promisifyAll(require("formidable"), {
+  multiArgs: true,
+});
+const fs = require("fs");
+const path = require("path");
+const sharp = require("sharp");
 const shortid = require("shortid");
 const constants = require("../data/constants");
 const models = require("../db/models");
@@ -102,6 +109,72 @@ router.get("/", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Could not load comments. Please refresh and try again.");
+  }
+});
+
+// Pasted images upload on paste. The editor embeds the returned path as
+// ordinary markdown, so the post itself stays plain text.
+router.post("/image", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+
+    if (!(await routeUtils.verifyPermission(res, userId, "postReply"))) return;
+    if (!(await routeUtils.rateLimit(userId, "postPastedImage", res))) return;
+
+    var form = new formidable();
+    form.maxFileSize = 5 * 1024 * 1024;
+    form.maxFields = 1;
+    form.maxFieldsSize = 8192;
+    const temporaryPaths = [];
+    form.on("file", (name, file) => temporaryPaths.push(file.path));
+    let parsed = false;
+
+    const uploadDir = process.env.UPLOAD_PATH;
+    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+    const fileName = `pasted_${shortid.generate()}.webp`;
+
+    try {
+      var [fields, files] = await form.parseAsync(req);
+      parsed = true;
+
+      const image = sharp(files.image.path, { limitInputPixels: 16 * 1000 * 1000 });
+      const metadata = await image.metadata();
+      if (!["png", "jpeg", "webp"].includes(metadata.format))
+        throw new Error("Unsupported pasted image format.");
+
+      await image
+        .rotate()
+        .webp({ quality: 85 })
+        .resize({
+          width: 1024,
+          height: 1024,
+          fit: sharp.fit.inside,
+          withoutEnlargement: true,
+          kernel: sharp.kernel.lanczos3,
+        })
+        .toFile(path.join(uploadDir, fileName));
+    } catch (e) {
+      logger.warn(e);
+      errors.unprocessable(res, "Images must be readable PNG, JPEG or WebP and up to 5 MiB.");
+      return;
+    } finally {
+      // Formidable owns cleanup while a failed parse may still have open files.
+      if (parsed) {
+        for (const temporaryPath of temporaryPaths) {
+          try {
+            await fs.promises.unlink(temporaryPath);
+          } catch (e) {
+            if (e.code !== "ENOENT")
+              logger.warn("Could not remove temporary pasted image:", e);
+          }
+        }
+      }
+    }
+
+    res.send(`/uploads/${fileName}`);
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Error uploading image. Please try again.");
   }
 });
 
