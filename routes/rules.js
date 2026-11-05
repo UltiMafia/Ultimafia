@@ -30,6 +30,18 @@ router.post("/check", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req, true);
 
+    // Logged-out callers get no verdict: they cannot speak in a game, so
+    // scoring them would only burn model time for anonymous traffic.
+    if (!userId) {
+      res.send({ flagged: false });
+      return;
+    }
+
+    if (!(await redis.rateLimit(userId, "ruleCheck"))) {
+      res.send({ flagged: false, limited: true });
+      return;
+    }
+
     const content = String(req.body.content || "").slice(0, 2000);
     if (!content.trim()) {
       res.send({ flagged: false });
