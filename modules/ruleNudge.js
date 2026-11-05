@@ -76,6 +76,28 @@ async function claimNudge(gameId, userId) {
   return result === "OK";
 }
 
+// Pure decision for one accepted message: consume the token, count it if it
+// qualifies, and report whether this message should trigger the nudge.
+async function noteVerdict({ gameId, userId, token }) {
+  const verdict = await takeToken(token);
+  if (!verdict || !userId) return { counted: false, nudge: false, reason: "no-token" };
+  if (verdict.u !== userId || verdict.g !== gameId) {
+    return { counted: false, nudge: false, reason: "mismatch" };
+  }
+  if (verdict.e) return { counted: false, nudge: false, reason: "prompt-on" };
+  if (verdict.c !== "abuse" || !(verdict.p >= ABUSE_PROBABILITY)) {
+    return { counted: false, nudge: false, reason: "not-abuse" };
+  }
+
+  const count = await countFlag(gameId, userId);
+  if (count < FLAG_THRESHOLD) return { counted: true, count, nudge: false };
+  if (!(await claimNudge(gameId, userId))) {
+    return { counted: true, count, nudge: false, reason: "already" };
+  }
+
+  return { counted: true, count, nudge: true };
+}
+
 module.exports = {
   FLAG_THRESHOLD,
   ABUSE_PROBABILITY,
@@ -84,4 +106,5 @@ module.exports = {
   takeToken,
   countFlag,
   claimNudge,
+  noteVerdict,
 };
