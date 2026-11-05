@@ -57,9 +57,23 @@ function mongoConnectOptions() {
   };
 }
 
-function isBanishedKey(key) {
-  const mods = key.split(":")[1] || "";
-  return mods.toLowerCase().includes("banished");
+const EVENT_REPLACEMENTS = {
+  Airdrop: { name: "Airdrop", addModifier: "Armed" },
+  Moonshine: { name: "Airdrop" },
+  "Ominous Warning": { name: "Airdrop", addModifier: "Steeled" },
+  Vaccination: { name: "Airdrop", addModifier: "Macabre" },
+  Bloodhound: { name: "Tracker", addModifier: "Binary" },
+  Lurker: { name: "Scout", addModifier: "Binary" },
+};
+
+function splitRoleKey(key) {
+  const colonIdx = key.indexOf(":");
+  if (colonIdx === -1) {
+    return { name: key, mods: [] };
+  }
+  const name = key.slice(0, colonIdx);
+  const modPart = key.slice(colonIdx + 1);
+  return { name, mods: modPart ? modPart.split("/") : [] };
 }
 
 function isEventKey(key) {

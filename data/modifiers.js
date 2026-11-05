@@ -1428,6 +1428,15 @@ const modifierData = {
       tags: ["Alignments"],
       description: "Mafia roles with this modifier applied join the Red Mafia.",
     },
+    Binary: {
+      category: "Other",
+      internal: [],
+      tags: ["Information", "Visit Interaction"],
+      roles: ["Tracker", "Scout", "Shadow"],
+      description:
+        "On Tracker, Scout, and Shadow, you learn whether your target visited anybody, instead of who they visited. A watch on that target is unchanged.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
   },
   Jotto: {},
   Acrotopia: {},

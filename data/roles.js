@@ -838,26 +838,6 @@ const roleData = {
       ],
       nightOrder: [["Arbiter", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
-    Bloodhound: {
-      alignment: "Village",
-      category: "Investigative",
-      tags: ["Information", "Visit Interaction", "Visiting", "Basic"],
-      description: [
-        "Each night, you can choose to visit one player and learn if they visited anybody.",
-        //"Tracks a player each night and learns if they visited anybody.",
-      ],
-      nightOrder: [["Binary Track", PRIORITY_INVESTIGATIVE_DEFAULT]],
-      skins: [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Old",
-          value: "old",
-        },
-      ],
-    },
     "Bounty Hunter": {
       alignment: "Village",
       category: "Investigative",
@@ -2865,15 +2845,6 @@ const roleData = {
       "See also: Watcher (Village).",
       ],
       nightOrder: [["Watch", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5]],
-    },
-    Lurker: {
-      alignment: "Mafia",
-      category: "Investigative",
-      tags: ["Information", "Visit Interaction", "Visiting", "Basic"],
-      description: [
-        "Each night, you can choose to visit one player and learn if they visited anybody.",
-      ],
-      nightOrder: [["Binary Track", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
     Revisionist: {
       alignment: "Mafia",

@@ -1467,6 +1467,10 @@ function verifyRole(role, gameType, alignment) {
   if (modifiers) {
     for (const modifier of modifiers.split("/")) {
       if (!constants.modifiers[gameType][modifier]) return false;
+      const modData = modifierData[gameType][modifier];
+      if (modData && modData.roles && !modData.roles.includes(roleName)) {
+        return false;
+      }
     }
     if (!areModifiersCompatible(gameType, modifiers)) {
       return false;

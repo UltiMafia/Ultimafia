@@ -482,14 +482,6 @@
   background-image: url("/src/images/roles/village/analyst-vivid.png");
 }
 
-.role-icon-vivid-Mafia-Bloodhound {
-  background-image: url("/src/images/roles/village/bloodhound-vivid.png");
-}
-
-.role-icon-old-Mafia-Bloodhound {
-  background-image: url("/src/images/roles/village/skins/bloodhound-old.png");
-}
-
 .role-icon-vivid-Mafia-Voyeur {
   background-image: url("/src/images/roles/village/voyeur-vivid.png");
 }
@@ -1399,10 +1391,6 @@
 
 .role-icon-vivid-Mafia-Busybody {
   background-image: url("/src/images/roles/mafia/busybody-vivid.png");
-}
-
-.role-icon-vivid-Mafia-Lurker {
-  background-image: url("/src/images/roles/mafia/lurker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Caser {
