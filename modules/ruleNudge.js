@@ -12,8 +12,9 @@ const TOKEN_TTL_SECONDS = 600;
 const COUNTER_TTL_SECONDS = 12 * 60 * 60;
 
 const NUDGE_TEXT =
-  "Automated heads-up: 5 of your messages this game read as personal attacks. " +
-  "Nobody has been notified; if another player reports you, moderators will review them.";
+  `Automated warning: ${FLAG_THRESHOLD} of your messages this game read as personal attacks. ` +
+  "Nobody has been notified; if another player reports you, moderators will review them. " +
+  "Please be respectful of other players.";
 
 async function issueToken({ userId, gameId, category, prob, abusePrompt }) {
   if (!userId || !gameId) return null;
