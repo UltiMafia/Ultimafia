@@ -720,6 +720,23 @@ html[data-keyboard="open"] .game .meeting-tabs {
   overflow-y: auto;
 }
 
+/* An expanded accordion menu marked scrollable: once its collapse has finished
+   opening, the collapse layers fill the bounded menu so the content scrolls
+   instead of being clipped. Waiting for "entered" keeps the open animation,
+   which measures the content's natural height. */
+.game .side-menu.scrollable.MuiAccordion-root > .MuiCollapse-entered {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.game .side-menu.scrollable.MuiAccordion-root > .MuiCollapse-entered .MuiCollapse-wrapper,
+.game .side-menu.scrollable.MuiAccordion-root > .MuiCollapse-entered .MuiCollapse-wrapperInner,
+.game .side-menu.scrollable.MuiAccordion-root > .MuiCollapse-entered .MuiAccordion-region,
+.game .side-menu.scrollable.MuiAccordion-root > .MuiCollapse-entered .side-menu-content {
+  box-sizing: border-box;
+  height: 100%;
+}
+
 .game .side-menu-content {
   overflow: hidden;
 }
