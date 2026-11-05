@@ -3,7 +3,7 @@ const router = express.Router();
 const models = require("../db/models");
 const redis = require("../modules/redis");
 const routeUtils = require("./utils");
-const ruleFilter = require("../modules/ruleFilter");
+const ruleFilter = require("../modules/ruleFilterService");
 const ruleNudge = require("../modules/ruleNudge");
 const logger = require("../modules/logging")(".");
 

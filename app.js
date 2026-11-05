@@ -44,7 +44,7 @@ const cors = require("cors");
 const itemsRouter = require("./routes/items");
 const stockMarketRouter = require("./routes/stockMarket");
 const rulesRouter = require("./routes/rules");
-const ruleFilter = require("./modules/ruleFilter");
+const ruleFilter = require("./modules/ruleFilterService");
 const { seedDefaultWordDecks } = require("./modules/seed");
 const db = require("./db/db");
 
@@ -142,6 +142,7 @@ db.promise
 
 // Load the chat rule classifier once per process; messages are never blocked
 // if it fails to load.
+// The model loads in a worker thread; the gate fails open until it is ready.
 ruleFilter.init();
 
 app.get("/.well-known/apple-app-site-association", (req, res) => {
