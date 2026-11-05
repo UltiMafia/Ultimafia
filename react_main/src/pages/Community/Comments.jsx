@@ -24,8 +24,6 @@ export default function Comments(props) {
   const [comments, setComments] = useState([]);
   const [showInput, setShowInput] = useState(false);
   const [postContent, setPostContent] = useState("");
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const imageUploads = useRef(0);
   const [loaded, setLoaded] = useState(false);
   const isMountedRef = useRef(true);
 
@@ -87,20 +85,8 @@ export default function Comments(props) {
       });
   }
 
-  function onImageUploadStart() {
-    imageUploads.current++;
-    setUploadingImage(true);
-    return (discardedMarker) => {
-      if (isMountedRef.current && discardedMarker)
-        setPostContent((content) => content.split(discardedMarker).join(""));
-      imageUploads.current--;
-      if (isMountedRef.current)
-        setUploadingImage(imageUploads.current > 0);
-    };
-  }
-
   function onPostSubmit() {
-    if (!postLocation || imageUploads.current > 0) return;
+    if (!postLocation) return;
     axios
       .post("/api/comment", { content: postContent, location: postLocation })
       .then(() => {
@@ -207,8 +193,7 @@ export default function Comments(props) {
             }}
           >
             <Stack direction="column" spacing={1} sx={{ flex: "1" }}>
-              <TextEditor value={postContent} onChange={setPostContent} pasteImages
-                onImageUploadStart={onImageUploadStart} />
+              <TextEditor value={postContent} onChange={setPostContent} />
               <Stack direction="row" spacing={1}>
                 <Button
                   variant="outlined"
@@ -220,10 +205,9 @@ export default function Comments(props) {
                 <div style={{ flex: "1" }} />
                 <Button
                   onClick={onPostSubmit}
-                  disabled={uploadingImage}
                   sx={{ flex: "1", marginLeft: "auto !important" }}
                 >
-                  {uploadingImage ? "Uploading image..." : "Post"}
+                  Post
                 </Button>
               </Stack>
             </Stack>
