@@ -3796,16 +3796,6 @@ const roleData = {
         "While you are alive, Mafia will not win by majority.",
       ],
       nightOrder: [["Kill players in Room", PRIORITY_KILL_DEFAULT]],
-      skins: [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Old",
-          value: "old",
-        },
-      ],
       SpecialInteractionsModifiers: {
         "X-Shot": ["Splits players into an additional room."],
         Delayed: ["Adds an extra round of switching before killing."],
@@ -5581,11 +5571,6 @@ const roleData = {
         {
           label: "Vivid",
           value: "vivid",
-        },
-        {
-          label: "Goofy",
-          value: "goofy",
-          achReq: "Mafia29",
         },
         {
           label: "Old",
