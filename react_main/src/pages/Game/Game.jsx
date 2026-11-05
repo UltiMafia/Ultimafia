@@ -7324,7 +7324,7 @@ export function useHistoryReducer() {
                       [history.currentState]: {
                         meetings: {
                           [message.meetingId]: {
-                            messages: { $set: messages },
+                            messages: { $set: replaced },
                           },
                         },
                       },
@@ -7355,7 +7355,7 @@ export function useHistoryReducer() {
                       meetings: {
                         [message.meetingId]: {
                           messages: {
-                            $set: replaced,
+                            $set: messages,
                           },
                         },
                       },
