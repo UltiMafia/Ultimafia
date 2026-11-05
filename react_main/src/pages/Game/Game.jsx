@@ -34,6 +34,7 @@ import Newspaper, {
 } from "../../components/gameComponents/Newspaper";
 import { newspaperPlayer } from "../../utils/newspaperPlayers";
 import { legacyObituaryMessages } from "../../utils/legacyObituaries";
+import { insertBeforePending } from "../../utils/messageOrdering";
 import MafiaGame from "./MafiaGame";
 import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
@@ -3730,6 +3731,7 @@ function SpeechInput(props) {
   const self = props.self;
   const updateHistory = props.updateHistory;
   const user = useContext(UserContext);
+  const { singleState } = useContext(GameTypeContext);
 
   // Same defaults the server applies: OGI warns unless switched off, abuse
   // warns only when the account has it enabled (a violation on record does
@@ -4104,8 +4106,16 @@ function SpeechInput(props) {
         // Replies quote a server-side message the client cannot fabricate, so
         // they keep the plain send path. Ordinary speech gets an optimistic row
         // that the server's own message replaces on arrival.
+        // Time-sorted transcripts (singleState games) place rows by the
+        // server's time. A row stamped with the local Enter time would sort
+        // above messages that arrive meanwhile and then jump when the server's
+        // later time replaces it, so those games keep the plain send path.
         const pendingId =
-          !isCommand && !reply && !abilityName && (anonymous || Boolean(self))
+          !isCommand &&
+          !reply &&
+          !abilityName &&
+          !singleState &&
+          (anonymous || Boolean(self))
             ? `pending:${Date.now().toString(36)}${Math.random()
                 .toString(36)
                 .slice(2, 8)}`
@@ -7333,19 +7343,12 @@ export function useHistoryReducer() {
                 ) {
                   break;
                 }
-                // Optimistic rows are always the tail of the list. A message
-                // that arrives while one is unconfirmed is inserted before
-                // it, so the settled order matches the server's rather than
-                // putting the confirmed message above one that came earlier.
-                let insertAt = meeting.messages.length;
-                while (
-                  insertAt > 0 &&
-                  meeting.messages[insertAt - 1].pending
-                ) {
-                  insertAt--;
-                }
-                const messages = meeting.messages.slice();
-                messages.splice(insertAt, 0, message);
+                // A message that arrives while an optimistic row is waiting
+                // was accepted first, so it goes before the row.
+                const messages = insertBeforePending(
+                  meeting.messages,
+                  message
+                );
 
                 return update(history, {
                   states: {
@@ -7396,13 +7399,18 @@ export function useHistoryReducer() {
             ) {
               break;
             }
+            // A quote is a message like any other: if one of this client's
+            // own rows is still waiting, the quote was accepted first.
             return update(history, {
               states: {
                 [history.currentState]: {
                   meetings: {
                     [action.quote.toMeetingId]: {
                       messages: {
-                        $push: [action.quote],
+                        $set: insertBeforePending(
+                          quoteMeeting.messages,
+                          action.quote
+                        ),
                       },
                     },
                   },
