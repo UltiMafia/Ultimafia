@@ -370,10 +370,6 @@
   background-image: url("/src/images/roles/village/mediator-vivid.png");
 }
 
-.role-icon-vivid-Mafia-Debtor {
-  background-image: url("/src/images/roles/village/debtor-vivid.png");
-}
-
 .role-icon-vivid-Mafia-Braggart {
   background-image: url("/src/images/roles/village/braggart-vivid.png");
 }
@@ -628,10 +624,6 @@
 
 .role-icon-vivid-Mafia-Chef {
   background-image: url("/src/images/roles/village/chef-vivid.png");
-}
-
-.role-icon-old-Mafia-Chef {
-  background-image: url("/src/images/roles/village/skins/chef-old.png");
 }
 
 .role-icon-vivid-Mafia-Journalist {

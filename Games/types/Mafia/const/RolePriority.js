@@ -457,10 +457,6 @@ const Nightdata = {
       ActionNames: ["Learn Visitors"],
       ActionValues: [PRIORITY_INVESTIGATIVE_DEFAULT],
     },
-    Debtor: {
-      ActionNames: ["Die with Incorrect Guess"],
-      ActionValues: [PRIORITY_KILL_DEFAULT - 1],
-    },
     Firebrand: {
       ActionNames: ["Douse In Gasoline"],
       ActionValues: [PRIORITY_EFFECT_GIVER_DEFAULT - 1],
