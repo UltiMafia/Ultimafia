@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
+import { LatestRequest } from "../lib/latestRequest.js";
 
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
@@ -44,6 +45,21 @@ import { getSetupBackgroundColor } from "pages/Play/LobbyBrowser/gameRowColors";
 export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck, defaultLobby }) {
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
+  const [hostError, setHostError] = useState("");
+  const [hosting, setHosting] = useState(false);
+  const hostRequest = useRef(new LatestRequest());
+
+  useEffect(() => {
+    setHostError("");
+    hostRequest.current.invalidate();
+  }, [open]);
+
+  function hostErrorText(error) {
+    const message = error?.response?.data || error?.message || error;
+    return typeof message === "string" && message.length <= 200
+      ? message
+      : "Could not host game. Please try again.";
+  }
   const isPhoneDevice = useIsPhoneDevice();
   const navigate = useNavigate();
 
@@ -121,19 +137,33 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
   }
 
   const onHostGameWrapper = () => {
+    if (hosting) return;
+    setHostError("");
     if (!supportsGameType) {
-      errorAlert("This setup cannot be hosted right now. Please refresh and try again.");
+      setHostError("This setup cannot be hosted right now. Please refresh and try again.");
       return;
     }
+    // Cancelling makes this attempt's result ineligible for the dialog and the
+    // page, though the server may still create the game.
+    const request = hostRequest.current.begin();
+    setHosting(true);
     onHostGame(setup.id, getFormFieldValue)
       .then((res) => {
+        const current = request.isCurrent();
         // Close before navigating: the dialog renders in a portal, so it stays
         // visible over the game even while the lobby it lives in is frozen.
-        setOpen(false);
+        if (current) setOpen(false);
         user.refreshGameMembership();
-        navigate(`/game/${res.data}`);
+        if (current) navigate(`/game/${res.data}`);
       })
-      .catch(errorAlert);
+      .catch((error) => {
+        const text = hostErrorText(error);
+        // A site alert would cover the Cancel and Host buttons on phones, so it
+        // is only for an attempt the dialog can no longer show.
+        if (request.isCurrent()) setHostError(text);
+        else errorAlert(text);
+      })
+      .finally(() => setHosting(false));
   };
 
   const lobby = getFormFieldValue("lobby");
@@ -185,6 +215,7 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
               <div style={{ flex: "1" }} />
               <Button
                 onClick={onHostGameWrapper}
+                disabled={hosting}
                 sx={{
                   flex: "1",
                 }}
@@ -203,6 +234,7 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
                 true
               )}
             />
+            {hostError && <Alert severity="error">{hostError}</Alert>}
             {alertText && <Alert severity="warning">{alertText}</Alert>}
             <Form compact fields={formFields} onChange={updateFormFields} />
           </Stack>
