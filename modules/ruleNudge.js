@@ -23,7 +23,14 @@ function db() {
 const TOKEN_TTL_SECONDS = 600;
 const COUNTER_TTL_SECONDS = 12 * 60 * 60;
 
-async function issueToken({ userId, gameId, category, prob, abusePrompt }) {
+async function issueToken({
+  userId,
+  gameId,
+  category,
+  prob,
+  abuseProb,
+  abusePrompt,
+}) {
   if (!userId || !gameId) return null;
 
   const token = crypto.randomBytes(12).toString("hex");
@@ -32,6 +39,9 @@ async function issueToken({ userId, gameId, category, prob, abusePrompt }) {
     g: gameId,
     c: category,
     p: prob,
+    // Abuse-class probability, distinct from p (any violation). Tokens issued
+    // before this field existed carry none and are treated as not abuse.
+    a: abuseProb,
     // True when the pre-send abuse prompt is enabled: those players already
     // saw the dialog, so they are not nudged afterwards.
     e: Boolean(abusePrompt),

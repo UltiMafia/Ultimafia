@@ -23,7 +23,9 @@ async function noteVerdict({ gameId, userId, token }, store) {
   if (verdict.e) {
     return { counted: false, nudge: false, reason: "prompt-on" };
   }
-  if (verdict.c !== "abuse" || !(verdict.p >= ABUSE_PROBABILITY)) {
+  // `verdict.a` is the abuse-class probability; `verdict.p` is the chance of
+  // any violation, which an OGI-heavy message can clear on its own.
+  if (verdict.c !== "abuse" || !(verdict.a >= ABUSE_PROBABILITY)) {
     return { counted: false, nudge: false, reason: "not-abuse" };
   }
 
