@@ -32,7 +32,8 @@ function spawn() {
     if (!message) return;
 
     if (message.type === "ready") {
-      if (!message.ready) logger.error("rule worker not ready", message.error || "");
+      if (message.ready) logger.info("rule filter ready (worker thread)");
+      else logger.error("rule worker not ready", message.error || "");
       return;
     }
 
