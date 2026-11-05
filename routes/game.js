@@ -10,6 +10,7 @@ const redis = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const rehost = require("../modules/rehost");
 const { defaultLobbyName, isCustomLobbyName } = require("../modules/lobbyName");
+const { reviewPlayerSettings } = require("../modules/reviewPlayerSettings");
 const blocks = require("../modules/blocks");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
@@ -59,10 +60,7 @@ async function enrichReviewUser(user) {
 
   return {
     ...user,
-    settings: {
-      textColor: user.settings.textColor,
-      nameColor: user.settings.textColor,
-    },
+    settings: reviewPlayerSettings(user.settings),
     vanityUrl: vanityUrl?.url,
   };
 }

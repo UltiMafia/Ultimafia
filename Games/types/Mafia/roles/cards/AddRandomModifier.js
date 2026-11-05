@@ -30,6 +30,10 @@ module.exports = class AddRandomModifier extends Card {
             modifiersToUse = modifiersToUse.filter(
               (m) => !this.target.role.modifier.split("/").includes(m)
             );
+            modifiersToUse = modifiersToUse.filter((m) => {
+              const allowed = modifiers.Mafia[m].roles;
+              return !allowed || allowed.includes(this.target.role.name);
+            });
             if (modifiersToUse.length <= 0) {
               return;
             }

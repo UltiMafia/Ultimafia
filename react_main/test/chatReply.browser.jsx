@@ -5,13 +5,16 @@
 // Query: layout (messageLayout setting), st (state; -1 is pregame), anon=1
 // (anonymous senders), noreply=1 (no reply handler, so rows are drawn exactly
 // as without the reply feature), spec=1 (replies are spectator chat), dead=1
-// (repliers are dead), ts=0 (timestamps off).
+// (repliers are dead), ts=0 (timestamps off), styled=1 (AlageRheba10 and Bob
+// have their own name colour, animated name, name font and text colour, so a
+// reply's reference can be checked against the original line's row).
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import { Box, createTheme, ThemeProvider } from "@mui/material";
-import { GameTypeContext, TextMeetingLayout } from "../src/pages/Game/Game";
+import { GameTypeContext, IsPhoneDeviceContext, TextMeetingLayout } from "../src/pages/Game/Game";
 import { GameContext, SiteInfoContext, UserContext } from "../src/Contexts";
+import { makeReplyTarget, redirectTypingToChat } from "../src/utils/messageReply";
 import "../src/css/main.css";
 import "../src/css/game.css";
 
@@ -20,7 +23,13 @@ const layout = params.get("layout") || "default";
 const anon = params.get("anon") === "1";
 const st = Number(params.get("st") || -1);
 const stName = st === -1 ? "Pregame" : "Day 1";
-const theme = createTheme();
+const themeMode = params.get("theme");
+if (themeMode === "light" || themeMode === "dark") {
+  document.documentElement.classList.add(`${themeMode}-mode`);
+}
+const theme = createTheme({ palette: {
+  mode: themeMode === "dark" || (themeMode === "auto" && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light",
+} });
 const user = {
   id: "u1",
   loggedIn: true,
@@ -33,7 +42,13 @@ const dead = params.get("dead") === "1";
 // Extra flags for the reply lines (spectator chat, dead sender).
 const R = { ...(spec ? { spectatorChat: true } : {}), ...(dead ? { alive: false } : {}) };
 const t0 = 1761500000000;
-const msgs = [
+const styled = params.get("styled") === "1";
+// Per-message colours, as the server stamps them on every line.
+const COLORS = {
+  pA: { nameColor: "#1f9d55", textColor: "#c2185b" },
+  pB: { nameColor: "#1565c0", textColor: "#e65100" },
+};
+const msgs0 = [
   {
     id: "m1aaaaaa",
     senderId: S("pA"),
@@ -177,6 +192,11 @@ const msgs = [
     ...R,
   },
 ];
+const msgs = msgs0.map((m) =>
+  styled && !m.isQuote && COLORS[m.senderId]
+    ? { ...m, ...COLORS[m.senderId] }
+    : m
+);
 const meeting = {
   id: "v1",
   name: stName === "Pregame" ? "Pregame" : "Village",
@@ -187,9 +207,18 @@ const meeting = {
   members: [{ id: "pA" }, { id: "pB" }, { id: "pC" }],
   votes: {},
 };
+const STYLES = {
+  pA: {
+    nameFont: "georgia",
+    animatedNameColor: "gradient",
+    nameGradientColorA: "#ff0080",
+    nameGradientColorB: "#00e5ff",
+  },
+  pB: { nameFont: "mono", animatedNameColor: "pulse" },
+};
 const players = {
-  pA: { id: "pA", name: "AlageRheba10", userId: "uA" },
-  pB: { id: "pB", name: "Bob", userId: "uB" },
+  pA: { id: "pA", name: "AlageRheba10", userId: "uA", ...(styled ? STYLES.pA : {}) },
+  pB: { id: "pB", name: "Bob", userId: "uB", ...(styled ? STYLES.pB : {}) },
   pC: { id: "pC", name: "Vinman", userId: "uC" },
 };
 const game = {
@@ -224,25 +253,70 @@ const game = {
   isolatedPlayers: new Set(),
   getSetupGameSetting: () => undefined,
   setup: { gameSettings: [] },
-  onMessageQuote: () => {},
-  onMessageReply: params.get("noreply") === "1" ? undefined : () => {},
-  onPinMessage: () => {},
+  onMessageQuote: (m) => window.__quotes.push(m.id),
+  onMessageReply:
+    params.get("noreply") === "1"
+      ? undefined
+      : (m) => {
+          window.__replies.push(m.id);
+          window.__setReplyTarget(makeReplyTarget(m, st));
+        },
+  onPinMessage: (m) => window.__pins.push(m.id),
   isMessagePinned: () => false,
 };
-const root = document.createElement("div");
-document.body.append(root);
+// Click to reply. Query: link=1 (a link in Bob's plain line), sys=1 (adds a
+// server line). Replies, quotes and pins are recorded in window.__replies,
+// __quotes and __pins; window.__unmount() removes the chat.
+if (params.get("link") === "1") msgs[1].content += " https://example.com/x";
+if (params.get("sys") === "1")
+  msgs.push({
+    id: "s1aaaaaa",
+    senderId: "server",
+    meetingId: "v1",
+    content: "Bob has been lynched.",
+    time: t0 + 7000,
+  });
+window.__replies = [];
+window.__quotes = [];
+window.__pins = [];
+const root = document.getElementById("root") || document.createElement("div");
+if (!root.isConnected) document.body.append(root);
+window.__unmount = () => ReactDOM.unmountComponentAtNode(root);
+// The game page's own "type to chat" keydown handler (Game.jsx).
+window.addEventListener("keydown", (e) => redirectTypingToChat(e));
+const mobile = params.get("mobile") === "1";
+if (mobile) {
+  document.documentElement.style.height = "100%";
+  document.body.style.cssText = "margin: 0; height: 100%; overflow: hidden";
+}
+window.__sent = [];
+// Stub transport only: the real SpeechInput builds and sends the reply payload.
+game.socket.send = (type, payload) => window.__sent.push({ type, payload });
+function FixtureGame({ children }) {
+  const [replyTarget, setReplyTarget] = React.useState(null);
+  window.__setReplyTarget = setReplyTarget;
+  return (
+    <IsPhoneDeviceContext.Provider value={mobile}>
+      <GameContext.Provider value={{ ...game, replyTarget, setReplyTarget }}>
+        {children}
+      </GameContext.Provider>
+    </IsPhoneDeviceContext.Provider>
+  );
+}
 ReactDOM.render(
   <BrowserRouter>
     <ThemeProvider theme={theme}>
       <UserContext.Provider value={user}>
         <SiteInfoContext.Provider value={{ showAlert: () => {} }}>
-          <GameContext.Provider value={game}>
+          <FixtureGame>
             <GameTypeContext.Provider value={{ singleState: false }}>
               <Box
                 className="game"
                 sx={{
-                  width: 640,
-                  height: 700,
+                  width: mobile ? "100%" : 640,
+                  height: mobile ? "100dvh" : 700,
+                  minHeight: 0,
+                  boxSizing: "border-box",
                   backgroundColor: "background.paper",
                   display: "flex",
                   flexDirection: "column",
@@ -251,7 +325,7 @@ ReactDOM.render(
                 <TextMeetingLayout seatActions={false} />
               </Box>
             </GameTypeContext.Provider>
-          </GameContext.Provider>
+          </FixtureGame>
         </SiteInfoContext.Provider>
       </UserContext.Provider>
     </ThemeProvider>

@@ -28,6 +28,7 @@ import {
   pregameSpectatorList,
 } from "shared/spectatorChat";
 import { completePlayerName, tabCompleteNames } from "shared/tabComplete";
+import { isSpectatorPing } from "shared/spectatorPing";
 import Newspaper, {
   ObituariesMessage,
 } from "../../components/gameComponents/Newspaper";
@@ -50,6 +51,7 @@ import BattleshipGame from "./BattleshipGame";
 import SpotItGame from "./SpotItGame";
 import ChessGame from "./ChessGame";
 import { GameContext, SiteInfoContext, UserContext } from "Contexts";
+import { mobileInfoTabSx } from "./mobileInfoTab";
 import Dropdown from "../../components/Dropdown";
 import Setup from "../../components/Setup";
 import { NameWithAvatar } from "../User/UserWidgets";
@@ -85,7 +87,7 @@ import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { hyphenDelimit } from "../../utils";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { pregameSeatAction } from "shared/pregameSeatAction";
-import { useLongPress } from "../../hooks/useLongPress.jsx";
+import { bindMessageTouch } from "../../utils/messageTouch";
 import {
   Accordion,
   AccordionSummary,
@@ -147,6 +149,10 @@ import {
   buildReplyPayload,
   canReplyTo,
   describeQuotedMessage,
+  isReplyClick,
+  redirectTypingToChat,
+  hasSelectionIn,
+  REPLY_CLICK_DELAY_MS,
   findMessageRow,
   handleGameEscape,
   makeReplyTarget,
@@ -215,12 +221,14 @@ export default function Game(props) {
   const user = useContext(UserContext);
   // HTTP connect, socket join and reconnect all belong to the same entry URL,
   // even while this session is retained behind an unrelated site page. Only a
-  // server-confirmed membership change may replace the spectator join mode.
+  // server-confirmed membership change may replace the spectator join mode
+  // within a hosted session; a new lobby entry mounts a new session.
   const joinOptionsRef = useRef(null);
   if (!joinOptionsRef.current) {
     const search = props.joinSearch ?? window.location.search;
+    const params = new URLSearchParams(search);
     joinOptionsRef.current = {
-      spectate: new URLSearchParams(search).get("spectate") === "true",
+      spectate: params.get("spectate") === "true",
       isBot: search === "?bot",
     };
   }
@@ -247,6 +255,7 @@ export default function Game(props) {
   const [spectators, setSpectators] = useState();
   const [spectatorCount, setSpectatorCount] = useState(0);
   const [isSpectator, setIsSpectator] = useState(false);
+  const isSpectatorRef = useRef(false);
   const [isOmniscientSpectator, setIsOmniscientSpectator] = useState(false);
   const [self, setSelf] = useState();
   const [voteKickUrgency, setVoteKickUrgency] = useState(false);
@@ -366,6 +375,38 @@ export default function Game(props) {
     if (!active) stopDeathSounds();
   }, [active, stopDeathSounds]);
   const navigate = useNavigate();
+
+  // Keep the URL equal to the role the server confirmed. Otherwise a stale
+  // ?spectate=true would move a newly seated player back to spectators on
+  // reload. The membershipUpdate navigation changes the hosted search without
+  // changing the session key, so it does not remount the game. A bot tab has
+  // no URL state.
+  useEffect(() => {
+    if (!active || !loaded || leave || joinOptionsRef.current.isBot) return;
+    const target = `/game/${gameId}${isSpectator ? "?spectate=true" : ""}`;
+    const current = window.location.pathname + window.location.search;
+    if (current !== target) {
+      navigate(target, {
+        replace: true,
+        state: { membershipUpdate: true },
+      });
+    }
+  }, [active, loaded, leave, isSpectator, gameId, navigate]);
+
+  // A lobby Join/Spectate click for the game already hosted asks for the other
+  // role. Send that over the existing socket instead of replacing the session
+  // and reconnecting. Each navigation is applied once.
+  const appliedMembershipRequestRef = useRef(null);
+  useEffect(() => {
+    if (!active || !loaded || leave || !props.membershipRequest) return;
+    const { key, membership } = props.membershipRequest;
+    if (appliedMembershipRequestRef.current === key) return;
+    appliedMembershipRequestRef.current = key;
+    if (membership === (isSpectator ? "spectator" : "player")) return;
+    const action = membership === "spectator" ? "spectate" : "takeSeat";
+    if (socket && socket.send) socket.send(action);
+  }, [active, loaded, leave, isSpectator, props.membershipRequest, socket]);
+
   const [selectedPanel, setSelectedPanel] = useState("chat");
   const isPhoneDeviceRef = useRef(false);
   isPhoneDeviceRef.current = isPhoneDevice;
@@ -766,17 +807,9 @@ export default function Game(props) {
     if (!review) {
       loadAudioFiles(coreAudioConfig);
 
-      function onKeydown() {
+      function onKeydown(e) {
         if (!activeRef.current) return;
-        var speechInput = document.getElementById("speechInput");
-        var activeElName = document.activeElement.tagName;
-
-        if (
-          speechInput &&
-          activeElName !== "INPUT" &&
-          activeElName !== "TEXTAREA"
-        )
-          speechInput.focus();
+        redirectTypingToChat(e);
       }
 
       window.addEventListener("keydown", onKeydown);
@@ -1166,10 +1199,15 @@ export default function Game(props) {
         pings.indexOf("@" + playersRef?.current?.[selfRef?.current]?.name) !==
         -1;
 
+      const spectatorWasPinged = isSpectatorPing(
+        message.content,
+        isSpectatorRef.current
+      );
       if (
-        selfRef.current &&
-        playersRef.current[selfRef.current] &&
-        (iWasPinged || pings.some((p) => p.startsWith(EVERYONE_PING)))
+        spectatorWasPinged ||
+        (selfRef.current &&
+          playersRef.current[selfRef.current] &&
+          (iWasPinged || pings.some((p) => p.startsWith(EVERYONE_PING))))
       ) {
         playAudio("ping");
         if (iWasPinged) {
@@ -1229,6 +1267,7 @@ export default function Game(props) {
     socket.on("isSpectator", (value) => {
       const spectatingNow = value !== false;
       joinOptionsRef.current.spectate = spectatingNow;
+      isSpectatorRef.current = spectatingNow;
       setIsSpectator(spectatingNow);
       if (!spectatingNow) stopReadyBellRepeatRef.current();
     });
@@ -1238,6 +1277,7 @@ export default function Game(props) {
     });
 
     socket.on("left", (data) => {
+      isSpectatorRef.current = false;
       stopReadyBellRepeatRef.current();
       if (!noLeaveRef.current) {
         setLeave(true);
@@ -1979,7 +2019,7 @@ export function MobileLayout({
         {outerLeftContent}
       </Stack>
       {!hideInfoTab && (
-        <Box sx={{ display: selectedPanel === "info" ? undefined : "none" }}>
+        <Box data-testid="game-info-tab" sx={mobileInfoTabSx(selectedPanel)}>
           {/* The additionalInfoContent displays after the mobile version of TopBar */}
           {additionalInfoContent}
         </Box>
@@ -2132,7 +2172,7 @@ const EMPTY_CHAT_STATE = { meetings: {}, alerts: [], obituaries: {} };
 // above the chat box on mobile and sits in the player list on desktop
 export function PregameSeatActions() {
   const isPhoneDevice = useIsPhoneDevice();
-  const { review, history, isSpectator, socket, options, gameId } =
+  const { review, history, isSpectator, socket, options } =
     useContext(GameContext);
   const action = pregameSeatAction({ review, history, isSpectator, options });
   if (!action) return null;
@@ -2176,7 +2216,7 @@ export function PregameSeatActions() {
         fullWidth={true}
         size={"small"}
         onClick={() => {
-          window.location.assign(`/game/${gameId}?spectate=true`);
+          if (socket && socket.on) socket.send("spectate");
         }}
       >
       Spectate
@@ -2319,6 +2359,10 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
       return false;
     }
 
+    if (message.replyTo) {
+      return false;
+    }
+
     if (message.senderId === previousMessage.senderId) {
       return true;
     } else {
@@ -2382,6 +2426,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           history={history}
           players={players}
           self={game.self}
+          isSpectator={game.isSpectator}
           spectators={spectators}
           stateViewing={
             singleState && !message.obituaries && !message.winners
@@ -2425,6 +2470,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     game.onPinMessage,
     game.isMessagePinned,
     game.self,
+    game.isSpectator,
   ]);
 
   // Typing and unrelated game updates must not repeatedly measure the entire
@@ -2835,6 +2881,7 @@ function Message(props) {
     meetingState,
     replyQuote,
     replyMerged,
+    isSpectator,
     ...rowProps
   } = props;
   const { message, stateViewing } = props;
@@ -2843,7 +2890,9 @@ function Message(props) {
   if (message.content && props.settings.highlightMentions) {
     const pings = parsePings(message.content);
     iWasPinged =
-          pings.indexOf("@" + props.players?.[props.self]?.name) !== -1 || pings.some((p) => p.startsWith(EVERYONE_PING));
+      pings.indexOf("@" + props.players?.[props.self]?.name) !== -1 ||
+      pings.some((p) => p.startsWith(EVERYONE_PING)) ||
+      isSpectatorPing(message.content, isSpectator);
   }
 
   // The quoted line shown inside a reply row (see pairReplies).
@@ -2913,6 +2962,18 @@ function ReplyReference(props) {
     autoContrastColor: user.autoContrastColor.bind(user),
     theme,
   });
+  // The original line in its sender's text colour, resolved the same way its
+  // own row does (accessible colours, "ignore text colours", auto contrast).
+  let textColor = sender ? reply.textColor : undefined;
+  if (Object.keys(textColor ?? {}).length === 2)
+    textColor = textColor["darkTheme"];
+  const resolvedTextColor = resolveDisplayTextColor({
+    accessibleNameColors,
+    ignoreTextColor: user.settings?.ignoreTextColor,
+    rawTextColor: textColor && textColor !== "" ? textColor : null,
+    autoContrastColor: user.autoContrastColor.bind(user),
+    theme,
+  });
 
   function jumpToOriginal(e) {
     e.stopPropagation();
@@ -2948,7 +3009,14 @@ function ReplyReference(props) {
             avatar={sender.avatar}
             isSquare={sender.avatarShape === "square"}
             color={color}
+            nameColorSwatch={
+              accessibleNameColors && rawNameColor ? rawNameColor : undefined
+            }
             nameFont={sender.nameFont}
+            animatedNameColor={sender.animatedNameColor}
+            nameGradientColorA={sender.nameGradientColorA}
+            nameGradientColorB={sender.nameGradientColorB}
+            nameGradientColorC={sender.nameGradientColorC}
             noLink
             small
           />
@@ -2956,7 +3024,10 @@ function ReplyReference(props) {
           <NameWithAvatar name="Anonymous" noLink small />
         )}
       </span>
-      <span className="reply-reference-text">
+      <span
+        className="reply-reference-text"
+        style={resolvedTextColor ? { color: resolvedTextColor } : undefined}
+      >
         <UserText
           text={reply.content}
           settings={user.settings}
@@ -2964,6 +3035,7 @@ function ReplyReference(props) {
           spectators={spectators}
           customEmotes={reply.customEmotes}
           customStickers={reply.customStickers}
+          collapseStickers={true}
           filterProfanity
           linkify={false}
           emotify
@@ -2982,16 +3054,24 @@ const MessageRow = React.memo(function MessageRow(props) {
   const theme = useTheme();
   const [isHovering, setIsHovering] = useState(false);
   const accessibleNameColors = user.settings?.accessibleNameColors;
+  // Click to reply: the pending single click, cleared by a double-click, by
+  // another click and on unmount.
+  const replyClickTimer = useRef(null);
+  // Where the last left press on the row started (a drag is not a reply).
+  const pointerDownAt = useRef(null);
+  const cancelReplyClick = useCallback(() => {
+    clearTimeout(replyClickTimer.current);
+    replyClickTimer.current = null;
+  }, []);
+  useEffect(() => cancelReplyClick, [cancelReplyClick]);
 
-  // Mobile only - users pin message by long pressing them
-  const onPinMessage = props.onPinMessage;
   const messageObj = props.message;
-  const messageLongPress = useLongPress(
-    // Stable identity: useLongPress keys its effect on the callback, so a fresh
-    // arrow here re-runs that effect for every message on every render pass.
-    useCallback(() => onPinMessage(messageObj), [onPinMessage, messageObj]),
-    600
-  );
+  const rowRef = useRef(null);
+  const touchCallbacks = useRef(null);
+  touchCallbacks.current = {
+    onReply: startReply,
+    onPin: () => props.onPinMessage(messageObj),
+  };
   // Chat text effect (/wave etc.), attached by the server for item owners.
   // Plays once when the message first appears; pinned and review rows stay plain.
   const textEffect = useTextEffect(
@@ -3039,17 +3119,25 @@ const MessageRow = React.memo(function MessageRow(props) {
     isHovering,
     stateViewing: props.stateViewing,
   });
-  // Whether this row offers a reply button (shown on hover). It does not
-  // depend on hover, so the room the row keeps for it never changes the
-  // layout when the mouse moves.
-  const replyButtonSlot =
+  // Whether clicking this row starts a reply (the rows that used to show the
+  // reply button).
+  const replyable =
     !!props.onMessageReply &&
-    !isPhoneDevice &&
     !isRightAligned &&
     canReplyTo(message, {
       review: props.review,
       stateViewing: props.stateViewing,
     });
+  const clickToReply = replyable && !isPhoneDevice;
+  const swipeToReply = replyable && isPhoneDevice;
+  useEffect(() => {
+    if (!isPhoneDevice || !rowRef.current) return;
+    return bindMessageTouch(rowRef.current, {
+      canReply: swipeToReply,
+      onReply: () => touchCallbacks.current.onReply(),
+      onPin: () => touchCallbacks.current.onPin(),
+    });
+  }, [isPhoneDevice, swipeToReply, messageObj, props.stateViewing]);
   const thumbtackFaClass = props.pinned
     ? "fas fa-thumbtack"
     : "fas fa-thumbtack fa-rotate-270";
@@ -3267,18 +3355,65 @@ const MessageRow = React.memo(function MessageRow(props) {
     className += props.replyMerged
       ? " reply-merged with-reply-reference"
       : " with-reply-reference";
-  if (replyButtonSlot) className += " with-reply-button";
-  
+  if (clickToReply) className += " click-to-reply";
+  if (swipeToReply) className += " swipe-to-reply";
+
+  function startReply() {
+    props.onMessageReply(message);
+    // Focusing the chat box would drop a text selection; leave it alone then.
+    const selection = window.getSelection();
+    if (selection && !selection.isCollapsed && String(selection).trim()) return;
+    document.getElementById("speechInput")?.focus();
+  }
+
+  function onRowPointerDown(e) {
+    pointerDownAt.current =
+      e.button === 0 ? { x: e.clientX, y: e.clientY } : null;
+  }
+
+  // One click starts a reply after REPLY_CLICK_DELAY_MS, so that a
+  // double-click can still quote without starting one.
+  function onRowClick(e) {
+    cancelReplyClick();
+    if (!clickToReply) return;
+    const row = e.currentTarget;
+    const env = {
+      selection: window.getSelection(),
+      getComputedStyle: (el) => window.getComputedStyle(el),
+      pointerDown: pointerDownAt.current,
+    };
+    pointerDownAt.current = null;
+    if (!isReplyClick(e, row, env)) return;
+    replyClickTimer.current = setTimeout(() => {
+      replyClickTimer.current = null;
+      if (hasSelectionIn(row, window.getSelection())) return;
+      startReply();
+    }, REPLY_CLICK_DELAY_MS);
+  }
+
+  function onRowKeyDown(e) {
+    if (e.key !== "Enter" || e.target !== e.currentTarget) return;
+    e.preventDefault();
+    startReply();
+  }
+
   return (
     <div
+      ref={rowRef}
       className={className}
       data-message-id={message.id ?? undefined}
-      onDoubleClick={() => props.onMessageQuote(message)}
+      onPointerDown={clickToReply ? onRowPointerDown : undefined}
+      onClick={clickToReply ? onRowClick : undefined}
+      onKeyDown={clickToReply ? onRowKeyDown : undefined}
+      tabIndex={clickToReply ? 0 : undefined}
+      aria-keyshortcuts={clickToReply ? "Enter" : undefined}
+      onDoubleClick={() => {
+        cancelReplyClick();
+        props.onMessageQuote(message);
+      }}
       style={messageStyle}
       onMouseEnter={messageOnMouseEnter}
       onMouseLeave={messageOnMouseLeave}
-      onTouchStart={messageLongPress.onTouchStart}
-      onTouchEnd={messageLongPress.onTouchEnd}
     >
       <div className={innerClassName}>
         {props.replyPreview && !message.isQuote && (
@@ -3449,21 +3584,6 @@ const MessageRow = React.memo(function MessageRow(props) {
             />
           )}
         </div>
-      )}
-      {replyButtonSlot && isHovering && (
-        // Bottom-right corner of the row, under the pin (which stays where
-        // it always was, top-right). The row reserves room for both.
-        <i
-          className="fas fa-reply reply-button"
-          title="Reply"
-          role="button"
-          aria-label="Reply"
-          onClick={(e) => {
-            e.stopPropagation();
-            props.onMessageReply(message);
-          }}
-          onDoubleClick={(e) => e.stopPropagation()}
-        />
       )}
     </div>
   );
@@ -3888,7 +4008,9 @@ function SpeechInput(props) {
           setSpeechInput("");
         }
       }
-    } else if (e.key === "Tab") {
+    } else if (e.key === "Tab" && !e.shiftKey) {
+      // Tab completes a name; Shift+Tab leaves the chat box as usual (back
+      // to the messages, which can be replied to with Enter).
       e.preventDefault();
       const words = speechInput.split(" ");
       const word = words.pop();
@@ -6423,6 +6545,7 @@ export function SettingsMenu() {
     <SideMenu
       title="Settings"
       isAccordionMenu
+      scrollable={expanded}
       content={<SettingsForm handleClose={handleClose} />}
       expanded={expanded}
       onChange={handleToggle}
@@ -6622,6 +6745,7 @@ export function PinnedMessages() {
         history={game.history}
         players={game.players}
         self={game.self}
+        isSpectator={game.isSpectator}
         spectators={game.spectators}
         stateViewing={game.stateViewing}
         key={message.id || message.messageId + message.time || i}

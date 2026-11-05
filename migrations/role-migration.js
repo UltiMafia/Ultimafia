@@ -2,22 +2,34 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const oHash = require("object-hash");
 const models = require("../db/models");
+const roleData = require("../data/roles");
 const logger = require("../modules/logging")(".");
 
 /**
- * Migration: fold retired Mafia events into Airdrop.
+ * Migration: retire "No Event", Bloodhound, and Lurker from Mafia setups.
  *
- * Each setup role key is "Name" or "Name:Mod1/Mod2". Replacements run once per
- * key, so a Moonshine that becomes Airdrop is not then given Armed.
+ * "No Event" was a blank event-pool entry. Each non-banished copy is converted
+ * into NoEventChance, the percent of event slots that should be skipped:
  *
- *   Airdrop            -> Airdrop:Armed   (Armed is added if missing; other modifiers stay)
- *   Moonshine          -> Airdrop         (modifiers unchanged)
- *   Ominous Warning    -> Airdrop:Steeled (Steeled is added if missing)
- *   Vaccination        -> Airdrop:Macabre (Macabre is added if missing)
+ *   chance = round(100 * noEventCopies / nonBanishedEventCopies)
  *
- * When a modifier is added, the modifier list is sorted alphabetically so
- * "Airdrop:Banished" becomes "Airdrop:Armed/Banished". Counts for keys that
- * land on the same string are added together.
+ * Only rolesets that contain a non-banished "No Event" are counted, so an
+ * alternate roleset made entirely of real events does not dilute the chance.
+ *
+ * Every "No Event" key is then deleted, including modified keys such as
+ * "No Event:Banished". Banished copies are removed and do not affect the
+ * percentage.
+ *
+ * Bloodhound, Lurker, and Debtor are rewritten in the same pass. Each setup role key
+ * is "Name" or "Name:Mod1/Mod2". A modifier is added only when it is missing,
+ * and the modifier list is sorted alphabetically. Counts for keys that land
+ * on the same string are added together.
+ *
+ *   Bloodhound -> Tracker:Binary
+ *   Lurker     -> Scout:Binary
+ *   Debtor     -> Manhunter:Desperate
+ *
+ * Counts are the role-key weights already stored on the setup.
  *
  * How to run
  * ----------
@@ -40,6 +52,7 @@ const logger = require("../modules/logging")(".");
  */
 
 const DRY_RUN = process.env.DRY_RUN === "true" || process.env.DRY_RUN === "1";
+const RETIRED_EVENT = "No Event";
 
 function mongoConnectOptions() {
   const host = process.env.MONGO_URL || "localhost:27017";
@@ -55,12 +68,16 @@ function mongoConnectOptions() {
   };
 }
 
-const EVENT_REPLACEMENTS = {
-  Airdrop: { name: "Airdrop", addModifier: "Armed" },
-  Moonshine: { name: "Airdrop" },
-  "Ominous Warning": { name: "Airdrop", addModifier: "Steeled" },
-  Vaccination: { name: "Airdrop", addModifier: "Macabre" },
+const ROLE_REPLACEMENTS = {
+  Bloodhound: { name: "Tracker", addModifier: "Binary" },
+  Lurker: { name: "Scout", addModifier: "Binary" },
+  Debtor: { name: "Manhunter", addModifier: "Desperate" },
 };
+
+function isBanishedKey(key) {
+  const mods = key.split(":")[1] || "";
+  return mods.toLowerCase().includes("banished");
+}
 
 function splitRoleKey(key) {
   const colonIdx = key.indexOf(":");
@@ -77,64 +94,94 @@ function joinRoleKey(name, mods) {
   return `${name}:${mods.join("/")}`;
 }
 
-function replaceEventsInRoleKey(key) {
+function replaceRetiredRoleKey(key) {
   const { name, mods } = splitRoleKey(key);
-  const replacement = EVENT_REPLACEMENTS[name];
+  const replacement = ROLE_REPLACEMENTS[name];
   if (!replacement) {
     return { newKey: key, changed: false };
   }
 
   let newMods = mods;
   if (replacement.addModifier && !mods.includes(replacement.addModifier)) {
-    newMods = mods.concat(replacement.addModifier).sort((a, b) => a.localeCompare(b));
+    newMods = mods
+      .concat(replacement.addModifier)
+      .sort((a, b) => a.localeCompare(b));
   }
 
   const newKey = joinRoleKey(replacement.name, newMods);
   return { newKey, changed: newKey !== key };
 }
 
-function replaceEventsInRoleset(roleset) {
-  const newRoleset = {};
-  let changed = false;
-  const keyChanges = [];
-  for (const key of Object.keys(roleset)) {
-    const count = roleset[key];
-    const { newKey, changed: keyChanged } = replaceEventsInRoleKey(key);
-    if (keyChanged) {
-      changed = true;
-      const change = `${key} -> ${newKey}`;
-      if (!keyChanges.includes(change)) keyChanges.push(change);
-    }
-    newRoleset[newKey] = (newRoleset[newKey] || 0) + count;
-  }
-  return { newRoleset, changed, keyChanges };
+function isEventKey(key) {
+  const name = key.split(":")[0];
+  return roleData.Mafia[name] && roleData.Mafia[name].alignment === "Event";
 }
 
-function replaceEventsInRoles(rolesJson) {
+function removeNoEventFromRoles(rolesJson) {
   const roles = JSON.parse(rolesJson);
-  let anyChanged = false;
-  const newRoles = [];
+  let changed = false;
+  let noEvent = 0;
+  let events = 0;
   const changes = [];
-  for (const roleset of roles) {
-    const { newRoleset, changed, keyChanges } = replaceEventsInRoleset(roleset);
-    newRoles.push(newRoleset);
-    if (changed) anyChanged = true;
-    for (const change of keyChanges) {
-      if (!changes.includes(change)) changes.push(change);
+
+  const newRoles = roles.map((roleset) => {
+    const next = {};
+    let setNoEvent = 0;
+    let setEvents = 0;
+    for (const key of Object.keys(roleset)) {
+      const count = Number(roleset[key]) || 0;
+      const name = key.split(":")[0];
+      const banished = isBanishedKey(key);
+
+      if (name === RETIRED_EVENT) {
+        changed = true;
+        changes.push(`removed ${key} x${count}`);
+        if (!banished) {
+          setNoEvent += count;
+          setEvents += count;
+        }
+        continue;
+      }
+
+      const { newKey, changed: keyChanged } = replaceRetiredRoleKey(key);
+      if (keyChanged) {
+        changed = true;
+        const change = `${key} -> ${newKey}`;
+        if (!changes.includes(change)) changes.push(change);
+      }
+
+      if (!isBanishedKey(newKey) && isEventKey(newKey)) setEvents += count;
+      next[newKey] = (next[newKey] || 0) + count;
     }
-  }
-  return { newRoles: JSON.stringify(newRoles), changed: anyChanged, changes };
+    if (setNoEvent > 0) {
+      noEvent += setNoEvent;
+      events += setEvents;
+    }
+    return next;
+  });
+
+  const chance =
+    noEvent > 0 && events > 0 ? Math.round((100 * noEvent) / events) : null;
+
+  return {
+    newRoles: JSON.stringify(newRoles),
+    changed,
+    changes,
+    chance,
+  };
 }
 
-function computeHash(doc, newRolesString) {
+function computeHash(doc, newRolesString, noEventChance) {
   const plain = doc.toObject();
   const countObj =
     doc.count instanceof Map ? Object.fromEntries(doc.count) : doc.count;
-  return oHash({
+  const hashed = {
     ...plain,
     roles: newRolesString,
     count: JSON.stringify(countObj),
-  });
+  };
+  if (noEventChance != null) hashed.NoEventChance = noEventChance;
+  return oHash(hashed);
 }
 
 async function migrate() {
@@ -149,21 +196,25 @@ async function migrate() {
     let updated = 0;
 
     for (const setup of setups) {
-      const { newRoles, changed, changes } = replaceEventsInRoles(setup.roles);
+      const { newRoles, changed, changes, chance } = removeNoEventFromRoles(
+        setup.roles
+      );
 
       if (!changed) continue;
 
-      const newHash = computeHash(setup, newRoles);
+      const newHash = computeHash(setup, newRoles, chance);
+      const update = { roles: newRoles, hash: newHash };
+      if (chance != null) {
+        update.NoEventChance = chance;
+        changes.push(`Chance of No Event: ${chance}%`);
+      }
 
       logger.info(
         `Setup ${setup.id} (${setup.name || "unnamed"}): ${changes.join("; ")}`
       );
 
       if (!DRY_RUN) {
-        await models.Setup.updateOne(
-          { id: setup.id },
-          { $set: { roles: newRoles, hash: newHash } }
-        );
+        await models.Setup.updateOne({ id: setup.id }, { $set: update });
       }
       updated++;
     }
@@ -185,6 +236,5 @@ if (require.main === module) {
 }
 
 module.exports = {
-  replaceEventsInRoleKey,
-  replaceEventsInRoles,
+  removeNoEventFromRoles,
 };

@@ -31,11 +31,13 @@ export function useHostedGameSession() {
     if (!routeGameId) return;
     // Capture the entry URL before the lazy game mounts or authenticates. Site
     // navigation must not change whether this session joins as a spectator/bot.
-    // Returning to the same game keeps both its state and its original intent.
-    setHostedGame(current => current?.id === routeGameId ? current : {
-      id: routeGameId,
-      search: location.search,
-    });
+    // Returning to the same game keeps its state and socket; a different game
+    // starts a new session.
+    setHostedGame(current =>
+      current?.id === routeGameId
+        ? current
+        : { id: routeGameId, search: location.search }
+    );
   }, [routeGameId, location.search]);
 
   const leaveGameSession = useCallback(() => {
