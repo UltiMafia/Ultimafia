@@ -43,6 +43,18 @@ import {
 } from "components/Roles";
 import { Cell } from "components/CellSearch";
 import Form from "components/Form";
+
+function setupHasEvent(roles, rolesRaw) {
+  if (!Array.isArray(roles) || !rolesRaw) return false;
+  for (const roleSet of roles) {
+    if (!roleSet) continue;
+    for (const key of Object.keys(roleSet)) {
+      const name = key.split(":")[0];
+      if (rolesRaw[name]?.alignment === "Event") return true;
+    }
+  }
+  return false;
+}
 import { useErrorAlert } from "components/Alerts";
 
 import "css/createSetup.css";
@@ -1219,6 +1231,12 @@ export default function CreateSetup(props) {
           <Stack direction={isPhoneDevice ? "column" : "row"}>
             <Form
               fields={formFields}
+              deps={{
+                hasEvent: setupHasEvent(
+                  roleData.roles,
+                  siteInfo.rolesRaw?.[gameType]
+                ),
+              }}
               onChange={updateFormFields}
               submitText={isMafiaSetup ? undefined : editing ? "Edit" : "Create"}
               onSubmit={() =>

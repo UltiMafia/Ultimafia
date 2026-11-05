@@ -55,6 +55,7 @@ function generateMafiaSetupManifest(setup, roles) {
       `Name: ${setup.name}`,
       `Starting state: ${setup.startState}`,
       `Events per night: ${setup.EventsPerNight}`,
+      `Chance of no event: ${setup.NoEventChance}%`,
       `No death limit: ${setup.noDeathLimit}`,
       `Force must act: ${setup.ForceMustAct}`,
       `Is closed: ${setup.closed}`,
@@ -1007,6 +1008,10 @@ router.post("/create", async function (req, res) {
     //setup.PrivateShare = Boolean(setup.PrivateShare);
     //setup.PublicShare = Boolean(setup.PublicShare);
     setup.EventsPerNight = Number(setup.EventsPerNight || 0);
+    setup.NoEventChance = Math.min(
+      100,
+      Math.max(0, Math.round(Number(setup.NoEventChance) || 0))
+    );
     setup.noDeathLimit = Number(setup.noDeathLimit || 6);
     setup.ForceMustAct =
       setup.ForceMustAct === undefined || setup.ForceMustAct === null
