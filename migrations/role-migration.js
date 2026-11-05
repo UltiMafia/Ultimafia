@@ -6,7 +6,7 @@ const roleData = require("../data/roles");
 const logger = require("../modules/logging")(".");
 
 /**
- * Migration: remove the retired "No Event" role from Mafia setups.
+ * Migration: retire "No Event", Bloodhound, and Lurker from Mafia setups.
  *
  * "No Event" was a blank event-pool entry. Each non-banished copy is converted
  * into NoEventChance, the percent of event slots that should be skipped:
@@ -18,7 +18,17 @@ const logger = require("../modules/logging")(".");
  *
  * Every "No Event" key is then deleted, including modified keys such as
  * "No Event:Banished". Banished copies are removed and do not affect the
- * percentage. Counts are the role-key weights already stored on the setup.
+ * percentage.
+ *
+ * Bloodhound and Lurker are rewritten in the same pass. Each setup role key
+ * is "Name" or "Name:Mod1/Mod2". A modifier is added only when it is missing,
+ * and the modifier list is sorted alphabetically. Counts for keys that land
+ * on the same string are added together.
+ *
+ *   Bloodhound -> Tracker:Binary
+ *   Lurker     -> Scout:Binary
+ *
+ * Counts are the role-key weights already stored on the setup.
  *
  * How to run
  * ----------
@@ -57,14 +67,15 @@ function mongoConnectOptions() {
   };
 }
 
-const EVENT_REPLACEMENTS = {
-  Airdrop: { name: "Airdrop", addModifier: "Armed" },
-  Moonshine: { name: "Airdrop" },
-  "Ominous Warning": { name: "Airdrop", addModifier: "Steeled" },
-  Vaccination: { name: "Airdrop", addModifier: "Macabre" },
+const ROLE_REPLACEMENTS = {
   Bloodhound: { name: "Tracker", addModifier: "Binary" },
   Lurker: { name: "Scout", addModifier: "Binary" },
 };
+
+function isBanishedKey(key) {
+  const mods = key.split(":")[1] || "";
+  return mods.toLowerCase().includes("banished");
+}
 
 function splitRoleKey(key) {
   const colonIdx = key.indexOf(":");
@@ -74,6 +85,29 @@ function splitRoleKey(key) {
   const name = key.slice(0, colonIdx);
   const modPart = key.slice(colonIdx + 1);
   return { name, mods: modPart ? modPart.split("/") : [] };
+}
+
+function joinRoleKey(name, mods) {
+  if (!mods.length) return name;
+  return `${name}:${mods.join("/")}`;
+}
+
+function replaceRetiredRoleKey(key) {
+  const { name, mods } = splitRoleKey(key);
+  const replacement = ROLE_REPLACEMENTS[name];
+  if (!replacement) {
+    return { newKey: key, changed: false };
+  }
+
+  let newMods = mods;
+  if (replacement.addModifier && !mods.includes(replacement.addModifier)) {
+    newMods = mods
+      .concat(replacement.addModifier)
+      .sort((a, b) => a.localeCompare(b));
+  }
+
+  const newKey = joinRoleKey(replacement.name, newMods);
+  return { newKey, changed: newKey !== key };
 }
 
 function isEventKey(key) {
@@ -107,8 +141,15 @@ function removeNoEventFromRoles(rolesJson) {
         continue;
       }
 
-      if (!banished && isEventKey(key)) setEvents += count;
-      next[key] = roleset[key];
+      const { newKey, changed: keyChanged } = replaceRetiredRoleKey(key);
+      if (keyChanged) {
+        changed = true;
+        const change = `${key} -> ${newKey}`;
+        if (!changes.includes(change)) changes.push(change);
+      }
+
+      if (!isBanishedKey(newKey) && isEventKey(newKey)) setEvents += count;
+      next[newKey] = (next[newKey] || 0) + count;
     }
     if (setNoEvent > 0) {
       noEvent += setNoEvent;
