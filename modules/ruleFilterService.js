@@ -10,6 +10,10 @@ const logger = require("./logging")(".");
 
 const THRESHOLD = 0.5;
 const REQUEST_TIMEOUT_MS = 2000;
+// A request that timed out still occupies the worker, so its slot stays in
+// `pending` until the worker replies. If it never does, drop it after this so a
+// hung job cannot wedge the queue forever.
+const ABANDON_AFTER_MS = 10000;
 const READY_TIMEOUT_MS = 5000;
 // A busy server must not queue an unbounded number of inferences in front of
 // one worker; past this, messages go unscored rather than piling up.
@@ -107,14 +111,30 @@ function classify(text) {
 
   const id = nextId++;
   return new Promise((resolve) => {
-    const timer = setTimeout(() => {
+    let settled = false;
+    const settle = (result) => {
+      if (settled) return;
+      settled = true;
+      resolve(result);
+    };
+
+    const abandon = setTimeout(() => {
+      // The worker never answered: stop holding the slot.
       pending.delete(id);
-      resolve(null);
+      settle(null);
+    }, ABANDON_AFTER_MS);
+
+    const timer = setTimeout(() => {
+      // Fail this request open, but keep its slot: the worker is still busy
+      // with it, so the cap must count it until the reply arrives.
+      settle(null);
     }, REQUEST_TIMEOUT_MS);
 
     pending.set(id, (result) => {
       clearTimeout(timer);
-      resolve(result);
+      clearTimeout(abandon);
+      pending.delete(id);
+      settle(result);
     });
 
     try {
@@ -122,7 +142,8 @@ function classify(text) {
     } catch (e) {
       pending.delete(id);
       clearTimeout(timer);
-      resolve(null);
+      clearTimeout(abandon);
+      settle(null);
     }
   });
 }
