@@ -410,23 +410,18 @@ module.exports = class Game {
   // rule check left a single-use verdict token; only accepted messages count.
   async noteRuleVerdict(player, token) {
     try {
-      const verdict = await ruleNudge.takeToken(token);
-      if (!verdict || !player) return;
-      if (verdict.u !== player.id || verdict.g !== this.id) return;
-      // Pre-send abuse prompt was on: the player already saw the dialog.
-      if (verdict.e) return;
-      if (
-        verdict.c !== "abuse" ||
-        !(verdict.p >= ruleNudge.ABUSE_PROBABILITY)
-      ) {
-        return;
+      const userId = player && player.user && player.user.id;
+      if (!userId) return;
+
+      const outcome = await ruleNudge.noteVerdict({
+        gameId: this.id,
+        userId,
+        token,
+      });
+
+      if (outcome.nudge) {
+        this.sendAlert(ruleNudge.NUDGE_TEXT, [player], {}, ["info"]);
       }
-
-      const count = await ruleNudge.countFlag(this.id, player.id);
-      if (count < ruleNudge.FLAG_THRESHOLD) return;
-      if (!(await ruleNudge.claimNudge(this.id, player.id))) return;
-
-      this.sendAlert(ruleNudge.NUDGE_TEXT, [player], {}, ["info"]);
     } catch (e) {
       logger.error(e);
     }
