@@ -2042,16 +2042,6 @@ const roleData = {
         //"Chooses two players during the day to attend a banquet the following evening.",
         //"Players chosen to attend the banquet meet anonymously with their roles revealed to one another.",
       ],
-      skins: [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Old",
-          value: "old",
-        },
-      ],
     },
     Freemason: {
       alignment: "Village",
@@ -2194,17 +2184,6 @@ const roleData = {
       nightOrder: [["Learn Role Visitors", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
     //killing roles
-    Debtor: {
-      alignment: "Village",
-      category: "Killing",
-      disabled: true,
-      tags: ["Guess", "Roles", "Visiting", "Self Kill", "Advanced"],
-      description: [
-        "Each night, you must choose a player and role from the Setup.",
-        "If the selected role is not the player's role, you die.",
-      ],
-      nightOrder: [["Die with Incorrect Guess", PRIORITY_KILL_DEFAULT - 1]],
-    },
     Firebrand: {
       alignment: "Village",
       category: "Killing",

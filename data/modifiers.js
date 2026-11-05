@@ -1430,11 +1430,20 @@ const modifierData = {
     },
     Binary: {
       category: "Other",
-      internal: [],
+      internal: ["Binary"],
       tags: ["Information", "Visit Interaction"],
       roles: ["Tracker", "Scout", "Shadow"],
       description:
         "On Tracker, Scout, and Shadow, you learn whether your target visited anybody, instead of who they visited. A watch on that target is unchanged.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Desperate: {
+      category: "Other",
+      internal: ["Desperate"],
+      tags: ["Guess", "Self Kill"],
+      roles: ["Manhunter", "Bondsman", "Seeker", "Hider", "Invader", "Sculptor"],
+      description:
+        "If your guess is wrong, you die. Manhunter and Bondsman must guess a player and a role from the setup each night.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
   },
