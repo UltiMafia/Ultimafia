@@ -2208,16 +2208,6 @@ const roleData = {
         "You can only be killed by condemn.",
       ],
       nightOrder: [["Kill Visitors", PRIORITY_KILL_DEFAULT]],
-      skins: [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Old",
-          value: "old",
-        },
-      ],
     },
     Jailer: {
       alignment: "Village",
