@@ -34,7 +34,11 @@ import Newspaper, {
 } from "../../components/gameComponents/Newspaper";
 import { newspaperPlayer } from "../../utils/newspaperPlayers";
 import { legacyObituaryMessages } from "../../utils/legacyObituaries";
-import { insertBeforePending } from "../../utils/messageOrdering";
+import {
+  insertBeforePending,
+  removePending,
+  replacePending,
+} from "../../utils/messageOrdering";
 import MafiaGame from "./MafiaGame";
 import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
@@ -7287,7 +7291,7 @@ export function useHistoryReducer() {
                 meetings: {
                   [action.meetingId]: {
                     messages: {
-                      $set: meeting.messages.filter((m) => m.id !== action.id),
+                      $set: removePending(meeting.messages, action.id),
                     },
                   },
                 },
@@ -7310,16 +7314,11 @@ export function useHistoryReducer() {
                 // An optimistic row for this message is already on screen:
                 // replace it in place so the line does not jump to the end
                 // when the server confirms it.
-                const pendingIndex = (meeting.messages || []).findIndex(
-                  (m) =>
-                    m.pending &&
-                    m.senderId === message.senderId &&
-                    String(m.content || "").trim() ===
-                      String(message.content || "").trim()
+                const replaced = replacePending(
+                  meeting.messages,
+                  message
                 );
-                if (pendingIndex !== -1) {
-                  const messages = meeting.messages.slice();
-                  messages[pendingIndex] = message;
+                if (replaced) {
                   return update(history, {
                     states: {
                       [history.currentState]: {
@@ -7356,7 +7355,7 @@ export function useHistoryReducer() {
                       meetings: {
                         [message.meetingId]: {
                           messages: {
-                            $set: messages,
+                            $set: replaced,
                           },
                         },
                       },

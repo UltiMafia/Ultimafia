@@ -57,15 +57,22 @@ async function issueToken({
   return token;
 }
 
+// GET and DEL in one round trip: with separate calls, two consumers could both
+// read the verdict before either deletes it, and a duplicated message would
+// count twice.
+const TAKE_VERDICT_SCRIPT =
+  "local v = redis.call('GET', KEYS[1]) " +
+  "if v then redis.call('DEL', KEYS[1]) end " +
+  "return v";
+
 // Single use: the token is removed whether or not it counts, so a duplicated
 // or replayed message cannot be counted twice.
 async function takeToken(token) {
   if (!token || typeof token !== "string") return null;
 
   const key = `rl:verdict:${token}`;
-  const raw = await db().client.getAsync(key);
+  const raw = await db().client.evalAsync(TAKE_VERDICT_SCRIPT, 1, key);
   if (!raw) return null;
-  await db().client.delAsync(key);
 
   try {
     return JSON.parse(raw);
