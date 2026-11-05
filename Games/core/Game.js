@@ -19,6 +19,7 @@ const { games, deprecationCheck } = require("../games");
 const events = require("events");
 const models = require("../../db/models");
 const redis = require("../../modules/redis");
+const ruleNudge = require("../../modules/ruleNudge");
 const pushNotifications = require("../../modules/pushNotifications");
 const roleData = require("../../data/roles");
 const gameAchievements = require("../../data/Achievements");
@@ -403,6 +404,27 @@ module.exports = class Game {
     for (let player of this.players) player.send(eventName, data);
 
     for (let spectator of this.spectators) spectator.send(eventName, data);
+  }
+
+  // Called from Meeting.speak once the message is actually sent. The client's
+  // rule check left a single-use verdict token; only accepted messages count.
+  async noteRuleVerdict(player, token) {
+    try {
+      const userId = player && player.user && player.user.id;
+      if (!userId) return;
+
+      const outcome = await ruleNudge.noteVerdict({
+        gameId: this.id,
+        userId,
+        token,
+      });
+
+      if (outcome.nudge) {
+        this.sendAlert(ruleNudge.NUDGE_TEXT, [player], {}, ["info"]);
+      }
+    } catch (e) {
+      logger.error(e);
+    }
   }
 
   sendAlert(message, recipients, extraStyle = {}, tags = []) {

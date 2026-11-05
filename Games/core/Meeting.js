@@ -1177,6 +1177,9 @@ module.exports = class Meeting {
 
     if (message.recipients.length == 0) return;
 
+    // Carried through the Message constructor? No: keep it for after send().
+    const ruleToken = message.ruleToken;
+
     message = new Message({
       sender: message.sender,
       content: message.content,
@@ -1192,6 +1195,11 @@ module.exports = class Meeting {
     });
 
     message.send();
+
+    // The rule check that produced this line left a single-use verdict token.
+    // Count it now, not when the client asked for the check: a cancelled
+    // dialog, a cooldown, a mute or a dropped client never reaches this point.
+    if (ruleToken) this.game.noteRuleVerdict(message.sender, ruleToken);
   }
 
   quote(sender, quote) {

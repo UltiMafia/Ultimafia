@@ -154,6 +154,12 @@ html[data-keyboard="open"] .game .meeting-tabs {
   background-color: rgba(12, 12, 12, 0.15);
 }
 
+/* An optimistic message that the server has not confirmed yet. Subtle on
+   purpose: it should read as "not quite there yet", not as disabled. */
+.game .message.pending {
+  opacity: 0.8;
+}
+
 .game .message {
   display: flex;
   flex-flow: row nowrap;

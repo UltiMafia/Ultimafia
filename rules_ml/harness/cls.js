@@ -5,7 +5,7 @@ const path = require('path');
 const ort = require('onnxruntime-node');
 
 const MODEL_DIR = process.env.CLS_MODEL_DIR ||
-  '//wsl.localhost/Ubuntu/home/tt/Documents/Ultimafia/rules_ml/finetune_cls3_out';
+  path.join(__dirname, '..', 'finetune_cls3_out');
 const MAXLEN = 96;
 
 // index order must match CLASSES in finetune_cls3.py
