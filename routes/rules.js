@@ -79,6 +79,7 @@ router.post("/check", async function (req, res) {
         gameId: String(req.body.gameId || ""),
         category: result.category,
         prob: result.prob,
+        abuseProb: result.abuseProb,
         abusePrompt: abuse,
       });
     } catch (e) {

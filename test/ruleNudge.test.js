@@ -32,7 +32,17 @@ function makeStore() {
 }
 
 function verdict(overrides = {}) {
-  return { u: "user-1", g: "game-1", c: "abuse", p: 0.95, e: false, ...overrides };
+  // p: chance of any violation; a: abuse-class probability. Both are carried
+  // by the verdict token; the nudge thresholds on a.
+  return {
+    u: "user-1",
+    g: "game-1",
+    c: "abuse",
+    p: 0.95,
+    a: 0.95,
+    e: false,
+    ...overrides,
+  };
 }
 
 describe("rule nudge policy", function () {
@@ -92,14 +102,39 @@ describe("rule nudge policy", function () {
     expect(outcome).to.deep.equal({ counted: false, nudge: false, reason: "prompt-on" });
   });
 
-  it("skips below the probability bar", async function () {
+  it("skips below the abuse-probability bar", async function () {
     const store = makeStore();
-    store.tokens.set("t", verdict({ p: 0.55 }));
+    store.tokens.set("t", verdict({ a: 0.55 }));
     const outcome = await policy.noteVerdict(
       { gameId: "game-1", userId: "user-1", token: "t" },
       store
     );
     expect(outcome.reason).to.equal("not-abuse");
+  });
+
+  it("does not count a high combined probability when abuse is low", async function () {
+    const store = makeStore();
+    // 0.9 chance of some violation, but only 0.4 of it is abuse: the rest is
+    // outside-game influence. The nudge is about personal attacks.
+    store.tokens.set("t", verdict({ p: 0.9, a: 0.4 }));
+    const outcome = await policy.noteVerdict(
+      { gameId: "game-1", userId: "user-1", token: "t" },
+      store
+    );
+    expect(outcome.reason).to.equal("not-abuse");
+  });
+
+  it("counts an abuse-probability match even when the combined score differs", async function () {
+    const store = makeStore();
+    // a is a subset of p, so a <= p always; here the combined score is
+    // higher than the abuse probability but both clear the bar.
+    store.tokens.set("t", verdict({ p: 0.9, a: 0.86 }));
+    const outcome = await policy.noteVerdict(
+      { gameId: "game-1", userId: "user-1", token: "t" },
+      store
+    );
+    expect(outcome.counted).to.equal(true);
+    expect(outcome.count).to.equal(1);
   });
 
   it("skips OGI verdicts", async function () {

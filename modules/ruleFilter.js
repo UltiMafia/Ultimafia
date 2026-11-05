@@ -46,7 +46,16 @@ async function classify(text) {
   if (!ready && !(await init())) return null;
   try {
     const result = await cls.score(text);
-    return { prob: result.prob, category: result.category };
+    // `prob` is 1 - P(no_violation): the chance of any violation at all, which
+    // is what the pre-send prompt is calibrated on. `abuseProb` is the chance
+    // of the abuse class specifically; the retrospective nudge needs that one,
+    // otherwise an OGI message with a little abuse in it clears the bar.
+    const abuse = (result.probs || []).find((c) => c.category === "abuse");
+    return {
+      prob: result.prob,
+      category: result.category,
+      abuseProb: abuse ? abuse.p : 0,
+    };
   } catch (e) {
     console.error("Chat rule filter score failed:", e.message);
     return null;
