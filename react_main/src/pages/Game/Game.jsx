@@ -4101,6 +4101,11 @@ function SpeechInput(props) {
           props.setAutoScroll(true);
         }
 
+        // The verdict token returned by /api/rules/check. The games process
+        // counts the message only if this token comes with a message it
+        // actually accepts, so a cancelled dialog is never counted.
+        let ruleToken = null;
+
         const deliver = () => {
           if (isCommand) {
             pendingSpeechRef.current = null;
@@ -4113,7 +4118,13 @@ function SpeechInput(props) {
           }
 
           if (reply) {
-            socket.send("reply", reply);
+            socket.send("reply", {
+              ...reply,
+              message: {
+                ...reply.message,
+                ...(ruleToken ? { ruleToken } : {}),
+              },
+            });
             setReplyTarget(null);
           } else {
             socket.send("speak", {
@@ -4122,6 +4133,7 @@ function SpeechInput(props) {
               abilityName,
               abilityTarget,
               ...checkboxOptions,
+              ...(ruleToken ? { ruleToken } : {}),
             });
           }
           props.setAutoScroll(true);
@@ -4140,11 +4152,12 @@ function SpeechInput(props) {
           axios
             .post(
               "/api/rules/check",
-              { content: maskNamesForRules(content) },
+              { content: maskNamesForRules(content), gameId: game.gameId },
               { timeout: 3000 }
             )
             .then((res) => {
               const flagged = res.data;
+              ruleToken = (flagged && flagged.token) || null;
               if (flagged && flagged.flagged) {
                 const warning = { ...flagged, deliver, pendingId, content };
                 ruleWarningRef.current = warning;
