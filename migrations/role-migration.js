@@ -60,6 +60,8 @@ const EVENT_REPLACEMENTS = {
   Moonshine: { name: "Airdrop" },
   "Ominous Warning": { name: "Airdrop", addModifier: "Steeled" },
   Vaccination: { name: "Airdrop", addModifier: "Macabre" },
+  Bloodhound: { name: "Tracker", addModifier: "Binary" },
+  Lurker: { name: "Scout", addModifier: "Binary" },
 };
 
 function splitRoleKey(key) {

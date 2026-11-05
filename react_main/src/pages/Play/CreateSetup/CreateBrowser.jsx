@@ -1068,7 +1068,12 @@ export default function CreateSetup(props) {
       {isMafiaSetup && activeStep === 1 && selectedRoleExists && (
         roleModifiers.length < MaxModifiersPerRole ? (
           <Box className="setup-catalog">
-            <ModifierSearch onAddClick={onAddModifier} gameType={gameType} curMods={roleModifiers} />
+            <ModifierSearch
+              onAddClick={onAddModifier}
+              gameType={gameType}
+              curMods={roleModifiers}
+              roleName={selectedRole.role.split(":")[0]}
+            />
           </Box>
         ) : <Typography>Modifier limit reached. Remove a modifier to add another.</Typography>
       )}

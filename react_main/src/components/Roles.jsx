@@ -1166,7 +1166,7 @@ export function RoleSearch(props) {
   );
 }
 
-function getCompatibleModifiersOther(siteInfo, gameType, curMods) {
+function getCompatibleModifiersOther(siteInfo, gameType, curMods, roleName) {
   if (!curMods) curMods = [];
   const mods = curMods.map((m) => m.name);
   const mappedMods = siteInfo.modifiers[gameType].filter((t) =>
@@ -1181,6 +1181,7 @@ function getCompatibleModifiersOther(siteInfo, gameType, curMods) {
     .filter((e) => !e.hidden)
     .filter((e) => e.allowDuplicate || !mods.includes(e.name))
     .filter((e) => !incompatibles.includes(e.name))
+    .filter((e) => !e.roles || (roleName && e.roles.includes(roleName)))
     .map((m) => m.name);
 }
 
@@ -1207,9 +1208,14 @@ export function ModifierSearch(props) {
 
   const compatibleNames = useMemo(
     () => siteInfo.modifiers?.[props.gameType]
-      ? getCompatibleModifiersOther(siteInfo, props.gameType, props.curMods)
+      ? getCompatibleModifiersOther(
+          siteInfo,
+          props.gameType,
+          props.curMods,
+          props.roleName
+        )
       : [],
-    [siteInfo, props.gameType, props.curMods]
+    [siteInfo, props.gameType, props.curMods, props.roleName]
   );
 
   const filteredItems = useMemo(() => {

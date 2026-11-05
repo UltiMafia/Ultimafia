@@ -6,6 +6,9 @@ module.exports = class TrackAndWatchPlayer extends Card {
   constructor(role) {
     super(role);
 
+    const binary =
+      role.modifier && role.modifier.split("/").includes("Binary");
+
     this.meetings = {
       Shadow: {
         actionName: "Track and Watch",
@@ -23,7 +26,7 @@ module.exports = class TrackAndWatchPlayer extends Card {
             );
             info.processInfo();
             let info2 = this.game.createInformation(
-              "TrackerInfo",
+              binary ? "BinaryTrackerInfo" : "TrackerInfo",
               this.actor,
               this.game,
               this.target
