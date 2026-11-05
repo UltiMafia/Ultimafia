@@ -1003,7 +1003,7 @@ const mafiaDefaultRoleByAlignment = {
   Mafia: "Mafioso",
   Cult: "Cultist",
   Independent: "Fool",
-  Event: "No-Event",
+  Event: "Airdrop",
 };
 
 const mafiaBanishedRoleByAlignment = {

@@ -132,6 +132,10 @@ module.exports = class MafiaGame extends Game {
     this.AdmiralGold = 15;
     //Other
     this.EventsPerNight = this.setup.EventsPerNight;
+    this.NoEventChance = Math.min(
+      100,
+      Math.max(0, Math.round(Number(this.setup && this.setup.NoEventChance) || 0))
+    );
     this.GameEndEvent = this.setup.GameEndEvent || "Meteor";
     this.lastNightVisits = [];
     this.infoLog = [];
@@ -511,6 +515,9 @@ module.exports = class MafiaGame extends Game {
         );
         if (Events.length <= 0) {
           break;
+        }
+        if (Random.randFloat() * 100 < this.NoEventChance) {
+          continue;
         }
         event = Random.randArrayVal(Events);
         eventMods = event.split(":")[1];
