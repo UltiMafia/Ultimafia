@@ -16,7 +16,6 @@ const cls = require("../rules_ml/harness/cls.js");
 
 // rules_ml/README.md measures 0.50 as the best precision/recall balance for a
 // "reconsider" prompt (0.70 drops recall to 0.688 for +0.012 precision).
-const THRESHOLD = 0.5;
 
 let initPromise = null;
 let ready = false;
@@ -54,4 +53,4 @@ async function classify(text) {
   }
 }
 
-module.exports = { init, isReady, classify, THRESHOLD };
+module.exports = { init, isReady, classify };
