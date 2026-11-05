@@ -6,7 +6,7 @@ const ABUSE_PROBABILITY = 0.8;
 
 const NUDGE_TEXT =
   `Automated warning: ${FLAG_THRESHOLD} of your messages this game read as personal attacks. ` +
-  "Nobody has been notified; if another player reports you, moderators will review them. " +
+  "If a player reports you, moderators will review them. " +
   "Please be respectful of other players.";
 
 // Decide one accepted message: consume its token, count it when it qualifies,
