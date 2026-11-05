@@ -19,6 +19,10 @@ let worker = null;
 let nextId = 1;
 const pending = new Map();
 let readyPromise = null;
+// After a failure (usually the native module is not installed) do not spawn a
+// worker per message; try again after this cooldown instead.
+let failedAt = 0;
+const SPAWN_COOLDOWN_MS = 30000;
 
 function rejectAll() {
   for (const resolve of pending.values()) resolve(null);
@@ -47,11 +51,15 @@ function spawn() {
 
   worker.on("error", (e) => {
     logger.error("rule worker error", e);
+    failedAt = Date.now();
     rejectAll();
   });
 
   worker.on("exit", (code) => {
-    if (code !== 0) logger.error(`rule worker exited with ${code}`);
+    if (code !== 0) {
+      logger.error(`rule worker exited with ${code}`);
+      failedAt = Date.now();
+    }
     worker = null;
     rejectAll();
   });
@@ -62,7 +70,12 @@ function spawn() {
 function init() {
   if (readyPromise) return readyPromise;
 
-  if (!worker) spawn();
+  if (!worker) {
+    if (failedAt && Date.now() - failedAt < SPAWN_COOLDOWN_MS) {
+      return Promise.resolve(false);
+    }
+    spawn();
+  }
 
   readyPromise = new Promise((resolve) => {
     const timer = setTimeout(() => resolve(false), READY_TIMEOUT_MS);
@@ -84,7 +97,12 @@ function init() {
 }
 
 function classify(text) {
-  if (!worker) spawn();
+  if (!worker) {
+    if (failedAt && Date.now() - failedAt < SPAWN_COOLDOWN_MS) {
+      return Promise.resolve(null);
+    }
+    spawn();
+  }
   if (pending.size >= MAX_PENDING) return Promise.resolve(null);
 
   const id = nextId++;
