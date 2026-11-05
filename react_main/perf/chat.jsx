@@ -60,15 +60,38 @@ function makeMessage(content, senderId, time = Date.now()) {
 function makeState(count) {
   nextId = 0;
   const start = Date.now() - count * 1000;
+  const messages = Array.from({ length: count }, (_, i) => makeMessage(null, null, start + i * 1000));
+
+  // Obituaries are tall special rows (a newspaper with deaths), not chat lines.
+  // `?obits=1` puts three of them through the same renderer as the real game.
+  const obituaries = {};
+  if (params.get("obits") === "1") {
+    const paper = (source, index, deaths) => ({
+      id: `0:${source}`, source, time: start + index * 1000 + 500, dayCount: 2,
+      obituaries: deaths.map((name, k) => ({
+        id: `${source}-${k}`,
+        playerInfo: { id: `${source}-${k}`, userId: `${source}-${k}`, name, avatar: false },
+        snippets: {
+          deathMessage: "was found dead in their home.",
+          revealMessage: "They were the Doctor.",
+          lastWill: "I was sure about the vote.",
+        },
+      })),
+    });
+    obituaries.Night = paper("Night", Math.floor(count * 0.25), ["Synthetic 1", "Synthetic 2"]);
+    obituaries.Day = paper("Day", Math.floor(count * 0.5), ["Synthetic 3"]);
+    obituaries.End = paper("Postgame", count - 1, ["Synthetic 4"]);
+  }
+
   return {
     0: {
-      name: "Day 1", selTab: "village", alerts: [], obituaries: {},
+      name: "Day 1", selTab: "village", alerts: [], obituaries,
       dead: {}, exorcised: {},
       meetings: {
         village: {
           id: "village", name: "Village", speech: true, amMember: true, canTalk: true,
           members: Object.keys(players), speechAbilities: [], voteRecord: [],
-          messages: Array.from({ length: count }, (_, i) => makeMessage(null, null, start + i * 1000)),
+          messages,
         },
       },
     },
