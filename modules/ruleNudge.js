@@ -4,13 +4,21 @@
 // and counts only there. A cancelled dialog, a cooldown, a mute or a client
 // that never sends leaves the token unused and uncounted.
 const crypto = require("crypto");
-const redis = require("./redis");
 const {
   FLAG_THRESHOLD,
   ABUSE_PROBABILITY,
   NUDGE_TEXT,
   noteVerdict: decide,
 } = require("./ruleNudgePolicy");
+
+// Loaded lazily: this module is required by Games/core/Game.js, and loading
+// modules/redis.js opens a connection immediately. Tests (and the CI runner)
+// have no `redis` host, so an eager require broke the whole suite.
+let redisClient = null;
+function db() {
+  if (!redisClient) redisClient = require("./redis");
+  return redisClient;
+}
 
 const TOKEN_TTL_SECONDS = 600;
 const COUNTER_TTL_SECONDS = 12 * 60 * 60;
@@ -29,7 +37,7 @@ async function issueToken({ userId, gameId, category, prob, abusePrompt }) {
     e: Boolean(abusePrompt),
   });
 
-  await redis.client.setAsync(
+  await db().client.setAsync(
     `rl:verdict:${token}`,
     payload,
     "EX",
@@ -45,9 +53,9 @@ async function takeToken(token) {
   if (!token || typeof token !== "string") return null;
 
   const key = `rl:verdict:${token}`;
-  const raw = await redis.client.getAsync(key);
+  const raw = await db().client.getAsync(key);
   if (!raw) return null;
-  await redis.client.delAsync(key);
+  await db().client.delAsync(key);
 
   try {
     return JSON.parse(raw);
@@ -58,15 +66,15 @@ async function takeToken(token) {
 
 async function countFlag(gameId, userId) {
   const key = `rl:flags:${gameId}:${userId}`;
-  const count = await redis.client.incrAsync(key);
-  if (count === 1) await redis.client.expireAsync(key, COUNTER_TTL_SECONDS);
+  const count = await db().client.incrAsync(key);
+  if (count === 1) await db().client.expireAsync(key, COUNTER_TTL_SECONDS);
   return count;
 }
 
 // One nudge per player per game.
 async function claimNudge(gameId, userId) {
   const key = `rl:nudged:${gameId}:${userId}`;
-  const result = await redis.client.setAsync(
+  const result = await db().client.setAsync(
     key,
     "1",
     "NX",
