@@ -838,26 +838,6 @@ const roleData = {
       ],
       nightOrder: [["Arbiter", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
-    Bloodhound: {
-      alignment: "Village",
-      category: "Investigative",
-      tags: ["Information", "Visit Interaction", "Visiting", "Basic"],
-      description: [
-        "Each night, you can choose to visit one player and learn if they visited anybody.",
-        //"Tracks a player each night and learns if they visited anybody.",
-      ],
-      nightOrder: [["Binary Track", PRIORITY_INVESTIGATIVE_DEFAULT]],
-      skins: [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Old",
-          value: "old",
-        },
-      ],
-    },
     "Bounty Hunter": {
       alignment: "Village",
       category: "Investigative",
@@ -2866,15 +2846,6 @@ const roleData = {
       ],
       nightOrder: [["Watch", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5]],
     },
-    Lurker: {
-      alignment: "Mafia",
-      category: "Investigative",
-      tags: ["Information", "Visit Interaction", "Visiting", "Basic"],
-      description: [
-        "Each night, you can choose to visit one player and learn if they visited anybody.",
-      ],
-      nightOrder: [["Binary Track", PRIORITY_INVESTIGATIVE_DEFAULT]],
-    },
     Revisionist: {
       alignment: "Mafia",
       category: "Investigative",
@@ -3825,16 +3796,6 @@ const roleData = {
         "While you are alive, Mafia will not win by majority.",
       ],
       nightOrder: [["Kill players in Room", PRIORITY_KILL_DEFAULT]],
-      skins: [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Old",
-          value: "old",
-        },
-      ],
       SpecialInteractionsModifiers: {
         "X-Shot": ["Splits players into an additional room."],
         Delayed: ["Adds an extra round of switching before killing."],
@@ -5612,11 +5573,6 @@ const roleData = {
           value: "vivid",
         },
         {
-          label: "Goofy",
-          value: "goofy",
-          achReq: "Mafia29",
-        },
-        {
           label: "Old",
           value: "old",
         },
@@ -6003,13 +5959,6 @@ const roleData = {
     },
 
     //Events
-    "No Event": {
-      alignment: "Event",
-      tags: ["Event"],
-      description: [
-        "Put this in a setup with other Events to have a chance for no Events to occur.",
-      ],
-    },
     Airdrop: {
       alignment: "Event",
       tags: ["Event", "Items"],

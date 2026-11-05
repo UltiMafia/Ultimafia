@@ -726,6 +726,23 @@ html[data-keyboard="open"] .game .meeting-tabs {
   overflow-y: auto;
 }
 
+/* An expanded accordion menu marked scrollable: once its collapse has finished
+   opening, the collapse layers fill the bounded menu so the content scrolls
+   instead of being clipped. Waiting for "entered" keeps the open animation,
+   which measures the content's natural height. */
+.game .side-menu.scrollable.MuiAccordion-root > .MuiCollapse-entered {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.game .side-menu.scrollable.MuiAccordion-root > .MuiCollapse-entered .MuiCollapse-wrapper,
+.game .side-menu.scrollable.MuiAccordion-root > .MuiCollapse-entered .MuiCollapse-wrapperInner,
+.game .side-menu.scrollable.MuiAccordion-root > .MuiCollapse-entered .MuiAccordion-region,
+.game .side-menu.scrollable.MuiAccordion-root > .MuiCollapse-entered .side-menu-content {
+  box-sizing: border-box;
+  height: 100%;
+}
+
 .game .side-menu-content {
   overflow: hidden;
 }
@@ -1152,6 +1169,69 @@ html[data-keyboard="open"] .game .meeting-tabs {
    row. */
 .game .message.with-reply-reference {
   flex-shrink: 0;
+}
+
+/* A left swipe reveals the reply cue without adding height or changing chat
+   layout. The transcript clips the translated row at its horizontal edges. */
+.game .message.swipe-to-reply {
+  touch-action: pan-y pinch-zoom;
+}
+
+.game .message.reply-swiping {
+  transform: translateX(var(--reply-swipe-offset, 0px));
+}
+
+/* The row moves left; this strip extends from its shifted right edge back
+   to the original edge, exposing the theme's recessed surface behind it. */
+.game .message.reply-swiping::before {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: 0;
+  bottom: 0;
+  width: calc(-1 * var(--reply-swipe-offset));
+  background: var(--scheme-color-background);
+  pointer-events: none;
+}
+
+.game .message.swipe-to-reply.reply-swiping::after {
+  content: "\f3e5";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  position: absolute;
+  right: -52px;
+  top: 50%;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  color: var(--scheme-color-text);
+  background: var(--scheme-color-background);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.game .message.reply-swiping.reply-swipe-ready::after {
+  opacity: 1;
+  color: var(--scheme-color-text);
+  background: var(--scheme-color-sec);
+  transform: translateY(-50%) scale(1.15);
+  animation: reply-cue-pop 260ms ease-out;
+}
+
+@keyframes reply-cue-pop {
+  0% { transform: translateY(-50%) scale(1); }
+  50% { transform: translateY(-50%) scale(1.4); }
+  75% { transform: translateY(-50%) scale(1.08); }
+  100% { transform: translateY(-50%) scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game .message.reply-swiping.reply-swipe-ready::after {
+    animation: none;
+  }
 }
 
 /* Rows that can be replied to take keyboard focus (Enter replies). */

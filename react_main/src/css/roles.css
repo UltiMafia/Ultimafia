@@ -482,14 +482,6 @@
   background-image: url("/src/images/roles/village/analyst-vivid.png");
 }
 
-.role-icon-vivid-Mafia-Bloodhound {
-  background-image: url("/src/images/roles/village/bloodhound-vivid.png");
-}
-
-.role-icon-old-Mafia-Bloodhound {
-  background-image: url("/src/images/roles/village/skins/bloodhound-old.png");
-}
-
 .role-icon-vivid-Mafia-Voyeur {
   background-image: url("/src/images/roles/village/voyeur-vivid.png");
 }
@@ -1401,10 +1393,6 @@
   background-image: url("/src/images/roles/mafia/busybody-vivid.png");
 }
 
-.role-icon-vivid-Mafia-Lurker {
-  background-image: url("/src/images/roles/mafia/lurker-vivid.png");
-}
-
 .role-icon-vivid-Mafia-Caser {
   background-image: url("/src/images/roles/mafia/caser-vivid.png");
 }
@@ -1510,10 +1498,6 @@
 
 .role-icon-vivid-Mafia-Assassin {
   background-image: url("/src/images/roles/mafia/assassin-vivid.png");
-}
-
-.role-icon-old-Mafia-Assassin {
-  background-image: url("/src/images/roles/mafia/skins/assassin-old.png");
 }
 
 .role-icon-vivid-Mafia-Suborner {
@@ -1826,10 +1810,6 @@
   background-image: url("/src/images/roles/independent/clown-vivid.png");
 }
 
-.role-icon-goofy-Mafia-Hellhound {
-  background-image: url("/src/images/roles/independent/skins/hellhound-goofy.png");
-}
-
 .role-icon-old-Mafia-Hellhound {
   background-image: url("/src/images/roles/independent/skins/hellhound-old.png");
 }
@@ -2135,10 +2115,6 @@
 }
 
 /*Events*/
-.role-icon-vivid-Mafia-No-Event {
-  background-image: url("/src/images/roles/event/no-event-vivid.png");
-}
-
 .role-icon-vivid-Mafia-Airdrop {
   background-image: url("/src/images/roles/event/airdrop-vivid.png");
 }
