@@ -79,6 +79,7 @@ jobs:
           MONGO_DB: ultimafia
           MONGO_USER: admin
           MONGO_PW: password
+          REDIS_URL: redis://127.0.0.1:6379
           REDIS_DB: 0
           FIREBASE_API_KEY: x
           FIREBASE_AUTH_DOMAIN: x

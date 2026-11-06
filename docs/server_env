@@ -20,6 +20,10 @@ MONGO_DB=ultimafia
 MONGO_USER=admin
 MONGO_PW=password
 
+# optional Redis endpoint; unset or empty uses redis://redis:6379 for Docker
+# Host-run CI sets redis://127.0.0.1:6379 for its mapped service port.
+REDIS_URL=
+
 # any number from 0 to 15
 REDIS_DB=0
 
