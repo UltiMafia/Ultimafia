@@ -313,7 +313,10 @@ var schemas = {
       uniqueWithoutModifier: Boolean,
       useRoleGroups: Boolean,
       roleGroupSizes: [Number],
-      roles: String,
+      // Array of rolesets. Each roleset is an array of
+      // { name, modifiers, items, count }. Older documents still hold the
+      // JSON string of "Role:Mods" -> count maps until roleset-object-migration.
+      roles: { type: mongoose.Schema.Types.Mixed, default: [] },
       count: { type: Map, of: Number },
       total: Number,
       gameSettings: { type: mongoose.Mixed, default: {} },

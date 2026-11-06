@@ -6,6 +6,7 @@ import { filterProfanity } from "components/Basic";
 import { SearchBar } from "components/Nav";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { hyphenDelimit } from "utils";
+import { asCountMaps } from "lib/roleset";
 
 import {
   Box,
@@ -37,7 +38,9 @@ export default function Setup(props) {
     path: `/api/setup/${props.setup.id}`,
     type: "setup",
     boundingEl: setupRef.current,
-    postprocessData: (data) => (data.roles = JSON.parse(data.roles)),
+    postprocessData: (data) => {
+      data.roles = asCountMaps(data.roles);
+    },
   });
   const { popoverOpen, handleClick } = popoverProps;
 
@@ -59,8 +62,8 @@ export default function Setup(props) {
       ? maxIconsPerRow * 3
       : maxIconsPerRow;
 
-  if (typeof props.setup.roles == "string")
-    props.setup.roles = JSON.parse(props.setup.roles);
+  if (props.setup)
+    props.setup.roles = asCountMaps(props.setup.roles);
 
   const backgroundColor = props.backgroundColor || undefined;
   const classList = props.classList || "";

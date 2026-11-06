@@ -398,7 +398,12 @@ describe("Rehost: carry lobby settings over", function () {
       expect([oldId, newId, info.hostId, info.hostName]).to.deep.equal(["rehost-old2", "newGame1", "rehost-host", "RehostHost"]);
       // the new game's setup, trimmed to what the client needs to draw it
       expect(info.setup).to.include({ id: "rehost-setup", name: "R", gameType: "Mafia", total: 3 });
-      expect(info.setup.roles).to.deep.equal([{ "Villager:": 2, "Mafioso:": 1 }]);
+      expect(info.setup.roles).to.deep.equal([
+        [
+          { name: "Villager", modifiers: [], items: [], count: 2 },
+          { name: "Mafioso", modifiers: [], items: [], count: 1 },
+        ],
+      ]);
       expect(info.setup).to.not.have.property("creator");
     });
 

@@ -3,6 +3,7 @@ const Utils = require("../../core/Utils");
 const Player = require("./Player");
 const Event = require("./Event");
 const Random = require("../../../lib/Random");
+const { normalizeRoles } = require("../../../lib/roleset");
 const Queue = require("../../core/Queue");
 const Winners = require("./Winners");
 const Action = require("./Action");
@@ -211,7 +212,7 @@ module.exports = class MafiaGame extends Game {
     if (this.setup.closed && this.isBroadcastClosedRoles()) {
       this.setup.closed = false;
       this.setup.closedRoles = this.setup.roles;
-      this.setup.roles = [
+      this.setup.roles = normalizeRoles([
         Object.values(this.originalRoles).reduce((acc, e) => {
           if (!acc[e]) {
             acc[e] = 1;
@@ -220,7 +221,7 @@ module.exports = class MafiaGame extends Game {
           }
           return acc;
         }, {}),
-      ];
+      ]);
       this.broadcast("setup", this.setup);
     }
   }

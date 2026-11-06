@@ -1,3 +1,5 @@
+import { asCountMaps } from "./roleset";
+
 // Where the role-marker chooser gets its setup from. usePopover() reads
 // `res.data` from whatever it is given (an axios response), so an in-memory
 // setup must be wrapped as { data } just like an axios.get result.
@@ -16,12 +18,10 @@ export function roleMarkerSetupSource(setup) {
   return Promise.resolve({ data: { roles: "[]" } });
 }
 
-// Flatten a setup's roles ("[{...}]" string or array of role-count maps) into
-// one { "Role:Modifier": count } map for the chooser.
+// Flatten a setup's roles into one { "Role:Modifier": count } map for the chooser.
+// Accepts the stored slot records, a legacy count-map array, or a JSON string.
 export function roleMarkerRoles(raw) {
-  const list =
-    typeof raw === "string" ? JSON.parse(raw || "[]") : raw || [];
   const roles = {};
-  for (const r of Array.isArray(list) ? list : [list]) Object.assign(roles, r);
+  for (const group of asCountMaps(raw)) Object.assign(roles, group);
   return roles;
 }

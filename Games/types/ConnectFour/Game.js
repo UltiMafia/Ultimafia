@@ -4,6 +4,7 @@ const Player = require("./Player");
 const Queue = require("../../core/Queue");
 const Winners = require("../../core/Winners");
 const Random = require("../../../lib/Random");
+const { roleCount } = require("../../../lib/roleset");
 
 module.exports = class ConnectFourGame extends Game {
   constructor(options) {
@@ -37,7 +38,7 @@ module.exports = class ConnectFourGame extends Game {
   start() {
     //this.currentPlayerIndex = Random.randInt(0, this.players.length - 1);
 
-    this.hasHost = this.setup.roles[0]["Host:"];
+    this.hasHost = roleCount(this.setup.roles[0], "Host:");
     if (this.hasHost) {
       let hostPlayer = this.players.array()[0];
       this.randomizedPlayers = Random.randomizeArray(

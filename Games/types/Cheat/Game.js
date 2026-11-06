@@ -6,6 +6,7 @@ const Queue = require("../../core/Queue");
 const Winners = require("../../core/Winners");
 
 const Random = require("../../../lib/Random");
+const { roleCount } = require("../../../lib/roleset");
 
 module.exports = class CheatGame extends Game {
   constructor(options) {
@@ -113,7 +114,7 @@ module.exports = class CheatGame extends Game {
     this.sendAlert(`Good luck... You'll probably need it.`);
 
     //start of game - randomizes player order, and gives dice to everyone.
-    this.hasHost = this.setup.roles[0]["Host:"];
+    this.hasHost = roleCount(this.setup.roles[0], "Host:");
     if (this.hasHost) {
       let hostPlayer = this.players.array()[0];
       this.randomizedPlayers = Random.randomizeArray(

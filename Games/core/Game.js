@@ -37,6 +37,13 @@ const { KudosVote, isWinLossResult, pickBotVote } = require("./Kudos");
 const dbStats = require("../../db/stats");
 const { isTestBotPlayer } = require("./botPlayers");
 const devControls = require("./devControls");
+const {
+  normalizeRoles,
+  normalizeRoleset,
+  formatRoleKey,
+  toCountMap,
+  roleCount,
+} = require("../../lib/roleset");
 const gameEventLog = require("../../modules/gameEventLog");
 const KUDOS_DISCONNECT_GRACE_MS = 20000;
 const VegKickMeeting = require("./VegKickMeeting");
@@ -75,6 +82,9 @@ module.exports = class Game {
     this.stateEvents = {};
     this.stateEventMessages = {};
     this.setup = options.settings.setup;
+    if (this.setup && this.setup.roles != null) {
+      this.setup.roles = normalizeRoles(this.setup.roles);
+    }
     this.lobby = options.settings.lobby;
     this.lobbyName = options.settings.lobbyName;
     this.private = options.settings.private;
@@ -2274,11 +2284,10 @@ module.exports = class Game {
     this.CurrentEvents = [];
     this.BanishedEvents = [];
 
-    for (let role in this.setup.roles[0]) {
-      let roleName = role.split(":")[0];
-      let isBanished =
-        role.split(":")[1] &&
-        role.split(":")[1].toLowerCase().includes("banished");
+    for (const slot of normalizeRoleset(this.setup.roles[0])) {
+      const role = formatRoleKey(slot);
+      let roleName = slot.name;
+      let isBanished = slot.modifiers.join("/").toLowerCase().includes("banished");
       let isEvent = this.getRoleAlignment(roleName) == "Event";
       const roleFromRoleData = roleData[this.type][roleName];
       if (!roleFromRoleData) {
@@ -2295,7 +2304,7 @@ module.exports = class Game {
       if (!isBanished && !isEvent) {
         if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = [];
 
-        for (let i = 0; i < this.setup.roles[0][role]; i++)
+        for (let i = 0; i < slot.count; i++)
           rolesByAlignment[alignment].push(role);
       } else {
         if (!isEvent) {
@@ -2341,20 +2350,19 @@ module.exports = class Game {
 
     for (let i in this.setup.roles) {
       let size = this.setup.roleGroupSizes[i];
-      let roleset = this.setup.roles[i];
+      let roleset = normalizeRoleset(this.setup.roles[i]);
 
       // has common logic with generatedClosedRoleset, can be refactored in future
       let rolesetArray = [];
-      for (let role in roleset) {
-        let isBanished =
-          role.split(":")[1] &&
-          role.split(":")[1].toLowerCase().includes("banished");
-        let isEvent = this.getRoleAlignment(role.split(":")[0]) == "Event";
+      for (const slot of roleset) {
+        const role = formatRoleKey(slot);
+        let isBanished = slot.modifiers.join("/").toLowerCase().includes("banished");
+        let isEvent = this.getRoleAlignment(slot.name) == "Event";
         if (!isEvent) {
           this.PossibleRoles.push(role);
         }
         if (!isBanished && !isEvent) {
-          for (let i = 0; i < roleset[role]; i++) {
+          for (let i = 0; i < slot.count; i++) {
             rolesetArray.push(role);
           }
         } else {
@@ -2394,34 +2402,28 @@ module.exports = class Game {
     let mappedModifiers = renamedModifierMapping[this.type];
     if (!mappedRoles && !mappedModifiers) return;
 
-    for (let j in this.setup.roles) {
-      let roleSet = this.setup.roles[j];
-      let newRoleSet = {};
-      for (let originalRoleName in roleSet) {
-        let [roleName, modifiers] = originalRoleName.split(":");
-
-        var newName = "";
-        if (!modifiers || modifiers.length == 0) {
-          newName = mappedRoles[roleName] || roleName;
+    const rename = (name) => (mappedRoles && mappedRoles[name]) || name;
+    this.setup.roles = normalizeRoles(this.setup.roles).map((roleset) => {
+      const merged = [];
+      const index = new Map();
+      for (const slot of roleset) {
+        const next = {
+          ...slot,
+          name: rename(slot.name),
+          modifiers: slot.modifiers.map((modifier) => rename(modifier)),
+          items: slot.items.slice(),
+        };
+        const key = `${formatRoleKey(next)}\0${next.items.join("\0")}`;
+        const existing = index.get(key);
+        if (existing) {
+          existing.count += next.count;
         } else {
-          let modifierNames = modifiers.split("/");
-          let newModifierNames = [];
-          for (let originalModifierName of modifierNames) {
-            let newModifierName =
-              mappedRoles[originalModifierName] || originalModifierName;
-            newModifierNames.push(newModifierName);
-          }
-          const newModifierNamesString = newModifierNames.join("/");
-          let newRoleName = mappedRoles[roleName] || roleName;
-          newName = [newRoleName, newModifierNamesString].join(":");
+          index.set(key, next);
+          merged.push(next);
         }
-
-        if (!newRoleSet[newName]) newRoleSet[newName] = 0;
-
-        newRoleSet[newName] += roleSet[originalRoleName];
       }
-      this.setup.roles[j] = newRoleSet;
-    }
+      return merged;
+    });
     return;
   }
 
@@ -2434,29 +2436,29 @@ module.exports = class Game {
 
     let noEvent = 0;
     let events = 0;
-    for (const roleset of groups) {
-      if (!roleset || typeof roleset !== "object") continue;
+    for (let g = 0; g < groups.length; g++) {
+      const roleset = normalizeRoleset(groups[g]);
+      if (!Array.isArray(groups[g])) continue;
       let setNoEvent = 0;
       let setEvents = 0;
-      for (const key of Object.keys(roleset)) {
-        const name = key.split(":")[0];
-        const mods = key.split(":")[1] || "";
-        const banished = mods.toLowerCase().includes("banished");
-        const count = Number(roleset[key]) || 0;
-        if (name === "No Event") {
+      const kept = [];
+      for (const slot of roleset) {
+        const banished = slot.modifiers.join("/").toLowerCase().includes("banished");
+        if (slot.name === "No Event") {
           if (!banished) {
-            setNoEvent += count;
-            setEvents += count;
+            setNoEvent += slot.count;
+            setEvents += slot.count;
           }
-          delete roleset[key];
           continue;
         }
         const alignment =
           roleData[this.type] &&
-          roleData[this.type][name] &&
-          roleData[this.type][name].alignment;
-        if (alignment === "Event" && !banished) setEvents += count;
+          roleData[this.type][slot.name] &&
+          roleData[this.type][slot.name].alignment;
+        if (alignment === "Event" && !banished) setEvents += slot.count;
+        kept.push(slot);
       }
+      groups[g] = kept;
       if (setNoEvent > 0) {
         noEvent += setNoEvent;
         events += setEvents;
@@ -2486,11 +2488,12 @@ module.exports = class Game {
     this.BanishedEvents = [];
 
     for (let i in this.setup.roles) {
-      roleset = this.setup.roles[i];
+      roleset = normalizeRoleset(this.setup.roles[i]);
 
-      for (let role in roleset) {
-        for (let i = 0; i < roleset[role]; i++) {
-          let roleName = role.split(":")[0];
+      for (const slot of roleset) {
+        const role = formatRoleKey(slot);
+        for (let n = 0; n < slot.count; n++) {
+          let roleName = slot.name;
           const roleFromRoleData = roleData[this.type][roleName];
           if (!roleFromRoleData) {
             this.sendAlert(
@@ -2500,9 +2503,10 @@ module.exports = class Game {
               `Unknown role "${roleName}" in ${this.type} setup.`
             );
           }
-          let isBanished =
-            role.split(":")[1] &&
-            role.split(":")[1].toLowerCase().includes("banished");
+          let isBanished = slot.modifiers
+            .join("/")
+            .toLowerCase()
+            .includes("banished");
           let isEvent = this.getRoleAlignment(roleName) == "Event";
           if (isEvent) {
             if (isBanished) this.BanishedEvents.push(role);
@@ -2518,7 +2522,7 @@ module.exports = class Game {
     }
 
     if (!this.setup.closed)
-      roleset = { ...Random.randArrayVal(this.setup.roles) };
+      roleset = toCountMap(Random.randArrayVal(this.setup.roles));
     else roleset = this.generateClosedRoleset();
 
     return roleset;
@@ -4609,7 +4613,7 @@ module.exports = class Game {
         return;
       }
       this.setup = setup.toJSON();
-      this.setup.roles = JSON.parse(this.setup.roles);
+      this.setup.roles = normalizeRoles(this.setup.roles);
       if (this.type == "Mafia") {
         this.noDeathLimit = this.setup.noDeathLimit;
         this.ForceMustAct = this.setup.ForceMustAct;
@@ -4642,19 +4646,19 @@ module.exports = class Game {
         }
         
       } else if (this.type == "Texas Hold Em") {
-        this.hasHost = this.setup.roles[0]["Host:"];
+        this.hasHost = roleCount(this.setup.roles[0], "Host:");
       } else if (this.type == "Cheat") {
-        this.hasHost = this.setup.roles[0]["Host:"];
+        this.hasHost = roleCount(this.setup.roles[0], "Host:");
       } else if (this.type == "Ratscrew") {
-        this.hasHost = this.setup.roles[0]["Host:"];
+        this.hasHost = roleCount(this.setup.roles[0], "Host:");
       } else if (this.type == "Liars Dice") {
-        this.hasHost = this.setup.roles[0]["Host:"];
+        this.hasHost = roleCount(this.setup.roles[0], "Host:");
       } else if (this.type == "Wacky Words") {
-        this.hasAlien = this.setup.roles[0]["Alien:"];
-        this.hasNeighbor = this.setup.roles[0]["Neighbor:"];
-        this.hasGovernor = this.setup.roles[0]["Governor:"];
-        this.hasGambler = this.setup.roles[0]["Gambler:"];
-        this.hasHost = this.setup.roles[0]["Host:"];
+        this.hasAlien = roleCount(this.setup.roles[0], "Alien:");
+        this.hasNeighbor = roleCount(this.setup.roles[0], "Neighbor:");
+        this.hasGovernor = roleCount(this.setup.roles[0], "Governor:");
+        this.hasGambler = roleCount(this.setup.roles[0], "Gambler:");
+        this.hasHost = roleCount(this.setup.roles[0], "Host:");
       } else if (this.type == "Draw It") {
         // TODO Wave 8 verify: Draw It currently has no host/optional-role flags
         // to mirror; setup-time flags (if any) would be wired here. Settings

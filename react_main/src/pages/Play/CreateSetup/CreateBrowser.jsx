@@ -32,6 +32,7 @@ import {
 } from "@mui/material";
 
 import { MaxModifiersPerRole } from "Constants";
+import { asCountMaps } from "lib/roleset";
 import { UserContext, SiteInfoContext } from "Contexts";
 import {
   RoleCount,
@@ -463,7 +464,7 @@ export default function CreateSetup(props) {
 
           updateRoleData({
             type: "setFromSetup",
-            roles: JSON.parse(setup.roles),
+            roles: asCountMaps(setup.roles),
             closed: setup.closed,
             useRoleGroups: setup.useRoleGroups,
             roleGroupSizes: setup.roleGroupSizes,

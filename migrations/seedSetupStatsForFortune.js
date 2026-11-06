@@ -27,6 +27,7 @@ const mongoose = require("mongoose");
 const mongo = require("mongodb");
 const models = require("../db/models");
 const roleData = require("../data/roles");
+const { normalizeRoles } = require("../lib/roleset");
 const logger = require("../modules/logging")("seedSetupStatsForFortune");
 
 const ObjectID = mongo.ObjectID;
@@ -72,17 +73,15 @@ function fetchJSON(url) {
   });
 }
 
-// composition string: "[{\"Granny:\":1,\"Templar:\":2,...}]" — array of role-groups,
-// each group is a map of "RoleName:Modifier" -> count. For determining slots per
-// game of a given role, we sum counts across groups for the bare role name.
+// Roles are slot records, or the older "RoleName:Modifier" -> count maps.
+// Slots per game of a role are the summed counts across groups.
 function parseComposition(rolesJson) {
-  const groups = JSON.parse(rolesJson);
+  const groups = normalizeRoles(rolesJson);
   if (!Array.isArray(groups) || groups.length === 0) throw new Error("No role groups in setup.roles");
   const slots = {};
   for (const group of groups) {
-    for (const rawKey of Object.keys(group)) {
-      const bare = rawKey.split(":")[0];
-      slots[bare] = (slots[bare] || 0) + group[rawKey];
+    for (const slot of group) {
+      slots[slot.name] = (slots[slot.name] || 0) + slot.count;
     }
   }
   return { slots, groupCount: groups.length };
