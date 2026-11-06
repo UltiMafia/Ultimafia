@@ -43,8 +43,6 @@ const compression = require("compression");
 const cors = require("cors");
 const itemsRouter = require("./routes/items");
 const stockMarketRouter = require("./routes/stockMarket");
-const rulesRouter = require("./routes/rules");
-const ruleFilter = require("./modules/ruleFilterService");
 const { seedDefaultWordDecks } = require("./modules/seed");
 const db = require("./db/db");
 
@@ -131,7 +129,6 @@ apiRouter.use("/items", itemsRouter);
 apiRouter.use("/site-activity", siteActivityRouter);
 apiRouter.use("/fanart", fanartRouter);
 apiRouter.use("/stocks", stockMarketRouter);
-apiRouter.use("/rules", rulesRouter);
 
 app.use("/api", apiRouter);
 
@@ -139,11 +136,6 @@ app.use("/api", apiRouter);
 db.promise
   .then(() => seedDefaultWordDecks())
   .catch((e) => console.error("Default deck seeding failed", e));
-
-// Load the chat rule classifier once per process; messages are never blocked
-// if it fails to load.
-// The model loads in a worker thread; the gate fails open until it is ready.
-ruleFilter.init();
 
 app.get("/.well-known/apple-app-site-association", (req, res) => {
   res.type("application/json");
