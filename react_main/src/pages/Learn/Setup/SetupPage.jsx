@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
+import { asCountMaps } from "lib/roleset";
 
 import {
   Box,
@@ -200,7 +201,7 @@ export function SetupPage() {
         .get(`/api/setup/${setupId}`, { headers: { includeStats: true } })
         .then((res) => {
           let setup = res.data;
-          setup.roles = JSON.parse(setup.roles);
+          setup.roles = asCountMaps(setup.roles);
           setSetup(res.data);
           setGameType(setup.gameType);
           setCurrentVersionNum(setup.version);

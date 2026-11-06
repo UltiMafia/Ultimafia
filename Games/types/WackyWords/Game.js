@@ -5,6 +5,7 @@ const Queue = require("../../core/Queue");
 const Random = require("../../../lib/Random");
 const Winners = require("../../core/Winners");
 const ArrayHash = require("../../core/ArrayHash");
+const { roleCount } = require("../../../lib/roleset");
 
 const questionList = require("./data/questions");
 const neighborQuestionList = require("./data/neighborQuestions");
@@ -64,11 +65,11 @@ module.exports = class WackyWordsGame extends Game {
     this.isRankedChoice = options.settings.isRankedChoice;
     this.votesToPoints = options.settings.votesToPoints;
 
-    this.hasAlien = this.setup.roles[0]["Alien:"];
-    this.hasNeighbor = this.setup.roles[0]["Neighbor:"];
-    this.hasGovernor = this.setup.roles[0]["Governor:"];
-    this.hasGambler = this.setup.roles[0]["Gambler:"];
-    this.hasHost = this.setup.roles[0]["Host:"];
+    this.hasAlien = roleCount(this.setup.roles[0], "Alien:");
+    this.hasNeighbor = roleCount(this.setup.roles[0], "Neighbor:");
+    this.hasGovernor = roleCount(this.setup.roles[0], "Governor:");
+    this.hasGambler = roleCount(this.setup.roles[0], "Gambler:");
+    this.hasHost = roleCount(this.setup.roles[0], "Host:");
     // cannot be both game modes
     let possible = [];
     if (this.hasAlien) {

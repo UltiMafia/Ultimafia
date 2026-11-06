@@ -1,6 +1,5 @@
 const express = require("express");
 const shortid = require("shortid");
-const oHash = require("object-hash");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const constants = require("../data/constants");
@@ -19,6 +18,15 @@ const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const Diff = require("diff");
 const errors = require("../lib/errors");
+const {
+  normalizeRoles,
+  toCountMaps,
+  toCountMap,
+  canonicalizeRoles,
+  attachItems,
+  hashSetup,
+  compareRoleKeys,
+} = require("../lib/roleset");
 const { requestUserObjectId } = require("../modules/devApi/requestUser");
 
 function canModifySetup(setup) {
@@ -90,7 +98,7 @@ function generateMafiaSetupManifest(setup, roles) {
     for (var i = 0; i < roles.length; i++) {
       lines.push(`- Role group ${i}:`);
 
-      const roleGroup = roles[i];
+      const roleGroup = toCountMap(roles[i]);
       Object.keys(roleGroup).forEach(function (role) {
         const tokens = role.split(":");
         const roleName =
@@ -174,9 +182,13 @@ router.get("/search", async function (req, res) {
     const sortBy = (req.query.sortBy || "").toLowerCase();
 
     if (req.query.query) {
+      const roleQuery = { $regex: String(req.query.query), $options: "i" };
       search["$or"] = [
-        { name: { $regex: String(req.query.query), $options: "i" } },
-        { roles: { $regex: String(req.query.query), $options: "i" } },
+        { name: roleQuery },
+        // Legacy documents store roles as a JSON string.
+        { roles: roleQuery },
+        { "roles.name": roleQuery },
+        { "roles.modifiers": roleQuery },
       ];
     }
     if (req.query.creatorId) {
@@ -582,7 +594,7 @@ router.get("/:id/lineage", async function (req, res) {
         .populate("creator", "id name avatar -_id")
         .lean();
       if (parent) {
-        parent.roles = parent.roles && JSON.parse(parent.roles);
+        if (parent.roles) parent.roles = normalizeRoles(parent.roles);
         result.copiedFrom = { setup: parent, copiedAt: setup.copiedAt };
       }
     }
@@ -594,7 +606,7 @@ router.get("/:id/lineage", async function (req, res) {
       .lean();
 
     for (const child of children) {
-      if (child.roles) child.roles = JSON.parse(child.roles);
+      if (child.roles) child.roles = normalizeRoles(child.roles);
       result.copiedTo.push({ setup: child, copiedAt: child.copiedAt });
     }
 
@@ -956,8 +968,9 @@ router.post("/create", async function (req, res) {
 
     if (req.body.editing) {
       var setup = await models.Setup.findOne({ id: String(req.body.id) })
-        .select("creator ranked competitive")
+        .select("creator ranked competitive roles")
         .populate("creator", "id");
+      var previousRoles = setup && setup.roles;
 
       if (setup && !canModifySetup(setup)) {
         res.status(403);
@@ -1110,14 +1123,19 @@ router.post("/create", async function (req, res) {
       return;
     }
 
-    //Verify unique hash and save
+    // Slot records are what gets stored. Count maps were only for validation.
+    // Items survive a round trip through the editor, which still sends maps.
+    setup.roles = canonicalizeRoles(
+      attachItems(setup.roles, req.body.roles, previousRoles),
+      setup.gameType
+    );
+
+    const hash = hashSetup(setup);
     var obj = {
       ...setup,
-      roles: JSON.stringify(setup.roles),
-      count: JSON.stringify(setup.count),
+      roles: setup.roles,
+      count: setup.count,
     };
-
-    const hash = oHash(obj);
     const existingSetup = await models.Setup.findOne({ hash });
 
     if (
@@ -1222,7 +1240,10 @@ function verifyRolesAndCount(setup) {
   const uniqueWithoutModifier = setup.uniqueWithoutModifier;
   const useRoleGroups = setup.useRoleGroups;
   const roleGroupSizes = setup.roleGroupSizes;
-  var roles = setup.roles;
+  // Validation still walks "Role:Mods" -> count. Slot records are projected
+  // into that map here and turned back into records after the checks.
+  var roles = toCountMaps(normalizeRoles(setup.roles));
+  setup.roles = roles;
   var count = setup.count;
   var total = 0;
 
@@ -1487,20 +1508,7 @@ function verifyRole(role, gameType, alignment) {
 }
 
 function sortRoles(gameType) {
-  const alignments = constants.alignments[gameType];
-
-  return (roleA, roleB) => {
-    var roleAName = roleA.split(":")[0];
-    var roleBName = roleB.split(":")[0];
-    var alignA = roleData[gameType][roleAName].alignment;
-    var alignB = roleData[gameType][roleBName].alignment;
-
-    if (alignA != alignB)
-      //Sort roles by alignment
-      return alignments.indexOf(alignA) - alignments.indexOf(alignB);
-    //Sort roles of same alignment by alphabetical order
-    else return roleA < roleB ? -1 : 1;
-  };
+  return (roleA, roleB) => compareRoleKeys(gameType, roleA, roleB);
 }
 
 function hasOpenRole(roles, roleName) {
