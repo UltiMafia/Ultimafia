@@ -127,8 +127,16 @@ async function removeImage(file) {
   }
 }
 
+// A parse stopped by an error can still be opening a file's write stream, and
+// the file appears when the open completes. Wait for the stream to close.
+function parserFileClosed(file) {
+  const stream = file._writeStream;
+  if (!stream || stream.closed) return;
+  return new Promise((resolve) => stream.once("close", resolve));
+}
+
 router.post("/", async function (req, res) {
-  const temporaryPaths = [];
+  const temporaryFiles = [];
   let outputPath;
   let saved = false;
   try {
@@ -161,7 +169,7 @@ router.post("/", async function (req, res) {
       };
       // Include partially written files; Formidable also closes/removes these
       // on parser errors. Our cleanup tolerates files it has already removed.
-      form.on("fileBegin", (name, file) => temporaryPaths.push(file.path));
+      form.on("fileBegin", (name, file) => temporaryFiles.push(file));
       try {
         let files;
         [fields, files] = await form.parseAsync(req);
@@ -256,6 +264,8 @@ router.post("/", async function (req, res) {
     else
       errors.serverError(res, "Error posting comment. Please try again.");
   } finally {
+    await Promise.all(temporaryFiles.map(parserFileClosed));
+    const temporaryPaths = temporaryFiles.map((file) => file.path);
     for (const file of [...temporaryPaths, ...(!saved && outputPath ? [outputPath] : [])]) {
       try {
         await removeImage(file);

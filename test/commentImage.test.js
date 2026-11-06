@@ -57,7 +57,11 @@ function loadRouter(state) {
     Object.assign(state.doc, update.$set);
   } });
   const formidable = require("formidable");
-  function Form() { const form = new formidable(); form.uploadDir = state.temp; return form; }
+  function Form() {
+    const form = new formidable(); form.uploadDir = state.temp;
+    form.on("fileBegin", () => { state.fileBegins++; });
+    return form;
+  }
   Form.prototype = formidable.prototype;
   Form.IncomingForm = Form;
   const fileSystem = { ...fs, promises: { ...fs.promises, unlink: async (file) => {
@@ -174,7 +178,7 @@ describe("comment image lifecycle (real Formidable, Sharp and files; mocked data
     // Keep all runtime files within this checkout, separate from concurrent tests.
     fs.mkdirSync(path.join(__dirname, "../node_modules/.cache"), { recursive: true });
     const root = fs.mkdtempSync(path.join(__dirname, "../node_modules/.cache/comment-image-"));
-    state = { root, upload: path.join(root, "uploads"), temp: path.join(root, "temp"), saved: [], projections: [], errors: [], unlinks: [], busy: 0, uploadBusy: 0, permission: true };
+    state = { root, upload: path.join(root, "uploads"), temp: path.join(root, "temp"), saved: [], fileBegins: 0, projections: [], errors: [], unlinks: [], busy: 0, uploadBusy: 0, permission: true };
     fs.mkdirSync(state.upload); fs.mkdirSync(state.temp);
     oldUpload = process.env.UPLOAD_PATH; process.env.UPLOAD_PATH = state.upload;
     router = loadRouter(state);
@@ -304,6 +308,21 @@ describe("comment image lifecycle (real Formidable, Sharp and files; mocked data
       [webp, [{ name: "content", data: "x".repeat(8193) }]],
     ]) {
       assert.equal((await post(data, extra)).statusCode, 422);
+      assert.equal(state.saved.length, 0);
+      assert.deepEqual(fs.readdirSync(state.upload), []);
+      assert.deepEqual(fs.readdirSync(state.temp), []);
+    }
+  });
+  it("stops parsing at a second file part or one not named image", async () => {
+    const empty = { name: "image", data: "", type: "image/png" };
+    for (const extra of [
+      Array(1000).fill(empty),
+      [{ name: "image", data: webp, type: "image/webp" }],
+      [{ name: "other", data: webp, type: "image/webp" }],
+    ]) {
+      state.fileBegins = 0;
+      assert.equal((await post(webp, extra)).statusCode, 422);
+      assert.equal(state.fileBegins, 1);
       assert.equal(state.saved.length, 0);
       assert.deepEqual(fs.readdirSync(state.upload), []);
       assert.deepEqual(fs.readdirSync(state.temp), []);
