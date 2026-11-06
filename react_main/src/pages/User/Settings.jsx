@@ -342,6 +342,18 @@ export default function Settings() {
       type: "boolean",
     },
     {
+      label: "Warn before sending outside game influence (OGI)",
+      ref: "ogiFilter",
+      type: "boolean",
+      groupName: "Chat",
+    },
+    {
+      label: "Warn before sending personal attacks",
+      ref: "abuseFilter",
+      type: "boolean",
+      groupName: "Chat",
+    },
+    {
       label: "Hide Tutorial",
       ref: "hideTutorialButton",
       type: "boolean",

@@ -34,6 +34,15 @@ import Newspaper, {
 } from "../../components/gameComponents/Newspaper";
 import { newspaperPlayer } from "../../utils/newspaperPlayers";
 import { legacyObituaryMessages } from "../../utils/legacyObituaries";
+import {
+  confirmsPending,
+  draftAfterRestore,
+} from "../../utils/pendingSpeech";
+import {
+  insertBeforePending,
+  removePending,
+  replacePending,
+} from "../../utils/messageOrdering";
 import MafiaGame from "./MafiaGame";
 import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
@@ -129,6 +138,7 @@ import {
 import lore from "images/emotes/lore.webp";
 import poison from "images/emotes/poison.webp";
 import exit from "images/emotes/exit.png";
+import jailerIcon from "images/roles/village/jailer-vivid.png";
 import { usePopover, InfoPopover, SetupInfo } from "components/Popover";
 
 import dice1 from "images/emotes/dice1.webp";
@@ -159,6 +169,7 @@ import {
   pairReplies,
   showPinButton,
 } from "utils/messageReply";
+import { buildNameMasker, collectPlayerNames } from "utils/nameMasking";
 import { buildQuotePayload, findMessageState } from "utils/messageQuote";
 import RoleMarkerToggle from "./components/RoleMarkerToggle";
 import { playerNameWithAvatarProps } from "./playerDisplay";
@@ -2601,6 +2612,8 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
               setAutoScroll={setAutoScroll}
               speechInput={speechInput}
               setSpeechInput={setSpeechInput}
+              self={game.self}
+              updateHistory={updateHistory}
               whispersEnabled={game.getSetupGameSetting("Whispers")}
             />
           )}
@@ -2849,7 +2862,11 @@ function getContentClasses(message) {
   else if (isVoteMessage) contentClasses.push("vote-record");
 
   // Make content clickable if it's quotable
-  if ((isPlayerMessage || isAnonymousMessage) && !message.isQuote) {
+  if (
+    (isPlayerMessage || isAnonymousMessage) &&
+    !message.isQuote &&
+    !message.pending
+  ) {
     contentClasses.push("clickable");
   }
 
@@ -3345,6 +3362,7 @@ const MessageRow = React.memo(function MessageRow(props) {
     : "nameplate";
 
   let className = "message";
+  if (message.pending) className += " pending";
   if (message.spectatorChat) className += " spectator-chat";
   else if (props.iWasPinged) className += " mention";
   // A reply shows what it answers above its header (see ReplyReference). One
@@ -3355,7 +3373,7 @@ const MessageRow = React.memo(function MessageRow(props) {
     className += props.replyMerged
       ? " reply-merged with-reply-reference"
       : " with-reply-reference";
-  if (clickToReply) className += " click-to-reply";
+  if (clickToReply && !message.pending) className += " click-to-reply";
   if (swipeToReply) className += " swipe-to-reply";
 
   function startReply() {
@@ -3375,7 +3393,7 @@ const MessageRow = React.memo(function MessageRow(props) {
   // double-click can still quote without starting one.
   function onRowClick(e) {
     cancelReplyClick();
-    if (!clickToReply) return;
+    if (!clickToReply || message.pending) return;
     const row = e.currentTarget;
     const env = {
       selection: window.getSelection(),
@@ -3718,7 +3736,39 @@ function SpeechInput(props) {
 
   const speechInput = props.speechInput;
   const setSpeechInput = props.setSpeechInput;
+  const self = props.self;
+  const updateHistory = props.updateHistory;
+  const user = useContext(UserContext);
+  const { singleState } = useContext(GameTypeContext);
+
+  // Same defaults the server applies: OGI warns unless switched off, abuse
+  // warns only when the account has it enabled (a violation on record does
+  // that when /api/user/info is loaded). With both off there is nothing to
+  // ask the server, so skip the round trip before sending.
+  const rulesEnabled =
+    user?.settings?.ogiFilter !== false || user?.settings?.abuseFilter === true;
+
+  // Player names read as ordinary words to the classifier: a user called
+  // "worstplayer" made "@worstplayer" score 0.98 as abuse. Mask names in the
+  // text sent for scoring only; the message that is sent stays untouched.
+  const maskNamesForRules = useMemo(
+    () => buildNameMasker(collectPlayerNames(players, game.spectators)),
+    [players, game.spectators]
+  );
   const pendingSpeechRef = useRef(null);
+  // The timer below fires 15s after the send and must see the meeting as it is
+  // then, not as it was when the row was created.
+  const meetingsRef = useRef(props.meetings);
+  meetingsRef.current = props.meetings;
+  // Optimistic rows: shown immediately, replaced by the server's message.
+  const pendingRowsRef = useRef(new Map());
+  useEffect(
+    () => () => {
+      pendingRowsRef.current.forEach((entry) => clearTimeout(entry.timer));
+      pendingRowsRef.current.clear();
+    },
+    []
+  );
   const [speechDropdownOptions, setSpeechDropdownOptions] = useState([]);
   const [speechDropdownValue, setSpeechDropdownValue] = useState("Say");
   const [lastTyped, setLastTyped] = useState(0);
@@ -3732,6 +3782,25 @@ function SpeechInput(props) {
   });
   const [speakCooldownRemainingMs, setSpeakCooldownRemainingMs] = useState(0);
   const lastSpeakCooldownEventAtRef = useRef(0);
+  const ruleCheckBusy = useRef(false);
+  const ruleWarningRef = useRef(null);
+  const [ruleWarning, setRuleWarning] = useState(null);
+  const confirmRuleWarningRef = useRef(null);
+
+  // Enter confirms while the warning is open. A document listener is used
+  // because MUI moves focus inside the modal; the ref guard makes a second
+  // Enter (or the focused button's own click) a no-op.
+  useEffect(() => {
+    if (!ruleWarning) return undefined;
+    const onKeyDown = (e) => {
+      if (e.key !== "Enter" || e.repeat) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (confirmRuleWarningRef.current) confirmRuleWarningRef.current();
+    };
+    document.addEventListener("keydown", onKeyDown, true);
+    return () => document.removeEventListener("keydown", onKeyDown, true);
+  }, [ruleWarning]);
 
   var placeholder = "";
 
@@ -3816,7 +3885,11 @@ function SpeechInput(props) {
     if (!meeting?.messages?.length) return;
 
     const pending = pendingSpeechRef.current;
-    const lastMessage = meeting.messages[meeting.messages.length - 1];
+    let lastIndex = meeting.messages.length - 1;
+    while (lastIndex >= 0 && meeting.messages[lastIndex].pending) lastIndex--;
+    if (lastIndex < 0) return;
+
+    const lastMessage = meeting.messages[lastIndex];
     const matchesSender =
       lastMessage.senderId === game.self ||
       (pending.anonymous && lastMessage.senderId === "anonymous");
@@ -3826,10 +3899,24 @@ function SpeechInput(props) {
       lastMessage.content === pending.content &&
       matchesSender
     ) {
-      setSpeechInput("");
+      // The server's copy confirms the row: stop tracking it, or its stale
+      // entry can later be handed back to the box by a refusal.
+      releasePendingRow(lastMessage);
+      // The box is cleared when the message is submitted, so only clear it
+      // here if it still holds that same message. Otherwise the player has
+      // already started typing the next one and this would wipe it.
+      if (speechInput === pending.content) setSpeechInput("");
       pendingSpeechRef.current = null;
     }
-  }, [game.history, game.self, selTab, isCurrentState, meetings, setSpeechInput]);
+  }, [
+    game.history,
+    game.self,
+    selTab,
+    isCurrentState,
+    meetings,
+    setSpeechInput,
+    speechInput,
+  ]);
 
   useEffect(() => {
     if (!socket.on) return;
@@ -3847,6 +3934,22 @@ function SpeechInput(props) {
 
       const cooldownMs = Math.max(Number(info.cooldownMs) || 0, 0);
       if (!cooldownMs) return;
+
+      // A cooldown means the server refused the message: take the optimistic
+      // row back and put its text in the box instead of losing it.
+      let newestId = null;
+      pendingRowsRef.current.forEach((entry, id) => {
+        if (entry.meetingId === selTab) newestId = id;
+      });
+      if (newestId) {
+        const entry = pendingRowsRef.current.get(newestId);
+        removePendingRow(newestId);
+        // The refusal of line N can arrive while line N+1 is being typed;
+        // restoring N over it would erase the new draft.
+        setSpeechInput((current) =>
+          draftAfterRestore(current, entry.content)
+        );
+      }
 
       const now = Date.now();
       setSpeakCooldown((prev) => {
@@ -3957,6 +4060,66 @@ function SpeechInput(props) {
   const replyTarget = game.replyTarget;
   const setReplyTarget = game.setReplyTarget;
 
+  // Drops the bookkeeping for the row this message confirms, without touching
+  // the row itself (the reducer replaced it in place).
+  function releasePendingRow(message) {
+    const rows = pendingRowsRef.current;
+    for (const [id, entry] of rows) {
+      if (!confirmsPending(entry, message)) continue;
+      clearTimeout(entry.timer);
+      rows.delete(id);
+      return;
+    }
+  }
+
+  function removePendingRow(id) {
+    const entry = pendingRowsRef.current.get(id);
+    if (!entry) return;
+    clearTimeout(entry.timer);
+    pendingRowsRef.current.delete(id);
+    updateHistory({
+      type: "removePendingMessage",
+      meetingId: entry.meetingId,
+      id,
+    });
+  }
+
+  function addPendingRow({ id, meetingId, senderId, content }) {
+    updateHistory({
+      type: "addPendingMessage",
+      message: {
+        id,
+        meetingId,
+        senderId,
+        content,
+        time: Date.now(),
+        pending: true,
+      },
+    });
+    // If the server never confirms (mute, dropped socket), take the row back
+    // and give the text back so it can be sent again. Only when the box is
+    // empty, and only when the row is still pending: a confirmed row was
+    // replaced in place, and resurrecting its text would be wrong.
+    const timer = setTimeout(() => {
+      const entry = pendingRowsRef.current.get(id);
+      if (!entry) return;
+
+      const meeting = meetingsRef.current?.[entry.meetingId];
+      const stillPending = Boolean(
+        meeting?.messages?.some((m) => m.id === id && m.pending)
+      );
+
+      removePendingRow(id);
+      if (stillPending) {
+        setSpeechInput((current) =>
+          draftAfterRestore(current, entry.content)
+        );
+      }
+    }, 15000);
+    pendingRowsRef.current.set(id, { meetingId, content, timer });
+  }
+
+
   function onSpeechSubmit(e) {
     if (isSpeakCooldownActive) return;
 
@@ -3975,37 +4138,118 @@ function SpeechInput(props) {
         pendingSpeechRef.current = null;
         setSpeechInput("");
       } else {
-        if (isCommand) {
-          pendingSpeechRef.current = null;
-        } else {
-          pendingSpeechRef.current = {
-            content: speechInput,
-            anonymous:
-              Boolean(abilityName) || Boolean(meetings[selTab]?.anonymous),
-          };
-        }
-
+        const content = speechInput;
         const reply = buildReplyPayload(replyTarget, {
           meetingId: selTab,
-          content: speechInput,
+          content,
           abilityName,
         });
-        if (reply) {
-          socket.send("reply", reply);
-          setReplyTarget(null);
-        } else {
-          socket.send("speak", {
-            content: speechInput,
-            meetingId: selTab,
-            abilityName,
-            abilityTarget,
-            ...checkboxOptions,
-          });
-        }
-        props.setAutoScroll(true);
 
-        if (isCommand) {
+        // A second Enter while a check is in flight, or while a warning is
+        // open, must not leave a row that nobody is going to send.
+        if (!isCommand && (ruleWarning || ruleCheckBusy.current)) return;
+
+        const anonymous =
+          Boolean(abilityName) || Boolean(meetings[selTab]?.anonymous);
+
+        // Replies quote a server-side message the client cannot fabricate, so
+        // they keep the plain send path. Ordinary speech gets an optimistic row
+        // that the server's own message replaces on arrival.
+        // Time-sorted transcripts (singleState games) place rows by the
+        // server's time. A row stamped with the local Enter time would sort
+        // above messages that arrive meanwhile and then jump when the server's
+        // later time replaces it, so those games keep the plain send path.
+        const pendingId =
+          !isCommand &&
+          !reply &&
+          !abilityName &&
+          !singleState &&
+          (anonymous || Boolean(self))
+            ? `pending:${Date.now().toString(36)}${Math.random()
+                .toString(36)
+                .slice(2, 8)}`
+            : null;
+
+        if (pendingId) {
+          addPendingRow({
+            id: pendingId,
+            meetingId: selTab,
+            senderId: anonymous ? "anonymous" : self,
+            content,
+          });
           setSpeechInput("");
+          props.setAutoScroll(true);
+        }
+
+        // The verdict token returned by /api/rules/check. The games process
+        // counts the message only if this token comes with a message it
+        // actually accepts, so a cancelled dialog is never counted.
+        let ruleToken = null;
+
+        const deliver = () => {
+          if (isCommand) {
+            pendingSpeechRef.current = null;
+          } else {
+            pendingSpeechRef.current = {
+              content,
+              anonymous:
+                Boolean(abilityName) || Boolean(meetings[selTab]?.anonymous),
+            };
+          }
+
+          if (reply) {
+            socket.send("reply", {
+              ...reply,
+              message: {
+                ...reply.message,
+                ...(ruleToken ? { ruleToken } : {}),
+              },
+            });
+            setReplyTarget(null);
+          } else {
+            socket.send("speak", {
+              content,
+              meetingId: selTab,
+              abilityName,
+              abilityTarget,
+              ...checkboxOptions,
+              ...(ruleToken ? { ruleToken } : {}),
+            });
+          }
+          props.setAutoScroll(true);
+
+          if (isCommand) {
+            setSpeechInput("");
+          }
+        };
+
+        // Commands are not chat content. Everything else is scored by the rule
+        // filter first; a flagged message still sends after confirmation.
+        if (isCommand || !rulesEnabled) {
+          deliver();
+        } else {
+          ruleCheckBusy.current = true;
+          axios
+            .post(
+              "/api/rules/check",
+              { content: maskNamesForRules(content), gameId: game.gameId },
+              { timeout: 3000 }
+            )
+            .then((res) => {
+              const flagged = res.data;
+              ruleToken = (flagged && flagged.token) || null;
+              if (flagged && flagged.flagged) {
+                const warning = { ...flagged, deliver, pendingId, content };
+                ruleWarningRef.current = warning;
+                setRuleWarning(warning);
+              } else {
+                deliver();
+              }
+            })
+            .catch(() => deliver())
+            .finally(() => {
+              ruleCheckBusy.current = false;
+            });
         }
       }
     } else if (e.key === "Tab" && !e.shiftKey) {
@@ -4039,6 +4283,35 @@ function SpeechInput(props) {
       speechInput ? `${speechInput.trimRight()} ${emote} ` : `${emote} `
     );
   }
+
+  function closeRuleWarning() {
+    ruleWarningRef.current = null;
+    setRuleWarning(null);
+  }
+
+  function editRuleWarning() {
+    const warning = ruleWarningRef.current;
+    closeRuleWarning();
+    if (!warning) return;
+    if (warning.pendingId) removePendingRow(warning.pendingId);
+    setSpeechInput(warning.content || "");
+  }
+
+  function confirmRuleWarning() {
+    const warning = ruleWarningRef.current;
+    closeRuleWarning();
+    if (!warning) return;
+
+    // Confirming an abuse warning means the account now has a flagged message;
+    // keep the warning on for the next one (the setting can still be turned off).
+    if (warning.category === "abuse") {
+      axios.post("/api/rules/ack", { category: "abuse" }).catch(() => {});
+    }
+    warning.deliver();
+  }
+
+  // Keep the Enter handler pointed at the latest confirm function.
+  confirmRuleWarningRef.current = confirmRuleWarning;
 
   const replyMessage = replyTarget?.message;
   const replySender =
@@ -4135,6 +4408,61 @@ function SpeechInput(props) {
           onEmoteSelected={onEmoteSelected}
         />
       </div>
+      <Dialog
+        open={Boolean(ruleWarning)}
+        onClose={editRuleWarning}
+        maxWidth="xs"
+        fullWidth
+        data-testid="rule-warning-dialog"
+      >
+        <DialogTitle
+          component="div"
+          sx={{ display: "flex", gap: 2, alignItems: "flex-start", pr: 3 }}
+        >
+          <img
+            src={jailerIcon}
+            alt=""
+            aria-hidden="true"
+            width={72}
+            height={72}
+            style={{ flexShrink: 0, imageRendering: "pixelated", marginTop: 2 }}
+          />
+          <div>
+            <Typography
+              variant="h6"
+              component="h2"
+              sx={{ fontSize: "1.1rem", lineHeight: 1.3 }}
+            >
+              Send this message?
+            </Typography>
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              This reads like{" "}
+              <strong>
+                {ruleWarning &&
+                ruleWarning.category === "outside_game_influence"
+                  ? "outside game influence"
+                  : "personal attacks"}
+              </strong>
+              {ruleWarning &&
+              ruleWarning.category === "outside_game_influence"
+                ? " — accusing someone of breaking a rule, or implying a report."
+                : " — an attack on another player or group."}{" "}
+              You can still send it.
+            </Typography>
+          </div>
+        </DialogTitle>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={editRuleWarning}>Edit</Button>
+          <Button
+            variant="contained"
+            color="warning"
+            onClick={confirmRuleWarning}
+            data-testid="rule-warning-send"
+          >
+            Send anyway
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
@@ -6973,6 +7301,52 @@ export function useHistoryReducer() {
           }
           break;
         }
+        case "addPendingMessage": {
+          const pendingStateData = history.states[history.currentState];
+          const pendingMeeting =
+            pendingStateData &&
+            pendingStateData.meetings[action.message.meetingId];
+          if (!pendingMeeting) break;
+
+          return update(history, {
+            states: {
+              [history.currentState]: {
+                meetings: {
+                  [action.message.meetingId]: {
+                    messages: { $push: [action.message] },
+                  },
+                },
+              },
+            },
+          });
+        }
+        case "removePendingMessage": {
+          // The state can advance while a message is unconfirmed, so look in
+          // every state rather than only the one that is on screen.
+          const pendingStates = {};
+          Object.keys(history.states).forEach((stateId) => {
+            const meeting =
+              history.states[stateId].meetings &&
+              history.states[stateId].meetings[action.meetingId];
+            if (
+              meeting &&
+              (meeting.messages || []).some((m) => m.id === action.id)
+            ) {
+              pendingStates[stateId] = {
+                meetings: {
+                  [action.meetingId]: {
+                    messages: {
+                      $set: removePending(meeting.messages, action.id),
+                    },
+                  },
+                },
+              };
+            }
+          });
+          if (!Object.keys(pendingStates).length) break;
+
+          return update(history, { states: pendingStates });
+        }
         case "addMessage": {
           const currentStateData = history.states[history.currentState];
           if (currentStateData) {
@@ -6982,6 +7356,27 @@ export function useHistoryReducer() {
             if (message.meetingId) {
               const meeting = currentStateData.meetings[message.meetingId];
               if (meeting) {
+                // An optimistic row for this message is already on screen:
+                // replace it in place so the line does not jump to the end
+                // when the server confirms it.
+                const replaced = replacePending(
+                  meeting.messages,
+                  message
+                );
+                if (replaced) {
+                  return update(history, {
+                    states: {
+                      [history.currentState]: {
+                        meetings: {
+                          [message.meetingId]: {
+                            messages: { $set: replaced },
+                          },
+                        },
+                      },
+                    },
+                  });
+                }
+
                 // Pure duplicate check: a repeated delivery or a replay of
                 // history after reconnecting must not add a second row. The
                 // reducer must not mutate anything, because React may call it
@@ -6992,13 +7387,20 @@ export function useHistoryReducer() {
                 ) {
                   break;
                 }
+                // A message that arrives while an optimistic row is waiting
+                // was accepted first, so it goes before the row.
+                const messages = insertBeforePending(
+                  meeting.messages,
+                  message
+                );
+
                 return update(history, {
                   states: {
                     [history.currentState]: {
                       meetings: {
                         [message.meetingId]: {
                           messages: {
-                            $push: [message],
+                            $set: messages,
                           },
                         },
                       },
@@ -7041,13 +7443,18 @@ export function useHistoryReducer() {
             ) {
               break;
             }
+            // A quote is a message like any other: if one of this client's
+            // own rows is still waiting, the quote was accepted first.
             return update(history, {
               states: {
                 [history.currentState]: {
                   meetings: {
                     [action.quote.toMeetingId]: {
                       messages: {
-                        $push: [action.quote],
+                        $set: insertBeforePending(
+                          quoteMeeting.messages,
+                          action.quote
+                        ),
                       },
                     },
                   },
