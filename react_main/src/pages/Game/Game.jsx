@@ -34,6 +34,7 @@ import Newspaper, {
 } from "../../components/gameComponents/Newspaper";
 import { newspaperPlayer } from "../../utils/newspaperPlayers";
 import { legacyObituaryMessages } from "../../utils/legacyObituaries";
+import { dayExtensionHint } from "../../utils/dayExtensionHint";
 import MafiaGame from "./MafiaGame";
 import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
@@ -3715,6 +3716,7 @@ function SpeechInput(props) {
   const isCurrentState = props.isCurrentState;
   const players = props.players;
   const spectatorChat = !!props.spectatorChat;
+  const extensionHint = dayExtensionHint(game, isCurrentState);
 
   const speechInput = props.speechInput;
   const setSpeechInput = props.setSpeechInput;
@@ -4051,6 +4053,21 @@ function SpeechInput(props) {
 
   return (
     <div className="speech-input-area" data-tutorial="chat-input">
+      {extensionHint && (
+        <Box
+          id="day-extension-hint"
+          sx={{
+            flexBasis: "100%",
+            minWidth: 0,
+            px: 1,
+            py: 0.5,
+            color: "var(--scheme-color-text)",
+            fontSize: "0.875rem",
+          }}
+        >
+          {extensionHint}
+        </Box>
+      )}
       {replyMessage && (
         <div className="reply-preview">
           <i className="fas fa-reply" />
@@ -4085,6 +4102,7 @@ function SpeechInput(props) {
             aria-autocomplete="none"
             name="MafiaSpeech"
             inputProps={{
+              "aria-describedby": extensionHint ? "day-extension-hint" : undefined,
               inputMode: "text",
               autoCorrect: "on",
               autoCapitalize: "on",
