@@ -6,7 +6,7 @@ const roleData = require("../data/roles");
 const logger = require("../modules/logging")(".");
 
 /**
- * Migration: retire "No Event", Bloodhound, and Lurker from Mafia setups.
+ * Migration: retire "No Event" from Mafia setups, and rewrite Soprano.
  *
  * "No Event" was a blank event-pool entry. Each non-banished copy is converted
  * into NoEventChance, the percent of event slots that should be skipped:
@@ -20,15 +20,12 @@ const logger = require("../modules/logging")(".");
  * "No Event:Banished". Banished copies are removed and do not affect the
  * percentage.
  *
- * Bloodhound, Lurker, Debtor, and Prince are rewritten in the same pass. Each setup role key
+ * Soprano is rewritten in the same pass. Each setup role key
  * is "Name" or "Name:Mod1/Mod2". A modifier is added only when it is missing,
  * and the modifier list is sorted alphabetically. Counts for keys that land
  * on the same string are added together.
  *
- *   Bloodhound -> Tracker:Binary
- *   Lurker     -> Scout:Binary
- *   Debtor     -> Manhunter:Desperate
- *   Prince     -> Politician
+ *   Soprano -> Doctor:Rakish
  *
  * Counts are the role-key weights already stored on the setup.
  *
@@ -70,10 +67,7 @@ function mongoConnectOptions() {
 }
 
 const ROLE_REPLACEMENTS = {
-  Bloodhound: { name: "Tracker", addModifier: "Binary" },
-  Lurker: { name: "Scout", addModifier: "Binary" },
-  Debtor: { name: "Manhunter", addModifier: "Desperate" },
-  Prince: { name: "Politician" },
+  Soprano: { name: "Doctor", addModifier: "Rakish" },
 };
 
 function isBanishedKey(key) {

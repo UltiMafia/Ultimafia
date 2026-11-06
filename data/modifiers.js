@@ -977,6 +977,14 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Vain"],
     },
+    Rakish: {
+      category: "Visits",
+      internal: ["Rakish"],
+      tags: ["Killing", "Death Interaction", "Linked", "Visits"],
+      description:
+        "If you die, the player you most recently protected will also die.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Regretful: {
       category: "Visits",
       internal: ["Regretful"],

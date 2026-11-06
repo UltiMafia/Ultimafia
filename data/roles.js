@@ -419,16 +419,6 @@ const roleData = {
         },
       ],
     },
-    Soprano: {
-      alignment: "Village",
-      category: "Protective",
-      tags: ["Protective", "Visiting", "Death Interaction", "Basic", "Killing"],
-      description: [
-        "Each night, you can choose to visit one player and protect them from death.",
-        "If you die, the player you most recently protected will also die.",
-      ],
-      nightOrder: [["Protect", PRIORITY_NIGHT_SAVER]],
-    },
     Martyr: {
       alignment: "Village",
       category: "Protective",
