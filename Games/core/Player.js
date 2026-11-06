@@ -470,6 +470,9 @@ module.exports = class Player {
         var meeting = this.game.getMeeting(quote.toMeetingId);
         if (!meeting) return;
 
+        const sourceMeeting = this.game.getMeeting(quote.fromMeetingId, quote.fromState);
+        if (!sourceMeeting || !sourceMeeting.messages.some((target) => target.id === quote.messageId)) return;
+
         const posted = postQuote(meeting, quote);
         if (!posted) return;
 
