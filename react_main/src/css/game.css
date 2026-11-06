@@ -245,6 +245,12 @@ html[data-keyboard="open"] .game .meeting-tabs {
   padding-bottom: 10px;
 }
 
+/* A virtual item wrapper makes every message a DOM last child. Keep the
+   transcript's trailing padding only on its actual final row, not every item. */
+.game .transcript-window-row:not([data-transcript-last-row]) > .message:last-child {
+  padding-bottom: 3px;
+}
+
 .game .message .time {
   opacity: 0.5;
   min-width: 40px;

@@ -87,6 +87,8 @@ import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { hyphenDelimit } from "../../utils";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { pregameSeatAction } from "shared/pregameSeatAction";
+import { useLongPress } from "../../hooks/useLongPress.jsx";
+import { WindowedTranscript } from "./components/WindowedTranscript";
 import { bindMessageTouch } from "../../utils/messageTouch";
 import {
   Accordion,
@@ -2237,6 +2239,10 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   const { isolationEnabled, isolatedPlayers, isSpectator } = game;
   const { history, players, stateViewing, updateHistory, settings, filters, spectators } =
     game;
+  // Explicit fixture overrides win; partial legacy contexts retain the full DOM.
+  const windowed = typeof game.transcriptWindowing === "boolean"
+    ? game.transcriptWindowing
+    : settings.virtualizeTranscript === true;
 
   const stateInfo = history.states[stateViewing];
   const meetings = stateInfo ? stateInfo.meetings : EMPTY_CHAT_STATE.meetings;
@@ -2477,12 +2483,12 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   // transcript. Cancel pending work when the user scrolls away or changes tabs.
   useEffect(() => {
     const container = speechDisplayRef.current;
-    if (!autoScroll || !container) return;
+    if (windowed || !autoScroll || !container) return;
     const frame = requestAnimationFrame(() => {
       container.scrollTo(0, container.scrollHeight);
     });
     return () => cancelAnimationFrame(frame);
-  }, [messages, autoScroll]);
+  }, [messages, autoScroll, windowed]);
 
   // Keep the newest message in view when the transcript is resized, e.g. when
   // the on-screen keyboard opens and the game frame shrinks (which grows the
@@ -2490,13 +2496,13 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   // the bottom).
   useEffect(() => {
     const container = speechDisplayRef.current;
-    if (!container || typeof ResizeObserver === "undefined") return;
+    if (windowed || !container || typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(() => {
       if (autoScroll) container.scrollTo(0, container.scrollHeight);
     });
     observer.observe(container);
     return () => observer.disconnect();
-  }, [autoScroll]);
+  }, [autoScroll, windowed]);
 
   const newMessageCount = useNewMessageCount({
     messageCount: messages.length,
@@ -2569,14 +2575,20 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
       </Box>
 
       <div className="speech-wrapper" data-tutorial="chat-panel">
-        <div
+        {windowed ? <WindowedTranscript
+          key={JSON.stringify([singleState, stateViewing, selTab, filters, settings.messageLayout])}
+          rows={messages}
+          speechDisplayRef={speechDisplayRef}
+          onScroll={onSpeechScroll}
+          autoScroll={autoScroll}
+        /> : <div
           className="speech-display"
           data-name-animation-viewport
           onScroll={onSpeechScroll}
           ref={speechDisplayRef}
         >
           {messages}
-        </div>
+        </div>}
         <div className="speech-footer">
           {newMessageCount > 0 && (
             <button
@@ -2978,7 +2990,12 @@ function ReplyReference(props) {
   function jumpToOriginal(e) {
     e.stopPropagation();
     const row = findMessageRow(e.currentTarget.closest(".message"), reply.messageId);
-    if (!row) return;
+    if (!row) {
+      e.currentTarget.closest(".speech-display")?.dispatchEvent(
+        new CustomEvent("transcript-jump", { detail: { messageId: reply.messageId } })
+      );
+      return;
+    }
     row.scrollIntoView({ block: "center", behavior: "smooth" });
     row.classList.remove("reply-jump-highlight");
     // Restart the highlight animation on repeated clicks.
@@ -6414,7 +6431,22 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
       step: 0.1,
       value: settings.importantVolume,
     },
+    {
+      label: "Virtualize transcript",
+      ref: "virtualizeTranscript",
+      type: "boolean",
+      value: settings.virtualizeTranscript,
+    },
   ]);
+
+  // Settings may load after this form mounts; reflect the persisted preference.
+  useEffect(() => {
+    updateFormFields({
+      ref: "virtualizeTranscript",
+      prop: "value",
+      value: settings.virtualizeTranscript,
+    });
+  }, [settings.virtualizeTranscript, updateFormFields]);
 
   function handleFieldChange(action) {
     if (
@@ -6482,6 +6514,11 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
         </Button>
       )}
       <Form compact fields={formFields.slice(1)} onChange={handleFieldChange} />
+      <Typography variant="caption" color="text.secondary">
+        Virtualization keeps long chats responsive by rendering only nearby messages.
+        To use browser Find (Ctrl/Cmd+F) or select the full history, turn off
+        Virtualize transcript and click Save. Loading the full history may be slower.
+      </Typography>
     </Stack>
   );
 
@@ -7377,6 +7414,7 @@ export function useSettingsReducer() {
     messageLayout: "default",
     legacyObituaries: false,
     highlightMentions: true,
+    virtualizeTranscript: true,
   };
 
   function clampVolume(value, fallback = 1) {
