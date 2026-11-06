@@ -2320,15 +2320,15 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   }
 
   function onSpeechScroll() {
-    if (hasMouse && !mouseMoved) {
-      doAutoScroll();
-      return;
-    }
-
     var speech = speechDisplayRef.current;
     const scrollTop = Math.round(speech.scrollTop);
     const scrolledUp = scrollTop < lastSpeechScrollTop.current;
     lastSpeechScrollTop.current = scrollTop;
+
+    if (hasMouse && !mouseMoved) {
+      doAutoScroll();
+      return;
+    }
 
     if (
       Math.round(speech.scrollTop + speech.clientHeight) >=
