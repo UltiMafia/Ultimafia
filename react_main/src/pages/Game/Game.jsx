@@ -3346,7 +3346,7 @@ const MessageRow = React.memo(function MessageRow(props) {
 
   let className = "message";
   if (message.spectatorChat) className += " spectator-chat";
-  else if (props.iWasPinged) className += " mention";
+  if (props.iWasPinged) className += " mention";
   // A reply shows what it answers above its header (see ReplyReference). One
   // whose quote cannot be found keeps the indented look.
   if (message.replyTo && !message.isQuote && !props.replyPreview)
