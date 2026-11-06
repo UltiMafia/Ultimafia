@@ -102,9 +102,13 @@ async function createGame(hostId, gameType, settings) {
   const registeredPorts = await redis.getAllGameServerPorts();
   const ready = (socket) =>
     socket && socket.readyState === 1 && socket.canCreateGames && !socket.deprecated;
-  // Only fall back to ports still registered: a games process removes its
-  // registration on close without a deprecate event, while its socket is open.
-  const port = [preferredPort, ...registeredPorts].find((port) => ready(servers[port]));
+  // Only use ports still registered, the next port included: a games process
+  // removes its registration on close without a deprecate event, while its
+  // socket is open, and that can happen between the two reads above.
+  const candidates = registeredPorts.includes(preferredPort)
+    ? [preferredPort, ...registeredPorts]
+    : registeredPorts;
+  const port = candidates.find((port) => ready(servers[port]));
   const socket = servers[port];
 
   if (!socket) throw new Error("No game server is ready to host a game.");

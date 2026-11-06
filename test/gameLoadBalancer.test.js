@@ -5,7 +5,7 @@ const sockets = require("../lib/sockets");
 
 describe("Game load balancer recovery", function () {
   this.timeout(5000);
-  let server, port, registry, clients, subscribers, restore, options, creations;
+  let server, port, registry, nextPort, clients, subscribers, restore, options, creations;
   let savedEnv;
 
   async function startWebsite() {
@@ -20,7 +20,7 @@ describe("Game load balancer recovery", function () {
         return subscriber;
       } },
       getAllGameServerPorts: async () => [...registry],
-      getNextGameServerPort: async () => [...registry][0],
+      getNextGameServerPort: async () => (nextPort !== undefined ? nextPort : [...registry][0]),
       registerGameServer: async (value) => { registry.add(Number(value)); },
       removeGameServer: async (value) => { registry.delete(Number(value)); },
     };
@@ -67,6 +67,7 @@ describe("Game load balancer recovery", function () {
     await once(server, "listening");
     port = server.address().port;
     registry = new Set([port]);
+    nextPort = undefined;
     server.on("connection", (peer) => {
       const socket = new sockets.ServerSocket(peer);
       if (options.greet)
@@ -222,6 +223,58 @@ describe("Game load balancer recovery", function () {
       replacement.clients.forEach((peer) => peer.terminate());
       await new Promise((resolve) => replacement.close(resolve));
     }
+  });
+
+  async function hostAfterNextPortLeaves(replacementReady) {
+    // The first read still returned this port; the registry no longer lists it
+    // when the balancer reads all ports, while its socket stays open and ready.
+    const replacement = new WebSocket.Server({ port: 0 });
+    await once(replacement, "listening");
+    const peers = [];
+    replacement.on("connection", (peer) => peers.push(new sockets.ServerSocket(peer)));
+    try {
+      registry = new Set([port, replacement.address().port]);
+      const balancer = await startWebsite();
+      await waitFor(() => clients[0].canCreateGames && peers.length === 1);
+      const hosted = [];
+      peers[0].on("createGame", (data) => {
+        hosted.push(data);
+        peers[0].send("gameCreated", data.gameId);
+      });
+      if (replacementReady) {
+        peers[0].send("connected", { serverAuthentication: true });
+        peers[0].send("serverAuthenticated");
+        await waitFor(() => clients[1].canCreateGames);
+      }
+      registry.delete(port);
+      nextPort = port;
+
+      let gameId, failure;
+      try {
+        gameId = await balancer.createGame("host", "Mafia", {});
+      } catch (error) {
+        failure = error;
+      }
+      return { gameId, failure, hosted };
+    } finally {
+      clients.forEach((client) => client.clear());
+      replacement.clients.forEach((peer) => peer.terminate());
+      await new Promise((resolve) => replacement.close(resolve));
+    }
+  }
+
+  it("hosts on a registered port when the next port leaves the registry between reads", async function () {
+    const { gameId, failure, hosted } = await hostAfterNextPortLeaves(true);
+    expect(failure).to.equal(undefined);
+    expect(hosted.map((game) => game.gameId)).to.deep.equal([gameId]);
+    expect(creations).to.have.length(0);
+  });
+
+  it("rejects when the next port leaves the registry between reads and no registered port is ready", async function () {
+    const { failure, hosted } = await hostAfterNextPortLeaves(false);
+    expect(failure && failure.message).to.equal("No game server is ready to host a game.");
+    expect(hosted).to.have.length(0);
+    expect(creations).to.have.length(0);
   });
 
   it("removes an explicitly deprecated port and ignores later authentication replies", async function () {
