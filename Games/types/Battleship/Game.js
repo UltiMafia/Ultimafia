@@ -73,10 +73,6 @@ module.exports = class BattleshipGame extends Game {
     super.createNextStateTimer(stateInfo);
   }
 
-  getPlayerTotal() {
-    return PLAYER_TOTAL;
-  }
-
   checkGameStart() {
     if (Number(this.setup.total) !== PLAYER_TOTAL) {
       this.sendAlert(
@@ -144,11 +140,6 @@ module.exports = class BattleshipGame extends Game {
 
   cellKey(row, col) {
     return `${row},${col}`;
-  }
-
-  parseCellKey(key) {
-    const [row, col] = key.split(",").map(Number);
-    return { row, col };
   }
 
   getOpponent(player) {

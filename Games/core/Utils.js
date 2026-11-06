@@ -60,50 +60,6 @@ module.exports = class Utils {
     return {}[prop] == null;
   }
 
-  static numToPos(n) {
-    n = String(n);
-
-    var lastDigit = n[n.length - 1];
-    var secLastDigit = n.length > 1 ? n[n.length - 2] : "";
-
-    if (secLastDigit == "1") return `${n}th`;
-
-    if (lastDigit == "1") return `${n}st`;
-
-    if (lastDigit == "2") return `${n}nd`;
-
-    if (lastDigit == "3") return `${n}rd`;
-
-    return `${n}th`;
-  }
-
-  //#region Text color stuff
-  static getIncreasedBrightness(color1, color2) {
-    let contrastVal = colorContrast(color1, color2);
-    if (contrastVal < 1.5) {
-      return this.increaseBrightness(color1, 60);
-    } else if (contrastVal <= 2.5) {
-      return this.increaseBrightness(color1, 45);
-    } else if (contrastVal <= 4.5) {
-      return this.increaseBrightness(color1, 30);
-    } else {
-      return color1;
-    }
-  }
-
-  static getDecreasedBrightness(color1, color2) {
-    let contrastVal = colorContrast(color1, color2);
-    if (contrastVal < 1.5) {
-      return this.decreaseBrightness(color1, 50);
-    } else if (contrastVal <= 2.5) {
-      return this.decreaseBrightness(color1, 40);
-    } else if (contrastVal <= 4.5) {
-      return this.decreaseBrightness(color1, 30);
-    } else {
-      return color1;
-    }
-  }
-
   static increaseBrightness(color, percent) {
     let num = parseInt(color.replace("#", ""), 16),
       amt = Math.round(2.55 * percent),
