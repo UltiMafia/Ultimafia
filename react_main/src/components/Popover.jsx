@@ -1014,7 +1014,7 @@ export function parseGamePopover(game) {
 
   switch (game.type) {
     case "Mafia":
-      var extendLength = game.settings.gameTypeOptions.extendLength || 3;
+      var extendLength = game.settings.gameTypeOptions.extendLength ?? 3;
       var pregameWaitLength =
         game.settings.gameTypeOptions.pregameWaitLength || 1;
       var advancedHosting = game.settings.gameTypeOptions.advancedHosting;
@@ -1022,7 +1022,13 @@ export function parseGamePopover(game) {
         <InfoSection title="Mafia specific settings">
           <InfoRow
             title="Extension Length"
-            content={<Time millisec={extendLength * 60 * 1000} />}
+            content={
+              extendLength === 0 || extendLength === "0" ? (
+                "Disabled"
+              ) : (
+                <Time millisec={extendLength * 60 * 1000} />
+              )
+            }
             key="extendLength"
           />
           <InfoRow
