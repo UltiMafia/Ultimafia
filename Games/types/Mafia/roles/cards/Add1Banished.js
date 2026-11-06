@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
+const { roleEquals } = require("../../../../../lib/roleIdentity");
 
 module.exports = class Add1Banished extends Card {
   constructor(role) {
@@ -25,32 +26,12 @@ module.exports = class Add1Banished extends Card {
           let currentBanishedPlayers = this.game.players.filter(
             (p) => p.role.data.banished
           );
-          let currentBanishedRoles = [];
-          for (let x = 0; x < currentBanishedPlayers.length; x++) {
-            let tempName = currentBanishedPlayers[x].role.name;
-            let tempModifier = currentBanishedPlayers[x].role.modifier;
-            currentBanishedRoles.push(`${tempName}:${tempModifier}`);
-          }
-          let match = false;
-          let validRoles = [];
-          for (let x = 0; x < roles.length; x++) {
-            for (let y = 0; y < currentBanishedRoles.length; y++) {
-              if (roles[x] == currentBanishedRoles[y]) {
-                roles.slice(roles.indexOf(roles[x]), 1);
-                match = true;
-              }
-            }
-            if (!match) {
-              validRoles.push(roles[x]);
-            }
-            match = false;
-            /*
-            if (currentBanishedRoles.includes(roles[x])) {
-              roles.slice(roles.indexOf(roles[x]), 1);
-            }
-            */
-          }
-          roles = validRoles;
+          const currentBanishedRoles = currentBanishedPlayers.map((p) =>
+            p.role.toRoleData()
+          );
+          roles = roles.filter(
+            (role) => !currentBanishedRoles.some((current) => roleEquals(role, current))
+          );
         }
         if (roles.length <= 0) return;
         let newRole = Random.randArrayVal(roles);
@@ -67,7 +48,8 @@ module.exports = class Add1Banished extends Card {
           "RemoveStartingItems"
         );
         //this.game.originalRoles[suffledPlayers[0].id] = newRole;
-        roles.slice(roles.indexOf(newRole), 1);
+        const selectedIndex = roles.findIndex((role) => roleEquals(role, newRole));
+        if (selectedIndex !== -1) roles.splice(selectedIndex, 1);
       },
     };
   }

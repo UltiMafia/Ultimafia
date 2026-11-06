@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
+const { roleEquals } = require("../../../../../lib/roleIdentity");
 
 module.exports = class RemoveEvilRoles extends Card {
   constructor(role) {
@@ -20,14 +21,12 @@ module.exports = class RemoveEvilRoles extends Card {
           let playersAll = this.game.players.filter((p) => p.role);
           for (let x = 0; x < playersAll.length; x++) {
             //currentRoles.push(playersAll[x].role);
-            let tempName = playersAll[x].role.name;
-            let tempModifier = playersAll[x].role.modifier;
-            currentRoles.push(`${tempName}:${tempModifier}`);
+            currentRoles.push(playersAll[x].role.toRoleData());
           }
           if (this.game.setup.unique) {
             for (let y = 0; y < currentRoles.length; y++) {
               roles = roles.filter(
-                (r) => r != currentRoles[y] && !currentRoles[y].includes(r)
+                (r) => !roleEquals(r, currentRoles[y])
               );
             }
           }

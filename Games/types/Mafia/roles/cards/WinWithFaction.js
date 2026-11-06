@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const { roleName } = require("../../../../../lib/roleIdentity");
 const {
   PRIORITY_WIN_CHECK_DEFAULT,
   PRIORITY_SUNSET_DEFAULT,
@@ -542,7 +543,7 @@ module.exports = class WinWithFaction extends Card {
         for (let z = 0; z < this.game.PossibleRoles.length; z++) {
           if (
             this.game
-              .getRoleTags(this.game.PossibleRoles[z].split(":")[0])
+                            .getRoleTags(roleName(this.game.PossibleRoles[z]))
               .includes("Independent Faction")
           ) {
             this.game.IndependentFaction = true;
@@ -628,7 +629,7 @@ module.exports = class WinWithFaction extends Card {
               .includes("Endangered") &&
             !this.game
               .getRoleTags(
-                `${this.player.role.name}:${this.player.role.modifier}`
+                this.player.role
               )
               .join("")
               .includes("Demonic") &&
@@ -764,7 +765,7 @@ module.exports = class WinWithFaction extends Card {
           for (let z = 0; z < this.game.PossibleRoles.length; z++) {
             if (
               this.game
-                .getRoleTags(this.game.PossibleRoles[z].split(":")[0])
+                              .getRoleTags(roleName(this.game.PossibleRoles[z]))
                 .includes("Independent Faction")
             ) {
               this.game.IndependentFaction = true;

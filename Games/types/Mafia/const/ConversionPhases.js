@@ -1,6 +1,7 @@
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 const { PRIORITY_CONVERT_DEFAULT } = require("./Priority");
+const { roleName } = require("../../../../lib/roleIdentity");
 
 const CONVERSION_PHASES = [
   {
@@ -41,7 +42,7 @@ function setupRoleNames(game) {
   const names = new Set();
   const add = (role) => {
     if (!role) return;
-    names.add(String(role).split(":")[0]);
+    names.add(roleName(role));
   };
 
   for (let role of game.PossibleRoles || []) add(role);
@@ -49,7 +50,9 @@ function setupRoleNames(game) {
   const collectRoleset = (roleset) => {
     if (!roleset) return;
     if (Array.isArray(roleset)) {
-      for (let role of roleset) add(role);
+      for (let entry of roleset) {
+        add(entry && entry.role ? entry.role : entry);
+      }
       return;
     }
     if (typeof roleset == "object") {

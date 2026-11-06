@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
+const { roleKey, roleName } = require("../../../../../lib/roleIdentity");
 
 module.exports = class VampireAppearAsRoles extends Card {
   constructor(role) {
@@ -9,19 +10,19 @@ module.exports = class VampireAppearAsRoles extends Card {
       .getAllRoles()
       .filter(
         (r) =>
-          role.game.getRoleAlignment(r) === "Cult" ||
-          role.game.getRoleAlignment(r) === "Mafia"
+          role.game.getRoleAlignment(roleName(r)) === "Cult" ||
+          role.game.getRoleAlignment(roleName(r)) === "Mafia"
       );
 
     let randomNonVampire = evilRoles.filter(
-      (r) => r.split(":")[0] != "Vampire"
+      (r) => roleName(r) != "Vampire"
     );
 
     if (randomNonVampire.length <= 0) return;
 
     const randomEvilRole = Random.randArrayVal(randomNonVampire);
 
-    const roleAppearance = randomEvilRole;
+    const roleAppearance = roleKey(randomEvilRole);
 
     //const selfAppearance = role.name == "Miller" ? "Villager" : "real";
 

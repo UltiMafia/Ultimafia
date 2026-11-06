@@ -76,9 +76,9 @@ module.exports = class RevealInfo extends Information {
     } else if (this.truthValue == "Favorable") {
       OtherRoles = OtherRoles.filter(
         (r) =>
-          this.game.getRoleAlignment(r.split(":")[0]) == "Village" ||
-          (this.game.getRoleAlignment(r.split(":")[0]) == "Independent" &&
-            !this.game.getRoleTags(r.split(":")[0]).includes("Hostile"))
+          this.game.getRoleAlignment(roleName(r)) == "Village" ||
+          (this.game.getRoleAlignment(roleName(r)) == "Independent" &&
+            !this.game.getRoleTags(r).includes("Hostile"))
       );
       if (OtherRoles.length <= 0) {
         OtherRoles.push("Villager");
@@ -89,10 +89,10 @@ module.exports = class RevealInfo extends Information {
     } else if (this.truthValue == "Unfavorable") {
       OtherRoles = OtherRoles.filter(
         (r) =>
-          this.game.getRoleAlignment(r.split(":")[0]) != "Village" &&
+          this.game.getRoleAlignment(roleName(r)) != "Village" &&
           !(
-            this.game.getRoleAlignment(r.split(":")[0]) == "Independent" &&
-            !this.game.getRoleTags(r.split(":")[0]).includes("Hostile")
+            this.game.getRoleAlignment(roleName(r)) == "Independent" &&
+            !this.game.getRoleTags(r).includes("Hostile")
           )
       );
       if (OtherRoles.length <= 0) {

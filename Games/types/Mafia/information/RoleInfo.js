@@ -104,7 +104,7 @@ module.exports = class RoleInfo extends Information {
     );
 
     this.mainInfo = roles[0];
-    this.targetRole = roles[0].split(":")[0];
+    this.targetRole = roles[0].split(" (")[0];
   }
   makeFavorable() {
     if (this.isEvil(this.creator.faction)) {
@@ -127,7 +127,7 @@ module.exports = class RoleInfo extends Information {
     );
 
     this.mainInfo = roles[0];
-    this.targetRole = roles[0].split(":")[0];
+    this.targetRole = roles[0].split(" (")[0];
   }
   makeUnfavorable() {
     if (this.isEvil(this.creator)) {
@@ -140,12 +140,12 @@ module.exports = class RoleInfo extends Information {
       );
 
       this.mainInfo = rolesGood[0];
-      this.targetRole = rolesGood[0].split(":")[0];
+      this.targetRole = rolesGood[0].split(" (")[0];
       return;
     }
     let roles = this.getFakeRole(this.target, 1, true, this.investType, "Evil");
 
     this.mainInfo = roles[0];
-    this.targetRole = roles[0].split(":")[0];
+    this.targetRole = roles[0].split(" (")[0];
   }
 };

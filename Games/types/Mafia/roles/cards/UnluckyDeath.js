@@ -2,6 +2,7 @@ const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
+const { roleName } = require("../../../../../lib/roleIdentity");
 
 module.exports = class UnluckyDeath extends Card {
   constructor(role) {
@@ -52,9 +53,9 @@ module.exports = class UnluckyDeath extends Card {
           }
           shuffledPlayers = Random.randomizeArray(alivePlayers);
           if (this.actor.role.data.FakeWordKill) {
-            this.actor.role.cursedWord = Random.randArrayVal(roles, true)
-              .split(":")[0]
-              .toLowerCase();
+            this.actor.role.cursedWord = roleName(
+              Random.randArrayVal(roles, true)
+            ).toLowerCase();
             this.actor.giveEffect(
               "Cursed",
               this.actor,
@@ -81,7 +82,7 @@ module.exports = class UnluckyDeath extends Card {
           chance = 60;
         }
         for (let x = 0; x < roles.length; x++) {
-          let roleTags = this.game.getRoleTags(roles[x]);
+          let roleTags = this.game.getRoleTags(roleName(roles[x]));
           for (let v = 0; v < roleTags.length; v++) {
             if (
               roleTags[v] == "Vote Kills" &&

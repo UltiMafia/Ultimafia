@@ -26,6 +26,7 @@ const skillRatingModule = require("../modules/skillRating");
 const blocks = require("../modules/blocks");
 const { DEFAULT_MU, DEFAULT_SIGMA, MIN_RATED_GAMES } = skillRatingModule;
 const router = express.Router();
+const setupRoleCompatibility = require("../lib/setupRoleCompatibility");
 
 /** Keep in sync with `isRetroThemeForcedByCalendar` in react_main/src/utils/holidayThemes.js */
 function isRetroThemeForcedByCalendar(date = new Date()) {
@@ -789,8 +790,12 @@ router.get("/:id/profile", async function (req, res) {
       }));
     } else user.friendRequests = [];
 
-    for (let game of user.games)
+    for (let game of user.games) {
       if (game.status == null) game.status = "Finished";
+      if (game.setup && game.setup.roles) {
+        game.setup.roles = setupRoleCompatibility.setupRolesForApi(game.setup.roles);
+      }
+    }
 
     var inGame = await redis.inGame(userId);
     var game;
@@ -815,7 +820,7 @@ router.get("/:id/profile", async function (req, res) {
           useRoleGroups: game.settings.setup.useRoleGroups,
           roleGroupSizes: game.settings.setup.roleGroupSizes,
           count: game.settings.setup.count,
-          roles: game.settings.setup.roles,
+          roles: setupRoleCompatibility.setupRolesForApi(game.settings.setup.roles),
           total: game.settings.setup.total,
         },
         players: game.players.length,

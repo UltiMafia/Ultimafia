@@ -45,6 +45,9 @@ module.exports = class Role {
     this.actions = [];
     this.passiveActions = [];
     this.startItems = [];
+    // Item definitions supplied as part of this role's identity. Kept apart
+    // from startItems, which may also contain defaults from the role class.
+    this.roleItems = [];
     this.startEffects = [];
     this.immunity = {};
     this.cancelImmunity = {};
@@ -525,6 +528,14 @@ module.exports = class Role {
     if (meeting.instant || meeting.repeatable)
       this.game.instantAction(action, meeting);
     else this.game.queueAction(action);
+  }
+
+  toRoleData() {
+    return {
+      name: this.name,
+      modifiers: this.modifier ? this.modifier.split("/") : [],
+      items: JSON.parse(JSON.stringify(this.roleItems || [])),
+    };
   }
 
   speak(message) {

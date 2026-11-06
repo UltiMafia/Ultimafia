@@ -1,5 +1,6 @@
 const Information = require("../Information");
 const Random = require("../../../../lib/Random");
+const { roleName } = require("../../../../lib/roleIdentity");
 const {
   EVIL_FACTIONS,
   NOT_EVIL_FACTIONS,
@@ -437,19 +438,19 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
     if (isSimple) {
       roles = roles.filter(
         (r) =>
-          r.split(":")[0] == "Villager" ||
-          r.split(":")[0] == "Mafioso" ||
-          r.split(":")[0] == "Cultist" ||
-          r.split(":")[0] == "Grouch"
+          roleName(r) == "Villager" ||
+          roleName(r) == "Mafioso" ||
+          roleName(r) == "Cultist" ||
+          roleName(r) == "Grouch"
       );
     }
     if (isComplex) {
       roles = roles.filter(
         (r) =>
-          r.split(":")[0] != "Villager" &&
-          r.split(":")[0] != "Mafioso" &&
-          r.split(":")[0] != "Cultist" &&
-          r.split(":")[0] != "Grouch"
+          roleName(r) != "Villager" &&
+          roleName(r) != "Mafioso" &&
+          roleName(r) != "Cultist" &&
+          roleName(r) != "Grouch"
       );
     }
     if (isHoly) {

@@ -1,4 +1,5 @@
 const Effect = require("../Effect");
+const { roleName } = require("../../../../lib/roleIdentity");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 const { PRIORITY_DAY_EFFECT_DEFAULT } = require("../const/Priority");
@@ -20,7 +21,7 @@ module.exports = class DayTask extends Effect {
     let possibleTasks = [];
     let canDoTalkingTasks = this.player.alive || player.game.isTalkingDead();
     let canDoVotingTasks = this.player.alive || player.game.isVotingDead();
-    let Roles = this.taskCreator.getAllRoles().map((r) => r.split(":")[0]);
+    let Roles = this.taskCreator.getAllRoles().map((r) => roleName(r));
     /*
     //Whispers
     if (this.game.setup.whispers && canDoTalkingTasks) {

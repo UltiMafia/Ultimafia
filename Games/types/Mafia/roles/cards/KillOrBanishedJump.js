@@ -47,7 +47,7 @@ module.exports = class KillorBanishedJump extends Card {
                 if(action.dominates() && this.dominates(this.actor)){
                 this.role.data.hasJumped = true;
                 this.target.setRole(
-                  `${this.role.name}:${this.role.modifier}`,
+                  this.role.toRoleData(),
                   this.role.data
                 );
                 this.actor.kill("basic");

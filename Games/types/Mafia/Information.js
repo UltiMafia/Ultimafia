@@ -1,5 +1,6 @@
 const Action = require("../../core/Action");
 const Random = require("../../../lib/Random");
+const { roleEquals } = require("../../../lib/roleIdentity");
 const Player = require("../../core/Player");
 const {
   EVIL_FACTIONS,
@@ -420,11 +421,7 @@ module.exports = class MafiaInformation {
     if (this.target instanceof Player) {
       roles = this.game.PossibleRoles.filter(
         (r) =>
-          r !=
-            this.game.formatRoleInternal(
-              this.target.role.name,
-              this.target.role.modifier
-            ) &&
+          !roleEquals(r, this.target.role) &&
           !this.game.getRoleTags(r).includes("No Investigate") &&
           !this.game.getRoleTags(r).includes("Exposed")
       );

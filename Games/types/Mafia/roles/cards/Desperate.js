@@ -1,16 +1,20 @@
 const Card = require("../../Card");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const { roleEquals } = require("../../../../../lib/roleIdentity");
 
 function playerRole(player) {
-  return player.role.modifier
-    ? `${player.role.name}:${player.role.modifier}`
-    : player.role.name;
+  return player.role.toRoleData();
 }
 
 function matchesRoleList(roleToGuess, player) {
   if (!roleToGuess) return false;
   for (let name of roleToGuess) {
-    if (player.getRoleName() == name) return true;
+    if (
+      (typeof name === "string" && player.getRoleName() == name) ||
+      (typeof name !== "string" && roleEquals(player.role.toRoleData(), name))
+    ) {
+      return true;
+    }
   }
   return false;
 }
@@ -35,7 +39,7 @@ module.exports = class Desperate extends Card {
         let targetRole = this.role.data.targetRole;
         if (!targetRole) return;
 
-        if (targetRole != playerRole(this.target) && this.dominates(this.actor)) {
+        if (!roleEquals(targetRole, playerRole(this.target)) && this.dominates(this.actor)) {
           this.actor.kill("basic", this.actor);
         }
         delete this.role.data.targetRole;

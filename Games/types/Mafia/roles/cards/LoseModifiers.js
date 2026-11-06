@@ -3,6 +3,7 @@ const Random = require("../../../../../lib/Random");
 const AllRoles = require("../../../../../data/roles");
 const Action = require("../../Action");
 const { PRIORITY_BECOME_DEAD_ROLE } = require("../../const/Priority");
+const { roleWith } = require("../../../../../lib/roleIdentity");
 
 module.exports = class LoseModifiers extends Card {
   constructor(role) {
@@ -21,7 +22,7 @@ module.exports = class LoseModifiers extends Card {
           if (this.game.getStateName() != "Night") return;
 
           this.actor.setRole(
-            this.actor.role.name,
+            roleWith(this.actor.role, { modifiers: [] }),
             this.actor.role.data,
             false,
             false,

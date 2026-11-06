@@ -8,6 +8,7 @@ const {
 } = require("../../const/Priority");
 const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 const { CULT_FACTIONS } = require("../../const/FactionList");
+const { roleName } = require("../../../../../lib/roleIdentity");
 
 module.exports = class GhostGame extends Card {
   constructor(role) {
@@ -22,7 +23,7 @@ module.exports = class GhostGame extends Card {
         (p) => p.role && (p.role.name == "Host" || p.role.name == "Poet")
       ).length <= 0 &&
       role.game.StartingRoleset.filter(
-        (r) => r.split(":")[0] == "Poet" || r.split(":")[0] == "Host"
+        (r) => roleName(r) == "Poet" || roleName(r) == "Host"
       ).length <= 0
     ) {
       role.game.realWord = shuffledWordPack[0];

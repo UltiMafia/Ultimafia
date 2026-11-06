@@ -2,6 +2,7 @@ const Card = require("../../Card");
 const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
+const { roleName } = require("../../../../../lib/roleIdentity");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
 module.exports = class LearnAboutPlayerAndRole extends Card {
@@ -201,8 +202,8 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
             return;
           }
 
-          this.data.ConvertOptions = this.game.PossibleRoles.map(
-            (r) => r.split(":")[0]
+          this.data.ConvertOptions = this.game.PossibleRoles.map((r) =>
+            roleName(r)
           );
         },
         // refresh cooldown
