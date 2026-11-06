@@ -180,6 +180,50 @@ describe("Game load balancer recovery", function () {
     }
   });
 
+  it("never hosts on a ready socket whose port left the registry without deprecation", async function () {
+    // A games worker's onClose removes its registration before it exits,
+    // without a deprecate event; its socket can still be open and ready.
+    const replacement = new WebSocket.Server({ port: 0 });
+    await once(replacement, "listening");
+    const peers = [];
+    replacement.on("connection", (peer) => peers.push(new sockets.ServerSocket(peer)));
+    try {
+      registry = new Set([port, replacement.address().port]);
+      const balancer = await startWebsite();
+      await waitFor(() =>
+        clients[0].received.some((message) => message.eventName === "serverAuthenticated") &&
+        peers.length === 1
+      );
+      registry.delete(port);
+
+      let failure;
+      try {
+        await balancer.createGame("host", "Mafia", {});
+      } catch (error) {
+        failure = error;
+      }
+      expect(creations).to.have.length(0);
+      expect(failure && failure.message).to.equal("No game server is ready to host a game.");
+
+      // Hosting resumes on the registered replacement once it is ready.
+      const hosted = [];
+      peers[0].on("createGame", (data) => {
+        hosted.push(data);
+        peers[0].send("gameCreated", data.gameId);
+      });
+      peers[0].send("connected", { serverAuthentication: true });
+      peers[0].send("serverAuthenticated");
+      await waitFor(() => clients[1].canCreateGames);
+      const gameId = await balancer.createGame("host", "Mafia", {});
+      expect(hosted.map((game) => game.gameId)).to.deep.equal([gameId]);
+      expect(creations).to.have.length(0);
+    } finally {
+      clients.forEach((client) => client.clear());
+      replacement.clients.forEach((peer) => peer.terminate());
+      await new Promise((resolve) => replacement.close(resolve));
+    }
+  });
+
   it("removes an explicitly deprecated port and ignores later authentication replies", async function () {
     const balancer = await startWebsite();
     await waitFor(() => clients[0].canCreateGames);
