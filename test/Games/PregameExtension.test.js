@@ -73,7 +73,7 @@ describe("Pregame lobby extension", function () {
 
     oldTimer.done.should.equal(true);
     game.getTimeLeft("pregameWait").should.be.closeTo(HOUR + 30 * 1000, 1000);
-    stub.alerts.should.include("The host extended the lobby by 60 minutes.");
+    stub.alerts.should.include("The lobby was extended by 60 minutes.");
     stub.sent
       .filter(([event]) => event === "options")
       .slice(-1)[0][1]

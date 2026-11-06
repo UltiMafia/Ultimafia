@@ -432,7 +432,7 @@ module.exports = class Game {
     this.clearTimer("pregameWait");
     this.pregameExtensions++;
     this.startHostingTimer(timeLeft + PREGAME_EXTENSION_MS);
-    this.sendAlert("The host extended the lobby by 60 minutes.");
+    this.sendAlert("The lobby was extended by 60 minutes.");
     this.broadcast("options", this.getOptionsPayload());
   }
 
