@@ -2335,9 +2335,8 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
       Math.round(speech.scrollHeight - 10)
     )
       setAutoScroll(true);
-    // Only moving up (wheel, touch, keys, scrollbar) leaves the bottom on
-    // purpose. New rows or growing content can land between a scroll to the
-    // bottom and its scroll event; keep following instead of stopping.
+    // Use decreasing scrollTop as the signal to stop following. New rows or
+    // growing content can land between a scroll to the bottom and its event.
     else if (scrolledUp) setAutoScroll(false);
     else doAutoScroll();
   }
