@@ -264,7 +264,8 @@ function alignmentRowsToWinRateMap(setupStats) {
  * `opts.alignmentWinRates`, otherwise from the keys derived from
  * `opts.setupStats.alignmentRows`.
  *
- * Each row exposes both `soloPayout` (rounded int, for display) and
+ * Each row exposes both `soloPayout` (rounded int, for display; clamped to
+ * 50-70 in two-faction setups, as awards are) and
  * `soloPayoutExact` (float, for callers like `computeFactionFortunePoints`
  * that need to apply joint dampening before a final round).
  *
@@ -284,6 +285,7 @@ function computeSoloPayoutsForSetup(opts) {
   const alignmentWinRates =
     o.alignmentWinRates || alignmentRowsToWinRateMap(o.setupStats);
   const factions = o.factions || Object.keys(alignmentWinRates);
+  const isTwoFactionSetup = factions.length === 2;
 
   const result = factions.map((faction) => {
     const observed = winRateFromAlignmentEntries(alignmentWinRates[faction]);
@@ -305,7 +307,12 @@ function computeSoloPayoutsForSetup(opts) {
       hasHistoricalWinrate,
       games,
       lowSampleSize,
-      soloPayout: Math.round(exact),
+      soloPayout: isTwoFactionSetup
+        ? Math.max(
+            TWO_FACTION_MIN,
+            Math.min(TWO_FACTION_MAX, Math.round(exact))
+          )
+        : Math.round(exact),
       soloPayoutExact: exact,
     };
   });
