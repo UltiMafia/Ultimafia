@@ -2246,14 +2246,29 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   const selTab = stateInfo && stateInfo.selTab;
 
   const [speechInput, setSpeechInput] = useState("");
-  const [autoScroll, setAutoScroll] = useState(true);
+  const [autoScroll, setAutoScrollState] = useState(true);
   const [mouseMoved, setMouseMoved] = useState(false);
   const speechDisplayRef = useRef();
   const lastSpeechScrollTop = useRef(0);
+  const autoScrollRef = useRef(true);
+  const autoScrollFrame = useRef(null);
   const hasMouse = useMediaQuery("(pointer:fine)");
 
   const speechMeetings = getSpeechMeetings(meetings);
   const spectatorChatMeeting = findSpectatorChatMeeting(meetings, isSpectator);
+
+  function setAutoScroll(enabled) {
+    autoScrollRef.current = enabled;
+    if (enabled) {
+      lastSpeechScrollTop.current = Math.round(
+        speechDisplayRef.current?.scrollTop || 0
+      );
+    } else {
+      cancelAnimationFrame(autoScrollFrame.current);
+      autoScrollFrame.current = null;
+    }
+    setAutoScrollState(enabled);
+  }
 
   function onTabChange(event, newValue) {
     updateHistory({
@@ -2302,9 +2317,11 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
 
   function doAutoScroll() {
     const container = speechDisplayRef.current;
-    if (autoScroll && container) {
-      requestAnimationFrame(() => {
-        container.scrollTo(0, container.scrollHeight);
+    if (autoScrollRef.current && container) {
+      cancelAnimationFrame(autoScrollFrame.current);
+      autoScrollFrame.current = requestAnimationFrame(() => {
+        autoScrollFrame.current = null;
+        if (autoScrollRef.current) container.scrollTo(0, container.scrollHeight);
       });
     }
   }
@@ -2483,12 +2500,11 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   // Typing and unrelated game updates must not repeatedly measure the entire
   // transcript. Cancel pending work when the user scrolls away or changes tabs.
   useEffect(() => {
-    const container = speechDisplayRef.current;
-    if (!autoScroll || !container) return;
-    const frame = requestAnimationFrame(() => {
-      container.scrollTo(0, container.scrollHeight);
-    });
-    return () => cancelAnimationFrame(frame);
+    doAutoScroll();
+    return () => {
+      cancelAnimationFrame(autoScrollFrame.current);
+      autoScrollFrame.current = null;
+    };
   }, [messages, autoScroll]);
 
   // Keep the newest message in view when the transcript is resized, e.g. when
@@ -2499,7 +2515,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     const container = speechDisplayRef.current;
     if (!container || typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(() => {
-      if (autoScroll) container.scrollTo(0, container.scrollHeight);
+      if (autoScrollRef.current) container.scrollTo(0, container.scrollHeight);
     });
     observer.observe(container);
     return () => observer.disconnect();
