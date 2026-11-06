@@ -35,6 +35,10 @@ import Newspaper, {
 import { newspaperPlayer } from "../../utils/newspaperPlayers";
 import { legacyObituaryMessages } from "../../utils/legacyObituaries";
 import {
+  confirmsPending,
+  draftAfterRestore,
+} from "../../utils/pendingSpeech";
+import {
   insertBeforePending,
   removePending,
   replacePending,
@@ -3752,6 +3756,10 @@ function SpeechInput(props) {
     [players, game.spectators]
   );
   const pendingSpeechRef = useRef(null);
+  // The timer below fires 15s after the send and must see the meeting as it is
+  // then, not as it was when the row was created.
+  const meetingsRef = useRef(props.meetings);
+  meetingsRef.current = props.meetings;
   // Optimistic rows: shown immediately, replaced by the server's message.
   const pendingRowsRef = useRef(new Map());
   useEffect(
@@ -3891,6 +3899,9 @@ function SpeechInput(props) {
       lastMessage.content === pending.content &&
       matchesSender
     ) {
+      // The server's copy confirms the row: stop tracking it, or its stale
+      // entry can later be handed back to the box by a refusal.
+      releasePendingRow(lastMessage);
       // The box is cleared when the message is submitted, so only clear it
       // here if it still holds that same message. Otherwise the player has
       // already started typing the next one and this would wipe it.
@@ -3932,8 +3943,12 @@ function SpeechInput(props) {
       });
       if (newestId) {
         const entry = pendingRowsRef.current.get(newestId);
-        setSpeechInput(entry.content);
         removePendingRow(newestId);
+        // The refusal of line N can arrive while line N+1 is being typed;
+        // restoring N over it would erase the new draft.
+        setSpeechInput((current) =>
+          draftAfterRestore(current, entry.content)
+        );
       }
 
       const now = Date.now();
@@ -4045,6 +4060,18 @@ function SpeechInput(props) {
   const replyTarget = game.replyTarget;
   const setReplyTarget = game.setReplyTarget;
 
+  // Drops the bookkeeping for the row this message confirms, without touching
+  // the row itself (the reducer replaced it in place).
+  function releasePendingRow(message) {
+    const rows = pendingRowsRef.current;
+    for (const [id, entry] of rows) {
+      if (!confirmsPending(entry, message)) continue;
+      clearTimeout(entry.timer);
+      rows.delete(id);
+      return;
+    }
+  }
+
   function removePendingRow(id) {
     const entry = pendingRowsRef.current.get(id);
     if (!entry) return;
@@ -4069,8 +4096,26 @@ function SpeechInput(props) {
         pending: true,
       },
     });
-    // If the server never confirms (mute, dropped socket), take the row back.
-    const timer = setTimeout(() => removePendingRow(id), 15000);
+    // If the server never confirms (mute, dropped socket), take the row back
+    // and give the text back so it can be sent again. Only when the box is
+    // empty, and only when the row is still pending: a confirmed row was
+    // replaced in place, and resurrecting its text would be wrong.
+    const timer = setTimeout(() => {
+      const entry = pendingRowsRef.current.get(id);
+      if (!entry) return;
+
+      const meeting = meetingsRef.current?.[entry.meetingId];
+      const stillPending = Boolean(
+        meeting?.messages?.some((m) => m.id === id && m.pending)
+      );
+
+      removePendingRow(id);
+      if (stillPending) {
+        setSpeechInput((current) =>
+          draftAfterRestore(current, entry.content)
+        );
+      }
+    }, 15000);
     pendingRowsRef.current.set(id, { meetingId, content, timer });
   }
 
