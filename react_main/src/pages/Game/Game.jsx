@@ -2249,6 +2249,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   const [autoScroll, setAutoScroll] = useState(true);
   const [mouseMoved, setMouseMoved] = useState(false);
   const speechDisplayRef = useRef();
+  const lastSpeechScrollTop = useRef(0);
   const hasMouse = useMediaQuery("(pointer:fine)");
 
   const speechMeetings = getSpeechMeetings(meetings);
@@ -2325,13 +2326,20 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     }
 
     var speech = speechDisplayRef.current;
+    const scrollTop = Math.round(speech.scrollTop);
+    const scrolledUp = scrollTop < lastSpeechScrollTop.current;
+    lastSpeechScrollTop.current = scrollTop;
 
     if (
       Math.round(speech.scrollTop + speech.clientHeight) >=
       Math.round(speech.scrollHeight - 10)
     )
       setAutoScroll(true);
-    else setAutoScroll(false);
+    // Only moving up (wheel, touch, keys, scrollbar) leaves the bottom on
+    // purpose. New rows or growing content can land between a scroll to the
+    // bottom and its scroll event; keep following instead of stopping.
+    else if (scrolledUp) setAutoScroll(false);
+    else doAutoScroll();
   }
 
   const tabs = speechMeetings.map((meeting) => {
