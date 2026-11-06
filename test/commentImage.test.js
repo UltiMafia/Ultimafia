@@ -14,12 +14,12 @@ function source(filename) {
     : fs.readFileSync(filename, "utf8");
 }
 
-function multipart(data, extra = []) {
+function multipart(data, extra = [], { before = [], split } = {}) {
   const boundary = "comment-image-test";
   const chunks = [];
   for (const part of [
     { name: "content", data: "hello" }, { name: "location", data: "owner" },
-    { name: "image", data, type: "image/webp" }, ...extra,
+    ...before, { name: "image", data, type: "image/webp" }, ...extra,
   ]) {
     chunks.push(Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="${part.name}"${part.type ? '; filename="image"' : ""}\r\n${part.type ? `Content-Type: ${part.type}\r\n` : ""}\r\n`));
     chunks.push(Buffer.isBuffer(part.data) ? part.data : Buffer.from(part.data));
@@ -27,7 +27,8 @@ function multipart(data, extra = []) {
   }
   chunks.push(Buffer.from(`--${boundary}--\r\n`));
   const body = Buffer.concat(chunks);
-  const req = Readable.from([body]);
+  // split cuts the body into two chunks at the offset it returns.
+  const req = Readable.from(split ? [body.subarray(0, split(body)), body.subarray(split(body))] : [body]);
   req.headers = { "content-type": `multipart/form-data; boundary=${boundary}`, "content-length": body.length };
   req.is = () => true;
   req.body = {};
@@ -187,8 +188,13 @@ describe("comment image lifecycle (real Formidable, Sharp and files; mocked data
     if (oldUpload === undefined) delete process.env.UPLOAD_PATH; else process.env.UPLOAD_PATH = oldUpload;
     fs.rmSync(state.root, { recursive: true, force: true });
   });
-  async function post(data = webp, extra) {
-    const res = response(); await handler(router, "/")(multipart(data, extra), res);
+  async function post(data = webp, extra, options) {
+    const res = response();
+    let timer;
+    await Promise.race([
+      handler(router, "/")(multipart(data, extra, options), res),
+      new Promise((resolve, reject) => { timer = setTimeout(reject, 5000, new Error("post() did not resolve")); }),
+    ]).finally(() => clearTimeout(timer));
     res.diagnostic = state.errors.map((e) => e.stack || e).join("\n");
     return res;
   }
@@ -315,14 +321,20 @@ describe("comment image lifecycle (real Formidable, Sharp and files; mocked data
   });
   it("stops parsing at a second file part or one not named image", async () => {
     const empty = { name: "image", data: "", type: "image/png" };
-    for (const extra of [
-      Array(1000).fill(empty),
-      [{ name: "image", data: webp, type: "image/webp" }],
-      [{ name: "other", data: webp, type: "image/webp" }],
+    const other = { name: "other", data: webp, type: "image/webp" };
+    // The image after a rejected part is still in the received chunk; the last
+    // case cuts that chunk inside its data, so the part never ends.
+    const cut = (body) => body.lastIndexOf(webp) + 4;
+    for (const [extra, options, fileBegins] of [
+      [Array(1000).fill(empty), {}, 1],
+      [[{ name: "image", data: webp, type: "image/webp" }], {}, 1],
+      [[other], {}, 1],
+      [[], { before: [other] }, 0],
+      [[], { before: [other], split: cut }, 0],
     ]) {
       state.fileBegins = 0;
-      assert.equal((await post(webp, extra)).statusCode, 422);
-      assert.equal(state.fileBegins, 1);
+      assert.equal((await post(webp, extra, options)).statusCode, 422);
+      assert.equal(state.fileBegins, fileBegins);
       assert.equal(state.saved.length, 0);
       assert.deepEqual(fs.readdirSync(state.upload), []);
       assert.deepEqual(fs.readdirSync(state.temp), []);

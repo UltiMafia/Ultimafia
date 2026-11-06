@@ -156,8 +156,11 @@ router.post("/", async function (req, res) {
       form.maxFieldsSize = 8192;
       // maxFields does not count file parts. Accept one, named image, and stop
       // parsing at any other before Formidable creates its temporary file.
+      // Formidable still passes on parts already received after an error, and
+      // would open files it no longer closes, so handle none once it is set.
       let fileParts = 0;
       form.onPart = (part) => {
+        if (form.error) return;
         if (
           part.filename !== undefined &&
           (part.name !== "image" || ++fileParts > 1)
