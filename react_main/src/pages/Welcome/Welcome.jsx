@@ -17,6 +17,11 @@ import {
 } from "firebase/auth";
 import axios from "axios";
 import { collectFingerprint } from "../../utils/fingerprint";
+import {
+  FINGERPRINT_BLOCK_BODY,
+  FINGERPRINT_BLOCK_TITLE,
+  shouldBlockForFingerprint,
+} from "../../utils/fingerprintGuard";
 import { useSnackbar } from "hooks/useSnackbar";
 import { Loading } from "../../components/Loading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
@@ -34,6 +39,7 @@ if (localStorage.getItem("showChatTab") !== null) {
 export const Welcome = () => {
   const user = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(true);
+  const [fingerprintBlocked, setFingerprintBlocked] = useState(false);
   const isPhoneDevice = useIsPhoneDevice();
   const snackbarHook = useSnackbar();
 
@@ -46,6 +52,11 @@ export const Welcome = () => {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const idToken = await auth.currentUser.getIdToken(true);
         const fingerprint = await collectFingerprint();
+        if (shouldBlockForFingerprint(fingerprint)) {
+          setFingerprintBlocked(true);
+          setIsLoading(false);
+          return;
+        }
         axios
           .post("/api/auth", { idToken, fingerprint })
           .then(async () => {
@@ -101,6 +112,22 @@ export const Welcome = () => {
 
   if (user && user.loggedIn) {
     return <Navigate to="/play" />;
+  }
+
+  if (fingerprintBlocked) {
+    return (
+      <Container maxWidth="sm" sx={{ py: 8 }}>
+        <Typography variant="h5" gutterBottom>
+          {FINGERPRINT_BLOCK_TITLE}
+        </Typography>
+        <Typography color="text.secondary" sx={{ mb: 3 }}>
+          {FINGERPRINT_BLOCK_BODY}
+        </Typography>
+        <Button variant="contained" onClick={() => window.location.reload()}>
+          Reload
+        </Button>
+      </Container>
+    );
   }
 
   if (isLoading) {

@@ -27,6 +27,8 @@ import {
 import axios from "axios";
 import { verifyRecaptcha } from "../utils";
 import { collectFingerprint } from "../utils/fingerprint";
+import { shouldBlockForFingerprint } from "../utils/fingerprintGuard";
+import { FingerprintBlockedDialog } from "./FingerprintBlockedDialog";
 import { useSnackbar } from "../hooks/useSnackbar";
 import { SiteInfoContext, UserContext } from "../Contexts";
 import { Link } from "react-router-dom";
@@ -40,6 +42,9 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
   const user = useContext(UserContext);
   const [tabValue, setTabValue] = useState(defaultTab);
   const [loading, setLoading] = useState(false);
+  // Set when the browser withheld its device fingerprint: sign-in is refused
+  // rather than creating a session no ban can match.
+  const [fingerprintBlocked, setFingerprintBlocked] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
@@ -143,6 +148,15 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
     }
 
     try {
+      // Collect before Firebase so a refused fingerprint costs the user a
+      // dialog, not a sign-in that cannot be completed.
+      const fingerprint = await collectFingerprint();
+      if (shouldBlockForFingerprint(fingerprint)) {
+        setFingerprintBlocked(true);
+        setLoading(false);
+        return;
+      }
+
       if (import.meta.env.MODE !== "development" && emailTest) {
         await verifyRecaptcha("auth");
       }
@@ -150,7 +164,6 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
       const auth = getAuth();
       const userCred = await signInWithEmailAndPassword(auth, email, password);
       const idToken = await userCred.user.getIdToken(true);
-      const fingerprint = await collectFingerprint();
 
       try {
         await axios.post("/api/auth", { idToken, fingerprint });
@@ -241,6 +254,11 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
       const userCred = await signInWithPopup(getAuth(), provider);
       const idToken = await userCred.user.getIdToken(true);
       const fingerprint = await collectFingerprint();
+      if (shouldBlockForFingerprint(fingerprint)) {
+        setFingerprintBlocked(true);
+        setLoading(false);
+        return;
+      }
 
       try {
         await axios.post("/api/auth", { idToken, fingerprint });
@@ -851,6 +869,10 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
             {authContent}
           </DialogContent>
         </Dialog>
+        <FingerprintBlockedDialog
+          open={fingerprintBlocked}
+          onClose={() => setFingerprintBlocked(false)}
+        />
         {snackbarHook.SnackbarWrapped}
       </>
     );
@@ -859,6 +881,10 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
   return (
     <>
       {authContent}
+      <FingerprintBlockedDialog
+        open={fingerprintBlocked}
+        onClose={() => setFingerprintBlocked(false)}
+      />
       {snackbarHook.SnackbarWrapped}
     </>
   );
