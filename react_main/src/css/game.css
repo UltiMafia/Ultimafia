@@ -727,11 +727,15 @@ html[data-keyboard="open"] .game .meeting-tabs {
 
 /* An accordion menu marked scrollable keeps its natural height in every
    collapse state, so the open and close animation measures and moves the real
-   box. Its content is capped at about half the panel and scrolls past that. */
+   box. Its content is capped at about half the panel and scrolls past that.
+   When other open menus leave less room than that, the menu gives way and
+   scrolls as a whole instead of running past the panel. */
 .game .side-menu.scrollable.MuiAccordion-root {
   flex-grow: 0;
-  flex-shrink: 0;
+  flex-shrink: 1;
   height: auto;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .game .side-menu.scrollable.MuiAccordion-root .side-menu-content {
