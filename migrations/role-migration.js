@@ -20,7 +20,7 @@ const logger = require("../modules/logging")(".");
  * "No Event:Banished". Banished copies are removed and do not affect the
  * percentage.
  *
- * Bloodhound, Lurker, and Debtor are rewritten in the same pass. Each setup role key
+ * Bloodhound, Lurker, Debtor, and Prince are rewritten in the same pass. Each setup role key
  * is "Name" or "Name:Mod1/Mod2". A modifier is added only when it is missing,
  * and the modifier list is sorted alphabetically. Counts for keys that land
  * on the same string are added together.
@@ -28,6 +28,7 @@ const logger = require("../modules/logging")(".");
  *   Bloodhound -> Tracker:Binary
  *   Lurker     -> Scout:Binary
  *   Debtor     -> Manhunter:Desperate
+ *   Prince     -> Politician
  *
  * Counts are the role-key weights already stored on the setup.
  *
@@ -72,6 +73,7 @@ const ROLE_REPLACEMENTS = {
   Bloodhound: { name: "Tracker", addModifier: "Binary" },
   Lurker: { name: "Scout", addModifier: "Binary" },
   Debtor: { name: "Manhunter", addModifier: "Desperate" },
+  Prince: { name: "Politician" },
 };
 
 function isBanishedKey(key) {
