@@ -301,13 +301,14 @@ router.post("/delete", async function (req, res) {
       { $set: { deleted: true } }
     ).exec();
 
+    // Log the moderator action once, even when only the image cleanup is retried.
+    if (isNotOwnPost && !comment.deleted)
+      routeUtils.createModAction(userId, "Delete Comment", [commentId]);
+
     // Keep the reference on soft-deleted comments so a failed unlink can be
     // retried by deleting again. Never accept a path supplied by the request.
     if (comment.imagePath)
       await removeImage(path.join(process.env.UPLOAD_PATH, comment.imagePath));
-
-    if (isNotOwnPost)
-      routeUtils.createModAction(userId, "Delete Comment", [commentId]);
 
     res.sendStatus(200);
   } catch (e) {
