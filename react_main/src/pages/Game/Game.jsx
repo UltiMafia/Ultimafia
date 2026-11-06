@@ -8,7 +8,7 @@ import React, {
   useCallback,
   createContext,
 } from "react";
-import { useParams, Navigate, Link, useNavigate } from "react-router-dom";
+import { useParams, Navigate, Link, useLocation, useNavigate } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
 import ReactLoading from "react-loading";
@@ -34,6 +34,8 @@ import Newspaper, {
 } from "../../components/gameComponents/Newspaper";
 import { newspaperPlayer } from "../../utils/newspaperPlayers";
 import { legacyObituaryMessages } from "../../utils/legacyObituaries";
+import { gameUrlTarget } from "../../utils/gameUrlSync";
+import { gameIdAt } from "../../hooks/useHostedGameSession";
 import MafiaGame from "./MafiaGame";
 import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
@@ -375,6 +377,11 @@ export default function Game(props) {
     if (!active) stopDeathSounds();
   }, [active, stopDeathSounds]);
   const navigate = useNavigate();
+  const location = useLocation();
+  // The game named by the URL, which is the one being opened. `routeGameId`
+  // above is the route param and is empty when the hosted session renders
+  // outside the route table.
+  const locationGameId = gameIdAt(location.pathname);
 
   // Keep the URL equal to the role the server confirmed. Otherwise a stale
   // ?spectate=true would move a newly seated player back to spectators on
@@ -383,7 +390,10 @@ export default function Game(props) {
   // no URL state.
   useEffect(() => {
     if (!active || !loaded || leave || joinOptionsRef.current.isBot) return;
-    const target = `/game/${gameId}${isSpectator ? "?spectate=true" : ""}`;
+    // Null when the URL already names a different game, which is the moment a
+    // new session is taking over: do not rewrite it back to this one.
+    const target = gameUrlTarget({ routeGameId: locationGameId, gameId, isSpectator });
+    if (!target) return;
     const current = window.location.pathname + window.location.search;
     if (current !== target) {
       navigate(target, {
@@ -391,7 +401,7 @@ export default function Game(props) {
         state: { membershipUpdate: true },
       });
     }
-  }, [active, loaded, leave, isSpectator, gameId, navigate]);
+  }, [active, loaded, leave, isSpectator, gameId, navigate, locationGameId]);
 
   // A lobby Join/Spectate click for the game already hosted asks for the other
   // role. Send that over the existing socket instead of replacing the session
