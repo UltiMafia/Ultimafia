@@ -421,6 +421,7 @@ module.exports = class Game {
       !this.started &&
       !!timer &&
       !timer.done &&
+      timer.timeLeft() > 0 &&
       timer.timeLeft() <= PREGAME_EXTENSION_WINDOW_MS &&
       this.getPregameExtensionsLeft() > 0
     );

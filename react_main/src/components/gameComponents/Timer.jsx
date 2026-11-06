@@ -272,6 +272,7 @@ export function Timer(props) {
     !game.review &&
     timerName === "pregameWait" &&
     remaining != null &&
+    remaining > 0 &&
     remaining <= LOBBY_EXTEND_WINDOW_MS &&
     game.options?.pregameExtensionsLeft > 0 &&
     game.players[game.self]?.userId === game.hostId;
