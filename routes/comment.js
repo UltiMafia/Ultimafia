@@ -146,6 +146,19 @@ router.post("/", async function (req, res) {
       form.maxFileSize = 5 * 1024 * 1024;
       form.maxFields = 2;
       form.maxFieldsSize = 8192;
+      // maxFields does not count file parts. Accept one, named image, and stop
+      // parsing at any other before Formidable creates its temporary file.
+      let fileParts = 0;
+      form.onPart = (part) => {
+        if (
+          part.filename !== undefined &&
+          (part.name !== "image" || ++fileParts > 1)
+        ) {
+          form._error(new Error("Only one image may be uploaded."));
+          return;
+        }
+        form.handlePart(part);
+      };
       // Include partially written files; Formidable also closes/removes these
       // on parser errors. Our cleanup tolerates files it has already removed.
       form.on("fileBegin", (name, file) => temporaryPaths.push(file.path));
