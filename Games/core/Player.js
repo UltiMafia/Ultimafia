@@ -349,7 +349,6 @@ module.exports = class Player {
           abilityTarget: message.abilityTarget,
           forceLeak: message.forceLeak,
           textEffect: message.textEffect,
-          ruleToken: message.ruleToken,
         });
 
         if (this.game.tutorial)
@@ -483,7 +482,6 @@ module.exports = class Player {
           sender: this,
           content: message.content,
           replyTo: posted.id,
-          ruleToken: message.ruleToken,
         });
 
         if (this.game.tutorial)
