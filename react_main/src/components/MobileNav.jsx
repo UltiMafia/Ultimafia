@@ -62,6 +62,12 @@ export function MobileNav() {
       sx={{
         flexShrink: 0,
         backgroundColor: "background.paper",
+        // MUI's dark-mode elevation overlay is a white gradient on the Paper.
+        // The BottomNavigation paints its own flat `background.paper` on top of
+        // it, so the bar looked black while the safe-area padding beneath it
+        // took the overlay and read as a grey strip. Keep the shadow, drop the
+        // overlay: the strip is part of the bar and must be the same colour.
+        backgroundImage: "none",
       }}
     >
       <BottomNavigation
