@@ -34,6 +34,7 @@ import Newspaper, {
 } from "../../components/gameComponents/Newspaper";
 import { newspaperPlayer } from "../../utils/newspaperPlayers";
 import { legacyObituaryMessages } from "../../utils/legacyObituaries";
+import { pingSenderName } from "../../utils/pingSender";
 import MafiaGame from "./MafiaGame";
 import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
@@ -295,6 +296,7 @@ export default function Game(props) {
   rehostInviteSlotsRef.current = rehostInviteSlots;
 
   const playersRef = useRef();
+  const spectatorsRef = useRef();
   const rehostInviteSeenRef = useRef(false);
   const selfRef = useRef();
   const noLeaveRef = useRef();
@@ -956,6 +958,10 @@ export default function Game(props) {
   }, [players]);
 
   useEffect(() => {
+    spectatorsRef.current = spectators;
+  }, [spectators]);
+
+  useEffect(() => {
     if (socket.readyState !== 1) {
       if (
         (socket.readyState == null || socket.readyState === 3) &&
@@ -1211,9 +1217,15 @@ export default function Game(props) {
       ) {
         playAudio("ping");
         if (iWasPinged) {
-          const senderName = playersRef?.current?.[message?.senderId]?.name;
+          // Spectators are not in `players`, so a spectator ping used to name
+          // the sender "undefined".
+          const senderName = pingSenderName(
+            message,
+            playersRef?.current,
+            spectatorsRef?.current
+          );
           setPingInfo({
-            msg: `⚠ ${senderName} pinged you!`,
+            msg: `⚠ ${senderName || "Someone"} pinged you!`,
             timestamp: new Date().getTime(),
           });
         }
