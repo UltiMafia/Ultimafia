@@ -98,7 +98,7 @@ var deprecated = false;
         var user;
 
         socket.logId = shortid.generate();
-        socket.send("connected");
+        socket.send("connected", { serverAuthentication: true });
 
         socket.on("auth", async (token) => {
           try {

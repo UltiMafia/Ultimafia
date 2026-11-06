@@ -32,27 +32,29 @@ function establishGameConn(port) {
   servers[port] = socket;
   socket.canCreateGames = false;
   socket.deprecated = false;
-  // An old connection closing must not unregister its replacement.
+  // Each replacement starts with its own readiness state.
   if (previousSocket) previousSocket.terminate();
 
-  socket.on("connected", () => {
+  socket.on("connected", (capabilities) => {
     socket.canCreateGames = false;
     socket.send("authAsServer", process.env.LOAD_BALANCER_KEY);
+    // Old games processes do not acknowledge authentication. WebSocket ordering
+    // delivers authAsServer before any createGame, which still checks isServer.
+    if (!capabilities || !capabilities.serverAuthentication) markReady();
   });
 
-  socket.on("serverAuthenticated", () => {
+  function markReady() {
     if (servers[port] === socket && !socket.deprecated && socket.readyState === 1) {
       socket.canCreateGames = true;
-      // Restore discovery after a temporary disconnect. A www restart while the port
-      // is removed still loses it until that game server registers again.
-      redis.registerGameServer(port).catch((error) => logger.error(error));
     }
-  });
+  }
+
+  socket.on("serverAuthenticated", markReady);
 
   socket.on("disconnected", () => {
+    // Keep discovery across transient disconnects, including a www restart.
+    // Explicit deprecation remains responsible for removing registration.
     socket.canCreateGames = false;
-    if (servers[port] === socket && !socket.deprecated)
-      redis.removeGameServer(port).catch((error) => logger.error(error));
   });
 
   socket.on("gameCreated", (gameId) => {
