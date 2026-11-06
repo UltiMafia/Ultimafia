@@ -66,6 +66,10 @@ function loadRouter(state) {
       state.busy--;
       throw Object.assign(new Error("File busy"), { code: "EBUSY" });
     }
+    if (path.dirname(file) === state.upload && state.uploadBusy > 0) {
+      state.uploadBusy--;
+      throw Object.assign(new Error("File busy"), { code: "EBUSY" });
+    }
     return fs.promises.unlink(file);
   } } };
   const mocks = {
@@ -170,7 +174,7 @@ describe("comment image lifecycle (real Formidable, Sharp and files; mocked data
     // Keep all runtime files within this checkout, separate from concurrent tests.
     fs.mkdirSync(path.join(__dirname, "../node_modules/.cache"), { recursive: true });
     const root = fs.mkdtempSync(path.join(__dirname, "../node_modules/.cache/comment-image-"));
-    state = { root, upload: path.join(root, "uploads"), temp: path.join(root, "temp"), saved: [], projections: [], errors: [], unlinks: [], busy: 0, permission: true };
+    state = { root, upload: path.join(root, "uploads"), temp: path.join(root, "temp"), saved: [], projections: [], errors: [], unlinks: [], busy: 0, uploadBusy: 0, permission: true };
     fs.mkdirSync(state.upload); fs.mkdirSync(state.temp);
     oldUpload = process.env.UPLOAD_PATH; process.env.UPLOAD_PATH = state.upload;
     router = loadRouter(state);
@@ -222,6 +226,25 @@ describe("comment image lifecycle (real Formidable, Sharp and files; mocked data
     await handler(router, "/delete")({ body: { comment: comment.id } }, res);
     assert.equal(res.statusCode, 200);
     assert.ok(state.projections.some((projection) => projection.includes("imagePath")));
+    assert.equal(state.doc.deleted, true);
+    assert.deepEqual(fs.readdirSync(state.upload), []);
+  });
+  it("keeps the comment visible and deletable when removing its picture fails", async () => {
+    const posted = await post();
+    assert.equal(posted.statusCode, 200, posted.diagnostic);
+    const comment = state.saved[0];
+    const file = path.join(state.upload, comment.imagePath);
+    state.doc = { ...comment, author: { id: "owner" } };
+    state.uploadBusy = 100;
+    const failed = response();
+    await handler(router, "/delete")({ body: { comment: comment.id } }, failed);
+    assert.notEqual(failed.statusCode, 200);
+    assert.notEqual(state.doc.deleted, true);
+    assert.ok(fs.existsSync(file));
+    state.uploadBusy = 0;
+    const retried = response();
+    await handler(router, "/delete")({ body: { comment: comment.id } }, retried);
+    assert.equal(retried.statusCode, 200);
     assert.equal(state.doc.deleted, true);
     assert.deepEqual(fs.readdirSync(state.upload), []);
   });

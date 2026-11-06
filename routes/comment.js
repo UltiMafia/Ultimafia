@@ -296,19 +296,20 @@ router.post("/delete", async function (req, res) {
     if (isNotOwnPost || !(await routeUtils.verifyPermission(userId, perm1)))
       if (!(await routeUtils.verifyPermission(res, userId, perm2))) return;
 
+    // Remove the picture before marking the comment deleted: if removal fails,
+    // the comment stays visible with its Delete button, so deleting it again
+    // retries. Never accept a path supplied by the request.
+    if (comment.imagePath)
+      await removeImage(path.join(process.env.UPLOAD_PATH, comment.imagePath));
+
     await models.Comment.updateOne(
       { id: commentId },
       { $set: { deleted: true } }
     ).exec();
 
-    // Log the moderator action once, even when only the image cleanup is retried.
+    // Log the moderator action once, not again for an already deleted comment.
     if (isNotOwnPost && !comment.deleted)
       routeUtils.createModAction(userId, "Delete Comment", [commentId]);
-
-    // Keep the reference on soft-deleted comments so a failed unlink can be
-    // retried by deleting again. Never accept a path supplied by the request.
-    if (comment.imagePath)
-      await removeImage(path.join(process.env.UPLOAD_PATH, comment.imagePath));
 
     res.sendStatus(200);
   } catch (e) {
