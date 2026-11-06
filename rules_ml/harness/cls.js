@@ -2,7 +2,20 @@
 // Same WordPiece tokenizer as tf.js; this one reports WHICH rule, not just whether.
 const fs = require('fs');
 const path = require('path');
-const ort = require('onnxruntime-node');
+// WebAssembly rather than the native binding. The native package runs a
+// postinstall that downloads ~245 MB of CUDA/TensorRT libraries from NuGet,
+// inflates 284 MB of them, and peaks near 850 MB RSS -- with no timeout and no
+// output, which is how a deploy turns into an hour of downtime. The wasm build
+// has no install script and no platform binaries; on this model it costs about
+// 90 ms per forward pass instead of 25 ms, which the worker thread absorbs.
+const ort = require('onnxruntime-web');
+
+// The wasm file has to be found on disk; without this the session creation
+// fails with "failed to load wasm" in Node.
+ort.env.wasm.numThreads = 1;
+// The package's main entry lives in its dist/ directory, next to the .wasm
+// files, so the entry's own directory is the path to point at.
+ort.env.wasm.wasmPaths = path.dirname(require.resolve('onnxruntime-web')) + path.sep;
 
 const MODEL_DIR = process.env.CLS_MODEL_DIR ||
   path.join(__dirname, '..', 'finetune_cls3_out');
@@ -87,7 +100,11 @@ function encode(text) {
 
 async function init() {
   if (!VOCAB) VOCAB = loadVocab();
-  if (!SESS) SESS = await ort.InferenceSession.create(path.join(MODEL_DIR, 'model.int8.onnx'));
+  if (!SESS)
+    SESS = await ort.InferenceSession.create(
+      path.join(MODEL_DIR, 'model.int8.onnx'),
+      { executionProviders: ['wasm'] }
+    );
   return true;
 }
 

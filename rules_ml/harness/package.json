@@ -11,6 +11,6 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "onnxruntime-node": "^1.30.0"
+    "onnxruntime-web": "^1.31.1"
   }
 }

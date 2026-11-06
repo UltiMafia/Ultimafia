@@ -5,7 +5,8 @@ breaks Ultimafia's rules of conduct. It is **not for moderation**. The intended 
 to flag a message *as it is sent* and ask the author to reconsider.
 
 **The shipped artifact.** `finetune_cls3_out/model.int8.onnx` — MiniLM-L6 fine-tuned to
-4 classes, quantised to int8, 23 MB, ~13 ms/message in Node via `onnxruntime-node`.
+4 classes, quantised to int8, 23 MB, ~130 ms/message in Node via the `onnxruntime-web`
+WebAssembly build (~22 ms with the native build, which is no longer a dependency).
 
 Classes: `no_violation` · `abuse` · `outside_game_influence` · `other`.
 The binary "is this a violation" decision is `1 − P(no_violation)` from the same model.

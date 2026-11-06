@@ -25,8 +25,9 @@ and every number below is measured on the int8 file.
 
 ### Dependencies
 
-One: `onnxruntime-node` (`^1.30.0`, already pinned in `harness/package.json`). No Python, no
-`transformers`, no network access at inference time.
+One: `onnxruntime-web` (`^1.31.1`, already pinned in `harness/package.json`) — the WebAssembly
+build, so there is no native module and no install script. No Python, no `transformers`, no
+network access at inference time.
 
 ### The contract
 
