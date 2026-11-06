@@ -273,7 +273,6 @@ export default function MafiaGame() {
           case "Governor":
           case "Senator":
           case "President":
-          case "Prince":
           case "Princess":
           case "King":
           case "Kingmaker":

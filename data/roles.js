@@ -5155,18 +5155,6 @@ const roleData = {
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT]],
     },
-    Prince: {
-      alignment: "Independent",
-      tags: ["Essential", "Alignment Changing", "Visiting", "Advanced", "Death Interaction"],
-      description: [
-        "On your first night, you must choose to visit a player and become their alignment.",
-        "If you die, all players who are aligned with you die.",
-        "You win if your current alignment wins.",
-      ],
-      nightOrder: [
-        ["Conquer Alignment", PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT],
-      ],
-    },
     Nomad: {
       alignment: "Independent",
       tags: ["Alignment Changing", "Visiting", "Basic"],
@@ -5536,16 +5524,6 @@ const roleData = {
         "You win if Hellhounds have majority.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_GUESS_ROLE]],
-      skins: [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Old",
-          value: "old",
-        },
-      ],
     },
     Blob: {
       alignment: "Independent",
