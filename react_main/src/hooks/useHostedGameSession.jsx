@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
+import { afterOverlayBack } from "./useDismissOnBack";
 
 export function gameIdAt(pathname) {
   return matchPath({ path: "/game/:gameId", end: false }, pathname)?.params.gameId || null;
@@ -40,15 +41,20 @@ export function useHostedGameSession() {
     );
   }, [routeGameId, location.search]);
 
+  // Confirming the leave dialog closes it, which goes Back to remove its
+  // history entry. Leave only after that Back lands: replacing the entry first
+  // let the Back return to the game page, which rejoined as a spectator.
   const leaveGameSession = useCallback(() => {
-    setHostedGame(null);
-    if (!activeRef.current) return;
-    const previous = previousSite.current;
-    navigate(gameIdAt(previous.pathname) ? "/play" : {
-      pathname: previous.pathname,
-      search: previous.search,
-      hash: previous.hash,
-    }, { replace: true, state: previous.state });
+    afterOverlayBack(() => {
+      setHostedGame(null);
+      if (!activeRef.current) return;
+      const previous = previousSite.current;
+      navigate(gameIdAt(previous.pathname) ? "/play" : {
+        pathname: previous.pathname,
+        search: previous.search,
+        hash: previous.hash,
+      }, { replace: true, state: previous.state });
+    });
   }, [navigate]);
 
   return {
