@@ -81,14 +81,4 @@
   .setup-step-navigation {
     flex-wrap: wrap;
   }
-
-  .setup-step-navigation .MuiButton-root {
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 700px) {
-  .play .create-setup .top-link {
-    font-size: 13px !important;
-  }
 }

@@ -776,13 +776,13 @@
 
 .thread-wrapper .petition-title {
   font-weight: 700;
-  font-size: 14px;
+  font-size: 0.875rem;
   margin-bottom: 6px;
   word-break: break-word;
 }
 
 .thread-wrapper .petition-body {
-  font-size: 13px;
+  font-size: 0.8125rem;
   opacity: 0.85;
   margin-bottom: 10px;
   word-break: break-word;
@@ -822,7 +822,7 @@
   gap: 6px;
   cursor: pointer;
   padding: 6px 12px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   align-self: flex-start;
 }
 
@@ -838,7 +838,7 @@
   width: 100%;
   box-sizing: border-box;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 
 .thread-wrapper .petition-edit-form textarea {
