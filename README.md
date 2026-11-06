@@ -121,6 +121,31 @@ More local troubleshooting is in the [Local Setup Guide](/docs/setup-local-guide
 3. Open a pull request on the master branch of this repository
 4. Perform a final test on the main site after merge into master
 
+## Comment wall pictures
+
+Paste, drop or select a PNG, JPEG or WebP in a comment wall editor to preview
+it locally. Remove image discards the attachment; Cancel discards the preview
+and keeps your text. Nothing uploads until Post, which sends text and image
+together. A failed Post keeps the draft available to retry.
+
+The server uses Formidable and Sharp, accepts up to 5 MiB and 16 million
+pixels, and saves the first frame as WebP within 1024 by 1024 pixels. Text
+fields are limited to 8192 bytes, and the final text including the image link
+must fit the wall's existing comment length limit. Decoded PNG, JPEG and WebP
+are accepted regardless of their supplied type label.
+
+The public file's name is stored in the comment's `imagePath` field. A failed
+comment save removes the written file. Deleting a comment removes its file;
+restoring the text does not restore the deleted picture. Temporary files are
+removed after processing, with up to four unlink attempts, 50 ms apart, for
+Windows `EBUSY` errors. Other cleanup failures are logged. Previously uploaded
+images without a stored attachment reference cannot be cleaned up this way.
+
+Focused checks: `NODE_ENV=test npx mocha test/commentImage.test.js --exit`.
+These exercise real Formidable, Sharp and files, with mocked persistence and
+permissions, plus the production composer with controlled hooks and requests.
+They do not replace live MongoDB/Redis or native clipboard checks.
+
 ## Forum replies
 
 Click a post's Reply arrow to open the composer beneath that post. Selecting

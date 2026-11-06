@@ -762,6 +762,7 @@ var schemas = {
     author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     location: { type: String, index: true },
     content: String,
+    imagePath: String,
     date: { type: Number, index: true },
     voteCount: { type: Number, default: 0 },
     deleted: { type: Boolean, default: false },

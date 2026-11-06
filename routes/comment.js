@@ -112,73 +112,25 @@ router.get("/", async function (req, res) {
   }
 });
 
-// Pasted images upload on paste. The editor embeds the returned path as
-// ordinary markdown, so the post itself stays plain text.
-router.post("/image", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-
-    if (!(await routeUtils.verifyPermission(res, userId, "postReply"))) return;
-    if (!(await routeUtils.rateLimit(userId, "postPastedImage", res))) return;
-
-    var form = new formidable();
-    form.maxFileSize = 5 * 1024 * 1024;
-    form.maxFields = 1;
-    form.maxFieldsSize = 8192;
-    const temporaryPaths = [];
-    form.on("file", (name, file) => temporaryPaths.push(file.path));
-    let parsed = false;
-
-    const uploadDir = process.env.UPLOAD_PATH;
-    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
-    const fileName = `pasted_${shortid.generate()}.webp`;
-
+// Windows can briefly retain a WebP file handle after decoding. Retry only
+// EBUSY, at most four attempts with three 50 ms waits; ENOENT is already clean.
+async function removeImage(file) {
+  for (let attempt = 0; ; attempt++) {
     try {
-      var [fields, files] = await form.parseAsync(req);
-      parsed = true;
-
-      const image = sharp(files.image.path, { limitInputPixels: 16 * 1000 * 1000 });
-      const metadata = await image.metadata();
-      if (!["png", "jpeg", "webp"].includes(metadata.format))
-        throw new Error("Unsupported pasted image format.");
-
-      await image
-        .rotate()
-        .webp({ quality: 85 })
-        .resize({
-          width: 1024,
-          height: 1024,
-          fit: sharp.fit.inside,
-          withoutEnlargement: true,
-          kernel: sharp.kernel.lanczos3,
-        })
-        .toFile(path.join(uploadDir, fileName));
-    } catch (e) {
-      logger.warn(e);
-      errors.unprocessable(res, "Images must be readable PNG, JPEG or WebP and up to 5 MiB.");
+      await fs.promises.unlink(file);
       return;
-    } finally {
-      // Formidable owns cleanup while a failed parse may still have open files.
-      if (parsed) {
-        for (const temporaryPath of temporaryPaths) {
-          try {
-            await fs.promises.unlink(temporaryPath);
-          } catch (e) {
-            if (e.code !== "ENOENT")
-              logger.warn("Could not remove temporary pasted image:", e);
-          }
-        }
-      }
+    } catch (e) {
+      if (e.code === "ENOENT") return;
+      if (e.code !== "EBUSY" || attempt === 3) throw e;
+      await new Promise((resolve) => setTimeout(resolve, 50));
     }
-
-    res.send(`/uploads/${fileName}`);
-  } catch (e) {
-    logger.error(e);
-    errors.serverError(res, "Error uploading image. Please try again.");
   }
-});
+}
 
 router.post("/", async function (req, res) {
+  const temporaryPaths = [];
+  let outputPath;
+  let saved = false;
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
 
@@ -186,8 +138,30 @@ router.post("/", async function (req, res) {
 
     if (!(await routeUtils.rateLimit(userId, "postComment", res))) return;
 
-    var content = String(req.body.content);
-    var location = String(req.body.location).slice(
+    let fields = req.body;
+    let imageFile;
+    if (req.is?.("multipart/form-data")) {
+      if (!(await routeUtils.rateLimit(userId, "postPastedImage", res))) return;
+      const form = new formidable();
+      form.maxFileSize = 5 * 1024 * 1024;
+      form.maxFields = 2;
+      form.maxFieldsSize = 8192;
+      // Include partially written files; Formidable also closes/removes these
+      // on parser errors. Our cleanup tolerates files it has already removed.
+      form.on("fileBegin", (name, file) => temporaryPaths.push(file.path));
+      try {
+        let files;
+        [fields, files] = await form.parseAsync(req);
+        imageFile = files.image;
+        if (!imageFile?.path) throw new Error("Missing image.");
+      } catch (e) {
+        e.imageValidation = true;
+        throw e;
+      }
+    }
+
+    var content = String(fields.content || "");
+    var location = String(fields.location || "").slice(
       0,
       constants.maxCommentLocationLength
     );
@@ -196,7 +170,7 @@ router.post("/", async function (req, res) {
     let maxLength = useLargeCommentLength
       ? constants.maxLargeCommentLength
       : constants.maxCommentLength;
-    if (content.length == 0 || content.length > maxLength) {
+    if ((!content.length && !imageFile) || content.length > maxLength) {
       errors.unprocessable(res, `Content must be between 1 and ${maxLength} characters.`);
       return;
     }
@@ -220,19 +194,62 @@ router.post("/", async function (req, res) {
       }
     }
 
+    let imagePath;
+    if (imageFile) {
+      try {
+        // Decode bytes rather than a filename so Sharp's input cache cannot
+        // retain the parser's Windows file handle between WebP uploads.
+        const image = sharp(await fs.promises.readFile(imageFile.path), {
+          limitInputPixels: 16 * 1000 * 1000,
+        });
+        const metadata = await image.metadata();
+        if (!["png", "jpeg", "webp"].includes(metadata.format))
+          throw new Error("Unsupported pasted image format.");
+        const uploadDir = process.env.UPLOAD_PATH;
+        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+        imagePath = `pasted_${shortid.generate()}.webp`;
+        outputPath = path.join(uploadDir, imagePath);
+        await image.rotate().webp({ quality: 85 }).resize({
+          width: 1024, height: 1024, fit: sharp.fit.inside,
+          withoutEnlargement: true, kernel: sharp.kernel.lanczos3,
+        }).toFile(outputPath);
+        content += `${content ? "\n\n" : ""}![image](/uploads/${imagePath})`;
+      } catch (e) {
+        e.imageValidation = true;
+        throw e;
+      }
+      if (content.length > maxLength) {
+        errors.unprocessable(res, `Content must be between 1 and ${maxLength} characters.`);
+        return;
+      }
+    }
+
     var comment = new models.Comment({
       id: shortid.generate(),
       author: req.session.user._id,
       date: Date.now(),
       location,
       content,
+      imagePath,
     });
     await comment.save();
+    saved = true;
 
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    errors.serverError(res, "Error posting comment. Please try again.");
+    if (e.imageValidation)
+      errors.unprocessable(res, "Images must be readable PNG, JPEG or WebP and up to 5 MiB.");
+    else
+      errors.serverError(res, "Error posting comment. Please try again.");
+  } finally {
+    for (const file of [...temporaryPaths, ...(!saved && outputPath ? [outputPath] : [])]) {
+      try {
+        await removeImage(file);
+      } catch (e) {
+        logger.error("Could not remove comment image:", e);
+      }
+    }
   }
 });
 
@@ -262,9 +279,8 @@ router.post("/delete", async function (req, res) {
 
     var comment = await models.Comment.findOne({
       id: commentId,
-      deleted: false,
     })
-      .select("author location")
+      .select("author location imagePath deleted")
       .populate("author", "id");
 
     if (!comment) {
@@ -284,6 +300,11 @@ router.post("/delete", async function (req, res) {
       { id: commentId },
       { $set: { deleted: true } }
     ).exec();
+
+    // Keep the reference on soft-deleted comments so a failed unlink can be
+    // retried by deleting again. Never accept a path supplied by the request.
+    if (comment.imagePath)
+      await removeImage(path.join(process.env.UPLOAD_PATH, comment.imagePath));
 
     if (isNotOwnPost)
       routeUtils.createModAction(userId, "Delete Comment", [commentId]);
