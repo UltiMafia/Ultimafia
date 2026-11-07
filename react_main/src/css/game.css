@@ -1390,6 +1390,23 @@ html[data-keyboard="open"] .game .meeting-tabs {
   white-space: nowrap;
 }
 
+/* Decorations in the quoted line — role mentions, emotes, the collapsed sticker
+   label — are inline-level boxes with a baseline of their own. Baseline
+   alignment hangs that baseline on the icon or the box edge, which lifts their
+   text clear of the line ("Click to see sticker" sat 10px high). Centre them
+   against the text instead, and keep the emote inside the 18px line. */
+.game .message .reply-reference .reply-reference-text .emote,
+.game .message .reply-reference .reply-reference-text .sticker,
+.game .message .reply-reference .reply-reference-text .collapsed-sticker-label,
+.game .message .reply-reference .reply-reference-text .inline-role-mention {
+  vertical-align: middle;
+}
+
+.game .message .reply-reference .reply-reference-text .emote {
+  width: 16px;
+  height: 16px;
+}
+
 .game .message .reply-reference .reply-reference-text br {
   display: none;
 }

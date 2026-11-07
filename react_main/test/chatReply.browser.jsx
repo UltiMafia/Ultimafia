@@ -51,6 +51,9 @@ const rolesOn = params.get("roles") === "1";
 // to a "Click to see sticker" label, which is itself a flex box, so the reply
 // text has to lay it out inline.
 const stickerOn = params.get("sticker") === "1";
+// decor=1 puts every inline decoration the quoted line can hold into one line:
+// a role mention, a site emote and a collapsed sticker.
+const decorOn = params.get("decor") === "1";
 // A role mention is normally an icon plus coloured text, which hides a missing
 // space behind the icon's own margin. The user's report is a highlighted chip
 // that ends exactly at the word, so the fixture paints the mention the same way
@@ -77,12 +80,14 @@ const msgs0 = [
     id: "m1aaaaaa",
     senderId: S("pA"),
     meetingId: "v1",
-    content: rolesOn
-      ? "Cop yeah no I'm Mafioso with an inno on Raya"
-      : stickerOn
-        ? "testing box"
-        : "testing",
-    ...(stickerOn
+    content: decorOn
+      ? "Cop testing gun box"
+      : rolesOn
+        ? "Cop yeah no I'm Mafioso with an inno on Raya"
+        : stickerOn
+          ? "testing box"
+          : "testing",
+    ...(stickerOn || decorOn
       ? { customStickers: { box: { name: "box", path: "images/icon-192.png" } } }
       : {}),
     time: t0,
@@ -277,7 +282,7 @@ const game = {
     messageLayout: layout,
     timestamps: params.get("ts") !== "0",
     highlightMentions: true,
-    roleMentions: rolesOn,
+    roleMentions: rolesOn || decorOn,
   },
   filters: {},
   socket: { on: () => {}, send: () => {} },
@@ -341,10 +346,10 @@ ReactDOM.render(
         <SiteInfoContext.Provider
           value={{
             showAlert: () => {},
-            roles: rolesOn
+            roles: rolesOn || decorOn
               ? { Mafia: [{ name: "Cop" }, { name: "Mafioso" }, { name: "Doctor" }] }
               : undefined,
-            rolesRaw: rolesOn
+            rolesRaw: rolesOn || decorOn
               ? { Mafia: { Cop: {}, Mafioso: {}, Doctor: {} } }
               : undefined,
           }}
