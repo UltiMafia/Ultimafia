@@ -24,6 +24,11 @@ const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
 const errors = require("../lib/errors");
 const { findAliasAccount } = require("../modules/emailAlias");
+const { chooseSignupName } = require("../modules/signupName");
+const {
+  stash: stashDiscordFingerprint,
+  take: takeDiscordFingerprint,
+} = require("../modules/discordFingerprint");
 const {
   signInProvider,
   isAllowedSignupEmail,
@@ -51,7 +56,13 @@ passport.use(
       try {
         if (profile) {
           if (profile.email) {
-            await authSuccess(req, null, profile.email, profile, null);
+            await authSuccess(
+              req,
+              null,
+              profile.email,
+              profile,
+              takeDiscordFingerprint(req)
+            );
             // Verify that authSuccess actually created a session
             if (req.session.user) {
               done(null, profile);
@@ -162,7 +173,18 @@ router.post("/", async function (req, res) {
   }
 });
 
-router.get("/discord", passport.authenticate("discord"));
+router.get(
+  "/discord",
+  // The client sets a short-lived first-party cookie before leaving the site
+  // (query strings end up in access logs); keep the value in the session until
+  // the Discord callback reads it.
+  (req, res, next) => {
+    stashDiscordFingerprint(req, req.cookies && req.cookies.fp);
+    res.clearCookie("fp", { path: "/" });
+    next();
+  },
+  passport.authenticate("discord")
+);
 
 router.get("/discord/redirect", (req, res, next) => {
   passport.authenticate("discord", { session: false }, (err, user, info) => {
@@ -483,11 +505,21 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint, provide
 
       var name = null;
       if (discordProfile) {
-        name = discordProfile.global_name;
-        doesItExist = await models.User.findOne({ name: name }).select("id");
-        if (doesItExist.id) {
-          name = routeUtils.nameGen().slice(0, constants.maxUserNameLength);
-        }
+        const displayName = discordProfile.global_name;
+        // A missing display name must not become `{ name: undefined }`, which
+        // Mongoose turns into a query matching an arbitrary user, and an unused
+        // one has no row to read: both fall back to a generated name.
+        const nameTaken = displayName
+          ? Boolean(
+              await models.User.findOne({ name: displayName }).select("id")
+            )
+          : false;
+        name = chooseSignupName({
+          displayName,
+          nameTaken,
+          generate: routeUtils.nameGen,
+          maxLength: constants.maxUserNameLength,
+        });
       } else {
         name = routeUtils.nameGen().slice(0, constants.maxUserNameLength);
       }

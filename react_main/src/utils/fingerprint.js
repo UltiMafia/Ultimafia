@@ -288,4 +288,25 @@ async function collectFingerprint() {
   }
 }
 
-export { collectFingerprint };
+// The Discord OAuth flow leaves the site, so the fingerprint cannot survive in
+// this page's memory. A short-lived first-party cookie carries it to the
+// callback; the server keeps it in the session and clears the cookie. A cookie
+// is used instead of a query parameter so the device hash does not land in
+// access logs and referrers.
+const FINGERPRINT_COOKIE = "fp";
+const FINGERPRINT_COOKIE_TTL_SECONDS = 120;
+
+function writeFingerprintCookie(fingerprint) {
+  if (!fingerprint) return;
+  try {
+    const value = encodeURIComponent(JSON.stringify(fingerprint));
+    document.cookie =
+      `${FINGERPRINT_COOKIE}=${value}; path=/; ` +
+      `max-age=${FINGERPRINT_COOKIE_TTL_SECONDS}; samesite=lax`;
+  } catch (e) {
+    // A fingerprint is an optimisation here: without it the Discord callback
+    // behaves exactly as it did before.
+  }
+}
+
+export { collectFingerprint, writeFingerprintCookie };
