@@ -1,4 +1,5 @@
-// Post-game kudos voting: one secret, locked-once-cast vote per alignment row.
+// Post-game kudos voting: one locked-once-cast vote per alignment row.
+// Legacy votes stay secret; explicit prospective policy can reveal final ballots.
 //
 // The award rule is kept as pure functions (rowWinners / guaranteedRowWinners)
 // so it can be unit tested without a game; KudosVote holds the per-game state.
@@ -89,7 +90,11 @@ function pickBotVote(candidates, botId, favorite, rand = Math.random) {
 class KudosVote {
   // candidates: [{ id, alignment }]; voters: [playerId]. testMode marks a
   // game with bots in it: everything works, but nothing gets saved.
-  constructor({ candidates, voters, testMode = false }) {
+  constructor({ candidates, voters, testMode = false, disclosureVersion = 0 }) {
+    // Snapshot at creation. Missing/legacy versions never reveal ballots.
+    this.disclosureVersion = disclosureVersion === 1 && !testMode ? 1 : 0;
+    // Server-only closing audience, tied to exact connections, not reusable ids.
+    this.disclosureRecipients = null;
     this.testMode = !!testMode;
     this.rows = [];
     const byRow = {};
@@ -205,15 +210,45 @@ class KudosVote {
     return all;
   }
 
+  snapshotDisclosureRecipients(viewers) {
+    if (this.disclosureVersion !== 1 || this.finalized || this.disclosureRecipients)
+      return;
+    this.disclosureRecipients = new Map(
+      viewers
+        .filter((viewer) => !viewer.left && viewer.socket?.readyState === 1)
+        .map((viewer) => [viewer.id, viewer.socket])
+    );
+  }
+
   // What one client may see: the rows, their own votes, and the awards.
-  // Nobody else's votes or any counts are included.
-  stateFor(viewerId) {
+  // Legacy votes remain secret. New-policy ballots appear only after finalization.
+  stateFor(viewerId, viewerSocket) {
     return {
       rows: this.rows.map((r) => ({
         key: r.key,
         label: r.label,
         candidates: r.candidates.slice(),
       })),
+      ...(this.disclosureVersion === 1
+        ? {
+            disclosureVersion: 1,
+            ...(this.finalized &&
+            viewerSocket &&
+            this.disclosureRecipients?.get(viewerId) === viewerSocket
+              ? {
+                  revealedBallots: this.rows.flatMap((row) =>
+                    Object.entries(this.ballots)
+                      .filter(([, votes]) => row.key in votes)
+                      .map(([voterId, votes]) => ({
+                        row: row.key,
+                        voterId,
+                        targetId: votes[row.key],
+                      }))
+                  ),
+                }
+              : {}),
+          }
+        : {}),
       myVotes: { ...(this.ballots[viewerId] || {}) },
       awarded: Object.fromEntries(
         this.rows.map((r) => [r.key, (this.awarded[r.key] || []).slice()])
