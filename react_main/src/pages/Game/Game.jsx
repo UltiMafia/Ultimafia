@@ -2911,6 +2911,17 @@ function Message(props) {
         : null,
     [replyQuote, replyQuoteState, props.players, props.spectators]
   );
+  // A reply addresses the original sender, not the player who posted its
+  // quote. Reuse the visible preview: anonymous or unavailable sources do
+  // not identify anyone, and mention highlighting keeps its existing switch.
+  if (
+    props.settings.highlightMentions &&
+    props.self != null &&
+    message.senderId !== props.self &&
+    replyPreview?.sender?.id === props.self
+  ) {
+    iWasPinged = true;
+  }
   if (message.obituaries && props.settings.legacyObituaries) {
     return legacyObituaryMessages(message).map((alert) => (
       <Message
