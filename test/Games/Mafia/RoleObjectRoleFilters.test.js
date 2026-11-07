@@ -103,6 +103,28 @@ describe("role filters use base names and modifiers like master", function () {
     assert.equal(roleName(role.newRole), "Doctor");
   });
 
+  // Mechanics ruling: a different modifier is a different role, so the
+  // Braggart may take the other variant in either direction.
+  function braggartChoice(holderRole, possibleRoles) {
+    const game = makeGame(possibleRoles);
+    game.players = [{ role: { toRoleData: () => normalizeRole(holderRole) } }];
+    const role = makeCardRole(game, "Braggart");
+    withFirstChoice(() => loadSwitchRoleBefore()(role));
+    return role.newRole;
+  }
+
+  it("Braggart may become vanilla Cop while a modified Cop is in play", function () {
+    const picked = braggartChoice("Cop:Loud", ["Cop", "Doctor"]);
+    assert.equal(roleName(picked), "Cop");
+    assert.deepEqual(normalizeRole(picked).modifiers, []);
+  });
+
+  it("Braggart may become a modified Cop while a vanilla Cop is in play", function () {
+    const picked = braggartChoice("Cop", ["Cop:Loud", "Doctor"]);
+    assert.equal(roleName(picked), "Cop");
+    assert.deepEqual(normalizeRole(picked).modifiers, ["Loud"]);
+  });
+
   it("Braggart still avoids Banished-modified roles", function () {
     const game = makeGame(["Cop:Banished", "Doctor"]);
     const role = makeCardRole(game, "Braggart");
