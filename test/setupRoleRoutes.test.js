@@ -156,3 +156,55 @@ describe("Setup role object route wiring (mocked storage/auth)", function () {
     assert.equal(Object.keys(state.setups).length, 0);
   });
 });
+
+describe("User route setup serialization", function () {
+  const source = fs.readFileSync(path.join(__dirname, "../routes/user.js"), "utf8");
+  const compatibility = require("../lib/setupRoleCompatibility");
+
+  function loadHelper() {
+    const start = source.indexOf("function setupRolesForClient");
+    assert.notEqual(start, -1, "setupRolesForClient helper exists");
+    const end = source.indexOf("\n}", start);
+    const fnSource = source.slice(start, end + 2);
+    return vm.runInNewContext(`(${fnSource})`, { setupRoleCompatibility: compatibility });
+  }
+
+  it("converts stored descriptor groups into the legacy count-map JSON", function () {
+    const setupRolesForClient = loadHelper();
+    const entries = [[{ role: { name: "Villager", items: ["Gun"] }, count: 2 },
+      { role: { name: "Mafioso" }, count: 1 }]];
+    const setup = { roles: serializeRoleGroups(entries) };
+    setupRolesForClient(setup);
+    assert.equal(typeof setup.roles, "string");
+    assert.deepEqual(JSON.parse(setup.roles), toRoleMaps(entries));
+  });
+
+  it("leaves legacy map setups unchanged", function () {
+    const setupRolesForClient = loadHelper();
+    const legacy = JSON.stringify([{ "Villager:": 4, "Mafioso:": 1 }]);
+    const setup = { roles: legacy };
+    setupRolesForClient(setup);
+    assert.deepEqual(JSON.parse(setup.roles), [{ "Villager:": 4, "Mafioso:": 1 }]);
+  });
+
+  it("tolerates a setup without roles", function () {
+    const setupRolesForClient = loadHelper();
+    assert.deepEqual(setupRolesForClient({ id: "x" }), { id: "x" });
+    assert.equal(setupRolesForClient(undefined), undefined);
+  });
+
+  it("adapts profile setups, archived games, the setup list and the game list", function () {
+    const checks = {
+      profileSetups: /for \(let setup of user\.setups \|\| \[\]\) setupRolesForClient\(setup\);/.test(source),
+      nestedSetups: (source.match(/setup: setupRolesForClient\(rest\.setup\),/g) || []).length === 2,
+      setupList: /return setupRolesForClient\(rest\);/.test(source),
+      helperUsed: source.split("setupRolesForClient(").length - 1 === 5,
+    };
+    assert.deepEqual(checks, {
+      profileSetups: true,
+      nestedSetups: true,
+      setupList: true,
+      helperUsed: true,
+    });
+  });
+});

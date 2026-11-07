@@ -1,5 +1,6 @@
 const Information = require("../Information");
 const Random = require("../../../../lib/Random");
+const { roleName, roleEquals } = require("../../../../lib/roleIdentity");
 const {
   EVIL_FACTIONS,
   NOT_EVIL_FACTIONS,
@@ -46,11 +47,7 @@ module.exports = class RevealInfo extends Information {
     let tempTempAppearance = this.target.tempAppearance[this.investType];
     let OtherRoles = this.game.PossibleRoles.filter(
       (r) =>
-        r !=
-          this.game.formatRoleInternal(
-            this.target.role.name,
-            this.target.role.modifier
-          ) &&
+        !roleEquals(r, this.target.role.toRoleData()) &&
         !this.game.getRoleTags(r).includes("No Investigate") &&
         !this.game.getRoleTags(r).includes("Exposed")
     );

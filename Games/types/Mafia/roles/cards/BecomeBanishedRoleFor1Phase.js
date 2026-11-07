@@ -1,5 +1,9 @@
 const Card = require("../../Card");
-const { roleEquals, roleModifiers } = require("../../../../../lib/roleIdentity");
+const {
+  roleEquals,
+  roleModifiers,
+  roleKey,
+} = require("../../../../../lib/roleIdentity");
 const roleBlacklist = ["Hermit", "Jack", "Consigliere", "Sidhe", "Oddfather"];
 
 module.exports = class BecomeBanishedRoleFor1Phase extends Card {
@@ -22,16 +26,20 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
             this.role.data.roleSelectedLastNight.push(this.target);
             this.role.data.roleSelectedEver.push(this.target);
             //this.actor.role.data.ConvertOptions.splice(this.actor.role.data.ConvertOptions.indexOf(this.target),1);
+            // Meeting compares candidates with roleKey, so store canonical
+            // identities rather than display choices or raw descriptors.
             if(roleModifiers(this.role).split("/").includes("Fair")){
-              this.role.data.roleBlacklist2 = this.role.data.roleSelectedEver;
+              this.role.data.roleBlacklist2 =
+                this.role.data.roleSelectedEver.map((r) => roleKey(r));
             }
             else if(roleModifiers(this.role).split("/").includes("Nonconsecutive")){
-              this.role.data.roleBlacklist2 = this.role.data.roleSelectedLastNight;
+              this.role.data.roleBlacklist2 =
+                this.role.data.roleSelectedLastNight.map((r) => roleKey(r));
             }
             else if(roleModifiers(this.role).split("/").includes("Consecutive")){
               let allRole = this.role.getAllRoles();
               allRole = allRole.filter((r) => !roleEquals(r, this.target));
-              this.role.data.roleBlacklist2 = allRole;
+              this.role.data.roleBlacklist2 = allRole.map((r) => roleKey(r));
             }
             //this.role.data.roleBlacklist2.push(this.target);
 

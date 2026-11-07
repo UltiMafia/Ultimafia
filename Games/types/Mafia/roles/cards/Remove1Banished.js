@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
-const { roleEquals, roleName } = require("../../../../../lib/roleIdentity");
+const { roleEquals, roleName, roleModifiers } = require("../../../../../lib/roleIdentity");
 
 module.exports = class Remove1Banished extends Card {
   constructor(role) {
@@ -34,7 +34,9 @@ module.exports = class Remove1Banished extends Card {
           );
         }
         roles = roles.filter(
-          (r) => !roleName(r).toLowerCase().includes("banished")
+          (r) =>
+            !roleName(r).toLowerCase().includes("banished") &&
+            !roleModifiers(r).toLowerCase().includes("banished")
         );
         roles = roles.filter(
           (r) => this.game.getRoleAlignment(roleName(r)) == "Village"

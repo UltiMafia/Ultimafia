@@ -1956,6 +1956,14 @@ module.exports = class Player {
   }
 
   setTempAppearance(type, appearance) {
+    if (appearance && typeof appearance === "object") {
+      const identity = roleIdentity.normalizeRole(appearance);
+      this.tempAppearance[type] = identity.name;
+      this.tempAppearanceMods[type] = identity.modifiers.length
+        ? identity.modifiers.join("/")
+        : null;
+      return;
+    }
     if (appearance == "real") appearance = this.role.name;
     this.tempAppearanceMods[type] = appearance.split(":")[1];
     if (
