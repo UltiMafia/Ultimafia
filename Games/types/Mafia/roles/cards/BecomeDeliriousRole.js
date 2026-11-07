@@ -5,7 +5,7 @@ const {
   PRIORITY_FULL_DISABLE,
   PRIORITY_ITEM_TAKER_DEFAULT,
 } = require("../../const/Priority");
-const { roleEquals, roleKey, roleName, roleModifiers } = require("../../../../../lib/roleIdentity");
+const { roleEquals, appearanceKey, roleName, roleModifiers } = require("../../../../../lib/roleIdentity");
 
 module.exports = class BecomeDeliriousRole extends Card {
   constructor(role) {
@@ -165,8 +165,8 @@ function switchRoleBefore(role) {
   role.newRole = Random.randArrayVal(roles);
 
   let tempApp = {
-    self: roleKey(role.newRole),
-    reveal: roleKey(role.newRole),
+    self: appearanceKey(role.newRole),
+    reveal: appearanceKey(role.newRole),
   };
   role.editAppearance(tempApp);
 }

@@ -6,7 +6,7 @@ const {
   PRIORITY_NIGHT_ROLE_BLOCKER,
   PRIORITY_CLEAN_DEATH,
 } = require("../../const/Priority");
-const { roleKey, roleName } = require("../../../../../lib/roleIdentity");
+const { appearanceKey, roleName } = require("../../../../../lib/roleIdentity");
 
 module.exports = class MagusGame extends Card {
   constructor(role) {
@@ -124,11 +124,11 @@ module.exports = class MagusGame extends Card {
           rolesEvil = Random.randomizeArray(rolesEvil);
           shuffledPlayers = Random.randomizeArray(alivePlayers);
           if (shuffledPlayers[0]) {
-            shuffledPlayers[0].role.appearance.reveal = roleKey(rolesEvil[0]);
+            shuffledPlayers[0].role.appearance.reveal = appearanceKey(rolesEvil[0]);
             shuffledPlayers[0].role.appearance.investigate =
-              roleKey(rolesEvil[0]);
+              appearanceKey(rolesEvil[0]);
             shuffledPlayers[0].role.appearance.condemn =
-              roleKey(rolesEvil[0]);
+              appearanceKey(rolesEvil[0]);
             shuffledPlayers[0].role.hideModifier = {
               death: false,
               reveal: true,
@@ -138,10 +138,10 @@ module.exports = class MagusGame extends Card {
           }
           rolesEvil = Random.randomizeArray(rolesEvil);
           this.actor.role.alignment = this.game.getRoleAlignment(roleName(rolesEvil[0]));
-          this.actor.role.appearance.death = roleKey(rolesEvil[0]);
-          this.actor.role.appearance.reveal = roleKey(rolesEvil[0]);
-          this.actor.role.appearance.investigate = roleKey(rolesEvil[0]);
-          this.actor.role.appearance.condemn = roleKey(rolesEvil[0]);
+          this.actor.role.appearance.death = appearanceKey(rolesEvil[0]);
+          this.actor.role.appearance.reveal = appearanceKey(rolesEvil[0]);
+          this.actor.role.appearance.investigate = appearanceKey(rolesEvil[0]);
+          this.actor.role.appearance.condemn = appearanceKey(rolesEvil[0]);
           this.actor.role.hideModifier = {
             death: true,
             reveal: true,

@@ -3,7 +3,7 @@ const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
 const { CULT_FACTIONS } = require("../../const/FactionList");
 const { PRIORITY_FULL_DISABLE } = require("../../const/Priority");
-const { roleEquals, roleKey, roleName, roleModifiers, normalizeRole } = require("../../../../../lib/roleIdentity");
+const { roleEquals, appearanceKey, roleName, roleModifiers, normalizeRole } = require("../../../../../lib/roleIdentity");
 
 module.exports = class BecomeFakeCultRole extends Card {
   constructor(role) {
@@ -62,8 +62,8 @@ module.exports = class BecomeFakeCultRole extends Card {
 
     role.newRole = Random.randArrayVal(roles);
     let tempApp = {
-      self: roleKey(role.newRole),
-      reveal: roleKey(role.newRole),
+      self: appearanceKey(role.newRole),
+      reveal: appearanceKey(role.newRole),
     };
     this.editAppearance(tempApp);
 
@@ -354,8 +354,8 @@ function switchRoleBefore(role) {
 
   role.newRole = Random.randArrayVal(roles);
   let tempApp = {
-    self: roleKey(role.newRole),
-    reveal: roleKey(role.newRole),
+    self: appearanceKey(role.newRole),
+    reveal: appearanceKey(role.newRole),
   };
   role.editAppearance(tempApp);
 }

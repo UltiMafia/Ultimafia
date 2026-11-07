@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
-const { roleKey, roleName } = require("../../../../../lib/roleIdentity");
+const { appearanceKey, roleName } = require("../../../../../lib/roleIdentity");
 
 module.exports = class AppearAsVillagePRrOnDeath extends Card {
   constructor(role) {
@@ -24,7 +24,7 @@ module.exports = class AppearAsVillagePRrOnDeath extends Card {
 
     // const roleAppearance = randomEvilRole.split(":")[0];
 
-    const roleAppearance = roleKey(randomVillageRole);
+    const roleAppearance = appearanceKey(randomVillageRole);
 
     let tempApp = {
       condemn: roleAppearance,

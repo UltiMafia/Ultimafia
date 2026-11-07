@@ -31,7 +31,9 @@ module.exports = class RoleDisguiser extends Card {
               this.target.name
             }, you learn to act like ${addArticle(info.getInfoRaw())}.`;
             this.actor.holdItem("Suit", {
-              type: roleKey(this.target.role.toRoleData()),
+              // Name and modifiers only: the Suit's type becomes the
+              // disguiser's appearance and snoop name.
+              type: `${this.target.getRoleName()}:${this.target.role.modifier}`,
             });
             this.actor.queueAlert(alert);
           },

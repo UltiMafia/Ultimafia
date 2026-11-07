@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
-const { roleKey, roleName } = require("../../../../../lib/roleIdentity");
+const { appearanceKey, roleName } = require("../../../../../lib/roleIdentity");
 
 module.exports = class VampireAppearAsRoles extends Card {
   constructor(role) {
@@ -22,7 +22,7 @@ module.exports = class VampireAppearAsRoles extends Card {
 
     const randomEvilRole = Random.randArrayVal(randomNonVampire);
 
-    const roleAppearance = roleKey(randomEvilRole);
+    const roleAppearance = appearanceKey(randomEvilRole);
 
     //const selfAppearance = role.name == "Miller" ? "Villager" : "real";
 
