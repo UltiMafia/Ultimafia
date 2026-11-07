@@ -280,6 +280,23 @@ describe("Games/SpectateJoin", function () {
     spectating.should.have.lengthOf(0);
   });
 
+  it("adds one spectator when two spectate joins race", async function () {
+    const game = await openGame.call(this, { total: 3 });
+    const specUser = makeUser(null, "spec");
+
+    // Two tabs opening ?spectate=true at the same moment.
+    await Promise.all([
+      game.userJoin(specUser, { spectate: true }),
+      game.userJoin(specUser, { spectate: true }),
+    ]);
+
+    const spectating = game.spectators.filter(
+      (sp) => sp.user && sp.user.id === specUser.id
+    );
+    spectating.should.have.lengthOf(1);
+    game.players.should.have.lengthOf(0);
+  });
+
   it("seats one player when takeSeat packets race", async function () {
     const game = await openGame.call(this, { total: 3 });
     const specUser = makeUser(null, "spec");

@@ -670,16 +670,7 @@ module.exports = class Game {
       // Reconnect if already a spectator. Do this before seating so a refresh
       // during pregame cannot take an open seat.
       if (spectator) {
-        spectator.setUser(user);
-        spectator.omniscient = omniscient;
-        this.restoreSpectatorMeetings(spectator);
-        this.sendAllGameInfo(spectator);
-        // The history above is the shared spectator view, which is not a
-        // member of any meeting, so it never says this spectator can talk.
-        // Send their own Pregame / Spectator Meeting info too, or the chat
-        // box is gone after a refresh.
-        spectator.sendMeetings();
-        spectator.send("loaded");
+        this.reconnectSpectator(spectator, user, omniscient);
         return;
       }
 
@@ -715,6 +706,19 @@ module.exports = class Game {
           await redis.leaveGame(user.id);
         }
 
+        // Two connections can reach here at once (two tabs opening the game
+        // with ?spectate=true). Whoever wins adds the spectator; the other must
+        // take over that entry rather than add a second one, and must not
+        // invent a spectator for an account that just won a seat.
+        if (this.findJoinedPlayer(user, isBot)) return;
+
+        const raced = this.findSpectator(user);
+        if (raced) {
+          this.reconnectSpectator(raced, user, omniscient);
+          return;
+        }
+
+        // No await between the check above and this insert.
         await this.sendSpectatorJoinHint(this.addSpectator(user, omniscient));
         return;
       }
@@ -762,6 +766,22 @@ module.exports = class Game {
     }
 
     return null;
+  }
+
+  // Hand a spectator entry to the connection that now owns it. Shared by the
+  // ordinary reconnect path and the spectate-intent path, where a second
+  // connection can arrive before the first has added its spectator entry.
+  reconnectSpectator(spectator, user, omniscient) {
+    spectator.setUser(user);
+    spectator.omniscient = omniscient;
+    this.restoreSpectatorMeetings(spectator);
+    this.sendAllGameInfo(spectator);
+    // The history above is the shared spectator view, which is not a member of
+    // any meeting, so it never says this spectator can talk. Send their own
+    // Pregame / Spectator Meeting info too, or the chat box is gone.
+    spectator.sendMeetings();
+    spectator.send("loaded");
+    return spectator;
   }
 
   findSpectator(user) {
