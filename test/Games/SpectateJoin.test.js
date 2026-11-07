@@ -264,6 +264,22 @@ describe("Games/SpectateJoin", function () {
     expect(await redis.inGame(game.hostId)).to.equal(false);
   });
 
+  it("seats one player when userJoin calls race", async function () {
+    const game = await openGame.call(this, { total: 3 });
+    const specUser = makeUser(null, "spec");
+
+    await Promise.all([game.userJoin(specUser), game.userJoin(specUser)]);
+
+    const seated = game.players
+      .array()
+      .filter((p) => (p.userId || p.user.id) === specUser.id);
+    seated.should.have.lengthOf(1);
+    const spectating = game.spectators.filter(
+      (sp) => sp.user && sp.user.id === specUser.id
+    );
+    spectating.should.have.lengthOf(0);
+  });
+
   it("seats one player when takeSeat packets race", async function () {
     const game = await openGame.call(this, { total: 3 });
     const specUser = makeUser(null, "spec");

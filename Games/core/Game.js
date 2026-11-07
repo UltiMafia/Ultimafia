@@ -727,6 +727,10 @@ module.exports = class Game {
       ) {
         const seated = await this.seatPlayer(user, isBot);
         if (seated) return;
+
+        // seatPlayer also returns null when a racing join seated this account
+        // first; adding them to spectators here lists the same account twice.
+        if (this.findJoinedPlayer(user, isBot)) return;
       }
 
       const refusal = await this.spectatorJoinRefusal(user, omniscient);
@@ -1179,6 +1183,13 @@ module.exports = class Game {
       refuse(spectator, "No open seats.");
       return;
     }
+
+    // A racing packet may already have moved this seat, in which case the
+    // socket now belongs to the seated Player: clearing it here strips the
+    // winner's listeners and they can no longer speak, ready up or spectate.
+    // Nothing awaits between this check and the removal below, so the winner
+    // cannot slip in between them.
+    if (this.spectators.indexOf(spectator) == -1) return;
 
     this.removeSpectator(spectator);
     if (spectator.socket && spectator.socket.clearListeners) {
