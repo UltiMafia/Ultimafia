@@ -54,6 +54,9 @@ const stickerOn = params.get("sticker") === "1";
 // decor=1 puts every inline decoration the quoted line can hold into one line:
 // a role mention, a site emote and a collapsed sticker.
 const decorOn = params.get("decor") === "1";
+// emote=1 puts a custom emote between two words, so the space to its right can
+// be measured on a normal message row.
+const emoteOn = params.get("emote") === "1";
 // A role mention is normally an icon plus coloured text, which hides a missing
 // space behind the icon's own margin. The user's report is a highlighted chip
 // that ends exactly at the word, so the fixture paints the mention the same way
@@ -80,8 +83,10 @@ const msgs0 = [
     id: "m1aaaaaa",
     senderId: S("pA"),
     meetingId: "v1",
-    content: decorOn
-      ? "Cop testing gun box"
+    content: emoteOn
+      ? "hello box world"
+      : decorOn
+        ? "Cop testing gun box"
       : rolesOn
         ? "Cop yeah no I'm Mafioso with an inno on Raya"
         : stickerOn
@@ -89,6 +94,9 @@ const msgs0 = [
           : "testing",
     ...(stickerOn || decorOn
       ? { customStickers: { box: { name: "box", path: "images/icon-192.png" } } }
+      : {}),
+    ...(emoteOn
+      ? { customEmotes: { box: { name: "box", path: "images/icon-192.png" } } }
       : {}),
     time: t0,
     quotable: true,
