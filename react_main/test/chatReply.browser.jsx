@@ -43,6 +43,30 @@ const dead = params.get("dead") === "1";
 const R = { ...(spec ? { spectatorChat: true } : {}), ...(dead ? { alive: false } : {}) };
 const t0 = 1761500000000;
 const styled = params.get("styled") === "1";
+// roles=1 turns role mentions on and gives the quoted line two of them, so a
+// reply's reference can be checked for the space between a highlighted role
+// and the words beside it.
+const rolesOn = params.get("roles") === "1";
+// sticker=1 puts a custom sticker in the quoted line. Replies collapse stickers
+// to a "Click to see sticker" label, which is itself a flex box, so the reply
+// text has to lay it out inline.
+const stickerOn = params.get("sticker") === "1";
+// A role mention is normally an icon plus coloured text, which hides a missing
+// space behind the icon's own margin. The user's report is a highlighted chip
+// that ends exactly at the word, so the fixture paints the mention the same way
+// to make the gap measurable in a screenshot.
+if (rolesOn) {
+  const style = document.createElement("style");
+  style.textContent = `
+    .reply-reference-text span[style*="inline-flex"] {
+      background: rgba(233, 30, 99, 0.85);
+      color: #fff;
+      border-radius: 2px;
+      padding: 0 2px;
+    }
+  `;
+  document.head.appendChild(style);
+}
 // Per-message colours, as the server stamps them on every line.
 const COLORS = {
   pA: { nameColor: "#1f9d55", textColor: "#c2185b" },
@@ -53,7 +77,14 @@ const msgs0 = [
     id: "m1aaaaaa",
     senderId: S("pA"),
     meetingId: "v1",
-    content: "testing",
+    content: rolesOn
+      ? "Cop yeah no I'm Mafioso with an inno on Raya"
+      : stickerOn
+        ? "testing box"
+        : "testing",
+    ...(stickerOn
+      ? { customStickers: { box: { name: "box", path: "images/icon-192.png" } } }
+      : {}),
     time: t0,
     quotable: true,
   },
@@ -246,7 +277,7 @@ const game = {
     messageLayout: layout,
     timestamps: params.get("ts") !== "0",
     highlightMentions: true,
-    roleMentions: false,
+    roleMentions: rolesOn,
   },
   filters: {},
   socket: { on: () => {}, send: () => {} },
@@ -307,7 +338,17 @@ ReactDOM.render(
   <BrowserRouter>
     <ThemeProvider theme={theme}>
       <UserContext.Provider value={user}>
-        <SiteInfoContext.Provider value={{ showAlert: () => {} }}>
+        <SiteInfoContext.Provider
+          value={{
+            showAlert: () => {},
+            roles: rolesOn
+              ? { Mafia: [{ name: "Cop" }, { name: "Mafioso" }, { name: "Doctor" }] }
+              : undefined,
+            rolesRaw: rolesOn
+              ? { Mafia: { Cop: {}, Mafioso: {}, Doctor: {} } }
+              : undefined,
+          }}
+        >
           <FixtureGame>
             <GameTypeContext.Provider value={{ singleState: false }}>
               <Box

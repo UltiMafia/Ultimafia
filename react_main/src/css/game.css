@@ -1374,8 +1374,11 @@ html[data-keyboard="open"] .game .meeting-tabs {
   flex: 1 1 auto;
   min-width: 0;
 
-  display: flex;
-  align-items: center;
+  /* Not a flex container. A role mention is an inline-flex span inside this
+     text, and flex turns each run of words between mentions into its own
+     anonymous flex item, which drops the spaces next to it: "Copwith an inno".
+     Normal inline flow keeps the text-join as the line's own row does. */
+  display: block;
 
   overflow: hidden;
   white-space: nowrap;
