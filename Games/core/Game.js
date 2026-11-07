@@ -868,6 +868,14 @@ module.exports = class Game {
         return null;
       }
 
+      // A competing packet can seat the same user while this one waited for the
+      // lock; two Player objects for one account show up as a duplicate row and
+      // corrupt the seat count. Callers must treat null as "not seated by me".
+      const alreadySeated = this.players.filter(
+        (p) => p && (p.userId || (p.user && p.user.id)) === user.id
+      );
+      if (alreadySeated.length) return null;
+
       await redis.joinGame(user.id, this.id, this.ranked, this.competitive);
 
       player = new this.Player(user, this, isBot);
@@ -1179,8 +1187,15 @@ module.exports = class Game {
 
     const player = await this.seatPlayer(user, false);
     if (!player) {
-      const back = this.addSpectator(user, spectator.omniscient);
-      refuse(back, "No open seats.");
+      // A racing takeSeat may have seated them; re-adding the spectator entry
+      // is the other half of the duplicate (seated and spectating at once).
+      const seated = this.players.filter(
+        (p) => p && (p.userId || (p.user && p.user.id)) === user.id
+      );
+      if (!seated.length) {
+        const back = this.addSpectator(user, spectator.omniscient);
+        refuse(back, "No open seats.");
+      }
       return;
     }
 

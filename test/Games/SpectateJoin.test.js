@@ -264,6 +264,27 @@ describe("Games/SpectateJoin", function () {
     expect(await redis.inGame(game.hostId)).to.equal(false);
   });
 
+  it("seats one player when takeSeat packets race", async function () {
+    const game = await openGame.call(this, { total: 3 });
+    const specUser = makeUser(null, "spec");
+    await game.userJoin(specUser, { spectate: true });
+    const spectator = game.spectators[0];
+
+    // Holding the toggle down sends these faster than the awaits resolve.
+    await Promise.all([
+      game.takeSeat(spectator),
+      game.takeSeat(spectator),
+      game.takeSeat(spectator),
+    ]);
+
+    const seated = game.players
+      .array()
+      .filter((p) => (p.userId || p.user.id) === specUser.id);
+    seated.should.have.lengthOf(1);
+    game.players.should.have.lengthOf(1);
+    game.spectators.should.have.lengthOf(0);
+  });
+
   it("takeSeat uses the normal join path", async function () {
     const game = await openGame.call(this, { total: 2 });
     const spectatorUser = makeUser(null, "spec");
