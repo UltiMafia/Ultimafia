@@ -1,5 +1,5 @@
 const { expect } = require("chai");
-const { refundTargets } = require("../modules/heartRefund");
+const { refundTargets, accountIdOf } = require("../modules/heartRefund");
 
 describe("refundTargets", function () {
   const charged = { userIds: ["a", "b", "c"], red: 0, gold: 1 };
@@ -36,5 +36,30 @@ describe("refundTargets", function () {
     expect(
       refundTargets({ charged: { userIds: ["", "a", null, undefined] } })
     ).to.deep.equal(["a"]);
+  });
+});
+
+describe("accountIdOf", function () {
+  it("reads the account id of an ordinary seat", function () {
+    expect(accountIdOf({ user: { id: "u2" } })).to.equal("u2");
+  });
+
+  it("reads the account id of an anonymous seat", function () {
+    // makeAnonymous deletes user.id and keeps the real account here; without
+    // this fallback the first anonymous breaker would be refunded.
+    expect(accountIdOf({ user: {}, originalProfile: { userId: "u1" } })).to.equal(
+      "u1"
+    );
+  });
+
+  it("prefers an explicit userId", function () {
+    expect(
+      accountIdOf({ userId: "bot", user: { id: "u2" }, originalProfile: {} })
+    ).to.equal("bot");
+  });
+
+  it("returns undefined when there is no account behind the seat", function () {
+    expect(accountIdOf(null)).to.equal(undefined);
+    expect(accountIdOf({ user: {} })).to.equal(undefined);
   });
 });

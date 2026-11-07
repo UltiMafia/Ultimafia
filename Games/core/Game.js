@@ -16,7 +16,7 @@ const ArrayHash = require("./ArrayHash");
 const Action = require("./Action");
 const Winners = require("./Winners");
 const { games, deprecationCheck } = require("../games");
-const { refundTargets } = require("../../modules/heartRefund");
+const { refundTargets, accountIdOf } = require("../../modules/heartRefund");
 const events = require("events");
 const models = require("../../db/models");
 const redis = require("../../modules/redis");
@@ -1493,9 +1493,7 @@ module.exports = class Game {
     // Pay back everyone who was charged at start. Walking the seats instead
     // skipped players who had died and left before the break: they paid in full
     // and are no longer seated, so they were left a heart short silently.
-    const excludedUserId = excludedPlayer
-      ? excludedPlayer.userId || (excludedPlayer.user && excludedPlayer.user.id)
-      : undefined;
+    const excludedUserId = accountIdOf(excludedPlayer);
 
     if (!this.heartsRefundedUserIds) this.heartsRefundedUserIds = new Set();
 

@@ -16,4 +16,22 @@ function refundTargets({ charged, excludedUserId, refunded }) {
   );
 }
 
-module.exports = { refundTargets };
+module.exports = { refundTargets, accountIdOf };
+
+// The account behind a seat.
+//
+// Anonymous games replace the seat's user object and keep the real account id in
+// `originalProfile` (Player.makeAnonymous), leaving `user.id` deleted and
+// `player.userId` unset. Resolving the responsible player without that fallback
+// yields undefined for the first anonymous vegger or leaver, so the ledger loop
+// would hand them the refund they are supposed to lose.
+function accountIdOf(player) {
+  if (!player) return undefined;
+
+  return (
+    player.userId ||
+    (player.user && player.user.id) ||
+    (player.originalProfile && player.originalProfile.userId) ||
+    undefined
+  );
+}
