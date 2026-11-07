@@ -574,7 +574,9 @@ export function KudosDock({ onResize }) {
   const voting = !!kudos && kudos.canVote && !kudos.finalized;
   const allGone =
     rows.length > 0 && rows.every((r) => phases[r.key] === "gone");
-  const visible = voting && rows.length > 0 && !allGone;
+  const showingBallots = !!kudos && kudos.disclosureVersion === 1 &&
+    kudos.finalized && Array.isArray(kudos.revealedBallots);
+  const visible = showingBallots || (voting && rows.length > 0 && !allGone);
   const open = visible && !collapsed;
   // The chat column grows with its content, so size the dock from the space
   // the column has without it: measure with the dock collapsed, then cap it so
@@ -654,7 +656,10 @@ export function KudosDock({ onResize }) {
 
   function onVote(rowKey, target) {
     if (!socket || !socket.send) return;
-    socket.send("kudosVote", { row: rowKey, target });
+    socket.send("kudosVote", {
+      row: rowKey, target,
+      ...(kudos.disclosureVersion === 1 ? { disclosureVersion: 1 } : {}),
+    });
   }
 
   const visibleRows = rows.filter((r) => phases[r.key] !== "gone");
@@ -696,7 +701,7 @@ export function KudosDock({ onResize }) {
       >
         <Box component="img" src={KUDOS_ICON} alt="" sx={{ width: 20 }} />
         <Typography sx={{ fontWeight: 700, fontSize: 15 }}>
-          Give Kudos
+          {showingBallots ? "Final kudos votes" : "Give Kudos"}
         </Typography>
         <IconButton
           data-testid="kudos-collapse"
@@ -715,6 +720,15 @@ export function KudosDock({ onResize }) {
           />
         </IconButton>
       </Stack>
+      {!collapsed && kudos.disclosureVersion === 1 && (
+        <Typography variant="caption" sx={{ display: "block", mx: 1, mb: 1 }}>
+          Your votes, including “No one”, will identify your displayed postgame
+          name to players and spectators still connected when kudos voting
+          closes. This does not keep anonymous-game names hidden. This live view
+          is unavailable after reconnecting or reloading and is not saved in
+          game reviews.
+        </Typography>
+      )}
       {!collapsed && kudos.testMode && (
         <Stack
           data-testid="kudos-testmode"
@@ -754,7 +768,23 @@ export function KudosDock({ onResize }) {
           gap: 0.75,
         }}
       >
-        {visibleRows.map((row) => {
+        {showingBallots && (
+          <Stack spacing={0.5} sx={{ width: "100%" }}>
+            {kudos.revealedBallots.length === 0 && (
+              <Typography variant="body2">No votes were cast.</Typography>
+            )}
+            {kudos.revealedBallots.map(({ row, voterId, targetId }) => (
+              <Typography key={`${row}:${voterId}`} variant="body2">
+                {(rows.find((r) => r.key === row) || {}).label || row}{": "}
+                {game.players[voterId]?.name || "Former player"}{" → "}
+                {targetId === KUDOS_NO_ONE
+                  ? "No one"
+                  : game.players[targetId]?.name || "Former player"}
+              </Typography>
+            ))}
+          </Stack>
+        )}
+        {!showingBallots && visibleRows.map((row) => {
           const n = row.candidates.length;
           const natural = kudosGroupWidth(n, mobile);
           // Big teams take a whole line (and scroll/swipe inside it); small

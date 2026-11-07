@@ -618,7 +618,7 @@ module.exports = class Player {
         const target = String(info.target);
         if (!Utils.validProp(rowKey) || !Utils.validProp(target)) return;
 
-        this.game.castKudosVote(this, rowKey, target);
+        this.game.castKudosVote(this, rowKey, target, info.disclosureVersion);
       } catch (e) {
         logger.error(e);
       }

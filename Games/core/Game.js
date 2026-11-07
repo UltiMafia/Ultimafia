@@ -1854,7 +1854,7 @@ module.exports = class Game {
     if (player.user.dev && !player.isBot) player.send("dev");
 
     if (this.kudosVote)
-      player.send("kudos", this.kudosVote.stateFor(player.id));
+      player.send("kudos", this.kudosVote.stateFor(player.id, player.socket));
 
     if (this.isReadyCheckActive && !player.spectator) {
       const endTime = Date.now() + this.getTimeLeft("pregameCountdown");
@@ -4377,7 +4377,13 @@ module.exports = class Game {
       .filter((p) => !p.left && (!p.isBot || (testMode && isTestBotPlayer(p))))
       .map((p) => p.id);
 
-    this.kudosVote = new KudosVote({ candidates, voters, testMode });
+    // Off until the prospective disclosure policy and audience are approved.
+    // Snapshot once: changing the flag cannot expose an existing secret vote.
+    const disclosureVersion =
+      process.env.KUDOS_FINAL_BALLOTS === "true" && !testMode ? 1 : 0;
+    this.kudosVote = new KudosVote({
+      candidates, voters, testMode, disclosureVersion,
+    });
     this.broadcastKudos();
     if (testMode) this.scheduleBotKudosVotes();
   }
@@ -4509,20 +4515,28 @@ module.exports = class Game {
     if (!this.kudosVote) return;
     for (let player of this.players)
       if (!player.left)
-        player.send("kudos", this.kudosVote.stateFor(player.id));
+        player.send("kudos", this.kudosVote.stateFor(player.id, player.socket));
     for (let spectator of this.spectators)
-      spectator.send("kudos", this.kudosVote.stateFor(spectator.id));
+      spectator.send("kudos", this.kudosVote.stateFor(spectator.id, spectator.socket));
   }
 
-  castKudosVote(player, rowKey, target) {
+  castKudosVote(player, rowKey, target, disclosureVersion) {
     if (this.tutorial || this.tutorialSettings) return;
     if (!this.kudosVote || !this.finished || this.postgameOver) return;
 
+    // A cached old client must not cast under a policy it never displayed.
+    if (
+      this.kudosVote.disclosureVersion === 1 &&
+      disclosureVersion !== 1
+    ) {
+      player.sendAlert("Reload to read the kudos voting disclosure before voting.");
+      return;
+    }
     const error = this.kudosVote.castVote(player.id, rowKey, target);
     if (error) player.sendAlert(error);
     else this.evaluateKudos(false);
 
-    player.send("kudos", this.kudosVote.stateFor(player.id));
+    player.send("kudos", this.kudosVote.stateFor(player.id, player.socket));
   }
 
   // Awards anyone who is now guaranteed kudos (or, with `final`, settles
@@ -5402,6 +5416,18 @@ module.exports = class Game {
     this.postgameOver = true;
     this.clearTimers();
     this.clearBotKudosTimers();
+    // The client closes its socket on finished, so deliver the final live
+    // ballot view first. The persistence pass remains idempotent below.
+    if (this.kudosVote && this.kudosVote.disclosureVersion === 1) {
+      try {
+        this.kudosVote.snapshotDisclosureRecipients([
+          ...this.players, ...this.spectators,
+        ]);
+        this.evaluateKudos(true);
+      } catch (e) {
+        logger.warn(`final kudos disclosure failed for game ${this.id}: ${e.message}`);
+      }
+    }
     this.broadcast("finished");
 
     this._endPostgamePromise = this._doEndPostgame();
