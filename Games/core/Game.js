@@ -772,7 +772,14 @@ module.exports = class Game {
   // ordinary reconnect path and the spectate-intent path, where a second
   // connection can arrive before the first has added its spectator entry.
   reconnectSpectator(spectator, user, omniscient) {
-    spectator.setUser(user);
+    // Two join packets on one authenticated connection share a socket.
+    // Player.setUser sends "left" and terminates the socket it is handed, so
+    // calling it here would hang up the very connection it is meant to keep.
+    const sameSocket =
+      spectator.socket && user.socket && spectator.socket === user.socket;
+
+    if (!sameSocket) spectator.setUser(user);
+
     spectator.omniscient = omniscient;
     this.restoreSpectatorMeetings(spectator);
     this.sendAllGameInfo(spectator);
