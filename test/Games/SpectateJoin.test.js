@@ -280,6 +280,28 @@ describe("Games/SpectateJoin", function () {
     spectating.should.have.lengthOf(0);
   });
 
+  it("keeps the connection open when two spectate joins race on it", async function () {
+    const game = await openGame.call(this, { total: 3 });
+    const specUser = makeUser(null, "spec");
+    // TestSocket has no terminate(); record it per instance so a handoff that
+    // hangs up the socket it is meant to keep is visible here.
+    specUser.socket.terminate = function () {
+      this.terminated = true;
+    };
+
+    await Promise.all([
+      game.userJoin(specUser, { spectate: true }),
+      game.userJoin(specUser, { spectate: true }),
+    ]);
+
+    const spectating = game.spectators.filter(
+      (sp) => sp.user && sp.user.id === specUser.id
+    );
+    spectating.should.have.lengthOf(1);
+    expect(specUser.socket.terminated).to.equal(undefined);
+    Object.keys(specUser.socket.listeners).length.should.be.above(0);
+  });
+
   it("adds one spectator when two spectate joins race", async function () {
     const game = await openGame.call(this, { total: 3 });
     const specUser = makeUser(null, "spec");
