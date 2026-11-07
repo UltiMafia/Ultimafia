@@ -2748,7 +2748,10 @@ router.post("/refundGame", async (req, res) => {
           for (let uid in playerIdMap) {
             const pid = playerIdMap[uid];
             if (!originalRoles[pid]) continue;
-            const roleName = originalRoles[pid].split(":")[0];
+            const roleName =
+              typeof originalRoles[pid] === "string"
+                ? originalRoles[pid].split(":")[0]
+                : originalRoles[pid].name;
             const alignment = playerAlignmentMap[uid] || "";
             const alignmentIsFaction =
               alignment === "Village" ||

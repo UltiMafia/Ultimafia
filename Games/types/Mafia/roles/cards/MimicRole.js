@@ -18,7 +18,7 @@ module.exports = class MimicRole extends Card {
               // only check conversion immunity for village roles
               if (this.dominates()) {
                 this.actor.setRole(
-                  `${this.target.getRoleName()}:${this.target.getModifierName()}`,
+                  this.target.role.toRoleData(),
                   this.target.role.data,
                   false,
                   false,

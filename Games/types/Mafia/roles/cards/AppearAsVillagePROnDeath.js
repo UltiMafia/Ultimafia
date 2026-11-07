@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
+const { appearanceKey, roleName } = require("../../../../../lib/roleIdentity");
 
 module.exports = class AppearAsVillagePRrOnDeath extends Card {
   constructor(role) {
@@ -9,9 +10,9 @@ module.exports = class AppearAsVillagePRrOnDeath extends Card {
       .getAllRoles()
       .filter(
         (r) =>
-          role.game.getRoleAlignment(r) === "Village" &&
-          r.split(":")[0] != "Villager" &&
-          !role.game.getRoleTags(r).includes("No Investigate")
+          role.game.getRoleAlignment(roleName(r)) === "Village" &&
+          roleName(r) != "Villager" &&
+          !role.game.getRoleTags(roleName(r)).includes("No Investigate")
       );
 
     let temp = villageRoles.filter((p) => p);
@@ -23,7 +24,7 @@ module.exports = class AppearAsVillagePRrOnDeath extends Card {
 
     // const roleAppearance = randomEvilRole.split(":")[0];
 
-    const roleAppearance = randomVillageRole;
+    const roleAppearance = appearanceKey(randomVillageRole);
 
     let tempApp = {
       condemn: roleAppearance,

@@ -1,5 +1,6 @@
 const Information = require("../Information");
 const Random = require("../../../../lib/Random");
+const { roleName } = require("../../../../lib/roleIdentity");
 const {
   EVIL_FACTIONS,
   NOT_EVIL_FACTIONS,
@@ -49,7 +50,7 @@ module.exports = class RevealPlayersWithRoleInfo extends Information {
     }
     if (OtherRoles.length < this.mainInfo.length) {
       OtherRoles = this.game.PossibleRoles.filter(
-        (r) => r.split(":")[0] == this.role
+        (r) => roleName(r) == this.role
       );
     }
 

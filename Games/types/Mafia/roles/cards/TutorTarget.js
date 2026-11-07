@@ -1,6 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 const roleData = require("../../../../../data/roles");
+const { roleName, roleModifiers } = require("../../../../../lib/roleIdentity");
 
 module.exports = class TutorTarget extends Card {
   constructor(role) {
@@ -120,8 +121,8 @@ module.exports = class TutorTarget extends Card {
             if (target.role.alignment !== "Village") return;
 
             const banishedRoleNames = (game.PossibleRoles || [])
-              .filter(r => r.split(":")[1] === "Banished")
-              .map(r => r.split(":")[0]);
+              .filter((r) => roleModifiers(r).split("/").includes("Banished"))
+              .map((r) => roleName(r));
 
             const infoRoles = Object.entries(roleData.Mafia)
               .filter(([roleName, data]) =>

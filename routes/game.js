@@ -14,6 +14,7 @@ const { reviewPlayerSettings } = require("../modules/reviewPlayerSettings");
 const blocks = require("../modules/blocks");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
+const setupRoleCompatibility = require("../lib/setupRoleCompatibility");
 
 // Extra finished rows fetched per page so a repeated id can be dropped.
 const FINISHED_DEDUPE_SLACK = 5;
@@ -274,7 +275,11 @@ router.get("/list", async function (req, res) {
         )
       : [];
     const setupMap = new Map(
-      setupDocs.map((doc) => [doc.id, doc.toJSON()])
+      setupDocs.map((doc) => {
+        const setup = doc.toJSON();
+        setup.roles = setupRoleCompatibility.setupRolesForApi(setup.roles);
+        return [doc.id, setup];
+      })
     );
 
     for (let i in games) {
@@ -359,6 +364,13 @@ router.get("/list", async function (req, res) {
       games = games.concat(finishedGames);
     }
 
+    // Finished rows are populated separately from live setup documents above.
+    // Both paths must expose the legacy map representation to existing clients.
+    for (const game of games) {
+      if (game.setup && game.setup.roles) {
+        game.setup.roles = setupRoleCompatibility.setupRolesForApi(game.setup.roles);
+      }
+    }
     res.send(games);
   } catch (e) {
     logger.error(e);
@@ -696,6 +708,12 @@ router.get("/:id/review/data", async function (req, res) {
 
     if (game !== null) {
       game = game.toJSON();
+      game.history = setupRoleCompatibility.gameHistoryForApi(game.history);
+      if (game.setup && game.setup.roles) {
+        game.setup.roles = setupRoleCompatibility.setupRolesForApi(
+          game.setup.roles
+        );
+      }
 
       // Guest seats are omitted from older stored users arrays; realign with playerIdMap.
       if (game.users.length !== game.players.length) {
@@ -1180,7 +1198,15 @@ router.post("/host", async function (req, res) {
     }
 
     setup = setup.toJSON();
-    setup.roles = JSON.parse(setup.roles);
+    try {
+      setup.roles = setupRoleCompatibility.toValidatorRoleMaps(
+        setup.roles,
+        gameType
+      );
+    } catch (error) {
+      errors.unprocessable(res, "Invalid role data");
+      return;
+    }
 
     if (await redis.getSetCreatingGame(userId)) {
       errors.conflict(res, "Already creating a game.");

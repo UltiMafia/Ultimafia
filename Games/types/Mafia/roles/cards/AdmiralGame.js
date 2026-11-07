@@ -26,7 +26,7 @@ module.exports = class AdmiralGame extends Card {
             players[x].role.alignment == "Cult"
           ) {
             this.game.AdmiralEvilRoles.push(
-              `${players[x].role.name}:${players[x].role.modifier}`
+              players[x].role.toRoleData()
             );
           } else if (
             players[x].role.name == "Admiral" ||
@@ -34,7 +34,7 @@ module.exports = class AdmiralGame extends Card {
           ) {
           } else {
             this.game.AdmiralGoodRoles.push(
-              `${players[x].role.name}:${players[x].role.modifier}`
+              players[x].role.toRoleData()
             );
           }
           players[x].setRole(

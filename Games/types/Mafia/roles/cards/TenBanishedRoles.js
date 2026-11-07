@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
+const { roleName, roleModifiers } = require("../../../../../lib/roleIdentity");
 const roleBlacklist = ["Hermit", "Oddfather", "Jack", "Consigliere", "Sidhe"];
 
 module.exports = class TenBanishedRoles extends Card {
@@ -20,10 +21,9 @@ module.exports = class TenBanishedRoles extends Card {
         let roles = Random.randomizeArray(
           this.getAllRoles().filter(
             (r) =>
-              !roleBlacklist.includes(r.split(":"))[0] &&
-              r.split(":")[1] &&
-              r.split(":")[1].split("/").includes("Banished") &&
-              this.game.getRoleAlignment(r) == this.alignment
+              !roleBlacklist.includes(roleName(r)) &&
+              roleModifiers(r).split("/").includes("Banished") &&
+              this.game.getRoleAlignment(roleName(r)) == this.alignment
           )
         );
         //this.game.queueAlert(`roles length is ${roles.length}`);

@@ -2,6 +2,7 @@ const Card = require("../../Card");
 const { PRIORITY_BLOCK_EARLY } = require("../../const/Priority");
 const Action = require("../../Action");
 const { addArticle } = require("../../../../core/Utils");
+const { roleEquals, roleWith } = require("../../../../../lib/roleIdentity");
 module.exports = class DeliriateRoleFor3Nights extends Card {
   constructor(role) {
     super(role);
@@ -42,8 +43,11 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
             if (!this.target.includes(":")) {
               this.target = `${this.target}:`;
             }
+            // The choice may carry an item suffix that the rebuilt
+            // name:modifier strings never have; compare without items.
+            const chosen = roleWith(this.target, { items: [] });
             for (let y = 0; y < currentRoles.length; y++) {
-              if (this.target == currentRoles[y]) {
+              if (roleEquals(chosen, currentRoles[y])) {
                 this.role.giveEffect(
                   players[y],
                   "Delirious",

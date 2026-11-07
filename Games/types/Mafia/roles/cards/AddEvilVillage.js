@@ -18,7 +18,7 @@ module.exports = class AddEvilVillage extends Card {
         for (let item of villageTarget.items) {
           item.drop();
         }
-        let role = `${villageTarget.role.name}:${villageTarget.role.modifier}`;
+        let role = villageTarget.role.toRoleData();
         villageTarget.setRole(
           role,
           undefined,

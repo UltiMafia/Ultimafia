@@ -34,11 +34,11 @@ module.exports = class SwapTwoOtherRoles extends Card {
               
             var targetA = this.role.data.targetA;
             var targetB = this.target;
-            var oldARole = `${targetA.getRoleName()}:${targetA.getModifierName()}`;
+            var oldARole = targetA.role.toRoleData();
             let oldFaction = targetA.faction;
 
             targetA.setRole(
-              `${targetB.getRoleName()}:${targetB.getModifierName()}`,
+              targetB.role.toRoleData(),
               null,
               false,
               false,
