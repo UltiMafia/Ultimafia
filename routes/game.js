@@ -320,7 +320,7 @@ router.get("/list", async function (req, res) {
         lobby != "All" ? { lobby } : { lobby: { $ne: constants.testingLobby } };
       var finishedNeeded = constants.lobbyPageSize - games.length;
       var finishedSelect =
-        "id type setup lobby lobbyName anonymousGame anonymousDeck ranked competitive private spectating guests readyCheck noVeg stateLengths gameTypeOptions broken winnersInfo playerIdMap playerAlignmentMap endTime -_id";
+        "id type setup lobby lobbyName anonymousGame anonymousDeck ranked competitive private spectating guests readyCheck noVeg stateLengths gameTypeOptions broken winnersInfo playerIdMap playerAlignmentMap pastPregamePlayers endTime -_id";
       var finishedSetupSelect =
         "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id";
       // A few extra rows so that dropping a repeated id still fills the page.
@@ -772,7 +772,7 @@ router.get("/:id/info", async function (req, res) {
     if (!game) {
       game = await models.Game.findOne({ id: gameId })
         .select(
-          "type users spectatorsUsers players spectators left stateLengths lobbyName ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions winners winnersInfo kudosReceiver kudosReceivers playerIdMap playerAlignmentMap skillRatingChanges -_id"
+          "type users spectatorsUsers players spectators left stateLengths lobbyName ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions winners winnersInfo kudosReceiver kudosReceivers playerIdMap playerAlignmentMap pastPregamePlayers skillRatingChanges -_id"
         )
         .populate("users", "id name avatar -_id");
 
