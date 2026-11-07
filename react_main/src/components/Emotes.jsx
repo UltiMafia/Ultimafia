@@ -96,10 +96,21 @@ export function emotify(text, customEmotes, customStickers, options) {
           emoteOnlyText = false;
           stickerOnlyText = false;
         }
-        if (j < words.length - 1) {
-          // do NOT append an extra ' ' space in the last word (which wasn't there in the first place)
-          words[j] += " ";
-        }
+      }
+
+      // The separator between words lives on the word before it, so an emote,
+      // sticker or custom emote needs it too: only plain words used to get it,
+      // which glued the next word to the right side of every inline emote.
+      // The last word has no trailing space to begin with.
+      if (j < words.length - 1) {
+        if (typeof words[j] === "string") words[j] += " ";
+        else
+          words[j] = (
+            <React.Fragment key={`${i}-${j}`}>
+              {words[j]}
+              {" "}
+            </React.Fragment>
+          );
       }
     }
 

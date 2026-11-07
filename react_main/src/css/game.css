@@ -1374,8 +1374,11 @@ html[data-keyboard="open"] .game .meeting-tabs {
   flex: 1 1 auto;
   min-width: 0;
 
-  display: flex;
-  align-items: center;
+  /* Not a flex container. A role mention is an inline-flex span inside this
+     text, and flex turns each run of words between mentions into its own
+     anonymous flex item, which drops the spaces next to it: "Copwith an inno".
+     Normal inline flow keeps the text-join as the line's own row does. */
+  display: block;
 
   overflow: hidden;
   white-space: nowrap;
@@ -1385,6 +1388,23 @@ html[data-keyboard="open"] .game .meeting-tabs {
 
 .game .message .reply-reference .reply-reference-text * {
   white-space: nowrap;
+}
+
+/* Decorations in the quoted line — role mentions, emotes, the collapsed sticker
+   label — are inline-level boxes with a baseline of their own. Baseline
+   alignment hangs that baseline on the icon or the box edge, which lifts their
+   text clear of the line ("Click to see sticker" sat 10px high). Centre them
+   against the text instead, and keep the emote inside the 18px line. */
+.game .message .reply-reference .reply-reference-text .emote,
+.game .message .reply-reference .reply-reference-text .sticker,
+.game .message .reply-reference .reply-reference-text .collapsed-sticker-label,
+.game .message .reply-reference .reply-reference-text .inline-role-mention {
+  vertical-align: middle;
+}
+
+.game .message .reply-reference .reply-reference-text .emote {
+  width: 16px;
+  height: 16px;
 }
 
 .game .message .reply-reference .reply-reference-text br {
