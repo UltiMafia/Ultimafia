@@ -153,7 +153,11 @@ function switchRoleBefore(role) {
     (r) => !roleModifiers(r).toLowerCase().includes("banished")
   );
   roles = roles.filter((r) => role.game.getRoleAlignment(roleName(r)) == "Village");
-  roles = roles.filter((r) => !roleName(r).toLowerCase().includes("humble"));
+  roles = roles.filter(
+    (r) =>
+      !roleName(r).toLowerCase().includes("humble") &&
+      !roleModifiers(r).toLowerCase().includes("humble")
+  );
   if (roles.length <= 0) {
     roles = currentRoles;
     roles = roles.filter((r) => role.game.getRoleAlignment(roleName(r)) == "Village");

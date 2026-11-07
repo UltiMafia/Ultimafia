@@ -1,6 +1,6 @@
 const Information = require("../Information");
 const Random = require("../../../../lib/Random");
-const { roleName, roleEquals } = require("../../../../lib/roleIdentity");
+const { roleName, roleEquals, roleWith } = require("../../../../lib/roleIdentity");
 const {
   EVIL_FACTIONS,
   NOT_EVIL_FACTIONS,
@@ -47,7 +47,12 @@ module.exports = class RevealInfo extends Information {
     let tempTempAppearance = this.target.tempAppearance[this.investType];
     let OtherRoles = this.game.PossibleRoles.filter(
       (r) =>
-        !roleEquals(r, this.target.role.toRoleData()) &&
+        // Appearances carry no items, so a same-role entry with other items
+        // would still show the target's true appearance.
+        !roleEquals(
+          roleWith(r, { items: [] }),
+          roleWith(this.target.role.toRoleData(), { items: [] })
+        ) &&
         !this.game.getRoleTags(r).includes("No Investigate") &&
         !this.game.getRoleTags(r).includes("Exposed")
     );

@@ -2,7 +2,7 @@ const Card = require("../../Card");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 const { addArticle } = require("../../../../core/Utils");
 const { attachConversionPhase } = require("../../const/ConversionPhases");
-const { roleEquals } = require("../../../../../lib/roleIdentity");
+const { roleName } = require("../../../../../lib/roleIdentity");
 module.exports = class ConvertSelfToChosenRole extends Card {
   constructor(role) {
     super(role);
@@ -33,7 +33,7 @@ module.exports = class ConvertSelfToChosenRole extends Card {
                 currentRoles.push(players[x].role.toRoleData());
               }
               for (let y = 0; y < currentRoles.length; y++) {
-                if (roleEquals(this.target, currentRoles[y])) {
+                if (roleName(this.target) == currentRoles[y].name) {
                   if (
                     this.game.getRoleAlignment(this.target) != "Independent"
                   ) {

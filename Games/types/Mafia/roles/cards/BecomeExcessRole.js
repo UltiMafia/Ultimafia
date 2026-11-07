@@ -3,7 +3,7 @@ const Random = require("../../../../../lib/Random");
 const AllRoles = require("../../../../../data/roles");
 const Action = require("../../Action");
 const { PRIORITY_BECOME_DEAD_ROLE } = require("../../const/Priority");
-const { roleEquals, normalizeRole } = require("../../../../../lib/roleIdentity");
+const { roleName, normalizeRole } = require("../../../../../lib/roleIdentity");
 
 module.exports = class BecomeExcessRole extends Card {
   constructor(role) {
@@ -29,7 +29,7 @@ module.exports = class BecomeExcessRole extends Card {
           for (let y = 0; y < currentRoles.length; y++) {
             roles = roles.filter(
               (r) =>
-                !roleEquals(r, currentRoles[y]) &&
+                roleName(r) != currentRoles[y].name &&
                 (this.game.getRoleAlignment(r) ==
                   this.game.getRoleAlignment(this.actor.getRoleName()) ||
                   this.game.getRoleAlignment(this.actor.role.name) ==

@@ -3,6 +3,7 @@ const Random = require("../../../lib/Random");
 const MafiaPlayer = require("../../../Games/types/Mafia/Player");
 const Meeting = require("../../../Games/core/Meeting");
 const { normalizeRole, roleKey, roleName } = require("../../../lib/roleIdentity");
+const Information = require("../../../Games/types/Mafia/Information");
 const RevealInfo = require("../../../Games/types/Mafia/information/RevealInfo");
 const RevealEvilPlayersInfo = require("../../../Games/types/Mafia/information/RevealEvilPlayersInfo");
 const RevealPlayersWithRoleInfo = require("../../../Games/types/Mafia/information/RevealPlayersWithRoleInfo");
@@ -156,6 +157,35 @@ describe("role-object information consumers", function () {
     }
     return calls;
   }
+
+  it("RevealInfo False ignores a same-role entry that differs only by items", function () {
+    // Appearances never carry items, so Cop with a Gun would reveal as the
+    // target's own "Cop" even though the identity keys differ.
+    const game = makeGame(["Cop", "Mafioso", "Villager"]);
+    game.PossibleRoles[0] = { name: "Cop", modifiers: [], items: ["Gun"] };
+    const target = makePlayer("Cop", game);
+    const info = new RevealInfo(null, game, target, "investigate", "Self");
+    const calls = recordTempAppearance([target]);
+    info.makeFalse();
+
+    withFixedRandom(() => info.getInfoRaw());
+
+    assert.notEqual(calls[0].name, "Cop");
+    assert.equal(calls[0].name, "Mafioso");
+  });
+
+  it("getFakeRole never fakes the target's own role through an item-only variant", function () {
+    const game = makeGame(["Cop", "Doctor"]);
+    game.PossibleRoles[0] = { name: "Cop", modifiers: [], items: ["Gun"] };
+    const target = makePlayer("Cop", game);
+    const info = Object.create(Information.prototype);
+    info.game = game;
+    info.target = target;
+
+    const picked = withFixedRandom(() => info.getFakeRole(target, 1, false, "investigate", null));
+
+    assert.deepEqual(picked, ["Doctor"]);
+  });
 
   it("RevealEvilPlayersInfo False falls back to possible roles without throwing", function () {
     const game = makeGame(["Villager", "Doctor", "Mafioso", "Cultist"]);

@@ -2,7 +2,7 @@ const Card = require("../../Card");
 const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 const { addArticle } = require("../../../../core/Utils");
 const { attachConversionPhase } = require("../../const/ConversionPhases");
-const { roleEquals } = require("../../../../../lib/roleIdentity");
+const { roleName, appearanceKey } = require("../../../../../lib/roleIdentity");
 module.exports = class ConvertToChosenRole extends Card {
   constructor(role) {
     super(role);
@@ -40,7 +40,9 @@ module.exports = class ConvertToChosenRole extends Card {
                 currentRoles.push(players[x].role.toRoleData());
               }
               for (let y = 0; y < currentRoles.length; y++) {
-                if (roleEquals(this.target, currentRoles[y])) {
+                // Master compared the chosen base name with the holder's
+                // rendered "Name:Modifier" string.
+                if (roleName(this.target) === appearanceKey(currentRoles[y])) {
                   return;
                 }
               }
