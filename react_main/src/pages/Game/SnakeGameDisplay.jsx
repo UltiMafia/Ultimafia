@@ -190,8 +190,14 @@ export default function SnakeGameDisplay({ player, players, gameSocket, extraInf
       .attr("height", displaySize)
       .attr("viewBox", `${viewX} ${viewY} ${viewSize} ${viewSize}`);
 
+    // Fixed layers keep new food and segments below retained avatar images.
+    const gridLayer = svg.select(".snake-grid-layer");
+    const foodLayer = svg.select(".snake-food-layer");
+    const segmentLayer = svg.select(".snake-segment-layer");
+    const avatarLayer = svg.select(".snake-avatar-layer");
+
     // Map border — only meaningful for solid walls. Hidden when wrapping.
-    let borderSel = svg
+    let borderSel = gridLayer
       .selectAll(".map-border")
       .data(followView && !wallsTransparent ? [0] : []);
     borderSel.exit().remove();
@@ -216,7 +222,7 @@ export default function SnakeGameDisplay({ player, players, gameSocket, extraInf
       : { from: 0, to: boardPx };
 
     const vertLineData = d3.range(gridStart + 1, gridEndExclusive);
-    let vertLines = svg.selectAll(".gridline-vert").data(vertLineData);
+    let vertLines = gridLayer.selectAll(".gridline-vert").data(vertLineData);
     vertLines
       .enter()
       .append("line")
@@ -230,7 +236,7 @@ export default function SnakeGameDisplay({ player, players, gameSocket, extraInf
       .attr("y2", lineSpan.to);
     vertLines.exit().remove();
 
-    let horizLines = svg.selectAll(".gridline-horiz").data(vertLineData);
+    let horizLines = gridLayer.selectAll(".gridline-horiz").data(vertLineData);
     horizLines
       .enter()
       .append("line")
@@ -253,7 +259,7 @@ export default function SnakeGameDisplay({ player, players, gameSocket, extraInf
         _key: `${f.x}-${f.y}-${ti}`,
       }))
     );
-    let foodSel = svg.selectAll(".food").data(foodData, (d) => d._key);
+    let foodSel = foodLayer.selectAll(".food").data(foodData, (d) => d._key);
     foodSel
       .enter()
       .append("image")
@@ -297,7 +303,7 @@ export default function SnakeGameDisplay({ player, players, gameSocket, extraInf
       colorMap[id] = (p && p.textColor) || snakeColor(idx);
     });
 
-    let segsSel = svg.selectAll(".snake-seg").data(allSegs, (d) => d._key);
+    let segsSel = segmentLayer.selectAll(".snake-seg").data(allSegs, (d) => d._key);
     segsSel
       .enter()
       .append("rect")
@@ -314,7 +320,7 @@ export default function SnakeGameDisplay({ player, players, gameSocket, extraInf
     segsSel.exit().remove();
 
     // Highlight your snake with thick outline
-    svg
+    segmentLayer
       .selectAll(".snake-seg")
       .attr("filter", (d) =>
         d.player === playerId && d.isHead ? "drop-shadow(0 0 4px #fff)" : null
@@ -345,7 +351,7 @@ export default function SnakeGameDisplay({ player, players, gameSocket, extraInf
     });
 
     // Draw avatar images on heads (replicated across tiles when wrapping)
-    let avatarsSel = svg.selectAll(".snake-avatar").data(headData, (d) => d._key);
+    let avatarsSel = avatarLayer.selectAll(".snake-avatar").data(headData, (d) => d._key);
     avatarsSel
       .enter()
       .append("image")
@@ -400,7 +406,12 @@ export default function SnakeGameDisplay({ player, players, gameSocket, extraInf
         onTouchEnd={isPhoneDevice ? handleTouchEnd : undefined}
         style={isPhoneDevice ? { touchAction: "none" } : undefined}
       >
-        <svg ref={svgRef} />
+        <svg ref={svgRef}>
+          <g className="snake-grid-layer" />
+          <g className="snake-food-layer" />
+          <g className="snake-segment-layer" />
+          <g className="snake-avatar-layer" />
+        </svg>
       </div>
       <div
         style={{
