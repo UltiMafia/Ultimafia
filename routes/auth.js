@@ -24,6 +24,7 @@ const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
 const errors = require("../lib/errors");
 const { findAliasAccount } = require("../modules/emailAlias");
+const { chooseSignupName } = require("../modules/signupName");
 const {
   stash: stashDiscordFingerprint,
   take: takeDiscordFingerprint,
@@ -504,11 +505,21 @@ async function authSuccess(req, uid, email, discordProfile, fingerprint, provide
 
       var name = null;
       if (discordProfile) {
-        name = discordProfile.global_name;
-        doesItExist = await models.User.findOne({ name: name }).select("id");
-        if (doesItExist.id) {
-          name = routeUtils.nameGen().slice(0, constants.maxUserNameLength);
-        }
+        const displayName = discordProfile.global_name;
+        // A missing display name must not become `{ name: undefined }`, which
+        // Mongoose turns into a query matching an arbitrary user, and an unused
+        // one has no row to read: both fall back to a generated name.
+        const nameTaken = displayName
+          ? Boolean(
+              await models.User.findOne({ name: displayName }).select("id")
+            )
+          : false;
+        name = chooseSignupName({
+          displayName,
+          nameTaken,
+          generate: routeUtils.nameGen,
+          maxLength: constants.maxUserNameLength,
+        });
       } else {
         name = routeUtils.nameGen().slice(0, constants.maxUserNameLength);
       }
