@@ -16,6 +16,7 @@ const ArrayHash = require("./ArrayHash");
 const Action = require("./Action");
 const Winners = require("./Winners");
 const { games, deprecationCheck } = require("../games");
+const { refundTargets } = require("../../modules/heartRefund");
 const events = require("events");
 const models = require("../../db/models");
 const redis = require("../../modules/redis");
@@ -1489,15 +1490,21 @@ module.exports = class Game {
 
     this.heartsRefundedOnIntegrityBreak = true;
 
-    for (let player of this.players) {
-      if (!player || player.left || player.isBot) continue;
-      if (excludedPlayer && player.id === excludedPlayer.id) continue;
+    // Pay back everyone who was charged at start. Walking the seats instead
+    // skipped players who had died and left before the break: they paid in full
+    // and are no longer seated, so they were left a heart short silently.
+    const excludedUserId = excludedPlayer
+      ? excludedPlayer.userId || (excludedPlayer.user && excludedPlayer.user.id)
+      : undefined;
 
-      const userId = player.userId || player.user.id;
-      if (this.heartsRefundedUserIds) {
-        if (this.heartsRefundedUserIds.has(userId)) continue;
-        this.heartsRefundedUserIds.add(userId);
-      }
+    if (!this.heartsRefundedUserIds) this.heartsRefundedUserIds = new Set();
+
+    for (const userId of refundTargets({
+      charged: this.heartsCharged,
+      excludedUserId,
+      refunded: this.heartsRefundedUserIds,
+    })) {
+      this.heartsRefundedUserIds.add(userId);
       await models.User.updateOne(
         { id: userId },
         {
