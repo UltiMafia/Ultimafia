@@ -56,3 +56,23 @@ test("reads the message off a rendered row element", () => {
 test("a row element without a message keeps the floor", () => {
   assert.equal(estimateTranscriptRowHeight({ props: {}, key: "x" }, 150), 150);
 });
+
+test("follows the rendered layout instead of fixed metrics", () => {
+  const content = "A short line.\n".repeat(15);
+  const small = { lineHeight: 24, charsPerLine: 45, chrome: 18 };
+  const large = { lineHeight: 36, charsPerLine: 30, chrome: 26 };
+
+  const smallEstimate = estimateTranscriptRowHeight({ content }, 150, small);
+  const largeEstimate = estimateTranscriptRowHeight({ content }, 150, large);
+
+  assert.ok(largeEstimate > smallEstimate, `${largeEstimate} should exceed ${smallEstimate}`);
+  assert.ok(largeEstimate >= 16 * 36, `expected one line per newline at the larger line height, got ${largeEstimate}`);
+});
+
+test("ignores a null layout and keeps the constants", () => {
+  const content = "A short line.\n".repeat(15);
+  assert.equal(
+    estimateTranscriptRowHeight({ content }, 150, null),
+    estimateTranscriptRowHeight({ content }, 150)
+  );
+});

@@ -1,7 +1,10 @@
 // Opt-in transcript window. Measurement and scroll compensation share one owner.
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { estimateTranscriptRowHeight } from "../../../utils/transcriptRowEstimate";
+import {
+  estimateTranscriptRowHeight,
+  transcriptLayoutMetrics,
+} from "../../../utils/transcriptRowEstimate";
 
 // Measured row heights survive remounts (switching tabs, leaving and
 // re-entering a game), so a transcript that has been read once starts from
@@ -44,6 +47,25 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
   const rowsRef = useRef(rows);
   rowsRef.current = rows;
 
+  // Font size and column width are user settings, so the estimate is derived
+  // from the rendered transcript. Measured heights are only valid for the
+  // layout they were taken in: a font-size or width change invalidates them.
+  const layoutRef = useRef(null);
+  useLayoutEffect(() => {
+    const layout = transcriptLayoutMetrics(speechDisplayRef.current);
+    const previous = layoutRef.current;
+    if (layout && previous && previous.signature !== layout.signature) {
+      // A font-size or width change reflows every row, so both the portable
+      // cache and the virtualizer's own measured sizes are stale. Re-laying out
+      // here is expected: the transcript has already reflowed visually.
+      measuredHeights.clear();
+      layoutRef.current = layout;
+      virtualizer.measure();
+      return;
+    }
+    if (layout) layoutRef.current = layout;
+  });
+
   const estimateSize = useCallback((index) => {
     const row = rowsRef.current[index];
     const key = row && row.key != null ? row.key : null;
@@ -53,7 +75,7 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     // A constant cannot describe rows that run to the 240-character limit: an
     // estimate under the real height leaves unreachable history on iOS, where
     // corrections are held through the gesture rather than written.
-    return estimateTranscriptRowHeight(row, UNSEEN_ROW_ESTIMATE);
+    return estimateTranscriptRowHeight(row, UNSEEN_ROW_ESTIMATE, layoutRef.current);
   }, []);
   const virtualizerRef = useRef(null);
   const virtualizer = useVirtualizer({
