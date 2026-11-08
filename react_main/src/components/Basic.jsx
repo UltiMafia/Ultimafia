@@ -215,7 +215,10 @@ export function UserText(props) {
         slangifySeed: props.slangifySeed,
         displayEmoji: props.terminologyEmoticons,
       });
-    if (props.iconUsername) text = iconUsername(text, props.players);
+    if (props.iconUsername)
+      text = iconUsername(text, props.players, {
+        compact: props.compactAvatars,
+      });
 
     if (props.roleify) text = roleifySegments(text, siteInfo);
 
@@ -346,7 +349,7 @@ export function filterProfanity(text, settings, char, seed) {
   return text.length === 1 ? text[0] : text;
 }
 
-export function iconUsername(text, players) {
+export function iconUsername(text, players, options) {
   if (text == null) return;
 
   if (!Array.isArray(text)) text = [text];
@@ -378,6 +381,7 @@ export function iconUsername(text, players) {
                 key={matchedPlayer.userId || matchedPlayer.name}
                 userId={matchedPlayer.userId}
                 username={matchedPlayer.name}
+                compact={Boolean(options && options.compact)}
               />
             );
           } else {
@@ -387,6 +391,7 @@ export function iconUsername(text, players) {
             words[j] = (
               <InlineAvatar
               username={matchedPlayer.name}
+              compact={Boolean(options && options.compact)}
               />
             );
           }
@@ -413,6 +418,17 @@ function InlineAvatar(props) {
   let style = {
     position: "relative",
   };
+
+  // Only where the avatar would draw out of its line: the reply reference is a
+  // small single line of text inside a tight row. Sized in em so it follows the
+  // font; nothing else about the avatar changes.
+  if (props.compact) {
+    style.width = "1.1em";
+    style.height = "1.1em";
+    style.maxWidth = "1.1em";
+    style.maxHeight = "1.1em";
+    style.verticalAlign = "-0.2em";
+  }
   let src = photoSrc;
   if (props.userId && photoSrc) {
     style.backgroundImage = "none";
