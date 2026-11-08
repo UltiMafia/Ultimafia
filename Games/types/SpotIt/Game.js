@@ -4,6 +4,7 @@ const Winners = require("../../core/Winners");
 const Queue = require("../../core/Queue");
 const generateDeck = require("./generateDeck");
 const Random = require("../../../lib/Random");
+const { roleCount } = require("../../../lib/roleset");
 const fs = require("fs");
 const path = require("path");
 
@@ -45,7 +46,7 @@ module.exports = class SpotItGame extends Game {
     
     this.symbols = [];
 
-    this.isWell = this.setup.roles[0]["Welldigger:"] > 0;
+    this.isWell = roleCount(this.setup.roles[0], "Welldigger:") > 0;
     this.deckSize = options.settings.deckSize || "standard";
   }
 

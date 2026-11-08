@@ -49,7 +49,11 @@ function setupRoleNames(game) {
   const collectRoleset = (roleset) => {
     if (!roleset) return;
     if (Array.isArray(roleset)) {
-      for (let role of roleset) add(role);
+      for (let role of roleset) {
+        if (role && typeof role.name === "string" && Array.isArray(role.modifiers))
+          add(role.name);
+        else add(role);
+      }
       return;
     }
     if (typeof roleset == "object") {

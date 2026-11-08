@@ -20,6 +20,7 @@ const FINISHED_DEDUPE_SLACK = 5;
 const axios = require("axios");
 const { devApiEnabled } = require("../modules/devApi/policy");
 const errors = require("../lib/errors");
+const { normalizeRoles } = require("../lib/roleset");
 
 const isTestingLobby = (lobby) => lobby == constants.testingLobby;
 const canUseTesting = (userId) =>
@@ -1180,7 +1181,7 @@ router.post("/host", async function (req, res) {
     }
 
     setup = setup.toJSON();
-    setup.roles = JSON.parse(setup.roles);
+    setup.roles = normalizeRoles(setup.roles);
 
     if (await redis.getSetCreatingGame(userId)) {
       errors.conflict(res, "Already creating a game.");

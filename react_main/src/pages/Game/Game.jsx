@@ -34,6 +34,7 @@ import Newspaper, {
 } from "../../components/gameComponents/Newspaper";
 import { newspaperPlayer } from "../../utils/newspaperPlayers";
 import { legacyObituaryMessages } from "../../utils/legacyObituaries";
+import { asCountMaps } from "lib/roleset";
 import MafiaGame from "./MafiaGame";
 import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
@@ -1000,6 +1001,7 @@ export default function Game(props) {
     });
 
     socket.on("setup", (data) => {
+      if (data && data.roles != null) data.roles = asCountMaps(data.roles);
       setSetup(data);
     });
 

@@ -1,8 +1,8 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
-const oHash = require("object-hash");
 const models = require("../db/models");
 const logger = require("../modules/logging")(".");
+const { normalizeRoles, canonicalizeRoles, hashSetup } = require("../lib/roleset");
 
 /**
  * Migration: replace a modifier in Mafia setups (edit OLD_MODIFIER / NEW_MODIFIER below).
@@ -46,60 +46,30 @@ function mongoConnectOptions() {
 const OLD_MODIFIER = "Scatterbrained";
 const NEW_MODIFIER = "Humble";
 
-function replaceModifierInRoleKey(key) {
-  const colonIdx = key.indexOf(":");
-  if (colonIdx === -1) {
-    return { newKey: key, changed: false };
-  }
-
-  const rolePart = key.slice(0, colonIdx + 1);
-  const modPart = key.slice(colonIdx + 1);
-  if (!modPart) {
-    return { newKey: key, changed: false };
-  }
-
-  const mods = modPart.split("/");
-  if (!mods.includes(OLD_MODIFIER)) {
-    return { newKey: key, changed: false };
-  }
-
-  const newMods = mods.map((m) => (m === OLD_MODIFIER ? NEW_MODIFIER : m));
-  return { newKey: rolePart + newMods.join("/"), changed: true };
-}
-
-function replaceModifierInRoleset(roleset) {
-  const newRoleset = {};
-  let changed = false;
-  for (const key of Object.keys(roleset)) {
-    const count = roleset[key];
-    const { newKey, changed: keyChanged } = replaceModifierInRoleKey(key);
-    if (keyChanged) changed = true;
-    newRoleset[newKey] = (newRoleset[newKey] || 0) + count;
-  }
-  return { newRoleset, changed };
-}
-
-function replaceModifierInRoles(rolesJson) {
-  const roles = JSON.parse(rolesJson);
+function replaceModifierInRoles(rolesValue, gameType) {
   let anyChanged = false;
-  const newRoles = [];
-  for (const roleset of roles) {
-    const { newRoleset, changed } = replaceModifierInRoleset(roleset);
-    newRoles.push(newRoleset);
-    if (changed) anyChanged = true;
-  }
-  return { newRoles: JSON.stringify(newRoles), changed: anyChanged };
+  const roles = normalizeRoles(rolesValue).map((roleset) =>
+    roleset.map((slot) => {
+      if (!slot.modifiers.includes(OLD_MODIFIER)) return slot;
+      anyChanged = true;
+      return {
+        ...slot,
+        modifiers: slot.modifiers.map((modifier) =>
+          modifier === OLD_MODIFIER ? NEW_MODIFIER : modifier
+        ),
+      };
+    })
+  );
+  return {
+    newRoles: canonicalizeRoles(roles, gameType),
+    changed: anyChanged,
+  };
 }
 
-function computeHash(doc, newRolesString) {
+function computeHash(doc, roles) {
   const plain = doc.toObject();
-  const countObj =
-    doc.count instanceof Map ? Object.fromEntries(doc.count) : doc.count;
-  return oHash({
-    ...plain,
-    roles: newRolesString,
-    count: JSON.stringify(countObj),
-  });
+  if (plain.count instanceof Map) plain.count = Object.fromEntries(plain.count);
+  return hashSetup({ ...plain, roles });
 }
 
 async function migrate() {
@@ -114,7 +84,10 @@ async function migrate() {
     let updated = 0;
 
     for (const setup of setups) {
-      const { newRoles, changed } = replaceModifierInRoles(setup.roles);
+      const { newRoles, changed } = replaceModifierInRoles(
+        setup.roles,
+        setup.gameType
+      );
 
       if (!changed) continue;
 

@@ -21,6 +21,7 @@
  */
 const constants = require("../data/constants");
 const roleData = require("../data/roles");
+const { normalizeRoles } = require("../lib/roleset");
 
 const FORTUNE_GAME_TYPES = new Set(["ranked", "competitive"]);
 const MAJOR_ALIGNMENTS = new Set(["Village", "Mafia", "Cult"]);
@@ -165,28 +166,21 @@ function computeFactionFortunePoints(opts) {
  * Used by route handlers so empty-history setups still yield a row per
  * faction (showing the prior-based default payout).
  *
- * @param {Array<object>|string} setupRoles  setup.roles — either the parsed
- *   array of role-group maps or the JSON string straight off the DB.
+ * @param {Array|string} setupRoles  setup.roles — slot records, a legacy
+ *   count-map array, or the JSON string straight off the DB.
  * @returns {string[]}  Faction keys, alphabetically sorted.
  */
 function getMafiaFactionsFromSetup(setupRoles) {
   if (!setupRoles) return [];
-  let groups = setupRoles;
-  if (typeof groups === "string") {
-    try {
-      groups = JSON.parse(groups);
-    } catch (e) {
-      return [];
-    }
-  }
-  if (!Array.isArray(groups)) return [];
+  const groups = normalizeRoles(setupRoles);
+  if (!groups.length) return [];
 
   const factions = new Set();
   const mafiaRoles = roleData.Mafia || {};
   for (const group of groups) {
     if (!group) continue;
-    for (const rawKey of Object.keys(group)) {
-      const roleName = rawKey.split(":")[0];
+    for (const slot of group) {
+      const roleName = slot.name;
       const entry = mafiaRoles[roleName];
       if (!entry || !entry.alignment) continue;
       if (entry.alignment === "Event") continue;

@@ -3,11 +3,15 @@ const path = require("path");
 const { expect } = require("chai");
 
 // Load the client helper (ES module syntax) without a bundler.
+const rolesetSrc = fs
+  .readFileSync(path.join(__dirname, "../react_main/src/lib/roleset.js"), "utf8")
+  .replace(/export (const|function) /g, "$1 ");
 const src = fs
   .readFileSync(path.join(__dirname, "../react_main/src/lib/roleMarkerSetup.js"), "utf8")
+  .replace(/import \{ asCountMaps \} from "\.\/roleset";\r?\n/, "")
   .replace(/export (const|function) /g, "$1 ");
 const { roleMarkerSetupSource, roleMarkerRoles } = new Function(
-  src + "\nreturn { roleMarkerSetupSource, roleMarkerRoles };"
+  rolesetSrc + "\n" + src + "\nreturn { roleMarkerSetupSource, roleMarkerRoles };"
 )();
 const TutorialController = require("../Games/core/tutorial/TutorialController");
 
