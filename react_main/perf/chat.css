@@ -6,3 +6,10 @@ html, body, #root { height: 100%; margin: 0; }
 .perf-controls output, .perf-controls small { display: block; margin-top: 6px; }
 .chat-perf .perf-game { flex: 1; min-height: 0; height: auto; background-image: none; }
 .chat-perf .speech-wrapper { min-height: 0; }
+
+/* Static-at-load equivalent of PR #3144's sweep-off declarations for a
+   controlled WebKit comparison; no UA override or scroll-time attribute writes. */
+.perf-sweep-off .speech-display .user-name-text {
+  animation: none !important;
+  will-change: auto !important;
+}
