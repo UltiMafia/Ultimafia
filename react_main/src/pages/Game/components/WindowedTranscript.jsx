@@ -112,7 +112,10 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
           const rowTop =
             row.getBoundingClientRect().top -
             scroller.getBoundingClientRect().top;
-          const delta = rowTop - anchorDelta;
+          // anchorDelta is how far the reader is scrolled *into* the row, so
+          // the row's top belongs at negative that; the correction to apply is
+          // the difference between where it is and that target.
+          const delta = rowTop + anchorDelta;
           if (Math.abs(delta) <= 0.5) {
             if (++stable >= 2) return;
           } else {
