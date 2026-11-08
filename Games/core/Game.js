@@ -104,9 +104,15 @@ module.exports = class Game {
     this.heartsRefundedUserIds = new Set();
     // Accounts that broke the integrity of the game and therefore keep paying.
     this.integrityBreakUserIds = new Set();
-    // A refund owed but not paid yet: the breaking phase can still produce
-    // more responsible players.
+    // A refund owed but not paid yet: the batch that broke the game can still
+    // produce more responsible players.
     this.integrityRefundPending = null;
+    // True only while the actions that broke the game are still being
+    // processed (the vote timeout that vegs every non-voter runs as one loop).
+    this.integrityBreakOpen = false;
+    // Held by a caller that runs several actions as one batch, so the batch is
+    // not closed between them.
+    this.integrityBatchHeld = 0;
     this.readyCountdownLength =
       options.settings.readyCountdownLength != null
         ? options.settings.readyCountdownLength
@@ -1394,6 +1400,8 @@ module.exports = class Game {
         } else {
           this.noteIntegrityResponsible(player);
         }
+
+        await this.settleIntegrityBreak();
       }
 
       if (!this.postgameOver && this.players[player.id]) {
@@ -1450,10 +1458,12 @@ module.exports = class Game {
         this.penalizePlayerForLeaving(userId);
       }
     } else {
-      // Vegging along with the rest of the phase, after the break: still
-      // responsible, so still not refunded.
+      // Vegging in the same batch that broke the game: still responsible, so
+      // still not refunded.
       this.noteIntegrityResponsible(player);
     }
+
+    await this.settleIntegrityBreak();
   }
 
   exorcisePlayer(player) {
@@ -1485,21 +1495,25 @@ module.exports = class Game {
 
     if (hadIntegrity) {
       this.queueAlert("The game is now safe to leave without penalty.");
+
+      // Responsibility lasts for this batch of actions only. When a vote times
+      // out without a majority, Meeting.finish() vegs every non-voter in one
+      // synchronous loop: those players broke the game together. Anything
+      // afterwards — a leave later in the same phase as much as in a later one
+      // — is someone declining to play out an unranked game, and is refunded.
+      this.integrityBreakOpen = true;
     }
 
-    // A break is not always one player's act. When a vote times out without a
-    // majority, Meeting.finish() vegs every member who did not vote in one
-    // loop, so a whole game can lose its integrity in a single phase.
     this.noteIntegrityResponsible(player);
 
     return hadIntegrity;
   }
 
-  // Records an account that took part in breaking the game's integrity. Every
-  // player who vegs or leaves alive before the refund is paid keeps paying it;
-  // one who does so afterwards is exempt, because the game was already safe to
-  // leave and nothing they do then breaks anything.
+  // Records an account that took part in breaking the game's integrity. Only
+  // the players acting in the batch that broke it are responsible; a later veg
+  // or leave, even in the same phase, leaves the heart with the player.
   noteIntegrityResponsible(player) {
+    if (!this.integrityBreakOpen) return;
     if (this.heartsRefundedOnIntegrityBreak) return;
 
     const userId = accountIdOf(player);
@@ -1517,12 +1531,49 @@ module.exports = class Game {
     this.integrityRefundPending = { wasRanked, wasCompetitive };
   }
 
-  async flushIntegrityRefund() {
-    const pending = this.integrityRefundPending;
-    if (!pending) return;
+  // A caller that runs several actions as one batch holds responsibility open
+  // across them: Meeting.finish() vegs every non-voter in one loop.
+  beginIntegrityBreakBatch() {
+    this.integrityBatchHeld++;
+  }
 
-    this.integrityRefundPending = null;
-    await this.refundHeartsForIntegrityBreak(pending);
+  // Releases the batch. The last release ends responsibility and pays.
+  endIntegrityBreakBatch() {
+    if (this.integrityBatchHeld > 0) this.integrityBatchHeld--;
+
+    if (this.integrityBatchHeld > 0) return Promise.resolve();
+    if (!this.integrityBreakOpen && !this.integrityRefundPending)
+      return Promise.resolve();
+
+    this.integrityBreakOpen = false;
+
+    return this.flushIntegrityRefund().catch((e) =>
+      logger.warn(`flushIntegrityRefund failed for game ${this.id}: ${e.message}`)
+    );
+  }
+
+  // Called at the end of a single action: closes the batch unless a caller is
+  // holding it open, so a lone veg or leave pays straight away and a later
+  // action in the same phase can never join it.
+  settleIntegrityBreak() {
+    if (!this.integrityBreakOpen || this.integrityBatchHeld > 0)
+      return Promise.resolve();
+
+    return this.endIntegrityBreakBatch();
+  }
+
+  // Paying twice would be a money bug, so an in-flight payment is shared rather
+  // than started again — callers can await it and see the writes settle.
+  flushIntegrityRefund() {
+    if (!this.integrityRefundPromise) {
+      const pending = this.integrityRefundPending;
+      if (!pending) return Promise.resolve();
+
+      this.integrityRefundPending = null;
+      this.integrityRefundPromise = this.refundHeartsForIntegrityBreak(pending);
+    }
+
+    return this.integrityRefundPromise;
   }
 
   async refundHeartsForIntegrityBreak({ wasRanked, wasCompetitive } = {}) {
@@ -3513,8 +3564,8 @@ module.exports = class Game {
   }
 
   incrementState(index, skipped) {
-    // End of the phase that broke the game: every player responsible for the
-    // break has now acted, so the refund can be paid to the rest.
+    // Safety net: the refund is paid on the tick after the break, so this is
+    // normally a no-op.
     this.flushIntegrityRefund().catch((e) =>
       logger.warn(`flushIntegrityRefund failed for game ${this.id}: ${e.message}`)
     );
