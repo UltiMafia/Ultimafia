@@ -1,6 +1,7 @@
 // Opt-in transcript window. Measurement and scroll compensation share one owner.
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { estimateTranscriptRowHeight } from "../../../utils/transcriptRowEstimate";
 
 // Measured row heights survive remounts (switching tabs, leaving and
 // re-entering a game), so a transcript that has been read once starts from
@@ -31,19 +32,29 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
   const bridgingTop = useRef(false);
   const edgeDeadline = useRef(0);
   const keys = useMemo(() => rows.map((row, index) => row.key ?? index), [rows]);
-  // Heights may only be shared under a key that identifies the message across
-  // mounts; an index fallback would mix different games' rows.
-  const stableKeys = useMemo(() => rows.map((row) => row.key ?? null), [rows]);
   const getItemKey = useCallback((index) => keys[index], [keys]);
   // Every row measured during an iOS fling adds its estimate error to the held
   // offset; a held positive offset is scrollable history the element cannot
   // reach, so the fling stops early at a false top. Underestimating row height
   // feeds that exactly, while overestimating only trims space that measuring
   // the row then restores.
+  // The virtualizer keeps the estimate callback it was constructed with, so a
+  // closure over `rows` goes stale and every unseen row keeps the bare floor.
+  // Read the current rows through a ref instead.
+  const rowsRef = useRef(rows);
+  rowsRef.current = rows;
+
   const estimateSize = useCallback((index) => {
-    const key = stableKeys[index];
-    return (key == null ? undefined : measuredHeights.get(key)) ?? UNSEEN_ROW_ESTIMATE;
-  }, [stableKeys]);
+    const row = rowsRef.current[index];
+    const key = row && row.key != null ? row.key : null;
+    const measured = key == null ? undefined : measuredHeights.get(key);
+    if (measured != null) return measured;
+
+    // A constant cannot describe rows that run to the 240-character limit: an
+    // estimate under the real height leaves unreachable history on iOS, where
+    // corrections are held through the gesture rather than written.
+    return estimateTranscriptRowHeight(row, UNSEEN_ROW_ESTIMATE);
+  }, []);
   const virtualizerRef = useRef(null);
   const virtualizer = useVirtualizer({
     count: rows.length,
