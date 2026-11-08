@@ -73,8 +73,12 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     if (measured != null) return measured;
 
     // A constant cannot describe rows that run to the 240-character limit: an
-    // estimate under the real height leaves unreachable history on iOS, where
-    // corrections are held through the gesture rather than written.
+    // estimate under the real height leaves unreachable history on the platform
+    // that holds corrections through the gesture rather than writing them.
+    // Everywhere else the constant stays as it is — a larger estimated scroll
+    // height costs something, and those platforms were never the failing case.
+    if (!iOSDefersCorrections) return UNSEEN_ROW_ESTIMATE;
+
     return estimateTranscriptRowHeight(row, UNSEEN_ROW_ESTIMATE, layoutRef.current);
   }, []);
   const virtualizerRef = useRef(null);
