@@ -54,6 +54,11 @@ function averageCharWidth(style) {
 export function transcriptLayoutMetrics(element) {
   if (!element || typeof window === "undefined") return null;
 
+  // A hidden transcript (display:none, a retained game behind the current
+  // route) reports width 0. That is not a layout the reader is looking at, so
+  // it must not be treated as a width change.
+  if (!element.clientWidth || !element.clientHeight) return null;
+
   const style = window.getComputedStyle(element);
   const fontSize = parseFloat(style.fontSize) || 16;
   let lineHeight = parseFloat(style.lineHeight);
@@ -61,7 +66,7 @@ export function transcriptLayoutMetrics(element) {
 
   const padding =
     (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0);
-  const width = Math.max(120, (element.clientWidth || 0) - padding);
+  const width = Math.max(120, element.clientWidth - padding);
   const charWidth = averageCharWidth(style) || fontSize * 0.5;
   const charsPerLine = Math.max(8, Math.floor(width / charWidth));
 

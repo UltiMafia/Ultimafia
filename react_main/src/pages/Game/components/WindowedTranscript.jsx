@@ -52,18 +52,78 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
   // layout they were taken in: a font-size or width change invalidates them.
   const layoutRef = useRef(null);
   useLayoutEffect(() => {
+    // Null for a hidden or zero-size transcript: no reader is looking at it,
+    // and treating invisibility as a width change destroys their position.
     const layout = transcriptLayoutMetrics(speechDisplayRef.current);
+    if (!layout) return;
+
     const previous = layoutRef.current;
-    if (layout && previous && previous.signature !== layout.signature) {
-      // A font-size or width change reflows every row, so both the portable
-      // cache and the virtualizer's own measured sizes are stale. Re-laying out
-      // here is expected: the transcript has already reflowed visually.
-      measuredHeights.clear();
+    if (!previous) {
       layoutRef.current = layout;
-      virtualizer.measure();
       return;
     }
-    if (layout) layoutRef.current = layout;
+    if (previous.signature === layout.signature) return;
+
+    // A real reflow (font size or column width): every row's height changes,
+    // so the library's measured sizes are stale and unseen rows need the new
+    // estimate. Re-lay the list, but put the reader back on the row and offset
+    // they were reading — a bare measure() leaves them wherever the new
+    // estimates put index 0.
+    const instance = virtualizerRef.current;
+    // The DOM scroll position is the truth here; the library's scrollOffset can
+    // lag a frame behind, which shifts the anchor by a row.
+    const offset = speechDisplayRef.current
+      ? speechDisplayRef.current.scrollTop
+      : instance.scrollOffset ?? 0;
+    const anchorItem = instance
+      .getVirtualItems()
+      .find((item) => item.end > offset);
+    const anchorKey = anchorItem ? anchorItem.key : null;
+    const anchorDelta = anchorItem ? offset - anchorItem.start : 0;
+
+    layoutRef.current = layout;
+    measuredHeights.clear();
+    instance.measure();
+
+    if (anchorKey != null) {
+      const index = keys.indexOf(anchorKey);
+      const scroller = speechDisplayRef.current;
+      if (index >= 0 && scroller) {
+        // Bring the row into view from the new layout, then correct against its
+        // real box once it has rendered: every height above it is an estimate
+        // again, so an offset computed from them lands a row or two out.
+        const offsetInfo = instance.getOffsetForIndex(index, "start");
+        const newStart = Array.isArray(offsetInfo) ? offsetInfo[0] : null;
+        if (typeof newStart === "number") {
+          scroller.scrollTop = Math.max(0, newStart + anchorDelta);
+        }
+        // Rows above are estimates again, so the position settles over a few
+        // frames as the rendered ones report their real heights. Converge on
+        // the row's box rather than trusting any single offset.
+        let stable = 0;
+        const align = (attempt) => {
+          if (attempt > 12) return;
+          const row = scroller.querySelector(`[data-index="${index}"]`);
+          if (!row) {
+            instance.scrollToIndex(index, { align: "start" });
+            requestAnimationFrame(() => align(attempt + 1));
+            return;
+          }
+          const rowTop =
+            row.getBoundingClientRect().top -
+            scroller.getBoundingClientRect().top;
+          const delta = rowTop - anchorDelta;
+          if (Math.abs(delta) <= 0.5) {
+            if (++stable >= 2) return;
+          } else {
+            stable = 0;
+            scroller.scrollTop += delta;
+          }
+          requestAnimationFrame(() => align(attempt + 1));
+        };
+        requestAnimationFrame(() => align(0));
+      }
+    }
   });
 
   const estimateSize = useCallback((index) => {
