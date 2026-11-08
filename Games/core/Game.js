@@ -102,6 +102,11 @@ module.exports = class Game {
     // Who was charged at start, and who has had that heart given back.
     this.heartsCharged = null; // { userIds, red, gold }
     this.heartsRefundedUserIds = new Set();
+    // Accounts that broke the integrity of the game and therefore keep paying.
+    this.integrityBreakUserIds = new Set();
+    // A refund owed but not paid yet: the breaking phase can still produce
+    // more responsible players.
+    this.integrityRefundPending = null;
     this.readyCountdownLength =
       options.settings.readyCountdownLength != null
         ? options.settings.readyCountdownLength
@@ -1380,16 +1385,14 @@ module.exports = class Game {
         this.makeUnranked();
         this.makeUncompetitive();
 
-        if (this.breakIntegrity()) {
-          await this.refundHeartsForIntegrityBreak(
-            player,
-            wasRanked,
-            wasCompetitive
-          );
+        if (this.breakIntegrity(player)) {
+          this.queueIntegrityRefund(wasRanked, wasCompetitive);
           if (!player.isBot) {
             const userId = player.userId || player.user.id;
             this.penalizePlayerForLeaving(userId);
           }
+        } else {
+          this.noteIntegrityResponsible(player);
         }
       }
 
@@ -1440,12 +1443,16 @@ module.exports = class Game {
     player.kill("veg", player);
     this.exorcisePlayer(player);
 
-    if (this.breakIntegrity()) {
-      await this.refundHeartsForIntegrityBreak(player, wasRanked, wasCompetitive);
+    if (this.breakIntegrity(player)) {
+      this.queueIntegrityRefund(wasRanked, wasCompetitive);
       if (!player.isBot) {
         const userId = player.userId || player.user.id;
         this.penalizePlayerForLeaving(userId);
       }
+    } else {
+      // Vegging along with the rest of the phase, after the break: still
+      // responsible, so still not refunded.
+      this.noteIntegrityResponsible(player);
     }
   }
 
@@ -1472,7 +1479,7 @@ module.exports = class Game {
   }
 
   // Returns if the integrity of the game was broken for the first time or not
-  breakIntegrity() {
+  breakIntegrity(player) {
     const hadIntegrity = this.hasIntegrity;
     this.hasIntegrity = false;
 
@@ -1480,10 +1487,45 @@ module.exports = class Game {
       this.queueAlert("The game is now safe to leave without penalty.");
     }
 
+    // A break is not always one player's act. When a vote times out without a
+    // majority, Meeting.finish() vegs every member who did not vote in one
+    // loop, so a whole game can lose its integrity in a single phase.
+    this.noteIntegrityResponsible(player);
+
     return hadIntegrity;
   }
 
-  async refundHeartsForIntegrityBreak(excludedPlayer, wasRanked, wasCompetitive) {
+  // Records an account that took part in breaking the game's integrity. Every
+  // player who vegs or leaves alive before the refund is paid keeps paying it;
+  // one who does so afterwards is exempt, because the game was already safe to
+  // leave and nothing they do then breaks anything.
+  noteIntegrityResponsible(player) {
+    if (this.heartsRefundedOnIntegrityBreak) return;
+
+    const userId = accountIdOf(player);
+    if (userId) this.integrityBreakUserIds.add(userId);
+  }
+
+  // The refund is owed as soon as integrity breaks, but it is paid when the
+  // phase ends: paying immediately refunded the rest of a mass veg.
+  queueIntegrityRefund(wasRanked, wasCompetitive) {
+    if (!this.heartsChargedAtStart) return;
+    if (!wasRanked && !wasCompetitive) return;
+    if (this.integrityRefundPending || this.heartsRefundedOnIntegrityBreak)
+      return;
+
+    this.integrityRefundPending = { wasRanked, wasCompetitive };
+  }
+
+  async flushIntegrityRefund() {
+    const pending = this.integrityRefundPending;
+    if (!pending) return;
+
+    this.integrityRefundPending = null;
+    await this.refundHeartsForIntegrityBreak(pending);
+  }
+
+  async refundHeartsForIntegrityBreak({ wasRanked, wasCompetitive } = {}) {
     if (!this.heartsChargedAtStart) return;
     if (this.heartsRefundedOnIntegrityBreak) return;
     if (!wasRanked && !wasCompetitive) return;
@@ -1493,13 +1535,12 @@ module.exports = class Game {
     // Pay back everyone who was charged at start. Walking the seats instead
     // skipped players who had died and left before the break: they paid in full
     // and are no longer seated, so they were left a heart short silently.
-    const excludedUserId = accountIdOf(excludedPlayer);
 
     if (!this.heartsRefundedUserIds) this.heartsRefundedUserIds = new Set();
 
     for (const userId of refundTargets({
       charged: this.heartsCharged,
-      excludedUserId,
+      excludedUserIds: this.integrityBreakUserIds,
       refunded: this.heartsRefundedUserIds,
     })) {
       this.heartsRefundedUserIds.add(userId);
@@ -3472,6 +3513,12 @@ module.exports = class Game {
   }
 
   incrementState(index, skipped) {
+    // End of the phase that broke the game: every player responsible for the
+    // break has now acted, so the refund can be paid to the rest.
+    this.flushIntegrityRefund().catch((e) =>
+      logger.warn(`flushIntegrityRefund failed for game ${this.id}: ${e.message}`)
+    );
+
     this.currentState++;
 
     if (index === undefined || skipped === undefined) {
@@ -4723,6 +4770,12 @@ module.exports = class Game {
 
       this.finished = true;
       this.clearTimers();
+
+      await this.flushIntegrityRefund().catch((e) =>
+        logger.warn(
+          `flushIntegrityRefund failed for game ${this.id}: ${e.message}`
+        )
+      );
 
       this.winners = winners;
       this.currentState = -2;

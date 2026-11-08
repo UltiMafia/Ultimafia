@@ -5,14 +5,22 @@
 // break paid in full and is gone from the seat list, and the seat-based loop
 // skipped them — leaving them a heart short with nothing logged.
 //
-// The player responsible for the break is still excluded, by account rather than
-// by seat, so a leaver or vegger keeps paying.
-function refundTargets({ charged, excludedUserId, refunded }) {
+// The players responsible for the break are still excluded, by account rather
+// than by seat, so a leaver or vegger keeps paying. Responsibility is a set:
+// a vote timing out vegs every member who did not vote, so several players can
+// break the same game in one phase and none of them is owed a heart back.
+function refundTargets({ charged, excludedUserId, excludedUserIds, refunded }) {
   const userIds = (charged && charged.userIds) || [];
   const paid = refunded instanceof Set ? refunded : new Set(refunded || []);
+  const excluded =
+    excludedUserIds instanceof Set
+      ? excludedUserIds
+      : new Set(
+          excludedUserIds || (excludedUserId ? [excludedUserId] : [])
+        );
 
   return userIds.filter(
-    (userId) => userId && userId !== excludedUserId && !paid.has(userId)
+    (userId) => userId && !excluded.has(userId) && !paid.has(userId)
   );
 }
 

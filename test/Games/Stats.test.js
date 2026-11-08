@@ -493,6 +493,8 @@ describe("Stats recording", function () {
       const vegger = game.players.at(0);
       await game.vegPlayer(vegger);
       game.processActionQueue();
+      // Paid at the end of the breaking phase, not inside vegPlayer.
+      await game.flushIntegrityRefund();
 
       game.hadVegKill.should.equal(true);
       game.ranked.should.equal(false);
@@ -534,6 +536,7 @@ describe("Stats recording", function () {
       const vegger = game.players.at(0);
       await game.vegPlayer(vegger);
       game.processActionQueue();
+      await game.flushIntegrityRefund();
 
       game.hadVegKill.should.equal(true);
       game.competitive.should.equal(false);
@@ -552,6 +555,33 @@ describe("Stats recording", function () {
         const doc = await getUserDoc(player.user);
         expect(doc.stats?.Mafia).to.equal(undefined);
       }
+    });
+
+    it("several players veg in one phase: none of them is refunded", async function () {
+      const { game, users } = await makeRankedishGameSeeded({ competitive: true });
+
+      // One player is already out: they were charged at start, died and left,
+      // and took no part in the break.
+      const departed = game.players.at(2);
+      departed.kill("nightkill");
+      await game.playerLeave(departed);
+
+      // The reported game: the day vote times out and every alive player vegs
+      // in the same phase, so responsibility is not one player's.
+      const [first, second] = game.players;
+      game.vegPlayer(first);
+      game.vegPlayer(second);
+      await game.flushIntegrityRefund();
+
+      const firstDoc = await getUserDoc(first.user);
+      const secondDoc = await getUserDoc(second.user);
+      const departedDoc = await getUserDoc(users[2]);
+
+      // Both veggers keep paying, and the one who died and left before the
+      // break is made whole.
+      firstDoc.goldHearts.should.equal(2);
+      secondDoc.goldHearts.should.equal(2);
+      departedDoc.goldHearts.should.equal(3);
     });
 
     it("unranked vegged: no charge and no refund", async function () {

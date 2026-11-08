@@ -22,6 +22,27 @@ describe("refundTargets", function () {
     expect(refundTargets({ charged, excludedUserId: "a" })).to.not.include("a");
   });
 
+  it("does not pay any of the players who broke the game together", function () {
+    // A vote timing out without a majority vegs every member who did not vote,
+    // in one loop: none of those players is owed a heart back.
+    expect(
+      refundTargets({ charged, excludedUserIds: new Set(["a", "b"]) })
+    ).to.deep.equal(["c"]);
+  });
+
+  it("pays the dead players when every alive player was responsible", function () {
+    // The reported game: all alive players vegged at the end of a day. The
+    // player who had already died and left was not responsible and is owed
+    // their heart back.
+    const game = { userIds: ["alive1", "alive2", "dead"] };
+    expect(
+      refundTargets({
+        charged: game,
+        excludedUserIds: new Set(["alive1", "alive2"]),
+      })
+    ).to.deep.equal(["dead"]);
+  });
+
   it("does not pay anyone twice", function () {
     const refunded = new Set(["b"]);
     expect(refundTargets({ charged, refunded })).to.deep.equal(["a", "c"]);
