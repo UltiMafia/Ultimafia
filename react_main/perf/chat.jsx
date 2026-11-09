@@ -8,6 +8,7 @@ import {
   TextMeetingLayout,
   ThreePanelLayout,
   SideMenu,
+  SettingsMenu,
   useHistoryReducer,
   useSettingsReducer,
 } from "../src/pages/Game/Game";
@@ -59,15 +60,38 @@ function makeMessage(content, senderId, time = Date.now()) {
 function makeState(count) {
   nextId = 0;
   const start = Date.now() - count * 1000;
+  const messages = Array.from({ length: count }, (_, i) => makeMessage(null, null, start + i * 1000));
+
+  // Obituaries are tall special rows (a newspaper with deaths), not chat lines.
+  // `?obits=1` puts three of them through the same renderer as the real game.
+  const obituaries = {};
+  if (params.get("obits") === "1") {
+    const paper = (source, index, deaths) => ({
+      id: `0:${source}`, source, time: start + index * 1000 + 500, dayCount: 2,
+      obituaries: deaths.map((name, k) => ({
+        id: `${source}-${k}`,
+        playerInfo: { id: `${source}-${k}`, userId: `${source}-${k}`, name, avatar: false },
+        snippets: {
+          deathMessage: "was found dead in their home.",
+          revealMessage: "They were the Doctor.",
+          lastWill: "I was sure about the vote.",
+        },
+      })),
+    });
+    obituaries.Night = paper("Night", Math.floor(count * 0.25), ["Synthetic 1", "Synthetic 2"]);
+    obituaries.Day = paper("Day", Math.floor(count * 0.5), ["Synthetic 3"]);
+    obituaries.End = paper("Postgame", count - 1, ["Synthetic 4"]);
+  }
+
   return {
     0: {
-      name: "Day 1", selTab: "village", alerts: [], obituaries: {},
+      name: "Day 1", selTab: "village", alerts: [], obituaries,
       dead: {}, exorcised: {},
       meetings: {
         village: {
           id: "village", name: "Village", speech: true, amMember: true, canTalk: true,
           members: Object.keys(players), speechAbilities: [], voteRecord: [],
-          messages: Array.from({ length: count }, (_, i) => makeMessage(null, null, start + i * 1000)),
+          messages,
         },
       },
     },
@@ -78,13 +102,15 @@ function ChatPerformance() {
   const [history, updateHistory] = useHistoryReducer();
   const [settings, updateSettings] = useSettingsReducer();
   const [pinnedMessages, setPinnedMessages] = useState({});
+  const [transcriptVersion, setTranscriptVersion] = useState("");
   const [streaming, setStreaming] = useState(false);
   const status = useRef();
   const isPhone = useIsPhoneDevice();
 
   useEffect(() => {
     updateHistory({ type: "set", history: makeState(initialCount) });
-  }, [updateHistory]);
+    if (params.has("settingsIntegration")) updateSettings({ type: "load" });
+  }, [updateHistory, updateSettings]);
 
   // This replaces only the transport. The real reducer, transcript, text input,
   // echo-to-clear behavior, formatting, and scroll handling run unchanged.
@@ -131,8 +157,21 @@ function ChatPerformance() {
 
   const state = history.states[0];
   const count = state?.meetings.village.messages.length || 0;
+
+  // Read the renderer version from the DOM so the harness names the build it is
+  // actually running, not a hard-coded label.
+  useEffect(() => {
+    if (params.get("virtual") !== "1") return undefined;
+    const timer = setTimeout(() => setTranscriptVersion(
+      document.querySelector("[data-transcript-window]")?.dataset.transcriptWindow || ""), 0);
+    return () => clearTimeout(timer);
+  }, [count]);
   const game = {
-    history, updateHistory, players, spectators, settings, options,
+    ...(params.has("virtual") || !params.has("settingsIntegration")
+      ? { transcriptWindowing: params.get("virtual") === "1" } : {}),
+    history, updateHistory, players, spectators, settings: params.has("partialSettings")
+      ? Object.fromEntries(Object.entries(settings).filter(([key]) => key !== "virtualizeTranscript"))
+      : settings, updateSettings, options,
     stateViewing: 0, self: "test-0", socket, review: false,
     isolationEnabled: false, isolatedPlayers, isSpectator: false,
     pinnedMessages, isMessagePinned, onPinMessage, onMessageQuote,
@@ -147,14 +186,21 @@ function ChatPerformance() {
   }, [updateHistory]);
 
   useEffect(() => {
-    window.chatPerf = { load, append: () => append(makeMessage()), setStreaming };
+    window.chatPerf = { load, settings, updateSettings,
+      append: (message) => append(message || makeMessage()), setStreaming,
+      replyTo: (id) => {
+        append({ ...makeMessage("quote", "test-0"), id: "perf-quote", isQuote: true,
+          fromState: 0, fromMeetingId: "village", messageId: id });
+        append({ ...makeMessage("a reply that jumps to old history", "test-0"), id: "perf-reply", replyTo: "perf-quote" });
+      },
+    };
     return () => { delete window.chatPerf; };
-  }, [load, append]);
+  }, [load, append, settings, updateSettings]);
 
   return (
-    <main className="chat-perf dark-mode">
+    <main className={`chat-perf ${params.get("theme") === "light" ? "light-mode" : "dark-mode"} ${params.get("sweep") === "off" ? "perf-sweep-off" : ""}`}>
       <div className="perf-controls">
-        <strong>Chat test · {count.toLocaleString()} messages</strong>
+        <strong>Chat test · {count.toLocaleString()} messages{params.get("virtual") === "1" ? ` · ${transcriptVersion || "virtualized"}` : " · full DOM"}</strong>
         <div className="perf-buttons">
           {[0, 100, 1000, 5000, 10000].map((size) => (
             <button key={size} onClick={() => load(size)}>Load {size.toLocaleString()}</button>
@@ -174,6 +220,11 @@ function ChatPerformance() {
         <small>Local simulation. Frame timing includes rendering and frame waits, not server/network latency. Reload to reset.</small>
       </div>
       <GameContext.Provider value={game}>
+        {params.has("settingsIntegration") && <div data-testid="settings-integration"
+          style={{ position: "fixed", right: 0, top: 0, zIndex: 100, width: 340,
+            maxHeight: "75vh", overflowY: "auto", background: theme.palette.background.paper }}>
+          <SettingsMenu />
+        </div>}
         <IsPhoneDeviceContext.Provider value={isPhone}>
           <div className="game perf-game">
             {state && (params.get("panels") === "flat" || isPhone ? <TextMeetingLayout /> :
@@ -194,7 +245,7 @@ function ChatPerformance() {
 
 ReactDOM.render(
   <BrowserRouter>
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme} defaultMode={params.get("theme") || "dark"}>
       <CssBaseline />
       <SiteInfoContext.Provider value={siteInfo}>
         <UserContext.Provider value={user}>
