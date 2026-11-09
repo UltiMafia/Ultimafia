@@ -260,6 +260,21 @@ router.post(
   })
 );
 
+async function requireGameLogAccess(res, userId, gameId) {
+  const first = await models.GameEventLogChunk.findOne({ gameId }).select("hostId").lean();
+  if (!first) {
+    errors.notFound(res, "No event log for this game.");
+    return false;
+  }
+  const creatorId = await redis.client.getAsync(`devapi:game:${gameId}:creator`);
+  const isHost = (creatorId || first.hostId) == userId;
+  if (!isHost && !(await routeUtils.verifyPermission(userId, "giveGroup", Infinity))) {
+    errors.forbidden(res, "Only the developer who hosted this game or an Owner can read its log.");
+    return false;
+  }
+  return true;
+}
+
 const logChunksPerPage = 20;
 
 function parseLines(chunk) {
@@ -272,6 +287,7 @@ router.get(
     const userId = await requireDeveloper(req, res);
     if (!userId) return;
     const gameId = String(req.params.gameId);
+    if (!(await requireGameLogAccess(res, userId, gameId))) return;
     const from = Math.max(0, Number(req.query.fromChunk) || 0);
     const chunks = await models.GameEventLogChunk.find({ gameId, n: { $gte: from } })
       .select("n lines -_id")
@@ -296,17 +312,7 @@ router.get(
     const userId = await requireDeveloper(req, res);
     if (!userId) return;
     const gameId = String(req.params.gameId);
-    const first = await models.GameEventLogChunk.findOne({ gameId }).select("hostId").lean();
-    if (!first) {
-      errors.notFound(res, "No event log for this game.");
-      return;
-    }
-    const creatorId = await redis.client.getAsync(`devapi:game:${gameId}:creator`);
-    const isHost = (creatorId || first.hostId) == userId;
-    if (!isHost && !(await routeUtils.verifyPermission(userId, "giveGroup", Infinity))) {
-      errors.forbidden(res, "Only the developer who hosted this game or an Owner can download its log.");
-      return;
-    }
+    if (!(await requireGameLogAccess(res, userId, gameId))) return;
     res.set("Content-Type", "application/x-ndjson");
     res.set("Content-Disposition", `attachment; filename="game-${gameId}.jsonl"`);
     const cursor = models.GameEventLogChunk.find({ gameId }).select("lines -_id").sort("n").lean().cursor();
