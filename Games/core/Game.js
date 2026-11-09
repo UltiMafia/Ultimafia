@@ -404,8 +404,6 @@ module.exports = class Game {
   }
 
   getPregameExtensionsLeft() {
-    if (this.competitive) return 0;
-
     return Math.max(
       0,
       Math.floor(

@@ -102,10 +102,10 @@ describe("Pregame lobby extension", function () {
     game.getPregameExtensionsLeft().should.equal(0);
   });
 
-  it("is refused in competitive games and once the game has started", function () {
+  it("allows competitive games but is refused once the game has started", function () {
     ({ game } = stubGame({ competitive: true }));
     setTimeLeft(game, 30 * 1000);
-    game.canExtendPregameWait().should.equal(false);
+    game.canExtendPregameWait().should.equal(true);
     game.clearTimers();
 
     ({ game } = stubGame());
