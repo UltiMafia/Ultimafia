@@ -23,7 +23,11 @@ const iOSDefersCorrections = (() => {
 })();
 const UNSEEN_ROW_ESTIMATE = iOSDefersCorrections ? 150 : 60;
 
-export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScroll }) {
+// `startAtEnd` is only true for the transcript a reader is following live: the
+// current phase of a running game. A review, or an older phase someone opened to
+// read, starts at its first message — the same place the full-DOM transcript put
+// them before this component existed.
+export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScroll, startAtEnd = true }) {
   const initializing = useRef(true);
   const jumpFrame = useRef(null);
   const highlightTimer = useRef(null);
@@ -194,10 +198,11 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
   }, []);
 
   useLayoutEffect(() => {
-    virtualizer.scrollToEnd();
+    if (startAtEnd) virtualizer.scrollToEnd();
+    else virtualizer.scrollToOffset(0);
     const timer = setTimeout(recordMeasured, 200);
     return () => clearTimeout(timer);
-  }, [virtualizer, recordMeasured]);
+  }, [virtualizer, recordMeasured, startAtEnd]);
 
   // A keyboard changes the viewport without appending data. Keep an already
   // following reader pinned, but never pull someone away from older messages.
