@@ -1,5 +1,30 @@
 import Color from "color";
 
+// Perceived brightness of a name colour, 0 (black) to 1 (white).
+export function nameGlowLuminance(color) {
+  try {
+    const [r, g, b] = Color(color).rgb().array();
+    return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+  } catch {
+    return null;
+  }
+}
+
+// The halo's alphas are calibrated on a mid colour; a light name needs less of
+// them to look like light rather than a lit bar, a dark one can take more.
+const REFERENCE_LUMINANCE = 0.61;
+const LUMINANCE_SLOPE = 1.2;
+const MIN_LUMINANCE_SCALE = 0.55;
+const MAX_LUMINANCE_SCALE = 1.35;
+
+function luminanceScale(luminance) {
+  const scale = 1 + LUMINANCE_SLOPE * (REFERENCE_LUMINANCE - luminance);
+  return Math.min(
+    MAX_LUMINANCE_SCALE,
+    Math.max(MIN_LUMINANCE_SCALE, scale)
+  );
+}
+
 // Resolve channels once per render, not with style/layout reads per animation frame.
 // drop-shadow already includes the glyph alpha; do not multiply that alpha twice.
 export function nameGlowStyle(color) {
