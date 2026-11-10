@@ -4273,7 +4273,6 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
                 square: true,
               })}
               dead={className === "dead"}
-              avatarSize={32}
               active={activity.speaking[player.id]}
               noLink={stateViewing >= 0 && game.options.anonymousGame}
               includeMiniprofile

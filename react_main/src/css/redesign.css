@@ -190,8 +190,13 @@ button, select { font: inherit; }
 .game .left-panel { width: var(--game-left-panel-width); border-right: 1px solid var(--scheme-color-border); }
 .game .right-panel { width: var(--game-right-panel-width); border-left: 1px solid var(--scheme-color-border); }
 .game .center-panel { background: var(--scheme-color); }
-.game .title-box.title-box { display: flex; align-items: center; min-height: 40px; height: auto; padding: 6px 12px; border-radius: 0; background: var(--scheme-color); border-bottom: 1px solid var(--scheme-color-border); font-size: var(--ui-text-small); font-weight: var(--ui-weight-strong); }
-.game .meeting-tabs.meeting-tabs { gap: 8px; }
+/* One header height across every game panel: the three columns meet on the
+   same line, and the meeting-tab strip cannot grow taller than its siblings. */
+.game .title-box.title-box { display: flex; align-items: center; height: 48px; min-height: 48px; box-sizing: border-box; padding: 0 12px; border-radius: 0; background: var(--scheme-color); border-bottom: 1px solid var(--scheme-color-border); font-size: var(--ui-text-small); font-weight: var(--ui-weight-strong); overflow: hidden; }
+.game .meeting-tabs.meeting-tabs { gap: 8px; padding: 0 8px; background: var(--scheme-color); }
+.game .meeting-tabs .MuiTabs-root { min-height: 32px; }
+.game .meeting-tabs .MuiTab-root { min-height: 32px; padding-top: 0; padding-bottom: 0; }
+.game .meeting-tabs .MuiTabs-indicator { bottom: 0; }
 .game .speech-wrapper, .game .speech-display { min-height: 0; background: var(--scheme-color); }
 .game .player.player { min-height: 40px; padding: 3px; font-size: inherit; }
 .player-role-tools { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; margin-right: 6px; }
@@ -363,7 +368,7 @@ button, select { font: inherit; }
   .player-role-mark-control { opacity: 1; }
   .player-role-tools .role-marker { width: 40px; height: 40px; }
   .game .game-composer { padding: 6px 8px; }
-  .game .title-box.title-box { min-height: 42px; }
+  .game .title-box.title-box { height: 42px; min-height: 42px; }
   .game .player-count.spectator-count { min-width: 40px; min-height: 40px; }
   .reference-page.reference-page, .community-page.community-page { padding: 0; }
   .community-page .user-directory-grid { grid-template-columns: minmax(0, 1fr); }
