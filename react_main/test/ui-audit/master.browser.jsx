@@ -19,7 +19,7 @@ const bootstrap = {
   '/api/roles/all': site.roles, '/api/roles/raw': site.rolesRaw,
   '/api/roles/modifiers': site.modifiers, '/api/roles/gamesettings': site.gamesettings,
   '/api/roles/roletags': site.tags, '/api/roles/descriptions': site.learnGameDescriptionByType,
-  '/api/achievements': {}, '/api/items': site.items,
+  '/api/achievements': site.achievementsRaw, '/api/items': site.items,
   // Contracts: routes/stockMarket.js:15 and routes/chat.js:35. Values here are
   // controlled fixture data, not a live balance or a successful transaction.
   '/api/stocks/config': { creatorFeePct: 0.015, systemFeePct: 0.01 },

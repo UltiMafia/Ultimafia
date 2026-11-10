@@ -79,6 +79,17 @@ beside its value. Unsupported variants, inline table overrides and external
 `.ui-table*` CSS fail the architecture guard. Do not use comparison tables to
 turn informational role directories into framed cards.
 
+`UiReferenceList` has two named layouts. `directory` keeps each name and its
+complete description together in continuous, divider-separated rows. Use it for
+roles, modifiers, mechanics, items and achievements. `picker` is a bounded,
+scrollable editing control with a compact first-paragraph preview and explicit
+add/remove actions. It is for setup creation, not a second reference directory.
+Compose entries through `UiReferenceEntry` and filters through
+`UiReferenceToolbar`; do not add external `.ui-reference*` CSS or restore the
+removed `.cell-search-grid`/`.role-cell` gallery paths. The new-page fixture tests
+both variants without page CSS, including complete directory paragraphs and a
+real picker action.
+
 Do not wrap ordinary pages or every heading/body pair in Card/Paper. Avoid
 repeated heading strips, alternating inset backgrounds and ornamental panels.
 Use an actual surface when it communicates a boundary: dialogs, menus, editors,

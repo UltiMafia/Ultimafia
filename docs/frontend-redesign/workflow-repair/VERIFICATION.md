@@ -3,7 +3,77 @@
 PR #3197 is open and draft. This is not visual acceptance or a completed audit.
 Numbered historical evidence directories are not final-HEAD verification.
 
-## Latest Rules/table slice
+## Active Learn directory/picker slice
+
+- Shared `UiReferenceList`/`UiReferenceEntry` replace the role-card gallery with
+  continuous directory rows. Names, original artwork and complete descriptions
+  remain together. The named `picker` variant preserves the setup editor's
+  bounded, scrollable add/remove controls and compact previews. Role/modifier
+  filters are unchanged; mechanics now composes the same search/list path.
+- Learn items and achievements use the same continuous directory, not a separate
+  framed table/gallery. Shared type/tabs/fields replace the migrated direct MUI
+  paths. Reference section tabs and panels have linked IDs; the phone achievement
+  icon no longer opens a hover popover on synthetic mouseenter while scrolling.
+- Removed the old `.cell-search-grid`, `.cell-search-item`, `.role-cell*` CSS and
+  setup-specific gallery overrides. Architecture guards reject their return,
+  external `.ui-reference*` overrides and unsupported list variants. Independently
+  checked debt **602 → 589**, zero increases. The new-page fixture composes both
+  reference variants with full directory paragraphs and a real picker action.
+- Expanded the formerly thin fixtures using public static source data: **165
+  modifiers, 33 game settings, 35 items, 83 achievements**. No account/database
+  records were replaced. All five Mafia alignments and reference tabs/categories,
+  search and no-results expand the registry **750 → 852 cells**. Non-Mafia and
+  global/game workflow registration remains incomplete.
+- Corrected populated BEFORE pairs **114 cells** at all widths/palettes. The first
+  master attempt failed a test that omitted its passive `/api/user/online` write;
+  no service mutation was forwarded. The corrected run is in
+  `../audit/learn-populated-before/`; failed originals are retained diagnostics.
+- The updated new-page/focused AFTER matrix passes **18/18 redesign and 18/18
+  actual-master route cases**, pairing **120 cells**; **662 geometry candidates**
+  remain in this focused report, many repeated tab-window candidates. They are
+  not silently suppressed. `../audit/learn-verified/` is dirty-source slice
+  evidence, not final-HEAD evidence. The complete integrated run is still pending.
+- Image inspection then exposed the master's stale empty `/api/achievements`
+  bootstrap despite the shared populated fixture. Corrected it to the same public
+  achievement source and recaptured **12/12 BEFORE master and 18/18 AFTER master
+  cases**. New source-contract and browser-count guards reject this mismatch.
+  Previous empty-master achievement images remain diagnostics, not matching-data
+  evidence. The counts above refer to the refreshed latest report pointers.
+- Strengthened selected-tab/keyboard checks pass **12/12 cases** across Learn and
+  the new-page fixture in both palettes/all widths. Text ranges and a minimum
+  usable visible hit area are checked: MUI may scroll blank tab padding behind
+  an arrow without clipping its label. An initial whole-button-box assertion
+  incorrectly rejected that case; it was corrected, not patched in production.
+- Inspected every first repaired Learn/setup image through sheets 53–80 in
+  `/var/tmp/ultimafia-learn-inspection/`, including separate phone bottoms in both
+  palettes. Desktop thumbnails establish composition, not native text detail.
+  Before/master and newly updated fixture inspection is not yet complete.
+  No visual acceptance is claimed. The 320px initial picker partly overlaps the
+  sticky step controls; the actual add action is reachable after scrolling in
+  the passing full creator interaction. Keep this distinction explicit.
+- `python3 test/ui-audit/build-inspection.py --audit <audit-root> ... --output
+  <new-directory>` builds hash-deduplicated inspection sheets with original-image
+  provenance, excludes failed cases and never marks visual acceptance. It requires
+  Pillow and refuses an existing output directory. The current three-run set
+  contains 1,182 images / 698 unique hashes / 88 sheets; inspection is still in
+  progress, not 1,182 visually accepted images.
+
+| Learn check | Observed result |
+| --- | --- |
+| Frontend Node tests | **260 passed, 0 failed**; `/var/tmp/ultimafia-learn-node-final.log` |
+| `npm run lint:ui` | Passed; independently verified baseline 589, no increases |
+| Production build | Passed; `/var/tmp/ultimafia-learn-production-build.log` |
+| Scoped ESLint | **0 errors, 28 warnings** across CellSearch, Roles, Achievements, UiReferenceList and Learn/Games; `/var/tmp/ultimafia-learn-eslint.json`. Existing Roles/achievement-hook warnings are not called passing full-site lint |
+| Controls / retained lifecycle | **57 checks, 39 states / 33 checks passed**; `/var/tmp/ultimafia-learn-{controls,lifecycle}.log` |
+| Game / competitive / homepage | **36 / 16 / 10 cases passed**, no recorded failures; `../audit/learn-regressions/` |
+
+Also merged the fork's concurrent change titled “fix(chat): reveal a surface
+behind a swiped message again” without rewriting its history. The rejected
+initial push was retried only after fetching and merging. The above fresh builds
+and regression fixtures include its CSS; no speculative gameplay change was
+made to integrate it.
+
+## Preceding Rules/table slice
 
 - Rules penalty tables now use `UiTable variant="comparison"`; desktop values
   remain centered, while phone records keep each complete offense label beside

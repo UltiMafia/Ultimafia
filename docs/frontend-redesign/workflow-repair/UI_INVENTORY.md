@@ -15,7 +15,7 @@ at `/audit/new-page` verifies composition without page-specific CSS. The global
 and workflow lists below still require complete stable-ID registration and
 capture tasks before the inventory can be called exhaustive.
 
-The registry currently contains **125 route/state IDs × six cells = 750 cells**.
+The registry currently contains **142 route/state IDs × six cells = 852 cells**.
 The preceding administrative integration run covered all **720 then-registered pairs**, with no
 gaps and 246 open geometry candidates. It was built before the final composer
 correction and is not final-HEAD evidence. Registered coverage is not exhaustive
@@ -152,6 +152,12 @@ inventory cells remain gaps in that focused report, not silently reused evidence
   master ancestors remain master UI, including its blank loading body. Repaired
   Rules keeps static policy text readable while penalty data is unavailable.
   Canonical text for all 17 sections is guarded separately from presentation.
+- Learn registration includes all five Mafia alignments, role search/no results,
+  modifiers (Items/Visits/Appearance/Chat/Other), items, mechanics
+  (Standard/Voting/Timer/Other), and achievements. Fixtures use public source
+  records for all 165 modifiers, 33 game settings, 35 items and 83 achievements,
+  not the previous two-modifier/one-setting/empty-item demonstration lists.
+  Non-Mafia game-specific reference variants still need explicit registration.
 - Dark and light palettes; desktop 1440, phone 390, narrow phone 320.
 - Loading, empty, error/failure and permission states for the routes that expose them.
 - Dialogs: host, avatar crop, banner crop, report, trade, leave game, deck delete, family role/removal/bio, moderation command, group removal, ban confirmation, strategy editor, image viewer.

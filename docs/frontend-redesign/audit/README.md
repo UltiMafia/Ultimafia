@@ -42,6 +42,24 @@ owned disk-backed temporary directory if `/tmp` hits its per-user quota. Set
 `TMPDIR` on the command too to relocate browser scratch files. This is a storage
 workaround, not permission to delete old builds, worktrees or evidence.
 
+Generate hash-deduplicated inspection sheets with Pillow installed:
+
+```sh
+python3 test/ui-audit/build-inspection.py \
+  --audit ../docs/frontend-redesign/audit/learn-populated-before \
+  --audit ../docs/frontend-redesign/audit/learn-verified \
+  --output /var/tmp/ultimafia-new-inspection
+```
+
+The output directory must be new. The manifest links each thumbnail to its
+original screenshot, source report and hash, excludes failed cases and never
+marks images inspected or accepted automatically. Contact sheets are inspection
+aids, not new coverage cells or stitched phone evidence; check original images
+or native crops for details that desktop thumbnails cannot establish. Refuse
+empty reference baselines: the master bootstrap must use the same public source
+records, not hard-coded empty achievement/item lists. Source-contract and browser
+population assertions guard this explicitly.
+
 ## Current limits — not completion
 
 The initial inventory derives from the existing route registry plus its explicit
@@ -55,10 +73,13 @@ old colors. Reads and passive acknowledgements stay in memory, with the same
 controlled records; this is separate from live same-database public-route pairs,
 which now have a separate `live-public` run. The upstream-integrated run paired
 all then-registered 582 cells with no gaps and 270 open candidates. The registry
-has since expanded to 720 cells with explicit administrative pending/error/empty
-states. The administrative integration run captured all 720 pairs with zero gaps
+has since expanded to 852 cells with explicit administrative, Rules and Mafia
+reference states. The administrative integration run captured all 720 then-registered pairs with zero gaps
 and 246 open candidates (94 heading offsets, 152 clipping), before the final
 composer correction; it is not final-HEAD evidence or exhaustive inventory. The
+current focused Learn/setup/new-page comparison pairs 120 cells; the expanded
+full comparison is still pending. Non-Mafia reference/global/game states still
+need inventory expansion. The
 report does not interpret a missing master as a redesign regression. Geometry
 candidates require image inspection and classification; automated capture is not
 visual acceptance, nor evidence of live authentication or physical-phone behavior.

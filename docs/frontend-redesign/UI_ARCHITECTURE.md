@@ -67,6 +67,16 @@ Developer API, Invoices and Rules use this path; existing tables elsewhere still
 need migration and are not claimed complete. Unsupported variants, inline table
 overrides and external `.ui-table*` CSS fail the architecture guard.
 
+`UiReferenceList` distinguishes continuous reference information (`directory`)
+from a bounded setup-editing control (`picker`). `UiReferenceEntry` keeps the
+name, artwork and full description together in directory rows; picker entries
+retain a compact preview and explicit add/remove controls. `UiReferenceToolbar`
+owns filter/search geometry. Learn roles, modifiers, mechanics, items and
+achievements share this path without flattening the setup picker. Removed
+`.cell-search-grid`/`.role-cell` CSS cannot return, and external `.ui-reference*`
+overrides or unnamed list variants fail the architecture guard. The new-page
+fixture composes both variants without feature CSS.
+
 ## Enforcement and current migration status
 
 `npm run lint:ui` parses production JSX and rejects new legacy-control debt. It

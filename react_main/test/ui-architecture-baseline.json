@@ -4,9 +4,6 @@
     "mui:Button": 1,
     "mui:Paper": 1
   },
-  "components/Achievements.jsx": {
-    "mui:Typography": 1
-  },
   "components/AppealDialog.jsx": {
     "mui:Button": 1,
     "mui:Dialog": 1,
@@ -48,12 +45,6 @@
   },
   "components/CasePanel.jsx": {
     "mui:Typography": 1
-  },
-  "components/CellSearch.jsx": {
-    "mui:Tabs": 1,
-    "mui:Tab": 1,
-    "mui:Typography": 1,
-    "mui:TextField": 1
   },
   "components/CookieBanner.jsx": {
     "mui:Button": 1,
@@ -228,12 +219,6 @@
   },
   "components/ReportTypology.jsx": {
     "mui:Typography": 1
-  },
-  "components/Roles.jsx": {
-    "mui:Tabs": 1,
-    "mui:Tab": 1,
-    "mui:Typography": 1,
-    "mui:Paper": 1
   },
   "components/Scrapbook.jsx": {
     "mui:Typography": 1,
@@ -584,12 +569,6 @@
     "mui:DialogContent": 1,
     "mui:DialogTitle": 1,
     "mui:Typography": 1
-  },
-  "pages/Learn/Games.jsx": {
-    "mui:Typography": 1,
-    "mui:Tabs": 1,
-    "mui:Tab": 1,
-    "mui:Paper": 1
   },
   "pages/Learn/LearnGlossary.jsx": {
     "mui:Typography": 1,

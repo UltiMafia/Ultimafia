@@ -11,6 +11,7 @@ const masterEquivalents = require("./ui-audit/master-equivalents.json");
 const { reviewMasterTasks } = require("./ui-audit/master-tasks.cjs");
 const { reviewAdminTasks } = require("./ui-audit/admin-tasks.cjs");
 const { reviewRulesTasks } = require("./ui-audit/rules-tasks.cjs");
+const { reviewLearnTasks } = require("./ui-audit/learn-tasks.cjs");
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "/tmp/opencode/redesign-tools/node_modules/playwright");
 const root = path.resolve(__dirname, "../..");
 const upstream = process.env.UI_AUDIT_BRANCH === "master";
@@ -259,7 +260,7 @@ async function main() {
                entry.measurements.push({ state, position, screenshot: filename, ...await page.evaluate(measureUi), ...metadata,
                  masterEquivalent: masterEquivalents[`${item.name}.${state}`] || entry.masterEquivalent });
                };
-               entry.taskChecks = [...await reviewMasterTasks(page, item, captureMaster), ...await reviewAdminTasks(page, item, captureMaster, { master: true, evidence: entry.adminEvidence }), ...await reviewRulesTasks(page, item, captureMaster, { master: true })];
+               entry.taskChecks = [...await reviewMasterTasks(page, item, captureMaster), ...await reviewAdminTasks(page, item, captureMaster, { master: true, evidence: entry.adminEvidence }), ...await reviewRulesTasks(page, item, captureMaster, { master: true }), ...await reviewLearnTasks(page, item, captureMaster, { master: true })];
              }
           entry.status = "captured-baseline-not-accepted";
         } catch (error) {
@@ -375,11 +376,27 @@ async function checkLayout(page, item) {
     }));
     assert.ok(fits, 'Long names, identifiers and actions fit the shared responsive table without page CSS');
     checks.push('new-page-inherits-responsive-semantic-table-without-css');
+    const directory = page.getByRole('list', { name: 'Example directory', exact: true });
+    const picker = page.getByRole('list', { name: 'Example picker', exact: true });
+    assert.equal(await directory.locator('.ui-reference-description p').count(), 2, 'Directory preserves all description paragraphs');
+    assert.equal(await picker.locator('.ui-reference-description p').count(), 1, 'Picker keeps the compact preview');
+    assert.equal(await picker.getByRole('button', { name: 'Add example reference', exact: true }).count(), 1);
+    assert.ok(await directory.locator('.ui-reference-entry--directory').count());
+    assert.ok(await picker.locator('.ui-reference-entry--picker').count());
+    checks.push('new-page-inherits-continuous-directory-and-bounded-action-picker-without-css');
   }
   if (item.name === "learn-games") {
-    assert.ok(await page.locator(".role-cell").count() > 3);
-    assert.ok((await page.locator(".role-cell-description").first().innerText()).length > 10);
-    checks.push("role-directory-rows-include-descriptions");
+    const migrated = await page.locator('.ui-reference-list--directory').count();
+    assert.ok(await page.locator(migrated ? '.ui-reference-entry--directory' : '.role-cell').count() > 3);
+    assert.ok((await page.locator(migrated ? '.ui-reference-description' : '.role-cell-description').first().innerText()).length > 10);
+    if (migrated) {
+      const rows = await page.locator('.ui-reference-entry--directory').evaluateAll(elements => elements.map(element => ({
+        border: getComputedStyle(element).borderWidth, background: getComputedStyle(element).backgroundColor,
+        clipped: [...element.querySelectorAll('.ui-reference-name, .ui-reference-description')].some(text => text.scrollWidth > text.clientWidth + 1 || text.scrollHeight > text.clientHeight + 1),
+      })));
+      assert.ok(rows.every(row => row.border === '0px' && row.background === 'rgba(0, 0, 0, 0)' && !row.clipped), 'Reference rows are continuous information, not clipped cards');
+    }
+    checks.push("role-directory-rows-retain-readable-names-and-descriptions");
   }
   if (item.name === "role-detail") {
     assert.equal(await page.locator(".role-hero").count(), 1);
@@ -919,6 +936,7 @@ async function reviewTasks(page, item, viewport, entry) {
     checks.push('report-dialog-shared-violations-load-cancel-unmount-during-read-and-reopen-without-write');
   }
   checks.push(...await reviewRulesTasks(page, item, captureTask, { after: phase === 'after' }));
+  checks.push(...await reviewLearnTasks(page, item, captureTask, { after: phase === 'after' }));
   if (item.name.startsWith("settings-")) {
     const navigation = page.getByRole("navigation", { name: "Settings sections" });
     await page.locator(".site-wrapper").evaluate(element => { element.scrollTop = 0; });

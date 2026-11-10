@@ -1,7 +1,8 @@
 // No page-specific CSS, styles or MUI imports. A new page should get usable
 // geometry by composing the supported primitives alone.
 import React from 'react';
-import { UiPage, UiSection, UiField, UiMenuItem, UiAction, UiCard, UiIcon, UiTable } from '../../src/components/ui';
+import { UiPage, UiSection, UiField, UiMenuItem, UiAction, UiCard, UiIcon, UiTable, UiReferenceList, UiReferenceEntry } from '../../src/components/ui';
+const references = [{ name: 'Example reference with a real-length name', description: ['The complete first paragraph remains beside its name.', 'The second paragraph is visible in a reference directory.'] }];
 
 export default function NewPageFixture() {
   return <UiPage width="reading" title="Example page" description="Shared page geometry" actions={<UiAction variant="primary"><UiIcon name="add" />Create item</UiAction>}>
@@ -11,5 +12,7 @@ export default function NewPageFixture() {
       { key: 'name', label: 'Name' }, { key: 'id', label: 'Public ID', code: true },
       { key: 'actions', label: 'Actions', render: () => <UiAction>Review record</UiAction> },
     ]} rows={[{ id: 'fixture-public-identifier-that-is-longer-than-a-phone-column', name: 'A record with a real-length descriptive name' }]} rowKey="id" />
+    <UiSection title="Reference directory"><UiReferenceList label="Example directory" items={references} getItemKey={entry => entry.name} renderEntry={entry => <UiReferenceEntry {...entry} icon={<UiIcon name="info" />} />} /></UiSection>
+    <UiSection title="Setup picker"><UiReferenceList label="Example picker" variant="picker" items={references} getItemKey={entry => entry.name} renderEntry={entry => <UiReferenceEntry {...entry} icon={<UiIcon name="info" />} actions={<UiAction iconOnly aria-label="Add example reference"><UiIcon name="add" /></UiAction>} />} /></UiSection>
   </UiPage>;
 }

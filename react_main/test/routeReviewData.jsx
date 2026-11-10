@@ -1,6 +1,12 @@
 // Explicit synthetic contracts for production route components. No live data.
 import { violationDefinitions } from "../../data/violations";
 import fullMafiaRoles from "./routeReviewRoles.json";
+import modifierData from "../../data/modifiers";
+import settingData from "../../data/gamesettings";
+import itemData from "../../data/items";
+import achievementData from "../../data/Achievements";
+import tagData from "../../data/roletags";
+const namedRecords = data => Object.fromEntries(Object.entries(data).map(([game, records]) => [game, Object.entries(records).map(([name, record]) => ({ name, ...record }))]));
 export const fixtureTime = Date.UTC(2026, 10, 8, 16);
 // Contract: modules/cryptoPayments.js. "Unpaid" is a filter group, not a status.
 const invoiceApproveStatuses = ["pending", "expired", "failed", "rejected"];
@@ -11,10 +17,7 @@ export const people = ["NightOwl", "Juniper", "Moth", "Rook", "Velvet", "Sol"].m
 }));
 const roleRecords = Object.entries(fullMafiaRoles).map(([name, role]) => ({ name, ...role }));
 export const rolesRaw = { Mafia: Object.fromEntries(roleRecords.map(role => [role.name, role])) };
-export const modifiers = { Mafia: [
-  { name: "Armed", description: "Start with [X] gun.", tags: [], category: "Items", allowDuplicate: true, maxCount: 3 },
-  { name: "Bulletproof", description: "Survive [X] attempt on your life.", tags: [], category: "Protection", allowDuplicate: true, maxCount: 3 },
-] };
+export const modifiers = namedRecords(modifierData);
 export const setups = ["Classic", "Follow the visits", "A small town", "Night investigation", "Open discussion"].map((name, i) => ({
   id: `fixture-setup-${i}`, name, gameType: "Mafia", total: 7 + i, closed: false,
   roles: [{ "Villager:": 3 + i, "Cop:": 1, "Doctor:": 1, "Mafioso:": 2 }],
@@ -130,10 +133,10 @@ export function makeUser(mode = "member") {
 export function makeSiteInfo(record) {
   return {
     cacheVal: 1, rolesRaw, roles: { Mafia: roleRecords }, modifiers,
-    gamesettings: { Mafia: [{ name: "Day Start", description: "The game begins during the day.", tags: [], allowDuplicate: false }] },
-    gameSettings: { Mafia: {} }, items: { Mafia: [] }, tags: { Mafia: [{ name: "Village" }, { name: "Deception" }] },
+    gamesettings: namedRecords(settingData),
+    gameSettings: { Mafia: {} }, items: namedRecords(itemData), tags: namedRecords(tagData),
     learnGameDescriptionByType: { Mafia: [{ type: "paragraph", content: "Mafia is a social deduction game. The village discusses claims and votes during the day; the mafia meets at night." }] },
-    achievements: {}, notifsBumpToken: 0,
+    achievements: {}, achievementsRaw: achievementData, notifsBumpToken: 0,
     showAlert: (message, severity) => record("alert", { message: typeof message === "string" ? message : "React alert content", severity }),
     hideAllAlerts: () => {}, refreshNotifs: () => record("refreshNotifs", {}), clearCache: () => record("clearCache", {}),
   };

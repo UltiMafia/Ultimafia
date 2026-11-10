@@ -300,19 +300,6 @@ button, select { font: inherit; }
   html[data-keyboard="open"] .game .game-mobile-clock .state-timer { padding: 2px 6px; font-size: var(--ui-text-small); }
 }
 
-.cell-search-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px; }
-.cell-search-item { min-width: 0; }
-.role-cell { display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 54px; padding: 8px 10px; border: 1px solid var(--scheme-color-border); border-radius: var(--ui-radius); background: var(--scheme-color); }
-.role-cell > .role { flex-shrink: 0; }
-.role-cell-copy { flex: 1 1 auto; min-width: 0; }
-.role-cell-copy > p { overflow-wrap: anywhere; }
-.role-cell-description { display: block; margin-top: 2px; color: var(--um-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.role-cell > .ui-action { flex-shrink: 0; }
-@media (max-width: 600px) {
-  .cell-search-grid { grid-template-columns: minmax(0, 1fr); }
-  .role-cell { min-height: 50px; padding: 7px 8px; }
-}
-
 /* Reference and community content. Table transformations are glossary-only. */
 .reference-page.reference-page, .community-page.community-page { padding: 0; border: 0; border-radius: 0; background: transparent; }
 .glossary-page .reference-search { margin: 4px 0 12px; max-width: 480px; }

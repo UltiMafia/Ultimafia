@@ -76,3 +76,10 @@ test("shared tables reject alternate variants and page-specific presentation ove
   assert.deepEqual(architecture.countLegacyUi('const page = <UiTable variant="comparison" />;'), {});
   assert.equal(architecture.cssViolations('.ui-table td {font-size:40px}', 'policy.css').length, 1);
 });
+test("reference directories and setup pickers use named variants without legacy galleries", () => {
+  assert.deepEqual(architecture.countLegacyUi('const page = <UiReferenceList variant="cards" style={{gap:80}} />;'), { 'reference:unsupported-variant': 1, 'surface:inline-override': 1 });
+  assert.deepEqual(architecture.countLegacyUi('const page = <UiReferenceList variant={editing ? "picker" : "directory"} />;'), {});
+  assert.deepEqual(architecture.countLegacyUi('const page = <div className="role-cell" />;'), { 'reference:legacy': 1 });
+  assert.equal(architecture.cssViolations('.cell-search-grid {display:grid}', 'learn.css').length, 1);
+  assert.equal(architecture.cssViolations('.ui-reference-entry {background:red}', 'learn.css').length, 1);
+});

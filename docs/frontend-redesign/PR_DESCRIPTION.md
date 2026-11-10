@@ -15,7 +15,7 @@ the complete screenshot refresh remains outstanding.
 
 ### Diff against fetched upstream master
 
-358 files: **+21,700 / −14,782** text lines; 157 added, 168 modified, 33 deleted
+363 files: **+22,055 / −14,976** text lines; 161 added, 169 modified, 33 deleted
 (25 binary files). Recomputed against fetched `origin/master` for this slice.
 
 ## Current work
@@ -44,9 +44,14 @@ the complete screenshot refresh remains outstanding.
   penalty values on phones. Static policy text remains readable during penalty
   loading/failure/empty states, with retry on failure. Canonical wording is guarded;
   the shared violations read cancels obsolete/unmounted requests.
+- Learn reference tabs use continuous shared name/description rows instead of a
+  role-card gallery. The named setup `picker` variant retains bounded add/remove
+  controls and compact previews. Removed gallery CSS cannot return. Populated
+  source fixtures cover all Mafia alignments, modifiers, items, mechanics and
+  achievements; a bootstrap contract guard prevents an empty master counterpart.
 - Architecture guards reject new alternate icon imports, raw h1 titles, removed
   header paths, unsupported variants and inline shared-surface/header overrides.
-   Legacy debt decreased **755 → 617 → 615 → 606 → 602** with no increases. The remaining
+   Legacy debt decreased **755 → 617 → 615 → 606 → 602 → 589** with no increases. The remaining
   baseline is debt, not a completed reviewed allowlist.
 - The comparative audit records stable IDs, six-cell width/palette coverage,
   actual production geometry, role comparisons, source/bundle/image provenance
@@ -75,7 +80,7 @@ the complete screenshot refresh remains outstanding.
 - [UI architecture](docs/frontend-redesign/UI_ARCHITECTURE.md)
 - [Read-only public comparison procedure](docs/frontend-redesign/audit/live-public/README.md)
 
-The registered denominator is **750 cells**. Global/game states, menus and further
+The registered denominator is **852 cells**. Global/game states, menus and further
 loading/empty/failure/permission branches still need registration. A complete
 registered run would therefore still not establish exhaustive inventory coverage.
 
@@ -88,15 +93,17 @@ registered run would therefore still not establish exhaustive inventory coverage
 | Public same-database comparison | 48/48 cases, 24 paired cells, 96 separate top/bottom images; 56 public source responses all HTTP 200 |
 | Upstream-integrated comparison before administrative expansion | 582/582 redesign cells and 582/582 master cells; 582 pairs, zero gaps, 270 open candidates; inventory remained incomplete |
 | Administrative/new-page focused comparison | 36/36 redesign and 36/36 master route cases; 174 paired cells; four remaining Rules clipping candidates. Subsequent invoice-contract correction requires refreshed data evidence |
-| Frontend Node tests | 258 passed, 0 failed |
+| Frontend Node tests | 260 passed, 0 failed |
 | Controls / lifecycle | 57 checks and 39 states / 33 checks passed |
 | Game / competitive / homepage | 36 / 16 / 10 cases passed |
-| Build / UI architecture / scoped ESLint | Passed / passed / 0 errors, 0 warnings across the current three-file Rules slice (tooling separately reports a stale browser database) |
+| Build / UI architecture / scoped ESLint | Passed / passed / 0 errors, 28 existing Roles/achievement-hook warnings across the five-file Learn slice (tooling separately reports a stale browser database) |
 | Transcript windowing | 19/19 script/engine runs passed across Chromium and WebKit, including strict reflow/settings error checks; added composer/helper assertions passed in both engines |
 | Transcript comparative capture matrix | 6/6 repaired and 6/6 actual-master cells passed; pre-repair redesign reproduces the 32px failure in both 390px palettes |
 | Expanded full comparison | **720/720 redesign and 720/720 master cells; 720 pairs, zero gaps, 246 open candidates** (94 heading offsets, 152 clipping). All 438 route cases passed per branch. Built before the last composer correction, so not final-HEAD evidence |
 | Corrected Rules comparison | **12/12 redesign and 12/12 master route cases; 42 paired cells**, including all 30 newly registered Rules-state cells; 22 unresolved geometry candidates. Inspected all newly unique corrected-label images after the 264-image initial Rules inspection |
 | Shared violations consumers | 12/12 route cases passed across profile reporting and staff report detail; select/cancel, deferred unmount/reopen and no report-write assertions passed |
+| Learn/setup/new-page comparison | **18/18 redesign and 18/18 actual-master route cases; 120 paired cells**, including populated achievements in both branches after correcting master's stale bootstrap. 662 geometry candidates remain in this focused report; the expanded full run remains pending |
+| Selected reference tabs / keyboard | 12/12 cases passed; complete text labels and usable visible hit areas fit their scroll windows, and keyboard navigation reaches first/last sections. Neighboring blank tab padding is not misreported as clipped text |
 | Backend suite | Failed isolated attempts: 821 passed/80 failed, then 994 passed/145 failed; worker heap exhaustion and a Mocha parallel-reporter crash remain unresolved. No server/game-engine changes were made to force a pass |
 
 Selected slice images/contact sheets and native-size summary crops were inspected.

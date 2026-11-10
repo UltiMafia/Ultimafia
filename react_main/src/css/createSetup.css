@@ -15,57 +15,6 @@
   scroll-margin-top: 72px;
 }
 
-.setup-wizard .setup-catalog > .MuiStack-root > .MuiPaper-root {
-  max-height: none;
-  overflow-y: visible;
-}
-
-.setup-wizard .setup-catalog .MuiTabs-root {
-  min-width: 0;
-  max-width: 100%;
-}
-
-.setup-wizard .setup-catalog > .MuiStack-root > .MuiStack-root {
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.setup-wizard .cell-search-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-  gap: 8px;
-}
-
-.setup-wizard .cell-search-grid > * {
-  width: auto;
-  min-width: 0;
-}
-
-.setup-wizard .role-cell {
-  height: auto;
-  min-height: 64px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-}
-
-.setup-wizard .role-cell > .MuiStack-root {
-  min-width: 0;
-}
-
-.setup-wizard .role-cell .MuiButton-root {
-  align-self: center;
-  flex-shrink: 0;
-  height: 36px;
-}
-
-.setup-wizard .role-cell .MuiTypography-root {
-  min-width: 0;
-  word-break: normal;
-  overflow-wrap: anywhere;
-  hyphens: none;
-}
-
 .setup-step-navigation {
   position: sticky;
   bottom: 8px;
@@ -120,12 +69,6 @@
 .setup-selected-roles-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .setup-selected-roles-header h3 { margin: 0; }
 .setup-selected-roles-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: var(--um-muted); font-size: var(--ui-text-small); }
-.setup-catalog .cell-search-grid { max-height: min(60vh, 560px); overflow-y: auto; padding-right: 4px; }
-@media (max-width: 700px) {
-  .setup-catalog .cell-search-grid { max-height: 52vh; }
-}
-@media (max-width: 700px) {
-}
 .setup-current-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
 @media (max-width: 700px) {
   .setup-current-summary { flex-wrap: wrap; }

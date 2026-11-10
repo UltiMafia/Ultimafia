@@ -19,6 +19,7 @@ const taskStates = {
   'developer-owner': ['revoke-confirmation', 'revoke-pending', 'revoke-error', 'create-pending', 'create-error', 'loading', 'read-error', 'empty'],
   invoices: ['approve-confirmation', 'reject-confirmation', 'review-pending', 'review-error', 'loading', 'read-error', 'empty'],
   rules: ['appeal', 'other-policies', 'loading', 'read-error', 'empty'],
+  'learn-games': ['roles-mafia', 'roles-cult', 'roles-independent', 'roles-event', 'roles-search', 'roles-empty', 'modifiers', 'modifiers-visits', 'modifiers-appearance', 'modifiers-chat', 'modifiers-other', 'items', 'mechanics', 'mechanics-voting', 'mechanics-timer', 'mechanics-other', 'achievements'],
 };
 function inventoryFromSource(source) {
   const literal = source.match(/export const routeCases = (\[[\s\S]*?\n\]);/);
