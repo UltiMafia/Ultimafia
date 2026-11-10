@@ -1,5 +1,12 @@
 # UltiMafia client redesign
 
+> Repository audit-status record, not the published PR description. The user
+> requires progress/verification updates in PR comments. The original detailed
+> description and screenshots were restored from GitHub's edit history and checked
+> for exact equality; PR #3197 remains open and draft. The classification update is
+> [a comment](https://github.com/UltiMafia/Ultimafia/pull/3197#issuecomment-6775025552).
+> Do not upload this file over the PR body.
+
 ## Draft — audit and migration in progress
 
 This is the **complete client redesign**, not a cleanup on top of master. It
