@@ -351,8 +351,8 @@ export default function Family() {
       <div className="family-page-layout">
         <div className="family-main">
             <Paper className="ui-card family-profile-panel">
-              {family.banner && (
-                <div className="family-banner">
+              <div className={`family-banner${family.banner ? "" : " family-banner--fallback"}`}>
+                {family.banner ? (
                   <img
                     className="family-banner-media"
                     src={`/uploads/${family.id}_family_banner.${
@@ -370,8 +370,22 @@ export default function Family() {
                       display: "block",
                     }}
                   />
-                </div>
-              )}
+                ) : (
+                  <div className="family-banner-fallback" aria-hidden="true">
+                    {family.avatar ? (
+                      <FamilyAvatarImage
+                        id={family.id}
+                        size={160}
+                        cacheVal={siteInfo.cacheVal}
+                      />
+                    ) : (
+                      <span className="family-banner-monogram">
+                        {(family.name || "?").trim().charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
               <Stack
                 className="family-header"
                 direction="row"
@@ -379,7 +393,7 @@ export default function Family() {
                 alignItems="center"
                 sx={{
                   mb: 2,
-                  mt: family.banner ? 1.5 : 0,
+                  mt: 1.5,
                 }}
               >
                 {family.avatar && (
@@ -390,7 +404,7 @@ export default function Family() {
                   />
                 )}
                 <Box>
-                  <Typography component="h1" variant="h2" sx={{ overflowWrap: "anywhere" }}>
+                  <Typography component="h1" variant="h2" sx={{ overflowWrap: "anywhere", fontWeight: 600 }}>
                     {family.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">

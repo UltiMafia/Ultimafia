@@ -9,7 +9,7 @@
 .family-page-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start; }
 .family-main, .family-rail { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 .family-comments { max-width: 760px; }
-.family-comments > h2 { margin: 0 0 10px; font-size: var(--ui-text-heading); }
+.family-comments > h2 { margin: 0 0 10px; font-size: var(--ui-text-heading); font-weight: var(--ui-weight-strong); }
 @media (max-width: 1000px) {
   .family-page-layout { grid-template-columns: minmax(0, 1fr); }
 }

@@ -40,9 +40,11 @@ function useFamilyConfirmation() {
   return { open, dialog, busy };
 }
 
+// Family section headings use the same scale as profile sections so the two
+// pages read as one design.
 export const headingStyle = {
-  fontSize: "1.25rem",
-  fontWeight: 600,
+  fontSize: "var(--ui-text-heading)",
+  fontWeight: "var(--ui-weight-strong)",
   marginBottom: "8px",
 };
 
