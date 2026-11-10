@@ -283,18 +283,6 @@ module.exports = class Role {
     this.events.removeListener(eventName, listener);
   }
 
-  enableListeners() {
-    for (let eventName in this.listeners)
-      for (let listener of this.listeners[eventName])
-        this.enableListener(eventName, listener);
-  }
-
-  disableListeners() {
-    for (let eventName in this.listeners)
-      for (let listener of this.listeners[eventName])
-        this.disableListener(eventName, listener);
-  }
-
   removeListeners() {
     for (let eventName in this.listeners)
       for (let listener of this.listeners[eventName])

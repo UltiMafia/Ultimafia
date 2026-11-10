@@ -49,11 +49,6 @@ export function getAbandons(stats) {
   return normalizeStats(stats).abandons;
 }
 
-export function getWinRate(stats) {
-  const total = getTotalGames(stats);
-  return total ? getWins(stats) / total : 0;
-}
-
 // Merge two stats buckets (e.g. ranked "all" + "unranked") into one combined object.
 // Each bucket has shape: { totalGames, wins: {count,total}, abandons: {count,total},
 //   bySetup: { key: statsObj }, byRole: { key: statsObj }, byAlignment: { key: statsObj } }

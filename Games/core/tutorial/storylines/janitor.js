@@ -268,25 +268,6 @@ module.exports = {
   },
 };
 
-async function mafiaNightKill(t, k) {
-  const victim = ["sheriff", "journalist", "cop", "v3", "v1", "v2"].find(
-    (key) => t.player(key) && t.player(key).alive && key !== t.data.victim
-  );
-  if (!victim) return;
-  for (const key of ["mafioso", "lawyer", "janitor"]) {
-    if (t.player(key) && t.player(key).alive) t.vote(key, "Mafia Kill", victim);
-  }
-  if (t.player("lawyer") && t.player("lawyer").alive) t.vote("lawyer", "Litigate", "*");
-}
-
-async function mafiaDayPush(t, k) {
-  const push = ["v1", "v3", "journalist", "cop", "sheriff", "v2"].find(
-    (key) => t.player(key) && t.player(key).alive
-  );
-  if (!push) return;
-  await t.everyoneVotes(push, k, "Village", { dissenters: { [push]: "mafioso" } });
-}
-
 async function claimFakeCopOnLawyer(t, k) {
   const reactions = {
     wrongRole: [
