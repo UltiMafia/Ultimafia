@@ -351,8 +351,8 @@ export default function Family() {
       <div className="family-page-layout">
         <div className="family-main">
             <Paper className="ui-card family-profile-panel">
-              <div className={`family-banner${family.banner ? "" : " family-banner--fallback"}`}>
-                {family.banner ? (
+              {family.banner && (
+                <div className="family-banner">
                   <img
                     className="family-banner-media"
                     src={`/uploads/${family.id}_family_banner.${
@@ -370,22 +370,8 @@ export default function Family() {
                       display: "block",
                     }}
                   />
-                ) : (
-                  <div className="family-banner-fallback" aria-hidden="true">
-                    {family.avatar ? (
-                      <FamilyAvatarImage
-                        id={family.id}
-                        size={160}
-                        cacheVal={siteInfo.cacheVal}
-                      />
-                    ) : (
-                      <span className="family-banner-monogram">
-                        {(family.name || "?").trim().charAt(0).toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
               <Stack
                 className="family-header"
                 direction="row"
@@ -393,7 +379,7 @@ export default function Family() {
                 alignItems="center"
                 sx={{
                   mb: 2,
-                  mt: 1.5,
+                  mt: family.banner ? 1.5 : 0,
                 }}
               >
                 {family.avatar && (
