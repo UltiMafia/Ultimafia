@@ -1,10 +1,19 @@
 # UltiMafia UI inventory
 
-This is the review inventory for the client surfaces. Route captures use the
-controlled production-component fixture with the full Mafia role list (443 roles)
-and the populated local data where noted. Every route is captured at 1440, 390
-and 320 in both dark and light palettes; interaction cases add dialog and state
-captures. The full run is the source of the 500+ screenshots.
+This is the review inventory, **not a statement of completed coverage**. Route
+fixtures use production components with controlled records and the full Mafia
+role list (443 roles). Live existing-database evidence is labeled separately.
+The comparative matrix is `../audit/coverage.json`; its denominator is each
+registered route/state × 1440/390/320 × dark/light. A successful route capture is
+not proof that every dialog, loading/empty/failure or permission branch is covered.
+Missing master evidence remains a gap. Screenshot counts do not establish scope.
+
+Machine IDs are `<surface>.<state>`; each table row below has a `.default` state.
+Additional registered interaction states are in
+`react_main/test/ui-audit/report.cjs`. The fixture-only `new-page-contract.default`
+at `/audit/new-page` verifies composition without page-specific CSS. The global
+and workflow lists below still require complete stable-ID registration and
+capture tasks before the inventory can be called exhaustive.
 
 ## Route surfaces
 
@@ -113,7 +122,12 @@ captures. The full run is the source of the 500+ screenshots.
 
 ## Evidence
 
-- Final route runs: `final8-routes-dark/` and `final8-routes-light/`.
-- Game workspace: `final7-game/` or the latest game layout run.
-- Controls, competitive, ban appeals, lifecycle and homepage suites: see `VERIFICATION.md`.
-- Live-site captures: `final7-live/` / `final8-live/` (comment card, family, handbook, setup editor, stock market, shop, game card Details).
+- Current comparative runs and open gaps: `../audit/report.html` and
+  `../audit/coverage.json`. The first measured before run has 64 routes × 3 widths
+  × 2 palettes, plus task captures. Later runs include the new-page fixture.
+- Master controlled-data captures import actual `origin/master` Main and route
+  components. They are not authenticated journeys or live-data comparisons.
+- `final8-routes-*`, `final7-*` and previous numbered folders are historical
+  evidence, not final-HEAD verification of this audit.
+- Current exact commands/results and still-unverified suites belong in
+  `VERIFICATION.md`; do not infer completion from a folder called `final`.

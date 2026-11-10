@@ -1,117 +1,113 @@
-# Workflow repair: forums, profiles, moderation, navigation and shared surfaces
+# Redesign audit verification — in progress
 
-## Scope
+PR #3197 is open and draft. This is not visual acceptance or a completed audit.
+Numbered historical evidence directories are not final-HEAD verification.
 
-This batch follows the user's direct visual reports on the redesigned site. It
-does not replace the populated local site or claim subjective acceptance.
+## Current changes
 
-- **Profiles:** the profile page is now a continuous dashboard instead of five
-  hidden tabs. The identity header is followed by the karma strip, a section nav
-  (About, Statistics, Games, Setups, Comments, Connections, Collection), and a
-  two-column dashboard. About, statistics, recent games, setups and comments are
-  in the main column; connections, stock, media and archived games are in the
-  side rail; the collection is a full-width section below. The **pie chart is
-  restored** on the profile statistics section and in the player popover.
-  Comments use a compact header/content/vote-footer card instead of a left vote
-  gutter. The profile karma controls stay beside the score, including on your own
-  profile, and profile comments/games use structured rows.
-- **Forums:** the forum thread page uses bordered post sections with the author,
-  timestamp, vote control, reply action and permalink in stable positions. Board
-  pages use a continuous thread directory with explicit **Thread** and **Latest
-  activity** columns on desktop, stacking the same information on phones. Real
-  local forum data was seeded for review.
-- **Moderation:** the single crowded log page is split into **Recent actions**,
-  **Run action** and **Staff groups**. Each page has one job, its own heading and
-  the shared moderation side navigation. Action arguments are labeled fields
-  rather than an inline sentence.
-- **Families and shared surfaces:** family panels and homepage right-column
-  panels now use the same `.ui-card` surface (16px padding, 1px border, 6px
-  radius, scheme background, no shadow). Family settings no longer renders a
-  stray `0` when the account does not own the create-family item.
-- **Site navigation:** the sidebar exposes **Play** (Host a game, Create setup,
-  Competitive, Stock market) before **More**. Character and word decks live in
-  More, below Competitive and Stock market. Utility links share the same 24px
-  icon slot and spacing, including the iOS beta link.
-- **Game and lobby:** the desktop game top bar centers the day/state switcher,
-  keeps the setup summary and Leave game in a right-hand group and no longer
-  offers a Browse site link that navigates out of the game. The lobby has only
-  **Games** and **More**; the Chat and empty Setups tabs are gone.
-- **Setups and hosting:** the host dialog groups fields into **Game and lobby**,
-  **Access and options** and **Timing** cards. Setup detail uses card sections for
-  roles, description, discussion and secondary panels. Setup creation puts the
-  role picker before the selected-roles summary on phones and offers an explicit
-  Review roles action.
-- **Controls and popovers:** labeled native selects shrink their labels on Host,
-  Feedback, Family discovery, Setup version, Create Setup and Reports. Setup and
-  game detail popovers have a visible info icon as the click target, readable
-  titles and bounded height. Mission settings appear only when the setup actually
-  contains a Spymaster role.
-- **Word decks:** missing or failed covers use a neutral document placeholder in
-  the same 96x64 slot as a real cover, so titles and actions stay aligned without
-  empty framed boxes.
+- `UiPage` and standalone `UiPageHeader` now use one header implementation.
+  Standard/editor/moderation/forum/detail share the title scale; the editor
+  variant stacks controls on phones. The removed `page-heading`,
+  `forum-directory-heading`, `moderation-heading`, `setup-editor-heading` and
+  `deck-editor-heading` CSS paths cannot be reintroduced by the architecture check.
+- Native/MUI explicit h1 implementations migrated to the shared header, except
+  the reviewed existing mobile **Game info** panel. This does **not** mean every
+  legacy h2 or section-like page heading has completed migration.
+- The comparative audit measures production header/container/shell geometry,
+  role-based computed styles, clipping candidates and one-character wrapping.
+  It records source revision, dirty-source status, bundle/image hashes and
+  explicit missing coverage. It does not count failed fixture contracts.
+- The new-page fixture composes shared primitives without page-specific CSS.
+  A reduced-matrix CI workflow builds the real fixture and checks geometry in
+  both palettes at 1440/390/320.
+- The actual-master fixture renders upstream's complete `Main`, providers,
+  original shell and route tree. The runner verifies its source is untouched and
+  exactly the fetched `origin/master`, not an older redesign revision.
+- The fork's uploaded-banner-only family change was fast-forwarded before these
+  edits. No generated gradient/banner is shown for an absent family banner.
+  The profile remains the restored two-column layout, not the intermediate
+  dashboard described by the previous verification document.
 
-## Verification
+## Observed commands/results
 
-| Check | Observed result |
+| Command / run | Observed result |
 | --- | --- |
-| Full route inventory | 192 cases per palette: 64 routes × 3 widths (1440, 390, 320), dark and light; 0 failed captures, no runtime errors, no unresolved fixtures |
-| Frontend Node tests | 225 passed, 0 failed |
-| Retained-app lifecycle | 33 checks passed; no failures or errors |
-| Competitive workspace | 16 cases passed; no errors |
-| Shared controls | 57 interaction checks passed; 39 states captured |
-| Game layout matrix | 36 cases passed (dark/light × pregame/live/review × 1440/1180/1024/390/320/740) |
-| Ban appeals focused suite | 36 checks passed, including queue links, case data, required justification and vote change |
-| Homepage restoration | 10 cases passed; community wall, right-column features and lobby structure retained |
-| Production build | Passed |
-| UI architecture check | Passed; no new direct controls, browser dialogs or alternate icon/loading imports outside `components/ui` |
-| Scoped ESLint | 0 errors; warnings remain |
-| Local forum data | Live API returns 2 categories, 5 boards, 7 threads and 23 replies; seeded records use `mock-*` IDs and are rerunnable with `scripts/seedForumMock.js` |
-| Phone URL | `https://mm-acer-desktop.tail162da2.ts.net:8443/play` returned HTTP 200 over Tailscale; the 390px forum board rendered its 2 Mafia discussion threads |
+| `git fetch origin master`; `git fetch fork redesign/workflow-repair-draft`; `git merge --no-edit fork/redesign/workflow-repair-draft` | Fast-forwarded the fork's uploaded-banner-only family change; no history rewrite |
+| `gh pr view 3197 --repo UltiMafia/Ultimafia --json state,isDraft,headRefName,headRepositoryOwner,baseRefName` | OPEN, draft, expected fork/branch/base |
+| `node --test test/*.test.mjs` | 236 passed, 0 failed; log `/tmp/opencode/audit-header-final-node-tests.log` |
+| `node --test test/uiArchitecture.test.mjs test/uiAudit.test.mjs` | Included in the full passing run, including rejected baseline-expansion commands and page-specific h1 CSS |
+| `npm run lint:ui` / architecture test | Passed; raw titles, computed legacy header classes, alternate icon imports and external page-geometry overrides are guarded |
+| `node scripts/check-ui-architecture.cjs --reduce-baseline` | Budget decreased from 755 to 617; independent comparison found zero increases |
+| `npm run build` | Passed after the final redundant-CSS removal; log `/tmp/opencode/audit-code-slice-production-build.log` |
+| Scoped ESLint across changed production JS/JSX | 0 errors, 80 warnings; log `/tmp/opencode/audit-current-eslint.log` |
+| First measured BEFORE, both palettes | 384/384 route cases captured; no failed renders; 64 routes × 3 widths × 2 palettes |
+| First header AFTER, both palettes | 390/390 route cases captured; no failed renders; includes new-page fixture. Inspected images exposed stretched detail metadata and doubled router-shell header spacing, subsequently corrected |
+| Corrected header AFTER, both palettes | 390/390 route cases captured, 0 failures; shared header geometry assertions passed; compact detail badge and corrected spacing inspected at 320 in both palettes |
+| Final header focused matrix after removing redundant external h1 CSS | 54/54 cases captured, 0 failed renders; `/tmp/opencode/audit-header-focused-sourcecommit/`. Its aggregate command exits 1 because the full denominator remains 510 and master pairs are not supplied to this reduced run |
+| Master smoke: Players, Host, thread, profile settings; dark; 1440/390/320 | 12/12 cases captured from actual upstream production components with identical controlled records |
+| `DESIGN_PHASE=after npm run audit:ui` | Full current redesign/master run in progress; see the audit's generated reports, not the older counts above, for completion/failure |
+| `node test/run-live-ui-audit.cjs` after both live-fixture builds | 48/48 cases, 0 failures; 24 paired public cells, 96 separate viewport images, 56 local source responses all HTTP 200. No authentication or synthetic accounts |
+| Lifecycle: `PLAYWRIGHT_MODULE=… node test/run-browser.cjs` after lifecycle fixture build | 33 checks, no failures/errors/blocked traffic; `/tmp/opencode/audit-lifecycle.log` |
+| Shared controls: `PLAYWRIGHT_MODULE=… SCREENSHOT_DIR=… node test/run-control-review.cjs` | 57 checks passed, 39 states captured; `/tmp/opencode/audit-controls.log` |
+| Game layout: `GAME_LAYOUT_OUTPUT_DIR=… node test/run-game-layout-review.cjs` | 36 cases, no failures; `/tmp/opencode/audit-game-layout.log` |
+| Competitive: `PLAYWRIGHT_MODULE=… COMPETITIVE_OUTPUT_DIR=… node test/run-competitive-game-review.cjs` | 16/16 passed, no errors; `/tmp/opencode/audit-competitive.log` |
+| Homepage: `PLAYWRIGHT_MODULE=… HOMEPAGE_OUTPUT_DIR=… node test/run-homepage-restoration.cjs` | 10 cases passed; `/tmp/opencode/audit-homepage.log` |
+| Backend: isolated `docker compose … run --rm tests` (`npm test -- --jobs 4 --reporter dot`, then jobs 2) | **Failed**, not passing verification: first attempt 821 passing/80 failing after disposable MongoDB hit its descriptor limit and crashed. Retry with nofile 65536 and writable temporary logs: 994 passing/145 failing; MongoDB stayed up, but a worker exhausted its 4GB heap and Mocha's parallel failure reporter threw `test.titlePath is not a function`. Logs `/tmp/opencode/audit-isolated-backend-tests.log` and `…tests2.log` |
+| `git diff --check` | Passed before this documentation update |
 
-The profile route task now verifies all seven section destinations exist and are
-visible without a tab click, then retains a comment draft while scrolling between
-sections. Route interactions also include profile karma upvote/undo (including
-the self profile), report open/back, GitHub approval/rejection cancellation,
-group-member removal cancellation, competitive setup add/cancel, moderation read
-retry, feedback draft retention after a forced in-memory failure, family
-role/removal/bio cancellation, setup creator add/copy/remove and save payloads,
-and role/setup navigation. The moderation split adds separate Recent actions,
-Run action and Staff groups cases.
+The audit command intentionally exits nonzero for missing cells or open findings.
+The first report counted 492/510 redesign cells, 0 master cells and 448 candidates.
+The first header-after report counted 498/510 redesign cells and 318 candidates.
+These are diagnostic snapshots, **not** final counts; the inventory still needs
+expansion. The family removal/bio interactions have now gained explicit captures.
 
-### Evidence
+## Evidence and inspection
 
-- `final5-routes-dark/` and `final5-routes-light/` contain the final full route
-  runs, 192 cases each, including the continuous profile dashboard and compact
-  comment cards.
-- `final5-controls/` contains the final shared-control captures.
-- `final5-homepage-restoration/` contains the homepage restoration captures.
-- `final5-live/` contains the live-site captures that route fixtures cannot
-  provide: the lobby sidebar and tabs, the setup popover, the player popover pie
-  chart, the moderation Recent actions page, word decks, the 390px Tailscale
-  forum and lobby pages, and the community-wall comment cards at 390px and 1080px.
-- `final4-game/`, `final4-competitive/`, `final4-ban-appeals/` and the saved
-  lifecycle log cover the game, competitive, ban-appeal and app-lifecycle suites,
-  which were not changed by the profile/comment layout work.
-- `profile-redesign-dark/` and `profile-redesign-light/` retain the focused
-  profile captures used while reworking the dashboard.
-- `final4-routes-*`, `final3-*`, `final2-*`, `structure*`, `card-check/` and
-  earlier folders remain diagnostic history; failed or superseded runs are not
-  counted as final.
+- Generated inventory, coverage, findings, measurements, report and capture
+  manifest: `../audit/`. Each capture set has its own immutable `run-*` directory.
+- Top and separately scrolled bottom phone images are retained. Inspection aids
+  are contact sheets, never stitched mobile evidence or additional matrix cells.
+- Inspected the initial migrated Players, Families, Host, deck editors, setup
+  editor/detail, role detail, forums, staff handbook, family profile and new-page
+  fixture in dark desktop/390/320 contact sheets, plus selected native-size before
+  images. Light desktop/320 top/bottom contact sheets were also inspected for
+  Players, Families, Host, setup editor, role detail, board, handbook and family.
+  Selected corrected-header 320 images were inspected in both palettes, and the
+  real same-data lobby master/redesign pair was inspected at 320 light. This is
+  **not** inspection of every capture.
+- Master source is the upstream change titled “fix(game): animate the Settings
+  menu again and keep it inside the panel” (`989a014c438dd0670477650d11481bb686735ebe`).
+- Current captures have dirty-source provenance; they are not labeled final HEAD.
+  Final images must be recaptured after the final code commit.
 
-Screenshots are controlled production-component fixtures unless they are named
-as live-site captures. They are not a claim of authenticated live gameplay or
-physical-device testing.
+## Local environment and genuine limits
 
-## Genuine limits
+- Running MongoDB uses `ultimafia_mongodb:/data/db`; Redis uses
+  `ultimafia_redis:/data`. No data volumes were created, replaced, reset or pruned.
+- Existing local web APIs returned JSON HTTP 200 for `/api/user/online`,
+  `/api/setup/search?gameType=Mafia` and `/api/roles/all`. The online list was
+  empty at that check; that is not evidence the database is empty.
+- Controlled fixture writes remain in memory. The live-public proxy permits
+  GET/HEAD only, forwards no identity headers/cookies and never persists response
+  bodies. Its screenshots are public guest pages, not authenticated workflows.
+- Sign-in, live hosting/trading/purchasing, family administration and destructive
+  moderation remain unverified. No authentication-project setting was changed.
+- Physical-phone keyboard, browser chrome and safe-area behavior remain
+  unverified. Chromium viewports do not establish those results.
+- Full current-HEAD PR screenshot refresh still needs a final run. The browser
+  regression suites above have been rerun for this slice, not for future edits.
+- The backend failure remains unresolved. `git diff --name-only HEAD -- Games
+  modules db routes lib test` was empty: this slice changed no backend source or
+  tests. That is evidence of scope, **not** a claim master passes or that every
+  reported backend failure is pre-existing. No gameplay/server change is made
+  to turn those results green. Disposable test MongoDB/Redis are separate from
+  the user's original development volumes.
 
-- Provider sign-in still needs `mm-acer-desktop.tail162da2.ts.net` added to
-  Firebase Authentication Authorized domains. No account was signed into.
-- Authenticated hosting, trades, purchases, family administration and destructive
-  moderation were not performed. Fixture writes are in-memory only.
-- Chromium viewports are not a physical-phone keyboard, browser-chrome or
-  safe-area test. Full minigame/network behavior and every entitlement branch are
-  not verified.
-- Tests and visual inspection are evidence, not exhaustive subjective acceptance.
+## Still required before completion
 
-All changes remain unstaged, uncommitted, unpushed and undeployed to an UltiMafia
-server. The populated local site continues to serve the working tree.
+Expand the stable-ID inventory to every global/workflow state; complete paired
+master coverage (including live same-database evidence and explicit nearest
+ancestors for new surfaces); inspect every image; resolve/classify every
+high/medium candidate; migrate all remaining legacy controls/surfaces/page-title
+paths; finish role/shell checks; run all required suites; commit/push; refresh PR
+images and description from final code. The PR must remain open and draft.

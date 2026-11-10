@@ -5,7 +5,7 @@ import { UserContext } from "Contexts";
 import { Avatar } from "pages/User/UserWidgets";
 import { TextEditor, UserSearchSelect } from "./Form";
 import CustomMarkdown from "./CustomMarkdown";
-import { UiAction, UiDialog, UiPending } from "./ui";
+import { UiAction, UiDialog, UiPending, UiPageHeader } from "./ui";
 import { LatestRequest } from "../lib/latestRequest";
 import "css/acknowledgements.css";
 
@@ -63,7 +63,7 @@ export default function AcknowledgementDirectory({ kind, title, children }) {
   }
 
   return <section className="acknowledgement-directory">
-    <header className="page-heading"><h1>{title}</h1>{canManage && <UiAction onClick={() => { setOperation({ type: "add" }); setSelectedUser(null); setSearchName(""); }}>Assign donor status</UiAction>}</header>
+    <UiPageHeader title={title} actions={canManage && <UiAction onClick={() => { setOperation({ type: "add" }); setSelectedUser(null); setSearchName(""); }}>Assign donor status</UiAction>} />
     {children && <div className="acknowledgement-intro">{children}</div>}
     {loading && <UiPending label={`Loading ${title.toLowerCase()}`} />}
     {error && <div role="alert"><p>{error}</p>{!editing && !operation && <UiAction onClick={() => setRetry(value => value + 1)}>Retry</UiAction>}</div>}

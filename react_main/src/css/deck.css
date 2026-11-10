@@ -501,7 +501,6 @@
 .deck-library-description p { margin: 8px 0; overflow-wrap: anywhere; }
 .deck-library-description .deck { max-width: 100%; }
 .deck-library-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.deck-editor-heading { margin-bottom: 24px; }
 @media (max-width: 600px) {
   .deck-library-toolbar { align-items: stretch; flex-direction: column; }
   .deck-library-actions { flex-basis: 100%; }
@@ -510,7 +509,6 @@
 .deck-library-cover--placeholder { display: grid; place-items: center; width: 96px; height: 64px; border: 0; background: transparent; color: var(--um-muted); }
 .deck-editor-page.deck { display: flex; flex-direction: column; width: 100%; min-width: 0; }
 .deck-editor-page > .main-section { min-width: 0; width: 100%; }
-.deck-editor-page .deck-editor-heading { flex-wrap: wrap; }
 .deck .deck-name { border: 0; padding: 0; background: transparent; color: inherit; font: inherit; text-align: left; }
 .deck .deck-editor.deck-editor { padding: 0; background: transparent; border: 0; box-shadow: none; }
 .deck .deck-editor form > .deck-top-bar { order: 1; }

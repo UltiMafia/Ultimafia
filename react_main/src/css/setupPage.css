@@ -17,7 +17,6 @@
 .setup-rating-row > span { color: var(--um-muted); font-size: var(--ui-text-small); }
 .setup-rating-row .MuiStack-root { flex-direction: row; align-items: center; }
 .setup-save-actions > .MuiStack-root { flex-wrap: wrap; gap: 4px; }
-.setup-title-copy h1 { margin: 0; overflow-wrap: anywhere; }
 .setup-status { display: inline-flex; align-items: center; padding: 3px 8px; border: 1px solid var(--scheme-color-border); border-radius: 4px; font-size: var(--ui-text-small); color: var(--scheme-color-text); }
 .setup-roster { min-width: 0; }
 .setup-description > .ui-section + .ui-section { margin-top: 16px; }
@@ -135,11 +134,6 @@
 }
 
 .role-page { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
-.role-hero { display: flex; align-items: center; gap: 20px; padding: 16px 0 20px; border-bottom: 3px solid var(--role-accent, var(--scheme-color-border)); min-width: 0; flex-wrap: wrap; }
-.role-hero-icon { flex-shrink: 0; }
-.role-hero-copy { flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
-.role-hero-title { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
-.role-hero-title h1 { margin: 0; font-size: 2rem; overflow-wrap: anywhere; }
 .role-alignment { padding: 2px 9px; border: 1px solid var(--role-accent, var(--scheme-color-border)); border-radius: 999px; font-size: var(--ui-text-small); font-weight: 600; }
 .role-tags { display: flex; flex-wrap: wrap; gap: 4px; list-style: none; margin: 0; padding: 0; }
 .role-tags li { padding: 2px 7px; border-radius: 3px; background: var(--scheme-color-sec); color: var(--um-muted); font-size: var(--ui-text-caption); }
@@ -163,8 +157,6 @@
 .role-comments { margin-top: 8px; }
 .role-comments > h2 { margin: 0 0 12px; font-size: var(--ui-text-heading); }
 @media (max-width: 600px) {
-  .role-hero { gap: 12px; padding-top: 4px; }
-  .role-hero-title h1 { font-size: 1.6rem; }
   .role-hero-actions { width: 100%; margin-left: 0; justify-content: space-between; }
   .role-skin-control { width: 100%; }
   .role-skin-control .MuiFormControl-root { flex: 1; min-width: 0; }

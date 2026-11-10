@@ -13,7 +13,7 @@ import {
 
 import { UserContext } from "../../../Contexts";
 import { useErrorAlert } from "../../../components/Alerts";
-import { UiAction, UiIcon, UiPending } from "components/ui";
+import { UiAction, UiPending, UiPageHeader } from "components/ui";
 import { LatestRequest } from "../../../lib/latestRequest";
 import { useNavigate } from "react-router-dom";
 import { RoleCount } from "../../../components/Roles";
@@ -64,12 +64,12 @@ export default function TutorialPicker() {
       .finally(() => { startingRef.current = false; setStarting(null); });
   }
 
-  if (!storylines) return <section><h1>Tutorial</h1><UiPending label="Loading tutorial roles" /></section>;
+  if (!storylines) return <section><UiPageHeader title="Tutorial" /><UiPending label="Loading tutorial roles" /></section>;
 
   return (
     <Stack spacing={2} sx={{ maxWidth: 900, mx: "auto", p: { xs: 1, sm: 2 } }}>
       <Box>
-        <Typography component="h1" variant="h4" sx={{ display: "flex", alignItems: "center", gap: 1 }}><UiIcon name="book" />Tutorial</Typography>
+        <UiPageHeader title="Tutorial" />
         <Typography variant="body1" sx={{ mt: 1, lineHeight: 1.55 }}>
           Play a guided game of <b>Frontier Justice</b> against bots: Cop,
           Journalist, Sheriff and 3 Villagers vs Janitor, Lawyer and Mafioso.

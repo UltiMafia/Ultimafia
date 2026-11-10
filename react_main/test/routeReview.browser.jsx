@@ -24,6 +24,7 @@ import Activity from "../src/pages/Activity/Activity";
 import { Welcome } from "../src/pages/Welcome/Welcome";
 import { Loading } from "../src/components/Loading";
 import { makeUser, makeSiteInfo, readFixture, routeCases } from "./routeReviewData";
+import NewPageFixture from "./ui-audit/NewPageFixture";
 import "../src/css/main.css";
 import "../src/css/accessibility.css";
 import "../src/css/redesign.css";
@@ -131,7 +132,8 @@ function App() {
     <ViewOverlayBoundary active={true}><SiteLayout header={<Header setShowAnnouncementTemporarily={setShowAnnouncement} />} footer={<Footer />}>
       <main id="main-content" tabIndex={-1}>
         <Suspense fallback={<Loading small />}><RouteBoundary>
-          <Routes>
+           <Routes>
+             <Route path="/audit/new-page" element={<NewPageFixture />} />
             <Route path="/play/*" element={<Play />} />
             <Route path="/learn/*" element={<Learn />} />
             <Route path="/community/*" element={<Community />} />

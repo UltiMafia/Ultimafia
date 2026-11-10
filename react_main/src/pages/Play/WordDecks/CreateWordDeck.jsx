@@ -3,6 +3,7 @@ import { useLocation, Link } from "react-router-dom";
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import UiAction from "../../../components/ui/UiAction";
+import { UiPageHeader } from "components/ui";
 import { SiteInfoContext } from "../../../Contexts";
 import { useErrorAlert } from "../../../components/Alerts";
 import "css/deck.css";
@@ -215,7 +216,7 @@ export default function CreateWordDeck() {
 
   return (
     <div className="deck deck-editor-page">
-      <header className="page-heading deck-editor-heading"><h1>{editId ? "Edit word deck" : "Create word deck"}</h1><Link to="/play/wordDecks">Back to decks</Link></header>
+      <UiPageHeader variant="editor" title={editId ? "Edit word deck" : "Create word deck"} actions={<Link to="/play/wordDecks">Back to decks</Link>} />
       <div className="main-section">
         <div className="span-panel deck-editor">
           {isDefault && (

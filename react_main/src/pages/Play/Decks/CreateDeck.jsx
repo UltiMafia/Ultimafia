@@ -6,6 +6,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import axios from "axios";
 import UiAction from "../../../components/ui/UiAction";
 import UiIcon from "../../../components/ui/UiIcon";
+import { UiPageHeader } from "components/ui";
 import { useErrorAlert } from "../../../components/Alerts";
 import "css/deck.css";
 import "css/form.css";
@@ -233,7 +234,7 @@ export default function CreateDecks() {
 
   return (
     <div className="deck deck-editor-page">
-      <header className="page-heading deck-editor-heading"><h1>{editId ? "Edit character deck" : "Create character deck"}</h1><Link to="/play/decks">Back to decks</Link></header>
+      <UiPageHeader variant="editor" title={editId ? "Edit character deck" : "Create character deck"} actions={<Link to="/play/decks">Back to decks</Link>} />
       {loadError && <p role="alert">Could not load this deck. Return to the deck list and try again.</p>}
       <div className="main-section">
         <div className="span-panel deck-editor">

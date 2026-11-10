@@ -1,7 +1,4 @@
 .moderation-shell { width: 100%; min-width: 0; }
-.moderation-heading { max-width: 780px; margin-bottom: 24px; }
-.moderation-heading h1 { margin: 0 0 6px; }
-.moderation-heading p { margin: 0; color: var(--um-muted); }
 .moderation-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 32px; align-items: start; }
 .moderation-navigation { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 2px; }
 .moderation-nav-link { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 8px 10px; border-radius: var(--ui-radius); color: var(--scheme-color-text); text-decoration: none; }

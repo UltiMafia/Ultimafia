@@ -4,7 +4,7 @@ import { useErrorAlert } from "../../components/Alerts";
 import { NameWithAvatar, StatusIcon } from "../User/UserWidgets";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { Time } from "../../components/Basic";
-import { UiField, UiAction, UiSection, UiPending } from "components/ui";
+import { UiField, UiAction, UiSection, UiPending, UiPageHeader } from "components/ui";
 import "css/directories.css";
 import { LatestRequest } from "../../lib/latestRequest";
 
@@ -64,7 +64,7 @@ export default function UserSearch(props) {
 
   return (
     <>
-    <header className="page-heading"><h1>Players</h1></header>
+    <UiPageHeader title="Players" />
      <div className="player-directory-layout">
        <UiSection title={searchVal ? "Search results" : "Online players"}>
            <p className="directory-summary" role="status">

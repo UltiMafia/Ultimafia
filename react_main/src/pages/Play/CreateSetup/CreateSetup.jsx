@@ -20,7 +20,7 @@ import CreateBattleshipSetup from "./CreateBattleshipSetup";
 import CreateChessSetup from "./CreateChessSetup";
 
 import { ActiveGameTypes } from "Constants";
-import { UiField, UiDialog, UiAction } from "components/ui";
+import { UiField, UiDialog, UiAction, UiPageHeader } from "components/ui";
 
 export default function CreateSetup(props) {
   const defaultGameType = "Mafia";
@@ -99,10 +99,9 @@ export default function CreateSetup(props) {
 
   return (
     <>
-      <header className="page-heading setup-editor-heading">
-        <h1>{params.has("edit") ? "Edit setup" : params.has("copy") ? "Copy setup" : "Create a setup"}</h1>
+      <UiPageHeader variant="editor" title={params.has("edit") ? "Edit setup" : params.has("copy") ? "Copy setup" : "Create a setup"} actions={
         <UiField select size="small" label="Game type" InputLabelProps={{ shrink: true }} SelectProps={{ native: true }} value={gameType} onChange={event => setPendingGameType(event.target.value)}>{ActiveGameTypes.map(game => <option key={game}>{game}</option>)}</UiField>
-      </header>
+      } />
       {CreatePage()}
       <UiDialog open={!!pendingGameType} title="Change game type?" onClose={() => setPendingGameType(null)} actions={<><UiAction onClick={() => setPendingGameType(null)}>Cancel</UiAction><UiAction variant="primary" onClick={() => { handleListItemClick(pendingGameType); setPendingGameType(null); }}>Change game type</UiAction></>}><p>Changing to {pendingGameType} opens a different setup editor. Unsaved changes in this editor will be lost.</p></UiDialog>
     </>

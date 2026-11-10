@@ -7,7 +7,7 @@ import { PageNav } from "components/Nav";
 import Setup, { SetupManipulationButtons } from "components/Setup";
 import { UserSearchSelect } from "components/Form";
 import HostGameDialogue from "components/HostGameDialogue";
-import { UiAction, UiDialog, UiPending, UiField } from "components/ui";
+import { UiAction, UiDialog, UiPending, UiField, UiPageHeader } from "components/ui";
 import { ActiveGameTypes } from "Constants";
 import { LatestRequest } from "../../../lib/latestRequest";
 import "css/host.css";
@@ -95,7 +95,7 @@ export default function HostBrowser() {
   }
 
   return <div className="host">
-    <header className="page-heading"><h1>Host a game</h1><Link className="ui-action ui-action--secondary" to={`/play/create?game=${gameType}`}>Create a setup</Link></header>
+    <UiPageHeader title="Host a game" actions={<Link className="ui-action ui-action--secondary" to={`/play/create?game=${gameType}`}>Create a setup</Link>} />
     {!user.loggedIn && <p><Link to="/welcome">Sign in</Link> to host or save setups.</p>}
     <div className="host-discovery-controls">
       <UiField select size="small" label="Game type" InputLabelProps={{ shrink: true }} SelectProps={{ native: true }} value={gameType} onChange={event => changeGame(event.target.value)}>{ActiveGameTypes.map(game => <option key={game}>{game}</option>)}</UiField>

@@ -7,7 +7,7 @@ import { Time } from "../../../components/Basic";
 import { useErrorAlert } from "../../../components/Alerts";
 import { ViewsAndReplies } from "./Forums";
 import { ListSkeleton } from "../../../components/Skeletons";
-import { UiSection, UiList, UiListItem, UiIcon } from "components/ui";
+import { UiSection, UiList, UiListItem, UiIcon, UiPageHeader } from "components/ui";
 import { newestRepliesFirst } from "./recentActivity.mjs";
 
 export default function Categories(props) {
@@ -117,5 +117,5 @@ export default function Categories(props) {
 
   if (!loaded) return <ListSkeleton />;
 
-  return <><header className="forum-directory-heading"><h1>Forums</h1><p>Browse discussions by board.</p></header>{categories}</>;
+  return <><UiPageHeader variant="forum" title="Forums" description="Browse discussions by board." />{categories}</>;
 }

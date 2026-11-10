@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { UiAction, UiField } from "components/ui";
+import { UiAction, UiField, UiPageHeader } from "components/ui";
 import { UserContext, SiteInfoContext } from "Contexts";
 import "css/feedback.css";
 
@@ -78,7 +78,7 @@ export default function Feedback() {
 
   return (
     <section className="feedback-page">
-      <header className="page-heading"><h1>Feedback</h1></header>
+      <UiPageHeader title="Feedback" />
       <p>Report a bug or suggest a change. Submitting creates a tracked GitHub issue for the team to review.</p>
       {!user.loggedIn && <p className="feedback-sign-in"><Link to="/auth/login">Sign in</Link> to submit feedback.</p>}
       {success && <p role="status">{success}</p>}

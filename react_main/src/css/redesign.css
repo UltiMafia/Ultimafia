@@ -44,8 +44,6 @@ button, select { font: inherit; }
 .site-footer nav, .site-footer-credits { display: flex; flex-wrap: wrap; gap: 8px 20px; }
 .skip-link { position: absolute; left: 12px; top: -100px; z-index: 1500; padding: 12px; border-radius: 4px; background: var(--mui-palette-primary-main); color: var(--mui-palette-primary-contrastText); }
 .skip-link:focus { top: 8px; }
-.page-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; margin-bottom: 16px; }
-.page-heading h1 { margin: 0; font-size: var(--ui-text-title); font-weight: 700; }
 .announcement-notice { display: flex; align-items: center; gap: 4px; min-height: 40px; margin-bottom: 12px; border: 1px solid var(--scheme-color-border); border-radius: 4px; background: var(--scheme-color); }
 .announcement-summary { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; min-height: 40px; padding: 8px 10px; border: 0; background: transparent; color: var(--scheme-color-text); text-align: left; cursor: pointer; font-size: 13px; }
 .announcement-summary > i { color: var(--um-accent); }
@@ -317,7 +315,6 @@ button, select { font: inherit; }
 
 /* Reference and community content. Table transformations are glossary-only. */
 .reference-page.reference-page, .community-page.community-page { padding: 0; border: 0; border-radius: 0; background: transparent; }
-.reference-page h1 { font-size: 24px; margin-top: 0; }
 .glossary-page .reference-search { margin: 4px 0 12px; max-width: 480px; }
 .glossary-page .MuiTableCell-root { text-align: left; overflow-wrap: anywhere; }
 .glossary-page .MuiTableCell-root:first-child { width: 18%; }
@@ -341,8 +338,6 @@ button, select { font: inherit; }
   .site-header .user-nav { padding: 0; gap: 4px; }
   .site-header .user-nav-balances, .site-header .user-nav > hr { display: none; }
   .site-header .user-nav .avatar { width: 32px; height: 32px; }
-  .page-heading { min-height: 40px; margin-bottom: 8px; }
-  .page-heading .MuiButton-root { min-height: 40px; }
   .lobby-sections.lobby-sections { margin-bottom: 8px; }
   .lobby-sections .MuiTab-root { min-width: 0; flex: 1; min-height: 40px; padding: 8px 12px; }
   .lobby-sections .MuiTabs-scrollButtons { display: none; }

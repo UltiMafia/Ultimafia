@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { UiPageHeader } from "components/ui";
 import "css/play.css";
 import {
   Paper,
@@ -115,12 +116,7 @@ export default function LearnGlossary(props) {
 
   return (
     <section className="glossary-page">
-      <Typography variant="h2" component="h1" gutterBottom sx={{ mt: 1 }}>
-        Glossary
-      </Typography>
-      <Typography variant="body1" paragraph>
-        Search definitions and chat commands.
-      </Typography>
+      <UiPageHeader title="Glossary" description="Search definitions and chat commands." />
       <TextField className="reference-search" type="search" fullWidth label="Search terms and commands" value={query} onChange={event => setQuery(event.target.value)} />
       <Tabs value={tab} onChange={(_, v) => setTab(v)} aria-label="Terminology sections">
         <Tab label="Slang" id="term-tab-0" aria-controls="term-panel-0" />

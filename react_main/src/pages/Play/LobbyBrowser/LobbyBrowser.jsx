@@ -4,6 +4,7 @@ import { useLocation, Link } from "react-router-dom";
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import UiIcon from "components/ui/UiIcon";
+import { UiPageHeader } from "components/ui";
 
 import { UserContext, InGameContext } from "Contexts";
 import { getPageNavFilterArg, PageNav } from "components/Nav";
@@ -312,10 +313,9 @@ export default function LobbyBrowser() {
 
   return (
     <div className="lobby-browser">
-      <header className="page-heading">
-        <h1>Games</h1>
+      <UiPageHeader title="Games" actions={
         <Button component={Link} to={user.loggedIn ? "/play/host" : "/welcome"} startIcon={<UiIcon name="add" />}>Host a game</Button>
-      </header>
+      } />
       <Tabs value={section} onChange={(_, value) => setSection(value)} aria-label="Lobby sections" className="lobby-sections">
         <Tab label="Games" value="games" id="lobby-games-tab" aria-controls="lobby-games-panel" />
         <Tab label="More" value="extras" id="lobby-extras-tab" aria-controls="lobby-extras-panel" />

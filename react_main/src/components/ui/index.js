@@ -4,7 +4,7 @@ export { default as UiPending } from "./UiPending";
 export { default as UiProductCard } from "./UiProductCard";
 export { default as UiCard } from "./UiCard";
 export { UiStatRow, UiStat } from "./UiStat";
-export { default as UiPage, UiSection, UiList, UiListItem } from "./UiPage";
+export { default as UiPage, UiPageHeader, UiSection, UiList, UiListItem } from "./UiPage";
 export { default as UiIcon } from "./UiIcon";
 export { default as MessageComposer } from "./MessageComposer";
 export { TextField as UiField, Typography as UiText } from "@mui/material";

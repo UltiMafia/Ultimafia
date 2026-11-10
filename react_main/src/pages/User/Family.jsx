@@ -25,7 +25,7 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import CustomMarkdown from "components/CustomMarkdown";
 import TrophyCase from "components/TrophyCase";
 import { capitalize } from "utils";
-import { UiAction, UiDialog, UiIcon, UiMenu, UiMenuItem } from "components/ui";
+import { UiAction, UiDialog, UiIcon, UiMenu, UiMenuItem, UiPageHeader } from "components/ui";
 import { LatestRequest } from "../../lib/latestRequest";
 import "css/family.css";
 import { 
@@ -248,7 +248,7 @@ export default function Family() {
   }
 
   if (!familyLoaded) return <PageSkeleton />;
-  if (!family) return <div role="alert"><h1>Family unavailable</h1><p>{profileError || "This family could not be found."}</p><UiAction onClick={() => loadFamilyProfile()}>Retry</UiAction><p><Link to="/community/families">Browse families</Link></p></div>;
+  if (!family) return <div role="alert"><UiPageHeader title="Family unavailable" /><p>{profileError || "This family could not be found."}</p><UiAction onClick={() => loadFamilyProfile()}>Retry</UiAction><p><Link to="/community/families">Browse families</Link></p></div>;
 
   const hasTrophySpotlight = family.perks?.some((p) => p.key === "trophySpotlight" && p.owned);
 
@@ -390,9 +390,7 @@ export default function Family() {
                   />
                 )}
                 <Box>
-                  <Typography component="h1" variant="h2" sx={{ overflowWrap: "anywhere", fontWeight: 600 }}>
-                    {family.name}
-                  </Typography>
+                  <UiPageHeader variant="detail" title={family.name} />
                   <Typography variant="body2" color="text.secondary">
                     Founded by{" "}
                     <NameWithAvatar

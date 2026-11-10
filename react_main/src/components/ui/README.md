@@ -14,8 +14,8 @@ exemptions; existing files cannot increase those counts. Reductions are allowed.
 New game-specific board/canvas targets require a reviewed exception, not a
 second utility UI. Do not regenerate the baseline to make a violation pass.
 After a migration, `--reduce-baseline` only lowers/removes exception counts so a
-removed legacy pattern cannot quietly return. The one-time surface-inventory
-extension added pre-existing Card/Paper debt without increasing other budgets.
+removed legacy pattern cannot quietly return. The historical baseline-writing
+and surface-extension commands are now rejected; they cannot silently add debt.
 
 - `designTokens.js`: default red/yellow palettes, type scale, weights, line
   heights, action sizes and icon family. `getSiteTheme` configures MUI from these

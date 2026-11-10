@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { SiteInfoContext, UserContext } from "Contexts";
-import { UiAction, UiIcon, UiPending, UiField, UiCheckbox } from "components/ui";
+import { UiAction, UiIcon, UiPending, UiField, UiCheckbox, UiPageHeader } from "components/ui";
 import { NameWithAvatar } from "../User/UserWidgets";
 import { CoinAmount } from "../User/FamilyExtras";
 import { FamilyAvatarImage } from "utils/avatarUrl";
@@ -69,9 +69,9 @@ export default function FamilyDiscovery() {
   const clear = () => { setSearchInput(""); setSearch(""); setOpenOnly(false); setSort("members"); };
 
   return <div className="family-directory">
-    <header className="page-heading"><h1>Families</h1>
+    <UiPageHeader title="Families" actions={
       <Link className="ui-action ui-action--secondary" to={user.loggedIn ? "/user/settings/family" : "/welcome"}>{user.loggedIn ? "Manage or create family" : "Sign in to join"}</Link>
-    </header>
+    } />
     <form className="directory-toolbar" onSubmit={event => { event.preventDefault(); setSearch(searchInput.trim()); }}>
       <UiField label="Search families" type="search" inputProps={{ maxLength: 40 }} value={searchInput} onChange={event => setSearchInput(event.target.value)} />
       <UiField select size="small" label="Sort by" InputLabelProps={{ shrink: true }} SelectProps={{ native: true }} value={sort} onChange={event => setSort(event.target.value)}>

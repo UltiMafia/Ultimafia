@@ -262,6 +262,7 @@ export function readFixture(url, user) {
 }
 
 export const routeCases = [
+  { name: "new-page-contract", route: "/audit/new-page", text: "Shared page geometry" },
   { name: "players", route: "/community/users", text: "Search players" },
   { name: "families", route: "/community/families", text: "The Harbor" },
   { name: "host", route: "/play/host?game=Mafia", text: "Classic" },

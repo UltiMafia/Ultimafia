@@ -4,13 +4,6 @@ import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/
 import { NameWithAvatar } from "../../User/UserWidgets";
 import {
   Box,
-  Button,
-  Card,
-  MenuItem,
-  Select,
-  Typography,
-  Stack,
-  Chip,
   List,
   ListItem,
   ListItemIcon,
@@ -36,7 +29,7 @@ import { VoteWidget } from "../../../components/VoteWidget";
 import TwoPanelLayout from "../../../components/SetupProfileLayout";
 import FanartPanel from "../../../components/FanartPanel";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
-import { UiAction, UiField, UiIcon } from "components/ui";
+import { UiAction, UiField, UiIcon, UiPageHeader } from "components/ui";
 
 export default function RolePage() {
   return (
@@ -340,15 +333,13 @@ export function RoleThings() {
 
   return (
     <div className="role-page">
-      <header className="role-hero" style={{ "--role-accent": alignmentColor }}>
-        <div className="role-hero-icon">
+      <UiPageHeader variant="detail" title={RoleName} className="role-hero" leading={
           <RoleCount key={0} scheme={activeRoleSkin} role={role[0]} gameType="Mafia" skin={activeRoleSkin} large />
-        </div>
-        <div className="role-hero-copy">
-          <div className="role-hero-title">
-            <h1>{RoleName}</h1>
-            <span className="role-alignment">{role[1].alignment}</span>
-          </div>
+        } actions={<div className="role-hero-actions">
+          <VoteWidget item={roleVoteItem} itemType="role" setItemHolder={(newItem) => setRoleVoteState({ vote: newItem.vote ?? 0, voteCount: newItem.voteCount ?? 0 })} />
+          {user.loggedIn && <UiAction variant={isFavorited ? "primary" : "secondary"} aria-pressed={isFavorited} onClick={onFavRole}><UiIcon name={isFavorited ? "starFilled" : "star"} />{isFavorited ? "Favorited" : "Favorite role"}</UiAction>}
+        </div>}>
+          <span className="role-alignment" style={{ color: alignmentColor }}>{role[1].alignment}</span>
           {sortedTags.length > 0 && <ul className="role-tags" aria-label="Role tags">{sortedTags.map(tag => <li key={tag}>{tag}</li>)}</ul>}
           <div className="role-skin-control">
             <span>Icon skin</span>
@@ -359,12 +350,7 @@ export function RoleThings() {
             }}>{roleSkinOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</UiField>
           </div>
           {artists.length > 0 && <div className="role-artists"><span>Icon artists</span>{artists}</div>}
-        </div>
-        <div className="role-hero-actions">
-          <VoteWidget item={roleVoteItem} itemType="role" setItemHolder={(newItem) => setRoleVoteState({ vote: newItem.vote ?? 0, voteCount: newItem.voteCount ?? 0 })} />
-          {user.loggedIn && <UiAction variant={isFavorited ? "primary" : "secondary"} aria-pressed={isFavorited} onClick={onFavRole}><UiIcon name={isFavorited ? "starFilled" : "star"} />{isFavorited ? "Favorited" : "Favorite role"}</UiAction>}
-        </div>
-      </header>
+      </UiPageHeader>
       <TwoPanelLayout
         left={<>
           <section className="role-info">

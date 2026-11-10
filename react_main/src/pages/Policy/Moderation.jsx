@@ -3,7 +3,7 @@ import { NavLink, Outlet, useLocation, useOutletContext } from "react-router-dom
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import { UserContext } from "Contexts";
-import { UiIcon } from "components/ui";
+import { UiIcon, UiPageHeader } from "components/ui";
 
 import { ModerationRecent } from "./Moderation/ModerationPages";
 
@@ -79,7 +79,7 @@ export default function Moderation() {
   });
 
   return <div className="moderation-shell">
-    <header className="moderation-heading"><h1>Moderation</h1><p>Staff tools for reports, appeals, account safety and competitive operations.</p></header>
+    <UiPageHeader variant="moderation" title="Moderation" description="Staff tools for reports, appeals, account safety and competitive operations." />
     <div className="moderation-layout">
       <nav className="moderation-navigation" aria-label="Moderation sections">
         {links.map(([to, label, icon]) => <NavLink key={to} to={to} end={to === "/policy/moderation"} className={({ isActive }) => isActive ? "moderation-nav-link is-active" : "moderation-nav-link"} aria-current={current === to ? "page" : undefined}>

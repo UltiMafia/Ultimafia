@@ -28,14 +28,7 @@
     "native:input": 2
   },
   "components/AvatarUpload.jsx": {
-    "mui:Dialog": 1,
-    "mui:DialogTitle": 1,
-    "mui:DialogContent": 1,
-    "mui:DialogActions": 1,
-    "mui:Button": 1,
     "mui:Typography": 1,
-    "mui:IconButton": 1,
-    "mui:Slider": 1,
     "native:input": 1
   },
   "components/BannerUpload.jsx": {
@@ -60,9 +53,7 @@
     "mui:Tabs": 1,
     "mui:Tab": 1,
     "mui:Typography": 1,
-    "mui:Button": 1,
-    "mui:TextField": 1,
-    "mui:Paper": 1
+    "mui:TextField": 1
   },
   "components/CookieBanner.jsx": {
     "mui:Button": 1,
@@ -72,9 +63,6 @@
     "mui:DialogContent": 1,
     "mui:DialogTitle": 1,
     "mui:Checkbox": 1
-  },
-  "components/CustomAppBar.jsx": {
-    "mui:Typography": 1
   },
   "components/DeathSoundUpload.jsx": {
     "mui:Button": 1,
@@ -137,21 +125,7 @@
   "components/GuestAuthButtons.jsx": {
     "mui:Button": 1
   },
-  "components/HostGameDialogue.jsx": {
-    "mui:Dialog": 1,
-    "mui:DialogContent": 1,
-    "mui:DialogTitle": 1,
-    "mui:DialogActions": 1,
-    "mui:Button": 1,
-    "mui:IconButton": 1,
-    "mui:TextField": 1,
-    "mui:Typography": 1,
-    "mui:Paper": 1
-  },
   "components/ImageViewer.jsx": {
-    "mui:IconButton": 1
-  },
-  "components/IosBetaTicker.jsx": {
     "mui:IconButton": 1
   },
   "components/LeaveGameDialog.jsx": {
@@ -226,12 +200,7 @@
     "mui:Paper": 1
   },
   "components/RecentTradesFeed.jsx": {
-    "mui:Typography": 1,
-    "mui:Dialog": 1,
-    "mui:DialogTitle": 1,
-    "mui:DialogContent": 1,
-    "mui:DialogActions": 1,
-    "mui:Button": 1
+    "mui:Typography": 1
   },
   "components/ReportDetail.jsx": {
     "mui:Button": 1,
@@ -320,13 +289,7 @@
     "native:confirm": 1
   },
   "components/TradeDialog.jsx": {
-    "mui:Dialog": 1,
-    "mui:DialogTitle": 1,
-    "mui:DialogContent": 1,
-    "mui:DialogActions": 1,
     "mui:Typography": 1,
-    "mui:Button": 1,
-    "mui:TextField": 1,
     "mui:Paper": 1
   },
   "components/TrophyCase.jsx": {
@@ -453,23 +416,6 @@
     "mui:Button": 1,
     "mui:Typography": 1
   },
-  "pages/Community/FamilyDiscovery.jsx": {
-    "mui:Button": 1,
-    "mui:MenuItem": 1,
-    "mui:Select": 1,
-    "mui:Switch": 1,
-    "mui:TextField": 1,
-    "mui:Typography": 1,
-    "mui:Paper": 1
-  },
-  "pages/Community/Feedback.jsx": {
-    "mui:Button": 1,
-    "mui:MenuItem": 1,
-    "mui:Select": 1,
-    "mui:TextField": 1,
-    "mui:Typography": 1,
-    "mui:Paper": 1
-  },
   "pages/Community/Forums/Board.jsx": {
     "native:input": 7,
     "native:textarea": 1,
@@ -500,11 +446,6 @@
     "native:confirm": 2,
     "native:textarea": 1
   },
-  "pages/Community/UserSearch.jsx": {
-    "mui:TextField": 1,
-    "mui:Typography": 1,
-    "mui:Card": 1
-  },
   "pages/Fame/Competitive.jsx": {
     "mui:Typography": 1,
     "mui:CircularProgress": 1,
@@ -520,32 +461,8 @@
   "pages/Fame/CompetitiveFaq.jsx": {
     "mui:Typography": 1
   },
-  "pages/Fame/Contributors.jsx": {
-    "mui:Typography": 1,
-    "mui:Button": 1,
-    "mui:Card": 1
-  },
-  "pages/Fame/Donors.jsx": {
-    "mui:Typography": 1,
-    "mui:Button": 1,
-    "mui:IconButton": 1,
-    "mui:Card": 1
-  },
-  "pages/Fame/FortuneCalculator.jsx": {
-    "mui:Typography": 1,
-    "mui:Slider": 1,
-    "mui:IconButton": 1,
-    "mui:Button": 1,
-    "alternate:@mui/icons-material/Add": 1,
-    "alternate:@mui/icons-material/Close": 1,
-    "mui:Paper": 1
-  },
   "pages/Fame/HallOfFame.jsx": {
     "mui:Button": 1,
-    "mui:Dialog": 1,
-    "mui:DialogContent": 1,
-    "mui:DialogTitle": 1,
-    "mui:IconButton": 1,
     "mui:MenuItem": 1,
     "mui:Select": 1,
     "mui:Tab": 1,
@@ -695,39 +612,13 @@
   "pages/Learn/Setup/SetupWinRateBars.jsx": {
     "mui:Typography": 1
   },
-  "pages/Learn/role/RolePage.jsx": {
-    "mui:Button": 1,
-    "mui:MenuItem": 1,
-    "mui:Select": 1,
-    "mui:Typography": 1,
-    "mui:Card": 1
-  },
   "pages/Play/CreateSetup/CreateBrowser.jsx": {
     "mui:Typography": 1,
-    "mui:Button": 1,
-    "mui:IconButton": 1,
-    "mui:Paper": 1
-  },
-  "pages/Play/CreateSetup/CreateSetup.jsx": {
-    "mui:IconButton": 1,
     "mui:Paper": 1
   },
   "pages/Play/Decks/CreateDeck.jsx": {
     "native:button": 1,
     "native:input": 5
-  },
-  "pages/Play/Decks/DeckSelector.jsx": {
-    "mui:Button": 1
-  },
-  "pages/Play/Host/HostBrowser.jsx": {
-    "mui:Button": 1,
-    "mui:MenuItem": 1,
-    "mui:Select": 1,
-    "mui:Tab": 1,
-    "mui:Tabs": 1,
-    "mui:TextField": 1,
-    "mui:Typography": 1,
-    "mui:Paper": 1
   },
   "pages/Play/LobbyBrowser/CompetitiveRounds.jsx": {
     "mui:Typography": 1
@@ -737,8 +628,7 @@
     "mui:Paper": 1
   },
   "pages/Play/LobbyBrowser/FeaturedSetup.jsx": {
-    "mui:Button": 1,
-    "mui:Paper": 1
+    "mui:Button": 1
   },
   "pages/Play/LobbyBrowser/GameRow.jsx": {
     "mui:Button": 1,
@@ -753,23 +643,10 @@
     "native:select": 1,
     "native:button": 3
   },
-  "pages/Play/LobbyBrowser/LobbySidebarPanel.jsx": {
-    "mui:Typography": 1,
-    "mui:Paper": 1
-  },
   "pages/Play/LobbyBrowser/PlayerCount.jsx": {
     "mui:Typography": 1
   },
-  "pages/Play/LobbyBrowser/RecentlyPlayedSetups.jsx": {
-    "mui:IconButton": 1,
-    "mui:Typography": 1,
-    "mui:Paper": 1
-  },
-  "pages/Play/LobbyBrowser/RefreshButton.jsx": {
-    "mui:IconButton": 1
-  },
   "pages/Play/Tutorial/TutorialPicker.jsx": {
-    "mui:Button": 1,
     "mui:Typography": 1,
     "mui:Card": 1
   },
@@ -777,10 +654,6 @@
     "native:button": 1,
     "native:input": 3,
     "native:textarea": 1
-  },
-  "pages/Play/WordDecks/WordDeckSelector.jsx": {
-    "mui:Button": 1,
-    "mui:Typography": 1
   },
   "pages/Policy/Invoices.jsx": {
     "mui:Button": 1,
@@ -803,30 +676,8 @@
     "mui:Button": 1,
     "mui:Typography": 1
   },
-  "pages/Policy/Moderation/CompetitiveManagement.jsx": {
-    "mui:Dialog": 1,
-    "mui:DialogContent": 1,
-    "mui:DialogTitle": 1,
-    "mui:Typography": 1,
-    "mui:TextField": 1,
-    "mui:Button": 1,
-    "mui:IconButton": 1
-  },
   "pages/Policy/Moderation/FlaggedIntake.jsx": {
-    "mui:IconButton": 1,
-    "mui:Typography": 1,
-    "mui:Card": 1
-  },
-  "pages/Policy/Moderation/GithubLinks.jsx": {
-    "mui:IconButton": 1,
-    "mui:Tab": 1,
-    "mui:Tabs": 1,
-    "mui:Typography": 1,
-    "mui:Card": 1
-  },
-  "pages/Policy/Moderation/GroupPanels.jsx": {
-    "mui:Typography": 1,
-    "mui:IconButton": 1
+    "mui:Typography": 1
   },
   "pages/Policy/Moderation/ModActions.jsx": {
     "mui:TextField": 1,
@@ -844,28 +695,8 @@
   "pages/Policy/Moderation/StaffHandbook.jsx": {
     "mui:Typography": 1
   },
-  "pages/Policy/Moderation/Volunteer.jsx": {
-    "mui:Button": 1,
-    "mui:TextField": 1,
-    "mui:Typography": 1,
-    "mui:Paper": 1
-  },
-  "pages/Policy/Moderation.jsx": {
-    "mui:Tab": 1,
-    "mui:Tabs": 1,
-    "mui:Typography": 1
-  },
   "pages/Policy/PrivacyPolicy.jsx": {
     "mui:Typography": 1
-  },
-  "pages/Policy/Reports.jsx": {
-    "mui:Button": 1,
-    "mui:MenuItem": 1,
-    "mui:Select": 1,
-    "mui:TextField": 1,
-    "mui:Typography": 1,
-    "mui:Card": 1,
-    "mui:Paper": 1
   },
   "pages/Policy/Rules.jsx": {
     "mui:Typography": 1,
@@ -902,19 +733,13 @@
     "mui:Button": 1,
     "mui:IconButton": 1,
     "mui:LinearProgress": 1,
-    "mui:Menu": 1,
-    "mui:MenuItem": 1,
-    "native:confirm": 3,
     "mui:Paper": 1
   },
   "pages/User/FamilyExtras.jsx": {
     "mui:Typography": 1,
     "mui:Button": 1,
-    "mui:TextField": 1,
     "mui:LinearProgress": 1,
     "mui:Switch": 1,
-    "mui:IconButton": 1,
-    "native:confirm": 5,
     "mui:Paper": 1
   },
   "pages/User/Inbox.jsx": {
@@ -942,8 +767,6 @@
     "mui:Select": 1,
     "mui:TextField": 1,
     "mui:LinearProgress": 1,
-    "mui:Tabs": 1,
-    "mui:Tab": 1,
     "mui:Checkbox": 1,
     "mui:Switch": 1,
     "native:confirm": 10
@@ -976,7 +799,6 @@
   },
   "pages/Welcome/Welcome.jsx": {
     "mui:Button": 1,
-    "mui:Typography": 1,
     "mui:Paper": 1
   },
   "utilsFolder/autoContrast.jsx": {

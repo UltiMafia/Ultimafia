@@ -1,9 +1,6 @@
 .deleted {
   background-color: #9b4c4c !important;
 }
-.forum-directory-heading { margin: 0 0 24px; }
-.forum-directory-heading h1 { margin: 0; font-size: var(--ui-text-title); }
-.forum-directory-heading p { margin: 8px 0 0; color: var(--um-muted); }
 .forum-thread-byline { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--um-muted); font-size: var(--ui-text-small); }
 .forums .forum-thread-row { grid-template-columns: 40px minmax(0, 1fr) minmax(180px, 280px); gap: 8px 16px; padding-block: 16px; }
 .forums .forum-thread-row > .MuiStack-root { grid-column: 1; grid-row: 1 / span 2; }

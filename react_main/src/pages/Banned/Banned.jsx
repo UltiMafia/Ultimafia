@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { UiPageHeader } from "components/ui";
 import axios from "axios";
 import { getAuth, signOut } from "firebase/auth";
 import {
@@ -294,19 +295,7 @@ export default function Banned() {
             height={112}
             style={{ imageRendering: "pixelated" }}
           />
-          <Typography
-            variant="h3"
-            component="h1"
-            color="error"
-            sx={{
-              fontWeight: 800,
-              letterSpacing: 2,
-              textAlign: "center",
-              fontSize: { xs: "2rem", sm: "2.75rem" },
-            }}
-          >
-            YOU ARE BANNED
-          </Typography>
+          <UiPageHeader title="You are banned" />
         </Stack>
         {body}
         <Divider sx={{ my: 3 }} />

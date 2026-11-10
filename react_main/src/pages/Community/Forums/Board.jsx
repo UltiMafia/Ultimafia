@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import UiAction from "../../../components/ui/UiAction";
 import UiIcon from "../../../components/ui/UiIcon";
-import { UiSection, UiList, UiListItem } from "components/ui";
+import { UiSection, UiList, UiListItem, UiPageHeader } from "components/ui";
 import { newestRepliesFirst } from "./recentActivity.mjs";
 import { useParams, Link } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
@@ -181,13 +181,14 @@ export default function Board(props) {
         setThreadContent={setNewThreadContent}
         setRedirect={setRedirect}
       />
-      <UiSection title={boardInfo.name} headingLevel={1} actions={<UiAction variant="primary"
+      <UiPageHeader variant="forum" title={boardInfo.name} actions={<UiAction variant="primary"
           onClick={onCreateThreadClick}
           disabled={!user.perms?.createThread}
         >
           <UiIcon name="add" size={18} />
           Create Thread
-        </UiAction>}>
+        </UiAction>} />
+      <UiSection>
       <div className="forum-thread-columns" aria-hidden="true"><span>Thread</span><span>Latest activity</span></div>
       {pinnedThreads.length > 0 && (
         <UiSection title="Pinned"><UiList>{pinnedThreads}</UiList></UiSection>

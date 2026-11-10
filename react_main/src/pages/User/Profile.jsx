@@ -6,7 +6,6 @@ import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/
 import axios from "axios";
 import update from "immutability-helper";
 import colorContrast from "color-contrast";
-import { Icon } from "@iconify/react";
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import {

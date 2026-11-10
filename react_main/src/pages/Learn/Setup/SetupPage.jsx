@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { UiSection, UiAction, UiField, UiStatRow, UiStat } from "components/ui";
+import { UiSection, UiAction, UiField, UiStatRow, UiStat, UiPageHeader } from "components/ui";
 import {
   Link as RouterLink,
   Route,
@@ -563,9 +563,7 @@ export function SetupPage() {
               flexWrap="wrap"
               useFlexGap
             >
-              <Typography variant="h1" sx={{ mr: 0.5 }}>
-                {setup.name}
-              </Typography>
+              <UiPageHeader variant="detail" title={setup.name} />
               <span className="setup-status">{rolesVisibilityLabel}</span>
               <StatusPill
                 active={setup.ranked}

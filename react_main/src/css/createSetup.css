@@ -79,8 +79,6 @@
   border: 1px solid var(--scheme-color-border);
   border-radius: 6px;
 }
-.setup-editor-heading label { display: grid; gap: 6px; font-size: var(--ui-text-small); }
-.setup-editor-heading select { min-height: 42px; padding: 8px; background: var(--scheme-color); color: var(--scheme-color-text); border: 1px solid var(--scheme-color-border); border-radius: 4px; max-width: 100%; }
 .setup-wizard.setup-wizard { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
 .setup-wizard.setup-wizard > * { min-width: 0; margin: 0; }
 .setup-wizard .setup-role-set-actions { width: 100%; padding: 0; background: transparent; box-shadow: none; }
@@ -127,9 +125,6 @@
   .setup-catalog .cell-search-grid { max-height: 52vh; }
 }
 @media (max-width: 700px) {
-  .setup-editor-heading { flex-wrap: wrap; align-items: stretch; gap: 12px; }
-  .setup-editor-heading h1 { flex-basis: 100%; }
-  .setup-editor-heading .MuiFormControl-root { width: 100%; }
 }
 .setup-current-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
 @media (max-width: 700px) {

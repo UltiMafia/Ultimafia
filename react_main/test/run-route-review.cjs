@@ -5,10 +5,14 @@ const assert = require("node:assert/strict");
 const path = require("node:path");
 const http = require("node:http");
 const crypto = require("node:crypto");
-const { chromium } = require("/tmp/opencode/redesign-tools/node_modules/playwright");
+const { execFileSync } = require("node:child_process");
+const { measureUi } = require("./ui-audit/measure.cjs");
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "/tmp/opencode/redesign-tools/node_modules/playwright");
 const root = path.resolve(__dirname, "../..");
-const directory = "/tmp/opencode/ultimafia-route-review-browser";
-const publicDir = path.resolve(__dirname, "../public");
+const upstream = process.env.UI_AUDIT_BRANCH === "master";
+const sourceRoot = upstream ? (process.env.UI_AUDIT_MASTER || "/tmp/opencode/ultimafia-master") : root;
+const directory = process.env.ROUTE_BUNDLE_DIR || "/tmp/opencode/ultimafia-route-review-browser";
+const publicDir = path.join(sourceRoot, "react_main/public");
 const phase = process.env.DESIGN_PHASE || "before";
 const palette = process.env.ROUTE_THEME || "dark";
 const viewports = (process.env.ROUTE_WIDTHS || "1440,390").split(",").map(Number).map(width => ({ width, height: width >= 900 ? 1000 : 844 }));
@@ -46,12 +50,21 @@ const server = http.createServer((req, res) => {
 const hash = filename => crypto.createHash("sha256").update(fs.readFileSync(filename)).digest("hex");
 
 async function main() {
+  if (upstream) {
+    const revision = execFileSync("git", ["rev-parse", "HEAD"], { cwd: sourceRoot, encoding: "utf8" }).trim();
+    const required = execFileSync("git", ["rev-parse", "origin/master"], { cwd: root, encoding: "utf8" }).trim();
+    if (revision !== required) throw new Error("Master source is not the fetched origin/master; refusing a mislabeled baseline");
+    execFileSync("git", ["diff", "--quiet", "HEAD", "--", "react_main/src"], { cwd: sourceRoot });
+  }
   fs.mkdirSync(output, { recursive: true });
   await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
   const origin = `http://127.0.0.1:${server.address().port}`;
   const browser = await chromium.launch({ headless: true });
   const compiledAssets = fs.readdirSync(path.join(directory, "static/js"), { recursive: true }).filter(file => file.endsWith(".js")).map(file => ({ file: `static/js/${file}`, sha256: hash(path.join(directory, "static/js", file)) }));
   const report = { phase, runName, origin, viewports, compiledAssets,
+    palette, branch: upstream ? "master" : "redesign", data: "controlled-production-component-fixture",
+    sourceRevision: execFileSync("git", ["rev-parse", "HEAD"], { cwd: sourceRoot, encoding: "utf8" }).trim(),
+    trackedSourceDirty: Boolean(execFileSync("git", ["diff", "HEAD", "--", "react_main/src", "react_main/test", "react_main/scripts"], { cwd: sourceRoot, encoding: "utf8" }).trim()),
     visualAcceptance: false, note: "Captured baseline, not visual acceptance. Phone bottom images are separate viewports, never stitched documents.",
     buildIndexSha256: hash(path.join(directory, "index.html")), cases: [], staticFailures, fatal: null };
   try {
@@ -125,17 +138,19 @@ async function main() {
     for (const viewport of report.viewports) {
       for (const item of cases) {
         const { page, context, observed } = await newPage(viewport);
-        const entry = { ...item, viewport, ...observed, screenshots: [], status: "pending", visualAcceptance: false };
+         const entry = { ...item, viewport, ...observed, screenshots: [], measurements: [], status: "pending", visualAcceptance: false };
         const requestStart = staticFailures.length;
         try {
           const url = new URL(item.route, origin);
+          if (upstream && item.name === "authentication") url.pathname = "/welcome";
           url.searchParams.set("fixtureMode", item.mode || "member");
           url.searchParams.set("theme", palette);
           await page.goto(String(url), { waitUntil: "load" });
           await page.waitForFunction(() => window.__routeReview?.ready, { timeout: 15000 });
           // The marker must come from production route content, not Header/sidebar.
-          const content = page.locator("#main-content");
-          if (item.selector) await content.locator(item.selector).first().waitFor({ state: "attached", timeout: 10000 });
+          const content = page.locator(upstream ? ".inner-container" : "#main-content");
+          if (upstream && item.name === "players") await content.locator('.newest-users').first().waitFor({ state: "attached", timeout: 10000 });
+          else if (item.selector) await content.locator(item.selector).first().waitFor({ state: "attached", timeout: 10000 });
           else await content.getByText(item.text, { exact: false }).first().waitFor({ state: "attached", timeout: 10000 });
           await page.waitForFunction(() => window.__routeReview.pending === 0 && performance.now() - window.__routeReview.lastRequestAt > 400, null, { timeout: 10000, polling: 50 });
           await page.evaluate(() => document.fonts.ready);
@@ -143,25 +158,29 @@ async function main() {
             await Promise.all([...document.images].filter(image => image.currentSrc).map(image => image.decode().catch(() => {})));
             await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
           });
-          await page.locator(".site-header").waitFor({ state: "visible", timeout: 3000 });
+          await page.locator(upstream ? ".app-shell" : ".site-header").waitFor({ state: "visible", timeout: 3000 });
+          if (upstream) await content.evaluate(element => { element.id = "main-content"; });
           const shell = await geometry(page);
           if (shell.contentWidth < viewport.width / 2 || shell.clientHeight < 200) throw new Error(`Hidden or undersized production shell: ${JSON.stringify(shell)}`);
           if (await page.locator("[data-route-review-failure]").count()) throw new Error("Production route error boundary displayed");
           const fixture = await page.evaluate(() => window.__routeReview);
            if (fixture.errors.length || fixture.unresolved.length || observed.runtimeErrors.length) throw new Error("Runtime error or unresolved fixture contract (see JSON)");
-           if (phase === "after") entry.layoutChecks = await checkLayout(page, item);
+           if (phase === "after" && !upstream) entry.layoutChecks = await checkLayout(page, item);
           const filename = `${item.name}-${viewport.width}-top.png`;
           await page.screenshot({ path: path.join(output, filename), fullPage: false, animations: "disabled" });
-          entry.screenshots.push(filename);
+           entry.screenshots.push(filename);
+           entry.measurements.push({ state: "default", position: "top", screenshot: filename, ...await page.evaluate(measureUi) });
           entry.topGeometry = await geometry(page);
           // Also capture desktop bottoms for long routes; every capture is a viewport.
-          await page.locator(".site-wrapper").evaluate(element => { element.scrollTop = element.scrollHeight; });
+           await page.locator(".site-wrapper").evaluate(element => { element.scrollTop = element.scrollHeight; });
+           if (upstream) await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
           await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
           const bottom = `${item.name}-${viewport.width}-bottom.png`;
           await page.screenshot({ path: path.join(output, bottom), fullPage: false, animations: "disabled" });
-          entry.screenshots.push(bottom);
+           entry.screenshots.push(bottom);
+           entry.measurements.push({ state: "default", position: "bottom", screenshot: bottom, ...await page.evaluate(measureUi) });
            entry.bottomGeometry = await geometry(page);
-           if (phase === "after" && ["forum-categories", "forum-board"].includes(item.name)) {
+            if (phase === "after" && !upstream && ["forum-categories", "forum-board"].includes(item.name)) {
              const disclosure = content.locator(".forum-recent-replies").first();
              await disclosure.locator("summary").click();
              assert.ok(await disclosure.getAttribute("open") !== null, "Activity disclosure opens without navigation");
@@ -182,11 +201,13 @@ async function main() {
               if (await option.count() && !(await option.isDisabled())) await option.check();
             }
             await page.screenshot({ path: path.join(output, `host-dialog-${viewport.width}-top.png`), animations: "disabled" });
-            entry.screenshots.push(`host-dialog-${viewport.width}-top.png`);
+             entry.screenshots.push(`host-dialog-${viewport.width}-top.png`);
+             entry.measurements.push({ state: "host-dialog", position: "top", screenshot: `host-dialog-${viewport.width}-top.png`, ...await page.evaluate(measureUi) });
             await dialog.locator(".MuiDialogContent-root").evaluate(element => { element.scrollTop = element.scrollHeight; });
             await dialog.evaluate(element => { const parent = element.closest(".MuiDialog-container"); parent.scrollTop = parent.scrollHeight; });
             await page.screenshot({ path: path.join(output, `host-dialog-${viewport.width}-bottom.png`), animations: "disabled" });
-            entry.screenshots.push(`host-dialog-${viewport.width}-bottom.png`);
+             entry.screenshots.push(`host-dialog-${viewport.width}-bottom.png`);
+             entry.measurements.push({ state: "host-dialog", position: "bottom", screenshot: `host-dialog-${viewport.width}-bottom.png`, ...await page.evaluate(measureUi) });
              await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
            }
             if (process.env.ROUTE_AVATAR_REVIEW === "1" && item.name === "profile-self") {
@@ -242,6 +263,34 @@ async function main() {
 }
 async function checkLayout(page, item) {
   const checks = [];
+  const headers = await page.locator('[data-ui-page-header] h1').evaluateAll(elements => elements.map(element => {
+    const style = getComputedStyle(element);
+    return { title: element.textContent, size: parseFloat(style.fontSize), weight: style.fontWeight, lineHeight: parseFloat(style.lineHeight), margin: style.margin };
+  }));
+  for (const header of headers) {
+    assert.equal(header.size, 24, `${item.name}: ${header.title} uses the page-title scale`);
+    assert.equal(header.weight, '700', `${item.name}: page-title weight`);
+    assert.ok(Math.abs(header.lineHeight - 31.2) < 0.1, `${item.name}: page-title line height`);
+    assert.equal(header.margin, '0px', `${item.name}: no page-specific title margins`);
+  }
+  if (headers.length) checks.push('shared-page-header-font-weight-line-height-and-margins');
+  if (item.name === "new-page-contract") {
+    const contract = await page.locator('.ui-page').evaluate(element => {
+      const heading = element.querySelector('.ui-page-heading h1'), style = getComputedStyle(heading);
+      const content = element.querySelector('.ui-page-content');
+      return { count: element.querySelectorAll('h1').length, fontSize: parseFloat(style.fontSize), fontWeight: style.fontWeight,
+        margin: style.margin, width: element.getBoundingClientRect().width, maxWidth: parseFloat(getComputedStyle(element).maxWidth),
+        gap: parseFloat(getComputedStyle(content).gap), fields: [...element.querySelectorAll('input')].map(input => input.getBoundingClientRect().width) };
+    });
+    assert.equal(contract.count, 1);
+    assert.equal(contract.fontSize, 24);
+    assert.equal(contract.fontWeight, '700');
+    assert.equal(contract.margin, '0px');
+    assert.equal(contract.gap, 24);
+    assert.ok(contract.width <= contract.maxWidth + 1);
+    assert.ok(contract.fields.every(width => width > 100 && width <= contract.width));
+    checks.push('new-page-inherits-header-shell-spacing-and-field-geometry-without-css');
+  }
   if (item.name === "learn-games") {
     assert.ok(await page.locator(".role-cell").count() > 3);
     assert.ok((await page.locator(".role-cell-description").first().innerText()).length > 10);
@@ -361,10 +410,12 @@ async function reviewDiscoveryTasks(page, item, captureTask) {
     await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
     await page.getByRole("button", { name: "Manage Moth", exact: true }).click();
     await page.getByRole("menuitem", { name: "Remove Member", exact: true }).click();
-    dialog = page.getByRole("dialog", { name: "Remove member?", exact: true });
+     dialog = page.getByRole("dialog", { name: "Remove member?", exact: true });
+     await captureTask("remove-confirmation");
     await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
     await page.getByRole("button", { name: "Edit family bio", exact: true }).click();
-    await page.locator('.family-profile-panel textarea').first().fill("Local family draft, never submitted");
+     await page.locator('.family-profile-panel textarea').first().fill("Local family draft, never submitted");
+     await captureTask("bio-editor");
     await page.locator('.family-profile-panel .buttons').getByRole("button", { name: "Cancel", exact: true }).click();
     assert.equal(await page.evaluate(() => window.__routeReview.writes.filter(write => write.url?.startsWith('/api/family/')).length), 0);
     checks.push("family-role-removal-and-bio-cancellation-sends-no-write");
@@ -689,7 +740,8 @@ async function reviewTasks(page, item, viewport, entry) {
   async function captureTask(name) {
     const filename = `${item.name}-${viewport.width}-${name}.png`;
     await page.screenshot({ path: path.join(output, filename), animations: "disabled" });
-    entry.screenshots.push(filename);
+   entry.screenshots.push(filename);
+   entry.measurements.push({ state: name, position: "task", screenshot: filename, ...await page.evaluate(measureUi) });
   }
   checks.push(...await reviewDiscoveryTasks(page, item, captureTask));
   if (item.name.startsWith("settings-")) {
