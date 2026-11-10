@@ -1,10 +1,30 @@
-# Draft: redesign consolidation, workflow repair and full-site visual audit
+# UltiMafia client redesign
 
 ## Status: draft, not ready to merge
 
-This branch contains a broad client redesign and workflow repair. It is well beyond what we can finish alone, so this draft exists to put the current state, evidence and remaining defects in one place for review and help.
+This PR is the **complete client redesign**, not a cleanup pass on top of master. It replaces the client shell, navigation, lobby, forums, profiles, families, moderation, setup/host flows, decks, shop, stock market and game chrome. Compare the diff against master for the full scope.
 
-This is not a claim of visual acceptance. Several pages still have obvious layout defects. The full-site audit described at the end has not been implemented yet.
+This is a draft because the redesign is not finished and several pages still have obvious layout defects. It is not a claim of visual acceptance. The mechanical full-site audit described at the end has not been built yet.
+
+## Compared to master
+
+| Measure | master → this branch |
+| --- | --- |
+| Files changed | 317 |
+| Additions / deletions | +19,497 / −14,104 |
+| New files | 133 |
+| Deleted files | 33 |
+| Modified files | 151 |
+
+The major structural changes against master:
+
+- **Shell:** `SiteLayout` and `SiteNavigation` replace the old `CustomAppBar`/`Menu`/mobile header arrangement; the sidebar is regrouped and the phone navigation is rebuilt.
+- **Lobby and community:** the lobby is rebuilt around Games/More, the community wall, game discovery and the right-column features; forums, comments and profile pages are reworked.
+- **Profiles:** the master two-column profile layout is intentionally restored, with the pie chart kept and comments using the shared card treatment.
+- **Families, moderation, setups and hosting:** new page layouts, split moderation pages, shared setup/host cards and full-role setup editor data.
+- **Decks, shop and stock market:** shared deck library, product cards and coin icon; the stock table and summary are reworked.
+- **Design system:** new `components/ui` primitives, icon sets and licenses, shared CSS tokens and a UI-architecture check.
+- **Removed:** 33 unreachable legacy files.
 
 ## What this changes
 
@@ -64,6 +84,12 @@ This is not a claim of visual acceptance. Several pages still have obvious layou
 ## Screenshots
 
 All images are from the current branch's controlled production-component fixtures or the populated local site. They are not a claim of authenticated live gameplay.
+
+### Master baseline vs redesign: Players directory
+
+![Players before](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/players-master.png)
+
+![Players after](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/players-redesign.png)
 
 ### Profile: master layout restored, pie chart retained
 ![Profile layout](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/profile-master-layout.png)
