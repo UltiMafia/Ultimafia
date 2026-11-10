@@ -10,9 +10,9 @@ This is a draft because the redesign is not finished and several pages still hav
 
 | Measure | master → this branch |
 | --- | --- |
-| Files changed | 317 |
-| Additions / deletions | +19,497 / −14,104 |
-| New files | 133 |
+| Files changed | 320 |
+| Additions / deletions | +19,602 / −14,111 |
+| New files | 136 |
 | Deleted files | 33 |
 | Modified files | 151 |
 
