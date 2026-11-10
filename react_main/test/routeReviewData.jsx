@@ -288,7 +288,7 @@ export const routeCases = [
   { name: "settings-github", route: "/user/settings/github", text: "GitHub Username" },
   { name: "settings-cookies", route: "/user/settings/cookies", text: "Essential Cookies" },
   { name: "settings-family", route: "/user/settings/family", text: "No family." },
-  { name: "shop", route: "/user/shop", text: "Custom text colors" },
+  { name: "shop", route: "/user/shop", text: "Name and Text Colors" },
   { name: "notifications", route: "/user/notifications", text: "Juniper replied" },
   { name: "rankings", route: "/fame/hall-of-fame", text: "NightOwl" },
   { name: "competitive", route: "/fame/competitive", text: "Season 1 standings" },
