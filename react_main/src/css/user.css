@@ -413,6 +413,12 @@ iframe {
 .name-color-preview.name-anim-glow {
   animation: name-color-glow 1.6s ease-in-out infinite;
   will-change: filter;
+
+  /* Nothing may paint behind the glyphs: a filter takes the whole element as
+     its input, so any background on this box (including the browser's own tap
+     highlight) is blurred into the halo and reads as a lit rectangle instead. */
+  background: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /*
