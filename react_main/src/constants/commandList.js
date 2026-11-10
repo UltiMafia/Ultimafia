@@ -18,7 +18,7 @@ export const commandList = {
   "/extend": {
     input: "N/A",
     description:
-      "During Day, type /extend and press Enter to vote for more time. Each extension raises the next vote requirement. At timeout, eligible players who have not voted can also count toward an extension.",
+      "When extensions are enabled, type /extend during Day to vote for more time. The required tally is half the players still in play (alive and not in the safehouse), rounded up, plus one for each extension already granted that Day. At an eligible Day timeout, living members who can vote in the Village meeting also add to the tally if they have no current Village vote and have not already voted /extend toward that tally. After an extension, the tally resets and players can vote again.",
   },
   "/role": {
     input: "Role name",
