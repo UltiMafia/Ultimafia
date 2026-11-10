@@ -180,7 +180,7 @@ export default function FloatingDmWindow() {
         borderColor: "divider",
         bgcolor: "background.paper",
         boxShadow:
-          "rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px",
+          "rgba(0, 0, 0, 0.24) 0px 0px 15px, rgba(0, 0, 0, 0.18) 0px 0px 3px 1px",
       }}
     >
       <Chat

@@ -8,7 +8,7 @@ const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
 
-const TITLE_BAR = 44;
+const TITLE_BAR = 52;
 const MIN_WIDTH = 280;
 const MIN_HEIGHT = 200;
 
