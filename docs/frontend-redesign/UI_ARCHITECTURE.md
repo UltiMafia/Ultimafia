@@ -57,12 +57,15 @@ or direct MUI equivalents. Dialogs use `UiDialog`, explicit cancellation and
 pending guards. Utility icons use `UiIcon` (HackerNoon Solid, native 24px slot);
 currency uses `CoinIcon`. Existing role icons and seasonal wordmarks stay intact.
 
-Administrative record tables use `UiTable`: an accessible table label, stable
+Record and comparison tables use `UiTable`: an accessible table label, stable
 row-key property, named columns and optional value renderers. The same DOM becomes
 continuous labeled records on phones, preserving every value and row action
 instead of clipping rightmost columns or maintaining a second mobile-only view.
-Developer API and Invoices use this path; existing tables elsewhere still need
-migration and are not claimed complete.
+The default `records` variant left-aligns administrative values; `comparison`
+centers equivalent short values on desktop and reserves readable phone labels.
+Developer API, Invoices and Rules use this path; existing tables elsewhere still
+need migration and are not claimed complete. Unsupported variants, inline table
+overrides and external `.ui-table*` CSS fail the architecture guard.
 
 ## Enforcement and current migration status
 

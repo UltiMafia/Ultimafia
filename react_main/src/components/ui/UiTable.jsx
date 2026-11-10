@@ -3,8 +3,9 @@ import "./ui.css";
 
 // Administrative records become labeled continuous rows on phones. Keeping the
 // labels and actions with each record avoids hiding the last columns offscreen.
-export default function UiTable({ label, columns, rows, rowKey, emptyMessage = "No results." }) {
-  return <table className="ui-table" aria-label={label} role="table">
+export default function UiTable({ label, columns, rows, rowKey, emptyMessage = "No results.", variant = "records" }) {
+  if (!["records", "comparison"].includes(variant)) throw new TypeError(`Unsupported UiTable variant: ${variant}`);
+  return <table className={`ui-table ui-table--${variant}`} aria-label={label} role="table">
     <thead><tr role="row">
       {columns.map(column => <th key={column.key} scope="col" role="columnheader">{column.label}</th>)}
     </tr></thead>

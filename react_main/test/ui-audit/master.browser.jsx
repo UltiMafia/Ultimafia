@@ -59,7 +59,7 @@ axios.defaults.adapter = async config => {
     else if (url.pathname === '/api/user/info' && !user.loggedIn) data = {};
     else data = readFixture(url, user);
     if (params.get('fixtureEmptyRead') === url.pathname) {
-      if (['/api/dev/keys', '/api/dev/owner/keys'].includes(url.pathname)) data = [];
+      if (['/api/dev/keys', '/api/dev/owner/keys', '/api/site/violations'].includes(url.pathname)) data = [];
       else if (url.pathname === '/api/crypto/admin/invoices') data = { invoices: [], total: 0, pageSize: 50 };
       else throw new Error('Unregistered empty-state contract');
     }

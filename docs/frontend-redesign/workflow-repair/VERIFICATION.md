@@ -3,7 +3,44 @@
 PR #3197 is open and draft. This is not visual acceptance or a completed audit.
 Numbered historical evidence directories are not final-HEAD verification.
 
-## Latest upstream integration and administrative/transcript slice
+## Latest Rules/table slice
+
+- Rules penalty tables now use `UiTable variant="comparison"`; desktop values
+  remain centered, while phone records keep each complete offense label beside
+  its value. The last columns are no longer hidden in a local horizontal table.
+  The shared mobile label minimum was corrected after image inspection caught
+  `2nd Offense` wrapping. Geometry checks cover every penalty cell and label.
+- Static rules remain available during the violations read's loading, failure and
+  empty states; failed reads offer Retry. Shared tabs/panels have explicit linked
+  IDs. All 17 canonical rule sections retain their original wording, guarded by a
+  canonical-data hash test. No policy/server contract was changed.
+- `useViolations` now exposes reload, cancels superseded/unmounted reads and
+  rejects stale responses with `LatestRequest`; existing error alerts remain.
+- Architecture guards reject unsupported table variants, inline table overrides
+  and external `.ui-table*` CSS. Independent HEAD-to-working-tree comparison found
+  **606 → 602**, with **zero increases**. Shared table variants are documented in
+  `react_main/src/components/ui/README.md`.
+- Registration expands **720 → 750 cells**. Rules BEFORE and corrected AFTER each
+  pair 42 cells across both palettes at 1440/390/320, including appeal, other
+  policies, loading, failure, empty and the invoice permission redirect. Corrected
+  AFTER passes **12/12 redesign and 12/12 actual-master route cases**; 22 geometry
+  candidates remain, principally scroll-managed tabs, not silently accepted.
+  Reports: `../audit/rules-before/`, `../audit/rules-labels-corrected/`.
+- Inspected the 264 initial Rules before/after/master images through 116 unique
+  hashes in 16 inspection sheets, then all six newly unique corrected-label
+  images. These are slice inspections, not exhaustive global inspection or
+  final-HEAD evidence. No screenshots are described as visual acceptance.
+
+| Rules check | Observed result |
+| --- | --- |
+| Frontend Node tests | **258 passed, 0 failed**; `/var/tmp/ultimafia-rules-node-final.log` |
+| `npm run lint:ui` | Passed; independently verified baseline 602, no increases |
+| Production build / scoped ESLint | Passed / **0 errors, 0 warnings** across Rules, useViolations and UiTable; `/var/tmp/ultimafia-rules-{production-build,eslint}.log` |
+| Controls / retained lifecycle | **57 checks, 39 states / 33 checks passed**; `/var/tmp/ultimafia-rules-{controls,lifecycle}.log` |
+| Game / competitive / homepage | **36 / 16 / 10 cases passed**, no recorded failures; `../audit/rules-regressions/` and `/var/tmp/ultimafia-rules-{game,competitive,homepage}.log` |
+| Shared violations consumers | **12/12 route cases passed** across profile report and staff report detail, all widths/palettes. Selection/completion cancellation sends no report write; deferred report-dialog reads can unmount and reopen. `../audit/rules-consumers-corrected-{dark,light}/`; initial selector failures used an abbreviated rule name, not the actual source label, and are retained as diagnostics |
+
+## Preceding upstream integration and administrative/transcript slice
 
 - Merged fetched upstream master without rewriting history. This preserves its
   transcript virtualization, spectator ping names, Settings animation/containment,

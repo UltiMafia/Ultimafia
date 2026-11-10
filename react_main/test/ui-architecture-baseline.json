@@ -688,12 +688,6 @@
   "pages/Policy/PrivacyPolicy.jsx": {
     "mui:Typography": 1
   },
-  "pages/Policy/Rules.jsx": {
-    "mui:Typography": 1,
-    "mui:Tabs": 1,
-    "mui:Tab": 1,
-    "mui:Paper": 1
-  },
   "pages/Policy/TermsOfService.jsx": {
     "mui:Typography": 1
   },

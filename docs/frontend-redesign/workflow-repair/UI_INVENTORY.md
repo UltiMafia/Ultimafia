@@ -15,11 +15,13 @@ at `/audit/new-page` verifies composition without page-specific CSS. The global
 and workflow lists below still require complete stable-ID registration and
 capture tasks before the inventory can be called exhaustive.
 
-The registry currently contains **120 route/state IDs × six cells = 720 cells**.
-The administrative integration run covered all **720 registered pairs**, with no
+The registry currently contains **125 route/state IDs × six cells = 750 cells**.
+The preceding administrative integration run covered all **720 then-registered pairs**, with no
 gaps and 246 open geometry candidates. It was built before the final composer
 correction and is not final-HEAD evidence. Registered coverage is not exhaustive
-global/game-state inventory completion.
+global/game-state inventory completion. The focused corrected Rules run pairs
+42 cells, including all 30 newly registered Rules-state cells; its other 708
+inventory cells remain gaps in that focused report, not silently reused evidence.
 
 ## Route surfaces
 
@@ -145,6 +147,11 @@ global/game-state inventory completion.
   literals in `modules/cryptoPayments.js`, checked without importing that module.
   Upstream native prompts are recorded/dismissed and their actual table ancestors
   are labeled as such, not represented as screenshots of native browser chrome.
+- Registered Rules states: `appeal`, `other-policies`, `loading`, `read-error`,
+  `empty`. The real violations read is deferred/failed/emptied in both branches;
+  master ancestors remain master UI, including its blank loading body. Repaired
+  Rules keeps static policy text readable while penalty data is unavailable.
+  Canonical text for all 17 sections is guarded separately from presentation.
 - Dark and light palettes; desktop 1440, phone 390, narrow phone 320.
 - Loading, empty, error/failure and permission states for the routes that expose them.
 - Dialogs: host, avatar crop, banner crop, report, trade, leave game, deck delete, family role/removal/bio, moderation command, group removal, ban confirmation, strategy editor, image viewer.

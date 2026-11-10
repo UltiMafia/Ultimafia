@@ -18,6 +18,7 @@ const taskStates = {
   developer: ['revoke-confirmation', 'revoke-pending', 'revoke-error', 'create-pending', 'create-error', 'loading', 'read-error', 'empty'],
   'developer-owner': ['revoke-confirmation', 'revoke-pending', 'revoke-error', 'create-pending', 'create-error', 'loading', 'read-error', 'empty'],
   invoices: ['approve-confirmation', 'reject-confirmation', 'review-pending', 'review-error', 'loading', 'read-error', 'empty'],
+  rules: ['appeal', 'other-policies', 'loading', 'read-error', 'empty'],
 };
 function inventoryFromSource(source) {
   const literal = source.match(/export const routeCases = (\[[\s\S]*?\n\]);/);

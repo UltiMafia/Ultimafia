@@ -91,6 +91,7 @@
 .ui-table { width: 100%; border-collapse: collapse; text-align: left; font-size: var(--ui-text-body); }
 .ui-table :is(th, td) { padding: 12px 8px; border-bottom: 1px solid var(--scheme-color-border); vertical-align: top; }
 .ui-table th { color: var(--um-muted); font-weight: var(--ui-weight-strong); }
+.ui-table--comparison :is(th, td) { text-align: center; }
 .ui-table-value { min-width: 0; overflow-wrap: anywhere; }
 .ui-table-value--code { font-family: monospace; }
 .ui-table-mobile-label { display: none; }
@@ -101,6 +102,7 @@
   .ui-table tbody > tr { display: block; padding: 12px 0; border-bottom: 1px solid var(--scheme-color-border); }
   .ui-table :is(th, td) { border: 0; }
   .ui-table td { display: grid; grid-template-columns: minmax(80px, .35fr) minmax(0, 1fr); gap: 12px; padding: 6px 0; }
+  .ui-table--comparison td { text-align: left; grid-template-columns: minmax(7em, .35fr) minmax(0, 1fr); }
   .ui-table td[colspan] { display: block; }
   .ui-table-mobile-label { display: block; color: var(--um-muted); font-weight: var(--ui-weight-strong); }
 }

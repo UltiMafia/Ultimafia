@@ -10,6 +10,7 @@ const { measureUi } = require("./ui-audit/measure.cjs");
 const masterEquivalents = require("./ui-audit/master-equivalents.json");
 const { reviewMasterTasks } = require("./ui-audit/master-tasks.cjs");
 const { reviewAdminTasks } = require("./ui-audit/admin-tasks.cjs");
+const { reviewRulesTasks } = require("./ui-audit/rules-tasks.cjs");
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "/tmp/opencode/redesign-tools/node_modules/playwright");
 const root = path.resolve(__dirname, "../..");
 const upstream = process.env.UI_AUDIT_BRANCH === "master";
@@ -258,7 +259,7 @@ async function main() {
                entry.measurements.push({ state, position, screenshot: filename, ...await page.evaluate(measureUi), ...metadata,
                  masterEquivalent: masterEquivalents[`${item.name}.${state}`] || entry.masterEquivalent });
                };
-               entry.taskChecks = [...await reviewMasterTasks(page, item, captureMaster), ...await reviewAdminTasks(page, item, captureMaster, { master: true, evidence: entry.adminEvidence })];
+               entry.taskChecks = [...await reviewMasterTasks(page, item, captureMaster), ...await reviewAdminTasks(page, item, captureMaster, { master: true, evidence: entry.adminEvidence }), ...await reviewRulesTasks(page, item, captureMaster, { master: true })];
              }
           entry.status = "captured-baseline-not-accepted";
         } catch (error) {
@@ -316,6 +317,23 @@ async function checkLayout(page, item) {
     assert.equal(header.actionsOverlapCopy, false, `${item.name}: page actions do not overlap title or description`);
   }
   if (headers.length) checks.push('shared-page-header-font-weight-line-height-and-margins');
+  if (['rules', 'invoices-denied'].includes(item.name)) {
+    const tables = await page.locator('.ui-table--comparison').evaluateAll(elements => elements.map(element => ({
+      label: element.getAttribute('aria-label'), columns: element.querySelectorAll('th').length,
+      values: element.querySelectorAll('tbody td').length,
+      wrappedLabels: [...element.querySelectorAll('.ui-table-mobile-label')].filter(label => {
+        const style = getComputedStyle(label);
+        return style.display !== 'none' && label.getBoundingClientRect().height > parseFloat(style.lineHeight) + 1;
+      }).length,
+      clipped: [...element.querySelectorAll('.ui-table-value')].some(value => {
+        const box = value.getBoundingClientRect(), table = element.getBoundingClientRect();
+        return box.left < table.left - 1 || box.right > table.right + 1 || value.scrollWidth > value.clientWidth + 1;
+      }),
+    })));
+    assert.ok(tables.length >= 8, 'Policy retains the source penalty tables');
+    assert.ok(tables.every(table => table.label && table.values >= 6 && table.columns === table.values && !table.clipped && !table.wrappedLabels), 'Every offense label and penalty stays readable, including the last columns on phones');
+    checks.push('all-policy-offense-labels-values-and-original-tables-remain-readable');
+  }
   if (['developer', 'developer-owner', 'developer-denied', 'invoices'].includes(item.name)) assert.equal(headers.length, 1, `${item.name}: exactly one shared page heading`);
   const shells = await page.locator('.ui-page').evaluateAll(elements => elements.map(element => {
     const box = element.getBoundingClientRect(), maximum = parseFloat(getComputedStyle(element).maxWidth);
@@ -528,9 +546,16 @@ async function reviewDiscoveryTasks(page, item, captureTask) {
   if (item.name === "moderation-reports") {
     await page.getByRole("button", { name: "Open report", exact: true }).first().click();
     await page.getByRole("button", { name: /Back/, exact: false }).first().waitFor();
+    await page.getByRole("button", { name: "Complete Report", exact: true }).click();
+    const complete = page.getByRole("dialog", { name: "Complete Report", exact: true });
+    await complete.getByRole("combobox").nth(1).click();
+    await page.getByRole("option", { name: "Personal Attacks & Harassment (PA)", exact: true }).click();
+    await complete.getByRole("button", { name: "Cancel", exact: true }).click();
+    await complete.waitFor({ state: "hidden" });
     await page.getByRole("button", { name: /Back/, exact: false }).first().click();
     await page.getByText("Report R-1042", { exact: false }).waitFor();
-    checks.push("report-row-opens-detail-and-returns-to-queue");
+    assert.equal(await page.evaluate(() => window.__routeReview.writes.filter(write => write.url?.startsWith('/api/mod/reports/')).length), 0);
+    checks.push("report-detail-loads-shared-violations-and-completion-cancels-without-write");
   }
   if (item.name === "moderation-github") {
     await page.getByRole("button", { name: "Approve link", exact: true }).first().click();
@@ -856,15 +881,44 @@ async function checkRemainingLayout(page, item) {
 }
 async function reviewTasks(page, item, viewport, entry) {
   const checks = [];
-  async function captureTask(name) {
-    const filename = `${item.name}-${viewport.width}-${name}.png`;
+  async function captureTask(name, position = "task") {
+    const filename = `${item.name}-${viewport.width}-${name}${position === "task" ? "" : `-${position}`}.png`;
     await page.screenshot({ path: path.join(output, filename), animations: "disabled" });
    entry.screenshots.push(filename);
-   entry.measurements.push({ state: name, position: "task", screenshot: filename, ...await page.evaluate(measureUi) });
+   entry.measurements.push({ state: name, position, screenshot: filename, ...await page.evaluate(measureUi) });
   }
   checks.push(...await reviewDiscoveryTasks(page, item, captureTask));
   entry.adminEvidence = [];
   checks.push(...await reviewAdminTasks(page, item, captureTask, { evidence: entry.adminEvidence }));
+  if (item.name === "profile-default") {
+    // The legacy profile entry has no accessible name yet. Keep this selector
+    // explicit rather than pretending this regression check repairs that debt.
+    const openReport = page.locator('button').filter({ has: page.locator('.fa-flag') });
+    await openReport.click();
+    let dialog = page.getByRole('dialog');
+    await dialog.getByRole('combobox', { name: /^Rule Broken/ }).click();
+    await page.getByRole('option', { name: 'Personal Attacks & Harassment (PA)', exact: true }).click();
+    await dialog.getByRole('textbox', { name: /^Description/ }).fill('Local report draft, never submitted');
+    await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await dialog.waitFor({ state: 'hidden' });
+    await page.evaluate(() => { window.__routeReview.deferRead = '/api/site/violations'; });
+    await openReport.click();
+    dialog = page.getByRole('dialog');
+    await page.waitForFunction(() => typeof window.__routeReview.releaseRead === 'function');
+    assert.ok(await dialog.getByRole('combobox', { name: /^Rule Broken/ }).isDisabled());
+    await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await dialog.waitFor({ state: 'hidden' });
+    await page.evaluate(() => window.__routeReview.releaseRead());
+    await page.waitForFunction(() => window.__routeReview.pending === 0);
+    await openReport.click();
+    await page.getByRole('dialog').getByRole('combobox', { name: /^Rule Broken/ }).click();
+    await page.getByRole('option', { name: 'Personal Attacks & Harassment (PA)', exact: true }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Cancel', exact: true }).click();
+    await page.getByRole('dialog').waitFor({ state: 'hidden' });
+    assert.equal(await page.evaluate(() => window.__routeReview.writes.filter(write => write.url === '/api/report/send').length), 0);
+    checks.push('report-dialog-shared-violations-load-cancel-unmount-during-read-and-reopen-without-write');
+  }
+  checks.push(...await reviewRulesTasks(page, item, captureTask, { after: phase === 'after' }));
   if (item.name.startsWith("settings-")) {
     const navigation = page.getByRole("navigation", { name: "Settings sections" });
     await page.locator(".site-wrapper").evaluate(element => { element.scrollTop = 0; });

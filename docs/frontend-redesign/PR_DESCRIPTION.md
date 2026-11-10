@@ -15,7 +15,7 @@ the complete screenshot refresh remains outstanding.
 
 ### Diff against fetched upstream master
 
-355 files: **+21,466 / −14,691** text lines; 155 added, 167 modified, 33 deleted
+358 files: **+21,700 / −14,782** text lines; 157 added, 168 modified, 33 deleted
 (25 binary files). Recomputed against fetched `origin/master` for this slice.
 
 ## Current work
@@ -40,9 +40,13 @@ the complete screenshot refresh remains outstanding.
   successful empty lists; late invoice-filter responses cannot replace newer
   results. Revoke/approve/reject have cancellable dialogs and guarded pending/
   failure states. Tests create no credentials and perform no payment or credit.
+- Rules uses the shared comparison table, preserving complete offense labels and
+  penalty values on phones. Static policy text remains readable during penalty
+  loading/failure/empty states, with retry on failure. Canonical wording is guarded;
+  the shared violations read cancels obsolete/unmounted requests.
 - Architecture guards reject new alternate icon imports, raw h1 titles, removed
   header paths, unsupported variants and inline shared-surface/header overrides.
-  Legacy debt decreased **755 → 617 → 615 → 606** with no increases. The remaining
+   Legacy debt decreased **755 → 617 → 615 → 606 → 602** with no increases. The remaining
   baseline is debt, not a completed reviewed allowlist.
 - The comparative audit records stable IDs, six-cell width/palette coverage,
   actual production geometry, role comparisons, source/bundle/image provenance
@@ -71,7 +75,7 @@ the complete screenshot refresh remains outstanding.
 - [UI architecture](docs/frontend-redesign/UI_ARCHITECTURE.md)
 - [Read-only public comparison procedure](docs/frontend-redesign/audit/live-public/README.md)
 
-The registered denominator is **720 cells**. Global/game states, menus and further
+The registered denominator is **750 cells**. Global/game states, menus and further
 loading/empty/failure/permission branches still need registration. A complete
 registered run would therefore still not establish exhaustive inventory coverage.
 
@@ -84,13 +88,15 @@ registered run would therefore still not establish exhaustive inventory coverage
 | Public same-database comparison | 48/48 cases, 24 paired cells, 96 separate top/bottom images; 56 public source responses all HTTP 200 |
 | Upstream-integrated comparison before administrative expansion | 582/582 redesign cells and 582/582 master cells; 582 pairs, zero gaps, 270 open candidates; inventory remained incomplete |
 | Administrative/new-page focused comparison | 36/36 redesign and 36/36 master route cases; 174 paired cells; four remaining Rules clipping candidates. Subsequent invoice-contract correction requires refreshed data evidence |
-| Frontend Node tests | 256 passed, 0 failed |
+| Frontend Node tests | 258 passed, 0 failed |
 | Controls / lifecycle | 57 checks and 39 states / 33 checks passed |
 | Game / competitive / homepage | 36 / 16 / 10 cases passed |
-| Build / UI architecture / scoped ESLint | Passed / passed / 0 errors, 0 warnings across the current four-file production slice (tooling separately reports a stale browser database) |
+| Build / UI architecture / scoped ESLint | Passed / passed / 0 errors, 0 warnings across the current three-file Rules slice (tooling separately reports a stale browser database) |
 | Transcript windowing | 19/19 script/engine runs passed across Chromium and WebKit, including strict reflow/settings error checks; added composer/helper assertions passed in both engines |
 | Transcript comparative capture matrix | 6/6 repaired and 6/6 actual-master cells passed; pre-repair redesign reproduces the 32px failure in both 390px palettes |
 | Expanded full comparison | **720/720 redesign and 720/720 master cells; 720 pairs, zero gaps, 246 open candidates** (94 heading offsets, 152 clipping). All 438 route cases passed per branch. Built before the last composer correction, so not final-HEAD evidence |
+| Corrected Rules comparison | **12/12 redesign and 12/12 master route cases; 42 paired cells**, including all 30 newly registered Rules-state cells; 22 unresolved geometry candidates. Inspected all newly unique corrected-label images after the 264-image initial Rules inspection |
+| Shared violations consumers | 12/12 route cases passed across profile reporting and staff report detail; select/cancel, deferred unmount/reopen and no report-write assertions passed |
 | Backend suite | Failed isolated attempts: 821 passed/80 failed, then 994 passed/145 failed; worker heap exhaustion and a Mocha parallel-reporter crash remain unresolved. No server/game-engine changes were made to force a pass |
 
 Selected slice images/contact sheets and native-size summary crops were inspected.

@@ -66,12 +66,18 @@ continuous content area. `UiSection` groups related content using a heading and
 spacing; `UiList`/`UiListItem` provide aligned, divider-separated collections.
 Layout widths and section/column gaps come from the central tokens.
 
-`UiTable` is the supported path for administrative record tables. Supply a table
+`UiTable` is the supported path for record and comparison tables. Supply a table
 label, stable row-key property and named columns with optional render functions.
 At desktop widths it is a semantic table; at 900px and below the same DOM becomes
 continuous labeled records, keeping every value and action reachable without
 horizontal scrolling. Do not build a second mobile-only copy or hide columns.
 Use `code: true` for identifiers, not page-specific monospace/width overrides.
+The default `records` variant aligns administrative values to the left. Use
+`comparison` for short, equally important values such as policy penalty lengths:
+desktop values are centered; phone records preserve each complete column label
+beside its value. Unsupported variants, inline table overrides and external
+`.ui-table*` CSS fail the architecture guard. Do not use comparison tables to
+turn informational role directories into framed cards.
 
 Do not wrap ordinary pages or every heading/body pair in Card/Paper. Avoid
 repeated heading strips, alternating inset backgrounds and ornamental panels.

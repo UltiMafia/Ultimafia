@@ -71,3 +71,8 @@ test("stat density is named and shared surfaces reject page-specific inline over
   assert.deepEqual(architecture.countLegacyUi('const page = <><UiCard sx={{padding:80}} /><UiStatRow variant="custom" style={{marginTop:19}} /></>;'), { "surface:inline-override": 2, "stat:unsupported-variant": 1 });
   assert.deepEqual(architecture.countLegacyUi('const page = <UiStatRow variant="compact" />;'), {});
 });
+test("shared tables reject alternate variants and page-specific presentation overrides", () => {
+  assert.deepEqual(architecture.countLegacyUi('const page = <UiTable variant="custom" sx={{padding:80}} />;'), { 'table:unsupported-variant': 1, 'surface:inline-override': 1 });
+  assert.deepEqual(architecture.countLegacyUi('const page = <UiTable variant="comparison" />;'), {});
+  assert.equal(architecture.cssViolations('.ui-table td {font-size:40px}', 'policy.css').length, 1);
+});
