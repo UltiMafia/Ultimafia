@@ -38,3 +38,34 @@ test('role comparisons weight routes equally and retain every outlier selector',
   assert.deepEqual(result.map(value => value.selectors), [['target-0'], ['target-1']]);
   assert.equal(result[1].masterDelta, 10);
 });
+test('reviewed tab windows require matching master evidence, keyboard checks, complete labels and usable targets', () => {
+  const observation = { surface: 'learn-games', taskChecks: ['selected-tabs-fit-scroll-window-and-keyboard-reaches-first-and-last-sections'] };
+  const problem = { property: 'clippedByAncestor', severity: 'medium', target: { role: 'tab' }, tabScrollWindow: {
+    scrollWidth: 500, clientWidth: 200, hasEnabledScrollButton: true,
+    selected: true, labelWithinWindow: true, visibleHitWidth: 70,
+  } };
+  assert.equal(report.classifyDifference(observation, problem, 0).status, 'intentional');
+  assert.equal(report.classifyDifference({ ...observation, surface: 'shop' }, problem, 0).status, 'open');
+  assert.equal(report.classifyDifference({ ...observation, taskChecks: [] }, problem, 0).status, 'open');
+  assert.equal(report.classifyDifference(observation, problem, null).status, 'open');
+  assert.equal(report.classifyDifference(observation, { ...problem, severity: 'high' }, 0).status, 'open');
+  assert.equal(report.classifyDifference(observation, { ...problem, target: { role: 'button' } }, 0).status, 'open');
+  for (const change of [{ labelWithinWindow: false }, { visibleHitWidth: 20 }, { hasEnabledScrollButton: false }, { scrollWidth: 200 }]) {
+    assert.equal(report.classifyDifference(observation, { ...problem, tabScrollWindow: { ...problem.tabScrollWindow, ...change } }, 0).status, 'open');
+  }
+});
+test('clipping comparisons match the same named control and tablist, never an unrelated first master finding', () => {
+  const identity = { role: 'tab', name: 'event', tablistIndex: 1 };
+  const problem = { role: 'control', selector: '#event', property: 'clippedByAncestor', observed: 12, target: identity, severity: 'medium' };
+  const measurement = targets => ({ state: 'default', position: 'top', screenshot: 'example.png', viewport: { width: 320, height: 844 },
+    heading: { selector: '#heading', fontSize: 24, box: { top: 0 } }, shell: { box: { top: 0 } }, samples: [], controlTargets: targets, problems: [problem] });
+  const run = (branch, targets) => ({ branch, directory: '/unused', report: { palette: 'dark', cases: [{ name: 'learn-games', route: '/learn/games',
+    status: 'captured-baseline-not-accepted', viewport: { width: 320 }, measurements: [measurement(targets)] }] } });
+  const target = { identity, clippingPixels: 5 };
+  const runs = [run('redesign', [{ ...target, clippingPixels: 12 }]), run('master', [{ identity: { ...identity, name: 'roles', tablistIndex: 0 }, clippingPixels: 90 }, target])];
+  const compare = runs => report.buildReport([{ id: 'learn-games.default', surface: 'learn-games', state: 'default' }], runs).findings[0];
+  assert.equal(compare(runs).masterValue, 5);
+  assert.equal(compare(runs).masterDelta, 7);
+  assert.equal(compare([runs[0], run('master', [])]).masterValue, null);
+  assert.equal(compare([runs[0], run('master', [target, target])]).masterStatus, 'ambiguous-target');
+});

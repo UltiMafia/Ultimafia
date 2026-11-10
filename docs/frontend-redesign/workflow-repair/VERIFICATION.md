@@ -3,7 +3,46 @@
 PR #3197 is open and draft. This is not visual acceptance or a completed audit.
 Numbered historical evidence directories are not final-HEAD verification.
 
-## Active Learn directory/picker slice
+## Active audit classification and integrated Learn results
+
+- Completed `../audit/learn-integrated/`: **852/852 redesign cells, 852/852 actual-master
+  cells, 852 pairs, zero gaps** in the registered matrix. All **438 route cases per
+  branch passed**. Its **856 pre-classification candidates** comprise 94 heading
+  offsets and 762 clipping findings. Registration still omits global/game states;
+  this dirty-source run predates the final Learn commit, not final-HEAD evidence.
+- Clipping measurements now retain numeric pixels, original boxes and named
+  control/tablist identities. Master comparison matches that target, never the
+  first unrelated clipped control. Missing/ambiguous targets remain explicit.
+- The corrected focused run `../audit/reference-tab-classification-corrected/`
+  passes **18/18 redesign and 18/18 master route cases**, pairing **120 cells**.
+  It retains **662 total findings: 628 intentional tab-window findings and 34
+  open setup-editor findings**. Its other 732 inventory cells remain gaps in this
+  focused report. Do not subtract these classifications from the older full run
+  as though that run had been remeasured.
+- The named `reference-tab-scroll-window` rule is limited to Learn tabs with a
+  matched master target, overflowing MUI scroll window, visible enabled arrow and
+  passing selected-label/hit-area/keyboard contract. All 628 classified targets
+  are unselected neighboring tabs. Findings, geometry, master deltas and written
+  reasons stay visible; other surfaces and clipped selected labels stay open.
+  The first classification attempt found zero intentional findings because the
+  clipping ancestor was MUI's root rather than its scroller; retained diagnostics
+  are in `../audit/reference-tab-classification/`. No production workaround was
+  made for this measurement issue.
+- Inspected all 80 original Learn sheets (696 images / 634 unique hashes), including
+  superseded empty-master diagnostics, and all 14 newly unique corrected sheets
+  (111 hashes) in `/var/tmp/ultimafia-learn-new-images/`. This includes populated
+  master achievements, composition fixture and separate phone bottoms. These sets
+  overlap; their totals are not additive coverage. Desktop thumbnails establish
+  composition, not all native text detail. The setup editor's 320px sticky-step
+  overlap remains open, although Add succeeds after scrolling. No visual acceptance.
+- Latest tooling verification: **262 Node tests passed, 0 failed** using
+  `node --test test/*.test.mjs`; `/var/tmp/ultimafia-tab-classification-node-verified.log`.
+  `npm run lint:ui` and `git diff --check` passed. No production UI is changed by
+  classification. The fork's subsequent Back-dismissal navigation fix was then
+  fast-forwarded without rewriting history; its integrated verification follows
+  in the next slice rather than being inferred from earlier captures.
+
+## Preceding Learn directory/picker slice
 
 - Shared `UiReferenceList`/`UiReferenceEntry` replace the role-card gallery with
   continuous directory rows. Names, original artwork and complete descriptions
@@ -32,7 +71,7 @@ Numbered historical evidence directories are not final-HEAD verification.
   actual-master route cases**, pairing **120 cells**; **662 geometry candidates**
   remain in this focused report, many repeated tab-window candidates. They are
   not silently suppressed. `../audit/learn-verified/` is dirty-source slice
-  evidence, not final-HEAD evidence. The complete integrated run is still pending.
+  evidence, not final-HEAD evidence. The completed integrated run is recorded above.
 - Image inspection then exposed the master's stale empty `/api/achievements`
   bootstrap despite the shared populated fixture. Corrected it to the same public
   achievement source and recaptured **12/12 BEFORE master and 18/18 AFTER master
@@ -47,7 +86,7 @@ Numbered historical evidence directories are not final-HEAD verification.
 - Inspected every first repaired Learn/setup image through sheets 53–80 in
   `/var/tmp/ultimafia-learn-inspection/`, including separate phone bottoms in both
   palettes. Desktop thumbnails establish composition, not native text detail.
-  Before/master and newly updated fixture inspection is not yet complete.
+  Before/master and newly updated fixture inspection was completed as recorded above.
   No visual acceptance is claimed. The 320px initial picker partly overlaps the
   sticky step controls; the actual add action is reachable after scrolling in
   the passing full creator interaction. Keep this distinction explicit.
@@ -55,8 +94,8 @@ Numbered historical evidence directories are not final-HEAD verification.
   <new-directory>` builds hash-deduplicated inspection sheets with original-image
   provenance, excludes failed cases and never marks visual acceptance. It requires
   Pillow and refuses an existing output directory. The current three-run set
-  contains 1,182 images / 698 unique hashes / 88 sheets; inspection is still in
-  progress, not 1,182 visually accepted images.
+  contains 1,182 images / 698 unique hashes / 88 sheets; that generated manifest
+  does not mark inspection or acceptance. Manual inspection is recorded separately.
 
 | Learn check | Observed result |
 | --- | --- |

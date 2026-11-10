@@ -15,7 +15,7 @@ the complete screenshot refresh remains outstanding.
 
 ### Diff against fetched upstream master
 
-363 files: **+22,055 / −14,976** text lines; 161 added, 169 modified, 33 deleted
+365 files: **+22,235 / −14,982** text lines; 162 added, 170 modified, 33 deleted
 (25 binary files). Recomputed against fetched `origin/master` for this slice.
 
 ## Current work
@@ -57,6 +57,10 @@ the complete screenshot refresh remains outstanding.
   actual production geometry, role comparisons, source/bundle/image provenance
   and explicit missing cells. Role medians weight each route once rather than
   allowing a 443-role directory to outweigh other pages.
+- Clipping comparisons match the same named master control/tablist, retaining
+  missing/ambiguous targets. A narrow Learn tab-window rule retains intentional
+  findings and reasons instead of suppressing them; selected labels, usable hit
+  areas, scroll affordances and keyboard checks remain required.
 - Actual master uses its untouched complete Main/providers/routes, not redesign
   components with old colors. New dialogs are paired with documented actual
   ancestors when master lacks them; native prompts are recorded and dismissed,
@@ -93,7 +97,7 @@ registered run would therefore still not establish exhaustive inventory coverage
 | Public same-database comparison | 48/48 cases, 24 paired cells, 96 separate top/bottom images; 56 public source responses all HTTP 200 |
 | Upstream-integrated comparison before administrative expansion | 582/582 redesign cells and 582/582 master cells; 582 pairs, zero gaps, 270 open candidates; inventory remained incomplete |
 | Administrative/new-page focused comparison | 36/36 redesign and 36/36 master route cases; 174 paired cells; four remaining Rules clipping candidates. Subsequent invoice-contract correction requires refreshed data evidence |
-| Frontend Node tests | 260 passed, 0 failed |
+| Frontend Node tests | 262 passed, 0 failed |
 | Controls / lifecycle | 57 checks and 39 states / 33 checks passed |
 | Game / competitive / homepage | 36 / 16 / 10 cases passed |
 | Build / UI architecture / scoped ESLint | Passed / passed / 0 errors, 28 existing Roles/achievement-hook warnings across the five-file Learn slice (tooling separately reports a stale browser database) |
@@ -102,7 +106,9 @@ registered run would therefore still not establish exhaustive inventory coverage
 | Expanded full comparison | **720/720 redesign and 720/720 master cells; 720 pairs, zero gaps, 246 open candidates** (94 heading offsets, 152 clipping). All 438 route cases passed per branch. Built before the last composer correction, so not final-HEAD evidence |
 | Corrected Rules comparison | **12/12 redesign and 12/12 master route cases; 42 paired cells**, including all 30 newly registered Rules-state cells; 22 unresolved geometry candidates. Inspected all newly unique corrected-label images after the 264-image initial Rules inspection |
 | Shared violations consumers | 12/12 route cases passed across profile reporting and staff report detail; select/cancel, deferred unmount/reopen and no report-write assertions passed |
-| Learn/setup/new-page comparison | **18/18 redesign and 18/18 actual-master route cases; 120 paired cells**, including populated achievements in both branches after correcting master's stale bootstrap. 662 geometry candidates remain in this focused report; the expanded full run remains pending |
+| Learn/setup/new-page comparison | **18/18 redesign and 18/18 actual-master route cases; 120 paired cells**, including populated achievements in both branches after correcting master's stale bootstrap |
+| Learn integrated full comparison | **852/852 redesign and 852/852 master cells, 852 pairs, zero gaps; all 438 route cases passed per branch**. 856 pre-classification candidates (94 heading offsets, 762 clipping). Dirty-source run before the final Learn commit, not final-HEAD evidence |
+| Corrected focused tab classification | **120 paired cells; 662 total findings, 628 intentional neighboring-tab findings, 34 open setup-editor findings**. All 18 route cases passed per branch. Other 732 cells remain gaps in this focused report; classifications are not silently applied to the older full run |
 | Selected reference tabs / keyboard | 12/12 cases passed; complete text labels and usable visible hit areas fit their scroll windows, and keyboard navigation reaches first/last sections. Neighboring blank tab padding is not misreported as clipped text |
 | Backend suite | Failed isolated attempts: 821 passed/80 failed, then 994 passed/145 failed; worker heap exhaustion and a Mocha parallel-reporter crash remain unresolved. No server/game-engine changes were made to force a pass |
 
@@ -110,6 +116,12 @@ Selected slice images/contact sheets and native-size summary crops were inspecte
 All 18 transcript comparison images were inspected through width-specific sheets
 and selected native images. Administrative before images and selected repaired
 phone/dialog/loading captures were also inspected.
+All 80 original Learn inspection sheets and all 14 newly unique corrected sheets
+were inspected, including populated master achievements and separate phone
+bottoms. Desktop thumbnails establish composition, not every native text detail.
+The 320px setup editor's sticky-step overlap remains open despite the Add action
+succeeding after scrolling. The fork's later Back-dismissal fix was fast-forwarded;
+earlier captures do not establish its integrated verification.
 This is not inspection or acceptance of every route, master counterpart, dialog
 and global-state image. Speculative navigation changes made while diagnosing a
 selector failure were discarded; the existing Back handler is unchanged.

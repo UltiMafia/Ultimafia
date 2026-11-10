@@ -28,6 +28,17 @@ master captures are gaps, not `not-on-master` exemptions. `masterStatus:
 unverified` explicitly means a comparison was not performed. It must not be
 reported as `same`, `changed` or `not-on-master` without actual evidence.
 
+Clipping values are numeric pixels with the original control/container boxes.
+Actual-master targets match normalized control role/name and tablist index;
+missing or ambiguous matches remain explicit rather than becoming zero. The
+versioned `test/ui-audit/intentional-differences.json` contains narrow, named review
+rules. The Learn tab-window rule requires matched master evidence, an overflowing
+MUI window, an enabled visual arrow, complete selected labels/usable targets and
+passing first/last keyboard checks. It does not exempt other surfaces or ordinary
+controls. Intentional findings retain geometry, screenshots, master deltas and
+their reason in JSON/HTML. Summary counts distinguish total, intentional and open;
+classification never means visual acceptance or creates missing coverage.
+
 For iteration, use `ROUTE_CASES=players ROUTE_WIDTHS=320 npm run audit:ui`.
 This deliberately leaves the full denominator unchanged. Regenerate reports
 without capturing with `node test/run-ui-audit.cjs --report-only`. Use
@@ -77,9 +88,12 @@ has since expanded to 852 cells with explicit administrative, Rules and Mafia
 reference states. The administrative integration run captured all 720 then-registered pairs with zero gaps
 and 246 open candidates (94 heading offsets, 152 clipping), before the final
 composer correction; it is not final-HEAD evidence or exhaustive inventory. The
-current focused Learn/setup/new-page comparison pairs 120 cells; the expanded
-full comparison is still pending. Non-Mafia reference/global/game states still
-need inventory expansion. The
+completed Learn full comparison pairs all 852 registered cells with zero gaps,
+856 pre-classification candidates (94 heading offsets, 762 clipping), and all
+438 route cases passing per branch. It predates the final Learn commit and is
+not final-HEAD evidence. The corrected focused tab-classification run pairs 120
+cells: 662 total findings, 628 intentional and 34 open; its other 732 cells remain
+gaps. Non-Mafia reference/global/game states still need inventory expansion. The
 report does not interpret a missing master as a redesign regression. Geometry
 candidates require image inspection and classification; automated capture is not
 visual acceptance, nor evidence of live authentication or physical-phone behavior.

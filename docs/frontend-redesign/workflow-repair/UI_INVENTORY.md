@@ -16,12 +16,13 @@ and workflow lists below still require complete stable-ID registration and
 capture tasks before the inventory can be called exhaustive.
 
 The registry currently contains **142 route/state IDs × six cells = 852 cells**.
-The preceding administrative integration run covered all **720 then-registered pairs**, with no
-gaps and 246 open geometry candidates. It was built before the final composer
-correction and is not final-HEAD evidence. Registered coverage is not exhaustive
-global/game-state inventory completion. The focused corrected Rules run pairs
-42 cells, including all 30 newly registered Rules-state cells; its other 708
-inventory cells remain gaps in that focused report, not silently reused evidence.
+The Learn integration run covered all **852 registered pairs**, with no gaps and
+856 pre-classification geometry candidates (94 heading offsets, 762 clipping).
+It predates the final Learn commit and is not final-HEAD evidence. Registered
+coverage is not exhaustive global/game-state inventory completion. The corrected
+tab-classification run pairs 120 cells, retaining 628 intentional findings and
+34 open findings; its other 732 cells remain gaps in that focused report, not
+silently reused evidence. Intentional findings remain visible with their reason.
 
 ## Route surfaces
 
