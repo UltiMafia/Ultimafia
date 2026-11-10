@@ -3486,7 +3486,7 @@ const MessageRow = React.memo(function MessageRow(props) {
                   roleify={props.settings.roleMentions}
                 />
               </span>
-              <UiIcon name="quote" size={16} />
+              <UiIcon name="quote" size={16} className="quote-mark-end" />
             </>
           )}
         </div>

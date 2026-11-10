@@ -472,6 +472,12 @@ html[data-keyboard="open"] .game .meeting-tabs {
   margin: 0px 2px 0px 5px;
 }
 
+/* The mark that closes a quote is the opening glyph, mirrored - the icon set
+   has one quote icon, not a left and a right one. */
+.game .message .quote-mark-end {
+  transform: scaleX(-1);
+}
+
 .game .message .quote-content {
   /*display: flex;*/
   /*flex-flow: row wrap;*/
