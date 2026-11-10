@@ -73,9 +73,10 @@ async function main() {
     async function newPage(viewport) {
       const context = await browser.newContext({ viewport, colorScheme: palette, reducedMotion: "reduce", serviceWorkers: "block", locale: "en-US", timezoneId: "UTC" });
       const page = await context.newPage();
-      const observed = { runtimeErrors: [], consoleErrors: [], consoleWarnings: [], blockedTraffic: [], failedRequests: [] };
+      const observed = { runtimeErrors: [], consoleErrors: [], consoleWarnings: [], blockedTraffic: [], failedRequests: [], historyTransitions: [] };
       page.on("pageerror", error => observed.runtimeErrors.push(error.stack || error.message));
       page.on("console", message => {
+        if (message.text().startsWith('UI_AUDIT_HISTORY ')) observed.historyTransitions.push(JSON.parse(message.text().slice(17)));
         if (message.type() === "error") observed.consoleErrors.push(message.text());
         if (message.type() === "warning") observed.consoleWarnings.push(message.text());
       });
@@ -94,7 +95,17 @@ async function main() {
         observed.blockedTraffic.push({ url: requestUrl.toString(), method: route.request().method(), type: route.request().resourceType() });
         return route.abort("blockedbyclient");
       });
-      await context.addInitScript(() => {
+      await context.addInitScript(({ traceHistory }) => {
+        if (traceHistory) {
+          for (const method of ['pushState', 'replaceState', 'back', 'go']) {
+            const original = window.history[method];
+            window.history[method] = function (...args) {
+              console.debug('UI_AUDIT_HISTORY ' + JSON.stringify({ method, state: this.state, nextState: ['pushState', 'replaceState'].includes(method) ? args[0] : undefined }));
+              return original.apply(this, args);
+            };
+          }
+          window.addEventListener('popstate', () => console.debug('UI_AUDIT_HISTORY ' + JSON.stringify({ method: 'popstate', state: window.history.state })));
+        }
         window.__routeReviewLocalWrites = [];
         const NativeDate = Date;
         const fixedNow = Date.UTC(2026, 10, 8, 16, 10);
@@ -124,7 +135,7 @@ async function main() {
         };
         // Never allow a browser form to navigate to an auth/provider endpoint.
         document.addEventListener("submit", event => { event.preventDefault(); window.__routeReviewLocalWrites.push({ type: "form-submit-blocked" }); }, true);
-      });
+      }, { traceHistory: process.env.ROUTE_HISTORY_TRACE === '1' });
       return { page, context, observed };
     }
     const bootstrap = await newPage({ width: 1440, height: 1000 });
@@ -428,16 +439,36 @@ async function reviewDiscoveryTasks(page, item, captureTask) {
     checks.push("directory-bio-editor-accessible-and-cancel-sends-no-write");
   }
   if (item.name === "donors-management") {
+    const trace = async step => {
+      if (process.env.ROUTE_HISTORY_TRACE === '1') await page.evaluate(step => console.debug('UI_AUDIT_HISTORY ' + JSON.stringify({ method: 'task', step, state: history.state, dialogs: [...document.querySelectorAll('[role="dialog"]')].map(element => element.textContent.slice(0, 120)) })), step);
+    };
+    for (let attempt = 0; attempt < 3; attempt++) {
+    await trace(`${attempt}-before-assign`);
     await page.getByRole("button", { name: "Assign donor status", exact: true }).click();
+    await trace(`${attempt}-after-assign`);
     let dialog = page.getByRole("dialog", { name: "Assign donor status", exact: true });
     assert.ok(await dialog.getByRole("button", { name: "Assign status", exact: true }).isDisabled());
+    if (attempt === 0) await captureTask("assign-dialog");
     await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
-    await page.getByRole("button", { name: "Remove status", exact: true }).first().click();
+    await trace(`${attempt}-after-assign-cancel`);
+    // Intentionally open the next overlay without waiting for history.back().
+    await page.locator('.acknowledgement-row').first().getByRole("button", { name: "Remove status", exact: true }).click();
     dialog = page.getByRole("dialog", { name: "Remove donor status?", exact: true });
-    await captureTask("remove-confirmation");
-    await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
+    await dialog.waitFor();
+    await trace(`${attempt}-after-remove`);
+    if (attempt === 0) await captureTask("remove-confirmation");
+    if (attempt === 1) {
+      assert.ok(await page.evaluate(() => window.history.state?.__overlay), 'An interactive dialog must own a Back marker before browser Back');
+      await page.evaluate(() => window.history.back());
+    }
+    else await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
+    await dialog.waitFor({ state: "hidden" });
+    await page.waitForFunction(() => !window.history.state?.__overlay);
+    assert.equal(new URL(page.url()).pathname, '/fame/donors', 'Overlay Back never navigates away from its retained route');
+    }
     assert.equal(await page.evaluate(() => window.__routeReview.writes.filter(write => write.url?.startsWith('/api/mod/')).length), 0);
     checks.push("donor-assignment-and-removal-cancel-without-changing-groups");
+    checks.push("rapid-dialog-reopen-and-browser-back-have-no-stale-history-markers");
   }
   if (item.name === "family-leader") {
     await page.getByRole("button", { name: "Manage Juniper", exact: true }).click();
@@ -752,6 +783,22 @@ async function checkRemainingLayout(page, item) {
     assert.ok(await page.getByRole("button", { name: /^Buy / }).count() >= 20);
     assert.ok(await page.getByRole("button", { name: "Buy Word Deck Slot", exact: false }).isEnabled());
     checks.push("full-product-grid-with-explicit-price-ownership-and-buy");
+  }
+  if (item.name === "stocks") {
+    const summary = page.locator('.ui-stat-row--compact');
+    assert.equal(await summary.locator('.ui-stat').count(), 3);
+    const bounds = await summary.evaluate(element => {
+      const box = element.getBoundingClientRect();
+      return { height: box.height, overflow: element.scrollWidth > element.clientWidth + 1, valuesOverflow: [...element.querySelectorAll('.ui-stat')].some(stat => stat.scrollWidth > stat.clientWidth + 1), currencyMisaligned: [...element.querySelectorAll('.ui-stat strong')].some(value => {
+        const text = document.createRange(); text.selectNodeContents(value.firstChild);
+        const textBox = text.getBoundingClientRect(), iconBox = value.querySelector('.coin-icon').getBoundingClientRect();
+        return Math.abs((textBox.top + textBox.bottom) / 2 - (iconBox.top + iconBox.bottom) / 2) > 6;
+      }) };
+    });
+    assert.ok(bounds.height < 100, 'A compact balance summary does not strand a third value on a tall phone panel');
+    assert.equal(bounds.overflow || bounds.valuesOverflow, false, 'Every balance value and currency icon fits its stat');
+    assert.equal(bounds.currencyMisaligned, false, 'Currency icons remain on the same line as their amounts');
+    checks.push('compact-shared-balance-summary-keeps-all-three-values-and-currency-icons-readable');
   }
   if (item.name === "profile-custom") {
     const colors = await page.locator(".profile .box-panel").first().evaluate(element => ({ inline: element.style.backgroundColor, computed: getComputedStyle(element).backgroundColor }));

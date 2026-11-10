@@ -27,7 +27,7 @@ import TrophyCase from "components/TrophyCase";
 import { UserContext } from "Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { NameWithAvatar } from "pages/User/UserWidgets";
-import { UiAction, UiDialog, UiIcon } from "components/ui";
+import { UiAction, UiDialog, UiIcon, UiPageHeader } from "components/ui";
 
 import { TIER_ICONS } from "utils/skillRating";
 import { MIN_RATED_GAMES } from "Constants";
@@ -400,40 +400,10 @@ export default function HallOfFame() {
   const activeSortDirection = data?.sort?.sortDirection || sortDirection;
 
   return (
-    <Stack direction="column" spacing={1}>
-      <Grid2 container columns={isPhoneDevice ? 1 : 3} spacing={1}>
-        <Grid2 size={2}>
-          <Stack direction="column" spacing={0.5}>
-            <Typography variant="h2" sx={{ textAlign: isPhoneDevice ? "center" : "left" }}>
-              Hall of Fame
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ textAlign: isPhoneDevice ? "center" : "left" }}
-            >
-              Recognition for top players by skill rating and collected loot — trophies,
-              kudos, karma, achievements, and scrapbook progress.
-            </Typography>
-          </Stack>
-        </Grid2>
-        <Grid2 size={1}>
-          <Paper
-            elevation={2}
-            sx={{
-              p: 1.5,
-              height: "100%",
-            }}
-          >
-            <Stack direction="column" spacing={0.5}>
-              <Typography variant="h4">Current filters</Typography>
-              <Typography variant="body2">{filterSummary}</Typography>
-              {data?.myRank && (
-                <Typography variant="body2">Your rank: #{data.myRank}</Typography>
-              )}
-            </Stack>
-          </Paper>
-        </Grid2>
-      </Grid2>
+    <>
+      <UiPageHeader title="Hall of Fame" description="Recognition for top players by skill rating and collected loot — trophies, kudos, karma, achievements, and scrapbook progress.">
+        <p>Current filters: {filterSummary}{data?.myRank ? ` · Your rank: #${data.myRank}` : ""}</p>
+      </UiPageHeader>
 
       <Tabs
         centered
@@ -608,6 +578,6 @@ export default function HallOfFame() {
       >
           <SkillRatingAboutContent minRatedGames={data?.filters?.minRatedGames} />
       </UiDialog>
-    </Stack>
+    </>
   );
 }

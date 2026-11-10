@@ -1,7 +1,8 @@
 import React from "react";
 
-export function UiStatRow({ children, className = "" }) {
-  return <div className={`ui-stat-row ${className}`.trim()}>{children}</div>;
+export function UiStatRow({ children, className = "", variant = "standard" }) {
+  if (!["standard", "compact"].includes(variant)) throw new TypeError(`Unsupported UiStatRow variant: ${variant}`);
+  return <div className={`ui-stat-row ui-stat-row--${variant} ${className}`.trim()}>{children}</div>;
 }
 
 export function UiStat({ label, value, detail = null }) {

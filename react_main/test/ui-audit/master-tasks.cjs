@@ -76,6 +76,29 @@ async function reviewMasterTasks(page, item, capture) {
     await capture('submission-error');
     checks.push('actual-master-feedback-error-without-creating-an-issue');
   }
+  if (['contributors', 'donors'].includes(item.name)) {
+    // Upstream's own-card click is not an accessible Edit button. Do not replace
+    // that DOM with redesign components merely to obtain a matching selector.
+    const card = content.locator('.MuiCard-root').filter({ has: page.getByText('NightOwl', { exact: true }) }).first();
+    // The center of the card may hit a profile/GitHub link, which deliberately
+    // stops bubbling. The existing edit glyph is the intended own-card target.
+    await card.locator('.fa-pencil-alt').click();
+    const editor = card.locator('textarea').first();
+    await editor.fill('Local unsubmitted bio draft');
+    await editor.scrollIntoViewIfNeeded();
+    await capture('bio-editor');
+    await card.getByRole('button', { name: 'Cancel', exact: true }).click();
+    checks.push('actual-master-own-bio-edit-and-cancel-without-saving');
+  }
+  if (item.name === 'donors-management') {
+    await content.getByRole('button', { name: 'Assign donor status', exact: true }).click();
+    await page.getByRole('combobox', { name: /Search user/ }).waitFor();
+    await capture('assign-dialog');
+    await page.keyboard.press('Escape');
+    await page.getByRole('combobox', { name: /Search user/ }).waitFor({ state: 'hidden' });
+    await capture('remove-confirmation');
+    checks.push('master-assignment-popover-and-removal-ancestor-with-no-mutation');
+  }
   if (item.name === 'admin-intake') {
     // Upstream posts immediately; it has no confirmation dialog. Do NOT click
     // the destructive buttons to manufacture an equivalent. Capture the actual

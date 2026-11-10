@@ -36,7 +36,7 @@ import {
 } from "@mui/material";
 import "css/fame.css";
 import CoinIcon from "components/CoinIcon";
-import { UiAction, UiCard, UiIcon } from "components/ui";
+import { UiAction, UiIcon, UiPageHeader, UiStat, UiStatRow } from "components/ui";
 import { useErrorAlert } from "../../components/Alerts";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { UserContext, SiteInfoContext } from "../../Contexts";
@@ -472,34 +472,13 @@ export default function StockMarket() {
 
   return (
     <Box sx={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden', textAlign: 'left' }}>
-      {/* Top Banner & Balance */}
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        justifyContent="space-between"
-        alignItems={{ xs: "stretch", sm: "center" }}
-        spacing={2}
-        sx={{ mb: 3 }}
-      >
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: 1 }}>
-            <UiIcon name="rankings" size={20} /> Player & Family Stock Market
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Trade player shares or Family ETFs. Earn passive dividends when they win ranked/competitive matches!
-          </Typography>
-        </Box>
-
-        {user.loggedIn && (
-          <UiCard className="stock-summary">
-            <CoinIcon size={28} />
-            <div className="stock-summary-values">
-              <div><span>Coins</span><strong>{user.coins.toFixed(2)}</strong></div>
-              <div><span>Stock Value</span><strong>{totalStockValue.toFixed(2)}</strong></div>
-              <div><span>Net Worth</span><strong>{(user.coins + totalStockValue).toFixed(2)}</strong></div>
-            </div>
-          </UiCard>
-        )}
-      </Stack>
+      <UiPageHeader title="Player & Family Stock Market" description="Trade player shares or Family ETFs. Earn passive dividends when they win ranked/competitive matches!">
+        {user.loggedIn && <UiStatRow variant="compact">
+          <UiStat label="Coins" value={<>{user.coins.toFixed(2)} <CoinIcon size={16} /></>} />
+          <UiStat label="Stock Value" value={<>{totalStockValue.toFixed(2)} <CoinIcon size={16} /></>} />
+          <UiStat label="Net Worth" value={<>{(user.coins + totalStockValue).toFixed(2)} <CoinIcon size={16} /></>} />
+        </UiStatRow>}
+      </UiPageHeader>
 
       {/* Tabs Menu */}
       <Tabs

@@ -60,6 +60,8 @@ function countLegacyUi(source, filename = "example.jsx") {
         if (attribute.name?.name === "headingLevel" && (value === "1" || attribute.value?.expression?.value === 1)) add("title:h1");
         if (attribute.name?.name === "className" && literalStrings(attribute.value).some(value => legacyHeaders.test(value))) add("header:legacy");
         if (["UiPage", "UiPageHeader"].includes(node.name?.name) && ["style", "sx"].includes(attribute.name?.name)) add("header:inline-override");
+        if (["UiCard", "UiStatRow"].includes(node.name?.name) && ["style", "sx"].includes(attribute.name?.name)) add("surface:inline-override");
+        if (node.name?.name === "UiStatRow" && attribute.name?.name === "variant" && attributeValues(attribute.value).some(value => !["standard", "compact"].includes(value))) add("stat:unsupported-variant");
         if (node.name?.name === "UiPage" && attribute.name?.name === "width" && attributeValues(attribute.value).some(value => !["reading", "wide", "prose", "full"].includes(value))) add("page:unsupported-width");
         if (["UiPage", "UiPageHeader"].includes(node.name?.name) && attribute.name?.name === "variant" && attributeValues(attribute.value).some(value => !["standard", "editor", "moderation", "forum", "detail", "identity"].includes(value))) add("header:unsupported-variant");
       }

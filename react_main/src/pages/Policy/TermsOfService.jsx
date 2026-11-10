@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { UiPageHeader } from "components/ui";
 import { useTheme } from "@mui/material/styles";
 import { Typography, Link, List, ListItem, ListItemText, Box, Divider } from "@mui/material";
 
@@ -11,12 +12,7 @@ export default function TermsOfService() {
 
   return (
     <>
-      <Typography variant="h2" gutterBottom>
-        Terms of Service
-      </Typography>
-      <Typography variant="body2" color="text.secondary" paragraph>
-        Last Updated: February 6, 2026
-      </Typography>
+      <UiPageHeader title="Terms of Service" description="Last Updated: February 6, 2026" />
 
       <Typography variant="body1" paragraph>
         Welcome to UltiMafia. These Terms of Service ("Terms") govern your access to and use of the UltiMafia website, 

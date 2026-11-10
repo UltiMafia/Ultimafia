@@ -3,9 +3,6 @@ import { useLocation, Link as RouterLink } from "react-router-dom";
 import {
   Box,
   Typography,
-  Select,
-  MenuItem,
-  FormControl,
   Tabs,
   Tab,
   Link,
@@ -25,6 +22,7 @@ import { ActiveGameTypes, DisabledGameTypes } from "Constants";
 import GameIcon from "components/GameIcon";
 import { SiteInfoContext } from "Contexts";
 import { hyphenDelimit } from "utils";
+import { UiPageHeader, UiField, UiMenuItem } from "components/ui";
 
 const TAB_IDS = ["roles", "modifiers", "items", "mechanics", "achievements"];
 const TAB_LABELS = {
@@ -307,37 +305,18 @@ export default function Games(props) {
 
   return (
     <>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-        <Typography variant="h2" component="span" gutterBottom={false}>
-          Learn
-        </Typography>
-        <FormControl variant="standard" size="small" sx={{ minWidth: 180 }}>
-          <Select
-            value={gameType}
-            onChange={handleGameChange}
-            displayEmpty
-            sx={{
-              typography: "h2",
-              "& .MuiSelect-select": { py: 0.5 },
-            }}
-            renderValue={(value) => (
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <GameIcon gameType={value} size={28} />
-                {value}
-              </Box>
-            )}
-          >
+      <UiPageHeader title="Learn" variant="editor" actions={
+          <UiField select label="Game" value={gameType} onChange={handleGameChange} SelectProps={{ renderValue: value => <span className="ui-action-row"><GameIcon gameType={value} size={24} />{value}</span> }}>
             {ActiveGameTypes.map((game) => (
-              <MenuItem key={game} value={game}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <UiMenuItem key={game} value={game}>
+                <span className="ui-action-row">
                   <GameIcon gameType={game} size={24} />
                   {game}
-                </Box>
-              </MenuItem>
+                </span>
+              </UiMenuItem>
             ))}
-          </Select>
-        </FormControl>
-      </Box>
+          </UiField>
+      } />
       <Box>
         <LearnGamePanel gameType={panelGameType} Layout={LearnTabsLayout} />
       </Box>

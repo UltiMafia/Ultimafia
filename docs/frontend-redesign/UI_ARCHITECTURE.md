@@ -43,6 +43,12 @@ introduce a gallery of cards for continuous role/setup reference information.
 than inheriting text from an authored background. Profile identity/bio/reputation
 insets preserve the authored color around their readable theme surface. Profile
 statistics show exact results on a neutral surface, not a theme-dependent pie.
+`UiStatRow` has `standard` (responsive, general summary) and `compact` (three
+adjacent account values, maximum 480px) variants. The compact row prevents a
+phone balance summary from wrapping its last value into a tall sparse card.
+Use header children for status/filter metadata, not the header action slot;
+read-only information is not an action. Shared surfaces reject page-specific
+inline `style`/`sx` overrides.
 
 Controls use `UiField` and `UiAction` with named variants rather than raw native
 or direct MUI equivalents. Dialogs use `UiDialog`, explicit cancellation and

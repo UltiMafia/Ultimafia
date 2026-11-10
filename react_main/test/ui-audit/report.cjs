@@ -13,6 +13,8 @@ const taskStates = {
   'profile-rich': ['games', 'collection', 'statistics'], 'profile-custom': ['games', 'collection', 'statistics'],
   'family-leader': ['bio-editor', 'remove-confirmation', 'role-confirmation'],
   feedback: ['submission-error'], 'admin-intake': ['approve-confirmation', 'ban-confirmation'],
+  contributors: ['bio-editor'], donors: ['bio-editor'],
+  'donors-management': ['assign-dialog', 'remove-confirmation'],
 };
 function inventoryFromSource(source) {
   const literal = source.match(/export const routeCases = (\[[\s\S]*?\n\]);/);

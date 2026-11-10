@@ -16,6 +16,7 @@ import {
   ListItemText,
 } from "@mui/material";
 import { useViolations } from "../../hooks/useViolations";
+import { UiPageHeader } from "components/ui";
 
 const OFFENSE_LABELS = ["1st", "2nd", "3rd", "4th", "5th", "6th"];
 
@@ -510,12 +511,7 @@ export default function Rules() {
 
   return (
     <>
-      <Typography variant="h2" gutterBottom>
-        UltiMafia Rules of Conduct
-      </Typography>
-      <Typography variant="body2" color="text.secondary" paragraph>
-        Last Updated: August 22, 2026
-      </Typography>
+      <UiPageHeader title="UltiMafia Rules of Conduct" description="Last Updated: August 22, 2026" />
 
       <Tabs value={selectedTab} onChange={handleTabChange}>
         <Tab label="Rules" />

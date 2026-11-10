@@ -134,6 +134,7 @@ function App() {
         <Suspense fallback={<Loading small />}><RouteBoundary>
            <Routes>
              <Route path="/audit/new-page" element={<NewPageFixture />} />
+             <Route path="/welcome" element={<Welcome />} />
             <Route path="/play/*" element={<Play />} />
             <Route path="/learn/*" element={<Learn />} />
             <Route path="/community/*" element={<Community />} />

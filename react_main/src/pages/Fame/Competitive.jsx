@@ -29,6 +29,7 @@ import { UserContext, SiteInfoContext } from "Contexts";
 import { PageNav, SearchBar } from "components/Nav";
 import { useErrorAlert } from "components/Alerts";
 import { formatUTCDateOnly, formatUTCDateTime } from "utils";
+import { UiPageHeader } from "components/ui";
 
 export const QUERY_PARAM_SEASON = "season";
 export const QUERY_PARAM_ROUND = "round";
@@ -661,37 +662,16 @@ export default function Competitive() {
   }
 
   return (
-    <Stack direction="column" spacing={1}>
+    <>
+      <UiPageHeader title={displayTitle} description={caption || undefined} />
       <Grid2
         container
-        columns={isPhoneDevice ? 1 : 3}
+        columns={isPhoneDevice ? 1 : 2}
         spacing={1}
         sx={{
           alignItems: "center",
         }}
       >
-        <Grid2 size={1}>
-          <Stack
-            direction="column"
-            spacing={0.5}
-            sx={{
-              alignItems: "center",
-            }}
-          >
-            <Typography variant="h2">{displayTitle}</Typography>
-            {caption && (
-              <Typography
-                variant="caption"
-                sx={{
-                  display: "block",
-                  textAlign: isPhoneDevice ? "center" : "right",
-                }}
-              >
-                {caption}
-              </Typography>
-            )}
-          </Stack>
-        </Grid2>
         <Grid2 size={1}>
           <SeasonRoundSelect
             seasonNumber={seasonNumber}
@@ -818,7 +798,7 @@ export default function Competitive() {
           </Box>
         </>
       )}
-    </Stack>
+    </>
   );
 }
 

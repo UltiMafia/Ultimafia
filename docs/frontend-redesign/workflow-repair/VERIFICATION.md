@@ -5,6 +5,18 @@ Numbered historical evidence directories are not final-HEAD verification.
 
 ## Current changes
 
+- Third slice: Rules, Terms, Privacy, Competitive FAQ, Hall of Fame, competitive
+  standings, Learn and Stock Market now use the shared page header instead of
+  h2/h4/span title imitations. Hall-of-Fame filter metadata is continuous text,
+  not a stranded action-card. The stock balance summary uses `UiStatRow`'s named
+  compact variant; its old page-specific summary component/CSS is removed.
+- Stat-label CSS now targets the direct label, not nested currency spans. Native
+  1440/390/320 crops in both palettes confirm coins stay beside their amounts;
+  the browser runner asserts the amount/icon alignment as well as bounds.
+- Registered seven previously missing route/permission variants (Glossary,
+  invoices/denied, developer/owner/denied, Welcome) and four acknowledgement
+  dialog/editor states. The denominator is now **582 cells**, still not an
+  exhaustive global/game-state inventory.
 - Second slice: Play, profile and family now use named `UiPage` shells; Learn
   details no longer nest a second legacy shell. Profile identity uses the same
   header with a keyboard-accessible name-history action. Supported widths and
@@ -48,7 +60,7 @@ Numbered historical evidence directories are not final-HEAD verification.
 | --- | --- |
 | `git fetch origin master`; `git fetch fork redesign/workflow-repair-draft`; `git merge --no-edit fork/redesign/workflow-repair-draft` | Fast-forwarded the fork's uploaded-banner-only family change; no history rewrite |
 | `gh pr view 3197 --repo UltiMafia/Ultimafia --json state,isDraft,headRefName,headRepositoryOwner,baseRefName` | OPEN, draft, expected fork/branch/base |
-| `node --test test/*.test.mjs` | Latest shell/profile slice: 238 passed, 0 failed; log `/tmp/opencode/audit-shell-node-tests.log`. Earlier header slice: 236 passed |
+| `node --test test/*.test.mjs` | Latest title/summary slice: 239 passed, 0 failed; log `/tmp/opencode/audit-title-final-node-tests.log`. Earlier shell/profile: 238 passed; first header slice: 236 passed |
 | `node --test test/uiArchitecture.test.mjs test/uiAudit.test.mjs` | Included in the full passing run, including rejected baseline-expansion commands and page-specific h1 CSS |
 | `npm run lint:ui` / architecture test | Passed; raw titles, computed legacy header classes, alternate icon imports and external page-geometry overrides are guarded |
 | `node scripts/check-ui-architecture.cjs --reduce-baseline` | Budget decreased from 755 to 617; independent comparison found zero increases |
@@ -61,6 +73,11 @@ Numbered historical evidence directories are not final-HEAD verification.
 | Master smoke: Players, Host, thread, profile settings; dark; 1440/390/320 | 12/12 cases captured from actual upstream production components with identical controlled records |
 | Full shell-contract comparison | 516/516 redesign cells and 510/516 master pairs; six missing feedback cells because its MUI autosize helper textarea made the old selector ambiguous. The selector was corrected; focused master feedback rerun captured all six widths/palettes plus six submission-error states. Full replacement run is in progress; no claim of final-HEAD coverage |
 | Focused profile repair, all five profiles × all widths/palettes | 30/30 route cases, 0 failed renders; 66 registered cells, 96 top/bottom/task images. Contrast, adjacency and non-overlap assertions passed. `/tmp/opencode/audit-profile-contrast3.log`; six remaining identity-header offset candidates are not silently waived |
+| Completed shell/profile full comparison | 515/516 redesign cells and all 516 master cells captured. Its one donor-management failure came from a global selector hitting the outgoing assignment dialog's Remove action, not the donor row. Event tracing established the target error; speculative Back-handler changes were discarded and no navigation/game code is changed |
+| Corrected acknowledgement workflow | All 18 redesign route cases passed; 42 registered cells. Three immediate assign/cancel/remove cycles and browser Back passed at all widths/palettes with the unchanged production Back handler. Corrected actual-master editor/popover driver separately captured all 18 cases/42 cells; no writes were sent |
+| Remaining title/summary matrix | 48/48 redesign and 48/48 actual-master route cases captured, pairing 66 registered cells; no failed renders. 56 clipping candidates remain, chiefly scroll-managed tab controls, not silently accepted. `/tmp/opencode/audit-title-summary-contract.log` |
+| Compact stats after currency-span repair | 6/6 route cases, 18 registered states captured; amount/icon baseline assertions passed in both palettes at all three widths. `/tmp/opencode/audit-compact-stats-currency.log` |
+| Added-route BEFORE coverage | Six new routes captured all 36 redesign/master cells. Welcome initially exposed a missing fixture route (not missing production UI); adding its actual production route to the fixture gave 6/6 additional paired cells in `/tmp/opencode/audit-welcome-fixed.log` |
 | `node test/run-live-ui-audit.cjs` after both live-fixture builds | 48/48 cases, 0 failures; 24 paired public cells, 96 separate viewport images, 56 local source responses all HTTP 200. No authentication or synthetic accounts |
 | Lifecycle: `PLAYWRIGHT_MODULE=… node test/run-browser.cjs` after lifecycle fixture build | 33 checks, no failures/errors/blocked traffic; `/tmp/opencode/audit-lifecycle.log` |
 | Shared controls: `PLAYWRIGHT_MODULE=… SCREENSHOT_DIR=… node test/run-control-review.cjs` | 57 checks passed, 39 states captured; `/tmp/opencode/audit-controls.log` |
@@ -76,6 +93,13 @@ production build; architecture check; 238 Node tests; 57 control checks/39 state
 cases. Logs are `/tmp/opencode/audit-shell-{production-build,node-tests,controls,
 lifecycle,game-layout,competitive,homepage}.log`. Scoped ESLint reported 0 errors
 and 61 warnings before the final unused-import removal (not full-site lint).
+
+Title/summary slice regression reruns also all passed after the currency fix:
+production build, 239 Node tests, 57 controls/39 states, 33 lifecycle checks,
+36 game-layout cases, 16 competitive cases and 10 homepage cases. Logs:
+`/tmp/opencode/audit-title-final-*.log`. Scoped ESLint across its nine production
+JSX files: **0 errors, 21 warnings**. Architecture check passed and the debt
+budget shrank **617 → 615**, independently checked with zero increases.
 
 The audit command intentionally exits nonzero for missing cells or open findings.
 The first report counted 492/510 redesign cells, 0 master cells and 448 candidates.
@@ -107,6 +131,11 @@ expansion. The family removal/bio interactions have now gained explicit captures
   this does not establish native-size inspection of every desktop detail or
   inspection of the full global inventory. The overlapping-arrow attempt remains
   retained as superseded diagnostics.
+- Inspected title-slice desktop/390/320 top images in both palettes and separate
+  390/320 bottoms. Follow-up summary images exposed the nested coin-span style
+  defect; after fixing it, all six native-size summary crops were inspected.
+  These are slice inspections, not inspection or acceptance of every master,
+  interaction and global-state image.
 
 ## Local environment and genuine limits
 

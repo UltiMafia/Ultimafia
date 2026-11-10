@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { UiPageHeader } from "components/ui";
 import { useTheme } from "@mui/material/styles";
 import {
   Typography,
@@ -24,9 +25,7 @@ export default function CompetitiveFaq() {
 
   return (
     <>
-      <Typography variant="h2" gutterBottom>
-        Competitive FAQ
-      </Typography>
+      <UiPageHeader title="Competitive FAQ" />
       <Typography variant="h3" gutterBottom>
         What is competitive?
       </Typography>

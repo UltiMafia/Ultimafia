@@ -587,8 +587,6 @@
   },
   "pages/Learn/Games.jsx": {
     "mui:Typography": 1,
-    "mui:Select": 1,
-    "mui:MenuItem": 1,
     "mui:Tabs": 1,
     "mui:Tab": 1,
     "mui:Paper": 1

@@ -1,4 +1,12 @@
 {
+  "donors-management.assign-dialog": {
+    "equivalence": "nearest-ancestor",
+    "reason": "Master uses a user-search popover that submits immediately upon selection (upstream Donors.jsx:356–374), not a cancellable assignment dialog. Open the actual popover without choosing any user."
+  },
+  "donors-management.remove-confirmation": {
+    "equivalence": "nearest-ancestor",
+    "reason": "Master removes donor status immediately without confirmation (upstream Donors.jsx:78–85). Capture the actual directory ancestor without clicking a removal control or issuing a write."
+  },
   "admin-intake.approve-confirmation": {
     "equivalence": "nearest-ancestor",
     "reason": "Master has no web confirmation: onWhitelist posts immediately (upstream FlaggedIntake.jsx:87). Capture the actual review row without clicking or issuing that action."

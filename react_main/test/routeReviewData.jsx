@@ -110,15 +110,16 @@ const stocks = people.map((person, i) => ({ ...person, _id: `fixture-stock-${i}`
   dividendsPaidOut: 8.5, shareSupply: 50, priceHistory: [1.8, 2.1, 1.9, 2.2, 2.4].map(price => price + i),
 }));
 export function makeUser(mode = "member") {
+  const staff = mode === "staff" || mode === "owner";
   return {
-    ...people[0], loggedIn: mode !== "guest", loaded: true, rank: mode === "staff" ? 3 : 0,
+    ...people[0], loggedIn: mode !== "guest", loaded: true, rank: mode === "owner" ? "Infinity" : staff ? 3 : 0,
     state: {}, settings: { disableSnowstorm: true, disableMediaAutoplay: true, roleSkins: "", siteColorScheme: "dark", minimumContrast: "none", fontSize: "16", fontFamily: "default" },
     perms: { createSetup: true, createThread: true, postReply: true, vote: true, playGame: true,
-      playRanked: true, seeModPanel: mode === "staff", viewModActions: mode === "staff",
-       whitelist: mode === "staff", approveGithubLinks: mode === "staff", giveGroup: mode === "staff",
-      manageCompetitive: mode === "staff", unban: mode === "staff" },
+      playRanked: true, seeModPanel: staff, viewModActions: staff,
+       whitelist: staff, approveGithubLinks: staff, giveGroup: staff,
+      manageCompetitive: staff, unban: staff, devApi: mode === "developer" || mode === "owner" },
     itemsOwned: { customProfile: 1, textColors: 1, avatarShape: 1, wordDeck: 3, customEmotes: [], customStickers: [] },
-    groups: [], blockedUsers: [], redHearts: 12, goldHearts: 3, coins: 48.5, inGame: null,
+    groups: mode === "owner" ? [{ name: "Owner", rank: "Infinity" }] : [], blockedUsers: [], redHearts: 12, goldHearts: 3, coins: 48.5, inGame: null,
     canPlayRanked: true, gamesPlayed: 63, autoContrastColor: color => color,
     dailyChallenges: ["Basic1:0:Mafia", "Advanced2:0:Cop"],
   };
@@ -150,6 +151,13 @@ export function readFixture(url, user) {
   if (p === "/api/mod/announcements") return [];
   if (p === "/api/site/violations") return violationDefinitions;
   if (p === "/api/user/info") return user;
+  // Public identifiers and synthetic invoice records only. No client secrets,
+  // tokens, wallet addresses or real payment/account data are supplied.
+  if (p === "/api/dev/keys" || p === "/api/dev/owner/keys") return [
+    { clientId: "fixture-client-1", name: "Local read-only statistics integration", userId: people[0].id, createdAt: fixtureTime - 86400000 * 20, expiresAt: fixtureTime + 86400000 * 30, lastUsedAt: fixtureTime - 3600000 },
+    { clientId: "fixture-client-2", name: "Archived local integration", userId: people[1].id, createdAt: fixtureTime - 86400000 * 60, expiresAt: fixtureTime - 86400000 * 30, lastUsedAt: null, revokedAt: fixtureTime - 86400000 * 40 },
+  ];
+  if (p === "/api/crypto/admin/invoices") return { total: 6, pageSize: 50, invoices: ["unpaid", "pending", "expired", "completed", "rejected", "failed"].map((status, index) => ({ id: `fixture-invoice-${index}`, userId: people[index].id, userName: people[index].name, userAvatar: people[index].avatar, chain: "fixture-network", chainLabel: "Synthetic network", asset: "TEST", usd: 10 + index, expectedAmount: "1.000000", coins: 100 + index, status, createdAt: fixtureTime - 3600000 * index })) };
   if (/^\/api\/user\/[^/]+\/info$/.test(p)) return people.find(person => person.id === p.split("/")[3]) || { id: p.split("/")[3], name: "Unknown player", avatar: false };
   if (p === "/api/site/contributors" || p === "/api/site/donors") return people.map((person, i) => ({ ...person, types: i % 2 ? ["art", "design"] : ["code"], github: i % 2 ? null : { username: `fictional-${person.name.toLowerCase()}`, lines: 12345 }, bio: "I help maintain the site and enjoy discussing open setups." }));
   if (p === "/api/game/tutorial/storylines") return [{ id: "cop", role: "Cop", title: "Cop", available: true, blurb: "Investigate at night and compare your information with other players." }, { id: "sheriff", role: "Sheriff", title: "Sheriff", available: true, blurb: "Learn how day actions work in a guided game." }];
@@ -294,6 +302,7 @@ export const routeCases = [
   { name: "word-decks", route: "/play/wordDecks?game=Mafia", text: "Everyday words" },
   { name: "word-deck-editor", route: "/play/createWordDeck?game=Mafia&edit=fixture-word-0", selector: 'input[value="Everyday words"]' },
   { name: "learn-games", route: "/learn/games", text: "Villager" },
+  { name: "glossary", route: "/learn/glossary", text: "Glossary" },
   { name: "role-detail", route: "/learn/role/Cop", text: "Each night, you can choose to visit one player" },
   { name: "setup-detail", route: "/learn/setup/fixture-setup-0", text: "Classic" },
   { name: "forum-categories", route: "/community/forums", text: "Mafia discussion" },
@@ -321,6 +330,11 @@ export const routeCases = [
   { name: "rules", route: "/policy/rules", text: "Rules" },
   { name: "terms", route: "/policy/tos", text: "Terms" },
   { name: "privacy", route: "/policy/privacy", text: "Privacy" },
+  { name: "invoices", route: "/policy/invoices", mode: "owner", text: "Invoices" },
+  { name: "invoices-denied", route: "/policy/invoices", text: "UltiMafia Rules" },
+  { name: "developer", route: "/user/developer", mode: "developer", text: "Developer API" },
+  { name: "developer-owner", route: "/user/developer", mode: "owner", text: "Developer API" },
+  { name: "developer-denied", route: "/user/developer", text: "Only developers" },
   { name: "staff-handbook", route: "/policy/moderation/handbook", mode: "staff", text: "Staff Handbook" },
   { name: "admin-github", route: "/policy/moderation/github-links", mode: "staff", text: "fictional-juniper" },
   { name: "admin-intake", route: "/policy/moderation/flagged-intake", mode: "staff", text: "Moth" },
@@ -334,6 +348,7 @@ export const routeCases = [
   { name: "moderation-ban-appeals", route: "/policy/moderation/ban-appeals", mode: "staff", text: "Moth" },
   { name: "moderation-ban-case", route: "/policy/moderation/ban-appeals/case1", mode: "staff", text: "Appeal from" },
   { name: "authentication", route: "/auth/login", mode: "guest", selector: 'input[type="password"]' },
+  { name: "welcome", route: "/welcome", mode: "guest", selector: 'input[type="password"]' },
   { name: "feedback", route: "/community/feedback", text: "Describe your feedback" },
   { name: "feedback-guest", route: "/community/feedback", mode: "guest", text: "Feedback" },
   { name: "contributors", route: "/fame/contributors", text: "Contributors" },

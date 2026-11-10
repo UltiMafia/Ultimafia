@@ -67,3 +67,7 @@ test("removed baseline expansion commands fail without modifying the baseline", 
   }
   assert.equal(fs.readFileSync(baseline, 'utf8'), before);
 });
+test("stat density is named and shared surfaces reject page-specific inline overrides", () => {
+  assert.deepEqual(architecture.countLegacyUi('const page = <><UiCard sx={{padding:80}} /><UiStatRow variant="custom" style={{marginTop:19}} /></>;'), { "surface:inline-override": 2, "stat:unsupported-variant": 1 });
+  assert.deepEqual(architecture.countLegacyUi('const page = <UiStatRow variant="compact" />;'), {});
+});

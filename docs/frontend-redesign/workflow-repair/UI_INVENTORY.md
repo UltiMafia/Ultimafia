@@ -29,6 +29,7 @@ capture tasks before the inventory can be called exhaustive.
 | `word-decks` | `/play/wordDecks?game=Mafia` |
 | `word-deck-editor` | `/play/createWordDeck?game=Mafia&edit=fixture-word-0` |
 | `learn-games` | `/learn/games` |
+| `glossary` | `/learn/glossary` |
 | `role-detail` | `/learn/role/Cop` |
 | `setup-detail` | `/learn/setup/fixture-setup-0` |
 | `forum-categories` | `/community/forums` |
@@ -56,6 +57,11 @@ capture tasks before the inventory can be called exhaustive.
 | `rules` | `/policy/rules` |
 | `terms` | `/policy/tos` |
 | `privacy` | `/policy/privacy` |
+| `invoices` | `/policy/invoices` (owner; synthetic records, no payment actions) |
+| `invoices-denied` | `/policy/invoices` (ordinary member; actual permission redirect) |
+| `developer` | `/user/developer` (developer; public fixture identifiers only) |
+| `developer-owner` | `/user/developer` (owner directory variant) |
+| `developer-denied` | `/user/developer` (ordinary member) |
 | `staff-handbook` | `/policy/moderation/handbook` |
 | `admin-github` | `/policy/moderation/github-links` |
 | `admin-intake` | `/policy/moderation/flagged-intake` |
@@ -69,6 +75,7 @@ capture tasks before the inventory can be called exhaustive.
 | `moderation-ban-appeals` | `/policy/moderation/ban-appeals` |
 | `moderation-ban-case` | `/policy/moderation/ban-appeals/case1` |
 | `authentication` | `/auth/login` |
+| `welcome` | `/welcome` (guest) |
 | `feedback` | `/community/feedback` |
 | `feedback-guest` | `/community/feedback` |
 | `contributors` | `/fame/contributors` |
@@ -116,6 +123,11 @@ capture tasks before the inventory can be called exhaustive.
 
 ## States and interaction captures
 
+- Registered acknowledgement states: `contributors.bio-editor`,
+  `donors.bio-editor`, `donors-management.assign-dialog` and
+  `donors-management.remove-confirmation`. Upstream's assignment popover and
+  immediate-removal ancestor are explicitly distinguished from the redesign's
+  cancellable dialogs; no donor-group mutations are performed.
 - Dark and light palettes; desktop 1440, phone 390, narrow phone 320.
 - Loading, empty, error/failure and permission states for the routes that expose them.
 - Dialogs: host, avatar crop, banner crop, report, trade, leave game, deck delete, family role/removal/bio, moderation command, group removal, ban confirmation, strategy editor, image viewer.
