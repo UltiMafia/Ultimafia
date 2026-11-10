@@ -24,7 +24,7 @@ The major structural changes against master:
 - **Families, moderation, setups and hosting:** new page layouts, split moderation pages, shared setup/host cards and full-role setup editor data.
 - **Decks, shop and stock market:** shared deck library, product cards and coin icon; the stock table and summary are reworked.
 - **Design system:** new `components/ui` primitives, icon sets and licenses, shared CSS tokens and a UI-architecture check.
-- **Removed:** 33 unreachable legacy files.
+- **Removed:** 33 files, including unreachable legacy components and the old raster coin image.
 
 ## What this changes
 
@@ -78,12 +78,12 @@ The major structural changes against master:
 ### Design system and dead code
 - Added shared primitives: `UiCard`, `UiStatRow`, `UiStat`, `CoinIcon`.
 - Reused `UiSection`, `UiAction`, `UiIcon`, `UiField`, `UiDialog` across the changed surfaces.
-- Deleted 32 unreachable files (legacy minigames, announcement/chart components, unused service worker, old CSS) — about 3,100 lines.
+- Deleted 33 files (legacy minigames, announcement/chart components, unused service worker, old CSS and the old raster coin image) — about 3,100 lines.
 - Added `test/routeReviewRoles.json` with the real 443-role Mafia list for realistic role-picker and setup-detail review.
 
 ## Screenshots
 
-All images are from the current branch's controlled production-component fixtures or the populated local site. They are not a claim of authenticated live gameplay.
+The **master baseline** images were captured from `origin/master` at the commit described as “fix(game): animate the Settings menu again and keep it inside the panel”, served from a local static build against the same local database. The **redesign** images are from this branch at the same 1440×1000 viewport and the same data. The remaining screenshots are from this branch's controlled production-component fixtures or the populated local site. None of this is a claim of authenticated live gameplay.
 
 ### Master baseline vs redesign: Players directory
 
@@ -91,7 +91,15 @@ All images are from the current branch's controlled production-component fixture
 
 ![Players after](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/players-redesign.png)
 
-The “before” image is the saved master-baseline capture; the “after” image is the current branch.
+Both captures show the same local data: 1 user online, the same online player and the same Newest Users list. The difference is the client, not the content.
+
+### Master baseline vs redesign: Lobby
+
+![Lobby before](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/lobby-master.png)
+
+![Lobby after](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/lobby.png)
+
+Both captures show the same 7 games from the same local database. Master uses the old horizontal navigation, iOS ticker and All/Main/Sandbox/Competitive tabs; this branch uses the sidebar shell and the Games/More lobby.
 
 ### Profile: master layout restored, pie chart retained
 ![Profile layout](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/profile-master-layout.png)
@@ -125,9 +133,6 @@ The “before” image is the saved master-baseline capture; the “after” ima
 
 ### Staff handbook: wide shell, prose-width text
 ![Staff handbook](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/staff-handbook.png)
-
-### Lobby
-![Lobby](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/lobby.png)
 
 ### Game workspace
 ![Game workspace](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/game-workspace.png)
