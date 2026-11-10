@@ -242,13 +242,22 @@ html[data-keyboard="open"] .game .meeting-tabs {
   overflow-x: hidden;
 }
 
-.game .message:last-child {
+/* Trailing space above the composer belongs to the transcript, not to
+   whichever message happens to be last. Padding keyed to the last row shrinks
+   that row the moment a new message arrives, and with the transcript following
+   the bottom the correction moves every already-painted row — the new message
+   visibly settles instead of simply appearing. */
+.game .speech-display {
   padding-bottom: 10px;
 }
 
+.game .message:last-child {
+  padding-bottom: 2px;
+}
+
 /* A virtual item wrapper makes every message a DOM last child. Keep the
-   transcript's trailing padding only on its actual final row, not every item. */
-.game .transcript-window-row:not([data-transcript-last-row]) > .message:last-child {
+   transcript's padding uniform across items so appending cannot resize one. */
+.game .transcript-window-row > .message:last-child {
   padding-bottom: 3px;
 }
 
@@ -472,15 +481,24 @@ html[data-keyboard="open"] .game .meeting-tabs {
   margin-right: 10px;
 }
 
+/* The pin control only exists while the pointer is over the row, so it must not
+   take part in its layout: a 24px button stretched the height of a one-line
+   message and pushed every row below it (visible as a jump in the windowed
+   transcript, which measures row heights). The wrapper keeps its width at all
+   times - so revealing the button never rewraps the text - and holds no height,
+   with the button positioned inside it. */
 .game .message .pin-button-wrapper {
-  align-self: start;
+  align-self: stretch;
 
-  min-width: 20px;
+  width: 24px;
+  min-width: 24px;
   margin-left: auto;
   transform: translateX(6px);
+
+  position: relative;
 }
 
-.game .message-pin-action { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--um-muted); cursor: pointer; }
+.game .message-pin-action { position: absolute; top: 2px; right: 0; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--um-muted); cursor: pointer; }
 .game .message-pin-action[aria-pressed="true"] { color: var(--um-accent); }
 .game .message-pin-action:focus-visible { outline: 2px solid var(--um-accent); }
 .game .section-title .ui-icon { margin-right: 6px; }

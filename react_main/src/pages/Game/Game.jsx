@@ -1882,7 +1882,6 @@ function MobileMenu({ hideInfoTab = false }) {
 
   return <div className="game-mobile-menu">
     <div className="game-menu-navigation" aria-label="Game navigation">
-      {!hideInfoTab && <UiAction onClick={() => game.setSelectedPanel("info")}><UiIcon name="info" />Game info</UiAction>}
       <UiAction variant="danger-quiet" onClick={game.onLeaveGameClick}><UiIcon name="leave" size={18} />Leave game</UiAction>
       <p>Leaving ends your participation. Use the browser Back button to browse without leaving.</p>
     </div>
@@ -2008,6 +2007,16 @@ export function MobileLayout({
             aria-pressed={selectedPanel === outerLeftNavigationProps.value}
             data-tutorial={`${outerLeftNavigationProps.value}-tab`}
           />
+          {!hideInfoTab && (
+            <BottomNavigationAction
+              label="Info"
+              aria-label="Info"
+              value="info"
+              aria-pressed={selectedPanel === "info"}
+              icon={<UiIcon name="info" />}
+              data-tutorial="info-tab"
+            />
+          )}
           <BottomNavigationAction label="Chat" aria-label="Chat" value="chat" aria-pressed={selectedPanel === "chat"} icon={<UiIcon name="chat" />} data-tutorial="chat-tab" />
           <BottomNavigationAction
             {...innerRightNavigationProps}
@@ -2475,6 +2484,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           speechDisplayRef={speechDisplayRef}
           onScroll={onSpeechScroll}
           autoScroll={autoScroll}
+          startAtEnd={!game.review && (singleState || stateViewing === history.currentState)}
         /> : <div
           className="speech-display"
           data-name-animation-viewport
