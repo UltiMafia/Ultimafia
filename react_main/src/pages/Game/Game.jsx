@@ -87,6 +87,7 @@ import StateSwitcher from "../../components/gameComponents/StateSwitcher";
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { hyphenDelimit } from "../../utils";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { isIos } from "utils/platform";
 import { pregameSeatAction } from "shared/pregameSeatAction";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
 import { WindowedTranscript } from "./components/WindowedTranscript";
@@ -2596,6 +2597,11 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
         /> : <div
           className="speech-display"
           data-name-animation-viewport
+          data-name-sweep={
+            SWEEP_SUSPENDED && messages.length > NAME_SWEEP_MAX_ROWS
+              ? "off"
+              : undefined
+          }
           onScroll={onSpeechScroll}
           ref={speechDisplayRef}
         >
@@ -2893,6 +2899,18 @@ function getContentClasses(message) {
  * read the same way from anywhere, so a new render site cannot forget.
  */
 export const IsPhoneDeviceContext = createContext(false);
+
+// The name-colour sweep animates background-position on mask-clipped text, which
+// makes WebKit re-rasterize the name on every frame. A long transcript pays that
+// on every newly exposed row while scrolling, which is what makes a big game's
+// chat unusable on an iPhone (Android and desktop do not reproduce it). Past this
+// many rows the sweep is suspended and the gradient stays: measured 17 fps
+// sweeping vs 58.8 fps stopped at 2,214 rows, against 58.2 fps with the
+// nameplates removed entirely. Short games keep the effect.
+export const NAME_SWEEP_MAX_ROWS = 300;
+// A CSS feature query cannot express "iOS" portably: @supports (-webkit-touch-callout)
+// is false in WebKit itself. isIos() also covers iPadOS, which reports as a Mac.
+const SWEEP_SUSPENDED = isIos();
 
 export function rowStateClass(stateViewing) {
   return stateViewing > 0 ? 1 : stateViewing;
