@@ -120,7 +120,8 @@ function MissionHistoryPanel(props) {
 
 // The guides sat in this tab during pregame. Rather than render the list twice
 // — two fetches, and two vote states that can disagree — point at where it
-// lives now. Only shown during pregame, when this tab is otherwise empty.
+// lives now: the Info tab, which is on screen in every phase. Only shown during
+// pregame, when this tab is otherwise empty.
 export function GuidesMovedHint({ onOpenGuides }) {
   return (
     <SideMenu
@@ -132,7 +133,7 @@ export function GuidesMovedHint({ onOpenGuides }) {
             data-testid="guides-moved-hint"
             sx={{ opacity: 0.85 }}
           >
-            Guides are in Game info, available from the game menu throughout the game.
+            Guides are in the Info tab, between Players and Chat.
           </Typography>
           <Button
             size="small"

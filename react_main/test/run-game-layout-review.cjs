@@ -63,7 +63,7 @@ async function main() {
             assert.equal(await page.getByRole('link', { name: 'Browse site', exact: true }).count(), 0);
             record.checks.push('leave-and-browse-are-separated-above-settings');
           }
-          await page.getByRole('button', { name: 'Game info', exact: true }).click();
+          await page.locator('.game-mobile-nav button[aria-label="Info"]').click();
           await capture('info-top');
           if (phase === 'after') {
             const info = page.getByTestId('game-info-tab');

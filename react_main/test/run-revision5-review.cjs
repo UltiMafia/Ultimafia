@@ -57,7 +57,7 @@ async function main() {
         await page.getByRole("button", { name: "Return to current", exact: true }).click();
         assert.equal(await editor.inputValue(), "Keep this draft while checking history.");
         await page.getByRole("button", { name: "Menu", exact: true }).click();
-        await page.getByRole("button", { name: "Game info", exact: true }).click();
+        await page.locator('.game-mobile-nav button[aria-label="Info"]').click();
         await page.locator('[data-testid="game-info-tab"]').waitFor();
         await nav.getByRole("button", { name: "Chat", exact: true }).click();
         assert.equal(await editor.inputValue(), "Keep this draft while checking history.");
