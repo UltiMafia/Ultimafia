@@ -119,6 +119,8 @@ All images are from the current branch's controlled production-component fixture
 
 Evidence: `docs/frontend-redesign/workflow-repair/final8-routes-dark/`, `final8-routes-light/`, `final7-controls/`, `final7-homepage-restoration/`, `profile-current-rerun/`, and the focused `final4-game/`, `final4-competitive/`, `final4-ban-appeals/` runs.
 
+> Note: the 192-case full route run was captured before the final profile, stock-market and coin-icon edits. The profile and stock cases were rerun after those edits, but a final full run is still part of the proposed audit.
+
 ## Known issues / why this is a draft
 
 - **Settings birthday input is about twice the width of every other settings input.** It is not using the same field width primitive. This is identified but not fixed.
