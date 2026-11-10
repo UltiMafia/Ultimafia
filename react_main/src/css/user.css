@@ -523,8 +523,11 @@ iframe {
 @keyframes name-color-glow {
   0%,
   100% {
-    /* Filter shadows stack cumulatively, unlike independent text shadows.
-       Attenuate the halo and brighten the completed result, as before. */
+    /* Two shadows, not three. drop-shadow filters compound: each one blurs the
+       previous result, so a third wide radius fills the gaps between letters and
+       the halo reads as a lit rectangle behind the name instead of light around
+       the letters. The alphas are raised to keep the peak as bright as the old
+       three-shadow version. */
     filter: drop-shadow(
         0 0 1px
           rgb(
@@ -536,23 +539,13 @@ iframe {
           )
       )
       drop-shadow(
-        0 0 4px
+        0 0 5px
           rgb(
             var(
                 --name-glow-rgb,
                 var(--mui-palette-text-primaryChannel, 255 255 255)
               ) /
               var(--name-glow-dim-alpha, 0.75)
-          )
-      )
-      drop-shadow(
-        0 0 0
-          rgb(
-            var(
-                --name-glow-rgb,
-                var(--mui-palette-text-primaryChannel, 255 255 255)
-              ) /
-              0
           )
       )
       brightness(1);
@@ -565,27 +558,17 @@ iframe {
                 --name-glow-rgb,
                 var(--mui-palette-text-primaryChannel, 255 255 255)
               ) /
-              var(--name-glow-peak-alpha, 0.61)
+              calc(var(--name-glow-peak-alpha, 0.61) * 1.45)
           )
       )
       drop-shadow(
-        0 0 8px
+        0 0 11px
           rgb(
             var(
                 --name-glow-rgb,
                 var(--mui-palette-text-primaryChannel, 255 255 255)
               ) /
-              var(--name-glow-peak-alpha, 0.61)
-          )
-      )
-      drop-shadow(
-        0 0 14px
-          rgb(
-            var(
-                --name-glow-rgb,
-                var(--mui-palette-text-primaryChannel, 255 255 255)
-              ) /
-              var(--name-glow-peak-alpha, 0.61)
+              calc(var(--name-glow-peak-alpha, 0.61) * 1.45)
           )
       )
       brightness(1.35);
