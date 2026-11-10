@@ -24,7 +24,8 @@ import { UserContext } from "../Contexts";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import "css/emotes.css";
 
-import happy from "images/emotes/happy.webp";
+import UiAction from "./ui/UiAction";
+import UiIcon from "./ui/UiIcon";
 
 // emoji-picker-react is large and only ever renders inside the popover below,
 // so keep it out of the chunk every page with a comment box has to download.
@@ -45,7 +46,8 @@ function StickerPanel({ stickers, onSelect }) {
     <Box
       sx={{
         width: 320,
-        maxHeight: "min(70vh, 480px)",
+        maxWidth: "100%",
+        maxHeight: "min(480px, calc(100dvh - var(--app-bottom, 0px) - 100px))",
         overflowY: "auto",
         p: 1,
       }}
@@ -174,18 +176,13 @@ function EmotePicker({ onEmoteSelected, className = "", players }) {
 
   return (
     <div className={`dropdown ${className}`}>
-      <Tooltip title="Emotes & Stickers!" placement="top">
-        <Button
+      <Tooltip title="Emotes and stickers" placement="top">
+        <UiAction iconOnly variant="ghost" aria-label="Emotes and stickers"
           className="dropdown-control"
           onClick={handleOpen}
-          sx={{
-            height: "100%",
-            backgroundColor: "transparent",
-            border: `1px solid ${theme.palette.primary.main}`,
-          }}
         >
-          <img src={happy} alt="Emotes" />
-        </Button>
+          <UiIcon name="emotes" />
+        </UiAction>
       </Tooltip>
       <Popover
         action={popoverActions}
@@ -203,6 +200,7 @@ function EmotePicker({ onEmoteSelected, className = "", players }) {
         onClose={closePopover}
         disableScrollLock
         disableRestoreFocus
+        slotProps={{ paper: { sx: { maxWidth: "calc(100vw - 32px)", maxHeight: "calc(100dvh - var(--app-top, 0px) - var(--app-bottom, 0px) - 32px)" } } }}
       >
         <Box
           ref={observeContent}
@@ -254,7 +252,7 @@ function EmotePicker({ onEmoteSelected, className = "", players }) {
             <Suspense fallback={null}>
             <EmojiPicker
               width="100%"
-              height="80vh"
+              height="min(420px, calc(100dvh - var(--app-bottom, 0px) - 100px))"
               emojiStyle="native"
               theme={theme.palette.mode}
               onEmojiClick={selectEmote}

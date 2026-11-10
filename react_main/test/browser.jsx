@@ -207,7 +207,11 @@ const publicGame = {
 };
 function GameSessionFixture({ delayed = false, loggedIn = true }) {
   const session = useHostedGameSession();
+  const location = useLocation();
   const navigate = useNavigate();
+  const membershipRequest = location.state?.requestedMembership
+    ? { membership: location.state.requestedMembership, key: location.key }
+    : null;
   const [gameMounted, setGameMounted] = useState(!delayed);
   useEffect(() => { api = { ...session, navigate, setGameMounted }; });
   return <UserContext.Provider value={{ ...user, loggedIn, id: loggedIn ? "fixture-member" : null,
@@ -215,7 +219,8 @@ function GameSessionFixture({ delayed = false, loggedIn = true }) {
     {!session.inGame && <GameRow small game={{ ...publicGame }} />}
     {session.hostedGameId && gameMounted && <ViewActivityContext.Provider value={session.inGame}>
       <Game key={session.hostedGameId} gameId={session.hostedGameId}
-        joinSearch={session.hostedGameSearch} active={session.inGame} onLeave={session.leaveGameSession} />
+        joinSearch={session.hostedGameSearch} membershipRequest={membershipRequest}
+        active={session.inGame} onLeave={session.leaveGameSession} />
     </ViewActivityContext.Provider>}
   </SiteInfoContext.Provider></UserContext.Provider>;
 }
@@ -487,26 +492,28 @@ async function tests() {
     assert(join.spectate === false && join.isBot === true, "site query changed the session's join flags");
   });
 
-  await run("explicit Spectate re-enters the server even for an already retained game", async () => {
+  await run("explicit Spectate and Join request server membership over the retained socket", async () => {
     mountGameSession("/game/fixture-game");
-    await authenticateGame(await nextGameRequest(false));
+    const { native } = await authenticateGame(await nextGameRequest(false));
+    native.message("loaded"); await wait();
+    const socketCount = FakeSocket.all.length;
     api.navigate("/play"); await until(() => !api.inGame, "browse from seated game");
     const link = [...root.querySelectorAll("a")].find(el => el.textContent === "Spectate");
     assert(link, "lobby spectator link missing");
-    let documentNavigation;
-    const intercept = event => {
-      if (!link.contains(event.target)) return;
-      // Observe React Router's handling at document bubble, then prevent the
-      // actual reload so this fixture can finish. Production must NOT turn the
-      // membership-changing click into a same-session client-side route change.
-      documentNavigation = { preventedByRouter: event.defaultPrevented, href: link.getAttribute("href") };
-      event.preventDefault();
-    };
-    document.addEventListener("click", intercept);
-    try { link.click(); } finally { document.removeEventListener("click", intercept); }
-    assert(documentNavigation && !documentNavigation.preventedByRouter,
-      "Spectate reused the seated session without asking the server");
-    assert(documentNavigation.href === "/game/fixture-game?spectate=true", "wrong spectator destination");
+    assert(link.getAttribute("href") === "/game/fixture-game?spectate=true", "wrong spectator destination");
+    link.click();
+    await until(() => native.sent.some(s => parseMessage(s)?.[0] === "spectate"), "server spectator request");
+    assert(FakeSocket.all.length === socketCount, "Spectate replaced the retained socket");
+    native.message("isSpectator:boolean:true"); await wait();
+    api.navigate("/play"); await until(() => !api.inGame, "browse from spectator game");
+    const join = [...root.querySelectorAll("a")].find(el => el.textContent === "Join");
+    assert(join, "lobby join link missing");
+    join.click();
+    await until(() => native.sent.some(s => parseMessage(s)?.[0] === "takeSeat"), "server player request");
+    native.message("isSpectator:boolean:false"); await wait();
+    assert(FakeSocket.all.length === socketCount, "Join replaced the retained socket");
+    for (const event of ["spectate", "takeSeat"])
+      assert(native.sent.filter(s => parseMessage(s)?.[0] === event).length === 1, event + " applied more than once");
   });
 
   await run("full public lobbies retain Spectate without exposing restricted games", async () => {
@@ -818,8 +825,9 @@ async function tests() {
     window.gtag = () => {}; pending.length = 0; mount(<LobbyFixture />);
     await until(() => pending.some(p=>p.url.includes('lobby=Main')), 'initial lobby request');
     const main = pending.find(p=>p.url.includes('lobby=Main'));
-    const sandbox = [...document.querySelectorAll('[role=tab]')].find(el => el.textContent.includes('Sandbox'));
-    sandbox.click();
+    const lobbySelect = root.querySelector('select[aria-label="Lobby"]');
+    lobbySelect.value = 'Sandbox';
+    lobbySelect.dispatchEvent(new Event('change', { bubbles: true }));
     await until(() => pending.some(p=>p.url.includes('lobby=Sandbox')), 'new lobby request');
     const next = pending.find(p=>p.url.includes('lobby=Sandbox'));
     const game = (id, lobby) => ({id,status:'Finished',lobby,lobbyName:id,endTime:Date.now(),type:'Mafia',broken:true,setup:{id:'fixture',name:id,gameType:'Mafia',roles:'[{}]',total:1,closed:false}});
@@ -827,7 +835,7 @@ async function tests() {
     main.resolve([game('obsolete-old-lobby','Main')]); await wait(100);
     assert(root.textContent.includes('accepted-new-lobby'),'new lobby missing');
     assert(!root.textContent.includes('obsolete-old-lobby'),'old lobby overwrote new');
-    const button = root.querySelector('.fa-sync-alt'); button.parentElement.click();
+    root.querySelector('button[aria-label="Refresh games"]').click();
     await until(() => pending.length === 3,'manual refresh');
     assert(pending[2].url.includes('last=Infinity&page=1'),'reload lost accepted cursor');
     api.setActive(false); await wait(); pending[2].resolve([game('late-inactive','Sandbox')]); await wait(100);
@@ -842,21 +850,23 @@ async function tests() {
     const game = (id,endTime) => ({id,status:'Finished',lobby:'Main',lobbyName:id,endTime,type:'Mafia',broken:true,setup:{id:'fixture',name:id,gameType:'Mafia',roles:'[{}]',total:1,closed:false}});
     await until(() => pending.length === 1,'initial page');
     pending[0].resolve([game('page-one',102)]); await wait(80);
-    root.querySelector('.page-nav .fa-angle-right').parentElement.click();
+    root.querySelector('.page-nav button[aria-label="Next page"]').click();
     await until(() => pending.length === 2,'page two');
     assert(pending[1].url.includes('last=102&page=2'),'page two cursor');
     pending[1].resolve([game('page-two',51)]); await wait(80);
-    root.querySelector('.page-nav .fa-angle-right').parentElement.click();
+    root.querySelector('.page-nav button[aria-label="Next page"]').click();
     await until(() => pending.length === 3,'page three');
     pending[2].resolve([]); await wait(80);
-    root.querySelector('.fa-sync-alt').parentElement.click();
+    root.querySelector('button[aria-label="Refresh games"]').click();
     await until(() => pending.length === 4,'refresh accepted page');
     assert(pending[3].url === pending[1].url,'empty page advanced the reload cursor');
     pending[3].resolve([game('page-two',51)]); await wait(80);
-    [...root.querySelectorAll('[role=tab]')].find(el=>el.textContent.includes('Sandbox')).click();
+    const lobbySelect = root.querySelector('select[aria-label="Lobby"]');
+    lobbySelect.value = 'Sandbox';
+    lobbySelect.dispatchEvent(new Event('change', { bubbles: true }));
     await until(() => pending.length === 5,'lobby switch');
     pending[4].reject(new Error('simulated failed lobby fetch')); await wait(80);
-    root.querySelector('.fa-sync-alt').parentElement.click();
+    root.querySelector('button[aria-label="Refresh games"]').click();
     await until(() => pending.length === 6,'retry new lobby');
     assert(pending[5].url.includes('lobby=Sandbox&last=Infinity&page=1'),'new lobby inherited old cursor after failure');
     pending[5].resolve([]); await wait(80);

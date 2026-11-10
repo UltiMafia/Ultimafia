@@ -1,4 +1,6 @@
 import React, { useContext, useLayoutEffect, useRef, useState } from "react";
+import UiAction from "./ui/UiAction";
+import UiIcon from "./ui/UiIcon";
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import { RoleCount } from "components/Roles";
@@ -44,14 +46,15 @@ export default function Setup(props) {
   const iconContainerRef = useRef();
   const [maxIconsPerRow, setMaxIconsPerRow] = useState(null);
   const [setupIndex, setSetupIndex] = useState(0);
+  const [summaryExpanded, setSummaryExpanded] = useState(false);
 
   // On mobile, always wrap icons onto multiple rows instead of pruning — narrow
   // containers often compute 0 fitting icons, which otherwise hides all roles.
-  const wrapIcons = isPhoneDevice || (maxIconsPerRow && maxIconsPerRow <= 2);
+  const wrapIcons = props.wrapRoles || isPhoneDevice || (maxIconsPerRow && maxIconsPerRow <= 2);
   // Mobile shows every icon (no cap); desktop caps at a single row or 3 rows if
   // the container is narrow enough to trigger wrapping.
   const maxIconsTotal =
-    maxIconsPerRow === null
+    props.summary || maxIconsPerRow === null
       ? null
       : isPhoneDevice
       ? null
@@ -289,6 +292,25 @@ export default function Setup(props) {
 
   const setupName = filterProfanity(props.setup.name, user.settings);
 
+  if (props.summary) {
+    const shownRoles = summaryExpanded ? roleCounts : roleCounts.slice(0, 8);
+    return (
+      <div className="setup-summary" ref={setupRef}>
+        <InfoPopover {...popoverProps} page={`/learn/setup/${props.setup.id}`} title={setupName} />
+        <button type="button" className="setup-name-trigger" onClick={handleClick}
+          aria-haspopup="true" aria-expanded={popoverOpen} aria-label={`View setup: ${setupName}`}>
+          <span>{setupName}</span><UiIcon name="info" size={16} />
+        </button>
+        {props.showRoles !== false && <div className="setup-summary-roles" ref={iconContainerRef}>
+          {shownRoles}
+          {roleCounts.length > 8 && <button className="setup-more-roles" type="button" onClick={() => setSummaryExpanded(value => !value)} aria-expanded={summaryExpanded}>
+            {summaryExpanded ? "Show fewer" : `+${roleCounts.length - 8} roles`}
+          </button>}
+        </div>}
+      </div>
+    );
+  }
+
   return (
     <>
       <InfoPopover
@@ -355,7 +377,18 @@ export default function Setup(props) {
               overflowX: "hidden",
             }}
           >
-            <Typography variant="body2" className="setup-name">
+            <Typography
+              variant="body2"
+              className={`setup-name ${props.nameIsTrigger ? "setup-name-trigger" : ""}`}
+              component={props.nameIsTrigger ? "button" : "p"}
+              {...(props.nameIsTrigger ? {
+                type: "button",
+                onClick: handleClick,
+                "aria-haspopup": "true",
+                "aria-expanded": popoverOpen,
+                "aria-label": `View setup: ${setupName}`,
+              } : {})}
+            >
               {setupName}
             </Typography>
             <Stack
@@ -688,12 +721,12 @@ function RoleBox({ children, color, legend = null }) {
   return (
     <fieldset style={{
       height: "100%",
-      border: `4px solid ${color}`,
-      borderRadius: "4px",
+      border: 0,
+      padding: "8px 0",
       minWidth: "0",
     }}>
       {legend && (
-        <legend>
+        <legend style={{ padding: "0 0 0 8px", borderLeft: `3px solid ${color}` }}>
           <Typography>
             {legend}
           </Typography>
@@ -713,7 +746,7 @@ function RoleBox({ children, color, legend = null }) {
   );
 }
 
-export function FullRoleList({ setup, compact = false }) {
+export function FullRoleList({ setup, compact = false, showNames = false }) {
   const roles = setup.roles;
   const gameType = setup.gameType;
 
@@ -749,8 +782,8 @@ export function FullRoleList({ setup, compact = false }) {
 
       const alignmentColor = getAlignmentColor(alignment);
       const roles = Object.keys(rolesDividedByAlignment[i][alignment]).map(
-        (role) => (
-          <RoleCount
+        (role) => {
+          const icon = <RoleCount
             role={role}
             count={rolesDividedByAlignment[i][alignment][role]}
             small={true}
@@ -758,8 +791,12 @@ export function FullRoleList({ setup, compact = false }) {
             showSecondaryHover
             key={role}
             otherRoles={setup.roles}
-          />
-        )
+          />;
+          if (!showNames) return icon;
+          return <div key={role} className="setup-role-entry">{icon}<span className="setup-role-name">{role.split(":")[0]}{!setup.closed && rolesDividedByAlignment[i][alignment][role] > 1 ? ` × ${rolesDividedByAlignment[i][alignment][role]}` : ""}
+            {role.split(":")[1] && <small>{role.split(":")[1]}</small>}
+          </span></div>;
+        }
       );
 
       // For closed setups, the actual slot count per alignment lives in
@@ -870,73 +907,61 @@ export function SetupManipulationButtons(props) {
   const user = useContext(UserContext);
   const isPhoneDevice = useIsPhoneDevice();
   const navigate = useNavigate();
-  const iconSize = isPhoneDevice ? "small" : "medium";
 
   const isOwner = props.setup.creator?.id === user.id;
   const hasEditAnySetupPerm = user.perms?.editAnySetup;
   const isRanked = props.setup.ranked || props.setup.competitive;
   const canEditThisSetup = (isOwner || hasEditAnySetupPerm) && !isRanked;
-  const favIconFormat = props.setup.favorite ? "fas" : "far";
-
-  const disabledStyle = {
-    opacity: "20%",
-    cursor: "not-allowed",
-  };
-
-  const editStyle = !canEditThisSetup ? disabledStyle : undefined;
-  const deleteStyle = !isOwner ? disabledStyle : undefined;
 
   const rankedMsg = "Ranked setups cannot be edited";
 
   const editButton = (
-    <IconButton
-      aria-label="edit"
+    <UiAction iconOnly={!props.showLabels} variant="ghost"
+      aria-label="Edit setup" title="Edit setup"
       disabled={!canEditThisSetup}
-      size={iconSize}
-      sx={editStyle}
       onClick={() =>
         navigate(`/play/create?edit=${props.setup.id}&game=${props.setup.gameType}`)
       }
     >
-      <i className={`setup-btn edit-setup fa-pen-square fas`} />
-    </IconButton>
+      <UiIcon name="edit" size={18} />
+      {props.showLabels && "Edit"}
+    </UiAction>
   );
 
   const deleteButton = (
-    <IconButton
-      aria-label="delete"
+    <UiAction iconOnly={!props.showLabels} variant="danger-quiet"
+      aria-label="Delete setup" title="Delete setup"
       disabled={!isOwner}
-      size={iconSize}
-      sx={deleteStyle}
       onClick={() => props.onDel(props.setup)}
     >
-      <i className={`setup-btn del-setup fa-times-circle fas`} />
-    </IconButton>
+      <UiIcon name="delete" size={18} />
+      {props.showLabels && "Delete"}
+    </UiAction>
   );
 
   return (
-    <Stack direction="row" sx={{ gap: { xs: 0.25, sm: 1.5 } }} alignItems="center">
-      <IconButton
-        aria-label="favorite"
-        size={iconSize}
+    <Stack direction="row" sx={{ gap: 0.5, flexWrap: "wrap" }} alignItems="center">
+      <UiAction iconOnly={!props.showLabels} variant="ghost"
+        aria-label="Favorite setup" title="Favorite setup" aria-pressed={!!props.setup.favorite}
         onClick={() => props.onFav(props.setup)}
       >
-        <i className={`setup-btn fav-setup fa-star ${favIconFormat}`} />
-      </IconButton>
+        <UiIcon name={props.setup.favorite ? "starFilled" : "star"} size={18} />
+        {props.showLabels && (props.setup.favorite ? "Saved" : "Favorite")}
+      </UiAction>
       {isRanked ? (
         <Tooltip title={rankedMsg}><span>{editButton}</span></Tooltip>
       ) : editButton}
-      <IconButton
-        aria-label="copy"
-        size={iconSize}
+      <UiAction iconOnly={!props.showLabels} variant="ghost"
+        aria-label="Copy setup" title="Copy setup"
         onClick={() =>
           navigate(
             `/play/create?copy=${props.setup.id}&game=${props.setup.gameType}`
           )
         }
       >
-        <i className={`setup-btn copy-setup fa-copy fas`} />
-      </IconButton>
+        <UiIcon name="copy" size={18} />
+        {props.showLabels && "Copy"}
+      </UiAction>
       {deleteButton}
     </Stack>
   );

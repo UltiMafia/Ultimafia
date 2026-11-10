@@ -1,172 +1,135 @@
-import React, { useEffect, useState } from "react";
-import { Alert, Box, IconButton, Stack } from "@mui/material";
-import {
-  getAnnouncement,
-  getPrevAnnouncement,
-  getNextAnnouncement,
-  isFirstAnnouncement,
-  isLastAnnouncement,
-} from "../../services/announcementService";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import axios from "axios";
 import { Loading } from "../Loading";
-import { minimumLoadingTime } from "../../Constants";
-import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { LatestRequest } from "../../lib/latestRequest";
+import { useViewActive } from "../../hooks/useViewActivity";
+import { useDismissOnBack } from "../../hooks/useDismissOnBack";
 import { urlifyText } from "../../utilsFolder";
 
-export const Announcement = ({
-  showAnnouncementTemporarily,
-  setShowAnnouncementTemporarily,
-}) => {
-  const [seenAnnouncement, setSeenAnnouncement] = useState(false);
-  const [announcement, setAnnouncement] = useState(null);
-  const [showPrevButton, setShowPrevButton] = useState(false);
-  const [showNextButton, setShowNextButton] = useState(true); // BUG: if there's only 1 announcement, NEXT_BUTTON should be disabled
-  const [loadingFirstTime, setLoadingFirstTime] = useState(true);
+// The existing announcements endpoint returns descending batches of five.
+const PAGE_SIZE = 5;
+const SEEN_KEY = "lastSeenAnnouncementDate";
+
+function readSeenDate() {
+  try { return localStorage.getItem(SEEN_KEY); } catch { return null; }
+}
+
+export function Announcement({ showAnnouncementTemporarily, setShowAnnouncementTemporarily }) {
+  const [announcements, setAnnouncements] = useState([]);
+  const [index, setIndex] = useState(0);
+  const [seen, setSeen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const isPhoneDevice = useIsPhoneDevice();
+  const [hasMore, setHasMore] = useState(false);
+  const [error, setError] = useState(false);
+  const requests = useRef(new LatestRequest());
+  const cached = useRef([]);
+  const selectionVersion = useRef(0);
+  const retry = useRef({});
+  const active = useViewActive();
+  const location = useLocation();
+  const previousPath = useRef(location.pathname);
 
-  useEffect(() => {
-    (async () => {
-      const firstAnnouncement = await getAnnouncement();
-      const lastSeenAnnouncementDate = localStorage.getItem(
-        "lastSeenAnnouncementDate"
-      );
-
-      setSeenAnnouncement(lastSeenAnnouncementDate == firstAnnouncement?.date);
-      setAnnouncement(firstAnnouncement);
-      setLoading(false);
-      setLoadingFirstTime(false);
-    })();
+  const loadPage = useCallback(async (lastDate, append = false, targetIndex = 0, version = selectionVersion.current) => {
+    const request = requests.current.begin();
+    retry.current = { lastDate, append, targetIndex };
+    setLoading(true);
+    setError(false);
+    try {
+      const query = lastDate === undefined ? "" : `?last=${encodeURIComponent(lastDate)}`;
+      const response = await axios.get(`/api/mod/announcements${query}`, { signal: request.signal });
+      if (!request.isCurrent()) return;
+      if (!Array.isArray(response.data)) throw new Error("Invalid announcement response");
+      const previous = append ? cached.current : [];
+      const ids = new Set(previous.map(item => item.id || item.date));
+      const additions = response.data.filter(item => !ids.has(item.id || item.date));
+      cached.current = previous.concat(additions);
+      setAnnouncements(cached.current);
+      setHasMore(response.data.length >= PAGE_SIZE);
+      if (version === selectionVersion.current && (!append || additions.length)) setIndex(targetIndex);
+      if (!append) setSeen(readSeenDate() === String(cached.current[0]?.date));
+    } catch {
+      if (request.isCurrent() && version === selectionVersion.current) setError(true);
+    } finally {
+      if (request.isCurrent()) setLoading(false);
+    }
   }, []);
 
-  if (loadingFirstTime) {
-    return "";
-  }
-  if (seenAnnouncement && !showAnnouncementTemporarily) {
-    return "";
-  }
-  if (!announcement) {
-    return "";
-  }
+  useEffect(() => {
+    const owner = requests.current;
+    loadPage();
+    return () => owner.invalidate();
+  }, [loadPage]);
 
-  const stopLoading = () =>
-    setTimeout(() => setLoading(false), minimumLoadingTime);
-  const closeAnnouncements = () => {
-    localStorage.setItem("lastSeenAnnouncementDate", announcement?.date);
-    setSeenAnnouncement(true);
+  const openDialog = useCallback(() => {
+    selectionVersion.current++;
+    setIndex(0);
+    setError(false);
+    setOpen(true);
+    if (!cached.current.length && !loading) loadPage();
+  }, [loading, loadPage]);
+
+  const closeDialog = useCallback(() => {
+    selectionVersion.current++;
+    setOpen(false);
     setShowAnnouncementTemporarily(false);
-  };
-  const showPrevAnnouncement = async () => {
-    setLoading(true);
-    const newAnnouncement = await getPrevAnnouncement(announcement?.date);
-    const newShowPrevButton = await isFirstAnnouncement(newAnnouncement);
+    if (cached.current.length) {
+      try { localStorage.setItem(SEEN_KEY, String(cached.current[0].date)); } catch { /* Session-only dismissal if storage is unavailable. */ }
+      setSeen(true);
+    }
+  }, [setShowAnnouncementTemporarily]);
 
-    setShowNextButton(true);
-    setShowPrevButton(newShowPrevButton);
-    setAnnouncement(newAnnouncement);
-    stopLoading();
-  };
-  const showNextAnnouncement = async () => {
-    setLoading(true);
-    const newAnnouncement = await getNextAnnouncement(announcement?.date);
-    const newShowNextButton = await isLastAnnouncement(newAnnouncement);
+  useDismissOnBack(open && active, closeDialog);
+  useEffect(() => {
+    if (active && showAnnouncementTemporarily) {
+      openDialog();
+      setShowAnnouncementTemporarily(false);
+    }
+  }, [active, showAnnouncementTemporarily, openDialog, setShowAnnouncementTemporarily]);
+  useEffect(() => {
+    if (!active || previousPath.current !== location.pathname) {
+      selectionVersion.current++;
+      setOpen(false);
+    }
+    previousPath.current = location.pathname;
+  }, [active, location.pathname]);
 
-    setShowPrevButton(true);
-    setShowNextButton(newShowNextButton);
-    setAnnouncement(newAnnouncement);
-    stopLoading();
-  };
-  const CloseButton = (
-    <IconButton
-      aria-label="Close announcement"
-      color="info"
-      sx={{ p: 0.5 }}
-      onClick={closeAnnouncements}
-    >
-      <i className="far fa-times-circle" />
-    </IconButton>
-  );
+  function older() {
+    const version = ++selectionVersion.current;
+    if (index + 1 < announcements.length) setIndex(index + 1);
+    else loadPage(announcements[announcements.length - 1]?.date, true, index + 1, version);
+  }
+  function newer() {
+    selectionVersion.current++;
+    setIndex(index - 1);
+  }
+  const current = announcements[index];
 
-  // const ScrollButtonsWidth = 35;
-  const iconHeight = 15; // default: 20px
-  const PrevButton = (
-    <IconButton
-      aria-label="Previous announcement"
-      disabled={loading || !showPrevButton}
-      color="info"
-      sx={{ width: `${iconHeight + 8}px`, p: 0.5 }}
-      onClick={showPrevAnnouncement}
-    >
-      <i
-        className="fas fa-angle-up"
-        style={{ fontSize: `${iconHeight}px` }}
-      ></i>
-    </IconButton>
-  );
-  const NextButton = (
-    <IconButton
-      aria-label="Next announcement"
-      disabled={loading || !showNextButton}
-      color="info"
-      sx={{ width: `${iconHeight + 8}px`, p: 0.5 }}
-      onClick={showNextAnnouncement}
-    >
-      <i
-        className="fas fa-angle-down"
-        style={{ fontSize: `${iconHeight}px` }}
-      ></i>
-    </IconButton>
-  );
-  const ScrollButtons = (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        mr: 0.5,
-        mt: 0.5,
-        ml: -4,
-        // ml: `-${ScrollButtonsWidth}px`,
-      }}
-    >
-      {PrevButton}
-      {NextButton}
-    </Box>
-  );
-
-  const content = loading ? (
-    <div
-      style={{
-        maxHeight: "20px" /* MAGIC NUMBER WARNING... CSS demands sacrifices */,
-      }}
-    >
-      <Loading extraSmall />
-    </div>
-  ) : (
-    urlifyText(announcement?.content)
-  );
-
-  return (
-    <Stack direction="row" spacing={1}>
-      {ScrollButtons}
-      <Alert
-        severity="info"
-        variant="outlined"
-        sx={{
-          width: "100%",
-          backgroundColor: "background.paper",
-        }}
-        action={CloseButton}
-        icon={<i className="fas fa-bullhorn" />}
-      >
-        <Box
-          sx={{
-            width: "100%",
-            wordBreak: "break-word",
-            cursor: "default",
-          }}
-        >
-          {content}
-        </Box>
-      </Alert>
-    </Stack>
-  );
-};
+  return <>
+    {!seen && announcements.length > 0 && <div className="announcement-notice">
+      <button className="announcement-summary" type="button" onClick={openDialog} aria-haspopup="dialog" aria-label="Read announcement">
+        <i className="fas fa-bullhorn" aria-hidden="true" />
+        <span className="announcement-preview">{announcements[0].content}</span>
+        <span className="announcement-read">Read</span>
+      </button>
+      <button className="utility-button" type="button" onClick={closeDialog} aria-label="Dismiss announcement"><i className="fas fa-times" aria-hidden="true" /></button>
+    </div>}
+    <Dialog open={open && active} onClose={closeDialog} fullWidth maxWidth="sm" aria-labelledby="announcement-title">
+      <DialogTitle id="announcement-title" sx={{ fontSize: 18, fontWeight: 600 }}>Announcements</DialogTitle>
+      <DialogContent dividers aria-busy={loading}>
+        {error && <Alert severity="error" action={<Button onClick={() => {
+          const request = retry.current;
+          loadPage(request.lastDate, request.append, request.targetIndex, ++selectionVersion.current);
+        }}>Retry</Button>}>Could not load announcements.</Alert>}
+        {loading && !current ? <Loading small /> : current ? <div className="announcement-content">{urlifyText(current.content)}</div> : !error && "No announcements."}
+      </DialogContent>
+      <DialogActions>
+        <Button variant="text" onClick={newer} disabled={loading || index === 0}>Newer</Button>
+        <Button variant="text" onClick={older} disabled={loading || !current || (index + 1 >= announcements.length && !hasMore)}>Older</Button>
+        <Button onClick={closeDialog}>Close</Button>
+      </DialogActions>
+    </Dialog>
+  </>;
+}

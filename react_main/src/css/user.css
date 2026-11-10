@@ -2,6 +2,45 @@
   --online-status-icon-size: 16px;
 }
 
+/* A profile is a person, then explicit destinations—not two unrelated columns. */
+.profile.profile-rebuilt { display: flex; flex-direction: column; gap: 24px; width: 100%; max-width: 100%; min-width: 0; }
+.profile-rebuilt .profile-hero { order: 0; min-width: 0; }
+.profile.profile-rebuilt .profile-header { margin: 0; padding: 0; border: 1px solid var(--scheme-color-border); border-radius: 12px; overflow: hidden; background: var(--scheme-color); }
+.profile.profile-rebuilt .profile-header > .content { padding: 0; }
+.profile-rebuilt .banner { max-height: 240px; aspect-ratio: 4; }
+.profile-identity-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 20px; }
+.profile-identity-row > div:first-child { min-width: 0; }
+.profile-identity { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.profile-identity h1 { margin: 0; overflow-wrap: anywhere; }
+.profile-avatar { flex-shrink: 0; }
+.profile-affiliations { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 12px; font-size: var(--ui-text-small); color: var(--um-muted); }
+.profile-family, .profile-relationship { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; color: inherit; }
+.profile.profile-rebuilt .profile-actions .options { flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 4px; }
+.profile-section { min-width: 0; scroll-margin-top: 56px; }
+.profile-section > h2 { margin: 0 0 10px; font-size: var(--ui-text-heading); }
+.profile-section .box-panel { margin-bottom: 0; }
+.profile-statistics-overview { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; padding: 4px 0 16px; }
+.profile-statistics-overview .pie-chart { flex: 0 0 auto; }
+.profile-statistics-overview .profile-results-summary { flex: 0 1 420px; min-width: 0; max-width: 420px; }
+.profile-pie-placeholder { width: 200px; height: 200px; }
+.profile-collection-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; align-items: start; }
+.profile-collection-grid > * { min-width: 0; }
+.profile-collection-grid > .scrapbook-panel { grid-column: 1 / -1; }
+.profile-collection-grid .box-panel { margin-bottom: 0; }
+.profile-rebuilt .profile-bio .bio, .profile-rebuilt .profile-comments { max-width: none; }
+.profile.profile-rebuilt[data-custom-background="true"] .profile-header > .content { padding: 0; }
+@media (max-width: 900px) {
+}
+@media (max-width: 600px) {
+  .profile-identity-row { flex-direction: column; align-items: stretch; padding: 16px; gap: 12px; }
+  .profile-identity { gap: 12px; }
+  .profile.profile-rebuilt .profile-actions .options { justify-content: flex-start; }
+  .profile.profile-rebuilt .profile-actions > .MuiStack-root { align-items: flex-start; }
+  .profile-rebuilt .banner { aspect-ratio: 3; }
+  .profile-statistics-overview { flex-direction: column; align-items: stretch; }
+  .profile-statistics-overview .pie-chart { align-self: center; }
+}
+
 .avatar {
   flex-shrink: 0;
   position: relative;
@@ -11,10 +50,12 @@
   width: 40px;
   height: 40px;
 
-  background-image: url("/src/images/avatar.webp");
   background-size: 100%;
   background-color: var(--scheme-color);
 }
+
+.avatar-image { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; }
+.avatar-default { display: block; color: #243449; }
 
 img.avatar-img {
   position: absolute;
@@ -80,7 +121,11 @@ iframe {
 
 .avatar .edit,
 .avatar .avatar-edit-overlay {
-  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  pointer-events: none;
   flex-flow: row;
   align-items: center;
   justify-content: center;
@@ -100,13 +145,21 @@ iframe {
   border-radius: inherit;
 
   background-color: black;
-  opacity: 0.55;
+  opacity: 0;
   cursor: pointer;
 }
 
 .avatar:hover .edit,
-.avatar:hover .avatar-edit-overlay {
+.avatar:hover .avatar-edit-overlay,
+.avatar:focus-within .avatar-edit-overlay {
   display: flex;
+  opacity: 0.8;
+  pointer-events: auto;
+}
+
+@media (hover: none) {
+  .avatar .avatar-edit-overlay { inset: -6px -6px auto auto; width: auto; height: auto; opacity: 1; pointer-events: auto; background: var(--scheme-color); border: 1px solid var(--scheme-color-border); border-radius: 6px; gap: 2px; }
+  .avatar .avatar-edit-action { min-height: 32px; }
 }
 
 .avatar .avatar-edit-action {
@@ -613,90 +666,26 @@ iframe {
   flex-flow: row nowrap;
   align-items: center;
   gap: 10px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: linear-gradient(
-    135deg,
-    var(--scheme-color) 0%,
-    var(--scheme-color-background) 100%
-  );
-  border: 1px solid var(--scheme-color-border);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.profile .trophy-tile:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
 }
 
 .profile .trophy-tile-prestige {
-  position: relative;
-  clip-path: inset(0 round 8px);
-  background: linear-gradient(
-    135deg,
-    #fff7d4 0%,
-    #ffe58a 40%,
-    #f0b429 70%,
-    #b8860b 100%
-  );
-  border-color: #d4a017;
-  box-shadow: 0 1px 3px rgba(184, 134, 11, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  color: var(--mui-palette-secondary-main);
 }
 
 .profile .trophy-tile-prestige .trophy-value,
 .profile .trophy-tile-prestige .trophy-label {
-  color: #3d2f00;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
+  color: var(--mui-palette-secondary-main);
   opacity: 1;
 }
 
 .profile .trophy-tile.trophy-tile-prestige .trophy-value,
 .profile .trophy-tile.trophy-tile-prestige .trophy-label {
-  color: #3d2f00;
+  color: var(--mui-palette-secondary-main);
 }
 
-.profile .trophy-tile-prestige::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -75%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    100deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0) 30%,
-    rgba(255, 255, 255, 0.6) 50%,
-    rgba(255, 255, 255, 0) 70%,
-    transparent 100%
-  );
-  transform: skewX(-20deg);
-  animation: prestige-sheen 3.5s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@media (max-width: 768px) {
-  .profile .trophy-tile-prestige::before {
-    display: none;
-  }
-}
-
-.profile .trophy-tile-prestige:hover {
-  box-shadow: 0 4px 12px rgba(184, 134, 11, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-}
-
-@keyframes prestige-sheen {
-  0% {
-    left: -75%;
-  }
-  60%,
-  100% {
-    left: 150%;
-  }
-}
 
 .profile .trophy-tile .trophy-icon {
   width: 32px;
@@ -750,18 +739,49 @@ iframe {
 }
 
 .profile .box-panel {
-  border-radius: 4px;
-  background-color: var(--scheme-color-sec);
+  border-radius: 0;
+  background-color: transparent;
+  padding: 0;
+  margin-bottom: var(--ui-section-gap);
 }
 
+.profile-game-row { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--scheme-color-border); min-width: 0; }
+.profile-game-row:last-child { border-bottom: 0; }
+.profile-game-result { display: inline-flex; justify-content: center; padding: 3px 6px; border: 1px solid var(--scheme-color-border); border-radius: 4px; color: var(--um-muted); font-size: var(--ui-text-caption); font-weight: 600; }
+.profile-game-result.is-win { border-color: #4caf50; color: #4caf50; }
+.profile-game-result.is-loss { border-color: #d9534f; color: #d9534f; }
+.profile-game-copy { min-width: 0; }
+.profile-game-title { display: inline-block; color: var(--scheme-color-text); font-weight: 600; overflow-wrap: anywhere; }
+.profile-game-title:hover { color: var(--um-accent); }
+.profile-game-copy p { margin: 3px 0 0; color: var(--um-muted); font-size: var(--ui-text-small); overflow-wrap: anywhere; }
+.profile-game-copy .profile-game-unavailable { color: var(--ui-danger-text); }
+.profile-game-actions { display: flex; align-items: center; gap: 6px; }
+.profile-game-row.is-ranked { border-left: 3px solid #ff82a9; padding-left: 10px; }
+.profile-game-row.is-competitive { border-left: 3px solid gold; padding-left: 10px; }
+@media (max-width: 600px) {
+  .profile-game-row { grid-template-columns: 46px minmax(0, 1fr); gap: 10px; }
+  .profile-game-actions { grid-column: 2; justify-content: flex-start; }
+}
 .profile .box-panel:last-child {
   margin-bottom: 0px;
 }
 
+/* Custom profile colors retain a legible inset for authored text. Ordinary
+   profiles use the continuous site canvas, without alternating panel colors. */
+.profile[data-custom-background="true"] .box-panel { padding: 12px; }
+.profile[data-custom-background="true"] .box-panel .content,
+.profile[data-custom-background="true"] .bio { background: var(--scheme-color); color: var(--scheme-color-text); padding: 12px; }
+.profile[data-custom-background="true"] .profile-bio .bio { max-width: none; }
+.profile[data-custom-background="true"] .profile-bio .md-content { max-width: var(--ui-reading-width); }
+.notification-row { border-radius: 0; }
+.notification-unread { color: var(--um-accent); font-size: var(--ui-text-caption); font-weight: var(--ui-weight-strong); }
+.settings-page .form > .form-group + .form-group { margin-top: var(--ui-section-gap); }
+.settings-page .form-group { padding-bottom: 8px; }
+
 .profile .box-panel .content {
-  padding: 4px;
-  background-color: var(--scheme-color);
-  color: var(--scheme-color-text);
+  padding: 0;
+  background-color: transparent;
+  color: inherit;
 }
 
 .profile .box-panel .row {
@@ -864,9 +884,8 @@ iframe {
   flex-flow: column;
 
   box-sizing: border-box;
-  padding: 15px;
-
-  background-color: var(--scheme-color);
+  padding: 0;
+  background-color: transparent;
   color: var(--scheme-color-text);
 }
 
@@ -875,7 +894,7 @@ iframe {
 }
 
 .profile .bio.edit:hover {
-  box-shadow: 0px 0px 5px #62a0db;
+  outline: 1px dashed var(--scheme-color-border);
 }
 
 .profile .bio .buttons {
@@ -1382,3 +1401,4 @@ iframe {
 .media-embed-wrap.media-collapsible.media-collapsed .media-embed-toggle {
   margin-top: 0;
 }
+.profile[data-custom-background="true"] .profile-section:not(.profile-bio) .box-panel { background: var(--scheme-color) !important; color: var(--scheme-color-text) !important; }

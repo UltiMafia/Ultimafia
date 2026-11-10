@@ -10,7 +10,7 @@ import { UserContext } from "../../Contexts";
 import "css/forums.css";
 import "css/comments.css";
 import { Loading } from "../../components/Loading";
-import { Box, Button, Paper, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import { Comment } from "./Comment";
 
 export default function Comments(props) {
@@ -125,8 +125,8 @@ export default function Comments(props) {
 
   const canPost = Boolean(postLocation) && user.loggedIn && user.perms.postReply;
 
-  const topBar = (
-    <Paper sx={{ p: 1 }}>
+  const topBar = (canPost || maxPage > 1) && (
+    <Box sx={{ py: 1 }}>
       <Stack
         direction="row"
         spacing={1}
@@ -146,18 +146,18 @@ export default function Comments(props) {
         ) : (
           <Box />
         )}
-        <PageNav
+        {maxPage > 1 && <PageNav
           inverted
           page={page}
           maxPage={maxPage}
           onNav={onCommentsPageNav}
-        />
+        />}
       </Stack>
-    </Paper>
+    </Box>
   );
 
-  const bottomBar = (
-    <Paper sx={{ p: 1 }}>
+  const bottomBar = maxPage > 1 && (
+    <Box sx={{ py: 1 }}>
       <Stack
         direction="row"
         sx={{
@@ -172,7 +172,7 @@ export default function Comments(props) {
           onNav={onCommentsPageNav}
         />
       </Stack>
-    </Paper>
+    </Box>
   );
 
   return (
@@ -180,9 +180,9 @@ export default function Comments(props) {
       <div className="comments-input-wrapper">
         {!showInput && topBar}
         {showInput && (
-          <Paper
+          <Box
             sx={{
-              p: 1,
+              py: 1,
               ".react-mde, .mde-header, .mde-text, .mde-preview": {
                 backgroundColor: "unset !important",
                 borderColor: "var(--mui-palette-divider)",
@@ -211,7 +211,7 @@ export default function Comments(props) {
                 </Button>
               </Stack>
             </Stack>
-          </Paper>
+          </Box>
         )}
       </div>
       <Stack direction="column" spacing={1} className="comments-page">

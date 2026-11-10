@@ -1,8 +1,7 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
-import { useTheme } from "@mui/material/styles";
-import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
+import { UiPage } from "components/ui";
 
 import Donors from "./Donors";
 import Contributors from "./Contributors";
@@ -12,19 +11,10 @@ import HallOfFame from "./HallOfFame";
 import StockMarket from "./StockMarket";
 
 export default function Fame(props) {
-  const theme = useTheme();
+  const { pathname } = useLocation();
 
   return (
-    <>
-      <Box sx={{ 
-        width: { xs: '100%', md: '1280px' }, 
-        maxWidth: '100vw',
-        position: 'relative',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        flexGrow: 1 
-      }}>
-        <Card sx={{ p: { xs: 1, sm: 2, md: 3 } }}>
+    <UiPage className="fame-page" width={pathname.endsWith("/faq") ? "prose" : "wide"}>
           <Routes>
             <Route path="competitive" element={<Competitive />} />
             <Route path="competitive/faq" element={<CompetitiveFaq />} />
@@ -34,8 +24,6 @@ export default function Fame(props) {
             <Route path="stocks" element={<StockMarket />} />
             <Route path="*" element={<Navigate to="competitive" />} />
           </Routes>
-        </Card>
-      </Box>
-    </>
+    </UiPage>
   );
 }

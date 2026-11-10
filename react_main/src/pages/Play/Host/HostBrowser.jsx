@@ -1,600 +1,130 @@
-import React, { useState, useEffect, useContext, useReducer, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
-
 import { UserContext } from "Contexts";
-import { PageNav, SearchBar } from "components/Nav";
+import { PageNav } from "components/Nav";
 import Setup, { SetupManipulationButtons } from "components/Setup";
 import { UserSearchSelect } from "components/Form";
 import HostGameDialogue from "components/HostGameDialogue";
-import { useErrorAlert } from "components/Alerts";
-
-import "css/buttons.css";
+import { UiAction, UiDialog, UiPending, UiField } from "components/ui";
+import { ActiveGameTypes } from "Constants";
+import { LatestRequest } from "../../../lib/latestRequest";
 import "css/host.css";
-import { clamp } from "../../../lib/MathExt";
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
-import {
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  IconButton,
-  InputLabel,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
-  Paper,
-  Select,
-  Stack,
-  SwipeableDrawer,
-  Tab,
-  Tabs,
-  useTheme,
-  Grid,
-} from "@mui/material";
 
-import GameIcon from "components/GameIcon";
-import { ActiveGameTypes, DisabledGameTypes } from "Constants";
+const initialFilters = { page: 1, option: "Popular", query: "", minSlots: 1, maxSlots: 50, sortBy: "", creatorId: "", creatorName: "" };
+const lists = ["Yours", "Popular", "Favorites", "Featured", "Ranked", "Competitive"];
+const sorts = [["", "Default"], ["newest", "Newest"], ["oldest", "Oldest"], ["updated", "Most recently updated"], ["upvoted", "Most upvoted"], ["downvoted", "Most downvoted"], ["controversial", "Most controversial"], ["favorites", "Most favorites"], ["played", "Most played"]];
 
-export default function HostBrowser(props) {
-  const defaultGameType = "Mafia";
-  const defaultNavLabel = "Popular";
-  const formFields = props.formFields;
-
-  const [selSetup, setSelSetup] = useState(null);
-  const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  const [hostNavLabel, setHostNavLabel] = useState(defaultNavLabel);
-  const [pageCount, setPageCount] = useState(1);
-  const [setups, setSetups] = useState([]);
-  const isMountedRef = useRef(true);
-
-  const isPhoneDevice = useIsPhoneDevice();
-  const theme = useTheme();
-  const errorAlert = useErrorAlert();
+export default function HostBrowser() {
+  const user = useContext(UserContext);
   const location = useLocation();
   const navigate = useNavigate();
-
-  const minSlots = 1;
-  const maxSlots = 50;
-
   const params = new URLSearchParams(location.search);
-  const preSelectedDeck = new URLSearchParams(location.search).get("deck");
-
-  const [filters, dispatchFilters] = useReducer(
-    (state, action) => {
-      switch (action.type) {
-        case "ChangeList": {
-          return {
-            ...state,
-            option: action.value,
-            page: 1,
-            query: "",
-            ...(action.value === "Yours"
-              ? { creatorId: "", creatorName: "" }
-              : {}),
-          };
-        }
-        case "ChangePage": {
-          return { ...state, page: action.value };
-        }
-        case "ChangeQuery": {
-          return { ...state, page: 1, query: action.value };
-        }
-        case "ChangeGame": {
-          return {
-            gameType: action.value,
-            page: 1,
-            option: defaultNavLabel,
-            query: "",
-          };
-        }
-        case "ChangeMinSlots": {
-          return { ...state, minSlots: action.value };
-        }
-        case "ChangeMaxSlots": {
-          return { ...state, maxSlots: action.value };
-        }
-        case "ChangeSortBy": {
-          return { ...state, page: 1, sortBy: action.value };
-        }
-        case "ChangeCreator": {
-          return {
-            ...state,
-            page: 1,
-            creatorId: action.value?.id ?? "",
-            creatorName: action.value?.name ?? "",
-          };
-        }
-      }
-    },
-    {
-      page: 1,
-      option: defaultNavLabel,
-      query: "",
-      minSlots: minSlots,
-      maxSlots: maxSlots,
-      sortBy: "",
-      creatorId: "",
-      creatorName: "",
-    }
-  );
-
-  const requestedGameType =
-    params.get("game") || localStorage.getItem("gameType") || defaultGameType;
-  const [gameType, setGameType] = useState(
-    DisabledGameTypes.includes(requestedGameType)
-      ? defaultGameType
-      : requestedGameType
-  );
-
-  const handleListItemClick = (newValue) => {
-    setGameType(newValue);
-    localStorage.setItem("gameType", newValue);
-    navigate({
-      pathname: location.pathname,
-      search: new URLSearchParams({
-        game: newValue,
-      }).toString(),
-    });
-    setDrawerOpen(false);
-  };
-
-  const toggleDrawer = (open) => (event) => {
-    if (
-      event &&
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-    setDrawerOpen(open);
-  };
+  const requestedGame = params.get("game") || localStorage.getItem("gameType") || "Mafia";
+  const gameType = ActiveGameTypes.includes(requestedGame) ? requestedGame : "Mafia";
+  const [filters, setFilters] = useState(initialFilters);
+  const [setups, setSetups] = useState([]);
+  const [pageCount, setPageCount] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [retry, setRetry] = useState(0);
+  const [advanced, setAdvanced] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [hostOpen, setHostOpen] = useState(false);
+  const [deleting, setDeleting] = useState(null);
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const favoriteRequests = useRef(new Set());
+  const requests = useRef(new LatestRequest());
+  const selectionRequests = useRef(new LatestRequest());
+  const lastGame = useRef(gameType);
+  const requestedSetup = params.get("setup");
+  useEffect(() => {
+    if (!requestedSetup || !user.loggedIn) return;
+    const owner = selectionRequests.current, request = owner.begin();
+    axios.get(`/api/setup/${encodeURIComponent(requestedSetup)}`, { signal: request.signal })
+      .then(({ data }) => {
+        if (!request.isCurrent()) return;
+        const setup = { ...data, roles: typeof data.roles === "string" ? JSON.parse(data.roles) : data.roles };
+        setSelected(setup); setHostOpen(true);
+      })
+      .catch(() => { if (request.isCurrent()) setError("Could not open the requested setup. Search for it below or try again."); });
+    return () => owner.invalidate();
+  }, [requestedSetup, user.loggedIn]);
 
   useEffect(() => {
-    const timeout = window.setTimeout(() => {
-      getSetupList(filters);
+    document.title = "Host a game | UltiMafia";
+    if (lastGame.current !== gameType) { lastGame.current = gameType; setFilters(initialFilters); }
+  }, [gameType]);
+  useEffect(() => {
+    const owner = requests.current;
+    const request = owner.begin();
+    setLoading(true); setError("");
+    const timer = setTimeout(() => {
+      axios.get(`/api/setup/search?${new URLSearchParams({ gameType, ...filters })}`, { signal: request.signal })
+        .then(({ data }) => {
+          if (!request.isCurrent()) return;
+          setSetups(data.setups || []); setPageCount(Math.max(1, data.pages || 1));
+        })
+        .catch(() => { if (request.isCurrent()) setError("Could not load setups. Your filters have been kept."); })
+        .finally(() => { if (request.isCurrent()) setLoading(false); });
     }, 100);
-    return () => {
-      window.clearTimeout(timeout);
-    };
-  }, [filters, gameType]);
+    return () => { clearTimeout(timer); owner.invalidate(); };
+  }, [filters, gameType, retry]);
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
-
-  function getSetupList(filters) {
-    axios
-      .get(
-        `/api/setup/search?${new URLSearchParams({
-          gameType: gameType,
-          ...filters,
-        }).toString()}`
-      )
-      .then((res) => {
-        if (isMountedRef.current) {
-          setSetups(res.data.setups);
-          setPageCount(res.data.pages);
-        }
-      })
-      .catch(() => {
-        // Silently handle errors
-      });
+  const change = values => setFilters(previous => ({ ...previous, ...values, page: 1 }));
+  function changeGame(value) {
+    localStorage.setItem("gameType", value);
+    navigate({ pathname: location.pathname, search: new URLSearchParams({ game: value }).toString() }, { replace: true });
+  }
+  function favorite(setup) {
+    if (favoriteRequests.current.has(setup.id)) return;
+    favoriteRequests.current.add(setup.id);
+    axios.post("/api/setup/favorite", { id: setup.id })
+      .then(() => setSetups(previous => previous.map(item => item.id === setup.id ? { ...item, favorite: !item.favorite } : item)))
+      .catch(() => setError("Could not update this favorite. Please try again."))
+      .finally(() => favoriteRequests.current.delete(setup.id));
+  }
+  function removeSetup() {
+    if (!deleting || deleteBusy) return;
+    setDeleteBusy(true);
+    axios.post("/api/setup/delete", { id: deleting.id })
+      .then(() => { setDeleting(null); setRetry(value => value + 1); })
+      .catch(() => setError("Could not delete this setup. Please try again."))
+      .finally(() => setDeleteBusy(false));
   }
 
-  function onHostNavClick(listType) {
-    dispatchFilters({ type: "ChangeList", value: listType });
-    setHostNavLabel(listType);
-  }
-
-  function onSearchInput(query) {
-    dispatchFilters({ type: "ChangeQuery", value: query });
-  }
-
-  function onCreatorSelect(userId, userName) {
-    dispatchFilters({
-      type: "ChangeCreator",
-      value:
-        userId != null && userId !== ""
-          ? { id: userId, name: userName ?? "" }
-          : null,
-    });
-  }
-
-  function onPageNav(page) {
-    dispatchFilters({ type: "ChangePage", value: page });
-  }
-
-  function onMinSlotsChange(e) {
-    let value = clamp(
-      e.target.value,
-      minSlots,
-      Math.min(filters.maxSlots, maxSlots)
-    );
-    dispatchFilters({ type: "ChangeMinSlots", value });
-  }
-
-  function onMaxSlotsChange(e) {
-    let value = clamp(
-      e.target.value,
-      Math.max(filters.minSlots, minSlots),
-      maxSlots
-    );
-    dispatchFilters({ type: "ChangeMaxSlots", value });
-  }
-
-  const sortByOptions = [
-    { value: "", label: "Default" },
-    { value: "newest", label: "Newest" },
-    { value: "oldest", label: "Oldest" },
-    { value: "updated", label: "Most recently updated" },
-    { value: "upvoted", label: "Most upvoted" },
-    { value: "downvoted", label: "Most downvoted" },
-    { value: "controversial", label: "Most controversial" },
-    { value: "favorites", label: "Most favorites" },
-    { value: "played", label: "Most played" },
-  ];
-
-  function onSelectSetup(setup) {
-    setSelSetup(setup);
-    setIshostGameDialogueOpen(true);
-  }
-
-  function onFavSetup(favSetup) {
-    axios.post("/api/setup/favorite", { id: favSetup.id }).catch(errorAlert);
-
-    var newSetups = [...setups];
-
-    for (let i in setups) {
-      if (setups[i].id === favSetup.id) {
-        newSetups[i].favorite = !setups[i].favorite;
-        break;
-      }
-    }
-
-    setSetups(newSetups);
-  }
-
-  function onEditSetup(setup) {
-    navigate(`/play/create?edit=${setup.id}&game=${setup.gameType}`);
-  }
-
-  function onCopySetup(setup) {
-    navigate(`/play/create?copy=${setup.id}&game=${setup.gameType}`);
-  }
-
-  function onDelSetup(setup) {
-    axios
-      .post("/api/setup/delete", { id: setup.id })
-      .then(() => {
-        getSetupList(filters);
-      })
-      .catch(errorAlert);
-  }
-
-  const hostButtonLabels = [
-    "Yours",
-    "Popular",
-    "Favorites",
-    "Featured",
-    "Ranked",
-    "Competitive",
-  ];
-
-  const hostNavTabs = (
-    <Tabs
-      value={hostNavLabel}
-      onChange={(_, newValue) => onHostNavClick(newValue)}
-    >
-      {hostButtonLabels.map((label) => (
-        <Tab key={label} label={<div>{label}</div>} value={label} />
-      ))}
-    </Tabs>
-  );
-
-  const setupRows = setups.map((setup) => (
-    <SetupRow
-      setup={setup}
-      listType={filters.option}
-      onSelect={onSelectSetup}
-      onFav={onFavSetup}
-      onEdit={onEditSetup}
-      onCopy={onCopySetup}
-      onDel={onDelSetup}
-      odd={setups.indexOf(setup) % 2 === 1}
-      key={setup.id}
-    />
-  ));
-
-  return (
-    <>
-      {isPhoneDevice && (
-        <>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            onClick={toggleDrawer(true)}
-            sx={{
-              position: "fixed",
-              top: "50%",
-              left: 0,
-              zIndex: 1201,
-              visibility: drawerOpen ? "hidden" : "visible",
-              backgroundColor: theme.palette.secondary.main,
-              padding: "8px",
-              borderRadius: "50%",
-              boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
-            }}
-          >
-            <GameIcon gameType={gameType} size={30} />
-          </IconButton>
-          <Paper
-            onClick={toggleDrawer(true)}
-            sx={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              height: "100%",
-              width: "10px",
-              backgroundColor: "transparent",
-              zIndex: 1200,
-              cursor: "pointer",
-            }}
-          />
-          <SwipeableDrawer
-            anchor="left"
-            open={drawerOpen}
-            onClose={toggleDrawer(false)}
-            onOpen={toggleDrawer(true)}
-            sx={{
-              width: 240,
-              flexShrink: 0,
-              [`& .MuiDrawer-paper`]: { width: 240, boxSizing: "border-box" },
-            }}
-          >
-            <List>
-              {ActiveGameTypes.map((game) => (
-                <ListItem
-                  button
-                  key={game}
-                  selected={gameType === game}
-                  onClick={() => handleListItemClick(game)}
-                >
-                  <ListItemIcon>
-                    <GameIcon gameType={game} size={24} />
-                  </ListItemIcon>
-                  <ListItemText primary={game} />
-                </ListItem>
-              ))}
-            </List>
-          </SwipeableDrawer>
-        </>
-      )}
-      <Stack
-        direction="column"
-        className="host"
-        sx={{
-          alignItems: "center",
-        }}
-      >
-        <Grid container spacing={1} sx={{ my: 1 }}>
-          <Grid item xs={6} md={4}>
-            <Paper sx={{ height: "100%" }}>
-              <div className="range-wrapper-slots">
-                <i className="fas fa-filter" />
-                Min slots
-                <input
-                  type="number"
-                  min={minSlots}
-                  max={Math.min(filters.maxSlots, maxSlots)}
-                  step={1}
-                  value={filters.minSlots}
-                  onChange={onMinSlotsChange}
-                />
-              </div>
-            </Paper>
-          </Grid>
-          <Grid item xs={6} md={4}>
-            <Paper sx={{ height: "100%" }}>
-              <div className="range-wrapper-slots">
-                Max slots
-                <input
-                  type="number"
-                  min={Math.max(filters.minSlots, minSlots)}
-                  max={maxSlots}
-                  step={1}
-                  value={filters.maxSlots}
-                  onChange={onMaxSlotsChange}
-                />
-              </div>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Paper>
-              <SearchBar
-                value={filters.query}
-                placeholder="🔎 Setup Name or Role"
-                onInput={onSearchInput}
-              />
-            </Paper>
-          </Grid>
-          <Grid item xs={12}>
-            <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
-              <FormControl size="small" sx={{ minWidth: 220 }}>
-                <InputLabel id="host-sort-by-label">Sort by</InputLabel>
-                <Select
-                  labelId="host-sort-by-label"
-                  value={filters.sortBy ?? ""}
-                  label="Sort by"
-                  onChange={(e) =>
-                    dispatchFilters({ type: "ChangeSortBy", value: e.target.value })
-                  }
-                >
-                  {sortByOptions.map((opt) => (
-                    <MenuItem key={opt.value || "default"} value={opt.value}>
-                      {opt.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl size="small" sx={{ minWidth: 220 }}>
-                <UserSearchSelect
-                  value={filters.creatorName ?? ""}
-                  onChange={onCreatorSelect}
-                  placeholder="Filter by creator"
-                />
-              </FormControl>
-            </Stack>
-          </Grid>
-        </Grid>
-        <Box
-          sx={{
-            alignSelf: "normal",
-          }}
-        >
-          {hostNavTabs}
-        </Box>
-        <Box
-          sx={{
-            alignSelf: "stretch",
-          }}
-        >
-          <Divider sx={{ mb: 1 }} />
-          <Stack
-            direction="row"
-            sx={{
-              alignItems: "stretch",
-            }}
-          >
-            {!isPhoneDevice && (
-              <Paper
-                sx={{
-                  flex: "0 0 20%",
-                  maxHeight: "28rem",
-                  overflowY: "scroll",
-                  mr: 1,
-                  p: 0.5,
-                }}
-              >
-                <Stack direction="column" spacing={0.5}>
-                  {ActiveGameTypes.map((game) => (
-                    <ListItem
-                      button
-                      key={game}
-                      selected={gameType === game}
-                      onClick={() => handleListItemClick(game)}
-                      sx={{
-                        borderRadius: "8px",
-                      }}
-                    >
-                      <ListItemIcon>
-                        <GameIcon gameType={game} size={24} />
-                      </ListItemIcon>
-                      <ListItemText primary={game} />
-                    </ListItem>
-                  ))}
-                </Stack>
-              </Paper>
-            )}
-            <Paper
-              sx={{
-                minWidth: 0,
-                flex: "1 1",
-              }}
-            >
-              <Stack
-                direction="column"
-                divider={<Divider orientation="horizontal" flexItem />}
-              >
-                {setupRows}
-              </Stack>
-            </Paper>
-          </Stack>
-        </Box>
-        <Paper
-          sx={{
-            p: 1,
-            mt: 1,
-            mb: 1,
-          }}
-        >
-          <PageNav page={filters.page} maxPage={pageCount} onNav={onPageNav} />
-        </Paper>
-        {selSetup && (
-          <HostGameDialogue
-            open={ishostGameDialogueOpen}
-            setOpen={setIshostGameDialogueOpen}
-            setup={selSetup}
-            preSelectedDeck={preSelectedDeck}
-          />
-        )}
-      </Stack>
-    </>
-  );
-}
-
-function SetupRow(props) {
-  const user = useContext(UserContext);
-  const isPhoneDevice = useIsPhoneDevice();
-
-  const favIconFormat = props.setup.favorite ? "fas" : "far";
-
-  return (
-    <Stack
-      direction={isPhoneDevice ? "column-reverse" : "row"}
-      spacing={1}
-      className="setup-row"
-      sx={{
-        p: 1,
-        alignItems: "center",
-        justifyContent: "start",
-        width: "100%",
-      }}
-    >
-      {!isPhoneDevice && user.loggedIn && (
-        <Button onClick={() => props.onSelect(props.setup)}>Host</Button>
-      )}
-      <Box
-        sx={{
-          minWidth: 0,
-          width: "100%",
-          flex: "1 1",
-        }}
-      >
-        <Setup setup={props.setup} />
-      </Box>
-      <Stack
-        direction="row"
-        sx={{
-          alignItems: "center",
-          alignSelf: "stretch",
-          ml: isPhoneDevice ? undefined : "auto !important",
-        }}
-      >
-        {isPhoneDevice && user.loggedIn && (
-          <Button size="small" onClick={() => props.onSelect(props.setup)}>Host</Button>
-        )}
-        {user.loggedIn && (
-          <Box sx={{ ml: isPhoneDevice ? undefined : "auto" }}>
-            <SetupManipulationButtons
-              setup={props.setup}
-              onFav={props.onFav}
-              onEdit={props.onEdit}
-              onCopy={props.onCopy}
-              onDel={props.onDel}
-            />
-          </Box>
-        )}
-      </Stack>
-    </Stack>
-  );
+  return <div className="host">
+    <header className="page-heading"><h1>Host a game</h1><Link className="ui-action ui-action--secondary" to={`/play/create?game=${gameType}`}>Create a setup</Link></header>
+    {!user.loggedIn && <p><Link to="/welcome">Sign in</Link> to host or save setups.</p>}
+    <div className="host-discovery-controls">
+      <UiField select size="small" label="Game type" InputLabelProps={{ shrink: true }} SelectProps={{ native: true }} value={gameType} onChange={event => changeGame(event.target.value)}>{ActiveGameTypes.map(game => <option key={game}>{game}</option>)}</UiField>
+      <UiField fullWidth size="small" type="search" label="Search setups or roles" value={filters.query} onChange={event => change({ query: event.target.value })} />
+      <UiAction aria-expanded={advanced} aria-controls="host-filters" onClick={() => setAdvanced(value => !value)}>Filters</UiAction>
+    </div>
+    <div className="host-list-choices" role="group" aria-label="Setup collections">{lists.map(option => <UiAction key={option} variant="ghost" aria-pressed={filters.option === option}
+      disabled={!user.loggedIn && ["Yours", "Favorites"].includes(option)} onClick={() => change({ option, query: "", ...(option === "Yours" ? { creatorId: "", creatorName: "" } : {}) })}>{option}</UiAction>)}</div>
+    <div id="host-filters" className="host-filter-fields" hidden={!advanced}>
+      <UiField fullWidth size="small" type="number" label="Min slots" value={filters.minSlots} inputProps={{ min: 1, max: filters.maxSlots }} onChange={event => change({ minSlots: Math.max(1, Math.min(filters.maxSlots, Number(event.target.value) || 1)) })} />
+      <UiField fullWidth size="small" type="number" label="Max slots" value={filters.maxSlots} inputProps={{ min: filters.minSlots, max: 50 }} onChange={event => change({ maxSlots: Math.min(50, Math.max(filters.minSlots, Number(event.target.value) || 50)) })} />
+      <UiField select size="small" label="Sort by" InputLabelProps={{ shrink: true }} SelectProps={{ native: true }} value={filters.sortBy} onChange={event => change({ sortBy: event.target.value })}>{sorts.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</UiField>
+      <UserSearchSelect value={filters.creatorName} placeholder="Filter by creator" onChange={(id, name) => change({ creatorId: id || "", creatorName: name || "" })} />
+      <UiAction onClick={() => setFilters(initialFilters)}>Reset filters</UiAction>
+    </div>
+    {error && <div role="alert" className="host-error"><p>{error}</p><UiAction onClick={() => setRetry(value => value + 1)}>Retry</UiAction></div>}
+    <p className="host-results-summary" role="status">{loading ? "Loading setups…" : `${setups.length} setups on this page · Page ${filters.page} of ${pageCount}`}</p>
+    {loading && !setups.length && <UiPending label="Loading setups" />}
+    <ul className="host-setup-list" aria-label="Setups" aria-busy={loading}>{setups.map(setup => <li key={setup.id} className="host-setup-row">
+      <div className="host-setup-information"><Setup setup={setup} summary /></div>
+      <div className="host-setup-actions"><Link to={`/learn/setup/${setup.id}`}>Details</Link>{user.loggedIn && <UiAction variant="primary" onClick={() => { setSelected(setup); setHostOpen(true); }}>Host</UiAction>}</div>
+      <div className="host-setup-secondary"><p className="host-setup-facts">{setup.gameType} · {setup.total} players{setup.competitive ? " · Competitive" : setup.ranked ? " · Ranked" : ""}</p>{user.loggedIn && <div className="host-setup-tools"><SetupManipulationButtons setup={setup} onFav={favorite} onDel={setDeleting} showLabels /></div>}</div>
+    </li>)}</ul>
+    {!loading && !error && !setups.length && <div role="status"><h2>No matching setups</h2><p>Try another name, collection or player range.</p><UiAction onClick={() => setFilters(initialFilters)}>Reset filters</UiAction></div>}
+    <PageNav page={filters.page} maxPage={pageCount} onNav={page => setFilters(previous => ({ ...previous, page }))} />
+    {selected && <HostGameDialogue key={selected.id} open={hostOpen} setOpen={setHostOpen} setup={selected} preSelectedDeck={params.get("deck")} preSelectedWordDeck={params.get("wordDeck")} />}
+    <UiDialog open={!!deleting} title="Delete setup?" onClose={deleteBusy ? undefined : () => setDeleting(null)}
+      actions={<><UiAction disabled={deleteBusy} onClick={() => setDeleting(null)}>Cancel</UiAction><UiAction variant="danger" busy={deleteBusy} onClick={removeSetup}>Delete setup</UiAction></>}>
+      <p>Delete {deleting?.name}? This cannot be undone.</p>
+    </UiDialog>
+  </div>;
 }

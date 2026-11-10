@@ -1,196 +1,55 @@
-import React, {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
-import {
-  Box,
-  IconButton,
-  Paper,
-  Stack,
-  Tab,
-  Tabs,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import StateIcon from "../StateIcon";
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import React, { useContext } from "react";
 import { GameContext } from "Contexts";
+import StateIcon from "../StateIcon";
+import UiIcon from "../ui/UiIcon";
+import { UiTabs, UiTab, UiAction } from "../ui";
 
-export default function StateSwitcher({ stateRange = null }) {
-  const game = useContext(GameContext);
-  const isPhoneDevice = useIsPhoneDevice();
-  const hideFastForward = isPhoneDevice;
-
-  const { history, stateViewing, updateStateViewing } = game;
-
-  const STATE_RANGE = stateRange !== null ? stateRange : isPhoneDevice ? 1 : 2;
-
-  const leftArrowVisible = stateViewing !== -1;
-  const rightArrowVisible =
-    stateViewing < history.currentState ||
-    (history.currentState === -2 && stateViewing !== history.currentState);
-
-  const handleClick = (action) => {
-    updateStateViewing(action);
-  };
-
-  const stateIconSize = 40;
-  const iconStyle = {
-    width: "1em",
-    height: "1em",
-  };
-
-  let stateNums = Object.keys(history.states).map((stateNum) =>
-    Number.parseInt(stateNum)
-  );
-  stateNums.sort((a, b) => {
-    // Postgame is always greater
-    if (a === -2) {
-      return 1;
-    }
-    if (b === -2) {
-      return -1;
-    } else {
-      return a - b;
-    }
+export default function StateSwitcher({ compact = false, mobile = false } = {}) {
+  const { history, stateViewing, updateStateViewing, review } = useContext(GameContext);
+  const states = Object.keys(history.states).map(Number).sort((a, b) => {
+    if (a === -2) return 1;
+    if (b === -2) return -1;
+    return a - b;
   });
-  const reverseStateNums = Object.fromEntries(
-    stateNums.map((stateNum, i) => [stateNum, i])
-  );
-  const currentStateIndex = reverseStateNums[stateViewing];
+  const index = states.indexOf(stateViewing);
+  const state = history.states[stateViewing];
+  const live = stateViewing === history.currentState;
+  const goTo = stateNum => updateStateViewing({ type: "set", stateNum });
+  const options = states.map(number => <option key={number} value={number}>
+    {history.states[number].name}{!history.states[-2] ? (number === history.currentState ? " · Live" : " · History") : ""}
+  </option>);
 
-  const padInvisibleLeft = Math.max(0, STATE_RANGE - currentStateIndex);
-  const padInvisibleRight = Math.max(
-    0,
-    STATE_RANGE - stateNums.length + 1 + currentStateIndex
-  );
+  if (mobile) return <div className={`game-phase-control${live ? "" : " is-history"}`}>
+    <label className="game-phase-picker">
+      <StateIcon stateName={state?.name || "Pregame"} winnerGroups={state?.winners?.groups || []} size={24} showNumber={false} />
+      <span><strong>{state?.name || "Pregame"}</strong><small>{review ? "Game review" : live ? "View history" : "Viewing history"}</small></span>
+      <UiIcon name="down" size={16} />
+      <select aria-label="View phase" value={stateViewing} onChange={event => goTo(Number(event.target.value))}>{options}</select>
+    </label>
+    {!live && <button type="button" className="return-to-live" aria-label={review ? "Go to final phase" : "Return to current"} onClick={() => updateStateViewing({ type: "current" })}>{review ? "End" : "Live"}</button>}
+  </div>;
 
-  const paginatedStates = stateNums.map((stateNum) => {
-    const state = history.states[stateNum];
-    const stateName = state ? state.name : "Unknown State";
-    const index = reverseStateNums[stateNum];
-
-    // Determine winnerGroups, if any
-    const gameState = game.history.states[stateNum];
-    let winnerGroups = [];
-    if (gameState && gameState.winners && gameState.winners.groups) {
-      winnerGroups = gameState.winners.groups;
-    }
-
-    const isInRange =
-      index >= currentStateIndex - STATE_RANGE &&
-      index <= currentStateIndex + STATE_RANGE;
-
-    // If you change the sizing of this, make sure to tweak the padInvisibleLeft and padInvisibleRight calcs accordingly
-    return (
-      <Tab
-        key={stateNum}
-        aria-label={stateName}
-        icon={
-          <StateIcon
-            stateName={stateName}
-            winnerGroups={winnerGroups}
-            unfocused={stateNum !== stateViewing}
-            size={stateIconSize}
-          />
-        }
-        sx={{
-          display: isInRange ? undefined : "none",
-          px: 0.5,
-          paddingBottom: 0.5,
-          paddingTop: 0,
-          minWidth: 0,
-          minHeight: 0,
-        }}
-      />
-    );
-  });
-
-  const handleChange = (event, newValue) => {
-    const newState = stateNums[newValue];
-    handleClick({ type: "set", stateNum: newState });
-  };
+  if (compact) return <div className="state-history-compact-row">
+    <label className={`state-history-compact${live ? "" : " is-history"}`} title={state?.name}>
+      <span aria-hidden="true">{state?.name || "Pregame"}<UiIcon name="down" size={16} /></span>
+      <select aria-label="View phase" value={stateViewing} onChange={event => goTo(Number(event.target.value))}>{options}</select>
+    </label>
+    {!live && <button type="button" className="return-to-live-compact" aria-label="Return to current" onClick={() => updateStateViewing({ type: "current" })}>Live</button>}
+  </div>;
 
   return (
-    <Stack
-      direction="row"
-      sx={{
-        alignItems: "center",
-        justifyContent: "center",
-        py: 0.5,
-        borderRadius: 1,
-      }}
-    >
-      {/* <IconButton
-        sx={{
-          visibility: leftArrowVisible ? undefined : "hidden",
-        }}
-        onClick={() => handleClick({ type: "backward" })}
-      >
-        <i className="fas fa-angle-left" style={iconStyle} />
-      </IconButton> */}
-
-      {!hideFastForward && (
-        <IconButton
-          aria-label="Go to first state"
-          sx={{
-            visibility: leftArrowVisible ? undefined : "hidden",
-          }}
-          onClick={() => handleClick({ type: "first" })}
-        >
-          <i className="fas fa-angle-double-left" style={iconStyle} />
-        </IconButton>
-      )}
-
-      <Stack
-        direction="column"
-        sx={{
-          alignItems: "center",
-        }}
-      >
-        <Tabs
-          value={reverseStateNums[stateViewing]}
-          onChange={handleChange}
-          variant="standard"
-          scrollButtons={false}
-          allowScrollButtonsMobile={false}
-          sx={{
-            maxWidth: "100%",
-            minHeight: 0,
-            paddingLeft: `calc(${padInvisibleLeft} * (var(--mui-spacing) + ${stateIconSize}px))`,
-            paddingRight: `calc(${padInvisibleRight} * (var(--mui-spacing) + ${stateIconSize}px))`,
-            "& .MuiTabs-indicator": {
-              transition: "none",
-            },
-          }}
-        >
-          {paginatedStates}
-        </Tabs>
-      </Stack>
-
-      {!hideFastForward && (
-        <IconButton
-          aria-label="Go to current state"
-          sx={{
-            visibility: rightArrowVisible ? undefined : "hidden",
-          }}
-          onClick={() => handleClick({ type: "current" })}
-        >
-          <i className="fas fa-angle-double-right" style={iconStyle} />
-        </IconButton>
-      )}
-
-      {/* <IconButton
-        sx={{
-          visibility: rightArrowVisible ? undefined : "hidden",
-        }}
-        onClick={() => handleClick({ type: "forward" })}
-      >
-        <i className="fas fa-angle-right" style={iconStyle}  />
-      </IconButton> */}
-    </Stack>
+    <div className="state-history state-history--desktop" aria-label="Game history">
+      <UiAction variant="ghost" iconOnly aria-label="Go to first phase" disabled={index <= 0} onClick={() => goTo(states[0])}><UiIcon name="first" size={18} /></UiAction>
+      <UiTabs value={stateViewing} onChange={(_, number) => goTo(number)} aria-label="Game phases"
+        sx={{ minHeight: 0, '& .MuiTabs-indicator': { transition: 'none' } }}>
+        {states.map((number, phaseIndex) => {
+          const phase = history.states[number];
+          return <UiTab key={number} value={number} aria-label={phase.name}
+            icon={<StateIcon stateName={phase.name} winnerGroups={phase.winners?.groups || []} unfocused={number !== stateViewing} size={40} />}
+            sx={{ display: Math.abs(phaseIndex - index) <= 2 ? undefined : 'none', p: .5, minWidth: 0, minHeight: 0 }} />;
+        })}
+      </UiTabs>
+      <UiAction variant="ghost" iconOnly aria-label={review ? "Go to final phase" : "Return to current"} disabled={live} onClick={() => updateStateViewing({ type: "current" })}><UiIcon name="last" size={18} /></UiAction>
+    </div>
   );
 }

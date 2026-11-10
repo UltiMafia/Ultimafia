@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { GameContext } from "../../Contexts";
+import { Slider } from "@mui/material";
+import { UiAction, UiDialog, UiField } from "components/ui";
 
 export default function PokerActions() {
   const game = useContext(GameContext);
@@ -32,7 +34,7 @@ export default function PokerActions() {
     [meetings]
   );
 
-  const myTurn = isCurrentState && !!moveMeeting && moveMeeting.canVote;
+  const myTurn = !game.review && isCurrentState && !!moveMeeting && moveMeeting.canVote;
   const currentTurnName = extraInfo?.whoseTurnName || "";
 
   const me = (extraInfo?.randomizedPlayers || []).find(
@@ -78,7 +80,7 @@ export default function PokerActions() {
   if (!state || !extraInfo) return null;
 
   function castMoveVote(selection) {
-    if (!moveMeeting || !moveTargets.includes(selection)) return;
+    if (!myTurn || !moveMeeting || !moveTargets.includes(selection)) return;
     game.socket.send("vote", {
       meetingId: moveMeeting.id,
       selection,
@@ -86,7 +88,7 @@ export default function PokerActions() {
   }
 
   function castRaiseVote(amount) {
-    if (!raiseMeeting) return;
+    if (!myTurn || !raiseMeeting?.canVote) return;
     game.socket.send("vote", {
       meetingId: raiseMeeting.id,
       selection: String(amount),
@@ -129,33 +131,27 @@ export default function PokerActions() {
       </div>
 
       <div className={`poker-actions${myTurn ? "" : " poker-actions--disabled"}`}>
-        <button
-          type="button"
-          className="poker-action poker-action--fold"
+        <UiAction variant="danger-quiet" style={{ flex: 1 }}
           onClick={() => castMoveVote("Fold")}
           disabled={!myTurn || !canFold}
         >
           Fold
-        </button>
+        </UiAction>
 
-        <button
-          type="button"
-          className="poker-action poker-action--call"
+        <UiAction variant="primary" style={{ flex: 1 }}
           onClick={() => castMoveVote(isCheck ? "Check" : "Call")}
           disabled={!myTurn || !canCallOrCheck}
         >
           {callLabel}
-        </button>
+        </UiAction>
 
         <div className="poker-action-raise-wrap">
-          <button
-            type="button"
-            className="poker-action poker-action--raise"
+          <UiAction style={{ width: "100%" }}
             onClick={handleRaiseClick}
             disabled={!myTurn || !canRaise}
           >
             Raise
-          </button>
+          </UiAction>
 
           {raisePopoverOpen && canRaise && (
             <PokerRaisePopover
@@ -177,7 +173,7 @@ export default function PokerActions() {
   );
 }
 
-function PokerRaisePopover({
+export function PokerRaisePopover({
   minRaise,
   maxRaise,
   halfPot,
@@ -203,86 +199,58 @@ function PokerRaisePopover({
   const aboveCallBy = Math.max(0, amount - callAmount);
 
   return (
-    <div className="poker-raise-popover" role="dialog" aria-label="Raise amount">
-      <div className="poker-raise-popover-header">
-        Raise <span className="poker-raise-popover-amount">{amount}</span>
+    <UiDialog title="Raise amount" onClose={onCancel} actions={<>
+      <UiAction onClick={onCancel}>Cancel</UiAction>
+      <UiAction variant="primary" onClick={onConfirm}>Confirm</UiAction>
+    </>}>
+      <div className="ui-form-stack">
+       <p>Your resulting total bid: {totalBidIfConfirmed}.</p>
         {aboveCallBy > 0 && (
-          <span className="poker-raise-popover-meta">
-            ({callAmount > 0 ? `+${aboveCallBy} over call` : "first bet"} ·
-            total bid {totalBidIfConfirmed})
+          <span>
+             {callAmount > 0 ? `${aboveCallBy} above the call amount.` : "First bet."}
           </span>
         )}
-      </div>
-
-      <input
-        type="range"
+      <Slider
         min={minRaise}
         max={maxRaise}
         value={amount}
         step={1}
-        onChange={(e) => setClamped(e.target.value)}
-        className="poker-raise-slider"
+        onChange={(_, value) => setClamped(value)}
+        aria-label="Raise amount slider"
       />
 
-      <div className="poker-raise-row">
-        <input
+        <UiField fullWidth label="Raise amount"
           type="number"
-          className="poker-raise-input"
           value={amount}
-          min={minRaise}
-          max={maxRaise}
+          inputProps={{ min: minRaise, max: maxRaise, step: 1 }}
           onChange={(e) => setClamped(e.target.value)}
         />
-        <div className="poker-raise-quick-buttons">
-          <button
-            type="button"
-            className="poker-raise-quick"
+        <div className="ui-action-row ui-amount-shortcuts">
+          <UiAction
             onClick={() => onAmountChange(minRaise)}
           >
             Min
-          </button>
-          <button
-            type="button"
-            className="poker-raise-quick"
+          </UiAction>
+          <UiAction
             onClick={() => onAmountChange(halfPot)}
             disabled={halfPot <= minRaise}
           >
             ½ Pot
-          </button>
-          <button
-            type="button"
-            className="poker-raise-quick"
+          </UiAction>
+          <UiAction
             onClick={() => onAmountChange(fullPot)}
             disabled={fullPot <= minRaise}
           >
             Pot
-          </button>
-          <button
-            type="button"
-            className="poker-raise-quick"
+          </UiAction>
+          <UiAction
             onClick={() => onAmountChange(maxRaise)}
           >
-            All-In
-          </button>
+            All-in
+          </UiAction>
         </div>
       </div>
 
-      <div className="poker-raise-actions">
-        <button
-          type="button"
-          className="poker-raise-cancel"
-          onClick={onCancel}
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          className="poker-raise-confirm"
-          onClick={onConfirm}
-        >
-          Confirm
-        </button>
-      </div>
-    </div>
+    </UiDialog>
   );
 }

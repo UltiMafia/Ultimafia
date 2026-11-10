@@ -34,7 +34,9 @@ import SignInWithAppleButton, {
   createAppleProvider,
 } from "./SignInWithAppleButton";
 
+let nextAuthTabsId = 0;
 export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
+  const [tabId] = useState(() => `auth-tabs-${++nextAuthTabsId}`);
   const snackbarHook = useSnackbar();
   const siteInfo = useContext(SiteInfoContext);
   const user = useContext(UserContext);
@@ -537,7 +539,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
             <Button
               fullWidth
               sx={{ mt: 2 }}
-              type="submit"
+              type="submit" variant="contained"
               disabled={loading || !email}
             >
               Reset Password
@@ -582,7 +584,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
             <Button
               fullWidth
               sx={{ mt: 2 }}
-              type="submit"
+              type="submit" variant="contained"
               disabled={loading || !email || !password}
             >
               Resend Verification Email
@@ -620,7 +622,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
             <Button
               fullWidth
               sx={{ mt: 2 }}
-              type="submit"
+              type="submit" variant="contained"
               disabled={loading || !email || !password}
             >
               Login
@@ -743,7 +745,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
         <Button
           fullWidth
           sx={{ mt: 2 }}
-          type="submit"
+          type="submit" variant="contained"
           disabled={
             loading ||
             !email ||
@@ -804,11 +806,11 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
         aria-label="authentication tabs"
         sx={{ borderBottom: 1, borderColor: "divider", flexShrink: 0 }}
       >
-        <Tab label="Login" />
-        <Tab label="Register" />
+        <Tab label="Login" id={`${tabId}-login`} aria-controls={`${tabId}-panel-login`} />
+        <Tab label="Register" id={`${tabId}-register`} aria-controls={`${tabId}-panel-register`} />
       </Tabs>
       <Box 
-        role="tabpanel" 
+        role="tabpanel" id={`${tabId}-panel-login`} aria-labelledby={`${tabId}-login`}
         hidden={tabValue !== 0}
         sx={{ 
           flex: 1, 
@@ -819,7 +821,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
         {tabValue === 0 && LoginContent}
       </Box>
       <Box 
-        role="tabpanel" 
+        role="tabpanel" id={`${tabId}-panel-register`} aria-labelledby={`${tabId}-register`}
         hidden={tabValue !== 1}
         sx={{ 
           flex: 1, 
@@ -842,8 +844,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
           fullWidth
           PaperProps={{
             sx: {
-              height: "600px",
-              maxHeight: "90vh",
+              maxHeight: "calc(100dvh - var(--app-top, 0px) - var(--app-bottom, 0px) - 32px)",
             }
           }}
         >

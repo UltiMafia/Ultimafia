@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { UiSection, UiAction, UiField, UiStatRow, UiStat } from "components/ui";
 import {
   Link as RouterLink,
   Route,
@@ -11,10 +12,7 @@ import axios from "axios";
 import {
   Box,
   Button,
-  Card,
-  Chip,
   Grid,
-  IconButton,
   Link,
   MenuItem,
   Select,
@@ -48,17 +46,12 @@ import HostGameDialogue from "components/HostGameDialogue";
 import { UserContext, SiteInfoContext } from "Contexts";
 
 import Comments from "pages/Community/Comments";
-import vegIcon from "images/emotes/veg.webp";
 import { SetupStrategiesSection } from "components/Strategies";
 import { NameWithAvatar } from "pages/User/UserWidgets";
 import { TextEditor } from "components/Form";
 import CustomMarkdown from "components/CustomMarkdown";
 import { Loading } from "components/Loading";
 import { VoteWidget } from "components/VoteWidget";
-import {
-  getRowStubColor,
-  getSetupBackgroundColor,
-} from "pages/Play/LobbyBrowser/gameRowColors";
 
 import { RoleCount } from "components/Roles";
 import { PieChart } from "./PieChart";
@@ -133,14 +126,6 @@ function weightedAvgMs(aMs, aCount, bMs, bCount) {
   return (aMs * aCount + bMs * bCount) / (aCount + bCount);
 }
 
-function avgLengthColor(ms) {
-  if (ms == null || Number.isNaN(ms)) return "#888";
-  const minutes = ms / 60000;
-  if (minutes < 10) return "#4caf50";
-  if (minutes < 30) return "#ff9800";
-  return "#e45050";
-}
-
 export function SetupPage() {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -178,21 +163,6 @@ export function SetupPage() {
   const shouldDisplayStats = gameType === "Mafia";
   const shouldDisplayChangelog = gameType === "Mafia";
 
-  const colorInfo = {
-    ranked: setup ? setup.ranked : false,
-    lobby: gameType === "Mafia" ? (setup.closed ? "Sandbox" : "Main") : "Games",
-  };
-  const setupHeadingIconColor = getRowStubColor(colorInfo);
-  // Intentionally do not pass competitive — the comp state is expressed via
-  // the pill, not the banner. Banner stays whichever ranked/lobby color it
-  // would otherwise have.
-  const setupHeadingBackgroundColor = getSetupBackgroundColor(colorInfo, true);
-  // In dark mode, force white + drop shadow so text is readable on any of
-  // the pastel/gold/pink banner colors. In light mode, use near-black text
-  // without a shadow — the same pastels are bright enough that white text
-  // disappears.
-  const headerTextColor = isLightMode ? "#141414" : "#fff";
-  const headerTextShadow = isLightMode ? "none" : "0 1px 3px rgba(0,0,0,0.75)";
 
   useEffect(() => {
     if (setupId) {
@@ -508,7 +478,6 @@ export function SetupPage() {
     }
   };
 
-  const iconSize = isPhoneDevice ? 30 : 60;
 
   // Night order: flatten setup roles with siteInfo, collect night actions, sort by priority
   let useingRoles = [];
@@ -559,29 +528,13 @@ export function SetupPage() {
 
   return (
     <Stack
-      spacing={1}
+      spacing={3}
       className="setup-page"
       sx={{
         maxWidth: "100%",
       }}
     >
-      <Card
-        variant="outlined"
-        sx={{
-          backgroundColor: setupHeadingBackgroundColor,
-          mb: 1,
-          p: 1,
-          // Universal legibility layer: in dark mode, white text with a
-          // drop shadow reads well on pink/gold/pastel banners. In light
-          // mode those same pastels are bright, so switch to dark text.
-          color: headerTextColor,
-          textShadow: headerTextShadow,
-          "& .MuiTypography-root": {
-            color: headerTextColor,
-            textShadow: headerTextShadow,
-          },
-        }}
-      >
+      <UiSection className="setup-heading">
         {setup && (
           <HostGameDialogue
             open={ishostGameDialogueOpen}
@@ -595,39 +548,14 @@ export function SetupPage() {
           prefilledArgs={{ setupId }}
         />
         <Stack
-          direction={{ xs: "column", md: "row" }}
+          className="setup-title-layout"
+          direction="row"
+          useFlexGap flexWrap="wrap"
           spacing={2}
           alignItems={{ xs: "stretch", md: "center" }}
         >
-          <Stack direction="row" spacing={1} alignItems="center">
-            <VoteWidget
-              item={{
-                id: setup.id,
-                vote: setup.vote ?? 0,
-                voteCount: setup.voteCount ?? 0,
-              }}
-              itemType="setup"
-              setItemHolder={(newItem) =>
-                setSetup((prev) =>
-                  prev?.id === newItem.id
-                    ? { ...prev, vote: newItem.vote, voteCount: newItem.voteCount }
-                    : prev
-                )
-              }
-            />
-            <IconButton
-              onClick={() => setIshostGameDialogueOpen(true)}
-              sx={{
-                p: isPhoneDevice ? 1 : 2,
-                borderRadius: "50%",
-                backgroundColor: setupHeadingIconColor,
-              }}
-            >
-              <GameIcon gameType={setup.gameType} size={iconSize} />
-            </IconButton>
-          </Stack>
-
-          <Stack direction="column" spacing={0.5} sx={{ flex: 1, minWidth: 0 }}>
+          <Stack className="setup-title-copy" direction="column" spacing={1} sx={{ flex: 1, minWidth: 0 }}>
+            <div className="setup-kind"><GameIcon gameType={setup.gameType} size={24} /><span>{setup.gameType} setup · {setup.total} players</span></div>
             <Stack
               direction="row"
               spacing={1}
@@ -635,26 +563,14 @@ export function SetupPage() {
               flexWrap="wrap"
               useFlexGap
             >
-              <Typography variant="h2" sx={{ mr: 0.5 }}>
+              <Typography variant="h1" sx={{ mr: 0.5 }}>
                 {setup.name}
               </Typography>
-              <Chip
-                label={rolesVisibilityLabel}
-                size="small"
-                sx={{
-                  backgroundColor: "rgba(0,0,0,0.55)",
-                  color: "#fff",
-                  fontWeight: 600,
-                  border: "1px solid rgba(255,255,255,0.25)",
-                  textShadow: "none",
-                  "& .MuiChip-label": { textShadow: "none" },
-                }}
-              />
+              <span className="setup-status">{rolesVisibilityLabel}</span>
               <StatusPill
                 active={setup.ranked}
                 canToggle={canToggleRanked}
                 onClick={onToggleRanked}
-                icon="fa-trophy"
                 label="Ranked"
                 color="#e45050"
               />
@@ -662,10 +578,8 @@ export function SetupPage() {
                 active={setup.competitive}
                 canToggle={canToggleComp}
                 onClick={onToggleComp}
-                icon="fa-crown"
-                label="Comp"
+                label="Competitive"
                 color="#ebd722"
-                activeTextColor="#000"
               />
             </Stack>
             {setup.creator && (
@@ -715,108 +629,33 @@ export function SetupPage() {
           </Stack>
 
           <Stack
-            direction="column"
+            className="setup-header-actions"
+            direction="row" flexWrap="wrap" useFlexGap
             spacing={1}
             alignItems={{ xs: "flex-start", md: "flex-end" }}
           >
-            <Button
-              onClick={() => setIshostGameDialogueOpen(true)}
-              sx={{ textShadow: "none" }}
-            >
-              Host
-            </Button>
-            {shouldDisplayStats && (
-              <Stack
-                direction="column"
-                spacing={0.5}
-                alignItems={{ xs: "flex-start", md: "flex-end" }}
-              >
-              <Typography
-                variant="overline"
-                sx={{
-                  fontSize: "0.65rem",
-                  letterSpacing: "0.12em",
-                  opacity: 0.7,
-                  lineHeight: 1,
-                }}
-              >
-                Version
-              </Typography>
-              <Select
-                value={selectedVersionNum}
-                onChange={(e) =>
-                  handleVersionChange({ target: { value: e.target.value } })
-                }
-                variant="standard"
-                disableUnderline
-                IconComponent={(props) => (
-                  <i
-                    {...props}
-                    className={`fas fa-chevron-down ${props.className || ""}`}
-                    style={{ fontSize: "0.7rem", right: 10 }}
-                  />
-                )}
-                sx={{
-                  minWidth: 72,
-                  backgroundColor: "rgba(0,0,0,0.55)",
-                  borderRadius: 999,
-                  px: 1.5,
-                  py: 0.25,
-                  fontSize: "1.05rem",
-                  fontWeight: 700,
-                  color: "#fff",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  transition: "border-color 120ms, background-color 120ms",
-                  "&:hover": {
-                    borderColor: "rgba(255,255,255,0.45)",
-                    backgroundColor: "rgba(0,0,0,0.35)",
-                  },
-                  "& .MuiSelect-select": {
-                    paddingTop: "2px",
-                    paddingBottom: "2px",
-                    paddingRight: "28px !important",
-                  },
-                  "& .MuiSelect-icon": {
-                    color: "rgba(255,255,255,0.7)",
-                    top: "calc(50% - 0.35em)",
-                  },
-                }}
-              >
-                {allVersions.map((v) => (
-                  <MenuItem key={v} value={v}>
-                    v{v}
-                  </MenuItem>
-                ))}
-              </Select>
-              </Stack>
-            )}
+            <UiAction variant="primary" onClick={() => setIshostGameDialogueOpen(true)}>Host game</UiAction>
+            {shouldDisplayStats && <UiField select size="small" label="Version" InputLabelProps={{ shrink: true }} SelectProps={{ native: true }} value={selectedVersionNum} onChange={(event) => handleVersionChange({ target: { value: event.target.value } })}>
+              {allVersions.map(version => <option key={version} value={version}>v{version}</option>)}
+            </UiField>}
           </Stack>
         </Stack>
-      </Card>
-      <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)}>
-        <Tab label="Info" />
+      </UiSection>
+      <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)} variant="scrollable" scrollButtons="auto">
+        <Tab label="Overview" />
         <Tab label="Statistics" />
-        <Tab label="Night Order" />
-        <Tab label="Version History" />
+        <Tab label="Night actions" />
+        <Tab label="Version history" />
       </Tabs>
       {tabValue === 0 && (
         <>
-          <Box sx={{ mb: 1 }}>
-            <StatBadge
-              icon="fa-users"
-              iconColor="#68a9dc"
-              label="Roster"
-              value={setup.total}
-              suffix="players"
-              compact
-            />
-          </Box>
-          <FullRoleList setup={setup} compact={isPhoneDevice} />
-          <TwoPanelLayout
-          left={
-            <>
-              <div className="box-panel">
-                <div className="heading">Description</div>
+          <UiSection title={setup.closed ? "Possible roles" : "Roles"} className="ui-card setup-roster">
+            {setup.closed && <p>Hidden roles are drawn from these pools.</p>}
+            <FullRoleList setup={setup} compact={isPhoneDevice} showNames />
+          </UiSection>
+          <div className="setup-overview">
+            <div className="setup-description">
+              <UiSection title="Description" className="ui-card">
                 <div
                   className={`content${isSetupCreator && !editingDescription ? " edit" : ""}`}
                   onClick={onDescriptionClick}
@@ -830,24 +669,16 @@ export function SetupPage() {
                     <>
                       <TextEditor value={description} onChange={setDescription} />
                       <div className="buttons" style={{ marginTop: 8 }}>
-                        <div className="btn btn-theme" onClick={onSaveDescription}>
-                          Submit
-                        </div>
-                        <div className="btn btn-theme-sec" onClick={onCancelEditDescription}>
-                          Cancel
-                        </div>
+                        <UiAction variant="primary" onClick={onSaveDescription}>Save description</UiAction>
+                        <UiAction onClick={onCancelEditDescription}>Cancel</UiAction>
                       </div>
                     </>
                   )}
                 </div>
-              </div>
-              <Box sx={{ mt: 1 }}>
-                <Comments fullWidth location={commentLocation} />
-              </Box>
-            </>
-          }
-          right={
-            <>
+              </UiSection>
+              <UiSection title="Discussion" className="ui-card"><Comments fullWidth location={commentLocation} /></UiSection>
+            </div>
+            <aside className="setup-secondary">
               {closedRoleInfo.length > 0 && (
                 <div className="box-panel">
                   <div className="heading">Closed Setup Info</div>
@@ -855,69 +686,36 @@ export function SetupPage() {
                 </div>
               )}
               {user.loggedIn && (
-                <div className="box-panel">
-                  <div className="heading">Actions</div>
-                  <div className="content">
-                    <SetupManipulationButtons
-                      setup={setup}
-                      onFav={onFavSetup}
-                      onEdit={onEditSetup}
-                      onCopy={onCopySetup}
-                      onDel={onDelSetup}
-                    />
+                <UiSection title="Save or customize" className="ui-card">
+                  <div className="setup-save-panel">
+                    <div className="setup-rating-row">
+                      <span>Community rating</span>
+                      <VoteWidget item={{ id: setup.id, vote: setup.vote ?? 0, voteCount: setup.voteCount ?? 0 }} itemType="setup" setItemHolder={(newItem) => setSetup(previous => previous?.id === newItem.id ? { ...previous, vote: newItem.vote, voteCount: newItem.voteCount } : previous)} />
+                    </div>
+                    <div className="setup-save-actions">
+                      <SetupManipulationButtons setup={setup} onFav={onFavSetup} onEdit={onEditSetup} onCopy={onCopySetup} onDel={onDelSetup} showLabels />
+                    </div>
                   </div>
-                </div>
+                </UiSection>
               )}
               <SetupStrategiesSection setupId={setupId} title={setup?.name} />
-            </>
-          }
-        />
+            </aside>
+          </div>
         </>
       )}
       {tabValue === 1 && (
         <Box>
           {(() => {
             const avgMs = mergedGranular?.averageLengthMs;
-            const avgColor = avgLengthColor(avgMs);
             return (
-              <Stack
-                direction="row"
-                spacing={2}
-                flexWrap="wrap"
-                useFlexGap
-                sx={{ mb: 2 }}
-              >
-                <StatBadge
-                  icon="fa-star"
-                  iconColor="#ebd722"
-                  label="Favorited"
-                  value={setup.favorites ?? 0}
-                  suffix="times"
-                />
-                <StatBadge
-                  icon="fa-dice"
-                  iconColor="#4caf50"
-                  label="Played"
-                  value={setup.playedCount ?? 0}
-                  suffix="games"
-                />
-                {shouldDisplayStats && statsBundle && (
-                  <>
-                    <StatBadge
-                      icon="fa-clock"
-                      iconColor={avgColor}
-                      label="Average length"
-                      value={formatAvgLengthMs(avgMs)}
-                    />
-                    <StatBadge
-                      iconImage={vegIcon}
-                      iconColor="#8a8a8a"
-                      label="Vegged games"
-                      value={statsBundle?.totalVegs ?? 0}
-                    />
-                  </>
-                )}
-              </Stack>
+              <UiStatRow className="setup-stats">
+                <UiStat label="Favorited" value={setup.favorites ?? 0} detail="times" />
+                <UiStat label="Played" value={setup.playedCount ?? 0} detail="games" />
+                {shouldDisplayStats && statsBundle && <>
+                  <UiStat label="Average length" value={formatAvgLengthMs(avgMs)} />
+                  <UiStat label="Vegged games" value={statsBundle?.totalVegs ?? 0} />
+                </>}
+              </UiStatRow>
             );
           })()}
           {shouldDisplayStats && (
@@ -939,55 +737,27 @@ export function SetupPage() {
                     {[
                       { value: "all", label: "All" },
                       { value: "unranked", label: "Unranked" },
-                      { value: "ranked", label: "Ranked", accent: "#e45050" },
-                      { value: "competitive", label: "Competitive", accent: "#ebd722" },
-                      { value: "rankedComp", label: "Ranked + Comp", accent: "#ff9800" },
+                      { value: "ranked", label: "Ranked" },
+                      { value: "competitive", label: "Competitive" },
+                      { value: "rankedComp", label: "Ranked + Comp" },
                     ].map((opt) => {
                       const selected = statsGameFilter === opt.value;
-                      const accent = opt.accent;
                       const g = getGranularForFilter(opt.value);
                       const hasData =
                         !!g &&
                         ((g.alignment && g.alignment.length > 0) ||
                           (g.role && g.role.length > 0));
                       return (
-                        <Box
+                        <UiAction
                           key={opt.value}
-                          component="button"
+                          variant="ghost"
+                          className={`setup-filter${selected ? " is-selected" : ""}`}
                           disabled={!hasData}
+                          aria-pressed={selected}
                           onClick={() => hasData && setStatsGameFilter(opt.value)}
-                          sx={{
-                            cursor: hasData ? "pointer" : "not-allowed",
-                            px: 1.75,
-                            py: 0.5,
-                            fontSize: "0.8rem",
-                            fontWeight: 600,
-                            borderRadius: "6px",
-                            border: 1,
-                            borderColor: selected
-                              ? accent || "text.primary"
-                              : "divider",
-                            backgroundColor: selected
-                              ? accent
-                                ? `${accent}22`
-                                : "action.selected"
-                              : "transparent",
-                            color: selected
-                              ? accent || "text.primary"
-                              : "text.secondary",
-                            opacity: hasData ? 1 : 0.35,
-                            filter: hasData ? undefined : "grayscale(1)",
-                            transition: "all 120ms",
-                            "&:hover": hasData
-                              ? {
-                                  borderColor: accent || "text.primary",
-                                  color: accent || "text.primary",
-                                }
-                              : undefined,
-                          }}
                         >
                           {opt.label}
-                        </Box>
+                        </UiAction>
                       );
                     })}
                   </Stack>
@@ -1058,7 +828,6 @@ export function SetupPage() {
                             ? normalizeRoleRows(mergedGranular?.role)
                             : mergedGranular?.alignment
                         }
-                        rolesRaw={siteInfo?.rolesRaw?.Mafia}
                         payouts={
                           statsViewMode === "alignment" &&
                           (setup.ranked || setup.competitive) &&
@@ -1276,162 +1045,10 @@ export function SetupPage() {
   );
 }
 
-// Pastel colors like #ebd722 (gold) disappear on a white background, so map
-// them to a darker variant that still reads cleanly in light mode.
-const LIGHT_MODE_COLOR_OVERRIDES = {
-  "#ebd722": "#b8860b", // gold → dark goldenrod
-  "#4caf50": "#2e7d32", // green → darker green
-  "#68a9dc": "#1565c0", // blue → darker blue
-  "#ff9800": "#ed6c02", // orange → darker orange
-  "#e45050": "#c62828", // red → darker red
-};
-
-function StatBadge({ icon, iconImage, iconColor, label, value, suffix, compact }) {
-  const theme = useTheme();
-  const isLight = theme.palette.mode === "light";
-  const displayColor = isLight
-    ? LIGHT_MODE_COLOR_OVERRIDES[iconColor] || iconColor
-    : iconColor;
-  const iconSize = compact ? 32 : 44;
-  const iconFont = compact ? "0.95rem" : "1.2rem";
-  const valueVariant = compact ? "h5" : "h3";
-  // Light-mode needs a denser background/border because the alpha blends
-  // against white are otherwise invisible.
-  const cardBgAlpha = isLight ? "22" : "14";
-  const cardBorderAlpha = isLight ? "77" : "40";
-  const iconBgAlpha = isLight ? "33" : "26";
-  return (
-    <Box
-      sx={{
-        flex: compact ? "0 0 auto" : 1,
-        minWidth: compact ? 0 : 140,
-        display: "inline-flex",
-        alignItems: "center",
-        gap: compact ? 1 : 1.5,
-        px: compact ? 1.25 : 2,
-        py: compact ? 0.75 : 1.25,
-        borderRadius: 2,
-        backgroundColor: `${displayColor}${cardBgAlpha}`,
-        border: `1px solid ${displayColor}${cardBorderAlpha}`,
-      }}
-    >
-      <Box
-        sx={{
-          width: iconSize,
-          height: iconSize,
-          borderRadius: "50%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: `${displayColor}${iconBgAlpha}`,
-          flexShrink: 0,
-        }}
-      >
-        {iconImage ? (
-          <img
-            src={iconImage}
-            alt={label}
-            style={{
-              width: compact ? 18 : 24,
-              height: compact ? 18 : 24,
-            }}
-          />
-        ) : (
-          <i
-            className={`fas ${icon}`}
-            style={{ color: displayColor, fontSize: iconFont }}
-          />
-        )}
-      </Box>
-      <Stack spacing={0}>
-        <Typography
-          variant="caption"
-          sx={{
-            textTransform: "uppercase",
-            letterSpacing: "0.08em",
-            opacity: 0.65,
-            lineHeight: 1.2,
-            fontSize: compact ? "0.65rem" : undefined,
-          }}
-        >
-          {label}
-        </Typography>
-        <Stack direction="row" alignItems="baseline" spacing={0.75}>
-          <Typography
-            variant={valueVariant}
-            sx={{
-              color: isLight ? "text.primary" : displayColor,
-              fontWeight: 700,
-              lineHeight: 1.1,
-            }}
-          >
-            {value}
-          </Typography>
-          {suffix && (
-            <Typography variant="caption" sx={{ opacity: 0.55 }}>
-              {suffix}
-            </Typography>
-          )}
-        </Stack>
-      </Stack>
-    </Box>
-  );
-}
-
-function StatusPill({ active, canToggle, onClick, icon, label, color, activeTextColor }) {
-  const textColor = activeTextColor || "#fff";
-  const pill = (
-    <Box
-      component="button"
-      type="button"
-      disabled={!canToggle}
-      onClick={canToggle ? onClick : undefined}
-      sx={{
-        display: "inline-flex",
-        alignItems: "center",
-        flex: "0 0 auto",
-        flexShrink: 0,
-        width: "max-content",
-        whiteSpace: "nowrap",
-        gap: 0.5,
-        px: 1,
-        py: 0.25,
-        m: 0,
-        borderRadius: 999,
-        fontFamily: "inherit",
-        fontSize: "0.75rem",
-        fontWeight: 700,
-        lineHeight: 1.4,
-        border: `2px solid ${color}`,
-        backgroundColor: active ? color : "rgba(0,0,0,0.7)",
-        color: active ? textColor : "#fff",
-        opacity: active ? 1 : 0.9,
-        textShadow: "none",
-        boxShadow: active
-          ? "0 1px 4px rgba(0,0,0,0.35)"
-          : "0 1px 2px rgba(0,0,0,0.25)",
-        cursor: canToggle ? "pointer" : "default",
-        textTransform: "uppercase",
-        letterSpacing: "0.03em",
-        transition: "opacity 120ms, background-color 120ms",
-        "&:hover": canToggle ? { opacity: 1 } : undefined,
-        "&:disabled": { cursor: "default" },
-      }}
-    >
-      <i
-        className={`fas ${icon}`}
-        style={{
-          fontSize: "0.7rem",
-          color: active ? textColor : color,
-        }}
-      />
-      {label}
-    </Box>
-  );
-  const tooltipText = `${label}${active ? "" : " (inactive)"}${
-    canToggle ? " — click to toggle" : ""
-  }`;
-  return <Tooltip title={tooltipText}>{pill}</Tooltip>;
+function StatusPill({ active, canToggle, onClick, label, color }) {
+  if (!active && !canToggle) return null;
+  if (canToggle) return <UiAction variant="ghost" aria-pressed={!!active} onClick={onClick}>{label}: {active ? "on" : "off"}</UiAction>;
+  return <span className="setup-status" style={{ borderColor: color }}>{label}</span>;
 }
 
 // Before the backend manifest generator was fixed, the game-settings block

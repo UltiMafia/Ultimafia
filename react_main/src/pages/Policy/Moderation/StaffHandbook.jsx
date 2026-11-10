@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 
 export default function StaffHandbook() {
   return (
-    <Box sx={{ px: 2, py: 2 }}>
+    <Box className="staff-handbook" sx={{ px: 2, py: 2 }}>
       <Typography variant="h3">
         Staff Handbook
       </Typography>

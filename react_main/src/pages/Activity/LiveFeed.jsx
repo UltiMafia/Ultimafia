@@ -19,6 +19,7 @@ import {
 import { useErrorAlert } from "components/Alerts";
 import { UserContext } from "Contexts";
 import ActivityRow from "./ActivityRow";
+import { UiIcon, UiPending } from "components/ui";
 
 // Three mutually-exclusive category tabs. Each owns a set of per-type sub
 // filters (shown as chips under the tab). `serverCategory` tells the backend
@@ -70,6 +71,7 @@ function FilterChip({ label, active, onClick }) {
   return (
     <ButtonBase
       onClick={onClick}
+      aria-pressed={active}
       sx={{
         px: 1.5,
         py: 0.5,
@@ -81,7 +83,7 @@ function FilterChip({ label, active, onClick }) {
           : "transparent",
         color: active ? "primary.main" : "text.secondary",
         fontSize: "0.72rem",
-        fontFamily: "Roboto",
+        fontFamily: "inherit",
         fontWeight: 700,
         letterSpacing: "0.12em",
         textTransform: "uppercase",
@@ -199,7 +201,7 @@ export default function LiveFeed({ windowKey }) {
         scrollButtons="auto"
         sx={{
           "& .MuiTab-root": {
-            fontFamily: "RobotoSlab",
+            fontFamily: "inherit",
             fontWeight: 700,
             letterSpacing: "0.18em",
             textTransform: "uppercase",
@@ -246,7 +248,7 @@ export default function LiveFeed({ windowKey }) {
             borderColor: "divider",
             color: loading ? "text.disabled" : "primary.main",
             fontSize: "0.72rem",
-            fontFamily: "Roboto",
+            fontFamily: "inherit",
             fontWeight: 700,
             letterSpacing: "0.12em",
             textTransform: "uppercase",
@@ -259,63 +261,14 @@ export default function LiveFeed({ windowKey }) {
             },
           }}
         >
-          <i
-            className="fas fa-sync-alt"
-            style={{
-              animation: loading
-                ? "site-activity-spin .9s linear infinite"
-                : "none",
-            }}
-          />
-          <Box
-            component="style"
-            dangerouslySetInnerHTML={{
-              __html:
-                "@keyframes site-activity-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}",
-            }}
-          />
+          <UiIcon name="refresh" size={18} />
           Refresh
         </ButtonBase>
       </Stack>
 
-      <Box
-        sx={{
-          position: "relative",
-          borderRadius: 1,
-          border: "1px solid",
-          borderColor: "divider",
-          backgroundColor: "action.hover",
-          overflow: "hidden",
-        }}
-      >
-        <Box
-          aria-hidden
-          sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 2,
-            background:
-              "linear-gradient(90deg, transparent, var(--mui-palette-primary-main) 50%, transparent)",
-            opacity: 0.35,
-          }}
-        />
+      <div className="activity-feed-rows">
         {loading && visibleItems.length === 0 && (
-          <Typography
-            variant="body2"
-            sx={{
-              opacity: 0.7,
-              p: 3,
-              textAlign: "center",
-              letterSpacing: "0.16em",
-              textTransform: "uppercase",
-              fontSize: "0.75rem",
-              fontWeight: 600,
-            }}
-          >
-            · Loading ·
-          </Typography>
+          <UiPending label="Loading activity" />
         )}
         {!loading && visibleItems.length === 0 && (
           <Stack alignItems="center" spacing={0.5} sx={{ p: 3 }}>
@@ -326,7 +279,7 @@ export default function LiveFeed({ windowKey }) {
                 letterSpacing: "0.2em",
               }}
             >
-              No signal
+              No activity
             </Typography>
             <Typography
               variant="caption"
@@ -343,7 +296,7 @@ export default function LiveFeed({ windowKey }) {
             last={idx === visibleItems.length - 1}
           />
         ))}
-      </Box>
+      </div>
 
       <Stack
         direction="row"
@@ -362,7 +315,7 @@ export default function LiveFeed({ windowKey }) {
             borderColor: "divider",
             color: page === 0 || loading ? "text.disabled" : "text.primary",
             fontSize: "0.75rem",
-            fontFamily: "Roboto",
+            fontFamily: "inherit",
             fontWeight: 600,
             letterSpacing: "0.1em",
             textTransform: "uppercase",
@@ -375,7 +328,7 @@ export default function LiveFeed({ windowKey }) {
             },
           }}
         >
-          <i className="fas fa-chevron-left" />
+          <UiIcon name="previous" size={18} />
           Prev
         </ButtonBase>
         <Box
@@ -385,7 +338,7 @@ export default function LiveFeed({ windowKey }) {
             borderRadius: 1,
             minWidth: 86,
             textAlign: "center",
-            fontFamily: "RobotoSlab",
+            fontFamily: "inherit",
             fontWeight: 700,
             fontVariantNumeric: "tabular-nums",
             letterSpacing: "0.06em",
@@ -406,7 +359,7 @@ export default function LiveFeed({ windowKey }) {
             borderColor: "divider",
             color: !hasMore || loading ? "text.disabled" : "text.primary",
             fontSize: "0.75rem",
-            fontFamily: "Roboto",
+            fontFamily: "inherit",
             fontWeight: 600,
             letterSpacing: "0.1em",
             textTransform: "uppercase",
@@ -420,7 +373,7 @@ export default function LiveFeed({ windowKey }) {
           }}
         >
           Next
-          <i className="fas fa-chevron-right" />
+          <UiIcon name="next" size={18} />
         </ButtonBase>
       </Stack>
     </Stack>

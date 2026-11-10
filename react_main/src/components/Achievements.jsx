@@ -10,9 +10,9 @@ import {
 import { SiteInfoContext } from "../Contexts";
 import { CellSearch, Cell } from "./CellSearch";
 import CasePanel from "./CasePanel";
+import CoinIcon from "./CoinIcon";
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
 
-const COIN_ICON = require("images/umcoin.png");
 
 function AchievementCount({ item }) {
   const internal = item.internal?.[0] ?? "";
@@ -72,12 +72,7 @@ function AchievementCount({ item }) {
               <Typography>{item.description ?? ""}</Typography>
             </Stack>
             <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-              <img
-                src={COIN_ICON}
-                className="um-coin"
-                alt=""
-                style={{ width: "1rem", height: "1rem" }}
-              />
+              <CoinIcon size={16} />
               <Typography>
                 <span style={{ fontWeight: "bold" }}>Reward</span>: {item.reward ?? 0} coins
               </Typography>

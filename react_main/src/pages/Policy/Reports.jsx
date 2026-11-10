@@ -1,40 +1,22 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Card,
-  Chip,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-  Typography,
-  Paper,
-} from "@mui/material";
-import { useErrorAlert } from "components/Alerts";
+import { Autocomplete } from "@mui/material";
 import { PageNav } from "components/Nav";
 import { Time } from "components/Basic";
 import { NameWithAvatar } from "pages/User/UserWidgets";
-import { UserContext, SiteInfoContext } from "../../Contexts";
-import { Loading } from "components/Loading";
 import ReportDetail from "components/ReportDetail";
+import { UiAction, UiField, UiPending } from "components/ui";
+import { LatestRequest } from "../../lib/latestRequest";
+
+const statusLabels = { "in-progress": "In progress", complete: "Complete", open: "Open", appealed: "Appealed" };
 
 export default function Reports({ basePath = "/policy" }) {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [retry, setRetry] = useState(0);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [statusFilter, setStatusFilter] = useState("");
@@ -48,351 +30,75 @@ export default function Reports({ basePath = "/policy" }) {
   const [reportedUserIdMap, setReportedUserIdMap] = useState({});
   const [selectedReport, setSelectedReport] = useState(null);
   const [showDetail, setShowDetail] = useState(false);
-
-  const user = useContext(UserContext);
-  const siteInfo = useContext(SiteInfoContext);
-  const errorAlert = useErrorAlert();
+  const reads = useRef(new LatestRequest());
   const navigate = useNavigate();
   const { reportId } = useParams();
 
   useEffect(() => {
     document.title = "Reports | UltiMafia";
-    if (reportId) {
-      loadReport(reportId);
-    } else {
-      loadReports();
-    }
-  }, [page, statusFilter, assigneeFilter, reportedUserFilter, reportId]);
+    const owner = reads.current, request = owner.begin();
+    setLoading(true); setError("");
+    const endpoint = reportId ? `/api/mod/reports/${encodeURIComponent(reportId)}` : `/api/mod/reports?${new URLSearchParams({ page: String(page), limit: "20", ...(statusFilter ? { status: statusFilter } : {}), ...(assigneeFilter ? { assignee: assigneeFilter } : {}), ...(reportedUserFilter ? { reportedUser: reportedUserFilter } : {}) })}`;
+    axios.get(endpoint, { signal: request.signal })
+      .then(({ data }) => {
+        if (!request.isCurrent()) return;
+        if (reportId) { setSelectedReport(data); setShowDetail(true); }
+        else { setReports(data.reports || []); setTotalPages(data.totalPages || 1); }
+      })
+      .catch(() => { if (request.isCurrent()) setError(reportId ? "Could not load this report." : "Could not load reports. Please try again."); })
+      .finally(() => { if (request.isCurrent()) setLoading(false); });
+    return () => owner.invalidate();
+  }, [page, statusFilter, assigneeFilter, reportedUserFilter, reportId, retry]);
 
   useEffect(() => {
-    if (assigneeQuery.length === 0) {
-      setAssigneeOptions([]);
-      return;
-    }
-
-    axios
-      .get(`/api/user/searchName?query=${assigneeQuery}`)
-      .then((res) => {
-        const newIdMap = {};
-        for (let userData of res.data) {
-          newIdMap[userData.name] = userData.id;
-        }
-        setAssigneeIdMap(newIdMap);
-        setAssigneeOptions(res.data.map((user) => user.name));
-      })
-      .catch(errorAlert);
+    if (!assigneeQuery) { setAssigneeOptions([]); return; }
+    let current = true;
+    axios.get(`/api/user/searchName?query=${encodeURIComponent(assigneeQuery)}`)
+      .then(({ data }) => { if (current) { setAssigneeIdMap(Object.fromEntries(data.map(person => [person.name, person.id]))); setAssigneeOptions(data.map(person => person.name)); } })
+      .catch(() => { if (current) setAssigneeOptions([]); });
+    return () => { current = false; };
   }, [assigneeQuery]);
 
   useEffect(() => {
-    if (reportedUserQuery.length === 0) {
-      setReportedUserOptions([]);
-      return;
-    }
-
-    axios
-      .get(`/api/user/searchName?query=${reportedUserQuery}`)
-      .then((res) => {
-        const newIdMap = {};
-        for (let userData of res.data) {
-          newIdMap[userData.name] = userData.id;
-        }
-        setReportedUserIdMap(newIdMap);
-        setReportedUserOptions(res.data.map((user) => user.name));
-      })
-      .catch(errorAlert);
+    if (!reportedUserQuery) { setReportedUserOptions([]); return; }
+    let current = true;
+    axios.get(`/api/user/searchName?query=${encodeURIComponent(reportedUserQuery)}`)
+      .then(({ data }) => { if (current) { setReportedUserIdMap(Object.fromEntries(data.map(person => [person.name, person.id]))); setReportedUserOptions(data.map(person => person.name)); } })
+      .catch(() => { if (current) setReportedUserOptions([]); });
+    return () => { current = false; };
   }, [reportedUserQuery]);
 
-  const loadReports = async () => {
-    try {
-      setLoading(true);
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: "20",
-      });
-      if (statusFilter) params.append("status", statusFilter);
-      if (assigneeFilter) params.append("assignee", assigneeFilter);
-      if (reportedUserFilter) params.append("reportedUser", reportedUserFilter);
+  function openReport(report) { navigate(`${basePath}/reports/${report.id}`); setSelectedReport(report); setShowDetail(true); }
+  function backToList() { navigate(`${basePath}/reports`); setShowDetail(false); setSelectedReport(null); }
 
-      const res = await axios.get(`/api/mod/reports?${params.toString()}`);
-      setReports(res.data.reports || []);
-      setTotalPages(res.data.totalPages || 1);
-    } catch (e) {
-      errorAlert(e);
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (showDetail && selectedReport) return <ReportDetail report={selectedReport} onBack={backToList} onUpdate={() => setRetry(value => value + 1)} />;
 
-  const loadReport = async (id) => {
-    try {
-      setLoading(true);
-      const res = await axios.get(`/api/mod/reports/${id}`);
-      setSelectedReport(res.data);
-      setShowDetail(true);
-    } catch (e) {
-      errorAlert(e);
-      navigate(`${basePath}/reports`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "open":
-        return "success";
-      case "in-progress":
-        return "warning";
-      case "complete":
-        return "error";
-      case "appealed":
-        return "info";
-      default:
-        return "default";
-    }
-  };
-
-  const handleReportClick = (report) => {
-    navigate(`${basePath}/reports/${report.id}`);
-    setSelectedReport(report);
-    setShowDetail(true);
-  };
-
-  const handleBackToList = () => {
-    navigate(`${basePath}/reports`);
-    setShowDetail(false);
-    setSelectedReport(null);
-    loadReports();
-  };
-
-  if (loading && !selectedReport) {
-    return <Loading />;
-  }
-
-  if (showDetail && selectedReport) {
-    return (
-      <ReportDetail
-        report={selectedReport}
-        onBack={handleBackToList}
-        onUpdate={loadReports}
-      />
-    );
-  }
-
-  return (
-    <Box>
-      <Typography variant="h3" sx={{ mb: 2 }}>
-        Reports
-      </Typography>
-
-      <Stack spacing={2} sx={{ mb: 2 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={4}>
-            <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={statusFilter}
-                label="Status"
-                onChange={(e) => {
-                  setStatusFilter(e.target.value);
-                  setPage(1);
-                }}
-              >
-                <MenuItem value="">All</MenuItem>
-                <MenuItem value="open">Open</MenuItem>
-                <MenuItem value="in-progress">In Progress</MenuItem>
-                <MenuItem value="complete">Complete</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Autocomplete
-              options={assigneeOptions}
-              inputValue={assigneeQuery}
-              onInputChange={(e, newValue) => {
-                setAssigneeQuery(newValue);
-              }}
-              onChange={(e, newValue) => {
-                setAssigneeFilter(newValue ? assigneeIdMap[newValue] || "" : "");
-                setPage(1);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  fullWidth
-                  label="Assignee"
-                />
-              )}
-              freeSolo
-              clearOnEscape
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Autocomplete
-              options={reportedUserOptions}
-              inputValue={reportedUserQuery}
-              onInputChange={(e, newValue) => {
-                setReportedUserQuery(newValue);
-              }}
-              onChange={(e, newValue) => {
-                setReportedUserFilter(newValue ? reportedUserIdMap[newValue] || "" : "");
-                setPage(1);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  fullWidth
-                  label="Reported User"
-                />
-              )}
-              freeSolo
-              clearOnEscape
-            />
-          </Grid>
-        </Grid>
-      </Stack>
-
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Reported User</TableCell>
-              <TableCell>Reporter</TableCell>
-              <TableCell>Rule</TableCell>
-              <TableCell>Assignees</TableCell>
-              <TableCell>Created</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {reports.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} align="center">
-                  <Typography sx={{ py: 2 }}>No reports found</Typography>
-                </TableCell>
-              </TableRow>
-            ) : (
-              reports.map((report) => (
-                <TableRow
-                  key={report.id}
-                  hover
-                  onClick={() => handleReportClick(report)}
-                  sx={{ cursor: "pointer" }}
-                >
-                  <TableCell>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontFamily: "monospace" }}
-                    >
-                      {report.id}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={report.status}
-                      color={getStatusColor(report.status)}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <NameWithAvatar
-                      id={report.reportedUserId}
-                      name={report.reportedUserName || report.reportedUserId}
-                      avatar={report.reportedUserAvatar}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {report.reporterInfo?.length > 1 ? (
-                      <Stack direction="row" spacing={0.5} flexWrap="wrap" alignItems="center">
-                        {report.reporterInfo.slice(0, 2).map((r) => (
-                          <NameWithAvatar
-                            key={r.id}
-                            id={r.id}
-                            name={r.name || r.id}
-                            avatar={r.avatar}
-                            size="small"
-                          />
-                        ))}
-                        {report.reporterInfo.length > 2 && (
-                          <Typography variant="caption" color="textSecondary">
-                            +{report.reporterInfo.length - 2}
-                          </Typography>
-                        )}
-                      </Stack>
-                    ) : (
-                      <NameWithAvatar
-                        id={report.reporterId}
-                        name={report.reporterName || report.reporterId}
-                        avatar={report.reporterAvatar}
-                      />
-                    )}
-                  </TableCell>
-                  <TableCell>{report.rule}</TableCell>
-                  <TableCell>
-                    {report.assignees && report.assignees.length > 0 ? (
-                      <Stack direction="row" spacing={0.5} flexWrap="wrap">
-                        {(report.assigneeInfo || report.assignees)
-                          .slice(0, 3)
-                          .map((assignee) => {
-                            const assigneeId =
-                              typeof assignee === "string"
-                                ? assignee
-                                : assignee.id;
-                            const assigneeName =
-                              typeof assignee === "string"
-                                ? assignee
-                                : assignee.name || assigneeId;
-                            const assigneeAvatar =
-                              typeof assignee === "string"
-                                ? false
-                                : assignee.avatar;
-                            return (
-                              <NameWithAvatar
-                                key={assigneeId}
-                                id={assigneeId}
-                                name={assigneeName}
-                                avatar={assigneeAvatar}
-                                size="small"
-                              />
-                            );
-                          })}
-                        {report.assignees.length > 3 && (
-                          <Typography variant="caption">
-                            +{report.assignees.length - 3}
-                          </Typography>
-                        )}
-                      </Stack>
-                    ) : (
-                      <Typography variant="body2" color="textSecondary">
-                        Unassigned
-                      </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {report.createdAt && (
-                      <Time
-                        millisec={Date.now() - report.createdAt}
-                        suffix=" ago"
-                      />
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      {totalPages > 1 && (
-        <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
-          <PageNav
-            page={page}
-            maxPage={totalPages}
-            onNav={(newPage) => setPage(newPage)}
-          />
-        </Box>
-      )}
-    </Box>
-  );
+  return <section className="moderation-reports">
+    <header className="moderation-section-heading"><h2>Reports</h2><p>Open reports, check their status and assign moderators.</p></header>
+    <div className="moderation-toolbar">
+      <UiField select size="small" label="Status" InputLabelProps={{ shrink: true }} SelectProps={{ native: true }} value={statusFilter} onChange={event => { setStatusFilter(event.target.value); setPage(1); }}>
+        <option value="">All</option><option value="open">Open</option><option value="in-progress">In progress</option><option value="complete">Complete</option>
+      </UiField>
+      <Autocomplete options={assigneeOptions} inputValue={assigneeQuery} onInputChange={(_, value) => setAssigneeQuery(value)} onChange={(_, value) => { setAssigneeFilter(value ? assigneeIdMap[value] || "" : ""); setPage(1); }} freeSolo clearOnEscape
+        renderInput={params => <UiField {...params} size="small" label="Assignee" />} />
+      <Autocomplete options={reportedUserOptions} inputValue={reportedUserQuery} onInputChange={(_, value) => setReportedUserQuery(value)} onChange={(_, value) => { setReportedUserFilter(value ? reportedUserIdMap[value] || "" : ""); setPage(1); }} freeSolo clearOnEscape
+        renderInput={params => <UiField {...params} size="small" label="Reported player" />} />
+    </div>
+    {loading && <UiPending label="Loading reports" />}
+    {error && <div role="alert"><p>{error}</p><UiAction onClick={() => setRetry(value => value + 1)}>Retry</UiAction></div>}
+    {!loading && !error && reports.length === 0 && <p className="moderation-row-meta">No reports found.</p>}
+    <ul className="moderation-list">{reports.map(report => <li className="moderation-list-row" key={report.id}>
+      <div>
+        <div className="moderation-row-title">
+          <strong>Report {report.id}</strong>
+          <span className={`moderation-status moderation-status-${report.status}`}>{statusLabels[report.status] || report.status}</span>
+          <span className="moderation-row-meta">{report.rule}</span>
+        </div>
+        <p className="moderation-row-meta">Against <NameWithAvatar id={report.reportedUserId} name={report.reportedUserName || report.reportedUserId} avatar={report.reportedUserAvatar} />{report.createdAt && <> · <Time millisec={Date.now() - report.createdAt} suffix=" ago" /></>}</p>
+        <p className="moderation-row-meta">Reported by {(report.reporterInfo?.length ? report.reporterInfo.map(person => person.name).join(", ") : report.reporterName || report.reporterId)} · Assigned to {(report.assigneeInfo?.length ? report.assigneeInfo.map(person => person.name).join(", ") : report.assignees?.length ? report.assignees.map(person => typeof person === "string" ? person : person.name).join(", ") : "Unassigned")}</p>
+      </div>
+      <div className="moderation-row-actions"><UiAction onClick={() => openReport(report)}>Open report</UiAction></div>
+    </li>)}</ul>
+    {totalPages > 1 && <PageNav page={page} maxPage={totalPages} onNav={setPage} />}
+  </section>;
 }

@@ -4,11 +4,8 @@ import {
   Tab,
   Box,
   Typography,
-  Grid2,
-  Paper,
   Stack,
   Divider,
-  Button,
   Autocomplete,
   TextField,
 } from "@mui/material";
@@ -16,6 +13,7 @@ import { UserContext, SiteInfoContext } from "../Contexts";
 import { SearchBar } from "./Nav";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 import { Loading } from "./Loading";
+import { UiAction, UiIcon } from "./ui";
 
 export function CellSearch({
   tabs = [],
@@ -98,30 +96,22 @@ export function CellSearch({
       </Stack>
       {!useTagAutocomplete && extraToolbarContent}
       <Divider direction="horizontal" sx={{ mb: 1 }} />
-      <Paper sx={{ p: 1 }}>
-        <Grid2 className="cell-search-grid" container spacing={1} columns={gridColumns}>
-          {items.map((item) => {
-            const key = getItemKey(item);
-            const name = getItemName(item);
-            const icon = renderIcon ? renderIcon(item) : null;
-            const cell = renderCell
-              ? renderCell(item, icon)
-              : (
-                  <Paper variant="outlined" key={key} sx={{ p: 1 }}>
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      {icon}
-                      <Typography variant="body2">{name}</Typography>
-                    </Stack>
-                  </Paper>
-                );
-            return (
-              <Grid2 size={{ xs: 2 }} key={key}>
-                {cell}
-              </Grid2>
-            );
-          })}
-        </Grid2>
-      </Paper>
+      <div className="cell-search-grid">
+        {items.map((item) => {
+          const key = getItemKey(item);
+          const name = getItemName(item);
+          const icon = renderIcon ? renderIcon(item) : null;
+          const cell = renderCell
+            ? renderCell(item, icon)
+            : (
+                <div className="role-cell" key={key}>
+                  {icon}
+                  <Typography variant="body2">{name}</Typography>
+                </div>
+              );
+          return <div className="cell-search-item" key={key}>{cell}</div>;
+        })}
+      </div>
     </Stack>
   );
 }
@@ -153,79 +143,16 @@ export function Cell(props) {
     );
   }
 
+  const description = Array.isArray(item.description) ? item.description[0] : item.description;
   return (
-    <Paper
-      variant="outlined"
-      className="role-cell"
-      key={item.name}
-      sx={{
-        p: isPhoneDevice ? 0.5 : 1,
-        lineHeight: "normal",
-        height: myHeight,
-      }}
-    >
-      <Stack
-        direction="row"
-        spacing={1}
-        sx={{
-          alignItems: "center",
-          width: "100%",
-        }}
-        ref={cellRef}
-      >
-        {user.loggedIn && onAddClick && (
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              onAddClick(item);
-            }}
-            sx={{
-              padding: 1,
-              bgcolor: "#62a0db",
-              alignSelf: "stretch",
-              minWidth: "0px",
-            }}
-          >
-            <i
-              className="fa-plus fas"
-              aria-hidden="true"
-              style={{ fontSize: "0.5em" }}
-            />
-          </Button>
-        )}
-        {user.loggedIn && onDelClick && (
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelClick(item);
-            }}
-            sx={{
-              padding: 1,
-              bgcolor: "#e45050",
-              alignSelf: "stretch",
-              minWidth: "0px",
-            }}
-          >
-            <i
-              className="fa-times fas"
-              aria-hidden="true"
-              style={{ fontSize: "0.5em" }}
-            />
-          </Button>
-        )}
-        {icon}
-        <Typography
-          variant="body2"
-          sx={{
-            flex: "1",
-            textAlign: "right",
-            wordBreak: "break-word",
-            hyphens: "auto",
-          }}
-        >
-          {item.name}
-        </Typography>
-      </Stack>
-    </Paper>
+    <div className="role-cell" ref={cellRef}>
+      {icon}
+      <div className="role-cell-copy">
+        <Typography variant="body2">{item.name}</Typography>
+        {description && <Typography component="p" variant="caption" className="role-cell-description">{description}</Typography>}
+      </div>
+      {user.loggedIn && onAddClick && <UiAction iconOnly aria-label={`Add ${item.name}`} onClick={(e) => { e.stopPropagation(); onAddClick(item); }}><UiIcon name="add" /></UiAction>}
+      {user.loggedIn && onDelClick && <UiAction iconOnly variant="danger-quiet" aria-label={`Remove ${item.name}`} onClick={(e) => { e.stopPropagation(); onDelClick(item); }}><UiIcon name="remove" /></UiAction>}
+    </div>
   );
 }

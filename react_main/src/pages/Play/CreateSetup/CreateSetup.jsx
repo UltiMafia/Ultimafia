@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
-import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
-import {
-  SwipeableDrawer,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  IconButton,
-  Box,
-  Paper,
-  useTheme,
-  ListItemButton,
-} from "@mui/material";
+import { useLocation } from "react-router-dom";
+import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 
 import CreateMafiaSetup from "./CreateMafiaSetup";
 import CreateJottoSetup from "./CreateJottoSetup";
@@ -31,27 +19,24 @@ import CreateSpotItSetup from "./CreateSpotItSetup";
 import CreateBattleshipSetup from "./CreateBattleshipSetup";
 import CreateChessSetup from "./CreateChessSetup";
 
-import { ActiveGameTypes, DisabledGameTypes } from "Constants";
-import GameIcon from "components/GameIcon";
+import { ActiveGameTypes } from "Constants";
+import { UiField, UiDialog, UiAction } from "components/ui";
 
 export default function CreateSetup(props) {
-  const theme = useTheme();
   const defaultGameType = "Mafia";
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const requestedGameType =
     params.get("game") || localStorage.getItem("gameType") || defaultGameType;
   const [gameType, setGameType] = useState(
-    DisabledGameTypes.includes(requestedGameType)
-      ? defaultGameType
-      : requestedGameType
+    ActiveGameTypes.includes(requestedGameType) ? requestedGameType : defaultGameType
   );
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [pendingGameType, setPendingGameType] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const gameParam = new URLSearchParams(location.search).get("game");
-    if (gameParam && gameParam !== gameType) {
+    if (ActiveGameTypes.includes(gameParam) && gameParam !== gameType) {
       setGameType(gameParam);
       localStorage.setItem("gameType", gameParam);
     }
@@ -62,24 +47,15 @@ export default function CreateSetup(props) {
     localStorage.setItem("gameType", newValue);
     const params = new URLSearchParams(location.search);
     params.set("game", newValue);
+    // A source setup belongs to its game type, never carry it into a different editor.
+    params.delete("copy");
+    params.delete("edit");
     // Replace, not push: picking a game type filters this page, it is not a
     // navigation, and a pushed entry would need extra Back presses to leave.
     navigate(
       { pathname: location.pathname, search: params.toString() },
       { replace: true }
     );
-    setDrawerOpen(false);
-  };
-
-  const toggleDrawer = (open) => (event) => {
-    if (
-      event &&
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-    setDrawerOpen(open);
   };
 
   function CreatePage() {
@@ -117,72 +93,18 @@ export default function CreateSetup(props) {
       case "Chess":
         return <CreateChessSetup />;
       default:
-        setGameType(defaultGameType);
-        return null;
+        return <CreateMafiaSetup />;
     }
   }
 
   return (
     <>
-      <IconButton
-        edge="start"
-        color="inherit"
-        aria-label="menu"
-        onClick={toggleDrawer(true)}
-        sx={{
-          position: "fixed",
-          top: "50%",
-          left: 0,
-          zIndex: 1201,
-          visibility: drawerOpen ? "hidden" : "visible",
-          backgroundColor: theme.palette.secondary.main,
-          padding: "8px",
-          borderRadius: "50%",
-          boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
-        }}
-      >
-        <GameIcon gameType={gameType} size={30} />
-      </IconButton>
-      <Paper
-        onClick={toggleDrawer(true)}
-        sx={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          height: "100%",
-          width: "10px",
-          backgroundColor: "transparent",
-          zIndex: 1200,
-          cursor: "pointer",
-        }}
-      />
-      <SwipeableDrawer
-        anchor="left"
-        open={drawerOpen}
-        onClose={toggleDrawer(false)}
-        onOpen={toggleDrawer(true)}
-        sx={{
-          width: 240,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { width: 240, boxSizing: "border-box" },
-        }}
-      >
-        <List>
-          {ActiveGameTypes.map((game) => (
-            <ListItemButton
-              key={game}
-              selected={gameType === game}
-              onClick={() => handleListItemClick(game)}
-            >
-              <ListItemIcon>
-                <GameIcon gameType={game} size={24} />
-              </ListItemIcon>
-              <ListItemText primary={game} />
-            </ListItemButton>
-          ))}
-        </List>
-      </SwipeableDrawer>
-      <Box>{CreatePage()}</Box>
+      <header className="page-heading setup-editor-heading">
+        <h1>{params.has("edit") ? "Edit setup" : params.has("copy") ? "Copy setup" : "Create a setup"}</h1>
+        <UiField select size="small" label="Game type" InputLabelProps={{ shrink: true }} SelectProps={{ native: true }} value={gameType} onChange={event => setPendingGameType(event.target.value)}>{ActiveGameTypes.map(game => <option key={game}>{game}</option>)}</UiField>
+      </header>
+      {CreatePage()}
+      <UiDialog open={!!pendingGameType} title="Change game type?" onClose={() => setPendingGameType(null)} actions={<><UiAction onClick={() => setPendingGameType(null)}>Cancel</UiAction><UiAction variant="primary" onClick={() => { handleListItemClick(pendingGameType); setPendingGameType(null); }}>Change game type</UiAction></>}><p>Changing to {pendingGameType} opens a different setup editor. Unsaved changes in this editor will be lost.</p></UiDialog>
     </>
   );
 }

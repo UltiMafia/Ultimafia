@@ -41,7 +41,8 @@
   background-color: var(--scheme-color-sec);
   border-radius: var(--mui-shape-borderRadius);
 
-  font-family: RobotoMono;
+  font-family: var(--ui-font-body);
+  font-variant-numeric: tabular-nums;
 }
 
 .game .main {
@@ -73,12 +74,12 @@
 
 .game .left-panel {
   /* Desktop sizing */
-  width: 22vw;
+  width: var(--game-left-panel-width, 22vw);
 }
 
 .game .right-panel {
   /* Desktop sizing */
-  width: 22vw;
+  width: var(--game-right-panel-width, 22vw);
 }
 
 .game .center-panel {
@@ -473,6 +474,11 @@ html[data-keyboard="open"] .game .meeting-tabs {
   transform: translateX(6px);
 }
 
+.game .message-pin-action { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--um-muted); cursor: pointer; }
+.game .message-pin-action[aria-pressed="true"] { color: var(--um-accent); }
+.game .message-pin-action:focus-visible { outline: 2px solid var(--um-accent); }
+.game .section-title .ui-icon { margin-right: 6px; }
+
 .game .speech-wrapper {
   flex-grow: 1;
   flex-basis: 0;
@@ -539,12 +545,13 @@ html[data-keyboard="open"] .game .meeting-tabs {
   overscroll-behavior: contain;
 }
 
-.game .speech-input-area {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: flex-start;
-
-  margin: 10px;
+.game .game-composer { padding: 6px 12px; background: transparent; }
+@media (min-width: 901px) {
+  .game-composer .composer-surface { display: grid; grid-template-columns: minmax(0, 1fr) auto; border-radius: 6px; }
+  .game-composer .composer-preview, .game-composer .composer-context, .game-composer .composer-progress { grid-column: 1 / -1; }
+  .game-composer .composer-row { grid-column: 1; }
+  .game-composer .composer-toolbar { grid-column: 2; align-self: end; padding: 2px 4px; }
+  .game-composer .composer-send.ui-action { height: 36px; min-height: 36px; width: 36px; min-width: 36px; flex-basis: 36px; }
 }
 
 .with-radial-gradient {
@@ -558,92 +565,6 @@ html[data-keyboard="open"] .game .meeting-tabs {
     1;
 
   border-radius: var(--mui-shape-borderRadius);
-}
-
-.game .speech-input-wrapper {
-  flex-grow: 1;
-  display: flex;
-  flex-flow: row;
-}
-
-.game .speech-input-field-group {
-  flex-grow: 1;
-  display: flex;
-  flex-flow: column;
-}
-
-.game .speech-dropdown {
-  background-color: var(--scheme-color-sec);
-  color: white;
-}
-
-.game .speech-input {
-  flex-grow: 1;
-
-  border: none;
-
-  background-color: var(--scheme-color);
-  font-size: 16px;
-}
-
-.game .speech-cooldown-progress {
-  height: 3px;
-  margin-top: 2px;
-  border-radius: 999px;
-  background-color: rgba(244, 67, 54, 0.18);
-  overflow: hidden;
-}
-
-.game .speech-cooldown-progress-fill {
-  height: 100%;
-  width: 0;
-  border-radius: 999px;
-  background: linear-gradient(
-    90deg,
-    rgba(244, 67, 54, 0.45),
-    rgba(244, 67, 54, 0.85)
-  );
-  transition: width 0.1s linear;
-}
-
-@keyframes speak-cooldown-pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.08);
-  }
-  50% {
-    box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.2);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.08);
-  }
-}
-
-.game .speech-input-area i {
-  align-self: center;
-
-  width: 20px;
-  height: 20px;
-
-  margin-left: 5px;
-  padding: 5px;
-  border-radius: 5px;
-
-  background-color: var(--scheme-color);
-  font-size: 20px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.game .speech-input-area i:hover {
-  opacity: 0.8;
-}
-
-.game .speech-input-area i.disabled {
-  opacity: 0.5;
-}
-
-.game .speech-input-area i.disabled:hover {
-  opacity: 0.3;
 }
 
 .game .dropdown-control {
@@ -880,7 +801,9 @@ html[data-keyboard="open"] .game .meeting-tabs {
 
 .game .action .vote {
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
+  align-items: baseline;
+  gap: 2px;
 }
 
 .game .action .vote.multi {
@@ -904,6 +827,7 @@ html[data-keyboard="open"] .game .meeting-tabs {
   cursor: pointer;
   margin-right: 5px;
   margin-bottom: 5px;
+  flex-shrink: 0;
 }
 
 .game .action .vote .selection {
@@ -1247,42 +1171,6 @@ html[data-keyboard="open"] .game .meeting-tabs {
   margin-right: 4px;
   font-size: 0.75em;
   opacity: 0.6;
-}
-
-.game .speech-input-area {
-  flex-wrap: wrap;
-}
-
-.game .speech-input-area .reply-preview {
-  display: flex;
-  flex-basis: 100%;
-  align-items: center;
-  gap: 6px;
-
-  min-width: 0;
-  margin-bottom: 4px;
-  padding: 2px 4px 2px 8px;
-  border-left: 2px solid var(--scheme-color-sec);
-
-  font-size: 0.85em;
-  opacity: 0.85;
-}
-
-.game .speech-input-area .reply-preview i {
-  width: auto;
-  height: auto;
-  margin: 0;
-  padding: 0;
-  background-color: transparent;
-  font-size: inherit;
-}
-
-.game .speech-input-area .reply-preview-text {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }
 
 /* The line above a reply (ReplyReference), as in Discord: a curved line

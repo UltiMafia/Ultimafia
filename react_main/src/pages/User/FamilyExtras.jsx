@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 import {
   Stack,
@@ -6,7 +6,6 @@ import {
   Box,
   Paper,
   Button,
-  TextField,
   Chip,
   LinearProgress,
   Switch,
@@ -14,20 +13,32 @@ import {
   Grid,
   useTheme,
   Tooltip,
-  IconButton,
 } from "@mui/material";
 import { NameWithAvatar } from "./UserWidgets";
 import { SiteInfoContext, UserContext } from "Contexts";
-import { Icon } from "@iconify/react";
 import Sparkline from "components/Sparkline";
 import TradeDialog from "components/TradeDialog";
 import { PageNav } from "components/Nav";
+import { UiAction, UiDialog, UiField, UiIcon } from "components/ui";
+import CoinIcon from "components/CoinIcon";
+import { LatestRequest } from "../../lib/latestRequest";
 
-export const panelStyle = {
-  backgroundColor: "var(--scheme-color)",
-  padding: "16px",
-  borderRadius: "4px",
-};
+function useFamilyConfirmation() {
+  const [confirmation, setConfirmation] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const pending = useRef(false);
+  function open(value) { setError(""); setConfirmation(value); }
+  async function confirm() {
+    if (pending.current || !confirmation) return;
+    pending.current = true; setBusy(true); setError("");
+    try { await confirmation.run(); setConfirmation(null); }
+    catch (failure) { setError(typeof failure.response?.data === "string" && failure.response.data.length <= 200 ? failure.response.data : "Could not complete this action. Please try again."); }
+    finally { pending.current = false; setBusy(false); }
+  }
+  const dialog = <UiDialog open={!!confirmation} title={confirmation?.title} onClose={busy ? undefined : () => setConfirmation(null)} actions={<><UiAction disabled={busy} onClick={() => setConfirmation(null)}>Cancel</UiAction><UiAction variant={confirmation?.destructive ? "danger" : "primary"} busy={busy} onClick={confirm}>{confirmation?.label || "Confirm"}</UiAction></>}><p>{confirmation?.description}</p>{error && <p role="alert">{error}</p>}</UiDialog>;
+  return { open, dialog, busy };
+}
 
 export const headingStyle = {
   fontSize: "1.25rem",
@@ -46,7 +57,7 @@ export function CoinAmount({ amount, variant = "body2", sx = {} }) {
       <Typography component="span" variant={variant}>
         {Number(amount || 0).toFixed(2)}
       </Typography>
-      <Icon icon="lucide:coins" style={{ fontSize: "0.95em" }} />
+      <CoinIcon size={16} alt="Coins" />
     </Stack>
   );
 }
@@ -57,6 +68,7 @@ export function FamilyTreasury({ family, familyId, refreshFamilyTools }) {
   const user = useContext(UserContext);
   const isFamilyMember = Boolean(family.userRole);
   const canWithdraw = family.userRole === "leader" || family.userRole === "founder";
+  const confirmation = useFamilyConfirmation();
 
   function onAction(type) {
     const amountNum = Math.floor(Number(amount));
@@ -64,11 +76,8 @@ export function FamilyTreasury({ family, familyId, refreshFamilyTools }) {
       siteInfo.showAlert("Enter a positive coin amount", "error");
       return;
     }
-    const actionWord = type === "deposit" ? "deposit" : "withdraw";
-    if (!window.confirm(`Are you sure you want to ${actionWord} ${amountNum} coins ${type === "deposit" ? "into" : "from"} the family treasury?`)) {
-      return;
-    }
-    axios
+    if (!isFamilyMember || (type === "withdraw" && !canWithdraw)) return;
+    confirmation.open({ title: type === "deposit" ? "Deposit coins?" : "Withdraw coins?", description: `${type === "deposit" ? "Deposit" : "Withdraw"} ${amountNum} coins ${type === "deposit" ? "into" : "from"} the treasury of ${family.name}?`, label: type === "deposit" ? "Deposit" : "Withdraw", run: () => axios
       .post(`/api/family/${familyId}/treasury/${type}`, { amount: amountNum })
       .then((res) => {
         siteInfo.showAlert(`Coins ${type === "deposit" ? "deposited" : "withdrawn"}`, "success");
@@ -80,11 +89,11 @@ export function FamilyTreasury({ family, familyId, refreshFamilyTools }) {
         }));
         refreshFamilyTools();
       })
-      .catch((e) => siteInfo.showAlert(e.response?.data || "Error", "error"));
+    });
   }
 
   return (
-    <Paper sx={panelStyle}>
+    <Paper className="ui-card family-treasury">
       <Typography variant="h3" sx={headingStyle}>
         Treasury
       </Typography>
@@ -95,25 +104,26 @@ export function FamilyTreasury({ family, familyId, refreshFamilyTools }) {
         </Typography>
       )}
       {isFamilyMember && (
-        <Stack direction="row" spacing={1} sx={{ mt: 1.5 }}>
-          <TextField
+        <Stack direction="row" useFlexGap spacing={1} sx={{ mt: 1.5, flexWrap: "wrap" }}>
+          <UiField label="Treasury amount"
             size="small"
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="Amount"
-            sx={{ flexGrow: 1, minWidth: "80px" }}
+            sx={{ flex: "1 1 100%", minWidth: 0 }}
           />
-          <Button variant="outlined" onClick={() => onAction("deposit")}>
+          <UiAction disabled={confirmation.busy} onClick={() => onAction("deposit")}>
             Deposit
-          </Button>
+          </UiAction>
           {canWithdraw && (
-            <Button variant="outlined" color="secondary" onClick={() => onAction("withdraw")}>
+            <UiAction disabled={confirmation.busy} onClick={() => onAction("withdraw")}>
               Withdraw
-            </Button>
+            </UiAction>
           )}
         </Stack>
       )}
+      {confirmation.dialog}
     </Paper>
   );
 }
@@ -122,29 +132,36 @@ export function FamilyLedger({ familyId, refreshKey }) {
   const [ledger, setLedger] = useState([]);
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(1);
+  const [error, setError] = useState(false);
+  const reads = useRef(new LatestRequest());
 
   const loadLedger = (pageToLoad) => {
+    const request = reads.current.begin();
+    setError(false);
     axios
-      .get(`/api/family/${familyId}/ledger?page=${pageToLoad}`)
+      .get(`/api/family/${familyId}/ledger?page=${pageToLoad}`, { signal: request.signal })
       .then((res) => {
+        if (!request.isCurrent()) return;
         setLedger(res.data.ledger || []);
         setMaxPage(res.data.maxPage || 1);
         setPage(pageToLoad);
       })
       .catch(() => {
-        setLedger([]);
-        setMaxPage(1);
+        if (request.isCurrent()) setError(true);
       });
   };
 
   useEffect(() => {
+    const owner = reads.current;
     loadLedger(1);
+    return () => owner.invalidate();
   }, [familyId, refreshKey]);
 
+  if (error) return <div role="alert"><p>Could not load family history.</p><UiAction onClick={() => loadLedger(page)}>Retry</UiAction></div>;
   if (ledger.length === 0) return null;
 
   return (
-    <Paper sx={panelStyle}>
+    <Paper className="ui-card">
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
         <Typography variant="h3" sx={{ ...headingStyle, mb: 0 }}>
           History
@@ -190,7 +207,7 @@ export function FamilyLedger({ familyId, refreshKey }) {
                 >
                   {isNegative ? "-" : "+"}
                   {Math.abs(entry.amount).toFixed(2)}
-                  <Icon icon="lucide:coins" style={{ fontSize: "0.95em" }} />
+                  <CoinIcon size={16} />
                 </Typography>
               </Box>
             </Box>
@@ -204,19 +221,30 @@ export function FamilyLedger({ familyId, refreshKey }) {
 export function FamilyApplications({ familyId, family, refreshFamilyTools }) {
   const [applications, setApplications] = useState([]);
   const siteInfo = useContext(SiteInfoContext);
+  const confirmation = useFamilyConfirmation();
+  const [loading, setLoading] = useState(true);
+  const [readError, setReadError] = useState(false);
+  const [retry, setRetry] = useState(0);
+  const reads = useRef(new LatestRequest());
+  const [toggling, setToggling] = useState(false);
+  const togglePending = useRef(false);
 
   useEffect(() => {
     if (family.canManageApplications) {
+      const owner = reads.current, request = owner.begin();
+      setReadError(false); setLoading(true);
       axios
-        .get(`/api/family/${familyId}/applications`)
-        .then((res) => setApplications(res.data.applications || []))
-        .catch(() => setApplications([]));
+        .get(`/api/family/${familyId}/applications`, { signal: request.signal })
+        .then((res) => { if (request.isCurrent()) setApplications(res.data.applications || []); })
+        .catch(() => { if (request.isCurrent()) setReadError(true); })
+        .finally(() => { if (request.isCurrent()) setLoading(false); });
+      return () => owner.invalidate();
     }
-  }, [familyId, family.canManageApplications]);
+  }, [familyId, family.canManageApplications, retry]);
 
   function onApplicationAction(applicationId, action) {
-    if (!window.confirm(`Are you sure you want to ${action} this application?`)) return;
-    axios
+    if (!family.canManageApplications) return;
+    confirmation.open({ title: action === "accept" ? "Accept application?" : "Reject application?", description: `${action === "accept" ? "Accept" : "Reject"} this application to ${family.name}?`, label: action === "accept" ? "Accept application" : "Reject application", destructive: action === "reject", run: () => axios
       .post(`/api/family/${familyId}/applications/${applicationId}/${action}`)
       .then(() => {
         siteInfo.showAlert(action === "accept" ? "Application accepted" : "Application rejected", "success");
@@ -224,10 +252,12 @@ export function FamilyApplications({ familyId, family, refreshFamilyTools }) {
         // Remove from list locally to update UI quickly
         setApplications((prev) => prev.filter((a) => a.id !== applicationId));
       })
-      .catch((e) => siteInfo.showAlert(e.response?.data || "Error", "error"));
+    });
   }
 
   function toggleApplicationsOpen() {
+    if (togglePending.current || !family.isLeader) return;
+    togglePending.current = true; setToggling(true);
     axios
       .post(`/api/family/${familyId}/applicationsOpen`, {
         applicationsOpen: !family.applicationsOpen,
@@ -235,13 +265,14 @@ export function FamilyApplications({ familyId, family, refreshFamilyTools }) {
       .then(() => {
         refreshFamilyTools();
       })
-      .catch((e) => siteInfo.showAlert(e.response?.data || "Error", "error"));
+      .catch((e) => siteInfo.showAlert(e.response?.data || "Error", "error"))
+      .finally(() => { togglePending.current = false; setToggling(false); });
   }
 
   if (!family.canManageApplications) return null;
 
   return (
-    <Paper sx={panelStyle}>
+    <Paper className="ui-card family-applications">
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Typography variant="h3" sx={headingStyle}>
           Applications
@@ -252,7 +283,7 @@ export function FamilyApplications({ familyId, family, refreshFamilyTools }) {
               size="small"
               checked={family.applicationsOpen}
               onChange={toggleApplicationsOpen}
-              disabled={!family.isLeader}
+              disabled={!family.isLeader || toggling}
             />
           }
           label={<Typography variant="caption">{family.applicationsOpen ? "Open" : "Closed"}</Typography>}
@@ -260,7 +291,9 @@ export function FamilyApplications({ familyId, family, refreshFamilyTools }) {
         />
       </Stack>
       <Stack direction="column" spacing={1}>
-        {applications.length === 0 && (
+        {readError && <div role="alert"><p>Could not load family applications.</p><UiAction onClick={() => setRetry(value => value + 1)}>Retry</UiAction></div>}
+        {loading && <p role="status">Loading applications…</p>}
+        {!loading && !readError && applications.length === 0 && (
           <Typography variant="body2" color="text.secondary">
             No pending applications.
           </Typography>
@@ -284,16 +317,17 @@ export function FamilyApplications({ familyId, family, refreshFamilyTools }) {
               </Typography>
             )}
             <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-              <Button size="small" variant="contained" color="success" onClick={() => onApplicationAction(application.id, "accept")}>
+              <UiAction variant="primary" onClick={() => onApplicationAction(application.id, "accept")}>
                 Accept
-              </Button>
-              <Button size="small" variant="outlined" color="error" onClick={() => onApplicationAction(application.id, "reject")}>
+              </UiAction>
+              <UiAction variant="danger-quiet" onClick={() => onApplicationAction(application.id, "reject")}>
                 Reject
-              </Button>
+              </UiAction>
             </Stack>
           </Box>
         ))}
       </Stack>
+      {confirmation.dialog}
     </Paper>
   );
 }
@@ -301,20 +335,21 @@ export function FamilyApplications({ familyId, family, refreshFamilyTools }) {
 export function FamilyPerks({ family, familyId, refreshFamilyTools }) {
   const siteInfo = useContext(SiteInfoContext);
   const ownedPerks = (family.perks || []).filter((perk) => perk.owned);
+  const confirmation = useFamilyConfirmation();
 
   function onBuyPerk(perk) {
-    if (!window.confirm(`Are you sure you want to spend family treasury funds on ${perk.name}?`)) return;
-    axios
+    if (!family.canManageApplications) return;
+    confirmation.open({ title: "Buy family perk?", description: `Spend ${Number(perk.cost).toFixed(2)} treasury coins on ${perk.name}?`, label: "Buy perk", run: () => axios
       .post(`/api/family/${familyId}/perks/${perk.key}/buy`)
       .then(() => {
         siteInfo.showAlert("Family perk bought", "success");
         refreshFamilyTools();
       })
-      .catch((e) => siteInfo.showAlert(e.response?.data || "Error", "error"));
+    });
   }
 
   return (
-    <Paper sx={panelStyle}>
+    <Paper className="ui-card family-perks">
       <Typography variant="h3" sx={headingStyle}>
         Perks
       </Typography>
@@ -351,20 +386,12 @@ export function FamilyPerks({ family, familyId, refreshFamilyTools }) {
                       placement="top"
                       enterTouchDelay={0}
                     >
-                      <IconButton
-                        size="small"
+                      <UiAction iconOnly variant="ghost"
                         aria-label={`More info about ${perk.name}`}
-                        sx={{
-                          p: 0.25,
-                          color: "text.secondary",
-                        }}
                         onClick={(e) => e.preventDefault()}
                       >
-                        <i
-                          className="fas fa-info-circle"
-                          style={{ fontSize: "0.9em" }}
-                        />
-                      </IconButton>
+                        <UiIcon name="info" size={16} />
+                      </UiAction>
                     </Tooltip>
                   ) : null}
                 </Typography>
@@ -373,14 +400,13 @@ export function FamilyPerks({ family, familyId, refreshFamilyTools }) {
                 <Chip size="small" label="Owned" color="success" />
               ) : (
                 family.canManageApplications && (
-                  <Button
-                    size="small"
-                    variant="outlined"
+                  <UiAction
+                    aria-label={`Buy ${perk.name}`}
                     onClick={() => onBuyPerk(perk)}
-                    startIcon={<Icon icon="lucide:coins" />}
                   >
+                    <CoinIcon size={16} />
                     {Number(perk.cost).toFixed(2)}
-                  </Button>
+                  </UiAction>
                 )
               )}
             </Stack>
@@ -392,6 +418,7 @@ export function FamilyPerks({ family, familyId, refreshFamilyTools }) {
           </Typography>
         )}
       </Stack>
+      {confirmation.dialog}
     </Paper>
   );
 }
@@ -399,15 +426,20 @@ export function FamilyPerks({ family, familyId, refreshFamilyTools }) {
 export function FamilyJoinFee({ family, familyId, refreshFamilyTools }) {
   const [joinFeeInput, setJoinFeeInput] = useState(String(Number(family.joinFee || 0)));
   const siteInfo = useContext(SiteInfoContext);
+  const [saving, setSaving] = useState(false);
+  const pending = useRef(false);
+  useEffect(() => setJoinFeeInput(String(Number(family.joinFee || 0))), [family.joinFee]);
 
   if (!family.isLeader) return null;
 
   function onSaveJoinFee() {
+    if (pending.current || !family.isLeader) return;
     const joinFee = Math.floor(Number(joinFeeInput));
     if (!Number.isFinite(joinFee) || joinFee < 0) {
       siteInfo.showAlert("Join fee must be a positive number or 0", "error");
       return;
     }
+    pending.current = true; setSaving(true);
     axios
       .post(`/api/family/${familyId}/joinFee`, { joinFee })
       .then((res) => {
@@ -415,16 +447,17 @@ export function FamilyJoinFee({ family, familyId, refreshFamilyTools }) {
         siteInfo.showAlert("Join fee updated", "success");
         refreshFamilyTools();
       })
-      .catch((e) => siteInfo.showAlert(e.response?.data || "Error", "error"));
+      .catch((e) => siteInfo.showAlert(e.response?.data || "Error", "error"))
+      .finally(() => { pending.current = false; setSaving(false); });
   }
 
   return (
-    <Paper sx={panelStyle}>
+    <Paper className="ui-card">
       <Typography variant="h3" sx={headingStyle}>
         Join Fee
       </Typography>
       <Stack direction="column" spacing={1}>
-        <TextField
+        <UiField label="Join fee in coins" disabled={saving}
           size="small"
           type="number"
           value={joinFeeInput}
@@ -433,9 +466,9 @@ export function FamilyJoinFee({ family, familyId, refreshFamilyTools }) {
           placeholder="0"
           fullWidth
         />
-        <Button variant="outlined" onClick={onSaveJoinFee} fullWidth>
+        <UiAction busy={saving} onClick={onSaveJoinFee}>
           Save Join Fee
-        </Button>
+        </UiAction>
         <Typography variant="caption" color="text.secondary">
           Applicants pay this fee when requesting to join. Rejected applications are refunded.
         </Typography>
@@ -448,6 +481,7 @@ export function FamilyApply({ family, familyId, refreshFamilyTools }) {
   const [applyMessage, setApplyMessage] = useState("");
   const siteInfo = useContext(SiteInfoContext);
   const user = useContext(UserContext);
+  const confirmation = useFamilyConfirmation();
 
   const isFamilyMember = Boolean(family.userRole);
   const canApply =
@@ -463,9 +497,8 @@ export function FamilyApply({ family, familyId, refreshFamilyTools }) {
       ? `Are you sure you want to cancel your application? Your ${joinFee.toLocaleString()} coin join fee will be refunded.` 
       : "Are you sure you want to cancel your application?";
       
-    if (!window.confirm(msg)) return;
-
-    axios
+    if (!family.hasPendingApplication || !user.loggedIn) return;
+    confirmation.open({ title: "Cancel application?", description: msg, label: "Cancel application", destructive: true, run: () => axios
       .delete(`/api/family/${familyId}/applications/mine`)
       .then((res) => {
         siteInfo.showAlert("Application cancelled", "success");
@@ -478,18 +511,13 @@ export function FamilyApply({ family, familyId, refreshFamilyTools }) {
         }
         refreshFamilyTools();
       })
-      .catch((e) => siteInfo.showAlert(e.response?.data || "Error", "error"));
+    });
   }
 
   function onApplyToFamily() {
+    if (!canApply) return;
     const joinFee = Number(family?.joinFee || 0);
-    if (joinFee > 0) {
-      if (!window.confirm(`This family requires a join fee of ${joinFee.toLocaleString()} coins. It will be refunded if rejected. Proceed?`)) {
-        return;
-      }
-    }
-
-    axios
+    confirmation.open({ title: "Apply to family?", description: joinFee > 0 ? `Pay ${joinFee.toLocaleString()} coins to apply to ${family.name}? The fee is refunded if your application is rejected.` : `Send your application to ${family.name}?`, label: joinFee > 0 ? "Pay fee and apply" : "Submit application", run: () => axios
       .post(`/api/family/${familyId}/apply`, { message: applyMessage })
       .then((res) => {
         siteInfo.showAlert("Application submitted", "success");
@@ -503,13 +531,13 @@ export function FamilyApply({ family, familyId, refreshFamilyTools }) {
         }
         refreshFamilyTools();
       })
-      .catch((e) => siteInfo.showAlert(e.response?.data || "Error", "error"));
+    });
   }
 
   return (
     <>
       {!isFamilyMember && family.hasPendingApplication && (
-        <Paper sx={panelStyle}>
+        <Paper className="ui-card">
           <Typography variant="h3" sx={headingStyle}>
             Pending Application
           </Typography>
@@ -523,14 +551,14 @@ export function FamilyApply({ family, familyId, refreshFamilyTools }) {
                 <CoinAmount amount={family.joinFee} variant="body1" sx={{ fontWeight: 700 }} />
               </Box>
             )}
-            <Button variant="outlined" color="error" onClick={onCancelApplication}>
+            <UiAction variant="danger-quiet" onClick={onCancelApplication}>
               Cancel Application
-            </Button>
+            </UiAction>
           </Stack>
         </Paper>
       )}
       {canApply && (
-        <Paper sx={panelStyle}>
+        <Paper className="ui-card family-apply">
           <Typography variant="h3" sx={headingStyle}>
             Apply
           </Typography>
@@ -541,7 +569,7 @@ export function FamilyApply({ family, familyId, refreshFamilyTools }) {
                 <CoinAmount amount={family.joinFee} variant="body1" sx={{ fontWeight: 700 }} />
               </Box>
             )}
-            <TextField
+            <UiField label="Application message" disabled={confirmation.busy}
               multiline
               minRows={3}
               value={applyMessage}
@@ -550,12 +578,13 @@ export function FamilyApply({ family, familyId, refreshFamilyTools }) {
               inputProps={{ maxLength: 500 }}
               helperText={`${applyMessage.length}/500 characters`}
             />
-            <Button variant="contained" onClick={onApplyToFamily}>
+            <UiAction variant="primary" disabled={confirmation.busy} onClick={onApplyToFamily}>
               {Number(family.joinFee || 0) > 0 ? "Pay Fee and Apply" : "Submit Application"}
-            </Button>
+            </UiAction>
           </Stack>
         </Paper>
       )}
+      {confirmation.dialog}
     </>
   );
 }
@@ -564,7 +593,7 @@ export function FamilyApply({ family, familyId, refreshFamilyTools }) {
 export function FamilyProgress({ family }) {
   if (!family.quests || family.quests.length === 0) return null;
   return (
-    <Paper sx={panelStyle}>
+    <Paper className="ui-card">
       <Typography variant="h3" sx={headingStyle}>
         Family Progress
       </Typography>
@@ -626,7 +655,7 @@ export function FamilyStockCard({ stockInfo, family, familyId, refreshFamilyTool
         }
         onSuccess={refreshFamilyTools}
       />
-      <Paper sx={panelStyle}>
+      <Paper className="ui-card">
         <Typography variant="h3" sx={headingStyle}>
           Stock &amp; Equity
         </Typography>
@@ -641,7 +670,7 @@ export function FamilyStockCard({ stockInfo, family, familyId, refreshFamilyTool
               sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}
             >
               {stockInfo.buyPrice.toFixed(2)}{" "}
-              <Icon icon="lucide:coins" style={{ fontSize: "24px", verticalAlign: "middle" }} />
+              <CoinIcon size={16} />
             </Typography>
           </Box>
           <Box>
@@ -667,7 +696,7 @@ export function FamilyStockCard({ stockInfo, family, familyId, refreshFamilyTool
               sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}
             >
               {stockInfo.marketCap.toFixed(2)}{" "}
-              <Icon icon="lucide:coins" style={{ fontSize: "14px", verticalAlign: "middle" }} />
+              <CoinIcon size={16} />
             </Typography>
           </Grid>
           <Grid item xs={6}>
@@ -690,20 +719,16 @@ export function FamilyStockCard({ stockInfo, family, familyId, refreshFamilyTool
               sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}
             >
               {(stockInfo.dividendsPaidOut || 0).toFixed(2)}{" "}
-              <Icon icon="lucide:coins" style={{ fontSize: "14px", verticalAlign: "middle" }} />
+              <CoinIcon size={16} />
             </Typography>
           </Grid>
         </Grid>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
+          <UiAction variant="primary"
             onClick={() => setTradeModalOpen(true)}
-            sx={{ mt: 1, fontWeight: "bold" }}
-            startIcon={<i className="fas fa-chart-line" />}
+            style={{ marginTop: 8, width: "100%" }}
           >
             Trade Shares
-          </Button>
+          </UiAction>
         </Box>
       </Paper>
     </>

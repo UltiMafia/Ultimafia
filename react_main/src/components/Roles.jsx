@@ -374,7 +374,7 @@ export function RoleCount({
   const popoverProps = {
     ...keyboardProps,
     onClick: handleRoleCountClick,
-    onMouseEnter: popoverDisabled ? undefined : handleMouseEnter,
+    onMouseEnter: popoverDisabled || isPhoneDevice ? undefined : handleMouseEnter,
     onMouseLeave: popoverDisabled ? undefined : handleMouseLeave,
     style: {
       cursor: isInteractive ? "pointer" : "default",
@@ -774,7 +774,7 @@ export function ModifierCount(props) {
         aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
         aria-haspopup="true"
         onClick={handleRoleCountClick}
-        onMouseEnter={handleMouseEnter}
+        onMouseEnter={isPhoneDevice ? undefined : handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         style={{
           height: iconLength,
@@ -914,7 +914,7 @@ export function GameSettingCount(props) {
         aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
         aria-haspopup="true"
         onClick={handleRoleCountClick}
-        onMouseEnter={handleMouseEnter}
+        onMouseEnter={isPhoneDevice ? undefined : handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         style={{
           height: iconLength,

@@ -22,7 +22,7 @@
   padding: 16px 12px 24px;
 
   color: var(--scheme-color-text);
-  font-family: "Roboto", sans-serif;
+  font-family: var(--ui-font-body);
 }
 
 .game .acrotopia-stage > * {
@@ -61,7 +61,7 @@
 }
 
 .game .acrotopia-banner-label {
-  font-family: "RobotoSlab", serif;
+  font-family: var(--ui-font-body);
   font-weight: 700;
   font-size: 0.7rem;
   letter-spacing: 0.22em;
@@ -70,7 +70,7 @@
 }
 
 .game .acrotopia-banner-now {
-  font-family: "RobotoSlab", serif;
+  font-family: var(--ui-font-body);
   font-variant-numeric: tabular-nums;
   font-size: 1.6rem;
   font-weight: 700;
@@ -80,7 +80,7 @@
 }
 
 .game .acrotopia-banner-sep {
-  font-family: "RobotoSlab", serif;
+  font-family: var(--ui-font-body);
   font-size: 1.1rem;
   font-weight: 300;
   color: var(--acro-accent);
@@ -88,7 +88,7 @@
 }
 
 .game .acrotopia-banner-of {
-  font-family: "RobotoSlab", serif;
+  font-family: var(--ui-font-body);
   font-variant-numeric: tabular-nums;
   font-size: 1rem;
   font-weight: 400;
@@ -97,7 +97,7 @@
 }
 
 .game .acrotopia-banner-tag {
-  font-family: "RobotoSlab", serif;
+  font-family: var(--ui-font-body);
   font-weight: 700;
   font-size: 0.65rem;
   letter-spacing: 0.28em;
@@ -127,7 +127,7 @@
   top: -4px;
   left: 8px;
 
-  font-family: "RobotoSlab", serif;
+  font-family: var(--ui-font-body);
   font-size: 3.4rem;
   font-weight: 700;
   line-height: 1;
@@ -138,7 +138,7 @@
 
 .game .acrotopia-prompt-text {
   margin: 0;
-  font-family: "RobotoSlab", serif;
+  font-family: var(--ui-font-body);
   font-style: italic;
   font-weight: 500;
   font-size: 1.08rem;
@@ -195,7 +195,7 @@
   background: var(--acro-accent-soft);
   border: 1px solid var(--acro-accent);
 
-  font-family: "RobotoSlab", serif;
+  font-family: var(--ui-font-body);
   font-style: normal;
   font-weight: 700;
   font-size: 0.78rem;
@@ -204,7 +204,7 @@
 }
 
 .game .acrotopia-prompt-choice-text {
-  font-family: "RobotoSlab", serif;
+  font-family: var(--ui-font-body);
   font-style: italic;
 }
 
@@ -261,7 +261,7 @@
 .game .acrotopia-action-list .action .MuiTypography-subtitle1 {
   margin: 0 0 2px;
 
-  font-family: "RobotoSlab", serif;
+  font-family: var(--ui-font-body);
   font-weight: 700;
   font-size: 0.68rem;
   letter-spacing: 0.18em;
@@ -282,7 +282,7 @@
 
 .game .acrotopia-action-list .action .MuiOutlinedInput-root textarea,
 .game .acrotopia-action-list .action .MuiOutlinedInput-root input {
-  font-family: "Roboto", sans-serif;
+  font-family: var(--ui-font-body);
   font-size: 1rem;
   line-height: 1.5;
   color: var(--scheme-color-text);
@@ -305,7 +305,7 @@
   background: var(--acro-accent);
   color: #fff;
 
-  font-family: "Roboto", sans-serif;
+  font-family: var(--ui-font-body);
   font-weight: 700;
   font-size: 0.74rem;
   letter-spacing: 0.18em;
@@ -334,7 +334,7 @@
 }
 
 .game .acrotopia-action-list .action .MuiTypography-body2 {
-  font-family: "Roboto", sans-serif;
+  font-family: var(--ui-font-body);
   font-size: 0.88rem;
   padding: 8px 12px;
   border-left: 2px solid var(--acro-accent);
@@ -355,7 +355,7 @@
   margin: 0;
   padding-bottom: 4px;
 
-  font-family: "RobotoSlab", serif;
+  font-family: var(--ui-font-body);
   font-weight: 700;
   font-size: 0.7rem;
   letter-spacing: 0.22em;
@@ -393,7 +393,7 @@
 .game .acrotopia-response-quote {
   flex: 0 0 auto;
 
-  font-family: "RobotoSlab", serif;
+  font-family: var(--ui-font-body);
   font-size: 1.1rem;
   line-height: 1;
   color: var(--acro-accent);
@@ -405,7 +405,7 @@
   flex: 1 1 auto;
   min-width: 0;
 
-  font-family: "RobotoSlab", serif;
+  font-family: var(--ui-font-body);
   font-style: italic;
   font-weight: 500;
   font-size: 0.95rem;
@@ -421,7 +421,7 @@
   align-items: center;
   gap: 4px;
 
-  font-family: "Roboto", sans-serif;
+  font-family: var(--ui-font-body);
   font-size: 0.7rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -450,7 +450,7 @@
   background: var(--acro-chip);
   color: var(--acro-chip-ink);
 
-  font-family: "RobotoSlab", serif;
+  font-family: var(--ui-font-body);
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   font-size: 0.82rem;

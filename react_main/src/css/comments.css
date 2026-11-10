@@ -40,3 +40,24 @@
     width: auto;
   }
 }
+.comment-row { display: flex; flex-direction: column; gap: 8px; width: 100%; min-width: 0; padding: 12px; border: 1px solid var(--scheme-color-border); border-radius: 6px; background: var(--scheme-color); }
+.comments-page { max-width: 760px; }
+.comment-header { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; min-width: 0; }
+.comment-header .avatar { width: 32px; height: 32px; }
+.comment-header .user-name { font-size: var(--ui-text-body); font-weight: 600; }
+.comment-time { color: var(--um-muted); font-size: var(--ui-text-caption); }
+.comment-actions { margin-left: auto; display: flex; align-items: center; }
+.comment-actions button { width: 32px; height: 32px; }
+.comment-content { margin-top: 0; }
+.comment-content > :first-child { margin-top: 0; }
+.comment-footer { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 0; }
+.comment-footer .comment-vote { margin-left: -8px; }
+.comment-footer .emote-reactions { margin-top: 0; gap: 6px; }
+.comment-footer .emote-reactions-picker.dropdown .dropdown-control { min-width: 32px; min-height: 32px; padding: 4px; }
+.comment-footer .emote-reactions-picker.dropdown .dropdown-control img { width: 20px; height: 20px; }
+.comment-footer .comment-vote .MuiStack-root { flex-direction: row; align-items: center; }
+.comment-footer .comment-vote .MuiIconButton-root { width: 32px; height: 32px; min-width: 32px; min-height: 32px; }
+.comments-page > .comment-row:last-of-type { margin-bottom: 0; }
+@media (max-width: 600px) {
+  .comment-row { padding: 10px; }
+}

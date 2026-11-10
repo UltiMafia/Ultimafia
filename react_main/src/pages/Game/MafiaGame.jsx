@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useContext, useMemo } from "react";
+import UiIcon from "../../components/ui/UiIcon";
 
 import {
   useSocketListeners,
@@ -24,6 +25,9 @@ import { GameContext, SiteInfoContext } from "../../Contexts";
 import { mafiaAudioConfig } from "../../audio/audioConfigs";
 import { SideMenu } from "./Game";
 import { Button, Stack, Typography } from "@mui/material";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { StrategiesPanel, StrategiesSection } from "components/Strategies";
+import TutorialOverlay from "components/TutorialOverlay";
 
 function MissionScoreKeeper() {
   const game = useContext(GameContext);
@@ -113,9 +117,6 @@ function MissionHistoryPanel(props) {
     </div>
   );
 }
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
-import { StrategiesPanel, StrategiesSection } from "components/Strategies";
-import TutorialOverlay from "components/TutorialOverlay";
 
 // The guides sat in this tab during pregame. Rather than render the list twice
 // — two fetches, and two vote states that can disagree — point at where it
@@ -131,14 +132,13 @@ export function GuidesMovedHint({ onOpenGuides }) {
             data-testid="guides-moved-hint"
             sx={{ opacity: 0.85 }}
           >
-            Guides moved to the Info tab, where they stay on screen for the
-            whole game.
+            Guides are in Game info, available from the game menu throughout the game.
           </Typography>
           <Button
             size="small"
             variant="outlined"
             data-testid="guides-moved-open"
-            startIcon={<i className="fas fa-book-open" />}
+            startIcon={<UiIcon name="book" />}
             onClick={onOpenGuides}
           >
             Open guides
@@ -606,7 +606,7 @@ export default function MafiaGame() {
             setupId={setupId}
             visible={Boolean(setupId)}
             title={setupTitle}
-            variant="fill"
+            variant="section"
           />
         }
         innerRightContent={

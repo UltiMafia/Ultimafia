@@ -5,6 +5,7 @@ import update from "immutability-helper";
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { NameWithAvatar } from "pages/User/UserWidgets";
+import UiIcon from "./ui/UiIcon";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 
 import {
@@ -103,20 +104,22 @@ export function VoteWidget(props) {
   return (
     <Stack direction="column">
       <IconButton
-        className={`fas fa-arrow-up`}
+        aria-label="Upvote" disabled={!user.perms?.vote}
         sx={{
           fontSize: "1em",
           color: "inherit",
           ...(item.vote === 1 ? { color: theme.palette.info.main } : {}),
         }}
         onClick={() => onVote(item.id, 1)}
-      />
+      ><UiIcon name="up" size={18} /></IconButton>
       <IconButton
+        aria-label="View votes" disabled={!user.perms?.viewVotes}
         onClick={(e) => getVotes(e, item.id)}
         sx={{
           position: "relative",
           fontSize: "1em",
-          color: "inherit",
+          color: "text.primary",
+          "&.Mui-disabled": { color: "text.primary", opacity: 1 },
           minWidth: "2em",
           minHeight: "2em",
         }}
@@ -132,14 +135,14 @@ export function VoteWidget(props) {
         </Typography>
       </IconButton>
       <IconButton
-        className={`fas fa-arrow-down`}
+        aria-label="Downvote" disabled={!user.perms?.vote}
         sx={{
           fontSize: "1em",
           color: "inherit",
           ...(item.vote === -1 ? { color: theme.palette.info.main } : {}),
         }}
         onClick={() => onVote(item.id, -1)}
-      />
+      ><UiIcon name="down" size={18} /></IconButton>
       <Popover
         open={popoverOpen}
         sx={{ pointerEvents: openByClick ? "auto" : "none" }}

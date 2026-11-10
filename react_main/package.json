@@ -66,7 +66,8 @@
     "start": "rsbuild dev",
     "build": "rsbuild build",
     "preview": "rsbuild preview",
-    "lint": "eslint src",
+    "lint": "eslint src && npm run lint:ui",
+    "lint:ui": "node scripts/check-ui-architecture.cjs",
     "test:strategy-windows:browser": "rsbuild build --config rsbuild.strategy-windows-test.config.ts && node test/run-strategy-windows.cjs"
   },
   "eslintConfig": {

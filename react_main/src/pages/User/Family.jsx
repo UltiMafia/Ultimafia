@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useParams } from "react-router-dom";
-import { ViewNavigate as Navigate } from "hooks/useViewActivity";
+import React, { useState, useEffect, useContext, useRef } from "react";
+import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import {
-  Grid,
   Stack,
   Typography,
   Box,
@@ -13,8 +11,6 @@ import {
   Tooltip,
   Chip,
   LinearProgress,
-  Menu,
-  MenuItem,
 } from "@mui/material";
 
 import { UserContext, SiteInfoContext } from "Contexts";
@@ -29,6 +25,9 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import CustomMarkdown from "components/CustomMarkdown";
 import TrophyCase from "components/TrophyCase";
 import { capitalize } from "utils";
+import { UiAction, UiDialog, UiIcon, UiMenu, UiMenuItem } from "components/ui";
+import { LatestRequest } from "../../lib/latestRequest";
+import "css/family.css";
 import { 
   FamilyTreasury, 
   FamilyLedger, 
@@ -39,7 +38,6 @@ import {
   CoinAmount,
   FamilyProgress,
   FamilyStockCard,
-  panelStyle,
   headingStyle,
 } from "./FamilyExtras";
 
@@ -54,22 +52,35 @@ export default function Family() {
   const [ledgerRefreshKey, setLedgerRefreshKey] = useState(0);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [menuMember, setMenuMember] = useState(null);
+  const [confirmation, setConfirmation] = useState(null);
+  const [actionBusy, setActionBusy] = useState(false);
+  const [actionError, setActionError] = useState("");
+  const [profileError, setProfileError] = useState("");
+  const [bioBusy, setBioBusy] = useState(false);
+  const profileRequests = useRef(new LatestRequest());
+  const actionPending = useRef(false);
+  const bioPending = useRef(false);
+  const editingBioRef = useRef(editingBio);
+  editingBioRef.current = editingBio;
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
-  const isPhoneDevice = useIsPhoneDevice();
 
   function loadFamilyProfile(signal) {
+    const request = profileRequests.current.begin();
+    setProfileError("");
     axios
-      .get(`/api/family/${familyId}/profile`, signal ? { signal } : undefined)
+      .get(`/api/family/${familyId}/profile`, { signal: signal || request.signal })
       .then((res) => {
+        if (!request.isCurrent()) return;
         setFamily(res.data);
-        setBio(res.data.bio || "");
+        if (!editingBioRef.current) setBio(res.data.bio || "");
         setFamilyLoaded(true);
         document.title = `${res.data.name} | UltiMafia`;
       })
       .catch((e) => {
+        if (!request.isCurrent()) return;
         if (
           e.code === "ERR_CANCELED" ||
           e.name === "CanceledError" ||
@@ -77,7 +88,7 @@ export default function Family() {
         ) {
           return;
         }
-        errorAlert(e);
+        setProfileError("Could not load this family. Please try again.");
         setFamilyLoaded(true);
       });
   }
@@ -91,6 +102,8 @@ export default function Family() {
     if (familyId) {
       setFamilyLoaded(false);
       setFamily(null);
+      setPendingInvite(null);
+      setConfirmation(null);
       const controller = new AbortController();
       loadFamilyProfile(controller.signal);
 
@@ -110,7 +123,7 @@ export default function Family() {
           });
       }
 
-      return () => controller.abort();
+      return () => { controller.abort(); profileRequests.current.invalidate(); };
     }
   }, [familyId]);
 
@@ -178,6 +191,7 @@ export default function Family() {
   }
 
   function onEditBio() {
+    if (bioPending.current || !family.isLeader) return;
     if (bio.length > 20000) {
       siteInfo.showAlert(
         "Family bio must be 20,000 characters or less.",
@@ -186,13 +200,15 @@ export default function Family() {
       return;
     }
 
+    bioPending.current = true; setBioBusy(true);
     axios
       .post(`/api/family/${familyId}/bio`, { bio: bio })
       .then(() => {
         setEditingBio(false);
         setBio(filterProfanity(bio, user.settings, "\\*"));
       })
-      .catch(errorAlert);
+      .catch(errorAlert)
+      .finally(() => { bioPending.current = false; setBioBusy(false); });
   }
 
   function onCancelEditBio() {
@@ -212,39 +228,27 @@ export default function Family() {
   }
 
   function onRejectJoin() {
-    if (!window.confirm("Are you sure you want to reject this invitation?")) {
-      return;
-    }
-
-    axios
-      .post(`/api/family/${familyId}/rejectJoin`)
-      .then(() => {
-        siteInfo.showAlert("Invitation rejected", "success");
-        setPendingInvite(null);
-      })
-      .catch(errorAlert);
+    setActionError(""); setConfirmation({ type: "reject", title: "Reject invitation?", description: `Reject the invitation to ${family.name}?`, label: "Reject invitation" });
   }
 
   function onRemoveMember(memberId, memberName) {
-    if (
-      !window.confirm(
-        `Are you sure you want to remove ${memberName} from the family?`
-      )
-    ) {
-      return;
-    }
+    setActionError(""); setConfirmation({ type: "remove", memberId, title: "Remove member?", description: `Remove ${memberName} from ${family.name}?`, label: "Remove member" });
+  }
 
-    axios
-      .delete(`/api/family/${familyId}/member/${memberId}`)
-      .then(() => {
-        siteInfo.showAlert("Member removed from family", "success");
-        loadFamilyProfile();
-      })
-      .catch(errorAlert);
+  async function confirmAction() {
+    if (!confirmation || actionPending.current || (confirmation.type !== "reject" && !family.isLeader)) return;
+    actionPending.current = true; setActionBusy(true); setActionError("");
+    try {
+      if (confirmation.type === "reject") { await axios.post(`/api/family/${familyId}/rejectJoin`); setPendingInvite(null); }
+      else if (confirmation.type === "remove") await axios.delete(`/api/family/${familyId}/member/${confirmation.memberId}`);
+      else await axios.post(`/api/family/${familyId}/member/${confirmation.memberId}/role`, { role: confirmation.role });
+      setConfirmation(null); refreshFamilyTools();
+    } catch (_) { setActionError("Could not update the family. Please try again."); }
+    finally { actionPending.current = false; setActionBusy(false); }
   }
 
   if (!familyLoaded) return <PageSkeleton />;
-  if (!family) return <Navigate to="/play" />;
+  if (!family) return <div role="alert"><h1>Family unavailable</h1><p>{profileError || "This family could not be found."}</p><UiAction onClick={() => loadFamilyProfile()}>Retry</UiAction><p><Link to="/community/families">Browse families</Link></p></div>;
 
   const hasTrophySpotlight = family.perks?.some((p) => p.key === "trophySpotlight" && p.owned);
 
@@ -293,23 +297,23 @@ export default function Family() {
         )}
         <Chip size="small" label={capitalize(member.role || "member")} variant="outlined" />
         {family.isLeader && user.loggedIn && member.id !== user.id && (
-          <IconButton
-            size="small"
+          <UiAction iconOnly variant="ghost" aria-label={`Manage ${member.name}`}
             onClick={(e) => {
               setMenuAnchorEl(e.currentTarget);
               setMenuMember(member);
             }}
           >
-            <i className="fas fa-ellipsis-v" style={{ fontSize: "14px" }} />
-          </IconButton>
+            <UiIcon name="menu" />
+          </UiAction>
         )}
       </Box>
     </Box>
   ));
 
   return (
-    <>
-      <Menu
+    <div className="family-page">
+      {profileError && <p role="alert">{profileError}</p>}
+      <UiMenu
         anchorEl={menuAnchorEl}
         open={Boolean(menuAnchorEl)}
         onClose={() => {
@@ -318,27 +322,20 @@ export default function Family() {
         }}
       >
         {menuMember && (
-          <MenuItem
+          <UiMenuItem
             onClick={() => {
               const action = menuMember.role === "officer" ? "demote" : "promote";
               const newRole = menuMember.role === "officer" ? "member" : "officer";
-              if (window.confirm(`Are you sure you want to ${action} this member?`)) {
-                axios
-                  .post(`/api/family/${familyId}/member/${menuMember.id}/role`, { role: newRole })
-                  .then(() => {
-                    refreshFamilyTools();
-                    setMenuAnchorEl(null);
-                    setMenuMember(null);
-                  })
-                  .catch(errorAlert);
-              }
+              setActionError("");
+              setConfirmation({ type: "role", memberId: menuMember.id, role: newRole, title: "Change member role?", description: `${action === "promote" ? "Promote" : "Demote"} ${menuMember.name} to ${newRole}?`, label: "Change role" });
+              setMenuAnchorEl(null); setMenuMember(null);
             }}
           >
             {menuMember.role === "officer" ? "Demote to Member" : "Promote to Officer"}
-          </MenuItem>
+          </UiMenuItem>
         )}
         {menuMember && (
-          <MenuItem
+          <UiMenuItem
             onClick={() => {
               onRemoveMember(menuMember.id, menuMember.name);
               setMenuAnchorEl(null);
@@ -347,13 +344,13 @@ export default function Family() {
             sx={{ color: "error.main" }}
           >
             Remove Member
-          </MenuItem>
+          </UiMenuItem>
         )}
-      </Menu>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={8}>
-          <Stack direction="column" spacing={1}>
-            <Paper sx={panelStyle} className="family-profile-panel">
+      </UiMenu>
+      <UiDialog open={!!confirmation} title={confirmation?.title} onClose={actionBusy ? undefined : () => setConfirmation(null)} actions={<><UiAction disabled={actionBusy} onClick={() => setConfirmation(null)}>Cancel</UiAction><UiAction variant={confirmation?.type === "role" ? "primary" : "danger"} busy={actionBusy} onClick={confirmAction}>{confirmation?.label}</UiAction></>}><p>{confirmation?.description}</p>{actionError && <p role="alert">{actionError}</p>}</UiDialog>
+      <div className="family-page-layout">
+        <div className="family-main">
+            <Paper className="ui-card family-profile-panel">
               {family.banner && (
                 <div className="family-banner">
                   <img
@@ -376,6 +373,7 @@ export default function Family() {
                 </div>
               )}
               <Stack
+                className="family-header"
                 direction="row"
                 spacing={2}
                 alignItems="center"
@@ -392,7 +390,7 @@ export default function Family() {
                   />
                 )}
                 <Box>
-                  <Typography variant="h2" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Typography component="h1" variant="h2" sx={{ overflowWrap: "anywhere" }}>
                     {family.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -415,13 +413,13 @@ export default function Family() {
                 {!editingBio && (
                   <div className="md-content">
                     <CustomMarkdown>
-                      {bio || "Click to edit your family's bio"}
+                      {bio || (family.isLeader ? "Add a family bio." : "No family bio yet.")}
                     </CustomMarkdown>
                   </div>
                 )}
                 {editingBio && (
                   <>
-                    <TextEditor value={bio} onChange={setBio} />
+                    <TextEditor value={bio} onChange={setBio} readOnly={bioBusy} />
                     <Typography
                       variant="caption"
                       sx={{
@@ -434,32 +432,26 @@ export default function Family() {
                       {bio.length}/20,000 characters
                     </Typography>
                     <div className="buttons">
-                      <div
-                        className="btn btn-theme"
+                      <UiAction variant="primary" busy={bioBusy} disabled={bio.length > 20000}
                         onClick={onEditBio}
-                        style={{
-                          opacity: bio.length > 20000 ? 0.5 : 1,
-                          cursor:
-                            bio.length > 20000 ? "not-allowed" : "pointer",
-                        }}
                       >
-                        Submit
-                      </div>
-                      <div
-                        className="btn btn-theme-sec"
+                        Save bio
+                      </UiAction>
+                      <UiAction disabled={bioBusy}
                         onClick={onCancelEditBio}
                       >
                         Cancel
-                      </div>
+                      </UiAction>
                     </div>
                   </>
                 )}
               </div>
+              {family.isLeader && !editingBio && <UiAction onClick={onBioClick}>Edit family bio</UiAction>}
             </Paper>
             {family.trophies && family.trophies.length > 0 && (
-              <Paper 
+              <Paper
+                className="ui-card"
                 sx={{
-                  ...panelStyle,
                   ...(hasTrophySpotlight && {
                     boxShadow: "0 0 25px 2px rgba(255, 215, 0, 0.4)",
                     border: "1px solid rgba(255, 215, 0, 0.6)",
@@ -473,22 +465,14 @@ export default function Family() {
                 />
               </Paper>
             )}
-            {!isPhoneDevice && (
-              <Box
-                sx={{
-                  mt: "16px !important",
-                  px: 2,
-                }}
-              >
-                <Comments fullWidth location={`family/${familyId}`} canModerateLocation={!!family.isLeader} />
-              </Box>
-            )}
-          </Stack>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Stack direction="column" spacing={2}>
+            <section className="family-comments">
+              <h2>Comments</h2>
+              <Comments fullWidth location={`family/${familyId}`} canModerateLocation={!!family.isLeader} />
+            </section>
+        </div>
+        <aside className="family-rail">
             {pendingInvite && (
-              <Paper sx={panelStyle}>
+              <Paper className="ui-card">
                 <Typography variant="h3" sx={headingStyle}>
                   Pending Invite
                 </Typography>
@@ -524,7 +508,7 @@ export default function Family() {
             )}
             
             {family.hasMusicPlayer && family.mediaUrl && (
-              <Paper sx={panelStyle}>
+              <Paper className="ui-card">
                 <MediaEmbed
                   key={`${familyId}:${family.mediaUrl}`}
                   mediaUrl={family.mediaUrl}
@@ -535,7 +519,7 @@ export default function Family() {
               </Paper>
             )}
 
-            <Paper sx={panelStyle}>
+            <Paper className="ui-card">
               <Typography variant="h3" sx={headingStyle}>
                 Members
               </Typography>
@@ -557,14 +541,8 @@ export default function Family() {
             <FamilyJoinFee family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
             <FamilyPerks family={family} familyId={familyId} refreshFamilyTools={refreshFamilyTools} />
             <FamilyLedger familyId={familyId} refreshKey={ledgerRefreshKey} />
-          </Stack>
-        </Grid>
-        {isPhoneDevice && (
-          <Grid item xs={12} sx={{ mt: 1 }}>
-            <Comments fullWidth location={`family/${familyId}`} canModerateLocation={!!family.isLeader} />
-          </Grid>
-        )}
-      </Grid>
-    </>
+        </aside>
+      </div>
+    </div>
   );
 }

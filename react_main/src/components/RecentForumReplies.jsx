@@ -82,6 +82,13 @@ export function RecentForumReplies() {
     };
   }, [active]);
 
+  if (!newestThreads.length && !recentReplies.length) {
+    return <LobbySidebarPanel title="Forum activity">
+      <Typography variant="body2" color="text.secondary">No recent posts.</Typography>
+      <Link to="/community/forums">Forums</Link>
+    </LobbySidebarPanel>;
+  }
+
   return (
     <LobbySidebarPanel title="Forum Activity">
       <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>

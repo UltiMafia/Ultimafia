@@ -13,7 +13,6 @@ import { UserContext, SiteInfoContext } from "Contexts";
 import ReportDialog from "components/ReportDialog";
 import { useErrorAlert } from "components/Alerts";
 import {
-  getTotalGames,
   getWins,
   getLosses,
   getAbandons,
@@ -36,12 +35,10 @@ function Miniprofile(props) {
   const hasDefaultPronouns = pronouns === "";
   const vanityUrl = user.vanityUrl;
 
-  let pieChart = <></>;
-  let totalGames = 0;
+  let statsSummary = null;
   if (user.stats?.["Mafia"]?.all) {
     const mafiaStats = user.stats["Mafia"].all;
-    totalGames = getTotalGames(mafiaStats);
-    pieChart = (
+    statsSummary = (
       <PieChart
         wins={getWins(mafiaStats)}
         losses={getLosses(mafiaStats)}
@@ -197,7 +194,7 @@ function Miniprofile(props) {
           </Typography>
         </Stack>
       )}
-      {pieChart}
+      {statsSummary}
       <div className="score-info">
         <div className="score-info-column">
           <div className="score-info-row score-info-smallicon">

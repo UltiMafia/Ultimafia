@@ -1,13 +1,13 @@
 import React from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
-import { Paper } from "@mui/material";
+import { UiPage } from "components/ui";
 
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
 import Rules from "./Rules";
-import Moderation from "./Moderation";
-import { ModerationLog } from "./Moderation";
+import Moderation, { ModerationLog } from "./Moderation";
+import { ModerationGroups, ModerationTools } from "./Moderation/ModerationPages";
 import Reports from "./Reports";
 import CompetitiveManagement from "./Moderation/CompetitiveManagement";
 import StaffHandbook from "./Moderation/StaffHandbook";
@@ -29,8 +29,10 @@ function ReportsRedirect() {
 }
 
 export default function Policy() {
+  const { pathname } = useLocation();
+  const prose = ["/policy/rules", "/policy/tos", "/policy/privacy"].includes(pathname);
   return (
-    <Paper sx={{ p: 2, textAlign: "justify" }}>
+    <UiPage className="policy-page" width={prose ? "prose" : "wide"}>
       <Routes>
         <Route path="rules" element={<Rules />} />
         <Route path="tos" element={<TermsOfService />} />
@@ -38,6 +40,8 @@ export default function Policy() {
         <Route path="invoices" element={<Invoices />} />
         <Route path="moderation" element={<Moderation />}>
           <Route index element={<ModerationLog />} />
+          <Route path="tools" element={<ModerationTools />} />
+          <Route path="groups" element={<ModerationGroups />} />
           <Route
             path="reports"
             element={<Reports basePath="/policy/moderation" />}
@@ -57,6 +61,6 @@ export default function Policy() {
         <Route path="reports/*" element={<ReportsRedirect />} />
         <Route path="*" element={<Navigate to="rules" />} />
       </Routes>
-    </Paper>
+    </UiPage>
   );
 }

@@ -36,6 +36,8 @@ import {
   mergeStatsBuckets,
 } from "utils/mafiaStats";
 import Comments from "../Community/Comments";
+import CoinIcon from "components/CoinIcon";
+import { UiAction, UiIcon } from "components/ui";
 
 import "css/user.css";
 import { Modal } from "components/Modal";
@@ -176,6 +178,23 @@ function RoleIconCreditsPanel({
   );
 }
 
+function ProfileGameRow({ game, action = null }) {
+  const status = game.status || "Finished";
+  const won = game.won;
+  return <article className={`profile-game-row${game.ranked ? " is-ranked" : ""}${game.competitive ? " is-competitive" : ""}`}>
+    <span className={`profile-game-result${won === true ? " is-win" : won === false ? " is-loss" : ""}`}>{won === true ? "Win" : won === false ? "Loss" : "Played"}</span>
+    <div className="profile-game-copy">
+      <Link className="profile-game-title" to={`/game/${game.id}`}>{game.setup?.name || "Game"}</Link>
+      <p>{[game.setup?.gameType, game.lobby, status].filter(Boolean).join(" · ")}</p>
+      {game.broken && <p className="profile-game-unavailable">Unavailable</p>}
+    </div>
+    <div className="profile-game-actions">
+      <Link className="ui-action ui-action--secondary" to={`/game/${game.id}`}>{status === "Finished" ? "Review" : "Open"}</Link>
+      {action}
+    </div>
+  </article>;
+}
+
 export default function Profile() {
   const theme = useTheme();
   const goldColor = theme.palette.mode === "light" ? "#b8860b" : "gold";
@@ -185,6 +204,7 @@ export default function Profile() {
   const [avatar, setAvatar] = useState();
   const [banner, setBanner] = useState();
   const [bannerExt, setBannerExt] = useState("webp");
+  const [bannerFailed, setBannerFailed] = useState(false);
   const [profileBackground, setProfileBackground] = useState(false);
   const [skillRating, setSkillRating] = useState(null);
   const [bio, setBio] = useState("");
@@ -1062,6 +1082,8 @@ export default function Profile() {
   const bannerUrl = banner
     ? `/uploads/${profileUserId}_banner.${bannerExtSafe}?t=${siteInfo.cacheVal}`
     : null;
+  const showBanner = banner && !bannerFailed;
+  useEffect(() => { setBannerFailed(false); }, [bannerUrl]);
 
   // Prefer <img> for all banners so GIF/animated WebP play reliably
   if (settings.bannerFormat === "stretch") {
@@ -1110,52 +1132,10 @@ export default function Profile() {
     });
   }
 
-  const recentGamesRows = recentGames.map((game, index) => {
-    return (
-      <div key={game.id} style={{ display: "flex", alignItems: "center" }}>
-        <div style={{ width: "20px", textAlign: "center", flexShrink: 0 }}>
-          {game.won === true && (
-            <i
-              className="fas fa-check"
-              style={{ color: "#4caf50", fontSize: "14px" }}
-              title="Win"
-            />
-          )}
-          {game.won === false && (
-            <i
-              className="fas fa-times"
-              style={{ color: "#f44336", fontSize: "14px" }}
-              title="Loss"
-            />
-          )}
-        </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <GameRow
-            game={game}
-            type={game.status || "Finished"}
-            odd={index % 2 === 1}
-            small
-          />
-        </div>
-      </div>
-    );
-  });
+  const recentGamesRows = recentGames.map(game => <ProfileGameRow game={game} key={game.id} />);
 
-  const archivedGamesRows = archivedGames.map((game) => {
-    return (
-      <div className="archived-game" key={game.id}>
-        {showDeleteArchivedGame && (
-          <div className="btns-wrapper">
-            <i
-              className="fas fa-trash"
-              onClick={onUnarchiveGame(game.id, game.description)}
-            />
-          </div>
-        )}
-        <GameRow game={game} type={game.status || "Finished"} small />
-      </div>
-    );
-  });
+  const archivedGamesRows = archivedGames.map(game => <ProfileGameRow game={game} key={game.id}
+    action={showDeleteArchivedGame ? <UiAction variant="ghost" iconOnly aria-label="Unarchive game" onClick={onUnarchiveGame(game.id, game.description)}><UiIcon name="delete" size={18} /></UiAction> : null} />);
 
   const createdSetupRows = createdSetups.map((setup) => (
     <Setup setup={setup} key={setup.id} />
@@ -1649,12 +1629,13 @@ export default function Profile() {
               style={{ ...panelStyle, width: "100%", maxWidth: "924px" }}
             >
               <div className="content" style={{ gap: "8px" }}>
-                {banner && (
+                {showBanner && (
                   <div className="banner" style={bannerStyle}>
                     <img
                       className="banner-media"
                       src={bannerUrl}
                       alt=""
+                      onError={() => setBannerFailed(true)}
                       style={{
                         width: "100%",
                         height: "100%",
@@ -1670,7 +1651,7 @@ export default function Profile() {
                     {bannerUpload}
                   </div>
                 )}
-                {!banner && (
+                {!showBanner && (
                   <Box
                     className="banner no-banner"
                     sx={{ width: "100%", height: "24px !important" }}
@@ -1868,7 +1849,7 @@ export default function Profile() {
                         Current Price
                       </Typography>
                       <Typography variant="h4" sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}>
-                        {stockInfo.buyPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "24px", verticalAlign: "middle" }} />
+                        {stockInfo.buyPrice.toFixed(2)} <CoinIcon size={24} />
                       </Typography>
                     </Box>
                     <Box>
@@ -1890,7 +1871,7 @@ export default function Profile() {
                         Market Cap
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}>
-                        {stockInfo.marketCap.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "14px", verticalAlign: "middle" }} />
+                        {stockInfo.marketCap.toFixed(2)} <CoinIcon size={14} />
                       </Typography>
                     </Grid>
                     <Grid item xs={6}>
@@ -1906,7 +1887,7 @@ export default function Profile() {
                         Dividends Paid
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}>
-                        {(stockInfo.dividendsPaidOut || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "14px", verticalAlign: "middle" }} />
+                        {(stockInfo.dividendsPaidOut || 0).toFixed(2)} <CoinIcon size={14} />
                       </Typography>
                     </Grid>
                   </Grid>

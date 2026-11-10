@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { UiPage, UiAction, UiSection, UiIcon } from "components/ui";
 import { Link, Route, Routes } from "react-router-dom";
 import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
@@ -15,12 +16,9 @@ import {
   Select,
   TextField,
   LinearProgress,
-  Paper,
   ButtonGroup,
   Stack,
   Divider,
-  Tabs,
-  Tab,
   Checkbox,
   FormControlLabel,
   Switch,
@@ -43,7 +41,6 @@ import "css/settings.css";
 import { setCaptchaVisible } from "utils";
 import { PageSkeleton } from "components/Skeletons";
 import { Loading } from "components/Loading";
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 const githubStatusChips = {
   pending: { label: "Pending approval", color: "warning" },
@@ -92,9 +89,6 @@ function GithubSettings() {
   return (
     <Stack direction="column" spacing={2}>
       <Box>
-        <Typography variant="h4" sx={{ mb: 1 }}>
-          GitHub
-        </Typography>
         <Typography variant="body2" color="text.secondary">
           Link your GitHub account to show your code contributions to{" "}
           <MuiLink href="https://github.com/UltiMafia/Ultimafia" target="_blank" rel="noopener noreferrer">
@@ -117,9 +111,9 @@ function GithubSettings() {
           )}
         </Stack>
       )}
-      <Stack direction="row" spacing={1}>
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems="start">
         <TextField
-          sx={{ minWidth: "240px" }}
+          sx={{ width: "100%", maxWidth: "480px" }}
           label="GitHub Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -165,9 +159,6 @@ function CookieSettings() {
   return (
     <Stack direction="column" spacing={3}>
       <Box>
-        <Typography variant="h4" sx={{ mb: 1 }}>
-          Cookie Preferences
-        </Typography>
         <Typography variant="body2" color="text.secondary" paragraph>
           Manage your cookie preferences. These settings are stored in your browser 
           and apply to this device only. For more information, see our{" "}
@@ -262,42 +253,27 @@ function CookieSettings() {
 }
 
 function SettingsSection({ sections, activeSection }) {
-  const isPhoneDevice = useIsPhoneDevice();
-  const wrapInPaper = activeSection.wrapInPaper === true;
-
-  let content = activeSection.content;
-  if (wrapInPaper) {
-    content = (
-      <Paper sx={{ p: 2 }}>
-        {content}
-      </Paper>
-    );
-  }
-
   return (
-    <Stack direction="column" spacing={1}>
-      <Stack
-        direction="row"
-        spacing={1}
-      >
-        <Tabs value={activeSection.path} aria-label="Settings Sections">
+    <UiPage title="Settings" className="settings-page">
+      <div className="settings-layout">
+        <nav className="settings-navigation" aria-label="Settings sections">
           {sections.map((section) => (
-            <Tab
-              label={section.title}
+            <Link
               key={section.path}
-              value={section.path}
-              color="inherit"
-              component={Link}
               to={`../${section.path}`}
-              sx={{
-                minWidth: isPhoneDevice ? 0 : undefined,
-              }}
-            />
+              aria-current={activeSection.path === section.path ? "page" : undefined}
+            >{section.title}</Link>
           ))}
-        </Tabs>
-      </Stack>
-      {content}
-    </Stack>
+        </nav>
+        <div className="settings-content">
+          <header className="settings-section-heading">
+            <h2>{activeSection.title}</h2>
+            <p>{activeSection.description}</p>
+          </header>
+          {activeSection.content}
+        </div>
+      </div>
+    </UiPage>
   );
 }
 
@@ -327,7 +303,7 @@ export default function Settings() {
       ref: "referralURL",
       type: "text",
       value: (deps) =>
-        `${import.meta.env.REACT_APP_URL}/auth/login?ref=${deps.user.id}`,
+        `${window.location.origin}/auth/login?ref=${deps.user.id}`,
       fixed: true,
       highlight: true,
     },
@@ -451,9 +427,10 @@ export default function Settings() {
       groupName: "Appearance",
       options: [
         {
-          label: "Default (Roboto Slab)",
+          label: "Default (Fira Sans)",
           value: "default",
         },
+        { label: "Classic (Roboto / Roboto Slab)", value: "classic" },
         {
           label: "System (system-ui)",
           value: "system",
@@ -1194,23 +1171,34 @@ export default function Settings() {
     {
       title: "Site",
       path: "site",
+      description: "Appearance, accessibility and community preferences. Changes save as you make them.",
       content: (
         <Form
-          fields={siteFields}
+          fields={siteFields.map(field => ({ ...field, groupName: ({
+            referralURL: "Referral link", onlyFriendDMs: "Messages and privacy", disablePokes: "Messages and privacy",
+            hideDeleted: "Messages and privacy", hideTutorialButton: "Tutorial and animation",
+            disableSnowstorm: "Tutorial and animation", disableMediaAutoplay: "Tutorial and animation", disableAnimatedAvatars: "Tutorial and animation",
+          })[field.ref] || field.groupName })).sort((a, b) => {
+            const order = ["Appearance", "Messages and privacy", "Censors", "Tutorial and animation", "Referral link"];
+            return order.indexOf(a.groupName) - order.indexOf(b.groupName);
+          })}
           deps={{ user }}
           onChange={(action) => onSettingChange(action, updateSiteFields)}
-          wrapGroupsInPaper
-          halfWidth
         />
       ),
     },
     {
-      title: "User",
+      title: "Profile",
       path: "profile",
+      description: "Your public identity, profile media and visibility. Fields with a Save button apply only when saved.",
       content: (
         <>
           <Form
-            fields={profileFields}
+            fields={profileFields.map(field => ({ ...field, groupName: ({
+              username: "Identity", pronouns: "Identity", birthday: "Identity", vanityUrl: "Identity",
+              youtube: "Profile media", autoplay: "Profile media", collapseMedia: "Profile media",
+              hideStatistics: "Visibility", hideKarma: "Visibility", hidePointsNegative: "Visibility", hideJoinDate: "Visibility", hideDonorBadge: "Visibility",
+            })[field.ref] || "Profile appearance" }))}
             deps={{
               name: user.name,
               pronouns: user.pronouns,
@@ -1230,8 +1218,6 @@ export default function Settings() {
               onForumBannerRemove,
             }}
             onChange={(action) => onSettingChange(action, updateProfileFields)}
-            wrapGroupsInPaper
-            halfWidth
           />
         </>
       ),
@@ -1239,9 +1225,14 @@ export default function Settings() {
     {
       title: "Game",
       path: "game",
+      description: "Your in-game appearance, sounds and accessibility preferences. These do not change game rules.",
       content: (
         <Form
-          fields={gameFields}
+          fields={gameFields.map(field => ({ ...field, groupName: ({
+            ignoreTextColor: "Readability", ignoreNameFonts: "Readability", accessibleNameColors: "Readability", disableProTips: "Readability",
+            deathMessage: "Death message and sounds", deathSound: "Death message and sounds", ignoreDeathSounds: "Death message and sounds",
+            customEmotes: "Emotes and stickers", customStickers: "Emotes and stickers",
+          })[field.ref] || "Player appearance" }))}
           deps={{
             deathMessage: user.settings.deathMessage,
             user,
@@ -1249,64 +1240,51 @@ export default function Settings() {
             errorAlert,
           }}
           onChange={(action) => onSettingChange(action, updateGameFields)}
-          wrapGroupsInPaper
-          halfWidth
         />
       ),
     },
     {
       title: "Account",
       path: "account",
-      wrapInPaper: true,
+      description: "Manage your sign-in details and account access.",
       content: (
         <Stack direction="column" spacing={2}>
           <AccountCredentials />
-          <Button
-            variant="outlined"
-            sx={{ minWidth: "120px" }}
-            onClick={onDeleteClick}
-            startIcon={
-              <i className="fas fa-exclamation-triangle" aria-hidden="true" />
-            }
-            endIcon={
-              <i className="fas fa-exclamation-triangle" aria-hidden="true" />
-            }
-          >
-            Delete Account
-          </Button>
+          <UiSection title="Delete account" className="settings-danger-section">
+            <p>Account deletion is permanent. You will be asked to confirm before continuing.</p>
+            <UiAction variant="danger" onClick={onDeleteClick}><UiIcon name="warning" />Delete account</UiAction>
+          </UiSection>
         </Stack>
       ),
     },
     {
       title: "GitHub",
       path: "github",
-      wrapInPaper: true,
+      description: "Connect your contributions to your UltiMafia profile.",
       content: <GithubSettings />,
     },
     {
       title: "Cookies",
       path: "cookies",
-      wrapInPaper: true,
+      description: "Choose which optional cookies this browser may use.",
       content: <CookieSettings />,
     },
     {
       title: "Family",
       path: "family",
-      wrapInPaper: true,
+      description: "Family membership, appearance and management. Available actions depend on your membership and permissions.",
       content: (
         <Stack direction="column" spacing={3}>
           {/* No Family Section */}
           {!userFamily && !user.itemsOwned?.createFamily && (
             <Box>
-              <Typography variant="h4" sx={{ mb: 2 }}>
-                Family
-              </Typography>
               <Typography>No family.</Typography>
+              <Link to="/community/families">Find a family</Link>
             </Box>
           )}
 
           {/* Create Family Section */}
-          {user.itemsOwned?.createFamily && (
+          {Number(user.itemsOwned?.createFamily) > 0 && (
             <Box>
               <Typography variant="h4" sx={{ mb: 2 }}>
                 Create Family

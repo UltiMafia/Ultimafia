@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
+import { UiAction, UiDialog } from "components/ui";
 import { UserSearchSelect } from "components/Form";
 import { SearchBar } from "components/Nav";
 import { UserContext, SiteInfoContext } from "Contexts";
@@ -139,24 +140,7 @@ export function ModCommands(props) {
           !modCommands[commandName].hidden
         ) {
           hasAvailableCommands = true;
-          return (
-            <Typography
-              onClick={openDialogue}
-              key={commandName}
-              tabindex="0"
-              sx={{
-                pl: 1,
-                userSelect: "none",
-                fontFamily: "RobotoMono",
-                "&:hover": {
-                  backgroundColor: COMMAND_COLOR,
-                  cursor: "pointer",
-                },
-              }}
-            >
-              {commandName}
-            </Typography>
-          );
+          return <UiAction variant="ghost" key={commandName} className="moderation-command-option" onClick={openDialogue}>{commandName}</UiAction>;
         } else {
           return null;
         }
@@ -177,7 +161,7 @@ export function ModCommands(props) {
         >
           {category}
         </Typography>
-        <Box>{groupOptions}</Box>
+        <Box className="moderation-command-options">{groupOptions}</Box>
       </Stack>
     );
   });
@@ -343,44 +327,10 @@ export function ModCommands(props) {
 
   return (
     <Stack direction="column" spacing={1} key="mod-commands">
-      <Dialog open={isDialogueOpen} onClose={closeDialogue} fullWidth>
-        <DialogContent
-          sx={{
-            px: 1,
-            minHeight: "240px",
-          }}
-        >
-          <Stack direction="column" spacing={1}>
-            <Stack direction="row">
-              <Button onClick={onExecute}>Execute</Button>
-              <Button
-                variant="outlined"
-                onClick={() => setDialogueOpen(false)}
-                sx={{
-                  marginLeft: "auto",
-                }}
-              >
-                Cancel
-              </Button>
-            </Stack>
-            <Typography
-              sx={{
-                fontFamily: "RobotoMono",
-                fontSize: "16px",
-                backgroundColor: COMMAND_COLOR,
-                textAlign: "center",
-              }}
-            >
-              {command}
-            </Typography>
-          </Stack>
-          {args.length > 0 && (
-            <Grid container spacing={1} sx={{ mt: 0 }}>
-              {args}
-            </Grid>
-          )}
-        </DialogContent>
-      </Dialog>
+      <UiDialog open={isDialogueOpen} onClose={closeDialogue} title={command || "Run moderation action"} maxWidth="sm"
+        actions={<><UiAction onClick={closeDialogue}>Cancel</UiAction><UiAction variant="primary" onClick={onExecute}>Execute action</UiAction></>}>
+        {args.length > 0 && <Grid container spacing={1}>{args}</Grid>}
+      </UiDialog>
       <Stack
         direction="column"
         spacing={1}

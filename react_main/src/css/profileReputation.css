@@ -1,0 +1,33 @@
+.profile-reputation { display: flex; align-items: stretch; flex-wrap: wrap; gap: 0; border-top: 1px solid var(--scheme-color-border); border-bottom: 1px solid var(--scheme-color-border); margin: 0; padding: 12px 0; }
+.profile-karma { display: flex; align-items: center; justify-content: flex-start; gap: 10px; flex: 0 1 auto; min-width: 0; padding-right: 24px; }
+.profile-reputation-icon { width: 32px; height: 32px; object-fit: contain; image-rendering: pixelated; flex-shrink: 0; }
+.profile-karma-copy { display: flex; flex: 0 1 auto; flex-direction: column; gap: 2px; min-width: 0; }
+.profile-karma-score { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.profile-karma-copy strong { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.profile-karma-copy > .profile-karma-score > span { font-weight: 600; }
+.profile-karma-copy small { color: var(--um-muted); font-size: var(--ui-text-small); }
+.profile-karma-actions { display: flex; flex: 0 0 auto; align-self: center; gap: 4px; margin-left: 8px; }
+.profile-reputation-facts { display: grid; grid-template-columns: repeat(4, minmax(72px, 1fr)); flex: 1 1 380px; margin: 0; min-width: 0; }
+.profile-reputation-facts > div { min-width: 0; padding: 4px 12px; border-left: 1px solid var(--scheme-color-border); }
+.profile-reputation-facts dt { display: flex; align-items: center; gap: 5px; color: var(--um-muted); font-size: var(--ui-text-small); overflow-wrap: anywhere; }
+.profile-reputation-facts dt img { width: 18px; height: 18px; object-fit: contain; image-rendering: pixelated; flex-shrink: 0; }
+.profile-reputation-facts dd { margin: 2px 0 0; font-size: 1.1rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+@media (max-width: 600px) {
+  .profile-karma { flex-basis: 100%; padding: 0 0 12px; }
+  .profile-reputation-facts { flex-basis: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .profile-reputation-facts > div { padding: 8px 0; border-left: 0; border-top: 1px solid var(--scheme-color-border); }
+  .profile-reputation-facts > div:nth-child(even) { padding-left: 12px; border-left: 1px solid var(--scheme-color-border); }
+}
+.profile-results-summary { display: flex; flex-direction: column; gap: 10px; }
+.profile-results-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.profile-results-heading strong { font-size: 1.1rem; }
+.profile-results-heading span { color: var(--um-muted); font-size: var(--ui-text-small); }
+.profile-result-win { background: #5ab220; }
+.profile-result-loss { background: #d94440; }
+.profile-result-abandon { background: #8a8a8a; }
+.profile-results-legend { display: flex; flex-direction: column; gap: 6px; margin: 0; }
+.profile-results-legend > div { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 10px; }
+.profile-results-legend dt { display: flex; align-items: center; gap: 6px; color: var(--um-muted); font-size: var(--ui-text-small); }
+.profile-results-legend dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+.profile-result-percent { min-width: 48px; color: var(--um-muted); font-size: var(--ui-text-small); font-variant-numeric: tabular-nums; text-align: right; }
+.profile-result-swatch { width: 9px; height: 9px; border-radius: 2px; }

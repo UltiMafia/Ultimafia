@@ -93,7 +93,7 @@ async function main() {
 
       const layout = await page.evaluate(() => {
         const header = document.querySelector("header");
-        const row = header.firstElementChild;
+        const row = header.querySelector(":scope > .MuiStack-root");
         const logo = header.querySelector('img[alt="Site logo"]');
         const dm = header.querySelector('[data-testid="dm-button"]');
         const avatar = header.querySelector(".avatar");

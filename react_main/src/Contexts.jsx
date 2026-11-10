@@ -13,6 +13,7 @@ import MuiLink from "@mui/material/Link";
 
 import { AlertFadeTimeout, AlertFadeDuration } from "./Constants";
 import axios from "axios";
+import { startSiteBootstrap } from "./lib/siteBootstrap";
 import { GlobalStyles, useColorScheme, useTheme } from "@mui/material";
 import { getIconFilter } from "utilsFolder/iconFilter";
 import { generateContrastLookup, autoContrastColor } from "utilsFolder/autoContrast";
@@ -473,80 +474,14 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
   };
 
   useEffect(() => {
-    Promise.all([
-      axios
-        .get("/api/roles/all")
-        .then((res) =>
-          updateSiteInfo({ type: "setProp", prop: "roles", value: res.data })
-        ),
-      axios
-        .get("/api/roles/raw")
-        .then((res) =>
-          updateSiteInfo({ type: "setProp", prop: "rolesRaw", value: res.data })
-        ),
-      axios
-        .get("/api/achievements")
-        .then((res) =>
-          updateSiteInfo({ type: "setProp", prop: "achievementsRaw", value: res.data })
-        ),
-      axios.get("/api/roles/modifiers").then((res) =>
-        updateSiteInfo({
-          type: "setProp",
-          prop: "modifiers",
-          value: res.data,
-        })
-      ),
-      axios.get("/api/roles/gamesettings").then((res) =>
-        updateSiteInfo({
-          type: "setProp",
-          prop: "gamesettings",
-          value: res.data,
-        })
-      ),
-      axios.get("/api/roles/roletags").then((res) =>
-        updateSiteInfo({
-          type: "setProp",
-          prop: "tags",
-          value: res.data,
-        })
-      ),
-      axios.get("/api/roles/descriptions").then((res) =>
-        updateSiteInfo({
-          type: "setProp",
-          prop: "learnGameDescriptionByType",
-          value: res.data,
-        })
-      ),
-      axios
-        .get("/api/items")
-        .then((res) =>
-          updateSiteInfo({ type: "setProp", prop: "items", value: res.data })
-        ),
-      axios
-        .get("/api/stocks/config")
-        .then((res) =>
-          updateSiteInfo({ type: "setProp", prop: "marketConfig", value: res.data })
-        ),
-    ])
-      .then(() => {
-        setSiteInfoLoading(false);
-      })
-      .catch((err) => {
-        // Never leave the app on an infinite spinner if a bootstrap API fails
-        console.error("Site info bootstrap failed", err);
-        setSiteInfoLoading(false);
-      });
+    const bootstrap = startSiteBootstrap({
+      get: (url, options) => axios.get(url, options),
+      publish: (prop, value) => updateSiteInfo({ type: "setProp", prop, value }),
+      onReady: () => setSiteInfoLoading(false),
+      onError: (prop, error) => console.error(`Site info request failed: ${prop}`, error),
+    });
+    return bootstrap.cancel;
   }, []);
-
-  const _readyUnused =
-    siteInfoVal.roles &&
-    siteInfoVal.rolesRaw &&
-    siteInfoVal.achievementsRaw &&
-    siteInfoVal.modifiers &&
-    siteInfoVal.gamesettings &&
-    siteInfoVal.items &&
-    siteInfoVal.tags &&
-    siteInfoVal.learnGameDescriptionByType;
 
   // Always render children so the loading spinner/user fetch can run.
   // Bootstrap APIs still populate siteInfo; pages tolerate missing data briefly.

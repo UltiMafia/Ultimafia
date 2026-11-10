@@ -1,28 +1,17 @@
 import React from "react";
 import { Box, Stack, Typography } from "@mui/material";
 
-import { getAlignmentColor } from "components/Setup";
-
-function colorForKey(key, rolesRaw) {
-  if (!key) return "#888";
-  const baseRole = key.split(":")[0];
-  if (rolesRaw && rolesRaw[baseRole]) {
-    return getAlignmentColor(rolesRaw[baseRole].alignment);
-  }
-  return getAlignmentColor(key);
-}
 
 /**
  * @param {{
  *   rows: { key: string, winRate: number, totalGames: number }[],
- *   rolesRaw: object,
  *   emptyLabel: string,
  *   payouts: { [factionKey: string]: { soloPayout: number, hasHistoricalWinrate: boolean } }
  * }} props
  *   `payouts` keyed by row.key — when present, a fortune-payout column is
  *   rendered on the right of each row. Pass `undefined`/empty to hide.
  */
-export function SetupWinRateBars({ rows, rolesRaw, emptyLabel, payouts }) {
+export function SetupWinRateBars({ rows, emptyLabel, payouts }) {
   if (!rows || rows.length === 0) {
     return (
       <Typography variant="body2" color="text.secondary">
@@ -74,7 +63,7 @@ export function SetupWinRateBars({ rows, rolesRaw, emptyLabel, payouts }) {
                         <Typography
                           variant="caption"
                           sx={{
-                            color: "#ebd722",
+                            color: "var(--um-accent)",
                             textTransform: "uppercase",
                             letterSpacing: "0.06em",
                             fontWeight: 600,
@@ -85,7 +74,7 @@ export function SetupWinRateBars({ rows, rolesRaw, emptyLabel, payouts }) {
                         <Typography
                           variant="body2"
                           sx={{
-                            color: "#ebd722",
+                            color: "var(--um-accent)",
                             fontWeight: 700,
                             fontVariantNumeric: "tabular-nums",
                           }}
@@ -127,7 +116,7 @@ export function SetupWinRateBars({ rows, rolesRaw, emptyLabel, payouts }) {
                 sx={{
                   width: `${Math.min(100, Math.max(0, row.winRate * 100))}%`,
                   height: "100%",
-                  bgcolor: colorForKey(row.key, rolesRaw),
+                  bgcolor: "var(--um-accent)",
                   borderRadius: 1,
                   transition: "width 0.2s ease",
                 }}

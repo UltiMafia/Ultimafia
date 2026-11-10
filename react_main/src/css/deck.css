@@ -160,6 +160,7 @@
 }
 
 .deck .deck-cover-upload {
+  padding: 0; color: var(--scheme-color-text); font: inherit;
   width: 100%;
   max-width: 480px;
   aspect-ratio: 16 / 9;
@@ -327,13 +328,13 @@
   opacity: 0.85;
 }
 
-.deck input {
+.deck input, .deck textarea {
   display: block;
   box-sizing: border-box;
   padding: 8px 10px;
   background-color: var(--scheme-color);
   color: var(--scheme-color-text);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--scheme-color-border);
   border-radius: 6px;
   font-size: 14px;
   transition:
@@ -439,7 +440,7 @@
   font-size: 20px;
 }
 
-.row {
+.deck .row {
   justify-content: space-between;
 }
 
@@ -465,6 +466,7 @@
    */
 
 @media (max-width: 720px) {
+  .deck input, .deck textarea { font-size: 16px; }
   .deck .deck-editor {
     padding: 16px;
   }
@@ -479,11 +481,50 @@
     display: none;
   }
   .deck .deck-grid-row {
-    grid-template-columns: 40px 48px 1fr 48px 36px;
-    gap: 10px;
+    grid-template-columns: 32px 48px minmax(0, 1fr) 44px;
+    gap: 8px;
     padding: 8px 10px;
   }
+  .deck .deck-grid-row > .deck-input { grid-column: 3 / -1; }
+  .deck .deck-grid-row > .color-input { grid-column: 2; }
+  .deck .deck-grid-row > .ui-action { grid-column: 4; }
   .deck .color-input {
     width: 48px;
   }
+}
+.deck-library-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin: 24px 0 16px; }
+.deck-library-toolbar [aria-pressed="true"] { background: var(--scheme-color); color: var(--um-accent); box-shadow: inset 0 -2px var(--um-accent); }
+.deck-library-list { list-style: none; padding: 0; margin: 16px 0; }
+.deck-library-row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--scheme-color-border); }
+.deck-library-description { flex: 1; min-width: 200px; }
+.deck-library-description h2 { margin: 0 0 8px; font-size: 20px; overflow-wrap: anywhere; }
+.deck-library-description p { margin: 8px 0; overflow-wrap: anywhere; }
+.deck-library-description .deck { max-width: 100%; }
+.deck-library-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.deck-editor-heading { margin-bottom: 24px; }
+@media (max-width: 600px) {
+  .deck-library-toolbar { align-items: stretch; flex-direction: column; }
+  .deck-library-actions { flex-basis: 100%; }
+}
+.deck-library-cover { width: 96px; height: 64px; object-fit: cover; border-radius: 4px; flex: 0 0 auto; }
+.deck-library-cover--placeholder { display: grid; place-items: center; width: 96px; height: 64px; border: 0; background: transparent; color: var(--um-muted); }
+.deck-editor-page.deck { display: flex; flex-direction: column; width: 100%; min-width: 0; }
+.deck-editor-page > .main-section { min-width: 0; width: 100%; }
+.deck-editor-page .deck-editor-heading { flex-wrap: wrap; }
+.deck .deck-name { border: 0; padding: 0; background: transparent; color: inherit; font: inherit; text-align: left; }
+.deck .deck-editor.deck-editor { padding: 0; background: transparent; border: 0; box-shadow: none; }
+.deck .deck-editor form > .deck-top-bar { order: 1; }
+.deck .deck-editor form > .deck-cover-section { order: 2; }
+.deck .deck-editor form > .deck-grid, .deck .deck-editor form > .deck-words-section { order: 3; }
+.deck .deck-editor form > .deck-actions { order: 4; }
+.deck .deck-editor form .deck-cover-upload { max-width: 280px; }
+.deck .deck-editor form .deck-cover-placeholder { color: var(--um-muted); opacity: 1; }
+.deck .deck-editor form .deck-field-label { opacity: 1; text-transform: none; letter-spacing: 0; font-size: 14px; }
+.deck .deck-editor form .deck-grid-row { background: transparent; border-width: 0 0 1px; border-radius: 0; border-color: var(--scheme-color-border); }
+.deck .deck-editor form .deck-name-section { max-width: 600px; }
+@media (min-width: 1000px) {
+  .deck .deck-editor form { display: grid; grid-template-columns: minmax(0, 1fr) 280px; align-items: start; gap: 24px; }
+  .deck .deck-editor form > .deck-top-bar { grid-column: 1; grid-row: 1; }
+  .deck .deck-editor form > .deck-cover-section { grid-column: 2; grid-row: 1; }
+  .deck .deck-editor form > .deck-grid, .deck .deck-editor form > .deck-words-section, .deck .deck-editor form > .deck-actions { grid-column: 1 / -1; }
 }

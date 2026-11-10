@@ -2,20 +2,11 @@ import React, { useEffect, useRef, useState, useContext } from "react";
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import { LatestRequest } from "../lib/latestRequest.js";
 
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
+import { UiAction, UiDialog } from "./ui";
 
-import axios from "axios";
 import {
   Alert,
-  Box,
-  Button,
-  Divider,
-  IconButton,
-  Paper,
   Stack,
-  TextField,
-  Typography,
 } from "@mui/material";
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
@@ -39,15 +30,14 @@ import HostConnectFour from "./gameTypeHostForms/HostConnectFour";
 import HostSpotIt from "./gameTypeHostForms/HostSpotIt";
 import HostBattleship from "./gameTypeHostForms/HostBattleship";
 import HostChess from "./gameTypeHostForms/HostChess";
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
-import { getSetupBackgroundColor } from "pages/Play/LobbyBrowser/gameRowColors";
 
-export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck, defaultLobby }) {
+export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck, preSelectedWordDeck, defaultLobby }) {
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
   const [hostError, setHostError] = useState("");
   const [hosting, setHosting] = useState(false);
   const hostRequest = useRef(new LatestRequest());
+  useEffect(() => () => hostRequest.current.invalidate(), []);
 
   useEffect(() => {
     setHostError("");
@@ -60,7 +50,6 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
       ? message
       : "Could not host game. Please try again.";
   }
-  const isPhoneDevice = useIsPhoneDevice();
   const navigate = useNavigate();
 
   function getNormalizedGameType(gameType) {
@@ -122,6 +111,9 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
           if (field.ref === "anonymousDeckId") field.value = preSelectedDeck;
         }
       }
+      if (preSelectedWordDeck) {
+        for (let field of newFormFields) if (field.ref === "wordDeckId") field.value = preSelectedWordDeck;
+      }
       if (defaultLobby) {
         for (let field of newFormFields) {
           if (field.ref === "lobby") field.value = defaultLobby;
@@ -129,7 +121,7 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
       }
       updateFormFields({ type: "setFields", fields: newFormFields });
     },
-    [setup.gameType, preSelectedDeck, defaultLobby]
+    [setup.gameType, preSelectedDeck, preSelectedWordDeck, defaultLobby]
   );
 
   function getFormFieldValue(ref) {
@@ -166,7 +158,6 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
       .finally(() => setHosting(false));
   };
 
-  const lobby = getFormFieldValue("lobby");
   const isRanked = getFormFieldValue("ranked");
   const isCompetitive = getFormFieldValue("competitive");
 
@@ -190,56 +181,18 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
 
   return (
     <>
-      <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        scroll="body"
-        fullScreen={isPhoneDevice}
-      >
-        <DialogContent
-          sx={{
-            px: 2,
-          }}
-        >
-          <Stack direction="column" spacing={1}>
-            <Stack direction="row">
-              <Button
-                variant="outlined"
-                onClick={() => setOpen(false)}
-                sx={{
-                  flex: "1",
-                }}
-              >
-                Cancel
-              </Button>
-              <div style={{ flex: "1" }} />
-              <Button
-                onClick={onHostGameWrapper}
-                disabled={hosting}
-                sx={{
-                  flex: "1",
-                }}
-              >
-                Host
-              </Button>
-            </Stack>
-            <Setup
-              setup={setup}
-              backgroundColor={getSetupBackgroundColor(
-                {
-                  lobby: lobby,
-                  competitive: isCompetitive,
-                  ranked: isRanked,
-                },
-                true
-              )}
-            />
+      <UiDialog open={open} onClose={() => setOpen(false)} title="Host a game" maxWidth="sm"
+        actions={<><UiAction onClick={() => setOpen(false)}>Cancel</UiAction><UiAction variant="primary" busy={hosting} onClick={onHostGameWrapper}>Host</UiAction></>}>
+          <div className="host-dialog-content">
+            <div className="host-dialog-setup"><Setup setup={setup} summary /></div>
             {hostError && <Alert severity="error">{hostError}</Alert>}
             {alertText && <Alert severity="warning">{alertText}</Alert>}
-            <Form compact fields={formFields} onChange={updateFormFields} />
-          </Stack>
-        </DialogContent>
-      </Dialog>
+            <Form fields={formFields.map(field => ({ ...field, groupName: field.groupName || (
+              ["lobby", "lobbyName", "ranked", "competitive"].includes(field.ref) ? "Game and lobby" :
+              ["configureDuration", "dayLength", "nightLength", "pregameWaitLength", "extendLength"].includes(field.ref) ? "Timing" : "Access and options"
+            ) }))} onChange={updateFormFields} cardGroups />
+          </div>
+      </UiDialog>
     </>
   );
 }

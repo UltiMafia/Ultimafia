@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useContext, useState, useMemo } from "react";
+import { UiAction } from "components/ui";
 
 import {
   useSocketListeners,
@@ -366,8 +367,7 @@ function CheatBoard({
           />
 
           <div className="ch-actions">
-            <button
-              className="ch-action-btn ch-action-play"
+            <UiAction variant="primary"
               onClick={handlePlay}
               style={isMyTurn ? undefined : { visibility: "hidden" }}
               tabIndex={isMyTurn ? 0 : -1}
@@ -381,17 +381,16 @@ function CheatBoard({
               {selected.size > 0 && (
                 <span className="ch-play-count"> ({selected.size})</span>
               )}
-            </button>
-            <button
-              className="ch-action-btn ch-action-calllie"
+            </UiAction>
+            <UiAction
               onClick={onCallLie}
               style={canCallLie ? undefined : { visibility: "hidden" }}
               tabIndex={canCallLie ? 0 : -1}
               aria-hidden={!canCallLie}
               title="Call the last play a lie (Space)"
             >
-              Call Lie <span className="ch-key-hint">(Space)</span>
-            </button>
+              Call lie <span className="ch-key-hint">(Space)</span>
+            </UiAction>
           </div>
         </div>
       }

@@ -7,6 +7,8 @@ import { Time } from "../../../components/Basic";
 import { useErrorAlert } from "../../../components/Alerts";
 import { ViewsAndReplies } from "./Forums";
 import { ListSkeleton } from "../../../components/Skeletons";
+import { UiSection, UiList, UiListItem, UiIcon } from "components/ui";
+import { newestRepliesFirst } from "./recentActivity.mjs";
 
 export default function Categories(props) {
   const [categoryInfo, setCategoryInfo] = useState([]);
@@ -64,8 +66,8 @@ export default function Categories(props) {
         </div>
       ));
 
-      const recentReplies = board.recentReplies.map((reply) => (
-        <div className="column-item" key={reply.id}>
+      const recentReplies = newestRepliesFirst(board.recentReplies).map((reply) => (
+        <div className="column-item" key={reply.id} data-reply-id={reply.id}>
           <div className="thread-link-wrapper">
             <Link
               to={`/community/forums/thread/${reply.thread.id}?reply=${reply.id}`}
@@ -88,54 +90,32 @@ export default function Categories(props) {
       ));
 
       return (
-        <div className="board" key={board.id}>
-          <i className={`fas fa-fw fa-${board.icon || "comments"} board-icon`} />
-          <Link
-            className="board-info"
-            to={`/community/forums/board/${board.id}`}
-          >
-            <div className="board-name">{board.name}</div>
-            <div className="board-desc">{board.description}</div>
-          </Link>
-          <div className="forum-column tall">
-            <div className="column-title">Newest Thread</div>
-            <div
-              className={`column-content ${
-                newestThreads.length === 0 ? "center-content" : ""
-              }`}
-            >
-              {newestThreads.length === 0 && (
-                <div className="column-item center-item">No threads yet</div>
-              )}
-              {newestThreads}
-            </div>
+        <UiListItem className="forum-board-row" key={board.id}>
+          <div className="forum-board-main">
+            <UiIcon name="chat" />
+            <div><Link className="forum-board-name" to={`/community/forums/board/${board.id}`}>{board.name}</Link>
+              <p className="forum-board-description">{board.description}</p></div>
           </div>
-          <div className="forum-column tall three">
-            <div className="column-title">Recent Replies</div>
-            <div
-              className={`column-content ${
-                recentReplies.length === 0 ? "center-content" : ""
-              }`}
-            >
-              {recentReplies.length === 0 && (
-                <div className="column-item center-item">No replies yet</div>
-              )}
-              {recentReplies}
-            </div>
+          <div className="forum-latest">
+            <span className="forum-metadata">{recentReplies.length ? "Latest reply" : "Newest thread"}</span>
+            {recentReplies[0] || (newestThreads.length ? newestThreads : <span className="forum-metadata">No threads yet</span>)}
+            {recentReplies.length > 0 && <details className="forum-recent-replies"><summary>More activity</summary>
+              <h3>Newest thread</h3>{newestThreads.length ? newestThreads : <span className="forum-metadata">No threads yet</span>}
+              {recentReplies.length > 1 && <><h3>Earlier replies</h3>{recentReplies.slice(1)}</>}
+            </details>}
           </div>
-        </div>
+        </UiListItem>
       );
     });
 
     return (
-      <div className="span-panel forum-category" key={category.id}>
-        <div className="title">{category.name}</div>
-        <div className="boards">{boards}</div>
-      </div>
+      <UiSection title={category.name} className="forum-category" key={category.id}>
+        <UiList aria-label={`${category.name} boards`}>{boards}</UiList>
+      </UiSection>
     );
   });
 
   if (!loaded) return <ListSkeleton />;
 
-  return categories;
+  return <><header className="forum-directory-heading"><h1>Forums</h1><p>Browse discussions by board.</p></header>{categories}</>;
 }

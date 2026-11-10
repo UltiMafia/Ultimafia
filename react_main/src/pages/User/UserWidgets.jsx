@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 import { UserContext, SiteInfoContext, GameContext } from "Contexts";
 import AvatarUpload from "components/AvatarUpload";
+import UiIcon from "components/ui/UiIcon";
 import ripEmote from "images/emotes/rip.webp";
 
 import "css/user.css";
@@ -358,7 +359,6 @@ function RipAvatarIcon({ small, large, absoluteLeftAvatarPx }) {
   } else if (large) {
     avatarSize = 100;
   }
-
   const style = {
     display: "inline-block",
     width: `${avatarSize}px`,
@@ -455,6 +455,7 @@ export function Avatar(props) {
   } else if (large) {
     avatarSize = 100;
   }
+  if (Number.isFinite(props.size) && props.size > 0) avatarSize = props.size;
 
   if (absoluteLeftAvatarPx) {
     style.position = "absolute";
@@ -542,7 +543,9 @@ export function Avatar(props) {
         border: border,
       }}
     >
-      <AvatarPhoto src={photoSrc} onError={setFailedSrc} />
+      <div className="avatar-image">
+        {photoSrc ? <AvatarPhoto src={photoSrc} onError={setFailedSrc} /> : <UiIcon name="person" size={avatarSize} className="avatar-default" style={{ width: "100%", height: "100%" }} />}
+      </div>
       {edit && (
         <div className="edit avatar-edit-overlay">
           <AvatarUpload
@@ -582,10 +585,11 @@ export function Avatar(props) {
             transform: `translateX(50%) translateY(50%)`,
           }}
         >
-          <OnlineStatus
+           <OnlineStatus
             status={onlineStatus}
             lastActive={lastActive}
-            inGame={inGame}
+             inGame={inGame}
+             showCaption={props.showStatusCaption !== false}
           />
         </Box>
       )}
@@ -745,6 +749,7 @@ export function NameWithAvatar(props) {
         />
       ) : (
         <Avatar
+          size={props.avatarSize}
           hasImage={avatarUrl ? true : avatar}
           imageUrl={avatarUrl}
           id={id}
@@ -893,7 +898,7 @@ export function StatusIcon(props) {
   return <div className={`status-icon ${props.status}`} />;
 }
 
-export function OnlineStatus({ status, lastActive, inGame }) {
+export function OnlineStatus({ status, lastActive, inGame, showCaption = true }) {
   const isPhoneDevice = useIsPhoneDevice();
 
   const onlineStatusIconSize = isPhoneDevice ? "16px" : "24px";
@@ -929,7 +934,7 @@ export function OnlineStatus({ status, lastActive, inGame }) {
         border: "4px var(--scheme-color) solid",
       }}
     >
-      {caption && (
+      {showCaption && caption && (
         <Typography
           variant="caption"
           sx={{

@@ -12,21 +12,23 @@ import {
   Typography,
   Tabs,
   Tab,
+  TextField,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 
 import { slangList } from "../../constants/slangList";
 import { commandList } from "../../constants/commandList";
 
 export default function LearnGlossary(props) {
-  const theme = useTheme();
   const [tab, setTab] = useState(0);
+  const [query, setQuery] = useState("");
+  const matches = (...values) => values.some(value => String(value || "").toLowerCase().includes(query.trim().toLowerCase()));
 
   useEffect(() => {
     document.title = "Learn Glossary | UltiMafia";
   }, []);
 
   const commandTableRows = Object.keys(commandList)
+    .filter(key => matches(key, commandList[key].input, commandList[key].description))
     .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }))
     .map((key) => {
     let { input, description } = commandList[key];
@@ -40,7 +42,7 @@ export default function LearnGlossary(props) {
 
   const commandTable = (
     <TableContainer component={Paper}>
-      <Table aria-label="a dense table">
+      <Table aria-label="Chat commands">
         <TableHead>
           <TableRow>
             <TableCell>Command</TableCell>
@@ -69,6 +71,7 @@ export default function LearnGlossary(props) {
   const slangTableRows = Object.keys(slangList)
     .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }))
     .filter((key) => slangList[key] != null)
+    .filter(key => matches(key, slangList[key].definition))
     .map((key) => {
     let { definition, emoji } = slangList[key];
     if (Array.isArray(emoji)) {
@@ -84,7 +87,7 @@ export default function LearnGlossary(props) {
 
   const slangTable = (
     <TableContainer component={Paper}>
-      <Table aria-label="a dense table">
+      <Table aria-label="Game terminology">
         <TableHead>
           <TableRow>
             <TableCell>Term</TableCell>
@@ -111,21 +114,19 @@ export default function LearnGlossary(props) {
   );
 
   return (
-    <>
-      <Typography variant="h2" gutterBottom>
+    <section className="glossary-page">
+      <Typography variant="h2" component="h1" gutterBottom sx={{ mt: 1 }}>
         Glossary
       </Typography>
       <Typography variant="body1" paragraph>
-        UltiMafia features a comprehensive list of terms and chat commands.
-        Understanding these commands and terms is crucial for mastering the
-        game's mechanics and strategies. To improve the definitions or add new
-        ones, we encourage you to get involved through our Discord or Github
-        Repo.
+        Search definitions and chat commands.
       </Typography>
+      <TextField className="reference-search" type="search" fullWidth label="Search terms and commands" value={query} onChange={event => setQuery(event.target.value)} />
       <Tabs value={tab} onChange={(_, v) => setTab(v)} aria-label="Terminology sections">
         <Tab label="Slang" id="term-tab-0" aria-controls="term-panel-0" />
         <Tab label="Commands" id="term-tab-1" aria-controls="term-panel-1" />
       </Tabs>
+      <Typography variant="body2" color="text.secondary" role="status" sx={{ my: 2 }}>{(tab === 0 ? slangTableRows : commandTableRows).length} results{query.trim() ? ` for “${query.trim()}”` : ""}</Typography>
       <Box role="tabpanel" id="term-panel-0" aria-labelledby="term-tab-0" hidden={tab !== 0}>
         {tab === 0 && (
           <Box sx={{ pt: 2 }} className="paragraph">
@@ -147,6 +148,6 @@ export default function LearnGlossary(props) {
           </Box>
         )}
       </Box>
-    </>
+    </section>
   );
 }

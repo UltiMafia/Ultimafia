@@ -1,190 +1,92 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
-import {
-  Box,
-  Grid,
-  Stack,
-  Typography,
-  IconButton,
-  Popover,
-} from "@mui/material";
-
-import { useErrorAlert } from "components/Alerts";
 import { UserSearchSelect } from "components/Form";
 import { SiteInfoContext } from "Contexts";
 import { Badge, NameWithAvatar, StatusIcon } from "pages/User/UserWidgets";
-import { Loading } from "components/Loading";
+import { UiAction, UiDialog, UiIcon, UiPending } from "components/ui";
+import { LatestRequest } from "../../../lib/latestRequest";
 
 // Fixed display order; any other group follows, highest rank first.
 const GROUP_ORDER = ["Owner", "Developer", "Admin", "Mod", "Moderator", "Liaison"];
 
 function orderGroups(groups) {
-  const position = (g) => {
-    const i = GROUP_ORDER.indexOf(g.name);
-    return i === -1 ? GROUP_ORDER.length : i;
+  const position = (group) => {
+    const index = GROUP_ORDER.indexOf(group.name);
+    return index === -1 ? GROUP_ORDER.length : index;
   };
-  return [...groups].sort(
-    (a, b) => position(a) - position(b) || b.rank - a.rank
-  );
+  return [...groups].sort((a, b) => position(a) - position(b) || b.rank - a.rank);
 }
 
 export function GroupPanels({ user }) {
   const [groups, setGroups] = useState([]);
-  const [loaded, setLoaded] = useState(false);
-  const [addAnchor, setAddAnchor] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [retry, setRetry] = useState(0);
   const [addingToGroup, setAddingToGroup] = useState(null);
-  const [addSelectKey, setAddSelectKey] = useState(0);
-
-  const errorAlert = useErrorAlert();
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [searchName, setSearchName] = useState("");
+  const [confirmation, setConfirmation] = useState(null);
+  const [pending, setPending] = useState(false);
+  const requests = useRef(new LatestRequest());
+  const submitting = useRef(false);
   const siteInfo = useContext(SiteInfoContext);
-
   const canManageGroup = Boolean(user?.perms?.giveGroup);
 
-  function fetchGroups() {
-    return axios
-      .get("/api/mod/groups")
-      .then((res) => {
-        setGroups(orderGroups(res.data));
-        setLoaded(true);
-      })
-      .catch((e) => {
-        setLoaded(true);
-        errorAlert(e);
-      });
-  }
-
   useEffect(() => {
-    fetchGroups();
-  }, []);
+    const owner = requests.current, request = owner.begin();
+    setLoading(true); setError("");
+    axios.get("/api/mod/groups", { signal: request.signal })
+      .then(({ data }) => { if (request.isCurrent()) setGroups(orderGroups(Array.isArray(data) ? data : [])); })
+      .catch(() => { if (request.isCurrent()) setError("Could not load staff groups. Please try again."); })
+      .finally(() => { if (request.isCurrent()) setLoading(false); });
+    return () => owner.invalidate();
+  }, [retry]);
 
-  function openAddPopover(event, groupName) {
-    setAddAnchor(event.currentTarget);
-    setAddingToGroup(groupName);
-    setAddSelectKey((k) => k + 1);
+  async function changeMembership() {
+    if (!confirmation || submitting.current) return;
+    submitting.current = true; setPending(true); setError("");
+    try {
+      if (confirmation.type === "add") await axios.post("/api/mod/addToGroup", { groupName: confirmation.group, userId: selectedUser });
+      else await axios.post("/api/mod/removeFromGroup", { groupName: confirmation.group, userId: confirmation.member.id });
+      setConfirmation(null); setAddingToGroup(null); setSelectedUser(null); setSearchName("");
+      setRetry(value => value + 1);
+    } catch (_) { setError("Could not update this staff group. Please try again."); }
+    finally { submitting.current = false; setPending(false); }
   }
 
-  function closeAddPopover() {
-    setAddAnchor(null);
-    setAddingToGroup(null);
-  }
+  if (loading && !groups.length) return <UiPending label="Loading staff groups" />;
+  if (error && !groups.length) return <div role="alert"><p>{error}</p><UiAction onClick={() => setRetry(value => value + 1)}>Retry</UiAction></div>;
 
-  function addMember(userId) {
-    if (!userId || !addingToGroup) return;
-
-    axios
-      .post("/api/mod/addToGroup", { groupName: addingToGroup, userId })
-      .then(() => {
-        siteInfo.showAlert("User added to group.", "success");
-        closeAddPopover();
-        fetchGroups();
-      })
-      .catch(errorAlert);
-  }
-
-  function removeMember(groupName, userId) {
-    axios
-      .post("/api/mod/removeFromGroup", { groupName, userId })
-      .then(() => {
-        siteInfo.showAlert("User removed from group.", "success");
-        fetchGroups();
-      })
-      .catch(errorAlert);
-  }
-
-  if (!loaded) return <Loading small />;
-
-  const panels = groups.map((group) => {
-    const members = group.members.map((member) => (
-      <Grid item xs={12} md={6} key={member.id}>
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{
-            alignItems: "center",
-            p: 1,
-            backgroundColor: "var(--scheme-color)",
-          }}
-        >
-          <NameWithAvatar
-            id={member.id}
-            name={member.name}
-            avatar={member.avatar}
-          />
+  return <section className="moderation-groups" aria-label="Staff groups">
+    {error && <p role="alert">{error}</p>}
+    {groups.length === 0 && !loading && <p>No staff groups are configured.</p>}
+    {groups.map(group => <section className="moderation-group" key={group.name}>
+      <header>
+        <h3>{group.name}s</h3>
+        {group.badge && <Badge icon={group.badge} color={group.badgeColor || "black"} name={group.name} />}
+        {canManageGroup && <UiAction iconOnly variant="ghost" aria-label={`Add user to ${group.name}`} onClick={() => { setAddingToGroup(group.name); setSelectedUser(null); setSearchName(""); }}>
+          <UiIcon name="addPerson" />
+        </UiAction>}
+      </header>
+      <div className="moderation-group-members">
+        {group.members.map(member => <div className="moderation-group-member" key={member.id}>
+          <NameWithAvatar id={member.id} name={member.name} avatar={member.avatar} />
           <StatusIcon status={member.status} />
-          {canManageGroup && (
-            <IconButton
-              size="small"
-              onClick={() => removeMember(group.name, member.id)}
-              sx={{ color: "error.main", ml: "auto" }}
-              title={`Remove from ${group.name}`}
-              aria-label={`Remove ${member.name} from ${group.name}`}
-            >
-              <i className="fas fa-times" />
-            </IconButton>
-          )}
-        </Stack>
-      </Grid>
-    ));
-
-    return (
-      <div className="box-panel group-panel" key={group.name}>
-        <Stack
-          direction="row"
-          spacing={1}
-          alignItems="center"
-          sx={{ width: "100%" }}
-        >
-          <Typography variant="h4">{group.name + "s"}</Typography>
-          {group.badge && (
-            <Badge
-              icon={group.badge}
-              color={group.badgeColor || "black"}
-              name={group.name}
-            />
-          )}
-          {canManageGroup && (
-            <IconButton
-              size="small"
-              onClick={(e) => openAddPopover(e, group.name)}
-              sx={{ color: "primary.main", ml: "auto" }}
-              title={`Add user to ${group.name}`}
-              aria-label={`Add user to ${group.name}`}
-            >
-              <i className="fas fa-plus" />
-            </IconButton>
-          )}
-        </Stack>
-        <Grid container rowSpacing={1} columnSpacing={1}>
-          {members}
-        </Grid>
+          {canManageGroup && <UiAction iconOnly variant="danger-quiet" aria-label={`Remove ${member.name} from ${group.name}`} onClick={() => setConfirmation({ type: "remove", group: group.name, member })}>
+            <UiIcon name="close" size={16} />
+          </UiAction>}
+        </div>)}
+        {group.members.length === 0 && <p className="moderation-row-meta">No members.</p>}
       </div>
-    );
-  });
-
-  return (
-    <>
-      {panels}
-      <Popover
-        open={Boolean(addAnchor)}
-        anchorEl={addAnchor}
-        onClose={closeAddPopover}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        transformOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Box sx={{ p: 2, width: 280 }}>
-          <Typography variant="subtitle2" sx={{ mb: 1 }}>
-            Add user to {addingToGroup}
-          </Typography>
-          <UserSearchSelect
-            key={addSelectKey}
-            value=""
-            onChange={(userId) => {
-              if (userId) addMember(userId);
-            }}
-            placeholder="Search user…"
-          />
-        </Box>
-      </Popover>
-    </>
-  );
+    </section>)}
+    <UiDialog open={!!addingToGroup} title={`Add user to ${addingToGroup || ""}`} onClose={pending ? undefined : () => setAddingToGroup(null)}
+      actions={<><UiAction disabled={pending} onClick={() => setAddingToGroup(null)}>Cancel</UiAction><UiAction variant="primary" busy={pending} disabled={!selectedUser} onClick={() => setConfirmation({ type: "add", group: addingToGroup })}>Add to group</UiAction></>}>
+      <UserSearchSelect value={searchName} placeholder="Find a player" onChange={(id, name) => { setSelectedUser(id); setSearchName(name || ""); }} />
+      {selectedUser && <p>Add {searchName || "this player"} to {addingToGroup}?</p>}
+    </UiDialog>
+    <UiDialog open={!!confirmation} title={confirmation?.type === "remove" ? "Remove group member?" : "Add group member?"} onClose={pending ? undefined : () => setConfirmation(null)}
+      actions={<><UiAction disabled={pending} onClick={() => setConfirmation(null)}>Cancel</UiAction><UiAction variant={confirmation?.type === "remove" ? "danger" : "primary"} busy={pending} onClick={changeMembership}>{confirmation?.type === "remove" ? "Remove member" : "Add member"}</UiAction></>}>
+      <p>{confirmation?.type === "remove" ? `Remove ${confirmation?.member.name} from ${confirmation?.group}?` : `Add ${searchName || "this player"} to ${confirmation?.group}?`}</p>
+    </UiDialog>
+  </section>;
 }

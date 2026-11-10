@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Box, Stack, Typography } from "@mui/material";
+import { UiSection } from "components/ui";
 
 import { useErrorAlert } from "components/Alerts";
 import { PieChart } from "pages/Learn/Setup/PieChart";
 
 const COUNTER_DEFS = [
-  { key: "gamesHosted", label: "Games hosted", icon: "fa-gamepad", color: "#6c8ef1" },
-  { key: "dau", label: "Active users", icon: "fa-user-clock", color: "#f5a623" },
-  { key: "newSignups", label: "New signups", icon: "fa-user-plus", color: "#5cb85c" },
-  { key: "commentsCreated", label: "Comments", icon: "fa-comment", color: "#b161d3" },
-  { key: "threadsCreated", label: "Forum threads", icon: "fa-comments", color: "#d38d61" },
-  { key: "setupsEdited", label: "Setup edits", icon: "fa-sliders-h", color: "#61c7d3" },
-  { key: "reportsFiled", label: "Reports filed", icon: "fa-flag", color: "#e45050" },
-  { key: "modActionsTaken", label: "Mod actions", icon: "fa-gavel", color: "#7d7d7d" },
+  { key: "gamesHosted", label: "Games hosted" },
+  { key: "dau", label: "Active users" },
+  { key: "newSignups", label: "New signups" },
+  { key: "commentsCreated", label: "Comments" },
+  { key: "threadsCreated", label: "Forum threads" },
+  { key: "setupsEdited", label: "Setup edits" },
+  { key: "reportsFiled", label: "Reports filed" },
+  { key: "modActionsTaken", label: "Mod actions" },
 ];
 
 // Palette pulled from the site's brand / alignment colors so charts feel
@@ -41,134 +42,12 @@ function buildColorMap(entries, fixed = {}) {
   return map;
 }
 
-function SectionEyebrow({ label, count }) {
-  return (
-    <Stack
-      direction="row"
-      alignItems="center"
-      spacing={1.5}
-      sx={{ mb: 1.5 }}
-    >
-      <Box
-        sx={{
-          width: 16,
-          height: 2,
-          backgroundColor: "primary.main",
-          opacity: 0.7,
-        }}
-      />
-      <Typography
-        variant="overline"
-        sx={{
-          letterSpacing: "0.2em",
-          color: "primary.main",
-          fontWeight: 700,
-          lineHeight: 1,
-        }}
-      >
-        {label}
-      </Typography>
-      {typeof count === "number" && (
-        <Typography
-          variant="caption"
-          sx={{
-            opacity: 0.55,
-            fontVariantNumeric: "tabular-nums",
-            letterSpacing: "0.06em",
-          }}
-        >
-          · {count}
-        </Typography>
-      )}
-      <Box
-        sx={{
-          flex: 1,
-          height: 1,
-          backgroundColor: "divider",
-          opacity: 0.5,
-        }}
-      />
-    </Stack>
-  );
-}
-
 function Counter({ def, value }) {
   return (
-    <Box
-      sx={{
-        position: "relative",
-        px: 2,
-        pt: 2.25,
-        pb: 1.75,
-        borderRadius: 1,
-        border: "1px solid",
-        borderColor: "divider",
-        backgroundColor: "action.hover",
-        overflow: "hidden",
-        transition:
-          "border-color .18s ease, transform .18s ease, box-shadow .18s ease",
-        "&:hover": {
-          borderColor: def.color,
-          transform: "translateY(-2px)",
-          boxShadow: `0 4px 16px -6px ${def.color}66`,
-          "& .counter-icon": { opacity: 0.35, transform: "scale(1.04)" },
-        },
-      }}
-    >
-      <Box
-        aria-hidden
-        sx={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 3,
-          background: `linear-gradient(90deg, ${def.color}, ${def.color}22)`,
-        }}
-      />
-      <Box
-        aria-hidden
-        className="counter-icon"
-        sx={{
-          position: "absolute",
-          top: 12,
-          right: 14,
-          opacity: 0.18,
-          color: def.color,
-          fontSize: "2.1rem",
-          lineHeight: 1,
-          transition: "opacity .18s ease, transform .18s ease",
-        }}
-      >
-        <i className={`fas ${def.icon}`} />
-      </Box>
-      <Typography
-        variant="overline"
-        sx={{
-          letterSpacing: "0.16em",
-          opacity: 0.85,
-          color: def.color,
-          fontWeight: 700,
-          lineHeight: 1,
-          display: "block",
-          mb: 0.75,
-        }}
-      >
-        {def.label}
-      </Typography>
-      <Typography
-        variant="h3"
-        sx={{
-          fontWeight: 700,
-          fontVariantNumeric: "tabular-nums",
-          letterSpacing: "-0.01em",
-          lineHeight: 1.02,
-          fontSize: { xs: "2rem", md: "2.3rem" },
-        }}
-      >
-        {value ?? "—"}
-      </Typography>
-    </Box>
+    <div className="activity-metric">
+      <dt>{def.label}</dt>
+      <dd>{value ?? "—"}</dd>
+    </div>
   );
 }
 
@@ -180,34 +59,7 @@ function ChartPanel({ title, data, colors, unit = "games" }) {
   const total = entries.reduce((acc, [, v]) => acc + v, 0);
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-        pt: 2.25,
-        pb: 2,
-        px: 2,
-        borderRadius: 1,
-        border: "1px solid",
-        borderColor: "divider",
-        backgroundColor: "action.hover",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <Box
-        aria-hidden
-        sx={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 2,
-          background:
-            "linear-gradient(90deg, transparent, var(--mui-palette-primary-main) 50%, transparent)",
-          opacity: 0.45,
-        }}
-      />
+    <section className="activity-chart">
       <Stack
         direction="row"
         alignItems="baseline"
@@ -215,13 +67,7 @@ function ChartPanel({ title, data, colors, unit = "games" }) {
         sx={{ mb: 1.5 }}
       >
         <Typography
-          variant="overline"
-          sx={{
-            letterSpacing: "0.2em",
-            color: "primary.main",
-            fontWeight: 700,
-            lineHeight: 1,
-          }}
+          variant="h3"
         >
           {title}
         </Typography>
@@ -327,7 +173,7 @@ function ChartPanel({ title, data, colors, unit = "games" }) {
           })}
         </Stack>
       )}
-    </Box>
+    </section>
   );
 }
 
@@ -377,15 +223,16 @@ export default function Metrics({ windowKey }) {
 
   return (
     <Stack direction="column" spacing={3.5} sx={{ width: "100%", minWidth: 0 }}>
-      <Box>
-        <SectionEyebrow label="Pulse" />
+      <UiSection title="Overview">
         <Box
+          component="dl"
+          className="activity-metrics"
           sx={{
             display: "grid",
-            gap: 1.5,
+            m: 0,
+            gap: 2,
             gridTemplateColumns: {
-              xs: "1fr",
-              sm: "repeat(2, minmax(0, 1fr))",
+              xs: "repeat(2, minmax(0, 1fr))",
               md: "repeat(4, minmax(0, 1fr))",
             },
           }}
@@ -398,14 +245,13 @@ export default function Metrics({ windowKey }) {
             />
           ))}
         </Box>
-      </Box>
+      </UiSection>
 
-      <Box>
-        <SectionEyebrow label="Distribution" />
+      <UiSection title="Game distribution">
         <Box
           sx={{
             display: "grid",
-            gap: 1.5,
+            gap: 3,
             gridTemplateColumns: {
               xs: "1fr",
               md: "repeat(3, minmax(0, 1fr))",
@@ -424,7 +270,7 @@ export default function Metrics({ windowKey }) {
             colors={setupColors}
           />
         </Box>
-      </Box>
+      </UiSection>
     </Stack>
   );
 }

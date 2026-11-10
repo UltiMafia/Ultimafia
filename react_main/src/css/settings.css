@@ -21,3 +21,33 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.settings-layout { display: grid; grid-template-columns: 180px minmax(0, 720px); gap: 40px; align-items: start; }
+.settings-navigation { display: flex; flex-direction: column; gap: 4px; position: sticky; top: 16px; }
+.settings-navigation a { display: block; padding: 10px 12px; color: var(--um-muted); text-decoration: none; border-left: 3px solid transparent; border-radius: 0 4px 4px 0; }
+.settings-navigation a:hover { color: var(--scheme-color-text); background: var(--scheme-color); }
+.settings-navigation a[aria-current="page"] { color: var(--scheme-color-text); border-left-color: var(--um-accent); background: var(--scheme-color); font-weight: 600; }
+.settings-content { min-width: 0; }
+.settings-section-heading { margin-bottom: 28px; }
+.settings-section-heading h2 { margin: 0 0 8px; font-size: 24px; }
+.settings-section-heading p { margin: 0; color: var(--um-muted); line-height: 1.5; max-width: 65ch; }
+.settings-content .form { gap: 28px; }
+.settings-page .form > .form-group + .form-group { margin-top: 0; }
+.settings-content .form-group { margin: 0; padding-top: 20px; border-top: 1px solid var(--scheme-color-border); }
+.settings-content .form-group > .MuiBox-root { max-width: 100%; }
+.settings-content .form-group .ui-section-heading { margin-bottom: 0; }
+.settings-content .form-group .ui-section-heading h2 { font-size: 17px; }
+.settings-content .form-group > .MuiBox-root > .MuiStack-root { margin-top: 0; padding: 6px 0; gap: 6px; }
+.settings-content .form-group .MuiFormControlLabel-root { margin-left: -8px; }
+.settings-content .form-group .MuiFormControl-root { max-width: 480px; width: 100%; }
+.settings-content .form-group input { min-width: 0; }
+.settings-content .form-group .MuiTypography-root { line-height: 1.45; }
+.settings-danger-section { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--scheme-color-border); }
+.settings-danger-section p { color: var(--um-muted); }
+@media (max-width: 900px) {
+  .settings-layout { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .settings-navigation { position: static; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding-bottom: 12px; border-bottom: 1px solid var(--scheme-color-border); }
+  .settings-navigation a { padding: 10px 8px; font-size: 14px; }
+  .settings-section-heading { margin-bottom: 20px; }
+  .settings-content .MuiStack-root { min-width: 0; }
+}

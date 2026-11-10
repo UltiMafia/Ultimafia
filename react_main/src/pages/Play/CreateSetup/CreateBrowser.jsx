@@ -19,12 +19,7 @@ import {
   Stack,
   Paper,
   Box,
-  Divider,
-  useMediaQuery,
-  useTheme,
   Grid2,
-  Button,
-  IconButton,
   Stepper,
   Step,
   StepButton,
@@ -43,6 +38,11 @@ import {
 } from "components/Roles";
 import { Cell } from "components/CellSearch";
 import Form from "components/Form";
+import { UiAction, UiCard, UiField, UiIcon, UiSection, UiDialog } from "components/ui";
+import { useErrorAlert } from "components/Alerts";
+import "css/createSetup.css";
+import { Loading } from "components/Loading";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 function setupHasEvent(roles, rolesRaw) {
   if (!Array.isArray(roles) || !rolesRaw) return false;
@@ -55,71 +55,9 @@ function setupHasEvent(roles, rolesRaw) {
   }
   return false;
 }
-import { useErrorAlert } from "components/Alerts";
-
-import "css/createSetup.css";
-import { Loading } from "components/Loading";
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 function StickyStateViewer(props) {
-  const isSticky = props.isSticky;
-  const title = props.title;
-  const isVertical = props.isVertical;
-
-  const theme = useTheme();
-  const isPhoneDevice = useIsPhoneDevice();
-
-  return (
-    <Stack
-      direction="row"
-      sx={{
-        position: isSticky ? "sticky" : "relative",
-        bottom: isSticky ? "var(--mui-spacing)" : undefined,
-        mt: 1,
-      }}
-    >
-      <Paper
-        sx={{
-          p: 1,
-          maxWidth: props.compact ? "100%" : "80%",
-          flex: "1",
-          mx: "auto",
-        }}
-      >
-        <Stack
-          direction={isVertical ? "column" : "row"}
-          spacing={isPhoneDevice ? 0.5 : 1}
-          sx={{
-            justifyContent: isVertical ? "stretch" : "center",
-            alignItems: "stretch",
-            width: "100%",
-          }}
-        >
-          <Stack
-            direction="column"
-            sx={{
-              justifyContent: "center",
-              flex: "0 0",
-            }}
-          >
-            <Paper
-              variant="outlined"
-              sx={{
-                p: 1,
-                flex: "1",
-                borderColor: isSticky ? "primary.main" : undefined,
-              }}
-            >
-              <Typography variant={props.compact ? "h6" : "h4"} textAlign="center">
-                {title}
-              </Typography>
-            </Paper>
-          </Stack>
-          {props.children}
-        </Stack>
-      </Paper>
-    </Stack>
-  );
+  return <UiSection title={props.title} className="setup-role-set" style={{ position: props.isSticky ? "sticky" : "relative", bottom: props.isSticky ? "8px" : undefined }}>{props.children}</UiSection>;
 }
 
 export default function CreateSetup(props) {
@@ -142,13 +80,21 @@ export default function CreateSetup(props) {
   const [modifiers, setModifiers] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
   const [selectedRole, setSelectedRole] = useState(null);
+  const [presetConfirm, setPresetConfirm] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const savePending = useRef(false);
+  async function saveSetup() {
+    if (savePending.current) return;
+    savePending.current = true; setSaving(true);
+    try { await onCreateSetup(roleData, editing, setRedirect, gameSettings); }
+    finally { savePending.current = false; setSaving(false); }
+  }
   const wizardRef = useRef(null);
   const setupFormRef = useRef(null);
 
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const siteInfo = useContext(SiteInfoContext);
-  const theme = useTheme();
   const isPhoneDevice = useIsPhoneDevice();
 
   const gameTypeSettings = siteInfo.gamesettings[gameType];
@@ -663,52 +609,27 @@ export default function CreateSetup(props) {
 
     for (let role in roleSet) {
       roles.push(
-        <Box
+        <UiAction variant="ghost"
           key={role}
-          role={isMafiaSetup && activeStep === 1 ? "button" : undefined}
-          tabIndex={isMafiaSetup && activeStep === 1 ? 0 : undefined}
-          aria-label={isMafiaSetup && activeStep === 1 ? `Edit modifiers for ${role.replace(":", " ")}` : undefined}
+          aria-label={isMafiaSetup && activeStep === 1 ? `Edit modifiers for ${role.replace(":", " ")}` : `Remove one ${role.replace(":", " ")}`}
           aria-pressed={isMafiaSetup && activeStep === 1 ? selectedRole?.index === i && selectedRole?.role === role : undefined}
-          onClick={isMafiaSetup && activeStep === 1 ? () => {
-            setSelRoleSet(i);
-            setSelectedRole({ index: i, role });
-          } : undefined}
-          onKeyDown={(event) => {
-            if (isMafiaSetup && activeStep === 1 && (event.key === "Enter" || event.key === " ")) {
-              event.preventDefault();
-              setSelRoleSet(i);
-              setSelectedRole({ index: i, role });
-            }
-          }}
-          sx={{
-            display: "flex",
-            borderRadius: 1,
-            outline: isMafiaSetup && activeStep === 1 && selectedRole?.index === i && selectedRole?.role === role
-              ? "2px solid var(--mui-palette-primary-main)" : undefined,
-            p: 0.5,
-          }}
-        >
-        <RoleCount
-          role={role}
-          count={roleSet[role]}
-          gameType={gameType}
           onClick={() => {
             if (isMafiaSetup && activeStep === 1) {
               setSelRoleSet(i);
               setSelectedRole({ index: i, role });
-              return;
-            }
-            updateRoleData({
-              type: "removeRole",
-              role: role,
-              index: i,
-            });
+            } else updateRoleData({ type: "removeRole", role, index: i });
           }}
+        >
+        <RoleCount
+          role={role}
+          count={1}
+          gameType={gameType}
+          showPopover={false}
           key={role}
-          showPopover
           otherRoles={roleData.roles}
         />
-        </Box>
+        <span>{role.split(":")[0]} × {roleSet[role]}</span>
+        </UiAction>
       );
     }
 
@@ -723,15 +644,12 @@ export default function CreateSetup(props) {
         key={i}
       >
         <Paper
-          variant="outlined"
           onClick={() => setSelRoleSet(i)}
           className="roleset"
           sx={{
             p: 1,
             width: "100%",
-            maxHeight: "calc(8em + 4 * var(--mui-spacing))", // 8em = max 4 rows of icons before scrolling
-            overflowY: "auto",
-            borderColor: isSelected ? "primary.main" : undefined,
+            background: "transparent", boxShadow: "none",
           }}
         >
           <Stack
@@ -745,7 +663,7 @@ export default function CreateSetup(props) {
               {usingRoleGroups && (
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Size:</Typography>
-                  <IconButton
+                  <UiAction iconOnly
                     aria-label="decrease roleset size"
                     onClick={() => {
                       updateRoleData({
@@ -754,10 +672,10 @@ export default function CreateSetup(props) {
                       });
                     }}
                   >
-                    <i className="fas fa-minus-circle" />
-                  </IconButton>
+                    <UiIcon name="remove" />
+                  </UiAction>
                   <Typography>{roleData.roleGroupSizes[i]}</Typography>
-                  <IconButton
+                  <UiAction iconOnly
                     aria-label="increase roleset size"
                     onClick={() => {
                       updateRoleData({
@@ -766,8 +684,8 @@ export default function CreateSetup(props) {
                       });
                     }}
                   >
-                    <i className="fas fa-plus-circle" />
-                  </IconButton>
+                    <UiIcon name="add" />
+                  </UiAction>
                 </Stack>
               )}
               <Stack direction="column" spacing={0.5} sx={{ width: "100%" }}>
@@ -795,7 +713,7 @@ export default function CreateSetup(props) {
               </Stack>
             </Stack>
             {showMoveOptions && (!isMafiaSetup || activeStep === 0) && (
-              <Button
+              <UiAction
                 aria-label={`Move role set ${i + 1} up`}
                 onClick={() => {
                   updateRoleData({
@@ -803,23 +721,12 @@ export default function CreateSetup(props) {
                     index: i,
                   });
                 }}
-                sx={{
-                  padding: 1,
-                  bgcolor: "#62a0db",
-                  alignSelf: "stretch",
-                  minWidth: "0px",
-                  ml: 1,
-                }}
               >
-                <i
-                  className="fa-arrow-circle-up fas"
-                  aria-hidden="true"
-                  style={{ fontSize: isPhoneDevice ? "0.5em" : "1em" }}
-                />
-              </Button>
+                <UiIcon name="up" />Move up
+              </UiAction>
             )}
             {showMoveOptions && (!isMafiaSetup || activeStep === 0) && (
-              <Button
+              <UiAction
                 aria-label={`Move role set ${i + 1} down`}
                 onClick={() => {
                   updateRoleData({
@@ -827,23 +734,12 @@ export default function CreateSetup(props) {
                     index: i,
                   });
                 }}
-                sx={{
-                  padding: 1,
-                  bgcolor: "#62a0db",
-                  alignSelf: "stretch",
-                  minWidth: "0px",
-                  ml: 1,
-                }}
               >
-                <i
-                  className="fa-arrow-circle-down fas"
-                  aria-hidden="true"
-                  style={{ fontSize: isPhoneDevice ? "0.5em" : "1em" }}
-                />
-              </Button>
+                <UiIcon name="down" />Move down
+              </UiAction>
             )}
             {showAddRoleSet && (!isMafiaSetup || activeStep === 0) && (
-              <Button
+              <UiAction
                 aria-label={`Copy role set ${i + 1}`}
                 onClick={() => {
                   updateRoleData({
@@ -851,43 +747,21 @@ export default function CreateSetup(props) {
                     index: i,
                   });
                 }}
-                sx={{
-                  padding: 1,
-                  bgcolor: "#d350e4ff",
-                  alignSelf: "stretch",
-                  minWidth: "0px",
-                  ml: 1,
-                }}
               >
-                <i
-                  className="fa-copy fas"
-                  aria-hidden="true"
-                  style={{ fontSize: isPhoneDevice ? "0.5em" : "1em" }}
-                />
-              </Button>
+                <UiIcon name="copy" />Copy set
+              </UiAction>
             )}
             {isMafiaSetup && activeStep === 0 && (
-              <Button
-                onClick={applyMafiaSpeedRoundsPreset}
+              <UiAction
+                onClick={() => setPresetConfirm(true)}
                 aria-label="Apply Speed Rounds preset"
-                sx={{
-                  padding: 1,
-                  bgcolor: "#f4b400",
-                  alignSelf: "stretch",
-                  minWidth: "0px",
-                  ml: 1,
-                }}
                 title="Apply Speed Rounds preset"
               >
-                <i
-                  className="fa-bolt fas"
-                  aria-hidden="true"
-                  style={{ fontSize: isPhoneDevice ? "0.5em" : "1em" }}
-                />
-              </Button>
+                Speed Rounds preset
+              </UiAction>
             )}
             {i > 0 && (!isMafiaSetup || activeStep === 0) && (
-              <Button
+              <UiAction variant="danger-quiet"
                 aria-label={`Remove role set ${i + 1}`}
                 onClick={() => {
                   updateRoleData({
@@ -895,20 +769,9 @@ export default function CreateSetup(props) {
                     index: i,
                   });
                 }}
-                sx={{
-                  padding: 1,
-                  bgcolor: "#e45050",
-                  alignSelf: "stretch",
-                  minWidth: "0px",
-                  ml: 1,
-                }}
               >
-                <i
-                  className="fa-times fas"
-                  aria-hidden="true"
-                  style={{ fontSize: isPhoneDevice ? "0.5em" : "1em" }}
-                />
-              </Button>
+                <UiIcon name="delete" />Remove set
+              </UiAction>
             )}
           </Stack>
         </Paper>
@@ -982,10 +845,33 @@ export default function CreateSetup(props) {
     );
   });
 
+  const selectedRolesPanel = isMafiaSetup && activeStep < 2 ? (
+    <UiCard className="setup-selected-roles">
+      <div className="setup-selected-roles-header">
+        <Typography variant="h3">Your roles & events</Typography>
+        <div className="setup-selected-roles-actions">
+          {usingRoleGroups && <span>Total size: {roleData.roleGroupSizes.reduce((a, b) => a + b, 0)}</span>}
+          {showAddRoleSet && (
+            <UiAction onClick={() => updateRoleData({ type: "addRoleSet" })} aria-label="Add role set">
+              <UiIcon name="add" />Add role set
+            </UiAction>
+          )}
+        </div>
+      </div>
+      <Typography color="text.secondary">
+        {activeStep === 0
+          ? "Click a role below to add a copy. Click a role in this set to remove one."
+          : "Select an icon in your set to edit its modifiers. Each change applies to one copy of that role."}
+      </Typography>
+      <Box>{roleSets}</Box>
+    </UiCard>
+  ) : null;
+
   return (
-    <Stack direction="column" spacing={1} ref={wizardRef} className={isMafiaSetup ? "setup-wizard" : undefined}>
+    <Stack direction="column" spacing={1} ref={wizardRef} className={isMafiaSetup ? "setup-wizard" : "setup-editor"} data-step={activeStep}>
+      {isMafiaSetup && <div className="setup-name-field"><UiField fullWidth label="Setup Name" value={formFields.find(field => field.ref === "name")?.value || ""} onChange={event => updateFormFields({ ref: "name", prop: "value", value: event.target.value })} /></div>}
       {isMafiaSetup && (
-        <Paper sx={{ p: 2 }}>
+        <Box className="setup-step-list" sx={{ py: 1 }}>
           <Stepper nonLinear activeStep={activeStep} alternativeLabel={isPhoneDevice}>
             {stepLabels.map((label, index) => (
               <Step key={label}>
@@ -993,19 +879,9 @@ export default function CreateSetup(props) {
               </Step>
             ))}
           </Stepper>
-        </Paper>
+        </Box>
       )}
-      {isMafiaSetup && activeStep < 2 && (
-        <Paper sx={{ p: 1 }}>
-          <Typography variant="h3">Your roles & events</Typography>
-          <Typography color="text.secondary">
-            {activeStep === 0
-              ? "Add roles and events below. Click an icon in your set to remove one copy."
-              : "Select an icon in your set to edit its modifiers. Each change applies to one copy of that role."}
-          </Typography>
-          <Box sx={{ maxHeight: "26vh", overflowY: "auto" }}>{roleSets}</Box>
-        </Paper>
-      )}
+      {isMafiaSetup && !isPhoneDevice && selectedRolesPanel}
       {useFixedRoles && (
         <Paper sx={{ p: 1 }}>
           <Typography variant="body1">
@@ -1014,11 +890,22 @@ export default function CreateSetup(props) {
           </Typography>
         </Paper>
       )}
-      {!useFixedRoles && (!isMafiaSetup || activeStep === 0) && (
-        <Box className={isMafiaSetup ? "setup-catalog" : undefined}>
-          <RoleSearch onAddClick={onAddRole} gameType={gameType} />
-        </Box>
+      {isMafiaSetup && isPhoneDevice && activeStep === 0 && (
+        <div className="setup-current-summary">
+          <span>{roleData.roles.reduce((total, set) => total + Object.values(set).reduce((sum, count) => sum + count, 0), 0)} roles · {roleData.roles.length} role set{roleData.roles.length === 1 ? "" : "s"}</span>
+          <div className="setup-current-actions">
+            {showAddRoleSet && <UiAction onClick={() => updateRoleData({ type: "addRoleSet" })} aria-label="Add role set"><UiIcon name="add" size={16} />Add set</UiAction>}
+            <UiAction variant="ghost" onClick={() => wizardRef.current?.querySelector(".setup-selected-roles")?.scrollIntoView({ behavior: "smooth", block: "start" })}>Review roles</UiAction>
+          </div>
+        </div>
       )}
+      {!useFixedRoles && (!isMafiaSetup || activeStep === 0) && (
+        <UiCard className={isMafiaSetup ? "setup-catalog" : undefined}>
+          {isMafiaSetup && <h2 className="setup-catalog-heading">Add roles and events</h2>}
+          <RoleSearch onAddClick={onAddRole} gameType={gameType} />
+        </UiCard>
+      )}
+      {isMafiaSetup && isPhoneDevice && selectedRolesPanel}
       {!isMafiaSetup && !useFixedRoles && siteInfo.modifiers[props.gameType].length > 0 && (
         <Paper sx={{ p: 1 }}>
           <Accordion>
@@ -1036,7 +923,7 @@ export default function CreateSetup(props) {
         </Paper>
       )}
       {isMafiaSetup && activeStep === 1 && (
-        <Paper sx={{ p: 2 }}>
+        <Box className="setup-modifier-options" sx={{ py: 2 }}>
           <Typography variant="h3">
             {selectedRoleExists ? `Modifiers for ${selectedRole.role.split(":")[0]}` : "Select a role to add modifiers"}
           </Typography>
@@ -1057,7 +944,7 @@ export default function CreateSetup(props) {
               {roleModifiers.length === 0 && <Typography>No modifiers applied.</Typography>}
             </Stack>
           )}
-        </Paper>
+        </Box>
       )}
       {!isMafiaSetup && !useFixedRoles && siteInfo.modifiers[props.gameType].length > 0 && (
         <StickyStateViewer
@@ -1090,8 +977,9 @@ export default function CreateSetup(props) {
         ) : <Typography>Modifier limit reached. Remove a modifier to add another.</Typography>
       )}
       {!isMafiaSetup && !useFixedRoles && roleSets}
-      {!useFixedRoles && (!isMafiaSetup || activeStep === 0) && (
+      {!useFixedRoles && !isMafiaSetup && (
       <Paper
+        className="setup-role-set-actions"
         sx={{
           p: 1,
           width: "80%",
@@ -1110,20 +998,12 @@ export default function CreateSetup(props) {
                   height: "100%",
                 }}
               >
-                <Button
+                <UiAction
                   onClick={() => updateRoleData({ type: "addRoleSet" })}
                   aria-label="Add role set"
-                  sx={{
-                    padding: 1,
-                    bgcolor: "#62a0db",
-                    alignSelf: "stretch",
-                    minWidth: "0px",
-                    ml: 1,
-                  }}
                 >
-                  <i className="fa-plus fas" aria-hidden="true" />
-                  {isMafiaSetup && " Add role set"}
-                </Button>
+                  <UiIcon name="add" />Add role set
+                </UiAction>
               </Stack>
             )}
           </Grid2>
@@ -1147,7 +1027,7 @@ export default function CreateSetup(props) {
         </Grid2>
       </Paper>
       )}
-      <Box hidden={isMafiaSetup && activeStep !== 2}>
+      <Box className="setup-settings-step" hidden={isMafiaSetup && activeStep !== 2}>
       <Stack spacing={1} sx={isMafiaSetup ? {
         display: "grid",
         gridTemplateColumns: { xs: "1fr", md: "minmax(0, 1fr) minmax(0, 1fr)" },
@@ -1217,20 +1097,18 @@ export default function CreateSetup(props) {
         </Stack>
       </Paper>
       </Stack>
-      <Paper
-        ref={setupFormRef}
+       <Box
+         ref={setupFormRef}
         sx={{
           p: 1,
           width: isMafiaSetup || isPhoneDevice ? undefined : "50%",
           alignSelf: isMafiaSetup || isPhoneDevice ? undefined : "center",
-          maxHeight: isMafiaSetup ? "65vh" : undefined,
-          overflowY: isMafiaSetup ? "auto" : undefined,
         }}
       >
         {user.loggedIn && (
           <Stack direction={isPhoneDevice ? "column" : "row"}>
             <Form
-              fields={formFields}
+              fields={isMafiaSetup ? formFields.filter(field => field.ref !== "name") : formFields}
               deps={{
                 hasEvent: setupHasEvent(
                   roleData.roles,
@@ -1239,31 +1117,31 @@ export default function CreateSetup(props) {
               }}
               onChange={updateFormFields}
               submitText={isMafiaSetup ? undefined : editing ? "Edit" : "Create"}
-              onSubmit={() =>
-                onCreateSetup(roleData, editing, setRedirect, gameSettings)
-              }
+              submitBusy={saving}
+              onSubmit={saveSetup}
             />
           </Stack>
         )}
-      </Paper>
+      </Box>
       </Stack>
       </Box>
       {isMafiaSetup && (
-        <Paper className="setup-step-navigation" sx={{ p: 1 }}>
-          <Button disabled={activeStep === 0} onClick={() => changeStep(activeStep - 1)}>Back</Button>
+        <div className="setup-step-navigation">
+          <UiAction disabled={activeStep === 0} onClick={() => changeStep(activeStep - 1)}>Back</UiAction>
           <Typography variant="body2">Step {activeStep + 1} of {stepLabels.length}</Typography>
           {activeStep < 2 ? (
-            <Button variant="contained" onClick={() => changeStep(activeStep + 1)}>
+            <UiAction variant="primary" onClick={() => changeStep(activeStep + 1)}>
               Next: {stepLabels[activeStep + 1]}
-            </Button>
+            </UiAction>
           ) : user.loggedIn ? (
-            <Button variant="contained" onClick={() => onCreateSetup(roleData, editing, setRedirect, gameSettings)}>
+            <UiAction variant="primary" busy={saving} onClick={saveSetup}>
               {editing ? "Save changes" : "Create setup"}
-            </Button>
+            </UiAction>
           ) : <Typography variant="body2">Log in to save your setup</Typography>}
-        </Paper>
+        </div>
       )}
       {redirect && <Navigate to={`/play/host/?setup=${redirect}`} />}
+      <UiDialog open={presetConfirm} title="Replace roles with Speed Rounds?" onClose={() => setPresetConfirm(false)} actions={<><UiAction onClick={() => setPresetConfirm(false)}>Cancel</UiAction><UiAction variant="primary" onClick={() => { setPresetConfirm(false); applyMafiaSpeedRoundsPreset(); }}>Apply preset</UiAction></>}><p>This replaces your current role sets and game settings. Your setup name is kept.</p></UiDialog>
     </Stack>
   );
 }

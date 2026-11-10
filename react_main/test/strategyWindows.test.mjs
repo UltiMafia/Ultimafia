@@ -208,14 +208,13 @@ test("a stored window is pulled into a smaller screen", () => {
   assert.equal(win.y, 4);
 });
 
-test("the mobile Info tab body is a flex column, not a clipping box", () => {
-  // The guide list inside it is a filling child. In a non-flex box it grows to
-  // its content height, so the list looked cut off and would not scroll.
+test("mobile Info owns one scrollable column for setup details and guides", () => {
   const open = mobileInfoTabSx("info");
   assert.equal(open.display, "flex");
   assert.equal(open.flexDirection, "column");
   assert.equal(open.minHeight, 0);
-  assert.equal(open.overflow, "hidden");
+  assert.equal(open.overflowY, "auto");
+  assert.equal(open.overflowX, "hidden");
   assert.equal(open.flex, "1");
 
   assert.equal(mobileInfoTabSx("chat").display, "none");

@@ -26,7 +26,7 @@ export default function CreateSpotItSetup() {
   }, []);
 
   function onCreateSetup(roleData, editing, setNavigate, gameSettings) {
-    axios
+    return axios
       .post("/api/setup/create", {
         gameType: gameType,
         roles: roleData.roles,

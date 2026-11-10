@@ -4,6 +4,7 @@ import { pluginReact } from "@rsbuild/plugin-react";
 const { publicVars } = loadEnv({ prefixes: ["REACT_APP_"] });
 
 const isProduction = process.env.NODE_ENV === "production";
+const sameOriginSockets = !isProduction && process.env.UM_DEV_SAME_ORIGIN_SOCKETS === "true";
 
 export default defineConfig({
   plugins: [pluginReact()],
@@ -33,7 +34,7 @@ export default defineConfig({
   },
   devtool: isProduction ? "source-map" : "eval-source-map",
   source: {
-    define: publicVars,
+    define: { ...publicVars, "import.meta.env.REACT_APP_SAME_ORIGIN_SOCKETS": JSON.stringify(sameOriginSockets ? "true" : "false") },
     tsconfigPath: "./jsconfig.json",
   },
   server: {
@@ -41,6 +42,10 @@ export default defineConfig({
     proxy: {
       "/api": "http://backend:3000",
       "/uploads": "http://backend:3000",
+      ...(sameOriginSockets ? {
+        "/ws/chat": { target: "http://backend:2999", ws: true },
+        "/ws/game/3010": { target: "http://backend:3010", ws: true },
+      } : {}),
     },
   },
 });

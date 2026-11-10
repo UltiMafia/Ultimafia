@@ -47,6 +47,9 @@ import {
 
 import { countUnreadDmChannels, sendErrorText } from "../../utils/dmWindow";
 import DmPanel from "../../components/dms/DmPanel";
+import MessageComposer from "../../components/ui/MessageComposer";
+import { socketEndpoint } from "../../utils/socketEndpoint.mjs";
+import EmotePicker from "../../components/EmotePicker";
 
 import "css/chat.css";
 
@@ -133,22 +136,10 @@ export default function Chat({
   useEffect(() => {
     if (!token || !user.loggedIn) return;
 
-    var socketURL;
-
-    // The configured socket host defaults to "localhost", which is wrong for
-    // any client that is not the host machine -- a phone on the LAN or a
-    // tailnet, for example. Fall back to the page's own host so the same
-    // build works from localhost, a LAN/tailnet address, or the real domain.
-    const configuredSocketHost = import.meta.env.REACT_APP_SOCKET_URI;
-    const socketHost =
-      !configuredSocketHost || configuredSocketHost === "localhost"
-        ? window.location.hostname
-        : configuredSocketHost;
-
-    if (import.meta.env.REACT_APP_USE_PORT === "true")
-      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${socketHost}:${import.meta.env.REACT_APP_CHAT_PORT}`;
-    else
-      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${socketHost}/chatSocket`;
+    const socketURL = socketEndpoint({ location: window.location, kind: "chat", port: import.meta.env.REACT_APP_CHAT_PORT,
+      configuration: { sameOrigin: import.meta.env.REACT_APP_SAME_ORIGIN_SOCKETS,
+        host: import.meta.env.REACT_APP_SOCKET_URI, protocol: import.meta.env.REACT_APP_SOCKET_PROTOCOL,
+        usePort: import.meta.env.REACT_APP_USE_PORT } });
 
     var newSocket = new Socket(socketURL);
     newSocket.on("connected", () => setConnected((current) => current + 1));
@@ -389,12 +380,17 @@ export default function Chat({
   }
 
   function onSendMessage(e) {
-    if (e.key === "Enter" && textInput.length) {
-      const message = e.target.value;
-      socket.send("sendMessage", message);
-      setTextInput("");
-      setAutoScroll(true);
-    }
+    if (e.nativeEvent?.isComposing || e.isComposing || e.keyCode === 229) return;
+    if (e.key !== "Enter" || e.shiftKey) return;
+    e.preventDefault();
+    sendMessage();
+  }
+
+  function sendMessage() {
+    if (!textInput.trim() || paused || dmLocked || !channel.id || socket.readyState !== 1) return;
+    socket.send("sendMessage", textInput);
+    setTextInput("");
+    setAutoScroll(true);
   }
 
   function onMessagesScroll() {
@@ -513,7 +509,7 @@ export default function Chat({
   }
 
   function sendPanelMessage(text) {
-    if (!text || !text.trim().length || !socket || socket.readyState !== 1) return;
+    if (!text || !text.trim().length || !socket || socket.readyState !== 1 || paused || dmLocked || !currentChannelId || channel.id !== currentChannelId) return;
     pendingSends.current.push(text);
     if (pendingSends.current.length > 10) pendingSends.current.shift();
     socket.send("sendMessage", text);
@@ -692,6 +688,7 @@ export default function Chat({
 
   return (
     <Paper
+      className="site-chat"
       elevation={embedded ? 0 : 4}
       data-testid={directsOnly ? "dm-chat" : undefined}
       sx={{
@@ -705,6 +702,7 @@ export default function Chat({
       }}
     >
       <Stack
+        className="site-chat-toolbar"
         direction="row"
         alignItems="center"
         spacing={1.5}
@@ -725,13 +723,13 @@ export default function Chat({
                 : chatInfo.notifs.all
               : null
           }
-        ></Badge>
+        >
         <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
           Chat
         </Typography>
+        </Badge>
         </>
         )}
-        <Box sx={{ flexGrow: 1 }} />
         <Select
           size="small"
           value={currentChannelId || (navEntries[0]?.channel.id ?? "")}
@@ -774,7 +772,7 @@ export default function Chat({
           color="secondary"
           onClick={onOpenNewChatDialog}
         >
-          New
+          New chat
         </Button>
       </Stack>
 
@@ -830,21 +828,22 @@ export default function Chat({
               </Box>
 
               <Box
+                className="site-chat-composer"
                 sx={{
                   px: 2,
                   py: 1.5,
-                  borderTop: `1px solid ${theme.palette.divider}`,
-                  bgcolor: theme.palette.background.paper,
+                  bgcolor: "transparent",
                 }}
               >
-                <TextField
+                <MessageComposer
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
-                  onKeyPress={onSendMessage}
-                  placeholder="Send message"
-                  fullWidth
-                  size="small"
-                  inputProps={{ maxLength: MaxChatMessageLength }}
+                  onKeyDown={onSendMessage}
+                  placeholder="Message"
+                  label="Chat message" sendLabel="Send chat message"
+                  inputProps={{ maxLength: MaxChatMessageLength, enterKeyHint: "send" }}
+                  onSend={sendMessage} canSend={!!textInput.trim() && !paused && !dmLocked && socket.readyState === 1}
+                  tools={<EmotePicker onEmoteSelected={emote => setTextInput(value => `${value.trimEnd()}${value ? " " : ""}${emote} `)} />}
                 />
               </Box>
             </>
@@ -991,7 +990,7 @@ function Message(props) {
 
   return (
     <Box
-      className={`message ${isSelf ? "self" : ""}`}
+      className={`message site-chat-message ${isSelf ? "self" : ""}`}
       onContextMenu={onContextMenu}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
@@ -1001,7 +1000,7 @@ function Message(props) {
         display: "flex",
         alignItems: "center",
         gap: 1.25,
-        px: 2,
+        px: 0,
         py: 1,
         borderRadius: 1.5,
         maxWidth: "100%",
@@ -1012,11 +1011,10 @@ function Message(props) {
       }}
     >
       <Stack
-        direction="row"
-        spacing={1}
-        alignItems="center"
-        sx={{ flexWrap: "wrap", flexGrow: 1, minWidth: 0 }}
+        className="site-chat-message-body"
+        sx={{ flexGrow: 1, minWidth: 0 }}
       >
+        <div className="site-chat-message-meta">
         <NameWithAvatar
           small
           id={message.sender.id}
@@ -1031,6 +1029,10 @@ function Message(props) {
           vanityUrl={message.sender.vanityUrl}
           noLink={isSelf || message.sender.site}
         />
+        {showTimestamp && <Typography variant="caption" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
+          <Time millisec={age} suffix=" ago" />
+        </Typography>}
+        </div>
         <Typography
           variant="body2"
           component="span"
@@ -1038,7 +1040,7 @@ function Message(props) {
           sx={{
             flexGrow: 1,
             minWidth: 0,
-            display: "inline-flex",
+            display: "block",
             flexWrap: "wrap",
             alignItems: "center",
             wordBreak: "break-word",
@@ -1055,15 +1057,6 @@ function Message(props) {
             roleify
           />
         </Typography>
-        {showTimestamp && (
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ whiteSpace: "nowrap" }}
-          >
-            <Time millisec={age} suffix=" ago" />
-          </Typography>
-        )}
       </Stack>
       <Menu
         open={Boolean(menuPosition)}

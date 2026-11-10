@@ -33,7 +33,8 @@ export function WindowSegment({ value, onChange }) {
           <ButtonBase
             key={w.value}
             onClick={() => onChange(w.value)}
-            title={w.fullLabel}
+             title={w.fullLabel}
+             aria-pressed={active}
             sx={{
               px: 2,
               py: 0.5,
@@ -42,10 +43,7 @@ export function WindowSegment({ value, onChange }) {
               backgroundColor: active ? "primary.main" : "transparent",
               transition:
                 "background-color .18s ease, color .18s ease, box-shadow .18s ease",
-              boxShadow: active
-                ? (t) => `0 0 10px ${t.palette.primary.main}55`
-                : "none",
-              fontFamily: "RobotoSlab",
+              fontFamily: "inherit",
               fontWeight: 700,
               letterSpacing: "0.1em",
               fontSize: "0.82rem",

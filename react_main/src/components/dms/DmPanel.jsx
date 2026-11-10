@@ -19,6 +19,8 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { Avatar, StatusIcon } from "../../pages/User/UserWidgets";
 import { UserText } from "../Basic";
 import EmotePicker from "../EmotePicker";
+import MessageComposer from "../ui/MessageComposer";
+import UiIcon from "../ui/UiIcon";
 import { MaxChatMessageLength } from "../../Constants";
 import { formatUnreadBadge } from "../../utils/unreadBadge";
 import {
@@ -116,7 +118,7 @@ export default function DmPanel(props) {
         onClick={props.onNew}
         disabled={loading}
       >
-        <i className="fas fa-plus" style={{ fontSize: 14 }} />
+        <UiIcon name="add" size={20} />
       </IconButton>
     );
     body = (
@@ -174,7 +176,7 @@ function BackButton({ onClick }) {
       onClick={onClick}
       sx={{ ml: -0.5 }}
     >
-      <i className="fas fa-arrow-left" style={{ fontSize: 15 }} />
+      <UiIcon name="back" size={20} />
     </IconButton>
   );
 }
@@ -475,72 +477,34 @@ function ConversationView(props) {
         })}
       </Box>
       {sendError && <InlineError text={sendError} />}
-      <Box sx={{ px: 1.5, py: 1, borderTop: `1px solid ${theme.palette.divider}` }}>
-        <Stack
-          direction="row"
-          alignItems="center"
-          sx={{
-            bgcolor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.05)",
-            borderRadius: 99,
-            pl: 2,
-            pr: 0.5,
-          }}
-        >
-          <InputBase
+      <Box sx={{ px: 1.5, py: 1 }}>
+          <MessageComposer
             value={textInput}
             onChange={(e) => {
               setTextInput(e.target.value);
               if (sendError) clearSendError();
             }}
             onKeyDown={(e) => {
+              if (e.nativeEvent?.isComposing || e.isComposing || e.keyCode === 229) return;
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 onSend(textInput);
               }
             }}
             placeholder="Start a new message"
-            inputProps={{ maxLength: MaxChatMessageLength, "aria-label": "Message", "data-testid": "dm-input" }}
-            sx={{ flex: 1, fontSize: 14, py: 0.75 }}
+            inputProps={{ maxLength: MaxChatMessageLength, "data-testid": "dm-input", enterKeyHint: "send" }}
             disabled={!loaded}
-          />
-          {/* Same picker as game chat: site emotes, my custom emotes and
-              my stickers, inserted as ":code:" text. */}
-          <Box
-            data-testid="dm-emote-picker"
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              "& .dropdown-control": {
-                minWidth: 0,
-                width: 32,
-                height: "32px !important",
-                p: 0.5,
-                border: "none !important",
-                borderRadius: "50%",
-              },
-              "& .dropdown-control img": { width: 20, height: 20 },
-              opacity: loaded ? 1 : 0.5,
-              pointerEvents: loaded ? "auto" : "none",
-            }}
-          >
+            canSend={loaded && !!textInput.trim()} onSend={() => onSend(textInput)} sendLabel="Send"
+            sendButtonProps={{ "data-testid": "dm-send" }}
+            tools={loaded && <Box data-testid="dm-emote-picker">
             <EmotePicker
               onEmoteSelected={(emote) => {
                 setTextInput(insertEmote(textInput, emote));
                 if (sendError) clearSendError();
               }}
             />
-          </Box>
-          <IconButton
-            size="small"
-            color="primary"
-            aria-label="Send"
-            data-testid="dm-send"
-            disabled={!loaded || !textInput.trim().length}
-            onClick={() => onSend(textInput)}
-          >
-            <i className="fas fa-paper-plane" style={{ fontSize: 14 }} />
-          </IconButton>
-        </Stack>
+          </Box>}
+          />
       </Box>
     </>
   );

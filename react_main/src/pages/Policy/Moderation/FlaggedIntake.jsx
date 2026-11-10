@@ -1,13 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 import axios from "axios";
 import {
   Box,
-  Card,
-  CardContent,
-  IconButton,
   Stack,
-  Tooltip,
   Typography,
 } from "@mui/material";
 
@@ -16,7 +12,8 @@ import { useErrorAlert } from "components/Alerts";
 import { NameWithAvatar } from "pages/User/UserWidgets";
 import { Time } from "components/Basic";
 import { PageNav } from "components/Nav";
-import { Loading } from "components/Loading";
+import { UiAction, UiDialog, UiPending } from "components/ui";
+import { LatestRequest } from "../../../lib/latestRequest";
 
 export default function FlaggedIntake() {
   const { user } = useOutletContext() || {};
@@ -27,6 +24,11 @@ export default function FlaggedIntake() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState({});
+  const [confirmation, setConfirmation] = useState(null);
+  const [actionError, setActionError] = useState("");
+  const [loadError, setLoadError] = useState("");
+  const requests = useRef(new LatestRequest());
+  const lastQuery = useRef({ page: 1, query: "" });
 
   const errorAlert = useErrorAlert();
 
@@ -34,53 +36,41 @@ export default function FlaggedIntake() {
 
   useEffect(() => {
     loadFlaggedUsers(1);
+    return () => requests.current.invalidate();
   }, []);
 
-  function loadFlaggedUsers(targetPage) {
+  function loadFlaggedUsers(targetPage, query = "") {
+    const request = requests.current.begin();
+    lastQuery.current = { page: targetPage, query };
     setLoading(true);
-
-    const params = targetPage === 1 ? "" : `?last=${users[users.length - 1]?.joined || ""}`;
+    setLoadError("");
 
     axios
-      .get(`/api/user/flagged${params}`)
+      .get(`/api/user/flagged${query}`, { signal: request.signal })
       .then((res) => {
+        if (!request.isCurrent()) return;
         if (res.data.length > 0 || targetPage === 1) {
           setUsers(res.data);
           setPage(targetPage);
         }
         setLoading(false);
       })
-      .catch((e) => {
-        errorAlert(e);
+      .catch(() => {
+        if (!request.isCurrent()) return;
+        setLoadError("Could not load flagged users. Please try again.");
         setLoading(false);
       });
   }
 
   function onPageNav(newPage) {
-    if (newPage === page) return;
+    if (newPage === page || loading) return;
 
     if (newPage > page && users.length > 0) {
       const lastJoined = users[users.length - 1]?.joined;
-      axios
-        .get(`/api/user/flagged?last=${lastJoined}`)
-        .then((res) => {
-          if (res.data.length > 0) {
-            setUsers(res.data);
-            setPage(newPage);
-          }
-        })
-        .catch(errorAlert);
+      loadFlaggedUsers(newPage, `?last=${encodeURIComponent(lastJoined)}`);
     } else if (newPage < page && users.length > 0) {
       const firstJoined = users[0]?.joined;
-      axios
-        .get(`/api/user/flagged?first=${firstJoined}`)
-        .then((res) => {
-          if (res.data.length > 0) {
-            setUsers(res.data);
-            setPage(newPage);
-          }
-        })
-        .catch(errorAlert);
+      loadFlaggedUsers(newPage, `?first=${encodeURIComponent(firstJoined)}`);
     }
   }
 
@@ -92,6 +82,7 @@ export default function FlaggedIntake() {
     axios
       .post("/api/mod/whitelist", { userId })
       .then(() => {
+        setConfirmation(null);
         setUsers((prev) => prev.filter((u) => u.id !== userId));
         setActionLoading((prev) => {
           const next = { ...prev };
@@ -100,6 +91,7 @@ export default function FlaggedIntake() {
         });
       })
       .catch((e) => {
+        setActionError("Could not approve this user. Please try again.");
         errorAlert(e);
         setActionLoading((prev) => {
           const next = { ...prev };
@@ -117,6 +109,7 @@ export default function FlaggedIntake() {
     axios
       .post("/api/mod/blacklist", { userId })
       .then(() => {
+        setConfirmation(null);
         setUsers((prev) => prev.filter((u) => u.id !== userId));
         setActionLoading((prev) => {
           const next = { ...prev };
@@ -125,6 +118,7 @@ export default function FlaggedIntake() {
         });
       })
       .catch((e) => {
+        setActionError("Could not ban this user. Please try again.");
         errorAlert(e);
         setActionLoading((prev) => {
           const next = { ...prev };
@@ -134,30 +128,26 @@ export default function FlaggedIntake() {
       });
   }
 
-  if (loading && users.length === 0) {
-    return <Loading small />;
-  }
-
   const userRows = users.map((flaggedUser) => {
     const isProcessing = actionLoading[flaggedUser.id];
 
     return (
-      <Card
+      <Box
         key={flaggedUser.id}
-        variant="outlined"
-        sx={{ mb: 1 }}
+        className="flagged-intake-row"
+        sx={{ py: 2, borderBottom: 1, borderColor: "divider" }}
       >
-        <CardContent
+        <Box
           sx={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            py: 1.5,
-            "&:last-child": { pb: 1.5 },
+            flexWrap: "wrap",
+            gap: 2,
           }}
         >
-          <Stack direction="row" spacing={2} sx={{ alignItems: "center", flexGrow: 1 }}>
-            <Box sx={{ minWidth: 150 }}>
+          <Stack direction="column" spacing={0.5} sx={{ minWidth: 0, flexGrow: 1, "& .user-name": { whiteSpace: "normal", overflowWrap: "anywhere" } }}>
+            <Box sx={{ minWidth: 0 }}>
               <NameWithAvatar
                 id={flaggedUser.id}
                 name={flaggedUser.name}
@@ -175,70 +165,39 @@ export default function FlaggedIntake() {
           </Stack>
 
           {canWhitelist && (
-            <Stack direction="row" spacing={1}>
-              <Tooltip title="Whitelist (approve user)">
-                <span>
-                  <IconButton
-                    size="small"
-                    color="success"
-                    onClick={() => onWhitelist(flaggedUser.id)}
-                    disabled={!!isProcessing}
-                    sx={{
-                      border: "1px solid",
-                      borderColor: "success.main",
-                      "&:hover": {
-                        backgroundColor: "success.main",
-                        color: "white",
-                      },
-                    }}
-                  >
-                    <i
-                      className={isProcessing === "whitelist" ? "fas fa-spinner fa-spin" : "fas fa-check"}
-                    />
-                  </IconButton>
-                </span>
-              </Tooltip>
-              <Tooltip title="Blacklist (permanent IP ban)">
-                <span>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={() => onBlacklist(flaggedUser.id)}
-                    disabled={!!isProcessing}
-                    sx={{
-                      border: "1px solid",
-                      borderColor: "error.main",
-                      "&:hover": {
-                        backgroundColor: "error.main",
-                        color: "white",
-                      },
-                    }}
-                  >
-                    <i
-                      className={isProcessing === "blacklist" ? "fas fa-spinner fa-spin" : "fas fa-times"}
-                    />
-                  </IconButton>
-                </span>
-              </Tooltip>
+            <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
+              <UiAction disabled={!!isProcessing} onClick={() => { setActionError(""); setConfirmation({ type: "approve", user: flaggedUser }); }}>Approve user</UiAction>
+              <UiAction variant="danger" disabled={!!isProcessing} onClick={() => { setActionError(""); setConfirmation({ type: "ban", user: flaggedUser }); }}>Ban user</UiAction>
             </Stack>
           )}
-        </CardContent>
-      </Card>
+        </Box>
+      </Box>
     );
   });
 
   return (
     <Box className="flagged-intake">
-      <Typography variant="h4" sx={{ mb: 2 }}>
-        Flagged User Intake
-      </Typography>
-      <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-        Review flagged users and decide whether to whitelist (approve) or blacklist (permanently ban) them.
-      </Typography>
+      <header className="moderation-section-heading">
+        <h2>Flagged intake</h2>
+        <p>Review flagged accounts and decide whether to approve them or permanently ban them.</p>
+      </header>
 
       <PageNav page={page} onNav={onPageNav} inverted />
+      {loading && <UiPending label="Loading flagged users" />}
+      {loadError && <div role="alert"><p>{loadError}</p><UiAction onClick={() => loadFlaggedUsers(lastQuery.current.page, lastQuery.current.query)}>Retry</UiAction></div>}
+      <UiDialog open={!!confirmation} title={confirmation?.type === "ban" ? "Permanently ban user?" : "Approve user?"}
+        onClose={confirmation && actionLoading[confirmation.user.id] ? undefined : () => setConfirmation(null)}
+        actions={<><UiAction disabled={!!(confirmation && actionLoading[confirmation.user.id])} onClick={() => setConfirmation(null)}>Cancel</UiAction><UiAction variant={confirmation?.type === "ban" ? "danger" : "primary"} busy={!!(confirmation && actionLoading[confirmation.user.id])} onClick={() => {
+          if (!confirmation || actionLoading[confirmation.user.id]) return;
+          setActionError("");
+          if (confirmation.type === "ban") onBlacklist(confirmation.user.id);
+          else onWhitelist(confirmation.user.id);
+        }}>{confirmation?.type === "ban" ? "Permanently ban user" : "Approve user"}</UiAction></>}>
+        <p>{confirmation?.type === "ban" ? `Permanently ban ${confirmation?.user.name} and their IP address?` : `Approve ${confirmation?.user.name} and remove them from flagged intake?`}</p>
+        {actionError && <p role="alert">{actionError}</p>}
+      </UiDialog>
 
-      {users.length === 0 ? (
+      {!loading && !loadError && users.length === 0 ? (
         <Typography variant="body1" sx={{ py: 2, textAlign: "center" }}>
           No flagged users to review.
         </Typography>

@@ -3,13 +3,9 @@ import axios from "axios";
 import {
   Box,
   Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
   Divider,
   FormControl,
   Grid2,
-  IconButton,
   InputLabel,
   MenuItem,
   Paper,
@@ -31,6 +27,7 @@ import TrophyCase from "components/TrophyCase";
 import { UserContext } from "Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { NameWithAvatar } from "pages/User/UserWidgets";
+import { UiAction, UiDialog, UiIcon } from "components/ui";
 
 import { TIER_ICONS } from "utils/skillRating";
 import { MIN_RATED_GAMES } from "Constants";
@@ -46,8 +43,7 @@ const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 function getColumns(category, isPhoneDevice) {
   const compactColumns = [
     { label: "Rank", sortKey: null },
-    { label: "User", sortKey: "username" },
-    { label: "Metric", sortKey: null },
+    { label: "Player / metric", sortKey: "username" },
   ];
   if (isPhoneDevice) return compactColumns;
 
@@ -158,12 +154,12 @@ const StandingsTable = React.memo(function StandingsTable({
   }
 
   return (
-    <Stack direction="column" spacing={1} divider={<Divider flexItem />}>
+    <Stack className="standings-list" direction="column" spacing={1} divider={<Divider flexItem />}>
       <Box
         sx={{
           display: "grid",
           gridTemplateColumns: isPhoneDevice
-            ? "3em minmax(0, 1fr) minmax(0, 7em)"
+            ? "2em minmax(0, 1fr)"
             : desktopGridTemplate,
           gap: 1,
           alignItems: "center",
@@ -194,10 +190,11 @@ const StandingsTable = React.memo(function StandingsTable({
         return (
           <Box
             key={user.userId}
+            className="standings-row"
             sx={{
               display: "grid",
               gridTemplateColumns: isPhoneDevice
-                ? "3em minmax(0, 1fr) minmax(0, 7em)"
+                ? "2em minmax(0, 1fr)"
                 : desktopGridTemplate,
               gap: 1,
               alignItems: "center",
@@ -208,7 +205,7 @@ const StandingsTable = React.memo(function StandingsTable({
             }}
           >
             <Typography variant="h4">{user.rank}.</Typography>
-            <Box sx={{ overflowX: "clip" }}>
+             <Box className="standings-identity" sx={{ minWidth: 0, "& .user-name": { whiteSpace: "normal", overflowWrap: "anywhere" } }}>
               <NameWithAvatar
                 id={user.userId}
                 name={user.username}
@@ -217,7 +214,7 @@ const StandingsTable = React.memo(function StandingsTable({
               />
             </Box>
             {isPhoneDevice ? (
-              <Stack direction="column" spacing={0.25} sx={{ textAlign: "right" }}>
+              <Stack direction="column" spacing={0.25} sx={{ gridColumn: 2, textAlign: "left", "& > * > .MuiStack-root": { justifyContent: "flex-start" } }}>
                 <Typography variant="body2">{renderMobileMetric(user, category)}</Typography>
                 <Typography variant="caption">
                   {user.wins}W / {user.losses}L
@@ -549,12 +546,12 @@ export default function HallOfFame() {
                   {CATEGORY_OPTIONS.find((option) => option.value === category)?.label} Leaders
                 </Typography>
                 {category === "skillRating" && (
-                  <IconButton
+                  <UiAction iconOnly variant="ghost"
                     onClick={() => setSkillRatingAboutOpen(true)}
                     aria-label="skill rating about"
                   >
-                    <i className="fas fa-question-circle" />
-                  </IconButton>
+                    <UiIcon name="help" />
+                  </UiAction>
                 )}
               </Stack>
               <Typography variant="caption">
@@ -604,18 +601,13 @@ export default function HallOfFame() {
         </Stack>
       </Paper>
 
-      <Dialog
+      <UiDialog title="About the Skill Rating System"
         open={skillRatingAboutOpen}
         onClose={() => setSkillRatingAboutOpen(false)}
         maxWidth="sm"
-        fullWidth
-        scroll="body"
       >
-        <DialogTitle>About the Skill Rating System</DialogTitle>
-        <DialogContent>
           <SkillRatingAboutContent minRatedGames={data?.filters?.minRatedGames} />
-        </DialogContent>
-      </Dialog>
+      </UiDialog>
     </Stack>
   );
 }
