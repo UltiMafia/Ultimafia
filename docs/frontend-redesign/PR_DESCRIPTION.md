@@ -91,6 +91,8 @@ All images are from the current branch's controlled production-component fixture
 
 ![Players after](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/players-redesign.png)
 
+The “before” image is the saved master-baseline capture; the “after” image is the current branch.
+
 ### Profile: master layout restored, pie chart retained
 ![Profile layout](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/profile-master-layout.png)
 
