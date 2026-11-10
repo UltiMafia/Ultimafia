@@ -242,13 +242,22 @@ html[data-keyboard="open"] .game .meeting-tabs {
   overflow-x: hidden;
 }
 
-.game .message:last-child {
+/* Trailing space above the composer belongs to the transcript, not to
+   whichever message happens to be last. Padding keyed to the last row shrinks
+   that row the moment a new message arrives, and with the transcript following
+   the bottom the correction moves every already-painted row — the new message
+   visibly settles instead of simply appearing. */
+.game .speech-display {
   padding-bottom: 10px;
 }
 
+.game .message:last-child {
+  padding-bottom: 2px;
+}
+
 /* A virtual item wrapper makes every message a DOM last child. Keep the
-   transcript's trailing padding only on its actual final row, not every item. */
-.game .transcript-window-row:not([data-transcript-last-row]) > .message:last-child {
+   transcript's padding uniform across items so appending cannot resize one. */
+.game .transcript-window-row > .message:last-child {
   padding-bottom: 3px;
 }
 
