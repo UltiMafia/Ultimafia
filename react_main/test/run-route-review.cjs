@@ -9,6 +9,7 @@ const { execFileSync } = require("node:child_process");
 const { measureUi } = require("./ui-audit/measure.cjs");
 const masterEquivalents = require("./ui-audit/master-equivalents.json");
 const { reviewMasterTasks } = require("./ui-audit/master-tasks.cjs");
+const { reviewAdminTasks } = require("./ui-audit/admin-tasks.cjs");
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "/tmp/opencode/redesign-tools/node_modules/playwright");
 const root = path.resolve(__dirname, "../..");
 const upstream = process.env.UI_AUDIT_BRANCH === "master";
@@ -245,13 +246,20 @@ async function main() {
               assert.equal(await page.evaluate(() => window.__routeReview.writes.filter(write => write.type === 'axios' && write.url !== '/api/notifs/read').length), 0);
             }
              if (!upstream && process.env.ROUTE_TASK_REVIEW === "1") entry.taskChecks = await reviewTasks(page, item, viewport, entry);
-             if (upstream && process.env.MASTER_TASK_REVIEW === "1") entry.taskChecks = await reviewMasterTasks(page, item, async (state, position = "task", metadata = {}) => {
+             if (upstream && process.env.MASTER_TASK_REVIEW === "1") {
+               entry.adminEvidence = [];
+               const captureMaster = async (state, position = "task", metadata = {}) => {
+                 // A task may reload the untouched application for a pending or
+                 // failed read. Restore only the measurement marker, not its UI.
+                 await page.locator('.inner-container').evaluate(element => { element.id = 'main-content'; });
                const filename = `${item.name}-${viewport.width}-${state}-${position}.png`;
                await page.screenshot({ path: path.join(output, filename), fullPage: false, animations: "disabled" });
                entry.screenshots.push(filename);
                entry.measurements.push({ state, position, screenshot: filename, ...await page.evaluate(measureUi), ...metadata,
                  masterEquivalent: masterEquivalents[`${item.name}.${state}`] || entry.masterEquivalent });
-             });
+               };
+               entry.taskChecks = [...await reviewMasterTasks(page, item, captureMaster), ...await reviewAdminTasks(page, item, captureMaster, { master: true, evidence: entry.adminEvidence })];
+             }
           entry.status = "captured-baseline-not-accepted";
         } catch (error) {
           entry.status = "failed-not-accepted";
@@ -308,6 +316,7 @@ async function checkLayout(page, item) {
     assert.equal(header.actionsOverlapCopy, false, `${item.name}: page actions do not overlap title or description`);
   }
   if (headers.length) checks.push('shared-page-header-font-weight-line-height-and-margins');
+  if (['developer', 'developer-owner', 'developer-denied', 'invoices'].includes(item.name)) assert.equal(headers.length, 1, `${item.name}: exactly one shared page heading`);
   const shells = await page.locator('.ui-page').evaluateAll(elements => elements.map(element => {
     const box = element.getBoundingClientRect(), maximum = parseFloat(getComputedStyle(element).maxWidth);
     const content = element.querySelector(':scope > .ui-page-content');
@@ -335,9 +344,19 @@ async function checkLayout(page, item) {
     assert.equal(contract.gap, 24);
     assert.ok(contract.width <= contract.maxWidth + 1);
     assert.ok(contract.fields.every(width => width > 100 && width <= contract.width));
+    assert.equal(await page.getByRole('textbox', { name: 'Name', exact: true }).inputValue(), 'Example item');
+    assert.equal(await page.getByRole('combobox', { name: /^Record status(?: |$)/ }).innerText(), 'Active');
     const actionWidth = await page.getByRole('button', { name: 'Save details', exact: true }).evaluate(element => element.getBoundingClientRect().width);
     assert.ok(actionWidth < contract.fields[0], 'Ordinary actions do not stretch into reading-width bands');
     checks.push('new-page-inherits-header-shell-spacing-and-field-geometry-without-css');
+    const table = page.getByRole('table', { name: 'Example records', exact: true });
+    assert.equal(await table.getByRole('row').count(), 2);
+    const fits = await table.locator('.ui-table-value').evaluateAll(elements => elements.every(element => {
+      const box = element.getBoundingClientRect();
+      return box.left >= 0 && box.right <= innerWidth && element.scrollWidth <= element.clientWidth + 1;
+    }));
+    assert.ok(fits, 'Long names, identifiers and actions fit the shared responsive table without page CSS');
+    checks.push('new-page-inherits-responsive-semantic-table-without-css');
   }
   if (item.name === "learn-games") {
     assert.ok(await page.locator(".role-cell").count() > 3);
@@ -844,6 +863,8 @@ async function reviewTasks(page, item, viewport, entry) {
    entry.measurements.push({ state: name, position: "task", screenshot: filename, ...await page.evaluate(measureUi) });
   }
   checks.push(...await reviewDiscoveryTasks(page, item, captureTask));
+  entry.adminEvidence = [];
+  checks.push(...await reviewAdminTasks(page, item, captureTask, { evidence: entry.adminEvidence }));
   if (item.name.startsWith("settings-")) {
     const navigation = page.getByRole("navigation", { name: "Settings sections" });
     await page.locator(".site-wrapper").evaluate(element => { element.scrollTop = 0; });

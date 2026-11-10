@@ -9,6 +9,8 @@ test('audit inventory contains stable route/state ids with all master pairs requ
   assert.equal(new Set(items.map(item => item.id)).size, items.length);
   assert.ok(items.every(item => item.master.status === 'required'));
   assert.ok(items.some(item => item.id === 'forum-thread.reply'));
+  assert.ok(items.some(item => item.id === 'developer.revoke-confirmation' && item.master.equivalence === 'nearest-ancestor'));
+  assert.ok(items.some(item => item.id === 'invoices.loading' && item.master.equivalence === 'same-route'));
   const example = items.find(item => item.id === 'new-page-contract.default');
   assert.equal(example.master.equivalence, 'nearest-ancestor');
   assert.equal(example.master.route, '/community/feedback');

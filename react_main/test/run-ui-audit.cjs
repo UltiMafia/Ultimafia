@@ -18,8 +18,9 @@ const capture = env => {
   captureFailed ||= result.status !== 0;
 };
 if (!process.argv.includes('--report-only')) {
-  fs.mkdirSync('/tmp/opencode', { recursive: true });
-  const bundles = fs.mkdtempSync('/tmp/opencode/ui-audit-bundle-');
+  const bundleRoot = path.resolve(process.env.UI_AUDIT_BUNDLE_ROOT || '/tmp/opencode');
+  fs.mkdirSync(bundleRoot, { recursive: true, mode: 0o700 });
+  const bundles = fs.mkdtempSync(path.join(bundleRoot, 'ui-audit-bundle-'));
   if (!process.argv.includes('--master-only')) {
     const directory = path.join(bundles, 'redesign');
     run(path.join(cwd, 'node_modules/.bin/rsbuild'), ['build', '--no-env', '--config', 'rsbuild.route-review-test.config.ts'], { ...process.env, ROUTE_BUNDLE_DIR: directory });

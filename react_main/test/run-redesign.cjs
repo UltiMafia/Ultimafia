@@ -4,7 +4,7 @@ const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE);
-const directory = "/tmp/opencode/ultimafia-redesign-browser";
+const directory = process.env.REDESIGN_BUNDLE_DIR || "/tmp/opencode/ultimafia-redesign-browser";
 const publicDir = path.resolve(__dirname, "../public");
 const phase = process.env.DESIGN_PHASE || "after";
 const runChecks = phase !== "before" || process.env.DESIGN_CHECK_BASELINE === "1";

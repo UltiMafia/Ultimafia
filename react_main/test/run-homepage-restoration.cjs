@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE);
-const directory = '/tmp/opencode/ultimafia-redesign-browser';
+const directory = process.env.REDESIGN_BUNDLE_DIR || '/tmp/opencode/ultimafia-redesign-browser';
 const output = process.env.HOMEPAGE_OUTPUT_DIR;
 const before = process.env.DESIGN_PHASE === 'before';
 const types = { '.html': 'text/html', '.js': 'application/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };

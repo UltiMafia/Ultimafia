@@ -55,6 +55,9 @@
 .composer-editor:focus-visible { outline: none; }
 .composer-editor::placeholder { color: var(--um-muted); opacity: .85; }
 .composer-editor:disabled { color: var(--um-muted); }
+/* Keep the real editor at least one row high through hidden-view measurements.
+   Do not size MUI's aria-hidden helper: that would inflate its row estimate. */
+.composer-editor:not([aria-hidden="true"]) { min-height: calc(1.5em + 20px); }
 .composer-tools { display: flex; align-items: center; flex: 1 1 auto; flex-wrap: wrap; gap: 4px; min-width: 0; min-height: 40px; }
 .composer-tools .dropdown-control { padding: 0; background: transparent; }
 .composer-send.ui-action { flex: 0 0 40px; width: 40px; height: 40px; min-width: 40px; min-height: 40px; border-radius: 8px; padding: 0; margin-left: auto; }
@@ -85,6 +88,22 @@
 .ui-form-stack > p { margin: 0; }
 .ui-amount-shortcuts > .ui-action { padding-inline: 6px; }
 .ui-action-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ui-table { width: 100%; border-collapse: collapse; text-align: left; font-size: var(--ui-text-body); }
+.ui-table :is(th, td) { padding: 12px 8px; border-bottom: 1px solid var(--scheme-color-border); vertical-align: top; }
+.ui-table th { color: var(--um-muted); font-weight: var(--ui-weight-strong); }
+.ui-table-value { min-width: 0; overflow-wrap: anywhere; }
+.ui-table-value--code { font-family: monospace; }
+.ui-table-mobile-label { display: none; }
+.ui-code { font-family: monospace; overflow-wrap: anywhere; }
+@media (max-width: 900px) {
+  .ui-table, .ui-table tbody { display: block; }
+  .ui-table thead { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .ui-table tbody > tr { display: block; padding: 12px 0; border-bottom: 1px solid var(--scheme-color-border); }
+  .ui-table :is(th, td) { border: 0; }
+  .ui-table td { display: grid; grid-template-columns: minmax(80px, .35fr) minmax(0, 1fr); gap: 12px; padding: 6px 0; }
+  .ui-table td[colspan] { display: block; }
+  .ui-table-mobile-label { display: block; color: var(--um-muted); font-weight: var(--ui-weight-strong); }
+}
 .ui-section-label { margin: 16px 0 8px; font-size: var(--ui-text-body); font-weight: var(--ui-weight-strong); }
 .ui-page { width: 100%; max-width: var(--ui-page-width); min-width: 0; margin: 0; background: transparent; }
 .ui-page--reading { max-width: var(--ui-reading-width); }

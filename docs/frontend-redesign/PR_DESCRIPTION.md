@@ -3,106 +3,120 @@
 ## Draft — audit and migration in progress
 
 This is the **complete client redesign**, not a cleanup on top of master. It
-reworks the site shell/navigation, lobby/community wall, forums/comments,
-profiles/families, moderation, setup/hosting/deck flows, shop/stock market and
-game chrome. It introduces shared UI primitives, licensed utility icons,
-production-component fixtures and regression checks. The competitive game's
-panel/information architecture, gameplay logic and server contracts are not
-authorized redesign targets.
+reworks navigation, lobby/community wall, forums/comments, profiles/families,
+moderation, setup/hosting/decks, shop/stock market and game chrome. Shared UI
+primitives, licensed icons, production-component fixtures and regression checks
+support that work. Gameplay/server contracts and the competitive workspace's
+information architecture are not redesign targets.
 
-The PR is **not ready to merge**. Capture/test success is not visual acceptance.
-The previous description's claims that the audit had not been built, that the
-family always generated a fallback banner, and that older images represented
-final verification were stale. They are removed rather than repeated as current
-evidence. Final-HEAD screenshots will be refreshed after the last code change.
+**Not ready to merge.** Passing captures/tests are not visual acceptance.
+Historical `pr-evidence` and numbered `final*` images are not final-HEAD evidence;
+the complete screenshot refresh remains outstanding.
 
-### Code-slice diff against fetched upstream master
+### Diff against fetched upstream master
 
-Before adding the audit capture artifacts: **361 files**, 150 added, 50 deleted,
-161 modified; **+20,169 / −16,090 lines** (binary files excluded). This is
-the code-slice diff, not the final audit-artifact diff.
+355 files: **+21,466 / −14,691** text lines; 155 added, 167 modified, 33 deleted
+(25 binary files). Recomputed against fetched `origin/master` for this slice.
 
-## Current audit slice
+## Current work
 
-- `UiPage` and standalone `UiPageHeader` use one implementation. The editor
-  variant stacks controls on phones; standard/moderation/forum/detail retain the
-  same title scale. Native/MUI explicit h1 implementations migrated, with one
-  reviewed exception for the existing in-game mobile **Game info** panel.
-- Removed `page-heading`, `forum-directory-heading`, `moderation-heading`,
-  `setup-editor-heading` and `deck-editor-heading` implementations and their
-  page-specific CSS. Guards reject their return, including computed class names,
-  raw titles, inline header overrides and external shared-shell/title CSS.
-- Direct alternate icon imports are rejected. Legacy-control budgets decreased
-  **755 → 617**, with no increases. Baseline regeneration/expansion commands are
-  now rejected; remaining entries are debt, not a completed reviewed allowlist.
-- Added a comparative audit over real production components: stable route/state
-  IDs, six-cell width/palette matrix, heading/shell measurements, role-based
-  computed styles, geometry candidates, image/bundle hashes and a linked report.
-  Missing master coverage stays a gap; failed fixtures cannot count as captures.
-- Actual upstream master is rendered through its **complete Main/providers,
-  original shell and route tree**, from an unchanged worktree verified against
-  fetched `origin/master`. A previous redesign revision is never its baseline.
-- Added separate read-only **same-existing-database public comparisons**. Both
-  clients receive the same cached public responses; no identity headers or
-  writes are forwarded. Controlled fixtures are labeled separately.
-- Added `UI_ARCHITECTURE.md`, a new-page composition fixture without per-page
-  CSS, and a reduced-matrix CI geometry/architecture workflow.
-- Preserved the restored two-column profile arrangement. The fork's family
-  correction now shows a banner only when one was uploaded, without generating
-  a sparse gradient for absent media.
+- One `UiPage`/`UiPageHeader` implementation, named width/header variants,
+  supported-value validation and shared geometry checks. Play, profile and family
+  use named shells; Learn detail routes no longer nest legacy shells.
+- Explicit native/MUI h1 titles and eight remaining h2/h4/span title imitations
+   migrated. Removed legacy header classes and page-specific title CSS cannot be
+   reintroduced by the architecture check. Developer API and Invoices now use the
+   shared header too. This is not exhaustive every-page/state completion.
+- Profiles retain their two-column arrangement and authored colors. Neutral text
+  insets repair custom-background contrast. Karma controls sit beside their own
+  score; statistics show exact results instead of a decorative pie. The family
+  banner remains uploaded-media-only, without a generated fallback gradient.
+- Read-only filter metadata stays with the heading, not in a stranded action
+  card. A shared compact stat variant keeps all three stock balance values
+  together on phones, with currency icons beside their amounts. Old stock-summary
+  CSS is removed.
+- Developer/owner key directories and Invoices use shared controls and `UiTable`.
+  Every record value/action remains readable on phones. Failed reads are not
+  successful empty lists; late invoice-filter responses cannot replace newer
+  results. Revoke/approve/reject have cancellable dialogs and guarded pending/
+  failure states. Tests create no credentials and perform no payment or credit.
+- Architecture guards reject new alternate icon imports, raw h1 titles, removed
+  header paths, unsupported variants and inline shared-surface/header overrides.
+  Legacy debt decreased **755 → 617 → 615 → 606** with no increases. The remaining
+  baseline is debt, not a completed reviewed allowlist.
+- The comparative audit records stable IDs, six-cell width/palette coverage,
+  actual production geometry, role comparisons, source/bundle/image provenance
+  and explicit missing cells. Role medians weight each route once rather than
+  allowing a 443-role directory to outweigh other pages.
+- Actual master uses its untouched complete Main/providers/routes, not redesign
+  components with old colors. New dialogs are paired with documented actual
+  ancestors when master lacks them; native prompts are recorded and dismissed,
+  not fabricated in screenshots. Fixtures cannot forward service mutations.
+- Public **same-existing-database** comparisons remain separate from controlled
+  fixtures. No authentication, identity forwarding or database replacement is
+  implied by a fixture result.
+- Merged current upstream master without rewriting history, preserving transcript
+  virtualization, spectator ping names, Settings animation/containment, safe-area
+  bar treatment, editor font sizing and updated role artwork. Resolved a measured
+  32px Chromium cold-scroll regression with public offset synchronization and
+  frame-scheduled measurements. The shared composer's visible-only minimum fixes
+  a hidden-view WebKit ResizeObserver warning without sizing its autosize helper.
+  Strict browser-error and anchor assertions remain intact.
 
-## Evidence
+## Evidence and observed results
 
-- [Audit command, report format and limits](docs/frontend-redesign/audit/README.md)
-- [Existing-database public comparisons](docs/frontend-redesign/audit/live-public/README.md)
+- [Audit command/report format](docs/frontend-redesign/audit/README.md)
 - [Surface inventory](docs/frontend-redesign/workflow-repair/UI_INVENTORY.md)
-- [Exact verification record](docs/frontend-redesign/workflow-repair/VERIFICATION.md)
-- [Shared UI architecture](docs/frontend-redesign/UI_ARCHITECTURE.md)
+- [Exact verification and failures](docs/frontend-redesign/workflow-repair/VERIFICATION.md)
+- [UI architecture](docs/frontend-redesign/UI_ARCHITECTURE.md)
+- [Read-only public comparison procedure](docs/frontend-redesign/audit/live-public/README.md)
 
-Before, intermediate and corrected-header captures are diagnostic worktree
-evidence, not final-HEAD screenshots. Phone top/bottom images are separate
-viewports. Only selected images have been inspected; the audit does not claim
-that every capture has been visually reviewed.
+The registered denominator is **720 cells**. Global/game states, menus and further
+loading/empty/failure/permission branches still need registration. A complete
+registered run would therefore still not establish exhaustive inventory coverage.
 
-## Observed verification for this slice
-
-| Check | Result |
+| Check | Observed result (scoped runs, not final-HEAD acceptance) |
 | --- | --- |
-| First measured before routes | 384/384 captured, no failed renders |
-| Corrected-header route matrix | 390/390 captured: 65 routes × 3 widths × 2 palettes; shared-header geometry assertions passed |
-| Public same-database comparison | 48/48 cases, 0 failures; 24 paired cells, 96 top/bottom images; 56 source responses all HTTP 200 |
-| Frontend Node tests | 236 passed, 0 failed |
-| Shared controls | 57 checks, 39 captured states |
-| Game / competitive layout | 36 / 16 cases passed |
-| Retained lifecycle | 33 checks, no failures/errors/blocked traffic |
-| Homepage restoration | 10 cases passed |
-| Production build / UI architecture | Passed for the header slice |
-| Scoped ESLint | 0 errors, 80 warnings |
-| Full comparative audit | In progress; must fail until missing pairs and open findings are resolved |
-| Backend suite | Failed: isolated attempts reported 821 passed/80 failed, then 994 passed/145 failed. Raising MongoDB's descriptor limit prevented its crash, but a test worker still exhausted its heap and Mocha's parallel failure reporter crashed. No backend source was changed in this slice; development data services were not used |
+| Five-profile repair | 30/30 route cases; 66 registered cells; contrast and karma adjacency/non-overlap assertions passed |
+| Eight-title/summary comparison | 48/48 redesign and 48/48 actual-master route cases; 66 paired cells; 56 unresolved clipping candidates |
+| Corrected acknowledgement workflows | 18/18 redesign cases; rapid cancel/reopen/Back checks passed using the unchanged Back handler; corrected master driver separately captured 18/18 cases |
+| Newly added routes | 42 paired cells across Glossary, developer/owner/denied, invoices/denied and Welcome |
+| Public same-database comparison | 48/48 cases, 24 paired cells, 96 separate top/bottom images; 56 public source responses all HTTP 200 |
+| Upstream-integrated comparison before administrative expansion | 582/582 redesign cells and 582/582 master cells; 582 pairs, zero gaps, 270 open candidates; inventory remained incomplete |
+| Administrative/new-page focused comparison | 36/36 redesign and 36/36 master route cases; 174 paired cells; four remaining Rules clipping candidates. Subsequent invoice-contract correction requires refreshed data evidence |
+| Frontend Node tests | 256 passed, 0 failed |
+| Controls / lifecycle | 57 checks and 39 states / 33 checks passed |
+| Game / competitive / homepage | 36 / 16 / 10 cases passed |
+| Build / UI architecture / scoped ESLint | Passed / passed / 0 errors, 0 warnings across the current four-file production slice (tooling separately reports a stale browser database) |
+| Transcript windowing | 19/19 script/engine runs passed across Chromium and WebKit, including strict reflow/settings error checks; added composer/helper assertions passed in both engines |
+| Transcript comparative capture matrix | 6/6 repaired and 6/6 actual-master cells passed; pre-repair redesign reproduces the 32px failure in both 390px palettes |
+| Expanded full comparison | **720/720 redesign and 720/720 master cells; 720 pairs, zero gaps, 246 open candidates** (94 heading offsets, 152 clipping). All 438 route cases passed per branch. Built before the last composer correction, so not final-HEAD evidence |
+| Backend suite | Failed isolated attempts: 821 passed/80 failed, then 994 passed/145 failed; worker heap exhaustion and a Mocha parallel-reporter crash remain unresolved. No server/game-engine changes were made to force a pass |
 
-These counts are not a completion claim. Historical numbered `final*` folders
-are not substitutes for current evidence.
+Selected slice images/contact sheets and native-size summary crops were inspected.
+All 18 transcript comparison images were inspected through width-specific sheets
+and selected native images. Administrative before images and selected repaired
+phone/dialog/loading captures were also inspected.
+This is not inspection or acceptance of every route, master counterpart, dialog
+and global-state image. Speculative navigation changes made while diagnosing a
+selector failure were discarded; the existing Back handler is unchanged.
 
-## Remaining work / known limits
+## Still required
 
-- Expand stable IDs and capture tasks to every inventory dialog, tab, popover,
-  menu, loading/empty/failure/permission and game state. Complete master pairing
-  and explicit nearest-ancestor comparisons for new surfaces.
-- Migrate remaining h2/section-like page headings, shells, controls, surfaces,
-  dialogs and legacy CSS. The native-h1 migration is not every-page completion.
-- Inspect and resolve/classify every high/medium geometry candidate, including
-  intentional scroll-managed tabs/hidden hit targets rather than blindly changing
-  production behavior to satisfy a detector.
-- Complete the known birthday-field, forum-reply-composer and profile-game-row
-  repairs within the shared primitives; these are examples, not the audit scope.
-- Complete final verification and source-accurate PR screenshot refresh, then
-  replace these interim counts with the final report.
-- No authenticated hosting, purchases, trades, family administration or
-  destructive moderation was performed. Physical-phone keyboard/browser-chrome/
-  safe-area behavior is unverified. Visual acceptance is not claimed.
-
-## Reproduce
+- Complete stable-ID registration and both-baseline coverage for every surface,
+  state and interaction; retain before/after evidence for each repair.
+- Finish remaining header/shell/control/surface/icon migrations and remove their
+  legacy CSS/implementations. No baseline regeneration to hide violations.
+- Inspect every image; fix/classify all high/medium findings, including genuine
+  clipping versus reachable scroll-managed tabs. Resolve remaining role/shell
+  inconsistencies against both peers and actual master.
+- Finish the broken-layout and workflow sweep, including known birthday, reply
+  editor and profile-game-row examples without treating them as the scope.
+- Complete final-HEAD full-matrix and interaction verification, then
+  refresh every PR image and replace interim results with the final report.
+- Authenticated hosting, trading/purchases, family/staff administration and
+  destructive moderation were not performed. Physical-phone keyboard/chrome/
+  safe-area behavior for this redesign remains unverified.
 
 ```sh
 cd react_main
@@ -112,9 +126,7 @@ npm run build
 DESIGN_PHASE=after npm run audit:ui
 ```
 
-The audit requires isolated Playwright/Chromium and the actual upstream master
-worktree documented in its README. Fixture builds use `--no-env` and fake public
-Firebase configuration, not credentials. Live public comparisons additionally
-require the existing local backend; they do not seed or replace its database.
-
-Keep this PR open and draft. No production deployment or merge is requested.
+The audit needs isolated Playwright/Chromium and an untouched actual-master
+worktree. Fixture builds use fake public Firebase configuration and `--no-env`,
+not credentials. Keep this PR **open and draft**; no production merge or
+deployment is requested.

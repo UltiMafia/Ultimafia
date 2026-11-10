@@ -7,7 +7,7 @@ const http = require("node:http");
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE);
 const phase = process.env.DESIGN_PHASE || "after";
 const shots = process.env.SCREENSHOT_DIR || `/tmp/opencode/ultimafia-controls/${phase}`;
-const directory = "/tmp/opencode/ultimafia-redesign-browser";
+const directory = process.env.REDESIGN_BUNDLE_DIR || "/tmp/opencode/ultimafia-redesign-browser";
 const publicDir = path.resolve(__dirname, "../public");
 const mime = { ".html": "text/html", ".js": "application/javascript", ".css": "text/css", ".png": "image/png", ".webp": "image/webp", ".svg": "image/svg+xml", ".woff2": "font/woff2" };
 const server = http.createServer((req, res) => {

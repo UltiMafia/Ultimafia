@@ -66,6 +66,13 @@ continuous content area. `UiSection` groups related content using a heading and
 spacing; `UiList`/`UiListItem` provide aligned, divider-separated collections.
 Layout widths and section/column gaps come from the central tokens.
 
+`UiTable` is the supported path for administrative record tables. Supply a table
+label, stable row-key property and named columns with optional render functions.
+At desktop widths it is a semantic table; at 900px and below the same DOM becomes
+continuous labeled records, keeping every value and action reachable without
+horizontal scrolling. Do not build a second mobile-only copy or hide columns.
+Use `code: true` for identifiers, not page-specific monospace/width overrides.
+
 Do not wrap ordinary pages or every heading/body pair in Card/Paper. Avoid
 repeated heading strips, alternating inset backgrounds and ornamental panels.
 Use an actual surface when it communicates a boundary: dialogs, menus, editors,

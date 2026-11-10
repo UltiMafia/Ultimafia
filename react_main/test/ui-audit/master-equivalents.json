@@ -1,4 +1,18 @@
 {
+  "developer.revoke-confirmation": { "equivalence": "nearest-ancestor", "reason": "Master revokes a key immediately (DeveloperApi.jsx:48–52), without a confirmation dialog. Capture the real directory without issuing the write." },
+  "developer.revoke-pending": { "equivalence": "nearest-ancestor", "reason": "Master has no pending revoke dialog or disabled cancellation controls. Compare the actual key directory ancestor; do not revoke a key." },
+  "developer.revoke-error": { "equivalence": "nearest-ancestor", "reason": "The retained, retryable revoke dialog is new. Master reports errors through a global alert after immediate submission. Capture its directory ancestor without a key mutation." },
+  "developer.create-pending": { "equivalence": "nearest-ancestor", "reason": "Master has no creation pending/disabled state (DeveloperApi.jsx:37–45). Compare the actual creation form without creating credentials." },
+  "developer.create-error": { "equivalence": "nearest-ancestor", "reason": "Master has no inline draft-retention failure state. Compare the actual creation form; no credentials are generated for evidence." },
+  "developer-owner.revoke-confirmation": { "equivalence": "nearest-ancestor", "reason": "Master owner view revokes immediately without confirmation. Capture its actual owner directory, without a key mutation." },
+  "developer-owner.revoke-pending": { "equivalence": "nearest-ancestor", "reason": "Master has no disabled pending revoke dialog. Compare the actual owner directory ancestor without submitting." },
+  "developer-owner.revoke-error": { "equivalence": "nearest-ancestor", "reason": "The retryable revoke dialog is new. Compare the actual owner directory ancestor without submitting a key mutation." },
+  "developer-owner.create-pending": { "equivalence": "nearest-ancestor", "reason": "Master has no disabled creation pending state. Compare the actual form without generating credentials." },
+  "developer-owner.create-error": { "equivalence": "nearest-ancestor", "reason": "Master has no inline creation-failure state. Compare the actual form without generating credentials." },
+  "invoices.approve-confirmation": { "equivalence": "nearest-ancestor", "reason": "Master uses native window.confirm (Invoices.jsx:72–74). Dismiss the actual prompt and capture the table ancestor; the page screenshot is not an image of native browser chrome." },
+  "invoices.reject-confirmation": { "equivalence": "nearest-ancestor", "reason": "Master uses native window.confirm for rejection. Dismiss the actual prompt and capture the real table ancestor, without a payment write." },
+  "invoices.review-pending": { "equivalence": "nearest-ancestor", "reason": "Master has no pending review dialog. Capture the actual invoice table ancestor without approving, crediting or rejecting an invoice." },
+  "invoices.review-error": { "equivalence": "nearest-ancestor", "reason": "The retryable inline review dialog is new. Compare the actual invoice table ancestor, not a fabricated modal or a payment mutation." },
   "donors-management.assign-dialog": {
     "equivalence": "nearest-ancestor",
     "reason": "Master uses a user-search popover that submits immediately upon selection (upstream Donors.jsx:356–374), not a cancellable assignment dialog. Open the actual popover without choosing any user."

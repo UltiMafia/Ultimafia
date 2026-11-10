@@ -34,6 +34,7 @@ const state = window.__routeReview = {
   ready: false, pending: 0, requests: [], writes: [], alerts: [], errors: [],
   unresolved: [], blocked: [], lastRequestAt: performance.now(), cases: routeCases,
   failNextRead: params.get("fixtureFailRead"),
+  deferRead: params.get("fixtureDeferRead"),
 };
 const record = (type, value) => state.writes.push({ type, ...value });
 const user = makeUser(params.get("fixtureMode") || "member");
@@ -97,10 +98,22 @@ axios.defaults.adapter = async config => {
          state.allowTradeFailure = false;
          await new Promise(resolve => { state.releaseTradeFailure = resolve; });
          state.simulatedTradeFailures = (state.simulatedTradeFailures || 0) + 1;
-         throw Object.assign(new Error("Simulated trade failure. No trade was made."), { fixtureExpected: true });
+          throw Object.assign(new Error("Simulated trade failure. No trade was made."), { fixtureExpected: true });
+        }
+       else if (method === "post" && state.adminFailurePath === url.pathname &&
+         ["/api/dev/keys", "/api/dev/keys/fixture-client-1/revoke", "/api/crypto/admin/invoices/fixture-invoice-0/approve"].includes(url.pathname)) {
+         state.adminFailurePath = null;
+         await new Promise(resolve => { state.releaseAdminFailure = resolve; });
+         state.simulatedAdminFailures = (state.simulatedAdminFailures || 0) + 1;
+         throw Object.assign(new Error("Simulated administrative failure. No key or payment was changed."), { fixtureExpected: true });
        }
-      else throw new Error(`Fixture is read-only; recorded ${method.toUpperCase()} ${url.pathname}`);
-    } else data = readFixture(url, user);
+       else throw new Error(`Fixture is read-only; recorded ${method.toUpperCase()} ${url.pathname}`);
+     } else data = readFixture(url, user);
+    if (params.get("fixtureEmptyRead") === url.pathname) {
+      if (["/api/dev/keys", "/api/dev/owner/keys"].includes(url.pathname)) data = [];
+      else if (url.pathname === "/api/crypto/admin/invoices") data = { invoices: [], total: 0, pageSize: 50 };
+      else throw new Error("Unregistered empty-state contract");
+    }
     return { data: JSON.parse(JSON.stringify(data)), status: 200, statusText: "OK", headers: {}, config };
   } catch (error) {
     if (!error.fixtureExpected) state.unresolved.push(error.message);

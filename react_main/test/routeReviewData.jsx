@@ -2,6 +2,9 @@
 import { violationDefinitions } from "../../data/violations";
 import fullMafiaRoles from "./routeReviewRoles.json";
 export const fixtureTime = Date.UTC(2026, 10, 8, 16);
+// Contract: modules/cryptoPayments.js. "Unpaid" is a filter group, not a status.
+const invoiceApproveStatuses = ["pending", "expired", "failed", "rejected"];
+const invoiceRejectStatuses = ["pending", "expired", "failed"];
 export const people = ["NightOwl", "Juniper", "Moth", "Rook", "Velvet", "Sol"].map((name, i) => ({
   id: `fixture-person-${i}`, name, avatar: i === 1, groups: [],
   settings: {}, joined: fixtureTime - 86400000 * 400, status: "online",
@@ -157,7 +160,12 @@ export function readFixture(url, user) {
     { clientId: "fixture-client-1", name: "Local read-only statistics integration", userId: people[0].id, createdAt: fixtureTime - 86400000 * 20, expiresAt: fixtureTime + 86400000 * 30, lastUsedAt: fixtureTime - 3600000 },
     { clientId: "fixture-client-2", name: "Archived local integration", userId: people[1].id, createdAt: fixtureTime - 86400000 * 60, expiresAt: fixtureTime - 86400000 * 30, lastUsedAt: null, revokedAt: fixtureTime - 86400000 * 40 },
   ];
-  if (p === "/api/crypto/admin/invoices") return { total: 6, pageSize: 50, invoices: ["unpaid", "pending", "expired", "completed", "rejected", "failed"].map((status, index) => ({ id: `fixture-invoice-${index}`, userId: people[index].id, userName: people[index].name, userAvatar: people[index].avatar, chain: "fixture-network", chainLabel: "Synthetic network", asset: "TEST", usd: 10 + index, expectedAmount: "1.000000", coins: 100 + index, status, createdAt: fixtureTime - 3600000 * index })) };
+  if (p === "/api/crypto/admin/invoices") {
+    const invoices = ["pending", "expired", "completed", "rejected", "failed", "pending"].map((status, index) => ({ id: `fixture-invoice-${index}`, userId: people[index].id, userName: people[index].name, userAvatar: people[index].avatar, chain: "fixture-network", chainLabel: "Synthetic network", asset: "TEST", usd: 10 + index, expectedAmount: "1.000000", coins: 100 + index, status, createdAt: fixtureTime - 3600000 * index, canApprove: invoiceApproveStatuses.includes(status), canReject: invoiceRejectStatuses.includes(status) }));
+    const status = url.searchParams.get("status");
+    const filtered = invoices.filter(row => !status || status === "all" || (status === "unpaid" ? invoiceApproveStatuses.includes(row.status) : row.status === status));
+    return { total: filtered.length, pageSize: 50, invoices: filtered };
+  }
   if (/^\/api\/user\/[^/]+\/info$/.test(p)) return people.find(person => person.id === p.split("/")[3]) || { id: p.split("/")[3], name: "Unknown player", avatar: false };
   if (p === "/api/site/contributors" || p === "/api/site/donors") return people.map((person, i) => ({ ...person, types: i % 2 ? ["art", "design"] : ["code"], github: i % 2 ? null : { username: `fictional-${person.name.toLowerCase()}`, lines: 12345 }, bio: "I help maintain the site and enjoy discussing open setups." }));
   if (p === "/api/game/tutorial/storylines") return [{ id: "cop", role: "Cop", title: "Cop", available: true, blurb: "Investigate at night and compare your information with other players." }, { id: "sheriff", role: "Sheriff", title: "Sheriff", available: true, blurb: "Learn how day actions work in a guided game." }];

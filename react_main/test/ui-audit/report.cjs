@@ -15,6 +15,9 @@ const taskStates = {
   feedback: ['submission-error'], 'admin-intake': ['approve-confirmation', 'ban-confirmation'],
   contributors: ['bio-editor'], donors: ['bio-editor'],
   'donors-management': ['assign-dialog', 'remove-confirmation'],
+  developer: ['revoke-confirmation', 'revoke-pending', 'revoke-error', 'create-pending', 'create-error', 'loading', 'read-error', 'empty'],
+  'developer-owner': ['revoke-confirmation', 'revoke-pending', 'revoke-error', 'create-pending', 'create-error', 'loading', 'read-error', 'empty'],
+  invoices: ['approve-confirmation', 'reject-confirmation', 'review-pending', 'review-error', 'loading', 'read-error', 'empty'],
 };
 function inventoryFromSource(source) {
   const literal = source.match(/export const routeCases = (\[[\s\S]*?\n\]);/);

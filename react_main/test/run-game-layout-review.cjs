@@ -8,7 +8,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || '/tmp/opencode/red
 const phase = process.env.DESIGN_PHASE || 'after';
 const output = process.env.GAME_LAYOUT_OUTPUT_DIR;
 if (!output) throw new Error('GAME_LAYOUT_OUTPUT_DIR must name a fresh evidence directory');
-const roots = ['/tmp/opencode/ultimafia-redesign-browser', path.resolve(__dirname, '../public')];
+const roots = [process.env.REDESIGN_BUNDLE_DIR || '/tmp/opencode/ultimafia-redesign-browser', path.resolve(__dirname, '../public')];
 const mime = { '.html': 'text/html', '.js': 'application/javascript', '.css': 'text/css', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };
 const server = http.createServer((request, response) => {
   if (request.method !== 'GET') { response.writeHead(405); return response.end(); }

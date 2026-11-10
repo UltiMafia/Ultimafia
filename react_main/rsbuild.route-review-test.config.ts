@@ -24,6 +24,9 @@ export default defineConfig({
     tags: [{ tag: "link", attrs: { rel: "stylesheet", href: "/css/fontawesome.min.css" }, head: true }],
   },
   performance: { buildCache: false },
+  // The read-only runner serves each branch's original public directory. Do not
+  // duplicate the audio/artwork archive into every immutable fixture bundle.
+  server: { publicDir: false },
   output: {
     dataUriLimit: { image: 0 },
     distPath: { root: process.env.ROUTE_BUNDLE_DIR || "/tmp/opencode/ultimafia-route-review-browser" },

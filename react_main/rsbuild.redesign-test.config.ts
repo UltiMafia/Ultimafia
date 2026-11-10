@@ -13,6 +13,6 @@ export default defineConfig({
   },
   output: {
     dataUriLimit: { image: 0 },
-    distPath: { root: "/tmp/opencode/ultimafia-redesign-browser" },
+    distPath: { root: process.env.REDESIGN_BUNDLE_DIR || "/tmp/opencode/ultimafia-redesign-browser" },
   },
 });

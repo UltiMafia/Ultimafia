@@ -3,6 +3,7 @@ export { default as UiDialog } from "./UiDialog";
 export { default as UiPending } from "./UiPending";
 export { default as UiProductCard } from "./UiProductCard";
 export { default as UiCard } from "./UiCard";
+export { default as UiTable } from "./UiTable";
 export { UiStatRow, UiStat } from "./UiStat";
 export { default as UiPage, UiPageHeader, UiSection, UiList, UiListItem } from "./UiPage";
 export { default as UiIcon } from "./UiIcon";

@@ -11,6 +11,7 @@ import { makeUser, makeSiteInfo, readFixture, routeCases } from '../routeReviewD
 const params = new URLSearchParams(location.search);
 const state = window.__routeReview = { ready: false, pending: 0, requests: [], writes: [], unresolved: [], errors: [], lastRequestAt: performance.now(), cases: routeCases };
 state.failNextRead = params.get('fixtureFailRead');
+state.deferRead = params.get('fixtureDeferRead');
 const user = makeUser(params.get('fixtureMode') || 'member');
 user.settings.siteColorScheme = params.get('theme') || 'dark';
 const site = makeSiteInfo(() => {});
@@ -35,6 +36,10 @@ axios.defaults.adapter = async config => {
   state.requests.push({ method, url: url.pathname + url.search });
   try {
     if (url.origin !== location.origin) throw new Error('External master-fixture request blocked');
+    if (method === 'get' && state.deferRead === url.pathname) {
+      state.deferRead = null;
+      await new Promise(resolve => { state.releaseRead = resolve; });
+    }
     if (method === 'get' && state.failNextRead === url.pathname) {
       state.failNextRead = null;
       state.simulatedReadFailures = (state.simulatedReadFailures || 0) + 1;
@@ -53,6 +58,11 @@ axios.defaults.adapter = async config => {
     } else if (Object.hasOwn(bootstrap, url.pathname)) data = bootstrap[url.pathname];
     else if (url.pathname === '/api/user/info' && !user.loggedIn) data = {};
     else data = readFixture(url, user);
+    if (params.get('fixtureEmptyRead') === url.pathname) {
+      if (['/api/dev/keys', '/api/dev/owner/keys'].includes(url.pathname)) data = [];
+      else if (url.pathname === '/api/crypto/admin/invoices') data = { invoices: [], total: 0, pageSize: 50 };
+      else throw new Error('Unregistered empty-state contract');
+    }
     return { data: JSON.parse(JSON.stringify(data)), status: 200, statusText: 'OK', headers: {}, config };
   } catch (error) {
     if (!error.fixtureExpected) state.unresolved.push(error.message);

@@ -36,6 +36,12 @@ Use `UI_AUDIT_OUTPUT` for an independent run; before/after output folders are
 distinct (`DESIGN_PHASE=before` or `after`). Do not rebuild a bundle being served
 by another runner.
 
+The runner serves each branch's original public asset directory read-only; fixture
+builds do not duplicate its audio/artwork archive. Set `UI_AUDIT_BUNDLE_ROOT` to an
+owned disk-backed temporary directory if `/tmp` hits its per-user quota. Set
+`TMPDIR` on the command too to relocate browser scratch files. This is a storage
+workaround, not permission to delete old builds, worktrees or evidence.
+
 ## Current limits — not completion
 
 The initial inventory derives from the existing route registry plus its explicit
@@ -47,10 +53,12 @@ fetched `origin/master` or changes to that worktree's production source. It
 renders master’s **complete Main and route tree**, not the redesign shell with
 old colors. Reads and passive acknowledgements stay in memory, with the same
 controlled records; this is separate from live same-database public-route pairs,
-which now have a separate `live-public` run. The shell-contract run paired
-510/516 registered cells; its six feedback gaps were diagnosed and the focused
-master feedback rerun passed after targeting the accessible textbox rather than
-MUI's hidden autosize textarea. A replacement full run is still required. The
+which now have a separate `live-public` run. The upstream-integrated run paired
+all then-registered 582 cells with no gaps and 270 open candidates. The registry
+has since expanded to 720 cells with explicit administrative pending/error/empty
+states. The administrative integration run captured all 720 pairs with zero gaps
+and 246 open candidates (94 heading offsets, 152 clipping), before the final
+composer correction; it is not final-HEAD evidence or exhaustive inventory. The
 report does not interpret a missing master as a redesign regression. Geometry
 candidates require image inspection and classification; automated capture is not
 visual acceptance, nor evidence of live authentication or physical-phone behavior.

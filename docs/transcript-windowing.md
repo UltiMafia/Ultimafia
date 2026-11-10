@@ -31,6 +31,18 @@ above the reading anchor, preserves normal partially visible-row growth below
 that anchor, and uses stable message keys. Merged quote IDs resolve to their
 reply row without aliasing the quoted original's ID.
 
+ResizeObserver work is scheduled into animation frames. Before measuring a row
+on non-iOS platforms, the adapter feeds any newer native scroll offset through
+TanStack's public offset-observer callback. This prevents compensation from
+canceling the reader's latest motion; private held-correction state is not
+assigned. The following-only viewport observer also schedules its scroll command
+outside active observer delivery and cancels it when following ends or unmounts.
+
+The shared composer's visible textarea keeps at least one text row of height
+through hidden retained-view measurements. MUI's aria-hidden autosize helper is
+excluded from that minimum, so measurement does not inflate the row height.
+Reflow checks assert the distinction and keep strict browser-error assertions.
+
 The iOS deferred-correction path needs two top-boundary safeguards: a native
 sticky bound prevents held shrinking from exposing leading blank space, and a
 bounded, cancelable completion after release handles native zero reached before
@@ -80,6 +92,7 @@ for ENGINE in webkit chromium; do
   export ENGINE
   node perf/windowing-check.cjs build-chat-perf
   node perf/windowing-anchor.test.cjs build-chat-perf
+  node perf/windowing-reflow.test.cjs build-chat-perf
   EMPTY_TAIL=1 node perf/windowing-spacing.test.cjs build-chat-perf
 done
 ENGINE=webkit EDGE_RELEASE_EARLY=1 node perf/windowing-touch-edge.test.cjs build-chat-perf
@@ -101,7 +114,29 @@ The spacing driver checks all four layouts, desktop/mobile viewport widths and
 light/dark CSS schemes, at top/middle/bottom. It compares row dimensions and gaps
 intersecting the viewport; offscreen overscan positions may still be estimates.
 
+The anchor driver accepts `ANCHOR_WIDTH=1440|390|320`, `ANCHOR_THEME=dark|light`,
+`ANCHOR_SCREENSHOT` and `ANCHOR_OUTPUT` for comparative captures. At desktop widths
+it leaves initial end-following with native wheel input before the cold seek;
+mobile WebKit retains the original programmatic probe because wheel input is not
+supported there. Every run asserts that the cold midpoint was actually reached.
+`REFLOW_OUTPUT_DIR` keeps independent reflow results from overwriting one another;
+the default generated directory is created automatically.
+
 ## Evidence and remaining validation
+
+The redesign integration exposed a 32px Chromium cold-scroll regression at 390px,
+while the identical actual-master probe passed. Public offset synchronization,
+frame-scheduled measurement and the visible-only composer minimum repair it.
+The corresponding 1440/390/320 dark/light repair matrix and actual-master matrix
+each passed all six cells. The preserved pre-repair bundle still fails both
+390px palettes; other pre-repair widths pass. These are controlled fixtures, not
+authenticated game journeys or new physical-device acceptance.
+
+All nine engine-selectable windowing scripts passed on Chromium 158.0.8127.18
+and WebKit 27.2 after the repair; WebKit's separate obituary comparison also
+passed. This includes strict browser-error checks on reflow and settings, plus
+synthetic held-edge/fling probes. Earlier failed experiments and their warnings
+are retained as diagnostics, not relabeled as passing runs.
 
 Linux Playwright WebKit 27.2 and Chromium 156.0.8078.4 measured 0px unintended
 anchor displacement in the growth/shrink/batch/cold-scroll probes and 0px

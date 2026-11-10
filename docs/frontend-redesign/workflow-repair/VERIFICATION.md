@@ -3,7 +3,74 @@
 PR #3197 is open and draft. This is not visual acceptance or a completed audit.
 Numbered historical evidence directories are not final-HEAD verification.
 
-## Current changes
+## Latest upstream integration and administrative/transcript slice
+
+- Merged fetched upstream master without rewriting history. This preserves its
+  transcript virtualization, spectator ping names, Settings animation/containment,
+  safe-area paint, editor font sizing and role artwork. No backend source differs
+  from fetched master (`git diff origin/master --name-only -- Games modules db
+  routes lib test` is empty).
+- Developer API (including owner/denied views) and Invoices now use shared page
+  headings, controls and `UiTable`. The table keeps every value/action in labeled
+  continuous phone records instead of clipping the rightmost columns. Read
+  failures have explicit retry states, not successful empty lists. Invoices reject
+  late responses from earlier filters. Revoke/approve/reject use cancellable shared
+  dialogs with pending guards and retained inline errors; failed key creation
+  retains its name. Endpoint methods/payloads and server eligibility are unchanged.
+- Registered administrative pending/error/empty states expand **582 → 720 cells**.
+  Synthetic invoice status/eligibility rules now match the source literals in
+  `modules/cryptoPayments.js`, checked by reading them, never importing its database
+  module. The initial fixture incorrectly treated Unpaid as a status; it is a
+  filter group. Those older captures are retained as diagnostics, not final data
+  contracts. No credentials were generated and no payment/credit was performed.
+- Resolved the merged redesign's Chromium 32px cold-scroll regression through
+  TanStack's public offset observer plus frame-scheduled measurement. The iOS
+  held-correction path does not adopt native offsets. Following-only viewport
+  commands are frame-scheduled and canceled on cleanup. A separate WebKit warning
+  was traced to the shared composer shrinking while hidden: its one-row minimum
+  now excludes MUI's aria-hidden autosize helper. No browser errors are filtered
+  and no anchor tolerances were relaxed.
+- New-page composition now includes a long-identifier responsive table and labeled
+  select. Architecture debt shrank **615 → 606**, independently checked with zero
+  increases. Existing controls/surfaces elsewhere still require migration.
+- `/tmp`'s per-user quota interrupted one fixture build despite free filesystem
+  space. No evidence/builds/worktrees were deleted. New output uses disk-backed
+  temporary directories; fixture bundles no longer duplicate the public archive
+  already served read-only by the runner. Bundle-directory overrides also let the
+  regression runners use immutable disk-backed builds.
+
+| Latest check | Observed result |
+| --- | --- |
+| Upstream-integrated comparative run, before this slice | **582/582 redesign, 582/582 master, 582 pairs, zero gaps, 270 open candidates**; `../audit/upstream-integrated/coverage.json`. Inventory remained incomplete |
+| Administrative BEFORE | 30 redesign and 30 master route cases; 30 pairs in the then-582 denominator; both palettes at 1440/390/320 |
+| Corrected focused administrative/new-page matrix | **36/36 redesign and 36/36 master cases**, **174 paired registered cells**, four remaining Rules-tab clipping candidates; `../audit/admin-reference-corrected/`. Later invoice-contract corrections require refreshed data evidence |
+| New full comparative run | **720/720 redesign cells, 720/720 master cells, 720 pairs, zero gaps, 246 open candidates** (94 heading offsets, 152 clipping); all **438 route cases passed per branch** in `../audit/admin-integrated/`. Built before the final composer-minimum correction, not final-HEAD evidence |
+| `node --test test/*.test.mjs` | **256 passed, 0 failed**; `/var/tmp/ultimafia-admin-contracts-node-tests.log` |
+| `npm run lint:ui` | Passed; legacy budget 606, no increases |
+| Production build / scoped ESLint | Passed / **0 errors, 0 warnings** across DeveloperApi, Invoices, UiTable and WindowedTranscript; `/var/tmp/ultimafia-ui-current-{production-build,eslint}.log`. Tooling separately warns that its browser database is stale |
+| Controls / retained lifecycle | **57 checks, 39 states / 33 checks passed**; `../audit/admin-transcript-regressions/` |
+| Game / competitive / homepage | **36 / 16 / 10 cases passed**, no recorded failures; same regression directory |
+| Windowing scripts | **19/19 script/engine runs passed**: nine selectable scripts on Chromium 158.0.8127.18 and WebKit 27.2, plus WebKit-only obituary comparison. `/var/tmp/ultimafia-final-windowing-*.log` |
+| Added composer/minimum assertions | Reflow passed again on Chromium and WebKit with explicit one-editor/one-row and zero-minimum-helper assertions; `/var/tmp/ultimafia-visible-composer-asserted-*.log` |
+| Cold-scroll comparative capture matrix | **6/6 repaired and 6/6 actual-master cells passed** at all widths/palettes. Preserved pre-repair redesign fails both 390px palettes and passes the other four cells. `../audit/transcript-offset-frame-native/` |
+| Backend | Still the failed isolated attempts documented below; no server/game-engine changes made to force passing results |
+
+The cold-scroll driver now verifies it reached middle history. Desktop needs a
+native wheel action to leave its initial end command; a programmatic-only desktop
+probe failed identically on actual master and redesign and is retained separately
+as superseded diagnostics. Mobile WebKit has no wheel support, so its original
+programmatic cold-seek test is preserved. All displacement/bounded-DOM/browser-error
+assertions remain strict.
+
+Inspected all 18 transcript before/after/master images through three width-specific
+contact sheets, plus selected native-size images; desktop thumbnails establish
+composition, not native-size text inspection. Inspected the administrative BEFORE
+matrix through 12 contact sheets and selected repaired phone/dialog/native-size
+images, including the refreshed invoice eligibility and visible loading indicator.
+This is not inspection of every full-inventory image or visual acceptance. The
+latest runs have dirty-source provenance and are not final-HEAD PR evidence.
+
+## Earlier presentation slices
 
 - Third slice: Rules, Terms, Privacy, Competitive FAQ, Hall of Fame, competitive
   standings, Learn and Stock Market now use the shared page header instead of
@@ -16,7 +83,8 @@ Numbered historical evidence directories are not final-HEAD verification.
 - Registered seven previously missing route/permission variants (Glossary,
   invoices/denied, developer/owner/denied, Welcome) and four acknowledgement
   dialog/editor states. The denominator is now **582 cells**, still not an
-  exhaustive global/game-state inventory.
+  exhaustive global/game-state inventory. This was the then-current denominator;
+  the latest registration above expands it further.
 - Second slice: Play, profile and family now use named `UiPage` shells; Learn
   details no longer nest a second legacy shell. Profile identity uses the same
   header with a keyboard-accessible name-history action. Supported widths and

@@ -1,6 +1,10 @@
 // Opt-in transcript window. Measurement and scroll compensation share one owner.
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
-import { useVirtualizer } from "@tanstack/react-virtual";
+import {
+  useVirtualizer,
+  observeElementOffset,
+  measureElement,
+} from "@tanstack/react-virtual";
 import {
   estimateTranscriptRowHeight,
   transcriptLayoutMetrics,
@@ -145,12 +149,39 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     return estimateTranscriptRowHeight(row, UNSEEN_ROW_ESTIMATE, layoutRef.current);
   }, []);
   const virtualizerRef = useRef(null);
+  const scrollOffsetObserver = useRef(null);
+  const observeScrollOffset = useCallback((instance, onOffset) => {
+    scrollOffsetObserver.current = onOffset;
+    const cleanup = observeElementOffset(instance, onOffset);
+    return () => {
+      if (scrollOffsetObserver.current === onOffset) {
+        scrollOffsetObserver.current = null;
+      }
+      cleanup?.();
+    };
+  }, []);
+  const measureTranscriptRow = useCallback((element, entry, instance) => {
+    // A size notification can precede the latest native scroll event. Feed that
+    // offset through the public observer before compensation, so measuring an
+    // overscanned row cannot cancel a reader's just-completed scroll movement.
+    const offset = instance.scrollElement?.scrollTop;
+    if (!iOSDefersCorrections && offset != null && offset !== instance.scrollOffset) {
+      scrollOffsetObserver.current?.(offset, instance.isScrolling);
+    }
+    return measureElement(element, entry, instance);
+  }, []);
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => speechDisplayRef.current,
     getItemKey,
     estimateSize,
     overscan: 8,
+    observeElementOffset: observeScrollOffset,
+    measureElement: measureTranscriptRow,
+    // Schedule size work outside the active ResizeObserver delivery. The public
+    // offset observer above still adopts intervening native motion before each
+    // measurement, so this does not compensate from a stale scroll position.
+    useAnimationFrameWithResizeObserver: true,
     anchorTo: "end",
     followOnAppend: autoScroll,
     scrollEndThreshold: 10,
@@ -206,16 +237,25 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     if (!autoScroll || !scroller) return;
     let width = scroller.clientWidth;
     let height = scroller.clientHeight;
+    let frame;
     const observer = new ResizeObserver(() => {
-      const nextWidth = scroller.clientWidth;
-      const nextHeight = scroller.clientHeight;
-      if (nextWidth === width && nextHeight === height) return;
-      width = nextWidth;
-      height = nextHeight;
-      if (width > 0 && height > 0) virtualizer.scrollToEnd();
+      // scrollToEnd may synchronously commit measured rows. Do not start that
+      // layout work inside the active ResizeObserver delivery.
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const nextWidth = scroller.clientWidth;
+        const nextHeight = scroller.clientHeight;
+        if (nextWidth === width && nextHeight === height) return;
+        width = nextWidth;
+        height = nextHeight;
+        if (width > 0 && height > 0) virtualizer.scrollToEnd();
+      });
     });
     observer.observe(scroller);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+    };
   }, [autoScroll, speechDisplayRef, virtualizer]);
 
   useEffect(() => () => {

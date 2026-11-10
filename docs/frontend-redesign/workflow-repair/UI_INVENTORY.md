@@ -15,6 +15,12 @@ at `/audit/new-page` verifies composition without page-specific CSS. The global
 and workflow lists below still require complete stable-ID registration and
 capture tasks before the inventory can be called exhaustive.
 
+The registry currently contains **120 route/state IDs × six cells = 720 cells**.
+The administrative integration run covered all **720 registered pairs**, with no
+gaps and 246 open geometry candidates. It was built before the final composer
+correction and is not final-HEAD evidence. Registered coverage is not exhaustive
+global/game-state inventory completion.
+
 ## Route surfaces
 
 | Surface | Route |
@@ -128,6 +134,17 @@ capture tasks before the inventory can be called exhaustive.
   `donors-management.remove-confirmation`. Upstream's assignment popover and
   immediate-removal ancestor are explicitly distinguished from the redesign's
   cancellable dialogs; no donor-group mutations are performed.
+- Registered developer and owner-directory states: `revoke-confirmation`,
+  `revoke-pending`, `revoke-error`, `create-pending`, `create-error`, `loading`,
+  `read-error`, `empty`. Creation/revocation attempts are deliberately deferred
+  **failures in the in-memory adapter only**; no credential is generated or used.
+- Registered invoice states: `approve-confirmation`, `reject-confirmation`,
+  `review-pending`, `review-error`, `loading`, `read-error`, `empty`. Cancellation
+  issues no write; the only review attempt is a deferred in-memory failure, never
+  a successful payment/credit. Eligibility and the Unpaid filter follow the
+  literals in `modules/cryptoPayments.js`, checked without importing that module.
+  Upstream native prompts are recorded/dismissed and their actual table ancestors
+  are labeled as such, not represented as screenshots of native browser chrome.
 - Dark and light palettes; desktop 1440, phone 390, narrow phone 320.
 - Loading, empty, error/failure and permission states for the routes that expose them.
 - Dialogs: host, avatar crop, banner crop, report, trade, leave game, deck delete, family role/removal/bio, moderation command, group removal, ban confirmation, strategy editor, image viewer.

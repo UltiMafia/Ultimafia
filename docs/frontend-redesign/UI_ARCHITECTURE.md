@@ -8,6 +8,8 @@ it does not create competing implementations. The production-component example
 is `react_main/test/ui-audit/NewPageFixture.jsx`, at the fixture-only route
 `/audit/new-page`. It has no page-specific CSS or inline styles. The route runner
 asserts its heading, width, section spacing and field geometry at every width.
+It also composes a semantic `UiTable`, checking long names/identifiers and an
+explicit row action without page-specific table CSS.
 
 `UiPage` owns the shell. Width variants are `wide` (1180px maximum), `reading`
 (820px), `prose` (80ch) and `full` (available width). The parent router can own
@@ -54,6 +56,13 @@ Controls use `UiField` and `UiAction` with named variants rather than raw native
 or direct MUI equivalents. Dialogs use `UiDialog`, explicit cancellation and
 pending guards. Utility icons use `UiIcon` (HackerNoon Solid, native 24px slot);
 currency uses `CoinIcon`. Existing role icons and seasonal wordmarks stay intact.
+
+Administrative record tables use `UiTable`: an accessible table label, stable
+row-key property, named columns and optional value renderers. The same DOM becomes
+continuous labeled records on phones, preserving every value and row action
+instead of clipping rightmost columns or maintaining a second mobile-only view.
+Developer API and Invoices use this path; existing tables elsewhere still need
+migration and are not claimed complete.
 
 ## Enforcement and current migration status
 

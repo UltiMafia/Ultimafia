@@ -6,7 +6,7 @@ const crypto = require("node:crypto");
 const http = require("node:http");
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE);
 const output = process.env.DESIGN_SYSTEM_OUTPUT_DIR || path.resolve(__dirname, "../../docs/frontend-redesign/revision-5/system-after");
-const directory = "/tmp/opencode/ultimafia-redesign-browser";
+const directory = process.env.REDESIGN_BUNDLE_DIR || "/tmp/opencode/ultimafia-redesign-browser";
 const publicDir = path.resolve(__dirname, "../public");
 const mime = { ".html": "text/html", ".js": "application/javascript", ".css": "text/css", ".png": "image/png", ".webp": "image/webp", ".svg": "image/svg+xml", ".woff2": "font/woff2" };
 const server = http.createServer((req, res) => {

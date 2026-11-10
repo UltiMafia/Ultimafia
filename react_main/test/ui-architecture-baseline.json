@@ -653,14 +653,6 @@
     "native:input": 3,
     "native:textarea": 1
   },
-  "pages/Policy/Invoices.jsx": {
-    "mui:Button": 1,
-    "mui:MenuItem": 1,
-    "mui:TextField": 1,
-    "mui:Typography": 1,
-    "native:confirm": 1,
-    "mui:Paper": 1
-  },
   "pages/Policy/Moderation/BanAppeals.jsx": {
     "mui:Button": 1,
     "mui:CircularProgress": 1,
@@ -720,11 +712,6 @@
     "mui:TextField": 1,
     "mui:Typography": 1,
     "native:confirm": 1
-  },
-  "pages/User/DeveloperApi.jsx": {
-    "mui:Button": 1,
-    "mui:TextField": 1,
-    "mui:Typography": 1
   },
   "pages/User/Family.jsx": {
     "mui:Typography": 1,
