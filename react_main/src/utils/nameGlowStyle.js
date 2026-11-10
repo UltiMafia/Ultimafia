@@ -5,12 +5,17 @@ import Color from "color";
 export function nameGlowStyle(color) {
   try {
     const parsed = Color(color);
-    // The glow is a text-shadow, so it is painted at the glyph colour's own
-    // alpha - there is no cumulative filter to calibrate against any more.
-    const strength = 0.9 + 0.1 * parsed.alpha();
+    // A light name already reads as light: the same alpha that reads as a halo on
+    // a mid colour blows a white name into a solid bar. Normalise around the
+    // mid colour the halo was calibrated on, so every name gets the same
+    // perceived strength.
+    const luminance = nameGlowLuminance(color);
+    const strength =
+      (0.9 + 0.1 * parsed.alpha()) *
+      (luminance == null ? 1 : luminanceScale(luminance));
     return {
-      "--name-glow-dim-alpha": String(strength),
-      "--name-glow-peak-alpha": String(strength),
+      "--name-glow-dim-alpha": 0.75 * strength,
+      "--name-glow-peak-alpha": 0.61 * strength,
       "--name-glow-rgb": parsed.rgb().array().slice(0, 3).join(" "),
     };
   } catch {

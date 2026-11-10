@@ -529,20 +529,21 @@ iframe {
 @keyframes name-color-glow {
   0%,
   100% {
-    /* Glyph shadows, not a filter. A filter blurs the element's box: the region
-       is the border box plus 10%, so a wide halo is cut into a lit rectangle,
-       and stacked drop-shadows compound until the gaps between letters fill in.
-       text-shadow is painted per glyph, cannot be clipped to a box, and does not
-       affect layout - the glyphs' ink box is unchanged. */
+    /* Glyph shadows, not a filter. A filter blurs the element's box and clips its
+       output to the border box plus 10%, so a wide halo is cut into a lit
+       rectangle; text-shadow is painted per glyph, cannot be boxed, and takes no
+       space. The alphas are the tuned halo strength, further reduced for light
+       name colours (see nameGlowStyle): a white name at full alpha is a solid
+       bar, not a glow. */
     text-shadow: 0 0 2px
         rgb(
           var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
-            1
+            var(--name-glow-dim-alpha, 0.75)
         ),
       0 0 8px
         rgb(
           var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
-            1
+            var(--name-glow-dim-alpha, 0.75)
         );
     filter: brightness(1);
   }
@@ -550,17 +551,17 @@ iframe {
     text-shadow: 0 0 4px
         rgb(
           var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
-            1
+            var(--name-glow-peak-alpha, 0.61)
         ),
       0 0 16px
         rgb(
           var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
-            1
+            var(--name-glow-peak-alpha, 0.61)
         ),
       0 0 28px
         rgb(
           var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
-            1
+            var(--name-glow-peak-alpha, 0.61)
         );
     filter: brightness(1.35);
   }

@@ -7,9 +7,13 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
 
 // Preserve the original independent text shadows as a small visual reference.
 // Only eight characters animate here, never the old long-day implementation.
+// The same glyph shadows at the tuned strength (0.75 rest, 0.61 peak). The
+// implementation is a text-shadow too now, so this compares radii and alphas
+// rather than a filter approximation of them - full-alpha shadows blow a light
+// name into a solid bar, which is what the alphas exist to prevent.
 const reference = `@keyframes reference-glow {
-  0%, 100% { text-shadow: 0 0 2px currentColor, 0 0 8px currentColor; filter: brightness(1); }
-  50% { text-shadow: 0 0 4px currentColor, 0 0 16px currentColor, 0 0 28px currentColor; filter: brightness(1.35); }
+  0%, 100% { text-shadow: 0 0 2px rgba(255,255,255,.75), 0 0 8px rgba(255,255,255,.75); filter: brightness(1); }
+  50% { text-shadow: 0 0 4px rgba(255,255,255,.61), 0 0 16px rgba(255,255,255,.61), 0 0 28px rgba(255,255,255,.61); filter: brightness(1.35); }
 }`;
 const { nameGlowStyle } = require("../src/utils/nameGlowStyle.js");
 const css = fs.readFileSync(
