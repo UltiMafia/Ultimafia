@@ -14,5 +14,5 @@ export default defineConfig({
     alias: { "audit-master": path.join(master, "react_main/src") },
   },
   html: { ...fixture.html, title: "Actual upstream master — controlled audit records" },
-  output: { ...fixture.output, distPath: { root: "/tmp/opencode/ultimafia-master-audit-browser" } },
+  output: { ...fixture.output, distPath: { root: process.env.MASTER_AUDIT_BUNDLE_DIR || "/tmp/opencode/ultimafia-master-audit-browser" } },
 });

@@ -18,20 +18,25 @@ const capture = env => {
   captureFailed ||= result.status !== 0;
 };
 if (!process.argv.includes('--report-only')) {
+  fs.mkdirSync('/tmp/opencode', { recursive: true });
+  const bundles = fs.mkdtempSync('/tmp/opencode/ui-audit-bundle-');
   if (!process.argv.includes('--master-only')) {
-    run(path.join(cwd, 'node_modules/.bin/rsbuild'), ['build', '--no-env', '--config', 'rsbuild.route-review-test.config.ts']);
+    const directory = path.join(bundles, 'redesign');
+    run(path.join(cwd, 'node_modules/.bin/rsbuild'), ['build', '--no-env', '--config', 'rsbuild.route-review-test.config.ts'], { ...process.env, ROUTE_BUNDLE_DIR: directory });
     for (const palette of ['dark', 'light']) capture({ ...process.env,
+    UI_AUDIT_BRANCH: 'redesign', ROUTE_BUNDLE_DIR: directory,
     DESIGN_PHASE: phase, ROUTE_THEME: palette, ROUTE_WIDTHS: process.env.ROUTE_WIDTHS || '1440,390,320',
     ROUTE_CONTROLS: '1', ROUTE_TASK_REVIEW: process.env.ROUTE_TASK_REVIEW || '1',
     ROUTE_OUTPUT_DIR: path.join(output, 'captures', `redesign-${phase}-${palette}`),
     });
   }
   if (!process.argv.includes('--redesign-only')) {
-    run(path.join(cwd, 'node_modules/.bin/rsbuild'), ['build', '--no-env', '--config', 'rsbuild.master-audit-test.config.ts']);
+    const directory = path.join(bundles, 'master');
+    run(path.join(cwd, 'node_modules/.bin/rsbuild'), ['build', '--no-env', '--config', 'rsbuild.master-audit-test.config.ts'], { ...process.env, MASTER_AUDIT_BUNDLE_DIR: directory });
     for (const palette of ['dark', 'light']) capture({ ...process.env,
-      UI_AUDIT_BRANCH: 'master', ROUTE_BUNDLE_DIR: '/tmp/opencode/ultimafia-master-audit-browser',
+      UI_AUDIT_BRANCH: 'master', ROUTE_BUNDLE_DIR: directory,
       DESIGN_PHASE: phase, ROUTE_THEME: palette, ROUTE_WIDTHS: process.env.ROUTE_WIDTHS || '1440,390,320',
-      ROUTE_CONTROLS: '0', ROUTE_TASK_REVIEW: '0',
+      ROUTE_CONTROLS: '0', ROUTE_TASK_REVIEW: '0', MASTER_TASK_REVIEW: '1',
       ROUTE_OUTPUT_DIR: path.join(output, 'captures', `master-${phase}-${palette}`),
     });
   }

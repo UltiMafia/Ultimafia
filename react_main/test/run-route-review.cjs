@@ -7,6 +7,8 @@ const http = require("node:http");
 const crypto = require("node:crypto");
 const { execFileSync } = require("node:child_process");
 const { measureUi } = require("./ui-audit/measure.cjs");
+const masterEquivalents = require("./ui-audit/master-equivalents.json");
+const { reviewMasterTasks } = require("./ui-audit/master-tasks.cjs");
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "/tmp/opencode/redesign-tools/node_modules/playwright");
 const root = path.resolve(__dirname, "../..");
 const upstream = process.env.UI_AUDIT_BRANCH === "master";
@@ -139,17 +141,21 @@ async function main() {
       for (const item of cases) {
         const { page, context, observed } = await newPage(viewport);
          const entry = { ...item, viewport, ...observed, screenshots: [], measurements: [], status: "pending", visualAcceptance: false };
+         const masterEquivalent = upstream ? masterEquivalents[item.name] : null;
+         if (upstream) entry.masterEquivalent = masterEquivalent || { equivalence: "same-route", route: item.route };
         const requestStart = staticFailures.length;
         try {
-          const url = new URL(item.route, origin);
+          const url = new URL(masterEquivalent?.route || item.route, origin);
           if (upstream && item.name === "authentication") url.pathname = "/welcome";
           url.searchParams.set("fixtureMode", item.mode || "member");
           url.searchParams.set("theme", palette);
+          entry.captureRoute = url.pathname + url.search;
           await page.goto(String(url), { waitUntil: "load" });
           await page.waitForFunction(() => window.__routeReview?.ready, { timeout: 15000 });
           // The marker must come from production route content, not Header/sidebar.
           const content = page.locator(upstream ? ".inner-container" : "#main-content");
-          if (upstream && item.name === "players") await content.locator('.newest-users').first().waitFor({ state: "attached", timeout: 10000 });
+          if (masterEquivalent?.selector) await (masterEquivalent.selector === ".inner-container" ? content : content.locator(masterEquivalent.selector)).first().waitFor({ state: "attached", timeout: 10000 });
+          else if (upstream && item.name === "players") await content.locator('.newest-users').first().waitFor({ state: "attached", timeout: 10000 });
           else if (item.selector) await content.locator(item.selector).first().waitFor({ state: "attached", timeout: 10000 });
           else await content.getByText(item.text, { exact: false }).first().waitFor({ state: "attached", timeout: 10000 });
           await page.waitForFunction(() => window.__routeReview.pending === 0 && performance.now() - window.__routeReview.lastRequestAt > 400, null, { timeout: 10000, polling: 50 });
@@ -164,6 +170,7 @@ async function main() {
           if (shell.contentWidth < viewport.width / 2 || shell.clientHeight < 200) throw new Error(`Hidden or undersized production shell: ${JSON.stringify(shell)}`);
           if (await page.locator("[data-route-review-failure]").count()) throw new Error("Production route error boundary displayed");
           const fixture = await page.evaluate(() => window.__routeReview);
+           if (masterEquivalent?.requireReadFailure) assert.equal(fixture.simulatedReadFailures, 1, "The paired master state must consume the same explicit read failure");
            if (fixture.errors.length || fixture.unresolved.length || observed.runtimeErrors.length) throw new Error("Runtime error or unresolved fixture contract (see JSON)");
            if (phase === "after" && !upstream) entry.layoutChecks = await checkLayout(page, item);
           const filename = `${item.name}-${viewport.width}-top.png`;
@@ -191,7 +198,7 @@ async function main() {
              entry.screenshots.push(expanded);
              await disclosure.locator("summary").click();
            }
-           if (process.env.ROUTE_CONTROLS === "1" && item.name === "host") {
+           if (!upstream && process.env.ROUTE_CONTROLS === "1" && item.name === "host") {
             await page.locator(".site-wrapper").evaluate(element => { element.scrollTop = 0; });
             await content.getByRole("button", { name: "Host", exact: true }).first().click();
             const dialog = page.getByRole("dialog");
@@ -226,7 +233,14 @@ async function main() {
               await page.getByRole('dialog').getByRole('button', { name: 'Cancel', exact: true }).click();
               assert.equal(await page.evaluate(() => window.__routeReview.writes.filter(write => write.type === 'axios' && write.url !== '/api/notifs/read').length), 0);
             }
-            if (process.env.ROUTE_TASK_REVIEW === "1") entry.taskChecks = await reviewTasks(page, item, viewport, entry);
+             if (!upstream && process.env.ROUTE_TASK_REVIEW === "1") entry.taskChecks = await reviewTasks(page, item, viewport, entry);
+             if (upstream && process.env.MASTER_TASK_REVIEW === "1") entry.taskChecks = await reviewMasterTasks(page, item, async (state, position = "task", metadata = {}) => {
+               const filename = `${item.name}-${viewport.width}-${state}-${position}.png`;
+               await page.screenshot({ path: path.join(output, filename), fullPage: false, animations: "disabled" });
+               entry.screenshots.push(filename);
+               entry.measurements.push({ state, position, screenshot: filename, ...await page.evaluate(measureUi), ...metadata,
+                 masterEquivalent: masterEquivalents[`${item.name}.${state}`] || entry.masterEquivalent });
+             });
           entry.status = "captured-baseline-not-accepted";
         } catch (error) {
           entry.status = "failed-not-accepted";
@@ -265,15 +279,36 @@ async function checkLayout(page, item) {
   const checks = [];
   const headers = await page.locator('[data-ui-page-header] h1').evaluateAll(elements => elements.map(element => {
     const style = getComputedStyle(element);
-    return { title: element.textContent, size: parseFloat(style.fontSize), weight: style.fontWeight, lineHeight: parseFloat(style.lineHeight), margin: style.margin };
+    const header = element.closest('[data-ui-page-header]');
+    const bounds = header.getBoundingClientRect();
+    const actions = header.querySelector('.ui-page-actions')?.getBoundingClientRect();
+    const copy = header.querySelector('.ui-page-heading-copy').getBoundingClientRect();
+    return { title: element.textContent, size: parseFloat(style.fontSize), weight: style.fontWeight, lineHeight: parseFloat(style.lineHeight), margin: style.margin,
+      actionsOverflow: actions ? actions.left < bounds.left - 1 || actions.right > bounds.right + 1 || actions.left < -1 || actions.right > innerWidth + 1 : false,
+      actionsOverlapCopy: actions ? Math.min(actions.right, copy.right) - Math.max(actions.left, copy.left) > 1 && Math.min(actions.bottom, copy.bottom) - Math.max(actions.top, copy.top) > 1 : false,
+    };
   }));
   for (const header of headers) {
     assert.equal(header.size, 24, `${item.name}: ${header.title} uses the page-title scale`);
     assert.equal(header.weight, '700', `${item.name}: page-title weight`);
     assert.ok(Math.abs(header.lineHeight - 31.2) < 0.1, `${item.name}: page-title line height`);
     assert.equal(header.margin, '0px', `${item.name}: no page-specific title margins`);
+    assert.equal(header.actionsOverflow, false, `${item.name}: page actions remain inside the header and viewport`);
+    assert.equal(header.actionsOverlapCopy, false, `${item.name}: page actions do not overlap title or description`);
   }
   if (headers.length) checks.push('shared-page-header-font-weight-line-height-and-margins');
+  const shells = await page.locator('.ui-page').evaluateAll(elements => elements.map(element => {
+    const box = element.getBoundingClientRect(), maximum = parseFloat(getComputedStyle(element).maxWidth);
+    const content = element.querySelector(':scope > .ui-page-content');
+    return { width: box.width, left: box.left, right: box.right, maximum: Number.isFinite(maximum) ? maximum : null,
+      viewport: innerWidth, gap: content ? parseFloat(getComputedStyle(content).gap) : null };
+  }));
+  for (const shell of shells) {
+    assert.ok(shell.width > 0 && (shell.maximum === null || shell.width <= shell.maximum + 1), `${item.name}: named shell width`);
+    assert.ok(shell.left >= -1 && shell.right <= shell.viewport + 1, `${item.name}: shell remains inside viewport`);
+    assert.equal(shell.gap, 24, `${item.name}: inherited section rhythm`);
+  }
+  if (shells.length) checks.push('named-page-shell-width-content-edge-and-section-rhythm');
   if (item.name === "new-page-contract") {
     const contract = await page.locator('.ui-page').evaluate(element => {
       const heading = element.querySelector('.ui-page-heading h1'), style = getComputedStyle(heading);
@@ -289,6 +324,8 @@ async function checkLayout(page, item) {
     assert.equal(contract.gap, 24);
     assert.ok(contract.width <= contract.maxWidth + 1);
     assert.ok(contract.fields.every(width => width > 100 && width <= contract.width));
+    const actionWidth = await page.getByRole('button', { name: 'Save details', exact: true }).evaluate(element => element.getBoundingClientRect().width);
+    assert.ok(actionWidth < contract.fields[0], 'Ordinary actions do not stretch into reading-width bands');
     checks.push('new-page-inherits-header-shell-spacing-and-field-geometry-without-css');
   }
   if (item.name === "learn-games") {
@@ -720,6 +757,22 @@ async function checkRemainingLayout(page, item) {
     const colors = await page.locator(".profile .box-panel").first().evaluate(element => ({ inline: element.style.backgroundColor, computed: getComputedStyle(element).backgroundColor }));
     assert.equal(colors.inline, "rgb(32, 62, 71)"); assert.equal(colors.computed, colors.inline);
     checks.push("authored-profile-background-preserved");
+    const contrast = await page.locator('.profile .ui-page-heading h1, .profile .bio p, .profile .trophy-value, .profile .ratings .profile-results-heading strong').evaluateAll(elements => elements.map(element => {
+      const rgb = value => (value.match(/[\d.]+/g) || []).map(Number);
+      const luminance = values => values.slice(0, 3).map(value => { value /= 255; return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4; }).reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index], 0);
+      let background;
+      for (let node = element; node; node = node.parentElement) {
+        const color = rgb(getComputedStyle(node).backgroundColor);
+        if (color.length === 3 || color[3] === 1) { background = color; break; }
+      }
+      const foreground = rgb(getComputedStyle(element).color);
+      const values = [luminance(foreground), luminance(background || [255, 255, 255])].sort((a, b) => b - a);
+      return { text: element.textContent, ratio: (values[0] + 0.05) / (values[1] + 0.05) };
+    }));
+    assert.ok(contrast.length >= 5, 'Contrast checks include identity, bio, reputation and statistics');
+    assert.deepEqual(contrast.filter(value => value.ratio < 4.5), [], 'Authored backgrounds cannot replace the neutral text surface');
+    assert.equal(await page.locator('.profile .ratings svg').count(), 0, 'Statistics use exact readable counts, not a decorative chart');
+    checks.push("custom-profile-identity-bio-reputation-and-statistics-have-readable-neutral-surfaces");
   }
   if (item.name.startsWith("profile-")) {
     const invalidAvatars = await page.locator('.avi-name .avatar .avatar-default').evaluateAll(elements => elements.filter(element => {
@@ -786,7 +839,16 @@ async function reviewTasks(page, item, viewport, entry) {
     }
     if (item.name === "profile-rich") {
       assert.equal(await page.locator(".profile .karma-vote-wrap button").count(), 2);
-      assert.ok(await page.locator(".profile .trophies-content").count() > 0);
+      const karma = page.getByRole('group', { name: 'Profile karma', exact: true });
+      assert.equal(await karma.getByRole('button', { name: 'Upvote profile', exact: true }).count(), 1);
+      assert.equal(await karma.getByRole('button', { name: 'Downvote profile', exact: true }).count(), 1);
+      const bounds = await karma.evaluate(element => {
+        const score = element.querySelector('.trophy-meta').getBoundingClientRect();
+        const controls = element.querySelector('.karma-vote-wrap').getBoundingClientRect();
+        return { horizontalGap: Math.max(0, controls.left - score.right), verticalGap: Math.max(0, controls.top - score.bottom), overlap: Math.min(score.right, controls.right) - Math.max(score.left, controls.left) > 1 && Math.min(score.bottom, controls.bottom) - Math.max(score.top, controls.top) > 1 };
+      });
+      assert.ok(bounds.horizontalGap <= 12 && bounds.verticalGap <= 12, 'Karma controls stay beside their own score, including when wrapped');
+      assert.equal(bounds.overlap, false, 'Karma controls cannot overlap their score');
       checks.push("karma-controls-are-adjacent-to-the-profile-score");
     }
     assert.equal(await page.locator(".profile").count(), 1);

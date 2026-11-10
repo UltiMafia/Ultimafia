@@ -53,6 +53,11 @@ test("computed legacy class names and inline header overrides cannot evade the c
   const counts = architecture.countLegacyUi('const page = <><header className={`page-heading ${extra}`} /><div className={active ? "moderation-heading" : "other"} /><UiPageHeader title="People" sx={{fontSize:80}} /></>;');
   assert.deepEqual(counts, { "header:legacy": 2, "header:inline-override": 1 });
 });
+test("page widths and header variants must be explicitly supported by the primitive", () => {
+  assert.deepEqual(architecture.countLegacyUi('const page = <UiPage width="custom-narrow" variant="hero" />;'), { "page:unsupported-width": 1, "header:unsupported-variant": 1 });
+  assert.deepEqual(architecture.countLegacyUi('const page = <UiPage width={wide ? "full" : "wide"} variant="identity" />;'), {});
+  assert.deepEqual(architecture.countLegacyUi('const page = <UiPage width={pathname.endsWith("/faq") ? "prose" : "wide"} />;'), {});
+});
 test("removed baseline expansion commands fail without modifying the baseline", () => {
   const baseline = new URL('./ui-architecture-baseline.json', import.meta.url);
   const before = fs.readFileSync(baseline, 'utf8');

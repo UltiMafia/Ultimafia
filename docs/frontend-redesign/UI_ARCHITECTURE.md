@@ -20,11 +20,29 @@ ordinary page; `editor` stacks actions/fields at phone widths; `moderation`
 identifies the staff workspace without changing its side navigation; `forum`
 is for discussion routes; `detail` allows identity metadata and leading artwork.
 Variants express composition, not permission for another typography scale.
+`identity` retains the centered title inside an authored profile's established
+identity row rather than inserting another page heading above its banner. Its
+optional `titleAction` uses the same shared button with inherited title type and
+a real accessible label; name history is keyboard-operable without a clickable
+Typography imitation. Profile columns, media, karma and information placement
+are unchanged by that variant.
+
+Router-owned shells wrap Play and Learn; reference details do not nest legacy
+`inner-content` shells inside them. Family and profile routes own a wide UiPage
+while retaining their existing two-column content layouts. Lobby uses `full`
+to preserve desktop width for the visible community/homepage features.
+
+Fields fill their intended form width; ordinary direct child actions keep their
+intrinsic width in page/section columns, rather than becoming page-width bands.
 
 `UiSection` supplies subordinate headings and optional actions. `UiCard` is a
 meaningful bounded surface, not a default wrapper around every section. Preserve
 actual game boards, authored profile/family media and user cosmetics. Do not
 introduce a gallery of cards for continuous role/setup reference information.
+`UiCard` supplies both the neutral background and its foreground color, rather
+than inheriting text from an authored background. Profile identity/bio/reputation
+insets preserve the authored color around their readable theme surface. Profile
+statistics show exact results on a neutral surface, not a theme-dependent pie.
 
 Controls use `UiField` and `UiAction` with named variants rather than raw native
 or direct MUI equivalents. Dialogs use `UiDialog`, explicit cancellation and

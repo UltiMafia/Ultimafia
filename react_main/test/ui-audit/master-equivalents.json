@@ -1,0 +1,82 @@
+{
+  "admin-intake.approve-confirmation": {
+    "equivalence": "nearest-ancestor",
+    "reason": "Master has no web confirmation: onWhitelist posts immediately (upstream FlaggedIntake.jsx:87). Capture the actual review row without clicking or issuing that action."
+  },
+  "admin-intake.ban-confirmation": {
+    "equivalence": "nearest-ancestor",
+    "reason": "Master has no web confirmation: onBlacklist posts immediately (upstream FlaggedIntake.jsx:112). Pair the new cancellable dialog to its actual ancestor without a destructive click."
+  },
+  "family-leader.role-confirmation": {
+    "equivalence": "nearest-ancestor",
+    "reason": "Master uses a native browser confirm, not a DOM dialog (upstream Family.jsx:325). Record and dismiss the real prompt, then capture the actual ancestor. Native browser chrome is not present in a Playwright page screenshot."
+  },
+  "family-leader.remove-confirmation": {
+    "equivalence": "nearest-ancestor",
+    "reason": "Master uses a native browser confirm for removal (upstream Family.jsx:230). Its message and dismissal are recorded; the screenshot is explicitly the underlying ancestor, not a fabricated modal."
+  },
+  "lobby": {
+    "selector": ".inner-content.play",
+    "equivalence": "same-route",
+    "reason": "Use the actual legacy Play content root rather than requiring the redesign's lobby-browser class. Both receive the same populated list, community wall and sidebar data."
+  },
+  "new-page-contract": {
+    "route": "/community/feedback",
+    "selector": "textarea",
+    "equivalence": "nearest-ancestor",
+    "reason": "This is a test-only composition route, absent from master. The nearest master page combining a title and ordinary form controls is Feedback."
+  },
+  "moderation-log": {
+    "route": "/policy/moderation",
+    "selector": ".moderation",
+    "equivalence": "same-route",
+    "reason": "Master places recent actions beside commands and staff groups in its combined Moderation Log workspace (upstream pages/Policy/Moderation.jsx:23)."
+  },
+  "moderation-tools": {
+    "route": "/policy/moderation",
+    "selector": ".moderation",
+    "equivalence": "nearest-ancestor",
+    "reason": "The dedicated Run action route is new. Its commands exist in master's combined Moderation Log workspace (upstream pages/Policy/Moderation.jsx:35)."
+  },
+  "moderation-groups": {
+    "route": "/policy/moderation",
+    "selector": ".group-panel",
+    "equivalence": "nearest-ancestor",
+    "reason": "The dedicated Staff groups route is new. Its groups exist in master's combined Moderation Log workspace (upstream pages/Policy/Moderation.jsx:47)."
+  },
+  "moderation-reports": {
+    "selector": "table",
+    "equivalence": "same-route",
+    "reason": "Master uses a report table rather than redesign's Report R-1042 row label (upstream pages/Policy/Reports.jsx:182). Require actual loaded table content, not the Reports navigation tab."
+  },
+  "tutorial-failure": {
+    "selector": ".inner-container",
+    "equivalence": "same-route",
+    "requireReadFailure": true,
+    "reason": "Inject the same primary read failure into actual master; compare its real error/empty/loading presentation rather than requiring the redesign's Retry copy."
+  },
+  "contributors-failure": {
+    "selector": ".inner-container",
+    "equivalence": "same-route",
+    "requireReadFailure": true,
+    "reason": "Inject the same contributors read failure. Master's recovery UI is not assumed to have redesign's copy or Retry control."
+  },
+  "family-failure": {
+    "selector": ".inner-container",
+    "equivalence": "same-route",
+    "requireReadFailure": true,
+    "reason": "Inject the same family-profile read failure. Master redirects to the lobby instead of showing redesign's unavailable/retry page; capture that actual redirect and populated ancestor, not invented error UI."
+  },
+  "family-applications-failure": {
+    "selector": ".inner-container",
+    "equivalence": "same-route",
+    "requireReadFailure": true,
+    "reason": "Inject the same family-applications read failure while preserving the loaded family profile. A missing explicit master error is itself comparative evidence."
+  },
+  "family-history-failure": {
+    "selector": ".inner-container",
+    "equivalence": "same-route",
+    "requireReadFailure": true,
+    "reason": "Inject the same family-ledger read failure. Capture actual master behavior even if it does not expose a dedicated recovery state."
+  }
+}

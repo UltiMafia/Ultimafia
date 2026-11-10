@@ -32,11 +32,7 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { UiAction, UiField, UiIcon, UiPageHeader } from "components/ui";
 
 export default function RolePage() {
-  return (
-    <div className="inner-content">
-      <RoleThings />
-    </div>
-  );
+  return <RoleThings />;
 }
 
 export function RoleThings() {

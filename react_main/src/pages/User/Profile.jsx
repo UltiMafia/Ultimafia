@@ -1,11 +1,13 @@
 // React 17 does not batch state updates outside its own event handlers.
 import { unstable_batchedUpdates } from "react-dom";
-import React, { useState, useEffect, useContext, useRef, useMemo, Suspense, lazy } from "react";
+import React, { useState, useEffect, useContext, Suspense, lazy } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import update from "immutability-helper";
 import colorContrast from "color-contrast";
+import { UiCard, UiPage, UiPageHeader } from "components/ui";
+import ProfileStatsSummary from "./ProfileStatsSummary";
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import {
@@ -104,12 +106,9 @@ export {
 // Each of these renders only behind a flag, but importing them statically put
 // their whole dependency tree in the chunk every profile view downloads:
 // ModerationSideDrawer drags in the Moderation page (commands.js alone is 40KB)
-// and RapSheet, and PieChart drags in d3.
+// and RapSheet.
 const ModerationSideDrawer = lazy(() => import("components/ModerationSideDrawer"));
 const ReportDialog = lazy(() => import("../../components/ReportDialog"));
-const PieChart = lazy(() =>
-  import("./PieChart").then((m) => ({ default: m.PieChart }))
-);
 
 function FavoritedRolesPanel({
   favoriteRoles = [],
@@ -1056,11 +1055,6 @@ export default function Profile() {
     zIndex: 1,
   };
   const headingStyle = {};
-  // Body text that sits directly on the panel rather than on a Paper surface.
-  // MUI's text.primary/text.secondary are resolved against the theme background,
-  // not against a custom profile backgroundColor, so text drawn straight onto the
-  // panel needs the same treatment the headings already get.
-  const panelTextStyle = {};
   const bannerStyle = {};
 
   if (settings.backgroundColor) {
@@ -1072,7 +1066,6 @@ export default function Profile() {
     } else {
       headingStyle.color = "#fff";
     }
-    panelTextStyle.color = headingStyle.color;
   }
 
   const bannerExtSafe = ["webp", "gif", "png", "jpg", "jpeg"].includes(bannerExt)
@@ -1399,23 +1392,7 @@ export default function Profile() {
             }}
           >
             {badges}
-            <Typography
-              variant="h2"
-              onClick={canViewNameHistory ? onNameClick : undefined}
-              sx={{
-                flexShrink: "2",
-                fontWeight: "600",
-                cursor: canViewNameHistory ? "pointer" : "default",
-                "&:hover": canViewNameHistory
-                  ? {
-                      textDecoration: "underline",
-                      opacity: 0.8,
-                    }
-                  : {},
-              }}
-            >
-              {name}
-            </Typography>
+            <UiPageHeader variant="identity" title={name} titleAction={canViewNameHistory ? { label: `View ${name}'s name history`, onClick: onNameClick } : undefined} />
             {pronouns && (
               <Typography
                 variant="caption"
@@ -1583,7 +1560,7 @@ export default function Profile() {
   );
 
   return (
-    <>
+    <UiPage className="profile-page">
       <TradeDialog
         open={tradeModalOpen}
         onClose={() => setTradeModalOpen(false)}
@@ -1614,7 +1591,7 @@ export default function Profile() {
           />
         </Suspense>
       )}
-      <Grid container rowSpacing={1} columnSpacing={1} className="profile">
+      <Grid container rowSpacing={1} columnSpacing={1} className="profile" data-custom-background={Boolean(settings.backgroundColor)}>
         <Grid item xs={12}>
           <Stack
             direction="row"
@@ -1731,15 +1708,6 @@ export default function Profile() {
             )}
             <div className="box-panel" style={panelStyle}>
               <div className="content trophies-content">
-                {karmaInfo && (
-                  <div className="karma-vote-wrap">
-                    <KarmaVoteWidget
-                      item={karmaInfo}
-                      setItem={setKarmaInfo}
-                      userId={profileUserId}
-                    />
-                  </div>
-                )}
                 <div className="trophies-grid">
                   <Tooltip
                     title="Earned from outstanding performance in ranked and competitive games."
@@ -1758,6 +1726,7 @@ export default function Profile() {
                     </div>
                   </Tooltip>
                   {karmaInfo && (
+                    <div className="trophy-karma" role="group" aria-label="Profile karma">
                     <Tooltip
                       title="Upvotes from other players on your profile."
                       arrow
@@ -1776,6 +1745,10 @@ export default function Profile() {
                         </div>
                       </div>
                     </Tooltip>
+                    <div className="karma-vote-wrap">
+                      <KarmaVoteWidget item={karmaInfo} setItem={setKarmaInfo} userId={profileUserId} />
+                    </div>
+                    </div>
                   )}
                   <Tooltip
                     title="Earned by winning ranked and competitive games. Accumulates toward prestige at the end of a competitive round."
@@ -1908,8 +1881,8 @@ export default function Profile() {
             )}
             {hasAnyStats &&
               !settings.hideStatistics && (
-                <div className="box-panel ratings" style={panelStyle}>
-                  <Typography variant="h3" sx={headingStyle}>
+                <UiCard className="ratings">
+                  <Typography variant="h3">
                     Mafia Ratings
                     <Typography component="span" variant="body2" sx={{ opacity: 0.5, ml: 1 }}>
                       {profileTotalGames.toLocaleString()} total games
@@ -1952,30 +1925,14 @@ export default function Profile() {
                   {totalGames < RequiredTotalForStats ? (
                     <Typography
                       variant="body2"
-                      sx={{ textAlign: "center", opacity: 0.5, py: 2, ...panelTextStyle }}
+                      sx={{ textAlign: "center", py: 2 }}
                     >
                       No data yet.
                     </Typography>
                   ) : (
                     <>
                       <Stack spacing={2} sx={{ px: 1, py: 1 }}>
-                        <Paper variant="outlined" sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderRadius: 2, backgroundColor: "background.paper" }}>
-                          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: "text.secondary" }}>
-                            Win/Loss Distribution
-                          </Typography>
-                          <Box sx={{ my: 1, display: "flex", justifyContent: "center" }}>
-                            <Suspense fallback={null}>
-                              <PieChart
-                                wins={getWins(mafiaStats)}
-                                losses={getLosses(mafiaStats)}
-                                abandons={getAbandons(mafiaStats)}
-                              />
-                            </Suspense>
-                          </Box>
-                          <Typography variant="body2" sx={{ mt: 1, fontWeight: "bold" }}>
-                            Wins: {Math.round((getWins(mafiaStats) / totalGames) * 100)}% ({getWins(mafiaStats)}W / {getLosses(mafiaStats)}L)
-                          </Typography>
-                        </Paper>
+                        <ProfileStatsSummary wins={getWins(mafiaStats)} losses={getLosses(mafiaStats)} abandons={getAbandons(mafiaStats)} total={totalGames} />
 
                         {statsBucket === "ranked" && skillRating?.tier ? (
                           <Paper
@@ -2091,7 +2048,7 @@ export default function Profile() {
                       )}
                     </>
                   )}
-                </div>
+                </UiCard>
               )}
             {isSelf && pendingConfirmationTrades.length > 0 && (
               <PendingTradeConfirmations
@@ -2346,19 +2303,17 @@ export default function Profile() {
           )}
         </Box>
       </Popover>
-    </>
+    </UiPage>
   );
 }
 
 export function KarmaVoteWidget(props) {
-  const theme = useTheme();
   const item = props.item;
   const setItem = props.setItem;
   const userId = props.userId;
 
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
-  const widgetRef = useRef();
 
   function updateItemVoteCount(direction, newDirection) {
     var voteCount = item.voteCount;
@@ -2394,24 +2349,10 @@ export function KarmaVoteWidget(props) {
   }
 
   return (
-    <Stack direction="column" spacing={1}>
-      <IconButton
-        className={`fas fa-arrow-up`}
-        style={{
-          fontSize: "16px",
-          ...(item.vote === 1 ? { color: theme.palette.info.main } : {}),
-        }}
-        onClick={() => onVote(1)}
-      />
-      <IconButton
-        className={`fas fa-arrow-down`}
-        style={{
-          fontSize: "16px",
-          ...(item.vote === -1 ? { color: theme.palette.info.main } : {}),
-        }}
-        onClick={() => onVote(-1)}
-      />
-    </Stack>
+    <div className="ui-inline-actions" role="group" aria-label="Vote on this profile">
+      <UiAction iconOnly variant="ghost" aria-label="Upvote profile" aria-pressed={item.vote === 1} onClick={() => onVote(1)}><UiIcon name="up" /></UiAction>
+      <UiAction iconOnly variant="ghost" aria-label="Downvote profile" aria-pressed={item.vote === -1} onClick={() => onVote(-1)}><UiIcon name="down" /></UiAction>
+    </div>
   );
 }
 

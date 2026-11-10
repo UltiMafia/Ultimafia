@@ -26,7 +26,7 @@ export default defineConfig({
   performance: { buildCache: false },
   output: {
     dataUriLimit: { image: 0 },
-    distPath: { root: "/tmp/opencode/ultimafia-route-review-browser" },
+    distPath: { root: process.env.ROUTE_BUNDLE_DIR || "/tmp/opencode/ultimafia-route-review-browser" },
     sourceMap: false,
   },
 });

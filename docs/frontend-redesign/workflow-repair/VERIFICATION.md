@@ -5,6 +5,20 @@ Numbered historical evidence directories are not final-HEAD verification.
 
 ## Current changes
 
+- Second slice: Play, profile and family now use named `UiPage` shells; Learn
+  details no longer nest a second legacy shell. Profile identity uses the same
+  header with a keyboard-accessible name-history action. Supported widths and
+  header variants are validated statically and at runtime.
+- Custom profile backgrounds remain visible, with neutral insets for identity,
+  bio and reputation text. Statistics use a shared neutral `UiCard` and exact
+  win/loss/abandon counts, not a decorative pie chart. Karma controls now sit
+  beside their own score. Image inspection caught an overlapping-arrow attempt;
+  it was corrected and the focused matrix rerun with a non-overlap assertion.
+- Actual-master task captures now include host/reply/trade/rating dialogs,
+  setup tabs, profile sections, failed feedback submission, and family bio/native
+  confirmations. Native prompts are recorded and dismissed; ancestor screenshots
+  are explicitly not screenshots of browser-native dialogs. The fixture never
+  forwards these writes to a service.
 - `UiPage` and standalone `UiPageHeader` now use one header implementation.
   Standard/editor/moderation/forum/detail share the title scale; the editor
   variant stacks controls on phones. The removed `page-heading`,
@@ -34,7 +48,7 @@ Numbered historical evidence directories are not final-HEAD verification.
 | --- | --- |
 | `git fetch origin master`; `git fetch fork redesign/workflow-repair-draft`; `git merge --no-edit fork/redesign/workflow-repair-draft` | Fast-forwarded the fork's uploaded-banner-only family change; no history rewrite |
 | `gh pr view 3197 --repo UltiMafia/Ultimafia --json state,isDraft,headRefName,headRepositoryOwner,baseRefName` | OPEN, draft, expected fork/branch/base |
-| `node --test test/*.test.mjs` | 236 passed, 0 failed; log `/tmp/opencode/audit-header-final-node-tests.log` |
+| `node --test test/*.test.mjs` | Latest shell/profile slice: 238 passed, 0 failed; log `/tmp/opencode/audit-shell-node-tests.log`. Earlier header slice: 236 passed |
 | `node --test test/uiArchitecture.test.mjs test/uiAudit.test.mjs` | Included in the full passing run, including rejected baseline-expansion commands and page-specific h1 CSS |
 | `npm run lint:ui` / architecture test | Passed; raw titles, computed legacy header classes, alternate icon imports and external page-geometry overrides are guarded |
 | `node scripts/check-ui-architecture.cjs --reduce-baseline` | Budget decreased from 755 to 617; independent comparison found zero increases |
@@ -45,7 +59,8 @@ Numbered historical evidence directories are not final-HEAD verification.
 | Corrected header AFTER, both palettes | 390/390 route cases captured, 0 failures; shared header geometry assertions passed; compact detail badge and corrected spacing inspected at 320 in both palettes |
 | Final header focused matrix after removing redundant external h1 CSS | 54/54 cases captured, 0 failed renders; `/tmp/opencode/audit-header-focused-sourcecommit/`. Its aggregate command exits 1 because the full denominator remains 510 and master pairs are not supplied to this reduced run |
 | Master smoke: Players, Host, thread, profile settings; dark; 1440/390/320 | 12/12 cases captured from actual upstream production components with identical controlled records |
-| `DESIGN_PHASE=after npm run audit:ui` | Full current redesign/master run in progress; see the audit's generated reports, not the older counts above, for completion/failure |
+| Full shell-contract comparison | 516/516 redesign cells and 510/516 master pairs; six missing feedback cells because its MUI autosize helper textarea made the old selector ambiguous. The selector was corrected; focused master feedback rerun captured all six widths/palettes plus six submission-error states. Full replacement run is in progress; no claim of final-HEAD coverage |
+| Focused profile repair, all five profiles × all widths/palettes | 30/30 route cases, 0 failed renders; 66 registered cells, 96 top/bottom/task images. Contrast, adjacency and non-overlap assertions passed. `/tmp/opencode/audit-profile-contrast3.log`; six remaining identity-header offset candidates are not silently waived |
 | `node test/run-live-ui-audit.cjs` after both live-fixture builds | 48/48 cases, 0 failures; 24 paired public cells, 96 separate viewport images, 56 local source responses all HTTP 200. No authentication or synthetic accounts |
 | Lifecycle: `PLAYWRIGHT_MODULE=… node test/run-browser.cjs` after lifecycle fixture build | 33 checks, no failures/errors/blocked traffic; `/tmp/opencode/audit-lifecycle.log` |
 | Shared controls: `PLAYWRIGHT_MODULE=… SCREENSHOT_DIR=… node test/run-control-review.cjs` | 57 checks passed, 39 states captured; `/tmp/opencode/audit-controls.log` |
@@ -54,6 +69,13 @@ Numbered historical evidence directories are not final-HEAD verification.
 | Homepage: `PLAYWRIGHT_MODULE=… HOMEPAGE_OUTPUT_DIR=… node test/run-homepage-restoration.cjs` | 10 cases passed; `/tmp/opencode/audit-homepage.log` |
 | Backend: isolated `docker compose … run --rm tests` (`npm test -- --jobs 4 --reporter dot`, then jobs 2) | **Failed**, not passing verification: first attempt 821 passing/80 failing after disposable MongoDB hit its descriptor limit and crashed. Retry with nofile 65536 and writable temporary logs: 994 passing/145 failing; MongoDB stayed up, but a worker exhausted its 4GB heap and Mocha's parallel failure reporter threw `test.titlePath is not a function`. Logs `/tmp/opencode/audit-isolated-backend-tests.log` and `…tests2.log` |
 | `git diff --check` | Passed before this documentation update |
+
+Latest shell/profile regression reruns all passed after the arrow-layout repair:
+production build; architecture check; 238 Node tests; 57 control checks/39 states;
+33 lifecycle checks; 36 game-layout cases; 16 competitive cases; 10 homepage
+cases. Logs are `/tmp/opencode/audit-shell-{production-build,node-tests,controls,
+lifecycle,game-layout,competitive,homepage}.log`. Scoped ESLint reported 0 errors
+and 61 warnings before the final unused-import removal (not full-site lint).
 
 The audit command intentionally exits nonzero for missing cells or open findings.
 The first report counted 492/510 redesign cells, 0 master cells and 448 candidates.
@@ -79,6 +101,12 @@ expansion. The family removal/bio interactions have now gained explicit captures
   menu again and keep it inside the panel” (`989a014c438dd0670477650d11481bb686735ebe`).
 - Current captures have dirty-source provenance; they are not labeled final HEAD.
   Final images must be recaptured after the final code commit.
+- Inspected all 96 images in the corrected five-profile focused run through 16
+  contact sheets, including separate phone bottoms, and selected native-size
+  custom-profile/320 images. Desktop thumbnails establish composition only;
+  this does not establish native-size inspection of every desktop detail or
+  inspection of the full global inventory. The overlapping-arrow attempt remains
+  retained as superseded diagnostics.
 
 ## Local environment and genuine limits
 

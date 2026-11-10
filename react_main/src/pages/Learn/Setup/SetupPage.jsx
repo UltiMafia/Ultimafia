@@ -63,13 +63,7 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import TwoPanelLayout from "components/SetupProfileLayout";
 
 export default function Setups() {
-  return (
-    <>
-      <div className="inner-content">
-        <SetupPage />
-      </div>
-    </>
-  );
+  return <SetupPage />;
 }
 
 function getBasicPieStats(alignmentWinrate, roleWinrate, rolesRaw) {

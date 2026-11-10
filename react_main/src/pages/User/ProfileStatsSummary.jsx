@@ -1,9 +1,7 @@
 import React from "react";
 import "css/profileReputation.css";
 
-// A legend for the pie chart, not a second visualization. The pie shows the
-// proportions; this adds the exact counts and percentages without repeating a
-// bar that encodes the same three numbers again.
+// Exact results remain readable in either palette, independent of authored media.
 export default function ProfileStatsSummary({ wins, losses, abandons, total }) {
   const parts = [
     ["Wins", wins, "win"],

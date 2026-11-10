@@ -12,6 +12,7 @@ import { useViewActive } from "../../hooks/useViewActivity";
 import "css/play.css";
 
 import { Loading } from "../../components/Loading";
+import { UiPage } from "components/ui";
 
 // Route components must be created once, at module scope. Calling lazy() inside
 // Play gives every route a new component type on each Play render, so changing
@@ -68,7 +69,7 @@ export default function Play(props) {
 
   return (
     <>
-      <div className="inner-content play">
+      <UiPage className="play" width={inLobby ? "full" : "wide"}>
         <Suspense fallback={<Loading small />}>
           <Routes>
             <Route path="/" element={<LobbyBrowser />} />
@@ -82,7 +83,7 @@ export default function Play(props) {
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </Suspense>
-      </div>
+      </UiPage>
     </>
   );
 }

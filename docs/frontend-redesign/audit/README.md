@@ -17,6 +17,11 @@ six-cell denominator per ID, including uncaptured states. `measurements.json`
 records header/container geometry, shell widths/offsets and role-based computed
 styles. `findings.json` and `report.html` expose geometry candidates with peer
 medians and paired master values. `capture-manifest.json` hashes the images.
+`role-comparisons.json` groups every observed style by UI role/property, retains
+its selectors and compares it with the cross-route reference and actual-master
+role values. Each peer route contributes once; a 443-row directory cannot
+overweight a single-field form. These comparisons remain `requires-review`, not
+automatically accepted differences.
 
 The command **fails** if coverage is incomplete or findings remain open. Missing
 master captures are gaps, not `not-on-master` exemptions. `masterStatus:
@@ -42,8 +47,10 @@ fetched `origin/master` or changes to that worktree's production source. It
 renders master’s **complete Main and route tree**, not the redesign shell with
 old colors. Reads and passive acknowledgements stay in memory, with the same
 controlled records; this is separate from live same-database public-route pairs,
-which still need capture. The first master smoke run covers Players, Host,
-forum thread and profile settings at all three widths in dark. The
+which now have a separate `live-public` run. The shell-contract run paired
+510/516 registered cells; its six feedback gaps were diagnosed and the focused
+master feedback rerun passed after targeting the accessible textbox rather than
+MUI's hidden autosize textarea. A replacement full run is still required. The
 report does not interpret a missing master as a redesign regression. Geometry
 candidates require image inspection and classification; automated capture is not
 visual acceptance, nor evidence of live authentication or physical-phone behavior.

@@ -19,6 +19,7 @@ capture tasks before the inventory can be called exhaustive.
 
 | Surface | Route |
 | --- | --- |
+| `lobby` | `/play` (populated games, community wall and homepage features) |
 | `players` | `/community/users` |
 | `families` | `/community/families` |
 | `host` | `/play/host?game=Mafia` |

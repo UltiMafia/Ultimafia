@@ -648,9 +648,9 @@ iframe {
   align-self: stretch;
 }
 
-.profile .trophies-content .karma-vote-wrap .MuiIconButton-root {
-  padding: 4px;
-}
+.profile .trophy-karma { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.profile .trophy-karma .trophy-tile { gap: 6px; min-width: 0; }
+.profile .karma-vote-wrap .ui-inline-actions { display: flex; flex-direction: column; }
 
 .profile .trophies-grid {
   display: grid;
@@ -770,8 +770,6 @@ iframe {
 .profile[data-custom-background="true"] .box-panel { padding: 12px; }
 .profile[data-custom-background="true"] .box-panel .content,
 .profile[data-custom-background="true"] .bio { background: var(--scheme-color); color: var(--scheme-color-text); padding: 12px; }
-.profile[data-custom-background="true"] .profile-bio .bio { max-width: none; }
-.profile[data-custom-background="true"] .profile-bio .md-content { max-width: var(--ui-reading-width); }
 .notification-row { border-radius: 0; }
 .notification-unread { color: var(--um-accent); font-size: var(--ui-text-caption); font-weight: var(--ui-weight-strong); }
 .settings-page .form > .form-group + .form-group { margin-top: var(--ui-section-gap); }

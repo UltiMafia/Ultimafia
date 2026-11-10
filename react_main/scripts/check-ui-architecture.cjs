@@ -21,6 +21,17 @@ function literalStrings(node) {
   if (node.type === "TemplateElement") return [node.value.cooked || node.value.raw];
   return Object.entries(node).filter(([key]) => !["loc", "start", "end", "extra"].includes(key)).flatMap(([, value]) => Array.isArray(value) ? value.flatMap(literalStrings) : literalStrings(value));
 }
+function attributeValues(node) {
+  if (!node) return [];
+  if (node.type === "JSXExpressionContainer") return attributeValues(node.expression);
+  if (node.type === "ConditionalExpression") return [...attributeValues(node.consequent), ...attributeValues(node.alternate)];
+  if (node.type === "LogicalExpression") return [...attributeValues(node.left), ...attributeValues(node.right)];
+  if (node.type === "StringLiteral") return [node.value];
+  // Computed values are validated by the primitive at runtime. In particular,
+  // a string inside a predicate (pathname.endsWith('/faq')) is not its value.
+  if (node.type === "TemplateLiteral" && node.expressions.length === 0) return [node.quasis.map(part => part.value.cooked).join("")];
+  return [];
+}
 
 function countLegacyUi(source, filename = "example.jsx") {
   const ast = parse(source, { sourceType: "unambiguous", plugins: ["jsx", "typescript", "decorators-legacy"] });
@@ -49,6 +60,8 @@ function countLegacyUi(source, filename = "example.jsx") {
         if (attribute.name?.name === "headingLevel" && (value === "1" || attribute.value?.expression?.value === 1)) add("title:h1");
         if (attribute.name?.name === "className" && literalStrings(attribute.value).some(value => legacyHeaders.test(value))) add("header:legacy");
         if (["UiPage", "UiPageHeader"].includes(node.name?.name) && ["style", "sx"].includes(attribute.name?.name)) add("header:inline-override");
+        if (node.name?.name === "UiPage" && attribute.name?.name === "width" && attributeValues(attribute.value).some(value => !["reading", "wide", "prose", "full"].includes(value))) add("page:unsupported-width");
+        if (["UiPage", "UiPageHeader"].includes(node.name?.name) && attribute.name?.name === "variant" && attributeValues(attribute.value).some(value => !["standard", "editor", "moderation", "forum", "detail", "identity"].includes(value))) add("header:unsupported-variant");
       }
     }
     if (node.type === "CallExpression" && node.callee?.type === "MemberExpression" && node.callee.object?.name === "window" && ["confirm", "alert", "prompt"].includes(node.callee.property?.name)) add(`native:${node.callee.property.name}`);

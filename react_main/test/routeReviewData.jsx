@@ -23,6 +23,19 @@ export const setups = ["Classic", "Follow the visits", "A small town", "Night in
   stats: null, createDate: fixtureTime - 86400000 * 30,
 }));
 
+// Same list contract as routes/game.js and the existing homepage fixture. All
+// writes/join operations remain blocked; these are not live available seats.
+const lobbyGames = [
+  { id: "fixture-game-open", status: "Open", players: 4 },
+  { id: "fixture-game-full", status: "Open", players: 7, ranked: true },
+  { id: "fixture-game-live", status: "In Progress", players: 7, competitive: true, gameState: "Day 2" },
+  { id: "fixture-game-finished", status: "Finished", players: 7, endTime: fixtureTime - 900000 },
+].map((game, index) => ({ lobby: "Main", lobbyName: `${people[index].name}'s lobby`, spectating: true,
+  spectatorCount: 2, setup: { ...setups[0] }, ...game }));
+const lobbyPoll = { id: "fixture-poll", question: "Which setup would you like to play?", lobby: "Main",
+  options: ["Classic", "Follow the visits"], voteCounts: [7, 4], completed: false,
+  created: fixtureTime - 86400000, expiresAt: fixtureTime + 86400000, userVote: null };
+
 const fixtureGranular = {
   alignment: [{ key: "Village", winRate: 0.57, totalGames: 63 }, { key: "Mafia", winRate: 0.43, totalGames: 63 }],
   role: [{ key: "Cop", winRate: 0.61, totalGames: 31 }, { key: "Mafioso", winRate: 0.39, totalGames: 32 }],
@@ -107,6 +120,7 @@ export function makeUser(mode = "member") {
     itemsOwned: { customProfile: 1, textColors: 1, avatarShape: 1, wordDeck: 3, customEmotes: [], customStickers: [] },
     groups: [], blockedUsers: [], redHearts: 12, goldHearts: 3, coins: 48.5, inGame: null,
     canPlayRanked: true, gamesPlayed: 63, autoContrastColor: color => color,
+    dailyChallenges: ["Basic1:0:Mafia", "Advanced2:0:Cop"],
   };
 }
 export function makeSiteInfo(record) {
@@ -125,6 +139,13 @@ export function makeSiteInfo(record) {
 // the browser report; there is no successful catch-all empty response.
 export function readFixture(url, user) {
   const p = decodeURIComponent(url.pathname);
+  if (p === "/api/game/list") return lobbyGames;
+  if (p === "/api/game/openCounts") return { counts: { All: 2, Main: 2 }, hasOpen: true };
+  if (p === "/api/game/mostPlayedRecently") return setups.slice(0, 3).map((setup, index) => ({ _id: setup.id, count: 20 - index * 5, percentage: (20 - index * 5) / 45, setupDetails: setup }));
+  if (p === "/api/chat/connect") return ""; // No real chat socket is authorized by this read-only fixture.
+  if (p.startsWith("/api/poll/list/")) return { currentPoll: lobbyPoll, activePolls: [lobbyPoll], polls: [] };
+  if (p === "/api/stampTrades/open") return [{ id: "fixture-offer", initiator: people[1], initiatorRole: "Cop", initiatorGameType: "Mafia" }];
+  if (p === "/api/stampTrades/recent") return [{ id: "fixture-trade", initiator: people[1], recipient: people[2], initiatorRole: "Cop", initiatorGameType: "Mafia", recipientRole: "Doctor", recipientGameType: "Mafia" }];
   if (p === "/api/notifs/unreadCount") return { count: 3 };
   if (p === "/api/mod/announcements") return [];
   if (p === "/api/site/violations") return violationDefinitions;
@@ -262,6 +283,7 @@ export function readFixture(url, user) {
 }
 
 export const routeCases = [
+  { name: "lobby", route: "/play", selector: ".lobby-browser" },
   { name: "new-page-contract", route: "/audit/new-page", text: "Shared page geometry" },
   { name: "players", route: "/community/users", text: "Search players" },
   { name: "families", route: "/community/families", text: "The Harbor" },

@@ -33,7 +33,7 @@ jobs:
         env:
           DESIGN_PHASE: after
           ROUTE_WIDTHS: '1440,390,320'
-          ROUTE_CASES: new-page-contract,players,families,host,character-deck-editor,word-deck-editor,create-setup,role-detail,moderation-log
+          ROUTE_CASES: new-page-contract,lobby,players,families,host,character-deck-editor,word-deck-editor,create-setup,role-detail,moderation-log,profile-rich,profile-custom,family-leader
         run: |
           export PLAYWRIGHT_MODULE="$RUNNER_TEMP/ui-audit-tools/node_modules/playwright"
           ROUTE_THEME=dark ROUTE_OUTPUT_DIR="$RUNNER_TEMP/ui-contract-dark" node test/run-route-review.cjs

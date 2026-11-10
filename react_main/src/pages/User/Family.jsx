@@ -25,7 +25,7 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import CustomMarkdown from "components/CustomMarkdown";
 import TrophyCase from "components/TrophyCase";
 import { capitalize } from "utils";
-import { UiAction, UiDialog, UiIcon, UiMenu, UiMenuItem, UiPageHeader } from "components/ui";
+import { UiAction, UiDialog, UiIcon, UiMenu, UiMenuItem, UiPage, UiPageHeader } from "components/ui";
 import { LatestRequest } from "../../lib/latestRequest";
 import "css/family.css";
 import { 
@@ -248,7 +248,7 @@ export default function Family() {
   }
 
   if (!familyLoaded) return <PageSkeleton />;
-  if (!family) return <div role="alert"><UiPageHeader title="Family unavailable" /><p>{profileError || "This family could not be found."}</p><UiAction onClick={() => loadFamilyProfile()}>Retry</UiAction><p><Link to="/community/families">Browse families</Link></p></div>;
+  if (!family) return <UiPage title="Family unavailable" role="alert"><p>{profileError || "This family could not be found."}</p><UiAction onClick={() => loadFamilyProfile()}>Retry</UiAction><p><Link to="/community/families">Browse families</Link></p></UiPage>;
 
   const hasTrophySpotlight = family.perks?.some((p) => p.key === "trophySpotlight" && p.owned);
 
@@ -311,7 +311,7 @@ export default function Family() {
   ));
 
   return (
-    <div className="family-page">
+    <UiPage className="family-page">
       {profileError && <p role="alert">{profileError}</p>}
       <UiMenu
         anchorEl={menuAnchorEl}
@@ -541,6 +541,6 @@ export default function Family() {
             <FamilyLedger familyId={familyId} refreshKey={ledgerRefreshKey} />
         </aside>
       </div>
-    </div>
+    </UiPage>
   );
 }

@@ -14,16 +14,17 @@ function measureUi() {
   const selector = element => {
     if (element.id) return `#${CSS.escape(element.id)}`;
     const parts = [];
-    for (let node = element; node && node !== main && parts.length < 5; node = node.parentElement) {
+    const root = main.contains(element) ? main : document.body;
+    for (let node = element; node && node !== root; node = node.parentElement) {
       const siblings = node.parentElement ? [...node.parentElement.children].filter(child => child.tagName === node.tagName) : [node];
       parts.unshift(`${node.tagName.toLowerCase()}${siblings.length > 1 ? `:nth-of-type(${siblings.indexOf(node) + 1})` : ''}`);
     }
-    return `${main.id ? `#${CSS.escape(main.id)}` : '.main-content'} ${parts.join(' > ')}`;
+    return `${root === main ? (main.id ? `#${CSS.escape(main.id)}` : '.main-content') : 'body'} > ${parts.join(' > ')}`;
   };
   const details = element => {
     const style = getComputedStyle(element);
     return { selector: selector(element), text: (element.getAttribute('aria-label') || element.textContent || '').trim().slice(0, 120), box: rect(element),
-      fontSize: parseFloat(style.fontSize), fontWeight: style.fontWeight, lineHeight: style.lineHeight,
+      fontSize: parseFloat(style.fontSize), fontWeight: style.fontWeight, lineHeight: style.lineHeight, color: style.color,
       marginTop: parseFloat(style.marginTop), marginBottom: parseFloat(style.marginBottom),
       padding: style.padding, gap: style.gap, maxWidth: style.maxWidth,
       background: style.backgroundColor, border: style.border, radius: style.borderRadius,

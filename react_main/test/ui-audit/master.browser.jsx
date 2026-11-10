@@ -10,6 +10,7 @@ import { makeUser, makeSiteInfo, readFixture, routeCases } from '../routeReviewD
 
 const params = new URLSearchParams(location.search);
 const state = window.__routeReview = { ready: false, pending: 0, requests: [], writes: [], unresolved: [], errors: [], lastRequestAt: performance.now(), cases: routeCases };
+state.failNextRead = params.get('fixtureFailRead');
 const user = makeUser(params.get('fixtureMode') || 'member');
 user.settings.siteColorScheme = params.get('theme') || 'dark';
 const site = makeSiteInfo(() => {});
@@ -34,9 +35,19 @@ axios.defaults.adapter = async config => {
   state.requests.push({ method, url: url.pathname + url.search });
   try {
     if (url.origin !== location.origin) throw new Error('External master-fixture request blocked');
+    if (method === 'get' && state.failNextRead === url.pathname) {
+      state.failNextRead = null;
+      state.simulatedReadFailures = (state.simulatedReadFailures || 0) + 1;
+      throw Object.assign(new Error('Simulated read failure'), { fixtureExpected: true });
+    }
     let data;
     if (!['get', 'head', 'options'].includes(method)) {
       state.writes.push({ method, url: url.pathname });
+      if (state.allowMasterFailure === url.pathname && ['/api/stocks/buy', '/api/feedback/submit'].includes(url.pathname)) {
+        state.allowMasterFailure = null;
+        state.simulatedWriteFailures = (state.simulatedWriteFailures || 0) + 1;
+        throw Object.assign(new Error(url.pathname === '/api/stocks/buy' ? 'Simulated trade failure. No trade was made.' : 'Simulated feedback failure. No issue was created.'), { fixtureExpected: true });
+      }
       if (!['/api/user/online', '/api/notifs/read'].includes(url.pathname)) throw new Error(`Master fixture is read-only: ${method} ${url.pathname}`);
       data = { recordedLocally: true };
     } else if (Object.hasOwn(bootstrap, url.pathname)) data = bootstrap[url.pathname];
@@ -44,7 +55,7 @@ axios.defaults.adapter = async config => {
     else data = readFixture(url, user);
     return { data: JSON.parse(JSON.stringify(data)), status: 200, statusText: 'OK', headers: {}, config };
   } catch (error) {
-    state.unresolved.push(error.message);
+    if (!error.fixtureExpected) state.unresolved.push(error.message);
     throw Object.assign(error, { config, response: { status: 501, data: error.message } });
   } finally { state.pending--; state.lastRequestAt = performance.now(); }
 };
