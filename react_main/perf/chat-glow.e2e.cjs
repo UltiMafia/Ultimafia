@@ -25,9 +25,16 @@ for (end++; depth && end < css.length; end++) {
   if (css[end] === "}") depth--;
 }
 const production = css.slice(start, end);
+// The halo is a text-shadow on purpose. A drop-shadow filter blurs the element's
+// box: its region is the border box plus 10%, so a wide halo is cut into a lit
+// rectangle, and stacked shadows compound until the gaps between letters fill in
+// (measured: a dense 12-character name at 21px read as a solid slab). text-shadow
+// paints per glyph, cannot be clipped to a box, and takes no space, so it does
+// not change layout. This also makes `reference` below the actual implementation,
+// so the intensity comparison is against the same technique rather than a proxy.
 assert(
-  !production.includes("text-shadow:"),
-  "do not restore animated glyph-overflow/layout changes"
+  !production.includes("drop-shadow("),
+  "the glow must not go back to a filter: it clips to the element's box"
 );
 
 (async () => {

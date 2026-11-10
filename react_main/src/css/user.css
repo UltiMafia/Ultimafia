@@ -412,7 +412,7 @@ iframe {
 .user-name.name-anim-glow .user-name-text,
 .name-color-preview.name-anim-glow {
   animation: name-color-glow 1.6s ease-in-out infinite;
-  will-change: filter;
+  will-change: text-shadow, filter;
 
   /* Nothing may paint behind the glyphs: a filter takes the whole element as
      its input, so any background on this box (including the browser's own tap
@@ -529,55 +529,40 @@ iframe {
 @keyframes name-color-glow {
   0%,
   100% {
-    /* Two shadows, not three. drop-shadow filters compound: each one blurs the
-       previous result, so a third wide radius fills the gaps between letters and
-       the halo reads as a lit rectangle behind the name instead of light around
-       the letters. The alphas are raised to keep the peak as bright as the old
-       three-shadow version. */
-    filter: drop-shadow(
-        0 0 1px
-          rgb(
-            var(
-                --name-glow-rgb,
-                var(--mui-palette-text-primaryChannel, 255 255 255)
-              ) /
-              var(--name-glow-dim-alpha, 0.75)
-          )
-      )
-      drop-shadow(
-        0 0 5px
-          rgb(
-            var(
-                --name-glow-rgb,
-                var(--mui-palette-text-primaryChannel, 255 255 255)
-              ) /
-              var(--name-glow-dim-alpha, 0.75)
-          )
-      )
-      brightness(1);
+    /* Glyph shadows, not a filter. A filter blurs the element's box: the region
+       is the border box plus 10%, so a wide halo is cut into a lit rectangle,
+       and stacked drop-shadows compound until the gaps between letters fill in.
+       text-shadow is painted per glyph, cannot be clipped to a box, and does not
+       affect layout - the glyphs' ink box is unchanged. */
+    text-shadow: 0 0 2px
+        rgb(
+          var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
+            1
+        ),
+      0 0 8px
+        rgb(
+          var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
+            1
+        );
+    filter: brightness(1);
   }
   50% {
-    filter: drop-shadow(
-        0 0 2px
-          rgb(
-            var(
-                --name-glow-rgb,
-                var(--mui-palette-text-primaryChannel, 255 255 255)
-              ) /
-              calc(var(--name-glow-peak-alpha, 0.61) * 1.45)
-          )
-      )
-      drop-shadow(
-        0 0 11px
-          rgb(
-            var(
-                --name-glow-rgb,
-                var(--mui-palette-text-primaryChannel, 255 255 255)
-              ) /
-              calc(var(--name-glow-peak-alpha, 0.61) * 1.45)
-          )
-      )
-      brightness(1.35);
+    text-shadow: 0 0 4px
+        rgb(
+          var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
+            1
+        ),
+      0 0 16px
+        rgb(
+          var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
+            1
+        ),
+      0 0 28px
+        rgb(
+          var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
+            1
+        );
+    filter: brightness(1.35);
   }
 }
 
