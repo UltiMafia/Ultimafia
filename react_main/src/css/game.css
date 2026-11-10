@@ -1101,9 +1101,14 @@ html[data-keyboard="open"] .game .meeting-tabs {
   flex-shrink: 0;
 }
 
-/* A left swipe reveals the reply cue without adding height or changing chat
-   layout. The transcript clips the translated row at its horizontal edges. */
+/* The row moves left; this strip extends from its shifted right edge back
+   to the original edge, exposing a recessed surface behind it. The shade is
+   derived from the panel colour rather than reused from
+   --scheme-color-background: themes that map that token to the panel colour
+   (the redesign does) would otherwise reveal nothing but the row's own
+   background. */
 .game .message.swipe-to-reply {
+  --reply-swipe-surface: color-mix(in srgb, var(--scheme-color-sec) 88%, #000);
   touch-action: pan-y pinch-zoom;
 }
 
@@ -1111,8 +1116,6 @@ html[data-keyboard="open"] .game .meeting-tabs {
   transform: translateX(var(--reply-swipe-offset, 0px));
 }
 
-/* The row moves left; this strip extends from its shifted right edge back
-   to the original edge, exposing the theme's recessed surface behind it. */
 .game .message.reply-swiping::before {
   content: "";
   position: absolute;
@@ -1120,7 +1123,7 @@ html[data-keyboard="open"] .game .meeting-tabs {
   top: 0;
   bottom: 0;
   width: calc(-1 * var(--reply-swipe-offset));
-  background: var(--scheme-color-background);
+  background: var(--reply-swipe-surface, var(--scheme-color-background));
   pointer-events: none;
 }
 
