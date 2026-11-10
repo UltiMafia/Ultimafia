@@ -2475,6 +2475,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           speechDisplayRef={speechDisplayRef}
           onScroll={onSpeechScroll}
           autoScroll={autoScroll}
+          startAtEnd={!game.review && (singleState || stateViewing === history.currentState)}
         /> : <div
           className="speech-display"
           data-name-animation-viewport
