@@ -90,7 +90,7 @@ All images are from the current branch's controlled production-component fixture
 ![Stock market](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/stock-market.png)
 
 ### Shop with the unified coin icon
-![Shop](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/shop.png)
+![Shop](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/shop-full.png)
 
 ### Host dialog
 ![Host dialog](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/host-dialog.png)

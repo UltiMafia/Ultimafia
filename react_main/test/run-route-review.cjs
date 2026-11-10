@@ -660,10 +660,10 @@ async function checkRemainingLayout(page, item) {
     checks.push("notification-list-and-unread-actions-retained");
   }
   if (item.name === "shop") {
-    assert.equal(await page.locator(".ui-product-card").count(), 3);
-    assert.equal(await page.getByRole("button", { name: /^Buy / }).count(), 3);
-    assert.ok(await page.getByRole("button", { name: "Buy word deck slot", exact: false }).isEnabled());
-    checks.push("three-product-cards-with-explicit-price-ownership-and-buy");
+    assert.ok(await page.locator(".ui-product-card").count() >= 20);
+    assert.ok(await page.getByRole("button", { name: /^Buy / }).count() >= 20);
+    assert.ok(await page.getByRole("button", { name: "Buy Word Deck Slot", exact: false }).isEnabled());
+    checks.push("full-product-grid-with-explicit-price-ownership-and-buy");
   }
   if (item.name === "profile-custom") {
     const colors = await page.locator(".profile .box-panel").first().evaluate(element => ({ inline: element.style.backgroundColor, computed: getComputedStyle(element).backgroundColor }));

@@ -365,7 +365,7 @@ export default function Shop(props) {
   if (!loaded) return <PageSkeleton />;
 
   return (
-    <UiPage title="Shop" width="reading" className="shop-page" actions={
+    <UiPage title="Shop" width="wide" className="shop-page" actions={
         <Stack
           direction="row"
           spacing={1}

@@ -33,7 +33,7 @@
 .ui-progress { width: 16px; height: 16px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: ui-progress .8s linear infinite; }
 @keyframes ui-progress { to { transform: rotate(360deg); } }
 .message-composer { width: 100%; min-width: 0; }
-.ui-product-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.ui-product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
 .ui-product-card { display: flex; flex-direction: column; min-width: 0; }
 .ui-product-card h3 { margin: 0; font-size: var(--ui-text-section); }
 .ui-product-description { flex: 1; margin: 10px 0 16px; color: var(--um-muted); }
