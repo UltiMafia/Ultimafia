@@ -52,6 +52,8 @@ The major structural changes against master:
 ### Families
 - Family page uses a two-column layout with a consistent 16px card gap: bio and comments in the main column; members, stock, applications, treasury, join fee, perks and ledger in the rail.
 - Family cards and homepage cards share the `.ui-card` surface (16px padding, 1px border, 6px radius, scheme background, no shadow).
+- Family pages always render a 3:1 banner: the uploaded banner when present, otherwise the family crest or monogram on the scheme gradient.
+- Family section headings use the same heading scale as profile sections.
 - Family settings no longer renders a stray `0` when the account does not own the create-family item.
 
 ### Moderation
@@ -74,6 +76,10 @@ The major structural changes against master:
 - Shop product cards use the shared `.ui-card` surface.
 - Stock market summary is a neutral card; table headers are plain labels with sort arrows, the clipped action column was removed, and the trend column was dropped from the table so Buy/Sell fit.
 - Stock market tabs and controls use the pixel icon family.
+
+### Game workspace
+- In-game player-list avatars use the 40px site size instead of being forced to 32px.
+- All three game panel headers share a fixed 48px line (42px on phones), with the meeting-tab strip constrained to its own 32px row.
 
 ### Design system and dead code
 - Added shared primitives: `UiCard`, `UiStatRow`, `UiStat`, `CoinIcon`.
@@ -113,7 +119,7 @@ Both captures show the same 7 games from the same local database. Master uses th
 ### Setup statistics: neutral stat row and single-accent bars
 ![Setup statistics](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/setup-statistics.png)
 
-### Family page layout
+### Family page layout, including the banner fallback
 ![Family page](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/family-page.png)
 
 ### Forum thread with inline author metadata
@@ -134,7 +140,7 @@ Both captures show the same 7 games from the same local database. Master uses th
 ### Staff handbook: wide shell, prose-width text
 ![Staff handbook](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/staff-handbook.png)
 
-### Game workspace
+### Game workspace: 40px avatars and aligned panel headers
 ![Game workspace](https://raw.githubusercontent.com/BlueCannonBall/Ultimafia/redesign/workflow-repair-draft/docs/frontend-redesign/pr-evidence/game-workspace.png)
 
 ## Verification
@@ -152,7 +158,7 @@ Both captures show the same 7 games from the same local database. Master uses th
 
 Evidence: `docs/frontend-redesign/workflow-repair/final8-routes-dark/`, `final8-routes-light/`, `final7-controls/`, `final7-homepage-restoration/`, `profile-current-rerun/`, and the focused `final4-game/`, `final4-competitive/`, `final4-ban-appeals/` runs.
 
-> Note: the 192-case full route run was captured before the final profile, stock-market and coin-icon edits. The profile and stock cases were rerun after those edits, but a final full run is still part of the proposed audit.
+> Note: the 192-case full route run was captured before the final profile, stock-market and coin-icon edits. The profile and stock cases were rerun after those edits, and the family and game captures were refreshed at 1440 after the latest merged family/game fixes. A final full run is still part of the proposed audit.
 
 ## Known issues / why this is a draft
 
@@ -162,6 +168,7 @@ Evidence: `docs/frontend-redesign/workflow-repair/final8-routes-dark/`, `final8-
 - The **full-site audit harness described below has not been built**. The route captures are broad but are not yet a mechanical check for width outliers, one-character wrapping, clipping, surface drift and icon-family drift across every dialog and state.
 - Coin/icon consistency is improved but not exhaustively audited; some icon contexts may still use a different family or size.
 - The setup editor/detail with very large role lists needs a second visual review at 320px and in light mode.
+- The new family banner fallback is a large, sparse gradient when a family has neither a banner nor an avatar; the monogram size and placement still need a visual decision.
 - Visual acceptance is not claimed. There are pre-existing UltiMafia layout defects outside the redesign scope.
 - Provider sign-in still needs the Tailnet hostname added to Firebase Authorized domains. No authenticated live hosting, trading, purchase, family-administration or destructive-moderation journey was performed.
 - Physical-phone keyboard/safe-area behavior and full minigame/network coverage are not verified.
