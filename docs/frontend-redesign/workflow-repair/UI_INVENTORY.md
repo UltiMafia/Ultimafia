@@ -15,14 +15,16 @@ at `/audit/new-page` verifies composition without page-specific CSS. The global
 and workflow lists below still require complete stable-ID registration and
 capture tasks before the inventory can be called exhaustive.
 
-The registry currently contains **142 route/state IDs × six cells = 852 cells**.
-The Learn integration run covered all **852 registered pairs**, with no gaps and
+The registry currently contains **148 route/state IDs × six cells = 888 cells**.
+The Learn integration run covered all **852 then-registered pairs**, with no gaps and
 856 pre-classification geometry candidates (94 heading offsets, 762 clipping).
 It predates the final Learn commit and is not final-HEAD evidence. Registered
 coverage is not exhaustive global/game-state inventory completion. The corrected
 tab-classification run pairs 120 cells, retaining 628 intentional findings and
 34 open findings; its other 732 cells remain gaps in that focused report, not
 silently reused evidence. Intentional findings remain visible with their reason.
+The focused report-dialog/composition run pairs 48 cells in the expanded 888-cell
+registry. Its other 840 cells remain gaps; the integrated refresh is in progress.
 
 ## Route surfaces
 
@@ -153,6 +155,12 @@ silently reused evidence. Intentional findings remain visible with their reason.
   master ancestors remain master UI, including its blank loading body. Repaired
   Rules keeps static policy text readable while penalty data is unavailable.
   Canonical text for all 17 sections is guarded separately from presentation.
+- Registered profile reporting states: `report-form`, `report-loading`,
+  `report-read-error`, `report-empty`, `report-pending`, `report-error` under
+  `profile-default`. The pending and inline-error master pairs explicitly use its
+  actual populated form ancestor, without sending a report. AFTER simulates only
+  a deferred in-memory failure and asserts the existing payload and duplicate
+  guard. Complete global/miniprofile/menu coverage remains to be registered.
 - Learn registration includes all five Mafia alignments, role search/no results,
   modifiers (Items/Visits/Appearance/Chat/Other), items, mechanics
   (Standard/Voting/Timer/Other), and achievements. Fixtures use public source

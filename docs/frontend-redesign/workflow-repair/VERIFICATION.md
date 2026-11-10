@@ -3,7 +3,76 @@
 PR #3197 is open and draft. This is not visual acceptance or a completed audit.
 Numbered historical evidence directories are not final-HEAD verification.
 
-## Active audit classification and integrated Learn results
+## Active shared report-dialog slice
+
+- `components/ReportDialog.jsx` now composes `UiDialog`, shared fields/actions/type
+  and the existing `ui-form-stack`, without its own MUI frame/title styling or
+  decorative role-image heading. The profile entry is an explicitly labeled
+  HackerNoon `Report user` action. No report endpoint, method or payload changed.
+- Rule-list loading, read failure with Retry and successful empty data are distinct.
+  Unavailable rules disable submission. A deliberately failed submission retains
+  Game, user, rule and description with a readable inline error. Pending fields,
+  cancellation and Escape are guarded; synchronous duplicate form events still
+  issue only one request. A session guard ignores obsolete submission completions.
+  Additional navigation/unmount checks pass **6/6 cases** across all widths/palettes:
+  a deliberately failed pending submission resolves after a new report session
+  opens, without changing its draft or rendering the old error. This models a
+  programmatic owner unmount, not physical-phone behavior.
+  The user-search field forwards the pending disabled state.
+- The named `UiField selectText="wrap"` variant keeps complete selected rules and
+  portaled menu options readable. Initial phone assertions found MUI's repeated
+  class overriding the lower-specificity shared selector (`white-space: nowrap`);
+  corrected the shared variant, not a report-specific override. The composition
+  fixture tests ordinary fields and the wrapped select together without page CSS.
+- Registered six profile-report states expand **852 → 888 cells**. BEFORE captured
+  **6/6 redesign and 6/6 actual-master route cases**, pairing 30 registered cells;
+  the redesign had no pending/inline-error surfaces yet. Master's actual populated
+  form is explicitly the nearest ancestor for those new states; it is never
+  submitted to fabricate screenshots. Report forms use synthetic user data and
+  optional Game drafts, not authenticated reports.
+- Corrected AFTER plus composition fixture: **12/12 redesign and 12/12 master
+  route cases**, **48 paired cells**, 12 open heading-offset candidates in this
+  two-route report, no clipping findings. The other 840 cells remain gaps in this
+  focused report. This is `../audit/report-dialog-corrected/`, interim dirty-source
+  evidence. Its loading image predates the subsequent compact pending variant.
+  All six native-width redesigned compact-loading images from the running
+  `../audit/report-integrated/` refresh were separately inspected; the full run is
+  not assumed passing before it completes.
+- Inspected all **10 BEFORE sheets** (144 images / 74 unique hashes) and all
+  **14 corrected AFTER/master sheets** (192 images / 108 unique hashes), including
+  separate phone tops/bottoms in both palettes. Selected rule names, retry/error
+  text and cancellation remain readable at 320px. Desktop thumbnails establish
+  composition, not every native text detail. No visual acceptance.
+- The initial AFTER's four phone failures are retained in
+  `../audit/report-dialog-after/`; they exposed the real select-text clipping,
+  rather than being suppressed or counted as accepted cells. The native-style
+  diagnostic is in `../audit/report-select-diagnostic/`.
+- The fork's concurrent transcript, floating-window and permanent Info-tab changes
+  were merged without rewriting history. Fresh regression builds below include
+  them. No speculative game/transport change was made to integrate them.
+
+| Report-dialog check | Observed result |
+| --- | --- |
+| Frontend Node tests | **263 passed, 0 failed**; `/var/tmp/ultimafia-report-merged-node.log` |
+| Architecture / independent budget | Passed; **589 → 580**, zero increases |
+| Production build | Passed again after the compact-only pending adjustment; `/var/tmp/ultimafia-report-production-final.log` |
+| Scoped ESLint | **0 errors, 32 warnings** across ReportDialog, UiField, Form and Profile; `/var/tmp/ultimafia-report-eslint.json`. Existing Form/Profile warnings remain |
+| Controls / lifecycle | **57 checks, 39 states / 33 checks passed**; `/var/tmp/ultimafia-report-regressions-5lub1ibl/` |
+| Game / competitive / homepage | **36 / 16 / 10 cases passed**, same immutable regression directory |
+| Report transport safety | One explicitly opted-in, deferred **in-memory failure** per AFTER profile case; unchanged payload asserted. Cancel/failed-rule-read/empty-list paths send no report. No report was delivered to any live service |
+| Pending owner unmount / new session | **6/6 cases passed** in `../audit/report-session-navigation-{dark,light}/`; initial phone driver attempts assumed desktop links, but the actual phone navigation uses buttons. Corrected selectors, not production navigation. Failed originals remain diagnostics |
+
+## PR publishing correction
+
+The user rejected replacing the original description with progress. Its latest
+detailed pre-audit version, including screenshots, was restored from GitHub's edit
+history and verified for exact equality. PR #3197 remains open and draft. Progress
+belongs in comments; the classification update is
+[this comment](https://github.com/UltiMafia/Ultimafia/pull/3197#issuecomment-6775025552).
+`PR_DESCRIPTION.md` is a repository audit-status record, not a body-upload command.
+The restored description is historical, not a claim that its images match HEAD.
+
+## Preceding audit classification and integrated Learn results
 
 - Completed `../audit/learn-integrated/`: **852/852 redesign cells, 852/852 actual-master
   cells, 852 pairs, zero gaps** in the registered matrix. All **438 route cases per

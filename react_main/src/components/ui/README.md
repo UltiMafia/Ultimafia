@@ -45,6 +45,12 @@ real disabled/busy states, keyboard focus and shared sizing. Navigation remains
 an actual link. `MessageComposer` owns presentation only; game/site/DM transports,
 permissions, drafts and acknowledgements stay with their respective adapters.
 
+Use `<UiField select selectText="wrap">` when complete policy/category names
+must remain readable. This named variant wraps both the selected value and menu
+options, including portaled menus; ordinary fields keep their existing defaults.
+It forwards the underlying field ref and MUI selection props. Do not add external
+`.ui-field--wrap-select`/`.ui-select-options--wrap` CSS or arbitrary selectText values.
+
 Primary actions share a small dark 3px bottom edge, with a 2px pressed offset;
 MUI legacy contained-primary buttons and UiAction consume the same tokens.
 Secondary controls remain quiet and disabled controls never retain a raised edge.

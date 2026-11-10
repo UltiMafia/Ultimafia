@@ -86,6 +86,9 @@
 .ui-content-list > li + li { margin-top: 8px; }
 .ui-form-stack { display: flex; flex-direction: column; gap: 16px; }
 .ui-form-stack > p { margin: 0; }
+/* MUI repeats its select class; match that specificity before Emotion's later rules. */
+.ui-field--wrap-select .MuiSelect-select.MuiSelect-select { white-space: normal; overflow-wrap: anywhere; }
+.ui-select-options--wrap .MuiMenuItem-root { white-space: normal; overflow-wrap: anywhere; }
 .ui-amount-shortcuts > .ui-action { padding-inline: 6px; }
 .ui-action-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .ui-table { width: 100%; border-collapse: collapse; text-align: left; font-size: var(--ui-text-body); }

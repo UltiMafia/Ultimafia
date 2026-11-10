@@ -1,4 +1,6 @@
 {
+  "profile-default.report-pending": { "equivalence": "nearest-ancestor", "reason": "Master ReportDialog.jsx:69–108 has no guarded/disabled pending form. Capture its actual populated report dialog without submitting a report; this is the form ancestor, not a fabricated pending state." },
+  "profile-default.report-error": { "equivalence": "nearest-ancestor", "reason": "Master ReportDialog.jsx:101–106 reports failed submissions through global alerts, not a retained inline error. Compare its actual populated report form without delivering any report." },
   "developer.revoke-confirmation": { "equivalence": "nearest-ancestor", "reason": "Master revokes a key immediately (DeveloperApi.jsx:48–52), without a confirmation dialog. Capture the real directory without issuing the write." },
   "developer.revoke-pending": { "equivalence": "nearest-ancestor", "reason": "Master has no pending revoke dialog or disabled cancellation controls. Compare the actual key directory ancestor; do not revoke a key." },
   "developer.revoke-error": { "equivalence": "nearest-ancestor", "reason": "The retained, retryable revoke dialog is new. Master reports errors through a global alert after immediate submission. Capture its directory ancestor without a key mutation." },

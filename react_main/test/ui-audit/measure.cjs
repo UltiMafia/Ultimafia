@@ -46,7 +46,7 @@ function measureUi() {
   const problems = [];
   const controlTargets = [];
   if (document.documentElement.scrollWidth > innerWidth + 1) problems.push({ role: 'document', selector: 'html', property: 'horizontalOverflow', observed: document.documentElement.scrollWidth - innerWidth, severity: 'high' });
-  for (const element of [...main.querySelectorAll('button, input, select, textarea, [role="button"], h1, h2, h3')].filter(visible)) {
+  for (const element of [...document.querySelectorAll('button, input, select, textarea, [role="button"], h1, h2, h3')].filter(element => (main.contains(element) || element.closest('[role="dialog"]')) && visible(element))) {
     const box = rect(element), style = getComputedStyle(element);
     const tablist = element.closest('[role="tablist"]');
     const identity = { role: element.getAttribute('role') || element.tagName.toLowerCase(),

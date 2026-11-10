@@ -22,7 +22,7 @@ the complete screenshot refresh remains outstanding.
 
 ### Diff against fetched upstream master
 
-365 files: **+22,235 / −14,982** text lines; 162 added, 170 modified, 33 deleted
+372 files: **+22,765 / −15,127** text lines; 165 added, 174 modified, 33 deleted
 (25 binary files). Recomputed against fetched `origin/master` for this slice.
 
 ## Current work
@@ -56,9 +56,14 @@ the complete screenshot refresh remains outstanding.
   controls and compact previews. Removed gallery CSS cannot return. Populated
   source fixtures cover all Mafia alignments, modifiers, items, mechanics and
   achievements; a bootstrap contract guard prevents an empty master counterpart.
+- The shared report dialog uses the common frame, fields and actions. Loading,
+  retryable rule-read failure, empty rules and retained submission errors are
+  distinct; pending fields/cancellation and duplicate form events are guarded.
+  The shared wrapped-select variant keeps complete rule names and menu options
+  readable on phones. Tests deliver no report to a live service.
 - Architecture guards reject new alternate icon imports, raw h1 titles, removed
   header paths, unsupported variants and inline shared-surface/header overrides.
-   Legacy debt decreased **755 → 617 → 615 → 606 → 602 → 589** with no increases. The remaining
+   Legacy debt decreased **755 → 617 → 615 → 606 → 602 → 589 → 580** with no increases. The remaining
   baseline is debt, not a completed reviewed allowlist.
 - The comparative audit records stable IDs, six-cell width/palette coverage,
   actual production geometry, role comparisons, source/bundle/image provenance
@@ -91,7 +96,7 @@ the complete screenshot refresh remains outstanding.
 - [UI architecture](docs/frontend-redesign/UI_ARCHITECTURE.md)
 - [Read-only public comparison procedure](docs/frontend-redesign/audit/live-public/README.md)
 
-The registered denominator is **852 cells**. Global/game states, menus and further
+The registered denominator is **888 cells**. Global/game states, menus and further
 loading/empty/failure/permission branches still need registration. A complete
 registered run would therefore still not establish exhaustive inventory coverage.
 
@@ -104,7 +109,7 @@ registered run would therefore still not establish exhaustive inventory coverage
 | Public same-database comparison | 48/48 cases, 24 paired cells, 96 separate top/bottom images; 56 public source responses all HTTP 200 |
 | Upstream-integrated comparison before administrative expansion | 582/582 redesign cells and 582/582 master cells; 582 pairs, zero gaps, 270 open candidates; inventory remained incomplete |
 | Administrative/new-page focused comparison | 36/36 redesign and 36/36 master route cases; 174 paired cells; four remaining Rules clipping candidates. Subsequent invoice-contract correction requires refreshed data evidence |
-| Frontend Node tests | 262 passed, 0 failed |
+| Frontend Node tests | 263 passed, 0 failed |
 | Controls / lifecycle | 57 checks and 39 states / 33 checks passed |
 | Game / competitive / homepage | 36 / 16 / 10 cases passed |
 | Build / UI architecture / scoped ESLint | Passed / passed / 0 errors, 28 existing Roles/achievement-hook warnings across the five-file Learn slice (tooling separately reports a stale browser database) |
@@ -116,6 +121,8 @@ registered run would therefore still not establish exhaustive inventory coverage
 | Learn/setup/new-page comparison | **18/18 redesign and 18/18 actual-master route cases; 120 paired cells**, including populated achievements in both branches after correcting master's stale bootstrap |
 | Learn integrated full comparison | **852/852 redesign and 852/852 master cells, 852 pairs, zero gaps; all 438 route cases passed per branch**. 856 pre-classification candidates (94 heading offsets, 762 clipping). Dirty-source run before the final Learn commit, not final-HEAD evidence |
 | Corrected focused tab classification | **120 paired cells; 662 total findings, 628 intentional neighboring-tab findings, 34 open setup-editor findings**. All 18 route cases passed per branch. Other 732 cells remain gaps in this focused report; classifications are not silently applied to the older full run |
+| Shared report dialog / composition fixture | **12/12 redesign and 12/12 master route cases; 48 paired cells**, including six registered report states at all widths/palettes. One deferred in-memory failure per AFTER profile case; unchanged payload, duplicate guard, cancellation and draft retention asserted. Six additional pending-owner-unmount/new-session cases passed. Twelve heading-offset candidates remain in this focused two-route report; its other 840 cells remain gaps. Integrated refresh is running, not presumed passing |
+| Report slice regressions | **263 Node tests; build and architecture passed; 57 controls/39 states, 33 lifecycle, 36 game, 16 competitive and 10 homepage cases passed**. Scoped ESLint: 0 errors, 32 existing Form/Profile warnings across four files. Fresh regression builds include the fork's concurrent transcript/floating-window/Info-tab changes |
 | Selected reference tabs / keyboard | 12/12 cases passed; complete text labels and usable visible hit areas fit their scroll windows, and keyboard navigation reaches first/last sections. Neighboring blank tab padding is not misreported as clipped text |
 | Backend suite | Failed isolated attempts: 821 passed/80 failed, then 994 passed/145 failed; worker heap exhaustion and a Mocha parallel-reporter crash remain unresolved. No server/game-engine changes were made to force a pass |
 
@@ -128,10 +135,14 @@ were inspected, including populated master achievements and separate phone
 bottoms. Desktop thumbnails establish composition, not every native text detail.
 The 320px setup editor's sticky-step overlap remains open despite the Add action
 succeeding after scrolling. The fork's later Back-dismissal fix was fast-forwarded;
-earlier captures do not establish its integrated verification.
+earlier captures do not establish its integrated verification. The report slice's
+fresh regression builds include it and subsequent fork changes. All 10 report
+BEFORE and all 14 corrected AFTER/master inspection sheets were inspected,
+including separate phone tops/bottoms. All six native-width redesigned compact
+loading images from the running integrated refresh were separately inspected.
 This is not inspection or acceptance of every route, master counterpart, dialog
 and global-state image. Speculative navigation changes made while diagnosing a
-selector failure were discarded; the existing Back handler is unchanged.
+selector failure were discarded; the fork's subsequent Back-dismissal fix is retained.
 
 ## Still required
 

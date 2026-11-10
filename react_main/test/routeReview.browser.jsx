@@ -92,13 +92,19 @@ axios.defaults.adapter = async config => {
          }
          data = "Feedback recorded in the test fixture only.";
        }
-       else if (state.allowTradeFailure && method === "post" && url.pathname === "/api/stocks/buy") {
+        else if (state.allowTradeFailure && method === "post" && url.pathname === "/api/stocks/buy") {
          // Explicitly opted-in failure only: never simulate a balance-changing
          // success or forward a financial request outside this in-memory adapter.
          state.allowTradeFailure = false;
          await new Promise(resolve => { state.releaseTradeFailure = resolve; });
          state.simulatedTradeFailures = (state.simulatedTradeFailures || 0) + 1;
-          throw Object.assign(new Error("Simulated trade failure. No trade was made."), { fixtureExpected: true });
+           throw Object.assign(new Error("Simulated trade failure. No trade was made."), { fixtureExpected: true });
+         }
+        else if (state.allowReportFailure && method === "post" && url.pathname === "/api/report/send") {
+          state.allowReportFailure = false;
+          await new Promise(resolve => { state.releaseReportFailure = resolve; });
+          state.simulatedReportFailures = (state.simulatedReportFailures || 0) + 1;
+          throw Object.assign(new Error("Simulated report failure. No report was delivered."), { fixtureExpected: true });
         }
        else if (method === "post" && state.adminFailurePath === url.pathname &&
          ["/api/dev/keys", "/api/dev/keys/fixture-client-1/revoke", "/api/crypto/admin/invoices/fixture-invoice-0/approve"].includes(url.pathname)) {

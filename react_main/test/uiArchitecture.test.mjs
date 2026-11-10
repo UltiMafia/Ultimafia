@@ -83,3 +83,10 @@ test("reference directories and setup pickers use named variants without legacy 
   assert.equal(architecture.cssViolations('.cell-search-grid {display:grid}', 'learn.css').length, 1);
   assert.equal(architecture.cssViolations('.ui-reference-entry {background:red}', 'learn.css').length, 1);
 });
+test("long select text uses the shared wrap variant instead of external clipping overrides", () => {
+  assert.deepEqual(architecture.countLegacyUi('const field = <UiField select selectText="wrap" />;'), {});
+  assert.deepEqual(architecture.countLegacyUi('const field = <UiField select selectText="custom" />;'), { 'field:unsupported-select-text': 1 });
+  assert.equal(architecture.cssViolations('.ui-field--wrap-select .MuiSelect-select {white-space:nowrap}', 'report.css').length, 1);
+  const source = fs.readFileSync(new URL('../src/components/ReportDialog.jsx', import.meta.url), 'utf8');
+  assert.deepEqual(architecture.countLegacyUi(source, 'components/ReportDialog.jsx'), {}, 'migrated report dialog has no alternate frame or controls');
+});

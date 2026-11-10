@@ -1242,13 +1242,9 @@ export default function Profile() {
               >
                 <i className={`fas fa-ban ${isBlocked ? "sel" : ""}`} />
               </IconButton>
-              <IconButton
-                size="small"
-                onClick={onReportClick}
-                sx={{ cursor: "pointer", touchAction: "manipulation" }}
-              >
-                <i className="fas fa-flag" />
-              </IconButton>
+              <UiAction variant="ghost" iconOnly aria-label="Report user" onClick={onReportClick}>
+                <UiIcon name="flag" />
+              </UiAction>
               {reportDialogOpen && (
                 <Suspense fallback={null}>
                   <ReportDialog

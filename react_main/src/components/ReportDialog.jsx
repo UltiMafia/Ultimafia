@@ -1,25 +1,11 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import axios from "axios";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Typography,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-} from "@mui/material";
-import { useErrorAlert } from "./Alerts";
+import { UiAction, UiDialog, UiField, UiMenuItem, UiPending, UiText } from "./ui";
 import { UserSearchSelect } from "./Form";
 import { UserContext, SiteInfoContext } from "../Contexts";
 import { useViolations } from "../hooks/useViolations";
 
-import janitor from "images/roles/mafia/janitor-vivid.png";
+let nextReportFormId = 0;
 
 export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
   const [game, setGame] = useState(prefilledArgs.game || "");
@@ -28,6 +14,11 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
   );
   const [ruleBroken, setRuleBroken] = useState("");
   const [description, setDescription] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [formId] = useState(() => `report-form-${++nextReportFormId}`);
+  const submitInFlight = useRef(false);
+  const session = useRef(0);
 
   // Reset form only when the dialog opens, not on every parent re-render (e.g. game
   // state updates) which pass a new prefilledArgs object identity each time.
@@ -35,6 +26,7 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
   useEffect(() => {
     if (!open) {
       dialogSessionStartedRef.current = false;
+      session.current++;
       return;
     }
     if (dialogSessionStartedRef.current) {
@@ -46,12 +38,16 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
     setUserReported(userId);
     setRuleBroken("");
     setDescription("");
+    setSubmitError("");
+    setSubmitting(false);
+    submitInFlight.current = false;
   }, [
     open,
     prefilledArgs.game,
     prefilledArgs.userId,
     prefilledArgs.user,
   ]);
+  useEffect(() => () => { session.current++; }, []);
 
   // Get display value for user (prefer userName, fall back to userId)
   const userDisplayValue =
@@ -63,23 +59,25 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
-  const errorAlert = useErrorAlert();
-  const { violationDefinitions, loading: violationsLoading } = useViolations();
+  const { violationDefinitions, loading: violationsLoading, error: violationsError, reload } = useViolations();
+  const rulesAvailable = !violationsLoading && !violationsError && violationDefinitions.length > 0;
 
   const handleSubmit = async () => {
+    if (!open || !user.loggedIn || submitInFlight.current || !rulesAvailable) return;
     const reportedUserValue =
       userReported && typeof userReported === "object" && userReported.id
         ? userReported.id
         : userReported;
 
     if (!reportedUserValue || !ruleBroken) {
-      siteInfo.showAlert(
-        "Please choose a user to report and select the rule that was broken.",
-        "error"
-      );
+      setSubmitError("Please choose a user to report and select the rule that was broken.");
       return;
     }
 
+    const submittedSession = session.current;
+    submitInFlight.current = true;
+    setSubmitting(true);
+    setSubmitError("");
     try {
       await axios.post("/api/report/send", {
         game: game || undefined,
@@ -87,6 +85,7 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
         rule: ruleBroken,
         description: description || undefined,
       });
+      if (submittedSession !== session.current) return;
 
       setGame("");
       setUserReported("");
@@ -99,68 +98,44 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
       );
       onClose();
     } catch (e) {
-      if (e?.response?.data) {
-        siteInfo.showAlert(e.response.data.toString(), "error");
-      } else {
-        errorAlert(e);
+      if (submittedSession === session.current) {
+        setSubmitError(e?.response?.data
+          ? e.response.data.toString()
+          : "Could not submit report. Try again or cancel. Your draft has been retained.");
+      }
+    } finally {
+      if (submittedSession === session.current) {
+        submitInFlight.current = false;
+        setSubmitting(false);
       }
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1.5,
-          p: 2,
-          flexWrap: "wrap",
-        }}
-      >
-        <img
-          src={janitor}
-          alt="janitor"
-          width="60"
-          height="60"
-          style={{ flexShrink: 0 }}
-        />
-        <DialogTitle
-          sx={{
-            p: 0,
-            flex: 1,
-            fontSize: "1.25rem",
-            lineHeight: 1.3,
-            fontWeight: 600,
-            whiteSpace: "normal",
-            wordBreak: "break-word",
-          }}
-        >
-          File a Report
-        </DialogTitle>
-      </Box>
-
-      <DialogContent>
+    <UiDialog open={open} title="Report user" onClose={onClose} dismissible={!submitting}
+      actions={<>
+        <UiAction onClick={onClose} disabled={submitting}>Cancel</UiAction>
+        <UiAction type="submit" form={formId} variant="primary" busy={submitting}
+          disabled={!user.loggedIn || !rulesAvailable}>Submit Report</UiAction>
+      </>}>
         {user.loggedIn ? (
-          <Box
-            component="form"
-            sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
-          >
-            <Typography variant="body2" color="textSecondary">
+          <form id={formId} className="ui-form-stack" aria-busy={submitting || undefined}
+            onSubmit={event => { event.preventDefault(); handleSubmit(); }}>
+            <UiText variant="body2" color="text.secondary">
               Please provide as much detail as possible when reporting rule or
               policy violations.
-            </Typography>
+            </UiText>
 
-            <TextField
+            <UiField
               label="Game"
               value={game}
               onChange={(e) => setGame(e.target.value)}
               fullWidth
-              disabled={!!prefilledArgs.game}
+              disabled={submitting || !!prefilledArgs.game}
             />
 
             {prefilledArgs.userId || prefilledArgs.user ? (
-              <TextField
+              <UiField
                 label="User Reported"
                 value={userDisplayValue}
                 disabled
@@ -171,55 +146,42 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
                 onChange={(value) => setUserReported(value)}
                 placeholder="User Reported"
                 value={userReported}
+                disabled={submitting}
               />
             )}
 
-            <FormControl fullWidth>
-              <InputLabel id="rule-broken-label">Rule Broken</InputLabel>
-              <Select
-                labelId="rule-broken-label"
+            <UiField select selectText="wrap" fullWidth
                 value={ruleBroken}
                 label="Rule Broken"
                 onChange={(e) => setRuleBroken(e.target.value)}
-                disabled={violationsLoading}
+                disabled={submitting || !rulesAvailable}
               >
                 {violationDefinitions.map((rule) => (
-                  <MenuItem key={rule.name} value={rule.name}>
+                  <UiMenuItem key={rule.name} value={rule.name}>
                     {rule.name}
-                  </MenuItem>
+                  </UiMenuItem>
                 ))}
-              </Select>
-            </FormControl>
+            </UiField>
+            {violationsLoading ? <UiPending compact label="Loading rules" /> : violationsError ? (
+              <div role="alert">Could not load rules. <UiAction onClick={reload}>Retry</UiAction></div>
+            ) : !violationDefinitions.length ? <UiText role="status">No report rules are available.</UiText> : null}
 
-            <TextField
+            <UiField
               label="Description (Optional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               fullWidth
               multiline
               rows={4}
+              disabled={submitting}
             />
-          </Box>
+            {submitError && <UiText role="alert">{submitError}</UiText>}
+          </form>
         ) : (
-          <Typography color="error">
+          <UiText role="status">
             You must be logged in to file a report.
-          </Typography>
+          </UiText>
         )}
-      </DialogContent>
-
-      <DialogActions sx={{ px: 2, pb: 2 }}>
-        <Button onClick={onClose} color="secondary">
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          color="primary"
-          variant="contained"
-          disabled={!user.loggedIn}
-        >
-          Submit Report
-        </Button>
-      </DialogActions>
-    </Dialog>
+    </UiDialog>
   );
 }

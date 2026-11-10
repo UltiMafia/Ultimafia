@@ -84,8 +84,8 @@ old colors. Reads and passive acknowledgements stay in memory, with the same
 controlled records; this is separate from live same-database public-route pairs,
 which now have a separate `live-public` run. The upstream-integrated run paired
 all then-registered 582 cells with no gaps and 270 open candidates. The registry
-has since expanded to 852 cells with explicit administrative, Rules and Mafia
-reference states. The administrative integration run captured all 720 then-registered pairs with zero gaps
+has since expanded to 888 cells with explicit administrative, Rules, Mafia
+reference and profile-report states. The administrative integration run captured all 720 then-registered pairs with zero gaps
 and 246 open candidates (94 heading offsets, 152 clipping), before the final
 composer correction; it is not final-HEAD evidence or exhaustive inventory. The
 completed Learn full comparison pairs all 852 registered cells with zero gaps,
@@ -93,7 +93,10 @@ completed Learn full comparison pairs all 852 registered cells with zero gaps,
 438 route cases passing per branch. It predates the final Learn commit and is
 not final-HEAD evidence. The corrected focused tab-classification run pairs 120
 cells: 662 total findings, 628 intentional and 34 open; its other 732 cells remain
-gaps. Non-Mafia reference/global/game states still need inventory expansion. The
+gaps. The report-dialog/composition run pairs 48 cells in the expanded 888-cell
+registry; 12 heading-offset candidates remain, and the other 840 cells are gaps
+in that focused report. Its integrated refresh is in progress. Non-Mafia
+reference/global/game states still need inventory expansion. The
 report does not interpret a missing master as a redesign regression. Geometry
 candidates require image inspection and classification; automated capture is not
 visual acceptance, nor evidence of live authentication or physical-phone behavior.

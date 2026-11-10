@@ -12,6 +12,7 @@ const { reviewMasterTasks } = require("./ui-audit/master-tasks.cjs");
 const { reviewAdminTasks } = require("./ui-audit/admin-tasks.cjs");
 const { reviewRulesTasks } = require("./ui-audit/rules-tasks.cjs");
 const { reviewLearnTasks } = require("./ui-audit/learn-tasks.cjs");
+const { reviewReportTasks } = require("./ui-audit/report-tasks.cjs");
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "/tmp/opencode/redesign-tools/node_modules/playwright");
 const root = path.resolve(__dirname, "../..");
 const upstream = process.env.UI_AUDIT_BRANCH === "master";
@@ -365,6 +366,13 @@ async function checkLayout(page, item) {
     assert.ok(contract.fields.every(width => width > 100 && width <= contract.width));
     assert.equal(await page.getByRole('textbox', { name: 'Name', exact: true }).inputValue(), 'Example item');
     assert.equal(await page.getByRole('combobox', { name: /^Record status(?: |$)/ }).innerText(), 'Active');
+    const rule = page.getByRole('combobox', { name: /^Policy rule(?: |$)/ });
+    const selected = await rule.evaluate(element => ({ whiteSpace: getComputedStyle(element).whiteSpace, fits: element.scrollWidth <= element.clientWidth + 1 }));
+    assert.deepEqual(selected, { whiteSpace: 'normal', fits: true }, 'New pages inherit complete selected labels without custom CSS');
+    await rule.click();
+    const option = page.getByRole('option', { name: 'Personal Attacks & Harassment (PA)', exact: true });
+    assert.equal(await option.evaluate(element => getComputedStyle(element).whiteSpace), 'normal');
+    await page.keyboard.press('Escape');
     const actionWidth = await page.getByRole('button', { name: 'Save details', exact: true }).evaluate(element => element.getBoundingClientRect().width);
     assert.ok(actionWidth < contract.fields[0], 'Ordinary actions do not stretch into reading-width bands');
     checks.push('new-page-inherits-header-shell-spacing-and-field-geometry-without-css');
@@ -907,34 +915,7 @@ async function reviewTasks(page, item, viewport, entry) {
   checks.push(...await reviewDiscoveryTasks(page, item, captureTask));
   entry.adminEvidence = [];
   checks.push(...await reviewAdminTasks(page, item, captureTask, { evidence: entry.adminEvidence }));
-  if (item.name === "profile-default") {
-    // The legacy profile entry has no accessible name yet. Keep this selector
-    // explicit rather than pretending this regression check repairs that debt.
-    const openReport = page.locator('button').filter({ has: page.locator('.fa-flag') });
-    await openReport.click();
-    let dialog = page.getByRole('dialog');
-    await dialog.getByRole('combobox', { name: /^Rule Broken/ }).click();
-    await page.getByRole('option', { name: 'Personal Attacks & Harassment (PA)', exact: true }).click();
-    await dialog.getByRole('textbox', { name: /^Description/ }).fill('Local report draft, never submitted');
-    await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
-    await dialog.waitFor({ state: 'hidden' });
-    await page.evaluate(() => { window.__routeReview.deferRead = '/api/site/violations'; });
-    await openReport.click();
-    dialog = page.getByRole('dialog');
-    await page.waitForFunction(() => typeof window.__routeReview.releaseRead === 'function');
-    assert.ok(await dialog.getByRole('combobox', { name: /^Rule Broken/ }).isDisabled());
-    await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
-    await dialog.waitFor({ state: 'hidden' });
-    await page.evaluate(() => window.__routeReview.releaseRead());
-    await page.waitForFunction(() => window.__routeReview.pending === 0);
-    await openReport.click();
-    await page.getByRole('dialog').getByRole('combobox', { name: /^Rule Broken/ }).click();
-    await page.getByRole('option', { name: 'Personal Attacks & Harassment (PA)', exact: true }).click();
-    await page.getByRole('dialog').getByRole('button', { name: 'Cancel', exact: true }).click();
-    await page.getByRole('dialog').waitFor({ state: 'hidden' });
-    assert.equal(await page.evaluate(() => window.__routeReview.writes.filter(write => write.url === '/api/report/send').length), 0);
-    checks.push('report-dialog-shared-violations-load-cancel-unmount-during-read-and-reopen-without-write');
-  }
+  checks.push(...await reviewReportTasks(page, item, captureTask, { after: phase === 'after' }));
   checks.push(...await reviewRulesTasks(page, item, captureTask, { after: phase === 'after' }));
   checks.push(...await reviewLearnTasks(page, item, captureTask, { after: phase === 'after' }));
   if (item.name.startsWith("settings-")) {

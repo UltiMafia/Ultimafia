@@ -62,6 +62,7 @@ function countLegacyUi(source, filename = "example.jsx") {
         if (["UiPage", "UiPageHeader"].includes(node.name?.name) && ["style", "sx"].includes(attribute.name?.name)) add("header:inline-override");
         if (["UiCard", "UiStatRow", "UiTable"].includes(node.name?.name) && ["style", "sx"].includes(attribute.name?.name)) add("surface:inline-override");
         if (node.name?.name === "UiTable" && attribute.name?.name === "variant" && attributeValues(attribute.value).some(value => !["records", "comparison"].includes(value))) add("table:unsupported-variant");
+        if (node.name?.name === "UiField" && attribute.name?.name === "selectText" && attributeValues(attribute.value).some(value => value !== "wrap")) add("field:unsupported-select-text");
         if (node.name?.name === "UiReferenceList" && attribute.name?.name === "variant" && attributeValues(attribute.value).some(value => !["directory", "picker"].includes(value))) add("reference:unsupported-variant");
         if (["UiReferenceList", "UiReferenceEntry", "UiReferenceToolbar"].includes(node.name?.name) && ["style", "sx"].includes(attribute.name?.name)) add("surface:inline-override");
         if (attribute.name?.name === "className" && literalStrings(attribute.value).some(value => /\b(?:cell-search-grid|cell-search-item|role-cell(?:-[\w-]+)?)\b/.test(value))) add("reference:legacy");
@@ -97,6 +98,7 @@ function cssViolations(source, filename) {
     if (/\.ui-page(?:\b|--)/.test(selector)) violations.push(`${filename}: page geometry belongs in components/ui/ui.css, not ${selector}`);
     if (/\.ui-table(?:\b|--)/.test(selector)) violations.push(`${filename}: shared table presentation belongs in components/ui/ui.css, not ${selector}`);
     if (/\.ui-reference(?:\b|--|-)/.test(selector)) violations.push(`${filename}: reference layout belongs in components/ui/ui.css, not ${selector}`);
+    if (/\.(?:ui-field--wrap-select|ui-select-options--wrap)\b/.test(selector)) violations.push(`${filename}: select text presentation belongs in components/ui/ui.css, not ${selector}`);
     if (/\.(?:cell-search-grid|cell-search-item|role-cell)(?:\b|-)/.test(selector)) violations.push(`${filename}: removed legacy reference selector ${selector}`);
     if (/\bh1\b/.test(selector) && !headingCssAllowlist[filename]?.[selector.replace(/\s+/g, " ")]) violations.push(`${filename}: page-title CSS belongs in components/ui/ui.css; authored-content exceptions require review: ${selector}`);
   }

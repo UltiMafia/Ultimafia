@@ -22,6 +22,7 @@ const taskStates = {
   'setup-detail': ['statistics', 'night', 'version'],
   stocks: ['trade-dialog', 'trade-error'], rankings: ['rating-details'],
   'profile-rich': ['games', 'collection', 'statistics'], 'profile-custom': ['games', 'collection', 'statistics'],
+  'profile-default': ['report-form', 'report-loading', 'report-read-error', 'report-empty', 'report-pending', 'report-error'],
   'family-leader': ['bio-editor', 'remove-confirmation', 'role-confirmation'],
   feedback: ['submission-error'], 'admin-intake': ['approve-confirmation', 'ban-confirmation'],
   contributors: ['bio-editor'], donors: ['bio-editor'],

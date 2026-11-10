@@ -1311,6 +1311,7 @@ export function UserSearchSelect(props) {
   return (
     <Autocomplete
       size="small"
+      disabled={props.disabled}
       value={selectedName || null}
       inputValue={displayInputValue}
       onInputChange={(e, newInputValue, reason) => {

@@ -9,6 +9,7 @@ export { UiStatRow, UiStat } from "./UiStat";
 export { default as UiPage, UiPageHeader, UiSection, UiList, UiListItem } from "./UiPage";
 export { default as UiIcon } from "./UiIcon";
 export { default as MessageComposer } from "./MessageComposer";
-export { TextField as UiField, Typography as UiText, Autocomplete as UiAutocomplete } from "@mui/material";
+export { default as UiField } from "./UiField";
+export { Typography as UiText, Autocomplete as UiAutocomplete } from "@mui/material";
 export { Select as UiSelect, Menu as UiMenu, MenuItem as UiMenuItem, Tabs as UiTabs, Tab as UiTab, Checkbox as UiCheckbox, Radio as UiRadio, RadioGroup as UiRadioGroup, Switch as UiSwitch, Slider as UiSlider } from "@mui/material";
 export { uiTokens } from "./designTokens";

@@ -6,7 +6,7 @@ const references = [{ name: 'Example reference with a real-length name', descrip
 
 export default function NewPageFixture() {
   return <UiPage width="reading" title="Example page" description="Shared page geometry" actions={<UiAction variant="primary"><UiIcon name="add" />Create item</UiAction>}>
-    <UiSection title="Details"><UiField fullWidth label="Name" defaultValue="Example item" /><UiField select fullWidth label="Record status" defaultValue="active"><UiMenuItem value="active">Active</UiMenuItem></UiField><UiAction>Save details</UiAction></UiSection>
+    <UiSection title="Details"><UiField fullWidth label="Name" defaultValue="Example item" /><UiField select fullWidth label="Record status" defaultValue="active"><UiMenuItem value="active">Active</UiMenuItem></UiField><UiField select selectText="wrap" fullWidth label="Policy rule" defaultValue="long-rule"><UiMenuItem value="long-rule">Personal Attacks &amp; Harassment (PA)</UiMenuItem></UiField><UiAction>Save details</UiAction></UiSection>
     <UiCard><UiSection title="Preview"><p>Content is composed without a second page header or custom control CSS.</p></UiSection></UiCard>
     <UiTable label="Example records" columns={[
       { key: 'name', label: 'Name' }, { key: 'id', label: 'Public ID', code: true },

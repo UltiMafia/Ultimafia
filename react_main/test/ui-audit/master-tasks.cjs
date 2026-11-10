@@ -1,9 +1,11 @@
 // Compare actual upstream interactions. No action is forwarded to a service.
 // Only the two deliberately opted-in failed writes are allowed by its adapter.
 const assert = require('node:assert/strict');
+const { reviewReportTasks } = require('./report-tasks.cjs');
 
 async function reviewMasterTasks(page, item, capture) {
   const checks = [];
+  checks.push(...await reviewReportTasks(page, item, capture, { master: true }));
   const content = page.locator('#main-content');
   const settle = () => page.waitForFunction(() => window.__routeReview.pending === 0 && performance.now() - window.__routeReview.lastRequestAt > 400);
   if (item.name === 'host') {
