@@ -14,7 +14,7 @@ export default defineConfig({
     tags: [{ tag: "link", attrs: { rel: "stylesheet", href: "/css/fontawesome.min.css" } }],
   },
   output: {
-    distPath: { root: "build-chat-perf" },
+    distPath: { root: process.env.CHAT_PERF_DIST || "build-chat-perf" },
     dataUriLimit: { image: 0, media: 0 },
   },
   server: { host: "0.0.0.0", port: 3002, strictPort: true },
