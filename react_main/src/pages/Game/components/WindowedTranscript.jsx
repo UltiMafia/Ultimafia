@@ -352,10 +352,6 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
   }, [checkTopEdge, onScroll, speechDisplayRef]);
 
   const items = virtualizer.getVirtualItems();
-  // Unresolved quotes can render nothing. Match the original DOM's last child,
-  // not an empty logical tail whose measured wrapper has zero height.
-  let lastRowIndex = rows.length - 1;
-  while (lastRowIndex >= 0 && virtualizer.itemSizeCache.get(keys[lastRowIndex]) === 0) lastRowIndex--;
   const firstItem = items[0];
   const windowStart = firstItem?.start ?? 0;
   const windowHeight = items.length ? items[items.length - 1].end - windowStart : 0;
@@ -395,7 +391,6 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
             key={item.key}
             className="transcript-window-row"
             data-index={item.index}
-            data-transcript-last-row={item.index === lastRowIndex ? "true" : undefined}
             ref={virtualizer.measureElement}
             style={{ position: "absolute", top: item.start - windowStart, left: 0, width: "100%", display: "flow-root", overflowAnchor: "none" }}
           >
