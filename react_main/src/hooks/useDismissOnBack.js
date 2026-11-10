@@ -51,12 +51,19 @@ export function useDismissOnBack(isOpen, onClose) {
       if (index !== -1) overlayStack.splice(index, 1);
 
       // If our marker is still the current entry (the overlay was closed from
-      // its own UI, not by Back), remove it.
-      const state = window.history.state;
-      if (state && state.__overlay === id) {
-        programmaticBack = true;
-        window.history.back();
-      }
+      // its own UI, not by Back), remove it. The check is deferred by one
+      // microtask: a caller that closes the overlay and navigates in the same
+      // tick (hosting a game) pushes its new entry right after this cleanup,
+      // and a back() queued here would then traverse below that new entry —
+      // landing on the page the user came from while the navigation they asked
+      // for is already in history.
+      queueMicrotask(() => {
+        const state = window.history.state;
+        if (state && state.__overlay === id) {
+          programmaticBack = true;
+          window.history.back();
+        }
+      });
     };
   }, [isOpen]);
 }
