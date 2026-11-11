@@ -238,12 +238,23 @@ html[data-keyboard="open"] .game .meeting-tabs {
   font-weight: bold;
 }
 
-/* A name longer than its column is truncated, but the column must not cut the
-   animated glow off at its edge: `clip` equals `hidden` for the text and
-   `overflow-clip-margin` keeps the halo. */
+/* A clipped column cuts a name's halo at its edge, and `overflow-clip-margin`
+   is not available in Safari, so the column itself never clips. Names are
+   truncated on the text instead - except a glowing one, whose halo needs to
+   paint outside the glyph box. */
 .game .message .nameplate-aligned .name-with-avatar {
-  overflow-x: clip;
-  overflow-clip-margin: 20px;
+  overflow: visible;
+}
+
+.game .message .nameplate-aligned .user-name:not(.name-anim-glow),
+.game .player-list .player .user-name:not(.name-anim-glow) {
+  display: inline-block;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
 }
 
 /* Trailing space above the composer belongs to the transcript, not to
@@ -737,11 +748,9 @@ html[data-keyboard="open"] .game .meeting-tabs {
   padding-left: 7px; */
   /*SANTA CHANGES*/
 
-  /* Same trade as the aligned nameplate: clip the row, but leave room for a
-     glowing name to bleed out of it. */
-  overflow-x: clip;
-  overflow-y: clip;
-  overflow-clip-margin: 14px;
+  /* Same as the aligned nameplate: no clipping here, or the animated glow is
+     cut off at the row's edge. The name truncates itself instead. */
+  overflow: visible;
 }
 
 .game .player-list .player.dead {
