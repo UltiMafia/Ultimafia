@@ -1,6 +1,6 @@
 # Comparative UI audit
 
-Run `cd react_main && npm run audit:ui`. Set `PLAYWRIGHT_MODULE` to an isolated
+Run `cd react_main && ROUTE_CASES=<changed-routes> npm run audit:ui`. Set `PLAYWRIGHT_MODULE` to an isolated
 Playwright installation; the existing `/tmp/opencode/redesign-tools/node_modules/playwright`
 is the local default. Install Chromium for that Playwright version first. The
 fixture build uses `--no-env`, a fake public Firebase project and in-memory reads
@@ -40,6 +40,18 @@ their reason in JSON/HTML. Summary counts distinguish total, intentional and ope
 classification never means visual acceptance or creates missing coverage.
 
 For iteration, use `ROUTE_CASES=players ROUTE_WIDTHS=320 npm run audit:ui`.
+Interim capture requires an explicit route scope and defaults to a **120-image
+budget for the entire command**, across branches and palettes, including failed
+diagnostic attempts. Set a smaller `UI_AUDIT_CAPTURE_LIMIT` for small slices.
+`ROUTE_CAPTURE_STATES=modifiers,settings` keeps those task images while still
+running the other assertions and retaining the complete inventory denominator.
+Include `default` to capture initial top/bottom images; otherwise those images are
+reused only through explicit input provenance or remain coverage gaps. Direct route runners default to 120 images
+per process and accept `ROUTE_CAPTURE_LIMIT`; a manual multi-process slice must
+divide its stated total budget across those processes. Reuse identical immutable
+bundles and already captured master counterparts where verified. Do not generate
+fresh full-site matrices for individual repairs. `UI_AUDIT_FINAL=1` is reserved
+for the single complete matrix after all feasible work is genuinely finished.
 This deliberately leaves the full denominator unchanged. Regenerate reports
 without capturing with `node test/run-ui-audit.cjs --report-only`. Use
 `--redesign-only` or `--master-only` for independent immutable bundle runs.
@@ -95,7 +107,13 @@ not final-HEAD evidence. The corrected focused tab-classification run pairs 120
 cells: 662 total findings, 628 intentional and 34 open; its other 732 cells remain
 gaps. The report-dialog/composition run pairs 48 cells in the expanded 888-cell
 registry; 12 heading-offset candidates remain, and the other 840 cells are gaps
-in that focused report. Its integrated refresh is in progress. Non-Mafia
+in that focused report. The recovered integrated report pairs all 888 then-registered
+cells with zero gaps, 856 total findings, 628 intentional and 228 open (94 heading
+offsets, 134 clipping). The original run left 18 gaps from a narrow Learn case;
+its replacement uses identical HTML/compiled-JS hashes and bounded tab-scroll
+settlement before screenshots, not a production workaround or relaxed clipping
+threshold. The original failure and input report hashes remain explicit. This is
+interim frozen-bundle evidence, not final HEAD. Non-Mafia
 reference/global/game states still need inventory expansion. The
 report does not interpret a missing master as a redesign regression. Geometry
 candidates require image inspection and classification; automated capture is not

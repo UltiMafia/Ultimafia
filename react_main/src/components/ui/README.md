@@ -96,6 +96,22 @@ removed `.cell-search-grid`/`.role-cell` gallery paths. The new-page fixture tes
 both variants without page CSS, including complete directory paragraphs and a
 real picker action.
 
+`UiStepNavigation` owns sequential Back/progress/Next/final-action geometry.
+`currentStep` is zero-based; `stepCount` must be positive. On phones, progress
+becomes `1 / 3` and the visible action becomes `Next`; the complete destination
+remains its accessible name. Final labels are never shortened. `busy` disables
+navigation and preserves the final action's pending treatment. Use `sticky` only
+inside an editor's scroll container. Do not recreate setup-specific footer CSS,
+shrink action text, or add external `.ui-step-*`/inline geometry overrides. The
+composition fixture exercises Next, Back and a final action without page CSS.
+
+`UiTabs` preserves the MUI tabs API, linked `UiTab` semantics and keyboard
+navigation. It rechecks the selected (or keyboard-focused) tab after the local
+strip resizes or its auto-scroll arrows change. This prevents transient arrow
+removal from permanently clamping the scroll offset short of the last label.
+Only the strip is moved, not the page. Ordinary arrow scrolling is not intercepted.
+Use this shared path rather than page-specific tab scrolling or label clipping.
+
 Do not wrap ordinary pages or every heading/body pair in Card/Paper. Avoid
 repeated heading strips, alternating inset backgrounds and ornamental panels.
 Use an actual surface when it communicates a boundary: dialogs, menus, editors,

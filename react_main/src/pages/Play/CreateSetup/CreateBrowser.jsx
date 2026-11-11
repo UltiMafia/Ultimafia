@@ -38,7 +38,7 @@ import {
 } from "components/Roles";
 import { Cell } from "components/CellSearch";
 import Form from "components/Form";
-import { UiAction, UiCard, UiField, UiIcon, UiSection, UiDialog } from "components/ui";
+import { UiAction, UiCard, UiField, UiIcon, UiSection, UiDialog, UiStepNavigation } from "components/ui";
 import { useErrorAlert } from "components/Alerts";
 import "css/createSetup.css";
 import { Loading } from "components/Loading";
@@ -1126,19 +1126,11 @@ export default function CreateSetup(props) {
       </Stack>
       </Box>
       {isMafiaSetup && (
-        <div className="setup-step-navigation">
-          <UiAction disabled={activeStep === 0} onClick={() => changeStep(activeStep - 1)}>Back</UiAction>
-          <Typography variant="body2">Step {activeStep + 1} of {stepLabels.length}</Typography>
-          {activeStep < 2 ? (
-            <UiAction variant="primary" onClick={() => changeStep(activeStep + 1)}>
-              Next: {stepLabels[activeStep + 1]}
-            </UiAction>
-          ) : user.loggedIn ? (
-            <UiAction variant="primary" busy={saving} onClick={saveSetup}>
-              {editing ? "Save changes" : "Create setup"}
-            </UiAction>
-          ) : <Typography variant="body2">Log in to save your setup</Typography>}
-        </div>
+        <UiStepNavigation label="Setup steps" sticky currentStep={activeStep} stepCount={stepLabels.length}
+          onBack={() => changeStep(activeStep - 1)} onNext={() => changeStep(activeStep + 1)}
+          nextLabel={stepLabels[activeStep + 1]} onComplete={saveSetup} busy={saving}
+          completeLabel={editing ? "Save changes" : "Create setup"}
+          completionMessage={!user.loggedIn ? "Log in to save your setup" : undefined} />
       )}
       {redirect && <Navigate to={`/play/host/?setup=${redirect}`} />}
       <UiDialog open={presetConfirm} title="Replace roles with Speed Rounds?" onClose={() => setPresetConfirm(false)} actions={<><UiAction onClick={() => setPresetConfirm(false)}>Cancel</UiAction><UiAction variant="primary" onClick={() => { setPresetConfirm(false); applyMafiaSpeedRoundsPreset(); }}>Apply preset</UiAction></>}><p>This replaces your current role sets and game settings. Your setup name is kept.</p></UiDialog>

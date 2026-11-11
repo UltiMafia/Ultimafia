@@ -11,7 +11,7 @@ const masterEquivalents = require("./ui-audit/master-equivalents.json");
 const { reviewMasterTasks } = require("./ui-audit/master-tasks.cjs");
 const { reviewAdminTasks } = require("./ui-audit/admin-tasks.cjs");
 const { reviewRulesTasks } = require("./ui-audit/rules-tasks.cjs");
-const { reviewLearnTasks } = require("./ui-audit/learn-tasks.cjs");
+const { reviewLearnTasks, settleSelectedTabs } = require("./ui-audit/learn-tasks.cjs");
 const { reviewReportTasks } = require("./ui-audit/report-tasks.cjs");
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "/tmp/opencode/redesign-tools/node_modules/playwright");
 const root = path.resolve(__dirname, "../..");
@@ -27,6 +27,10 @@ const runName = `run-${new Date().toISOString().replace(/[:.]/g, "-")}`;
 const output = path.join(artifacts, runName);
 const mime = { ".html": "text/html", ".js": "application/javascript", ".css": "text/css", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif", ".webp": "image/webp", ".svg": "image/svg+xml", ".woff": "font/woff", ".woff2": "font/woff2", ".ttf": "font/ttf", ".ico": "image/x-icon", ".json": "application/json" };
 const staticFailures = [];
+const captureStates = process.env.ROUTE_CAPTURE_STATES ? new Set(process.env.ROUTE_CAPTURE_STATES.split(',')) : null;
+const captureLimit = Number(process.env.ROUTE_CAPTURE_LIMIT || 120);
+if (!Number.isInteger(captureLimit) || captureLimit < 1) throw new Error('ROUTE_CAPTURE_LIMIT must be a positive integer');
+let screenshotCount = 0;
 const fixtureSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320"><rect width="960" height="320" fill="#263e49"/><path d="M0 230L180 120 360 240 520 100 720 240 960 120V320H0Z" fill="#527b85"/><circle cx="800" cy="70" r="32" fill="#d7b77c"/></svg>`;
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://127.0.0.1");
@@ -76,7 +80,13 @@ async function main() {
   try {
     async function newPage(viewport) {
       const context = await browser.newContext({ viewport, colorScheme: palette, reducedMotion: "reduce", serviceWorkers: "block", locale: "en-US", timezoneId: "UTC" });
-      const page = await context.newPage();
+       const page = await context.newPage();
+       const screenshot = page.screenshot.bind(page);
+       page.screenshot = options => {
+         if (screenshotCount >= captureLimit) throw new Error(`Evidence cap reached (${captureLimit}); narrow routes/states instead of producing another full matrix`);
+         screenshotCount++;
+         return screenshot(options);
+       };
       const observed = { runtimeErrors: [], consoleErrors: [], consoleWarnings: [], blockedTraffic: [], failedRequests: [], historyTransitions: [] };
       page.on("pageerror", error => observed.runtimeErrors.push(error.stack || error.message));
       page.on("console", message => {
@@ -188,19 +198,23 @@ async function main() {
            if (masterEquivalent?.requireReadFailure) assert.equal(fixture.simulatedReadFailures, 1, "The paired master state must consume the same explicit read failure");
            if (fixture.errors.length || fixture.unresolved.length || observed.runtimeErrors.length) throw new Error("Runtime error or unresolved fixture contract (see JSON)");
            if (phase === "after" && !upstream) entry.layoutChecks = await checkLayout(page, item);
-          const filename = `${item.name}-${viewport.width}-top.png`;
-          await page.screenshot({ path: path.join(output, filename), fullPage: false, animations: "disabled" });
-           entry.screenshots.push(filename);
-           entry.measurements.push({ state: "default", position: "top", screenshot: filename, ...await page.evaluate(measureUi) });
+           const filename = `${item.name}-${viewport.width}-top.png`;
+           if (!captureStates || captureStates.has('default')) {
+            await page.screenshot({ path: path.join(output, filename), fullPage: false, animations: "disabled" });
+            entry.screenshots.push(filename);
+            entry.measurements.push({ state: "default", position: "top", screenshot: filename, ...await page.evaluate(measureUi) });
+           }
           entry.topGeometry = await geometry(page);
           // Also capture desktop bottoms for long routes; every capture is a viewport.
            await page.locator(".site-wrapper").evaluate(element => { element.scrollTop = element.scrollHeight; });
            if (upstream) await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
           await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
           const bottom = `${item.name}-${viewport.width}-bottom.png`;
-          await page.screenshot({ path: path.join(output, bottom), fullPage: false, animations: "disabled" });
-           entry.screenshots.push(bottom);
-           entry.measurements.push({ state: "default", position: "bottom", screenshot: bottom, ...await page.evaluate(measureUi) });
+           if (!captureStates || captureStates.has('default')) {
+            await page.screenshot({ path: path.join(output, bottom), fullPage: false, animations: "disabled" });
+            entry.screenshots.push(bottom);
+            entry.measurements.push({ state: "default", position: "bottom", screenshot: bottom, ...await page.evaluate(measureUi) });
+           }
            entry.bottomGeometry = await geometry(page);
             if (phase === "after" && !upstream && ["forum-categories", "forum-board"].includes(item.name)) {
              const disclosure = content.locator(".forum-recent-replies").first();
@@ -251,7 +265,8 @@ async function main() {
              if (!upstream && process.env.ROUTE_TASK_REVIEW === "1") entry.taskChecks = await reviewTasks(page, item, viewport, entry);
              if (upstream && process.env.MASTER_TASK_REVIEW === "1") {
                entry.adminEvidence = [];
-               const captureMaster = async (state, position = "task", metadata = {}) => {
+                const captureMaster = async (state, position = "task", metadata = {}) => {
+                 if (captureStates && !captureStates.has(state)) return;
                  // A task may reload the untouched application for a pending or
                  // failed read. Restore only the measurement marker, not its UI.
                  await page.locator('.inner-container').evaluate(element => { element.id = 'main-content'; });
@@ -289,6 +304,7 @@ async function main() {
     await browser.close();
     await new Promise(resolve => server.close(resolve));
     report.counts = { cases: report.cases.length, captured: report.cases.filter(item => item.status === "captured-baseline-not-accepted").length, failed: report.cases.filter(item => item.status === "failed-not-accepted").length };
+    report.captureBudget = { limit: captureLimit, produced: screenshotCount, states: captureStates ? [...captureStates] : 'all' };
     fs.writeFileSync(path.join(output, "report.json"), JSON.stringify(report, null, 2));
     const rows = report.cases.map(item => `| ${item.name} | ${item.viewport.width}×${item.viewport.height} | ${item.status} | ${item.screenshots.map(file => `[${file}](${file})`).join(" ") || (item.diagnosticScreenshot ? `[diagnostic only](${item.diagnosticScreenshot})` : "none")} |`).join("\n");
     fs.writeFileSync(path.join(output, "REPORT.md"), `# Route ${phase.toUpperCase()} captures\n\nProduction route components and SiteLayout/Header/Footer; synthetic data only. No services, accounts, auth submissions, or deliberate mutations. Screenshots are capture evidence, not visual acceptance. Failed renders are not accepted captures. All phone images are separate 390×844 viewports.\n\n${JSON.stringify(report.counts)}\n\n| Case | Viewport | Status | Images |\n| --- | --- | --- | --- |\n${rows}\n\nSee each case JSON for exact requests, locally recorded writes, unresolved contracts, console/runtime errors, blocked traffic, and geometry.\n\n${report.fatal || ""}\n`);
@@ -392,6 +408,28 @@ async function checkLayout(page, item) {
     assert.ok(await directory.locator('.ui-reference-entry--directory').count());
     assert.ok(await picker.locator('.ui-reference-entry--picker').count());
     checks.push('new-page-inherits-continuous-directory-and-bounded-action-picker-without-css');
+    const navigation = page.getByRole('navigation', { name: 'Example steps', exact: true });
+    const stepGeometry = await navigation.evaluate(element => {
+      const box = element.getBoundingClientRect(), buttons = [...element.querySelectorAll('button')].map(button => button.getBoundingClientRect());
+      return { height: box.height, overflow: element.scrollWidth > element.clientWidth + 1,
+        aligned: buttons.every(button => Math.abs(button.top - buttons[0].top) < 1) };
+    });
+    assert.ok(stepGeometry.height <= 74, 'Step navigation remains one row without page CSS');
+    assert.equal(stepGeometry.overflow, false); assert.equal(stepGeometry.aligned, true);
+    checks.push('new-page-inherits-single-row-step-controls-without-css');
+  }
+  if (item.name === 'create-setup') {
+    const navigation = page.getByRole('navigation', { name: 'Setup steps', exact: true });
+    const bounds = await navigation.boundingBox();
+    assert.ok(bounds.height <= 74, 'Sticky setup navigation stays one row at all registered widths');
+    const firstAdd = page.getByRole('button', { name: 'Add Villager', exact: true });
+    const target = await firstAdd.boundingBox();
+    assert.ok(target.y + target.height <= bounds.y - 4, 'Initial first-row Add action is not covered by the step navigation');
+    assert.equal(await firstAdd.evaluate(element => {
+      const box = element.getBoundingClientRect();
+      return element.contains(document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2));
+    }), true, 'The initial Add target is actually hit-testable before scrolling');
+    checks.push('single-row-step-navigation-leaves-initial-add-control-fully-visible-and-hit-testable');
   }
   if (item.name === "learn-games") {
     const migrated = await page.locator('.ui-reference-list--directory').count();
@@ -704,6 +742,11 @@ async function reviewDiscoveryTasks(page, item, captureTask) {
     checks.push("host-player-range-empty-reset-owner-delete-cancel-stale-results-and-retry");
   }
   if (item.name === "create-setup") {
+    const captureStep = async state => {
+      await page.mouse.move(0, 0);
+      await page.locator('.site-wrapper').evaluate(element => { element.scrollTop = 0; }); await captureTask(state, 'top');
+      await page.locator('.site-wrapper').evaluate(element => { element.scrollTop = element.scrollHeight; }); await captureTask(state, 'bottom');
+    };
     const name = page.getByRole("textbox", { name: "Setup Name", exact: true });
     await name.fill("Local creator review");
     await page.getByRole("combobox", { name: "Game type", exact: true }).selectOption("Jotto");
@@ -720,11 +763,14 @@ async function reviewDiscoveryTasks(page, item, captureTask) {
     await page.getByRole("button", { name: "Next: Role modifiers", exact: true }).click();
     await page.getByRole("button", { name: "Edit modifiers for Cop", exact: true }).click();
     await page.getByRole("button", { name: "Add Armed", exact: true }).click();
+    if (await page.locator('.ui-step-navigation').count()) assert.ok((await page.locator('.ui-step-navigation').boundingBox()).height <= 74);
+    await captureStep("modifiers");
     await page.getByRole("button", { name: "Next: Game settings", exact: true }).click();
     assert.equal(await name.inputValue(), "Local creator review");
     await page.getByRole("checkbox", { name: "Closed Roles", exact: true }).check();
     await page.getByRole("checkbox", { name: "Role Groups", exact: true }).check();
-    await captureTask("settings");
+    if (await page.locator('.ui-step-navigation').count()) assert.ok((await page.locator('.ui-step-navigation').boundingBox()).height <= 74, 'Final action remains in the same single-row footer');
+    await captureStep("settings");
     await page.getByRole("checkbox", { name: "Role Groups", exact: true }).uncheck();
     await page.getByRole("checkbox", { name: "Closed Roles", exact: true }).uncheck();
     await page.evaluate(() => { window.__routeReview.allowSetupWrites = true; });
@@ -907,6 +953,7 @@ async function checkRemainingLayout(page, item) {
 async function reviewTasks(page, item, viewport, entry) {
   const checks = [];
   async function captureTask(name, position = "task") {
+    if (captureStates && !captureStates.has(name)) return;
     const filename = `${item.name}-${viewport.width}-${name}${position === "task" ? "" : `-${position}`}.png`;
     await page.screenshot({ path: path.join(output, filename), animations: "disabled" });
    entry.screenshots.push(filename);
@@ -916,6 +963,31 @@ async function reviewTasks(page, item, viewport, entry) {
   entry.adminEvidence = [];
   checks.push(...await reviewAdminTasks(page, item, captureTask, { evidence: entry.adminEvidence }));
   checks.push(...await reviewReportTasks(page, item, captureTask, { after: phase === 'after' }));
+  if (item.name === 'new-page-contract') {
+    const tabs = page.getByRole('tablist', { name: 'Example sections', exact: true });
+    const tabRoot = '#main-content .MuiTabs-root:has([aria-label="Example sections"])';
+    for (let attempt = 0; attempt < 4; attempt++) {
+      await tabs.getByRole('tab').first().focus(); await page.keyboard.press('End'); await page.keyboard.press('Enter');
+      assert.equal(await tabs.getByRole('tab', { name: 'Additional information', exact: true }).getAttribute('aria-selected'), 'true');
+      await settleSelectedTabs(page, tabRoot);
+      await page.keyboard.press('Home'); await page.keyboard.press('Enter');
+      assert.equal(await tabs.getByRole('tab', { name: 'Overview', exact: true }).getAttribute('aria-selected'), 'true');
+      await settleSelectedTabs(page, tabRoot);
+    }
+    await page.keyboard.press('ArrowRight'); await page.keyboard.press('ArrowRight'); await page.keyboard.press('Enter');
+    assert.equal(await tabs.getByRole('tab', { name: 'Settings', exact: true }).getAttribute('aria-selected'), 'true', 'Keyboard skips disabled tabs');
+    await page.keyboard.press('End'); await page.keyboard.press('Enter'); await settleSelectedTabs(page, tabRoot);
+    await tabs.scrollIntoViewIfNeeded(); await captureTask('tabs-last');
+    checks.push('shared-tabs-repeated-home-end-disabled-skip-and-complete-selected-label-without-css');
+    const navigation = page.getByRole('navigation', { name: 'Example steps', exact: true });
+    await navigation.getByRole('button', { name: 'Next: Review', exact: true }).click();
+    await navigation.getByRole('button', { name: 'Next: Finish', exact: true }).click();
+    await navigation.getByRole('button', { name: 'Save changes', exact: true }).waitFor();
+    await navigation.scrollIntoViewIfNeeded(); await captureTask('steps-final');
+    await navigation.getByRole('button', { name: 'Back', exact: true }).click();
+    await navigation.getByRole('button', { name: 'Next: Finish', exact: true }).waitFor();
+    checks.push('shared-step-control-next-back-and-final-action-without-write');
+  }
   checks.push(...await reviewRulesTasks(page, item, captureTask, { after: phase === 'after' }));
   checks.push(...await reviewLearnTasks(page, item, captureTask, { after: phase === 'after' }));
   if (item.name.startsWith("settings-")) {

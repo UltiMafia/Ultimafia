@@ -3,7 +3,79 @@
 PR #3197 is open and draft. This is not visual acceptance or a completed audit.
 Numbered historical evidence directories are not final-HEAD verification.
 
-## Active shared report-dialog slice
+## Setup-navigation / selected-tab slice — verified scope, not audit completion
+
+- The registry is now **153 IDs / 918 cells**: added `create-setup.modifiers`,
+  `create-setup.settings`, `learn-games.keyboard-last` and the test-only
+  `new-page-contract.steps-final` / `tabs-last`.
+- The setup BEFORE/master run passed six cases per branch, pairing six cells in
+  the then-888-cell registry. All four inspection sheets (30 unique images) were
+  inspected. At 320px, the initial Add Villager target spans 644.69–688.69px while
+  the old footer's Back button begins at 670px, confirming a real overlap.
+- The shared `UiStepNavigation` replaces the setup-specific footer and its
+  wrapping/font rules. Initial-Add geometry/hit-testing and one-row footer checks
+  pass all six redesign setup cases; six composition cases also pass. Complete
+  Next destination names remain accessible; final labels/pending behavior and the
+  original setup payload are preserved. The old footer and its extra padding are
+  removed; static guards reject returning to that path.
+- `../audit/setup-navigation-after/` captures 102 redesign cells and 120 master
+  cells, **84 pairs / 822 gaps**, with 358 findings (314 intentional / 44 open).
+  All six actual-master setup tasks initially failed finding Armed because a Cop
+  popover hid background controls from accessibility. Real pointer movement and
+  Escape dismissal is verified (no source/DOM accessibility bypass).
+  The standalone `../audit/setup-master-popover-dismissal/` retry omitted
+  `MASTER_TASK_REVIEW=1`, so its three route captures **do not verify that task**.
+  The actual master driver subsequently exposed its unassociated Setup Name field
+  and tooltip text appended to checkbox names. Source/DOM inspection corrected
+  those selectors, without editing upstream UI.
+- Two newer Learn keyboard cases failed the strict two-second label wait after
+  End/Enter selected Achievements: dark 390px and light 320px. The latter image
+  visibly clips its selected label. These were **real settled clipping**, not
+  waived as transient or resolved by the older recovery. Mutation tracing shows
+  MUI removes both auto arrows between intersection callbacks, widening the strip
+  by 80px and clamping its offset; reinserted arrows do not update its indicator.
+  Shared `UiTabs` now rechecks the selected/focused item after strip resize/arrow
+  changes, moving only the local strip. All six Learn and six composition cases
+  pass, including repeated Home/End, disabled-item skipping and unchanged full
+  label / usable-target assertions. No thresholds or existing detectors weakened.
+- Final focused setup verification passes **6/6 redesign and 6/6 master tasks**.
+  `../audit/setup-navigation-paired-scoped/` has **18 pairs / 900 gaps**, retaining
+  **60 open clipping candidates**, chiefly neighboring category tabs, not waived.
+  Input provenance explicitly reuses unchanged master's earlier successful default
+  capture; new modifiers/settings use the same upstream revision. Dirty-source
+  bundles/runtime revisions differ; this is not final-HEAD evidence.
+- After the user's capture correction, the final setup retries produced **90
+  images including failed diagnostics within the stated 96-image allocation**.
+  Corrected master retried only missing task images, not the route defaults.
+  Selected existing before/after/master states total **138 images / 122 unique
+  hashes / 16 sheets**, under a 180-image inspection selection cap. Every selected
+  sheet was inspected, including separate phone tops/bottoms; desktop thumbnails
+  establish composition, not every native text detail. No visual acceptance.
+- **268 Node tests passed**, UI architecture and whitespace checks passed.
+  Production build passed; scoped ESLint **0 errors / 9 existing CreateBrowser
+  warnings**. Fresh regression builds passed **57 controls / 39 states, 33
+  lifecycle, 36 game, 16 competitive and 10 homepage checks**. Logs:
+  `/var/tmp/ultimafia-setup-tabs-{node-final,production}.log`,
+  `/var/tmp/ultimafia-setup-tabs-eslint.json`, and
+  `/var/tmp/ultimafia-setup-tabs-regressions-emfx3l0g/`.
+- Interim audits now require `ROUTE_CASES` and enforce a total image budget
+  (default 120), with task-state selection and unchanged full coverage denominator.
+  An unscoped matrix requires explicit `UI_AUDIT_FINAL=1`, reserved for completion.
+  No further interim full-site matrices will be produced.
+- The 299 full-report contact sheets were generated (3,000 images / 2,389 unique
+  hashes; one excluded original failure). Only sheets **1–24** are inspected so far;
+  the rest remain unverified. No new full matrix was run for this repair.
+
+## Next detector work (not yet implemented)
+
+Retain all existing checks. Add universal sampled-block/section fill-edge checks,
+declared-full-width intent and paired-master width regression; expose unmeasurable
+targets. Add sectionNav/sectionNavItem roles, graded cross-page divergence, measured
+44px/active-item/wrapping/fixed-bar phone contracts and static guards against new
+one-off nav/widths. Detectors precede example repairs. The lobby wall is a required
+demonstration, not the scope; no wall-only fix has been made.
+
+## Completed shared report-dialog slice
 
 - `components/ReportDialog.jsx` now composes `UiDialog`, shared fields/actions/type
   and the existing `ui-form-stack`, without its own MUI frame/title styling or
@@ -36,8 +108,8 @@ Numbered historical evidence directories are not final-HEAD verification.
   focused report. This is `../audit/report-dialog-corrected/`, interim dirty-source
   evidence. Its loading image predates the subsequent compact pending variant.
   All six native-width redesigned compact-loading images from the running
-  `../audit/report-integrated/` refresh were separately inspected; the full run is
-  not assumed passing before it completes.
+  `../audit/report-integrated/` refresh were separately inspected. The completed
+  full run and its explicit single-case recovery are recorded below.
 - Inspected all **10 BEFORE sheets** (144 images / 74 unique hashes) and all
   **14 corrected AFTER/master sheets** (192 images / 108 unique hashes), including
   separate phone tops/bottoms in both palettes. Selected rule names, retry/error
@@ -61,6 +133,31 @@ Numbered historical evidence directories are not final-HEAD verification.
 | Game / competitive / homepage | **36 / 16 / 10 cases passed**, same immutable regression directory |
 | Report transport safety | One explicitly opted-in, deferred **in-memory failure** per AFTER profile case; unchanged payload asserted. Cancel/failed-rule-read/empty-list paths send no report. No report was delivered to any live service |
 | Pending owner unmount / new session | **6/6 cases passed** in `../audit/report-session-navigation-{dark,light}/`; initial phone driver attempts assumed desktop links, but the actual phone navigation uses buttons. Corrected selectors, not production navigation. Failed originals remain diagnostics |
+
+### Completed integrated run and tab-scroll recovery
+
+- The original `../audit/report-integrated/` captured **870/888 redesign cells and
+  888/888 master cells**, leaving 18 gaps. One of the redesign's 438 route cases
+  failed: dark 320px Learn, with a visibly clipped “Roles” label during MUI's
+  JavaScript scroll animation. Its entire case remains excluded, not counted as
+  passing or hidden. Both master palettes and the redesign light palette passed.
+- The task now waits at most two seconds for the unchanged complete-label/44px
+  hit-area contract, then requires three stable scroll frames and checks again
+  **before** capturing. A settled clipped label still fails. Keyboard navigation
+  and numeric tolerances are unchanged; no production Learn workaround was made.
+- The narrow case passed using the **exact same immutable production bundle**.
+  HTML index and every compiled-JS hash were checked against the original run.
+  `../audit/report-integrated-recovered/input-reports.json` retains all input report
+  hashes and the original failed case. Runtime checkout revisions differ; this
+  reuse is explicitly not final-HEAD evidence.
+- The recovered aggregate pairs **888/888 redesign and 888/888 actual-master cells,
+  zero gaps in that then-registered matrix**, with 438 successful route cases per
+  branch after the one dedicated rerun. It retains **856 total findings: 628
+  intentional tab-window findings and 228 open candidates** (94 heading offsets,
+  134 clipping). Inventory completeness and visual acceptance are not established.
+- Inspected all five recovery contact sheets: 36 images / 35 unique hashes,
+  including the corrected search state and separate phone bottoms. Full-matrix
+  image inspection is still incomplete. These are not new coverage cells.
 
 ## PR publishing correction
 

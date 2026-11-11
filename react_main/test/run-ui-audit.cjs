@@ -12,12 +12,25 @@ const run = (command, args, env = process.env) => {
   if (result.error || result.status !== 0) throw result.error || new Error(`${command} exited ${result.status}`);
 };
 let captureFailed = false;
+const finalMatrix = process.env.UI_AUDIT_FINAL === '1';
+const captureLimit = Number(process.env.UI_AUDIT_CAPTURE_LIMIT || 120);
+if (!Number.isInteger(captureLimit) || captureLimit < 1) throw new Error('UI_AUDIT_CAPTURE_LIMIT must be a positive integer');
+let screenshotsProduced = 0;
 const capture = env => {
-  const result = spawnSync(process.execPath, [path.join(__dirname, 'run-route-review.cjs')], { cwd, env, stdio: 'inherit' });
+  const remaining = captureLimit - screenshotsProduced;
+  if (!finalMatrix && remaining <= 0) throw new Error(`Slice evidence cap reached (${captureLimit})`);
+  const result = spawnSync(process.execPath, [path.join(__dirname, 'run-route-review.cjs')], { cwd, env: { ...env, ROUTE_CAPTURE_LIMIT: String(finalMatrix ? 100000 : remaining) }, stdio: 'inherit' });
   if (result.error) throw result.error;
   captureFailed ||= result.status !== 0;
+  const pointer = path.join(env.ROUTE_OUTPUT_DIR, 'latest-run.json');
+  if (fs.existsSync(pointer)) {
+    const latest = JSON.parse(fs.readFileSync(pointer));
+    const report = JSON.parse(fs.readFileSync(path.join(env.ROUTE_OUTPUT_DIR, latest.report)));
+    screenshotsProduced += report.captureBudget?.produced || 0;
+  }
 };
 if (!process.argv.includes('--report-only')) {
+  if (!process.env.ROUTE_CASES && !finalMatrix) throw new Error('Interim audits require ROUTE_CASES. Reserve UI_AUDIT_FINAL=1 for the single final full matrix.');
   const bundleRoot = path.resolve(process.env.UI_AUDIT_BUNDLE_ROOT || '/tmp/opencode');
   fs.mkdirSync(bundleRoot, { recursive: true, mode: 0o700 });
   const bundles = fs.mkdtempSync(path.join(bundleRoot, 'ui-audit-bundle-'));

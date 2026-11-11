@@ -91,6 +91,16 @@
 .ui-select-options--wrap .MuiMenuItem-root { white-space: normal; overflow-wrap: anywhere; }
 .ui-amount-shortcuts > .ui-action { padding-inline: 6px; }
 .ui-action-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ui-step-navigation { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 12px; min-width: 0; border: 1px solid var(--scheme-color-border); border-radius: var(--ui-radius); background: var(--scheme-color); }
+.ui-step-navigation--sticky { position: sticky; bottom: 8px; z-index: 2; }
+.ui-step-position { text-align: center; font-size: var(--ui-text-small); white-space: nowrap; }
+.ui-step-position-compact { display: none; }
+.ui-step-message { min-width: 0; font-size: var(--ui-text-small); }
+@media (max-width: 700px) {
+  .ui-step-position-label { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .ui-step-position-compact { display: inline; }
+  .ui-step-destination { display: none; }
+}
 .ui-table { width: 100%; border-collapse: collapse; text-align: left; font-size: var(--ui-text-body); }
 .ui-table :is(th, td) { padding: 12px 8px; border-bottom: 1px solid var(--scheme-color-border); vertical-align: top; }
 .ui-table th { color: var(--um-muted); font-weight: var(--ui-weight-strong); }

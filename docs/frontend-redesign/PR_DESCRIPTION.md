@@ -96,7 +96,12 @@ the complete screenshot refresh remains outstanding.
 - [UI architecture](docs/frontend-redesign/UI_ARCHITECTURE.md)
 - [Read-only public comparison procedure](docs/frontend-redesign/audit/live-public/README.md)
 
-The registered denominator is **888 cells**. Global/game states, menus and further
+The registered denominator is **918 cells**. The setup/tab slice passes all six
+setup cases per branch and six Learn/six composition cases, with the scoped setup
+report pairing 18 cells / 900 gaps and retaining 60 open candidates. The shared tab
+repair resolves the newer settled keyboard clipping; the old single-case recovery
+was not its fix. Further captures are scoped/capped; one final full matrix is
+reserved for completion. Global/game states, menus and further
 loading/empty/failure/permission branches still need registration. A complete
 registered run would therefore still not establish exhaustive inventory coverage.
 
@@ -121,9 +126,10 @@ registered run would therefore still not establish exhaustive inventory coverage
 | Learn/setup/new-page comparison | **18/18 redesign and 18/18 actual-master route cases; 120 paired cells**, including populated achievements in both branches after correcting master's stale bootstrap |
 | Learn integrated full comparison | **852/852 redesign and 852/852 master cells, 852 pairs, zero gaps; all 438 route cases passed per branch**. 856 pre-classification candidates (94 heading offsets, 762 clipping). Dirty-source run before the final Learn commit, not final-HEAD evidence |
 | Corrected focused tab classification | **120 paired cells; 662 total findings, 628 intentional neighboring-tab findings, 34 open setup-editor findings**. All 18 route cases passed per branch. Other 732 cells remain gaps in this focused report; classifications are not silently applied to the older full run |
-| Shared report dialog / composition fixture | **12/12 redesign and 12/12 master route cases; 48 paired cells**, including six registered report states at all widths/palettes. One deferred in-memory failure per AFTER profile case; unchanged payload, duplicate guard, cancellation and draft retention asserted. Six additional pending-owner-unmount/new-session cases passed. Twelve heading-offset candidates remain in this focused two-route report; its other 840 cells remain gaps. Integrated refresh is running, not presumed passing |
+| Shared report dialog / composition fixture | **12/12 redesign and 12/12 master route cases; 48 paired cells**, including six registered report states at all widths/palettes. One deferred in-memory failure per AFTER profile case; unchanged payload, duplicate guard, cancellation and draft retention asserted. Six additional pending-owner-unmount/new-session cases passed. Twelve heading-offset candidates remain in this focused two-route report; its other 840 cells remain gaps |
+| Recovered report-integrated comparison | **888/888 redesign and 888/888 actual-master cells, zero registered gaps; 856 findings: 628 intentional, 228 open** (94 heading offsets, 134 clipping). 438 successful route cases per branch after one narrow rerun with identical production HTML/JS hashes. The original 870/888 redesign run and clipped in-animation tab image remain diagnostics. Bounded scroll settlement keeps all label/hit-area/keyboard assertions; not final-HEAD evidence or complete inventory |
 | Report slice regressions | **263 Node tests; build and architecture passed; 57 controls/39 states, 33 lifecycle, 36 game, 16 competitive and 10 homepage cases passed**. Scoped ESLint: 0 errors, 32 existing Form/Profile warnings across four files. Fresh regression builds include the fork's concurrent transcript/floating-window/Info-tab changes |
-| Selected reference tabs / keyboard | 12/12 cases passed; complete text labels and usable visible hit areas fit their scroll windows, and keyboard navigation reaches first/last sections. Neighboring blank tab padding is not misreported as clipped text |
+| Setup/tab repair | Six setup tasks pass per branch; six Learn and six composition cases pass with complete selected labels and repeated keyboard navigation. Shared step navigation clears the initial Add target at 320px. Scoped setup aggregate: 18 pairs / 900 gaps, 60 open candidates. Selected 138 before/after/master images inspected; not final-HEAD or whole-audit acceptance |
 | Backend suite | Failed isolated attempts: 821 passed/80 failed, then 994 passed/145 failed; worker heap exhaustion and a Mocha parallel-reporter crash remain unresolved. No server/game-engine changes were made to force a pass |
 
 Selected slice images/contact sheets and native-size summary crops were inspected.

@@ -77,6 +77,18 @@ achievements share this path without flattening the setup picker. Removed
 overrides or unnamed list variants fail the architecture guard. The new-page
 fixture composes both variants without feature CSS.
 
+`UiStepNavigation` owns sequential controls: Back, compact phone progress and
+Next with a complete accessible destination; final action labels remain intact.
+Busy state disables navigation, and the optional sticky variant stays inside the
+editor scroll container. The old setup-specific footer/wrapping/font CSS is gone.
+External step-navigation styling and inline overrides fail the architecture guard.
+
+`UiTabs` wraps the theme-backed MUI primitive without replacing its public API,
+linked tab/panel semantics or keyboard handling. Local resize/auto-arrow changes
+recheck the selected/focused label. The strip alone moves; no page-specific
+scrolling workaround or tab-label abbreviation is needed. The composition fixture
+checks repeated Home/End selection and skipping disabled tabs without custom CSS.
+
 ## Enforcement and current migration status
 
 `npm run lint:ui` parses production JSX and rejects new legacy-control debt. It

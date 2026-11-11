@@ -15,7 +15,13 @@ at `/audit/new-page` verifies composition without page-specific CSS. The global
 and workflow lists below still require complete stable-ID registration and
 capture tasks before the inventory can be called exhaustive.
 
-The registry currently contains **148 route/state IDs × six cells = 888 cells**.
+The registry currently contains **153 route/state IDs × six cells = 918 cells**.
+The setup/tab expansion adds setup `modifiers`/`settings`, Learn `keyboard-last`
+and the fixture's `steps-final`/`tabs-last`. Final setup tasks pass all six cases
+per branch. Its scoped aggregate pairs 18 cells / 900 gaps and retains 60 open
+clipping candidates. The initial master selector failures and settled selected-tab
+failure are retained diagnostics; the shared tab repair passes six Learn and six
+composition cases with strict keyboard/label assertions.
 The Learn integration run covered all **852 then-registered pairs**, with no gaps and
 856 pre-classification geometry candidates (94 heading offsets, 762 clipping).
 It predates the final Learn commit and is not final-HEAD evidence. Registered
@@ -24,7 +30,12 @@ tab-classification run pairs 120 cells, retaining 628 intentional findings and
 34 open findings; its other 732 cells remain gaps in that focused report, not
 silently reused evidence. Intentional findings remain visible with their reason.
 The focused report-dialog/composition run pairs 48 cells in the expanded 888-cell
-registry. Its other 840 cells remain gaps; the integrated refresh is in progress.
+registry. Its other 840 cells remain gaps. The recovered integrated report pairs
+all 888 then-registered cells: 856 total findings, 628 intentional and 228 open
+(94 heading offsets, 134 clipping). Its first attempt left 18 gaps from one
+transient tab-scroll failure; a rerun with the exact same production-bundle hashes
+fills those cells, while preserving the original diagnostics and input provenance.
+This is not final-HEAD evidence or exhaustive state registration.
 
 ## Route surfaces
 

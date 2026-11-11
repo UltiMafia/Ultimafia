@@ -8,6 +8,42 @@ async function reviewMasterTasks(page, item, capture) {
   checks.push(...await reviewReportTasks(page, item, capture, { master: true }));
   const content = page.locator('#main-content');
   const settle = () => page.waitForFunction(() => window.__routeReview.pending === 0 && performance.now() - window.__routeReview.lastRequestAt > 400);
+  if (item.name === 'new-page-contract') {
+    await capture('steps-final');
+    await capture('tabs-last');
+    checks.push('actual-master-feedback-form-ancestor-for-test-only-step-controls');
+  }
+  if (item.name === 'create-setup') {
+    const captureStep = async state => {
+      await page.mouse.move(0, 0);
+      await page.evaluate(() => scrollTo(0, 0)); await capture(state, 'top');
+      await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight)); await capture(state, 'bottom');
+    };
+    // Master's role icon opens a modal hover popover while the row is clicked.
+    // Dismiss the real overlay before locating background modifier controls;
+    // otherwise MUI marks that content aria-hidden, despite pointer pass-through.
+    const dismissRolePopover = async () => {
+      await page.mouse.move(0, 0);
+      if (await page.locator('.MuiPopover-root').count()) await page.keyboard.press('Escape');
+      await page.waitForFunction(() => ![...document.querySelectorAll('.MuiPopover-root')].some(element => getComputedStyle(element).visibility !== 'hidden'));
+    };
+    const add = label => content.locator('.role-cell').filter({ has: page.getByText(label, { exact: true }) }).getByRole('button').filter({ has: page.locator('.fa-plus') }).click();
+    await add('Villager');
+    await content.getByRole('button', { name: 'Next: Role modifiers', exact: true }).click();
+    await content.getByRole('button', { name: 'Edit modifiers for Cop', exact: true }).click();
+    await dismissRolePopover();
+    await add('Armed'); await dismissRolePopover(); await captureStep('modifiers');
+    await content.getByRole('button', { name: 'Next: Game settings', exact: true }).click();
+    // Upstream renders this as a separate Typography label, without an input
+    // association. Locate that exact field from its real FormField structure.
+    await content.getByText('Setup Name', { exact: true }).locator('..').locator('..').getByRole('textbox').fill('Local creator review');
+    // Upstream includes each nested info-tooltip's text in the checkbox name.
+    await content.getByRole('checkbox', { name: /^Closed Roles(?: |$)/ }).check();
+    await content.getByRole('checkbox', { name: /^Role Groups(?: |$)/ }).check();
+    await captureStep('settings');
+    assert.equal(await page.evaluate(() => window.__routeReview.writes.filter(write => write.url === '/api/setup/create').length), 0);
+    checks.push('actual-master-setup-modifier-and-final-step-without-save');
+  }
   if (item.name === 'host') {
     await content.getByRole('button', { name: 'Host', exact: true }).first().click();
     const dialog = page.getByRole('dialog');

@@ -90,3 +90,10 @@ test("long select text uses the shared wrap variant instead of external clipping
   const source = fs.readFileSync(new URL('../src/components/ReportDialog.jsx', import.meta.url), 'utf8');
   assert.deepEqual(architecture.countLegacyUi(source, 'components/ReportDialog.jsx'), {}, 'migrated report dialog has no alternate frame or controls');
 });
+test("step navigation has one shared geometry path, not a setup-specific footer", () => {
+  assert.deepEqual(architecture.countLegacyUi('const view = <UiStepNavigation currentStep={0} stepCount={3} sticky />;'), {});
+  assert.deepEqual(architecture.countLegacyUi('const view = <UiStepNavigation sx={{padding:40}} />;'), { 'step-navigation:inline-override': 1 });
+  assert.deepEqual(architecture.countLegacyUi('const view = <div className="setup-step-navigation" />;'), { 'step-navigation:legacy': 1 });
+  assert.equal(architecture.cssViolations('.setup-step-navigation {position:sticky}', 'setup.css').length, 1);
+  assert.equal(architecture.cssViolations('.ui-step-navigation {padding:40px}', 'setup.css').length, 1);
+});
