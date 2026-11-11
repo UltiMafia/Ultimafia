@@ -40,7 +40,9 @@ export function nameGlowStyle(color) {
       (luminance == null ? 1 : luminanceScale(luminance));
     return {
       "--name-glow-dim-alpha": 0.75 * strength,
-      "--name-glow-peak-alpha": 0.61 * strength,
+      // Chromium halo-energy comparison against the old filtered peak: an 8%
+      // alpha increase retains its strength without WebKit's clipped layer.
+      "--name-glow-peak-alpha": 0.61 * strength * 1.08,
       "--name-glow-rgb": parsed.rgb().array().slice(0, 3).join(" "),
     };
   } catch {

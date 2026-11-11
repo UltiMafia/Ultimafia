@@ -412,7 +412,11 @@ iframe {
 .user-name.name-anim-glow .user-name-text,
 .name-color-preview.name-anim-glow {
   animation: name-color-glow 1.6s ease-in-out infinite;
-  will-change: text-shadow, filter;
+  will-change: text-shadow;
+  /* WebKit clips the text-shadow's ink overflow when even a brightness-only
+     filter rasterizes this inline glyph box. Animate the glyph shadows without
+     a filter layer, otherwise its translucent halo acquires straight edges. */
+  filter: none;
 
   /* Nothing may paint behind the glyphs: a filter takes the whole element as
      its input, so any background on this box (including the browser's own tap
@@ -529,10 +533,9 @@ iframe {
 @keyframes name-color-glow {
   0%,
   100% {
-    /* Glyph shadows, not a filter. A filter blurs the element's box and clips its
-       output to the border box plus 10%, so a wide halo is cut into a lit
-       rectangle; text-shadow is painted per glyph, cannot be boxed, and takes no
-       space. The alphas are the tuned halo strength, further reduced for light
+    /* Keep the halo in glyph paint, including the pulse: a brightness filter
+       clips its ink overflow to the inline box in WebKit. The shadows take no
+       layout space. Their tuned alpha is further reduced for light
        name colours (see nameGlowStyle): a white name at full alpha is a solid
        bar, not a glow. */
     text-shadow: 0 0 2px
@@ -545,7 +548,6 @@ iframe {
           var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
             var(--name-glow-dim-alpha, 0.75)
         );
-    filter: brightness(1);
   }
   50% {
     text-shadow: 0 0 4px
@@ -563,7 +565,6 @@ iframe {
           var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
             var(--name-glow-peak-alpha, 0.61)
         );
-    filter: brightness(1.35);
   }
 }
 
