@@ -412,7 +412,17 @@ iframe {
 .user-name.name-anim-glow .user-name-text,
 .name-color-preview.name-anim-glow {
   animation: name-color-glow 1.6s ease-in-out infinite;
-  will-change: filter;
+  will-change: text-shadow;
+  /* WebKit clips the text-shadow's ink overflow when even a brightness-only
+     filter rasterizes this inline glyph box. Animate the glyph shadows without
+     a filter layer, otherwise its translucent halo acquires straight edges. */
+  filter: none;
+
+  /* Nothing may paint behind the glyphs: a filter takes the whole element as
+     its input, so any background on this box (including the browser's own tap
+     highlight) is blurred into the halo and reads as a lit rectangle instead. */
+  background: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /*
@@ -523,72 +533,38 @@ iframe {
 @keyframes name-color-glow {
   0%,
   100% {
-    /* Filter shadows stack cumulatively, unlike independent text shadows.
-       Attenuate the halo and brighten the completed result, as before. */
-    filter: drop-shadow(
-        0 0 1px
-          rgb(
-            var(
-                --name-glow-rgb,
-                var(--mui-palette-text-primaryChannel, 255 255 255)
-              ) /
-              var(--name-glow-dim-alpha, 0.75)
-          )
-      )
-      drop-shadow(
-        0 0 4px
-          rgb(
-            var(
-                --name-glow-rgb,
-                var(--mui-palette-text-primaryChannel, 255 255 255)
-              ) /
-              var(--name-glow-dim-alpha, 0.75)
-          )
-      )
-      drop-shadow(
-        0 0 0
-          rgb(
-            var(
-                --name-glow-rgb,
-                var(--mui-palette-text-primaryChannel, 255 255 255)
-              ) /
-              0
-          )
-      )
-      brightness(1);
+    /* Keep the halo in glyph paint, including the pulse: a brightness filter
+       clips its ink overflow to the inline box in WebKit. The shadows take no
+       layout space. Their tuned alpha is further reduced for light
+       name colours (see nameGlowStyle): a white name at full alpha is a solid
+       bar, not a glow. */
+    text-shadow: 0 0 2px
+        rgb(
+          var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
+            var(--name-glow-dim-alpha, 0.75)
+        ),
+      0 0 8px
+        rgb(
+          var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
+            var(--name-glow-dim-alpha, 0.75)
+        );
   }
   50% {
-    filter: drop-shadow(
-        0 0 2px
-          rgb(
-            var(
-                --name-glow-rgb,
-                var(--mui-palette-text-primaryChannel, 255 255 255)
-              ) /
-              var(--name-glow-peak-alpha, 0.61)
-          )
-      )
-      drop-shadow(
-        0 0 8px
-          rgb(
-            var(
-                --name-glow-rgb,
-                var(--mui-palette-text-primaryChannel, 255 255 255)
-              ) /
-              var(--name-glow-peak-alpha, 0.61)
-          )
-      )
-      drop-shadow(
-        0 0 14px
-          rgb(
-            var(
-                --name-glow-rgb,
-                var(--mui-palette-text-primaryChannel, 255 255 255)
-              ) /
-              var(--name-glow-peak-alpha, 0.61)
-          )
-      )
-      brightness(1.35);
+    text-shadow: 0 0 4px
+        rgb(
+          var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
+            var(--name-glow-peak-alpha, 0.61)
+        ),
+      0 0 16px
+        rgb(
+          var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
+            var(--name-glow-peak-alpha, 0.61)
+        ),
+      0 0 28px
+        rgb(
+          var(--name-glow-rgb, var(--mui-palette-text-primaryChannel, 255 255 255)) /
+            var(--name-glow-peak-alpha, 0.61)
+        );
   }
 }
 

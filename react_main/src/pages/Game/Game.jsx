@@ -2431,7 +2431,14 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   function jumpToLatest() {
     setAutoScroll(true);
     const container = speechDisplayRef.current;
-    if (container) container.scrollTo(0, container.scrollHeight);
+    if (!container) return;
+    // The windowed transcript knows where its real bottom is; a raw scrollTo
+    // would land at the estimated one.
+    if (windowed) {
+      container.dispatchEvent(new CustomEvent("transcript-scroll-end"));
+      return;
+    }
+    container.scrollTo(0, container.scrollHeight);
   }
 
   return (

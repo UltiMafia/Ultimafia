@@ -180,6 +180,11 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     getItemKey,
     estimateSize,
     overscan: 8,
+    // The transcript has 10px of breathing room above the composer, applied as
+    // padding on the scroller. The virtualizer sizes itself from its items, so
+    // without this it believes the list ends 10px early: scrollToEnd() lands
+    // there and the view sits 10px above the newest message.
+    paddingEnd: 10,
     observeElementOffset: observeScrollOffset,
     measureElement: measureTranscriptRow,
     // Schedule size work outside the active ResizeObserver delivery. The public
@@ -188,7 +193,10 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     useAnimationFrameWithResizeObserver: true,
     anchorTo: "end",
     followOnAppend: autoScroll,
-    scrollEndThreshold: 10,
+    // Tight enough that following never drifts: at 10px the view sat up to 10px
+    // above the newest message between appends, which reads as a small jitter
+    // while a busy table is talking.
+    scrollEndThreshold: 2,
   });
   virtualizerRef.current = virtualizer;
 
@@ -228,12 +236,42 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     }
   }, []);
 
+  // Jumping to the newest message cannot be one call: rows below the fold are
+  // still estimates, so scrollToEnd() lands at the estimated bottom and the rows
+  // measured afterwards leave the reader a little short of the real one - close
+  // enough to look wrong, far enough that following disengages. Re-pin for a few
+  // frames until the measured layout stops growing.
+  const pinToEnd = useCallback(() => {
+    const step = (attemptsLeft) => {
+      const instance = virtualizerRef.current;
+      const scroller = speechDisplayRef.current;
+      if (!instance || !scroller) return;
+      instance.scrollToEnd();
+      if (attemptsLeft <= 0) return;
+      requestAnimationFrame(() => {
+        const next = speechDisplayRef.current;
+        if (!next) return;
+        if (next.scrollHeight - next.clientHeight - next.scrollTop > 1) step(attemptsLeft - 1);
+      });
+    };
+    step(8);
+  }, [speechDisplayRef]);
+
+  // The "N new messages" pill lives above the transcript and has no handle on
+  // the virtualizer, so it asks for the bottom through the scroller.
   useLayoutEffect(() => {
-    if (startAtEnd) virtualizer.scrollToEnd();
+    const scroller = speechDisplayRef.current;
+    if (!scroller) return;
+    scroller.addEventListener("transcript-scroll-end", pinToEnd);
+    return () => scroller.removeEventListener("transcript-scroll-end", pinToEnd);
+  }, [pinToEnd, speechDisplayRef]);
+
+  useLayoutEffect(() => {
+    if (startAtEnd) pinToEnd();
     else virtualizer.scrollToOffset(0);
     const timer = setTimeout(recordMeasured, 200);
     return () => clearTimeout(timer);
-  }, [virtualizer, recordMeasured, startAtEnd]);
+  }, [virtualizer, recordMeasured, startAtEnd, pinToEnd]);
 
   // A keyboard changes the viewport without appending data. Keep an already
   // following reader pinned, but never pull someone away from older messages.
@@ -413,7 +451,16 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
       className="speech-display"
       data-name-animation-viewport
       data-transcript-window="anchored-v8"
-      style={{ display: "block", position: "relative", overflowAnchor: "none" }}
+      style={{
+        display: "block",
+        position: "relative",
+        overflowAnchor: "none",
+        // The gutter above the composer is `paddingEnd` on the virtualizer, not
+        // padding here: the virtualizer sizes the list from its items, so
+        // scroller padding is space it cannot see and every jump to the end
+        // stops short of the real bottom.
+        paddingBottom: 0,
+      }}
       ref={setScroller}
       onScroll={handleScroll}
       onTouchStartCapture={handleTouchStart}

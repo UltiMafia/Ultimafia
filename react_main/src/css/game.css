@@ -238,8 +238,12 @@ html[data-keyboard="open"] .game .meeting-tabs {
   font-weight: bold;
 }
 
+/* A name longer than its column is truncated, but the column must not cut the
+   animated glow off at its edge: `clip` equals `hidden` for the text and
+   `overflow-clip-margin` keeps the halo. */
 .game .message .nameplate-aligned .name-with-avatar {
-  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-clip-margin: 20px;
 }
 
 /* Trailing space above the composer belongs to the transcript, not to
@@ -733,8 +737,11 @@ html[data-keyboard="open"] .game .meeting-tabs {
   padding-left: 7px; */
   /*SANTA CHANGES*/
 
-  overflow-x: hidden;
-  overflow-y: hidden;
+  /* Same trade as the aligned nameplate: clip the row, but leave room for a
+     glowing name to bleed out of it. */
+  overflow-x: clip;
+  overflow-y: clip;
+  overflow-clip-margin: 14px;
 }
 
 .game .player-list .player.dead {
