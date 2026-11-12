@@ -70,6 +70,18 @@ Numbered historical evidence directories are not final-HEAD verification.
   visual acceptance false. Structural findings are one kind only — title offset on
   nine surfaces, now graded per header variant. The remaining open rows are
   cross-page style divergence (77 kinds).
+- **Post-matrix comparison scoping (scoped evidence only).** After full6, six
+  comparison corrections were committed: form width and fill ratio are not graded
+  for text fields and selects; section containers are split into surface and
+  plain kinds; icon-only actions are compared with icon actions; navigation
+  containers are split into tabs, menu and breadcrumb; section headings are
+  split by nesting depth and by h2/h3; page-level section titles across decks,
+  families, the community wall, setup and profiles now use the shared heading
+  font and line height. Scoped runs: 0 navigation rows on seven navigation
+  surfaces (was 544), 0 depth-0 heading rows on seven surfaces (was 888), and
+  five representative surfaces down from roughly 1,500 open rows to 104.
+  Directory and lobby toolbar selects now use the theme corner radius, action
+  height and body font; select findings 38 -> 34 on six surfaces.
 - **Coverage gap closed.** `/var/tmp/ultimafia-full4` reported 42 gaps, all
   `profile-default`. Cause: the report task looked for the Font Awesome flag icon,
   but the redesign renders a shared icon action named "Report user", so the task
