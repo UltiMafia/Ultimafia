@@ -276,7 +276,10 @@ function measureUi() {
     const box = rect(dialog);
     if (box.left < -1 || box.right > innerWidth + 1 || box.top < -1 || box.bottom > innerHeight + 1) problems.push({ role: 'dialog', selector: selector(dialog), property: 'outsideViewport', observed: box, severity: 'high' });
   }
+  const pageHeader = main.querySelector('[data-ui-page-header]');
   return { viewport: { width: innerWidth, height: innerHeight }, heading: heading ? details(heading) : null,
+    // Header placement differs by page type; only compare within a variant.
+    headerVariant: pageHeader?.getAttribute('data-ui-page-header') || null,
     headingContainer: heading ? details(heading.closest('.ui-page-heading, header') || heading.parentElement) : null,
     shell: { ...details(shell), variant: [...shell.classList].find(name => name.startsWith('ui-page--')) || 'legacy',
       firstSectionOffset: firstSection ? rect(firstSection).top - rect(shell).top : null,

@@ -69,3 +69,17 @@ test('clipping comparisons match the same named control and tablist, never an un
   assert.equal(compare([runs[0], run('master', [])]).masterValue, null);
   assert.equal(compare([runs[0], run('master', [target, target])]).masterStatus, 'ambiguous-target');
 });
+test('title offset is graded within a header variant and ignored without a shared header', () => {
+  const run = (surface, variant, top) => ({ branch: 'redesign', directory: '/unused', report: { palette: 'dark', cases: [{
+    name: surface, route: `/x/${surface}`, status: 'captured-baseline-not-accepted', viewport: { width: 1440 },
+    measurements: [{ state: 'default', position: 'top', screenshot: `${surface}.png`, viewport: { width: 1440, height: 900 },
+      headerVariant: variant, heading: { selector: '#title', fontSize: 32, box: { top } }, shell: { box: { top: 0 } },
+      samples: [], controlTargets: [], problems: [] }] }] } });
+  const inventory = ['standard-a', 'standard-b', 'forum-a', 'thread']
+    .map(surface => ({ id: `${surface}.default`, surface, state: 'default', route: `/x/${surface}` }));
+  const runs = [run('standard-a', 'standard', 0), run('standard-b', 'standard', 60),
+    run('forum-a', 'forum', 60), run('thread', null, 300)];
+  const report0 = report.buildReport(inventory, runs);
+  const offsets = report0.findings.filter(finding => finding.property === 'headingTopOffset').map(finding => finding.surface).sort();
+  assert.deepEqual(offsets, ['standard-a', 'standard-b']);
+});

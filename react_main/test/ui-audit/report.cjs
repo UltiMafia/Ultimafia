@@ -115,6 +115,14 @@ function compareRoles(observations) {
     });
   });
 }
+// Header placement is graded only within the same shared-header variant, and only
+// when the page actually renders the shared header. Pages whose first heading is
+// content (a thread title, an authored bio) are not graded on title offset.
+function offsetMedianVariant(observation, variantPeers) {
+  if (!observation.measurement.headerVariant) return null;
+  return median(variantPeers.map(peer => peer.measurement.heading
+    ? peer.measurement.heading.box.top - peer.measurement.shell.box.top : null));
+}
 function buildReport(inventory, runs) {
   const observations = [];
   for (const run of runs) for (const item of run.report.cases) {
@@ -163,7 +171,11 @@ function buildReport(inventory, runs) {
       const peers = observations.filter(peer => peer.branch === 'redesign' && peer.width === observation.width && peer.palette === observation.palette && peer.state === 'default' && peer.measurement.position === 'top');
       const sizeMedian = median(peers.map(peer => peer.measurement.heading?.fontSize));
       const offset = heading.box.top - observation.measurement.shell.box.top;
-      const offsetMedian = median(peers.map(peer => peer.measurement.heading ? peer.measurement.heading.box.top - peer.measurement.shell.box.top : null));
+      // First-heading offset is only meaningful for the shared page header, and
+      // only against the same header variant. A post title or identity block is
+      // content, not a page title at a wrong offset.
+      const variantPeers = peers.filter(peer => peer.measurement.headerVariant === observation.measurement.headerVariant);
+      const offsetMedian = offsetMedianVariant(observation, variantPeers);
       if (sizeMedian !== null && Math.abs(heading.fontSize - sizeMedian) > 1) compare(observation, 'pageHeader', heading.selector, 'headingFontSize', heading.fontSize, 'medium');
       if (offsetMedian !== null && Math.abs(offset - offsetMedian) > 8) compare(observation, 'pageHeader', heading.selector, 'headingTopOffset', offset, 'medium');
     }
