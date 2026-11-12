@@ -4,8 +4,10 @@ const assert = require('node:assert/strict');
 async function reviewReportTasks(page, item, capture, { master = false, after = false } = {}) {
   if (item.name !== 'profile-default') return [];
   const open = async () => {
-    const button = after && !master ? page.getByRole('button', { name: 'Report user', exact: true })
-      : page.locator('button').filter({ has: page.locator('.fa-flag') });
+    // The redesign uses a shared icon action with an accessible name; only the
+    // actual master capture still renders the Font Awesome flag.
+    const button = master ? page.locator('button').filter({ has: page.locator('.fa-flag') })
+      : page.getByRole('button', { name: 'Report user', exact: true });
     await button.click(); await page.getByRole('dialog').waitFor();
   };
   const dialog = () => page.getByRole('dialog');

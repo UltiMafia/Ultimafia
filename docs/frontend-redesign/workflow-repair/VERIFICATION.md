@@ -65,9 +65,13 @@ Numbered historical evidence directories are not final-HEAD verification.
   the arrows appear and re-clamps the scroll. Scoped run
   `/var/tmp/ultimafia-tabverify5`: **0** selected-tab findings at 390 and 320 in
   both palettes.
-- **Coverage gap.** `/var/tmp/ultimafia-full4` has 42 gaps, all
-  `profile-default` missing redesign captures; the route needs investigation
-  before the matrix can be called complete.
+- **Coverage gap closed.** `/var/tmp/ultimafia-full4` reported 42 gaps, all
+  `profile-default`. Cause: the report task looked for the Font Awesome flag icon,
+  but the redesign renders a shared icon action named "Report user", so the task
+  timed out. The task now selects by accessible name on the redesign branch and
+  keeps the icon selector only for the real master. Scoped rerun
+  `/var/tmp/ultimafia-profilecheck`: 20 redesign cells paired, 0 failures, 0
+  findings. The full matrix has not been re-run since this change.
 - **Remaining structural work.** `headingTopOffset` on 18 surfaces. The measured
   offsets span 0–300px because these pages use different shells and header
   structures (identity headers, breadcrumbs above the title, and the forum thread
