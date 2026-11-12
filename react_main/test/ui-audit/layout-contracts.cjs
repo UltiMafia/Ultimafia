@@ -69,7 +69,9 @@ function gradeRoleComparison(comparison) {
   };
   const numeric = typeof comparison.observed === 'number';
   if (numeric && Math.abs(comparison.observed - peer) <= (roleReviewRules.numeric[comparison.property] ?? 0)) return null;
-  if (comparison.property === 'width' && roleReviewRules.intrinsicRoles.includes(comparison.role)) return {
+  // Intrinsic controls are sized by their label or icon. Their width and fill
+  // ratio are not contracts; height, typography and surface treatment still are.
+  if (['width', 'fillRatio'].includes(comparison.property) && roleReviewRules.intrinsicRoles.includes(comparison.role)) return {
     status: 'intentional', severity: 'low', reviewRule: 'intrinsic-role-width',
     reviewReason: 'Label/icon-sized controls have intrinsic width; touch-target, label-visibility and allocation/fill contracts are graded separately.',
   };

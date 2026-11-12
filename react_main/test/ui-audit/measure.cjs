@@ -144,10 +144,16 @@ function measureUi() {
     // A nested card heading is not a page section heading; compare by depth.
     const sectionDepth = element ? [...function* () { for (let node = element.parentElement; node; node = node.parentElement) yield node; }()]
       .filter(node => node.matches('section, article, [role="region"]')).length : 0;
+    const inputKind = element && sample.role === 'textInput'
+      ? (element.tagName === 'TEXTAREA' ? 'multiline'
+        : element.closest('.MuiInputBase-root')?.querySelector('.MuiInputAdornment-root') ? 'adorned'
+        : 'plain')
+      : '';
     sample.variant = element?.getAttribute('data-ui-variant') || [element?.matches(':disabled') ? 'disabled' : 'enabled',
       element?.getAttribute('aria-busy') === 'true' ? 'busy' : 'idle',
       element?.matches('[aria-selected="true"], [aria-current="page"], [aria-pressed="true"]') ? 'active' : 'inactive',
-      sample.role === 'sectionHeading' ? `depth:${sectionDepth}` : ''].filter(Boolean).join(':');
+      sample.role === 'sectionHeading' ? `depth:${sectionDepth}` : '',
+      inputKind].filter(Boolean).join(':');
   }
   const fixedBars = [...document.querySelectorAll('body *')].filter(element => {
     if (!visible(element)) return false;

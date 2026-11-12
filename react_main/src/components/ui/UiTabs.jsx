@@ -33,10 +33,11 @@ const UiTabs = forwardRef(function UiTabs({ value, orientation = "horizontal", .
     };
     const observer = new ResizeObserver(keepSelectedVisible);
     observer.observe(scroller);
-    // The auto arrows can be removed and restored within one resize delivery.
-    // Their child-list change still requires a selected-tab visibility recheck.
+    // The auto arrows are children of the scroller, not of the Tabs root. Observe
+    // the scroller subtree so a tab strip that widens or narrows when the arrows
+    // appear or disappear rechecks the selected tab's visibility.
     const mutations = new MutationObserver(keepSelectedVisible);
-    mutations.observe(root.current, { childList: true });
+    mutations.observe(scroller, { childList: true, subtree: true });
     keepSelectedVisible();
     return () => { observer.disconnect(); mutations.disconnect(); cancelAnimationFrame(frame); };
   }, [value, orientation]);
