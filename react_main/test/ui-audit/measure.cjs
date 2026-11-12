@@ -46,7 +46,7 @@ function measureUi() {
     emptyState: '[role="status"]', dialog: '[role="dialog"]',
     comment: '.comment-row, .comments-page .post', commentList: '.comments-page',
     declaredFill: '[data-ui-fill], .MuiFormControl-fullWidth, .MuiButton-fullWidth',
-    sectionContainer: 'section, article, aside, [role="region"], [role="tabpanel"], [data-ui-section], .ui-page-content, .ui-page-content > *, :has(> h2), :has(> h3)',
+    sectionContainer: 'section, article, aside, [role="region"], [role="tabpanel"], [data-ui-section], .ui-page-content, .ui-page-content > :is(div, section, article), :has(> h2), :has(> h3)',
     // Section menus, tab strips and breadcrumb trails only. Pagination and other
     // navs are different contracts and must not be compared as section links.
     sectionNav: 'nav[aria-label*="section" i], nav[aria-label*="breadcrumb" i], [role="navigation"][aria-label*="section" i], [role="tablist"]',
@@ -75,6 +75,9 @@ function measureUi() {
       const name = element.getAttribute('aria-label') || element.getAttribute('aria-labelledby')?.split(/\s+/).map(id => document.getElementById(id)?.textContent || '').join(' ') ||
         (role === 'commentList' ? 'comments' : role === 'comment' ? element.querySelector('.user-name, .name')?.textContent : element.querySelector('h1, h2, h3, legend')?.textContent) || '';
       const identity = { role, name: name.trim().replace(/^Comment by\s+/i, '').replace(/\s+/g, ' ').toLowerCase(), index };
+      // Interactive elements are controls, not containers. A lone button that
+      // happens to be a direct child of the page content was graded as a section.
+      if (element.matches('button, a, input, select, textarea, [role="button"]') && !element.getAttribute('data-ui-fill')) continue;
       const target = { role, identity, selector: selector(element), box: rect(element), status: 'measured',
         intrinsic: intrinsicRoles.has(role), evidence: [], declaredFullWidth: element.getAttribute('data-ui-fill') === 'full' ||
           element.classList.contains('MuiFormControl-fullWidth') || element.classList.contains('MuiButton-fullWidth') };

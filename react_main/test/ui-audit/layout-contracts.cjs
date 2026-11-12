@@ -58,7 +58,7 @@ const roleReviewRules = {
   intrinsicRoles: ['primaryAction', 'secondaryAction', 'utilityIcon', 'currency', 'tab', 'sectionNavItem', 'sectionHeading', 'tableHeader'],
   // A container's height and width follow its content. Comparing them across
   // pages grades content, not presentation, so these are recorded but not graded.
-  contentSizedRoles: ['sectionContainer', 'sectionHeading', 'card', 'comment', 'commentList', 'declaredFill', 'emptyState', 'stat'],
+  contentSizedRoles: ['sectionContainer', 'sectionHeading', 'card', 'comment', 'commentList', 'declaredFill', 'emptyState', 'stat', 'sectionNav'],
 };
 function gradeRoleComparison(comparison) {
   const peer = comparison.peerValue;
