@@ -1,4 +1,11 @@
 const express = require("express");
+const bluebird = require("bluebird");
+const formidable = bluebird.promisifyAll(require("formidable"), {
+  multiArgs: true,
+});
+const fs = require("fs");
+const path = require("path");
+const sharp = require("sharp");
 const shortid = require("shortid");
 const constants = require("../data/constants");
 const models = require("../db/models");
@@ -105,7 +112,33 @@ router.get("/", async function (req, res) {
   }
 });
 
+// Windows can briefly retain a WebP file handle after decoding. Retry only
+// EBUSY, at most four attempts with three 50 ms waits; ENOENT is already clean.
+async function removeImage(file) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await fs.promises.unlink(file);
+      return;
+    } catch (e) {
+      if (e.code === "ENOENT") return;
+      if (e.code !== "EBUSY" || attempt === 3) throw e;
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+  }
+}
+
+// A parse stopped by an error can still be opening a file's write stream, and
+// the file appears when the open completes. Wait for the stream to close.
+function parserFileClosed(file) {
+  const stream = file._writeStream;
+  if (!stream || stream.closed) return;
+  return new Promise((resolve) => stream.once("close", resolve));
+}
+
 router.post("/", async function (req, res) {
+  const temporaryFiles = [];
+  let outputPath;
+  let saved = false;
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
 
@@ -113,8 +146,46 @@ router.post("/", async function (req, res) {
 
     if (!(await routeUtils.rateLimit(userId, "postComment", res))) return;
 
-    var content = String(req.body.content);
-    var location = String(req.body.location).slice(
+    let fields = req.body;
+    let imageFile;
+    if (req.is?.("multipart/form-data")) {
+      if (!(await routeUtils.rateLimit(userId, "postPastedImage", res))) return;
+      const form = new formidable();
+      form.maxFileSize = 5 * 1024 * 1024;
+      form.maxFields = 2;
+      form.maxFieldsSize = 8192;
+      // maxFields does not cap multipart file parts. Accept one, named image;
+      // any other is an error, after which no further part is handled.
+      // Formidable still passes on parts already received after an error, and
+      // would open files it no longer closes, so handle none once it is set.
+      let fileParts = 0;
+      form.onPart = (part) => {
+        if (form.error) return;
+        if (
+          part.filename !== undefined &&
+          (part.name !== "image" || ++fileParts > 1)
+        ) {
+          form._error(new Error("Only one image may be uploaded."));
+          return;
+        }
+        form.handlePart(part);
+      };
+      // Include partially written files; Formidable also closes/removes these
+      // on parser errors. Our cleanup tolerates files it has already removed.
+      form.on("fileBegin", (name, file) => temporaryFiles.push(file));
+      try {
+        let files;
+        [fields, files] = await form.parseAsync(req);
+        imageFile = files.image;
+        if (!imageFile?.path) throw new Error("Missing image.");
+      } catch (e) {
+        e.imageValidation = true;
+        throw e;
+      }
+    }
+
+    var content = String(fields.content || "");
+    var location = String(fields.location || "").slice(
       0,
       constants.maxCommentLocationLength
     );
@@ -123,7 +194,7 @@ router.post("/", async function (req, res) {
     let maxLength = useLargeCommentLength
       ? constants.maxLargeCommentLength
       : constants.maxCommentLength;
-    if (content.length == 0 || content.length > maxLength) {
+    if ((!content.length && !imageFile) || content.length > maxLength) {
       errors.unprocessable(res, `Content must be between 1 and ${maxLength} characters.`);
       return;
     }
@@ -147,19 +218,64 @@ router.post("/", async function (req, res) {
       }
     }
 
+    let imagePath;
+    if (imageFile) {
+      try {
+        // Decode bytes rather than a filename so Sharp's input cache cannot
+        // retain the parser's Windows file handle between WebP uploads.
+        const image = sharp(await fs.promises.readFile(imageFile.path), {
+          limitInputPixels: 16 * 1000 * 1000,
+        });
+        const metadata = await image.metadata();
+        if (!["png", "jpeg", "webp"].includes(metadata.format))
+          throw new Error("Unsupported pasted image format.");
+        const uploadDir = process.env.UPLOAD_PATH;
+        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+        imagePath = `pasted_${shortid.generate()}.webp`;
+        outputPath = path.join(uploadDir, imagePath);
+        await image.rotate().webp({ quality: 85 }).resize({
+          width: 1024, height: 1024, fit: sharp.fit.inside,
+          withoutEnlargement: true, kernel: sharp.kernel.lanczos3,
+        }).toFile(outputPath);
+        content += `${content ? "\n\n" : ""}![image](/uploads/${imagePath})`;
+      } catch (e) {
+        e.imageValidation = true;
+        throw e;
+      }
+      if (content.length > maxLength) {
+        errors.unprocessable(res, `Content must be between 1 and ${maxLength} characters.`);
+        return;
+      }
+    }
+
     var comment = new models.Comment({
       id: shortid.generate(),
       author: req.session.user._id,
       date: Date.now(),
       location,
       content,
+      imagePath,
     });
     await comment.save();
+    saved = true;
 
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
-    errors.serverError(res, "Error posting comment. Please try again.");
+    if (e.imageValidation)
+      errors.unprocessable(res, "Images must be readable PNG, JPEG or WebP and up to 5 MiB.");
+    else
+      errors.serverError(res, "Error posting comment. Please try again.");
+  } finally {
+    await Promise.all(temporaryFiles.map(parserFileClosed));
+    const temporaryPaths = temporaryFiles.map((file) => file.path);
+    for (const file of [...temporaryPaths, ...(!saved && outputPath ? [outputPath] : [])]) {
+      try {
+        await removeImage(file);
+      } catch (e) {
+        logger.error("Could not remove comment image:", e);
+      }
+    }
   }
 });
 
@@ -189,9 +305,8 @@ router.post("/delete", async function (req, res) {
 
     var comment = await models.Comment.findOne({
       id: commentId,
-      deleted: false,
     })
-      .select("author location")
+      .select("author location imagePath deleted")
       .populate("author", "id");
 
     if (!comment) {
@@ -207,12 +322,19 @@ router.post("/delete", async function (req, res) {
     if (isNotOwnPost || !(await routeUtils.verifyPermission(userId, perm1)))
       if (!(await routeUtils.verifyPermission(res, userId, perm2))) return;
 
+    // Remove the picture before marking the comment deleted: if removal fails,
+    // the comment stays visible with its Delete button, so deleting it again
+    // retries. Never accept a path supplied by the request.
+    if (comment.imagePath)
+      await removeImage(path.join(process.env.UPLOAD_PATH, comment.imagePath));
+
     await models.Comment.updateOne(
       { id: commentId },
       { $set: { deleted: true } }
     ).exec();
 
-    if (isNotOwnPost)
+    // Log the moderator action once, not again for an already deleted comment.
+    if (isNotOwnPost && !comment.deleted)
       routeUtils.createModAction(userId, "Delete Comment", [commentId]);
 
     res.sendStatus(200);

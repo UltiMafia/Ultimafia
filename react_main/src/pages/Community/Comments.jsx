@@ -24,6 +24,14 @@ export default function Comments(props) {
   const [comments, setComments] = useState([]);
   const [showInput, setShowInput] = useState(false);
   const [postContent, setPostContent] = useState("");
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const imageRef = useRef(null);
+  const [posting, setPosting] = useState(false);
+  const postingRef = useRef(false);
+  const draftGeneration = useRef(0);
+  const currentLocation = useRef(locationKey);
+  currentLocation.current = locationKey;
   const [loaded, setLoaded] = useState(false);
   const isMountedRef = useRef(true);
 
@@ -34,15 +42,29 @@ export default function Comments(props) {
     setComments([]);
     setLoaded(false);
     setShowInput(false);
+    draftGeneration.current++;
+    imageRef.current = null;
+    setImage(null);
     onCommentsPageNav(1);
   }, [locationKey]);
 
   // Cleanup on unmount
   useEffect(() => {
+    isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!image) {
+      setImagePreview("");
+      return;
+    }
+    const url = URL.createObjectURL(image);
+    setImagePreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [image]);
 
   function buildQuery(_page) {
     const parts = [`page=${_page}`];
@@ -85,25 +107,66 @@ export default function Comments(props) {
       });
   }
 
+  function onImageSelect(file) {
+    if (postingRef.current) return;
+    if (imageRef.current) {
+      errorAlert(new Error("Remove the current image before adding another."));
+      return;
+    }
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) ||
+        !file.size || file.size > 5 * 1024 * 1024) {
+      errorAlert(new Error("Choose a PNG, JPEG or WebP image up to 5 MiB."));
+      return;
+    }
+    imageRef.current = file;
+    setImage(file);
+  }
+
+  function removeImage() {
+    imageRef.current = null;
+    setImage(null);
+  }
+
   function onPostSubmit() {
-    if (!postLocation) return;
+    if (!postLocation || postingRef.current) return;
+    postingRef.current = true;
+    setPosting(true);
+    const generation = draftGeneration.current;
+    const submittedLocation = locationKey;
+    let body = { content: postContent, location: postLocation };
+    if (imageRef.current) {
+      body = new FormData();
+      body.append("content", postContent);
+      body.append("location", postLocation);
+      body.append("image", imageRef.current, "pasted-image");
+    }
+    const stillCurrent = () => isMountedRef.current &&
+      generation === draftGeneration.current && currentLocation.current === submittedLocation;
     axios
-      .post("/api/comment", { content: postContent, location: postLocation })
+      .post("/api/comment", body)
       .then(() => {
-        if (isMountedRef.current) {
+        if (stillCurrent()) {
           onCommentsPageNav(1);
           setPostContent("");
           setShowInput(false);
+          removeImage();
         }
       })
       .catch((err) => {
-        if (isMountedRef.current) {
+        if (stillCurrent()) {
           errorAlert(err);
         }
+      })
+      .finally(() => {
+        postingRef.current = false;
+        if (isMountedRef.current) setPosting(false);
       });
   }
 
   function onPostCancel() {
+    if (postingRef.current) return;
+    draftGeneration.current++;
+    removeImage();
     setShowInput(false);
   }
 
@@ -193,11 +256,20 @@ export default function Comments(props) {
             }}
           >
             <Stack direction="column" spacing={1} sx={{ flex: "1" }}>
-              <TextEditor value={postContent} onChange={setPostContent} />
+              <TextEditor value={postContent} onChange={setPostContent} pasteImages
+                readOnly={posting} onImageSelect={onImageSelect} />
+              {imagePreview && (
+                <Stack spacing={1} sx={{ alignItems: "flex-start" }}>
+                  <Box component="img" src={imagePreview} alt="Selected comment attachment"
+                    sx={{ maxWidth: "100%", maxHeight: 240 }} />
+                  <Button disabled={posting} onClick={removeImage}>Remove image</Button>
+                </Stack>
+              )}
               <Stack direction="row" spacing={1}>
                 <Button
                   variant="outlined"
                   onClick={onPostCancel}
+                  disabled={posting}
                   sx={{ flex: "1" }}
                 >
                   Cancel
@@ -205,9 +277,10 @@ export default function Comments(props) {
                 <div style={{ flex: "1" }} />
                 <Button
                   onClick={onPostSubmit}
+                  disabled={posting}
                   sx={{ flex: "1", marginLeft: "auto !important" }}
                 >
-                  Post
+                  {posting ? "Posting..." : "Post"}
                 </Button>
               </Stack>
             </Stack>
