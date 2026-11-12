@@ -65,6 +65,11 @@ Numbered historical evidence directories are not final-HEAD verification.
   the arrows appear and re-clamps the scroll. Scoped run
   `/var/tmp/ultimafia-tabverify5`: **0** selected-tab findings at 390 and 320 in
   both palettes.
+- **Complete matrix.** `/var/tmp/ultimafia-full6` pairs **918/918 cells with zero
+  gaps** for the first time: 10,465 findings, 3,214 intentional, **7,251 open**,
+  visual acceptance false. Structural findings are one kind only — title offset on
+  nine surfaces, now graded per header variant. The remaining open rows are
+  cross-page style divergence (77 kinds).
 - **Coverage gap closed.** `/var/tmp/ultimafia-full4` reported 42 gaps, all
   `profile-default`. Cause: the report task looked for the Font Awesome flag icon,
   but the redesign renders a shared icon action named "Report user", so the task
@@ -76,7 +81,7 @@ Numbered historical evidence directories are not final-HEAD verification.
   matrix; HEAD always contains the repaired dialog and the failure is in-memory,
   so both states are now captured in either phase. Scoped rerun: 28 redesign and
   28 master cells for `profile-default`, 0 failures, 0 findings. The remaining
-  full-matrix gaps should therefore be zero; the next full run confirms it.
+  full-matrix gaps are now zero, confirmed by the full6 matrix above.
 - **Remaining structural work.** `headingTopOffset` on 18 surfaces. The measured
   offsets span 0–300px because these pages use different shells and header
   structures (identity headers, breadcrumbs above the title, and the forum thread
