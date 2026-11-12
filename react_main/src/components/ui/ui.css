@@ -15,6 +15,8 @@
 }
 .ui-action:hover:not(:disabled) { background: color-mix(in srgb, var(--scheme-color) 90%, var(--um-accent)); }
 .ui-action:focus-visible { outline: 2px solid var(--um-accent); outline-offset: 2px; }
+.ui-action--block { width: 100%; }
+.ui-action--compact { min-height: 0; padding: 0; font-size: var(--ui-text-caption); }
 .ui-action--primary { background: var(--mui-palette-primary-main); border-color: transparent; color: var(--mui-palette-primary-contrastText); box-shadow: var(--ui-primary-shadow); }
 .ui-action--primary:hover:not(:disabled) { background: var(--mui-palette-primary-dark); }
 .ui-action--primary:active:not(:disabled) { transform: translateY(var(--ui-primary-pressed-offset)); box-shadow: var(--ui-primary-pressed-shadow); }

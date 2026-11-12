@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
+import { UiAction, UiField, UiIcon } from "components/ui";
 import {
-  Button,
   LinearProgress,
-  TextField,
   Tabs,
   Tab,
   Box,
@@ -516,117 +515,108 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
     <Box>
       {showForgotPassword ? (
         <Box>
-          <Button
-            variant="text"
+          <UiAction
+            variant="ghost"
+            style={{ marginBottom: 16 }}
             onClick={() => setShowForgotPassword(false)}
-            sx={{ mb: 2, textTransform: "none" }}
           >
-            <i className="fas fa-chevron-circle-left" /> Back to Login
-          </Button>
+            <UiIcon name="back" size={16} /> Back to Login
+          </UiAction>
           <form onSubmit={recoverPassword}>
-            <TextField
+            <UiField
               label="Email Address"
               type="email"
               autoFocus
               required
               autoComplete="off"
-              margin="dense"
               fullWidth
-              variant="standard"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <Button
-              fullWidth
-              sx={{ mt: 2 }}
-              type="submit" variant="contained"
+            <UiAction
+              variant="primary" className="ui-action--block"
+              style={{ marginTop: 16 }}
+              type="submit"
               disabled={loading || !email}
             >
               Reset Password
-            </Button>
+            </UiAction>
           </form>
           {loading && <LinearProgress sx={{ mt: 2 }} />}
         </Box>
       ) : showResendVerification ? (
         <Box>
-          <Button
-            variant="text"
+          <UiAction
+            variant="ghost"
+            style={{ marginBottom: 16 }}
             onClick={() => setShowResendVerification(false)}
-            sx={{ mb: 2, textTransform: "none" }}
           >
-            <i className="fas fa-chevron-circle-left" /> Back to Login
-          </Button>
+            <UiIcon name="back" size={16} /> Back to Login
+          </UiAction>
           <form onSubmit={resendVerification}>
-            <TextField
+            <UiField
               label="Email Address"
               type="email"
               autoFocus
               required
               autoComplete="off"
-              margin="dense"
               fullWidth
-              variant="standard"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <TextField
+            <UiField
               label="Password"
               type="password"
               required
               autoComplete="current-password"
-              margin="dense"
               fullWidth
-              variant="standard"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               sx={{ mt: 1 }}
             />
-            <Button
-              fullWidth
-              sx={{ mt: 2 }}
-              type="submit" variant="contained"
+            <UiAction
+              variant="primary" className="ui-action--block"
+              style={{ marginTop: 16 }}
+              type="submit"
               disabled={loading || !email || !password}
             >
               Resend Verification Email
-            </Button>
+            </UiAction>
           </form>
           {loading && <LinearProgress sx={{ mt: 2 }} />}
         </Box>
       ) : (
         <>
           <form onSubmit={login}>
-            <TextField
+            <UiField
               label="Email Address"
               type="email"
               autoFocus
               required
               autoComplete="off"
-              margin="dense"
               fullWidth
-              variant="standard"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <input hidden />
-            <TextField
+            <UiField
               label="Password"
               type="password"
               required
               autoComplete="new-password"
               margin="none"
               fullWidth
-              variant="standard"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <Button
-              fullWidth
-              sx={{ mt: 2 }}
-              type="submit" variant="contained"
+            <UiAction
+              variant="primary" className="ui-action--block"
+              style={{ marginTop: 16 }}
+              type="submit"
               disabled={loading || !email || !password}
             >
               Login
-            </Button>
+            </UiAction>
           </form>
           <ProviderButton
             provider="google"
@@ -661,20 +651,18 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
             <Link to="/policy/privacy">Privacy Policy</Link>.
           </Typography>
           <Stack direction="row" spacing={1} sx={{ mt: 1, justifyContent: "center" }}>
-            <Button
-              variant="text"
-              sx={{ pb: 0, cursor: "Pointer", textTransform: "none", fontSize: "12px" }}
+            <UiAction
+              variant="ghost" className="ui-action--compact"
               onClick={() => setShowForgotPassword(true)}
             >
               Forgot Password?
-            </Button>
-            <Button
-              variant="text"
-              sx={{ pb: 0, cursor: "Pointer", textTransform: "none", fontSize: "12px" }}
+            </UiAction>
+            <UiAction
+              variant="ghost" className="ui-action--compact"
               onClick={() => setShowResendVerification(true)}
             >
               Resend Verification
-            </Button>
+            </UiAction>
           </Stack>
           {loading && <LinearProgress sx={{ mt: 2 }} />}
         </>
@@ -686,50 +674,44 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
   const RegisterContent = (
     <Box>
       <form onSubmit={register}>
-        <TextField
+        <UiField
           label="Email Address"
           type="email"
           autoFocus
           required
           autoComplete="off"
-          margin="dense"
           fullWidth
-          variant="standard"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <input hidden />
-        <TextField
+        <UiField
           label="Password"
           type="password"
           required
           autoComplete="new-password"
           margin="none"
           fullWidth
-          variant="standard"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <TextField
+        <UiField
           label="Confirm Password"
           type="password"
           required
           autoComplete="new-password"
           margin="none"
           fullWidth
-          variant="standard"
           value={passwordConfirmation}
           onChange={handlePasswordConfirmationChange}
           error={!!passwordConfirmationHelperText}
           helperText={passwordConfirmationHelperText}
         />
-        <TextField
+        <UiField
           label="Date of Birth"
           type="date"
           required
-          margin="dense"
           fullWidth
-          variant="standard"
           value={birthDate}
           onChange={handleBirthDateChange}
           error={!!ageError}
@@ -742,10 +724,10 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
               .split("T")[0], // Set max date to 13 years ago
           }}
         />
-        <Button
-          fullWidth
-          sx={{ mt: 2 }}
-          type="submit" variant="contained"
+        <UiAction
+          variant="primary" className="ui-action--block"
+          style={{ marginTop: 16 }}
+          type="submit"
           disabled={
             loading ||
             !email ||
@@ -756,7 +738,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
           }
         >
           Register
-        </Button>
+        </UiAction>
       </form>
       <ProviderButton
         provider="google"
