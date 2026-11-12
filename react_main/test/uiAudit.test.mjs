@@ -73,7 +73,7 @@ test('title offset is graded within a header variant and ignored without a share
   const run = (surface, variant, top) => ({ branch: 'redesign', directory: '/unused', report: { palette: 'dark', cases: [{
     name: surface, route: `/x/${surface}`, status: 'captured-baseline-not-accepted', viewport: { width: 1440 },
     measurements: [{ state: 'default', position: 'top', screenshot: `${surface}.png`, viewport: { width: 1440, height: 900 },
-      headerVariant: variant, heading: { selector: '#title', fontSize: 32, box: { top } }, shell: { box: { top: 0 } },
+      headerVariant: variant, pageShell: surface !== 'thread', heading: { selector: '#title', fontSize: 32, box: { top } }, shell: { box: { top: 0 } },
       samples: [], controlTargets: [], problems: [] }] }] } });
   const inventory = ['standard-a', 'standard-b', 'forum-a', 'thread']
     .map(surface => ({ id: `${surface}.default`, surface, state: 'default', route: `/x/${surface}` }));

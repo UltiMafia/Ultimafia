@@ -118,8 +118,14 @@ function compareRoles(observations) {
 // Header placement is graded only within the same shared-header variant, and only
 // when the page actually renders the shared header. Pages whose first heading is
 // content (a thread title, an authored bio) are not graded on title offset.
+// Only these variants place the title directly under the page shell. Identity,
+// forum and detail headers sit under a banner, a breadcrumb trail or detail
+// metadata, so their absolute offset follows content rather than a contract.
+const FIXED_OFFSET_VARIANTS = new Set(['standard', 'editor', 'moderation']);
 function offsetMedianVariant(observation, variantPeers) {
   if (!observation.measurement.headerVariant) return null;
+  if (!observation.measurement.pageShell) return null;
+  if (!FIXED_OFFSET_VARIANTS.has(observation.measurement.headerVariant)) return null;
   return median(variantPeers.map(peer => peer.measurement.heading
     ? peer.measurement.heading.box.top - peer.measurement.shell.box.top : null));
 }

@@ -307,6 +307,9 @@ function measureUi() {
   return { viewport: { width: innerWidth, height: innerHeight }, heading: heading ? details(heading) : null,
     // Header placement differs by page type; only compare within a variant.
     headerVariant: pageHeader?.getAttribute('data-ui-page-header') || null,
+    // Pages that render the shared page shell place their header directly under it;
+    // standalone pages (centred auth forms) add their own container padding.
+    pageShell: Boolean(main.querySelector('.ui-page')),
     headingContainer: heading ? details(heading.closest('.ui-page-heading, header') || heading.parentElement) : null,
     shell: { ...details(shell), variant: [...shell.classList].find(name => name.startsWith('ui-page--')) || 'legacy',
       firstSectionOffset: firstSection ? rect(firstSection).top - rect(shell).top : null,
