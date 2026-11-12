@@ -21,7 +21,7 @@
 .setup-name-field { max-width: 600px; }
 .setup-current-summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; padding: 6px 10px; border: 1px solid var(--scheme-color-border); border-radius: var(--ui-radius); font-size: var(--ui-text-small); color: var(--um-muted); }
 .setup-catalog { min-width: 0; }
-.setup-catalog-heading { margin: 0 0 12px; font-size: var(--ui-text-section); }
+.setup-catalog-heading { margin: 0 0 12px; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); }
 .setup-role-set { margin-top: 16px; }
 .setup-role-set .ui-section-heading h2 { font-size: 16px; }
 .setup-role-set .roleset { padding: 0; }

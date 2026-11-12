@@ -15,7 +15,7 @@
 .directory-toolbar input[type="checkbox"] { width: 18px; min-height: 18px; accent-color: var(--um-accent); }
 .family-directory-row { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 16px; padding: 22px 0; border-bottom: 1px solid var(--scheme-color-border); align-items: start; }
 .family-directory-copy { min-width: 0; }
-.family-directory-copy h2 { margin: 0 0 8px; font-size: 20px; overflow-wrap: anywhere; }
+.family-directory-copy h2 { margin: 0 0 8px; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); overflow-wrap: anywhere; }
 .family-directory-copy h2 a { color: var(--scheme-color-text); }
 .family-directory-copy p { margin: 8px 0; }
 .family-directory-facts { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--um-muted); font-size: var(--ui-text-small); }

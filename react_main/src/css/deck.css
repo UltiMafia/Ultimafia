@@ -497,7 +497,7 @@
 .deck-library-list { list-style: none; padding: 0; margin: 16px 0; }
 .deck-library-row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--scheme-color-border); }
 .deck-library-description { flex: 1; min-width: 200px; }
-.deck-library-description h2 { margin: 0 0 8px; font-size: 20px; overflow-wrap: anywhere; }
+.deck-library-description h2 { margin: 0 0 8px; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); overflow-wrap: anywhere; }
 .deck-library-description p { margin: 8px 0; overflow-wrap: anywhere; }
 .deck-library-description .deck { max-width: 100%; }
 .deck-library-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }

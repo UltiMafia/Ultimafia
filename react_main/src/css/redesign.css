@@ -291,7 +291,7 @@ button, select { font: inherit; }
 .game-mobile-nav .MuiBottomNavigationAction-label, .mobile-nav .MuiBottomNavigationAction-label { font-size: var(--ui-text-caption); }
 .mobile-nav.mobile-nav { border-top: 1px solid var(--scheme-color-border); box-shadow: none; }
 .community-wall { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--scheme-color-border); }
-.community-wall > h2 { margin: 0 0 12px; font-size: var(--ui-text-heading); }
+.community-wall > h2 { margin: 0 0 12px; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); }
 @media (max-width: 900px) {
   .game.game { position: relative; }
   html[data-keyboard="open"] .game-mobile-tools,

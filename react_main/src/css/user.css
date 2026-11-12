@@ -16,7 +16,7 @@
 .profile-family, .profile-relationship { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; color: inherit; }
 .profile.profile-rebuilt .profile-actions .options { flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 4px; }
 .profile-section { min-width: 0; scroll-margin-top: 56px; }
-.profile-section > h2 { margin: 0 0 10px; font-size: var(--ui-text-heading); }
+.profile-section > h2 { margin: 0 0 10px; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); }
 .profile-section .box-panel { margin-bottom: 0; }
 .profile-statistics-overview { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; padding: 4px 0 16px; }
 .profile-statistics-overview .pie-chart { flex: 0 0 auto; }
