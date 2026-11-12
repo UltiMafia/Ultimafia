@@ -70,6 +70,12 @@ Numbered historical evidence directories are not final-HEAD verification.
   visual acceptance false. Structural findings are one kind only — title offset on
   nine surfaces, now graded per header variant. The remaining open rows are
   cross-page style divergence (77 kinds).
+- **Second gap-free matrix.** `/var/tmp/ultimafia-full7` pairs **918/918 cells
+  with zero gaps**: 7,786 findings, 3,164 intentional, **4,622 open** (down from
+  7,251), visual acceptance false. The comparison scoping and style corrections
+  described below account for the drop. Title offset is the only structural
+  kind, and it is now graded only for pages whose header sits under the shared
+  page shell.
 - **Post-matrix comparison scoping (scoped evidence only).** After full6, six
   comparison corrections were committed: form width and fill ratio are not graded
   for text fields and selects; section containers are split into surface and
