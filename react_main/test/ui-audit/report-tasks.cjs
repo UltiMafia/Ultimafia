@@ -49,7 +49,9 @@ async function reviewReportTasks(page, item, capture, { master = false, after = 
   if (master) {
     await snapshot('report-pending'); await snapshot('report-error');
   }
-  if (after && !master) {
+  // The pending and error surfaces only exist once the repaired dialog is present;
+  // HEAD always has it, so capture them in either phase (the failure is in-memory).
+  if (!master) {
     const selection = dialog().getByRole('combobox', { name: /^Rule Broken/ });
     const selectedText = await selection.evaluate(element => ({ overflow: element.scrollWidth > element.clientWidth + 1,
       whiteSpace: getComputedStyle(element).whiteSpace, textOverflow: getComputedStyle(element).textOverflow,
@@ -81,7 +83,7 @@ async function reviewReportTasks(page, item, capture, { master = false, after = 
     assert.deepEqual(JSON.parse(writes[0].data), { game: 'fixture-report-game', user: 'fixture-default', rule: 'Personal Attacks & Harassment (PA)', description: 'Local report draft, never delivered' });
   }
   await close();
-  assert.equal(await page.evaluate(() => window.__routeReview.writes.filter(write => write.url === '/api/report/send').length), after && !master ? 1 : 0);
+  assert.equal(await page.evaluate(() => window.__routeReview.writes.filter(write => write.url === '/api/report/send').length), master ? 0 : 1);
 
   await page.evaluate(() => { window.__routeReview.deferRead = '/api/site/violations'; });
   await open();

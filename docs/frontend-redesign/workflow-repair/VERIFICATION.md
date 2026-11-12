@@ -71,7 +71,12 @@ Numbered historical evidence directories are not final-HEAD verification.
   timed out. The task now selects by accessible name on the redesign branch and
   keeps the icon selector only for the real master. Scoped rerun
   `/var/tmp/ultimafia-profilecheck`: 20 redesign cells paired, 0 failures, 0
-  findings. The full matrix has not been re-run since this change.
+  findings. The report task also captured `report-pending` and `report-error`
+  only in the `after` phase, which left them permanently missing from an interim
+  matrix; HEAD always contains the repaired dialog and the failure is in-memory,
+  so both states are now captured in either phase. Scoped rerun: 28 redesign and
+  28 master cells for `profile-default`, 0 failures, 0 findings. The remaining
+  full-matrix gaps should therefore be zero; the next full run confirms it.
 - **Remaining structural work.** `headingTopOffset` on 18 surfaces. The measured
   offsets span 0–300px because these pages use different shells and header
   structures (identity headers, breadcrumbs above the title, and the forum thread
