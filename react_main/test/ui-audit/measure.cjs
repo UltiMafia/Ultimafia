@@ -162,6 +162,11 @@ function measureUi() {
         : element.closest('.MuiInputBase-root')?.querySelector('.MuiInputAdornment-root') ? 'adorned'
         : 'plain')
       : '';
+    // A tab strip, a section menu and a breadcrumb trail are different navigation
+    // containers with their own padding and borders; compare within each kind.
+    const navKind = element && sample.role === 'sectionNav'
+      ? (element.matches('[role="tablist"]') || element.querySelector('[role="tab"]') ? 'tabs'
+        : /breadcrumb/i.test(element.getAttribute('aria-label') || '') ? 'breadcrumb' : 'menu') : '';
     // A bordered, filled panel is a surface; a bare section is not. Compare the
     // surface treatment of each kind with its own kind.
     const surfaceKind = element && sample.role === 'sectionContainer'
@@ -173,7 +178,9 @@ function measureUi() {
       element?.getAttribute('aria-busy') === 'true' ? 'busy' : 'idle',
       element?.matches('[aria-selected="true"], [aria-current="page"], [aria-pressed="true"]') ? 'active' : 'inactive',
       sample.role === 'sectionHeading' ? `depth:${sectionDepth}` : '',
-      inputKind, tabKind, surfaceKind, actionKind].filter(Boolean).join(':');
+      // A level-3 heading is a sub-heading; compare it with other h3s, not with h2.
+      sample.role === 'sectionHeading' ? `level:${element ? element.tagName.toLowerCase() : 'none'}` : '',
+      inputKind, tabKind, surfaceKind, actionKind, navKind].filter(Boolean).join(':');
   }
   const fixedBars = [...document.querySelectorAll('body *')].filter(element => {
     if (!visible(element)) return false;
