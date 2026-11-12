@@ -25,7 +25,7 @@
 .settings-layout { display: grid; grid-template-columns: 180px minmax(0, 720px); gap: 40px; align-items: start; }
 .settings-content { min-width: 0; }
 .settings-section-heading { margin-bottom: 28px; }
-.settings-section-heading h2 { margin: 0 0 8px; font-size: 24px; }
+.settings-section-heading h2 { margin: 0 0 8px; }
 .settings-section-heading p { margin: 0; color: var(--um-muted); line-height: 1.5; max-width: 65ch; }
 .settings-content .form { gap: 28px; }
 .settings-page .form > .form-group + .form-group { margin-top: 0; }
