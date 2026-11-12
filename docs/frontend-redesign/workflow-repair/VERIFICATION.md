@@ -70,6 +70,11 @@ Numbered historical evidence directories are not final-HEAD verification.
   visual acceptance false. Structural findings are one kind only — title offset on
   nine surfaces, now graded per header variant. The remaining open rows are
   cross-page style divergence (77 kinds).
+- **Not verifiable here.** Authenticated private workflows (signed-in journeys,
+  moderation actions, account settings) are exercised only through controlled
+  fixtures; no real sign-in was performed and none should be claimed. Physical
+  phone behaviour has not been tested on hardware — every phone capture is
+  viewport emulation. Both need credentials or a device from the owner.
 - **Second gap-free matrix.** `/var/tmp/ultimafia-full7` pairs **918/918 cells
   with zero gaps**: 7,786 findings, 3,164 intentional, **4,622 open** (down from
   7,251), visual acceptance false. The comparison scoping and style corrections
