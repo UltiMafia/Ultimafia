@@ -50,10 +50,24 @@ Numbered historical evidence directories are not final-HEAD verification.
   strips (hidden overflow that scrolls, MUI tab scroller) are not clipping.
 - **Numbers.** Full run before repairs: 27,570 open. After the touch-target and
   grading corrections: 18,008. After the side-menu, breadcrumb, pagination,
-  clipping and navigation-kind corrections: **17,654 open** (3,566 intentional).
-  Clipping now reports **0** because every remaining candidate was a scroll strip,
-  a hidden native input or a tab window; the game's 32px meeting tabs are
-  unaffected.
+  clipping and navigation-kind corrections: 17,654. After the declared-width,
+  section-title, input-kind and intrinsic-fill corrections: **11,327 open**
+  (2,704 intentional) in `/var/tmp/ultimafia-full4`. Clipping reports **0**:
+  every remaining candidate was a scroll strip, a hidden native input or a tab
+  window; the game's 32px meeting tabs are unaffected. Structural findings are
+  now three kinds — title offset (graded per header variant since), one
+  `family-failure` container and the selected-tab clipping below.
+- **Selected-tab clipping.** The audit's own new-page fixture left the selected
+  tab 117px outside its strip at 390/320. `UiTabs` now scrolls from the strip's
+  own offsets and retries until the strip stops moving, because MUI's auto
+  arrows narrow it mid-flight; the task settles the strip after
+  `scrollIntoViewIfNeeded`, since disabling animations for the screenshot makes
+  the arrows appear and re-clamps the scroll. Scoped run
+  `/var/tmp/ultimafia-tabverify5`: **0** selected-tab findings at 390 and 320 in
+  both palettes.
+- **Coverage gap.** `/var/tmp/ultimafia-full4` has 42 gaps, all
+  `profile-default` missing redesign captures; the route needs investigation
+  before the matrix can be called complete.
 - **Remaining structural work.** `headingTopOffset` on 18 surfaces. The measured
   offsets span 0–300px because these pages use different shells and header
   structures (identity headers, breadcrumbs above the title, and the forum thread

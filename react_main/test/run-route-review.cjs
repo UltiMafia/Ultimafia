@@ -977,13 +977,16 @@ async function reviewTasks(page, item, viewport, entry) {
     await page.keyboard.press('ArrowRight'); await page.keyboard.press('ArrowRight'); await page.keyboard.press('Enter');
     assert.equal(await tabs.getByRole('tab', { name: 'Settings', exact: true }).getAttribute('aria-selected'), 'true', 'Keyboard skips disabled tabs');
     await page.keyboard.press('End'); await page.keyboard.press('Enter'); await settleSelectedTabs(page, tabRoot);
-    await tabs.scrollIntoViewIfNeeded(); await captureTask('tabs-last');
+    // Scrolling the page and disabling animations can resize the strip again, so
+    // settle the selected tab once more before measuring; otherwise the capture
+    // records a transient clamped scroll rather than the settled interface.
+    await tabs.scrollIntoViewIfNeeded(); await settleSelectedTabs(page, tabRoot); await captureTask('tabs-last');
     checks.push('shared-tabs-repeated-home-end-disabled-skip-and-complete-selected-label-without-css');
     const navigation = page.getByRole('navigation', { name: 'Example steps', exact: true });
     await navigation.getByRole('button', { name: 'Next: Review', exact: true }).click();
     await navigation.getByRole('button', { name: 'Next: Finish', exact: true }).click();
     await navigation.getByRole('button', { name: 'Save changes', exact: true }).waitFor();
-    await navigation.scrollIntoViewIfNeeded(); await captureTask('steps-final');
+    await navigation.scrollIntoViewIfNeeded(); await settleSelectedTabs(page, tabRoot); await captureTask('steps-final');
     await navigation.getByRole('button', { name: 'Back', exact: true }).click();
     await navigation.getByRole('button', { name: 'Next: Finish', exact: true }).waitFor();
     checks.push('shared-step-control-next-back-and-final-action-without-write');
