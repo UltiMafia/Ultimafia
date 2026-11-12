@@ -10,7 +10,7 @@
 .directory-toolbar > label { display: grid; gap: 6px; font-size: var(--ui-text-small); }
 .directory-toolbar > label:first-child { flex: 1; min-width: 180px; }
 .directory-toolbar > .MuiFormControl-root:first-child { flex: 1; min-width: 180px; }
-.directory-toolbar select, .directory-toolbar input { min-height: 42px; padding: 8px 10px; border: 1px solid var(--scheme-color-border); border-radius: 4px; background: var(--scheme-color); color: var(--scheme-color-text); width: 100%; }
+.directory-toolbar select, .directory-toolbar input { min-height: 42px; padding: 8px 10px; border: 1px solid var(--scheme-color-border); border-radius: var(--mui-shape-borderRadius, 6px); background: var(--scheme-color); color: var(--scheme-color-text); width: 100%; }
 .directory-toolbar .directory-checkbox { display: flex; align-items: center; min-height: 42px; gap: 8px; }
 .directory-toolbar input[type="checkbox"] { width: 18px; min-height: 18px; accent-color: var(--um-accent); }
 .family-directory-row { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 16px; padding: 22px 0; border-bottom: 1px solid var(--scheme-color-border); align-items: start; }
