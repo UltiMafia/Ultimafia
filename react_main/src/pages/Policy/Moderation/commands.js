@@ -1117,8 +1117,12 @@ export function useModCommands(argValues, commandRan, setResults) {
         axios
           .post("/api/mod/unlinkAccounts", argValues)
           .then((res) => {
-            const removed = res.data && res.data.removed;
-            const n = Array.isArray(removed) ? removed.length : 0;
+            const count = res.data && res.data.removedIpCount;
+            const n = Number.isSafeInteger(count) && count >= 0
+              ? count
+              : Array.isArray(res.data && res.data.removed)
+                ? res.data.removed.length
+                : 0;
             const fingerprints = Number(res.data && res.data.removedFingerprintCount) || 0;
             if (n === 0) {
               siteInfo.showAlert(
