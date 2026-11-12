@@ -206,6 +206,8 @@ function buildReport(inventory, runs) {
       const regression = widthRegression(target, paired.target);
       if (regression) addLayoutFinding(observation, target, regression, paired.target, paired.status);
     }
+    for (const problem of observation.measurement.controlProblems || []) addLayoutFinding(observation,
+      { role: 'formControl', selector: problem.selector }, { ...problem, status: 'open' }, null, 'unverified-target');
     for (const target of observation.measurement.navigationTargets || []) {
       const matches = (master?.measurement.navigationTargets || []).filter(candidate => candidate.identity.name === target.identity.name);
       for (const problem of navigationProblems(target, observation.measurement.viewport)) addLayoutFinding(observation, target,

@@ -47,10 +47,13 @@ const UiTabs = forwardRef(function UiTabs({ value, orientation = "horizontal", .
     const mutations = new MutationObserver(keepSelectedVisible);
     mutations.observe(root.current, { childList: true, subtree: true });
     keepSelectedVisible();
-    // Capture and measurement can both scroll the page after selection, which
-    // resizes the strip again. One late pass after layout settles.
+    // The indicator transition ends only after the new selection has settled, and
+    // page scrolling can resize the strip afterwards. Recheck on both.
+    scroller.addEventListener("transitionend", keepSelectedVisible, true);
     const late = setTimeout(keepSelectedVisible, 150);
-    return () => { observer.disconnect(); mutations.disconnect(); cancelAnimationFrame(frame); clearTimeout(late); };
+    const later = setTimeout(keepSelectedVisible, 400);
+    return () => { observer.disconnect(); mutations.disconnect(); scroller.removeEventListener("transitionend", keepSelectedVisible, true);
+      cancelAnimationFrame(frame); clearTimeout(late); clearTimeout(later); };
   }, [value, orientation]);
   return <Tabs {...props} value={value} orientation={orientation} ref={root} />;
 });

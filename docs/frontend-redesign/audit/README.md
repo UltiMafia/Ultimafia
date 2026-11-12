@@ -63,6 +63,13 @@ short: `primaryAction`, `secondaryAction`, `utilityIcon`, `currency`, `tab`,
 `sectionNavItem`, `sectionHeading`, `tableHeader` and `emptyState`. A status line
 is text, not a block.
 
+**Form controls.** Two elementary defects are now checked directly rather than
+inferred: `touchingFields` for adjacent form controls with less than 4px between
+them, and `labelClippedByContainer` for a floating label whose nearest scrolling
+ancestor starts below the label's top edge. Both are high severity. They exist
+because both defects shipped in this branch and neither was visible to the
+comparative geometry rules.
+
 **Section navigation and fixed bars (≤700px).** Every `nav`, `[role=navigation]`
 and `[role=tablist]` item records touch size, active state, label line count,
 label visibility inside its scroll window, and whether a fixed or sticky bar

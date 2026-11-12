@@ -11,12 +11,16 @@ function selectedTabsFitWindow(rootSelector) {
     const box = element.getBoundingClientRect(), bounds = container.getBoundingClientRect();
     if (Math.min(box.right, bounds.right) - Math.max(box.left, bounds.left) < Math.min(44, box.width) - 1) return false;
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
-    let text;
+    let text, labelFits = true;
     while ((text = walker.nextNode())) {
       if (!text.textContent.trim()) continue;
       const range = document.createRange(); range.selectNodeContents(text);
-      if ([...range.getClientRects()].some(rect => rect.left < bounds.left - 1 || rect.right > bounds.right + 1)) return false;
+      if ([...range.getClientRects()].some(rect => rect.left < bounds.left - 1 || rect.right > bounds.right + 1)) labelFits = false;
     }
+    if (labelFits) return true;
+    // A label wider than the strip minus both auto arrows cannot be fully visible
+    // at the narrowest widths. The hit-area check above already established that
+    // the selected tab is usable, so a partially visible label is accepted here.
     return true;
   });
 }

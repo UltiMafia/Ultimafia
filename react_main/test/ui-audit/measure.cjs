@@ -182,6 +182,30 @@ function measureUi() {
       sample.role === 'sectionHeading' ? `level:${element ? element.tagName.toLowerCase() : 'none'}` : '',
       inputKind, tabKind, surfaceKind, actionKind, navKind].filter(Boolean).join(':');
   }
+  // Two elementary defects that produced real, user-visible breakage and that no
+  // previous check could see: form controls with no vertical gap, and a floating
+  // label whose scroll container clips it.
+  const controlProblems = [];
+  const controls = [...document.querySelectorAll('.MuiFormControl-root')].filter(visible);
+  for (let index = 1; index < controls.length; index += 1) {
+    const previous = rect(controls[index - 1]), current = rect(controls[index]);
+    const horizontalOverlap = Math.min(previous.right, current.right) - Math.max(previous.left, current.left);
+    if (horizontalOverlap <= 1) continue;
+    const gap = Math.round((current.top - previous.bottom) * 100) / 100;
+    if (gap < 4) controlProblems.push({ property: 'touchingFields', observed: gap, severity: 'high',
+      selector: selector(controls[index]), previous: selector(controls[index - 1]) });
+  }
+  for (const label of [...document.querySelectorAll('.MuiFormControl-root label')].filter(visible)) {
+    const box = rect(label);
+    for (let container = label.parentElement; container && container !== document.body; container = container.parentElement) {
+      const style = getComputedStyle(container);
+      if (style.overflowX === 'visible' && style.overflowY === 'visible') continue;
+      const bounds = rect(container);
+      if (box.top < bounds.top - 1) controlProblems.push({ property: 'labelClippedByContainer', severity: 'high',
+        observed: Math.round((bounds.top - box.top) * 100) / 100, selector: selector(label), container: selector(container) });
+      break;
+    }
+  }
   const fixedBars = [...document.querySelectorAll('body *')].filter(element => {
     if (!visible(element)) return false;
     const style = getComputedStyle(element), box = rect(element);
@@ -316,6 +340,6 @@ function measureUi() {
        columns: getComputedStyle(firstSection || shell).gridTemplateColumns }, samples, controlTargets, problems,
      fillTargets, fillCoverage: { candidates: fillTargets.length, measured: fillTargets.filter(value => value.status === 'measured').length,
        unmeasurable: fillTargets.filter(value => value.status === 'unmeasurable').length, notVisible: fillTargets.filter(value => value.status === 'not-visible').length },
-     navigationTargets, fixedBarClearance, fixedBars: fixedBars.map(element => ({ selector: selector(element), box: rect(element) })) };
+     navigationTargets, fixedBarClearance, controlProblems, fixedBars: fixedBars.map(element => ({ selector: selector(element), box: rect(element) })) };
 }
 module.exports = { measureUi };
