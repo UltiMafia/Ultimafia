@@ -233,9 +233,30 @@ function CreateThreadModal(props) {
 
   const content = (
     <div className="form">
-      <div className="field-wrapper thread-title">
-        <div className="label">Title</div>
-        <input type="text" value={props.threadTitle} onChange={onTitleChange} />
+      <div
+        className="field-wrapper thread-title"
+        style={{ width: "100%", minWidth: 0 }}
+      >
+        <label
+          className="label"
+          htmlFor={`create-thread-title-${props.boardId}`}
+          style={{ display: "block" }}
+        >
+          Title
+        </label>
+        <input
+          id={`create-thread-title-${props.boardId}`}
+          type="text"
+          value={props.threadTitle}
+          onChange={onTitleChange}
+          style={{
+            display: "block",
+            width: "100%",
+            minWidth: 0,
+            boxSizing: "border-box",
+            font: "inherit",
+          }}
+        />
       </div>
       <TextEditor
         value={props.threadContent}
