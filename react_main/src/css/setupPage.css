@@ -21,7 +21,7 @@
 .setup-roster { min-width: 0; }
 .setup-description > .ui-section + .ui-section { margin-top: 16px; }
 .setup-secondary > .ui-section + .ui-section { margin-top: 16px; }
-.setup-secondary .box-panel { padding: 16px; border: 1px solid var(--scheme-color-border); border-radius: 6px; background: var(--scheme-color); }
+.setup-secondary .box-panel { padding: var(--ui-panel-padding); border: 1px solid var(--scheme-color-border); border-radius: 6px; background: var(--scheme-color); }
 .setup-roster fieldset > .MuiStack-root { flex-wrap: wrap; gap: 8px 16px; align-content: flex-start; max-height: min(50vh, 520px); overflow-y: auto; padding-right: 4px; }
 .setup-role-entry { display: flex; flex: 1 1 200px; align-items: center; gap: 12px; min-width: 0; }
 .setup-role-name { font-weight: var(--ui-weight-strong); overflow-wrap: anywhere; }

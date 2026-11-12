@@ -171,7 +171,7 @@
 .ui-page-content > .ui-page-heading { margin-bottom: 0; }
 .ui-page-content > .ui-action, .ui-section > .ui-action { align-self: flex-start; max-width: 100%; white-space: normal; }
 .ui-section { display: flex; flex-direction: column; gap: 12px; min-width: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
-.ui-card { padding: 16px; border: 1px solid var(--scheme-color-border); border-radius: 6px; background: var(--scheme-color); color: var(--scheme-color-text); box-shadow: none; }
+.ui-card { padding: var(--ui-panel-padding); border: 1px solid var(--scheme-color-border); border-radius: 6px; background: var(--scheme-color); color: var(--scheme-color-text); box-shadow: none; }
 .ui-stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); border: 1px solid var(--scheme-color-border); border-radius: 6px; background: var(--scheme-color); }
 .ui-stat { min-width: 0; padding: 12px 16px; border-left: 1px solid var(--scheme-color-border); }
 .ui-stat:first-child { border-left: 0; }

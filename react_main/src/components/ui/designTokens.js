@@ -7,7 +7,7 @@ export const uiTokens = {
   weight: { normal: 400, medium: 500, strong: 600, heading: 700 },
   lineHeight: { body: 1.5, heading: 1.3, action: 1.25 },
   control: { height: 40, touchHeight: 44, radius: 8, raisedEdge: 3, pressedOffset: 2 },
-  layout: { pageWidth: 1180, readingWidth: 820, proseWidth: "80ch", sectionGap: 24, columnGap: 32 },
+  layout: { pageWidth: 1180, readingWidth: 820, proseWidth: "80ch", sectionGap: 24, columnGap: 32, panelPadding: 16 },
   palettes: {
     light: {
       background: "#f5f3ef", surface: "#fffdfa", border: "#d7d1c9",
@@ -42,6 +42,7 @@ export function uiCssVariables(fontFamily = uiTokens.fontFamily) {
     "--ui-reading-width": `${uiTokens.layout.readingWidth}px`,
     "--ui-prose-width": uiTokens.layout.proseWidth,
     "--ui-section-gap": `${uiTokens.layout.sectionGap}px`,
+    "--ui-panel-padding": `${uiTokens.layout.panelPadding}px`,
     "--ui-column-gap": `${uiTokens.layout.columnGap}px`,
     "--ui-primary-edge-color": "color-mix(in srgb, var(--mui-palette-primary-main) 65%, black)",
     "--ui-primary-shadow": `0 ${uiTokens.control.raisedEdge}px 0 var(--ui-primary-edge-color)`,
