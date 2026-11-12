@@ -55,7 +55,7 @@ button, select { font: inherit; }
 
 /* Game discovery */
 .lobby-sections.lobby-sections { min-height: 40px; margin-bottom: 16px; border-bottom: 1px solid var(--scheme-color-border); }
-.lobby-sections .MuiTab-root { min-width: 72px; min-height: 40px; padding: 8px 18px; font-size: var(--ui-text-small); }
+.lobby-sections .MuiTab-root { min-width: 72px; min-height: 40px; }
 .lobby-controls { display: grid; grid-template-columns: 164px minmax(0, 1fr) 36px 36px; align-items: center; gap: 10px; margin-bottom: 8px; }
 .lobby-select select, .state-history select { border: 1px solid var(--scheme-color-border); border-radius: 4px; background: var(--scheme-color); color: var(--scheme-color-text); cursor: pointer; }
 .lobby-select select { width: 100%; min-height: 36px; padding: 6px 10px; font-size: 13px; }
@@ -326,7 +326,7 @@ button, select { font: inherit; }
   .site-header .user-nav-balances, .site-header .user-nav > hr { display: none; }
   .site-header .user-nav .avatar { width: 32px; height: 32px; }
   .lobby-sections.lobby-sections { margin-bottom: 8px; }
-  .lobby-sections .MuiTab-root { min-width: 0; flex: 1; min-height: var(--ui-touch-height); padding: 8px 12px; }
+  .lobby-sections .MuiTab-root { min-width: 0; flex: 1; min-height: var(--ui-touch-height); }
   .lobby-sections .MuiTabs-scrollButtons { display: none; }
   .lobby-controls { grid-template-columns: minmax(0, 1fr) 40px 40px; gap: 4px 8px; margin: 0; }
   .lobby-select select { min-height: 40px; }

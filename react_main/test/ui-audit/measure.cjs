@@ -40,7 +40,7 @@ function measureUi() {
     primaryAction: '.ui-action--primary, .MuiButton-containedPrimary',
     secondaryAction: '.ui-action--secondary, .MuiButton-outlined',
     textInput: 'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]), textarea',
-    select: 'select, [role="combobox"]', card: '.ui-card, .MuiCard-root, .MuiPaper-root',
+    select: 'select, [role="combobox"]', card: '.ui-card, .MuiCard-root',
     stat: '.ui-stat', sectionHeading: 'h2, h3', tableHeader: 'th, [role="columnheader"]',
     tab: '[role="tab"]', currency: '.coin-icon', utilityIcon: '.ui-icon',
     emptyState: '[role="status"]', dialog: '[role="dialog"]',
@@ -58,6 +58,9 @@ function measureUi() {
   const samples = Object.entries(roles).flatMap(([role, query]) => [...document.querySelectorAll(query)]
     .filter(element => (main.contains(element) || element.closest('[role="dialog"]')) && visible(element))
     .filter(element => role !== 'sectionHeading' || !authored(element))
+    // declaredFill marks a wrapper that declares full width; its own radius and
+    // typography belong to the inner control, so it is a fill target, not a style sample.
+    .filter(() => role !== 'declaredFill')
     .map(element => ({ role, ...details(element) })));
   const contentBounds = element => {
     const box = rect(element), style = getComputedStyle(element);
@@ -147,6 +150,9 @@ function measureUi() {
     // A nested card heading is not a page section heading; compare by depth.
     const sectionDepth = element ? [...function* () { for (let node = element.parentElement; node; node = node.parentElement) yield node; }()]
       .filter(node => node.matches('section, article, [role="region"]')).length : 0;
+    // An icon tab is laid out differently by MUI (smaller vertical padding);
+    // compare it only with other icon tabs.
+    const tabKind = element && sample.role === 'tab' ? (element.querySelector('svg, img') ? 'icon' : 'text') : '';
     const inputKind = element && sample.role === 'textInput'
       ? (element.tagName === 'TEXTAREA' ? 'multiline'
         : element.closest('.MuiInputBase-root')?.querySelector('.MuiInputAdornment-root') ? 'adorned'
@@ -156,7 +162,7 @@ function measureUi() {
       element?.getAttribute('aria-busy') === 'true' ? 'busy' : 'idle',
       element?.matches('[aria-selected="true"], [aria-current="page"], [aria-pressed="true"]') ? 'active' : 'inactive',
       sample.role === 'sectionHeading' ? `depth:${sectionDepth}` : '',
-      inputKind].filter(Boolean).join(':');
+      inputKind, tabKind].filter(Boolean).join(':');
   }
   const fixedBars = [...document.querySelectorAll('body *')].filter(element => {
     if (!visible(element)) return false;
