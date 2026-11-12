@@ -59,6 +59,9 @@ const roleReviewRules = {
   // A container's height and width follow its content. Comparing them across
   // pages grades content, not presentation, so these are recorded but not graded.
   contentSizedRoles: ['sectionContainer', 'sectionHeading', 'card', 'comment', 'commentList', 'declaredFill', 'emptyState', 'stat', 'sectionNav'],
+  // Form controls fill the column their layout gives them. Width is a property of
+  // the form grid, not of the control; height and surface treatment stay graded.
+  layoutSizedRoles: ['textInput', 'select'],
 };
 function gradeRoleComparison(comparison) {
   const peer = comparison.peerValue;
@@ -71,6 +74,10 @@ function gradeRoleComparison(comparison) {
   if (numeric && Math.abs(comparison.observed - peer) <= (roleReviewRules.numeric[comparison.property] ?? 0)) return null;
   // Intrinsic controls are sized by their label or icon. Their width and fill
   // ratio are not contracts; height, typography and surface treatment still are.
+  if (['width', 'fillRatio'].includes(comparison.property) && roleReviewRules.layoutSizedRoles.includes(comparison.role)) return {
+    status: 'not-graded', reviewRule: 'layout-sized-control',
+    reviewReason: 'A field fills the column its form layout gives it; control height, typography and surface treatment remain graded.',
+  };
   if (['width', 'fillRatio'].includes(comparison.property) && roleReviewRules.intrinsicRoles.includes(comparison.role)) return {
     status: 'intentional', severity: 'low', reviewRule: 'intrinsic-role-width',
     reviewReason: 'Label/icon-sized controls have intrinsic width; touch-target, label-visibility and allocation/fill contracts are graded separately.',

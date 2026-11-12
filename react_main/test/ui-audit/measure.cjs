@@ -158,11 +158,18 @@ function measureUi() {
         : element.closest('.MuiInputBase-root')?.querySelector('.MuiInputAdornment-root') ? 'adorned'
         : 'plain')
       : '';
+    // A bordered, filled panel is a surface; a bare section is not. Compare the
+    // surface treatment of each kind with its own kind.
+    const surfaceKind = element && sample.role === 'sectionContainer'
+      ? (() => { const style = getComputedStyle(element);
+          const filled = !/^rgba?\(0, 0, 0, 0\)$|^transparent$/.test(style.backgroundColor);
+          const bordered = parseFloat(style.borderTopWidth) > 0;
+          return filled && bordered ? 'surface' : 'plain'; })() : '';
     sample.variant = element?.getAttribute('data-ui-variant') || [element?.matches(':disabled') ? 'disabled' : 'enabled',
       element?.getAttribute('aria-busy') === 'true' ? 'busy' : 'idle',
       element?.matches('[aria-selected="true"], [aria-current="page"], [aria-pressed="true"]') ? 'active' : 'inactive',
       sample.role === 'sectionHeading' ? `depth:${sectionDepth}` : '',
-      inputKind, tabKind].filter(Boolean).join(':');
+      inputKind, tabKind, surfaceKind].filter(Boolean).join(':');
   }
   const fixedBars = [...document.querySelectorAll('body *')].filter(element => {
     if (!visible(element)) return false;
