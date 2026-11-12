@@ -524,6 +524,8 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
           </UiAction>
           <form onSubmit={recoverPassword}>
             <UiField
+              variant="standard"
+              margin="dense"
               label="Email Address"
               type="email"
               autoFocus
@@ -555,6 +557,8 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
           </UiAction>
           <form onSubmit={resendVerification}>
             <UiField
+              variant="standard"
+              margin="dense"
               label="Email Address"
               type="email"
               autoFocus
@@ -565,6 +569,8 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
               onChange={(e) => setEmail(e.target.value)}
             />
             <UiField
+              variant="standard"
+              margin="dense"
               label="Password"
               type="password"
               required
@@ -589,6 +595,8 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
         <>
           <form onSubmit={login}>
             <UiField
+              variant="standard"
+              margin="dense"
               label="Email Address"
               type="email"
               autoFocus
@@ -600,6 +608,8 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
             />
             <input hidden />
             <UiField
+              variant="standard"
+              margin="dense"
               label="Password"
               type="password"
               required
@@ -675,6 +685,8 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
     <Box>
       <form onSubmit={register}>
         <UiField
+              variant="standard"
+              margin="dense"
           label="Email Address"
           type="email"
           autoFocus
@@ -686,6 +698,8 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
         />
         <input hidden />
         <UiField
+              variant="standard"
+              margin="dense"
           label="Password"
           type="password"
           required
@@ -696,6 +710,8 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <UiField
+              variant="standard"
+              margin="dense"
           label="Confirm Password"
           type="password"
           required
@@ -708,6 +724,8 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
           helperText={passwordConfirmationHelperText}
         />
         <UiField
+              variant="standard"
+              margin="dense"
           label="Date of Birth"
           type="date"
           required
