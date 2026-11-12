@@ -183,6 +183,9 @@
 .ui-stat-row--compact .ui-stat strong { font-size: 1.1rem; }
 .ui-page-heading-copy > .ui-stat-row { margin-top: 16px; }
 .ui-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+/* A section title outside the flex header (title + description stack) keeps the
+   same scale as .ui-section-heading without inheriting its row layout. */
+.ui-section-title { margin: 0; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); }
 .ui-section-heading > :is(h1, h2, h3, h4) { margin: 0; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); }
 .ui-list { display: flex; flex-direction: column; list-style: none; margin: 0; padding: 0; min-width: 0; }
 .ui-list-item { min-width: 0; padding: 16px 0; border-bottom: 1px solid var(--scheme-color-border); background: transparent; }

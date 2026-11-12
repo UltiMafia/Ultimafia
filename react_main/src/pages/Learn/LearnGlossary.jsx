@@ -117,7 +117,7 @@ export default function LearnGlossary(props) {
   return (
     <section className="glossary-page">
       <UiPageHeader title="Glossary" description="Search definitions and chat commands." />
-      <TextField className="reference-search" type="search" fullWidth label="Search terms and commands" value={query} onChange={event => setQuery(event.target.value)} />
+      <TextField className="reference-search" type="search" label="Search terms and commands" value={query} onChange={event => setQuery(event.target.value)} />
       <Tabs value={tab} onChange={(_, v) => setTab(v)} aria-label="Terminology sections">
         <Tab label="Slang" id="term-tab-0" aria-controls="term-panel-0" />
         <Tab label="Commands" id="term-tab-1" aria-controls="term-panel-1" />

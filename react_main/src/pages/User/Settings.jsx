@@ -267,7 +267,7 @@ function SettingsSection({ sections, activeSection }) {
         </UiSectionNav>
         <div className="settings-content">
           <header className="settings-section-heading">
-            <h2>{activeSection.title}</h2>
+            <h2 className="ui-section-title">{activeSection.title}</h2>
             <p>{activeSection.description}</p>
           </header>
           {activeSection.content}

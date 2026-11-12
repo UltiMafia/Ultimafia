@@ -52,7 +52,13 @@ function measureUi() {
     sectionNav: 'nav[aria-label*="section" i], nav[aria-label*="breadcrumb" i], [role="navigation"][aria-label*="section" i], [role="tablist"]',
     sectionNavItem: 'nav[aria-label*="section" i] a, nav[aria-label*="section" i] button, nav[aria-label*="breadcrumb" i] a, [role="navigation"][aria-label*="section" i] a, [role="navigation"][aria-label*="section" i] button, [role="tablist"] [role="tab"]',
   };
-  const samples = Object.entries(roles).flatMap(([role, query]) => [...document.querySelectorAll(query)].filter(element => (main.contains(element) || element.closest('[role="dialog"]')) && visible(element)).map(element => ({ role, ...details(element) })));
+  // Authored Markdown headings are user content, not UI section headings; grading
+  // them against page headings reported every profile with a long bio.
+  const authored = element => Boolean(element.closest('.md-content, .paragraph, .bio'));
+  const samples = Object.entries(roles).flatMap(([role, query]) => [...document.querySelectorAll(query)]
+    .filter(element => (main.contains(element) || element.closest('[role="dialog"]')) && visible(element))
+    .filter(element => role !== 'sectionHeading' || !authored(element))
+    .map(element => ({ role, ...details(element) })));
   const contentBounds = element => {
     const box = rect(element), style = getComputedStyle(element);
     const left = box.left + element.clientLeft + (parseFloat(style.paddingLeft) || 0);
@@ -135,9 +141,13 @@ function measureUi() {
     const fill = fillTargets.find(target => target.role === sample.role && target.selector === sample.selector);
     sample.fillRatio = fill?.fillRatio ?? null;
     const element = document.querySelector(sample.selector);
+    // A nested card heading is not a page section heading; compare by depth.
+    const sectionDepth = element ? [...function* () { for (let node = element.parentElement; node; node = node.parentElement) yield node; }()]
+      .filter(node => node.matches('section, article, [role="region"]')).length : 0;
     sample.variant = element?.getAttribute('data-ui-variant') || [element?.matches(':disabled') ? 'disabled' : 'enabled',
       element?.getAttribute('aria-busy') === 'true' ? 'busy' : 'idle',
-      element?.matches('[aria-selected="true"], [aria-current="page"], [aria-pressed="true"]') ? 'active' : 'inactive'].join(':');
+      element?.matches('[aria-selected="true"], [aria-current="page"], [aria-pressed="true"]') ? 'active' : 'inactive',
+      sample.role === 'sectionHeading' ? `depth:${sectionDepth}` : ''].filter(Boolean).join(':');
   }
   const fixedBars = [...document.querySelectorAll('body *')].filter(element => {
     if (!visible(element)) return false;

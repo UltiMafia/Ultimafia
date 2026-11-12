@@ -3,7 +3,7 @@
 .moderation-content { min-width: 0; }
 .moderation-content > * { max-width: 1100px; }
 .moderation-section-heading { margin-bottom: 20px; }
-.moderation-section-heading h2 { margin: 0 0 4px; }
+.moderation-section-heading h2 { margin: 0 0 4px; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); }
 .moderation-section-heading p { margin: 0; color: var(--um-muted); }
 .moderation-log { display: flex; flex-direction: column; gap: 28px; }
 .moderation-log h3 { margin: 0 0 10px; font-size: var(--ui-text-heading); }
