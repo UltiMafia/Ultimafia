@@ -206,7 +206,6 @@ export default function LiveFeed({ windowKey }) {
             letterSpacing: "0.18em",
             textTransform: "uppercase",
             fontSize: "0.72rem",
-            minHeight: 36,
             minWidth: 84,
           },
           "& .MuiTab-root.Mui-selected": { color: "primary.main" },

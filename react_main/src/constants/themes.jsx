@@ -168,13 +168,16 @@ export function getSiteTheme(
     },
     MuiTab: {
       styleOverrides: {
-        root: {
+        root: ({ theme }) => ({
           textTransform: "none", fontSize: uiTokens.type.small, fontWeight: uiTokens.weight.strong, minHeight: uiTokens.control.height,
+          // Phones need the touch height, not the desktop control height. Game
+          // meeting tabs keep their own denser override.
+          [theme.breakpoints.down("sm")]: { minHeight: uiTokens.control.touchHeight },
           "&:focus-visible": {
             outline: "2px solid var(--mui-palette-primary-main)",
             outlineOffset: "2px",
           },
-        },
+        }),
       },
     },
   };

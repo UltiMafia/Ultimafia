@@ -51,7 +51,7 @@ export const Comment = (props) => {
   if (comment.deleted && user.settings.hideDeleted) content = "*deleted*";
 
   return (
-    <article className={`comment-row${comment.deleted ? " deleted" : ""}`} aria-label={`Comment by ${comment.author.name}`}>
+    <article className={`comment-row${comment.deleted ? " deleted" : ""}`} aria-label={`Comment by ${comment.author.name}`} data-ui-fill={props.fullWidth ? "full" : undefined}>
       <header className="comment-header">
         <NameWithAvatar
           id={comment.author.id}

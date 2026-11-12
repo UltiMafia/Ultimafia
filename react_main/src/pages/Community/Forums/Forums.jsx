@@ -13,7 +13,7 @@ import ForumSearch from "./ForumSearch";
 import ModerationSideDrawer from "components/ModerationSideDrawer";
 
 import "css/forums.css";
-import { UiAction, UiIcon } from "components/ui";
+import { UiBreadcrumb, UiAction, UiIcon } from "components/ui";
 
 export default function Forums() {
   const [forumNavInfo, updateForumNavInfo] = useForumNavInfo();
@@ -62,7 +62,7 @@ function ForumNav(props) {
   const forumNavInfo = props.forumNavInfo;
 
   return (
-      <nav className="forum-nav" aria-label="Forum location">
+      <UiBreadcrumb className="forum-nav">
         <div className="path">
           <NavLink to="/community/forums">
             Forums
@@ -83,7 +83,7 @@ function ForumNav(props) {
             Search
           </UiAction>
         </div>
-      </nav>
+      </UiBreadcrumb>
   );
 }
 

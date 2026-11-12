@@ -204,3 +204,24 @@
 }
 @media (prefers-reduced-motion: reduce) { .ui-progress, .ui-icon--busy, .ui-pending-mark { animation: none; } }
 .coin-icon { display: inline-flex; align-items: center; justify-content: center; vertical-align: -0.15em; flex: 0 0 auto; color: #e5bd58; line-height: 1; }
+
+/* Shared section navigation: one treatment for every secondary page menu. */
+.ui-section-nav { display: flex; flex-direction: column; gap: 2px; position: sticky; top: 16px; }
+.ui-section-nav-item { display: flex; align-items: center; gap: 10px; min-height: var(--ui-action-height); padding: 8px 10px; border-radius: var(--ui-radius); color: var(--scheme-color-text); text-decoration: none; }
+.ui-section-nav-item:hover { background: var(--scheme-color-sec); }
+.ui-section-nav-item.is-active { background: var(--ui-selection-background); color: var(--ui-selection); font-weight: 600; }
+.ui-section-nav-item:focus-visible { outline: 2px solid var(--um-accent); outline-offset: 1px; }
+@media (max-width: 900px) {
+  .ui-section-nav { position: static; flex-direction: row; flex-wrap: wrap; gap: 4px; padding-bottom: 12px; border-bottom: 1px solid var(--scheme-color-border); }
+  .ui-section-nav-item { min-height: var(--ui-touch-height); }
+}
+
+/* Pagers are tapped on phones; shared layer so page CSS stays free of one-offs. */
+@media (max-width: 800px) {
+  .page-nav .ui-action { min-width: var(--ui-touch-height); min-height: var(--ui-touch-height); }
+}
+
+/* MUI pagination is tapped on phones; sizing lives in the shared layer. */
+@media (max-width: 600px) {
+  .MuiPaginationItem-root.MuiPaginationItem-root { min-width: var(--ui-touch-height); min-height: var(--ui-touch-height); }
+}

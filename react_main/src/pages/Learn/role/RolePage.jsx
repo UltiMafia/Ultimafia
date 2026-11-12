@@ -356,7 +356,7 @@ export function RoleThings() {
             {specialBox}
             {overrideBox}
           </section>
-          <section className="role-comments"><h2>Discussion</h2><Comments location={commentLocation} /></section>
+          <section className="role-comments"><h2>Discussion</h2><Comments location={commentLocation} fullWidth /></section>
         </>}
         right={<div className="role-side">
           <FanartPanel roleId={roleId} />

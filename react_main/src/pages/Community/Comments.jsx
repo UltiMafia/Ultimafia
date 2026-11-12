@@ -214,7 +214,7 @@ export default function Comments(props) {
           </Box>
         )}
       </div>
-      <Stack direction="column" spacing={1} className="comments-page">
+      <Stack direction="column" spacing={1} className="comments-page" data-ui-fill={props.fullWidth ? "full" : undefined}>
         {comments.length === 0 && <Typography>No comments yet</Typography>}
         {commentRows}
         {bottomBar}

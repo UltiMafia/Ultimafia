@@ -326,7 +326,7 @@ button, select { font: inherit; }
   .site-header .user-nav-balances, .site-header .user-nav > hr { display: none; }
   .site-header .user-nav .avatar { width: 32px; height: 32px; }
   .lobby-sections.lobby-sections { margin-bottom: 8px; }
-  .lobby-sections .MuiTab-root { min-width: 0; flex: 1; min-height: 40px; padding: 8px 12px; }
+  .lobby-sections .MuiTab-root { min-width: 0; flex: 1; min-height: var(--ui-touch-height); padding: 8px 12px; }
   .lobby-sections .MuiTabs-scrollButtons { display: none; }
   .lobby-controls { grid-template-columns: minmax(0, 1fr) 40px 40px; gap: 4px 8px; margin: 0; }
   .lobby-select select { min-height: 40px; }

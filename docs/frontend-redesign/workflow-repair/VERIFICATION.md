@@ -3,6 +3,70 @@
 PR #3197 is open and draft. This is not visual acceptance or a completed audit.
 Numbered historical evidence directories are not final-HEAD verification.
 
+## Layout-contract detectors — implemented, scoped run only
+
+- Fill/content-edge, section-navigation and fixed-bar contracts are implemented in
+  `test/ui-audit/measure.cjs`, `layout-contracts.cjs` and `report.cjs`, with graded
+  cross-page divergence. `layoutContracts.test.mjs`, `uiLayoutChanges.test.mjs` and
+  `uiAudit.test.mjs` pass (14 tests). Uncommitted working-tree work.
+- Scoped run `/var/tmp/ultimafia-fillcheck2`: `lobby`, `settings-site`,
+  `moderation-log` at 1440/390, dark and light. **12 paired cells**, 1,004 findings,
+  894 open, 110 intentional, 906 registry cells not captured in this run. Not
+  final-HEAD evidence and not a visual verdict.
+- Confirmed candidates that the old checks could not see:
+  - Lobby community wall comments end **112px** short of the section edge at 1440
+    (declared `fullWidth`); the comments list fills **0.872** of its allocation
+    against master **0.9995**.
+  - Settings section cards fall **53px** short at 1440 and **13.5px** at 390.
+  - Section navigation is **41px** tall on settings and **36px** on moderation at
+    390, against 48px on master; both are below the 44px contract.
+- Calibration applied after the first run: unmeasurable flex-row candidates are
+  recorded in `measurement-coverage.json` instead of becoming findings (they were
+  96 of 1,236), `emptyState` is treated as intrinsic text, and findings deduplicate
+  per element and property (the three wall comments produced 44 rows, now 8 across
+  both palettes).
+- Not established: no full sweep has used these detectors, the 894 open rows are
+  unranked and uninspected, and unnamed structural targets have no master pairing.
+
+### Consistency repairs — verified scope, not site completion
+
+- **Touch targets.** Shared `MuiTab` phone height now uses the 44px touch token;
+  lobby tabs, settings/moderation menus, MUI pagination (≤600px) and activity tabs
+  raised to 44px; breadcrumbs moved to a shared `UiBreadcrumb` with the 24px
+  minimum target. Verified: 58 → **0** findings on `lobby`, `settings-site`,
+  `moderation-log`, `learn-games` at 390; **0** on `stocks`, `notifications`,
+  `activity-feed`; the game's 32px meeting tabs keep their explicit override.
+- **Comment width.** `.comments-page[data-ui-fill="full"]` no longer inherits the
+  760px profile reading cap, and the role page passes `fullWidth`. Lobby wall
+  **112px → 0**; role-page Discussion **24px → 0**.
+- **Section menus.** New `components/ui/UiSectionNav` + `UiSectionNavItem`;
+  settings and moderation migrated. Verified at 390 and 1440: identical item
+  height, padding, radius, active treatment and phone wrapping; settings no longer
+  orphans "Family" in a three-column grid.
+- **Detector corrections.** Page heading is the first `h1`, never an `h2` label
+  above it; a fill shortfall needs real evidence (wider aligned sibling, section
+  rule/divider or declared full width); content-sized roles are not graded on
+  height/width/fill ratio (7,376 rows removed); hidden native inputs and scroll
+  strips (hidden overflow that scrolls, MUI tab scroller) are not clipping.
+- **Numbers.** Full run before repairs: 27,570 open. After the touch-target and
+  grading corrections: 18,008. After the side-menu, breadcrumb, pagination,
+  clipping and navigation-kind corrections: **17,654 open** (3,566 intentional).
+  Clipping now reports **0** because every remaining candidate was a scroll strip,
+  a hidden native input or a tab window; the game's 32px meeting tabs are
+  unaffected.
+- **Remaining structural work.** `headingTopOffset` on 18 surfaces. The measured
+  offsets span 0–300px because these pages use different shells and header
+  structures (identity headers, breadcrumbs above the title, and the forum thread
+  has no page-level title at all); this needs the one-header migration with its
+  variants, not a spacing patch. Also open: 37 declared-full-width blocks with no
+  measurable allocation, 2 container shortfalls on 6 surfaces, and the glossary's
+  700px declared-width shortfall.
+- **Navigation comparison scope.** `sectionNavItem` now matches only labelled
+  section menus, breadcrumb trails and tab strips. Pagination and unlabelled navs
+  are separate contracts; comparing them produced the bulk of the old nav rows.
+- Nothing in this section is committed. `uiLayoutChanges` and the UI architecture
+  guard both pass.
+
 ## Setup-navigation / selected-tab slice — verified scope, not audit completion
 
 - The registry is now **153 IDs / 918 cells**: added `create-setup.modifiers`,

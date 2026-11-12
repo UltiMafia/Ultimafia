@@ -9,6 +9,8 @@ export { UiReferenceList, UiReferenceEntry, UiReferenceToolbar } from "./UiRefer
 export { UiStatRow, UiStat } from "./UiStat";
 export { default as UiPage, UiPageHeader, UiSection, UiList, UiListItem } from "./UiPage";
 export { default as UiIcon } from "./UiIcon";
+export { default as UiSectionNav, UiSectionNavItem } from "./UiSectionNav";
+export { default as UiBreadcrumb } from "./UiBreadcrumb";
 export { default as MessageComposer } from "./MessageComposer";
 export { default as UiField } from "./UiField";
 export { default as UiTabs } from "./UiTabs";

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { UiPage, UiAction, UiSection, UiIcon } from "components/ui";
+import { UiPage, UiAction, UiSection, UiIcon, UiSectionNav, UiSectionNavItem } from "components/ui";
 import { Link, Route, Routes } from "react-router-dom";
 import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
@@ -256,15 +256,15 @@ function SettingsSection({ sections, activeSection }) {
   return (
     <UiPage title="Settings" className="settings-page">
       <div className="settings-layout">
-        <nav className="settings-navigation" aria-label="Settings sections">
+        <UiSectionNav label="Settings sections">
           {sections.map((section) => (
-            <Link
+            <UiSectionNavItem
               key={section.path}
               to={`../${section.path}`}
-              aria-current={activeSection.path === section.path ? "page" : undefined}
-            >{section.title}</Link>
+              active={activeSection.path === section.path}
+            >{section.title}</UiSectionNavItem>
           ))}
-        </nav>
+        </UiSectionNav>
         <div className="settings-content">
           <header className="settings-section-heading">
             <h2>{activeSection.title}</h2>

@@ -42,6 +42,8 @@
 }
 .comment-row { display: flex; flex-direction: column; gap: 8px; width: 100%; min-width: 0; padding: 12px; border: 1px solid var(--scheme-color-border); border-radius: 6px; background: var(--scheme-color); }
 .comments-page { max-width: 760px; }
+/* A full-width wall (the lobby) must not inherit the profile reading cap. */
+.comments-page[data-ui-fill="full"] { max-width: none; }
 .comment-header { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; min-width: 0; }
 .comment-header .avatar { width: 32px; height: 32px; }
 .comment-header .user-name { font-size: var(--ui-text-body); font-weight: 600; }
