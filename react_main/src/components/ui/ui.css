@@ -87,6 +87,9 @@
 .ui-content-list { margin: 8px 0; padding-left: 22px; }
 .ui-content-list > li + li { margin-top: 8px; }
 .ui-form-stack { display: flex; flex-direction: column; gap: 16px; }
+/* A floating label rises 9px above its field; inside a scroll container the first
+   one needs that room or the container clips the top of the label. */
+.ui-form-stack { padding-top: 10px; }
 .ui-form-stack > p { margin: 0; }
 /* MUI repeats its select class; match that specificity before Emotion's later rules. */
 .ui-field--wrap-select .MuiSelect-select.MuiSelect-select { white-space: normal; overflow-wrap: anywhere; }
