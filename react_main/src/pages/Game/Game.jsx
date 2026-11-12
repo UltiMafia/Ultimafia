@@ -1023,6 +1023,10 @@ export default function Game(props) {
       setOptions(options);
     });
 
+    socket.on("hostId", (id) => {
+      setHostId(id);
+    });
+
     socket.on("emojis", (emojis) => {
       setEmojis(emojis);
     });
