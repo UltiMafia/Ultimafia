@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UiPageHeader } from "components/ui";
-import { Button, Container, Stack, Paper } from "@mui/material";
+import { Container, Stack, Paper } from "@mui/material";
 import { Link } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import "css/main.css";
@@ -74,10 +74,10 @@ export const Welcome = () => {
       <Paper variant="outlined" sx={{ p: { xs: 2, sm: 3 } }}>
         <Auth defaultTab={0} />
       </Paper>
-      <Button component={Link} to="/play">Browse games</Button>
+      <Link className="ui-action ui-action--secondary" to="/play">Browse games</Link>
       <Stack direction="row" spacing={2} justifyContent="center">
-        <Button component={Link} to="/play/tutorial" variant="text">Tutorial</Button>
-        <Button component={Link} to="/policy/rules" variant="text">Rules</Button>
+        <Link className="ui-action ui-action--ghost" to="/play/tutorial">Tutorial</Link>
+        <Link className="ui-action ui-action--ghost" to="/policy/rules">Rules</Link>
       </Stack>
     </Stack>
   </Container>;
