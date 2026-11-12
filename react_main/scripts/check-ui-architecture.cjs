@@ -3,6 +3,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { parse } = require("@babel/parser");
+const { checkLayoutChanges } = require('./check-ui-layout-changes.cjs');
 const root = path.resolve(__dirname, "../src");
 const baselinePath = path.resolve(__dirname, "../test/ui-architecture-baseline.json");
 const controls = new Set(["Button", "IconButton", "TextField", "Typography", "Dialog", "DialogTitle", "DialogContent", "DialogActions", "Modal", "Select", "Menu", "MenuItem", "Tabs", "Tab", "Checkbox", "Radio", "RadioGroup", "Switch", "Slider", "CircularProgress", "LinearProgress", "Skeleton", "Card", "Paper"]);
@@ -134,7 +135,7 @@ function inventory(directory = root) {
   return result;
 }
 function check() {
-  return [...violationsFor(inventory(), JSON.parse(fs.readFileSync(baselinePath, "utf8"))), ...checkCss()];
+  return [...violationsFor(inventory(), JSON.parse(fs.readFileSync(baselinePath, "utf8"))), ...checkCss(), ...checkLayoutChanges()];
 }
 module.exports = { countLegacyUi, violationsFor, cssViolations, check };
 if (require.main === module) {

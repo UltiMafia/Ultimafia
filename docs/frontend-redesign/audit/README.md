@@ -39,6 +39,60 @@ controls. Intentional findings retain geometry, screenshots, master deltas and
 their reason in JSON/HTML. Summary counts distinguish total, intentional and open;
 classification never means visual acceptance or creates missing coverage.
 
+## Layout contracts
+
+Two defect classes are graded numerically rather than judged from pixels.
+
+**Fill and content edge.** Every sampled block is compared with the space actually
+allocated to it: the parent's content box, a resolved grid track, or an aligned
+section content edge reached by following aligned wrappers. A shortfall only
+becomes a finding when there is evidence that wider space was available — a
+wider aligned sibling, a section rule or divider spanning further right, or a
+declared full-width intent (`data-ui-fill="full"`, `MuiFormControl-fullWidth`,
+`MuiButton-fullWidth`). Tolerance is 8px. Properties:
+`declaredFullWidthShortfall`, `contentEdgeShortfall`, `pairedFillWidthRegression`
+(allocated-space ratio lost against the paired master) and
+`fillMeasurementUnavailable`.
+
+Not every candidate is measurable: a flex-row allocation without an explicit
+track contract, an unresolved grid track, or a hidden element is recorded as
+`unmeasurable` in `measurement-coverage.json` and **not** raised as a finding,
+unless the element declares full width — in that case the missing measurement is
+the defect. Label-, icon- and text-sized roles are intrinsic and never count as
+short: `primaryAction`, `secondaryAction`, `utilityIcon`, `currency`, `tab`,
+`sectionNavItem`, `sectionHeading`, `tableHeader` and `emptyState`. A status line
+is text, not a block.
+
+**Section navigation and fixed bars (≤700px).** Every `nav`, `[role=navigation]`
+and `[role=tablist]` item records touch size, active state, label line count,
+label visibility inside its scroll window, and whether a fixed or sticky bar
+covers it. Properties: `navigationTouchTarget` (44px minimum, 1px tolerance),
+`activeNavigationItemClipped`, `navigationLabelWrapping` (one line for tabs, two
+for links) and `navigationCoveredByFixedBar`. Page content is also checked
+against fixed bars after scrolling to the bottom, as
+`contentCoveredByFixedBar`.
+
+**Cross-page divergence is graded, not merely listed.** `role-comparisons.json`
+rows are compared with the cross-route reference and graded with the tolerances in
+`role-review-rules.json`: 1px font size, 1px font weight, 1px line height, 2px
+height, 8px width, 0.03 fill ratio. Intrinsic roles are exempt from width only;
+they are still graded on height, and touch size is graded separately. Content-sized
+roles — `sectionContainer`, `sectionHeading`, `card`, `comment`, `commentList`,
+`declaredFill`, `emptyState`, `stat` — are **not graded** on height, width or fill
+ratio, because those follow their content; their alignment is covered by the fill
+contracts. Ungraded rows stay in `role-comparisons.json` with `not-graded` and
+never become findings. Divergence that matches a review rule is marked
+`intentional` with its reason; everything else is `open` and stays visible.
+
+Having a width is never evidence of underfilling. A fill shortfall requires a
+wider aligned sibling, a section rule or divider, or a declared full-width intent.
+The page heading is the first `h1` (or level-1 heading role); a smaller `h2` label
+or breadcrumb above it is not the page title and must not be measured as one.
+
+A shortfall is a measurement, not a verdict: the value, boxes, container,
+evidence and paired master value are retained for review. Structural targets
+without a name cannot be matched to master and stay `unverified-target`.
+
 For iteration, use `ROUTE_CASES=players ROUTE_WIDTHS=320 npm run audit:ui`.
 Interim capture requires an explicit route scope and defaults to a **120-image
 budget for the entire command**, across branches and palettes, including failed

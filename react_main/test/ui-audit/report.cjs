@@ -4,6 +4,7 @@ const vm = require('node:vm');
 const crypto = require('node:crypto');
 const masterEquivalents = require('./master-equivalents.json');
 const intentionalDifferences = require('./intentional-differences.json');
+const { fillProblems, matchFillTarget, widthRegression, navigationProblems, navigationMetric, gradeRoleComparison, roleReviewRules } = require('./layout-contracts.cjs');
 
 function classifyDifference(observation, problem, masterValue) {
   const rule = intentionalDifferences.find(rule => rule.surfaces.includes(observation.surface) && rule.property === problem.property);
@@ -68,6 +69,8 @@ function compareRoles(observations) {
     fontWeight: value => Number(value.fontWeight),
     lineHeight: value => parseFloat(value.lineHeight),
     height: value => value.box?.height,
+    width: value => value.box?.width,
+    fillRatio: value => value.fillRatio,
     padding: value => value.padding,
     background: value => value.background,
     color: value => value.color,
@@ -76,9 +79,12 @@ function compareRoles(observations) {
   };
   const baseline = observations.filter(value => value.state === 'default' && value.measurement.position === 'top');
   return observations.filter(value => value.branch === 'redesign' && value.measurement.position !== 'bottom').flatMap(observation => {
-    const roles = [...new Set((observation.measurement.samples || []).map(sample => sample.role))];
-    return roles.flatMap(role => Object.entries(properties).flatMap(([property, read]) => {
-      const own = (observation.measurement.samples || []).filter(sample => sample.role === role);
+    const roles = [...new Set((observation.measurement.samples || []).map(sample => JSON.stringify([sample.role, sample.variant || 'default'])))];
+    return roles.flatMap(group => {
+     const [role, variant] = JSON.parse(group);
+     return Object.entries(properties).flatMap(([property, read]) => {
+      const matches = sample => sample.role === role && (sample.variant || 'default') === variant;
+      const own = (observation.measurement.samples || []).filter(matches);
       const groups = new Map();
       for (const sample of own) {
         const value = read(sample);
@@ -87,25 +93,26 @@ function compareRoles(observations) {
         groups.get(value).push(sample.selector);
       }
       const master = observations.find(peer => peer.branch === 'master' && peer.surface === observation.surface && peer.state === observation.state && peer.width === observation.width && peer.palette === observation.palette && peer.measurement.position === observation.measurement.position);
-      const masterValues = (master?.measurement.samples || []).filter(sample => sample.role === role).map(read).filter(value => value != null && (typeof value !== 'number' || Number.isFinite(value)));
+      const masterValues = (master?.measurement.samples || []).filter(matches).map(read).filter(value => value != null && (typeof value !== 'number' || Number.isFinite(value)));
       return [...groups].map(([observed, selectors]) => {
         const numeric = typeof observed === 'number';
         // Each route contributes once, so 443 role rows cannot outweigh another
         // page's single field when computing the cross-page reference value.
         const peers = baseline.filter(peer => peer.branch === 'redesign' && peer.surface !== observation.surface && peer.width === observation.width && peer.palette === observation.palette).map(peer => {
-          const values = (peer.measurement.samples || []).filter(sample => sample.role === role).map(read);
+          const values = (peer.measurement.samples || []).filter(matches).map(read);
           return numeric ? median(values) : mostCommon(values);
         }).filter(value => value != null);
         const peerValue = numeric ? median(peers) : mostCommon(peers);
         const masterValue = numeric ? median(masterValues) : mostCommon(masterValues);
-        return { surface: observation.surface, route: observation.route, state: observation.state, width: observation.width, palette: observation.palette, role, property, selectors, observed,
+        return { surface: observation.surface, route: observation.route, state: observation.state, width: observation.width, palette: observation.palette, role, variant, property, selectors, observed,
           peerMedian: numeric ? peerValue : null, peerValue, delta: numeric && peerValue !== null ? observed - peerValue : null,
           masterValue, masterDelta: numeric && masterValue !== null ? observed - masterValue : null,
           masterStatus: !master ? 'unverified' : master.masterEquivalent?.equivalence === 'nearest-ancestor' ? 'not-on-master' : masterValue === null ? 'role-not-on-master' : masterValues.every(value => value === observed) ? 'same' : 'changed',
           masterRoute: master?.captureRoute || null, masterReason: master?.masterEquivalent?.reason || null,
           screenshot: observation.screenshot, status: 'requires-review' };
       });
-    }));
+     });
+    });
   });
 }
 function buildReport(inventory, runs) {
@@ -161,7 +168,65 @@ function buildReport(inventory, runs) {
       if (offsetMedian !== null && Math.abs(offset - offsetMedian) > 8) compare(observation, 'pageHeader', heading.selector, 'headingTopOffset', offset, 'medium');
     }
   }
-  return { coverage, findings, observations, roleComparisons: compareRoles(observations), summary: { required: coverage.length, redesignCaptured: coverage.filter(cell => cell.redesign.length).length, masterCaptured: coverage.filter(cell => cell.master.length).length, paired: coverage.filter(cell => cell.status === 'paired').length, gaps: coverage.filter(cell => cell.status !== 'paired').length, totalFindings: findings.length, intentionalFindings: findings.filter(finding => finding.status === 'intentional').length, openFindings: findings.filter(finding => finding.status === 'open').length, visualAcceptance: false } };
+  const addLayoutFinding = (observation, target, problem, masterTarget, masterStatus) => {
+    const masterValue = Object.hasOwn(problem, 'masterValue') ? problem.masterValue : (masterTarget?.status === 'measured' && masterTarget.allocation ? Math.max(0, masterTarget.allocation.right - masterTarget.box.right) : null);
+    findings.push({ id: `UI-${String(findings.length + 1).padStart(5, '0')}`, surface: observation.surface, route: observation.route,
+      state: observation.state, viewport: observation.measurement.viewport, palette: observation.palette,
+      role: target.role || target.identity?.role, selector: target.selector, target: target.identity, screenshot: observation.screenshot,
+      status: 'open', peerMedian: null, delta: null, masterValue,
+      masterDelta: typeof problem.observed === 'number' && Number.isFinite(masterValue) ? problem.observed - masterValue : null,
+      masterStatus: masterStatus === 'matched' ? (JSON.stringify(masterValue) === JSON.stringify(problem.observed) ? 'same' : 'changed') : masterStatus,
+      reviewRule: 'measured-layout-contract', ...problem });
+  };
+  for (const observation of observations.filter(value => value.branch === 'redesign')) {
+    const master = observations.find(peer => peer.branch === 'master' && peer.surface === observation.surface && peer.state === observation.state && peer.width === observation.width && peer.palette === observation.palette && peer.measurement.position === observation.measurement.position);
+    if (!Array.isArray(observation.measurement.fillTargets)) addLayoutFinding(observation, { role: 'measurement', selector: '#main-content' }, {
+      property: 'fillCoverageUnavailable', observed: null, severity: 'medium', reason: 'This historical capture predates fill/edge collection. It is not verified for that defect class.' }, null, 'unverified');
+    for (const target of observation.measurement.fillTargets || []) {
+      const paired = master?.masterEquivalent?.equivalence === 'nearest-ancestor' ? { target: null, status: 'not-on-master' } : matchFillTarget(target, master?.measurement.fillTargets || []);
+      for (const problem of fillProblems(target)) addLayoutFinding(observation, target, problem, paired.target, !master ? 'unverified' : paired.status);
+      const regression = widthRegression(target, paired.target);
+      if (regression) addLayoutFinding(observation, target, regression, paired.target, paired.status);
+    }
+    for (const target of observation.measurement.navigationTargets || []) {
+      const matches = (master?.measurement.navigationTargets || []).filter(candidate => candidate.identity.name === target.identity.name);
+      for (const problem of navigationProblems(target, observation.measurement.viewport)) addLayoutFinding(observation, target,
+        { ...problem, masterValue: navigationMetric(matches.length === 1 ? matches[0] : null, problem.property) },
+        null, !master ? 'unverified' : matches.length === 1 ? 'matched' : matches.length ? 'ambiguous-target' : 'unverified-target');
+    }
+    if (observation.width <= 700) for (const check of observation.measurement.fixedBarClearance?.checks || []) {
+      if (check.applicable && check.clearance < -2) {
+        const paired = master?.measurement.fixedBarClearance?.checks?.find(value => value.boundary === check.boundary && value.applicable);
+        addLayoutFinding(observation, { role: 'sectionContainer', selector: '#main-content' }, {
+          property: 'contentCoveredByFixedBar', observed: -check.clearance, severity: 'high',
+          observedBox: observation.measurement.fixedBarClearance.content, container: check.bar.box,
+          masterValue: paired ? Math.max(0, -paired.clearance) : null, boundary: check.boundary }, null, paired ? 'matched' : 'unverified-target');
+      }
+    }
+  }
+  const roleComparisons = compareRoles(observations);
+  for (const comparison of roleComparisons) {
+    const grade = gradeRoleComparison(comparison);
+    if (!grade) { comparison.status = comparison.peerValue == null ? 'insufficient-peer-evidence' : 'within-tolerance'; continue; }
+    Object.assign(comparison, grade);
+    // Deliberately ungraded comparisons stay visible in role-comparisons.json but
+    // never become findings; otherwise content-sized containers bury real defects.
+    if (grade.status === 'not-graded') continue;
+    findings.push({ id: `UI-${String(findings.length + 1).padStart(5, '0')}`, ...comparison,
+      viewport: { width: comparison.width, height: observations.find(value => value.screenshot === comparison.screenshot)?.measurement.viewport.height },
+      selector: comparison.selectors[0], property: `roleDivergence:${comparison.property}` });
+  }
+  // One element can match several role selectors (a comment row is also a declared
+  // fill target). Report each shortfall once per element and property, then renumber.
+  const seen = new Set();
+  const deduped = findings.filter(finding => {
+    const key = [finding.surface, finding.state, finding.viewport?.width, finding.palette, finding.property, finding.selector, JSON.stringify(finding.observed)].join('|');
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  deduped.forEach((finding, index) => { finding.id = `UI-${String(index + 1).padStart(5, '0')}`; });
+  return { coverage, findings: deduped, observations, roleComparisons, summary: { required: coverage.length, redesignCaptured: coverage.filter(cell => cell.redesign.length).length, masterCaptured: coverage.filter(cell => cell.master.length).length, paired: coverage.filter(cell => cell.status === 'paired').length, gaps: coverage.filter(cell => cell.status !== 'paired').length, totalFindings: deduped.length, intentionalFindings: deduped.filter(finding => finding.status === 'intentional').length, openFindings: deduped.filter(finding => finding.status === 'open').length, visualAcceptance: false } };
 }
 function writeReport(output, inventory, runs) {
   fs.mkdirSync(output, { recursive: true });
@@ -169,6 +234,9 @@ function writeReport(output, inventory, runs) {
   const stringify = value => JSON.stringify(value, null, 2) + '\n';
   for (const [name, value] of Object.entries({ inventory, coverage: { summary: result.summary, cells: result.coverage }, findings: result.findings, measurements: result.observations, 'role-comparisons': result.roleComparisons })) fs.writeFileSync(path.join(output, `${name}.json`), stringify(value));
   fs.writeFileSync(path.join(output, 'intentional-differences.json'), stringify(intentionalDifferences));
+  fs.writeFileSync(path.join(output, 'role-review-rules.json'), stringify(roleReviewRules));
+  fs.writeFileSync(path.join(output, 'measurement-coverage.json'), stringify(result.observations.map(value => ({ surface: value.surface, state: value.state, branch: value.branch,
+    width: value.width, palette: value.palette, screenshot: value.screenshot, fill: value.measurement.fillCoverage || { status: 'unavailable', reason: 'Historical capture predates this detector' } }))));
   const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   const relative = filename => path.relative(output, filename).split(path.sep).join('/');
   const images = [...new Set(result.observations.map(value => value.screenshot))].filter(filename => fs.existsSync(filename));
