@@ -81,6 +81,7 @@ import { pregameSeatAction } from "shared/pregameSeatAction";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
 import { WindowedTranscript } from "./components/WindowedTranscript";
 import { warmNameFonts } from "../../utils/fontWarmup";
+import { dedupeMessages } from "../../shared/dedupeMessages";
 import { bindMessageTouch } from "../../utils/messageTouch";
 import {
   Accordion,
@@ -2332,6 +2333,11 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
         spectatorChatMeeting
       );
     }
+
+    // A duplicated entry shares its key with the original, so the window draws
+    // both at the same offset for a frame and everything below moves when one
+    // goes away. Normalise once, here, whatever source produced the repeat.
+    messageData = dedupeMessages(messageData);
 
     var previousMessage = null;
     // A reply and the quote right above it are drawn as one row.
