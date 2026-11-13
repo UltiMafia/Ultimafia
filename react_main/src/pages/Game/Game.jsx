@@ -3665,6 +3665,8 @@ function SpeechInput(props) {
   const speechInput = props.speechInput;
   const setSpeechInput = props.setSpeechInput;
   const pendingSpeechRef = useRef(null);
+  const speechInputRef = useRef(null);
+  const isComposingRef = useRef(false);
   const [speechDropdownOptions, setSpeechDropdownOptions] = useState([]);
   const [speechDropdownValue, setSpeechDropdownValue] = useState("Say");
   const [lastTyped, setLastTyped] = useState(0);
@@ -3810,6 +3812,10 @@ function SpeechInput(props) {
       const cooldownMs = Math.max(Number(info.cooldownMs) || 0, 0);
       if (!cooldownMs) return;
 
+      // A rejected send has no echo; let the preserved draft be retried once
+      // the server's cooldown ends.
+      pendingSpeechRef.current = null;
+
       const now = Date.now();
       setSpeakCooldown((prev) => {
         const prevRemaining = Math.max(prev.until - now, 0);
@@ -3893,7 +3899,16 @@ function SpeechInput(props) {
   }
 
   function onSpeechType(e) {
-    changeDraft(e.target.value);
+    const raw = e.target.value;
+    const inputType = e.nativeEvent?.inputType;
+    const isReturn = inputType === "insertLineBreak" || inputType === "insertParagraph";
+    // A non-cancelable mobile edit may already have inserted the line break.
+    // Paste/dictation can contain newlines too, but those are spaces, not Send.
+    const value = raw.replace(/\r\n|[\r\n]/g, isReturn ? "" : " ");
+    changeDraft(value);
+    if (isReturn && !isComposingRef.current && !e.nativeEvent?.isComposing) {
+      onSpeechSubmit({ key: "Enter" }, value);
+    }
 
     if (
       e.target.value.length > 0 &&
@@ -3911,12 +3926,35 @@ function SpeechInput(props) {
   const replyTarget = game.replyTarget;
   const setReplyTarget = game.setReplyTarget;
 
-  function onSpeechSubmit(e) {
-    if (e.nativeEvent?.isComposing || e.isComposing || e.keyCode === 229) return;
-    if (e.key === "Enter" && !e.shiftKey) e.preventDefault?.();
+  // Listen to native editing events as well as keydown: a software keyboard
+  // can request a line break without delivering an Enter key event.
+  useEffect(() => {
+    const input = speechInputRef.current;
+    if (!input) return;
+    function beforeInput(event) {
+      if (event.inputType !== "insertLineBreak" && event.inputType !== "insertParagraph") return;
+      event.preventDefault();
+      if (!isComposingRef.current && !event.isComposing) onSpeechSubmit({ key: "Enter" }, input.value);
+    }
+    input.addEventListener("beforeinput", beforeInput);
+    return () => input.removeEventListener("beforeinput", beforeInput);
+  });
+
+  function onSpeechSubmit(e, content = speechInput) {
+    if (isComposingRef.current || e.nativeEvent?.isComposing || e.isComposing || e.keyCode === 229) return;
+    if (e.key === "Enter") e.preventDefault?.();
     if (isSpeakCooldownActive || isDisconnected || !isCurrentState || game.review) return;
 
-    if (e.key === "Enter" && !e.shiftKey && selTab && speechInput.trim().length) {
+    if (e.key === "Enter" && selTab && content.trim().length) {
+      const pending = pendingSpeechRef.current;
+      if (
+        pending?.content === content &&
+        pending.meetingId === selTab &&
+        pending.speechMode === speechDropdownValue &&
+        pending.state === game.history.currentState &&
+        Date.now() - pending.sentAt < 5000
+      ) return;
+
       const abilityInfo = speechDropdownValue.split(":");
       var abilityName = abilityInfo[0];
       var abilityTarget = abilityInfo[1];
@@ -3924,9 +3962,9 @@ function SpeechInput(props) {
       if (abilityName === "Say") abilityName = null;
 
       const isCommand =
-        speechInput[0] === "/" && speechInput.slice(0, 4) !== "/me ";
+        content[0] === "/" && content.slice(0, 4) !== "/me ";
 
-      if (textIncludesSlurs(speechInput)) {
+      if (textIncludesSlurs(content)) {
         socket.send("slurDetected");
         pendingSpeechRef.current = null;
         setSpeechInput("");
@@ -3935,8 +3973,14 @@ function SpeechInput(props) {
           pendingSpeechRef.current = null;
         } else {
           pendingSpeechRef.current = {
-            content: speechInput,
+            content,
             meetingId: selTab,
+            speechMode: speechDropdownValue,
+            state: game.history.currentState,
+            // Synchronous ref, not state: a second Enter/button/editing event
+            // must see this before an echo or React render. Bound the guard so
+            // a lost/rejected send cannot lock the preserved draft forever.
+            sentAt: Date.now(),
             previousMessageId: meetings[selTab]?.messages?.at(-1)?.id,
             anonymous:
               Boolean(abilityName) || Boolean(meetings[selTab]?.anonymous),
@@ -3945,7 +3989,7 @@ function SpeechInput(props) {
 
         const reply = buildReplyPayload(replyTarget, {
           meetingId: selTab,
-          content: speechInput,
+          content,
           abilityName,
         });
         if (reply) {
@@ -3953,7 +3997,7 @@ function SpeechInput(props) {
           setReplyTarget(null);
         } else {
           socket.send("speak", {
-            content: speechInput,
+            content,
             meetingId: selTab,
             abilityName,
             abilityTarget,
@@ -4011,12 +4055,12 @@ function SpeechInput(props) {
 
   return (
     <MessageComposer className="game-composer" data-tutorial="chat-input"
-      inputId="speechInput" value={speechInput} onChange={onSpeechType}
+      inputId="speechInput" inputRef={speechInputRef} value={speechInput} onChange={onSpeechType}
       onKeyDown={onSpeechSubmit} onSend={() => onSpeechSubmit({ key: "Enter" })}
       canSend={!!speechInput.trim() && !isSpeakCooldownActive && !isDisconnected && !!selTab && isCurrentState && !game.review}
       label={spectatorChat ? "Message spectators" : "Message this meeting"}
       placeholder={`Message ${placeholder || "this meeting"}`}
-      inputProps={{ name: "MafiaSpeech", inputMode: "text", autoCorrect: "on", autoCapitalize: "sentences", autoComplete: "off", maxLength: MaxGameMessageLength, enterKeyHint: "send" }}
+      inputProps={{ name: "MafiaSpeech", inputMode: "text", autoCorrect: "on", autoCapitalize: "sentences", autoComplete: "off", maxLength: MaxGameMessageLength, enterKeyHint: "send", onCompositionStart: () => { isComposingRef.current = true; }, onCompositionEnd: () => { isComposingRef.current = false; } }}
       preview={replyMessage && <>
         <UiIcon name="reply" size={18} />
         <span className="composer-preview-copy"><span className="composer-preview-label">Replying to {replySender}</span><span className="composer-preview-text">{replyMessage.content}</span></span>

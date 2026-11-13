@@ -107,6 +107,7 @@ function ChatPerformance() {
   const [transcriptVersion, setTranscriptVersion] = useState("");
   const [streaming, setStreaming] = useState(false);
   const status = useRef();
+  const sent = useRef([]);
   const isPhone = useIsPhoneDevice();
 
   useEffect(() => {
@@ -128,6 +129,7 @@ function ChatPerformance() {
 
   const socket = useMemo(() => ({
     send(event, data) {
+      sent.current.push({ event, data });
       if (event === "speak") {
         // Deliver asynchronously like an echoed socket message, without network
         // delay or spam limits. Typing events intentionally have no recipient.
@@ -188,7 +190,7 @@ function ChatPerformance() {
   }, [updateHistory]);
 
   useEffect(() => {
-    window.chatPerf = { load, settings, updateSettings,
+    window.chatPerf = { load, settings, updateSettings, sent: sent.current,
       append: (message) => append(message || makeMessage()), setStreaming,
       replyTo: (id) => {
         append({ ...makeMessage("quote", "test-0"), id: "perf-quote", isQuote: true,
