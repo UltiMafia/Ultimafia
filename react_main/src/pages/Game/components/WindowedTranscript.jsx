@@ -308,6 +308,21 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     recordMeasured();
   }, [recordMeasured]);
 
+  // A webfont that finishes loading after a row painted changes that row's line
+  // box, so the sizes the virtualizer holds go stale and the rows below it move.
+  // Re-measure once when the faces settle: one deliberate correction instead of
+  // a slow drift as rows are scrolled into view.
+  useEffect(() => {
+    if (typeof document === "undefined" || !document.fonts) return undefined;
+    if (!document.fonts.addEventListener) return undefined;
+    const remeasure = () => virtualizer.measure();
+    document.fonts.addEventListener("loadingdone", remeasure);
+    if (document.fonts.status === "loading") {
+      document.fonts.ready.then(remeasure).catch(() => undefined);
+    }
+    return () => document.fonts.removeEventListener("loadingdone", remeasure);
+  }, [virtualizer]);
+
   useEffect(() => {
     const scroller = speechDisplayRef.current;
     if (!scroller) return;

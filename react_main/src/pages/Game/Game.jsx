@@ -80,6 +80,7 @@ import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { pregameSeatAction } from "shared/pregameSeatAction";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
 import { WindowedTranscript } from "./components/WindowedTranscript";
+import { warmNameFonts } from "../../utils/fontWarmup";
 import { bindMessageTouch } from "../../utils/messageTouch";
 import {
   Accordion,
@@ -865,6 +866,21 @@ export default function Game(props) {
                 !!data.users[i] && kudosUserIds.includes(data.users[i].id),
             };
           }
+
+          // A name whose font arrives after the transcript painted changes its
+          // line box and shifts every row below it. Start the downloads now,
+          // while the game is still assembling its first transcript.
+          warmNameFonts(
+            Object.values(players)
+              .map((player) => player.nameFont)
+              .concat(
+                (data.spectators || []).map(
+                  (id, index) =>
+                    data.spectatorsUsers[index] &&
+                    data.spectatorsUsers[index].settings.nameFont
+                )
+              )
+          );
 
           for (let i in data.spectators) {
             spectators[data.spectators[i]] = {
