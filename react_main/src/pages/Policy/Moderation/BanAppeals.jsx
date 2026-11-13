@@ -8,7 +8,6 @@ import axios from "axios";
 import {
   Alert,
   Box,
-  Button,
   Chip,
   CircularProgress,
   Divider,
@@ -31,14 +30,9 @@ import {
 } from "@mui/material";
 
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
+import { UiAction, UiPending } from "components/ui";
 
 export const BAN_APPEALS_PATH = "/policy/moderation/ban-appeals";
-
-const STATUS_COLORS = {
-  pending: "warning",
-  accepted: "success",
-  denied: "error",
-};
 
 const REPORT_LINK_TEXT = {
   ban: "Linked to this ban by its report ruling",
@@ -96,14 +90,7 @@ function CaseCell({ to, children, sx }) {
 }
 
 function StatusChip({ status }) {
-  return (
-    <Chip
-      size="small"
-      label={String(status || "").toUpperCase()}
-      color={STATUS_COLORS[status] || "default"}
-      sx={{ fontWeight: 700 }}
-    />
-  );
+  return <span className={`moderation-status moderation-status-${status || "default"}`}>{String(status || "").toUpperCase()}</span>;
 }
 
 function UserLink({ id, name }) {
@@ -157,14 +144,14 @@ function AppealList() {
   }, [filter]);
 
   return (
-    <Stack spacing={2} data-testid="ban-appeals-list">
+    <Stack spacing={2} data-testid="ban-appeals-list" className="moderation-ban-appeals">
+      <header className="moderation-section-heading"><h2>Ban appeals</h2><p>Review appeals against site bans. Deciding an appeal does not itself lift the ban.</p></header>
       <Stack
         direction={{ xs: "column", sm: "row" }}
         spacing={1}
         justifyContent="space-between"
         alignItems={{ xs: "flex-start", sm: "center" }}
       >
-        <Typography variant="h3">Ban Appeals</Typography>
         <ToggleButtonGroup
           size="small"
           exclusive
@@ -177,11 +164,7 @@ function AppealList() {
         </ToggleButtonGroup>
       </Stack>
       {error && <Alert severity="error">{error}</Alert>}
-      {!error && !rows && (
-        <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-          <CircularProgress />
-        </Box>
-      )}
+      {!error && !rows && <UiPending label="Loading ban appeals" />}
       {rows && rows.length === 0 && (
         <Typography color="text.secondary" sx={{ py: 2, textAlign: "center" }}>
           {filter === "pending"
@@ -192,7 +175,7 @@ function AppealList() {
         </Typography>
       )}
       {rows && rows.length > 0 && (
-        <TableContainer component={Paper} variant="outlined">
+        <TableContainer className="moderation-table">
           <Table size="small">
             <TableHead>
               <TableRow>
@@ -271,12 +254,10 @@ function Field({ label, children }) {
 
 function Section({ title, children, testId }) {
   return (
-    <Paper variant="outlined" sx={{ p: 2 }} data-testid={testId}>
-      <Typography variant="h4" sx={{ mb: 1.5 }}>
-        {title}
-      </Typography>
+    <section className="moderation-case-section" data-testid={testId}>
+      <h3>{title}</h3>
       {children}
-    </Paper>
+    </section>
   );
 }
 
@@ -312,13 +293,7 @@ function AppealCase({ appealId }) {
     };
   }, [appealId, applyCase]);
 
-  const back = (
-    <Box>
-      <Button component={RouterLink} to={BAN_APPEALS_PATH} size="small">
-        Back to Ban Appeals
-      </Button>
-    </Box>
-  );
+  const back = <RouterLink className="ui-action ui-action--ghost moderation-back-link" to={BAN_APPEALS_PATH}>Back to Ban Appeals</RouterLink>;
 
   if (error)
     return (
@@ -327,12 +302,7 @@ function AppealCase({ appealId }) {
         <Alert severity="error">{error}</Alert>
       </Stack>
     );
-  if (!data)
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
+  if (!data) return <UiPending label="Loading appeal" />;
 
   const trimmed = justification.trim();
   const canSubmit =
@@ -567,13 +537,13 @@ function AppealCase({ appealId }) {
             {voteError && <Alert severity="error">{voteError}</Alert>}
             {saved && <Alert severity="success">Vote recorded.</Alert>}
             <Box>
-              <Button variant="contained" disabled={!canSubmit} onClick={submitVote}>
+              <UiAction variant="primary" disabled={!canSubmit} busy={submitting} onClick={submitVote}>
                 {submitting
                   ? "Saving..."
                   : data.myVote
                     ? "Change vote"
                     : "Submit vote"}
-              </Button>
+              </UiAction>
             </Box>
           </Stack>
         )}

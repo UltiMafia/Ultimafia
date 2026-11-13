@@ -1,393 +1,101 @@
 import React, { useContext, useState } from "react";
-import { useRankedTutorialGate } from "components/TutorialPrompt";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-
-import "css/shiny.css";
-import { Link } from "react-router-dom";
-import { PlayerCount } from "./PlayerCount";
+import { IconButton, Tooltip } from "@mui/material";
+import { useRankedTutorialGate } from "components/TutorialPrompt";
 import { UserContext, SiteInfoContext } from "Contexts";
 import { filterProfanity } from "components/Basic";
 import { useErrorAlert } from "components/Alerts";
 import Setup from "components/Setup";
 import HostGameDialogue from "components/HostGameDialogue";
-import {
-  Box,
-  Button,
-  IconButton,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
-import { getRowColor, getSetupBackgroundColor } from "./gameRowColors.js";
-import StateIcon from "components/StateIcon";
+import { PlayerCount } from "./PlayerCount";
+import { UiAction, UiIcon } from "components/ui";
+import { getRowStubColor } from "./gameRowColors";
 
-export const GameStatus = (props) => {
+export function GameStatus({ game, tools }) {
   const navigate = useNavigate();
   const user = useContext(UserContext);
-  const isPhoneDevice = useIsPhoneDevice();
-  const showGameState = props.showGameState;
+  const reviewableTesting = game.lobby === "Testing" && game.status === "Finished";
+  const full = game.status === "Open" && game.setup && game.players >= game.setup.total;
+  const allowed = (user.loggedIn || game.status === "Finished") && !game.broken && (!game.private || reviewableTesting);
+  const rankedJoin = game.status === "Open" && (game.ranked || game.competitive);
+  let destination = `/game/${game.id}`;
+  let label = "Join";
+  let membership = { requestedMembership: "player" };
+  let disabled = false;
 
-  // Testing lobby games are only listed for Developers/Owners, and the
-  // server lets them review those games even when locked.
-  const isReviewableTestingGame =
-    props.game.lobby === "Testing" && props.game.status === "Finished";
-  // Player capacity limits joining, not spectating. Keep the spectator action
-  // available while a full lobby waits for its ready check.
-  const isFullOpenGame =
-    props.game.status === "Open" &&
-    props.game.setup &&
-    props.game.players >= props.game.setup.total;
-
-  const canShowGameButton =
-    (user.loggedIn || props.game.status === "Finished") &&
-    !props.game.broken &&
-    (!props.game.private || isReviewableTestingGame);
-
-  let buttonUrl, buttonText, buttonVariant, buttonColor, buttonDisabled;
-  let showSpectate = false;
-  if (props.game.status === "Open") {
-    // The requested role travels in navigation state; the URL only describes
-    // the confirmed role. A spectator who clicks Join is seated over the
-    // existing socket (or by the new session's role request).
-    buttonUrl = `/game/${props.game.id}`;
-    buttonText = "Join";
-    buttonColor = "primary";
-    buttonVariant = "contained";
-    buttonDisabled = false;
-    showSpectate = !!props.game.spectating;
-  } else if (props.game.status === "In Progress") {
-    if (props.game.spectating /* || user.perms.canSpectateAny */) {
-      buttonUrl = `/game/${props.game.id}?spectate=true`;
-      buttonText = "Spectate";
-      buttonColor = "inherit";
-      buttonVariant = "contained";
-      buttonDisabled = false;
-    } else {
-      buttonUrl = "/play";
-      buttonText = "Ongoing";
-      buttonColor = "inherit"; //"rgba(211, 211, 211, 0.15)";
-      buttonVariant = "contained";
-      buttonDisabled = true;
-    }
-  } else if (props.game.status === "Finished") {
-    buttonUrl = `/game/${props.game.id}`;
-    buttonText = "Review";
-    buttonColor = "inherit"; //"rgba(211, 211, 211, 0.15)";
-    buttonVariant = "outlined";
-    buttonDisabled = false;
+  if (game.status === "In Progress") {
+    label = game.spectating ? "Spectate" : "Ongoing";
+    destination = game.spectating ? `${destination}?spectate=true` : "/play";
+    membership = game.spectating ? { requestedMembership: "spectator" } : undefined;
+    disabled = !game.spectating;
+  } else if (game.status === "Finished") {
+    label = "Review";
+    membership = undefined;
   }
 
-  const isRankedJoin =
-    props.game.status === "Open" && (props.game.ranked || props.game.competitive);
-  // The requested role travels in navigation state; the URL describes only
-  // the confirmed role. The mounted game applies a different role over its
-  // existing socket.
-  const membershipState =
-    buttonText === "Join"
-      ? { requestedMembership: "player" }
-      : buttonText === "Spectate"
-        ? { requestedMembership: "spectator" }
-        : undefined;
-  const tutorialGate = useRankedTutorialGate(() =>
-    membershipState
-      ? navigate(buttonUrl, { state: membershipState })
-      : navigate(buttonUrl)
-  );
-
-  const GameButton = (
-    <Button
-      component={Link}
-      to={buttonUrl}
-      state={membershipState}
-      onClick={isRankedJoin ? tutorialGate.guard : undefined}
-      variant={buttonVariant}
-      color={buttonColor}
-      disabled={buttonDisabled}
-      sx={{
-        p: 0.5,
-        width: "100%",
-        fontWeight: "bold",
-      }}
-    >
-      {buttonText}
-    </Button>
-  );
-
-  const spectateButton = showSpectate && (
-    <Button
-      component={Link}
-      to={`/game/${props.game.id}?spectate=true`}
-      state={{ requestedMembership: "spectator" }}
-      variant="outlined"
-      color="inherit"
-      sx={{
-        p: 0.5,
-        width: "100%",
-        fontWeight: "bold",
-      }}
-    >
-      Spectate
-    </Button>
-  );
-
-  const gameButtonWrapped = (
-    <Box sx={{ width: "100px" }}>
-      {canShowGameButton && (
-        <Stack spacing={0.5}>
-          {!isFullOpenGame && GameButton}
-          {spectateButton}
-        </Stack>
-      )}
-      {isRankedJoin && tutorialGate.dialog}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        {props.game.broken && (
-          <i
-            className="fas fa-car-crash"
-            style={{ fontSize: "24px", cursor: "not-allowed" }}
-            title="Broken"
-          />
-        )}
-        {props.game.private && !isReviewableTestingGame && (
-          <i
-            className="fas fa-lock"
-            style={{ fontSize: "24px", cursor: "not-allowed" }}
-            title="Private"
-          />
-        )}
-      </div>
-    </Box>
-  );
-
+  // Navigation intent is applied by the retained game over its current socket.
+  // Capacity limits joining, not spectating; do not merge these permission gates.
+  const tutorialGate = useRankedTutorialGate(() => navigate(destination, { state: membership }));
   return (
-    <Stack
-      direction="row"
-      spacing={1}
-      sx={{
-        ml: 1,
-        alignItems: "center",
-      }}
-    >
-      {/* LOBBY ICON GOES HERE */}
-      {/* <Box sx={{
-        height: "60px",
-        width: "60px",
-      }}>
-      </Box> */}
-      {showGameState && !isPhoneDevice && (
-        <StateIcon
-          stateName={props.game.gameState || "Postgame"}
-          winnerGroups={props.game.winnersInfo?.groups || []}
-        />
-      )}
-      <Stack
-        direction="column"
-        sx={{
-          gap: { xs: 0.5, sm: 1 },
-          alignItems: "stretch",
-          justifyContent: "center",
-          alignSelf: "stretch",
-          ml: 1,
-          mr: 0.5,
-        }}
-      >
-        <PlayerCount
-          game={props.game}
-          gameId={props.game.id}
-          anonymousGame={props.game.anonymousGame}
-          status={props.game.status}
-          numSlotsTaken={props.game.players}
-          spectatingAllowed={props.game.spectating}
-          spectatorCount={props.game.spectatorCount}
-        />
-        {gameButtonWrapped}
-      </Stack>
-    </Stack>
+    <div className="game-row-status">
+      <PlayerCount game={game} gameId={game.id} anonymousGame={game.anonymousGame}
+        status={game.status} numSlotsTaken={game.players} spectatingAllowed={game.spectating}
+        spectatorCount={game.spectatorCount} />
+      <div className="game-row-actions">
+        {allowed && !full && <UiAction component={Link} to={destination} state={membership}
+          onClick={rankedJoin ? tutorialGate.guard : undefined} disabled={disabled}
+          variant={label === "Join" ? "primary" : "secondary"}>
+          {label}
+        </UiAction>}
+        {allowed && game.status === "Open" && game.spectating &&
+          <UiAction component={Link} to={`/game/${game.id}?spectate=true`}
+            state={{ requestedMembership: "spectator" }} variant="ghost">Spectate</UiAction>}
+        {game.broken && <span className="game-access-note">Unavailable</span>}
+        {game.private && !reviewableTesting && <span className="game-access-note"><UiIcon name="lock" size={16} /> Private</span>}
+        {tools}
+      </div>
+      {rankedJoin && tutorialGate.dialog}
+    </div>
   );
-};
+}
 
-export const GameRow = (props) => {
-  const isPhoneDevice = useIsPhoneDevice();
+export function GameRow({ game, showLobbyName, showGameState, small }) {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
-  const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
+  const [hostDialogOpen, setHostDialogOpen] = useState(false);
+  const canBreak = user.perms?.breakGame && !game.broken;
+  const canRehost = !small && game.status === "Finished" && user.loggedIn;
+  if (!game.setup) return null;
 
-  const showLobbyName = props.showLobbyName;
-  const canBreakGame = user.perms?.breakGame && !props.game.broken;
-
-  function onBreakGameClick() {
-    if (!canBreakGame) return;
-    if (!window.confirm("Break this game? This cannot be undone.")) return;
-    axios
-      .post("/api/mod/breakGame", { gameId: props.game.id })
-      .then(() => {
-        siteInfo.showAlert("Game broken.", "success");
-      })
-      .catch(errorAlert);
+  function breakGame() {
+    if (!canBreak || !window.confirm("Break this game? This cannot be undone.")) return;
+    axios.post("/api/mod/breakGame", { gameId: game.id })
+      .then(() => siteInfo.showAlert("Game broken.", "success")).catch(errorAlert);
   }
-  const showGameState = props.showGameState;
-  const showGameTypeIcon = props.showGameTypeIcon;
-  const showRedoButton = isPhoneDevice
-    ? !props.small && props.game.status === "Finished" && user.loggedIn
-    : !props.small;
-  const lobbyName = props.game.lobbyName;
 
-  if (!props.game.setup) return <></>;
-
+  const status = game.status === "Open" ? "Open" : game.status === "In Progress" ? (game.gameState || "In progress") : "Finished";
   return (
-    <div className="shiny-container" style={{ minWidth: "0px" }}>
-      {props.game.competitive && <i className="shiny" />}
-      <HostGameDialogue
-        open={ishostGameDialogueOpen}
-        setOpen={setIshostGameDialogueOpen}
-        setup={props.game.setup}
-        defaultLobby={props.game.lobby}
-      />
-      <Stack
-        direction="row"
-        spacing={1}
-        sx={{
-          p: { xs: 0.5, sm: 1 },
-          width: "100%",
-          alignItems: "center",
-          background: getRowColor(props.game, false),
-        }}
-        key={props.game.id}
-      >
-        <GameStatus
-          small={props?.small}
-          game={props.game}
-          status={props.status}
-          showGameTypeIcon={showGameTypeIcon}
-          showGameState={showGameState}
-        />
-        <Stack
-          direction="column"
-          sx={{
-            minWidth: 0,
-            flex: "1 1",
-          }}
-        >
-          {showLobbyName && (
-            <Stack
-              direction="row"
-              sx={{
-                alignItems: "center",
-              }}
-            >
-              {/* game option indicators go HERE */}
-              <Stack
-                direction="row"
-                spacing={0.5}
-                sx={{
-                  alignItems: "center",
-                }}
-              >
-                {props.game.ranked && (
-                  <Tooltip title="ranked">
-                    <i
-                      className="fas fa-heart"
-                      style={{
-                        fontSize: "1rem",
-                        color: "rgb(226, 59, 59)",
-                      }}
-                    />
-                  </Tooltip>
-                )}
-                {props.game.competitive && (
-                  <Tooltip title="competitive">
-                    <i
-                      className="fas fa-heart"
-                      style={{
-                        fontSize: "1rem",
-                        color: "var(--gold-heart-color)",
-                      }}
-                    />
-                  </Tooltip>
-                )}
-                {props.game.anonymousGame && (
-                  <Tooltip title="Anonymous game">
-                    <i
-                      className="fas fa-theater-masks"
-                      style={{
-                        fontSize: "1rem",
-                      }}
-                    />
-                  </Tooltip>
-                )}
-              </Stack>
-              <Box
-                sx={{
-                  ml: 0.5,
-                  flexShrink: "1",
-                  overflowX: "hidden",
-                }}
-              >
-                <Typography
-                  noWrap
-                  variant="caption"
-                  style={{
-                    wordBreak: "break-word",
-                  }}
-                >
-                  {filterProfanity(lobbyName, user.settings)}
-                </Typography>
-              </Box>
-              {(showRedoButton || canBreakGame) && (
-                <Stack
-                  direction="row"
-                  spacing={0}
-                  sx={{
-                    marginLeft: "auto",
-                    alignItems: "center",
-                  }}
-                >
-                  {canBreakGame && (
-                    <Tooltip title="Break game">
-                      <IconButton
-                        size="small"
-                        onClick={onBreakGameClick}
-                        sx={{ color: "text.secondary" }}
-                        aria-label="Break game"
-                      >
-                        <i
-                          className="fas fa-car-crash"
-                          style={{ fontSize: "1rem" }}
-                        />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                  {props.game.status === "Finished" && user.loggedIn && (
-                    <IconButton
-                      size="small"
-                      color="primary"
-                      onClick={() => setIshostGameDialogueOpen(true)}
-                    >
-                      <i
-                        className="rehost fas fa-redo"
-                        style={{ fontSize: "1rem" }}
-                        title="Rehost"
-                      />
-                    </IconButton>
-                  )}
-                </Stack>
-              )}
-            </Stack>
-          )}
-          <Setup
-            setup={props.game.setup}
-            key={props.game.setup.id}
-            backgroundColor={getSetupBackgroundColor(props.game, true)}
-          />
-        </Stack>
-      </Stack>
-    </div>
+    <article className={`lobby-game-card${small ? " lobby-game-card--compact" : ""}${game.competitive ? " is-competitive" : game.ranked ? " is-ranked" : ""}`}
+      style={{ "--game-category-color": getRowStubColor(game) }}
+      data-game-id={game.id} data-status={game.status}>
+      <div className="game-row-information">
+        <div className="game-row-facts">
+          {showGameState && <span className={`game-state-label ${game.status === "Open" ? "is-open" : ""}`}>{status}</span>}
+          <span>{game.setup.gameType}</span>
+           {game.competitive ? <span className="competitive-label">Competitive</span> : game.ranked ? <span className="ranked-label">Ranked</span> : null}
+          {game.anonymousGame && <span>Anonymous</span>}
+          <span>{game.lobby}</span>
+        </div>
+        <Setup setup={game.setup} summary />
+        {showLobbyName && <div className="game-row-host">{filterProfanity(game.lobbyName, user.settings)}</div>}
+      </div>
+      <GameStatus game={game} tools={(canBreak || canRehost) && <div className="game-row-tools">
+        {canRehost && <Tooltip title="Host this setup"><IconButton size="small" aria-label="Rehost game" onClick={() => setHostDialogOpen(true)}><UiIcon name="refresh" size={16} /></IconButton></Tooltip>}
+        {canBreak && <Tooltip title="Break game"><IconButton size="small" aria-label="Break game" onClick={breakGame}><UiIcon name="warning" size={16} /></IconButton></Tooltip>}
+      </div>} />
+      <HostGameDialogue open={hostDialogOpen} setOpen={setHostDialogOpen} setup={game.setup} defaultLobby={game.lobby} />
+    </article>
   );
-};
+}

@@ -1,0 +1,598 @@
+{
+  "library": "HackerNoon Pixel Icon Library",
+  "revision": "5fe05c9c81a3eb43448e820b4521307102c248e7",
+  "license": "CC BY 4.0",
+  "artworkLicenseSource": "https://pixeliconlibrary.com/license/",
+  "files": [
+    {
+      "name": "regular/angle-down",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/angle-down.svg",
+      "sha256": "8bb5f7267d9b32db55078d63962ebfa209c6649af000d4cfc9713328579d7a24"
+    },
+    {
+      "name": "regular/angle-left",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/angle-left.svg",
+      "sha256": "e80a0c8d1868a2ad5febba157f2e7e5cc58fe42bdb6034f16ec67c2f00faad2f"
+    },
+    {
+      "name": "regular/angle-right",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/angle-right.svg",
+      "sha256": "220e11d2b0b865b12070fdd486eab1d6d7eaaff9acb08ab226ffaeb18c32c3bf"
+    },
+    {
+      "name": "regular/angle-up",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/angle-up.svg",
+      "sha256": "898c21c0b58a03edc8a074209f9cdecb7e2c6b0c9f24903947356d8f8a30bb9d"
+    },
+    {
+      "name": "regular/archive",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/archive.svg",
+      "sha256": "b1b3f2bcba28b9c4408f41367274e6267cc1d911d04f95d7bfb3a46aea648696"
+    },
+    {
+      "name": "regular/arrow-left",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/arrow-left.svg",
+      "sha256": "9638b5b3c2491e3bafbdcfc0c1ab9c36ead6c02a60ee284d540a8a017c50b681"
+    },
+    {
+      "name": "regular/arrow-right",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/arrow-right.svg",
+      "sha256": "60df33de4d306bdbf0f398dc398c58f1a750974e482476481c804ef564859d36"
+    },
+    {
+      "name": "regular/arrow-up",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/arrow-up.svg",
+      "sha256": "b41ee904661e4446f63ba85aec354955e5e13e89603b05432229d0ab5f0c949f"
+    },
+    {
+      "name": "regular/badge-check",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/badge-check.svg",
+      "sha256": "e929634ce3e4289889d40238ea08e47b4c42a1158b6fe27b515c05e30128d471"
+    },
+    {
+      "name": "regular/bars",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/bars.svg",
+      "sha256": "434684c0b90d0eae5aef3511b314dd065d6985adf627700127705638f78bd623"
+    },
+    {
+      "name": "regular/bell",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/bell.svg",
+      "sha256": "4619adb9eaf1296349da209fbf05b871aad3679511907195ef993a923f14fd28"
+    },
+    {
+      "name": "regular/book",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/book.svg",
+      "sha256": "b16af66c4d8f9a31608423c425fd9f32eef4fe8bf3031d2f4a43570c9b3238b4"
+    },
+    {
+      "name": "regular/briefcase",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/briefcase.svg",
+      "sha256": "60f5e058f3c260388e0ac46849df34c788992d0d2de779de687fff8d31f64f41"
+    },
+    {
+      "name": "regular/calender",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/calender.svg",
+      "sha256": "668ec4c9cd46cd358f4d7ff4e00353fa1222827c6bd4af22c939b5c00c32cf71"
+    },
+    {
+      "name": "regular/chart-line",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/chart-line.svg",
+      "sha256": "3883684fa030866dd8e1186ab32e5b042741e4fe8bd77dab6948767196befb2b"
+    },
+    {
+      "name": "regular/check",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/check.svg",
+      "sha256": "e5c5a21f48760885d8023f186682c2026a55ecdaad3ef4337c4f273b5b7a5057"
+    },
+    {
+      "name": "regular/clock",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/clock.svg",
+      "sha256": "b5787c4d8774f7957704ab08e7507727fe5d934b3d2687cc0301c002fe8c31a0"
+    },
+    {
+      "name": "regular/code",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/code.svg",
+      "sha256": "996ec2de9e4d9391f436632164cedf4b13d177f5b35d1fe0387170308b6f568f"
+    },
+    {
+      "name": "regular/cog",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/cog.svg",
+      "sha256": "6ee2ec2772b84f79d97a314d4bda852b081163636442d41e77efb4422eee790e"
+    },
+    {
+      "name": "regular/coins",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/coins.svg",
+      "sha256": "905814af1b9f8c5a42bffc529ac1dc3b8c2ce67b937826a3702a01cbf397ceff"
+    },
+    {
+      "name": "regular/copy",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/copy.svg",
+      "sha256": "dac9e4d333f6f82f0181503d286bbaa3c9a56d3c148fb791ea8920b5a9ba0e75"
+    },
+    {
+      "name": "regular/ellipses-horizontal",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/ellipses-horizontal.svg",
+      "sha256": "40a928ccfc213eb1d1cb829a324e9cd3f249d5e1013c6ac22014890b3be7b505"
+    },
+    {
+      "name": "regular/exclamation-triangle",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/exclamation-triangle.svg",
+      "sha256": "e076e44e87b2566bdf0c18c28385ef151921edf7a27e77dc19074d57611e27b3"
+    },
+    {
+      "name": "regular/external-link",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/external-link.svg",
+      "sha256": "d68beda2ec969a8cfe39c0a3b6731ff0812e2a30a88926b46b5f1405adbc3976"
+    },
+    {
+      "name": "regular/eye",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/eye.svg",
+      "sha256": "dee65071867b2b5148df8be021eba8e274817c539e6ae8340e8712a775ef3610"
+    },
+    {
+      "name": "regular/eye-cross",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/eye-cross.svg",
+      "sha256": "8d59742a3df8c2c17a437b7b4cbe51359f259c0c4729f06bbec69a3800726981"
+    },
+    {
+      "name": "regular/face-grin",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/face-grin.svg",
+      "sha256": "7247596baa38511668513df1c5a45d6a190b6c153240696bc843fe246e74bbe4"
+    },
+    {
+      "name": "regular/filter",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/filter.svg",
+      "sha256": "5e67b427b3b0417d0ae079e6def7f9d4b6535b4001ada14b0298dbe180796e59"
+    },
+    {
+      "name": "regular/flag",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/flag.svg",
+      "sha256": "1d67e93d654df752a6420625fe7a6cb63761af0095dc50a14a0ecbb3fbb27b8a"
+    },
+    {
+      "name": "regular/heart",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/heart.svg",
+      "sha256": "229618e1a06702c2ee3bb242906abd9bfb757601520371f5d5d191ea8f6d27d6"
+    },
+    {
+      "name": "regular/info-circle",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/info-circle.svg",
+      "sha256": "a25c00763790dee32662d361d0329faad91d6f57bdae1ac8551151dbaf3a10d2"
+    },
+    {
+      "name": "regular/link",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/link.svg",
+      "sha256": "90e3990db57b70a64bb7f2cdca0582cb8db437ccb0af8988c05854734be8f220"
+    },
+    {
+      "name": "regular/lock",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/lock.svg",
+      "sha256": "449ba4c7f6fc9c00b9be231458278a5abdc30b330014d75e586e49073a7a5779"
+    },
+    {
+      "name": "regular/logout",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/logout.svg",
+      "sha256": "3e494825f43e64662424a59282ef237e68dfb37f714746efd924c41625335eb8"
+    },
+    {
+      "name": "regular/message",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/message.svg",
+      "sha256": "d973d6377f2981e74ebeefec6909a982663a8db4171d03bd4dd1fdbff6408dba"
+    },
+    {
+      "name": "regular/minus",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/minus.svg",
+      "sha256": "4e8531c5e016cdec0312355f66829dcfcdb10d3f0389feec89176ee87b7e9580"
+    },
+    {
+      "name": "regular/moon",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/moon.svg",
+      "sha256": "5726d4ddc44df61bf14716164152c05e3d9fae9df9bea6e03e0276143a9c63fb"
+    },
+    {
+      "name": "regular/notebook",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/notebook.svg",
+      "sha256": "998be26437e81399b332c1fe65e213830ff884439bc1588feaf9ef9fed6febbe"
+    },
+    {
+      "name": "regular/pencil",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/pencil.svg",
+      "sha256": "f3a79a2e8157d4fc9f392413e9d28dd4b792d7cacc08d8d4cac4b83a85dd9d5c"
+    },
+    {
+      "name": "regular/plus",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/plus.svg",
+      "sha256": "b3948057798d895d1f7a770146836af38003da149a9bfb297aa9153cb12f9994"
+    },
+    {
+      "name": "regular/question-circle",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/question-circle.svg",
+      "sha256": "5494321f4c95ccbb8f54c29005a937f80cd3756ef609c0f9d8365ddc96a2ebee"
+    },
+    {
+      "name": "regular/quote-left",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/quote-left.svg",
+      "sha256": "3c067ca4f2e74c88431aca6aacb7e1437eb310ea01befd66e90565a306f31815"
+    },
+    {
+      "name": "regular/refresh",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/refresh.svg",
+      "sha256": "0723b46b558975aab5146fbf57951443ba7df84478265e74af68f238ad40f4d4"
+    },
+    {
+      "name": "regular/search",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/search.svg",
+      "sha256": "ad22a86e2e870c4886f95860247b987ca47671cbb6371cc031e4f500ae3b933c"
+    },
+    {
+      "name": "regular/shapes",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/shapes.svg",
+      "sha256": "45dc542d7d52dff9276cbee6e0a46eb611ac3a93c4db05d08d396a851cd52014"
+    },
+    {
+      "name": "regular/share",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/share.svg",
+      "sha256": "ca5e0dbebe8580507a3caec81fb6e46aceadcd769a94e5ff2ab1a5a441b42d0a"
+    },
+    {
+      "name": "regular/side-nav-collapse",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/side-nav-collapse.svg",
+      "sha256": "1c7762a95a094425e94630fb821717e9a5e8125cb559b661997cd2f9de77ef13"
+    },
+    {
+      "name": "regular/side-nav-expand",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/side-nav-expand.svg",
+      "sha256": "fdcbba1260cccf53cae346ac3ba7576a44ae6b4774bdb7ad8e52a7ef415c402e"
+    },
+    {
+      "name": "regular/star",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/star.svg",
+      "sha256": "e621260f19fd7c90583e54d05a22bb8982204820a3647b6ad0e2ad66aba0901f"
+    },
+    {
+      "name": "regular/sun",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/sun.svg",
+      "sha256": "81393c4f902fdd7e58133aacf1432f2673ef300ea1d57ebbbfe565eae717e8ac"
+    },
+    {
+      "name": "regular/thumbtack",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/thumbtack.svg",
+      "sha256": "d5af536578512f5fd280d94e89cdbdf666a690bffe3e9a9fb98dc029b123917a"
+    },
+    {
+      "name": "regular/times",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/times.svg",
+      "sha256": "6f9c718f881cf035db609b9a047ab4b20abfe8362e536227ddde5624878ae2ab"
+    },
+    {
+      "name": "regular/times-circle",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/times-circle.svg",
+      "sha256": "211c7cd1a26e3a3babfdfbd1710e7383e20920498c7c525e3739ebb3fd01fa18"
+    },
+    {
+      "name": "regular/trash",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/trash.svg",
+      "sha256": "40aca708c4b79aac2d133c1c66316127bfc9ab26e9a5f8cd1b9699481c63ba65"
+    },
+    {
+      "name": "regular/trophy",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/trophy.svg",
+      "sha256": "9d4573b2a8c0e983fc73b374ee5f7f59ec08c69bccbb3f6eff0c44865af4e2c8"
+    },
+    {
+      "name": "regular/unlock",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/unlock.svg",
+      "sha256": "65fe9efe99787d69dfa0e47d2788e33dd5b86954b5687fee481dce22bb71a9b0"
+    },
+    {
+      "name": "regular/user",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/user.svg",
+      "sha256": "cc7f4a0a6428bf177b6a1714f75d15e54c42e8abd2ee97ef51213e4e3b244c7b"
+    },
+    {
+      "name": "regular/user-plus",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/user-plus.svg",
+      "sha256": "859136785f83ddb3dc0ae86d7cd9c9ade5009d8696c89cd6ea5366481a40aa2d"
+    },
+    {
+      "name": "regular/users",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/regular/users.svg",
+      "sha256": "c749e3d1b3e624ac8b3f6750746beec67f203d2e244f9ef078f774d19b63f03f"
+    },
+    {
+      "name": "solid/angle-down-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/angle-down-solid.svg",
+      "sha256": "88c72d363954d6992a23a0297831d50ae3385386dd7c96b816d351d9b6f9844a"
+    },
+    {
+      "name": "solid/angle-left-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/angle-left-solid.svg",
+      "sha256": "d28a196fba30997b9e3322b9f44aba3586ba1d2f416b76ebb4fa1159e06740c0"
+    },
+    {
+      "name": "solid/angle-right-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/angle-right-solid.svg",
+      "sha256": "e03a0eb113c82600a05499c4dd51d28e7810e5960420da42bdaa47e027d7ce42"
+    },
+    {
+      "name": "solid/angle-up-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/angle-up-solid.svg",
+      "sha256": "67fd706d4b0dbdfc69ba160647c0ebe0aa4555a9446e438c1d9b9d8437f021ec"
+    },
+    {
+      "name": "solid/archive-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/archive-solid.svg",
+      "sha256": "449f0fa9385c7d4b135477d505876c1501dae02b39df280ba81f8afb1b2f6886"
+    },
+    {
+      "name": "solid/arrow-left-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/arrow-left-solid.svg",
+      "sha256": "31e5a2a0cea542187a6b7a86939cfa1b8bcf95cb644c0b05acaacfce51337e90"
+    },
+    {
+      "name": "solid/arrow-right-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/arrow-right-solid.svg",
+      "sha256": "26a68653f4983c4836162b2cc2bc7e7af7c14d9618f85a22e27f31b32e139f34"
+    },
+    {
+      "name": "solid/arrow-up-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/arrow-up-solid.svg",
+      "sha256": "e79ec5c80610e35ab5b7efc4fe6adf407b90deeaa40632597494452ec8a5738a"
+    },
+    {
+      "name": "solid/badge-check-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/badge-check-solid.svg",
+      "sha256": "c9faca01ebcab225259b5ed4dafbca2e1fc06c4f6a9bf302ec9f53dca6786976"
+    },
+    {
+      "name": "solid/bars-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/bars-solid.svg",
+      "sha256": "6dcc554c1d0cac58c6b7c1795e28b9605db072ffce7289f93735a24d1ffebe33"
+    },
+    {
+      "name": "solid/bell-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/bell-solid.svg",
+      "sha256": "47485882ad2d0841cf4af973ed3785d28c13510c41f86681368b231a7f8744eb"
+    },
+    {
+      "name": "solid/book-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/book-solid.svg",
+      "sha256": "674f8bc72e6679242772b55e915a925c907df482b0157e4b0111e2f88fe13341"
+    },
+    {
+      "name": "solid/briefcase-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/briefcase-solid.svg",
+      "sha256": "592f68bc6181512b342f6f7165af35de95285acb21e2324a97af87c023fdb87e"
+    },
+    {
+      "name": "solid/calender-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/calender-solid.svg",
+      "sha256": "b2467cd39604c52a3b124f2dfa0a7b9c4a3356cc27923329d3a62984179ce855"
+    },
+    {
+      "name": "solid/chart-line-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/chart-line-solid.svg",
+      "sha256": "88b688cd62176cd7a4a124ab14c0cd3bd45a474619659df0f758334ee3dcac6a"
+    },
+    {
+      "name": "solid/check-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/check-solid.svg",
+      "sha256": "842cd880bf266bb9342c5e733f562959d598b7ce6f73d32e2762e84cc8cac34c"
+    },
+    {
+      "name": "solid/clock-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/clock-solid.svg",
+      "sha256": "1b61be4ffb4a835035f7827fe0b132fbb05d1296970f518eb02dc8a41b94cdcf"
+    },
+    {
+      "name": "solid/code-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/code-solid.svg",
+      "sha256": "28211c88d5b88d16570bb62ee584df22274d52f182c51f517b4fa916603e0ea9"
+    },
+    {
+      "name": "solid/cog-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/cog-solid.svg",
+      "sha256": "861367974bc4bd92682a392f75e087b6f1d3d4f4c2f9423be5bfa5993f06d670"
+    },
+    {
+      "name": "solid/coins-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/coins-solid.svg",
+      "sha256": "59f4554ec1cf6a848fae2412f2b9d462e8dbb51852700e73a7113cff0b332f22"
+    },
+    {
+      "name": "solid/copy-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/copy-solid.svg",
+      "sha256": "c48d5458f586ce35116a55d64e38ee3367ef92f5c2f1cb4f0263d29cff201889"
+    },
+    {
+      "name": "solid/ellipses-horizontal-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/ellipses-horizontal-solid.svg",
+      "sha256": "a9e14f334a6d5fce76b2d11364cfaf0af9325cb963cc3bfafc1231ebbba37884"
+    },
+    {
+      "name": "solid/exclamation-triangle-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/exclamation-triangle-solid.svg",
+      "sha256": "ce9fe956ec4bc6b622a4ecd62ba75bd51410c43f6a17dcb1fb8fd3f023d3b432"
+    },
+    {
+      "name": "solid/external-link-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/external-link-solid.svg",
+      "sha256": "ea8db2bd199d5e12abf5f4a99fbc2c7f22dac83349690ec71abe37c37ca7543a"
+    },
+    {
+      "name": "solid/eye-cross-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/eye-cross-solid.svg",
+      "sha256": "a3c77570caacde4a348db0b2028865eae6fc28d06b6739138f4533692699abe7"
+    },
+    {
+      "name": "solid/eye-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/eye-solid.svg",
+      "sha256": "0870cbe445de73aaec7245f61c3b251e9658d590ad6302a0c61b460995f44a57"
+    },
+    {
+      "name": "solid/face-grin-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/face-grin-solid.svg",
+      "sha256": "554efd43123462b2b43fbf92b9dd192b9b4cb59137453db93d5e8948fda58d30"
+    },
+    {
+      "name": "solid/filter-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/filter-solid.svg",
+      "sha256": "4688514cb043e7b6413369163f98d8ae4a8e6b6c415f631e1d38c589522f5438"
+    },
+    {
+      "name": "solid/flag-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/flag-solid.svg",
+      "sha256": "f98bf68cb3c4615dbf7b7954ef3226056d82e0e01c27d8de3918eec189706a41"
+    },
+    {
+      "name": "solid/heart-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/heart-solid.svg",
+      "sha256": "926aed45887c71753a16a74df8addb5d987e7f94f0cc178ade24f8af12a62bde"
+    },
+    {
+      "name": "solid/info-circle-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/info-circle-solid.svg",
+      "sha256": "ebbd7facd0cc342919a4c946fd8c4ae4011f01b65bd256c64bb1a3664ad3ca7f"
+    },
+    {
+      "name": "solid/link-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/link-solid.svg",
+      "sha256": "bc2ac95c8a81f0d4e0419ad20ec1697eee3305eff7268fc953fb7ffbcfc1c75a"
+    },
+    {
+      "name": "solid/lock-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/lock-solid.svg",
+      "sha256": "fdbcdeb48cfa684b073f44b7f74457630f94e1f1264bfaa509c7e65e57f69357"
+    },
+    {
+      "name": "solid/logout-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/logout-solid.svg",
+      "sha256": "57d576a0771437c6fec2b5ba5684ba4fe1e3d0a06718c3491dcf918cb30c847d"
+    },
+    {
+      "name": "solid/message-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/message-solid.svg",
+      "sha256": "eb71413fb5a1d189c62a6849aea314b22d54eed617d0756455c1a97a1d920768"
+    },
+    {
+      "name": "solid/minus-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/minus-solid.svg",
+      "sha256": "b02554f8d342407cacc2a09e75a3dae8d715a8a742102a9bf029d15a980e0ff7"
+    },
+    {
+      "name": "solid/moon-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/moon-solid.svg",
+      "sha256": "42d2c71ce4053ae1ed8751594bd528d1f39ae812d6f18341590e2ae76fa1f715"
+    },
+    {
+      "name": "solid/notebook-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/notebook-solid.svg",
+      "sha256": "7731de5820eb754a0c0dec31d36187dffbf9e496187bd475d4d36eaef947f5c2"
+    },
+    {
+      "name": "solid/pencil-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/pencil-solid.svg",
+      "sha256": "4b7154e3c4e0c7f72fdcbef460a9f9014aef563f8783b4e0ea6acdc9ac23a4e0"
+    },
+    {
+      "name": "solid/plus-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/plus-solid.svg",
+      "sha256": "77993b3e7b586cb92b7ec0a2bfd28be598426b6b087e792db26d0a251bdc255b"
+    },
+    {
+      "name": "solid/question-circle-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/question-circle-solid.svg",
+      "sha256": "023131bc2672cd727a8b5e6ae67c44f52f82c06131125aff2fa627351c0ac7e9"
+    },
+    {
+      "name": "solid/quote-left-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/quote-left-solid.svg",
+      "sha256": "39eb1ecc4105e7c3c3d83ad5d72acf303e4b4860902fca54bf1086a1b19cd7ce"
+    },
+    {
+      "name": "solid/refresh-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/refresh-solid.svg",
+      "sha256": "e55e168d0cc7e39729d034c9a6cce17aa77cd4e9eaed461cdfb72c5947386cf3"
+    },
+    {
+      "name": "solid/search-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/search-solid.svg",
+      "sha256": "d1c72f65b4bff7a62393bbd08d7bab8b6d16815229e26721e1fc3f44a7510871"
+    },
+    {
+      "name": "solid/shapes-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/shapes-solid.svg",
+      "sha256": "3330e700169119467da8d7ae46e707362a4cf1c7774f86976fcd5bbf4748a77c"
+    },
+    {
+      "name": "solid/share-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/share-solid.svg",
+      "sha256": "9c2ef5fa641a3fe0c0b107e70ad0c4d76f1622a602860c0c448dcc9daec989c6"
+    },
+    {
+      "name": "solid/side-nav-collapse-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/side-nav-collapse-solid.svg",
+      "sha256": "7e6669d84c92d66fcd914b412c726cc4d9dec4909e541944b4e4a2b1d5617ee7"
+    },
+    {
+      "name": "solid/side-nav-expand-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/side-nav-expand-solid.svg",
+      "sha256": "f2494284f3bb2301ad2ade0a441c2a7a4c1f006e30f9ed41e4cd19b14fcc41c5"
+    },
+    {
+      "name": "solid/star-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/star-solid.svg",
+      "sha256": "ef18a1673e79d2acbde690c782cd9ee7431f178d4c8c793fea4df8ebbb97f49e"
+    },
+    {
+      "name": "solid/sun-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/sun-solid.svg",
+      "sha256": "b1d1445d6dc77ff60d55de79b59fd13b79e7c16d8e83c02e7ad34966ca301afe"
+    },
+    {
+      "name": "solid/thumbtack-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/thumbtack-solid.svg",
+      "sha256": "c82b0984857eb9ac8b78524a57c8ce95b8db63ee5919ea2fe02ba178ebb17e1d"
+    },
+    {
+      "name": "solid/times-circle-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/times-circle-solid.svg",
+      "sha256": "9c4abea9b3210106d8263fcc2eef1ba9d4487d73cddbc30aa12d1d47399e5ebc"
+    },
+    {
+      "name": "solid/times-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/times-solid.svg",
+      "sha256": "841a1e318ae288290e254fc6688e6701ba4d96fe7a34de3611b85fe9f34683dd"
+    },
+    {
+      "name": "solid/trash-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/trash-solid.svg",
+      "sha256": "b90c2d099f852218b2596bd22d88ddc5e69e984d2eeca8b00f7d92d46e3c669f"
+    },
+    {
+      "name": "solid/trophy-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/trophy-solid.svg",
+      "sha256": "13601a81c28bbad5994ff891898ce19f492cadeb38f82d1c29c8c4cb8ca30a63"
+    },
+    {
+      "name": "solid/unlock-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/unlock-solid.svg",
+      "sha256": "f9a9ed68aa3fd21baa097ed0b8fa03bbcaf5b4e8f8224fcf4aaf428dc216b685"
+    },
+    {
+      "name": "solid/user-plus-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/user-plus-solid.svg",
+      "sha256": "e1b837efecf921fcc41b260939679c985711a6c9606d953ec5da4cc5b2917974"
+    },
+    {
+      "name": "solid/user-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/user-solid.svg",
+      "sha256": "7f7fe12ae239b5810cafca218b23e666ae0539d98e4d095e991e6797458bb643"
+    },
+    {
+      "name": "solid/users-solid",
+      "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/users-solid.svg",
+      "sha256": "5500cd99f062646a425bb9089036794904acb6f3dabc3b44eada2ae4d64d38f3"
+    }
+  ]
+}

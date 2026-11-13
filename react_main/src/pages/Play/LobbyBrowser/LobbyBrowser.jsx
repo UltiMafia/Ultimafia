@@ -3,6 +3,8 @@ import { TutorialLobbyBanner } from "components/TutorialPrompt";
 import { useLocation, Link } from "react-router-dom";
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
+import UiIcon from "components/ui/UiIcon";
+import { UiPageHeader, UiAction, UiField, UiTabs, UiTab } from "components/ui";
 
 import { UserContext, InGameContext } from "Contexts";
 import { getPageNavFilterArg, PageNav } from "components/Nav";
@@ -10,43 +12,38 @@ import { useErrorAlert } from "components/Alerts";
 import { camelCase } from "../../../utils";
 import Comments from "../../Community/Comments";
 import "css/join.css";
-import { RefreshButton } from "./RefreshButton";
 import { ListSkeleton, PageSkeleton } from "components/Skeletons";
-import {
-  Box,
-  Button,
-  Divider,
-  Grid,
-  Grid2,
-  List,
-  ListItem,
-  Paper,
-  Stack,
-  Tab,
-  Tabs,
-  Typography,
-  useTheme,
-} from "@mui/material";
 import { useLoading } from "../../../hooks/useLoading";
 import { GameRow } from "./GameRow";
-import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
-import { RecentlyPlayedSetups } from "./RecentlyPlayedSetups";
 import { RecentForumReplies } from "components/RecentForumReplies";
 import { Poll } from "components/Poll";
 import RecentTradesFeed from "components/RecentTradesFeed";
-import Chat from "../../Chat/Chat";
 import { FeaturedSetup } from "./FeaturedSetup";
 import { DailyChallenges } from "./DailyChallengeDisplay";
 import { CompetitiveRounds } from "./CompetitiveRounds";
-import { getRowStubColor } from "./gameRowColors.js";
 
 import { lobbiesFor } from "../../../constants/lobbies";
-import { useViewActive } from "../../../hooks/useViewActivity";
+import { useViewActive, ViewActivityContext } from "../../../hooks/useViewActivity";
+import ViewOverlayBoundary from "../../../components/ViewOverlayBoundary";
 import { LatestRequest } from "../../../lib/latestRequest.js";
+import { filterLobbyGames } from "./gameDiscovery.js";
 
 // How often the lobby refreshes its open-game list on its own. A tick is
 // skipped while the tab is hidden or a game has the screen.
 const LOBBY_POLL_MS = 10000;
+
+// Load secondary features on first use, then retain drafts and conversations.
+// Their overlays and activity belong to this panel, not the visible game list.
+function LobbySection({ active, id, labelledBy, children }) {
+  const viewActive = useViewActive();
+  const [visited, setVisited] = useState(active);
+  useEffect(() => { if (active) setVisited(true); }, [active]);
+  return <div role="tabpanel" id={id} aria-labelledby={labelledBy} hidden={!active}>
+    {(visited || active) && <ViewActivityContext.Provider value={viewActive && active}>
+      <ViewOverlayBoundary active={viewActive && active}>{children}</ViewOverlayBoundary>
+    </ViewActivityContext.Provider>}
+  </div>;
+}
 
 // The list endpoint can return two documents for one game id -- a finished game
 // recorded twice, which was live on dev.ultimafia.gg (7Ufg1CxTF appeared twice
@@ -64,16 +61,16 @@ function oneRowPerGame(games) {
 }
 
 export default function LobbyBrowser() {
-  const isPhoneDevice = useIsPhoneDevice();
-  const theme = useTheme();
   const defaultLobbyName = "All";
   const [openGamesCounts, setOpenGamesCounts] = useState({});
   const [refreshButtonIsSpinning, setRefreshButtonIsSpinning] = useState(false);
-  const refreshTimeoutRef = useRef(null);
-  const [hasOneOpenGame, setHasOneOpenGame] = useState(false);
   const [listType, setListType] = useState("All");
   const [page, setPage] = useState(1);
   const [games, setGames] = useState([]);
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [search, setSearch] = useState("");
+  const [section, setSection] = useState("games");
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
   const listRequests = useRef(new LatestRequest());
   const countRequests = useRef(new LatestRequest());
   const { loading, setLoading } = useLoading();
@@ -101,15 +98,11 @@ export default function LobbyBrowser() {
     };
   }, [lobbyName, active]);
 
-  const glowingHostButton = !hasOneOpenGame;
 
   useEffect(() => {
     isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
-      if (refreshTimeoutRef.current) {
-        clearTimeout(refreshTimeoutRef.current);
-      }
     };
   }, []);
 
@@ -132,7 +125,6 @@ export default function LobbyBrowser() {
 
   useEffect(() => {
     if (!active) return;
-    setHasOneOpenGame(false);
     getOpenGameCounts();
   }, [lobbyName]);
 
@@ -143,7 +135,6 @@ export default function LobbyBrowser() {
       if (!isMountedRef.current || !request.isCurrent() || !currentViewRef.current.active) return;
 
       setOpenGamesCounts(data?.counts || {});
-      setHasOneOpenGame(Boolean(data?.hasOpen));
     }).catch(() => {});
   }, []);
 
@@ -220,7 +211,7 @@ export default function LobbyBrowser() {
   // lobby the user is looking at. Read through a ref so one interval can do
   // that without being torn down and rebuilt on every render.
   const pollRef = useRef(null);
-  pollRef.current = { getGameList, getOpenGameCounts, listType, page, inGame, active, loading };
+  pollRef.current = { getGameList, getOpenGameCounts, listType, page, inGame, active: active && section === "games", loading };
 
   // Refresh the list on its own so it does not sit at whatever it showed when
   // the page opened. Ticks are skipped while the tab is hidden (nobody is
@@ -266,37 +257,21 @@ export default function LobbyBrowser() {
       clearInterval(interval);
       document.removeEventListener("visibilitychange", poll);
     };
-  }, [inGame, active]);
+  }, [inGame, active, section]);
 
   const refreshGames = async () => {
     if (!isMountedRef.current) return;
 
-    window.gtag("event", "refreshing_games_hehe", {
-      gayness: Math.random(),
-    });
-    // This is a nice trick to allow spam-clicking the Refresh button
-    setRefreshButtonIsSpinning(false);
-    await new Promise((res) => setTimeout(res));
-    if (!isMountedRef.current) return;
+    window.gtag?.("event", "refresh_games");
     setRefreshButtonIsSpinning(true);
-
-    if (refreshTimeoutRef.current) {
-      clearTimeout(refreshTimeoutRef.current);
+    try {
+      await Promise.all([
+        getGameList(listType, page, null, { reload: true }),
+        getOpenGameCounts(),
+      ]);
+    } finally {
+      if (isMountedRef.current) setRefreshButtonIsSpinning(false);
     }
-
-    const callback = async () => {
-      // The animation is so beautiful… It must keep spinning! (although the games have already been refreshed)
-      const minAnimationTime = 100;
-      await new Promise((res) => {
-        refreshTimeoutRef.current = setTimeout(res, minAnimationTime);
-      });
-      // "But bro, this is bad UX - don't leave users hanging" nah, 100ms is short enough
-      if (isMountedRef.current) {
-        setRefreshButtonIsSpinning(false);
-      }
-    };
-    getGameList(listType, page, callback, { reload: true });
-    getOpenGameCounts();
   };
 
   if (lobbyName !== "All" && !lobbies.some((l) => l.name === lobbyName))
@@ -305,154 +280,96 @@ export default function LobbyBrowser() {
   if (!user.loaded) return <PageSkeleton />;
   // Allow logged-out users to access LobbyBrowser
 
-  const lobbyTabs = (
-    <Tabs
-      value={lobbyName}
-      onChange={(_, newValue) => setLobbyName(newValue)}
-    >
-      {lobbies
-        .filter((lobby) => !lobby.hidden)
-        .map((lobby) => (
-          <Tab
-            key={`lobby-tab-${lobby.name}`}
-            label={
-              <div>
-                {lobby.displayName}
-                {openGamesCounts[lobby.name] && (
-                  <span
-                    style={{
-                      marginLeft: "5px",
-                      borderRadius: "50%",
-                      backgroundColor: theme.palette.secondary.main,
-                      color: "white",
-                      padding: "0 5px",
-                    }}
-                  >
-                    {openGamesCounts[lobby.name]}
-                  </span>
-                )}
-              </div>
-            }
-            value={lobby.name}
-            disabled={lobby?.disabled}
-          />
-        ))}
-    </Tabs>
-  );
-
-  // Keep the current list visible while the next one loads, so switching
-  // lobbies does not blank the page or flash a spinner. The spinner is only
-  // for the very first load, when there is nothing to show yet.
+  const visibleGames = filterLobbyGames(games, statusFilter, search);
+  const clearFilters = () => {
+    setStatusFilter("All");
+    setSearch("");
+  };
+  // Retain the previous list while refreshing. Empty initial loads alone use a skeleton.
   const gameList =
     loading && games.length === 0 ? (
       <ListSkeleton rows={4} />
-    ) : games.length ? (
-    <Stack direction="column" spacing={1}>
-      {games.map((game) => {
-        return (
-          <ListItem disablePadding key={game.id}>
-            <Box
-              className={game.competitive ? "metallic-gold" : undefined}
-              sx={{
-                backgroundColor: getRowStubColor(game),
-                borderTopLeftRadius: "var(--mui-shape-borderRadius)",
-                borderBottomLeftRadius: "var(--mui-shape-borderRadius)",
-                alignSelf: "stretch",
-                minWidth: "16px",
-              }}
-            />
-            <GameRow
-              game={game}
-              lobby={lobbyName}
-              refresh={() => getGameList(listType, page, null, { reload: true })}
-              odd={games.indexOf(game) % 2 === 1}
-              key={game.id}
-              showLobbyName
-              showGameTypeIcon
-              showGameState
-            />
-          </ListItem>
-        );
-      })}
-    </Stack>
+    ) : visibleGames.length ? (
+      <ul className="lobby-game-list" aria-label="Games on this page" aria-busy={loading}>
+        {visibleGames.map(game => <li key={game.id}>
+          <GameRow game={game} lobby={lobbyName} showLobbyName showGameTypeIcon showGameState
+            refresh={() => getGameList(listType, page, null, { reload: true })} />
+        </li>)}
+      </ul>
   ) : (
-    <Typography style={{ textAlign: "center" }}>
-      No games played recently.
-    </Typography>
-  );
-
-  const buttons = (
-    <Paper>
-      <Stack
-        direction="row"
-        sx={{
-          width: "100%",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <PageNav page={page} onNav={(nextPage) => getGameList(listType, nextPage, null, { reload: nextPage === page })} />
-        <Typography variant="h3" color="primary">
-          Games
-        </Typography>
-        <Stack direction="row" spacing={1} alignItems="center">
-          {!user.settings?.hideTutorialButton && (
-            <Button component={Link} to="/play/tutorial" size="small" variant="outlined" data-testid="tutorial-link">
-              📘 Tutorial
-            </Button>
-          )}
-          <div onClick={refreshGames}>
-            <RefreshButton isSpinning={refreshButtonIsSpinning} />
-          </div>
-        </Stack>
-      </Stack>
-    </Paper>
+    <div className="lobby-empty" role="status">
+      <h2>{games.length ? "No matching games" : "No games in this lobby"}</h2>
+      <p>{games.length ? "Search and status filters apply to this page." : "Choose another lobby or host a game."}</p>
+      {games.length ? <UiAction onClick={clearFilters}>Clear filters</UiAction> :
+        <Link className="ui-action ui-action--primary" to={user.loggedIn ? "/play/host" : "/welcome"}>{user.loggedIn ? "Host a game" : "Sign in to host"}</Link>}
+    </div>
   );
 
   return (
-    <Stack direction="column" spacing={1}>
-      {lobbyTabs}
-      <Grid2 container rowSpacing={2} columnSpacing={2}>
-        <Grid2 size={{ xs: 12, md: 8 }}>
-          <Stack spacing={2}>
-            <Stack direction="column" spacing={1}>
-              <TutorialLobbyBanner />
-              {buttons}
-              {gameList}
-            </Stack>
-            <Comments
-              fullWidth
-              location={
-                lobbyName === "All"
-                  ? lobbies
-                      .filter((l) => l.name !== "All" && !l.developerOnly)
-                      .map((l) =>
-                        l.name === "Main" ? "lobby" : `lobby-${l.name}`
-                      )
-                  : lobbyName === "Main"
-                  ? "lobby"
-                  : `lobby-${lobbyName}`
-              }
-              postLocation={lobbyName === "All" ? "lobby" : undefined}
-            />
-          </Stack>
-        </Grid2>
-        <Grid2 size={{ xs: 12, md: 4 }}>
-          <Stack spacing={1}>
-            <FeaturedSetup
-              lobby={lobbyName}
-              glowingHostButton={glowingHostButton}
-            />
-            <CompetitiveRounds />
+    <div className="lobby-browser">
+      <UiPageHeader title="Games" actions={
+        <Link className="ui-action ui-action--primary" to={user.loggedIn ? "/play/host" : "/welcome"}><UiIcon name="add" />Host a game</Link>
+      } />
+      <UiTabs value={section} onChange={(_, value) => setSection(value)} aria-label="Lobby sections" className="lobby-sections">
+        <UiTab label="Games" value="games" id="lobby-games-tab" aria-controls="lobby-games-panel" />
+        <UiTab label="More" value="extras" id="lobby-extras-tab" aria-controls="lobby-extras-panel" />
+      </UiTabs>
+      <div className={`lobby-home-layout${section === "extras" ? " is-extras" : ""}`} hidden={section !== "games" && section !== "extras"}>
+      <LobbySection id="lobby-games-panel" labelledBy="lobby-games-tab" active={section === "games"}>
+        <TutorialLobbyBanner />
+        {!user.loggedIn && <p className="guest-join-hint"><Link to="/welcome">Sign in</Link> to join or spectate. <Link to="/play/tutorial">Tutorial</Link></p>}
+        <div className="lobby-controls">
+          <UiField
+            select
+            size="small"
+            aria-label="Lobby"
+            value={lobbyName}
+            onChange={event => setLobbyName(event.target.value)}
+            SelectProps={{ native: true }}
+            className="lobby-select"
+          >
+            {lobbies.filter(lobby => !lobby.hidden).map(lobby => <option key={lobby.name} value={lobby.name} disabled={lobby.disabled}>
+              {lobby.name === "All" ? "All lobbies" : lobby.name}{openGamesCounts[lobby.name] ? ` (${openGamesCounts[lobby.name]})` : ""}
+            </option>)}
+          </UiField>
+          <div className="lobby-status-tabs" role="group" aria-label="Filter games by status">
+            {[["All", "All"], ["Open", "Open"], ["In Progress", "Live"], ["Finished", "Finished"]].map(([value, label]) =>
+              <button key={value} type="button" aria-pressed={statusFilter === value} onClick={() => setStatusFilter(value)}>{label}</button>)}
+          </div>
+          <UiAction iconOnly aria-label="Search games" aria-expanded={filtersExpanded} aria-controls="game-search" onClick={() => setFiltersExpanded(value => !value)}><UiIcon name="search" /></UiAction>
+          <UiAction iconOnly aria-label="Refresh games" disabled={loading} aria-busy={refreshButtonIsSpinning} onClick={refreshGames}><UiIcon name="refresh" className={refreshButtonIsSpinning ? "ui-icon--busy" : ""} /></UiAction>
+        </div>
+        <div id="game-search" className="lobby-search" hidden={!filtersExpanded}>
+          <UiField size="small" type="search" fullWidth placeholder="Setup or host name" value={search} onChange={event => setSearch(event.target.value)} inputProps={{ "aria-label": "Search games on this page" }} />
+          {search && <UiAction variant="ghost" onClick={() => setSearch("")}>Clear</UiAction>}
+        </div>
+        <div className="lobby-result-count" role="status">{visibleGames.length} {visibleGames.length === 1 ? "game" : "games"} on this page</div>
+        {gameList}
+        <div className="lobby-pagination"><span>Page {page} · {visibleGames.length} games</span><PageNav page={page} onNav={nextPage => getGameList(listType, nextPage, null, { reload: nextPage === page })} /></div>
+        <section className="community-wall" aria-labelledby="community-wall-heading">
+          <h2 id="community-wall-heading">Community wall</h2>
+          <Comments fullWidth
+            location={lobbyName === "All"
+              ? lobbies.filter(lobby => lobby.name !== "All" && !lobby.developerOnly)
+                  .map(lobby => lobby.name === "Main" ? "lobby" : `lobby-${lobby.name}`)
+              : lobbyName === "Main" ? "lobby" : `lobby-${lobbyName}`}
+            postLocation={lobbyName === "All" ? "lobby" : undefined} />
+        </section>
+      </LobbySection>
+      <aside className="lobby-home-features" aria-label="Challenges and community activity" hidden={section !== "games" && section !== "extras"}>
+        <LobbySection id="lobby-extras-panel" labelledBy={section === "extras" ? "lobby-extras-tab" : "lobby-games-tab"} active={section === "games" || section === "extras"}>
+          <div className="lobby-secondary-content">
             <DailyChallenges />
-            <RecentlyPlayedSetups lobby={lobbyName} />
-            <RecentForumReplies />
-            <Chat />
+            <CompetitiveRounds />
+            <FeaturedSetup lobby={lobbyName} glowingHostButton={false} />
             <Poll lobby={lobbyName} />
+            <RecentForumReplies />
             <RecentTradesFeed />
-          </Stack>
-        </Grid2>
-      </Grid2>
-    </Stack>
+          </div>
+        </LobbySection>
+      </aside>
+      </div>
+
+    </div>
   );
 }

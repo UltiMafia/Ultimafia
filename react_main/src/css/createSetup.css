@@ -15,80 +15,43 @@
   scroll-margin-top: 72px;
 }
 
-.setup-wizard .setup-catalog > .MuiStack-root > .MuiPaper-root {
-  max-height: 38vh;
-  overflow-y: auto;
-  overscroll-behavior-y: contain;
-}
-
-.setup-wizard .setup-catalog .MuiTabs-root {
-  min-width: 0;
-  max-width: 100%;
-}
-
-.setup-wizard .setup-catalog > .MuiStack-root > .MuiStack-root {
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.setup-wizard .cell-search-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-  gap: 8px;
-}
-
-.setup-wizard .cell-search-grid > * {
-  width: auto;
-  min-width: 0;
-}
-
-.setup-wizard .role-cell {
-  height: auto;
-  min-height: 64px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-}
-
-.setup-wizard .role-cell > .MuiStack-root {
-  min-width: 0;
-}
-
-.setup-wizard .role-cell .MuiButton-root {
-  align-self: center;
-  flex-shrink: 0;
-  height: 36px;
-}
-
-.setup-wizard .role-cell .MuiTypography-root {
-  min-width: 0;
-  word-break: normal;
-  overflow-wrap: anywhere;
-  hyphens: none;
-}
-
-.setup-step-navigation {
-  position: sticky;
-  bottom: 8px;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-@media (max-width: 700px) {
-  .setup-step-navigation {
-    flex-wrap: wrap;
+.setup-wizard.setup-wizard { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+.setup-wizard.setup-wizard > * { min-width: 0; margin: 0; }
+.setup-wizard .setup-role-set-actions { width: 100%; padding: 0; background: transparent; box-shadow: none; }
+.setup-name-field { max-width: 600px; }
+.setup-current-summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; padding: 6px 10px; border: 1px solid var(--scheme-color-border); border-radius: var(--ui-radius); font-size: var(--ui-text-small); color: var(--um-muted); }
+.setup-catalog { min-width: 0; }
+.setup-catalog-heading { margin: 0 0 12px; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); }
+.setup-role-set { margin-top: 16px; }
+.setup-role-set .roleset { padding: 0; }
+.setup-role-set .roleset > .MuiStack-root { flex-wrap: wrap; gap: 8px; }
+.setup-role-set .roleset > .MuiStack-root > .MuiStack-root { flex-basis: 100%; }
+.setup-settings-step[hidden] { display: none; }
+@media (min-width: 1100px) {
+  .setup-wizard[data-step="0"] { grid-template-columns: minmax(0, 1fr) 320px; }
+  .setup-wizard > .setup-name-field, .setup-wizard > .setup-step-list, .setup-wizard > nav, .setup-wizard > .setup-settings-step { grid-column: 1 / -1; }
+  .setup-wizard[data-step="0"] > .setup-selected-roles {
+    grid-column: 2;
+    grid-row: 3;
+    position: sticky;
+    top: 76px;
+    max-height: calc(100vh - 320px);
+    overflow-y: auto;
+    align-self: start;
   }
-
-  .setup-step-navigation .MuiButton-root {
-    font-size: 12px;
-  }
+  .setup-wizard[data-step="0"] > .setup-catalog { grid-column: 1; grid-row: 3 / span 2; }
+  .setup-wizard[data-step="0"] > .setup-role-set-actions { grid-column: 2; }
 }
 
 @media (max-width: 700px) {
   .play .create-setup .top-link {
     font-size: 13px !important;
   }
+}
+.setup-selected-roles-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.setup-selected-roles-header h3 { margin: 0; }
+.setup-selected-roles-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: var(--um-muted); font-size: var(--ui-text-small); }
+.setup-current-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+@media (max-width: 700px) {
+  .setup-current-summary { flex-wrap: wrap; }
 }

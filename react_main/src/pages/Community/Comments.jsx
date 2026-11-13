@@ -10,7 +10,8 @@ import { UserContext } from "../../Contexts";
 import "css/forums.css";
 import "css/comments.css";
 import { Loading } from "../../components/Loading";
-import { Box, Button, Paper, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
+import { UiAction } from "components/ui";
 import { Comment } from "./Comment";
 
 export default function Comments(props) {
@@ -125,8 +126,8 @@ export default function Comments(props) {
 
   const canPost = Boolean(postLocation) && user.loggedIn && user.perms.postReply;
 
-  const topBar = (
-    <Paper sx={{ p: 1 }}>
+  const topBar = (canPost || maxPage > 1) && (
+    <Box sx={{ py: 1 }}>
       <Stack
         direction="row"
         spacing={1}
@@ -136,28 +137,27 @@ export default function Comments(props) {
         }}
       >
         {canPost ? (
-          <Button
-            variant="outlined"
-            size="small"
+          <UiAction
+            variant="secondary"
             onClick={() => setShowInput(true)}
           >
             Post Comment
-          </Button>
+          </UiAction>
         ) : (
           <Box />
         )}
-        <PageNav
+        {maxPage > 1 && <PageNav
           inverted
           page={page}
           maxPage={maxPage}
           onNav={onCommentsPageNav}
-        />
+        />}
       </Stack>
-    </Paper>
+    </Box>
   );
 
-  const bottomBar = (
-    <Paper sx={{ p: 1 }}>
+  const bottomBar = maxPage > 1 && (
+    <Box sx={{ py: 1 }}>
       <Stack
         direction="row"
         sx={{
@@ -172,7 +172,7 @@ export default function Comments(props) {
           onNav={onCommentsPageNav}
         />
       </Stack>
-    </Paper>
+    </Box>
   );
 
   return (
@@ -180,9 +180,9 @@ export default function Comments(props) {
       <div className="comments-input-wrapper">
         {!showInput && topBar}
         {showInput && (
-          <Paper
+          <Box
             sx={{
-              p: 1,
+              py: 1,
               ".react-mde, .mde-header, .mde-text, .mde-preview": {
                 backgroundColor: "unset !important",
                 borderColor: "var(--mui-palette-divider)",
@@ -195,26 +195,27 @@ export default function Comments(props) {
             <Stack direction="column" spacing={1} sx={{ flex: "1" }}>
               <TextEditor value={postContent} onChange={setPostContent} />
               <Stack direction="row" spacing={1}>
-                <Button
-                  variant="outlined"
+                <UiAction
+                  variant="secondary"
                   onClick={onPostCancel}
-                  sx={{ flex: "1" }}
+                  style={{ flex: "1" }}
                 >
                   Cancel
-                </Button>
+                </UiAction>
                 <div style={{ flex: "1" }} />
-                <Button
+                <UiAction
+                  variant="primary"
                   onClick={onPostSubmit}
-                  sx={{ flex: "1", marginLeft: "auto !important" }}
+                  style={{ flex: "1", marginLeft: "auto" }}
                 >
                   Post
-                </Button>
+                </UiAction>
               </Stack>
             </Stack>
-          </Paper>
+          </Box>
         )}
       </div>
-      <Stack direction="column" spacing={1} className="comments-page">
+      <Stack direction="column" spacing={1} className="comments-page" data-ui-fill={props.fullWidth ? "full" : undefined}>
         {comments.length === 0 && <Typography>No comments yet</Typography>}
         {commentRows}
         {bottomBar}

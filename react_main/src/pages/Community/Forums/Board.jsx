@@ -1,4 +1,8 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
+import UiAction from "../../../components/ui/UiAction";
+import UiIcon from "../../../components/ui/UiIcon";
+import { UiSection, UiList, UiListItem, UiPageHeader } from "components/ui";
+import { newestRepliesFirst } from "./recentActivity.mjs";
 import { useParams, Link } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import axios from "axios";
@@ -65,6 +69,7 @@ export default function Board(props) {
   }, [loaded, boardInfo]);
 
   function onCreateThreadClick() {
+    if (!user.perms?.createThread) return;
     setShowCreateModal(true);
   }
 
@@ -90,8 +95,8 @@ export default function Board(props) {
   }
 
   function threadRowsMap(thread) {
-    const recentReplies = thread.recentReplies.map((reply) => (
-      <div className="column-item" key={reply.id}>
+    const recentReplies = newestRepliesFirst(thread.recentReplies).map((reply) => (
+      <div className="column-item" key={reply.id} data-reply-id={reply.id}>
         <NameWithAvatar
           small
           id={reply.author.id}
@@ -110,8 +115,8 @@ export default function Board(props) {
     ));
 
     return (
-      <div
-        className={`thread ${thread.deleted ? "deleted" : ""}`}
+      <UiListItem
+        className={`forum-thread-row ${thread.deleted ? "deleted" : ""}`}
         key={thread.id}
       >
         <VoteWidget
@@ -121,24 +126,24 @@ export default function Board(props) {
           setItemHolder={setBoardInfo}
           itemKey="threads"
         />
-        <div className="thread-info">
+        <div className="forum-thread-main">
           <Link
             className="thread-title"
             to={`/community/forums/thread/${thread.id}`}
           >
-            {thread.locked && <i className="fas fa-lock" />}
-            {thread.pinned && <i className="fas fa-thumbtack" />}
-            {thread.restricted && <i className="fas fa-user-lock" title="Restricted thread" />}
+            {thread.locked && <UiIcon name="lock" size={16} />}
+            {thread.pinned && <UiIcon name="pin" size={16} />}
+            {thread.restricted && <UiIcon name="moderation" size={16} label="Restricted thread" />}
             {thread.title}
           </Link>
-          <NameWithAvatar
+          <div className="forum-thread-byline"><NameWithAvatar
             small
             id={thread.author.id}
             avatar={thread.author.avatar}
             name={thread.author.name}
             groups={thread.author.groups}
             vanityUrl={thread.author.vanityUrl}
-          />
+          /><span> · <Time millisec={Date.now() - thread.postDate} /> ago</span></div>
           <div className="counts">
             <ViewsAndReplies
               viewCount={thread.viewCount || 0}
@@ -146,29 +151,14 @@ export default function Board(props) {
             />
           </div>
         </div>
-        <div className="forum-column">
-          <div className="column-title">Post Date</div>
-          <div className="column-content">
-            <div className="column-item center-item">
-              <Time millisec={Date.now() - thread.postDate} />
-              {` ago`}
-            </div>
-          </div>
+        <div className="forum-thread-activity">
+          <span className="forum-metadata">Last reply</span>
+          {recentReplies[0] || <span className="forum-metadata">No replies yet</span>}
+          {recentReplies.length > 1 && <details className="forum-recent-replies"><summary>Earlier replies ({recentReplies.length - 1})</summary>
+            {recentReplies.slice(1)}
+          </details>}
         </div>
-        <div className="forum-column three">
-          <div className="column-title">Recent Replies</div>
-          <div
-            className={`column-content ${
-              recentReplies.length === 0 ? "center-content" : ""
-            }`}
-          >
-            {recentReplies.length === 0 && (
-              <div className="column-item center-item">No replies yet</div>
-            )}
-            {recentReplies}
-          </div>
-        </div>
-      </div>
+      </UiListItem>
     );
   }
 
@@ -191,34 +181,33 @@ export default function Board(props) {
         setThreadContent={setNewThreadContent}
         setRedirect={setRedirect}
       />
-      <div className="board-info">
-        <div className="board-title-wrapper">
-          <i className={`fas fa-fw fa-${boardInfo.icon || "comments"} board-icon`} />
-          <div className="board-title">{boardInfo.name}</div>
-        </div>
-        <div
-          className="create-thread btn btn-theme"
+      <UiPageHeader variant="forum" title={boardInfo.name} actions={<UiAction variant="primary"
           onClick={onCreateThreadClick}
-          disabled={!user.perms.createThread}
+          disabled={!user.perms?.createThread}
         >
-          <i className="fas fa-plus" />
+          <UiIcon name="add" size={18} />
           Create Thread
-        </div>
-      </div>
+        </UiAction>} />
+      <UiSection>
+      <div className="forum-thread-columns" aria-hidden="true"><span>Thread</span><span>Latest activity</span></div>
       {pinnedThreads.length > 0 && (
-        <div className="threads pinned-threads span-panel">{pinnedThreads}</div>
+        <UiSection title="Pinned"><UiList>{pinnedThreads}</UiList></UiSection>
       )}
-      <PageNav inverted page={boardPage} onNav={onBoardPageNav} />
-      <div className="threads span-panel">
+      <UiList aria-label="Discussion threads">
         {threads.length > 0 && threads}
-        {threads.length === 0 && "No threads yet"}
-      </div>
+        {threads.length === 0 && <UiListItem>No threads yet</UiListItem>}
+      </UiList>
       <PageNav inverted page={boardPage} onNav={onBoardPageNav} />
+      </UiSection>
     </div>
   );
 }
 
 function CreateThreadModal(props) {
+  const user = useContext(UserContext);
+  const submissionRef = useRef(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submissionError, setSubmissionError] = useState("");
   const [includePoll, setIncludePoll] = useState(false);
   const [pollQuestion, setPollQuestion] = useState("");
   const [pollOptions, setPollOptions] = useState("");
@@ -235,7 +224,7 @@ function CreateThreadModal(props) {
     <div className="form">
       <div className="field-wrapper thread-title">
         <div className="label">Title</div>
-        <input type="text" value={props.threadTitle} onChange={onTitleChange} />
+        <input type="text" aria-label="Thread title" value={props.threadTitle} onChange={onTitleChange} disabled={submitting} />
       </div>
       <TextEditor
         value={props.threadContent}
@@ -245,6 +234,7 @@ function CreateThreadModal(props) {
         <div className="label">Create Poll</div>
         <div className="switch-wrapper">
           <Switch
+            label="Create poll" disabled={submitting}
             value={includePoll}
             onChange={(e) => setIncludePoll(e.target.value)}
           />
@@ -256,6 +246,7 @@ function CreateThreadModal(props) {
             <div className="label">Question</div>
             <input
               type="text"
+              aria-label="Poll question"
               value={pollQuestion}
               onChange={(e) => setPollQuestion(e.target.value)}
               placeholder="What is your question?"
@@ -265,6 +256,7 @@ function CreateThreadModal(props) {
             <div className="label">Options (comma-separated)</div>
             <input
               type="text"
+              aria-label="Poll options, comma-separated"
               value={pollOptions}
               onChange={(e) => setPollOptions(e.target.value)}
               placeholder="Option 1, Option 2, Option 3"
@@ -274,6 +266,7 @@ function CreateThreadModal(props) {
             <div className="label">Expires in</div>
             <input
               type="text"
+              aria-label="Poll expiration"
               value={pollExpiration}
               onChange={(e) => setPollExpiration(e.target.value)}
               placeholder="Leave blank for no expiration"
@@ -284,6 +277,7 @@ function CreateThreadModal(props) {
       <div className="field-wrapper" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         <input
           type="checkbox"
+          aria-label="People list"
           checked={restricted}
           onChange={(e) => setRestricted(e.target.checked)}
         />
@@ -292,6 +286,7 @@ function CreateThreadModal(props) {
       <div className="field-wrapper" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         <input
           type="checkbox"
+          aria-label="Include petition"
           checked={includePetition}
           onChange={(e) => setIncludePetition(e.target.checked)}
         />
@@ -303,6 +298,7 @@ function CreateThreadModal(props) {
             <div className="label">Petition Title</div>
             <input
               type="text"
+              aria-label="Petition title"
               value={petitionTitle}
               onChange={(e) => setPetitionTitle(e.target.value)}
               placeholder="What is your petition?"
@@ -312,6 +308,7 @@ function CreateThreadModal(props) {
           <div className="field-wrapper">
             <div className="label">Petition Body</div>
             <textarea
+              aria-label="Petition body"
               value={petitionBody}
               onChange={(e) => setPetitionBody(e.target.value)}
               placeholder="Describe what you are petitioning for..."
@@ -326,13 +323,14 @@ function CreateThreadModal(props) {
   );
 
   const footer = (
-    <div className="control">
-      <div className="post btn btn-theme" onClick={onPostThread}>
-        Post
-      </div>
-      <div className="cancel btn btn-theme-sec" onClick={onCancel}>
+    <div className="thread-submit-actions">
+      {submissionError && <p role="alert">{submissionError}</p>}
+      <UiAction onClick={onCancel} disabled={submitting}>
         Cancel
-      </div>
+      </UiAction>
+      <UiAction variant="primary" busy={submitting} disabled={!props.threadTitle.trim() || !props.threadContent.trim() || !user.perms?.createThread} onClick={onPostThread}>
+        Post thread
+      </UiAction>
     </div>
   );
 
@@ -341,6 +339,7 @@ function CreateThreadModal(props) {
   }
 
   function onCancel() {
+    if (submissionRef.current) return;
     props.setShow(false);
     setIncludePoll(false);
     setPollQuestion("");
@@ -353,6 +352,10 @@ function CreateThreadModal(props) {
   }
 
   function onPostThread() {
+    if (submissionRef.current || !user.perms?.createThread || !props.threadTitle.trim() || !props.threadContent.trim()) return;
+    submissionRef.current = true;
+    setSubmitting(true);
+    setSubmissionError("");
     const threadData = {
       board: props.boardId,
       title: props.threadTitle,
@@ -394,7 +397,8 @@ function CreateThreadModal(props) {
         setPetitionTitle("");
         setPetitionBody("");
       })
-      .catch(errorAlert);
+      .catch(error => { setSubmissionError("Could not post the thread. Your draft has been kept."); errorAlert(error); })
+      .finally(() => { submissionRef.current = false; setSubmitting(false); });
   }
 
   return (
@@ -411,7 +415,7 @@ function CreateThreadModal(props) {
 
 function Switch(props) {
   return (
-    <div
+    <button type="button" role="switch" aria-label={props.label} aria-checked={!!props.value} disabled={props.disabled}
       className={`switch ${props.value ? "on" : ""}`}
       onClick={() =>
         !props.disabled && props.onChange({ target: { value: !props.value } })
@@ -419,7 +423,6 @@ function Switch(props) {
     >
       <div className="track" />
       <div className="thumb" />
-      <input type="hidden" value={props.value} />
-    </div>
+    </button>
   );
 }

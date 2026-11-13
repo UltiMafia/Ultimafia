@@ -1,0 +1,45 @@
+name: Client UI contracts
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  ui-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.17.0'
+          cache: npm
+          cache-dependency-path: react_main/package-lock.json
+      - run: npm ci
+        working-directory: react_main
+      - run: node --test test/*.test.mjs
+        working-directory: react_main
+      - run: npm run lint:ui
+        working-directory: react_main
+      - name: Install isolated browser tools
+        run: npm install --prefix "$RUNNER_TEMP/ui-audit-tools" --no-package-lock playwright@1.58.2
+      - name: Install Chromium
+        run: '"$RUNNER_TEMP/ui-audit-tools/node_modules/.bin/playwright" install --with-deps chromium'
+      - name: Build production-component fixture without credentials
+        run: npx rsbuild build --no-env --config rsbuild.route-review-test.config.ts
+        working-directory: react_main
+      - name: Check page/header geometry in both palettes
+        working-directory: react_main
+        env:
+          DESIGN_PHASE: after
+          ROUTE_WIDTHS: '1440,390,320'
+          ROUTE_CASES: new-page-contract,lobby,players,families,host,character-deck-editor,word-deck-editor,create-setup,role-detail,moderation-log,profile-rich,profile-custom,family-leader
+        run: |
+          export PLAYWRIGHT_MODULE="$RUNNER_TEMP/ui-audit-tools/node_modules/playwright"
+          ROUTE_THEME=dark ROUTE_OUTPUT_DIR="$RUNNER_TEMP/ui-contract-dark" node test/run-route-review.cjs
+          ROUTE_THEME=light ROUTE_OUTPUT_DIR="$RUNNER_TEMP/ui-contract-light" node test/run-route-review.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ui-contract-evidence
+          path: ${{ runner.temp }}/ui-contract-*

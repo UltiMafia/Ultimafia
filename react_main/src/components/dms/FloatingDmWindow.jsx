@@ -1,5 +1,8 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { IconButton, Paper, Stack } from "@mui/material";
+import FocusTrap from "@mui/material/Unstable_TrapFocus";
+import UiIcon from "../ui/UiIcon";
+import { useDismissOnBack } from "../../hooks/useDismissOnBack";
 
 import Chat from "../../pages/Chat/Chat";
 import { formatUnreadBadge } from "../../utils/unreadBadge";
@@ -27,6 +30,10 @@ export default function FloatingDmWindow() {
   const boxRef = useRef(null);
   const drag = useRef(null);
   const [livePos, setLivePos] = useState(null);
+  useDismissOnBack(isPhone && user.loggedIn && dm.open && !dm.access.locked, dm.close);
+  useEffect(() => {
+    if (isPhone && dm.open && dm.collapsed) dm.setCollapsed(false);
+  }, [isPhone, dm.open, dm.collapsed, dm.setCollapsed]);
 
   const viewport = () => ({ width: window.innerWidth, height: window.innerHeight });
   const size = () => ({
@@ -54,6 +61,7 @@ export default function FloatingDmWindow() {
   if (!user.loggedIn || !dm.open || dm.access.locked) return null;
 
   function onPointerDown(e) {
+    if (isPhone) return;
     if (e.button !== undefined && e.button !== 0) return;
     if (e.target.closest("button")) return;
     const rect = boxRef.current.getBoundingClientRect();
@@ -80,10 +88,10 @@ export default function FloatingDmWindow() {
 
   const unreadText = formatUnreadBadge(dm.unread);
   const pos = livePos || dm.pos;
-  const placed = pos
+  const placed = isPhone
+    ? { left: 0, right: 0, top: "var(--app-top, 0px)", bottom: "var(--app-bottom, 0px)" }
+    : pos
     ? { left: pos.x, top: pos.y }
-    : isPhone
-    ? { right: 8, bottom: "calc(72px + env(safe-area-inset-bottom))" }
     : { right: 24, bottom: 24 };
 
   // Title bar: drag handle with the view's own content on the left (title,
@@ -95,20 +103,20 @@ export default function FloatingDmWindow() {
         alignItems="center"
         spacing={1}
         data-testid="dm-drag-handle"
-        title="Drag to move"
+        title={isPhone ? undefined : "Drag to move"}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
         onDoubleClick={(e) => {
-          if (!e.target.closest("button")) dm.setCollapsed(!dm.collapsed);
+          if (!isPhone && !e.target.closest("button")) dm.setCollapsed(!dm.collapsed);
         }}
         sx={{
-          height: DM_TITLE_BAR_HEIGHT,
+          minHeight: DM_TITLE_BAR_HEIGHT, flexShrink: 0,
           pl: 1.5,
           pr: 0.75,
-          cursor: "move",
-          touchAction: "none",
+          cursor: isPhone ? undefined : "move",
+          touchAction: isPhone ? "auto" : "none",
           userSelect: "none",
           bgcolor: "background.paper",
           borderBottom: dm.collapsed ? "none" : "1px solid",
@@ -127,18 +135,15 @@ export default function FloatingDmWindow() {
           </span>
         )}
         {actions}
-        <IconButton
+        {!isPhone && <IconButton
           size="small"
           data-testid="dm-collapse"
           aria-label={dm.collapsed ? "Expand messages" : "Collapse messages"}
           title={dm.collapsed ? "Expand" : "Collapse"}
           onClick={() => dm.setCollapsed(!dm.collapsed)}
         >
-          <i
-            className={dm.collapsed ? "fas fa-chevron-up" : "fas fa-chevron-down"}
-            style={{ fontSize: 13 }}
-          />
-        </IconButton>
+          <UiIcon name={dm.collapsed ? "up" : "down"} size={18} />
+        </IconButton>}
         <IconButton
           size="small"
           data-testid="dm-close"
@@ -146,32 +151,36 @@ export default function FloatingDmWindow() {
           title="Close"
           onClick={dm.close}
         >
-          <i className="fas fa-times" style={{ fontSize: 14 }} />
+          <UiIcon name="close" size={20} />
         </IconButton>
       </Stack>
     );
   }
 
   return (
+    <FocusTrap open={isPhone}>
     <Paper
       ref={boxRef}
       elevation={10}
       data-testid="dm-window"
       data-collapsed={dm.collapsed ? "true" : "false"}
+      role={isPhone ? "dialog" : "region"} aria-modal={isPhone ? true : undefined} aria-label="Direct messages" tabIndex={-1}
       sx={{
         position: "fixed",
         ...placed,
-        width: DM_WINDOW_WIDTH,
-        maxWidth: "calc(100vw - 16px)",
+        width: isPhone ? "auto" : DM_WINDOW_WIDTH,
+        maxWidth: isPhone ? "none" : "calc(100vw - 16px)",
+        display: "flex", flexDirection: "column", minHeight: 0,
+        ...(isPhone ? { "& [data-testid='dm-chat']": { height: "auto", flex: 1, minHeight: 0 } } : {}),
         // Below MUI dialogs/menus (1300) so menus open on top.
         zIndex: 1250,
-        borderRadius: 3,
+        borderRadius: isPhone ? 0 : 2,
         overflow: "hidden",
         border: "1px solid",
         borderColor: "divider",
         bgcolor: "background.paper",
         boxShadow:
-          "rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px",
+          "rgba(0, 0, 0, 0.24) 0px 0px 15px, rgba(0, 0, 0, 0.18) 0px 0px 3px 1px",
       }}
     >
       <Chat
@@ -186,5 +195,6 @@ export default function FloatingDmWindow() {
         onLocked={onLocked}
       />
     </Paper>
+    </FocusTrap>
   );
 }

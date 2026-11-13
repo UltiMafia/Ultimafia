@@ -1,30 +1,21 @@
 import React, { useState, useMemo, useContext } from "react";
 import axios from "axios";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Stack,
   Box,
   Typography,
-  ToggleButton,
-  ToggleButtonGroup,
-  Button,
-  TextField,
   Paper,
   useTheme
 } from "@mui/material";
 import { UserContext, SiteInfoContext } from "Contexts";
-import { useErrorAlert } from "components/Alerts";
 import { Avatar } from "pages/User/UserWidgets"; // Reuse existing custom Avatar component
 import { FamilyAvatarImage } from "utils/avatarUrl";
-import { Icon } from "@iconify/react";
+import { UiDialog, UiAction, UiIcon, UiField } from "./ui";
+import { boundedShareCount, MAX_SHARES_PER_TRADE } from "../utils/stockTradeInput.mjs";
 
 export default function TradeDialog({ open, onClose, stock, initialType = "buy", onSuccess }) {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
-  const errorAlert = useErrorAlert();
   const theme = useTheme();
 
   const goldColor = theme.palette.mode === "light" ? "#b8860b" : "gold";
@@ -32,12 +23,14 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
   const [tradeType, setTradeType] = useState(initialType);
   const [shareCount, setShareCount] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  const [tradeError, setTradeError] = useState("");
 
   // Reset modal state when opening with a new stock
   React.useEffect(() => {
     if (open) {
       setTradeType(initialType || "buy");
       setShareCount(1);
+      setTradeError("");
     }
   }, [open, stock, initialType]);
 
@@ -86,8 +79,9 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
   if (!stock) return null;
 
   const handleConfirmTrade = () => {
-    if (shareCount <= 0) return;
+    if (submitting || !user.loggedIn || shareCount < 1 || shareCount > MAX_SHARES_PER_TRADE) return;
     setSubmitting(true);
+    setTradeError("");
 
     const isPlayer = stock.targetType === "player";
     const endpoint = isPlayer
@@ -109,14 +103,14 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
         onClose();
         if (onSuccess) onSuccess();
       })
-      .catch(errorAlert)
+      .catch(error => setTradeError(typeof error.response?.data === "string" && error.response.data.length <= 200 ? error.response.data : "Could not complete this trade. Please try again."))
       .finally(() => setSubmitting(false));
   };
 
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-      <DialogTitle sx={{ fontWeight: "bold", borderBottom: 1, borderColor: "divider", pb: 2 }}>
+    <UiDialog open={open} onClose={submitting ? undefined : onClose} title="Trade shares" maxWidth="xs"
+      actions={<><UiAction onClick={onClose} disabled={submitting}>Cancel</UiAction><UiAction variant="primary" busy={submitting} onClick={handleConfirmTrade} disabled={!user.loggedIn || shareCount < 1 || shareCount > MAX_SHARES_PER_TRADE || (tradeType === "buy" && user.coins < tradePreview.total) || (tradeType === "sell" && (stock.sharesOwned < shareCount || stock.shareSupply - shareCount < 1))}>{tradeType === "buy" ? "Buy" : "Sell"}</UiAction></>}>
         <Stack direction="row" spacing={1.5} alignItems="center">
           {stock.targetType === "player" ? (
             <Avatar id={stock.id} name={stock.name} hasImage={stock.avatar} size={40} />
@@ -141,11 +135,11 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
                 backgroundColor: "rgba(255, 255, 255, 0.05)",
               }}
             >
-              <Icon icon="lucide:users" style={{ fontSize: "20px" }} />
+              <UiIcon name="people" size={24} />
             </Box>
             )
           )}
-          <Box>
+          <Box sx={{ minWidth: 0, overflowWrap: "anywhere" }}>
             <Typography sx={{ fontWeight: "bold", fontSize: "0.875rem", lineHeight: 1.2 }}>
               {stock.name}
             </Typography>
@@ -154,58 +148,32 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
             </Typography>
           </Box>
         </Stack>
-      </DialogTitle>
-
-      <DialogContent sx={{ py: 3 }}>
         <Stack spacing={3} sx={{ pt: 1.5 }}>
-          <ToggleButtonGroup
-            value={tradeType}
-            exclusive
-            onChange={(e, val) => {
-              if (val) {
-                setTradeType(val);
-                setShareCount(1);
-              }
-            }}
-            fullWidth
-            color={tradeType === "buy" ? "success" : "error"}
-          >
-            <ToggleButton value="buy">
-              Buy Shares
-            </ToggleButton>
-            <ToggleButton value="sell">Sell Shares</ToggleButton>
-          </ToggleButtonGroup>
+          {tradeError && <p role="alert">{tradeError}</p>}
+          <div role="group" aria-label="Transaction type" style={{ display: "flex", gap: 8 }}>
+            {["buy", "sell"].map(type => <UiAction key={type} disabled={submitting} aria-pressed={tradeType === type} onClick={() => { setTradeType(type); setShareCount(1); }}>{type === "buy" ? "Buy shares" : "Sell shares"}</UiAction>)}
+          </div>
 
           <Box>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              Number of Shares
+            <Typography component="label" htmlFor="stock-trade-shares" variant="subtitle2" sx={{ display: "block", mb: 1 }}>
+              Number of shares
             </Typography>
             <Stack direction="row" spacing={1} alignItems="center">
-              <Button
-                variant="outlined"
-                onClick={() => setShareCount((c) => Math.max(1, c - 1))}
-                sx={{ minWidth: 48 }}
-              >
-                -
-              </Button>
-              <TextField
+              <UiAction iconOnly aria-label="Decrease shares" disabled={submitting || shareCount === 1} onClick={() => setShareCount(count => boundedShareCount(count - 1))}><UiIcon name="remove" /></UiAction>
+              <UiField
+                id="stock-trade-shares"
                 fullWidth
                 type="number"
                 value={shareCount}
                 onChange={(e) => {
-                  const num = Number(e.target.value);
-                  if (num > 0) setShareCount(Math.floor(num));
+                  setShareCount(boundedShareCount(e.target.value));
                 }}
-                slotProps={{ htmlInput: { min: 1, style: { textAlign: "center" } } }}
+                disabled={submitting}
+                slotProps={{ htmlInput: { min: 1, max: MAX_SHARES_PER_TRADE, step: 1, "aria-describedby": "stock-trade-share-limit", style: { textAlign: "center" } } }}
               />
-              <Button
-                variant="outlined"
-                onClick={() => setShareCount((c) => c + 1)}
-                sx={{ minWidth: 48 }}
-              >
-                +
-              </Button>
+              <UiAction iconOnly aria-label="Increase shares" disabled={submitting || shareCount === MAX_SHARES_PER_TRADE} onClick={() => setShareCount(count => boundedShareCount(count + 1))}><UiIcon name="add" /></UiAction>
             </Stack>
+            <Typography id="stock-trade-share-limit" variant="caption" color="text.secondary" sx={{ display: "block", mt: 0.5 }}>1–{MAX_SHARES_PER_TRADE} shares per trade</Typography>
             {tradeType === "sell" && (
               <Box sx={{ mt: 0.5 }}>
                 <Typography variant="caption" color="text.secondary" display="block">
@@ -220,38 +188,38 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
             )}
           </Box>
 
-          <Paper variant="outlined" sx={{ p: 2, backgroundColor: theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(255, 255, 255, 0.02)" }}>
+          <Paper variant="outlined" sx={{ p: { xs: 1.5, sm: 2 }, backgroundColor: theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(255, 255, 255, 0.02)" }}>
             <Stack spacing={1}>
-              <Stack direction="row" justifyContent="space-between">
+              <Stack direction="row" justifyContent="space-between" gap={1}>
                 <Typography variant="body2">Base Price:</Typography>
-                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                <Typography variant="body2" sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
                   {tradePreview.price.toFixed(2)} Coins
                 </Typography>
               </Stack>
-              <Stack direction="row" justifyContent="space-between">
+              <Stack direction="row" justifyContent="space-between" gap={1}>
                 <Typography variant="body2">
                   {stock.targetType === "player" 
                     ? `Creator Fee (${((siteInfo.marketConfig?.creatorFeePct ?? 0.015) * 100)}%):` 
                     : `Treasury Fee (${((siteInfo.marketConfig?.creatorFeePct ?? 0.015) * 100)}%):`}
                 </Typography>
-                <Typography variant="body2" color="success.main">
-                  +{tradePreview.creatorFee.toFixed(2)} Coins
+                <Typography variant="body2" color="success.main" sx={{ whiteSpace: "nowrap" }}>
+                  {tradeType === "buy" ? "+" : "−"}{tradePreview.creatorFee.toFixed(2)} Coins
                 </Typography>
               </Stack>
-              <Stack direction="row" justifyContent="space-between">
+              <Stack direction="row" justifyContent="space-between" gap={1}>
                 <Typography variant="body2">
                   System Fee ({((siteInfo.marketConfig?.systemFeePct ?? 0.01) * 100)}%):
                 </Typography>
-                <Typography variant="body2" color="warning.main">
-                  +{tradePreview.systemFee.toFixed(2)} Coins
+                <Typography variant="body2" color="warning.main" sx={{ whiteSpace: "nowrap" }}>
+                  {tradeType === "buy" ? "+" : "−"}{tradePreview.systemFee.toFixed(2)} Coins
                 </Typography>
               </Stack>
               <Box sx={{ borderTop: 1, borderColor: "divider", my: 1, pt: 1 }} />
-              <Stack direction="row" justifyContent="space-between">
+              <Stack direction="row" justifyContent="space-between" gap={1}>
                 <Typography sx={{ fontWeight: "bold" }}>
                   {tradeType === "buy" ? "Total Cost:" : "Total Payout:"}
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: "bold", color: goldColor }}>
+                <Typography variant="h6" sx={{ fontWeight: "bold", color: goldColor, whiteSpace: "nowrap" }}>
                   {tradePreview.total.toFixed(2)} Coins
                 </Typography>
               </Stack>
@@ -283,27 +251,6 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
             </Stack>
           )}
         </Stack>
-      </DialogContent>
-
-      <DialogActions sx={{ borderTop: 1, borderColor: "divider", p: 2 }}>
-        <Button onClick={onClose} disabled={submitting}>
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          color={tradeType === "buy" ? "success" : "error"}
-          onClick={handleConfirmTrade}
-          disabled={
-            submitting ||
-            shareCount <= 0 ||
-            (tradeType === "buy" && user.coins < tradePreview.total) ||
-            (tradeType === "sell" && stock.sharesOwned < shareCount) ||
-            (tradeType === "sell" && stock.shareSupply - shareCount < 1)
-          }
-        >
-          {submitting ? "Trading..." : tradeType === "buy" ? "Buy" : "Sell"}
-        </Button>
-      </DialogActions>
-    </Dialog>
+    </UiDialog>
   );
 }

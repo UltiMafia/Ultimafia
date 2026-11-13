@@ -1,26 +1,9 @@
-import { Paper, Typography } from "@mui/material";
+import { UiSection } from "components/ui";
 
-export default function LobbySidebarPanel({ children, title }) {
+export default function LobbySidebarPanel({ children, title, className = "" }) {
   return (
-    <Paper
-      sx={{
-        p: 2,
-      }}
-    >
-      {title && (
-        <Typography
-          color="primary"
-          variant="h3"
-          gutterBottom
-          sx={{
-            borderBottom: 1,
-            borderColor: "divider",
-          }}
-        >
-          {title}
-        </Typography>
-      )}
+    <UiSection title={title} className={`ui-card lobby-feature-section ${className}`}>
       {children}
-    </Paper>
+    </UiSection>
   );
 }

@@ -7,7 +7,7 @@
   --gradient-color-light: #76bd5b;
   --gradient-color-dark: #385b2b;
 
-  --primaryFont: RobotoSlab;
+  --primaryFont: var(--ui-font-body, system-ui);
   --hoverTransition: 0.2s;
   --game-row-odd: #21232a;
   --game-row: #41434d;
@@ -71,9 +71,7 @@ body {
 
   overflow-x: initial;
 
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: var(--ui-font-body, system-ui);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -375,10 +373,16 @@ input:focus:not(:focus-visible) {
   align-items: center;
   justify-content: center;
 
-  padding: 5px;
-  border: none;
-
-  background-color: var(--scheme-color-sec);
+  min-height: var(--ui-action-height);
+  padding: 8px 14px;
+  border: 1px solid var(--scheme-color-border);
+  border-radius: var(--ui-radius);
+  font-family: var(--ui-font-body, system-ui);
+  font-size: var(--ui-text-body);
+  font-weight: var(--ui-weight-strong);
+  line-height: 1.25;
+  color: var(--scheme-color-text);
+  background-color: var(--scheme-color);
   outline: none;
   text-decoration: none;
   cursor: pointer;
@@ -396,13 +400,16 @@ input:focus:not(:focus-visible) {
 }
 
 .btn-theme {
-  background-color: #ac2222;
-  color: white;
+  background-color: var(--mui-palette-primary-main);
+  color: var(--mui-palette-primary-contrastText);
+  border-color: transparent;
 }
 
 .btn-theme-sec {
-  background-color: var(--scheme-color-sec);
+  background-color: transparent;
 }
+
+.btn:focus-visible { outline: 2px solid var(--um-accent); outline-offset: 2px; }
 
 .popover hr {
   margin: 5px 0px;
@@ -526,8 +533,8 @@ input:focus:not(:focus-visible) {
 
   color: white;
 
-  font-family: Arial;
-  font-size: 12px;
+  font-family: var(--ui-font-body, system-ui);
+  font-size: var(--ui-text-caption);
   font-weight: 900;
 }
 
@@ -572,10 +579,8 @@ input:focus:not(:focus-visible) {
 
   opacity: 1;
   font-weight: normal;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  font-size: 16px;
+  font-family: var(--ui-font-body, system-ui);
+  font-size: var(--ui-text-body);
   color: var(--scheme-color-text);
 }
 

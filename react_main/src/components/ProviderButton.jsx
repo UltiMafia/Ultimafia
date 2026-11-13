@@ -50,6 +50,7 @@ export default function ProviderButton({
       onClick={onClick}
       disabled={disabled}
       data-provider={provider}
+      data-ui-variant={`provider-${provider}`}
       sx={{
         height: 40,
         px: 2,

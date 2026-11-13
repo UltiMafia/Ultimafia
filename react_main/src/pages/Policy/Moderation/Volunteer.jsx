@@ -1,110 +1,45 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
-import {
-  Box,
-  Button,
-  Paper,
-  TextField,
-  Typography,
-  Stack,
-} from "@mui/material";
-import { useErrorAlert } from "components/Alerts";
-import { UserContext, SiteInfoContext } from "Contexts";
+import { UserContext } from "Contexts";
+import { UiAction, UiField } from "components/ui";
+import "css/feedback.css";
 
 export default function Volunteer() {
   const [age, setAge] = useState("");
   const [reason, setReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const pending = useRef(false);
   const user = useContext(UserContext);
-  const siteInfo = useContext(SiteInfoContext);
-  const errorAlert = useErrorAlert();
 
-  const handleSubmit = async () => {
-    const ageNum = parseInt(age, 10);
-    if (isNaN(ageNum) || ageNum < 13 || ageNum > 100) {
-      siteInfo.showAlert("Please provide a valid age.", "error");
-      return;
-    }
-    if (!reason.trim()) {
-      siteInfo.showAlert(
-        "Please explain why you want to be an Admin on UltiMafia.",
-        "error"
-      );
-      return;
-    }
-
+  async function handleSubmit(event) {
+    event.preventDefault();
+    if (!user.loggedIn || pending.current) return;
+    const ageNumber = parseInt(age, 10);
+    if (!Number.isFinite(ageNumber) || ageNumber < 13 || ageNumber > 100) { setError("Enter an age between 13 and 100."); return; }
+    if (!reason.trim()) { setError("Explain why you want to help lead UltiMafia."); return; }
+    pending.current = true; setSubmitting(true); setError(""); setSuccess("");
     try {
-      setSubmitting(true);
-      await axios.post("/api/report/volunteer", {
-        age: ageNum,
-        reason: reason.trim(),
-      });
+      await axios.post("/api/report/volunteer", { age: ageNumber, reason: reason.trim() });
+      setSuccess("Your application has been submitted.");
+      setAge(""); setReason("");
+    } catch (failure) {
+      setError(typeof failure.response?.data === "string" && failure.response.data.length <= 200 ? failure.response.data : "Could not submit your application. Your draft has been kept; please try again.");
+    } finally { pending.current = false; setSubmitting(false); }
+  }
 
-      siteInfo.showAlert(
-        "Your application has been submitted successfully.",
-        "success"
-      );
-      setAge("");
-      setReason("");
-    } catch (e) {
-      if (e?.response?.data) {
-        siteInfo.showAlert(e.response.data.toString(), "error");
-      } else {
-        errorAlert(e);
-      }
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  return (
-    <Box sx={{ px: 2, py: 2 }}>
-      <Typography variant="h3" gutterBottom>
-        Volunteer
-      </Typography>
-      <Typography variant="body2" color="text.secondary" paragraph>
-        Interested in joining the UltiMafia staff team? Fill out the form
-        below to submit your application.
-      </Typography>
-
-      <Paper sx={{ p: 3, maxWidth: 560 }}>
-        <Stack spacing={2}>
-          <TextField
-            label="Age"
-            type="number"
-            value={age}
-            onChange={(e) => setAge(e.target.value)}
-            fullWidth
-            inputProps={{ min: 13, max: 100 }}
-            disabled={!user.loggedIn || submitting}
-          />
-          <TextField
-            label="Why do you want to help lead UltiMafia?"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            fullWidth
-            multiline
-            rows={6}
-            placeholder="Explain what you can bring to UltiMafia's leadership..."
-            disabled={!user.loggedIn || submitting}
-            inputProps={{ maxLength: 1500 }}
-            helperText={`${reason.length}/1500 characters`}
-          />
-          {user.loggedIn ? (
-            <Button
-              variant="contained"
-              onClick={handleSubmit}
-              disabled={submitting || !age.trim() || !reason.trim()}
-            >
-              {submitting ? "Submitting..." : "Submit Application"}
-            </Button>
-          ) : (
-            <Typography color="text.secondary">
-              You must be logged in to submit an application.
-            </Typography>
-          )}
-        </Stack>
-      </Paper>
-    </Box>
-  );
+  return <section className="feedback-page">
+    <header className="moderation-section-heading"><h2>Volunteer</h2></header>
+    <p>Interested in joining the UltiMafia staff team? Tell us what you can bring to the team. Applications are reviewed by administrators.</p>
+    {!user.loggedIn && <p><Link to="/auth/login">Sign in</Link> to apply.</p>}
+    {success && <p role="status">{success}</p>}
+    {error && <p role="alert">{error}</p>}
+    <form className="feedback-form" onSubmit={handleSubmit}>
+      <UiField label="Age" type="number" value={age} disabled={!user.loggedIn || submitting} onChange={event => setAge(event.target.value)} slotProps={{ htmlInput: { min: 13, max: 100 } }} required />
+      <UiField label="Why do you want to help lead UltiMafia?" value={reason} disabled={!user.loggedIn || submitting} onChange={event => setReason(event.target.value)} multiline minRows={8} slotProps={{ htmlInput: { maxLength: 1500 } }} helperText={`${reason.length}/1500 characters`} required />
+      {user.loggedIn && <UiAction type="submit" variant="primary" busy={submitting} disabled={!age.trim() || !reason.trim()}>Submit application</UiAction>}
+    </form>
+  </section>;
 }

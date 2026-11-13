@@ -5,6 +5,7 @@ import React, {
   Suspense,
 } from "react";
 import { lazyWithRetry, clearChunkReloadFlag } from "./lib/lazyWithRetry";
+import { loadGameModule } from "./lib/gameModule";
 import {
   Route,
   Link,
@@ -14,8 +15,7 @@ import {
 } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import axios from "axios";
-import { Icon } from "@iconify/react";
-import { ThemeProvider, CssBaseline, AppBar, Link as MuiLink } from "@mui/material";
+import { ThemeProvider, CssBaseline, AppBar } from "@mui/material";
 
 import {
   UserContext,
@@ -29,11 +29,11 @@ import { AlertList, useErrorAlert } from "./components/Alerts";
 import { ConnectionBanner } from "./components/ConnectionBanner";
 import UserNavSection from "./pages/User/UserNavSection";
 import CookieBanner from "./components/CookieBanner";
-import IosBetaTicker from "./components/IosBetaTicker";
+import { IOS_BETA_URL } from "./constants/iosBeta";
 import LeaveGameDialog from "./components/LeaveGameDialog";
 import NavDropdown from "./components/NavDropdown";
 import { Loading } from "./components/Loading";
-import { MobileNav } from "./components/MobileNav";
+import SiteLayout from "./components/SiteLayout";
 import { ProfileSheetProvider } from "./components/ProfileSheet";
 import { SheetProvider } from "./components/Sheet";
 import ThemeColorMeta from "./components/ThemeColorMeta";
@@ -49,6 +49,7 @@ import { useHostedGameSession } from "./hooks/useHostedGameSession";
 import { browserReservesBottomSafeArea } from "./utils/platform";
 import "css/main.css";
 import "css/accessibility.css";
+import "css/redesign.css";
 
 // Navigation icons removed - now using text-only navigation
 import {
@@ -126,7 +127,7 @@ function ErrorFallbackNoMain({ error, resetErrorBoundary }) {
 // any Main state change (e.g. crossing the md breakpoint on resize/rotation,
 // theme change) unmounted and remounted the whole page: its API calls re-ran
 // and the game page reconnected its socket.
-const Game = lazyWithRetry(() => import("pages/Game/Game"));
+const Game = lazyWithRetry(loadGameModule);
 const Play = lazyWithRetry(() => import("pages/Play/Play"));
 const Community = lazyWithRetry(() => import("pages/Community/Community"));
 const Fame = lazyWithRetry(() => import("pages/Fame/Fame"));
@@ -148,8 +149,6 @@ function Main(props) {
   const [showAnnouncementTemporarily, setShowAnnouncementTemporarily] =
     useState(false);
 
-  const isPhoneDevice = useIsPhoneDevice();
-
   const location = useLocation();
   // Size the phone shell and game session to the visual viewport.
   useAppViewport();
@@ -165,6 +164,9 @@ function Main(props) {
     return () => root.removeAttribute("data-bottom-inset");
   }, []);
   const { inGame, hostedGameId, hostedGameSearch, leaveGameSession } = useHostedGameSession();
+  useEffect(() => {
+    if (hostedGameId) void loadGameModule().catch(() => {});
+  }, [hostedGameId]);
   // A lobby Join/Spectate click carries the requested role in navigation
   // state. The mounted Game applies it over its existing socket.
   const membershipRequest = location.state?.requestedMembership
@@ -188,50 +190,17 @@ function Main(props) {
   }, []);
 
   const siteContent = (
-    <Stack
-      className="app-shell"
-      sx={{
-        backgroundColor: "background.paper",
-        // Kept mounted, not unmounted, while a game is displayed.
-        display: inGame ? "none" : undefined,
-        ...(isPhoneDevice
-          ? {
-              // A fixed frame that reaches the screen edge. The site bottom nav
-              // does not move with the on-screen keyboard (the keyboard covers
-              // it); only the game session insets for the keyboard.
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              overflow: "hidden",
-            }
-          : { minHeight: "100dvh" }),
-      }}
+    <SiteLayout
+      hidden={inGame}
+      beforeHeader={<CookieBanner />}
+      header={<Header setShowAnnouncementTemporarily={setShowAnnouncementTemporarily} />}
+      footer={<Footer />}
     >
-      <CookieBanner />
-      <IosBetaTicker />
-      <Header
-        setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
-      />
-      <Stack direction="row" className="site-wrapper" sx={{
-        flex: "1",
-        justifyContent: "center",
-        // On phones, the content scrolls inside the frame instead of the page.
-        ...(isPhoneDevice ? { overflowY: "auto", minHeight: 0 } : {}),
-      }}>
-        <Stack direction="column" spacing={1} sx={{
-          margin: "0 auto",
-          px: isPhoneDevice ? 1 : 3,
-          py: 1,
-          width: "1080px",
-          maxWidth: "100%",
-        }}>
           <Announcement
             showAnnouncementTemporarily={showAnnouncementTemporarily}
             setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
           />
-          <div className="inner-container">
+          <main className="inner-container" id="main-content" tabIndex={-1}>
             {errorContent ? (
               errorContent
             ) : (
@@ -250,19 +219,12 @@ function Main(props) {
                 </RetainedSiteRoutes>
               </Suspense>
             )}
-          </div>
+          </main>
           {/* Only while the user is elsewhere: while a game has the screen the
               warning is pointless, and the Snackbar portals to <body>, where
               the hidden shell does not reach it. */}
           {!inGame && <InGameWarning />}
-        </Stack>
-      </Stack>
-      {/* The large site footer is website chrome; on phones it is hidden so the
-          app does not end in a wall of links. Those links remain in the Policy
-          menu and the pages themselves. */}
-      {!isPhoneDevice && <Footer />}
-      {isPhoneDevice && <MobileNav />}
-    </Stack>
+    </SiteLayout>
   );
 
   // The game session is rendered outside the route table so that navigating
@@ -364,10 +326,11 @@ export function Header({ setShowAnnouncementTemporarily }) {
   };
 
   return (
-    <AppBar position="sticky" sx={{
+    <AppBar position="sticky" className="site-header" sx={{
       backgroundColor: "background.paper",
       color: "text.primary",
     }}>
+      <a className="skip-link" href="#main-content">Skip to content</a>
 
       {/* Mobile AppBar */}
       {isPhoneDevice && (
@@ -413,7 +376,7 @@ export function Header({ setShowAnnouncementTemporarily }) {
                 label: "Community",
                 items: [
                   { text: "Forums", path: "/community/forums" },
-                  { text: "Users", path: "/community/users" },
+                  { text: "Players", path: "/community/users" },
                   { text: "Families", path: "/community/families" },
                   { text: "Feedback", path: "/community/feedback" },
                 ],
@@ -431,8 +394,9 @@ export function Header({ setShowAnnouncementTemporarily }) {
               {
                 label: "Learn",
                 items: [
-                  { text: "Games", path: "/learn/games" },
-                  { text: "Terminology", path: "/learn/terminology" },
+                  { text: "Roles and games", path: "/learn/games" },
+                  { text: "Glossary", path: "/learn/glossary" },
+                  ...(IOS_BETA_URL ? [{ text: "iOS app (beta)", href: IOS_BETA_URL }] : []),
                 ],
               },
               {
@@ -481,62 +445,6 @@ export function Header({ setShowAnnouncementTemporarily }) {
             alignItems: "center",
             width: "100%",
           }}>
-            <NavDropdown
-              label="Play"
-              items={[
-                { text: "Play", path: "/play" },
-                { text: "Tutorial", path: "/play/tutorial" },
-                { text: "Host", path: "/play/host", hide: !user.loggedIn },
-                {
-                  text: "Create Setup",
-                  path: "/play/create",
-                  hide: !user.loggedIn,
-                },
-                { text: "Character Decks", path: "/play/decks", hide: !user.loggedIn },
-                { text: "Word Decks", path: "/play/wordDecks", hide: !user.loggedIn },
-              ]}
-            />
-            <NavDropdown
-              label="Community"
-              items={[
-                { text: "Forums", path: "/community/forums" },
-                { text: "Users", path: "/community/users" },
-                { text: "Families", path: "/community/families" },
-                { text: "Feedback", path: "/community/feedback" },
-              ]}
-            />
-            <NavDropdown
-              label="Fame"
-              items={[
-                { text: "Hall of Fame", path: "/fame/hall-of-fame" },
-                { text: "Competitive", path: "/fame/competitive" },
-                { text: "Stock Market", path: "/fame/stocks" },
-                { text: "Contributors", path: "/fame/contributors" },
-                { text: "Donors", path: "/fame/donors" },
-              ]}
-            />
-            <NavDropdown
-              label="Learn"
-              items={[
-                { text: "Games", path: "/learn/games" },
-                { text: "Glossary", path: "/learn/glossary" },
-              ]}
-            />
-            <NavDropdown
-              label="Policy"
-              items={[
-                { text: "Rules", path: "/policy/rules" },
-                { text: "Moderation", path: "/policy/moderation" },
-                { text: "Invoices", path: "/policy/invoices", hide: !(user.groups || []).some((g) => g && g.name === "Owner") },
-              ]}
-            />
-              <NavDropdown
-                label="Activity"
-                items={[
-                  { text: "Metrics", path: "/activity/metrics" },
-                  { text: "Live Feed", path: "/activity/livefeed" },
-                ]}
-              />
             <Box sx={{
               marginLeft: "auto !important",
             }}>
@@ -690,99 +598,26 @@ function useUnreadNotifications() {
   return unreadCount;
 }
 
-function Footer() {
-  const isPhoneDevice = useIsPhoneDevice();
-  let year = new Date().getYear() + 1900;
-
+export function Footer() {
   return (
-    <AppBar position="static" sx={{
-      backgroundColor: "background.paper",
-      color: "text.primary",
-    }}>
-      <Stack direction="column" spacing={2} sx={{
-        p: 2,
-        alignItems: "center",
-        textAlign: "center",
-        "& a": {
-          textDecoration: "none",
-        },
-      }}>
-        <Stack direction="row" spacing={2} sx={{
-          fontSize: "xx-large",
-        }}>
-          <MuiLink
-            href="https://github.com/UltiMafia/Ultimafia"
-            rel="noopener noreferrer nofollow"
-            sx={{ display: "flex", }}
-          >
-            <i className="fab fa-github" />
-          </MuiLink>
-          <MuiLink
-            href="https://ko-fi.com/ultimafia"
-            rel="noopener noreferrer nofollow"
-            sx={{ display: "flex", }}
-          >
-            <Icon icon="simple-icons:kofi" />
-          </MuiLink>
-          <MuiLink
-            href="https://discord.gg/C5WMFpYRHQ"
-            target="blank"
-            rel="noopener noreferrer nofollow"
-            sx={{ display: "flex", }}
-          >
-            <Icon
-              icon="simple-icons:discord"
-              style={{ color: "#5865F2" }}
-            />
-          </MuiLink>
-        </Stack>
-        <Typography variant="body2" sx={{ textAlign: "center" }}>
-          By accessing this website, you agree to our{" "}
-          <MuiLink
-            component={Link}
-            to="/policy/tos"
-          >
-            Terms of Service
-          </MuiLink>
-          {" "}and{" "}
-          <MuiLink
-            component={Link}
-            to="/policy/privacy"
-          >
-            Privacy Policy
-          </MuiLink>
-          .
-        </Typography>
-        <Stack direction={isPhoneDevice ? "column" : "row"} spacing={isPhoneDevice ? 0.5 : 2} sx={{
-        }}>
-          <Typography variant="body2">
-            © {year} UltiMafia
-          </Typography>
-          <MuiLink
-            variant="body2"
-            href="https://github.com/r3ndd/BeyondMafia-Integration"
-            rel="noopener noreferrer nofollow"
-          >
-            {"Built on code provided by rend"}
-          </MuiLink>
-          <MuiLink
-            variant="body2"
-            target="_blank"
-            href="https://www.youtube.com/@fredthemontymole"
-            rel="noopener noreferrer nofollow"
-          >
-            <i className="fab fa-youtube"></i> Featuring music by FredTheMole
-          </MuiLink>
-          <MuiLink
-            variant="body2"
-            target="_blank"
-            href="https://ultimafia.com/user/2oDrE3Ueq"
-          >
-            Additional music by Jumpy
-          </MuiLink>
-        </Stack>
-      </Stack>
-    </AppBar>
+    <footer className="site-footer">
+      <div className="site-footer-links">
+        <span>© {new Date().getFullYear()} UltiMafia</span>
+        <nav aria-label="Footer links">
+          <a href="https://github.com/UltiMafia/Ultimafia" target="_blank" rel="noopener noreferrer nofollow">GitHub</a>
+          <a href="https://discord.gg/C5WMFpYRHQ" target="_blank" rel="noopener noreferrer nofollow">Discord</a>
+          <a href="https://ko-fi.com/ultimafia" target="_blank" rel="noopener noreferrer nofollow">Support</a>
+          {IOS_BETA_URL && <a href={IOS_BETA_URL} target="_blank" rel="noopener noreferrer">iOS app</a>}
+        </nav>
+      </div>
+      <p>By accessing this website, you agree to our <Link to="/policy/tos">Terms of Service</Link> and <Link to="/policy/privacy">Privacy Policy</Link>.</p>
+      <p className="site-footer-credits">
+        <a href="https://github.com/r3ndd/BeyondMafia-Integration" target="_blank" rel="noopener noreferrer nofollow">Built on code provided by rend</a>
+        <a href="https://www.youtube.com/@fredthemontymole" target="_blank" rel="noopener noreferrer nofollow">Featuring music by FredTheMole</a>
+        <Link to="/user/2oDrE3Ueq">Additional music by Jumpy</Link>
+        <a href="https://pixeliconlibrary.com/" target="_blank" rel="noopener noreferrer">Icons by HackerNoon (CC BY 4.0)</a>
+      </p>
+    </footer>
   );
 }
 

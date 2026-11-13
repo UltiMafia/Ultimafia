@@ -128,20 +128,25 @@ export const InfoPopover = function ({
         sx={{ pointerEvents: openByClick ? "auto" : "none" }}
         anchorEl={anchorEl}
         anchorOrigin={{
-          vertical: "center",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "center",
+          vertical: "bottom",
           horizontal: "left",
         }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+        marginThreshold={16}
         onClose={closePopover}
         disableScrollLock
         disableRestoreFocus
         slotProps={{
           paper: {
             sx: {
-              width: "320px",
+              width: "min(320px, calc(100vw - 32px))",
+              maxHeight: "calc(100vh - 32px)",
+              overflowY: "auto",
+              border: "1px solid var(--scheme-color-border)",
+              borderRadius: "6px",
             },
           },
         }}
@@ -274,6 +279,7 @@ export function usePopover({ path, type, postprocessData, onData }) {
 export function InfoSection({ title, children }) {
   return (
     <Stack
+      className="info-section"
       direction="column"
       divider={<Divider orientation="horizontal" flexItem />}
     >
@@ -285,12 +291,12 @@ export function InfoSection({ title, children }) {
 
 export function InfoRow({ title, content, multiRow = false }) {
   if (typeof content === "boolean") {
-    content = content ? "☑️" : "❌";
+    content = content ? "Yes" : "No";
   }
 
   if (multiRow) {
     return (
-      <Stack direction="column">
+      <Stack className="info-row info-row-multiple" direction="column">
         <Typography>
           {title}
           {":"}
@@ -300,7 +306,7 @@ export function InfoRow({ title, content, multiRow = false }) {
     );
   } else {
     return (
-      <Stack direction="row" alignItems="center" spacing={1}>
+      <Stack className="info-row" direction="row" alignItems="center" spacing={1}>
         <Typography>
           {title}
           {":"}
@@ -322,20 +328,15 @@ export function InfoRow({ title, content, multiRow = false }) {
 
 export function SetupInfo({ setup, gameTypeOptions }) {
   const siteInfo = useContext(SiteInfoContext);
-  const [content, setContent] = useState([]);
-
-  useEffect(() => {
-    setContent(parseSetupPopover(setup, siteInfo, gameTypeOptions));
-  }, [setup.id, gameTypeOptions]);
-
-  return <Stack direction="column">{content}</Stack>;
+  const content = useMemo(() => parseSetupPopover(setup, siteInfo, gameTypeOptions), [setup, siteInfo, gameTypeOptions]);
+  return <Stack className="setup-info" direction="column">{content}</Stack>;
 }
 
 export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
   const result = [];
 
   //Creator
-  if (setup.creator) {
+  if (setup.creator && typeof setup.creator === "object" && setup.creator.name) {
     const name = (
       <NameWithAvatar
         small
@@ -443,7 +444,10 @@ export function parseSetupPopover(setup, siteInfo, gameTypeOptions = {}) {
   const hasGameTypeOptions =
     gameTypeOptions && Object.keys(gameTypeOptions).length > 0;
 
-  if (setup.gameType === "Mafia" && setup.numMissions != null) {
+  const hasMissionRoles = Array.isArray(setup.roles) && setup.roles.some(group =>
+    group && Object.keys(group).some(role => role.split(":")[0] === "Spymaster")
+  );
+  if (setup.gameType === "Mafia" && hasMissionRoles && setup.numMissions != null) {
     result.push(
       <InfoSection title="Mission settings">
         <InfoRow

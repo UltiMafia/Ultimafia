@@ -18,7 +18,7 @@ import { UserContext, InGameContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 
 import { ModCommands, COMMAND_COLOR } from "pages/Policy/Moderation";
-import hammer from "images/emotes/hammer.webp";
+import UiIcon from "./ui/UiIcon";
 
 export default function ModerationSideDrawer({
   open,
@@ -44,7 +44,7 @@ export default function ModerationSideDrawer({
       <IconButton
         edge="start"
         color={COMMAND_COLOR}
-        aria-label="menu"
+        aria-label="Moderation tools"
         onClick={() => setOpen(true)}
         sx={{
           display: commandsAvailable ? undefined : "none",
@@ -59,22 +59,8 @@ export default function ModerationSideDrawer({
           boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
         }}
       >
-        <img src={hammer} />
+        <UiIcon name="moderation" />
       </IconButton>
-      <Paper
-        onClick={() => setOpen(true)}
-        sx={{
-          display: commandsAvailable ? undefined : "none",
-          position: "fixed",
-          top: 0,
-          left: 0,
-          height: "100%",
-          width: "10px",
-          backgroundColor: "transparent",
-          zIndex: 1200,
-          cursor: "pointer",
-        }}
-      />
       <SwipeableDrawer
         anchor="left"
         open={open}

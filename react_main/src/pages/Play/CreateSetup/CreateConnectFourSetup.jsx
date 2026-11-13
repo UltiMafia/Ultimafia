@@ -47,7 +47,7 @@ export default function CreateConnectFourSetup() {
   }, []);
 
   function onCreateSetup(roleData, editing, setRedirect, gameSettings) {
-    axios
+    return axios
       .post("/api/setup/create", {
         gameType: gameType,
         roles: roleData.roles,

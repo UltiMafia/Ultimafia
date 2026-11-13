@@ -1,0 +1,46 @@
+// Small geometry fixtures test the detectors themselves. Zero screenshots and
+// zero application/network traffic; these are not production-page evidence.
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || '/tmp/opencode/redesign-tools/node_modules/playwright');
+const { measureUi } = require('./ui-audit/measure.cjs');
+const { fillProblems, navigationProblems } = require('./ui-audit/layout-contracts.cjs');
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  const errors = []; page.on('pageerror', error => errors.push(error.message));
+  await page.route('**/*', route => route.abort());
+  const set = html => page.setContent(`<style>*{box-sizing:border-box}body{margin:0}h1,h2{margin:0}</style><main id="main-content">${html}</main>`);
+  let checks = 0;
+  await set('<section style="width:870px;border-bottom:1px solid"><h2>Records</h2><div class="comments-page" data-ui-fill="full" style="width:760px"><article class="comment-row" aria-label="Comment by Example" style="height:80px;width:100%">Comment</article></div></section>');
+  let measurement = await page.evaluate(measureUi);
+  const list = measurement.fillTargets.find(target => target.role === 'commentList');
+  assert.equal(fillProblems(list)[0].observed, 110); checks++;
+  const comment = measurement.fillTargets.find(target => target.role === 'comment');
+  assert.equal(comment.allocation.method, 'aligned-section-content-edge');
+  assert.equal(fillProblems(comment)[0].observed, 110); checks++;
+  assert.ok(measurement.samples.some(sample => sample.role === 'comment' && sample.box.width === 760)); checks++;
+  await set('<section style="width:420px;display:grid;grid-template-columns:200px 200px;gap:20px"><article class="ui-card" style="width:130px;height:60px">First</article><article class="ui-card" style="height:60px">Second</article></section>');
+  measurement = await page.evaluate(measureUi);
+  const cards = measurement.fillTargets.filter(target => target.role === 'card');
+  assert.equal(fillProblems(cards[0])[0].observed, 70); checks++;
+  assert.deepEqual(fillProblems(cards[1]), []); checks++;
+  await set('<section style="display:flex;width:600px"><article class="ui-card" style="width:200px;height:60px">Unknown allocation</article></section>');
+  measurement = await page.evaluate(measureUi);
+  assert.equal(measurement.fillTargets.find(target => target.role === 'card').status, 'unmeasurable'); checks++;
+  assert.ok(measurement.fillCoverage.unmeasurable > 0); checks++;
+  await page.setViewportSize({ width: 320, height: 640 });
+  await set('<nav aria-label="Sections"><div class="MuiTabs-scroller" style="width:160px;overflow:hidden"><div role="tablist" style="display:flex;width:max-content"><button role="tab" style="width:90px;height:32px">First</button><button role="tab" aria-selected="true" style="width:100px;height:32px">Last section</button></div></div></nav><div style="position:fixed;bottom:0;height:60px;width:100%">Bar</div><nav style="position:absolute;top:600px"><button style="width:80px;height:32px">Covered</button></nav>');
+  measurement = await page.evaluate(measureUi);
+  assert.ok(measurement.samples.some(sample => sample.role === 'sectionNav')); checks++;
+  assert.ok(measurement.samples.some(sample => sample.role === 'sectionNavItem')); checks++;
+  const last = measurement.navigationTargets.find(target => target.active);
+  assert.ok(navigationProblems(last, measurement.viewport).some(problem => problem.property === 'activeNavigationItemClipped')); checks++;
+  const covered = measurement.navigationTargets.find(target => target.identity.name === 'Covered');
+  assert.ok(navigationProblems(covered, measurement.viewport).some(problem => problem.property === 'navigationCoveredByFixedBar')); checks++;
+  assert.deepEqual(errors, []); checks++;
+  await browser.close();
+  const result = { checks, failures: [], screenshots: 0, scope: 'detector microfixtures, not production acceptance', visualAcceptance: false };
+  if (process.env.LAYOUT_CONTRACT_REPORT) fs.writeFileSync(process.env.LAYOUT_CONTRACT_REPORT, JSON.stringify(result, null, 2));
+  console.log(JSON.stringify(result));
+})().catch(error => { console.error(error); process.exitCode = 1; });

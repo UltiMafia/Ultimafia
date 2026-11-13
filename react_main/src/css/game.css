@@ -41,7 +41,8 @@
   background-color: var(--scheme-color-sec);
   border-radius: var(--mui-shape-borderRadius);
 
-  font-family: RobotoMono;
+  font-family: var(--ui-font-body);
+  font-variant-numeric: tabular-nums;
 }
 
 .game .main {
@@ -73,12 +74,12 @@
 
 .game .left-panel {
   /* Desktop sizing */
-  width: 22vw;
+  width: var(--game-left-panel-width, 22vw);
 }
 
 .game .right-panel {
   /* Desktop sizing */
-  width: 22vw;
+  width: var(--game-right-panel-width, 22vw);
 }
 
 .game .center-panel {
@@ -237,17 +238,41 @@ html[data-keyboard="open"] .game .meeting-tabs {
   font-weight: bold;
 }
 
+/* A clipped column cuts a name's halo at its edge, and `overflow-clip-margin`
+   is not available in Safari, so the column itself never clips. Names are
+   truncated on the text instead - except a glowing one, whose halo needs to
+   paint outside the glyph box. */
 .game .message .nameplate-aligned .name-with-avatar {
-  overflow-x: hidden;
+  overflow: visible;
 }
 
-.game .message:last-child {
+.game .message .nameplate-aligned .user-name:not(.name-anim-glow),
+.game .player-list .player .user-name:not(.name-anim-glow) {
+  display: inline-block;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+/* Trailing space above the composer belongs to the transcript, not to
+   whichever message happens to be last. Padding keyed to the last row shrinks
+   that row the moment a new message arrives, and with the transcript following
+   the bottom the correction moves every already-painted row — the new message
+   visibly settles instead of simply appearing. */
+.game .speech-display {
   padding-bottom: 10px;
 }
 
+.game .message:last-child {
+  padding-bottom: 2px;
+}
+
 /* A virtual item wrapper makes every message a DOM last child. Keep the
-   transcript's trailing padding only on its actual final row, not every item. */
-.game .transcript-window-row:not([data-transcript-last-row]) > .message:last-child {
+   transcript's padding uniform across items so appending cannot resize one. */
+.game .transcript-window-row > .message:last-child {
   padding-bottom: 3px;
 }
 
@@ -462,6 +487,12 @@ html[data-keyboard="open"] .game .meeting-tabs {
   margin: 0px 2px 0px 5px;
 }
 
+/* The mark that closes a quote is the opening glyph, mirrored - the icon set
+   has one quote icon, not a left and a right one. */
+.game .message .quote-mark-end {
+  transform: scaleX(-1);
+}
+
 .game .message .quote-content {
   /*display: flex;*/
   /*flex-flow: row wrap;*/
@@ -471,13 +502,27 @@ html[data-keyboard="open"] .game .meeting-tabs {
   margin-right: 10px;
 }
 
+/* The pin control only exists while the pointer is over the row, so it must not
+   take part in its layout: a 24px button stretched the height of a one-line
+   message and pushed every row below it (visible as a jump in the windowed
+   transcript, which measures row heights). The wrapper keeps its width at all
+   times - so revealing the button never rewraps the text - and holds no height,
+   with the button positioned inside it. */
 .game .message .pin-button-wrapper {
-  align-self: start;
+  align-self: stretch;
 
-  min-width: 20px;
+  width: 24px;
+  min-width: 24px;
   margin-left: auto;
   transform: translateX(6px);
+
+  position: relative;
 }
+
+.game .message-pin-action { position: absolute; top: 2px; right: 0; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--um-muted); cursor: pointer; }
+.game .message-pin-action[aria-pressed="true"] { color: var(--um-accent); }
+.game .message-pin-action:focus-visible { outline: 2px solid var(--um-accent); }
+.game .section-title .ui-icon { margin-right: 6px; }
 
 .game .speech-wrapper {
   flex-grow: 1;
@@ -545,12 +590,13 @@ html[data-keyboard="open"] .game .meeting-tabs {
   overscroll-behavior: contain;
 }
 
-.game .speech-input-area {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: flex-start;
-
-  margin: 10px;
+.game .game-composer { padding: 6px 12px; background: transparent; }
+@media (min-width: 901px) {
+  .game-composer .composer-surface { display: grid; grid-template-columns: minmax(0, 1fr) auto; border-radius: 6px; }
+  .game-composer .composer-preview, .game-composer .composer-context, .game-composer .composer-progress { grid-column: 1 / -1; }
+  .game-composer .composer-row { grid-column: 1; }
+  .game-composer .composer-toolbar { grid-column: 2; align-self: end; padding: 2px 4px; }
+  .game-composer .composer-send.ui-action { height: 36px; min-height: 36px; width: 36px; min-width: 36px; flex-basis: 36px; }
 }
 
 .with-radial-gradient {
@@ -564,92 +610,6 @@ html[data-keyboard="open"] .game .meeting-tabs {
     1;
 
   border-radius: var(--mui-shape-borderRadius);
-}
-
-.game .speech-input-wrapper {
-  flex-grow: 1;
-  display: flex;
-  flex-flow: row;
-}
-
-.game .speech-input-field-group {
-  flex-grow: 1;
-  display: flex;
-  flex-flow: column;
-}
-
-.game .speech-dropdown {
-  background-color: var(--scheme-color-sec);
-  color: white;
-}
-
-.game .speech-input {
-  flex-grow: 1;
-
-  border: none;
-
-  background-color: var(--scheme-color);
-  font-size: 16px;
-}
-
-.game .speech-cooldown-progress {
-  height: 3px;
-  margin-top: 2px;
-  border-radius: 999px;
-  background-color: rgba(244, 67, 54, 0.18);
-  overflow: hidden;
-}
-
-.game .speech-cooldown-progress-fill {
-  height: 100%;
-  width: 0;
-  border-radius: 999px;
-  background: linear-gradient(
-    90deg,
-    rgba(244, 67, 54, 0.45),
-    rgba(244, 67, 54, 0.85)
-  );
-  transition: width 0.1s linear;
-}
-
-@keyframes speak-cooldown-pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.08);
-  }
-  50% {
-    box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.2);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.08);
-  }
-}
-
-.game .speech-input-area i {
-  align-self: center;
-
-  width: 20px;
-  height: 20px;
-
-  margin-left: 5px;
-  padding: 5px;
-  border-radius: 5px;
-
-  background-color: var(--scheme-color);
-  font-size: 20px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.game .speech-input-area i:hover {
-  opacity: 0.8;
-}
-
-.game .speech-input-area i.disabled {
-  opacity: 0.5;
-}
-
-.game .speech-input-area i.disabled:hover {
-  opacity: 0.3;
 }
 
 .game .dropdown-control {
@@ -788,8 +748,9 @@ html[data-keyboard="open"] .game .meeting-tabs {
   padding-left: 7px; */
   /*SANTA CHANGES*/
 
-  overflow-x: hidden;
-  overflow-y: hidden;
+  /* Same as the aligned nameplate: no clipping here, or the animated glow is
+     cut off at the row's edge. The name truncates itself instead. */
+  overflow: visible;
 }
 
 .game .player-list .player.dead {
@@ -892,7 +853,9 @@ html[data-keyboard="open"] .game .meeting-tabs {
 
 .game .action .vote {
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
+  align-items: baseline;
+  gap: 2px;
 }
 
 .game .action .vote.multi {
@@ -916,6 +879,7 @@ html[data-keyboard="open"] .game .meeting-tabs {
   cursor: pointer;
   margin-right: 5px;
   margin-bottom: 5px;
+  flex-shrink: 0;
 }
 
 .game .action .vote .selection {
@@ -1177,9 +1141,14 @@ html[data-keyboard="open"] .game .meeting-tabs {
   flex-shrink: 0;
 }
 
-/* A left swipe reveals the reply cue without adding height or changing chat
-   layout. The transcript clips the translated row at its horizontal edges. */
+/* The row moves left; this strip extends from its shifted right edge back
+   to the original edge, exposing a recessed surface behind it. The shade is
+   derived from the panel colour rather than reused from
+   --scheme-color-background: themes that map that token to the panel colour
+   (the redesign does) would otherwise reveal nothing but the row's own
+   background. */
 .game .message.swipe-to-reply {
+  --reply-swipe-surface: color-mix(in srgb, var(--scheme-color-sec) 88%, #000);
   touch-action: pan-y pinch-zoom;
 }
 
@@ -1187,8 +1156,6 @@ html[data-keyboard="open"] .game .meeting-tabs {
   transform: translateX(var(--reply-swipe-offset, 0px));
 }
 
-/* The row moves left; this strip extends from its shifted right edge back
-   to the original edge, exposing the theme's recessed surface behind it. */
 .game .message.reply-swiping::before {
   content: "";
   position: absolute;
@@ -1196,7 +1163,7 @@ html[data-keyboard="open"] .game .meeting-tabs {
   top: 0;
   bottom: 0;
   width: calc(-1 * var(--reply-swipe-offset));
-  background: var(--scheme-color-background);
+  background: var(--reply-swipe-surface, var(--scheme-color-background));
   pointer-events: none;
 }
 
@@ -1259,42 +1226,6 @@ html[data-keyboard="open"] .game .meeting-tabs {
   margin-right: 4px;
   font-size: 0.75em;
   opacity: 0.6;
-}
-
-.game .speech-input-area {
-  flex-wrap: wrap;
-}
-
-.game .speech-input-area .reply-preview {
-  display: flex;
-  flex-basis: 100%;
-  align-items: center;
-  gap: 6px;
-
-  min-width: 0;
-  margin-bottom: 4px;
-  padding: 2px 4px 2px 8px;
-  border-left: 2px solid var(--scheme-color-sec);
-
-  font-size: 0.85em;
-  opacity: 0.85;
-}
-
-.game .speech-input-area .reply-preview i {
-  width: auto;
-  height: auto;
-  margin: 0;
-  padding: 0;
-  background-color: transparent;
-  font-size: inherit;
-}
-
-.game .speech-input-area .reply-preview-text {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }
 
 /* The line above a reply (ReplyReference), as in Discord: a curved line

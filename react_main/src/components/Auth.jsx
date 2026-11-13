@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
+import { UiAction, UiField, UiIcon } from "components/ui";
 import {
-  Button,
   LinearProgress,
-  TextField,
   Tabs,
   Tab,
   Box,
@@ -34,7 +33,9 @@ import SignInWithAppleButton, {
   createAppleProvider,
 } from "./SignInWithAppleButton";
 
+let nextAuthTabsId = 0;
 export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
+  const [tabId] = useState(() => `auth-tabs-${++nextAuthTabsId}`);
   const snackbarHook = useSnackbar();
   const siteInfo = useContext(SiteInfoContext);
   const user = useContext(UserContext);
@@ -514,117 +515,103 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
     <Box>
       {showForgotPassword ? (
         <Box>
-          <Button
-            variant="text"
+          <UiAction
+            variant="ghost"
+            style={{ marginBottom: 16 }}
             onClick={() => setShowForgotPassword(false)}
-            sx={{ mb: 2, textTransform: "none" }}
           >
-            <i className="fas fa-chevron-circle-left" /> Back to Login
-          </Button>
-          <form onSubmit={recoverPassword}>
-            <TextField
+            <UiIcon name="back" size={16} /> Back to Login
+          </UiAction>
+          <form className="ui-form-stack" onSubmit={recoverPassword}>
+            <UiField
               label="Email Address"
               type="email"
               autoFocus
               required
               autoComplete="off"
-              margin="dense"
               fullWidth
-              variant="standard"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <Button
-              fullWidth
-              sx={{ mt: 2 }}
+            <UiAction
+              variant="primary" className="ui-action--block"
               type="submit"
               disabled={loading || !email}
             >
               Reset Password
-            </Button>
+            </UiAction>
           </form>
           {loading && <LinearProgress sx={{ mt: 2 }} />}
         </Box>
       ) : showResendVerification ? (
         <Box>
-          <Button
-            variant="text"
+          <UiAction
+            variant="ghost"
+            style={{ marginBottom: 16 }}
             onClick={() => setShowResendVerification(false)}
-            sx={{ mb: 2, textTransform: "none" }}
           >
-            <i className="fas fa-chevron-circle-left" /> Back to Login
-          </Button>
-          <form onSubmit={resendVerification}>
-            <TextField
+            <UiIcon name="back" size={16} /> Back to Login
+          </UiAction>
+          <form className="ui-form-stack" onSubmit={resendVerification}>
+            <UiField
               label="Email Address"
               type="email"
               autoFocus
               required
               autoComplete="off"
-              margin="dense"
               fullWidth
-              variant="standard"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <TextField
+            <UiField
               label="Password"
               type="password"
               required
               autoComplete="current-password"
-              margin="dense"
               fullWidth
-              variant="standard"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              sx={{ mt: 1 }}
             />
-            <Button
-              fullWidth
-              sx={{ mt: 2 }}
+            <UiAction
+              variant="primary" className="ui-action--block"
               type="submit"
               disabled={loading || !email || !password}
             >
               Resend Verification Email
-            </Button>
+            </UiAction>
           </form>
           {loading && <LinearProgress sx={{ mt: 2 }} />}
         </Box>
       ) : (
         <>
-          <form onSubmit={login}>
-            <TextField
+          <form className="ui-form-stack" onSubmit={login}>
+            <UiField
               label="Email Address"
               type="email"
               autoFocus
               required
               autoComplete="off"
-              margin="dense"
               fullWidth
-              variant="standard"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <input hidden />
-            <TextField
+            <UiField
               label="Password"
               type="password"
               required
               autoComplete="new-password"
-              margin="none"
               fullWidth
-              variant="standard"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <Button
-              fullWidth
-              sx={{ mt: 2 }}
+            <UiAction
+              variant="primary" className="ui-action--block"
               type="submit"
               disabled={loading || !email || !password}
             >
               Login
-            </Button>
+            </UiAction>
           </form>
           <ProviderButton
             provider="google"
@@ -659,20 +646,18 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
             <Link to="/policy/privacy">Privacy Policy</Link>.
           </Typography>
           <Stack direction="row" spacing={1} sx={{ mt: 1, justifyContent: "center" }}>
-            <Button
-              variant="text"
-              sx={{ pb: 0, cursor: "Pointer", textTransform: "none", fontSize: "12px" }}
+            <UiAction
+              variant="ghost" className="ui-action--compact"
               onClick={() => setShowForgotPassword(true)}
             >
               Forgot Password?
-            </Button>
-            <Button
-              variant="text"
-              sx={{ pb: 0, cursor: "Pointer", textTransform: "none", fontSize: "12px" }}
+            </UiAction>
+            <UiAction
+              variant="ghost" className="ui-action--compact"
               onClick={() => setShowResendVerification(true)}
             >
               Resend Verification
-            </Button>
+            </UiAction>
           </Stack>
           {loading && <LinearProgress sx={{ mt: 2 }} />}
         </>
@@ -683,51 +668,43 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
   // Register Tab Content
   const RegisterContent = (
     <Box>
-      <form onSubmit={register}>
-        <TextField
+      <form className="ui-form-stack" onSubmit={register}>
+        <UiField
           label="Email Address"
           type="email"
           autoFocus
           required
           autoComplete="off"
-          margin="dense"
           fullWidth
-          variant="standard"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <input hidden />
-        <TextField
+        <UiField
           label="Password"
           type="password"
           required
           autoComplete="new-password"
-          margin="none"
           fullWidth
-          variant="standard"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <TextField
+        <UiField
           label="Confirm Password"
           type="password"
           required
           autoComplete="new-password"
-          margin="none"
           fullWidth
-          variant="standard"
           value={passwordConfirmation}
           onChange={handlePasswordConfirmationChange}
           error={!!passwordConfirmationHelperText}
           helperText={passwordConfirmationHelperText}
         />
-        <TextField
+        <UiField
           label="Date of Birth"
           type="date"
           required
-          margin="dense"
           fullWidth
-          variant="standard"
           value={birthDate}
           onChange={handleBirthDateChange}
           error={!!ageError}
@@ -740,9 +717,8 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
               .split("T")[0], // Set max date to 13 years ago
           }}
         />
-        <Button
-          fullWidth
-          sx={{ mt: 2 }}
+        <UiAction
+          variant="primary" className="ui-action--block"
           type="submit"
           disabled={
             loading ||
@@ -754,7 +730,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
           }
         >
           Register
-        </Button>
+        </UiAction>
       </form>
       <ProviderButton
         provider="google"
@@ -804,11 +780,11 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
         aria-label="authentication tabs"
         sx={{ borderBottom: 1, borderColor: "divider", flexShrink: 0 }}
       >
-        <Tab label="Login" />
-        <Tab label="Register" />
+        <Tab label="Login" id={`${tabId}-login`} aria-controls={`${tabId}-panel-login`} />
+        <Tab label="Register" id={`${tabId}-register`} aria-controls={`${tabId}-panel-register`} />
       </Tabs>
       <Box 
-        role="tabpanel" 
+        role="tabpanel" id={`${tabId}-panel-login`} aria-labelledby={`${tabId}-login`}
         hidden={tabValue !== 0}
         sx={{ 
           flex: 1, 
@@ -819,7 +795,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
         {tabValue === 0 && LoginContent}
       </Box>
       <Box 
-        role="tabpanel" 
+        role="tabpanel" id={`${tabId}-panel-register`} aria-labelledby={`${tabId}-register`}
         hidden={tabValue !== 1}
         sx={{ 
           flex: 1, 
@@ -842,8 +818,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
           fullWidth
           PaperProps={{
             sx: {
-              height: "600px",
-              maxHeight: "90vh",
+              maxHeight: "calc(100dvh - var(--app-top, 0px) - var(--app-bottom, 0px) - 32px)",
             }
           }}
         >

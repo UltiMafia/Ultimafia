@@ -1,12 +1,13 @@
 // React 17 does not batch state updates outside its own event handlers.
 import { unstable_batchedUpdates } from "react-dom";
-import React, { useState, useEffect, useContext, useRef, useMemo, Suspense, lazy } from "react";
+import React, { useState, useEffect, useContext, Suspense, lazy } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import update from "immutability-helper";
 import colorContrast from "color-contrast";
-import { Icon } from "@iconify/react";
+import { UiCard, UiPage, UiPageHeader } from "components/ui";
+import ProfileStatsSummary from "./ProfileStatsSummary";
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import {
@@ -36,6 +37,8 @@ import {
   mergeStatsBuckets,
 } from "utils/mafiaStats";
 import Comments from "../Community/Comments";
+import CoinIcon from "components/CoinIcon";
+import { UiAction, UiIcon } from "components/ui";
 
 import "css/user.css";
 import { Modal } from "components/Modal";
@@ -103,12 +106,9 @@ export {
 // Each of these renders only behind a flag, but importing them statically put
 // their whole dependency tree in the chunk every profile view downloads:
 // ModerationSideDrawer drags in the Moderation page (commands.js alone is 40KB)
-// and RapSheet, and PieChart drags in d3.
+// and RapSheet.
 const ModerationSideDrawer = lazy(() => import("components/ModerationSideDrawer"));
 const ReportDialog = lazy(() => import("../../components/ReportDialog"));
-const PieChart = lazy(() =>
-  import("./PieChart").then((m) => ({ default: m.PieChart }))
-);
 
 function FavoritedRolesPanel({
   favoriteRoles = [],
@@ -176,6 +176,23 @@ function RoleIconCreditsPanel({
   );
 }
 
+function ProfileGameRow({ game, action = null }) {
+  const status = game.status || "Finished";
+  const won = game.won;
+  return <article className={`profile-game-row${game.ranked ? " is-ranked" : ""}${game.competitive ? " is-competitive" : ""}`}>
+    <span className={`profile-game-result${won === true ? " is-win" : won === false ? " is-loss" : ""}`}>{won === true ? "Win" : won === false ? "Loss" : "Played"}</span>
+    <div className="profile-game-copy">
+      <Link className="profile-game-title" to={`/game/${game.id}`}>{game.setup?.name || "Game"}</Link>
+      <p>{[game.setup?.gameType, game.lobby, status].filter(Boolean).join(" · ")}</p>
+      {game.broken && <p className="profile-game-unavailable">Unavailable</p>}
+    </div>
+    <div className="profile-game-actions">
+      <Link className="ui-action ui-action--secondary" to={`/game/${game.id}`}>{status === "Finished" ? "Review" : "Open"}</Link>
+      {action}
+    </div>
+  </article>;
+}
+
 export default function Profile() {
   const theme = useTheme();
   const goldColor = theme.palette.mode === "light" ? "#b8860b" : "gold";
@@ -185,6 +202,7 @@ export default function Profile() {
   const [avatar, setAvatar] = useState();
   const [banner, setBanner] = useState();
   const [bannerExt, setBannerExt] = useState("webp");
+  const [bannerFailed, setBannerFailed] = useState(false);
   const [profileBackground, setProfileBackground] = useState(false);
   const [skillRating, setSkillRating] = useState(null);
   const [bio, setBio] = useState("");
@@ -1037,11 +1055,6 @@ export default function Profile() {
     zIndex: 1,
   };
   const headingStyle = {};
-  // Body text that sits directly on the panel rather than on a Paper surface.
-  // MUI's text.primary/text.secondary are resolved against the theme background,
-  // not against a custom profile backgroundColor, so text drawn straight onto the
-  // panel needs the same treatment the headings already get.
-  const panelTextStyle = {};
   const bannerStyle = {};
 
   if (settings.backgroundColor) {
@@ -1053,7 +1066,6 @@ export default function Profile() {
     } else {
       headingStyle.color = "#fff";
     }
-    panelTextStyle.color = headingStyle.color;
   }
 
   const bannerExtSafe = ["webp", "gif", "png", "jpg", "jpeg"].includes(bannerExt)
@@ -1062,6 +1074,8 @@ export default function Profile() {
   const bannerUrl = banner
     ? `/uploads/${profileUserId}_banner.${bannerExtSafe}?t=${siteInfo.cacheVal}`
     : null;
+  const showBanner = banner && !bannerFailed;
+  useEffect(() => { setBannerFailed(false); }, [bannerUrl]);
 
   // Prefer <img> for all banners so GIF/animated WebP play reliably
   if (settings.bannerFormat === "stretch") {
@@ -1110,52 +1124,10 @@ export default function Profile() {
     });
   }
 
-  const recentGamesRows = recentGames.map((game, index) => {
-    return (
-      <div key={game.id} style={{ display: "flex", alignItems: "center" }}>
-        <div style={{ width: "20px", textAlign: "center", flexShrink: 0 }}>
-          {game.won === true && (
-            <i
-              className="fas fa-check"
-              style={{ color: "#4caf50", fontSize: "14px" }}
-              title="Win"
-            />
-          )}
-          {game.won === false && (
-            <i
-              className="fas fa-times"
-              style={{ color: "#f44336", fontSize: "14px" }}
-              title="Loss"
-            />
-          )}
-        </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <GameRow
-            game={game}
-            type={game.status || "Finished"}
-            odd={index % 2 === 1}
-            small
-          />
-        </div>
-      </div>
-    );
-  });
+  const recentGamesRows = recentGames.map(game => <ProfileGameRow game={game} key={game.id} />);
 
-  const archivedGamesRows = archivedGames.map((game) => {
-    return (
-      <div className="archived-game" key={game.id}>
-        {showDeleteArchivedGame && (
-          <div className="btns-wrapper">
-            <i
-              className="fas fa-trash"
-              onClick={onUnarchiveGame(game.id, game.description)}
-            />
-          </div>
-        )}
-        <GameRow game={game} type={game.status || "Finished"} small />
-      </div>
-    );
-  });
+  const archivedGamesRows = archivedGames.map(game => <ProfileGameRow game={game} key={game.id}
+    action={showDeleteArchivedGame ? <UiAction variant="ghost" iconOnly aria-label="Unarchive game" onClick={onUnarchiveGame(game.id, game.description)}><UiIcon name="delete" size={18} /></UiAction> : null} />);
 
   const createdSetupRows = createdSetups.map((setup) => (
     <Setup setup={setup} key={setup.id} />
@@ -1270,13 +1242,9 @@ export default function Profile() {
               >
                 <i className={`fas fa-ban ${isBlocked ? "sel" : ""}`} />
               </IconButton>
-              <IconButton
-                size="small"
-                onClick={onReportClick}
-                sx={{ cursor: "pointer", touchAction: "manipulation" }}
-              >
-                <i className="fas fa-flag" />
-              </IconButton>
+              <UiAction variant="ghost" iconOnly aria-label="Report user" onClick={onReportClick}>
+                <UiIcon name="flag" />
+              </UiAction>
               {reportDialogOpen && (
                 <Suspense fallback={null}>
                   <ReportDialog
@@ -1364,7 +1332,7 @@ export default function Profile() {
     : 50;
 
   const nameBox = (
-    <Grid item xs={12} md={6} className="avi-name">
+    <Grid item xs={12} className="avi-name">
       <Box
         sx={{
           display: "flex",
@@ -1420,23 +1388,7 @@ export default function Profile() {
             }}
           >
             {badges}
-            <Typography
-              variant="h2"
-              onClick={canViewNameHistory ? onNameClick : undefined}
-              sx={{
-                flexShrink: "2",
-                fontWeight: "600",
-                cursor: canViewNameHistory ? "pointer" : "default",
-                "&:hover": canViewNameHistory
-                  ? {
-                      textDecoration: "underline",
-                      opacity: 0.8,
-                    }
-                  : {},
-              }}
-            >
-              {name}
-            </Typography>
+            <UiPageHeader variant="identity" title={name} titleAction={canViewNameHistory ? { label: `View ${name}'s name history`, onClick: onNameClick } : undefined} />
             {pronouns && (
               <Typography
                 variant="caption"
@@ -1461,6 +1413,32 @@ export default function Profile() {
             >
               Joined {new Date(joined).toLocaleDateString()}
             </Typography>
+          )}
+          {(profileFamily || (love.id != null && (isLove || isMarried))) && (
+            <Stack direction="row" spacing={2} sx={{ alignItems: "center", justifyContent: "center", mt: 0.5, flexWrap: "wrap", gap: 1 }}>
+              {profileFamily && (
+                <Link
+                  className="name-with-avatar"
+                  to={`/user/family/${profileFamily.id}`}
+                  style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+                >
+                  <Typography variant="caption" color="text.secondary">Member of</Typography>
+                  <FamilyAvatarImage id={profileFamily.id} size={20} />
+                  <Typography variant="body2">{profileFamily.name}</Typography>
+                </Link>
+              )}
+              {love.id != null && (isLove || isMarried) && (
+                <Link
+                  className="name-with-avatar"
+                  to={`/user/${love.id}`}
+                  style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+                >
+                  <Typography variant="caption" color="text.secondary">{getLoveTitle(love.type)}</Typography>
+                  <Avatar hasImage={love.avatar} id={love.id} name={love.name} small />
+                  <Typography variant="body2">{love.name}</Typography>
+                </Link>
+              )}
+            </Stack>
           )}
         </Stack>
       </Box>
@@ -1551,18 +1529,9 @@ export default function Profile() {
     </Grid>
   );
 
-  const aviGridItems = isPhoneDevice ? (
+  const aviGridItems = (
     <>
       {nameBox}
-      {inLoveBox}
-      {familyBox}
-      {buttonsBox}
-    </>
-  ) : (
-    <>
-      {familyBox}
-      {nameBox}
-      {inLoveBox}
       {buttonsBox}
     </>
   );
@@ -1604,7 +1573,7 @@ export default function Profile() {
   );
 
   return (
-    <>
+    <UiPage width="wide" className="profile-page">
       <TradeDialog
         open={tradeModalOpen}
         onClose={() => setTradeModalOpen(false)}
@@ -1635,7 +1604,7 @@ export default function Profile() {
           />
         </Suspense>
       )}
-      <Grid container rowSpacing={1} columnSpacing={1} className="profile">
+      <Grid container rowSpacing={1} columnSpacing={1} className="profile" data-custom-background={Boolean(settings.backgroundColor)}>
         <Grid item xs={12}>
           <Stack
             direction="row"
@@ -1643,18 +1612,18 @@ export default function Profile() {
               justifyContent: "center",
             }}
           >
-            {/* 900px max banner size + 16px padding on box-panel + 8px padding on content = 924px */}
             <div
               className="box-panel"
-              style={{ ...panelStyle, width: "100%", maxWidth: "924px" }}
+              style={{ ...panelStyle, width: "100%" }}
             >
               <div className="content" style={{ gap: "8px" }}>
-                {banner && (
+                {showBanner && (
                   <div className="banner" style={bannerStyle}>
                     <img
                       className="banner-media"
                       src={bannerUrl}
                       alt=""
+                      onError={() => setBannerFailed(true)}
                       style={{
                         width: "100%",
                         height: "100%",
@@ -1670,7 +1639,7 @@ export default function Profile() {
                     {bannerUpload}
                   </div>
                 )}
-                {!banner && (
+                {!showBanner && (
                   <Box
                     className="banner no-banner"
                     sx={{ width: "100%", height: "24px !important" }}
@@ -1751,15 +1720,6 @@ export default function Profile() {
             )}
             <div className="box-panel" style={panelStyle}>
               <div className="content trophies-content">
-                {karmaInfo && (
-                  <div className="karma-vote-wrap">
-                    <KarmaVoteWidget
-                      item={karmaInfo}
-                      setItem={setKarmaInfo}
-                      userId={profileUserId}
-                    />
-                  </div>
-                )}
                 <div className="trophies-grid">
                   <Tooltip
                     title="Earned from outstanding performance in ranked and competitive games."
@@ -1778,6 +1738,7 @@ export default function Profile() {
                     </div>
                   </Tooltip>
                   {karmaInfo && (
+                    <div className="trophy-karma" role="group" aria-label="Profile karma">
                     <Tooltip
                       title="Upvotes from other players on your profile."
                       arrow
@@ -1796,6 +1757,10 @@ export default function Profile() {
                         </div>
                       </div>
                     </Tooltip>
+                    <div className="karma-vote-wrap">
+                      <KarmaVoteWidget item={karmaInfo} setItem={setKarmaInfo} userId={profileUserId} />
+                    </div>
+                    </div>
                   )}
                   <Tooltip
                     title="Earned by winning ranked and competitive games. Accumulates toward prestige at the end of a competitive round."
@@ -1868,7 +1833,7 @@ export default function Profile() {
                         Current Price
                       </Typography>
                       <Typography variant="h4" sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}>
-                        {stockInfo.buyPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "24px", verticalAlign: "middle" }} />
+                        {stockInfo.buyPrice.toFixed(2)} <CoinIcon size={24} />
                       </Typography>
                     </Box>
                     <Box>
@@ -1890,7 +1855,7 @@ export default function Profile() {
                         Market Cap
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}>
-                        {stockInfo.marketCap.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "14px", verticalAlign: "middle" }} />
+                        {stockInfo.marketCap.toFixed(2)} <CoinIcon size={14} />
                       </Typography>
                     </Grid>
                     <Grid item xs={6}>
@@ -1906,7 +1871,7 @@ export default function Profile() {
                         Dividends Paid
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}>
-                        {(stockInfo.dividendsPaidOut || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "14px", verticalAlign: "middle" }} />
+                        {(stockInfo.dividendsPaidOut || 0).toFixed(2)} <CoinIcon size={14} />
                       </Typography>
                     </Grid>
                   </Grid>
@@ -1928,8 +1893,8 @@ export default function Profile() {
             )}
             {hasAnyStats &&
               !settings.hideStatistics && (
-                <div className="box-panel ratings" style={panelStyle}>
-                  <Typography variant="h3" sx={headingStyle}>
+                <UiCard className="ratings">
+                  <Typography variant="h3">
                     Mafia Ratings
                     <Typography component="span" variant="body2" sx={{ opacity: 0.5, ml: 1 }}>
                       {profileTotalGames.toLocaleString()} total games
@@ -1972,30 +1937,14 @@ export default function Profile() {
                   {totalGames < RequiredTotalForStats ? (
                     <Typography
                       variant="body2"
-                      sx={{ textAlign: "center", opacity: 0.5, py: 2, ...panelTextStyle }}
+                      sx={{ textAlign: "center", py: 2 }}
                     >
                       No data yet.
                     </Typography>
                   ) : (
                     <>
                       <Stack spacing={2} sx={{ px: 1, py: 1 }}>
-                        <Paper variant="outlined" sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderRadius: 2, backgroundColor: "background.paper" }}>
-                          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: "text.secondary" }}>
-                            Win/Loss Distribution
-                          </Typography>
-                          <Box sx={{ my: 1, display: "flex", justifyContent: "center" }}>
-                            <Suspense fallback={null}>
-                              <PieChart
-                                wins={getWins(mafiaStats)}
-                                losses={getLosses(mafiaStats)}
-                                abandons={getAbandons(mafiaStats)}
-                              />
-                            </Suspense>
-                          </Box>
-                          <Typography variant="body2" sx={{ mt: 1, fontWeight: "bold" }}>
-                            Wins: {Math.round((getWins(mafiaStats) / totalGames) * 100)}% ({getWins(mafiaStats)}W / {getLosses(mafiaStats)}L)
-                          </Typography>
-                        </Paper>
+                        <ProfileStatsSummary wins={getWins(mafiaStats)} losses={getLosses(mafiaStats)} abandons={getAbandons(mafiaStats)} total={totalGames} />
 
                         {statsBucket === "ranked" && skillRating?.tier ? (
                           <Paper
@@ -2111,7 +2060,7 @@ export default function Profile() {
                       )}
                     </>
                   )}
-                </div>
+                </UiCard>
               )}
             {isSelf && pendingConfirmationTrades.length > 0 && (
               <PendingTradeConfirmations
@@ -2366,19 +2315,17 @@ export default function Profile() {
           )}
         </Box>
       </Popover>
-    </>
+    </UiPage>
   );
 }
 
 export function KarmaVoteWidget(props) {
-  const theme = useTheme();
   const item = props.item;
   const setItem = props.setItem;
   const userId = props.userId;
 
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
-  const widgetRef = useRef();
 
   function updateItemVoteCount(direction, newDirection) {
     var voteCount = item.voteCount;
@@ -2414,24 +2361,10 @@ export function KarmaVoteWidget(props) {
   }
 
   return (
-    <Stack direction="column" spacing={1}>
-      <IconButton
-        className={`fas fa-arrow-up`}
-        style={{
-          fontSize: "16px",
-          ...(item.vote === 1 ? { color: theme.palette.info.main } : {}),
-        }}
-        onClick={() => onVote(1)}
-      />
-      <IconButton
-        className={`fas fa-arrow-down`}
-        style={{
-          fontSize: "16px",
-          ...(item.vote === -1 ? { color: theme.palette.info.main } : {}),
-        }}
-        onClick={() => onVote(-1)}
-      />
-    </Stack>
+    <div className="ui-inline-actions" role="group" aria-label="Vote on this profile">
+      <UiAction iconOnly variant="ghost" aria-label="Upvote profile" aria-pressed={item.vote === 1} onClick={() => onVote(1)}><UiIcon name="up" /></UiAction>
+      <UiAction iconOnly variant="ghost" aria-label="Downvote profile" aria-pressed={item.vote === -1} onClick={() => onVote(-1)}><UiIcon name="down" /></UiAction>
+    </div>
   );
 }
 

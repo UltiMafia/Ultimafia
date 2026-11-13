@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { UiPageHeader } from "components/ui";
 import { useTheme } from "@mui/material/styles";
 import { Typography, Link, List, ListItem, ListItemText, Box, Divider } from "@mui/material";
 
@@ -11,12 +12,7 @@ export default function PrivacyPolicy() {
 
   return (
     <>
-      <Typography variant="h2" gutterBottom>
-        Privacy Policy
-      </Typography>
-      <Typography variant="body2" color="text.secondary" paragraph>
-        Last Updated: February 21, 2026
-      </Typography>
+      <UiPageHeader title="Privacy Policy" description="Last Updated: February 21, 2026" />
 
       <Typography variant="body1" paragraph>
         UltiMafia ("we," "us," or "our") is committed to protecting your privacy. This Privacy Policy explains 

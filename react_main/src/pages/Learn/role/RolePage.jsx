@@ -4,13 +4,6 @@ import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/
 import { NameWithAvatar } from "../../User/UserWidgets";
 import {
   Box,
-  Button,
-  Card,
-  MenuItem,
-  Select,
-  Typography,
-  Stack,
-  Chip,
   List,
   ListItem,
   ListItemIcon,
@@ -36,13 +29,10 @@ import { VoteWidget } from "../../../components/VoteWidget";
 import TwoPanelLayout from "../../../components/SetupProfileLayout";
 import FanartPanel from "../../../components/FanartPanel";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { UiAction, UiField, UiIcon, UiPageHeader } from "components/ui";
 
 export default function RolePage() {
-  return (
-    <div className="inner-content">
-      <RoleThings />
-    </div>
-  );
+  return <RoleThings />;
 }
 
 export function RoleThings() {
@@ -206,66 +196,25 @@ export function RoleThings() {
 
   // favourites <SetupRowInfo title="Current Skins" content={roleSkins} />
 
-  let description = (
-    <List>
-      {role[1].description.map((line) => {
-        return <ListItem>{line}</ListItem>;
-      })}
-    </List>
-  );
+  const description = <div className="role-description">{role[1].description.map((line, index) => <p key={index}>{line}</p>)}</div>;
 
-  const sortedTags = Array.isArray(role[1].tags) ? [...role[1].tags].sort() : [];
+  const sortedTags = Array.isArray(role[1].tags) ? [...role[1].tags].filter(tag => tag !== role[1].alignment).sort() : [];
 
-  let specialBox;
-  if (role[1].SpecialInteractions) {
-    specialBox = (
-      <List dense sx={{ paddingTop: "0" }}>
-        <div>
-          <span style={{ fontWeight: "bold" }}>Special Interactions</span>
-        </div>
-        {Object.entries(role[1].SpecialInteractions).map((special, i) => (
-          <ListItem
-            key={special[0] + i}
-            sx={{
-              paddingBottom: "0",
-              paddingTop: "0",
-            }}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: "0",
-                marginRight: "8px",
-              }}
-            >
-              {
-                <RoleCount
-                  key={0}
-                  scheme="vivid"
-                  role={special[0]}
-                  gameType={"Mafia"}
-                />
-              }
-            </ListItemIcon>
-            <ListItemText
-              disableTypography
-              className={"mui-popover-text"}
-              primary={
-                <div>
-                  <span style={{ fontWeight: "bold" }}>{special[0]}</span>:{" "}
-                  {special[1][0]}
-                </div>
-              }
-            />
-          </ListItem>
-        ))}
-      </List>
-    );
-  } else {
-    specialBox = "";
+  let specialBox = null;
+  if (role[1].SpecialInteractions && Object.keys(role[1].SpecialInteractions).length > 0) {
+    specialBox = <section className="role-info-section">
+      <h3>Special interactions</h3>
+      <ul className="role-interactions">
+        {Object.entries(role[1].SpecialInteractions).map(([name, interaction]) => <li key={name}>
+          <RoleCount scheme="vivid" role={name} gameType="Mafia" />
+          <p><strong>{name}</strong>: {interaction[0]}</p>
+        </li>)}
+      </ul>
+    </section>;
   }
 
   let overrideBox;
-  if (role[1].SpecialInteractionsModifiers) {
+  if (role[1].SpecialInteractionsModifiers && Object.keys(role[1].SpecialInteractionsModifiers).length > 0) {
     specialBox = (
       <List dense sx={{ paddingTop: "0" }}>
         <div>
@@ -310,20 +259,12 @@ export function RoleThings() {
   let examples;
   let exampleData = ExtraRoleData["Mafia"][role[0]];
   if (exampleData && exampleData.examples) {
-    examples = (
-      <SetupRowInfo
-        title="Examples"
-        content={
-          <List>
-            {exampleData.examples.map((line) => {
-              return <ListItem>{line}</ListItem>;
-            })}
-          </List>
-        }
-      />
-    );
+    examples = <section className="role-info-section">
+      <h3>Examples</h3>
+      <ol className="role-examples">{exampleData.examples.map((line, index) => <li key={index}>{line}</li>)}</ol>
+    </section>;
   } else {
-    examples = "";
+    examples = null;
   }
 
   const alignmentColor = getAlignmentColor(role[1].alignment);
@@ -387,258 +328,42 @@ export function RoleThings() {
   }
 
   return (
-    <Stack direction="column" spacing={1} className="setup-page">
-      <Card
-        variant="outlined"
-        sx={{
-          backgroundColor: alignmentColor,
-          borderRadius: "16px",
-          mb: 1,
-          p: { xs: 1.5, md: 2 },
-          color: headerTextColor,
-          textShadow: headerTextShadow,
-          "& .MuiTypography-root": {
-            color: headerTextColor,
-            textShadow: headerTextShadow,
-          },
-        }}
-      >
-        <Stack
-          direction={{ xs: "column", md: "row" }}
-          spacing={2}
-          alignItems={{ xs: "stretch", md: "center" }}
-        >
-          <Stack direction="row" spacing={1} alignItems="center">
-            <VoteWidget
-              item={roleVoteItem}
-              itemType="role"
-              setItemHolder={(newItem) =>
-                setRoleVoteState({
-                  vote: newItem.vote ?? 0,
-                  voteCount: newItem.voteCount ?? 0,
-                })
-              }
-            />
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                p: isPhoneDevice ? 1 : 1.5,
-                borderRadius: "50%",
-                backgroundColor: "rgba(255,255,255,0.18)",
-                border: "1px solid rgba(255,255,255,0.25)",
-              }}
-            >
-              <RoleCount
-                key={0}
-                scheme={activeRoleSkin}
-                role={role[0]}
-                gameType={"Mafia"}
-                skin={activeRoleSkin}
-                large
-              />
-            </Box>
-          </Stack>
-
-          <Stack
-            direction="column"
-            spacing={0.75}
-            sx={{ flex: 1, minWidth: 0 }}
-          >
-            <Stack
-              direction="row"
-              spacing={1}
-              alignItems="center"
-              flexWrap="wrap"
-              useFlexGap
-            >
-              <Typography variant="h2" sx={{ mr: 0.5 }}>
-                {RoleName}
-              </Typography>
-              {sortedTags.map((tag) => (
-                <Chip
-                  key={tag}
-                  label={tag}
-                  size="small"
-                  sx={{
-                    backgroundColor: "rgba(0,0,0,0.55)",
-                    color: "#fff",
-                    fontWeight: 600,
-                    border: "1px solid rgba(255,255,255,0.25)",
-                    textShadow: "none",
-                    "& .MuiChip-label": { textShadow: "none" },
-                  }}
-                />
-              ))}
-            </Stack>
-            <Stack
-              direction="row"
-              spacing={1}
-              alignItems="center"
-              flexWrap="wrap"
-              useFlexGap
-            >
-              <Typography
-                variant="overline"
-                sx={{
-                  fontSize: "0.65rem",
-                  letterSpacing: "0.12em",
-                  opacity: 0.7,
-                  lineHeight: 1,
-                }}
-              >
-                Skin
-              </Typography>
-              <Select
-                value={activeRoleSkin}
-                onChange={(e) => {
-                  const newSkin = e.target.value;
-                  setSelectedRoleSkin(newSkin);
-                  onRoleSkinChange(
-                    {
-                      prop: "value",
-                      value: newSkin,
-                      ref: "roleSkins",
-                      localOnly: false,
-                    },
-                    RoleName,
-                    null,
-                    user,
-                    roleSkins
-                  );
-                }}
-                variant="standard"
-                disableUnderline
-                IconComponent={(props) => (
-                  <i
-                    {...props}
-                    className={`fas fa-chevron-down ${props.className || ""}`}
-                    style={{ fontSize: "0.7rem", right: 10 }}
-                  />
-                )}
-                sx={{
-                  minWidth: 96,
-                  backgroundColor: "rgba(0,0,0,0.55)",
-                  borderRadius: 999,
-                  px: 1.5,
-                  py: 0.25,
-                  fontSize: "0.95rem",
-                  fontWeight: 600,
-                  color: "#fff",
-                  textShadow: "none",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  transition: "border-color 120ms, background-color 120ms",
-                  "&:hover": {
-                    borderColor: "rgba(255,255,255,0.45)",
-                    backgroundColor: "rgba(0,0,0,0.35)",
-                  },
-                  "& .MuiSelect-select": {
-                    paddingTop: "2px",
-                    paddingBottom: "2px",
-                    paddingRight: "28px !important",
-                  },
-                  "& .MuiSelect-icon": {
-                    color: "rgba(255,255,255,0.7)",
-                    top: "calc(50% - 0.35em)",
-                  },
-                }}
-              >
-                {roleSkinOptions.map((opt) => (
-                  <MenuItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </Stack>
-          </Stack>
-
-          {artists.length > 0 && (
-            <Stack
-              direction="column"
-              spacing={0.5}
-              alignItems={{ xs: "flex-start", md: "flex-end" }}
-              sx={{ minWidth: 120 }}
-            >
-              <Typography
-                variant="overline"
-                sx={{
-                  fontSize: "0.65rem",
-                  letterSpacing: "0.12em",
-                  opacity: 0.7,
-                  lineHeight: 1,
-                }}
-              >
-                Icon Artists
-              </Typography>
-              <Box>{artists}</Box>
-            </Stack>
-          )}
-        </Stack>
-      </Card>
-      <TwoPanelLayout
-        left={
-          <>
-            <div className="box-panel">
-              <div className="heading">Role Info</div>
-              <div className="meta">
-                <SetupRowInfo title="Description" content={description} />
-                {examples}
-                {specialBox}
-                {overrideBox}
+    <div className="role-page">
+      <UiPageHeader variant="detail" title={RoleName} className="role-hero" leading={
+          <RoleCount key={0} scheme={activeRoleSkin} role={role[0]} gameType="Mafia" skin={activeRoleSkin} large />
+        }>
+          <div className="role-meta-row">
+            <span className="role-alignment" style={{ color: alignmentColor }}>{role[1].alignment}</span>
+            {sortedTags.length > 0 && <ul className="role-tags" aria-label="Role tags">{sortedTags.map(tag => <li key={tag}>{tag}</li>)}</ul>}
+            <div className="role-hero-actions">
+              <div className="role-vote-pill">
+                <VoteWidget item={roleVoteItem} itemType="role" setItemHolder={(newItem) => setRoleVoteState({ vote: newItem.vote ?? 0, voteCount: newItem.voteCount ?? 0 })} />
               </div>
+              {user.loggedIn && <UiAction variant={isFavorited ? "primary" : "secondary"} aria-pressed={isFavorited} onClick={onFavRole}><UiIcon name={isFavorited ? "starFilled" : "star"} />{isFavorited ? "Favorited" : "Favorite role"}</UiAction>}
             </div>
-            <Box sx={{ mt: 1 }}>
-              <Comments location={commentLocation} />
-            </Box>
-          </>
-        }
-        right={
-          user.loggedIn && (
-            <Stack direction="column" spacing={1}>
-              <div className="box-panel">
-                <Button
-                  fullWidth
-                  onClick={onFavRole}
-                  startIcon={
-                    <i
-                      className={`fa-star ${isFavorited ? "fas" : "far"}`}
-                      style={{ color: "#f5c518" }}
-                    />
-                  }
-                  sx={{
-                    borderRadius: 999,
-                    textTransform: "none",
-                    fontWeight: 600,
-                    py: 1,
-                    color: isFavorited ? "#f5c518" : "text.primary",
-                    border: "1px solid",
-                    borderColor: isFavorited
-                      ? "rgba(245,197,24,0.55)"
-                      : "rgba(127,127,127,0.35)",
-                    backgroundColor: isFavorited
-                      ? "rgba(245,197,24,0.12)"
-                      : "transparent",
-                    "&:hover": {
-                      backgroundColor: isFavorited
-                        ? "rgba(245,197,24,0.2)"
-                        : "rgba(127,127,127,0.1)",
-                    },
-                  }}
-                >
-                  {isFavorited ? "Favorited" : "Favorite this role"}
-                </Button>
-              </div>
-              <div className="box-panel">
-                <div className="content">
-                  <FanartPanel roleId={roleId} />
-                </div>
-              </div>
-            </Stack>
-          )
-        }
-      />
-    </Stack>
+          </div>
+          <div className="role-skin-control">
+            <span>Icon skin</span>
+            <UiField select size="small" SelectProps={{ native: true }} value={activeRoleSkin} onChange={(event) => {
+              const newSkin = event.target.value;
+              setSelectedRoleSkin(newSkin);
+              onRoleSkinChange({ prop: "value", value: newSkin, ref: "roleSkins", localOnly: false }, RoleName, null, user, roleSkins);
+            }}>{roleSkinOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</UiField>
+          </div>
+          {artists.length > 0 && <div className="role-artists"><span>Icon artists</span>{artists}</div>}
+      </UiPageHeader>
+      <section className="role-info">
+        <h2>Role info</h2>
+        {description}
+        {examples}
+        {specialBox}
+        {overrideBox}
+      </section>
+      <section className="role-fanart-section">
+        <FanartPanel roleId={roleId} />
+      </section>
+      <section className="role-comments"><h2>Discussion</h2><Comments location={commentLocation} fullWidth /></section>
+    </div>
   );
 }
 

@@ -1,0 +1,16 @@
+.acknowledgement-directory { max-width: 1000px; min-width: 0; }
+.acknowledgement-intro { max-width: 75ch; color: var(--um-muted); margin-bottom: 20px; }
+.acknowledgement-list { list-style: none; padding: 0; margin: 0; }
+.acknowledgement-row { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--scheme-color-border); align-items: start; }
+.acknowledgement-name { font-weight: 600; overflow-wrap: anywhere; }
+.acknowledgement-meta { margin: 4px 0; font-size: var(--ui-text-small); color: var(--um-muted); overflow-wrap: anywhere; }
+.acknowledgement-details { min-width: 0; }
+.acknowledgement-details .md-content { margin-top: 8px; overflow-wrap: anywhere; }
+.acknowledgement-details .md-content > :first-child { margin-top: 0; }
+.acknowledgement-details .md-content > :last-child { margin-bottom: 0; }
+.acknowledgement-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.acknowledgement-editor { margin-top: 12px; }
+@media (max-width: 600px) {
+  .acknowledgement-row { grid-template-columns: 56px minmax(0, 1fr); gap: 12px; padding: 16px 0; }
+  .acknowledgement-actions { grid-column: 2; }
+}

@@ -1,0 +1,338 @@
+[
+  {
+    "family": "pixel-solid",
+    "name": "games",
+    "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/shapes-solid.svg",
+    "sha256": "3330e700169119467da8d7ae46e707362a4cf1c7774f86976fcd5bbf4748a77c"
+  },
+  {
+    "family": "pixel-solid",
+    "name": "chat",
+    "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/message-solid.svg",
+    "sha256": "eb71413fb5a1d189c62a6849aea314b22d54eed617d0756455c1a97a1d920768"
+  },
+  {
+    "family": "pixel-solid",
+    "name": "people",
+    "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/users-solid.svg",
+    "sha256": "5500cd99f062646a425bb9089036794904acb6f3dabc3b44eada2ae4d64d38f3"
+  },
+  {
+    "family": "pixel-solid",
+    "name": "book",
+    "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/book-solid.svg",
+    "sha256": "674f8bc72e6679242772b55e915a925c907df482b0157e4b0111e2f88fe13341"
+  },
+  {
+    "family": "pixel-solid",
+    "name": "rankings",
+    "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/chart-line-solid.svg",
+    "sha256": "88b688cd62176cd7a4a124ab14c0cd3bd45a474619659df0f758334ee3dcac6a"
+  },
+  {
+    "family": "pixel-solid",
+    "name": "settings",
+    "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/cog-solid.svg",
+    "sha256": "861367974bc4bd92682a392f75e087b6f1d3d4f4c2f9423be5bfa5993f06d670"
+  },
+  {
+    "family": "pixel-solid",
+    "name": "info",
+    "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/info-circle-solid.svg",
+    "sha256": "ebbd7facd0cc342919a4c946fd8c4ae4011f01b65bd256c64bb1a3664ad3ca7f"
+  },
+  {
+    "family": "pixel-solid",
+    "name": "check",
+    "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/check-circle-solid.svg",
+    "sha256": "6ede7f65208b4034ba5cb389b5e888ad1fc640f9933c50fdbacafd9975edd14e"
+  },
+  {
+    "family": "pixel-solid",
+    "name": "send",
+    "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/arrow-up-solid.svg",
+    "sha256": "e79ec5c80610e35ab5b7efc4fe6adf407b90deeaa40632597494452ec8a5738a"
+  },
+  {
+    "family": "pixel-solid",
+    "name": "emotes",
+    "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/face-grin-solid.svg",
+    "sha256": "554efd43123462b2b43fbf92b9dd192b9b4cb59137453db93d5e8948fda58d30"
+  },
+  {
+    "family": "pixel-solid",
+    "name": "menu",
+    "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/bars-solid.svg",
+    "sha256": "6dcc554c1d0cac58c6b7c1795e28b9605db072ffce7289f93735a24d1ffebe33"
+  },
+  {
+    "family": "pixel-solid",
+    "name": "add",
+    "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/plus-solid.svg",
+    "sha256": "77993b3e7b586cb92b7ec0a2bfd28be598426b6b087e792db26d0a251bdc255b"
+  },
+  {
+    "family": "pixel-solid",
+    "name": "close",
+    "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/times-solid.svg",
+    "sha256": "841a1e318ae288290e254fc6688e6701ba4d96fe7a34de3611b85fe9f34683dd"
+  },
+  {
+    "family": "pixel-solid",
+    "name": "help",
+    "source": "https://raw.githubusercontent.com/hackernoon/pixel-icon-library/5fe05c9c81a3eb43448e820b4521307102c248e7/icons/SVG/solid/question-circle-solid.svg",
+    "sha256": "023131bc2672cd727a8b5e6ae67c44f52f82c06131125aff2fa627351c0ac7e9"
+  },
+  {
+    "family": "phosphor-fill",
+    "name": "games",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/fill/game-controller-fill.svg",
+    "sha256": "9dcb7af7b4854bb2da15ab1852292428c4d95314b06cd25aa5f45f21b3134884"
+  },
+  {
+    "family": "phosphor-fill",
+    "name": "chat",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/fill/chat-circle-fill.svg",
+    "sha256": "ea4d05ca384dde5c67fb5b15b36e1c6734400147b41471b13665fac87520506b"
+  },
+  {
+    "family": "phosphor-fill",
+    "name": "people",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/fill/users-three-fill.svg",
+    "sha256": "aca109558096eca83a60ded74a65b5ab9d341857f0c76f7b89bf93e3bd6df971"
+  },
+  {
+    "family": "phosphor-fill",
+    "name": "book",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/fill/book-open-fill.svg",
+    "sha256": "869e2b75ba601a2915731ac86a52b72110da309b048173ff45400e75e37799ce"
+  },
+  {
+    "family": "phosphor-fill",
+    "name": "rankings",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/fill/chart-bar-fill.svg",
+    "sha256": "a417cc075c304374043e7d47f7622606b15f14e4c65663fd7a8a9898d768362a"
+  },
+  {
+    "family": "phosphor-fill",
+    "name": "settings",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/fill/gear-six-fill.svg",
+    "sha256": "dc303bf88571d9aa8d56c30d2630303aa7aba4ca21c21010be3549d6c17666ce"
+  },
+  {
+    "family": "phosphor-fill",
+    "name": "info",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/fill/info-fill.svg",
+    "sha256": "8240b810f7a3b076271a829dff61c7dd64257a781c30f29c938f88835f11136a"
+  },
+  {
+    "family": "phosphor-fill",
+    "name": "check",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/fill/check-circle-fill.svg",
+    "sha256": "6ba676543869fddabb7a4ba7026fc51e14351455f4c095ea389b89d0e1d79708"
+  },
+  {
+    "family": "phosphor-fill",
+    "name": "send",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/fill/arrow-up-fill.svg",
+    "sha256": "34268ddce0a1aed339b27cf87cb97ab8b9eece8239df016cf06f1031c3a6507e"
+  },
+  {
+    "family": "phosphor-fill",
+    "name": "emotes",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/fill/smiley-fill.svg",
+    "sha256": "2f993043ef4566931f5ad81be6d1030734d2dbad5e5d7c5d380debfeaeeb9399"
+  },
+  {
+    "family": "phosphor-fill",
+    "name": "menu",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/fill/list-fill.svg",
+    "sha256": "1df4bd0e497c551871da87fc5de752a81ff397c9b8fd9da10e319630e60d412f"
+  },
+  {
+    "family": "phosphor-fill",
+    "name": "add",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/fill/plus-fill.svg",
+    "sha256": "64ef1a2c9f693a531ddb970a6c6e7c9dcd9bf36a58afec66ecb57355449ce3d2"
+  },
+  {
+    "family": "phosphor-fill",
+    "name": "close",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/fill/x-fill.svg",
+    "sha256": "6ec0689770c1fb1dc7018039bef101079d2d20931c4661c3981cbe956f20c872"
+  },
+  {
+    "family": "phosphor-fill",
+    "name": "help",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/fill/question-fill.svg",
+    "sha256": "91390e2c8d076dedcf73ec4ffc5ac6531dbf93aadac7e0907ba1cfb9e95a145b"
+  },
+  {
+    "family": "phosphor-duotone",
+    "name": "games",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/duotone/game-controller-duotone.svg",
+    "sha256": "0ea6d7fd6dc328b3e2e1041b3575639e61a9546082553c0f4ca6101ee8f9f6b3"
+  },
+  {
+    "family": "phosphor-duotone",
+    "name": "chat",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/duotone/chat-circle-duotone.svg",
+    "sha256": "cee51ebf9726123b5fcb4139300dcf7f1bc5cb50373db7cb6f5e45a64a87fe3c"
+  },
+  {
+    "family": "phosphor-duotone",
+    "name": "people",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/duotone/users-three-duotone.svg",
+    "sha256": "8df43f36d7329c365afa0672e2367af16a7bfc7d8820838dfe7358cce1a76aba"
+  },
+  {
+    "family": "phosphor-duotone",
+    "name": "book",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/duotone/book-open-duotone.svg",
+    "sha256": "114456d637f78d1a748ef70768d3635c8f927fdfeed095a4ca9ded6f975ab8f5"
+  },
+  {
+    "family": "phosphor-duotone",
+    "name": "rankings",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/duotone/chart-bar-duotone.svg",
+    "sha256": "7c53ca5599782f50da2591abafd76d04d9fc9388877041911cb97ea585373d2f"
+  },
+  {
+    "family": "phosphor-duotone",
+    "name": "settings",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/duotone/gear-six-duotone.svg",
+    "sha256": "049e51d9b794d6b2649073414f90daed5ebadbebfcefb178170aef21c7ace330"
+  },
+  {
+    "family": "phosphor-duotone",
+    "name": "info",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/duotone/info-duotone.svg",
+    "sha256": "dec9ea1394c618d6d576ba43e0f08eea265eaf20046e98bc3da19eb4b8da73e8"
+  },
+  {
+    "family": "phosphor-duotone",
+    "name": "check",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/duotone/check-circle-duotone.svg",
+    "sha256": "d9c7016e83a81c8ef1a250a307acc6d29d5c492fc46066ab5e5e7446a65b48f6"
+  },
+  {
+    "family": "phosphor-duotone",
+    "name": "send",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/duotone/arrow-up-duotone.svg",
+    "sha256": "15ea3ef574110052e5a695d6e356c7f1649597d10f30b27eff251df8a6fe1d9f"
+  },
+  {
+    "family": "phosphor-duotone",
+    "name": "emotes",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/duotone/smiley-duotone.svg",
+    "sha256": "b5e8638df688ea1832380e63c0b986f4a502ade6d51ea2f4552d0a9f5a796eac"
+  },
+  {
+    "family": "phosphor-duotone",
+    "name": "menu",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/duotone/list-duotone.svg",
+    "sha256": "0e928c57bdcaee90844c6043d7b7c35acabe798fb147ad6f2d5c016ea5f94d0f"
+  },
+  {
+    "family": "phosphor-duotone",
+    "name": "add",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/duotone/plus-duotone.svg",
+    "sha256": "e1dee25823800a7cfff6c5cce5693bb4daef55657e99bfde7c5b57d7c7e17998"
+  },
+  {
+    "family": "phosphor-duotone",
+    "name": "close",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/duotone/x-duotone.svg",
+    "sha256": "2092e345cb389e4b3c9795d5aa467b7da4e230dd257ba40845a262c80d51f1ab"
+  },
+  {
+    "family": "phosphor-duotone",
+    "name": "help",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/2b75f3ad12b420c9504ef05df8d2564a28f8500e/assets/duotone/question-duotone.svg",
+    "sha256": "af995bac28b5f0007c9ff20cf23351dba0a8c07cea55868cd8b65056bc103515"
+  },
+  {
+    "family": "bootstrap-fill",
+    "name": "games",
+    "source": "https://raw.githubusercontent.com/twbs/icons/829d2bc2b87543c7d781c815ca4f0feee8cf9e45/icons/controller.svg",
+    "sha256": "1f61a8977e3aa8f620345cced0bbeb621ac54369d876ace68be2d041c45a3b6a"
+  },
+  {
+    "family": "bootstrap-fill",
+    "name": "chat",
+    "source": "https://raw.githubusercontent.com/twbs/icons/829d2bc2b87543c7d781c815ca4f0feee8cf9e45/icons/chat-dots-fill.svg",
+    "sha256": "9cdad0105d6551249c5ae2418b8d598fcccf6c918ca5c8f41fae6d2f6d361793"
+  },
+  {
+    "family": "bootstrap-fill",
+    "name": "people",
+    "source": "https://raw.githubusercontent.com/twbs/icons/829d2bc2b87543c7d781c815ca4f0feee8cf9e45/icons/people-fill.svg",
+    "sha256": "90c3fea13f40501e0ef903cf871a2226029cbd7c8ddebd921f6b127cc0ef339c"
+  },
+  {
+    "family": "bootstrap-fill",
+    "name": "book",
+    "source": "https://raw.githubusercontent.com/twbs/icons/829d2bc2b87543c7d781c815ca4f0feee8cf9e45/icons/book-fill.svg",
+    "sha256": "cd3ff04503e542fa378a288dc8b302a5582469cd148db51ba57d677e34e2da1b"
+  },
+  {
+    "family": "bootstrap-fill",
+    "name": "rankings",
+    "source": "https://raw.githubusercontent.com/twbs/icons/829d2bc2b87543c7d781c815ca4f0feee8cf9e45/icons/bar-chart-fill.svg",
+    "sha256": "353c4e55e77659f5f24f6df8827138eb0724165c0e955e1e319b7f7ca4e41b2e"
+  },
+  {
+    "family": "bootstrap-fill",
+    "name": "settings",
+    "source": "https://raw.githubusercontent.com/twbs/icons/829d2bc2b87543c7d781c815ca4f0feee8cf9e45/icons/gear-fill.svg",
+    "sha256": "dca7ce68ef3e4ff59217393da7c8946ac8be1925d3e4d6adea1d2638fab85db8"
+  },
+  {
+    "family": "bootstrap-fill",
+    "name": "info",
+    "source": "https://raw.githubusercontent.com/twbs/icons/829d2bc2b87543c7d781c815ca4f0feee8cf9e45/icons/info-circle-fill.svg",
+    "sha256": "896923ba1bb200ce52e7c62ea08495eaa8a79a423399d80c5a8abd9dded6b009"
+  },
+  {
+    "family": "bootstrap-fill",
+    "name": "check",
+    "source": "https://raw.githubusercontent.com/twbs/icons/829d2bc2b87543c7d781c815ca4f0feee8cf9e45/icons/check-circle-fill.svg",
+    "sha256": "f6f5d971091787219c4226c5bf68a6ebd4d976c91bd90fc52ba3b422589b2dc8"
+  },
+  {
+    "family": "bootstrap-fill",
+    "name": "send",
+    "source": "https://raw.githubusercontent.com/twbs/icons/829d2bc2b87543c7d781c815ca4f0feee8cf9e45/icons/arrow-up.svg",
+    "sha256": "b6d86790781ac475d20f54ead8284e26baadd2fb867250455cf7aa7030bd7ce3"
+  },
+  {
+    "family": "bootstrap-fill",
+    "name": "emotes",
+    "source": "https://raw.githubusercontent.com/twbs/icons/829d2bc2b87543c7d781c815ca4f0feee8cf9e45/icons/emoji-smile-fill.svg",
+    "sha256": "e105cb1f6374dca44e52a29d92d83a5becce8d2ad8906514ac9aaf363aac678d"
+  },
+  {
+    "family": "bootstrap-fill",
+    "name": "menu",
+    "source": "https://raw.githubusercontent.com/twbs/icons/829d2bc2b87543c7d781c815ca4f0feee8cf9e45/icons/list.svg",
+    "sha256": "ca32e9e89788d0721410969df4fe0e0327db886ee7460f018e615a85433d987e"
+  },
+  {
+    "family": "bootstrap-fill",
+    "name": "add",
+    "source": "https://raw.githubusercontent.com/twbs/icons/829d2bc2b87543c7d781c815ca4f0feee8cf9e45/icons/plus.svg",
+    "sha256": "2c987409ea9cded4f59e67fc873a72fe3eb1bacc17160a07f250c09970364630"
+  },
+  {
+    "family": "bootstrap-fill",
+    "name": "close",
+    "source": "https://raw.githubusercontent.com/twbs/icons/829d2bc2b87543c7d781c815ca4f0feee8cf9e45/icons/x-lg.svg",
+    "sha256": "5ac6965c9989afaad195dc0fe739bd7443a7e94e52f8530b9b7d664d20c5d9e5"
+  },
+  {
+    "family": "bootstrap-fill",
+    "name": "help",
+    "source": "https://raw.githubusercontent.com/twbs/icons/829d2bc2b87543c7d781c815ca4f0feee8cf9e45/icons/question-circle-fill.svg",
+    "sha256": "22a3d660233ab01acef28b9f7bda6be3b2bc3c88d299a6cabc64f3d9aa9164b2"
+  }
+]

@@ -1,0 +1,9 @@
+[
+  {
+    "id": "reference-tab-scroll-window",
+    "surfaces": ["learn-games"],
+    "property": "clippedByAncestor",
+    "requiredTaskCheck": "selected-tabs-fit-scroll-window-and-keyboard-reaches-first-and-last-sections",
+    "reason": "The reference/category tabs use an explicit horizontal scroll window. Neighboring unselected tabs may be outside that window; selected labels and a usable target must fit. Image review covers the repaired reference states at all widths/palettes, and the same case must pass first/last keyboard navigation. This does not allow clipped labels, disabled scroll affordances, ordinary controls or other surfaces."
+  }
+]

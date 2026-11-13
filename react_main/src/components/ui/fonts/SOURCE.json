@@ -1,0 +1,48 @@
+{
+  "family": "Fira Sans",
+  "package": "@fontsource/fira-sans",
+  "version": "5.2.7",
+  "license": "SIL OFL 1.1",
+  "files": [
+    {
+      "file": "fira-sans-latin-400-normal.woff2",
+      "source": "https://cdn.jsdelivr.net/npm/@fontsource/fira-sans@5.2.7/files/fira-sans-latin-400-normal.woff2",
+      "sha256": "3e38d8c01fe97529fbf0a086bf958d724b723ca7fc8be77b4ba5745f6259b6ca"
+    },
+    {
+      "file": "fira-sans-latin-ext-400-normal.woff2",
+      "source": "https://cdn.jsdelivr.net/npm/@fontsource/fira-sans@5.2.7/files/fira-sans-latin-ext-400-normal.woff2",
+      "sha256": "ed4d0b738d93612b44310bf3f2993d2ce220da28f064c2cdda37b2fcbc23662c"
+    },
+    {
+      "file": "fira-sans-latin-500-normal.woff2",
+      "source": "https://cdn.jsdelivr.net/npm/@fontsource/fira-sans@5.2.7/files/fira-sans-latin-500-normal.woff2",
+      "sha256": "88d3e420adee3fa99ae50c15b123e3c9a07ce0ec0c03a01bd6bdd5232822da28"
+    },
+    {
+      "file": "fira-sans-latin-ext-500-normal.woff2",
+      "source": "https://cdn.jsdelivr.net/npm/@fontsource/fira-sans@5.2.7/files/fira-sans-latin-ext-500-normal.woff2",
+      "sha256": "630d057d726045ae9b9d5063573862180659d9ce614a5d8ae5418ec799caea15"
+    },
+    {
+      "file": "fira-sans-latin-600-normal.woff2",
+      "source": "https://cdn.jsdelivr.net/npm/@fontsource/fira-sans@5.2.7/files/fira-sans-latin-600-normal.woff2",
+      "sha256": "55e09735e30d8492afac5d59ac433c6b367bb7dd00c46e157cfe95c9fb29e833"
+    },
+    {
+      "file": "fira-sans-latin-ext-600-normal.woff2",
+      "source": "https://cdn.jsdelivr.net/npm/@fontsource/fira-sans@5.2.7/files/fira-sans-latin-ext-600-normal.woff2",
+      "sha256": "8d1b17f77319ceb145549c9489dedc66b117ac2124cd72d0a4559ada43022510"
+    },
+    {
+      "file": "fira-sans-latin-700-normal.woff2",
+      "source": "https://cdn.jsdelivr.net/npm/@fontsource/fira-sans@5.2.7/files/fira-sans-latin-700-normal.woff2",
+      "sha256": "c753d7153cac2cfeb877264d18f11197ca672d3e04ba1472154a54777a4e354d"
+    },
+    {
+      "file": "fira-sans-latin-ext-700-normal.woff2",
+      "source": "https://cdn.jsdelivr.net/npm/@fontsource/fira-sans@5.2.7/files/fira-sans-latin-ext-700-normal.woff2",
+      "sha256": "9ff55b176e58ac7e0e6c3115858c7120d532957105fde0ca82d47a1e895db730"
+    }
+  ]
+}

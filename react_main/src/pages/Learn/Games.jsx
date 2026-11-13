@@ -2,21 +2,7 @@ import React, { useState, useMemo, useEffect, useContext } from "react";
 import { useLocation, Link as RouterLink } from "react-router-dom";
 import {
   Box,
-  Typography,
-  Select,
-  MenuItem,
-  FormControl,
-  Tabs,
-  Tab,
   Link,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Stack,
 } from "@mui/material";
 
 import { RoleSearch, ModifierSearch, GameSettingSearch } from "components/Roles";
@@ -25,6 +11,7 @@ import { ActiveGameTypes, DisabledGameTypes } from "Constants";
 import GameIcon from "components/GameIcon";
 import { SiteInfoContext } from "Contexts";
 import { hyphenDelimit } from "utils";
+import { UiPageHeader, UiField, UiMenuItem, UiReferenceList, UiReferenceEntry, UiText as Typography, UiTabs as Tabs, UiTab as Tab } from "components/ui";
 
 const TAB_IDS = ["roles", "modifiers", "items", "mechanics", "achievements"];
 const TAB_LABELS = {
@@ -155,35 +142,32 @@ function LearnTabsLayout({
     <div className="learn">
       {children}
       <Box sx={{ mt: 2, mb: 1 }}>
-        <Tabs value={value} onChange={handleChange}>
+        <Tabs aria-label="Reference sections" value={value} onChange={handleChange}>
           {TAB_IDS.map((id) => (
             <Tab
               key={id}
               label={TAB_LABELS[id]}
               value={id}
+              id={`learn-section-${id}`}
+              aria-controls={`learn-tab-${id}`}
               disabled={!enabledTabs.includes(id)}
-              sx={
-                !enabledTabs.includes(id)
-                  ? { color: "text.disabled", "&.Mui-disabled": { opacity: 0.6 } }
-                  : undefined
-              }
             />
           ))}
         </Tabs>
       </Box>
-      <Box role="tabpanel" hidden={value !== "roles"} id="learn-tab-roles">
+      <Box role="tabpanel" hidden={value !== "roles"} id="learn-tab-roles" aria-labelledby="learn-section-roles">
         {value === "roles" && rolesContent}
       </Box>
-      <Box role="tabpanel" hidden={value !== "modifiers"} id="learn-tab-modifiers">
+      <Box role="tabpanel" hidden={value !== "modifiers"} id="learn-tab-modifiers" aria-labelledby="learn-section-modifiers">
         {value === "modifiers" && modifiersContent}
       </Box>
-      <Box role="tabpanel" hidden={value !== "items"} id="learn-tab-items">
+      <Box role="tabpanel" hidden={value !== "items"} id="learn-tab-items" aria-labelledby="learn-section-items">
         {value === "items" && itemsContent}
       </Box>
-      <Box role="tabpanel" hidden={value !== "mechanics"} id="learn-tab-mechanics">
+      <Box role="tabpanel" hidden={value !== "mechanics"} id="learn-tab-mechanics" aria-labelledby="learn-section-mechanics">
         {value === "mechanics" && mechanicsContent}
       </Box>
-      <Box role="tabpanel" hidden={value !== "achievements"} id="learn-tab-achievements">
+      <Box role="tabpanel" hidden={value !== "achievements"} id="learn-tab-achievements" aria-labelledby="learn-section-achievements">
         {value === "achievements" && achievementsContent}
       </Box>
     </div>
@@ -214,40 +198,8 @@ function LearnGamePanel({ gameType, Layout }) {
 
   const description = learnGameDescriptionByType[gameType] ?? [];
 
-  const renderItemsTable = (data) => (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Description</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.map((entry, index) => (
-            <TableRow key={index}>
-              <TableCell>
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  sx={{
-                    alignItems: "center",
-                    textAlign: "left",
-                  }}
-                >
-                  {entry.icon}
-                  <Typography>{entry.name}</Typography>
-                </Stack>
-              </TableCell>
-              <TableCell>
-                <Typography variant="body2">{entry.text}</Typography>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+  const renderItems = data => <UiReferenceList label="Items" items={data} getItemKey={entry => entry.name}
+    renderEntry={entry => <UiReferenceEntry name={entry.name} icon={entry.icon} description={entry.text} />} />;
 
   let layoutProps = {
     rolesContent: <RoleSearch gameType={gameType} />,
@@ -257,7 +209,7 @@ function LearnGamePanel({ gameType, Layout }) {
     layoutProps = {
       ...layoutProps,
       modifiersContent: <ModifierSearch gameType={gameType} />,
-      itemsContent: renderItemsTable(items),
+      itemsContent: renderItems(items),
       mechanicsContent: <GameSettingSearch gameType={gameType} curMods={{}} />,
       achievementsContent: (
         <Box sx={{ pt: 2 }}>
@@ -307,37 +259,18 @@ export default function Games(props) {
 
   return (
     <>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-        <Typography variant="h2" component="span" gutterBottom={false}>
-          Learn
-        </Typography>
-        <FormControl variant="standard" size="small" sx={{ minWidth: 180 }}>
-          <Select
-            value={gameType}
-            onChange={handleGameChange}
-            displayEmpty
-            sx={{
-              typography: "h2",
-              "& .MuiSelect-select": { py: 0.5 },
-            }}
-            renderValue={(value) => (
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <GameIcon gameType={value} size={28} />
-                {value}
-              </Box>
-            )}
-          >
+      <UiPageHeader title="Learn" variant="editor" actions={
+          <UiField select size="small" label="Game" value={gameType} onChange={handleGameChange} SelectProps={{ renderValue: value => <span className="ui-action-row"><GameIcon gameType={value} size={24} />{value}</span> }}>
             {ActiveGameTypes.map((game) => (
-              <MenuItem key={game} value={game}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <UiMenuItem key={game} value={game}>
+                <span className="ui-action-row">
                   <GameIcon gameType={game} size={24} />
                   {game}
-                </Box>
-              </MenuItem>
+                </span>
+              </UiMenuItem>
             ))}
-          </Select>
-        </FormControl>
-      </Box>
+          </UiField>
+      } />
       <Box>
         <LearnGamePanel gameType={panelGameType} Layout={LearnTabsLayout} />
       </Box>

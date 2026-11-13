@@ -1,6 +1,10 @@
 // Opt-in transcript window. Measurement and scroll compensation share one owner.
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
-import { useVirtualizer } from "@tanstack/react-virtual";
+import {
+  useVirtualizer,
+  observeElementOffset,
+  measureElement,
+} from "@tanstack/react-virtual";
 import {
   estimateTranscriptRowHeight,
   transcriptLayoutMetrics,
@@ -23,7 +27,11 @@ const iOSDefersCorrections = (() => {
 })();
 const UNSEEN_ROW_ESTIMATE = iOSDefersCorrections ? 150 : 60;
 
-export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScroll }) {
+// `startAtEnd` is only true for the transcript a reader is following live: the
+// current phase of a running game. A review, or an older phase someone opened to
+// read, starts at its first message — the same place the full-DOM transcript put
+// them before this component existed.
+export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScroll, startAtEnd = true }) {
   const initializing = useRef(true);
   const jumpFrame = useRef(null);
   const highlightTimer = useRef(null);
@@ -145,15 +153,50 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     return estimateTranscriptRowHeight(row, UNSEEN_ROW_ESTIMATE, layoutRef.current);
   }, []);
   const virtualizerRef = useRef(null);
+  const scrollOffsetObserver = useRef(null);
+  const observeScrollOffset = useCallback((instance, onOffset) => {
+    scrollOffsetObserver.current = onOffset;
+    const cleanup = observeElementOffset(instance, onOffset);
+    return () => {
+      if (scrollOffsetObserver.current === onOffset) {
+        scrollOffsetObserver.current = null;
+      }
+      cleanup?.();
+    };
+  }, []);
+  const measureTranscriptRow = useCallback((element, entry, instance) => {
+    // A size notification can precede the latest native scroll event. Feed that
+    // offset through the public observer before compensation, so measuring an
+    // overscanned row cannot cancel a reader's just-completed scroll movement.
+    const offset = instance.scrollElement?.scrollTop;
+    if (!iOSDefersCorrections && offset != null && offset !== instance.scrollOffset) {
+      scrollOffsetObserver.current?.(offset, instance.isScrolling);
+    }
+    return measureElement(element, entry, instance);
+  }, []);
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => speechDisplayRef.current,
     getItemKey,
     estimateSize,
     overscan: 8,
+    // The transcript has 10px of breathing room above the composer, applied as
+    // padding on the scroller. The virtualizer sizes itself from its items, so
+    // without this it believes the list ends 10px early: scrollToEnd() lands
+    // there and the view sits 10px above the newest message.
+    paddingEnd: 10,
+    observeElementOffset: observeScrollOffset,
+    measureElement: measureTranscriptRow,
+    // Schedule size work outside the active ResizeObserver delivery. The public
+    // offset observer above still adopts intervening native motion before each
+    // measurement, so this does not compensate from a stale scroll position.
+    useAnimationFrameWithResizeObserver: true,
     anchorTo: "end",
     followOnAppend: autoScroll,
-    scrollEndThreshold: 10,
+    // Tight enough that following never drifts: at 10px the view sat up to 10px
+    // above the newest message between appends, which reads as a small jitter
+    // while a busy table is talking.
+    scrollEndThreshold: 2,
   });
   virtualizerRef.current = virtualizer;
 
@@ -193,11 +236,42 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     }
   }, []);
 
+  // Jumping to the newest message cannot be one call: rows below the fold are
+  // still estimates, so scrollToEnd() lands at the estimated bottom and the rows
+  // measured afterwards leave the reader a little short of the real one - close
+  // enough to look wrong, far enough that following disengages. Re-pin for a few
+  // frames until the measured layout stops growing.
+  const pinToEnd = useCallback(() => {
+    const step = (attemptsLeft) => {
+      const instance = virtualizerRef.current;
+      const scroller = speechDisplayRef.current;
+      if (!instance || !scroller) return;
+      instance.scrollToEnd();
+      if (attemptsLeft <= 0) return;
+      requestAnimationFrame(() => {
+        const next = speechDisplayRef.current;
+        if (!next) return;
+        if (next.scrollHeight - next.clientHeight - next.scrollTop > 1) step(attemptsLeft - 1);
+      });
+    };
+    step(8);
+  }, [speechDisplayRef]);
+
+  // The "N new messages" pill lives above the transcript and has no handle on
+  // the virtualizer, so it asks for the bottom through the scroller.
   useLayoutEffect(() => {
-    virtualizer.scrollToEnd();
+    const scroller = speechDisplayRef.current;
+    if (!scroller) return;
+    scroller.addEventListener("transcript-scroll-end", pinToEnd);
+    return () => scroller.removeEventListener("transcript-scroll-end", pinToEnd);
+  }, [pinToEnd, speechDisplayRef]);
+
+  useLayoutEffect(() => {
+    if (startAtEnd) pinToEnd();
+    else virtualizer.scrollToOffset(0);
     const timer = setTimeout(recordMeasured, 200);
     return () => clearTimeout(timer);
-  }, [virtualizer, recordMeasured]);
+  }, [virtualizer, recordMeasured, startAtEnd, pinToEnd]);
 
   // A keyboard changes the viewport without appending data. Keep an already
   // following reader pinned, but never pull someone away from older messages.
@@ -206,16 +280,25 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     if (!autoScroll || !scroller) return;
     let width = scroller.clientWidth;
     let height = scroller.clientHeight;
+    let frame;
     const observer = new ResizeObserver(() => {
-      const nextWidth = scroller.clientWidth;
-      const nextHeight = scroller.clientHeight;
-      if (nextWidth === width && nextHeight === height) return;
-      width = nextWidth;
-      height = nextHeight;
-      if (width > 0 && height > 0) virtualizer.scrollToEnd();
+      // scrollToEnd may synchronously commit measured rows. Do not start that
+      // layout work inside the active ResizeObserver delivery.
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const nextWidth = scroller.clientWidth;
+        const nextHeight = scroller.clientHeight;
+        if (nextWidth === width && nextHeight === height) return;
+        width = nextWidth;
+        height = nextHeight;
+        if (width > 0 && height > 0) virtualizer.scrollToEnd();
+      });
     });
     observer.observe(scroller);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+    };
   }, [autoScroll, speechDisplayRef, virtualizer]);
 
   useEffect(() => () => {
@@ -224,6 +307,21 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     clearTimeout(highlightTimer.current);
     recordMeasured();
   }, [recordMeasured]);
+
+  // A webfont that finishes loading after a row painted changes that row's line
+  // box, so the sizes the virtualizer holds go stale and the rows below it move.
+  // Re-measure once when the faces settle: one deliberate correction instead of
+  // a slow drift as rows are scrolled into view.
+  useEffect(() => {
+    if (typeof document === "undefined" || !document.fonts) return undefined;
+    if (!document.fonts.addEventListener) return undefined;
+    const remeasure = () => virtualizer.measure();
+    document.fonts.addEventListener("loadingdone", remeasure);
+    if (document.fonts.status === "loading") {
+      document.fonts.ready.then(remeasure).catch(() => undefined);
+    }
+    return () => document.fonts.removeEventListener("loadingdone", remeasure);
+  }, [virtualizer]);
 
   useEffect(() => {
     const scroller = speechDisplayRef.current;
@@ -352,10 +450,6 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
   }, [checkTopEdge, onScroll, speechDisplayRef]);
 
   const items = virtualizer.getVirtualItems();
-  // Unresolved quotes can render nothing. Match the original DOM's last child,
-  // not an empty logical tail whose measured wrapper has zero height.
-  let lastRowIndex = rows.length - 1;
-  while (lastRowIndex >= 0 && virtualizer.itemSizeCache.get(keys[lastRowIndex]) === 0) lastRowIndex--;
   const firstItem = items[0];
   const windowStart = firstItem?.start ?? 0;
   const windowHeight = items.length ? items[items.length - 1].end - windowStart : 0;
@@ -372,7 +466,16 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
       className="speech-display"
       data-name-animation-viewport
       data-transcript-window="anchored-v8"
-      style={{ display: "block", position: "relative", overflowAnchor: "none" }}
+      style={{
+        display: "block",
+        position: "relative",
+        overflowAnchor: "none",
+        // The gutter above the composer is `paddingEnd` on the virtualizer, not
+        // padding here: the virtualizer sizes the list from its items, so
+        // scroller padding is space it cannot see and every jump to the end
+        // stops short of the real bottom.
+        paddingBottom: 0,
+      }}
       ref={setScroller}
       onScroll={handleScroll}
       onTouchStartCapture={handleTouchStart}
@@ -395,7 +498,6 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
             key={item.key}
             className="transcript-window-row"
             data-index={item.index}
-            data-transcript-last-row={item.index === lastRowIndex ? "true" : undefined}
             ref={virtualizer.measureElement}
             style={{ position: "absolute", top: item.start - windowStart, left: 0, width: "100%", display: "flow-root", overflowAnchor: "none" }}
           >

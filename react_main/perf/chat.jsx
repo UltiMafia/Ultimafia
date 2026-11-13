@@ -22,6 +22,8 @@ const params = new URLSearchParams(window.location.search);
 const cosmetic = params.get("cosmetic") || "none";
 const modes = ["rainbow", "pulse", "glow", "gradient", "patriotic", "tricolor"];
 const initialCount = Number(params.get("count") || 100);
+// Echo latency, so a test can act between sending and the server confirming.
+const echoDelay = Number(params.get("echoDelay") || 0);
 const nameplateTarget = params.has("nameplates")
   ? Math.max(1, Math.min(initialCount, Number(params.get("nameplates"))))
   : null;
@@ -105,6 +107,7 @@ function ChatPerformance() {
   const [transcriptVersion, setTranscriptVersion] = useState("");
   const [streaming, setStreaming] = useState(false);
   const status = useRef();
+  const sent = useRef([]);
   const isPhone = useIsPhoneDevice();
 
   useEffect(() => {
@@ -126,10 +129,11 @@ function ChatPerformance() {
 
   const socket = useMemo(() => ({
     send(event, data) {
+      sent.current.push({ event, data });
       if (event === "speak") {
         // Deliver asynchronously like an echoed socket message, without network
         // delay or spam limits. Typing events intentionally have no recipient.
-        setTimeout(() => append(makeMessage(data.content, "test-0")), 0);
+        setTimeout(() => append(makeMessage(data.content, "test-0")), echoDelay);
       }
     },
   }), [append]);
@@ -186,7 +190,7 @@ function ChatPerformance() {
   }, [updateHistory]);
 
   useEffect(() => {
-    window.chatPerf = { load, settings, updateSettings,
+    window.chatPerf = { load, settings, updateSettings, sent: sent.current,
       append: (message) => append(message || makeMessage()), setStreaming,
       replyTo: (id) => {
         append({ ...makeMessage("quote", "test-0"), id: "perf-quote", isQuote: true,

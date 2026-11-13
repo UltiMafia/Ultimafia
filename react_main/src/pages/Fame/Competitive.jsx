@@ -29,6 +29,7 @@ import { UserContext, SiteInfoContext } from "Contexts";
 import { PageNav, SearchBar } from "components/Nav";
 import { useErrorAlert } from "components/Alerts";
 import { formatUTCDateOnly, formatUTCDateTime } from "utils";
+import { UiPageHeader, UiField } from "components/ui";
 
 export const QUERY_PARAM_SEASON = "season";
 export const QUERY_PARAM_ROUND = "round";
@@ -511,43 +512,45 @@ function SeasonRoundSelect({ seasonNumber, roundNumber, setSearchParams }) {
 
   return (
     <Stack direction="row" spacing={1}>
-      <FormControl fullWidth>
-        <InputLabel id="season-select-label">Season</InputLabel>
-        <Select
-          labelId="season-select-label"
-          id="season-select"
-          value={seasonNumber}
-          label="Season"
-          onChange={handleSeasonChange}
-        >
-          <MenuItem value={"latest"}>Latest</MenuItem>
-          {seasonList.map((season) => (
-            <MenuItem value={season.number} key={season.number}>
-              {season.number}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <UiField
+        select
+        size="small"
+        fullWidth
+        label="Season"
+        id="season-select"
+        value={seasonNumber}
+        onChange={handleSeasonChange}
+        InputLabelProps={{ shrink: true }}
+        SelectProps={{ native: true }}
+      >
+        <option value={"latest"}>Latest</option>
+        {seasonList.map((season) => (
+          <option value={season.number} key={season.number}>
+            {season.number}
+          </option>
+        ))}
+      </UiField>
       {roundList && (
-        <FormControl fullWidth>
-          <InputLabel id="round-select-label">Round</InputLabel>
-          <Select
-            labelId="round-select-label"
-            id="round-select"
-            value={roundNumber}
-            label="Round"
-            onChange={handleRoundChange}
-          >
-            <MenuItem value={"latest"}>Latest</MenuItem>
-            {roundList
-              .filter((round) => round.number > 0)
-              .map((round) => (
-                <MenuItem value={round.number} key={round.number}>
-                  {round.number}
-                </MenuItem>
-              ))}
-          </Select>
-        </FormControl>
+        <UiField
+          select
+          size="small"
+          fullWidth
+          label="Round"
+          id="round-select"
+          value={roundNumber}
+          onChange={handleRoundChange}
+          InputLabelProps={{ shrink: true }}
+          SelectProps={{ native: true }}
+        >
+          <option value={"latest"}>Latest</option>
+          {roundList
+            .filter((round) => round.number > 0)
+            .map((round) => (
+              <option value={round.number} key={round.number}>
+                {round.number}
+              </option>
+            ))}
+        </UiField>
       )}
     </Stack>
   );
@@ -661,37 +664,16 @@ export default function Competitive() {
   }
 
   return (
-    <Stack direction="column" spacing={1}>
+    <>
+      <UiPageHeader title={displayTitle} description={caption || undefined} />
       <Grid2
         container
-        columns={isPhoneDevice ? 1 : 3}
+        columns={isPhoneDevice ? 1 : 2}
         spacing={1}
         sx={{
           alignItems: "center",
         }}
       >
-        <Grid2 size={1}>
-          <Stack
-            direction="column"
-            spacing={0.5}
-            sx={{
-              alignItems: "center",
-            }}
-          >
-            <Typography variant="h2">{displayTitle}</Typography>
-            {caption && (
-              <Typography
-                variant="caption"
-                sx={{
-                  display: "block",
-                  textAlign: isPhoneDevice ? "center" : "right",
-                }}
-              >
-                {caption}
-              </Typography>
-            )}
-          </Stack>
-        </Grid2>
         <Grid2 size={1}>
           <SeasonRoundSelect
             seasonNumber={seasonNumber}
@@ -818,7 +800,7 @@ export default function Competitive() {
           </Box>
         </>
       )}
-    </Stack>
+    </>
   );
 }
 

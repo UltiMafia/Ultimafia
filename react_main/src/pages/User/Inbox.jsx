@@ -1,23 +1,23 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
+import { UiPage, UiList, UiListItem } from "components/ui";
 import { Link } from "react-router-dom";
-import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
+import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import axios from "axios";
 
 import {
   Box,
-  Button,
   Typography,
-  Paper,
   Stack,
-  IconButton,
   Divider,
-  Pagination,
   Chip,
 } from "@mui/material";
+import { PageNav } from "components/Nav";
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { PageSkeleton } from "components/Skeletons";
+import UiAction from "../../components/ui/UiAction";
+import UiIcon from "../../components/ui/UiIcon";
 
 import "css/inbox.css";
 
@@ -32,7 +32,6 @@ export default function Inbox() {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
-  const navigate = useNavigate();
 
   const notificationsRef = useRef(notifications);
   useEffect(() => {
@@ -142,15 +141,6 @@ export default function Inbox() {
     }
   };
 
-  const handleNotificationClick = (notif) => {
-    if (!notif.read) {
-      handleMarkAsRead(notif.id);
-    }
-    if (notif.link) {
-      navigate(notif.link);
-    }
-  };
-
   if (user.loaded && !user.loggedIn) {
     return <Navigate to="/play" />;
   }
@@ -160,21 +150,8 @@ export default function Inbox() {
   }
 
   return (
-    <Paper
-      className="inbox"
-      sx={{
-        p: 1,
-      }}
-    >
+    <UiPage title="Notifications" className="inbox" width="reading">
       <Stack direction="column" spacing={2}>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Typography variant="h2">Notifications</Typography>
-        </Stack>
-
         <Stack direction="row" spacing={2}>
           <Chip label={`Total: ${totalNotifications}`} variant="outlined" />
           <Chip
@@ -193,25 +170,13 @@ export default function Inbox() {
             </Typography>
           </Box>
         ) : (
-          <Stack direction="column" spacing={1}>
+          <UiList aria-label="Notifications">
             {notifications &&
               notifications.map((notif) => (
-                <Paper
+                <UiListItem
                   key={notif.id}
-                  sx={{
-                    p: 2,
-                    backgroundColor: notif.read
-                      ? "background.paper"
-                      : "action.hover",
-                    border: notif.read ? "1px solid" : "2px solid",
-                    borderColor: notif.read ? "divider" : "primary.main",
-                    cursor: notif.link ? "pointer" : "default",
-                    transition: "all 0.2s",
-                    "&:hover": {
-                      backgroundColor: "action.selected",
-                    },
-                  }}
-                  onClick={() => handleNotificationClick(notif)}
+                  className="notification-row"
+                  data-unread={!notif.read || undefined}
                 >
                   <Stack
                     direction="row"
@@ -221,18 +186,19 @@ export default function Inbox() {
                   >
                     {/* Icon and Content */}
                     <Stack
+                      component={notif.link ? Link : "div"} to={notif.link || undefined}
+                      onClick={() => { if (notif.link && !notif.read) handleMarkAsRead(notif.id); }}
                       direction="row"
                       spacing={2}
                       alignItems="center"
                       flex={1}
+                      sx={{ minWidth: 0, color: "inherit", textDecoration: "none" }}
                     >
                       {notif.icon && (
-                        <i
-                          className={`fas fa-${notif.icon}`}
-                          style={{ fontSize: "20px", minWidth: "20px" }}
-                        />
+                          <UiIcon name="notification" size={20} />
                       )}
                       <Stack direction="column" spacing={0.5} flex={1}>
+                        {!notif.read && <span className="notification-unread">Unread</span>}
                         <Typography
                           variant="body1"
                           sx={{
@@ -253,49 +219,44 @@ export default function Inbox() {
                       </Stack>
                     </Stack>
 
-                    <Stack direction="row" spacing={1}>
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={0}>
                       {!notif.read && (
-                        <IconButton
-                          size="small"
-                          color="primary"
+                        <UiAction iconOnly variant="ghost" aria-label="Mark as read"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleMarkAsRead(notif.id);
                           }}
                           title="Mark as read"
                         >
-                          <i className="fas-fa mail" />
-                        </IconButton>
+                          <UiIcon name="check" size={18} />
+                        </UiAction>
                       )}
-                      <IconButton
-                        size="small"
+                      <UiAction iconOnly variant="ghost" aria-label="Delete notification"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(notif.id);
                         }}
                         title="Delete notification"
                       >
-                        <i className="fas fa-trash" />
-                      </IconButton>
+                        <UiIcon name="delete" size={18} />
+                      </UiAction>
                     </Stack>
                   </Stack>
-                </Paper>
+                </UiListItem>
               ))}
-          </Stack>
+          </UiList>
         )}
 
         {totalPages > 1 && (
           <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-            <Pagination
-              count={totalPages}
+            <PageNav
+              maxPage={totalPages}
               page={currentPage}
-              onChange={handlePageChange}
-              color="primary"
-              size="large"
+              onNav={(newPage) => setCurrentPage(newPage)}
             />
           </Box>
         )}
       </Stack>
-    </Paper>
+    </UiPage>
   );
 }

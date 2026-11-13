@@ -1,10 +1,12 @@
-import React, { useEffect, useReducer } from "react";
+import React from "react";
+import UiAction from "./ui/UiAction";
+import UiIcon from "./ui/UiIcon";
 import { NavLink, useLocation } from "react-router-dom";
 
 import Dropdown from "./Dropdown";
 
 import "css/nav.css";
-import { IconButton, Box, Typography, TextField } from "@mui/material";
+import { Box, TextField } from "@mui/material";
 
 export function Nav(props) {
   return <div className="nav">{props.children}</div>;
@@ -53,100 +55,48 @@ export function PageNav(props) {
   const inverted = props.inverted;
   const noRange = maxPage == null;
 
-  const [pages, updatePages] = useReducer(
-    () => {
-      if (noRange) return [page];
-
-      var sel = page <= maxPage ? page : 1;
-      var i = sel;
-      var j = sel + 1;
-      var list = [];
-      var changed = true;
-
-      while (changed) {
-        changed = false;
-
-        if (list.length < range && i >= 1) {
-          list.unshift(i--);
-          changed = true;
-        }
-
-        if (list.length < range && j <= maxPage) {
-          list.push(j++);
-          changed = true;
-        }
-      }
-
-      return list;
-    },
-    maxPage,
-    (pages) => {
-      if (noRange) return [1];
-
-      var list = [];
-
-      for (let i = 0; i < pages; i++) list.push(i + 1);
-
-      return list;
-    }
-  );
-
-  useEffect(() => {
-    updatePages();
-  }, [page, range, maxPage]);
+  const count = noRange ? 1 : Math.max(0, Math.min(range, maxPage));
+  const start = noRange ? page : Math.max(1, Math.min(page - Math.floor(count / 2), maxPage - count + 1));
+  const pages = Array.from({ length: count }, (_, index) => start + index);
 
   function onClick(page) {
-    if (page >= 1 && (noRange || page <= maxPage)) onNav(page);
+    if (!props.disabled && page >= 1 && (noRange || page <= maxPage)) onNav(page);
   }
 
-  const fontSize = "16px";
-  const IconButtonSx = { width: "24px", height: "24px" };
   const pageNums = pages.map((page) => {
-    let extraSx = null;
-    if (props.page === page) {
-      extraSx = { background: "var(--scheme-color-sec)" };
-    }
-
     return (
-      <IconButton
-        color="primary"
-        key={page}
+      <UiAction iconOnly variant="ghost" key={page} className="page-nav-number"
+        aria-label={`Page ${page}`} aria-current={props.page === page ? "page" : undefined}
+        data-distant={Math.abs(props.page - page) > 1} disabled={props.disabled}
         onClick={() => onClick(page)}
-        sx={{ ...IconButtonSx, ...extraSx, fontSize }}
       >
-        <Typography>{page}</Typography>
-      </IconButton>
+        {page}
+      </UiAction>
     );
   });
 
   return (
-    <Box className={`page-nav ${inverted ? "inverted" : ""}`}>
-      <IconButton color="primary" sx={IconButtonSx} onClick={() => onClick(1)}>
-        <i style={{ fontSize }} className="fas fa-angle-double-left" />
-      </IconButton>
-      <IconButton
-        color="primary"
-        sx={IconButtonSx}
+    <Box component="nav" aria-label={props.label || "Pagination"} className={`page-nav ${inverted ? "inverted" : ""}`}>
+      <UiAction iconOnly variant="ghost" className="page-nav-boundary" aria-label="First page" disabled={props.disabled || page <= 1} onClick={() => onClick(1)}>
+        <UiIcon name="first" />
+      </UiAction>
+      <UiAction iconOnly variant="ghost" aria-label="Previous page" disabled={props.disabled || page <= 1}
         onClick={() => onClick(page - 1)}
       >
-        <i style={{ fontSize }} className="fas fa-angle-left" />
-      </IconButton>
+        <UiIcon name="previous" />
+      </UiAction>
       {pageNums}
-      <IconButton
-        color="primary"
-        sx={IconButtonSx}
+      <UiAction iconOnly variant="ghost" aria-label="Next page" disabled={props.disabled || (!noRange && page >= maxPage)}
         onClick={() => onClick(page + 1)}
       >
-        <i style={{ fontSize }} className="fas fa-angle-right" />
-      </IconButton>
+        <UiIcon name="next" />
+      </UiAction>
       {!noRange && (
-        <IconButton
-          color="primary"
-          sx={IconButtonSx}
+        <UiAction iconOnly variant="ghost" className="page-nav-boundary" aria-label="Last page" disabled={props.disabled || page >= maxPage}
           onClick={() => onClick(maxPage)}
         >
-          <i style={{ fontSize }} className="fas fa-angle-double-right" />
-        </IconButton>
+          <UiIcon name="last" />
+        </UiAction>
       )}
     </Box>
   );
@@ -176,6 +126,7 @@ export function SearchBar(props) {
         variant="outlined"
         value={props.value}
         placeholder={props.placeholder}
+        inputProps={{ "aria-label": props.label || props.placeholder || "Search" }} size="small"
         onChange={onInput}
         fullWidth
       />

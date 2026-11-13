@@ -452,6 +452,7 @@ export default function DrawItGame() {
       )}
       {isDrawer && (
         <DrawTools
+          key={stateViewing}
           color={color}
           size={size}
           eraseMode={eraseMode}

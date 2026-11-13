@@ -11,7 +11,6 @@ import React, {
 import { useParams, Navigate, Link, useLocation, useNavigate } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
-import ReactLoading from "react-loading";
 
 import { UserText } from "../../components/Basic";
 import {
@@ -38,21 +37,7 @@ import { gameUrlTarget } from "../../utils/gameUrlSync";
 import { gameIdAt } from "../../hooks/useHostedGameSession";
 import { pingSenderName } from "../../utils/pingSender";
 import MafiaGame from "./MafiaGame";
-import JottoGame from "./JottoGame";
-import AcrotopiaGame from "./AcrotopiaGame";
-import SecretDictatorGame from "./SecretDictatorGame";
-import WackyWordsGame from "./WackyWordsGame";
-import DrawItGame from "./DrawItGame";
-import LiarsDiceGame from "./LiarsDiceGame";
-import TexasHoldEmGame from "./TexasHoldEmGame";
-import CheatGame from "./CheatGame";
-import RatscrewGame from "./RatscrewGame";
-import BattlesnakesGame from "./BattlesnakesGame";
-import DiceWarsGame from "./DiceWarsGame";
-import ConnectFourGame from "./ConnectFourGame";
-import BattleshipGame from "./BattleshipGame";
-import SpotItGame from "./SpotItGame";
-import ChessGame from "./ChessGame";
+import GameView, { preloadGameView } from "./GameViews";
 import { GameContext, SiteInfoContext, UserContext } from "Contexts";
 import { mobileInfoTabSx } from "./mobileInfoTab";
 import Dropdown from "../../components/Dropdown";
@@ -69,6 +54,11 @@ import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
 import SiteLogo from "../../components/SiteLogo";
 import LeaveGameDialog from "../../components/LeaveGameDialog";
+import MessageComposer from "../../components/ui/MessageComposer";
+import UiAction from "../../components/ui/UiAction";
+import UiIcon from "../../components/ui/UiIcon";
+import { getGameActionAvailability, isGameActionSelection } from "../../utils/gameActionAvailability";
+import { socketEndpoint } from "../../utils/socketEndpoint.mjs";
 import { SportsmanshipJoinModal } from "../../components/SportsmanshipJoinModal";
 import { useErrorAlert } from "../../components/Alerts";
 import {
@@ -92,6 +82,8 @@ import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { pregameSeatAction } from "shared/pregameSeatAction";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
 import { WindowedTranscript } from "./components/WindowedTranscript";
+import { warmNameFonts } from "../../utils/fontWarmup";
+import { dedupeMessages } from "../../shared/dedupeMessages";
 import { bindMessageTouch } from "../../utils/messageTouch";
 import {
   Accordion,
@@ -125,15 +117,11 @@ import {
   Alert,
 } from "@mui/material";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
-import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
 import {
   resolveDisplayNameColor,
   resolveDisplayTextColor,
 } from "../../utils/accessibleNameColors";
 
-import lore from "images/emotes/lore.webp";
-import poison from "images/emotes/poison.webp";
-import exit from "images/emotes/exit.png";
 import { usePopover, InfoPopover, SetupInfo } from "components/Popover";
 
 import dice1 from "images/emotes/dice1.webp";
@@ -768,24 +756,10 @@ export default function Game(props) {
   useEffect(() => {
     if (token == null || !sessionIdentityValid || leave || finished || review) return;
 
-    var socketURL;
-
-    // The configured socket host defaults to "localhost", which is wrong for any
-    // client that is not the host machine -- a phone on the LAN or a tailnet, for
-    // example. Fall back to the page's own host, so the same build works from
-    // localhost, a LAN/tailnet address, or the real domain.
-    const configuredSocketHost = import.meta.env.REACT_APP_SOCKET_URI;
-    const socketHost =
-      !configuredSocketHost || configuredSocketHost === "localhost"
-        ? window.location.hostname
-        : configuredSocketHost;
-
-    if (import.meta.env.REACT_APP_USE_PORT === "true")
-      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${socketHost}:${port}`;
-    else
-      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${
-        import.meta.env[`REACT_APP_SOCKET_URI_${port}`] || socketHost
-      }/${port}`;
+    const socketURL = socketEndpoint({ location: window.location, kind: "game", port,
+      configuration: { sameOrigin: import.meta.env.REACT_APP_SAME_ORIGIN_SOCKETS,
+        host: import.meta.env.REACT_APP_SOCKET_URI, protocol: import.meta.env.REACT_APP_SOCKET_PROTOCOL,
+        usePort: import.meta.env.REACT_APP_USE_PORT, portHost: import.meta.env[`REACT_APP_SOCKET_URI_${port}`] } });
 
     var newSocket = new Socket(socketURL);
     newSocket.on("connected", () => setConnected((current) => current + 1));
@@ -848,6 +822,7 @@ export default function Game(props) {
           }
 
           setGameType(data.type);
+          void preloadGameView(data.type).catch(() => {});
           setSetup(data.setup);
           setStartTime(data.startTime);
 
@@ -902,6 +877,21 @@ export default function Game(props) {
                 !!data.users[i] && kudosUserIds.includes(data.users[i].id),
             };
           }
+
+          // A name whose font arrives after the transcript painted changes its
+          // line box and shifts every row below it. Start the downloads now,
+          // while the game is still assembling its first transcript.
+          warmNameFonts(
+            Object.values(players)
+              .map((player) => player.nameFont)
+              .concat(
+                (data.spectators || []).map(
+                  (id, index) =>
+                    data.spectatorsUsers[index] &&
+                    data.spectatorsUsers[index].settings.nameFont
+                )
+              )
+          );
 
           for (let i in data.spectators) {
             spectators[data.spectators[i]] = {
@@ -1393,6 +1383,7 @@ export default function Game(props) {
       .then((res) => {
         if (!request.isCurrent()) return;
         setGameType(res.data.type);
+        void preloadGameView(res.data.type).catch(() => {});
         setPort(res.data.port);
         setToken(res.data.token || false);
         setHostId(res.data.hostId);
@@ -1610,23 +1601,7 @@ export default function Game(props) {
               setShowModal={setShowFirstGameModal}
             />
             {gameType === "Mafia" && <MafiaGame />}
-            {gameType === "Jotto" && <JottoGame />}
-            {gameType === "Acrotopia" && <AcrotopiaGame />}
-            {gameType === "Secret Dictator" && <SecretDictatorGame />}
-            {gameType === "Wacky Words" && <WackyWordsGame />}
-            {gameType === "Draw It" && <DrawItGame />}
-            {gameType === "Liars Dice" && <LiarsDiceGame />}
-            {gameType === "Texas Hold Em" && <TexasHoldEmGame />}
-            {gameType === "Cheat" && <CheatGame />}
-            {gameType === "Ratscrew" && <RatscrewGame />}
-            {gameType === "Battlesnakes" && <BattlesnakesGame />}
-            {(gameType === "Dice Wars" || gameType === "DiceWars") && (
-              <DiceWarsGame />
-            )}
-            {gameType === "Connect Four" && <ConnectFourGame />}
-            {gameType === "Spot It" && <SpotItGame />}
-            {gameType === "Battleship" && <BattleshipGame />}
-            {gameType === "Chess" && <ChessGame />}
+            {gameType !== "Mafia" && <GameView type={gameType} />}
           </Box>
         </Stack>
         <UrgencyOverlay hidden={!isUrgent} />
@@ -1748,7 +1723,7 @@ function RehostInvite({ priority = 0 }) {
           fullWidth
           data-testid="rehost-join"
           onClick={game.onJoinRehostClick}
-          startIcon={<i className="fas fa-sign-in-alt" />}
+          startIcon={<UiIcon name="forward" />}
           sx={{ minHeight: 48, fontWeight: 700 }}
         >
           Leave & Join New Game
@@ -1762,7 +1737,7 @@ function RehostInvite({ priority = 0 }) {
           data-testid="rehost-start"
           disabled={game.rehostPending}
           onClick={game.onRehostClick}
-          startIcon={<i className="fas fa-redo" />}
+          startIcon={<UiIcon name="refresh" />}
           sx={{ minHeight: 48, fontWeight: 700 }}
         >
           Rehost?
@@ -1818,8 +1793,9 @@ export function TopBar({ forceShow = false } = {}) {
       });
   }
 
-  if (isPhoneDevice && game.selectedPanel !== "info" && !forceShow) {
-    // The top bar doubles as an info panel for mobile
+  if (isPhoneDevice && !forceShow) {
+    // Mobile setup details belong inside the Info viewport, never above the
+    // phase/menu toolbar as a separate, competing flex/scroll region.
     return <></>;
   }
 
@@ -1828,119 +1804,79 @@ export function TopBar({ forceShow = false } = {}) {
       flex: "1",
       alignItems: "center",
     }}>
-      <SiteLogo />
+      <SiteLogo flexible />
     </Stack>
   );
 
   const stateSwitcher = (
-    <Stack direction="column" spacing={1} sx={{
+    <Stack direction="row" spacing={1} sx={{
       alignItems: "center",
       justifyContent: "center",
       flex: "none",
     }}>
       {!singleState && (
-        <Paper>
-          <StateSwitcher />
-        </Paper>
+        <StateSwitcher />
       )}
     </Stack>
   );
 
   const setup = game.setup ? (
     <Setup
+      wrapRoles
+      nameIsTrigger
       setup={game.setup}
-      backgroundColor={getSetupBackgroundColor(game.options, false)}
     />
   ) : (
     <></>
   );
 
   const buttonGroup = (
-    <ButtonGroup
-      variant="contained"
-      sx={{
-        alignSelf: "stretch",
-        backgroundColor: theme.palette.secondary.main,
-        borderRadius: 1,
-      }}
-    >
+    <Stack className="game-topbar-actions" direction="row" spacing={1} alignItems="center">
       {game.review && (
         <Tooltip title="Archive">
-          <IconButton size="large" onClick={onArchiveGameClick}>
-            <img src={lore} alt="Archive" />
-          </IconButton>
+          <UiAction iconOnly variant="ghost" aria-label="Archive game" onClick={onArchiveGameClick}>
+            <UiIcon name="archive" />
+          </UiAction>
         </Tooltip>
       )}
 
       {game.dev && game.history.currentState == -1 && (
-        <Tooltip title="Fill">
-          <IconButton size="large" onClick={onTestClick}>
-            <img src={poison} alt="Fill" />
-          </IconButton>
+        <Tooltip title="Fill with test players">
+          <UiAction iconOnly variant="ghost" aria-label="Fill with test players" onClick={onTestClick}>
+            <UiIcon name="addPerson" />
+          </UiAction>
         </Tooltip>
       )}
 
-      {!isPhoneDevice && (
-        <Button
-          onClick={game.onLeaveGameClick}
-          startIcon={<img src={exit} alt="Leave" />}
-        >
-          Leave
-        </Button>
-      )}
-    </ButtonGroup>
+      {!isPhoneDevice && <UiAction variant="danger-quiet" onClick={game.onLeaveGameClick}>
+        <UiIcon name="leave" size={18} /> Leave game
+      </UiAction>}
+    </Stack>
   );
 
   if (!isPhoneDevice) {
     // DESKTOP ================================================================
     return (
-      <Stack
-        direction="row"
-        spacing={1}
-        sx={{
-          px: 1,
-          pb: 1,
-          alignItems: "center",
-        }}
-      >
-        {logo}
-        {stateSwitcher}
-        <Stack
-          direction="row"
-          spacing={1}
-          key="miscWrapper"
-          ref={game.scrollDownTriggerRef}
-          sx={{
-            alignItems: "center",
-            flex: "1",
-            minWidth: "0px",
-          }}
-        >
-          {setup}
+      <header className="game-topbar">
+        <div className="game-topbar-logo">{logo}</div>
+        <div className="game-topbar-state">{stateSwitcher}</div>
+        <div className="game-topbar-right">
+          <div className="game-topbar-setup" ref={game.scrollDownTriggerRef}>{setup}</div>
           {buttonGroup}
-        </Stack>
-      </Stack>
+        </div>
+      </header>
     );
   } else {
     // MOBILE ================================================================
     return (
-      <Stack direction="column" spacing={1} sx={{
-        p: 1,
-        flex: "1 1",
-        overflowY: "scroll",
-      }}>
-        <Stack direction="row" spacing={1}>
-          {logo}
-          {buttonGroup}
-        </Stack>
-        <Typography variant="h3">
-          {game.setup?.name}
-        </Typography>
-        <SetupInfo
+      <section className="game-setup-info" aria-label="Setup details">
+        <header><h2>Setup</h2><Link to={`/learn/setup/${game.setup?.id}`}>Open setup page</Link></header>
+        {game.setup && <Setup setup={game.setup} summary />}
+        {game.setup && <SetupInfo
           setup={game.setup}
           gameTypeOptions={game.options?.gameTypeOptions}
-        />
-      </Stack>
+        />}
+      </section>
     );
   }
 }
@@ -1968,30 +1904,25 @@ function UnresolvedActionCount({ children }) {
   );
 }
 
-function MobileMenu() {
+function MobileMenu({ hideInfoTab = false }) {
   const game = useContext(GameContext);
 
-  const menuContent = (
-    <Stack
-      direction="column"
-      sx={{
-        flex: "1",
-        p: 1,
-        paddingBottom: 0,
-      }}
-    >
-      <SettingsForm onLeave={game.onLeaveGameClick} />
-    </Stack>
-  );
-
-  return <SideMenu scrollable title="Settings" content={menuContent} />;
+  return <div className="game-mobile-menu">
+    <div className="game-menu-navigation" aria-label="Game navigation">
+      <UiAction variant="danger-quiet" onClick={game.onLeaveGameClick}><UiIcon name="leave" size={18} />Leave game</UiAction>
+      <p>Leaving ends your participation. Use the browser Back button to browse without leaving.</p>
+    </div>
+    <h2 className="game-settings-heading">Settings</h2>
+    {hideInfoTab && <details className="game-menu-setup"><summary>Setup details</summary><TopBar forceShow /></details>}
+    <SettingsForm />
+  </div>;
 }
 
 export function MobileLayout({
   outerLeftNavigationProps = {
     label: "Players",
     value: "players",
-    icon: <i className="fas fa-user" />,
+    icon: <UiIcon name="people" />,
   },
   outerLeftContent = <PlayerList />,
   centerContent = <TextMeetingLayout />,
@@ -2000,14 +1931,13 @@ export function MobileLayout({
     value: "actions",
     icon: (
       <UnresolvedActionCount>
-        <i className="fas fa-bolt" />
+        <UiIcon name="check" />
       </UnresolvedActionCount>
     ),
   },
   innerRightContent = <ActionList />,
   additionalInfoContent = <></>,
   hideInfoTab = false,
-  chatTab = false,
 }) {
   const game = useContext(GameContext);
   const { singleState } = useContext(GameTypeContext);
@@ -2030,6 +1960,12 @@ export function MobileLayout({
 
   return (
     <>
+      <div className="game-mobile-tools">
+        {!singleState && <StateSwitcher mobile />}
+        <UiAction variant="ghost" iconOnly aria-label="Menu" title="Game menu" aria-pressed={selectedPanel === "menu"}
+          onClick={() => setSelectedPanel(selectedPanel === "menu" ? "chat" : "menu")}><UiIcon name="menu" /></UiAction>
+      </div>
+      {!game.review && <div className="game-mobile-clock" aria-label="Time remaining"><Timer /></div>}
       <Stack
         data-tutorial-pad
         sx={{
@@ -2043,9 +1979,10 @@ export function MobileLayout({
         {outerLeftContent}
       </Stack>
       {!hideInfoTab && (
-        <Box data-testid="game-info-tab" sx={mobileInfoTabSx(selectedPanel)}>
-          {/* The additionalInfoContent displays after the mobile version of TopBar */}
-          {additionalInfoContent}
+        <Box className="game-mobile-info" data-testid="game-info-tab" sx={mobileInfoTabSx(selectedPanel)}>
+          <h1>Game info</h1>
+          <TopBar forceShow />
+          <div className="game-info-additional">{additionalInfoContent}</div>
         </Box>
       )}
       <Stack
@@ -2069,18 +2006,19 @@ export function MobileLayout({
         {innerRightContent}
       </Stack>
       <Stack
+        className="game-mobile-menu-panel"
         sx={{
           flex: "1",
           display: selectedPanel === "menu" ? undefined : "none",
         }}
       >
-        {/* Games that hide the Info tab still show setup details on Menu */}
-        {hideInfoTab && <TopBar forceShow />}
-        <MobileMenu />
+        <MobileMenu hideInfoTab={hideInfoTab} />
       </Stack>
-      <Paper elevation={3}>
+      <Paper elevation={3} className="game-mobile-nav">
         <Divider orientation="horizontal" />
         <BottomNavigation
+          component="nav"
+          aria-label="Game panels"
           showLabels
           value={selectedPanel}
           onChange={onBottomNavigationChange}
@@ -2093,49 +2031,24 @@ export function MobileLayout({
         >
           <BottomNavigationAction
             {...outerLeftNavigationProps}
+            aria-pressed={selectedPanel === outerLeftNavigationProps.value}
             data-tutorial={`${outerLeftNavigationProps.value}-tab`}
           />
           {!hideInfoTab && (
             <BottomNavigationAction
               label="Info"
+              aria-label="Info"
               value="info"
-              icon={<i className="fas fa-info" />}
+              aria-pressed={selectedPanel === "info"}
+              icon={<UiIcon name="info" />}
+              data-tutorial="info-tab"
             />
           )}
-          {chatTab ? (
-            <BottomNavigationAction
-              label="Chat"
-              value="chat"
-              icon={<i className="fas fa-comments" />}
-              data-tutorial="chat-tab"
-            />
-          ) : (
-            <Stack
-              direction="row"
-              data-tutorial="chat-tab"
-              onClick={() => setSelectedPanel("chat")}
-              sx={{
-                flex: 2,
-                minWidth: 0,
-                filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "hidden",
-              }}
-            >
-              {!singleState && <Divider orientation="vertical" flexItem />}
-              <StateSwitcher stateRange={singleState ? 0 : undefined} />
-              {!singleState && <Divider orientation="vertical" flexItem />}
-            </Stack>
-          )}
+          <BottomNavigationAction label="Chat" aria-label="Chat" value="chat" aria-pressed={selectedPanel === "chat"} icon={<UiIcon name="chat" />} data-tutorial="chat-tab" />
           <BottomNavigationAction
             {...innerRightNavigationProps}
+            aria-pressed={selectedPanel === innerRightNavigationProps.value}
             data-tutorial={`${innerRightNavigationProps.value}-tab`}
-          />
-          <BottomNavigationAction
-            label="Menu"
-            value="menu"
-            icon={<i className="fas fa-bars" />}
           />
         </BottomNavigation>
       </Paper>
@@ -2431,6 +2344,11 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
       );
     }
 
+    // A duplicated entry shares its key with the original, so the window draws
+    // both at the same offset for a frame and everything below moves when one
+    // goes away. Normalise once, here, whatever source produced the repeat.
+    messageData = dedupeMessages(messageData);
+
     var previousMessage = null;
     // A reply and the quote right above it are drawn as one row.
     return pairReplies(messageData).map(({ message, replyQuote, replyMerged }, i) => {
@@ -2545,12 +2463,19 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   function jumpToLatest() {
     setAutoScroll(true);
     const container = speechDisplayRef.current;
-    if (container) container.scrollTo(0, container.scrollHeight);
+    if (!container) return;
+    // The windowed transcript knows where its real bottom is; a raw scrollTo
+    // would land at the estimated one.
+    if (windowed) {
+      container.dispatchEvent(new CustomEvent("transcript-scroll-end"));
+      return;
+    }
+    container.scrollTo(0, container.scrollHeight);
   }
 
   return (
     <>
-      <Box
+      {(!isPhoneDevice || speechMeetings.length > 1) && <Box
         className="meeting-tabs title-box"
         sx={{
           display: "flex",
@@ -2568,8 +2493,6 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
             "& .MuiTab-root": {
               textTransform: "none",
               minHeight: 36,
-              fontWeight: 500,
-              fontSize: "0.9rem",
             },
           }}
         >
@@ -2590,11 +2513,8 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
             />
           )}
         </Tabs>
-
-        <Box sx={{ flexShrink: 0, ml: 1 }}>
-          <Timer />
-        </Box>
-      </Box>
+        {!isPhoneDevice && !game.review && <Box sx={{ flexShrink: 0, ml: 1 }}><Timer /></Box>}
+      </Box>}
 
       <div className="speech-wrapper" data-tutorial="chat-panel">
         {windowed ? <WindowedTranscript
@@ -2603,6 +2523,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           speechDisplayRef={speechDisplayRef}
           onScroll={onSpeechScroll}
           autoScroll={autoScroll}
+          startAtEnd={!game.review && (singleState || stateViewing === history.currentState)}
         /> : <div
           className="speech-display"
           data-name-animation-viewport
@@ -2623,7 +2544,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           )}
           {(seatActions && isPhoneDevice) && <PregameSeatActions />}
           <KudosDock onResize={doAutoScroll} />
-          {canSpeak && (
+          {canSpeak && !game.review ? (
             <SpeechInput
               meetings={meetings}
               selTab={speechTarget.meetingId}
@@ -2637,7 +2558,10 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
               setSpeechInput={setSpeechInput}
               whispersEnabled={game.getSetupGameSetting("Whispers")}
             />
-          )}
+          ) : <div className="composer-read-only">
+            <span><UiIcon name="lock" size={16} />{game.review ? "Game review is read-only." : stateViewing !== history.currentState ? "Viewing history. Messages are read-only." : "You cannot speak in this meeting."}</span>
+            {!game.review && stateViewing !== history.currentState && <UiAction variant="ghost" onClick={() => game.updateStateViewing({ type: "current" })}>Return to live</UiAction>}
+          </div>}
         </div>
       </div>
     </>
@@ -3177,10 +3101,6 @@ const MessageRow = React.memo(function MessageRow(props) {
       onPin: () => touchCallbacks.current.onPin(),
     });
   }, [isPhoneDevice, swipeToReply, messageObj, props.stateViewing]);
-  const thumbtackFaClass = props.pinned
-    ? "fas fa-thumbtack"
-    : "fas fa-thumbtack fa-rotate-270";
-
   // If message is obituary, then short circuit and render that instead
   if (message.obituaries) {
     return (
@@ -3530,8 +3450,7 @@ const MessageRow = React.memo(function MessageRow(props) {
           {!message.isQuote && (
             <>
               {message.replyTo && !props.replyPreview && (
-                <i
-                  className="fas fa-reply fa-rotate-180 reply-marker"
+                <UiIcon name="reply" size={16} className="reply-marker"
                   title="Reply to the quote above"
                 />
               )}
@@ -3540,7 +3459,7 @@ const MessageRow = React.memo(function MessageRow(props) {
                   className="spectator-chat-tag"
                   title="Spectator chat: only spectators can see this"
                 >
-                  <i className="fas fa-eye" /> Spectator
+                  <UiIcon name="eye" size={16} /> Spectator
                 </span>
               )}
               {message.prefix && (
@@ -3582,10 +3501,10 @@ const MessageRow = React.memo(function MessageRow(props) {
                   className="spectator-chat-tag"
                   title="Spectator chat: only spectators can see this"
                 >
-                  <i className="fas fa-eye" /> Spectator
+                  <UiIcon name="eye" size={16} /> Spectator
                 </span>
               )}
-              <i className="fas fa-quote-left" />
+              <UiIcon name="quote" size={16} />
               <Timestamp time={quotedMessage.time} />
               <span className="quote-info">
                 {`${quotedMessage.senderName} on ${quotedMessage.fromStateName}: `}
@@ -3606,7 +3525,7 @@ const MessageRow = React.memo(function MessageRow(props) {
                   roleify={props.settings.roleMentions}
                 />
               </span>
-              <i className="fas fa-quote-right" />
+              <UiIcon name="quote" size={16} className="quote-mark-end" />
             </>
           )}
         </div>
@@ -3614,13 +3533,11 @@ const MessageRow = React.memo(function MessageRow(props) {
       {!isPhoneDevice && !isRightAligned && (
         <div
           className="pin-button-wrapper"
-          onClick={() => props.onPinMessage(message)}
         >
           {showThumbtack && (
-            <i
-              className={thumbtackFaClass}
-              style={{ cursor: "pointer", textAlign: "center" }}
-            />
+            <button type="button" className="message-pin-action"
+              aria-label={props.pinned ? "Unpin message" : "Pin message"} aria-pressed={!!props.pinned}
+              onClick={() => props.onPinMessage(message)}><UiIcon name="pin" size={16} /></button>
           )}
         </div>
       )}
@@ -3758,13 +3675,15 @@ function SpeechInput(props) {
   const speechInput = props.speechInput;
   const setSpeechInput = props.setSpeechInput;
   const pendingSpeechRef = useRef(null);
+  const speechInputRef = useRef(null);
+  const isComposingRef = useRef(false);
   const [speechDropdownOptions, setSpeechDropdownOptions] = useState([]);
   const [speechDropdownValue, setSpeechDropdownValue] = useState("Say");
   const [lastTyped, setLastTyped] = useState(0);
   const [typingIn, setTypingIn] = useState();
   const [clearTyping, setClearTyping] = useState();
   const [checkboxOptions, setCheckboxOptions] = useState({});
-  const [isDisconnected, setIsDisconnected] = useState(false);
+  const [isDisconnected, setIsDisconnected] = useState(socket.readyState != null && socket.readyState !== 1);
   const [speakCooldown, setSpeakCooldown] = useState({
     until: 0,
     durationMs: 0,
@@ -3820,7 +3739,8 @@ function SpeechInput(props) {
     }
 
     setSpeechDropdownOptions(newDropdownOptions);
-  }, [selTab, spectatorChat]);
+    setSpeechDropdownValue(value => newDropdownOptions.some(option => option.id === value) ? value : "Say");
+  }, [selTab, spectatorChat, meetings[selTab]?.speechAbilities, props.whispersEnabled, players]);
 
   useEffect(() => {
     if (lastTyped > 0) {
@@ -3863,9 +3783,24 @@ function SpeechInput(props) {
     if (
       !lastMessage.isQuote &&
       lastMessage.content === pending.content &&
+      pending.meetingId === selTab &&
+      lastMessage.id !== pending.previousMessageId &&
       matchesSender
     ) {
-      setSpeechInput("");
+      // Clear only if the composer still holds exactly what was sent, so text
+      // typed after sending survives. A draft-revision counter cannot stand in
+      // for that comparison: iOS fires an extra change event for autocorrect,
+      // dictation and keyboard commit after a send, which bumped the counter and
+      // left the sent text sitting in the box.
+      setSpeechInput(value => {
+        if (value === pending.content) return "";
+        // The reader kept typing while it sent: drop the sent text and keep the
+        // rest, so the box never looks like the message failed to leave.
+        if (value.startsWith(pending.content)) {
+          return value.slice(pending.content.length);
+        }
+        return value;
+      });
       pendingSpeechRef.current = null;
     }
   }, [game.history, game.self, selTab, isCurrentState, meetings, setSpeechInput]);
@@ -3873,7 +3808,7 @@ function SpeechInput(props) {
   useEffect(() => {
     if (!socket.on) return;
 
-    socket.on("speakCooldown", (info) => {
+    return subscribeSocketListeners(socket, socket => socket.on("speakCooldown", (info) => {
       if (typeof info !== "object" || info == null) return;
       if (!isCurrentState) return;
       if (info.meetingId && info.meetingId !== selTab) return;
@@ -3887,6 +3822,10 @@ function SpeechInput(props) {
       const cooldownMs = Math.max(Number(info.cooldownMs) || 0, 0);
       if (!cooldownMs) return;
 
+      // A rejected send has no echo; let the preserved draft be retried once
+      // the server's cooldown ends.
+      pendingSpeechRef.current = null;
+
       const now = Date.now();
       setSpeakCooldown((prev) => {
         const prevRemaining = Math.max(prev.until - now, 0);
@@ -3897,7 +3836,7 @@ function SpeechInput(props) {
           durationMs: nextDurationMs,
         };
       });
-    });
+    }), { replay: false });
   }, [socket, selTab, isCurrentState]);
 
   useEffect(() => {
@@ -3937,13 +3876,9 @@ function SpeechInput(props) {
         )
       )
     : 0;
-  const speechPlaceholder = isSpeakCooldownActive
-    ? `You're typing too fast. Try again in: ${speakCooldownSeconds}s`
-    : placeholder;
-
   const timeoutRef = useRef(null);
   useEffect(() => {
-    if (socket.on) {
+    const unsubscribe = subscribeSocketListeners(socket, socket => {
       socket.on("p", () => {
         setIsDisconnected(false);
 
@@ -3954,17 +3889,14 @@ function SpeechInput(props) {
           setIsDisconnected(true);
         }, 15000);
 
-        return () => clearTimeout(timeoutRef.current);
       });
-    }
+      socket.on("disconnected", () => setIsDisconnected(true));
+    }, { replay: false });
+    return () => { unsubscribe(); clearTimeout(timeoutRef.current); };
   }, [socket]);
 
-  if (isDisconnected) {
-    return (
-      <Alert severity="error" sx={{ m: 1 }}>
-        Disconnected from server. Attempting to reconnect...
-      </Alert>
-    );
+  function changeDraft(value) {
+    setSpeechInput(value);
   }
 
   function onSpeechDropdownChange(value) {
@@ -3977,8 +3909,16 @@ function SpeechInput(props) {
   }
 
   function onSpeechType(e) {
-    if (isSpeakCooldownActive) return;
-    setSpeechInput(e.target.value);
+    const raw = e.target.value;
+    const inputType = e.nativeEvent?.inputType;
+    const isReturn = inputType === "insertLineBreak" || inputType === "insertParagraph";
+    // A non-cancelable mobile edit may already have inserted the line break.
+    // Paste/dictation can contain newlines too, but those are spaces, not Send.
+    const value = raw.replace(/\r\n|[\r\n]/g, isReturn ? "" : " ");
+    changeDraft(value);
+    if (isReturn && !isComposingRef.current && !e.nativeEvent?.isComposing) {
+      onSpeechSubmit({ key: "Enter" }, value);
+    }
 
     if (
       e.target.value.length > 0 &&
@@ -3996,10 +3936,35 @@ function SpeechInput(props) {
   const replyTarget = game.replyTarget;
   const setReplyTarget = game.setReplyTarget;
 
-  function onSpeechSubmit(e) {
-    if (isSpeakCooldownActive) return;
+  // Listen to native editing events as well as keydown: a software keyboard
+  // can request a line break without delivering an Enter key event.
+  useEffect(() => {
+    const input = speechInputRef.current;
+    if (!input) return;
+    function beforeInput(event) {
+      if (event.inputType !== "insertLineBreak" && event.inputType !== "insertParagraph") return;
+      event.preventDefault();
+      if (!isComposingRef.current && !event.isComposing) onSpeechSubmit({ key: "Enter" }, input.value);
+    }
+    input.addEventListener("beforeinput", beforeInput);
+    return () => input.removeEventListener("beforeinput", beforeInput);
+  });
 
-    if (e.key === "Enter" && selTab && speechInput.length) {
+  function onSpeechSubmit(e, content = speechInput) {
+    if (isComposingRef.current || e.nativeEvent?.isComposing || e.isComposing || e.keyCode === 229) return;
+    if (e.key === "Enter") e.preventDefault?.();
+    if (isSpeakCooldownActive || isDisconnected || !isCurrentState || game.review) return;
+
+    if (e.key === "Enter" && selTab && content.trim().length) {
+      const pending = pendingSpeechRef.current;
+      if (
+        pending?.content === content &&
+        pending.meetingId === selTab &&
+        pending.speechMode === speechDropdownValue &&
+        pending.state === game.history.currentState &&
+        Date.now() - pending.sentAt < 5000
+      ) return;
+
       const abilityInfo = speechDropdownValue.split(":");
       var abilityName = abilityInfo[0];
       var abilityTarget = abilityInfo[1];
@@ -4007,9 +3972,9 @@ function SpeechInput(props) {
       if (abilityName === "Say") abilityName = null;
 
       const isCommand =
-        speechInput[0] === "/" && speechInput.slice(0, 4) !== "/me ";
+        content[0] === "/" && content.slice(0, 4) !== "/me ";
 
-      if (textIncludesSlurs(speechInput)) {
+      if (textIncludesSlurs(content)) {
         socket.send("slurDetected");
         pendingSpeechRef.current = null;
         setSpeechInput("");
@@ -4018,7 +3983,15 @@ function SpeechInput(props) {
           pendingSpeechRef.current = null;
         } else {
           pendingSpeechRef.current = {
-            content: speechInput,
+            content,
+            meetingId: selTab,
+            speechMode: speechDropdownValue,
+            state: game.history.currentState,
+            // Synchronous ref, not state: a second Enter/button/editing event
+            // must see this before an echo or React render. Bound the guard so
+            // a lost/rejected send cannot lock the preserved draft forever.
+            sentAt: Date.now(),
+            previousMessageId: meetings[selTab]?.messages?.at(-1)?.id,
             anonymous:
               Boolean(abilityName) || Boolean(meetings[selTab]?.anonymous),
           };
@@ -4026,7 +3999,7 @@ function SpeechInput(props) {
 
         const reply = buildReplyPayload(replyTarget, {
           meetingId: selTab,
-          content: speechInput,
+          content,
           abilityName,
         });
         if (reply) {
@@ -4034,7 +4007,7 @@ function SpeechInput(props) {
           setReplyTarget(null);
         } else {
           socket.send("speak", {
-            content: speechInput,
+            content,
             meetingId: selTab,
             abilityName,
             abilityTarget,
@@ -4050,7 +4023,6 @@ function SpeechInput(props) {
     } else if (e.key === "Tab" && !e.shiftKey) {
       // Tab completes a name; Shift+Tab leaves the chat box as usual (back
       // to the messages, which can be replied to with Enter).
-      e.preventDefault();
       const words = speechInput.split(" ");
       const word = words.pop();
       const completed = completePlayerName(
@@ -4064,17 +4036,20 @@ function SpeechInput(props) {
       );
       if (completed === undefined) return;
       if (completed) {
+        e.preventDefault();
         words.push(completed);
-        setSpeechInput(words.join(" "));
+        changeDraft(words.join(" "));
       } else if (word.toLowerCase() === "@everyone".substring(0, word.length)) {
+        if (!word) return;
+        e.preventDefault();
         words.push("@everyone");
-        setSpeechInput(words.join(" "));
+        changeDraft(words.join(" "));
       }
     }
   }
 
   function onEmoteSelected(emote) {
-    setSpeechInput(
+    changeDraft(
       speechInput ? `${speechInput.trimRight()} ${emote} ` : `${emote} `
     );
   }
@@ -4089,92 +4064,41 @@ function SpeechInput(props) {
         "Anonymous");
 
   return (
-    <div className="speech-input-area" data-tutorial="chat-input">
-      {replyMessage && (
-        <div className="reply-preview">
-          <i className="fas fa-reply" />
-          <span className="reply-preview-text">
-            Replying to <b>{replySender}</b>: {replyMessage.content}
-          </span>
-          <IconButton
-            size="small"
-            aria-label="Cancel reply"
-            title="Cancel reply (Esc)"
-            onClick={() => setReplyTarget(null)}
-          >
-            <i className="fas fa-times" />
-          </IconButton>
-        </div>
-      )}
-      <div className="speech-input-wrapper">
-        <Dropdown
+    <MessageComposer className="game-composer" data-tutorial="chat-input"
+      inputId="speechInput" inputRef={speechInputRef} value={speechInput} onChange={onSpeechType}
+      onKeyDown={onSpeechSubmit} onSend={() => onSpeechSubmit({ key: "Enter" })}
+      canSend={!!speechInput.trim() && !isSpeakCooldownActive && !isDisconnected && !!selTab && isCurrentState && !game.review}
+      label={spectatorChat ? "Message spectators" : "Message this meeting"}
+      placeholder={`Message ${placeholder || "this meeting"}`}
+      inputProps={{ name: "MafiaSpeech", inputMode: "text", autoCorrect: "on", autoCapitalize: "sentences", autoComplete: "off", maxLength: MaxGameMessageLength, enterKeyHint: "send", onCompositionStart: () => { isComposingRef.current = true; }, onCompositionEnd: () => { isComposingRef.current = false; } }}
+      preview={replyMessage && <>
+        <UiIcon name="reply" size={18} />
+        <span className="composer-preview-copy"><span className="composer-preview-label">Replying to {replySender}</span><span className="composer-preview-text">{replyMessage.content}</span></span>
+        <UiAction variant="ghost" iconOnly aria-label="Cancel reply" title="Cancel reply (Esc)" onClick={() => setReplyTarget(null)}><UiIcon name="close" size={18} /></UiAction>
+      </>}
+      contextClassName={speechDropdownValue === "Say" ? "composer-context--keyboard" : ""}
+      context={speechDropdownValue === "Say" ? <span>{meetings[selTab]?.name} · {game.history.states[game.stateViewing]?.name} · Live</span> : <><span>{speechDropdownValue.split(":")[0]} {placeholder}{checkboxOptions.forceLeak ? " · Whispers will be leaked" : ""}</span><UiAction variant="ghost" iconOnly aria-label="Return to public speech" onClick={() => setSpeechDropdownValue("Say")}><UiIcon name="close" size={18} /></UiAction></>}
+      status={isDisconnected ? <><UiIcon name="offline" size={16} /><span>Disconnected. Reconnecting; your draft is kept.</span></> : isSpeakCooldownActive ? `Send available in ${speakCooldownSeconds}s. You can keep editing.` : checkboxOptions.forceLeak ? "Whispers will be leaked." : null}
+      progress={isSpeakCooldownActive ? speakCooldownProgressPercent : null}
+      statusLive={isDisconnected}
+      tools={<>
+        {speechDropdownOptions.length > 1 && <Dropdown
           className="speech-dropdown"
           options={speechDropdownOptions}
           onChange={onSpeechDropdownChange}
           onCheckboxChange={onCheckboxChange}
-          value={speechDropdownValue}
+          checkedValues={checkboxOptions}
+          value={speechDropdownValue} label="Speech mode and recipient" icon={<UiIcon name="messageOptions" size={18} />}
           anchorOrigin={{ vertical: "top", horizontal: "left" }}
           transformOrigin={{ vertical: "bottom", horizontal: "left" }}
-        />
-        <div className="speech-input-field-group">
-          <TextField
-            id="speechInput"
-            className="speech-input"
-            fullWidth
-            aria-autocomplete="none"
-            name="MafiaSpeech"
-            inputProps={{
-              inputMode: "text",
-              autoCorrect: "on",
-              autoCapitalize: "on",
-              autoComplete: "off",
-              maxLength: MaxGameMessageLength,
-            }}
-            value={speechInput}
-            placeholder={speechPlaceholder}
-            onChange={onSpeechType}
-            onKeyDown={onSpeechSubmit}
-            enterKeyHint="done"
-            disabled={isSpeakCooldownActive}
-            sx={{
-              "& .MuiOutlinedInput-root": isSpeakCooldownActive
-                ? {
-                    animation: "speak-cooldown-pulse 1.2s ease-in-out infinite",
-                    "& fieldset": {
-                      border: "1px solid rgba(244, 67, 54, 0.75) !important",
-                    },
-                    "&:hover fieldset": {
-                      border: "1px solid rgba(244, 67, 54, 0.9) !important",
-                    },
-                    "&.Mui-focused fieldset": {
-                      border: "1px solid rgba(244, 67, 54, 0.95) !important",
-                    },
-                  }
-                : {
-                    "& fieldset": { border: "none" },
-                  },
-              "& .MuiFormHelperText-root": isSpeakCooldownActive
-                ? { color: "rgba(244, 67, 54, 0.9)", marginTop: "4px" }
-                : {},
-              input: { color: "var(--scheme-color-text)" },
-            }}
-          />
-          {isSpeakCooldownActive && (
-            <div className="speech-cooldown-progress">
-              <div
-                className="speech-cooldown-progress-fill"
-                style={{ width: `${speakCooldownProgressPercent}%` }}
-              />
-            </div>
-          )}
-        </div>
+        />}
         <EmotePicker
           className="speech-dropdown"
           players={players}
           onEmoteSelected={onEmoteSelected}
         />
-      </div>
-    </div>
+      </>}
+    />
   );
 }
 
@@ -4450,7 +4374,7 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
 
     return (
       <div 
-        className={`player ${className ? className : ""}`} data-player-name={player.name} 
+        className={`player player-row ${className ? className : ""}`} data-player-name={player.name}
         key={player.id}
         style={readyCheck ? {
           boxShadow: isReady ? "inset 4px 0 0 #4caf50" : "inset 4px 0 0 #e02626",
@@ -4464,26 +4388,12 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
         } : {}}
       >
         {isolationCheckbox}
-        {stateViewing !== -1 && renderMarker ? (
-          renderMarker(player)
-        ) : (
-          stateViewing !== -1 && (
-            <>
-              <RoleMarkerToggle
-                playerId={player.id}
-                setup={setup}
-                toggleRolePrediction={toggleRolePrediction}
-              />
-              <RoleCount
-                role={roleToShow}
-                key={roleToShow}
-                gameType={gameType}
-                showPopover
-                otherRoles={setup?.roles}
-              />
-            </>
-          )
-        )}
+        {stateViewing !== -1 && <span className="player-role-tools">
+          {renderMarker ? renderMarker(player) : <>
+            <RoleMarkerToggle playerId={player.id} setup={setup} toggleRolePrediction={toggleRolePrediction} />
+            <RoleCount role={roleToShow} gameType={gameType} showPopover otherRoles={setup?.roles} />
+          </>}
+        </span>}
         {(() => {
           const nameWithAvatar = (
             <NameWithAvatar
@@ -4516,7 +4426,7 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
                 size={18}
                 sx={{
                   position: "absolute",
-                  left: 26,
+                  left: 18,
                   bottom: -2,
                   borderRadius: "50%",
                   backgroundColor: "background.paper",
@@ -4526,22 +4436,18 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
           );
         })()}
         {selTab && showBubbles && visibleTyping[player.id] === selTab && (
-          <ReactLoading
-            className={`typing-icon ${stateViewing != -1 ? "has-role" : ""}`}
-            type="bubbles"
-            color={bubbleColor}
-            width="20"
-            height="20"
-          />
+          <UiIcon name="more" label={`${player.name} is typing`} size={20}
+            className={`typing-icon ui-icon--busy ${stateViewing != -1 ? "has-role" : ""}`}
+            style={{ color: bubbleColor }} />
         )}
         {readyCheck && (
           <Box sx={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
             {isReady ?
               (<Tooltip title="Ready" arrow>
-                <i className="fas fa-check-circle" style={{ color: "#4caf50", fontSize: "1.2rem" }} />
+                <UiIcon name="check" label="Ready" style={{ color: "#4caf50" }} />
               </Tooltip>)
             : (<Tooltip title="Not Ready" arrow>
-                <i className="fas fa-times-circle" style={{ color: "#e02626", fontSize: "1.2rem" }} />
+                <UiIcon name="close" label="Not ready" style={{ color: "#e02626" }} />
               </Tooltip>)
             }
           </Box>
@@ -4589,13 +4495,14 @@ export function PlayerList(props) {
       }}
     >
       <Typography>Players</Typography>
+      {game.stateViewing >= 0 && <span className="player-alive-count">{alivePlayers.length} alive</span>}
       {game.isOmniscientSpectator && (
         <Tooltip title="Developer view: you can see every meeting, vote, whisper, private message and true role in this Testing lobby game. Players cannot see this.">
           <Chip
             className="omniscient-spectator-chip"
             size="small"
             color="warning"
-            icon={<i className="fas fa-eye" style={{ marginLeft: 8 }} />}
+            icon={<UiIcon name="eye" style={{ marginLeft: 8 }} />}
             label="Dev view"
           />
         </Tooltip>
@@ -4603,6 +4510,7 @@ export function PlayerList(props) {
       {!isPhoneDevice && <PregameSeatActions />}
       <Box sx={{ marginLeft: "auto !important" }}>
         <PlayerCount
+          showSeats={game.stateViewing === -1}
           game={game}
           gameId={game.gameId}
           anonymousGame={game.options.anonymousGame}
@@ -4630,7 +4538,7 @@ export function PlayerList(props) {
           />
           {deadPlayers.length > 0 && (
             <div className="section-title">
-              <i className="fas fa-skull" />
+              <UiIcon name="skull" size={16} />
               Graveyard
             </div>
           )}
@@ -4642,7 +4550,7 @@ export function PlayerList(props) {
           />
           {exorcisedPlayers.length > 0 && (
             <div className="section-title">
-              <i className="fas fa-skull" />
+              <UiIcon name="skull" size={16} />
               Underworld
             </div>
           )}
@@ -4678,7 +4586,7 @@ function PregameSpectatorRows() {
   return (
     <div className="pregame-spectators">
       <div className="section-title">
-        <i className="fas fa-eye" />
+        <UiIcon name="eye" size={16} />
         Spectators
       </div>
       {watching.map((spectator) => (
@@ -5502,13 +5410,13 @@ function ActionSelect(props) {
       <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
         <Dropdown
           className={`action-dropdown ${notClickable ? "not-clickable" : ""}`}
+          disabled={notClickable}
           options={targetOptions}
           value={null}
           onChange={onSelectVote}
           icon={
             <>
               <Typography>{meeting.actionName}</Typography>{" "}
-              <i className="fas fa-angle-down dropdown-arrow" />
             </>
           }
           anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
@@ -5578,6 +5486,7 @@ function ActionSelect(props) {
                 component="button"
                 type="button"
                 className="voter voter-btn"
+                aria-label={`${meeting.actionName || "Select"}: ${rowItem.name}`}
                 disabled={notClickable}
                 onClick={() => onSelectVote(rowItem.id)}
                 sx={{
@@ -5597,29 +5506,10 @@ function ActionSelect(props) {
               >
                 {rowItem.name}
               </Typography>
-              {!rowItem.canVote && !rowIsSpecial && (
-                <Typography className="selection" sx={{ color: "primary.main" }}>
-                  does not vote
-                </Typography>
-              )}
-              {rowItem.canVote && rowItem.hasVoted && (
-                <Typography sx={{ color: "primary.main" }}>votes</Typography>
-              )}
-              {rowItem.canVote && rowItem.selection.length > 0 && (
-                <Typography className="selection" sx={{ color: "primary.main" }}>
-                  {rowItem.selection.join(", ")}
-                </Typography>
-              )}
-              {rowItem.canVote &&
-                rowItem.isVoteHidden &&
-                rowItem.selection.length === 0 && (
-                  <Typography
-                    className="selection"
-                    sx={{ fontStyle: "italic", opacity: 0.7 }}
-                  >
-                    (target hidden)
-                  </Typography>
-                )}
+              {!rowItem.canVote && !rowIsSpecial && <Typography className="selection" sx={{ color: "primary.main" }}>does not vote</Typography>}
+              {rowItem.canVote && rowItem.hasVoted && <Typography sx={{ color: "primary.main" }}>votes</Typography>}
+              {rowItem.canVote && rowItem.selection.length > 0 && <Typography className="selection" sx={{ color: "primary.main" }}>{rowItem.selection.join(", ")}</Typography>}
+              {rowItem.canVote && rowItem.isVoteHidden && !rowItem.selection.length && <Typography className="selection" sx={{ fontStyle: "italic", opacity: .7 }}>(target hidden)</Typography>}
             </Box>
           );
         })}
@@ -5886,11 +5776,6 @@ function ActionButton(props) {
 function ActionImageButtons(props) {
   const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] =
     useAction(props);
-  const [selectedTarget, setSelectedTarget] = useState(null);
-
-  if (notClickable) {
-    return null;
-  }
 
   const votes = { ...meeting.votes };
   for (let playerId in votes)
@@ -5917,17 +5802,15 @@ function ActionImageButtons(props) {
   };
 
   const handleClick = (target) => {
-    setSelectedTarget(target);
     onVote(target);
   };
 
   const buttons = meeting.targets.map((target) => {
     var targetDisplay = getTargetDisplay(target, meeting, props.players);
-    const isSelected = selectedTarget === target;
+    const isSelected = isGameActionSelection({ meeting, self: props.self, selection: target });
     return (
-      <button
-        type="button"
-        className="btn btn-theme"
+      <UiAction iconOnly
+        className="action-image-choice" disabled={notClickable}
         key={target}
         onClick={() => handleClick(target)}
         aria-pressed={isSelected}
@@ -5940,7 +5823,7 @@ function ActionImageButtons(props) {
             className="action-icon"
           />
         </div>
-      </button>
+      </UiAction>
     );
   });
 
@@ -5955,11 +5838,6 @@ function ActionImageButtons(props) {
 function PlayingCardButtons(props) {
   const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] =
     useAction(props);
-  const [selectedTarget, setSelectedTarget] = useState(null);
-
-  if (notClickable) {
-    return null;
-  }
 
   const votes = { ...meeting.votes };
   for (let playerId in votes)
@@ -5986,20 +5864,15 @@ function PlayingCardButtons(props) {
   };
 
   const handleClick = (target) => {
-    setSelectedTarget(target);
     onVote(target);
   };
   //|| (selectedTarget && selectedTarget.includes(target))
   const buttons = meeting.targets.map((target) => {
     var targetDisplay = getTargetDisplay(target, meeting, props.players);
-    const isSelected =
-      votes[meeting.members[0].id] === target ||
-      (votes[meeting.members[0].id] &&
-        votes[meeting.members[0].id].includes(target));
+    const isSelected = isGameActionSelection({ meeting, self: props.self, selection: target });
     return (
-      <button
-        type="button"
-        className="btn btn-theme"
+      <UiAction
+        className="action-card-choice" disabled={notClickable} aria-label={String(targetDisplay)}
         key={target}
         onClick={() => handleClick(target)}
         aria-pressed={isSelected}
@@ -6008,7 +5881,7 @@ function PlayingCardButtons(props) {
         <div style={imgContainerStyle}>
           <div className={`card ${`c${targetDisplay}`}`}></div>
         </div>
-      </button>
+      </UiAction>
     );
   });
 
@@ -6021,10 +5894,12 @@ function PlayingCardButtons(props) {
 }
 
 function ActionText(props) {
+  const game = useContext(GameContext);
   const meeting = props.meeting;
   const self = props.self;
 
-  const disabled = meeting.finished;
+  const availability = getGameActionAvailability({ ...props, review: game.review || props.review });
+  const disabled = !availability.canAct;
 
   // text settings
   const textOptions = meeting.textOptions || {};
@@ -6036,33 +5911,28 @@ function ActionText(props) {
   const maxLength = textOptions.maxLength || MaxTextInputLength;
 
   const [textData, setTextData] = useState("");
+  const previousAvailability = useRef(null);
 
   useEffect(() => {
-    // Only act when meeting finishes and user hasn't already voted
-    if (meeting.finished && !meeting.votes[self]) {
+    // Only a live, previously eligible editor may submit on its finish edge.
+    // Opening history/review/finished content must never generate a vote.
+    const previous = previousAvailability.current;
+    const currentPermission = getGameActionAvailability({ ...props, meeting: { ...meeting, finished: false }, review: game.review || props.review });
+    if (meeting.finished && previous?.id === meeting.id && previous.canAct && currentPermission.canAct && !currentPermission.hasVoted) {
       if (textData.length >= minLength) {
-        // Valid content: auto-submit
-        meeting.votes[self] = textData;
         props.socket.send("vote", {
           meetingId: meeting.id,
           selection: textData,
         });
       } else {
-        // Invalid content: clear to prevent exploits
         setTextData("");
       }
     }
-  }, [
-    meeting.finished,
-    meeting.id,
-    self,
-    textData,
-    minLength,
-    props.socket,
-    meeting.votes,
-  ]);
+    previousAvailability.current = { id: meeting.id, canAct: availability.canAct };
+  }, [props, meeting, game.review, availability.canAct, textData, minLength]);
 
   function handleOnChange(e) {
+    if (disabled) return;
     var textInput = e.target.value;
     // disable new lines by default
     textInput = textInput.replace(/\n/g, " ");
@@ -6131,11 +6001,10 @@ function ActionText(props) {
   }
 
   function handleOnSubmit(e) {
-    if (textData.length < minLength) {
+    if (disabled || textData.length < minLength) {
       return;
     }
 
-    meeting.votes[self] = textData;
     props.socket.send("vote", {
       meetingId: meeting.id,
       selection: textData,
@@ -6143,6 +6012,7 @@ function ActionText(props) {
   }
 
   function handleKeyDown(e) {
+    if (e.nativeEvent?.isComposing || e.isComposing || e.keyCode === 229) return;
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleOnSubmit();
@@ -6154,6 +6024,7 @@ function ActionText(props) {
       <Typography variant="subtitle1" gutterBottom>
         {meeting.actionName}
       </Typography>
+      {disabled && <Typography variant="body2" color="text.secondary">{availability.reason}</Typography>}
 
       {!disabled && (() => {
         const isLongText = !textOptions.numericOnly && maxLength >= 100;
@@ -6173,6 +6044,7 @@ function ActionText(props) {
               onKeyDown={handleKeyDown}
               fullWidth
               placeholder={textOptions.placeholder || "Type here"}
+              inputProps={{ "aria-label": meeting.actionName, maxLength }}
               {...textFieldProps}
             />
             {isLongText && (
@@ -6200,7 +6072,7 @@ function ActionText(props) {
         );
       })()}
 
-      {meeting.votes[self] && (
+      {Object.prototype.hasOwnProperty.call(meeting.votes, self) && meeting.votes[self] != null && (
         <Typography variant="body2" sx={{ mt: 1 }}>
           Your vote: {meeting.votes[self]}
         </Typography>
@@ -6223,24 +6095,17 @@ function ActionSeparatingText(props) {
 }
 
 function useAction(props) {
+  const game = useContext(GameContext);
   const meeting = props.meeting;
   const history = props.history;
   const stateViewing = props.stateViewing;
-  const isCurrentState = stateViewing === history.currentState;
-
-  const notClickable =
-    !isCurrentState ||
-    !meeting.amMember ||
-    !meeting.canVote ||
-    (((meeting.instant && !meeting.instantButChangeable) || meeting.noUnvote) &&
-      meeting.votes[props.self]);
+  const availability = getGameActionAvailability({ ...props, review: game.review || props.review });
+  const isCurrentState = availability.isCurrentState;
+  const notClickable = !availability.canAct;
 
   function onVote(sel) {
-    var isUnvote;
-
-    if (!Array.isArray(meeting.votes[props.self]))
-      isUnvote = sel === meeting.votes[props.self];
-    else isUnvote = meeting.votes[props.self].indexOf(sel) !== -1;
+    if (notClickable) return;
+    const isUnvote = isGameActionSelection({ meeting, self: props.self, selection: sel });
 
     if (!isUnvote) {
       props.socket.send("vote", {
@@ -6323,11 +6188,7 @@ export function LastWillEntry() {
       title="Last Will"
       isAccordionMenu
       lockIcon={
-        <i
-          className={`fas ${
-            cannotModifyLastWill ? "fa-lock" : "fa-lock-open"
-          } fa-fw`}
-        />
+        <UiIcon name={cannotModifyLastWill ? "lock" : "unlock"} size={16} />
       }
       content={
         <div className="last-will-wrapper">
@@ -6343,7 +6204,7 @@ export function LastWillEntry() {
   );
 }
 
-function SettingsForm({ handleClose = null, onLeave = null }) {
+function SettingsForm({ handleClose = null }) {
   const game = useContext(GameContext);
   const { settings, updateSettings } = game;
 
@@ -6528,7 +6389,7 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
     game.players[game.self].userId === game.hostId;
 
   const menuContent = (
-    <Stack direction="column" spacing={1}>
+    <Stack className="game-settings-fields" direction="column" spacing={1}>
       <Form compact fields={formFields.slice(0, 1)} onChange={handleFieldChange} />
       {canChangeSetup && (
         <Button onClick={() => game.setChangeSetupDialogOpen(true)}>
@@ -6545,7 +6406,7 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
   );
 
   const menuFooter = (
-    <Stack direction="row" spacing={1}>
+    <Stack className="game-settings-footer" direction="row" spacing={1}>
       {handleClose && (
         <Button
           variant="outlined"
@@ -6557,7 +6418,6 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
           Cancel
         </Button>
       )}
-      {!handleClose && !onLeave && <div style={{ flex: 1 }} />}
       <Button
         color="primary"
         onClick={saveSettings}
@@ -6567,22 +6427,11 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
       >
         Save
       </Button>
-      {onLeave && (
-        <Button
-          onClick={onLeave}
-          startIcon={<img src={exit} alt="Leave" />}
-          sx={{
-            flex: "1",
-          }}
-        >
-          Leave
-        </Button>
-      )}
     </Stack>
   );
 
   return (
-    <Stack direction="column" spacing={1}>
+    <Stack className="game-settings-form" direction="column" spacing={1}>
       {menuContent}
       {menuFooter}
     </Stack>

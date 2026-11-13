@@ -5,7 +5,8 @@
 export const STRATEGY_WINDOWS_STORAGE_KEY = "strategyWindows";
 export const STRATEGY_WINDOW_WIDTH = 420;
 export const STRATEGY_WINDOW_HEIGHT = 460;
-export const STRATEGY_TITLE_BAR_HEIGHT = 44;
+// Matches the Messages window's bar so the two floating windows line up.
+export const STRATEGY_TITLE_BAR_HEIGHT = 52;
 export const STRATEGY_WINDOW_MIN_WIDTH = 280;
 export const STRATEGY_WINDOW_MIN_HEIGHT = 200;
 // Gap kept between a window and the viewport edge. A guide is meant to be

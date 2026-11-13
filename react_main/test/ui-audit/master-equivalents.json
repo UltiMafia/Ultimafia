@@ -1,0 +1,108 @@
+{
+  "new-page-contract.tabs-last": { "route": "/community/feedback", "equivalence": "nearest-ancestor", "reason": "The shared-component tab strip is test-only and absent from master. Compare the actual Feedback form's category selector ancestor; no master tabs are fabricated." },
+  "new-page-contract.steps-final": { "route": "/community/feedback", "equivalence": "nearest-ancestor", "reason": "The step control is a test-only shared-component composition, absent from master. Compare its actual Feedback form and final submission action without submitting; no master step navigation is fabricated." },
+  "profile-default.report-pending": { "equivalence": "nearest-ancestor", "reason": "Master ReportDialog.jsx:69–108 has no guarded/disabled pending form. Capture its actual populated report dialog without submitting a report; this is the form ancestor, not a fabricated pending state." },
+  "profile-default.report-error": { "equivalence": "nearest-ancestor", "reason": "Master ReportDialog.jsx:101–106 reports failed submissions through global alerts, not a retained inline error. Compare its actual populated report form without delivering any report." },
+  "developer.revoke-confirmation": { "equivalence": "nearest-ancestor", "reason": "Master revokes a key immediately (DeveloperApi.jsx:48–52), without a confirmation dialog. Capture the real directory without issuing the write." },
+  "developer.revoke-pending": { "equivalence": "nearest-ancestor", "reason": "Master has no pending revoke dialog or disabled cancellation controls. Compare the actual key directory ancestor; do not revoke a key." },
+  "developer.revoke-error": { "equivalence": "nearest-ancestor", "reason": "The retained, retryable revoke dialog is new. Master reports errors through a global alert after immediate submission. Capture its directory ancestor without a key mutation." },
+  "developer.create-pending": { "equivalence": "nearest-ancestor", "reason": "Master has no creation pending/disabled state (DeveloperApi.jsx:37–45). Compare the actual creation form without creating credentials." },
+  "developer.create-error": { "equivalence": "nearest-ancestor", "reason": "Master has no inline draft-retention failure state. Compare the actual creation form; no credentials are generated for evidence." },
+  "developer-owner.revoke-confirmation": { "equivalence": "nearest-ancestor", "reason": "Master owner view revokes immediately without confirmation. Capture its actual owner directory, without a key mutation." },
+  "developer-owner.revoke-pending": { "equivalence": "nearest-ancestor", "reason": "Master has no disabled pending revoke dialog. Compare the actual owner directory ancestor without submitting." },
+  "developer-owner.revoke-error": { "equivalence": "nearest-ancestor", "reason": "The retryable revoke dialog is new. Compare the actual owner directory ancestor without submitting a key mutation." },
+  "developer-owner.create-pending": { "equivalence": "nearest-ancestor", "reason": "Master has no disabled creation pending state. Compare the actual form without generating credentials." },
+  "developer-owner.create-error": { "equivalence": "nearest-ancestor", "reason": "Master has no inline creation-failure state. Compare the actual form without generating credentials." },
+  "invoices.approve-confirmation": { "equivalence": "nearest-ancestor", "reason": "Master uses native window.confirm (Invoices.jsx:72–74). Dismiss the actual prompt and capture the table ancestor; the page screenshot is not an image of native browser chrome." },
+  "invoices.reject-confirmation": { "equivalence": "nearest-ancestor", "reason": "Master uses native window.confirm for rejection. Dismiss the actual prompt and capture the real table ancestor, without a payment write." },
+  "invoices.review-pending": { "equivalence": "nearest-ancestor", "reason": "Master has no pending review dialog. Capture the actual invoice table ancestor without approving, crediting or rejecting an invoice." },
+  "invoices.review-error": { "equivalence": "nearest-ancestor", "reason": "The retryable inline review dialog is new. Compare the actual invoice table ancestor, not a fabricated modal or a payment mutation." },
+  "donors-management.assign-dialog": {
+    "equivalence": "nearest-ancestor",
+    "reason": "Master uses a user-search popover that submits immediately upon selection (upstream Donors.jsx:356–374), not a cancellable assignment dialog. Open the actual popover without choosing any user."
+  },
+  "donors-management.remove-confirmation": {
+    "equivalence": "nearest-ancestor",
+    "reason": "Master removes donor status immediately without confirmation (upstream Donors.jsx:78–85). Capture the actual directory ancestor without clicking a removal control or issuing a write."
+  },
+  "admin-intake.approve-confirmation": {
+    "equivalence": "nearest-ancestor",
+    "reason": "Master has no web confirmation: onWhitelist posts immediately (upstream FlaggedIntake.jsx:87). Capture the actual review row without clicking or issuing that action."
+  },
+  "admin-intake.ban-confirmation": {
+    "equivalence": "nearest-ancestor",
+    "reason": "Master has no web confirmation: onBlacklist posts immediately (upstream FlaggedIntake.jsx:112). Pair the new cancellable dialog to its actual ancestor without a destructive click."
+  },
+  "family-leader.role-confirmation": {
+    "equivalence": "nearest-ancestor",
+    "reason": "Master uses a native browser confirm, not a DOM dialog (upstream Family.jsx:325). Record and dismiss the real prompt, then capture the actual ancestor. Native browser chrome is not present in a Playwright page screenshot."
+  },
+  "family-leader.remove-confirmation": {
+    "equivalence": "nearest-ancestor",
+    "reason": "Master uses a native browser confirm for removal (upstream Family.jsx:230). Its message and dismissal are recorded; the screenshot is explicitly the underlying ancestor, not a fabricated modal."
+  },
+  "lobby": {
+    "selector": ".inner-content.play",
+    "equivalence": "same-route",
+    "reason": "Use the actual legacy Play content root rather than requiring the redesign's lobby-browser class. Both receive the same populated list, community wall and sidebar data."
+  },
+  "new-page-contract": {
+    "route": "/community/feedback",
+    "selector": "textarea",
+    "equivalence": "nearest-ancestor",
+    "reason": "This is a test-only composition route, absent from master. The nearest master page combining a title and ordinary form controls is Feedback."
+  },
+  "moderation-log": {
+    "route": "/policy/moderation",
+    "selector": ".moderation",
+    "equivalence": "same-route",
+    "reason": "Master places recent actions beside commands and staff groups in its combined Moderation Log workspace (upstream pages/Policy/Moderation.jsx:23)."
+  },
+  "moderation-tools": {
+    "route": "/policy/moderation",
+    "selector": ".moderation",
+    "equivalence": "nearest-ancestor",
+    "reason": "The dedicated Run action route is new. Its commands exist in master's combined Moderation Log workspace (upstream pages/Policy/Moderation.jsx:35)."
+  },
+  "moderation-groups": {
+    "route": "/policy/moderation",
+    "selector": ".group-panel",
+    "equivalence": "nearest-ancestor",
+    "reason": "The dedicated Staff groups route is new. Its groups exist in master's combined Moderation Log workspace (upstream pages/Policy/Moderation.jsx:47)."
+  },
+  "moderation-reports": {
+    "selector": "table",
+    "equivalence": "same-route",
+    "reason": "Master uses a report table rather than redesign's Report R-1042 row label (upstream pages/Policy/Reports.jsx:182). Require actual loaded table content, not the Reports navigation tab."
+  },
+  "tutorial-failure": {
+    "selector": ".inner-container",
+    "equivalence": "same-route",
+    "requireReadFailure": true,
+    "reason": "Inject the same primary read failure into actual master; compare its real error/empty/loading presentation rather than requiring the redesign's Retry copy."
+  },
+  "contributors-failure": {
+    "selector": ".inner-container",
+    "equivalence": "same-route",
+    "requireReadFailure": true,
+    "reason": "Inject the same contributors read failure. Master's recovery UI is not assumed to have redesign's copy or Retry control."
+  },
+  "family-failure": {
+    "selector": ".inner-container",
+    "equivalence": "same-route",
+    "requireReadFailure": true,
+    "reason": "Inject the same family-profile read failure. Master redirects to the lobby instead of showing redesign's unavailable/retry page; capture that actual redirect and populated ancestor, not invented error UI."
+  },
+  "family-applications-failure": {
+    "selector": ".inner-container",
+    "equivalence": "same-route",
+    "requireReadFailure": true,
+    "reason": "Inject the same family-applications read failure while preserving the loaded family profile. A missing explicit master error is itself comparative evidence."
+  },
+  "family-history-failure": {
+    "selector": ".inner-container",
+    "equivalence": "same-route",
+    "requireReadFailure": true,
+    "reason": "Inject the same family-ledger read failure. Capture actual master behavior even if it does not expose a dedicated recovery state."
+  }
+}

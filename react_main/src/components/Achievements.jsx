@@ -2,7 +2,6 @@ import React, { useContext, useState, useMemo } from "react";
 import "css/play.css";
 import "css/achievements.css";
 import {
-  Typography,
   Popover,
   Stack,
   Divider,
@@ -10,11 +9,14 @@ import {
 import { SiteInfoContext } from "../Contexts";
 import { CellSearch, Cell } from "./CellSearch";
 import CasePanel from "./CasePanel";
+import CoinIcon from "./CoinIcon";
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
+import { UiText as Typography } from "./ui";
+import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 
-const COIN_ICON = require("images/umcoin.png");
 
 function AchievementCount({ item }) {
+  const isPhoneDevice = useIsPhoneDevice();
   const internal = item.internal?.[0] ?? "";
   const {
     popoverOpen,
@@ -33,7 +35,7 @@ function AchievementCount({ item }) {
         aria-owns={popoverOpen ? `achievement-popover-${item.name.replace(/\s/g, "-")}` : undefined}
         aria-haspopup="true"
         onClick={handleClick}
-        onMouseEnter={handleMouseEnter}
+        onMouseEnter={isPhoneDevice ? undefined : handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         style={{
           width: "1.875rem",
@@ -72,12 +74,7 @@ function AchievementCount({ item }) {
               <Typography>{item.description ?? ""}</Typography>
             </Stack>
             <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-              <img
-                src={COIN_ICON}
-                className="um-coin"
-                alt=""
-                style={{ width: "1rem", height: "1rem" }}
-              />
+              <CoinIcon size={16} />
               <Typography>
                 <span style={{ fontWeight: "bold" }}>Reward</span>: {item.reward ?? 0} coins
               </Typography>
@@ -154,6 +151,8 @@ export function AchievementSearch() {
 
   return (
         <CellSearch
+          variant="directory"
+          label="Achievements"
           tabs={[]}
           searchPlaceholder="🔎 Search"
           searchVal={searchVal}
@@ -163,7 +162,6 @@ export function AchievementSearch() {
           getItemName={(item) => item.name}
           renderIcon={(item) => <AchievementCount item={item} />}
           renderCell={(item, icon) => <Cell item={item} icon={icon} />}
-          gridColumns={{ xs: 4, sm: 6, md: 8 }}
         />
   );
 }

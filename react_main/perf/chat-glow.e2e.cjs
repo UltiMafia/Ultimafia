@@ -7,9 +7,20 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "playwright");
 
 // Preserve the original independent text shadows as a small visual reference.
 // Only eight characters animate here, never the old long-day implementation.
+// Compare the original shadow radii with the current per-colour calibrated
+// alphas. The old fixed-white reference predates luminance scaling and already
+// failed for light names. Do not filter either halo: WebKit clips its ink at the
+// element boundary even for brightness-only filters (covered by the rendering
+// regression using the reporter's real font).
 const reference = `@keyframes reference-glow {
-  0%, 100% { text-shadow: 0 0 2px currentColor, 0 0 8px currentColor; filter: brightness(1); }
-  50% { text-shadow: 0 0 4px currentColor, 0 0 16px currentColor, 0 0 28px currentColor; filter: brightness(1.35); }
+  0%, 100% { text-shadow: 0 0 2px rgb(var(--name-glow-rgb) / var(--name-glow-dim-alpha)), 0 0 8px rgb(var(--name-glow-rgb) / var(--name-glow-dim-alpha)); }
+  50% { text-shadow: 0 0 4px rgb(var(--name-glow-rgb) / var(--name-glow-peak-alpha)), 0 0 16px rgb(var(--name-glow-rgb) / var(--name-glow-peak-alpha)), 0 0 28px rgb(var(--name-glow-rgb) / var(--name-glow-peak-alpha)); }
+}`;
+// Chromium-only intensity baseline for the previous paint path. WebKit's
+// rectangle is tested separately; matching it would preserve the defect.
+const legacyReference = `@keyframes legacy-glow {
+  0%, 100% { text-shadow: 0 0 2px rgb(var(--name-glow-rgb) / var(--name-glow-dim-alpha)), 0 0 8px rgb(var(--name-glow-rgb) / var(--name-glow-dim-alpha)); filter: brightness(1); }
+  50% { text-shadow: 0 0 4px rgb(var(--name-glow-rgb) / var(--name-glow-peak-alpha)), 0 0 16px rgb(var(--name-glow-rgb) / var(--name-glow-peak-alpha)), 0 0 28px rgb(var(--name-glow-rgb) / var(--name-glow-peak-alpha)); filter: brightness(1.35); }
 }`;
 const { nameGlowStyle } = require("../src/utils/nameGlowStyle.js");
 const css = fs.readFileSync(
@@ -25,9 +36,11 @@ for (end++; depth && end < css.length; end++) {
   if (css[end] === "}") depth--;
 }
 const production = css.slice(start, end);
+// Keep shadow colour/radius/alpha parity, and prohibit reintroducing the filter
+// layer that clips the glyph halo in WebKit. Chromium parity alone misses it.
 assert(
-  !production.includes("text-shadow:"),
-  "do not restore animated glyph-overflow/layout changes"
+  !/\bfilter\s*:/.test(production),
+  "the glow keyframes must not rasterize their glyph halo through a filter"
 );
 
 (async () => {
@@ -61,7 +74,7 @@ assert(
       html,body{margin:0;background:#151515}
       #tile{width:360px;height:160px;display:flex;align-items:center;justify-content:center}
       #name{display:inline-block;font:700 20px Arial;color:#eee;animation-duration:2000ms;animation-timing-function:linear;animation-iteration-count:infinite}
-      ${reference}${production}
+      ${reference}${legacyReference}${production}
       </style><div id="tile"><span id="name">Player12</span></div>`);
     if (process.env.CHAT_TEST_REQUIRE_GPU === "1") {
       const cdp = await browser.newBrowserCDPSession();
@@ -86,13 +99,16 @@ assert(
             name.style.removeProperty("filter");
             name.style.removeProperty("text-shadow");
             name.style.animationName =
-              kind === "reference" ? "reference-glow" : "name-color-glow";
+              kind === "reference" ? "reference-glow" : kind === "legacy" ? "legacy-glow" : "name-color-glow";
             const animation = name.getAnimations()[0];
             animation.pause();
             animation.currentTime = phase * 1000;
           }
         },
-        { kind, phase, color, glowStyle: nameGlowStyle(color) }
+        { kind, phase, color, glowStyle: {
+          ...nameGlowStyle(color),
+          ...(kind === "legacy" ? { "--name-glow-peak-alpha": nameGlowStyle(color)["--name-glow-peak-alpha"] / 1.08 } : {}),
+        } }
       );
       await page.evaluate(
         () =>
@@ -114,12 +130,14 @@ assert(
       }, png.toString("base64"));
     }
     const results = [];
-    for (const color of ["#eeeeee", "#60a5fa", "rgba(96, 165, 250, 0.5)"]) {
+    for (const color of ["#eeeeee", "#e6e6ff", "#60a5fa", "rgba(96, 165, 250, 0.5)"]) {
       for (const phase of [0, 0.25, 0.5, 0.75, 1]) {
         const plain = await pixels("plain", phase, color);
         const baseline = await pixels("reference", phase, color);
+        const legacy = await pixels("legacy", phase, color);
         const patched = await pixels("production", phase, color);
         let referenceEnergy = 0,
+          legacyEnergy = 0,
           patchedEnergy = 0,
           squaredError = 0,
           samples = 0;
@@ -129,6 +147,7 @@ assert(
             continue;
           for (let channel = 0; channel < 3; channel++) {
             referenceEnergy += Math.max(0, baseline[pixel + channel] - 21);
+            legacyEnergy += Math.max(0, legacy[pixel + channel] - 21);
             patchedEnergy += Math.max(0, patched[pixel + channel] - 21);
             squaredError +=
               (baseline[pixel + channel] - patched[pixel + channel]) ** 2;
@@ -137,7 +156,12 @@ assert(
         }
         const ratio = patchedEnergy / referenceEnergy;
         const rmse = Math.sqrt(squaredError / samples);
-        results.push({ color, phase, ratio, rmse });
+        const legacyRatio = patchedEnergy / legacyEnergy;
+        results.push({ color, phase, ratio, rmse, legacyRatio });
+        assert(
+          Math.abs(legacyRatio - 1) < 0.15,
+          `retain the old Chromium halo strength without its filter: ${JSON.stringify(results.at(-1))}`
+        );
         assert(
           Math.abs(ratio - 1) < 0.15,
           `glow halo intensity differs by more than 15%: ${JSON.stringify(results.at(-1))}`
@@ -172,7 +196,7 @@ assert(
                 .match(/[0-9.]+/g)
                 .slice(0, 3)
                 .map(Number),
-              shadow: style.filter
+              shadow: style.textShadow
                 .match(/rgba?\(([^)]+)\)/)?.[1]
                 .match(/[0-9.]+/g)
                 .slice(0, 3)

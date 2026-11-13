@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
+import UiAction from "../../../components/ui/UiAction";
+import { UiPageHeader } from "components/ui";
 import { SiteInfoContext } from "../../../Contexts";
 import { useErrorAlert } from "../../../components/Alerts";
 import "css/deck.css";
@@ -35,6 +37,7 @@ export default function CreateWordDeck() {
   const [coverPreview, setCoverPreview] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const coverInputRef = useRef(null);
+  useEffect(() => () => { if (coverPreview) URL.revokeObjectURL(coverPreview); }, [coverPreview]);
 
   useEffect(() => {
     document.title = "Create Word Deck | UltiMafia";
@@ -212,7 +215,8 @@ export default function CreateWordDeck() {
   const inputsDisabled = isDefault;
 
   return (
-    <div className="deck">
+    <div className="deck deck-editor-page">
+      <UiPageHeader variant="editor" title={editId ? "Edit word deck" : "Create word deck"} actions={<Link to="/play/wordDecks">Back to decks</Link>} />
       <div className="main-section">
         <div className="span-panel deck-editor">
           {isDefault && (
@@ -249,7 +253,7 @@ export default function CreateWordDeck() {
           <form onSubmit={onSubmit}>
             <div className="deck-cover-section">
               <span className="deck-field-label">Cover Photo</span>
-              <div
+              <button type="button" aria-label="Upload cover photo" disabled={inputsDisabled}
                 className={`deck-cover-upload ${
                   coverPreview || coverPhoto ? "" : "empty"
                 }`}
@@ -273,6 +277,7 @@ export default function CreateWordDeck() {
                     <span>Click to upload</span>
                   </div>
                 )}
+              </button>
                 <input
                   ref={coverInputRef}
                   className="hidden-upload"
@@ -281,17 +286,15 @@ export default function CreateWordDeck() {
                   onChange={onCoverSelect}
                   disabled={inputsDisabled}
                 />
-              </div>
               {(coverPreview || coverPhoto) && !inputsDisabled && (
-                <a
-                  className="btn deck-cover-remove"
+                <UiAction variant="ghost"
                   onClick={(e) => {
                     e.stopPropagation();
                     onCoverRemove();
                   }}
                 >
                   Remove cover
-                </a>
+                </UiAction>
               )}
             </div>
 
@@ -430,9 +433,8 @@ export default function CreateWordDeck() {
             </div>
 
             <div className="deck-actions">
-              <button
+              <UiAction variant="primary" busy={submitting}
                 type="submit"
-                className="btn btn-success deck-submit-btn"
                 title="Save deck"
                 disabled={
                   inputsDisabled ||
@@ -445,11 +447,8 @@ export default function CreateWordDeck() {
                   !loaded
                 }
               >
-                <i className="fas fa-check-circle fa-lg" />
-                <span style={{ marginLeft: 6 }}>
-                  {editing ? "Save Changes" : "Create Deck"}
-                </span>
-              </button>
+                {editing ? "Save changes" : "Create deck"}
+              </UiAction>
             </div>
           </form>
         </div>

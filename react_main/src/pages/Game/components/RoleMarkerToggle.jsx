@@ -2,6 +2,7 @@ import React, { useRef, useCallback, useMemo } from "react";
 import { usePopover, InfoPopover } from "components/Popover";
 import { getKeyboardActivationProps } from "utils/keyboard";
 import { roleMarkerSetupSource, roleMarkerRoles } from "lib/roleMarkerSetup";
+import UiIcon from "components/ui/UiIcon";
 
 export default function RoleMarkerToggle({
   playerId,
@@ -48,7 +49,7 @@ export default function RoleMarkerToggle({
           cursor: "pointer",
         }}
       >
-        <i className="fas fa-user-edit" />
+        <UiIcon name="edit" size={16} />
       </div>
     </>
   );

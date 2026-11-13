@@ -1,19 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
-import {
-  Outlet,
-  useLocation,
-  useOutletContext,
-} from "react-router-dom";
+import { Outlet, useLocation, useOutletContext } from "react-router-dom";
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
-import { Box, Grid, Stack, Tab, Tabs, Typography } from "@mui/material";
-
 import axios from "axios";
-
 import { UserContext } from "Contexts";
+import { UiPageHeader, UiSectionNav, UiSectionNavItem } from "components/ui";
 
-import { ModCommands } from "./Moderation/ModCommands";
-import { ModActions } from "./Moderation/ModActions";
-import { GroupPanels } from "./Moderation/GroupPanels";
+import { ModerationRecent } from "./Moderation/ModerationPages";
 
 import "css/main.css";
 import "css/moderation.css";
@@ -21,175 +13,80 @@ import "css/moderation.css";
 export { ModCommands, COMMAND_COLOR } from "./Moderation/ModCommands";
 
 export function ModerationLog() {
-  const { results = "", setResults = () => {}, user } =
-    useOutletContext() || {};
-
-  return (
-    <>
-      <Grid container rowSpacing={1} columnSpacing={1} className="moderation">
-        <Grid item xs={12} key={"mission-statement"}></Grid>
-        <Grid item xs={12} md={8} key={"execute-action"}>
-          <Stack direction="column" spacing={1}>
-            <Stack direction="column" spacing={1}>
-              {user?.perms?.viewModActions && (
-                <div className="box-panel">
-                  <Typography variant="h3">Execute Action</Typography>
-                  <Stack direction="column" spacing={1}>
-                    <ModCommands
-                      results={results}
-                      setResults={setResults}
-                      fixedHeight
-                    />
-                    {results && <Box>{results}</Box>}
-                  </Stack>
-                </div>
-              )}
-              <GroupPanels user={user} />
-            </Stack>
-          </Stack>
-        </Grid>
-        <Grid item xs={12} md={4} key={"mod-actions"}>
-          <Stack direction="column" spacing={1}>
-            <ModActions setResults={setResults} />
-          </Stack>
-        </Grid>
-      </Grid>
-    </>
-  );
+  return <ModerationRecent />;
 }
 
-function getTabValue(pathname) {
-  if (pathname.includes("/reports")) return "reports";
-  if (pathname.includes("/competitive")) return "competitive";
-  if (pathname.includes("/handbook")) return "handbook";
-  if (pathname.includes("/flagged-intake")) return "flagged-intake";
-  if (pathname.includes("/github-links")) return "github-links";
-  if (pathname.includes("/volunteer")) return "volunteer";
-  if (pathname.includes("/ban-appeals")) return "ban-appeals";
-  return "log";
+function getPath(pathname) {
+  if (pathname.includes("/reports")) return "/policy/moderation/reports";
+  if (pathname.includes("/competitive")) return "/policy/moderation/competitive";
+  if (pathname.includes("/handbook")) return "/policy/moderation/handbook";
+  if (pathname.includes("/flagged-intake")) return "/policy/moderation/flagged-intake";
+  if (pathname.includes("/github-links")) return "/policy/moderation/github-links";
+  if (pathname.includes("/volunteer")) return "/policy/moderation/volunteer";
+  if (pathname.includes("/ban-appeals")) return "/policy/moderation/ban-appeals";
+  if (pathname.includes("/groups")) return "/policy/moderation/groups";
+  if (pathname.includes("/tools")) return "/policy/moderation/tools";
+  return "/policy/moderation";
 }
+
+const destinations = [
+  ["/policy/moderation", "Recent actions", "settings", null],
+  ["/policy/moderation/tools", "Run action", "moderation", "viewModActions"],
+  ["/policy/moderation/groups", "Staff groups", "people", null],
+  ["/policy/moderation/handbook", "Staff handbook", "book", null],
+  ["/policy/moderation/volunteer", "Volunteer", "people", null],
+  ["/policy/moderation/reports", "Reports", "flag", "viewModActions"],
+  ["/policy/moderation/competitive", "Competitive", "trophy", "manageCompetitive"],
+  ["/policy/moderation/flagged-intake", "Flagged intake", "warning", "whitelist"],
+  ["/policy/moderation/github-links", "GitHub links", "link", "approveGithubLinks"],
+  ["/policy/moderation/ban-appeals", "Ban appeals", "skull", "banAppeals"],
+];
 
 export default function Moderation() {
   const [results, setResults] = useState("");
   const user = useContext(UserContext);
   const location = useLocation();
   const navigate = useNavigate();
+  const current = getPath(location.pathname);
 
-  const tabValue = getTabValue(location.pathname);
-
-  // The Ban Appeals tab is for the admins who get appeals; the server
-  // decides (it also guards every Ban Appeals endpoint).
   const [banAppealsAccess, setBanAppealsAccess] = useState(null);
   useEffect(() => {
     if (!user.loaded) return;
-    if (!user?.perms?.unban) {
-      setBanAppealsAccess(false);
-      return;
-    }
+    if (!user?.perms?.unban) { setBanAppealsAccess(false); return; }
     let cancelled = false;
-    axios
-      .get("/api/mod/banAppeals/access")
-      .then((res) => !cancelled && setBanAppealsAccess(!!res.data.allowed))
+    axios.get("/api/mod/banAppeals/access")
+      .then(res => !cancelled && setBanAppealsAccess(!!res.data.allowed))
       .catch(() => !cancelled && setBanAppealsAccess(false));
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [user.loaded, user?.perms?.unban]);
 
   useEffect(() => {
-    if (banAppealsAccess === false && location.pathname.includes("/ban-appeals"))
-      navigate("/policy/moderation", { replace: true });
+    if (banAppealsAccess === false && location.pathname.includes("/ban-appeals")) navigate("/policy/moderation", { replace: true });
   }, [banAppealsAccess, location.pathname, navigate]);
 
-  useEffect(() => {
-    document.title = "Moderation | UltiMafia";
-  }, []);
-
+  useEffect(() => { document.title = "Moderation | UltiMafia"; }, []);
   useEffect(() => {
     if (!user.loaded) return;
+    if ((location.pathname.includes("/reports") || location.pathname.includes("/tools")) && !user?.perms?.viewModActions) navigate("/policy/moderation", { replace: true });
+    else if (location.pathname.includes("/competitive") && !user?.perms?.manageCompetitive) navigate("/policy/moderation", { replace: true });
+    else if (location.pathname.includes("/flagged-intake") && !user?.perms?.whitelist) navigate("/policy/moderation", { replace: true });
+    else if (location.pathname.includes("/github-links") && !user?.perms?.approveGithubLinks) navigate("/policy/moderation", { replace: true });
+  }, [location.pathname, user.loaded, user?.perms?.viewModActions, user?.perms?.manageCompetitive, user?.perms?.whitelist, user?.perms?.approveGithubLinks, navigate]);
 
-    if (
-      location.pathname.includes("/reports") &&
-      !user?.perms?.viewModActions
-    ) {
-      navigate("/policy/moderation", { replace: true });
-    } else if (
-      location.pathname.includes("/competitive") &&
-      !user?.perms?.manageCompetitive
-    ) {
-      navigate("/policy/moderation", { replace: true });
-    } else if (
-      location.pathname.includes("/flagged-intake") &&
-      !user?.perms?.whitelist
-    ) {
-      navigate("/policy/moderation", { replace: true });
-    } else if (
-      location.pathname.includes("/github-links") &&
-      !user?.perms?.approveGithubLinks
-    ) {
-      navigate("/policy/moderation", { replace: true });
-    }
-  }, [
-    location.pathname,
-    user.loaded,
-    user?.perms?.viewModActions,
-    user?.perms?.manageCompetitive,
-    user?.perms?.whitelist,
-    user?.perms?.approveGithubLinks,
-    navigate,
-  ]);
+  const links = destinations.filter(([, , , permission]) => {
+    if (permission === "banAppeals") return Boolean(banAppealsAccess);
+    return !permission || Boolean(user?.perms?.[permission]);
+  });
 
-  const handleTabChange = (_, newValue) => {
-    const base = "/policy/moderation";
-    if (newValue === "log") navigate(base);
-    else if (newValue === "reports") navigate(`${base}/reports`);
-    else if (newValue === "competitive") navigate(`${base}/competitive`);
-    else if (newValue === "handbook") navigate(`${base}/handbook`);
-    else if (newValue === "flagged-intake") navigate(`${base}/flagged-intake`);
-    else if (newValue === "volunteer") navigate(`${base}/volunteer`);
-    else if (newValue === "github-links") navigate(`${base}/github-links`);
-    else if (newValue === "ban-appeals") navigate(`${base}/ban-appeals`);
-  };
-
-  return (
-    <Box>
-      <Tabs
-        value={tabValue}
-        onChange={handleTabChange}
-        variant="scrollable"
-        scrollButtons="auto"
-        allowScrollButtonsMobile
-        sx={{
-          borderBottom: 1,
-          borderColor: "divider",
-          mb: 2,
-        }}
-      >
-        <Tab label="Moderation Log" value="log" />
-        <Tab label="Staff Handbook" value="handbook" />
-        <Tab label="Volunteer" value="volunteer" />
-        {user?.perms?.viewModActions && (
-          <Tab label="Reports" value="reports" />
-        )}
-        {user?.perms?.manageCompetitive && (
-          <Tab label="Competitive Management" value="competitive" />
-        )}
-        {user?.perms?.whitelist && (
-          <Tab label="Flagged Intake" value="flagged-intake" />
-        )}
-        {user?.perms?.approveGithubLinks && (
-          <Tab label="GitHub Links" value="github-links" />
-        )}
-        {banAppealsAccess && <Tab label="Ban Appeals" value="ban-appeals" />}
-      </Tabs>
-
-      <Outlet
-        context={{
-          results,
-          setResults,
-          user,
-        }}
-      />
-    </Box>
-  );
+  return <div className="moderation-shell">
+    <UiPageHeader variant="moderation" title="Moderation" description="Staff tools for reports, appeals, account safety and competitive operations." />
+    <div className="moderation-layout">
+      <UiSectionNav label="Moderation sections">
+        {links.map(([to, label, icon]) => <UiSectionNavItem key={to} to={to} icon={icon} active={current === to}>{label}</UiSectionNavItem>)}
+      </UiSectionNav>
+      <main className="moderation-content" id="moderation-content">
+        <Outlet context={{ results, setResults, user }} />
+      </main>
+    </div>
+  </div>;
 }

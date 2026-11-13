@@ -13,24 +13,10 @@
   background-color: var(--scheme-color);
 }
 
-.role-cell {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-}
-
 .role-list .role-count-wrap {
   margin-right: 3px;
 
   color: var(--scheme-color-text);
-}
-
-.role-cell-content {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-
-  cursor: pointer;
 }
 
 .item {

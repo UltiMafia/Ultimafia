@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useRef, useMemo } from "react";
+import { UiPage, UiSection, UiProductCard } from "components/ui";
 import { useLocation } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import axios from "axios";
@@ -11,12 +12,10 @@ import {
   Box,
   Button,
   Typography,
-  Card,
   TextField,
   Stack,
   Paper,
   Grid2,
-  CardActionArea,
   Divider,
   Tabs,
   Tab,
@@ -30,7 +29,7 @@ import {
 
 import { PageSkeleton } from "../../components/Skeletons";
 
-import coin from "images/umcoin.png";
+import CoinIcon from "components/CoinIcon";
 import CryptoDonate from "./CryptoDonate";
 
 const SHOP_CATEGORIES = [
@@ -338,30 +337,16 @@ export default function Shop(props) {
     return map;
   }, [shopInfo.shopItems]);
 
-  const renderShopCard = ({ item, index: i }) => {
+  const renderShopItem = ({ item, index: i }) => {
     const numOwned = user.itemsOwned[item.key] || 0;
     const disabled = item.disabled || numOwned === item.limit;
 
     return (
-      <Grid2
-        size={{
-          xs: 12,
-          md: 6,
-        }}
-        key={i}
-      >
-        <Card
-          variant="outlined"
-          sx={(theme) => ({
-            width: "100%",
-            height: "100%",
-            opacity: disabled ? "50%" : undefined,
-            borderColor: theme.palette.primary.main,
-          })}
-        >
-          <CardActionArea
-            disabled={disabled}
-            onClick={() => {
+      <UiProductCard key={item.key} title={item.name} description={item.desc}
+        ownership={`Owned: ${numOwned}${item.limit != null ? ` / ${item.limit}` : ""}`}
+        price={<>{item.price.toFixed(2)} <CoinIcon size={20} alt="coins" /></>}
+        disabled={disabled} unavailableLabel={item.disabled ? "Unavailable" : "Limit reached"}
+        onBuy={() => {
               if (item.key === "stamp") {
                 setStampDialogOpen(true);
                 setShowSuggestions(true);
@@ -371,52 +356,7 @@ export default function Shop(props) {
               } else {
                 onBuyItem(i);
               }
-            }}
-            sx={{ px: 1.5, py: 1 }}
-          >
-            <Stack
-              direction="row"
-              spacing={1.5}
-              alignItems="center"
-              sx={{ width: "100%" }}
-            >
-              <Stack sx={{ flex: 1, minWidth: 0 }}>
-                <Stack direction="row" spacing={1} alignItems="baseline">
-                  <Typography variant="h3" sx={{ lineHeight: 1.2 }}>
-                    {item.name}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Owned: {numOwned}
-                    {item.limit != null && ` / ${item.limit}`}
-                  </Typography>
-                </Stack>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    display: "-webkit-box",
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                    lineHeight: 1.4,
-                    minHeight: "calc(2 * 1.4em)",
-                  }}
-                >
-                  {item.desc}
-                </Typography>
-              </Stack>
-              <Stack
-                direction="row"
-                spacing={0.5}
-                alignItems="center"
-                sx={{ flexShrink: 0 }}
-              >
-                <Typography>{item.price.toFixed(2)}</Typography>
-                <img src={coin} style={{ width: "20px", height: "20px" }} />
-              </Stack>
-            </Stack>
-          </CardActionArea>
-        </Card>
-      </Grid2>
+        }} />
     );
   };
 
@@ -425,8 +365,7 @@ export default function Shop(props) {
   if (!loaded) return <PageSkeleton />;
 
   return (
-    <Stack direction="column" spacing={1}>
-      <Paper sx={{ p: 2 }}>
+    <UiPage title="Shop" width="wide" className="shop-page" actions={
         <Stack
           direction="row"
           spacing={1}
@@ -437,14 +376,9 @@ export default function Shop(props) {
           <Typography variant="h3" className="balance">
             You have: {shopInfo.balance.toFixed(2)}
           </Typography>
-          <img
-            className="um-coin"
-            src={coin}
-            style={{ width: "20px", height: "20px" }}
-            alt="Coin Icon"
-          />
+          <CoinIcon size={20} alt="Coin Icon" />
         </Stack>
-      </Paper>
+      }>
 
       <Tabs
         value={activeTab}
@@ -462,57 +396,14 @@ export default function Shop(props) {
 
       {activeTab === "shop" && (
         <>
-          <Divider flexItem orientation="horizontal" />
-          <Stack spacing={2.5} sx={{ pt: 1 }}>
+          <Stack spacing={2.5}>
             {SHOP_CATEGORIES.map((c) => {
               const entries = itemsByCategory[c.key] || [];
               if (entries.length === 0) return null;
               return (
-                <Box key={c.key}>
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    spacing={1.5}
-                    sx={{ mb: 1.5 }}
-                  >
-                    <Box
-                      sx={(theme) => ({
-                        flex: 1,
-                        height: "1px",
-                        background: `linear-gradient(to right, transparent, ${theme.palette.primary.main}99)`,
-                      })}
-                    />
-                    <Typography
-                      variant="h4"
-                      sx={(theme) => ({
-                        fontWeight: 700,
-                        letterSpacing: "0.28em",
-                        textTransform: "uppercase",
-                        color: theme.palette.primary.main,
-                        fontSize: { xs: 16, md: 20 },
-                        whiteSpace: "nowrap",
-                        "&::before, &::after": {
-                          content: '"\\25C6"',
-                          margin: "0 0.65em",
-                          fontSize: "0.7em",
-                          opacity: 0.7,
-                        },
-                      })}
-                    >
-                      {c.label}
-                    </Typography>
-                    <Box
-                      sx={(theme) => ({
-                        flex: 1,
-                        height: "1px",
-                        background: `linear-gradient(to left, transparent, ${theme.palette.primary.main}99)`,
-                      })}
-                    />
-                  </Stack>
-                  <Grid2 container spacing={1}>
-                    {entries.map((entry) => renderShopCard(entry))}
-                  </Grid2>
-                </Box>
+                <UiSection key={c.key} title={c.label}>
+                  <div className="ui-product-grid">{entries.map(renderShopItem)}</div>
+                </UiSection>
               );
             })}
           </Stack>
@@ -793,6 +684,6 @@ export default function Shop(props) {
           </Button>
         </DialogActions>
       </Dialog>
-    </Stack>
+    </UiPage>
   );
 }

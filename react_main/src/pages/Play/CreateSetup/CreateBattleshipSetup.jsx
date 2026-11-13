@@ -46,7 +46,7 @@ export default function CreateBattleshipSetup() {
   }, []);
 
   function onCreateSetup(_roleData, editing, setRedirect, gameSettings) {
-    axios
+    return axios
       .post("/api/setup/create", {
         gameType: gameType,
         roles: BATTLESHIP_FIXED_ROLES,

@@ -1,9 +1,10 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext } from "react";
 import { filterProfanity } from "./Basic";
 import { UserContext } from "../Contexts";
 import "css/deck.css";
 import { usePopover, InfoPopover } from "components/Popover";
 import { Typography } from "@mui/material";
+import { UiAction } from "./ui";
 
 export default function AnonymousDeck(props) {
   const user = useContext(UserContext);
@@ -27,7 +28,7 @@ export default function AnonymousDeck(props) {
         {...popoverProps}
         title={filterProfanity(deck.name, user.settings)}
       />
-      <div
+      <UiAction variant="ghost" aria-label={`Preview ${filterProfanity(deck.name, user.settings)}`}
         className={`deck-cover ${deck.coverPhoto ? "" : "no-cover"}`}
         onClick={handleClick}
         style={
@@ -38,11 +39,12 @@ export default function AnonymousDeck(props) {
       />
       <div className="deck-listing-info">
         <Typography
+          component="button" type="button"
           className="deck-name"
           onClick={handleClick}
           style={{ cursor: "pointer" }}
         >
-          {displayName}
+           {filterProfanity(displayName, user.settings)}
         </Typography>
         <div
           className="deck-preview-row"

@@ -21,3 +21,26 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.settings-layout { display: grid; grid-template-columns: 180px minmax(0, 720px); gap: 40px; align-items: start; }
+.settings-content { min-width: 0; }
+.settings-section-heading { margin-bottom: 28px; }
+.settings-section-heading h2 { margin: 0 0 8px; }
+.settings-section-heading p { margin: 0; color: var(--um-muted); line-height: 1.5; max-width: 65ch; }
+.settings-content .form { gap: 28px; }
+.settings-page .form > .form-group + .form-group { margin-top: 0; }
+.settings-content .form-group { margin: 0; padding-top: 20px; border-top: 1px solid var(--scheme-color-border); }
+.settings-content .form-group > .MuiBox-root { max-width: 100%; }
+.settings-content .form-group .ui-section-heading { margin-bottom: 0; }
+.settings-content .form-group > .MuiBox-root > .MuiStack-root { margin-top: 0; padding: 6px 0; gap: 6px; }
+.settings-content .form-group .MuiFormControlLabel-root { margin-left: -8px; }
+.settings-content .form-group .MuiFormControl-root { max-width: 480px; width: 100%; }
+.settings-content .form-group input { min-width: 0; }
+.settings-content .form-group .MuiTypography-root { line-height: 1.45; }
+.settings-danger-section { margin-top: 32px; padding: 20px 0 8px; border-top: 1px solid var(--scheme-color-border); }
+.settings-danger-section p { color: var(--um-muted); }
+@media (max-width: 900px) {
+  .settings-layout { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .settings-section-heading { margin-bottom: 20px; }
+  .settings-content .MuiStack-root { min-width: 0; }
+}

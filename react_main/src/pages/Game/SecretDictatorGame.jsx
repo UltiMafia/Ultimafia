@@ -16,11 +16,8 @@ import {
   GameTypeContext,
 } from "./Game";
 import { nextStateBell } from "shared/stateBell";
+import { UiDialog, UiAction, UiIcon } from "components/ui";
 
-const isKickMeeting = (m) => m && m.name === "Vote Kick";
-const KickActionList = () => (
-  <ActionList meetingFilter={isKickMeeting} hideIfEmpty scrollable={false} />
-);
 import { Tooltip } from "@mui/material";
 import { GameContext } from "../../Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
@@ -30,6 +27,11 @@ import { SDPolicyAction } from "./SDPolicyAction";
 
 import "css/game.css";
 import "css/gameSecretDictator.css";
+
+const isKickMeeting = (m) => m && m.name === "Vote Kick";
+const KickActionList = () => (
+  <ActionList meetingFilter={isKickMeeting} hideIfEmpty scrollable={false} />
+);
 
 export default function SecretDictatorGame(props) {
   const game = useContext(GameContext);
@@ -150,12 +152,9 @@ export default function SecretDictatorGame(props) {
   );
 }
 
-function PolicyPeekModal({ policies, onClose }) {
+export function PolicyPeekModal({ policies, onClose }) {
   return (
-    <div className="sd-peek-overlay" onClick={onClose}>
-      <div className="sd-peek-dialog" onClick={(e) => e.stopPropagation()}>
-        <div className="sd-peek-title">POLICY PEEK</div>
-        <div className="sd-peek-subtitle">Next 3 policies in the draw pile</div>
+    <UiDialog title="Policy peek" description="Next 3 policies in the draw pile" onClose={onClose} actions={<UiAction onClick={onClose}>Close</UiAction>}>
         <div className="sd-peek-cards">
           {policies.map((policy, i) => {
             const isLiberal = policy === "Liberal";
@@ -169,30 +168,19 @@ function PolicyPeekModal({ policies, onClose }) {
             );
           })}
         </div>
-        <button className="sd-peek-close" onClick={onClose}>
-          Close
-        </button>
-      </div>
-    </div>
+    </UiDialog>
   );
 }
 
-function LoyaltyRevealModal({ name, alignment, onClose }) {
+export function LoyaltyRevealModal({ name, alignment, onClose }) {
   const isFascist = alignment === "Fascists";
   return (
-    <div className="sd-peek-overlay" onClick={onClose}>
-      <div className="sd-peek-dialog" onClick={(e) => e.stopPropagation()}>
-        <div className="sd-peek-title">LOYALTY INVESTIGATION</div>
-        <div className="sd-peek-subtitle">Classified — eyes only</div>
+    <UiDialog title="Loyalty investigation" onClose={onClose} actions={<UiAction onClick={onClose}>Close</UiAction>}>
         <div className={`sd-loyalty-badge sd-loyalty-badge--${isFascist ? "fascist" : "liberal"}`}>
           <div className="sd-loyalty-name">{name}</div>
           <div className="sd-loyalty-alignment">{alignment}</div>
         </div>
-        <button className="sd-peek-close" onClick={onClose}>
-          Close
-        </button>
-      </div>
-    </div>
+    </UiDialog>
   );
 }
 
@@ -348,7 +336,7 @@ function SDGameInfo({ setup }) {
         aria-expanded={expanded}
       >
         <span>Game Info</span>
-        <i className="sd-game-info-chevron fas fa-chevron-down" />
+        <UiIcon name={expanded ? "up" : "down"} size={16} />
       </button>
       {expanded && (
         <div className="sd-game-info-roles">
@@ -365,10 +353,7 @@ function SDGameInfo({ setup }) {
               placement="left"
               arrow
             >
-              <i
-                className={`sd-game-info-eye sd-game-info-eye--${dictatorKnows ? "yes" : "no"} fas ${dictatorKnows ? "fa-eye" : "fa-eye-slash"}`}
-                aria-label={dictatorKnows ? "Dictator knows Fascists" : "Dictator does not know Fascists"}
-              />
+              <UiIcon name={dictatorKnows ? "eye" : "eyeOff"} size={16} label={dictatorKnows ? "Dictator knows Fascists" : "Dictator does not know Fascists"} />
             </Tooltip>
           </span>
         </div>
@@ -395,22 +380,19 @@ function SDElectionVote({ electionMeeting, selfId, socket, mobile }) {
 
   return (
     <div className={`sd-election-vote${mobile ? " sd-election-vote--mobile" : ""}`}>
-      <div className="sd-election-vote-label">YOUR VOTE</div>
+      <div className="ui-section-label">Your vote</div>
       <div className="sd-vote-buttons sd-vote-buttons--large">
-        <button
-          className={`sd-vote-btn sd-vote-btn--large sd-vote-btn--ja${myVote === "Ja!" ? " sd-vote-btn--selected" : ""}${!myVote ? " sd-vote-btn--pending" : ""}`}
+        <UiAction aria-pressed={myVote === "Ja!"} disabled={electionMeeting.finished || electionMeeting.canVote === false}
           onClick={() => handleVote("Ja!")}
         >
           Ja!
-        </button>
-        <button
-          className={`sd-vote-btn sd-vote-btn--large sd-vote-btn--nein${myVote === "Nein!" ? " sd-vote-btn--selected" : ""}${!myVote ? " sd-vote-btn--pending" : ""}`}
+        </UiAction>
+        <UiAction aria-pressed={myVote === "Nein!"} disabled={electionMeeting.finished || electionMeeting.canVote === false}
           onClick={() => handleVote("Nein!")}
         >
           Nein!
-        </button>
+        </UiAction>
       </div>
     </div>
   );
 }
-

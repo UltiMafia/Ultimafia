@@ -1,0 +1,17 @@
+.family-page { min-width: 0; width: 100%; }
+.family-header { min-width: 0; flex-wrap: wrap; }
+.family-header > :last-child { min-width: 0; }
+.family-page .name-with-avatar .MuiStack-root { min-width: 0; }
+.family-page .name-with-avatar .user-name { white-space: normal; overflow-wrap: anywhere; }
+.family-page .family-profile-panel .bio { margin: 16px 0; }
+.family-page .family-profile-panel .buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.family-page .md-content { overflow-wrap: anywhere; }
+.family-page-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start; }
+.family-main, .family-rail { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.family-comments { min-width: 0; }
+.family-comments > h2 { margin: 0 0 10px; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); font-weight: 700; }
+@media (max-width: 1000px) {
+  .family-page-layout { grid-template-columns: minmax(0, 1fr); }
+}
+.family-profile-panel .md-content .media-embed-wrap,
+.family-profile-panel .md-content .video-responsive-generic { max-width: min(100%, 800px); margin-inline: auto; }

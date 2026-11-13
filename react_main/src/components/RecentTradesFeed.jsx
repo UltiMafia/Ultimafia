@@ -1,25 +1,24 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 import {
   Box,
   Typography,
   Stack,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
 } from "@mui/material";
 
 import { UserContext, SiteInfoContext } from "Contexts";
-import { useErrorAlert } from "components/Alerts";
 import { StampItem } from "components/Scrapbook";
 import { NameWithAvatar } from "pages/User/UserWidgets";
 import { useViewActive } from "../hooks/useViewActivity";
+import { UiAction, UiDialog, UiIcon, UiPending } from "./ui";
+import LobbySidebarPanel from "pages/Play/LobbyBrowser/LobbySidebarPanel";
+import { LatestRequest } from "../lib/latestRequest";
 
 function StickerPlaceholder({ size = 32, onClick }) {
   return (
     <Box
+      component={onClick ? "button" : "span"}
+      {...(onClick ? { type: "button", "aria-label": "Offer a duplicate stamp" } : {})}
       onClick={onClick}
       sx={{
         width: size,
@@ -48,80 +47,79 @@ export default function RecentTradesFeed() {
   const [loadingStamps, setLoadingStamps] = useState(false);
   const [selectedStamp, setSelectedStamp] = useState(null);
   const [stampPage, setStampPage] = useState(0);
+  const [sending, setSending] = useState(false);
+  const [tradeError, setTradeError] = useState("");
+  const [feedError, setFeedError] = useState(false);
+  const [feedLoaded, setFeedLoaded] = useState(false);
+  const [refresh, setRefresh] = useState(0);
+  const stampRequests = useRef(new LatestRequest());
   const STAMPS_PER_PAGE = 20;
 
   const user = useContext(UserContext);
   const active = useViewActive();
   const siteInfo = useContext(SiteInfoContext);
-  const errorAlert = useErrorAlert();
+  useEffect(() => () => stampRequests.current.invalidate(), []);
 
   function loadOpenTrades() {
-    axios
-      .get("/api/stampTrades/open")
-      .then((res) => setOpenTrades(Array.isArray(res.data) ? res.data : []))
-      .catch(() => {});
+    setRefresh(value => value + 1);
   }
 
   useEffect(() => {
     if (!active || !user.loggedIn) return;
     let cancelled = false;
-    function loadRecent() {
-      axios
-        .get("/api/stampTrades/recent")
-        .then((res) => {
-          if (!cancelled) setTrades(Array.isArray(res.data) ? res.data : []);
-        })
-        .catch(() => {});
+    async function loadTrades() {
+      const [recent, open] = await Promise.allSettled([axios.get("/api/stampTrades/recent"), axios.get("/api/stampTrades/open")]);
+      if (cancelled) return;
+      if (recent.status === "fulfilled") setTrades(Array.isArray(recent.value.data) ? recent.value.data : []);
+      if (open.status === "fulfilled") setOpenTrades(Array.isArray(open.value.data) ? open.value.data : []);
+      setFeedError(recent.status === "rejected" || open.status === "rejected");
+      setFeedLoaded(true);
     }
-    function loadOpen() {
-      axios
-        .get("/api/stampTrades/open")
-        .then((res) => {
-          if (!cancelled) setOpenTrades(Array.isArray(res.data) ? res.data : []);
-        })
-        .catch(() => {});
-    }
-    loadRecent();
-    loadOpen();
+    loadTrades();
     const interval = setInterval(() => {
       if (document.visibilityState !== "visible") return;
-      loadRecent();
-      loadOpen();
+      loadTrades();
     }, 30000);
     return () => {
       cancelled = true;
       clearInterval(interval);
     };
-  }, [active, user.loggedIn]);
+  }, [active, user.loggedIn, refresh]);
 
   function openRespondDialog(trade) {
+    const request = stampRequests.current.begin();
     setRespondingTo(trade);
+    setTradeError("");
     setSelectedStamp(null);
     setStampPage(0);
     setLoadingStamps(true);
 
     if (user.loggedIn && user.id) {
       axios
-        .get(`/api/user/${user.id}/profile`)
+        .get(`/api/user/${user.id}/profile`, { signal: request.signal })
         .then((res) => {
+          if (!request.isCurrent()) return;
           const stamps = res.data?.stamps || [];
           setUserStamps(stamps.filter((s) => s.count >= 2));
         })
-        .catch(() => setUserStamps([]))
-        .finally(() => setLoadingStamps(false));
+        .catch(() => { if (request.isCurrent()) setTradeError("Could not load your stamps. Close this dialog and try again."); })
+        .finally(() => { if (request.isCurrent()) setLoadingStamps(false); });
     } else {
       setLoadingStamps(false);
     }
   }
 
   function closeDialog() {
+    stampRequests.current.invalidate();
     setRespondingTo(null);
     setSelectedStamp(null);
     setUserStamps([]);
   }
 
   function handleConfirm() {
-    if (!respondingTo || !selectedStamp) return;
+    if (!respondingTo || !selectedStamp || sending) return;
+    setSending(true);
+    setTradeError("");
     axios
       .post("/api/stampTrades/respond", {
         tradeId: respondingTo.id,
@@ -133,16 +131,15 @@ export default function RecentTradesFeed() {
         loadOpenTrades();
         siteInfo.showAlert("Trade response sent!", "success");
       })
-      .catch(errorAlert);
+      .catch(() => setTradeError("Could not send your trade response. Please try again."))
+      .finally(() => setSending(false));
   }
 
   return (
-    <div className="box-panel">
-      <Typography variant="h3" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <i className="fas fa-stamp" style={{ fontSize: "0.9em", opacity: 0.8 }} />
-        Stamp Exchange
-      </Typography>
-      <div className="content" style={{ padding: "8px" }}>
+    <LobbySidebarPanel title="Stamp Exchange">
+      <div className="stamp-exchange-content">
+        {user.loggedIn && !feedLoaded && <UiPending label="Loading stamp trades" />}
+        {feedError && <div role="alert"><p>Could not update stamp trades.</p><UiAction onClick={loadOpenTrades}>Retry</UiAction></div>}
         {openTrades.length > 0 && (
           <>
             <Typography variant="subtitle2" sx={{ mb: 0.5, opacity: 0.7 }}>
@@ -176,10 +173,7 @@ export default function RecentTradesFeed() {
                       gameType={t.initiatorGameType}
                       size="small"
                     />
-                    <i
-                      className="fas fa-exchange-alt"
-                      style={{ fontSize: 10, opacity: 0.6 }}
-                    />
+                    <UiIcon name="forward" size={16} />
                     <StickerPlaceholder
                       onClick={
                         user.loggedIn && !isOwnOffer
@@ -198,7 +192,7 @@ export default function RecentTradesFeed() {
           <Typography variant="body2" color="textSecondary">
             Log in to see stamp trades.
           </Typography>
-        ) : trades.length === 0 && openTrades.length === 0 ? (
+        ) : feedLoaded && !feedError && trades.length === 0 && openTrades.length === 0 ? (
           <Typography variant="body2" color="textSecondary">
             No trades yet.
           </Typography>
@@ -240,20 +234,14 @@ export default function RecentTradesFeed() {
                       />
                       {isGift ? (
                         <>
-                          <i
-                            className="fas fa-gift"
-                            style={{ fontSize: 11, opacity: 0.7 }}
-                          />
+                          <UiIcon name="forward" size={16} />
                           <Typography variant="caption" sx={{ opacity: 0.65 }}>
                             gifted
                           </Typography>
                         </>
                       ) : (
                         <>
-                          <i
-                            className="fas fa-exchange-alt"
-                            style={{ fontSize: 10, opacity: 0.6 }}
-                          />
+                          <UiIcon name="refresh" size={16} />
                           <StampItem
                             role={t.recipientRole}
                             gameType={t.recipientGameType}
@@ -278,8 +266,8 @@ export default function RecentTradesFeed() {
         )}
       </div>
 
-      <Dialog open={!!respondingTo} onClose={closeDialog} maxWidth="xs" fullWidth>
-        <DialogTitle>
+      <UiDialog open={!!respondingTo} onClose={sending ? undefined : closeDialog} maxWidth="xs" title="Respond to stamp offer"
+        actions={<><UiAction disabled={sending} onClick={closeDialog}>Cancel</UiAction><UiAction variant="primary" busy={sending} onClick={handleConfirm} disabled={!selectedStamp}>Send offer</UiAction></>}>
           <Stack direction="row" alignItems="center" spacing={1} flexWrap="wrap">
             <Typography variant="body1">Offer a sticker for</Typography>
             <NameWithAvatar
@@ -296,12 +284,9 @@ export default function RecentTradesFeed() {
             />
             <Typography variant="body1">{respondingTo?.initiatorRole}</Typography>
           </Stack>
-        </DialogTitle>
-        <DialogContent dividers>
+        {tradeError && <p role="alert">{tradeError}</p>}
           {loadingStamps ? (
-            <Typography variant="body2" color="textSecondary">
-              Loading...
-            </Typography>
+            <UiPending label="Loading duplicate stamps" />
           ) : userStamps.length === 0 ? (
             <Typography variant="body2" color="textSecondary">
               You have no duplicate stickers to offer.
@@ -317,63 +302,43 @@ export default function RecentTradesFeed() {
                       selectedStamp?.role === s.role &&
                       selectedStamp?.gameType === s.gameType;
                     return (
-                      <Box
-                        key={key}
-                        onClick={() => setSelectedStamp(s)}
-                        sx={{
-                          p: 0.5,
-                          borderRadius: 1,
-                          border: isPicked
-                            ? "2px solid var(--scheme-color)"
-                            : "2px solid transparent",
-                          cursor: "pointer",
-                        }}
+                      <UiAction
+                         key={key}
+                         aria-label={`Offer ${s.role}`}
+                         aria-pressed={isPicked}
+                         onClick={() => setSelectedStamp(s)}
                       >
                         <StampItem
                           role={s.role}
                           gameType={s.gameType}
                           count={s.count}
                         />
-                      </Box>
+                      </UiAction>
                     );
                   })}
               </Box>
               {userStamps.length > STAMPS_PER_PAGE && (
                 <Stack direction="row" justifyContent="center" alignItems="center" spacing={1} sx={{ mt: 1 }}>
-                  <Button
-                    size="small"
+                  <UiAction aria-label="Previous stamps"
                     disabled={stampPage === 0}
                     onClick={() => setStampPage(stampPage - 1)}
                   >
-                    <i className="fas fa-chevron-left" />
-                  </Button>
+                    <UiIcon name="previous" />
+                  </UiAction>
                   <Typography variant="caption">
                     {stampPage + 1} / {Math.ceil(userStamps.length / STAMPS_PER_PAGE)}
                   </Typography>
-                  <Button
-                    size="small"
+                  <UiAction aria-label="Next stamps"
                     disabled={(stampPage + 1) * STAMPS_PER_PAGE >= userStamps.length}
                     onClick={() => setStampPage(stampPage + 1)}
                   >
-                    <i className="fas fa-chevron-right" />
-                  </Button>
+                    <UiIcon name="next" />
+                  </UiAction>
                 </Stack>
               )}
             </>
           )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeDialog}>Cancel</Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleConfirm}
-            disabled={!selectedStamp}
-          >
-            OK
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+      </UiDialog>
+    </LobbySidebarPanel>
   );
 }

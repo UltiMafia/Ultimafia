@@ -1,32 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Box,
-  Tabs,
-  Tab,
-  List,
-  ListItem,
-  ListItemText,
-} from "@mui/material";
+import { Box, List, ListItem, ListItemText } from "@mui/material";
 import { useViolations } from "../../hooks/useViolations";
+import { UiAction, UiPageHeader, UiPending, UiTable, UiText as Typography, UiTabs as Tabs, UiTab as Tab } from "components/ui";
 
 const OFFENSE_LABELS = ["1st", "2nd", "3rd", "4th", "5th", "6th"];
-
-const cellSx = {
-  backgroundColor: "var(--scheme-color-sec)",
-};
-
-const headerCellSx = {
-  ...cellSx,
-  fontWeight: "bold",
-};
 
 /**
  * Rules text from docs/SPORTSMANSHIP.txt (Rules section only).
@@ -344,36 +321,15 @@ function highlightAssociatedViolation(text) {
   return text;
 }
 
-function OffenseLengthsTable({ offenses }) {
+function OffenseLengthsTable({ offenses, label }) {
   const penalties = [
     ...offenses,
     ...Array(Math.max(0, 6 - offenses.length)).fill("-"),
   ];
 
-  return (
-    <TableContainer component={Paper} sx={{ overflowX: "auto", mt: 1, mb: 1 }}>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            {OFFENSE_LABELS.map((label) => (
-              <TableCell key={label} sx={headerCellSx} align="center">
-                {label} Offense
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          <TableRow>
-            {penalties.map((penalty, i) => (
-              <TableCell key={i} sx={cellSx} align="center">
-                {penalty}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+  const columns = penalties.map((_, index) => ({ key: String(index), label: `${OFFENSE_LABELS[index] || index + 1} Offense` }));
+  const row = { id: "penalties", ...Object.fromEntries(penalties.map((penalty, index) => [String(index), penalty])) };
+  return <UiTable label={`${label}: penalty lengths`} variant="comparison" columns={columns} rows={[row]} rowKey="id" />;
 }
 
 function BulletList({ items }) {
@@ -443,7 +399,6 @@ function RulesContent({ violationMap }) {
             <Typography
               variant="h4"
               gutterBottom
-              sx={{ textDecoration: "underline" }}
             >
               {section.title}
             </Typography>
@@ -464,7 +419,7 @@ function RulesContent({ violationMap }) {
               </Typography>
             ))}
             {violation?.offenses && (
-              <OffenseLengthsTable offenses={violation.offenses} />
+              <OffenseLengthsTable offenses={violation.offenses} label={section.title} />
             )}
           </Box>
         );
@@ -482,13 +437,13 @@ function TabPanel({ children, value, index, ...other }) {
       aria-labelledby={`rules-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
+      {value === index && children}
     </div>
   );
 }
 
 export default function Rules() {
-  const { violationDefinitions, loading } = useViolations();
+  const { violationDefinitions, loading, error, reload } = useViolations();
   const [selectedTab, setSelectedTab] = useState(0);
 
   useEffect(() => {
@@ -499,10 +454,6 @@ export default function Rules() {
     setSelectedTab(newValue);
   };
 
-  if (loading) {
-    return null;
-  }
-
   const violationMap = violationDefinitions.reduce((acc, violation) => {
     acc[violation.id] = violation;
     return acc;
@@ -510,17 +461,15 @@ export default function Rules() {
 
   return (
     <>
-      <Typography variant="h2" gutterBottom>
-        UltiMafia Rules of Conduct
-      </Typography>
-      <Typography variant="body2" color="text.secondary" paragraph>
-        Last Updated: August 22, 2026
-      </Typography>
+      <UiPageHeader title="UltiMafia Rules of Conduct" description="Last Updated: August 22, 2026" />
+      {loading && <UiPending label="Loading penalty lengths" />}
+      {error && <div role="alert">Could not load penalty lengths. The rules remain available. <UiAction onClick={reload}>Retry</UiAction></div>}
+      {!loading && !error && !violationDefinitions.length && <Typography role="status">Penalty lengths are not available.</Typography>}
 
-      <Tabs value={selectedTab} onChange={handleTabChange}>
-        <Tab label="Rules" />
-        <Tab label="Filing an Appeal" />
-        <Tab label="Other Policies" />
+      <Tabs aria-label="Policy sections" value={selectedTab} onChange={handleTabChange}>
+        <Tab label="Rules" id="rules-tab-0" aria-controls="rules-tabpanel-0" />
+        <Tab label="Filing an Appeal" id="rules-tab-1" aria-controls="rules-tabpanel-1" />
+        <Tab label="Other Policies" id="rules-tab-2" aria-controls="rules-tabpanel-2" />
       </Tabs>
 
       <TabPanel value={selectedTab} index={0}>
@@ -579,9 +528,9 @@ export default function Rules() {
         </Typography>
 
         <Typography
-          variant="h4"
+          variant="h3"
           gutterBottom
-          sx={{ textDecoration: "underline", mt: 2 }}
+          sx={{ mt: 3 }}
         >
           Hydra Accounts
         </Typography>
@@ -597,9 +546,9 @@ export default function Rules() {
         </Typography>
 
         <Typography
-          variant="h4"
+          variant="h3"
           gutterBottom
-          sx={{ textDecoration: "underline", mt: 2 }}
+          sx={{ mt: 3 }}
         >
           Human Users Required
         </Typography>

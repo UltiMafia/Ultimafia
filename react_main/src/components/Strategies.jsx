@@ -5,6 +5,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Collapse,
   Box,
   Button,
   Dialog,
@@ -25,12 +26,13 @@ import { useErrorAlert } from "components/Alerts";
 import { TextEditor } from "components/Form";
 import CustomMarkdown from "components/CustomMarkdown";
 import { VoteWidget } from "components/VoteWidget";
-import { NameWithAvatar } from "pages/User/UserWidgets";
+import { NameWithAvatar, Avatar } from "pages/User/UserWidgets";
 import { Loading } from "components/Loading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { useStrategyWindows } from "components/strategyWindows/StrategyWindowsContext";
-import surprisedFace from "images/emotes/surprised.webp";
-import sadFace from "images/emotes/sad.webp";
+import UiAction from "./ui/UiAction";
+import UiIcon from "./ui/UiIcon";
+import { UiSection } from "./ui";
 
 function sortStrategies(strategies) {
   if (!Array.isArray(strategies)) return [];
@@ -238,13 +240,13 @@ function StrategiesBase({
               aria-label="Open guides in a floating window"
               onClick={() => strategyWindows.openStrategyWindow(setupId, { title })}
             >
-              <i className="fas fa-external-link-alt" />
+              <UiIcon name="external" />
             </IconButton>
           </Tooltip>
         )}
         {canCreate && (
           <IconButton size="small" onClick={openCreateDialog}>
-            <i className="fas fa-plus" />
+            <UiIcon name="add" />
           </IconButton>
         )}
       </Stack>
@@ -334,45 +336,14 @@ function StrategiesBase({
     const canShowRestore = Boolean(isExpanded && strategy.canRestore);
 
     return (
-      <Accordion
+      <Box component="section"
         key={strategy.id}
-        disableGutters
-        expanded={isExpanded}
-        sx={
-          strategy.deleted
-            ? { backgroundColor: "#9b4c4c !important" }
-            : undefined
-        }
-        onChange={() => {
-          setExpandedIds((prev) => {
-            const next = new Set(prev);
-            if (next.has(strategy.id)) next.delete(strategy.id);
-            else next.add(strategy.id);
-            return next;
-          });
-        }}
+        sx={{ borderBottom: "1px solid", borderColor: "divider", bgcolor: strategy.deleted ? "action.hover" : "transparent" }}
       >
-        <AccordionSummary
-          data-testid="strategy-row"
-          expandIcon={
-            <img
-              src={isExpanded ? surprisedFace : sadFace}
-              alt={isExpanded ? "Collapse" : "Expand"}
-              width={24}
-              height={24}
-            />
-          }
-          sx={{
-            "& .MuiAccordionSummary-content": {
-              alignItems: "center",
-              gap: 1,
-            },
-          }}
-        >
           <Stack
             direction="row"
             spacing={1}
-            sx={{ alignItems: "center", width: "100%" }}
+            sx={{ alignItems: "center", width: "100%", p: 1 }}
           >
             <VoteWidget
               item={strategy}
@@ -382,30 +353,30 @@ function StrategiesBase({
             />
             {strategy.author && (
               <Box
-                sx={{
-                  "& .user-name": { display: "none" },
-                  "& .name-with-avatar": { width: "auto" },
-                }}
+                sx={{ flexShrink: 0, lineHeight: 0 }}
               >
                 <a
+                  aria-label={`Profile: ${strategy.author.name}`}
                   href={
                     strategy.author.vanityUrl
                       ? `/${strategy.author.vanityUrl}`
                       : `/user/${strategy.author.id}`
                   }
                 >
-                  <NameWithAvatar
+                  <Avatar
                     small
                     id={strategy.author.id}
-                    name=" "
-                    avatar={strategy.author.avatar}
-                    groups={strategy.author.groups}
-                    vanityUrl={strategy.author.vanityUrl}
+                    name={strategy.author.name}
+                    hasImage={strategy.author.avatar}
                   />
                 </a>
               </Box>
             )}
-            <Stack spacing={0.5} sx={{ flexGrow: 1, minWidth: 0 }}>
+            <UiAction variant="ghost" className="strategy-disclosure" data-testid="strategy-row"
+              aria-expanded={isExpanded} aria-controls={`strategy-content-${strategy.id}`}
+              onClick={() => setExpandedIds(previous => { const next = new Set(previous); if (next.has(strategy.id)) next.delete(strategy.id); else next.add(strategy.id); return next; })}
+              style={{ flex: 1, minWidth: 0, whiteSpace: "normal", justifyContent: "space-between", textAlign: "left", padding: "8px" }}>
+            <Stack spacing={0.5} sx={{ minWidth: 0 }}>
               <Typography
                 variant="subtitle1"
                 sx={{ fontWeight: 600, wordBreak: "break-word" }}
@@ -418,27 +389,31 @@ function StrategiesBase({
                 </Typography>
               )}
             </Stack>
+            <UiIcon name={isExpanded ? "up" : "down"} size={18} />
+            </UiAction>
             {canShowEdit && (
               <IconButton
                 size="small"
+                aria-label="Edit strategy"
                 onClick={(event) => {
                   event.stopPropagation();
                   openEditDialog(strategy);
                 }}
               >
-                <i className="fas fa-edit" />
+                <UiIcon name="edit" size={18} />
               </IconButton>
             )}
             {canShowDelete && !strategy.deleted && (
               <Tooltip title="Delete strategy">
                 <IconButton
                   size="small"
+                  aria-label="Delete strategy"
                   onClick={(event) => {
                     event.stopPropagation();
                     handleDeleteToggle(strategy, true);
                   }}
                 >
-                  <i className="fas fa-trash" />
+                  <UiIcon name="delete" size={18} />
                 </IconButton>
               </Tooltip>
             )}
@@ -446,25 +421,26 @@ function StrategiesBase({
               <Tooltip title="Restore strategy">
                 <IconButton
                   size="small"
+                  aria-label="Restore strategy"
                   onClick={(event) => {
                     event.stopPropagation();
                     handleDeleteToggle(strategy, false);
                   }}
                 >
-                  <i className="fas fa-trash-restore" />
+                  <UiIcon name="refresh" size={18} />
                 </IconButton>
               </Tooltip>
             )}
           </Stack>
-        </AccordionSummary>
-        <AccordionDetails>
+        <Collapse in={isExpanded} unmountOnExit>
+        <Box id={`strategy-content-${strategy.id}`} sx={{ px: 2, pb: 2 }}>
           <Stack spacing={1}>
             {readerMode && (
               <Button
                 size="small"
                 variant="outlined"
                 aria-label="Read full screen"
-                startIcon={<i className="fas fa-expand-alt" />}
+                startIcon={<UiIcon name="external" />}
                 onClick={() => setReaderId(strategy.id)}
                 sx={{ alignSelf: "flex-start" }}
               >
@@ -487,8 +463,9 @@ function StrategiesBase({
               </Typography>
             )}
           </Stack>
-        </AccordionDetails>
-      </Accordion>
+        </Box>
+        </Collapse>
+      </Box>
     );
   };
 
@@ -500,7 +477,7 @@ function StrategiesBase({
   const listContent = loading ? (
     <Loading small />
   ) : strategies.length === 0 ? (
-    <Typography variant="body2" align="center" sx={{ opacity: 0.7 }}>
+    <Typography variant="body2" sx={{ color: "var(--um-muted)" }}>
       No strategies yet. Write one!
     </Typography>
   ) : (
@@ -587,7 +564,7 @@ function StrategiesBase({
             aria-label="Close full-screen guide"
             onClick={() => setReaderId(null)}
           >
-            <i className="fas fa-times" />
+            <UiIcon name="close" />
           </IconButton>
           <Typography
             variant="subtitle1"
@@ -607,7 +584,7 @@ function StrategiesBase({
                 openEditDialog(strategy);
               }}
             >
-              <i className="fas fa-edit" />
+              <UiIcon name="edit" />
             </IconButton>
           )}
           {readerStrategy.canDelete && !readerStrategy.deleted && (
@@ -616,7 +593,7 @@ function StrategiesBase({
               aria-label="Delete guide"
               onClick={() => handleDeleteToggle(readerStrategy, true)}
             >
-              <i className="fas fa-trash" />
+              <UiIcon name="delete" />
             </IconButton>
           )}
         </Stack>
@@ -722,6 +699,11 @@ function StrategiesBase({
       </>
     );
   }
+
+  if (variant === "section") return <>
+    <UiSection className="strategy-section">{header}{listContent}</UiSection>
+    {dialog}{reader}
+  </>;
 
   const sideMenu = (
     <div

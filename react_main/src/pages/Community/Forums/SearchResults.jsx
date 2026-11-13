@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { UiPageHeader } from "components/ui";
 import { useSearchParams, Link } from "react-router-dom";
 import {
   Box,
@@ -6,10 +7,10 @@ import {
   CardContent,
   Typography,
   Chip,
-  Pagination,
   Alert,
   Paper,
 } from "@mui/material";
+import { PageNav } from "components/Nav";
 import axios from "axios";
 
 import { useErrorAlert } from "../../../components/Alerts";
@@ -151,12 +152,7 @@ export default function SearchResults(props) {
   return (
     <Box sx={{ p: 2 }}>
       <Paper sx={{ p: 3, mb: 3 }}>
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          🔎
-          <Typography variant="h5" component="h1">
-            Search Results
-          </Typography>
-        </Box>
+        <UiPageHeader variant="forum" title="Search results" />
 
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
           {query && (
@@ -341,12 +337,10 @@ export default function SearchResults(props) {
 
           {totalPages > 1 && (
             <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-              <Pagination
-                count={totalPages}
+              <PageNav
+                maxPage={totalPages}
                 page={page}
-                onChange={handlePageChange}
-                color="primary"
-                size="large"
+                onNav={(newPage) => handlePageChange(null, newPage)}
               />
             </Box>
           )}

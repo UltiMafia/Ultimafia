@@ -9,6 +9,8 @@ import { useErrorAlert } from "./Alerts";
 import DeckPicker from "./DeckPicker";
 import WordDeckPicker from "./WordDeckPicker";
 import DeathSoundUpload from "./DeathSoundUpload";
+import UiIcon from "./ui/UiIcon";
+import { UiSection, UiAction } from "./ui";
 
 import "react-mde/lib/styles/css/react-mde.css";
 import "react-mde/lib/styles/css/react-mde-editor.css";
@@ -40,8 +42,10 @@ import {
 } from "@mui/material";
 import { MuiColorInput } from 'mui-color-input'
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { LatestRequest } from "../lib/latestRequest";
 
 const UNGROUPED_NAME = "__UNGROUPED__";
+let nextFieldId = 0;
 
 function FormField({
   children,
@@ -52,12 +56,19 @@ function FormField({
   useFormControl = false,
   additionalButtons = <></>,
 }) {
+  const [controlId] = useState(() => `form-field-${++nextFieldId}`);
+  const control = React.Children.map(children, child => React.isValidElement(child) && child.type === TextField
+    ? React.cloneElement(child, {
+      id: controlId,
+      inputProps: { ...child.props.inputProps, "aria-label": field.label },
+      ...(child.props.select ? { SelectProps: { ...child.props.SelectProps, SelectDisplayProps: { ...child.props.SelectProps?.SelectDisplayProps, "aria-label": field.label } } } : {}),
+    }) : child);
   const separateLabel = forceSeparateLabel || (field.type !== "boolean" && !compact);
   const isUnsaved = deps !== undefined && deps[field.saveBtnDiffer] !== field.value;
   const tooltipIcon = field.infoTooltip ? (
     <Tooltip title={field.infoTooltip}>
-      <IconButton size="small" sx={{ p: 0.25 }}>
-        <i className="fas fa-info-circle" />
+      <IconButton size="small" aria-label={`About ${field.label}`} sx={{ p: 0.25 }}>
+        <UiIcon name="info" size={18} />
       </IconButton>
     </Tooltip>
   ) : null;
@@ -96,7 +107,6 @@ function FormField({
 
     if (conf) {
       if (field.saveBtnOnClick) field.saveBtnOnClick(field.value, deps);
-      else onChange(e, field);
     }
   }
 
@@ -122,6 +132,7 @@ function FormField({
           }}
         >
           <Typography
+            component="label" htmlFor={controlId}
             sx={{
               fontWeight: "bold",
               lineHeight: 1,
@@ -140,13 +151,13 @@ function FormField({
           position: "relative",
         }}
       >
-        {!useFormControl && children}
+        {!useFormControl && control}
         {useFormControl && (
           <FormControl>
             {separateLabel && (
-              <InputLabel htmlFor={field.ref}>{field.label}</InputLabel>
+              <InputLabel htmlFor={controlId}>{field.label}</InputLabel>
             )}
-            {children}
+            {control}
             <FormHelperText>{field.extraInfo}</FormHelperText>
           </FormControl>
         )}
@@ -160,11 +171,12 @@ export default function Form({
   fields,
   deps,
   submitText,
+  submitBusy = false,
   onSubmit,
   sx,
   compact = false,
-  wrapGroupsInPaper = false,
   halfWidth = false,
+  cardGroups = false,
 }) {
   const isPhoneDevice = useIsPhoneDevice();
 
@@ -482,18 +494,6 @@ export default function Form({
             </FormField>
           );
         case "boolean":
-          const booleanLabel = (
-            <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
-              <Typography>{field.label}</Typography>
-              {field.infoTooltip && (
-                <Tooltip title={field.infoTooltip}>
-                  <IconButton size="small" sx={{ p: 0.25 }}>
-                    <i className="fas fa-info-circle" />
-                  </IconButton>
-                </Tooltip>
-              )}
-            </Stack>
-          );
           return (
             <FormField
               field={field}
@@ -501,8 +501,9 @@ export default function Form({
               compact={compact}
               key={field.ref}
             >
+              <Stack direction="row" alignItems="center">
               <FormControlLabel
-                label={booleanLabel}
+                label={field.label}
                 control={
                   <Checkbox
                     checked={!!field.value}
@@ -511,6 +512,8 @@ export default function Form({
                   />
                 }
               />
+              {field.infoTooltip && <Tooltip title={field.infoTooltip}><IconButton aria-label={`About ${field.label}`}><UiIcon name="info" size={18} /></IconButton></Tooltip>}
+              </Stack>
             </FormField>
           );
         case "select": {
@@ -695,13 +698,14 @@ export default function Form({
               compact={compact}
               key={field.ref}
             >
-              <input
+              <TextField
                 type="date"
                 value={formatDateForInput(field.value || selectedValue)}
                 disabled={disabled}
                 onChange={(e) => onFieldChange(e, field, true)}
+                helperText={field.extraInfo}
+                label={compact ? field.label : undefined}
               />
-              <FormHelperText>{field.extraInfo}</FormHelperText>
             </FormField>
           );
         case "datetime-local": {
@@ -713,15 +717,18 @@ export default function Form({
               key={field.ref}
               useFormControl
             >
-              <input
+              <TextField
                 type="datetime-local"
-                min={dateToHTMLString(field.min)}
-                max={dateToHTMLString(field.max)}
+                inputProps={{
+                  min: dateToHTMLString(field.min),
+                  max: dateToHTMLString(field.max),
+                }}
                 value={dateToHTMLString(field.value)}
                 disabled={disabled}
                 onChange={(e) => onFieldChange(e, field)}
+                helperText={field.extraInfo}
+                label={compact ? field.label : undefined}
               />
-              <FormHelperText>{field.extraInfo}</FormHelperText>
             </FormField>
           );
         }
@@ -746,49 +753,21 @@ export default function Form({
       }
     });
 
-    const groupFormFields = (
-      <Stack direction="column" spacing={1} key={group}>
-        {group !== UNGROUPED_NAME && (
-          <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
-            <Typography
-              variant="h2"
-              sx={{
-                borderBottom: 1,
-                borderColor: "divider",
-                pt: 1,
-                whiteSpace: "nowrap",
-              }}
-            >
-              {group}
-            </Typography>
-            {groupTooltip && (
-              <Tooltip title={groupTooltip}>
-                <IconButton size="small" sx={{ p: 0.25 }}>
-                  <i className="fas fa-info-circle" />
-                </IconButton>
-              </Tooltip>
-            )}
-          </Stack>
-        )}
+    const visibleFields = formFields.filter(Boolean);
+    if (!visibleFields.length) return null;
+
+    return (
+      <UiSection key={group} className={`${cardGroups ? "ui-card " : ""}form-group${compact ? " is-compact" : ""}`}
+        title={group !== UNGROUPED_NAME ? group : undefined}
+        actions={groupTooltip && <Tooltip title={groupTooltip}><UiAction variant="ghost" iconOnly aria-label={`About ${group}`}><UiIcon name="info" /></UiAction></Tooltip>}>
         <Box sx={{
           maxWidth: !isPhoneDevice && halfWidth ? "50%" : undefined,
         }}>
-          {formFields}
+          {visibleFields}
         </Box>
-      </Stack>
+      </UiSection>
     );
-
-    if (wrapGroupsInPaper) {
-      return (
-        <Paper key={group} sx={{ p: 2 }}>
-          {groupFormFields}
-        </Paper>
-      );
-    }
-    else {
-      return groupFormFields;
-    }
-  });
+  }).filter(Boolean);
 
   return (
     <Stack
@@ -804,7 +783,7 @@ export default function Form({
       }}
     >
       {groupedFormFields}
-      {submitText && <Button onClick={onSubmit}>{submitText}</Button>}
+      {submitText && <UiAction variant="primary" busy={submitBusy} onClick={onSubmit}>{submitText}</UiAction>}
     </Stack>
   );
 }
@@ -975,11 +954,11 @@ class EmoteUpload extends React.Component {
                 }}
               />
               <Typography>:{this.state.emoteText}:</Typography>
-              <Button
-                size="small"
-                sx={{
+              <UiAction
+                variant="primary"
+                style={{
                   alignSelf: "center",
-                  marginLeft: "auto !important",
+                  marginLeft: "auto",
                 }}
                 onClick={(e) => {
                   this.setState({
@@ -998,7 +977,7 @@ class EmoteUpload extends React.Component {
                 }}
               >
                 Submit
-              </Button>
+              </UiAction>
             </Stack>
           </Paper>
         </Stack>
@@ -1055,15 +1034,17 @@ class EmoteUpload extends React.Component {
               minWidth: 0,
             }}
           >
-            <Button
+            <UiAction
               component="label"
               htmlFor={this.state.id}
-              sx={{
+              variant="secondary"
+              disabled={this.props.disabled}
+              style={{
                 flex: "1",
               }}
             >
               Upload
-            </Button>
+            </UiAction>
             <input
               id={this.state.id}
               style={{ visibility: "hidden", height: "0" }}
@@ -1119,11 +1100,11 @@ class StickerUpload extends React.Component {
                 }}
               />
               <Typography>:{this.state.stickerText}:</Typography>
-              <Button
-                size="small"
-                sx={{
+              <UiAction
+                variant="primary"
+                style={{
                   alignSelf: "center",
-                  marginLeft: "auto !important",
+                  marginLeft: "auto",
                 }}
                 onClick={(e) => {
                   this.setState({
@@ -1142,7 +1123,7 @@ class StickerUpload extends React.Component {
                 }}
               >
                 Submit
-              </Button>
+              </UiAction>
             </Stack>
           </Paper>
         </Stack>
@@ -1199,15 +1180,17 @@ class StickerUpload extends React.Component {
               minWidth: 0,
             }}
           >
-            <Button
+            <UiAction
               component="label"
               htmlFor={this.state.id}
-              sx={{
+              variant="secondary"
+              disabled={this.props.disabled}
+              style={{
                 flex: "1",
               }}
             >
               Upload
-            </Button>
+            </UiAction>
             <input
               id={this.state.id}
               style={{ visibility: "hidden", height: "0" }}
@@ -1280,6 +1263,8 @@ export function useForm(initialFormFields) {
 }
 
 export function UserSearchSelect(props) {
+  const errorAlert = useErrorAlert();
+  const requests = useRef(new LatestRequest());
   const [options, setOptions] = useState([]);
   const [idMap, setIdMap] = useState({});
   const [query, setQuery] = useState("");
@@ -1295,11 +1280,14 @@ export function UserSearchSelect(props) {
   );
 
   useEffect(() => {
-    if (query.length === 0) return;
+    const owner = requests.current;
+    const request = owner.begin();
+    if (query.length === 0) { setOptions([]); return () => owner.invalidate(); }
 
     axios
-      .get(`/api/user/searchName?query=${query}`)
+      .get(`/api/user/searchName?query=${encodeURIComponent(query)}`, { signal: request.signal })
       .then((res) => {
+        if (!request.isCurrent()) return;
         var newIdMap = {};
 
         for (let userData of res.data) newIdMap[userData.name] = userData.id;
@@ -1307,8 +1295,9 @@ export function UserSearchSelect(props) {
         setIdMap(newIdMap);
         setOptions(res.data.map((user) => user.name));
       })
-      .catch(useErrorAlert);
-  }, [query]);
+      .catch(error => { if (request.isCurrent()) errorAlert(error); });
+    return () => owner.invalidate();
+  }, [query, errorAlert]);
 
   function onChange(event, value) {
     if (!controlled)
@@ -1329,6 +1318,8 @@ export function UserSearchSelect(props) {
 
   return (
     <Autocomplete
+      size="small"
+      disabled={props.disabled}
       value={selectedName || null}
       inputValue={displayInputValue}
       onInputChange={(e, newInputValue, reason) => {

@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link, useParams, useLocation } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import update from "immutability-helper";
-import { Popover, List, ListItem, Typography, Button } from "@mui/material";
+import { Popover, List, ListItem, Typography } from "@mui/material";
 
 import CustomMarkdown from "components/CustomMarkdown";
 import { useErrorAlert } from "components/Alerts";
@@ -17,8 +17,10 @@ import { appendForumQuote, canComposeForumReply } from "./forumReplyComposer.mjs
 import { pastedForumReplyImage } from "./forumReplyImagePaste.mjs";
 
 import { VoteWidget } from "components/VoteWidget";
+import { UiAction, UiIcon } from "components/ui";
 import { EmoteReactions } from "components/EmoteReactions";
 import "css/emote-reactions.css";
+import "css/comments.css";
 import { NameWithAvatar } from "../../User/UserWidgets";
 
 function formatForumDate(timestamp) {
@@ -724,19 +726,19 @@ function onAddTag(targetUserId) {
           <div className="reply-image-preview">
             {replyImagePreview && <img src={replyImagePreview} alt="Pasted attachment preview"
               style={{ maxWidth: "100%", maxHeight: 240 }} />}
-            <button type="button" className="btn btn-theme-sec" disabled={postingReply}
-              onClick={() => setReplyImage(null)}>Remove image</button>
+            <UiAction variant="secondary" disabled={postingReply}
+              onClick={() => setReplyImage(null)}>Remove image</UiAction>
           </div>
         )}
-        <div className="post-btn-wrapper">
-          <button type="button" className="post-reply btn btn-theme"
-            disabled={postingReply} onClick={onPostReply}>
-            {postingReply ? "Posting..." : "Post"}
-          </button>
-          <button type="button" className="btn btn-theme-sec"
+        <div className="thread-submit-actions" style={{ marginTop: 12 }}>
+          <UiAction variant="secondary"
             disabled={postingReply} onClick={onPostCancel}>
             Cancel
-          </button>
+          </UiAction>
+          <UiAction variant="primary" busy={postingReply}
+            disabled={postingReply} onClick={onPostReply}>
+            {postingReply ? "Posting..." : "Post reply"}
+          </UiAction>
         </div>
       </fieldset>
     </div>
@@ -1116,14 +1118,13 @@ function onAddTag(targetUserId) {
           (!threadInfo.locked || user.perms.postInLocked) &&
           canReply && (
             <div style={{ marginTop: "16px" }}>
-              <Button
-                variant="contained"
-                color="primary"
+              <UiAction
+                variant="primary"
                 onClick={() => onReplyClick(null, "bottom")}
-                sx={{ minWidth: "120px" }}
+                style={{ minWidth: "120px" }}
               >
                 Reply
-              </Button>
+              </UiAction>
             </div>
           )}
         {replyTarget === "bottom" && replyForm}
@@ -1187,22 +1188,13 @@ function Post(props) {
       "lastVisit",
     ])
   );
-  const authorSubContent =
-    profileJoinDate || profileLastSeenDate ? (
-      <div className="forum-author-meta">
-        <div>
-          <Time minSec millisec={Date.now() - postInfo.postDate} /> ago
-        </div>
-        {profileJoinDate && <div>Join Date {profileJoinDate}</div>}
-        {profileLastSeenDate && <div>Last Seen {profileLastSeenDate}</div>}
-      </div>
-    ) : (
-      <div className="forum-author-meta">
-        <div>
-          <Time minSec millisec={Date.now() - postInfo.postDate} /> ago
-        </div>
-      </div>
-    );
+  const authorSubContent = (
+    <div className="forum-author-meta">
+      <Time minSec millisec={Date.now() - postInfo.postDate} /> ago
+      {profileJoinDate && <span> · Joined {profileJoinDate}</span>}
+      {profileLastSeenDate && <span> · Last seen {profileLastSeenDate}</span>}
+    </div>
+  );
 
   function onDeleteClick() {
     const shouldDelete = window.confirm(
@@ -1284,20 +1276,11 @@ function Post(props) {
 
   return (
     <div
-      className={`post span-panel ${postInfo.deleted ? "deleted" : ""} ${
+      className={`post ${postInfo.deleted ? "deleted" : ""} ${
         props.className || ""
       }`}
       id={id}
     >
-      <div className="vote-wrapper">
-        <VoteWidget
-          item={voteItem}
-          itemType={itemType}
-          itemHolder={voteItemHolder}
-          setItemHolder={setVoteItemHolder}
-          itemKey={itemKey}
-        />
-      </div>
       <div className="main-wrapper">
         <div className="heading">
           <div className="heading-left">
@@ -1317,12 +1300,11 @@ function Post(props) {
                   id={postInfo.author.id}
                   name={postInfo.author.name}
                   avatar={postInfo.author.avatar}
+                  avatarSize={32}
                   groups={postInfo.author.groups}
                   vanityUrl={postInfo.author.vanityUrl}
-                  includeMiniprofile
-                  large
-                  subContent={authorSubContent}
                 />
+                {authorSubContent}
               </div>
               {postInfo.author?.forumBanner && (
                 <img
@@ -1340,49 +1322,37 @@ function Post(props) {
                   user.perms.postReply &&
                   (!locked || user.perms.postInLocked) &&
                   canReply && (
-                    <i className="fas fa-reply" onClick={onReplyClick} />
+                    <UiAction variant="ghost" onClick={onReplyClick}><UiIcon name="reply" size={18} />Reply</UiAction>
                   )}
                 {itemType === "thread" && user.perms.pinThreads && (
-                  <i
-                    className={`fas fa-thumbtack ${
-                      postInfo.pinned ? "fa-rotate-180" : ""
-                    }`}
-                    onClick={onTogglePinnedClick}
-                  />
+                    <UiAction variant="ghost" iconOnly aria-label="Pin thread" aria-pressed={!!postInfo.pinned}
+                      onClick={onTogglePinnedClick}
+                    ><UiIcon name="pin" size={18} /></UiAction>
                 )}
                 {itemType === "thread" && user.perms.lockThreads && (
-                  <i
-                    className={`fas fa-lock${postInfo.locked ? "-open" : ""}`}
-                    onClick={onToggleLockedClick}
-                  />
+                    <UiAction variant="ghost" iconOnly aria-label={postInfo.locked ? "Unlock thread" : "Lock thread"}
+                      onClick={onToggleLockedClick}
+                    ><UiIcon name="lock" size={18} /></UiAction>
                 )}
                 {(user.perms.deleteAnyPost ||
                   (user.perms.deleteOwnPost &&
                     postInfo.author.id === user.id)) && (
-                  <i className="fas fa-trash" onClick={onDeleteClick} />
+                  <UiAction variant="danger-quiet" iconOnly aria-label="Delete post" onClick={onDeleteClick}><UiIcon name="delete" size={18} /></UiAction>
                 )}
                 {user.perms.editPost &&
                   postInfo.author.id === user.id &&
                   (!locked || user.perms.postInLocked) && (
-                    <i className="fas fa-pencil-alt" onClick={onEditClick} />
+                    <UiAction variant="ghost" iconOnly aria-label="Edit post" onClick={onEditClick}><UiIcon name="edit" size={18} /></UiAction>
                   )}
                 {itemType === "thread" && user.loggedIn && (
                   <>
-                    <i
-                      className={`fa${
-                        postInfo.author.id === user.id
-                          ? postInfo.replyNotify
-                            ? "s"
-                            : "r"
-                          : postInfo.isSubscribed
-                          ? "s"
-                          : "r"
-                      } fa-bell`}
+                    <UiAction variant="ghost" iconOnly aria-label="Follow thread"
+                      aria-pressed={!!(postInfo.author.id === user.id ? postInfo.replyNotify : postInfo.isSubscribed)}
                       onClick={onNotifyClick}
                       onMouseEnter={handlePopoverOpen}
                       onMouseLeave={handlePopoverClose}
                       style={{ cursor: "pointer" }}
-                    />
+                    ><UiIcon name="notification" size={18} /></UiAction>
                     <Popover
                       sx={{
                         pointerEvents: "none",
@@ -1453,14 +1423,14 @@ function Post(props) {
                   </>
                 )}
                 {permaLink && (
-                  <Link to={permaLink} onClick={() => onPermaLinkClick()}>
-                    <i className="fas fa-link" />
+                  <Link className="forum-permalink" aria-label="Link to this post" to={permaLink} onClick={() => onPermaLinkClick()}>
+                    <UiIcon name="link" size={18} />
                   </Link>
                 )}
               </>
             )}
             {postInfo.deleted && user.perms.restoreDeleted && (
-              <i className="fas fa-trash-restore" onClick={onRestoreClick} />
+              <UiAction variant="ghost" onClick={onRestoreClick}>Restore post</UiAction>
             )}
           </div>
         </div>
@@ -1470,27 +1440,35 @@ function Post(props) {
           </div>
         )}
         {!postInfo.deleted && !editing && (
-          <EmoteReactions
-            item={voteItem}
-            itemType={itemType}
-            itemHolder={voteItemHolder}
-            setItemHolder={setVoteItemHolder}
-            itemKey={itemKey}
-          />
+          <footer className="post-footer comment-footer">
+            <div className="comment-vote">
+              <VoteWidget
+                item={voteItem}
+                itemType={itemType}
+                itemHolder={voteItemHolder}
+                setItemHolder={setVoteItemHolder}
+                itemKey={itemKey}
+              />
+            </div>
+            <EmoteReactions
+              item={voteItem}
+              itemType={itemType}
+              itemHolder={voteItemHolder}
+              setItemHolder={setVoteItemHolder}
+              itemKey={itemKey}
+            />
+          </footer>
         )}
         {editing && (
           <div className="edit-wrapper">
             <TextEditor value={editContent} onChange={setEditContent} />
-            <div className="post-btn-wrapper">
-              <div
-                className="post-reply btn btn-theme-sec"
-                onClick={onEditSave}
-              >
-                Save
-              </div>
-              <div className="btn btn-theme-sec" onClick={onEditCancel}>
+            <div className="thread-submit-actions" style={{ marginTop: 12 }}>
+              <UiAction variant="secondary" onClick={onEditCancel}>
                 Cancel
-              </div>
+              </UiAction>
+              <UiAction variant="primary" onClick={onEditSave}>
+                Save
+              </UiAction>
             </div>
           </div>
         )}

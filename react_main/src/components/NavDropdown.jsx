@@ -3,6 +3,7 @@ import { useLocation, NavLink } from "react-router-dom";
 import {
   Menu,
   MenuItem,
+  ListSubheader,
   Box,
   Divider,
   IconButton,
@@ -11,6 +12,7 @@ import {
 } from "@mui/material";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 import { InGameContext } from "Contexts";
+import UiIcon from "./ui/UiIcon";
 
 export default function NavDropdown({
   label,
@@ -93,10 +95,11 @@ export default function NavDropdown({
     </IconButton>
   ) : isMobileMenu ? (
     <IconButton {...menuTriggerProps} aria-label="Menu" size="large">
-      <i className="fas fa-bars" />
+      <UiIcon name="menu" />
     </IconButton>
   ) : (
     <Button
+      className={`site-nav-trigger ${isActive ? "is-current" : ""}`}
       variant="text"
       {...menuTriggerProps}
       sx={{
@@ -109,7 +112,7 @@ export default function NavDropdown({
             ? "rgba(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-selectedOpacity));"
             : undefined,
       }}
-      endIcon={<i className="fas fa-caret-down" aria-hidden="true" />}
+      endIcon={<UiIcon name="down" size={16} />}
     >
       <Typography variant="h3">{label}</Typography>
     </Button>
@@ -147,10 +150,18 @@ export default function NavDropdown({
           if (item.divider) {
             return <Divider key={`divider-${index}`} />;
           }
+          if (item.info) {
+            return <ListSubheader key={`info-${index}`} disableSticky sx={{ py: 1.5, lineHeight: 1.6, fontSize: 12, color: "text.secondary" }}>{item.text}</ListSubheader>;
+          }
 
-          const menuItem = (
+          const navigation = item.href
+            ? { component: "a", href: item.href, target: "_blank", rel: "noopener noreferrer" }
+            : item.path ? { component: NavLink, to: item.path } : {};
+          return (
             <MenuItem
+              {...navigation}
               key={item.path || item.text || index}
+              disabled={item.disabled}
               onClick={() => handleMenuItemClick(item)}
               selected={location.pathname === item.path}
             >
@@ -163,21 +174,6 @@ export default function NavDropdown({
             </MenuItem>
           );
 
-          if (item.path) {
-            return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                style={{
-                  color: "inherit",
-                }}
-              >
-                {menuItem}
-              </NavLink>
-            );
-          } else {
-            return menuItem;
-          }
         })}
       </Menu>
     </>
