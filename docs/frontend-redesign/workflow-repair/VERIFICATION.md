@@ -4,11 +4,12 @@
 
 - Everything below the line is history. The tree is clean; all changes are
   committed and pushed to `fork/redesign/workflow-repair-draft`.
-- **Latest complete matrix:** `/var/tmp/ultimafia-full8` — 918 required,
-  912 paired, 6 gaps (all `new-page-contract` at 320 in the light run), 4,574
-  open, 3,088 intentional, visual acceptance false. The 6 gaps were a fixture
-  settle race, since fixed (see the selected-tab work); a matrix newer than
-  that fix has not been recorded.
+- **Latest complete matrix:** `/var/tmp/ultimafia-full10` — **924 required,
+  924 redesign, 924 master, 924 paired, 0 gaps**, 7,808 findings, 3,160
+  intentional, 4,648 open, visual acceptance false. The registry now includes the
+  transient user-menu state, captured on both branches. Earlier matrices
+  (`full8`: 918 cells with 6 fixture gaps; `full7`: 918/918, 4,622 open) are
+  history, not current evidence.
 - **What has been repaired and verified on screen at 320/390/1440:** shared
   section navigation (settings + moderation), phone touch targets across menus,
   pagination and tabs, lobby/role/family comment widths, selected-tab visibility,
