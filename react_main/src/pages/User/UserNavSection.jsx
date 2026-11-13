@@ -21,7 +21,6 @@ import DmButton from "../../components/dms/DmButton";
 
 import "css/main.css";
 import UiIcon from "../../components/ui/UiIcon";
-import CoinIcon from "../../components/CoinIcon";
 
 export default function UserNavSection({
   openAnnouncements,
@@ -104,7 +103,7 @@ export default function UserNavSection({
     {
       text: "Shop",
       path: "/user/shop",
-      icon: (<CoinIcon size={16} />),
+      icon: (<UiIcon name="coins" />),
     },
     ...(user.perms?.devApi
       ? [

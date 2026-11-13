@@ -19,7 +19,7 @@ function classifyDifference(observation, problem, masterValue) {
 const widths = [1440, 390, 320];
 const palettes = ['dark', 'light'];
 const taskStates = {
-  'new-page-contract': ['steps-final', 'tabs-last'],
+  'new-page-contract': ['steps-final', 'tabs-last'], lobby: ['user-menu'],
   'create-setup': ['modifiers', 'settings'],
   host: ['host-dialog'], 'forum-thread': ['reply'],
   'setup-detail': ['statistics', 'night', 'version'],

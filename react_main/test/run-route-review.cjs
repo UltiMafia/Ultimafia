@@ -963,6 +963,16 @@ async function reviewTasks(page, item, viewport, entry) {
   entry.adminEvidence = [];
   checks.push(...await reviewAdminTasks(page, item, captureTask, { evidence: entry.adminEvidence }));
   checks.push(...await reviewReportTasks(page, item, captureTask, { after: phase === 'after' }));
+  if (item.name === 'lobby') {
+    const menuTrigger = page.getByRole('button', { name: 'User menu', exact: true });
+    if (await menuTrigger.count()) {
+      await menuTrigger.click();
+      await page.getByRole('menuitem', { name: 'Log Out', exact: true }).waitFor({ timeout: 5000 });
+      await page.waitForTimeout(250);
+      await captureTask('user-menu');
+      await page.keyboard.press('Escape');
+    }
+  }
   if (item.name === 'new-page-contract') {
     const tabs = page.getByRole('tablist', { name: 'Example sections', exact: true });
     const tabRoot = '#main-content .MuiTabs-root:has([aria-label="Example sections"])';

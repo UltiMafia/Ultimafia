@@ -182,6 +182,20 @@ function measureUi() {
       sample.role === 'sectionHeading' ? `level:${element ? element.tagName.toLowerCase() : 'none'}` : '',
       inputKind, tabKind, surfaceKind, actionKind, navKind].filter(Boolean).join(':');
   }
+  // A menu's icons are one optical family: same size, same colour, same element
+  // kind. A gold 16px currency sprite among 24px monochrome glyphs is the kind of
+  // drift that reads as sloppy but never appeared in any geometry comparison.
+  const menuItems = [...document.querySelectorAll('.MuiMenuItem-root')].filter(visible);
+  const menuIcons = menuItems.map(item => item.querySelector('svg, img')).filter(Boolean);
+  if (menuIcons.length > 2) {
+    const kinds = new Set(menuIcons.map(icon => icon.tagName.toLowerCase()));
+    const sizes = new Set(menuIcons.map(icon => Math.round(rect(icon).width)));
+    const colours = new Set(menuIcons.map(icon => icon.tagName.toLowerCase() === 'svg' ? getComputedStyle(icon).color : 'image'));
+    if (kinds.size > 1 || sizes.size > 1 || colours.size > 1) {
+      problems.push({ role: 'menuIcon', selector: selector(menuIcons[0]), property: 'menuIconMismatch', severity: 'medium',
+        observed: { kinds: [...kinds], sizes: [...sizes], colours: [...colours] } });
+    }
+  }
   // Two elementary defects that produced real, user-visible breakage and that no
   // previous check could see: form controls with no vertical gap, and a floating
   // label whose scroll container clips it.
