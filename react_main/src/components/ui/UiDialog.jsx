@@ -22,7 +22,7 @@ export default function UiDialog({ open = true, title, description, onClose, act
     className="ui-dialog">
     <DialogTitle id={`${id}-heading`} className="ui-dialog-title">
       <span id={`${id}-title`}>{title}</span>
-      {dismissible && <UiAction variant="ghost" iconOnly aria-label="Close" onClick={onClose}><UiIcon name="close" /></UiAction>}
+      {dismissible && <UiAction variant="ghost" iconOnly aria-label="Close" onClick={onClose}><UiIcon name="close" size={20} /></UiAction>}
     </DialogTitle>
     <DialogContent className="ui-dialog-content">
       {description && <p id={`${id}-description`} className="ui-dialog-description">{description}</p>}
