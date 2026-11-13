@@ -3643,7 +3643,6 @@ function SpeechInput(props) {
   const speechInput = props.speechInput;
   const setSpeechInput = props.setSpeechInput;
   const pendingSpeechRef = useRef(null);
-  const draftRevisionRef = useRef(0);
   const [speechDropdownOptions, setSpeechDropdownOptions] = useState([]);
   const [speechDropdownValue, setSpeechDropdownValue] = useState("Say");
   const [lastTyped, setLastTyped] = useState(0);
@@ -3754,9 +3753,20 @@ function SpeechInput(props) {
       lastMessage.id !== pending.previousMessageId &&
       matchesSender
     ) {
-      if (draftRevisionRef.current === pending.revision) {
-        setSpeechInput(value => value === pending.content ? "" : value);
-      }
+      // Clear only if the composer still holds exactly what was sent, so text
+      // typed after sending survives. A draft-revision counter cannot stand in
+      // for that comparison: iOS fires an extra change event for autocorrect,
+      // dictation and keyboard commit after a send, which bumped the counter and
+      // left the sent text sitting in the box.
+      setSpeechInput(value => {
+        if (value === pending.content) return "";
+        // The reader kept typing while it sent: drop the sent text and keep the
+        // rest, so the box never looks like the message failed to leave.
+        if (value.startsWith(pending.content)) {
+          return value.slice(pending.content.length);
+        }
+        return value;
+      });
       pendingSpeechRef.current = null;
     }
   }, [game.history, game.self, selTab, isCurrentState, meetings, setSpeechInput]);
@@ -3848,7 +3858,6 @@ function SpeechInput(props) {
   }, [socket]);
 
   function changeDraft(value) {
-    draftRevisionRef.current += 1;
     setSpeechInput(value);
   }
 
@@ -3905,7 +3914,6 @@ function SpeechInput(props) {
         } else {
           pendingSpeechRef.current = {
             content: speechInput,
-            revision: draftRevisionRef.current,
             meetingId: selTab,
             previousMessageId: meetings[selTab]?.messages?.at(-1)?.id,
             anonymous:
