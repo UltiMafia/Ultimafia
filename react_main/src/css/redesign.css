@@ -203,7 +203,12 @@ button, select { font: inherit; }
 .game .player-list .player.player-row { min-height: 40px; padding: 3px; overflow: visible; }
 .game .player-row .name-with-avatar { flex: 1; min-width: 0; }
 .game .player-row .name-with-avatar .MuiStack-root { min-width: 0; max-width: 100%; }
-.game .player-row .name-with-avatar .user-name { white-space: nowrap; overflow-wrap: normal; overflow: hidden; text-overflow: ellipsis; }
+.game .player-row .name-with-avatar .user-name:not(.name-anim-glow) { white-space: nowrap; overflow-wrap: normal; overflow: hidden; text-overflow: ellipsis; }
+/* A glowing name paints its halo outside its own box. `overflow: hidden` is
+   what the ellipsis above needs, but on a glowing name it slices the halo into
+   a rectangle at the box edge - the name does not need the ellipsis, and the
+   halo is the effect, so the glow keeps its overflow visible. */
+.game .player-row .name-with-avatar .user-name.name-anim-glow { white-space: nowrap; overflow: visible; }
 .game .player-row .player-role-tools .role { margin-right: 0; }
 .game .player-row .role-marker i { margin: 0; }
 .game .player-list .player.player-row .typing-icon { position: static; flex-shrink: 0; margin-left: 4px; }

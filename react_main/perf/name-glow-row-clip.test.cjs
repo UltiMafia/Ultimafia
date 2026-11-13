@@ -32,11 +32,11 @@ async function run(engineName) {
       host.style.cssText = 'position:fixed;left:16px;top:60px;z-index:99999;background:#1b1b1e;padding:10px;width:230px';
       host.innerHTML = `
         <div class="player-list">
-          <div class="player">
-            <div class="user-name" id="plainName"><span class="user-name-text">a-really-very-long-player-name-that-must-truncate</span></div>
+          <div class="player player-row">
+            <div class="name-with-avatar"><div class="user-name" id="plainName"><span class="user-name-text">a-really-very-long-player-name-that-must-truncate</span></div></div>
           </div>
-          <div class="player">
-            <div class="user-name name-anim-glow" id="glowName"><span class="user-name-text">ASPECT8445</span></div>
+          <div class="player player-row">
+            <div class="name-with-avatar"><div class="user-name name-anim-glow" id="glowName"><span class="user-name-text">ASPECT8445</span></div></div>
           </div>
         </div>`;
       document.body.appendChild(host);
