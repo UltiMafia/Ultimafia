@@ -119,6 +119,7 @@ module.exports = class MafiaGame extends Game {
     this.lastStalemateDeathKind = null;
     this.extensions = 0;
     this.extensionVotes = 0;
+    this.endVotes = 0;
     this.hasBeenDay = false;
     this.ForceMustAct = this.setup.ForceMustAct;
     //Assassin Things
@@ -701,8 +702,12 @@ module.exports = class MafiaGame extends Game {
 
     this.extensions = 0;
     this.extensionVotes = 0;
+    this.endVotes = 0;
 
-    for (let player of this.players) player.votedForExtension = false;
+    for (let player of this.players) {
+      player.votedForExtension = false;
+      player.votedForEnd = false;
+    }
     super.checkVeg();
   }
 

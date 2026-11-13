@@ -23,6 +23,7 @@ module.exports = class MafiaPlayer extends Player {
     this.deathMessages = deathMessages;
     this.revivalMessages = revivalMessages;
     this.votedForExtension = false;
+    this.votedForEnd = false;
     this.data.blood = 100;
     this.data.Block = 0;
     this.data.ConversionProgress = 0;
@@ -45,7 +46,7 @@ module.exports = class MafiaPlayer extends Player {
   }
 
   gameCommands() {
-    return ["extend"];
+    return ["extend", "end"];
   }
 
   parseCommand(message) {
@@ -96,6 +97,49 @@ module.exports = class MafiaPlayer extends Player {
         for (let player of this.game.players) player.votedForExtension = false;
 
         this.game.sendAlert("Day extended.");
+        return;
+      case "end":
+        var vegKickMeeting = super.getVegKickMeeting();
+        if (vegKickMeeting !== undefined) {
+          return;
+        }
+        if (
+          this.game.getStateName() != "Day" ||
+          this.votedForEnd ||
+          !this.alive ||
+          this.housed
+        )
+          return;
+
+        if (this.game.getFixedDayLength() > 0) {
+          this.sendAlert("This setup has a fixed Day length.");
+          return;
+        }
+
+        var dayTimer = this.game.timers["main"];
+        if (!dayTimer || dayTimer.timeLeft() <= 60 * 1000) {
+          this.sendAlert("The Day already has a minute or less left.");
+          return;
+        }
+
+        this.votedForEnd = true;
+        this.game.endVotes++;
+
+        var aliveCount = this.game.playersInPlay().length;
+        var votesNeeded = Math.ceil(aliveCount / 2);
+
+        this.game.sendAlert(
+          `${this.name} voted to end the Day early using /end. ${this.game.endVotes}/${votesNeeded} votes.`
+        );
+
+        if (this.game.endVotes < votesNeeded) return;
+
+        dayTimer.set(60 * 1000);
+        this.game.endVotes = 0;
+
+        for (let player of this.game.players) player.votedForEnd = false;
+
+        this.game.sendAlert("Day shortened to 1 minute.");
         return;
       /*
       case "roleshare":

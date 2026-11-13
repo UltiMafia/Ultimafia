@@ -20,6 +20,11 @@ export const commandList = {
     description:
       "Used during the day phase to give more time to players while deliberating on the vote.",
   },
+  "/end": {
+    input: "N/A",
+    description:
+      "Used during the day phase to vote to cut the remaining day time to 1 minute once at least half of the players agree.",
+  },
   "/role": {
     input: "Role name",
     description: "Used to display role descriptions in chat.",
