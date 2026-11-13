@@ -70,7 +70,7 @@ const modifierData = {
     Playful: {
       category: "Items",
       internal: ["StartWithJack"],
-      tags: ["Items", "Coffee"],
+      tags: ["Items", "Jack-In-The-Box"],
       description: "You start with a Jack-In-The-Box. "+jackBoxDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
@@ -102,7 +102,7 @@ const modifierData = {
     Explosive: {
       category: "Items",
       internal: ["StartWithBomb"],
-      tags: ["Items", "Killing"],
+      tags: ["Items", "Killing", "Bomb"],
       description: "You start with a Bomb. "+bombDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
@@ -110,7 +110,7 @@ const modifierData = {
     Combustible: {
       category: "Items",
       internal: ["StartWithTNT"],
-      tags: ["Items", "Killing"],
+      tags: ["Items", "Killing", "TNT"],
       description: "You start with TNT. "+tntDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
@@ -151,7 +151,7 @@ const modifierData = {
     Shielded: {
       category: "Items",
       internal: ["StartWithShield"],
-      tags: ["Items"],
+      tags: ["Items", "Shield"],
       description: "You start with a Shield. "+shieldDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
@@ -167,7 +167,7 @@ const modifierData = {
     Rifled: {
       category: "Items",
       internal: ["StartWithRifle"],
-      tags: ["Items", "Killing", "Gun", "Alignments", "Day Killer"],
+      tags: ["Items", "Killing", "Gun", "Rifle", "Alignments", "Day Killer"],
       description: "You start with a Rifle. "+rifleDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
