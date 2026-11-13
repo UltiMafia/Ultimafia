@@ -8,7 +8,6 @@ import axios from "axios";
 import {
   Alert,
   Box,
-  Button,
   Chip,
   CircularProgress,
   Divider,
@@ -538,13 +537,13 @@ function AppealCase({ appealId }) {
             {voteError && <Alert severity="error">{voteError}</Alert>}
             {saved && <Alert severity="success">Vote recorded.</Alert>}
             <Box>
-              <Button variant="contained" disabled={!canSubmit} onClick={submitVote}>
+              <UiAction variant="primary" disabled={!canSubmit} busy={submitting} onClick={submitVote}>
                 {submitting
                   ? "Saving..."
                   : data.myVote
                     ? "Change vote"
                     : "Submit vote"}
-              </Button>
+              </UiAction>
             </Box>
           </Stack>
         )}

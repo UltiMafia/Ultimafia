@@ -399,7 +399,6 @@ function RulesContent({ violationMap }) {
             <Typography
               variant="h4"
               gutterBottom
-              sx={{ textDecoration: "underline" }}
             >
               {section.title}
             </Typography>
@@ -438,7 +437,7 @@ function TabPanel({ children, value, index, ...other }) {
       aria-labelledby={`rules-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
+      {value === index && children}
     </div>
   );
 }
@@ -529,9 +528,9 @@ export default function Rules() {
         </Typography>
 
         <Typography
-          variant="h4"
+          variant="h3"
           gutterBottom
-          sx={{ textDecoration: "underline", mt: 2 }}
+          sx={{ mt: 3 }}
         >
           Hydra Accounts
         </Typography>
@@ -547,9 +546,9 @@ export default function Rules() {
         </Typography>
 
         <Typography
-          variant="h4"
+          variant="h3"
           gutterBottom
-          sx={{ textDecoration: "underline", mt: 2 }}
+          sx={{ mt: 3 }}
         >
           Human Users Required
         </Typography>

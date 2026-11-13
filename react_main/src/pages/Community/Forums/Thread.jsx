@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link, useParams, useLocation } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import update from "immutability-helper";
-import { Popover, List, ListItem, Typography, Button } from "@mui/material";
+import { Popover, List, ListItem, Typography } from "@mui/material";
 
 import CustomMarkdown from "components/CustomMarkdown";
 import { useErrorAlert } from "components/Alerts";
@@ -20,6 +20,7 @@ import { VoteWidget } from "components/VoteWidget";
 import { UiAction, UiIcon } from "components/ui";
 import { EmoteReactions } from "components/EmoteReactions";
 import "css/emote-reactions.css";
+import "css/comments.css";
 import { NameWithAvatar } from "../../User/UserWidgets";
 
 function formatForumDate(timestamp) {
@@ -725,19 +726,19 @@ function onAddTag(targetUserId) {
           <div className="reply-image-preview">
             {replyImagePreview && <img src={replyImagePreview} alt="Pasted attachment preview"
               style={{ maxWidth: "100%", maxHeight: 240 }} />}
-            <button type="button" className="btn btn-theme-sec" disabled={postingReply}
-              onClick={() => setReplyImage(null)}>Remove image</button>
+            <UiAction variant="secondary" disabled={postingReply}
+              onClick={() => setReplyImage(null)}>Remove image</UiAction>
           </div>
         )}
-        <div className="post-btn-wrapper">
-          <button type="button" className="post-reply btn btn-theme"
-            disabled={postingReply} onClick={onPostReply}>
-            {postingReply ? "Posting..." : "Post"}
-          </button>
-          <button type="button" className="btn btn-theme-sec"
+        <div className="thread-submit-actions" style={{ marginTop: 12 }}>
+          <UiAction variant="secondary"
             disabled={postingReply} onClick={onPostCancel}>
             Cancel
-          </button>
+          </UiAction>
+          <UiAction variant="primary" busy={postingReply}
+            disabled={postingReply} onClick={onPostReply}>
+            {postingReply ? "Posting..." : "Post reply"}
+          </UiAction>
         </div>
       </fieldset>
     </div>
@@ -1117,14 +1118,13 @@ function onAddTag(targetUserId) {
           (!threadInfo.locked || user.perms.postInLocked) &&
           canReply && (
             <div style={{ marginTop: "16px" }}>
-              <Button
-                variant="contained"
-                color="primary"
+              <UiAction
+                variant="primary"
                 onClick={() => onReplyClick(null, "bottom")}
-                sx={{ minWidth: "120px" }}
+                style={{ minWidth: "120px" }}
               >
                 Reply
-              </Button>
+              </UiAction>
             </div>
           )}
         {replyTarget === "bottom" && replyForm}
@@ -1281,15 +1281,6 @@ function Post(props) {
       }`}
       id={id}
     >
-      <div className="vote-wrapper">
-        <VoteWidget
-          item={voteItem}
-          itemType={itemType}
-          itemHolder={voteItemHolder}
-          setItemHolder={setVoteItemHolder}
-          itemKey={itemKey}
-        />
-      </div>
       <div className="main-wrapper">
         <div className="heading">
           <div className="heading-left">
@@ -1309,10 +1300,10 @@ function Post(props) {
                   id={postInfo.author.id}
                   name={postInfo.author.name}
                   avatar={postInfo.author.avatar}
+                  avatarSize={32}
                   groups={postInfo.author.groups}
                   vanityUrl={postInfo.author.vanityUrl}
                   includeMiniprofile
-                  small
                 />
                 {authorSubContent}
               </div>
@@ -1450,27 +1441,35 @@ function Post(props) {
           </div>
         )}
         {!postInfo.deleted && !editing && (
-          <EmoteReactions
-            item={voteItem}
-            itemType={itemType}
-            itemHolder={voteItemHolder}
-            setItemHolder={setVoteItemHolder}
-            itemKey={itemKey}
-          />
+          <footer className="post-footer comment-footer">
+            <div className="comment-vote">
+              <VoteWidget
+                item={voteItem}
+                itemType={itemType}
+                itemHolder={voteItemHolder}
+                setItemHolder={setVoteItemHolder}
+                itemKey={itemKey}
+              />
+            </div>
+            <EmoteReactions
+              item={voteItem}
+              itemType={itemType}
+              itemHolder={voteItemHolder}
+              setItemHolder={setVoteItemHolder}
+              itemKey={itemKey}
+            />
+          </footer>
         )}
         {editing && (
           <div className="edit-wrapper">
             <TextEditor value={editContent} onChange={setEditContent} />
-            <div className="post-btn-wrapper">
-              <div
-                className="post-reply btn btn-theme-sec"
-                onClick={onEditSave}
-              >
-                Save
-              </div>
-              <div className="btn btn-theme-sec" onClick={onEditCancel}>
+            <div className="thread-submit-actions" style={{ marginTop: 12 }}>
+              <UiAction variant="secondary" onClick={onEditCancel}>
                 Cancel
-              </div>
+              </UiAction>
+              <UiAction variant="primary" onClick={onEditSave}>
+                Save
+              </UiAction>
             </div>
           </div>
         )}

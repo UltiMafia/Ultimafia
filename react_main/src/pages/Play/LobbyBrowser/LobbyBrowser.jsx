@@ -4,7 +4,7 @@ import { useLocation, Link } from "react-router-dom";
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import UiIcon from "components/ui/UiIcon";
-import { UiPageHeader } from "components/ui";
+import { UiPageHeader, UiAction, UiField, UiTabs, UiTab } from "components/ui";
 
 import { UserContext, InGameContext } from "Contexts";
 import { getPageNavFilterArg, PageNav } from "components/Nav";
@@ -13,12 +13,6 @@ import { camelCase } from "../../../utils";
 import Comments from "../../Community/Comments";
 import "css/join.css";
 import { ListSkeleton, PageSkeleton } from "components/Skeletons";
-import {
-  Button,
-  Tab,
-  Tabs,
-  TextField,
-} from "@mui/material";
 import { useLoading } from "../../../hooks/useLoading";
 import { GameRow } from "./GameRow";
 import { RecentForumReplies } from "components/RecentForumReplies";
@@ -306,42 +300,48 @@ export default function LobbyBrowser() {
     <div className="lobby-empty" role="status">
       <h2>{games.length ? "No matching games" : "No games in this lobby"}</h2>
       <p>{games.length ? "Search and status filters apply to this page." : "Choose another lobby or host a game."}</p>
-      {games.length ? <Button variant="outlined" onClick={clearFilters}>Clear filters</Button> :
-        <Button component={Link} to={user.loggedIn ? "/play/host" : "/welcome"}>{user.loggedIn ? "Host a game" : "Sign in to host"}</Button>}
+      {games.length ? <UiAction onClick={clearFilters}>Clear filters</UiAction> :
+        <Link className="ui-action ui-action--primary" to={user.loggedIn ? "/play/host" : "/welcome"}>{user.loggedIn ? "Host a game" : "Sign in to host"}</Link>}
     </div>
   );
 
   return (
     <div className="lobby-browser">
       <UiPageHeader title="Games" actions={
-        <Button component={Link} to={user.loggedIn ? "/play/host" : "/welcome"} startIcon={<UiIcon name="add" />}>Host a game</Button>
+        <Link className="ui-action ui-action--primary" to={user.loggedIn ? "/play/host" : "/welcome"}><UiIcon name="add" />Host a game</Link>
       } />
-      <Tabs value={section} onChange={(_, value) => setSection(value)} aria-label="Lobby sections" className="lobby-sections">
-        <Tab label="Games" value="games" id="lobby-games-tab" aria-controls="lobby-games-panel" />
-        <Tab label="More" value="extras" id="lobby-extras-tab" aria-controls="lobby-extras-panel" />
-      </Tabs>
+      <UiTabs value={section} onChange={(_, value) => setSection(value)} aria-label="Lobby sections" className="lobby-sections">
+        <UiTab label="Games" value="games" id="lobby-games-tab" aria-controls="lobby-games-panel" />
+        <UiTab label="More" value="extras" id="lobby-extras-tab" aria-controls="lobby-extras-panel" />
+      </UiTabs>
       <div className={`lobby-home-layout${section === "extras" ? " is-extras" : ""}`} hidden={section !== "games" && section !== "extras"}>
       <LobbySection id="lobby-games-panel" labelledBy="lobby-games-tab" active={section === "games"}>
         <TutorialLobbyBanner />
         {!user.loggedIn && <p className="guest-join-hint"><Link to="/welcome">Sign in</Link> to join or spectate. <Link to="/play/tutorial">Tutorial</Link></p>}
         <div className="lobby-controls">
-          <label className="lobby-select"><span className="sr-only">Lobby</span>
-            <select aria-label="Lobby" value={lobbyName} onChange={event => setLobbyName(event.target.value)}>
-              {lobbies.filter(lobby => !lobby.hidden).map(lobby => <option key={lobby.name} value={lobby.name} disabled={lobby.disabled}>
-                {lobby.name === "All" ? "All lobbies" : lobby.name}{openGamesCounts[lobby.name] ? ` (${openGamesCounts[lobby.name]})` : ""}
-              </option>)}
-            </select>
-          </label>
+          <UiField
+            select
+            size="small"
+            aria-label="Lobby"
+            value={lobbyName}
+            onChange={event => setLobbyName(event.target.value)}
+            SelectProps={{ native: true }}
+            className="lobby-select"
+          >
+            {lobbies.filter(lobby => !lobby.hidden).map(lobby => <option key={lobby.name} value={lobby.name} disabled={lobby.disabled}>
+              {lobby.name === "All" ? "All lobbies" : lobby.name}{openGamesCounts[lobby.name] ? ` (${openGamesCounts[lobby.name]})` : ""}
+            </option>)}
+          </UiField>
           <div className="lobby-status-tabs" role="group" aria-label="Filter games by status">
             {[["All", "All"], ["Open", "Open"], ["In Progress", "Live"], ["Finished", "Finished"]].map(([value, label]) =>
               <button key={value} type="button" aria-pressed={statusFilter === value} onClick={() => setStatusFilter(value)}>{label}</button>)}
           </div>
-          <button className="utility-button" type="button" onClick={() => setFiltersExpanded(value => !value)} aria-label="Search games" aria-expanded={filtersExpanded} aria-controls="game-search"><UiIcon name="search" /></button>
-          <button className="utility-button" type="button" onClick={refreshGames} disabled={loading} aria-label="Refresh games" aria-busy={refreshButtonIsSpinning}><UiIcon name="refresh" className={refreshButtonIsSpinning ? "ui-icon--busy" : ""} /></button>
+          <UiAction iconOnly aria-label="Search games" aria-expanded={filtersExpanded} aria-controls="game-search" onClick={() => setFiltersExpanded(value => !value)}><UiIcon name="search" /></UiAction>
+          <UiAction iconOnly aria-label="Refresh games" disabled={loading} aria-busy={refreshButtonIsSpinning} onClick={refreshGames}><UiIcon name="refresh" className={refreshButtonIsSpinning ? "ui-icon--busy" : ""} /></UiAction>
         </div>
         <div id="game-search" className="lobby-search" hidden={!filtersExpanded}>
-          <TextField type="search" fullWidth placeholder="Setup or host name" value={search} onChange={event => setSearch(event.target.value)} inputProps={{ "aria-label": "Search games on this page" }} />
-          {search && <Button variant="text" onClick={() => setSearch("")}>Clear</Button>}
+          <UiField size="small" type="search" fullWidth placeholder="Setup or host name" value={search} onChange={event => setSearch(event.target.value)} inputProps={{ "aria-label": "Search games on this page" }} />
+          {search && <UiAction variant="ghost" onClick={() => setSearch("")}>Clear</UiAction>}
         </div>
         <div className="lobby-result-count" role="status">{visibleGames.length} {visibleGames.length === 1 ? "game" : "games"} on this page</div>
         {gameList}

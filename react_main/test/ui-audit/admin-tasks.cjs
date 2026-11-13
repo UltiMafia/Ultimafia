@@ -9,6 +9,7 @@ async function reviewAdminTasks(page, item, captureImage, { master = false, evid
   const table = page.getByRole('table', { name: invoices ? 'Donation invoices' : 'Developer API keys', exact: true });
   const settle = () => page.waitForFunction(() => window.__routeReview.pending === 0 && performance.now() - window.__routeReview.lastRequestAt > 400);
   const capture = async state => {
+    await page.mouse.move(0, 0);
     await captureImage(state);
     const snapshot = await page.evaluate(() => ({ requests: window.__routeReview.requests, writes: window.__routeReview.writes, pending: window.__routeReview.pending, simulatedAdminFailures: window.__routeReview.simulatedAdminFailures || 0, unresolved: window.__routeReview.unresolved, errors: window.__routeReview.errors }));
     assert.deepEqual(snapshot.unresolved, [], `${state}: no unresolved contracts before navigating away`);

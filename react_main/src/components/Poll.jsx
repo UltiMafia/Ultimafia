@@ -110,6 +110,7 @@ function Polls({
                 return (
                   <Box key={index}>
                     <Button
+                      data-ui-variant="poll-option"
                       variant={isUserVote ? "contained" : "outlined"}
                       fullWidth
                       onClick={() =>

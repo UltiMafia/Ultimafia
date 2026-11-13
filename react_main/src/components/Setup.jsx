@@ -11,7 +11,6 @@ import { hyphenDelimit } from "utils";
 
 import {
   Box,
-  Card,
   Divider,
   Grid,
   IconButton,
@@ -318,13 +317,14 @@ export default function Setup(props) {
         page={`/learn/setup/${props.setup.id}`}
         title={setupName}
       />
-      <Card
-        variant="outlined"
+      <Box
         className={"setup " + classList}
         ref={setupRef}
         sx={{
           minWidth: 0,
           width: "100%",
+          border: "1px solid var(--mui-palette-divider)",
+          borderRadius: "var(--mui-shape-borderRadius)",
           backgroundColor:
             backgroundColor !== undefined
               ? "background.paper"
@@ -404,7 +404,7 @@ export default function Setup(props) {
             </Stack>
           </Stack>
         </Stack>
-      </Card>
+      </Box>
     </>
   );
 }

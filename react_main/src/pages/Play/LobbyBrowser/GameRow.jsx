@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Button, IconButton, Tooltip } from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 import { useRankedTutorialGate } from "components/TutorialPrompt";
 import { UserContext, SiteInfoContext } from "Contexts";
 import { filterProfanity } from "components/Basic";
@@ -9,7 +9,7 @@ import { useErrorAlert } from "components/Alerts";
 import Setup from "components/Setup";
 import HostGameDialogue from "components/HostGameDialogue";
 import { PlayerCount } from "./PlayerCount";
-import UiIcon from "components/ui/UiIcon";
+import { UiAction, UiIcon } from "components/ui";
 import { getRowStubColor } from "./gameRowColors";
 
 export function GameStatus({ game, tools }) {
@@ -43,14 +43,14 @@ export function GameStatus({ game, tools }) {
         status={game.status} numSlotsTaken={game.players} spectatingAllowed={game.spectating}
         spectatorCount={game.spectatorCount} />
       <div className="game-row-actions">
-        {allowed && !full && <Button component={Link} to={destination} state={membership}
+        {allowed && !full && <UiAction component={Link} to={destination} state={membership}
           onClick={rankedJoin ? tutorialGate.guard : undefined} disabled={disabled}
-          variant={label === "Join" ? "contained" : "outlined"} color={label === "Join" ? "primary" : "inherit"}>
+          variant={label === "Join" ? "primary" : "secondary"}>
           {label}
-        </Button>}
+        </UiAction>}
         {allowed && game.status === "Open" && game.spectating &&
-          <Button component={Link} to={`/game/${game.id}?spectate=true`}
-            state={{ requestedMembership: "spectator" }} variant="text" color="inherit">Spectate</Button>}
+          <UiAction component={Link} to={`/game/${game.id}?spectate=true`}
+            state={{ requestedMembership: "spectator" }} variant="ghost">Spectate</UiAction>}
         {game.broken && <span className="game-access-note">Unavailable</span>}
         {game.private && !reviewableTesting && <span className="game-access-note"><UiIcon name="lock" size={16} /> Private</span>}
         {tools}

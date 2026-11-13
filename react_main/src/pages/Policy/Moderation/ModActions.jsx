@@ -245,10 +245,13 @@ function ModActionArg({ label, arg }) {
   } else {
     value = (
       <Typography
+        component="span"
         sx={{
           display: "inline",
-          fontFamily: "RobotoMono",
-          color: "#28ab48ff",
+          fontFamily: "var(--ui-font-mono, monospace)",
+          fontSize: "var(--ui-text-small)",
+          color: "text.primary",
+          wordBreak: "break-all",
         }}
       >
         {arg}

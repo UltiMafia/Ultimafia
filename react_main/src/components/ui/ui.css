@@ -30,8 +30,9 @@
 .ui-action--danger-quiet { background: transparent; border-color: transparent; color: var(--ui-danger-text); }
 .ui-action--danger-quiet:hover:not(:disabled) { background: color-mix(in srgb, var(--ui-danger-text) 12%, transparent); }
 .ui-action--icon { flex: 0 0 40px; width: 40px; height: 40px; min-width: 40px; padding: 0; }
-.ui-action:disabled { background: var(--mui-palette-action-disabledBackground); border-color: transparent; color: var(--mui-palette-text-disabled); cursor: default; box-shadow: none; transform: none; }
-.ui-action--ghost:disabled, .ui-action--danger-quiet:disabled { background: transparent; }
+.ui-action:disabled, .ui-action.is-disabled, .ui-action[aria-disabled="true"] { background: var(--mui-palette-action-disabledBackground); border-color: transparent; color: var(--mui-palette-text-disabled); cursor: default; box-shadow: none; transform: none; pointer-events: none; }
+.ui-action--ghost:disabled, .ui-action--danger-quiet:disabled,
+.ui-action--ghost.is-disabled, .ui-action--danger-quiet.is-disabled { background: transparent; }
 .ui-progress { width: 16px; height: 16px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: ui-progress .8s linear infinite; }
 @keyframes ui-progress { to { transform: rotate(360deg); } }
 .message-composer { width: 100%; min-width: 0; }
@@ -111,6 +112,7 @@
 .ui-table { width: 100%; border-collapse: collapse; text-align: left; font-size: var(--ui-text-body); }
 .ui-table :is(th, td) { padding: 12px 8px; border-bottom: 1px solid var(--scheme-color-border); vertical-align: top; }
 .ui-table th { color: var(--um-muted); font-weight: var(--ui-weight-strong); }
+.ui-table th.is-nowrap, .ui-table td.is-nowrap { white-space: nowrap; }
 .ui-table--comparison :is(th, td) { text-align: center; }
 .ui-table-value { min-width: 0; overflow-wrap: anywhere; }
 .ui-table-value--code { font-family: monospace; }
@@ -139,7 +141,7 @@
 .ui-reference-entry--picker, .ui-reference-placeholder { min-height: 64px; padding: 8px 10px; border: 1px solid var(--scheme-color-border); border-radius: var(--ui-radius); background: var(--scheme-color); }
 .ui-reference-entry--picker .ui-reference-name, .ui-reference-entry--picker .ui-reference-description { font-size: var(--ui-text-small); }
 .ui-reference-entry--picker .ui-reference-description { margin-top: 2px; color: var(--um-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.ui-reference-empty { margin: 16px 0; color: var(--um-muted); }
+.ui-reference-empty { margin: 16px 0; color: var(--um-muted); font-size: var(--ui-text-small); }
 @media (max-width: 700px) {
   .ui-reference-filters { flex-direction: column-reverse; align-items: stretch; }
   .ui-reference-filters > .MuiTabs-root, .ui-reference-search { flex-basis: auto; }
@@ -159,7 +161,7 @@
   .ui-table-mobile-label { display: block; color: var(--um-muted); font-weight: var(--ui-weight-strong); }
 }
 .ui-section-label { margin: 16px 0 8px; font-size: var(--ui-text-body); font-weight: var(--ui-weight-strong); }
-.ui-page { width: 100%; max-width: var(--ui-page-width); min-width: 0; margin: 0; background: transparent; }
+.ui-page { width: 100%; max-width: var(--ui-page-width); min-width: 0; margin: 0 auto; background: transparent; }
 .ui-page--reading { max-width: var(--ui-reading-width); }
 .ui-page--prose { max-width: var(--ui-prose-width); }
 .ui-page--full { max-width: none; }
@@ -238,3 +240,20 @@
 @media (max-width: 600px) {
   .MuiPaginationItem-root.MuiPaginationItem-root { min-width: var(--ui-touch-height); min-height: var(--ui-touch-height); }
 }
+
+.game-row-actions > .ui-action { min-width: 80px; }
+.lobby-game-card--compact .game-row-actions > .ui-action { width: 88px; }
+@media (max-width: 900px) {
+  .game-row-actions > .ui-action { width: 88px; min-width: 0; min-height: var(--ui-touch-height, 44px); }
+}
+
+.tutorial-card { height: 100%; display: flex; flex-direction: column; min-width: 0; }
+
+/* Mobile user-nav balances (hearts) */
+@media (max-width: 900px) {
+  .site-header .user-nav-balances {
+    display: flex !important;
+    align-items: center;
+  }
+}
+

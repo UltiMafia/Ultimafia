@@ -9,17 +9,15 @@ import React, {
 import axios from "axios";
 import {
   Box,
-  ButtonBase,
   Stack,
-  Tab,
-  Tabs,
   Typography,
 } from "@mui/material";
+import { PageNav } from "components/Nav";
 
 import { useErrorAlert } from "components/Alerts";
 import { UserContext } from "Contexts";
 import ActivityRow from "./ActivityRow";
-import { UiIcon, UiPending } from "components/ui";
+import { UiIcon, UiPending, UiTabs, UiTab } from "components/ui";
 
 // Three mutually-exclusive category tabs. Each owns a set of per-type sub
 // filters (shown as chips under the tab). `serverCategory` tells the backend
@@ -194,31 +192,16 @@ export default function LiveFeed({ windowKey }) {
 
   return (
     <Stack direction="column" spacing={2.5}>
-      <Tabs
+      <UiTabs
         value={categoryIdx}
         onChange={(_, v) => setCategoryIdx(v)}
         variant="scrollable"
         scrollButtons="auto"
-        sx={{
-          "& .MuiTab-root": {
-            fontFamily: "inherit",
-            fontWeight: 700,
-            letterSpacing: "0.18em",
-            textTransform: "uppercase",
-            fontSize: "0.72rem",
-            minWidth: 84,
-          },
-          "& .MuiTab-root.Mui-selected": { color: "primary.main" },
-          "& .MuiTabs-indicator": {
-            height: 2,
-            backgroundColor: "primary.main",
-          },
-        }}
       >
         {categories.map((c) => (
-          <Tab key={c.key} label={c.label} />
+          <UiTab key={c.key} label={c.label} />
         ))}
-      </Tabs>
+      </UiTabs>
 
       <Stack
         direction="row"
@@ -297,84 +280,14 @@ export default function LiveFeed({ windowKey }) {
         ))}
       </div>
 
-      <Stack
-        direction="row"
-        spacing={1}
-        alignItems="center"
-        justifyContent="center"
-      >
-        <ButtonBase
-          onClick={() => setPage((p) => Math.max(0, p - 1))}
-          disabled={page === 0 || loading}
-          sx={{
-            px: 1.25,
-            py: 0.5,
-            borderRadius: 1,
-            border: 1,
-            borderColor: "divider",
-            color: page === 0 || loading ? "text.disabled" : "text.primary",
-            fontSize: "0.75rem",
-            fontFamily: "inherit",
-            fontWeight: 600,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 0.5,
-            "&:hover": {
-              borderColor:
-                page === 0 || loading ? "divider" : "text.primary",
-            },
-          }}
-        >
-          <UiIcon name="previous" size={18} />
-          Prev
-        </ButtonBase>
-        <Box
-          sx={{
-            px: 1.25,
-            py: 0.5,
-            borderRadius: 1,
-            minWidth: 86,
-            textAlign: "center",
-            fontFamily: "inherit",
-            fontWeight: 700,
-            fontVariantNumeric: "tabular-nums",
-            letterSpacing: "0.06em",
-            fontSize: "0.82rem",
-            color: "primary.main",
-          }}
-        >
-          Page {page + 1}
-        </Box>
-        <ButtonBase
-          onClick={() => setPage((p) => p + 1)}
-          disabled={!hasMore || loading}
-          sx={{
-            px: 1.25,
-            py: 0.5,
-            borderRadius: 1,
-            border: 1,
-            borderColor: "divider",
-            color: !hasMore || loading ? "text.disabled" : "text.primary",
-            fontSize: "0.75rem",
-            fontFamily: "inherit",
-            fontWeight: 600,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 0.5,
-            "&:hover": {
-              borderColor:
-                !hasMore || loading ? "divider" : "text.primary",
-            },
-          }}
-        >
-          Next
-          <UiIcon name="next" size={18} />
-        </ButtonBase>
-      </Stack>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <PageNav
+          page={page + 1}
+          maxPage={hasMore ? page + 2 : page + 1}
+          disabled={loading}
+          onNav={(p) => setPage(p - 1)}
+        />
+      </Box>
     </Stack>
   );
 }

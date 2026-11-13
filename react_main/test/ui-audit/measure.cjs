@@ -9,7 +9,13 @@ function measureUi() {
   };
   const visible = element => {
     const style = getComputedStyle(element), box = rect(element);
-    return style.display !== 'none' && style.visibility !== 'hidden' && box.width > 0 && box.height > 0 && !element.closest('[aria-hidden="true"]');
+    if (style.display === 'none' || style.visibility === 'hidden' || box.width <= 0 || box.height <= 0 || element.closest('[aria-hidden="true"]')) return false;
+    for (let node = element; node && node !== document.body; node = node.parentElement) {
+      const nodeStyle = getComputedStyle(node);
+      if (nodeStyle.clipPath && nodeStyle.clipPath !== 'none') return false;
+      if (nodeStyle.overflow === 'hidden' && (parseFloat(nodeStyle.width) <= 1 || parseFloat(nodeStyle.height) <= 1)) return false;
+    }
+    return true;
   };
   const selector = element => {
     if (element.id) return `#${CSS.escape(element.id)}`;
@@ -39,25 +45,26 @@ function measureUi() {
   const roles = {
     primaryAction: '.ui-action--primary, .MuiButton-containedPrimary',
     secondaryAction: '.ui-action--secondary, .MuiButton-outlined',
-    textInput: 'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]), textarea',
+    textInput: 'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="color"]), textarea',
     select: 'select, [role="combobox"]', card: '.ui-card, .MuiCard-root',
     stat: '.ui-stat', sectionHeading: 'h2, h3', tableHeader: 'th, [role="columnheader"]',
     tab: '[role="tab"]', currency: '.coin-icon', utilityIcon: '.ui-icon',
     emptyState: '[role="status"]', dialog: '[role="dialog"]',
     comment: '.comment-row, .comments-page .post', commentList: '.comments-page',
     declaredFill: '[data-ui-fill], .MuiFormControl-fullWidth, .MuiButton-fullWidth',
-    sectionContainer: 'section, article, aside, [role="region"], [role="tabpanel"], [data-ui-section], .ui-page-content, .ui-page-content > :is(div, section, article), :has(> h2), :has(> h3)',
+    sectionContainer: 'section, article, aside, [role="region"], [role="tabpanel"], [data-ui-section], .ui-page-content, .ui-page-content > :is(div, section, article):not(.MuiTabs-root):not(:has(> [role="tablist"])):not(.ui-pending):not([role="status"]):not([role="alert"]), :not(details):not(li):not(.md-content):not(.post *):not(.comment *):is(div, section, article):not(.ui-pending):not([role="status"]):not([role="alert"]):has(> h2), :not(details):not(li):not(.md-content):not(.post *):not(.comment *):is(div, section, article):not(.ui-pending):not([role="status"]):not([role="alert"]):has(> h3)',
     // Section menus, tab strips and breadcrumb trails only. Pagination and other
     // navs are different contracts and must not be compared as section links.
     sectionNav: 'nav[aria-label*="section" i], nav[aria-label*="breadcrumb" i], [role="navigation"][aria-label*="section" i], [role="tablist"]',
     sectionNavItem: 'nav[aria-label*="section" i] a, nav[aria-label*="section" i] button, nav[aria-label*="breadcrumb" i] a, [role="navigation"][aria-label*="section" i] a, [role="navigation"][aria-label*="section" i] button, [role="tablist"] [role="tab"]',
   };
-  // Authored Markdown headings are user content, not UI section headings; grading
-  // them against page headings reported every profile with a long bio.
-  const authored = element => Boolean(element.closest('.md-content, .paragraph, .bio'));
+  // Authored Markdown headings and custom user profile panels are user content,
+  // not UI section headings or standard theme containers.
+  const authored = element => Boolean(element.closest('.md-content, .paragraph, .bio, [data-custom-background="true"] .box-panel, [data-custom-background="true"]'));
   const samples = Object.entries(roles).flatMap(([role, query]) => [...document.querySelectorAll(query)]
     .filter(element => (main.contains(element) || element.closest('[role="dialog"]')) && visible(element))
     .filter(element => role !== 'sectionHeading' || !authored(element))
+    .filter(element => role !== 'sectionContainer' || (!authored(element) && !element.closest('[role="dialog"]') && !element.closest('.comments-page, .comment-row') && !element.matches('.comment-row, .lobby-game-card, ul > li > article, .profile-game-row, article.game-row, .activity-row, .box-panel article, [role="article"]')))
     // declaredFill marks a wrapper that declares full width; its own radius and
     // typography belong to the inner control, so it is a fill target, not a style sample.
     .filter(() => role !== 'declaredFill')
@@ -156,31 +163,49 @@ function measureUi() {
       ? (element.textContent.trim() ? 'text' : 'icon') : '';
     // An icon tab is laid out differently by MUI (smaller vertical padding);
     // compare it only with other icon tabs.
-    const tabKind = element && sample.role === 'tab' ? (element.querySelector('svg, img') ? 'icon' : 'text') : '';
-    const inputKind = element && sample.role === 'textInput'
-      ? (element.tagName === 'TEXTAREA' ? 'multiline'
-        : element.closest('.MuiInputBase-root')?.querySelector('.MuiInputAdornment-root') ? 'adorned'
+    const tabKind = element && (sample.role === 'tab' || element.matches('[role="tab"]')) ? (element.querySelector('svg, img, .ui-icon') ? 'icon' : 'text') : '';
+    const isAutocomplete = element?.closest('.MuiAutocomplete-root, .MuiAutocomplete-inputRoot');
+    const inputKind = element && ['textInput', 'select'].includes(sample.role)
+      ? (element.closest('.react-mde') ? 'editor'
+        : element.tagName === 'TEXTAREA' ? 'multiline'
+        : isAutocomplete ? 'autocomplete'
+        : element.closest('.MuiInputBase-root')?.querySelector('.MuiInputAdornment-root, .ui-icon') || element.previousElementSibling ? 'adorned'
+        : sample.role === 'select' && (element.closest('.ui-field--wrap-select') || element.scrollHeight > 45) ? 'wrap'
         : 'plain')
       : '';
+    const statusKind = element && sample.role === 'emptyState'
+      ? (element.matches('.ui-pending, .ui-pending *') ? 'pending'
+        : element.matches('.directory-summary, .lobby-result-count, .host-results-summary') ? 'summary'
+        : element.closest('[role="dialog"]') ? 'dialog'
+        : 'block')
+      : '';
+    const currencySize = element && sample.role === 'currency' ? `size:${Math.round(rect(element).height)}` : '';
     // A tab strip, a section menu and a breadcrumb trail are different navigation
     // containers with their own padding and borders; compare within each kind.
     const navKind = element && sample.role === 'sectionNav'
       ? (element.matches('[role="tablist"]') || element.querySelector('[role="tab"]') ? 'tabs'
         : /breadcrumb/i.test(element.getAttribute('aria-label') || '') ? 'breadcrumb' : 'menu') : '';
-    // A bordered, filled panel is a surface; a bare section is not. Compare the
-    // surface treatment of each kind with its own kind.
+    // A bordered, filled panel is a surface; a divided section has a boundary rule;
+    // a bare section is plain. Compare each kind with its own peers.
     const surfaceKind = element && sample.role === 'sectionContainer'
       ? (() => { const style = getComputedStyle(element);
           const filled = !/^rgba?\(0, 0, 0, 0\)$|^transparent$/.test(style.backgroundColor);
-          const bordered = parseFloat(style.borderTopWidth) > 0;
-          return filled && bordered ? 'surface' : 'plain'; })() : '';
-    sample.variant = element?.getAttribute('data-ui-variant') || [element?.matches(':disabled') ? 'disabled' : 'enabled',
+          const fullBorder = ((parseFloat(style.borderTopWidth) || 0) > 0 || (parseFloat(style.borderBottomWidth) || 0) > 0)
+            && ((parseFloat(style.borderLeftWidth) || 0) > 0 || (parseFloat(style.borderRightWidth) || 0) > 0);
+          if (filled || fullBorder) return 'surface';
+          const hasDivider = (parseFloat(style.borderTopWidth) || 0) > 0 || (parseFloat(style.borderBottomWidth) || 0) > 0;
+          return hasDivider ? 'divided' : 'plain'; })() : '';
+    const headerKind = element && sample.role === 'tableHeader'
+      ? (getComputedStyle(element).display === 'block' ? 'stacked' : element.closest('thead') || element.matches('[role="columnheader"], [scope="col"]') ? 'col' : 'row') : '';
+    const isDisabled = element?.matches(':disabled, [aria-disabled="true"], .Mui-disabled') || Boolean(element?.closest('.Mui-disabled, [aria-disabled="true"]'));
+    sample.variant = element?.getAttribute('data-ui-variant') || [isDisabled ? 'disabled' : 'enabled',
       element?.getAttribute('aria-busy') === 'true' ? 'busy' : 'idle',
       element?.matches('[aria-selected="true"], [aria-current="page"], [aria-pressed="true"]') ? 'active' : 'inactive',
       sample.role === 'sectionHeading' ? `depth:${sectionDepth}` : '',
       // A level-3 heading is a sub-heading; compare it with other h3s, not with h2.
       sample.role === 'sectionHeading' ? `level:${element ? element.tagName.toLowerCase() : 'none'}` : '',
-      inputKind, tabKind, surfaceKind, actionKind, navKind].filter(Boolean).join(':');
+      sample.role === 'sectionHeading' && element?.closest('[role="dialog"]') ? 'dialog' : '',
+      inputKind, tabKind, surfaceKind, actionKind, navKind, statusKind, currencySize, headerKind].filter(Boolean).join(':');
   }
   // A menu's icons are one optical family: same size, same colour, same element
   // kind. A gold 16px currency sprite among 24px monochrome glyphs is the kind of
@@ -215,8 +240,9 @@ function measureUi() {
       const style = getComputedStyle(container);
       if (style.overflowX === 'visible' && style.overflowY === 'visible') continue;
       const bounds = rect(container);
-      if (box.top < bounds.top - 1) controlProblems.push({ property: 'labelClippedByContainer', severity: 'high',
-        observed: Math.round((bounds.top - box.top) * 100) / 100, selector: selector(label), container: selector(container) });
+      const unscrolledTop = (box.top - bounds.top) + container.scrollTop;
+      if (unscrolledTop < -1) controlProblems.push({ property: 'labelClippedByContainer', severity: 'high',
+        observed: Math.round((-unscrolledTop) * 100) / 100, selector: selector(label), container: selector(container) });
       break;
     }
   }

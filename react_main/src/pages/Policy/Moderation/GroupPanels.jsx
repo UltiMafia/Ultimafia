@@ -61,11 +61,14 @@ export function GroupPanels({ user }) {
     {error && <p role="alert">{error}</p>}
     {groups.length === 0 && !loading && <p>No staff groups are configured.</p>}
     {groups.map(group => <section className="moderation-group" key={group.name}>
-      <header>
-        <h3>{group.name}s</h3>
-        {group.badge && <Badge icon={group.badge} color={group.badgeColor || "black"} name={group.name} />}
-        {canManageGroup && <UiAction iconOnly variant="ghost" aria-label={`Add user to ${group.name}`} onClick={() => { setAddingToGroup(group.name); setSelectedUser(null); setSearchName(""); }}>
-          <UiIcon name="addPerson" />
+      <header className="moderation-group-header">
+        <div className="moderation-group-title-wrap">
+          <h3>{group.name}s</h3>
+          {group.badge && <Badge icon={group.badge} color={group.badgeColor || "black"} name={group.name} />}
+          <span className="moderation-group-count">{group.members.length} {group.members.length === 1 ? "member" : "members"}</span>
+        </div>
+        {canManageGroup && <UiAction variant="ghost" aria-label={`Add user to ${group.name}`} onClick={() => { setAddingToGroup(group.name); setSelectedUser(null); setSearchName(""); }}>
+          <UiIcon name="addPerson" /> Add member
         </UiAction>}
       </header>
       <div className="moderation-group-members">
@@ -76,7 +79,7 @@ export function GroupPanels({ user }) {
             <UiIcon name="close" size={16} />
           </UiAction>}
         </div>)}
-        {group.members.length === 0 && <p className="moderation-row-meta">No members.</p>}
+        {group.members.length === 0 && <p className="moderation-row-meta">No members in this group.</p>}
       </div>
     </section>)}
     <UiDialog open={!!addingToGroup} title={`Add user to ${addingToGroup || ""}`} onClose={pending ? undefined : () => setAddingToGroup(null)}

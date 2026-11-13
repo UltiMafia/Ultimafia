@@ -698,13 +698,14 @@ export default function Form({
               compact={compact}
               key={field.ref}
             >
-              <input
+              <TextField
                 type="date"
                 value={formatDateForInput(field.value || selectedValue)}
                 disabled={disabled}
                 onChange={(e) => onFieldChange(e, field, true)}
+                helperText={field.extraInfo}
+                label={compact ? field.label : undefined}
               />
-              <FormHelperText>{field.extraInfo}</FormHelperText>
             </FormField>
           );
         case "datetime-local": {
@@ -716,15 +717,18 @@ export default function Form({
               key={field.ref}
               useFormControl
             >
-              <input
+              <TextField
                 type="datetime-local"
-                min={dateToHTMLString(field.min)}
-                max={dateToHTMLString(field.max)}
+                inputProps={{
+                  min: dateToHTMLString(field.min),
+                  max: dateToHTMLString(field.max),
+                }}
                 value={dateToHTMLString(field.value)}
                 disabled={disabled}
                 onChange={(e) => onFieldChange(e, field)}
+                helperText={field.extraInfo}
+                label={compact ? field.label : undefined}
               />
-              <FormHelperText>{field.extraInfo}</FormHelperText>
             </FormField>
           );
         }
@@ -950,11 +954,11 @@ class EmoteUpload extends React.Component {
                 }}
               />
               <Typography>:{this.state.emoteText}:</Typography>
-              <Button
-                size="small"
-                sx={{
+              <UiAction
+                variant="primary"
+                style={{
                   alignSelf: "center",
-                  marginLeft: "auto !important",
+                  marginLeft: "auto",
                 }}
                 onClick={(e) => {
                   this.setState({
@@ -973,7 +977,7 @@ class EmoteUpload extends React.Component {
                 }}
               >
                 Submit
-              </Button>
+              </UiAction>
             </Stack>
           </Paper>
         </Stack>
@@ -1030,15 +1034,17 @@ class EmoteUpload extends React.Component {
               minWidth: 0,
             }}
           >
-            <Button
+            <UiAction
               component="label"
               htmlFor={this.state.id}
-              sx={{
+              variant="secondary"
+              disabled={this.props.disabled}
+              style={{
                 flex: "1",
               }}
             >
               Upload
-            </Button>
+            </UiAction>
             <input
               id={this.state.id}
               style={{ visibility: "hidden", height: "0" }}
@@ -1094,11 +1100,11 @@ class StickerUpload extends React.Component {
                 }}
               />
               <Typography>:{this.state.stickerText}:</Typography>
-              <Button
-                size="small"
-                sx={{
+              <UiAction
+                variant="primary"
+                style={{
                   alignSelf: "center",
-                  marginLeft: "auto !important",
+                  marginLeft: "auto",
                 }}
                 onClick={(e) => {
                   this.setState({
@@ -1117,7 +1123,7 @@ class StickerUpload extends React.Component {
                 }}
               >
                 Submit
-              </Button>
+              </UiAction>
             </Stack>
           </Paper>
         </Stack>
@@ -1174,15 +1180,17 @@ class StickerUpload extends React.Component {
               minWidth: 0,
             }}
           >
-            <Button
+            <UiAction
               component="label"
               htmlFor={this.state.id}
-              sx={{
+              variant="secondary"
+              disabled={this.props.disabled}
+              style={{
                 flex: "1",
               }}
             >
               Upload
-            </Button>
+            </UiAction>
             <input
               id={this.state.id}
               style={{ visibility: "hidden", height: "0" }}

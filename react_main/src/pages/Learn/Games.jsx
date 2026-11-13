@@ -260,7 +260,7 @@ export default function Games(props) {
   return (
     <>
       <UiPageHeader title="Learn" variant="editor" actions={
-          <UiField select label="Game" value={gameType} onChange={handleGameChange} SelectProps={{ renderValue: value => <span className="ui-action-row"><GameIcon gameType={value} size={24} />{value}</span> }}>
+          <UiField select size="small" label="Game" value={gameType} onChange={handleGameChange} SelectProps={{ renderValue: value => <span className="ui-action-row"><GameIcon gameType={value} size={24} />{value}</span> }}>
             {ActiveGameTypes.map((game) => (
               <UiMenuItem key={game} value={game}>
                 <span className="ui-action-row">

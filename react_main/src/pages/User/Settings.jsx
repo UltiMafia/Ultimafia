@@ -241,12 +241,12 @@ function CookieSettings() {
       <Divider />
 
       <Stack direction="row" spacing={2}>
-        <Button onClick={handleAcceptAll} variant="outlined" color="primary">
+        <UiAction onClick={handleAcceptAll} variant="primary">
           Accept All
-        </Button>
-        <Button onClick={handleRejectAll} variant="outlined" color="secondary">
+        </UiAction>
+        <UiAction onClick={handleRejectAll} variant="secondary">
           Reject All
-        </Button>
+        </UiAction>
       </Stack>
     </Stack>
   );

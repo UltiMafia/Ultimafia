@@ -5,19 +5,56 @@
   margin-bottom: var(--ui-section-gap);
 }
 .setup-page .md-content { background: transparent; }
-.setup-page .setup-heading { padding-block: 8px; }
-.setup-page .setup-title-layout { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 16px 24px; }
-.setup-title-copy { grid-column: 1; grid-row: 1; }
-.setup-kind { display: flex; align-items: center; gap: 8px; color: var(--um-muted); font-size: var(--ui-text-small); }
-.setup-kind .game-icon { width: 24px; height: 24px; }
-.setup-page .setup-header-actions { grid-column: 2; grid-row: 1; gap: 12px; align-items: center; flex-wrap: wrap; }
+.setup-header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .setup-header-actions .MuiFormControl-root { min-width: 96px; }
+.setup-kind-badge { color: var(--um-muted); font-size: var(--ui-text-small); }
+.setup-meta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; }
+.setup-creator-byline { display: inline-flex; align-items: center; gap: 6px; font-size: var(--ui-text-small); color: var(--um-muted); }
+.setup-archive-action.ui-action { min-height: 24px; padding: 2px 8px; font-size: var(--ui-text-caption); }
 .setup-save-panel { display: flex; flex-direction: column; gap: 12px; }
 .setup-rating-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--scheme-color-border); }
 .setup-rating-row > span { color: var(--um-muted); font-size: var(--ui-text-small); }
 .setup-rating-row .MuiStack-root { flex-direction: row; align-items: center; }
-.setup-save-actions > .MuiStack-root { flex-wrap: wrap; gap: 4px; }
-.setup-status { display: inline-flex; align-items: center; padding: 3px 8px; border: 1px solid var(--scheme-color-border); border-radius: 4px; font-size: var(--ui-text-small); color: var(--scheme-color-text); }
+.setup-save-actions > .MuiStack-root { display: flex !important; flex-wrap: wrap !important; gap: 8px !important; }
+.setup-save-actions .MuiStack-root > span,
+.setup-save-actions .MuiStack-root > .ui-action {
+  flex: 1 1 40%;
+  width: 100%;
+  justify-content: center;
+}
+.setup-save-actions .MuiStack-root > span .ui-action { width: 100%; justify-content: center; }
+.setup-status,
+.setup-status-action.ui-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  border: 1px solid var(--scheme-color-border) !important;
+  border-radius: var(--ui-radius);
+  font-size: var(--ui-text-small);
+  font-weight: 500;
+  color: var(--scheme-color-text);
+  background: var(--scheme-color-sec) !important;
+  line-height: 1.4;
+  min-height: 26px;
+  height: 26px;
+  box-sizing: border-box;
+}
+.setup-status-action.ui-action {
+  cursor: pointer;
+}
+.setup-status-action.ui-action:hover:not(:disabled) {
+  background: var(--scheme-color) !important;
+  border-color: var(--scheme-color-border) !important;
+}
+.setup-status-action.ui-action.is-active {
+  background: color-mix(in srgb, currentColor 12%, var(--scheme-color-sec)) !important;
+}
+.setup-status-action.ui-action.is-off {
+  color: var(--um-muted);
+  border-color: var(--scheme-color-border) !important;
+  opacity: 0.85;
+}
 .setup-roster { min-width: 0; }
 .setup-description > .ui-section + .ui-section { margin-top: 16px; }
 .setup-secondary > .ui-section + .ui-section { margin-top: 16px; }
@@ -32,9 +69,6 @@
 .setup-secondary { display: flex; flex-direction: column; gap: 24px; }
 .setup-page .setup-description .md-content { padding: 0; }
 @media (max-width: 700px) {
-  .setup-page .setup-title-layout { grid-template-columns: minmax(0, 1fr); }
-  .setup-page .setup-header-actions { grid-column: 1; grid-row: 2; width: 100%; justify-content: space-between; }
-  .setup-header-actions > .ui-action { flex: 1 1 auto; justify-content: center; }
   .setup-overview { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .setup-roster { padding: 0; }
 }
@@ -141,13 +175,17 @@
 .role-skin-control > span { color: var(--um-muted); font-size: var(--ui-text-small); }
 .role-skin-control .MuiFormControl-root { min-width: 140px; }
 .role-artists { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; color: var(--um-muted); font-size: var(--ui-text-small); }
-.role-hero-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-left: auto; }
+.role-meta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.role-hero-actions { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.role-hero-actions .role-vote-pill { display: inline-flex; align-items: center; padding: 2px 6px; border: 1px solid var(--scheme-color-border); border-radius: var(--ui-radius); background: var(--scheme-color-sec); }
+.role-hero-actions .role-vote-pill > .MuiStack-root { flex-direction: row; align-items: center; gap: 2px; }
 .role-hero-actions > .MuiStack-root:first-child { flex-direction: row; align-items: center; gap: 2px; padding-right: 10px; border-right: 1px solid var(--scheme-color-border); }
+.role-fanart-section { max-width: var(--ui-reading-width); }
 .role-info { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
 .role-info > h2 { margin: 0; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); }
 .role-description { max-width: var(--ui-reading-width); }
 .role-description p { margin: 0 0 10px; line-height: 1.6; }
-.role-info-section h2 { margin: 0 0 10px; font-size: var(--ui-text-body); }
+.role-info-section h3 { margin: 0 0 10px; font-size: var(--ui-text-section); line-height: var(--ui-line-heading); }
 .role-examples { margin: 0; padding-left: 22px; max-width: var(--ui-reading-width); display: flex; flex-direction: column; gap: 10px; line-height: 1.55; }
 .role-interactions { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .role-interactions li { display: flex; align-items: flex-start; gap: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--scheme-color-border); }

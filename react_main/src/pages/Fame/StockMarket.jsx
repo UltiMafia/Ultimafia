@@ -4,11 +4,10 @@ import axios from "axios";
 import {
   Typography,
   Box,
-  Card,
-  CardContent,
   Stack,
   Button,
   TextField,
+  InputAdornment,
   Tabs,
   Tab,
   Dialog,
@@ -32,11 +31,11 @@ import {
   Grid,
   useMediaQuery,
   useTheme,
-  Pagination,
 } from "@mui/material";
+import { PageNav } from "components/Nav";
 import "css/fame.css";
 import CoinIcon from "components/CoinIcon";
-import { UiAction, UiIcon, UiPageHeader, UiStat, UiStatRow } from "components/ui";
+import { UiAction, UiCard, UiIcon, UiPageHeader, UiStat, UiStatRow } from "components/ui";
 import { useErrorAlert } from "../../components/Alerts";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { UserContext, SiteInfoContext } from "../../Contexts";
@@ -533,7 +532,11 @@ export default function StockMarket() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             InputProps={{
-              startAdornment: <UiIcon name="search" size={16} />,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <UiIcon name="search" size={16} />
+                </InputAdornment>
+              ),
             }}
           />
 
@@ -565,9 +568,8 @@ export default function StockMarket() {
                 const isSelf = user.loggedIn && marketMode === "player" && stock.userId === user.id;
                 const name = marketMode === "player" ? stock.username : stock.familyName;
                 return (
-                  <Card key={stock._id || stock.familyId} variant="outlined" sx={{ backgroundColor: theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(0, 0, 0, 0.2)" }}>
-                    <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-                      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
+                  <UiCard key={stock._id || stock.familyId}>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
                         <Stack direction="row" spacing={1.5} alignItems="center">
                           <StockAvatar
                             targetType={marketMode}
@@ -662,8 +664,7 @@ export default function StockMarket() {
                         <Button fullWidth variant="contained" color="success" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "buy", marketMode)}>Buy</Button>
                         <Button fullWidth variant="contained" color="error" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "sell", marketMode)}>Sell</Button>
                       </Stack>
-                    </CardContent>
-                  </Card>
+                  </UiCard>
                 );
               })}
               {filteredStocks.length === 0 && <Typography color="text.secondary" align="center">No markets found.</Typography>}
@@ -802,13 +803,12 @@ export default function StockMarket() {
             </Table>
           </TableContainer>
           )}
-          {filteredStocks.length > 0 && (
+          {filteredStocks.length > 0 && Math.ceil(filteredStocks.length / rowsPerPage) > 1 && (
             <Box display="flex" justifyContent="center" mt={2}>
-              <Pagination
-                count={Math.ceil(filteredStocks.length / rowsPerPage)}
+              <PageNav
+                maxPage={Math.ceil(filteredStocks.length / rowsPerPage)}
                 page={page}
-                onChange={(e, val) => setPage(val)}
-                color="primary"
+                onNav={(val) => setPage(val)}
               />
             </Box>
           )}
@@ -826,9 +826,8 @@ export default function StockMarket() {
                   portfolio.map((holding) => {
                     const matchingStock = stocks.find((s) => s.userId === holding.subjectId) || { shareSupply: 0 };
                     return (
-                      <Card key={holding.subjectId} variant="outlined" sx={{ backgroundColor: theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(0, 0, 0, 0.2)" }}>
-                        <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-                          <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
+                      <UiCard key={holding.subjectId}>
+                        <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
                             <StockAvatar targetType="player" id={holding.subjectId} name={holding.username} avatar={holding.avatar} siteInfo={siteInfo} />
                             <Typography
                               component="a"
@@ -880,8 +879,7 @@ export default function StockMarket() {
                             <Button fullWidth variant="contained" color="success" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "buy", "player")}>Buy More</Button>
                             <Button fullWidth variant="contained" color="error" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "sell", "player")}>Sell</Button>
                           </Stack>
-                        </CardContent>
-                      </Card>
+                      </UiCard>
                     );
                   })
                 )
@@ -892,9 +890,8 @@ export default function StockMarket() {
                   familyPortfolio.map((holding) => {
                     const matchingStock = familyStocks.find((s) => s.familyId === holding.familyId) || { shareSupply: 0 };
                     return (
-                      <Card key={holding.familyId} variant="outlined" sx={{ backgroundColor: theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(0, 0, 0, 0.2)" }}>
-                        <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-                          <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
+                      <UiCard key={holding.familyId}>
+                        <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
                             <StockAvatar targetType="family" id={holding.familyId} name={holding.familyName} avatar={holding.avatar} siteInfo={siteInfo} />
                             <Typography
                               component="a"
@@ -942,8 +939,7 @@ export default function StockMarket() {
                             <Button fullWidth variant="contained" color="success" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "buy", "family")}>Buy More</Button>
                             <Button fullWidth variant="contained" color="error" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "sell", "family")}>Sell</Button>
                           </Stack>
-                        </CardContent>
-                      </Card>
+                      </UiCard>
                     );
                   })
                 )
@@ -1150,8 +1146,7 @@ export default function StockMarket() {
           {/* Card 1: Player IPO */}
           {!hasIpoed && (
             <Grid item xs={12} md={eligibleFamilies.length > 0 ? 6 : 12}>
-              <Card variant="outlined" sx={{ p: 2, textAlign: "center", height: "100%", backgroundColor: "background.paper" }}>
-                <CardContent sx={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
+              <UiCard className="ipo-card">
                   <Box>
                     <Box sx={{ color: goldColor, mb: 2 }}>
                       <UiIcon name="trophy" size={64} />
@@ -1196,16 +1191,14 @@ export default function StockMarket() {
                       </Typography>
                     )}
                   </Stack>
-                </CardContent>
-              </Card>
+              </UiCard>
             </Grid>
           )}
 
           {/* Card 2: Family ETF IPO */}
           {eligibleFamilies.length > 0 && (
             <Grid item xs={12} md={!hasIpoed ? 6 : 12}>
-              <Card variant="outlined" sx={{ p: 2, textAlign: "center", height: "100%", backgroundColor: "background.paper" }}>
-                <CardContent sx={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
+              <UiCard className="ipo-card">
                   <Box>
                     <Box sx={{ color: "info.main", mb: 2 }}>
                       <UiIcon name="people" size={64} />
@@ -1266,8 +1259,7 @@ export default function StockMarket() {
                       </Typography>
                     )}
                   </Stack>
-                </CardContent>
-              </Card>
+              </UiCard>
             </Grid>
           )}
         </Grid>
@@ -1337,9 +1329,8 @@ export default function StockMarket() {
                   const targetAvatar = marketMode === "player" ? tx.subjectAvatar : tx.familyAvatar;
                   
                   return (
-                    <Card key={tx.id} variant="outlined" sx={{ backgroundColor: theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(0, 0, 0, 0.2)" }}>
-                      <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-                        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
+                    <UiCard key={tx.id}>
+                      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
                           <Stack direction="row" spacing={1.5} alignItems="center">
                             <StockAvatar
                               targetType={marketMode}
@@ -1435,8 +1426,7 @@ export default function StockMarket() {
                             </Typography>
                           </Grid>
                         </Grid>
-                      </CardContent>
-                    </Card>
+                    </UiCard>
                   );
                 })
               )}
@@ -1578,13 +1568,12 @@ export default function StockMarket() {
             </TableContainer>
           )}
 
-          {txTotal > 0 && (
+          {txTotal > 0 && Math.ceil(txTotal / 20) > 1 && (
             <Box display="flex" justifyContent="center" mt={2}>
-              <Pagination
-                count={Math.ceil(txTotal / 20)}
+              <PageNav
+                maxPage={Math.ceil(txTotal / 20)}
                 page={txPage}
-                onChange={(e, val) => setTxPage(val)}
-                color="primary"
+                onNav={(val) => setTxPage(val)}
               />
             </Box>
           )}

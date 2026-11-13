@@ -857,6 +857,9 @@ export function NameWithAvatar(props) {
               }}
               onClose={handleMiniprofileClose}
               disableScrollLock
+              disableAutoFocus
+              disableEnforceFocus
+              disableRestoreFocus
             >
               {userProfile && (
                 <React.Suspense fallback={null}>

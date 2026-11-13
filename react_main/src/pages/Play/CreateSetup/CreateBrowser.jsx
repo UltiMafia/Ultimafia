@@ -923,7 +923,7 @@ export default function CreateSetup(props) {
         </Paper>
       )}
       {isMafiaSetup && activeStep === 1 && (
-        <Box className="setup-modifier-options" sx={{ py: 2 }}>
+        <Box className="setup-modifier-options">
           <Typography variant="h3">
             {selectedRoleExists ? `Modifiers for ${selectedRole.role.split(":")[0]}` : "Select a role to add modifiers"}
           </Typography>

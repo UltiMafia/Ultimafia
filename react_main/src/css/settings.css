@@ -32,13 +32,12 @@
 .settings-content .form-group { margin: 0; padding-top: 20px; border-top: 1px solid var(--scheme-color-border); }
 .settings-content .form-group > .MuiBox-root { max-width: 100%; }
 .settings-content .form-group .ui-section-heading { margin-bottom: 0; }
-.settings-content .form-group .ui-section-heading h2 { font-size: 17px; }
 .settings-content .form-group > .MuiBox-root > .MuiStack-root { margin-top: 0; padding: 6px 0; gap: 6px; }
 .settings-content .form-group .MuiFormControlLabel-root { margin-left: -8px; }
 .settings-content .form-group .MuiFormControl-root { max-width: 480px; width: 100%; }
 .settings-content .form-group input { min-width: 0; }
 .settings-content .form-group .MuiTypography-root { line-height: 1.45; }
-.settings-danger-section { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--scheme-color-border); }
+.settings-danger-section { margin-top: 32px; padding: 20px 0 8px; border-top: 1px solid var(--scheme-color-border); }
 .settings-danger-section p { color: var(--um-muted); }
 @media (max-width: 900px) {
   .settings-layout { grid-template-columns: minmax(0, 1fr); gap: 24px; }

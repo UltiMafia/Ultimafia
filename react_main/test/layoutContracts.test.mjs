@@ -35,4 +35,6 @@ test('cross-page divergence is graded; intrinsic width never excuses small touch
   assert.equal(contracts.gradeRoleComparison({ role: 'secondaryAction', property: 'width', observed: 80, peerValue: 120 }).reviewRule, 'intrinsic-role-width');
   assert.equal(contracts.gradeRoleComparison({ role: 'card', property: 'width', observed: 760, peerValue: 870 }).status, 'not-graded');
   assert.equal(contracts.gradeRoleComparison({ role: 'card', property: 'padding', observed: '8px', peerValue: '16px' }).status, 'open');
+  assert.equal(contracts.gradeRoleComparison({ role: 'currency', property: 'fontWeight', observed: 700, peerValue: 400 }).status, 'not-graded');
+  assert.equal(contracts.gradeRoleComparison({ role: 'utilityIcon', property: 'fontSize', observed: 16, peerValue: 24 }).status, 'not-graded');
 });

@@ -954,6 +954,7 @@ async function reviewTasks(page, item, viewport, entry) {
   const checks = [];
   async function captureTask(name, position = "task") {
     if (captureStates && !captureStates.has(name)) return;
+    await page.mouse.move(0, 0);
     const filename = `${item.name}-${viewport.width}-${name}${position === "task" ? "" : `-${position}`}.png`;
     await page.screenshot({ path: path.join(output, filename), animations: "disabled" });
    entry.screenshots.push(filename);

@@ -73,7 +73,7 @@ export default function FamilyDiscovery() {
       <Link className="ui-action ui-action--secondary" to={user.loggedIn ? "/user/settings/family" : "/welcome"}>{user.loggedIn ? "Manage or create family" : "Sign in to join"}</Link>
     } />
     <form className="directory-toolbar" onSubmit={event => { event.preventDefault(); setSearch(searchInput.trim()); }}>
-      <UiField label="Search families" type="search" inputProps={{ maxLength: 40 }} value={searchInput} onChange={event => setSearchInput(event.target.value)} />
+      <UiField size="small" label="Search families" type="search" inputProps={{ maxLength: 40 }} value={searchInput} onChange={event => setSearchInput(event.target.value)} />
       <UiField select size="small" label="Sort by" InputLabelProps={{ shrink: true }} SelectProps={{ native: true }} value={sort} onChange={event => setSort(event.target.value)}>
         <option value="open">Open first</option><option value="members">Most members</option><option value="treasury">Most treasury</option><option value="newest">Newest</option>
       </UiField>

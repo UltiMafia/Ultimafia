@@ -1332,7 +1332,7 @@ export default function Profile() {
     : 50;
 
   const nameBox = (
-    <Grid item xs={12} md={6} className="avi-name">
+    <Grid item xs={12} className="avi-name">
       <Box
         sx={{
           display: "flex",
@@ -1413,6 +1413,32 @@ export default function Profile() {
             >
               Joined {new Date(joined).toLocaleDateString()}
             </Typography>
+          )}
+          {(profileFamily || (love.id != null && (isLove || isMarried))) && (
+            <Stack direction="row" spacing={2} sx={{ alignItems: "center", justifyContent: "center", mt: 0.5, flexWrap: "wrap", gap: 1 }}>
+              {profileFamily && (
+                <Link
+                  className="name-with-avatar"
+                  to={`/user/family/${profileFamily.id}`}
+                  style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+                >
+                  <Typography variant="caption" color="text.secondary">Member of</Typography>
+                  <FamilyAvatarImage id={profileFamily.id} size={20} />
+                  <Typography variant="body2">{profileFamily.name}</Typography>
+                </Link>
+              )}
+              {love.id != null && (isLove || isMarried) && (
+                <Link
+                  className="name-with-avatar"
+                  to={`/user/${love.id}`}
+                  style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+                >
+                  <Typography variant="caption" color="text.secondary">{getLoveTitle(love.type)}</Typography>
+                  <Avatar hasImage={love.avatar} id={love.id} name={love.name} small />
+                  <Typography variant="body2">{love.name}</Typography>
+                </Link>
+              )}
+            </Stack>
           )}
         </Stack>
       </Box>
@@ -1503,18 +1529,9 @@ export default function Profile() {
     </Grid>
   );
 
-  const aviGridItems = isPhoneDevice ? (
+  const aviGridItems = (
     <>
       {nameBox}
-      {inLoveBox}
-      {familyBox}
-      {buttonsBox}
-    </>
-  ) : (
-    <>
-      {familyBox}
-      {nameBox}
-      {inLoveBox}
       {buttonsBox}
     </>
   );
@@ -1556,7 +1573,7 @@ export default function Profile() {
   );
 
   return (
-    <UiPage className="profile-page">
+    <UiPage width="full" className="profile-page">
       <TradeDialog
         open={tradeModalOpen}
         onClose={() => setTradeModalOpen(false)}
@@ -1595,10 +1612,9 @@ export default function Profile() {
               justifyContent: "center",
             }}
           >
-            {/* 900px max banner size + 16px padding on box-panel + 8px padding on content = 924px */}
             <div
               className="box-panel"
-              style={{ ...panelStyle, width: "100%", maxWidth: "924px" }}
+              style={{ ...panelStyle, width: "100%" }}
             >
               <div className="content" style={{ gap: "8px" }}>
                 {showBanner && (

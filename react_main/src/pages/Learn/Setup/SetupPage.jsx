@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { UiSection, UiAction, UiField, UiStatRow, UiStat, UiPageHeader } from "components/ui";
+import { UiSection, UiAction, UiField, UiStatRow, UiStat, UiPageHeader, UiTabs, UiTab } from "components/ui";
 import {
   Link as RouterLink,
   Route,
@@ -528,126 +528,99 @@ export function SetupPage() {
         maxWidth: "100%",
       }}
     >
-      <UiSection className="setup-heading">
-        {setup && (
-          <HostGameDialogue
-            open={ishostGameDialogueOpen}
-            setOpen={setIshostGameDialogueOpen}
-            setup={setup}
-          />
-        )}
-        <ModerationSideDrawer
-          open={moderationDrawerOpen}
-          setOpen={setModerationDrawerOpen}
-          prefilledArgs={{ setupId }}
+      {setup && (
+        <HostGameDialogue
+          open={ishostGameDialogueOpen}
+          setOpen={setIshostGameDialogueOpen}
+          setup={setup}
         />
-        <Stack
-          className="setup-title-layout"
-          direction="row"
-          useFlexGap flexWrap="wrap"
-          spacing={2}
-          alignItems={{ xs: "stretch", md: "center" }}
-        >
-          <Stack className="setup-title-copy" direction="column" spacing={1} sx={{ flex: 1, minWidth: 0 }}>
-            <div className="setup-kind"><GameIcon gameType={setup.gameType} size={24} /><span>{setup.gameType} setup · {setup.total} players</span></div>
-            <Stack
-              direction="row"
-              spacing={1}
-              alignItems="center"
-              flexWrap="wrap"
-              useFlexGap
-            >
-              <UiPageHeader variant="detail" title={setup.name} />
-              <span className="setup-status">{rolesVisibilityLabel}</span>
-              <StatusPill
-                active={setup.ranked}
-                canToggle={canToggleRanked}
-                onClick={onToggleRanked}
-                label="Ranked"
-                color="#e45050"
-              />
-              <StatusPill
-                active={setup.competitive}
-                canToggle={canToggleComp}
-                onClick={onToggleComp}
-                label="Competitive"
-                color="#ebd722"
-              />
-            </Stack>
-            {setup.creator && (
-              <Stack direction="row" spacing={0.75} alignItems="center">
-                <Typography variant="caption" sx={{ opacity: 0.85 }}>
-                  Created by
-                </Typography>
-                <NameWithAvatar
-                  small
-                  id={setup.creator.id}
-                  name={setup.creator.name}
-                  avatar={setup.creator.avatar}
-                />
-                {canArchive && !setup.creator.name && (
-                  <Button
-                    size="small"
-                    onClick={onArchiveSetup}
-                    sx={{
-                      textTransform: "none",
-                      textShadow: "none",
-                      fontWeight: 600,
-                      borderRadius: 999,
-                      py: 0.15,
-                      px: 1.25,
-                      minHeight: 0,
-                      lineHeight: 1.4,
-                      color: isLightMode ? "#2e7d32" : "#a5d6a7",
-                      backgroundColor: isLightMode
-                        ? "rgba(46, 125, 50, 0.12)"
-                        : "rgba(129, 199, 132, 0.16)",
-                      border: "1px solid",
-                      borderColor: isLightMode
-                        ? "rgba(46, 125, 50, 0.35)"
-                        : "rgba(129, 199, 132, 0.35)",
-                      "&:hover": {
-                        backgroundColor: isLightMode
-                          ? "rgba(46, 125, 50, 0.2)"
-                          : "rgba(129, 199, 132, 0.26)",
-                      },
-                    }}
-                  >
-                    Archive
-                  </Button>
-                )}
-              </Stack>
+      )}
+      <ModerationSideDrawer
+        open={moderationDrawerOpen}
+        setOpen={setModerationDrawerOpen}
+        prefilledArgs={{ setupId }}
+      />
+      <UiPageHeader
+        variant="detail"
+        title={setup.name}
+        leading={<GameIcon gameType={setup.gameType} size={32} />}
+        actions={
+          <div className="setup-header-actions">
+            <UiAction variant="primary" onClick={() => setIshostGameDialogueOpen(true)}>
+              Host game
+            </UiAction>
+            {shouldDisplayStats && (
+              <UiField
+                select
+                size="small"
+                SelectProps={{ native: true }}
+                value={selectedVersionNum}
+                onChange={(event) => handleVersionChange({ target: { value: event.target.value } })}
+              >
+                {allVersions.map((version) => (
+                  <option key={version} value={version}>v{version}</option>
+                ))}
+              </UiField>
             )}
-          </Stack>
-
-          <Stack
-            className="setup-header-actions"
-            direction="row" flexWrap="wrap" useFlexGap
-            spacing={1}
-            alignItems={{ xs: "flex-start", md: "flex-end" }}
-          >
-            <UiAction variant="primary" onClick={() => setIshostGameDialogueOpen(true)}>Host game</UiAction>
-            {shouldDisplayStats && <UiField select size="small" label="Version" InputLabelProps={{ shrink: true }} SelectProps={{ native: true }} value={selectedVersionNum} onChange={(event) => handleVersionChange({ target: { value: event.target.value } })}>
-              {allVersions.map(version => <option key={version} value={version}>v{version}</option>)}
-            </UiField>}
-          </Stack>
-        </Stack>
-      </UiSection>
-      <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)} variant="scrollable" scrollButtons="auto">
-        <Tab label="Overview" />
-        <Tab label="Statistics" />
-        <Tab label="Night actions" />
-        <Tab label="Version history" />
-      </Tabs>
+          </div>
+        }
+      >
+        <div className="setup-kind-badge">
+          {setup.gameType} setup · {setup.total} players
+        </div>
+        <div className="setup-meta-row">
+          <span className="setup-status">{rolesVisibilityLabel}</span>
+          <StatusPill
+            active={setup.ranked}
+            canToggle={canToggleRanked}
+            onClick={onToggleRanked}
+            label="Ranked"
+            color="#e45050"
+          />
+          <StatusPill
+            active={setup.competitive}
+            canToggle={canToggleComp}
+            onClick={onToggleComp}
+            label="Competitive"
+            color="#ebd722"
+          />
+          {setup.creator && (
+            <span className="setup-creator-byline">
+              Created by{" "}
+              <NameWithAvatar
+                small
+                id={setup.creator.id}
+                name={setup.creator.name}
+                avatar={setup.creator.avatar}
+              />
+            </span>
+          )}
+          {canArchive && !setup.creator.name && (
+            <UiAction
+              variant="ghost"
+              onClick={onArchiveSetup}
+              className="setup-archive-action"
+            >
+              Archive
+            </UiAction>
+          )}
+        </div>
+      </UiPageHeader>
+      <UiTabs value={tabValue} onChange={(_, v) => setTabValue(v)} variant="scrollable" scrollButtons="auto" aria-label="Setup tabs">
+        <UiTab label="Overview" />
+        <UiTab label="Statistics" />
+        <UiTab label="Night actions" />
+        <UiTab label="Version history" />
+      </UiTabs>
       {tabValue === 0 && (
         <>
-          <UiSection title={setup.closed ? "Possible roles" : "Roles"} className="ui-card setup-roster">
+          <UiSection title={setup.closed ? "Possible roles" : "Roles"} className="setup-roster">
             {setup.closed && <p>Hidden roles are drawn from these pools.</p>}
             <FullRoleList setup={setup} compact={isPhoneDevice} showNames />
           </UiSection>
           <div className="setup-overview">
             <div className="setup-description">
-              <UiSection title="Description" className="ui-card">
+              <UiSection title="Description" className="setup-description-section">
                 <div
                   className={`content${isSetupCreator && !editingDescription ? " edit" : ""}`}
                   onClick={onDescriptionClick}
@@ -668,7 +641,7 @@ export function SetupPage() {
                   )}
                 </div>
               </UiSection>
-              <UiSection title="Discussion" className="ui-card"><Comments fullWidth location={commentLocation} /></UiSection>
+              <UiSection title="Discussion" className="setup-discussion-section"><Comments fullWidth location={commentLocation} /></UiSection>
             </div>
             <aside className="setup-secondary">
               {closedRoleInfo.length > 0 && (
@@ -682,7 +655,9 @@ export function SetupPage() {
                   <div className="setup-save-panel">
                     <div className="setup-rating-row">
                       <span>Community rating</span>
-                      <VoteWidget item={{ id: setup.id, vote: setup.vote ?? 0, voteCount: setup.voteCount ?? 0 }} itemType="setup" setItemHolder={(newItem) => setSetup(previous => previous?.id === newItem.id ? { ...previous, vote: newItem.vote, voteCount: newItem.voteCount } : previous)} />
+                      <div className="role-vote-pill">
+                        <VoteWidget item={{ id: setup.id, vote: setup.vote ?? 0, voteCount: setup.voteCount ?? 0 }} itemType="setup" setItemHolder={(newItem) => setSetup(previous => previous?.id === newItem.id ? { ...previous, vote: newItem.vote, voteCount: newItem.voteCount } : previous)} />
+                      </div>
                     </div>
                     <div className="setup-save-actions">
                       <SetupManipulationButtons setup={setup} onFav={onFavSetup} onEdit={onEditSetup} onCopy={onCopySetup} onDel={onDelSetup} showLabels />
@@ -895,7 +870,6 @@ export function SetupPage() {
                   {nightOrderTableRows.map((row, idx) => (
                     <TableRow
                       key={`${row.roleName}-${row.actionName}-${idx}`}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
                       <TableCell component="th" scope="row" align="center" sx={{ verticalAlign: "middle" }}>
                         <Stack direction="row" alignItems="center" justifyContent="center" spacing={1}>
@@ -1039,8 +1013,21 @@ export function SetupPage() {
 
 function StatusPill({ active, canToggle, onClick, label, color }) {
   if (!active && !canToggle) return null;
-  if (canToggle) return <UiAction variant="ghost" aria-pressed={!!active} onClick={onClick}>{label}: {active ? "on" : "off"}</UiAction>;
-  return <span className="setup-status" style={{ borderColor: color }}>{label}</span>;
+  const statusStyle = active && color ? { borderColor: color, color } : undefined;
+  if (canToggle) {
+    return (
+      <UiAction
+        variant="ghost"
+        className={`setup-status-action ${active ? "is-active" : "is-off"}`}
+        style={statusStyle}
+        onClick={onClick}
+        aria-pressed={!!active}
+      >
+        {label}: {active ? "on" : "off"}
+      </UiAction>
+    );
+  }
+  return <span className="setup-status" style={statusStyle}>{label}</span>;
 }
 
 // Before the backend manifest generator was fixed, the game-settings block

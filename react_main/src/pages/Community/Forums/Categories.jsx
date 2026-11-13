@@ -50,18 +50,20 @@ export default function Categories(props) {
               {thread.title}
             </Link>
           </div>
-          <NameWithAvatar
-            small
-            id={thread.author.id}
-            name={thread.author.name}
-            avatar={thread.author.avatar}
-            vanityUrl={thread.author.vanityUrl}
-          />
-          <div className="thread-counts">
-            <ViewsAndReplies
-              viewCount={thread.viewCount || 0}
-              replyCount={thread.replyCount || 0}
+          <div className="forum-activity-meta">
+            <NameWithAvatar
+              small
+              id={thread.author.id}
+              name={thread.author.name}
+              avatar={thread.author.avatar}
+              vanityUrl={thread.author.vanityUrl}
             />
+            <div className="thread-counts">
+              <ViewsAndReplies
+                viewCount={thread.viewCount || 0}
+                replyCount={thread.replyCount || 0}
+              />
+            </div>
           </div>
         </div>
       ));
@@ -75,16 +77,17 @@ export default function Categories(props) {
               {reply.thread.title}
             </Link>
           </div>
-          <NameWithAvatar
-            small
-            id={reply.author.id}
-            name={reply.author.name}
-            avatar={reply.author.avatar}
-            vanityUrl={reply.author.vanityUrl}
-          />
-          <div className="reply-age">
-            <Time millisec={Date.now() - reply.postDate} />
-            {` ago`}
+          <div className="forum-activity-meta">
+            <NameWithAvatar
+              small
+              id={reply.author.id}
+              name={reply.author.name}
+              avatar={reply.author.avatar}
+              vanityUrl={reply.author.vanityUrl}
+            />
+            <span className="reply-age">
+              · <Time millisec={Date.now() - reply.postDate} /> ago
+            </span>
           </div>
         </div>
       ));

@@ -1,7 +1,7 @@
 .activity-metric { min-width: 0; padding-block: 12px; }
 .activity-metric dt { color: var(--um-muted); font-size: var(--ui-text-small); }
 .activity-metric dd { margin: 4px 0 0; font-size: var(--ui-text-title); font-weight: var(--ui-weight-strong); font-variant-numeric: tabular-nums; }
-.activity-chart { min-width: 0; padding-block: 12px; }
+.activity-chart { min-width: 0; }
 .activity-row { display: grid; grid-template-columns: 148px max-content minmax(0, 1fr) max-content; align-items: baseline; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--scheme-color-border); }
 .activity-row[data-last] { border-bottom: 0; }
 .activity-actor, .activity-target { min-width: 0; overflow-wrap: anywhere; }

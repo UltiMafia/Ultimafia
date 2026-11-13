@@ -9,9 +9,9 @@ import {
   Typography,
   Stack,
   Divider,
-  Pagination,
   Chip,
 } from "@mui/material";
+import { PageNav } from "components/Nav";
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
@@ -249,12 +249,10 @@ export default function Inbox() {
 
         {totalPages > 1 && (
           <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-            <Pagination
-              count={totalPages}
+            <PageNav
+              maxPage={totalPages}
               page={currentPage}
-              onChange={handlePageChange}
-              color="primary"
-              size="large"
+              onNav={(newPage) => setCurrentPage(newPage)}
             />
           </Box>
         )}

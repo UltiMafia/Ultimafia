@@ -14,9 +14,7 @@
     "mui:Typography": 1
   },
   "components/Auth.jsx": {
-    "mui:Button": 1,
     "mui:LinearProgress": 1,
-    "mui:TextField": 1,
     "mui:Tabs": 1,
     "mui:Tab": 1,
     "mui:Typography": 1,
@@ -221,8 +219,7 @@
   "components/Setup.jsx": {
     "mui:IconButton": 1,
     "mui:Typography": 1,
-    "native:button": 2,
-    "mui:Card": 1
+    "native:button": 2
   },
   "components/SignInWithAppleButton.jsx": {
     "mui:Button": 1
@@ -387,7 +384,6 @@
     "native:confirm": 1
   },
   "pages/Community/Comments.jsx": {
-    "mui:Button": 1,
     "mui:Typography": 1
   },
   "pages/Community/Forums/Board.jsx": {
@@ -590,31 +586,20 @@
     "mui:Typography": 1
   },
   "pages/Play/LobbyBrowser/DailyChallengeDisplay.jsx": {
-    "mui:Typography": 1,
-    "mui:Paper": 1
-  },
-  "pages/Play/LobbyBrowser/FeaturedSetup.jsx": {
-    "mui:Button": 1
+    "mui:Typography": 1
   },
   "pages/Play/LobbyBrowser/GameRow.jsx": {
-    "mui:Button": 1,
     "mui:IconButton": 1,
     "native:confirm": 1
   },
   "pages/Play/LobbyBrowser/LobbyBrowser.jsx": {
-    "mui:Button": 1,
-    "mui:Tab": 1,
-    "mui:Tabs": 1,
-    "mui:TextField": 1,
-    "native:select": 1,
-    "native:button": 3
+    "native:button": 1
   },
   "pages/Play/LobbyBrowser/PlayerCount.jsx": {
     "mui:Typography": 1
   },
   "pages/Play/Tutorial/TutorialPicker.jsx": {
-    "mui:Typography": 1,
-    "mui:Card": 1
+    "mui:Typography": 1
   },
   "pages/Play/WordDecks/CreateWordDeck.jsx": {
     "native:button": 1,
@@ -745,7 +730,6 @@
     "native:button": 1
   },
   "pages/Welcome/Welcome.jsx": {
-    "mui:Button": 1,
     "mui:Paper": 1
   },
   "utilsFolder/autoContrast.jsx": {

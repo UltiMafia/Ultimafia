@@ -59,7 +59,7 @@ function ChartPanel({ title, data, colors, unit = "games" }) {
   const total = entries.reduce((acc, [, v]) => acc + v, 0);
 
   return (
-    <section className="activity-chart">
+    <div className="activity-chart">
       <Stack
         direction="row"
         alignItems="baseline"
@@ -173,7 +173,7 @@ function ChartPanel({ title, data, colors, unit = "games" }) {
           })}
         </Stack>
       )}
-    </section>
+    </div>
   );
 }
 

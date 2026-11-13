@@ -1,3 +1,4 @@
 
 .stock-sort-header { padding: 0 !important; min-height: 0 !important; border: 0 !important; background: transparent !important; color: inherit !important; font: inherit !important; font-weight: 700 !important; }
 .stock-sort-header:hover { color: var(--um-accent) !important; background: transparent !important; }
+.ipo-card { display: flex; flex-direction: column; justify-content: space-between; height: 100%; text-align: center; }

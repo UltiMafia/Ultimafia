@@ -311,7 +311,7 @@ export default function Family() {
   ));
 
   return (
-    <UiPage className="family-page">
+    <UiPage width="full" className="family-page">
       {profileError && <p role="alert">{profileError}</p>}
       <UiMenu
         anchorEl={menuAnchorEl}

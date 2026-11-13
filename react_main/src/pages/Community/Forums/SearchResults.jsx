@@ -7,10 +7,10 @@ import {
   CardContent,
   Typography,
   Chip,
-  Pagination,
   Alert,
   Paper,
 } from "@mui/material";
+import { PageNav } from "components/Nav";
 import axios from "axios";
 
 import { useErrorAlert } from "../../../components/Alerts";
@@ -337,12 +337,10 @@ export default function SearchResults(props) {
 
           {totalPages > 1 && (
             <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-              <Pagination
-                count={totalPages}
+              <PageNav
+                maxPage={totalPages}
                 page={page}
-                onChange={handlePageChange}
-                color="primary"
-                size="large"
+                onNav={(newPage) => handlePageChange(null, newPage)}
               />
             </Box>
           )}

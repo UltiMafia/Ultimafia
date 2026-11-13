@@ -58,7 +58,7 @@ const roleReviewRules = {
   intrinsicRoles: ['primaryAction', 'secondaryAction', 'utilityIcon', 'currency', 'tab', 'sectionNavItem', 'sectionHeading', 'tableHeader'],
   // A container's height and width follow its content. Comparing them across
   // pages grades content, not presentation, so these are recorded but not graded.
-  contentSizedRoles: ['sectionContainer', 'sectionHeading', 'card', 'comment', 'commentList', 'declaredFill', 'emptyState', 'stat', 'sectionNav'],
+  contentSizedRoles: ['sectionContainer', 'sectionHeading', 'card', 'comment', 'commentList', 'declaredFill', 'emptyState', 'stat', 'sectionNav', 'tableHeader'],
   // Form controls fill the column their layout gives them. Width is a property of
   // the form grid, not of the control; height and surface treatment stay graded.
   layoutSizedRoles: ['textInput', 'select'],
@@ -66,7 +66,11 @@ const roleReviewRules = {
 function gradeRoleComparison(comparison) {
   const peer = comparison.peerValue;
   if (peer == null || comparison.observed === peer) return null;
-  if (roleReviewRules.contentSizedRoles.includes(comparison.role) && ['height', 'width', 'fillRatio'].includes(comparison.property)) return {
+  if (['fontSize', 'fontWeight', 'lineHeight'].includes(comparison.property) && ['currency', 'utilityIcon'].includes(comparison.role)) return {
+    status: 'not-graded', reviewRule: 'icon-inherited-typography',
+    reviewReason: 'An icon contains no text; typography properties are inherited from surrounding content.',
+  };
+  if ((roleReviewRules.contentSizedRoles.includes(comparison.role) || (comparison.role === 'textInput' && (comparison.variant?.includes('multiline') || comparison.variant?.includes('editor')))) && ['height', 'width', 'fillRatio'].includes(comparison.property)) return {
     status: 'not-graded', reviewRule: 'content-dependent-size',
     reviewReason: 'Container size follows its content; fill and alignment are graded by the allocation contracts instead.',
   };

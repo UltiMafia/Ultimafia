@@ -21,12 +21,22 @@
 .moderation-row-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
 .moderation-toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 12px; }
 .moderation-toolbar .MuiFormControl-root, .moderation-toolbar .MuiAutocomplete-root { min-width: 180px; flex: 0 1 260px; }
-.moderation-group { margin-top: 8px; padding-bottom: 20px; border-bottom: 1px solid var(--scheme-color-border); }
-.moderation-group > header { display: flex; align-items: center; gap: 8px; min-height: 40px; }
-.moderation-group h3 { margin: 0; font-size: var(--ui-text-body); }
-.moderation-group-members { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 2px 16px; }
-.moderation-group-member { display: flex; align-items: center; gap: 6px; min-height: 36px; min-width: 0; }
-.moderation-group-member > :first-child { min-width: 0; }
+.moderation-group {
+  margin-top: 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--scheme-color-border);
+  background: transparent;
+}
+.moderation-group:last-child {
+  border-bottom: 0;
+}
+.moderation-group-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.moderation-group-title-wrap { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.moderation-group h3 { margin: 0; font-size: var(--ui-text-section); font-weight: var(--ui-weight-strong); }
+.moderation-group-count { font-size: var(--ui-text-caption); color: var(--um-muted); }
+.moderation-group-members { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px 16px; }
+.moderation-group-member { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 38px; padding: 4px 8px; border-radius: var(--ui-radius); background: var(--scheme-color-sec); border: 1px solid var(--scheme-color-border); min-width: 0; }
+.moderation-group-member > :first-child { min-width: 0; flex: 1 1 auto; }
 .moderation-command-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 2px 12px; }
 .moderation-command-option { display: flex; justify-content: flex-start; width: 100%; min-height: 32px; padding: 4px 8px; border-radius: 3px; font-family: var(--ui-font-mono, monospace); font-size: var(--ui-text-small); text-align: left; }
 .moderation-action-list { display: flex; flex-direction: column; }
@@ -51,8 +61,8 @@
 .moderation-reports .moderation-row-title .name-with-avatar, .moderation-reports .moderation-row-meta .name-with-avatar { display: inline-flex; vertical-align: middle; }
 .moderation-reports .moderation-row-meta .avatar { width: 18px; height: 18px; }
 .moderation-github .MuiTabs-root { margin-bottom: 12px; }
-.competitive-rounds { display: flex; flex-direction: column; gap: 20px; }
-.competitive-round { padding-bottom: 16px; border-bottom: 1px solid var(--scheme-color-border); }
+.competitive-rounds { display: flex; flex-direction: column; }
+.competitive-round { padding: 16px 0; border-bottom: 1px solid var(--scheme-color-border); }
 .competitive-round > header { display: flex; align-items: center; gap: 8px; }
 .competitive-round h3 { margin: 0; font-size: var(--ui-text-body); }
 .competitive-setup-list { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }

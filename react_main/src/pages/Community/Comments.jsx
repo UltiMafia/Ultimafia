@@ -10,7 +10,8 @@ import { UserContext } from "../../Contexts";
 import "css/forums.css";
 import "css/comments.css";
 import { Loading } from "../../components/Loading";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
+import { UiAction } from "components/ui";
 import { Comment } from "./Comment";
 
 export default function Comments(props) {
@@ -136,13 +137,12 @@ export default function Comments(props) {
         }}
       >
         {canPost ? (
-          <Button
-            variant="outlined"
-            size="small"
+          <UiAction
+            variant="secondary"
             onClick={() => setShowInput(true)}
           >
             Post Comment
-          </Button>
+          </UiAction>
         ) : (
           <Box />
         )}
@@ -195,20 +195,21 @@ export default function Comments(props) {
             <Stack direction="column" spacing={1} sx={{ flex: "1" }}>
               <TextEditor value={postContent} onChange={setPostContent} />
               <Stack direction="row" spacing={1}>
-                <Button
-                  variant="outlined"
+                <UiAction
+                  variant="secondary"
                   onClick={onPostCancel}
-                  sx={{ flex: "1" }}
+                  style={{ flex: "1" }}
                 >
                   Cancel
-                </Button>
+                </UiAction>
                 <div style={{ flex: "1" }} />
-                <Button
+                <UiAction
+                  variant="primary"
                   onClick={onPostSubmit}
-                  sx={{ flex: "1", marginLeft: "auto !important" }}
+                  style={{ flex: "1", marginLeft: "auto" }}
                 >
                   Post
-                </Button>
+                </UiAction>
               </Stack>
             </Stack>
           </Box>

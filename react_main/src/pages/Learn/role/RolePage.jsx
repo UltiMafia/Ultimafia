@@ -203,7 +203,7 @@ export function RoleThings() {
   let specialBox = null;
   if (role[1].SpecialInteractions && Object.keys(role[1].SpecialInteractions).length > 0) {
     specialBox = <section className="role-info-section">
-      <h2>Special interactions</h2>
+      <h3>Special interactions</h3>
       <ul className="role-interactions">
         {Object.entries(role[1].SpecialInteractions).map(([name, interaction]) => <li key={name}>
           <RoleCount scheme="vivid" role={name} gameType="Mafia" />
@@ -260,7 +260,7 @@ export function RoleThings() {
   let exampleData = ExtraRoleData["Mafia"][role[0]];
   if (exampleData && exampleData.examples) {
     examples = <section className="role-info-section">
-      <h2>Examples</h2>
+      <h3>Examples</h3>
       <ol className="role-examples">{exampleData.examples.map((line, index) => <li key={index}>{line}</li>)}</ol>
     </section>;
   } else {
@@ -331,12 +331,17 @@ export function RoleThings() {
     <div className="role-page">
       <UiPageHeader variant="detail" title={RoleName} className="role-hero" leading={
           <RoleCount key={0} scheme={activeRoleSkin} role={role[0]} gameType="Mafia" skin={activeRoleSkin} large />
-        } actions={<div className="role-hero-actions">
-          <VoteWidget item={roleVoteItem} itemType="role" setItemHolder={(newItem) => setRoleVoteState({ vote: newItem.vote ?? 0, voteCount: newItem.voteCount ?? 0 })} />
-          {user.loggedIn && <UiAction variant={isFavorited ? "primary" : "secondary"} aria-pressed={isFavorited} onClick={onFavRole}><UiIcon name={isFavorited ? "starFilled" : "star"} />{isFavorited ? "Favorited" : "Favorite role"}</UiAction>}
-        </div>}>
-          <span className="role-alignment" style={{ color: alignmentColor }}>{role[1].alignment}</span>
-          {sortedTags.length > 0 && <ul className="role-tags" aria-label="Role tags">{sortedTags.map(tag => <li key={tag}>{tag}</li>)}</ul>}
+        }>
+          <div className="role-meta-row">
+            <span className="role-alignment" style={{ color: alignmentColor }}>{role[1].alignment}</span>
+            {sortedTags.length > 0 && <ul className="role-tags" aria-label="Role tags">{sortedTags.map(tag => <li key={tag}>{tag}</li>)}</ul>}
+            <div className="role-hero-actions">
+              <div className="role-vote-pill">
+                <VoteWidget item={roleVoteItem} itemType="role" setItemHolder={(newItem) => setRoleVoteState({ vote: newItem.vote ?? 0, voteCount: newItem.voteCount ?? 0 })} />
+              </div>
+              {user.loggedIn && <UiAction variant={isFavorited ? "primary" : "secondary"} aria-pressed={isFavorited} onClick={onFavRole}><UiIcon name={isFavorited ? "starFilled" : "star"} />{isFavorited ? "Favorited" : "Favorite role"}</UiAction>}
+            </div>
+          </div>
           <div className="role-skin-control">
             <span>Icon skin</span>
             <UiField select size="small" SelectProps={{ native: true }} value={activeRoleSkin} onChange={(event) => {
@@ -347,21 +352,17 @@ export function RoleThings() {
           </div>
           {artists.length > 0 && <div className="role-artists"><span>Icon artists</span>{artists}</div>}
       </UiPageHeader>
-      <TwoPanelLayout
-        left={<>
-          <section className="role-info">
-            <h2>Role info</h2>
-            {description}
-            {examples}
-            {specialBox}
-            {overrideBox}
-          </section>
-          <section className="role-comments"><h2>Discussion</h2><Comments location={commentLocation} fullWidth /></section>
-        </>}
-        right={<div className="role-side">
-          <FanartPanel roleId={roleId} />
-        </div>}
-      />
+      <section className="role-info">
+        <h2>Role info</h2>
+        {description}
+        {examples}
+        {specialBox}
+        {overrideBox}
+      </section>
+      <section className="role-fanart-section">
+        <FanartPanel roleId={roleId} />
+      </section>
+      <section className="role-comments"><h2>Discussion</h2><Comments location={commentLocation} fullWidth /></section>
     </div>
   );
 }

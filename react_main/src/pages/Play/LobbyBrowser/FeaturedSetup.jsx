@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import axios from "axios";
-import { Button } from "@mui/material";
+import { UiAction } from "components/ui";
 import LobbySidebarPanel from "./LobbySidebarPanel";
 import Setup from "components/Setup";
 import HostGameDialogue from "components/HostGameDialogue";
@@ -52,13 +52,12 @@ export const FeaturedSetup = ({ lobby }) => {
         <Setup setup={featuredSetup} summary />
         <div className="featured-setup-action">
           {user.loggedIn ?
-          <Button
-            color="primary"
-            variant="outlined"
+          <UiAction
+            variant="secondary"
             onClick={() => setIshostGameDialogueOpen(true)}
           >
             Host this setup
-          </Button> : <Button component={Link} to="/welcome" variant="outlined">Sign in to host</Button>}
+          </UiAction> : <Link className="ui-action ui-action--secondary" to="/welcome">Sign in to host</Link>}
         </div>
       </LobbySidebarPanel>
     </>

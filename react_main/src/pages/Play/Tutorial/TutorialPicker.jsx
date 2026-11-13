@@ -2,9 +2,6 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import {
   Box,
-  Card,
-  CardActions,
-  CardContent,
   Chip,
   Grid2,
   Stack,
@@ -13,7 +10,7 @@ import {
 
 import { UserContext } from "../../../Contexts";
 import { useErrorAlert } from "../../../components/Alerts";
-import { UiAction, UiPending, UiPageHeader } from "components/ui";
+import { UiAction, UiCard, UiPending, UiPageHeader } from "components/ui";
 import { LatestRequest } from "../../../lib/latestRequest";
 import { useNavigate } from "react-router-dom";
 import { RoleCount } from "../../../components/Roles";
@@ -67,7 +64,7 @@ export default function TutorialPicker() {
   if (!storylines) return <section><UiPageHeader title="Tutorial" /><UiPending label="Loading tutorial roles" /></section>;
 
   return (
-    <Stack spacing={2} sx={{ maxWidth: 900, mx: "auto", p: { xs: 1, sm: 2 } }}>
+    <Stack spacing={2} sx={{ maxWidth: 900, mx: "auto" }}>
       <Box>
         <UiPageHeader title="Tutorial" />
         <Typography variant="body1" sx={{ mt: 1, lineHeight: 1.55 }}>
@@ -99,12 +96,11 @@ export default function TutorialPicker() {
       <Grid2 container spacing={{ xs: 1.5, sm: 2 }}>
         {storylines.map((s) => (
           <Grid2 key={s.id} size={{ xs: 12, sm: 6 }}>
-            <Card
-              variant="outlined"
+            <UiCard
+              className="tutorial-card"
               data-testid={`tutorial-${s.id}`}
-              sx={{ height: "100%", display: "flex", flexDirection: "column", minWidth: 0 }}
             >
-              <CardContent sx={{ flex: 1, p: { xs: 1.5, sm: 2 }, "&:last-child": { pb: { xs: 1.5, sm: 2 } } }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
                 <Stack direction="row" spacing={1.5} alignItems="center" sx={{ minWidth: 0 }}>
                   <Box sx={{ flexShrink: 0, display: "flex" }}>
                     <RoleCount role={s.role} gameType="Mafia" />
@@ -123,18 +119,18 @@ export default function TutorialPicker() {
                 >
                   {s.blurb}
                 </Typography>
-              </CardContent>
-              <CardActions sx={{ px: { xs: 1.5, sm: 2 }, pb: { xs: 1.5, sm: 2 }, pt: 0 }}>
+              </div>
+              <Box sx={{ mt: 2 }}>
                 <UiAction
                   variant="primary"
+                  className="ui-action--block"
                   disabled={!user.loggedIn || !s.available || Boolean(starting)}
                   onClick={() => start(s.id)}
-                  style={{ width: "100%", whiteSpace: "normal" }}
                 >
                   {!s.available ? "Coming soon" : starting === s.id ? "Starting…" : `Play as ${s.title}`}
                 </UiAction>
-              </CardActions>
-            </Card>
+              </Box>
+            </UiCard>
           </Grid2>
         ))}
       </Grid2>

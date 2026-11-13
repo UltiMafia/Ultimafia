@@ -17,6 +17,7 @@ async function reviewReportTasks(page, item, capture, { master = false, after = 
     await dialog().waitFor({ state: 'hidden' });
   };
   const snapshot = async state => {
+    await page.mouse.move(0, 0);
     if (after && !master) {
       assert.equal(await page.getByRole('dialog', { name: 'Report user', exact: true }).count(), 1);
       const geometry = await dialog().evaluate(element => {

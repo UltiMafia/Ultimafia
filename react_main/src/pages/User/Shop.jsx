@@ -396,7 +396,7 @@ export default function Shop(props) {
 
       {activeTab === "shop" && (
         <>
-          <Stack spacing={2.5} sx={{ pt: 1 }}>
+          <Stack spacing={2.5}>
             {SHOP_CATEGORIES.map((c) => {
               const entries = itemsByCategory[c.key] || [];
               if (entries.length === 0) return null;

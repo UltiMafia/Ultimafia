@@ -9,7 +9,7 @@
 .family-page-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start; }
 .family-main, .family-rail { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 .family-comments { min-width: 0; }
-.family-comments > h2 { margin: 0 0 10px; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); font-weight: var(--ui-weight-strong); }
+.family-comments > h2 { margin: 0 0 10px; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); font-weight: 700; }
 @media (max-width: 1000px) {
   .family-page-layout { grid-template-columns: minmax(0, 1fr); }
 }
