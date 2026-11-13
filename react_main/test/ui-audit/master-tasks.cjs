@@ -8,6 +8,18 @@ async function reviewMasterTasks(page, item, capture) {
   checks.push(...await reviewReportTasks(page, item, capture, { master: true }));
   const content = page.locator('#main-content');
   const settle = () => page.waitForFunction(() => window.__routeReview.pending === 0 && performance.now() - window.__routeReview.lastRequestAt > 400);
+  if (item.name === 'lobby') {
+    // The user menu is a transient surface; both branches open it for the same
+    // captured state so the menu itself is compared, not just the page behind it.
+    const trigger = page.getByRole('button', { name: 'User menu', exact: true });
+    if (await trigger.count()) {
+      await trigger.click();
+      await page.getByText('Log Out', { exact: true }).waitFor({ timeout: 5000 });
+      await page.waitForTimeout(250);
+      await capture('user-menu');
+      await page.keyboard.press('Escape');
+    }
+  }
   if (item.name === 'new-page-contract') {
     await capture('steps-final');
     await capture('tabs-last');
