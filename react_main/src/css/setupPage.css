@@ -56,8 +56,9 @@
   background: color-mix(in srgb, currentColor 12%, var(--scheme-color-sec)) !important;
 }
 .setup-status-action.ui-action.is-off {
-  color: var(--um-muted);
+  color: var(--um-muted) !important;
   border-color: var(--scheme-color-border) !important;
+  background: var(--scheme-color-sec) !important;
   opacity: 0.85;
 }
 .setup-roster { min-width: 0; }
@@ -203,8 +204,38 @@
   .role-skin-control { width: 100%; }
   .role-skin-control .MuiFormControl-root { flex: 1; min-width: 0; }
 }
-.setup-filter { padding: 6px 12px; border: 1px solid var(--scheme-color-border); border-radius: 6px; background: transparent; color: var(--um-muted); font: inherit; font-size: var(--ui-text-small); cursor: pointer; }
-.setup-filter.is-selected { border-color: var(--um-accent); background: var(--ui-selection-background); color: var(--ui-selection); }
-.setup-filter:disabled { opacity: .35; cursor: not-allowed; }
+.setup-filter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 12px;
+  border: 1px solid var(--scheme-color-border) !important;
+  border-radius: var(--ui-radius);
+  background: transparent;
+  color: var(--scheme-color-text);
+  font: inherit;
+  font-size: var(--ui-text-small);
+  font-weight: 500;
+  cursor: pointer;
+  line-height: 1.4;
+  min-height: 32px;
+  box-sizing: border-box;
+}
+.setup-filter:hover:not(:disabled) {
+  background: var(--scheme-color-sec);
+  border-color: var(--scheme-color-border) !important;
+}
+.setup-filter.is-selected,
+.setup-filter[aria-pressed="true"] {
+  border-color: var(--um-accent) !important;
+  background: color-mix(in srgb, var(--um-accent) 14%, transparent) !important;
+  color: var(--um-accent) !important;
+  font-weight: 600;
+}
+.setup-filter:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: var(--scheme-color-border) !important;
+}
 
 .setup-stats { margin-bottom: 16px; }

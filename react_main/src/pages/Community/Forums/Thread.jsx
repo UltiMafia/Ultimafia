@@ -1303,7 +1303,6 @@ function Post(props) {
                   avatarSize={32}
                   groups={postInfo.author.groups}
                   vanityUrl={postInfo.author.vanityUrl}
-                  includeMiniprofile
                 />
                 {authorSubContent}
               </div>

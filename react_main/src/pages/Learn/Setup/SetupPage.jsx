@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { UiSection, UiAction, UiField, UiStatRow, UiStat, UiPageHeader, UiTabs, UiTab } from "components/ui";
+import { UiSection, UiAction, UiField, UiStatRow, UiStat, UiPageHeader, UiTabs, UiTab, UiTable } from "components/ui";
 import {
   Link as RouterLink,
   Route,
@@ -17,14 +17,6 @@ import {
   MenuItem,
   Select,
   Stack,
-  Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Tabs,
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
@@ -511,7 +503,8 @@ export function SetupPage() {
       }
     }
   }
-  const nightOrderTableRows = nightActions.map((key) => ({
+  const nightOrderTableRows = nightActions.map((key, idx) => ({
+    key: `${key[0]}-${key[1][0]}-${idx}`,
     roleIcon: (
       <RoleCount key={0} scheme="vivid" role={key[0]} gameType={setup.gameType} />
     ),
@@ -519,6 +512,21 @@ export function SetupPage() {
     actionName: key[1][0],
     nightOrder: key[1][1],
   }));
+
+  const nightOrderColumns = [
+    {
+      key: "role",
+      label: "Role",
+      render: (row) => (
+        <Stack direction="row" alignItems="center" spacing={1}>
+          {row.roleIcon}
+          <span>{row.roleName}</span>
+        </Stack>
+      ),
+    },
+    { key: "actionName", label: "Action" },
+    { key: "nightOrder", label: "Priority" },
+  ];
 
   return (
     <Stack
@@ -730,13 +738,13 @@ export function SetupPage() {
                 </Stack>
               </Grid>
               <Grid item xs={12}>
-                <div className="box-panel">
+                <UiSection className="setup-winrates-section">
                   <Stack
                     direction="row"
                     alignItems="center"
                     justifyContent="space-between"
                     flexWrap="wrap"
-                    sx={{ px: 2, pt: 1.5, pb: 0.5, gap: 1 }}
+                    sx={{ px: 0, pt: 1.5, pb: 0.5, gap: 1 }}
                   >
                     <Box>
                       <Typography
@@ -786,7 +794,7 @@ export function SetupPage() {
                       <ToggleButton value="role">Role</ToggleButton>
                     </ToggleButtonGroup>
                   </Stack>
-                  <Box sx={{ maxWidth: 720, px: 2, pb: 2 }}>
+                  <Box sx={{ maxWidth: 720, px: 0, pb: 2 }}>
                     {statsBundle?.hasGranular ? (
                       <SetupWinRateBars
                         rows={
@@ -835,7 +843,7 @@ export function SetupPage() {
                       </>
                     )}
                   </Box>
-                </div>
+                </UiSection>
               </Grid>
             </Grid>
           )}
@@ -847,44 +855,17 @@ export function SetupPage() {
         </Box>
       )}
       {tabValue === 2 && (
-        <Box>
-          <Typography variant="h2" gutterBottom>
-            Setup Night Order
-          </Typography>
-          <Typography paragraph>
-            The night order resolves from the lowest priority to the highest. Ties
-            in priority are resolved by the player list
-          </Typography>
-          <Box className="paragraph">
-            <TableContainer>
-              <Table aria-label="night order">
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ verticalAlign: "middle" }}>Role</TableCell>
-                    <TableCell sx={{ verticalAlign: "middle" }}>Action</TableCell>
-                    <TableCell sx={{ verticalAlign: "middle" }}>Priority</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {nightOrderTableRows.map((row, idx) => (
-                    <TableRow
-                      key={`${row.roleName}-${row.actionName}-${idx}`}
-                    >
-                      <TableCell component="th" scope="row" align="center" sx={{ verticalAlign: "middle" }}>
-                        <Stack direction="row" alignItems="center" justifyContent="center" spacing={1}>
-                          {row.roleIcon}
-                          <span>{row.roleName}</span>
-                        </Stack>
-                      </TableCell>
-                      <TableCell align="center" sx={{ verticalAlign: "middle" }}>{row.actionName}</TableCell>
-                      <TableCell align="center" sx={{ verticalAlign: "middle" }}>{row.nightOrder}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-        </Box>
+        <UiSection
+          title="Setup Night Order"
+          description="The night order resolves from the lowest priority to the highest. Ties in priority are resolved by the player list."
+        >
+          <UiTable
+            label="Setup Night Order"
+            rowKey="key"
+            columns={nightOrderColumns}
+            rows={nightOrderTableRows}
+          />
+        </UiSection>
       )}
       {tabValue === 3 && (
         <TwoPanelLayout
@@ -902,7 +883,7 @@ export function SetupPage() {
                 ) : (
                   <Stack spacing={1.5}>
                     {versionHistory.map((entry) => (
-                      <div key={entry.version} className="box-panel">
+                      <div key={entry.version} className="ui-list-item">
                         <div className="heading">
                           <Stack
                             direction="row"
@@ -939,8 +920,7 @@ export function SetupPage() {
             </>
           }
           right={
-            <div className="box-panel">
-              <div className="heading">Lineage</div>
+            <UiSection title="Lineage" className="ui-card">
               <div className="content">
                 {lineage == null ? (
                   <Typography variant="body2" color="text.secondary">
@@ -1002,7 +982,7 @@ export function SetupPage() {
                   </Typography>
                 )}
               </div>
-            </div>
+            </UiSection>
           }
         />
       )}

@@ -640,12 +640,17 @@
   margin-top: 0px;
 }
 
+.thread-wrapper .reply-form-wrapper {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid var(--scheme-color-border);
+  border-radius: var(--ui-radius);
+  background: var(--scheme-color);
+}
 .thread-wrapper .reply-form {
   display: block;
-
-  margin-top: var(--mui-spacing);
+  margin-top: 0;
   padding: 0px;
-
   background-color: transparent;
 }
 
