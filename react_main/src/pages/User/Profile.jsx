@@ -1573,7 +1573,7 @@ export default function Profile() {
   );
 
   return (
-    <UiPage width="full" className="profile-page">
+    <UiPage width="wide" className="profile-page">
       <TradeDialog
         open={tradeModalOpen}
         onClose={() => setTradeModalOpen(false)}

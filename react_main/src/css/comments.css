@@ -40,7 +40,8 @@
     width: auto;
   }
 }
-.comment-row { display: flex; flex-direction: column; gap: 8px; width: 100%; min-width: 0; padding: 12px; border: 1px solid var(--scheme-color-border); border-radius: 6px; background: var(--scheme-color); }
+.comment-row { display: flex; flex-direction: column; gap: 8px; width: 100%; min-width: 0; padding: 16px 0; border: 0; border-bottom: 1px solid var(--scheme-color-border); border-radius: 0; background: transparent; }
+.comment-row:last-child { border-bottom: 0; }
 .comments-page { max-width: 760px; }
 /* A full-width wall (the lobby) must not inherit the profile reading cap. */
 .comments-page[data-ui-fill="full"] { max-width: none; }

@@ -645,13 +645,12 @@ export function SetupPage() {
             </div>
             <aside className="setup-secondary">
               {closedRoleInfo.length > 0 && (
-                <div className="box-panel">
-                  <div className="heading">Closed Setup Info</div>
+                <UiSection title="Closed Setup Info" className="setup-closed-info">
                   <div className="content">{closedRoleInfo}</div>
-                </div>
+                </UiSection>
               )}
               {user.loggedIn && (
-                <UiSection title="Save or customize" className="ui-card">
+                <UiSection title="Save or customize" className="setup-save-section">
                   <div className="setup-save-panel">
                     <div className="setup-rating-row">
                       <span>Community rating</span>

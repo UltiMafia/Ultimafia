@@ -7,6 +7,11 @@
 .setup-page .md-content { background: transparent; }
 .setup-header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .setup-header-actions .MuiFormControl-root { min-width: 96px; }
+@media (max-width: 600px) {
+  .setup-header-actions { width: 100%; display: flex; gap: 8px; }
+  .setup-header-actions > .ui-action { flex: 1 1 auto; justify-content: center; }
+  .setup-header-actions .MuiFormControl-root { flex: 0 0 auto; }
+}
 .setup-kind-badge { color: var(--um-muted); font-size: var(--ui-text-small); }
 .setup-meta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; }
 .setup-creator-byline { display: inline-flex; align-items: center; gap: 6px; font-size: var(--ui-text-small); color: var(--um-muted); }
@@ -58,7 +63,6 @@
 .setup-roster { min-width: 0; }
 .setup-description > .ui-section + .ui-section { margin-top: 16px; }
 .setup-secondary > .ui-section + .ui-section { margin-top: 16px; }
-.setup-secondary .box-panel { padding: var(--ui-panel-padding); border: 1px solid var(--scheme-color-border); border-radius: 6px; background: var(--scheme-color); }
 .setup-roster fieldset > .MuiStack-root { flex-wrap: wrap; gap: 8px 16px; align-content: flex-start; max-height: min(50vh, 520px); overflow-y: auto; padding-right: 4px; }
 .setup-role-entry { display: flex; flex: 1 1 200px; align-items: center; gap: 12px; min-width: 0; }
 .setup-role-name { font-weight: var(--ui-weight-strong); overflow-wrap: anywhere; }

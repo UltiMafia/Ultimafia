@@ -338,7 +338,7 @@ function StrategiesBase({
     return (
       <Box component="section"
         key={strategy.id}
-        sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1, bgcolor: strategy.deleted ? "action.hover" : "background.paper" }}
+        sx={{ borderBottom: "1px solid", borderColor: "divider", bgcolor: strategy.deleted ? "action.hover" : "transparent" }}
       >
           <Stack
             direction="row"
@@ -701,7 +701,7 @@ function StrategiesBase({
   }
 
   if (variant === "section") return <>
-    <UiSection className="ui-card strategy-section">{header}{listContent}</UiSection>
+    <UiSection className="strategy-section">{header}{listContent}</UiSection>
     {dialog}{reader}
   </>;
 

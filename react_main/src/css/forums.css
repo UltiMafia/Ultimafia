@@ -508,10 +508,14 @@
   align-items: stretch;
   justify-content: flex-start;
   margin-top: 0;
-  padding: 16px;
-  border: 1px solid var(--scheme-color-border);
-  border-radius: 6px;
-  background: var(--scheme-color);
+  padding: 16px 0;
+  border: 0;
+  border-bottom: 1px solid var(--scheme-color-border);
+  border-radius: 0;
+  background: transparent;
+}
+.thread-wrapper .post:last-child {
+  border-bottom: 0;
 }
 
 .vote-wrapper {
