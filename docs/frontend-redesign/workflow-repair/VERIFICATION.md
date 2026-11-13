@@ -1,5 +1,40 @@
 # Redesign audit verification — in progress
 
+## Handoff state (latest)
+
+- Everything below the line is history. The tree is clean; all changes are
+  committed and pushed to `fork/redesign/workflow-repair-draft`.
+- **Latest complete matrix:** `/var/tmp/ultimafia-full8` — 918 required,
+  912 paired, 6 gaps (all `new-page-contract` at 320 in the light run), 4,574
+  open, 3,088 intentional, visual acceptance false. The 6 gaps were a fixture
+  settle race, since fixed (see the selected-tab work); a matrix newer than
+  that fix has not been recorded.
+- **What has been repaired and verified on screen at 320/390/1440:** shared
+  section navigation (settings + moderation), phone touch targets across menus,
+  pagination and tabs, lobby/role/family comment widths, selected-tab visibility,
+  page-level section heading scale, panel padding token, toolbar selects,
+  welcome-page actions, the auth form on shared boxed fields with explicit
+  spacing, dialogue title/body alignment and body-to-actions spacing, field and
+  action height parity on touch, stacked-table action alignment, and one icon
+  family in the user menu.
+- **What the checker now catches that it did not before:** touching form fields,
+  labels clipped by a scroll container, menu icons of mixed size/kind/colour,
+  selected-tab clipping, fill shortfalls with evidence, navigation touch and
+  wrapping, and graded cross-page divergence (by role, variant and kind).
+  Guards fail new hand-written navs, hard-coded widths and one-off layout paths.
+- **Known limits, not fixable locally:** authenticated journeys are fixture-only
+  (no real sign-in was performed) and phone behaviour is viewport emulation, not
+  hardware. Both are stated in the PR record.
+- **Where to start next:** the open clusters by size from full8 were
+  section-container padding, secondary-action surface treatment (~760 rows), and
+  text-field height/padding, all now partially addressed by the panel, action and
+  field changes above and therefore due a re-measure. Read
+  `docs/frontend-redesign/audit/README.md` for how to run a scoped slice
+  (`ROUTE_CASES=… ROUTE_WIDTHS=…`), how the capture budget works, and what a
+  finding's fields mean.
+
+---
+
 PR #3197 is open and draft. This is not visual acceptance or a completed audit.
 Numbered historical evidence directories are not final-HEAD verification.
 
