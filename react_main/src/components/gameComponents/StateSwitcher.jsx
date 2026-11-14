@@ -123,7 +123,7 @@ export default function StateSwitcher({ stateRange = null }) {
         transitionDuration={0}
         disableScrollLock
         MenuListProps={{ "aria-label": "Game phases" }}
-        PaperProps={{ sx: { maxHeight: "min(60dvh, 360px)", minWidth: 180 } }}
+        PaperProps={{ sx: { mt: 1, maxHeight: "min(60dvh, 360px)", minWidth: 180 } }}
       >
         {stateNums.map(stateNum => {
           const state = history.states[stateNum];

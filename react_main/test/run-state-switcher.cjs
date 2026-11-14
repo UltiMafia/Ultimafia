@@ -88,9 +88,15 @@ const server = http.createServer((req, res) => {
             await chooser.click();
             const menu = page.getByRole('menu', { name: 'Game phases', exact: true });
             await menu.waitFor();
+            const menuGap = await menu.evaluate(el => {
+              const dropdown = el.closest('.MuiPaper-root').getBoundingClientRect();
+              const pill = document.querySelector('[aria-label="Choose phase"]').getBoundingClientRect();
+              return dropdown.top - pill.bottom;
+            });
+            assert.ok(menuGap >= 7 && menuGap <= 9, `dropdown must have an 8px gap below the pill, got ${menuGap}px`);
             if (process.env.SCREENSHOT_DIR && !full) {
               fs.mkdirSync(process.env.SCREENSHOT_DIR, { recursive: true });
-              await page.screenshot({ path: path.join(process.env.SCREENSHOT_DIR, `state-pill-menu-${engine}-${theme}.png`) });
+              await page.screenshot({ path: path.join(process.env.SCREENSHOT_DIR, `state-pill-menu-${engine}-${theme}.png`), animations: 'disabled' });
             }
             assert.deepEqual(await menu.getByRole('menuitem').allTextContents(), ['Pregame', 'Day 1', 'Night 1', 'Day 2']);
             assert.equal(await menu.getByRole('menuitem', { name: 'Day 1', exact: true }).getAttribute('aria-current'), 'step');
@@ -127,7 +133,7 @@ const server = http.createServer((req, res) => {
             await group.waitFor({ state: 'visible' });
             if (process.env.SCREENSHOT_DIR) {
               fs.mkdirSync(process.env.SCREENSHOT_DIR, { recursive: true });
-              await page.screenshot({ path: path.join(process.env.SCREENSHOT_DIR, `state-pill-${engine}-${theme}${full ? '-full' : ''}.png`) });
+              await page.screenshot({ path: path.join(process.env.SCREENSHOT_DIR, `state-pill-${engine}-${theme}${full ? '-full' : ''}.png`), animations: 'disabled' });
             }
             for (const width of [320, 375, 414]) {
               await page.setViewportSize({ width, height: 844 });
