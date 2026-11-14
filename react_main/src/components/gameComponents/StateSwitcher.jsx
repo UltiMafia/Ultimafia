@@ -29,6 +29,61 @@ export default function StateSwitcher({ stateRange = null }) {
 
   const { history, stateViewing, updateStateViewing } = game;
   const [menuAnchor, setMenuAnchor] = useState(null);
+  const mobileControlsRef = useRef(null);
+  useEffect(() => {
+    const controls = mobileControlsRef.current;
+    if (!isPhoneDevice || !controls) return;
+
+    // CSS touch-action alone still allowed double-tap zoom on iOS. Cancel
+    // single-finger taps locally and dispatch one click, retaining mouse/keyboard
+    // activation and leaving swipes, long presses and multi-touch untouched.
+    let tap = null;
+    const document = controls.ownerDocument;
+    const cancel = () => {
+      tap = null;
+      document.removeEventListener("touchstart", multiStart, true);
+    };
+    // A second finger may start outside this control group. Observe it only
+    // while a tap is pending; never cancel that finger's native default.
+    const multiStart = (event) => { if (event.touches.length > 1) cancel(); };
+    const start = (event) => {
+      cancel();
+      const point = event.touches[0];
+      tap = event.touches.length === 1 ? {
+        id: point.identifier, x: point.clientX, y: point.clientY,
+        time: Date.now(), button: event.target.closest("button"),
+      } : null;
+      if (tap) document.addEventListener("touchstart", multiStart, { passive: true, capture: true });
+    };
+    const move = (event) => {
+      if (!tap) return;
+      const point = Array.from(event.touches).find(point => point.identifier === tap.id);
+      if (event.touches.length !== 1 || !point ||
+          Math.hypot(point.clientX - tap.x, point.clientY - tap.y) > 10) cancel();
+    };
+    const end = (event) => {
+      const gesture = tap;
+      cancel();
+      if (!gesture || event.touches.length || !event.cancelable ||
+          Date.now() - gesture.time > 500) return;
+      const point = Array.from(event.changedTouches).find(point => point.identifier === gesture.id);
+      if (!point || Math.hypot(point.clientX - gesture.x, point.clientY - gesture.y) > 10) return;
+      // Also cancel taps on disabled arrows and the gaps between controls.
+      event.preventDefault();
+      if (gesture.button && !gesture.button.disabled) gesture.button.click();
+    };
+    controls.addEventListener("touchstart", start, { passive: true, capture: true });
+    controls.addEventListener("touchmove", move, { passive: true, capture: true });
+    controls.addEventListener("touchcancel", cancel, { passive: true, capture: true });
+    controls.addEventListener("touchend", end, { passive: false, capture: true });
+    return () => {
+      cancel();
+      controls.removeEventListener("touchstart", start, true);
+      controls.removeEventListener("touchmove", move, true);
+      controls.removeEventListener("touchcancel", cancel, true);
+      controls.removeEventListener("touchend", end, true);
+    };
+  }, [isPhoneDevice]);
   const [menuId] = useState(() => `phase-menu-${Math.random().toString(36).slice(2)}`);
   useEffect(() => {
     setMenuAnchor(null);
@@ -94,7 +149,7 @@ export default function StateSwitcher({ stateRange = null }) {
 
     return (
       <>
-      <Stack direction="row" role="group" aria-label="Game phase navigation" sx={{ alignItems: "center", justifyContent: "center", gap: 1, maxWidth: "calc(100% - 16px)", pointerEvents: "auto", touchAction: "manipulation" }}>
+      <Stack ref={mobileControlsRef} direction="row" role="group" aria-label="Game phase navigation" sx={{ alignItems: "center", justifyContent: "center", gap: 1, maxWidth: "calc(100% - 16px)", pointerEvents: "auto", touchAction: "manipulation" }}>
         {mobileArrow("previous", previousState)}
         <Paper
           component={ButtonBase}

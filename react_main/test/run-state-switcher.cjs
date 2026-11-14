@@ -118,12 +118,127 @@ const server = http.createServer((req, res) => {
             await menu.waitFor({ state: 'hidden' });
             await chooser.click();
             await menu.getByRole('menuitem', { name: 'Day 1', exact: true }).click();
-            assert.equal(await group.evaluate(el => getComputedStyle(el).touchAction), 'manipulation', 'phase controls must opt out of double-tap zoom');
+            assert.equal(await group.evaluate(el => getComputedStyle(el).touchAction), 'manipulation', 'retain the CSS gesture hint');
+            // Emulated viewport scale cannot establish iOS double-tap behavior. Test
+            // cancellation of the native default action, including disabled targets.
+            const nativeTap = await page.getByRole('button', { name: 'Next phase', exact: true }).evaluate(button => {
+              const point = { identifier: 1, clientX: 10, clientY: 10 };
+              const fire = (type, touches) => {
+                const event = new Event(type, { bubbles: true, cancelable: true });
+                Object.defineProperties(event, { touches: { value: touches }, changedTouches: { value: [point] } });
+                button.dispatchEvent(event);
+                return event.defaultPrevented;
+              };
+              fire('touchstart', [point]);
+              return fire('touchend', []);
+            });
+            assert.equal(nativeTap, true, 'a phase tap must cancel native touchend, not just set CSS');
+            await group.getByText('Night 1', { exact: true }).waitFor();
+            await page.getByRole('button', { name: 'Previous phase', exact: true }).click();
+            await group.getByText('Day 1', { exact: true }).waitFor();
+            const gestures = await group.evaluate(async controls => {
+              const clicks = [];
+              const recordClick = event => clicks.push(event.target.closest('button')?.getAttribute('aria-label'));
+              controls.addEventListener('click', recordClick, true);
+              const phase = () => controls.querySelector('[aria-live="polite"]').textContent;
+              const next = () => controls.querySelector('[aria-label="Next phase"]');
+              const point = { identifier: 1, clientX: 10, clientY: 10 };
+              const fire = (target, type, touches, changedTouches = [point], cancelable = true) => {
+                const event = new Event(type, { bubbles: true, cancelable });
+                Object.defineProperties(event, { touches: { value: touches }, changedTouches: { value: changedTouches } });
+                target.dispatchEvent(event);
+                return event.defaultPrevented;
+              };
+              const tap = target => { fire(target, 'touchstart', [point]); return fire(target, 'touchend', []); };
+              try {
+                const rapid = ['Next phase', 'Next phase', 'Next phase', 'Next phase', 'Previous phase', 'Previous phase', 'Previous phase', 'Previous phase'].map(name => {
+                  const button = controls.querySelector(`[aria-label="${name}"]`);
+                  return { canceled: tap(button.querySelector('i')), phase: phase() };
+                });
+                const gap = tap(controls);
+                const clicksAfterTaps = clicks.length;
+                const button = next();
+                fire(button, 'touchstart', [point]);
+                fire(button, 'touchmove', [{ ...point, clientX: 40 }]);
+                const swipe = fire(button, 'touchend', []);
+                fire(button, 'touchstart', [point]);
+                fire(button, 'touchstart', [point, { ...point, identifier: 2 }]);
+                const pinchFirst = fire(button, 'touchend', [point], [{ ...point, identifier: 2 }]);
+                const pinchLast = fire(button, 'touchend', []);
+                fire(button, 'touchstart', [point]);
+                const outsideTarget = document.querySelector('.speech-display');
+                fire(outsideTarget, 'touchstart', [point, { ...point, identifier: 2 }]);
+                fire(outsideTarget, 'touchend', [point], [{ ...point, identifier: 2 }]);
+                const mixedPinch = fire(button, 'touchend', []);
+                fire(button, 'touchstart', [point]);
+                fire(button, 'touchcancel', []);
+                const canceled = fire(button, 'touchend', []);
+                fire(button, 'touchstart', [point]);
+                const uncancelable = fire(button, 'touchend', [], [point], false);
+                fire(button, 'touchstart', [point]);
+                await new Promise(resolve => setTimeout(resolve, 550));
+                const held = fire(button, 'touchend', []);
+                const outside = tap(document.querySelector('.speech-display'));
+                return { rapid, gap, clicksAfterTaps, extraClicks: clicks.length - clicksAfterTaps, swipe, pinchFirst, pinchLast, mixedPinch, canceled, uncancelable, held, outside, phase: phase() };
+              } finally { controls.removeEventListener('click', recordClick, true); }
+            });
+            assert.deepEqual(gestures.rapid.map(tap => tap.phase), ['Night 1', 'Day 2', 'Day 2', 'Day 2', 'Night 1', 'Day 1', 'Pregame', 'Pregame'], 'rapid taps activate each enabled phase once');
+            assert.ok(gestures.rapid.every(tap => tap.canceled), 'cancel all rapid taps, including disabled arrows');
+            assert.equal(gestures.gap, true, 'gaps within the compact control group must not double-tap zoom');
+            assert.equal(gestures.clicksAfterTaps, 5, 'disabled arrows and gaps must not synthesize clicks');
+            assert.equal(gestures.extraClicks, 0, 'swipe, pinch, canceled/uncancelable touches, holds and outside taps must not synthesize phase clicks');
+            for (const gesture of ['swipe', 'pinchFirst', 'pinchLast', 'mixedPinch', 'canceled', 'uncancelable', 'held', 'outside']) assert.equal(gestures[gesture], false, `${gesture} keeps its native default`);
+            assert.equal(gestures.phase, 'Pregame');
+            await group.evaluate(controls => {
+              window.phaseTouchEnds = [];
+              controls.addEventListener('touchend', event => window.phaseTouchEnds.push(event.defaultPrevented), true);
+            });
+            const disabledBox = await page.getByRole('button', { name: 'Previous phase', exact: true }).boundingBox();
+            for (let i = 0; i < 4; i++) await page.touchscreen.tap(disabledBox.x + disabledBox.width / 2, disabledBox.y + disabledBox.height / 2);
+            assert.deepEqual(await page.evaluate(() => window.phaseTouchEnds), [true, true, true, true], 'browser-dispatched disabled-arrow taps cancel native defaults');
+            await chooser.tap();
+            await menu.waitFor();
+            await menu.getByRole('menuitem', { name: 'Day 1', exact: true }).click();
+            await group.evaluate(controls => {
+              window.realTapClicks = [];
+              window.realTapTouchEnds = [];
+              controls.addEventListener('click', event => {
+                const button = event.target.closest('button[aria-label]');
+                if (button) window.realTapClicks.push(button.getAttribute('aria-label'));
+              }, true);
+              controls.addEventListener('touchend', event => window.realTapTouchEnds.push(event.defaultPrevented), true);
+            });
             for (const [direction, name] of [['Next phase', 'Night 1'], ['Next phase', 'Day 2'], ['Previous phase', 'Night 1'], ['Previous phase', 'Day 1']]) {
               await page.getByRole('button', { name: direction, exact: true }).tap();
               await group.getByText(name, { exact: true }).waitFor();
             }
-            assert.equal(await page.evaluate(() => visualViewport.scale), 1, 'repeated taps must not change viewport scale in browser fixture');
+            assert.deepEqual(await page.evaluate(() => window.realTapClicks), ['Next phase', 'Next phase', 'Previous phase', 'Previous phase'], 'each real touchscreen tap produces exactly one button click');
+            assert.deepEqual(await page.evaluate(() => window.realTapTouchEnds), [true, true, true, true], 'each real touchscreen tap cancels native touchend default');
+            if (engine === 'chromium') {
+              // Touch events retain their START target even when the finger leaves it.
+              // Exercise native routing (not synthetic dispatch) across the group edge.
+              await group.evaluate(controls => {
+                window.outwardTouchEnds = [];
+                for (const type of ['touchend', 'touchcancel']) controls.addEventListener(type, event => {
+                  window.outwardTouchEnds.push({ type: event.type, target: event.target.closest('button')?.getAttribute('aria-label'), canceled: event.defaultPrevented });
+                }, true);
+              });
+              const box = await page.getByRole('button', { name: 'Next phase', exact: true }).boundingBox();
+              const session = await page.context().newCDPSession(page);
+              try {
+                const y = box.y + box.height / 2;
+                await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: box.x + box.width / 2, y }] });
+                await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: 4, y }] });
+                await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+              } finally { await session.detach(); }
+              const endings = await page.evaluate(() => window.outwardTouchEnds);
+              assert.equal(endings.length, 1, 'ending a touch outside the group still reaches its start target');
+              assert.equal(endings[0].target, 'Next phase');
+              assert.equal(endings[0].canceled, false, 'leaving the control remains a native gesture');
+              assert.deepEqual(await page.evaluate(() => window.realTapClicks), ['Next phase', 'Next phase', 'Previous phase', 'Previous phase'], 'an outward drag must not click the starting button');
+              await group.getByText('Day 1', { exact: true }).waitFor();
+            }
+            assert.equal(await page.evaluate(() => visualViewport.scale), 1, 'emulated viewport smoke check, not physical-iOS zoom verification');
             assert.equal(await page.locator('.MuiBottomNavigation-root [aria-label="Game phase navigation"]').count(), 0);
             const nav = page.locator('.MuiBottomNavigation-root');
             assert.deepEqual(await nav.locator('.MuiBottomNavigationAction-label').allTextContents(), ['Players', 'Info', 'Chat', 'Actions', 'Menu']);
