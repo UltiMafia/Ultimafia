@@ -4,7 +4,7 @@ const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const shortid = require("shortid");
 const routeUtils = require("../routes/utils");
-const constants = require("../data/constants");
+const competitiveSettings = require("./competitiveSettings");
 
 // SEE: https://docs.google.com/document/d/1amLZWVBKyalKh7KalYpCDgZSmmNmBy1-BIASOj9GnFA
 // v1: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1], used in seasons 1 and 2
@@ -38,8 +38,11 @@ async function getMaxRoundFortune(seasonNumber, roundNumber) {
 }
 
 async function hasRoundFortuneHammer(seasonNumber, roundNumber) {
+  const season = await models.CompetitiveSeason.findOne({ number: seasonNumber }).lean();
+  const { fortuneLimit } = competitiveSettings(season || {});
+  if (fortuneLimit === null) return false;
   const maxFortune = await getMaxRoundFortune(seasonNumber, roundNumber);
-  return maxFortune >= constants.competitiveRoundFortuneHammer;
+  return maxFortune >= fortuneLimit;
 }
 
 async function endOpenPhase(roundId, seasonNumber, roundNumber) {
@@ -83,7 +86,7 @@ async function checkFortuneHammerAndEndOpenPhase(seasonNumber, round) {
   }
 
   console.log(
-    `[progressCompetitive]: Fortune hammer (${constants.competitiveRoundFortuneHammer}) reached in season ${seasonNumber} round ${round.number}`
+    `[progressCompetitive]: Fortune limit reached in season ${seasonNumber} round ${round.number}`
   );
   await endOpenPhase(round._id, seasonNumber, round.number);
   return true;
@@ -103,6 +106,7 @@ async function progressCompetitive() {
   }
 
   const seasonNumber = currentSeason.number;
+  const settings = competitiveSettings(currentSeason);
   console.log(`[progressCompetitive]: Checking season ${seasonNumber}`);
 
   // Get the current round, if any
@@ -143,8 +147,8 @@ async function progressCompetitive() {
       season: seasonNumber,
       number: currentSeason.currentRound,
       startDate: startDateNew.toISOString().split("T")[0],
-      remainingOpenDays: constants.openDaysPerCompetitiveRound,
-      remainingReviewDays: constants.reviewDaysPerCompetitiveRound,
+      remainingOpenDays: settings.openDays,
+      remainingReviewDays: settings.reviewDays,
     });
     const newDocument = await round.save();
 
@@ -168,7 +172,7 @@ async function progressCompetitive() {
       if (!currentSeason.paused) {
         const graceEndsAt =
           currentRound.openPhaseEndedAt +
-          constants.competitiveHeartGracePeriodMillis;
+          settings.graceHours * 3600000;
         if (nowMillis >= graceEndsAt) {
           await endGracePeriod(
             currentRound._id,
@@ -219,15 +223,14 @@ async function progressCompetitive() {
 
         // Only give out gold hearts on the open days of a round
         if (
-          constants.openDaysPerCompetitiveRound - currentRound.remainingOpenDays <
-          constants.openDaysPerCompetitiveRound
+          currentRound.remainingOpenDays > 0
         ) {
           console.log(
-            `[progressCompetitive]: Giving everyone ${constants.goldHeartsPerCompetitiveDay} gold hearts`
+            `[progressCompetitive]: Giving everyone ${settings.dailyHearts} gold hearts`
           );
           await models.User.updateMany(
             {},
-            { $inc: { goldHearts: constants.goldHeartsPerCompetitiveDay } }
+            { $inc: { goldHearts: settings.dailyHearts } }
           ).exec();
           await redis.invalidateAllCachedUsers();
         }
@@ -257,7 +260,7 @@ async function progressCompetitive() {
           await hasRoundFortuneHammer(seasonNumber, currentRound.number)
         ) {
           console.log(
-            `[progressCompetitive]: Fortune hammer (${constants.competitiveRoundFortuneHammer}) reached after day progression`
+            `[progressCompetitive]: Fortune limit reached after day progression`
           );
           await endOpenPhase(
             currentRound._id,

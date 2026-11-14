@@ -121,6 +121,19 @@ More local troubleshooting is in the [Local Setup Guide](/docs/setup-local-guide
 3. Open a pull request on the master branch of this repository
 4. Perform a final test on the main site after merge into master
 
+## Competitive season controls
+
+Staff with the existing Manage Competitive permission can use Competitive
+Management to explicitly play or pause the active season and edit its settings.
+Open/review durations apply to new rounds. Daily heart amounts affect future
+allocations, without replacing current balances; zero stops new allocations.
+The fortune finish limit and grace hours also apply to the active round. Disable
+"fortune-triggered finish" to remove that threshold; open-day exhaustion still
+ends the round. Existing seasons keep their established defaults until edited.
+These controls do not reset scores, heart balances or round history. Play allows
+new starts; a full lobby whose start was cancelled while paused currently needs
+a player to leave and rejoin to restart its ready check/countdown.
+
 ## Forum replies
 
 Click a post's Reply arrow to open the composer beneath that post. Selecting

@@ -10,6 +10,8 @@ import {
   Box,
   Button,
   IconButton,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
@@ -21,6 +23,7 @@ import { COMMAND_COLOR } from "./commands";
 
 export default function CompetitiveManagement() {
   const [seasonData, setSeasonData] = useState(null);
+  const [controlsSaving, setControlsSaving] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [addSetupDialogOpen, setAddSetupDialogOpen] = useState(false);
@@ -78,6 +81,23 @@ export default function CompetitiveManagement() {
       cancelled = true;
     };
   }, []);
+
+  const saveControls = async (changes) => {
+    if (!seasonData || controlsSaving) return;
+    setControlsSaving(true);
+    try {
+      const response = await axios.post("/api/competitive/controls", {
+        seasonNumber: seasonData.seasonNumber, ...changes,
+      });
+      setSeasonData((current) => ({ ...current, paused: response.data.paused,
+        settings: changes.settings ? response.data.settings : current.settings }));
+      siteInfo.showAlert("Competitive controls saved.", "success");
+    } catch (error) {
+      errorAlert(error.response?.data || "Could not save competitive controls.");
+    } finally {
+      setControlsSaving(false);
+    }
+  };
 
   const moveSetup = (roundIndex, setupIndex, direction) => {
     if (!seasonData) return;
@@ -202,6 +222,43 @@ export default function CompetitiveManagement() {
           <Loading />
         ) : seasonData ? (
           <>
+            {seasonData.settings && (
+              <Stack spacing={2}>
+                <Typography>Season {seasonData.paused ? "paused" : "playing"}</Typography>
+                <Stack direction="row" spacing={1}>
+                  <Button disabled={controlsSaving || !seasonData.paused} onClick={() => saveControls({ paused: false })}>Play</Button>
+                  <Button disabled={controlsSaving || seasonData.paused} onClick={() => saveControls({ paused: true })}>Pause</Button>
+                </Stack>
+                <Typography variant="body2">
+                  Open and review days apply to newly created rounds. Daily hearts apply to future allocations;
+                  zero stops new allocation without removing existing hearts. The fortune limit and grace period
+                  apply to the current round as well. Saving does not reset scores or heart balances.
+                  Play permits new starts; an existing full lobby cancelled by Pause needs a player
+                  to leave and rejoin to restart its ready check/countdown.
+                </Typography>
+                {[
+                  ["openDays", "Open days per new round"],
+                  ["reviewDays", "Review days per new round"],
+                  ["dailyHearts", "Gold hearts per allocation"],
+                  ["fortuneLimit", "Fortune finish limit"],
+                  ["graceHours", "Heart-spending grace hours"],
+                ].map(([name, label]) => (
+                  <TextField key={name} label={label} type="number"
+                    disabled={controlsSaving || (name === "fortuneLimit" && seasonData.settings.fortuneLimit === null)}
+                    value={seasonData.settings[name] ?? ""}
+                    onChange={(event) => {
+                      const value = event.target.value === "" ? "" : Number(event.target.value);
+                      setSeasonData((current) => ({ ...current, settings: { ...current.settings, [name]: value } }));
+                    }} />
+                ))}
+                <FormControlLabel label="No fortune-triggered finish"
+                  control={<Checkbox disabled={controlsSaving} checked={seasonData.settings.fortuneLimit === null}
+                    onChange={(event) => setSeasonData((current) => ({ ...current,
+                      settings: { ...current.settings, fortuneLimit: event.target.checked ? null : "" },
+                    }))} />} />
+                <Button disabled={controlsSaving} onClick={() => saveControls({ settings: seasonData.settings })}>Save settings</Button>
+              </Stack>
+            )}
             <Box
               sx={{
                 border: "1px solid var(--scheme-color-border)",

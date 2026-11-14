@@ -4,6 +4,7 @@ const shortid = require("shortid");
 const sha1 = require("sha1");
 const models = require("../db/models");
 const constants = require("../data/constants");
+const competitiveSettings = require("./competitiveSettings");
 const Random = require("./../lib/Random");
 const utils = require("../lib/Utils");
 const dateOnly = require("../lib/dateOnly");
@@ -729,7 +730,7 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
   }
 
   const season = await models.CompetitiveSeason.findOne(seasonQuery)
-    .select("-_id setups setupOrder number paused")
+    .select("-_id setups setupOrder number paused graceHours")
     .populate([
       {
         path: "setups",
@@ -923,7 +924,7 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
           type: "graceEnd",
           date: new Date(
             roundInfo.round.openPhaseEndedAt +
-              constants.competitiveHeartGracePeriodMillis
+              competitiveSettings(season).graceHours * 3600000
           ),
         };
       } else {

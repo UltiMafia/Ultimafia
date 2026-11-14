@@ -10,6 +10,8 @@ const routeUtils = require("./utils");
 const logger = require("../modules/logging")("(competitive)");
 const errors = require("../lib/errors");
 
+const competitiveSettings = require("../modules/competitiveSettings");
+
 const iso8601DateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
 // Create a new season
@@ -146,6 +148,55 @@ router.post("/pause", async function (req, res) {
   } catch (e) {
     logger.error(e);
     errors.serverError(res, "Error toggling pause for season. Please try again.");
+  }
+});
+
+// Explicit controls avoid turning a repeated Play/Pause request into its opposite.
+router.post("/controls", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "manageCompetitive"))) return;
+    const { seasonNumber, paused, settings } = req.body;
+    if (!Number.isSafeInteger(seasonNumber) || seasonNumber < 1 ||
+        (paused !== undefined && typeof paused !== "boolean") ||
+        (settings !== undefined && (!settings || typeof settings !== "object" || Array.isArray(settings))) ||
+        (paused === undefined && settings === undefined)) {
+      return res.status(400).send("Invalid competitive controls.");
+    }
+    const changes = {};
+    if (paused !== undefined) changes.paused = paused;
+    const minimums = { openDays: 1, reviewDays: 0, dailyHearts: 0, fortuneLimit: 1, graceHours: 0 };
+    for (const [name, value] of Object.entries(settings || {})) {
+      if (!Object.prototype.hasOwnProperty.call(minimums, name) ||
+          !(name === "fortuneLimit" && value === null) &&
+          (!Number.isSafeInteger(value) || value < minimums[name]) ||
+          (name === "graceHours" && value * 3600000 + Date.now() > 8640000000000000) ||
+          (["openDays", "reviewDays"].includes(name) && value * 86400000 + Date.now() > 8640000000000000)) {
+        return res.status(400).send("Invalid competitive setting.");
+      }
+      changes[name] = value;
+    }
+    if (!Object.keys(changes).length) return res.status(400).send("No changes supplied.");
+    // Return the actual previous values from the same atomic update for the audit.
+    const season = await models.CompetitiveSeason.findOneAndUpdate(
+      { number: seasonNumber, completed: false }, { $set: changes }, { new: false }
+    ).lean();
+    if (!season) return res.status(409).send("This season is no longer active. Refresh before changing controls.");
+    // A Redis failure must not prevent recording the already applied change.
+    // Also attempt invalidation if audit persistence fails, so stale pause state
+    // is not retained simply because the audit store is unavailable.
+    try {
+      await routeUtils.createModAction(userId, "Update Competitive Controls", [
+        season.number,
+        JSON.stringify({ before: { paused: season.paused, ...competitiveSettings(season) }, after: changes }),
+      ]);
+    } finally {
+      await redis.invalidateCompRoundCache(season.number, season.currentRound);
+    }
+    res.json({ paused: changes.paused ?? season.paused, settings: competitiveSettings({ ...season, ...changes }) });
+  } catch (e) {
+    logger.error(e);
+    errors.serverError(res, "Error updating competitive controls. Refresh before retrying.");
   }
 });
 
@@ -489,7 +540,7 @@ router.get("/current", async function (req, res) {
       completed: false,
     })
       .sort({ number: -1 })
-      .select("setups setupOrder number numRounds")
+      .select("setups setupOrder number numRounds paused currentRound openDays reviewDays dailyHearts fortuneLimit graceHours")
       .populate([
         {
           path: "setups",
@@ -519,6 +570,9 @@ router.get("/current", async function (req, res) {
       setups: currentSeason.setups,
       setupOrder: currentSeason.setupOrder,
       numRounds: currentSeason.numRounds,
+      paused: currentSeason.paused,
+      currentRound: currentSeason.currentRound,
+      settings: competitiveSettings(currentSeason),
     });
   } catch (e) {
     logger.error(e);

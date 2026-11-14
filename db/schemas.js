@@ -1134,6 +1134,11 @@ var schemas = {
     paused: { type: Boolean, default: false },
     completed: { type: Boolean, default: false },
     numRounds: { type: Number },
+    openDays: { type: Number },
+    reviewDays: { type: Number },
+    dailyHearts: { type: Number },
+    fortuneLimit: { type: Number }, // null disables the fortune-triggered finish
+    graceHours: { type: Number },
   }),
   CompetitiveRound: new mongoose.Schema({
     season: { type: Number },
