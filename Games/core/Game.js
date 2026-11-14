@@ -682,16 +682,7 @@ module.exports = class Game {
       // Reconnect if already a spectator. Do this before seating so a refresh
       // during pregame cannot take an open seat.
       if (spectator) {
-        spectator.setUser(user);
-        spectator.omniscient = omniscient;
-        this.restoreSpectatorMeetings(spectator);
-        this.sendAllGameInfo(spectator);
-        // The history above is the shared spectator view, which is not a
-        // member of any meeting, so it never says this spectator can talk.
-        // Send their own Pregame / Spectator Meeting info too, or the chat
-        // box is gone after a refresh.
-        spectator.sendMeetings();
-        spectator.send("loaded");
+        this.reconnectSpectator(spectator, user, omniscient);
         return;
       }
 
@@ -727,6 +718,19 @@ module.exports = class Game {
           await redis.leaveGame(user.id);
         }
 
+        // Two connections can reach here at once (two tabs opening the game
+        // with ?spectate=true). Whoever wins adds the spectator; the other must
+        // take over that entry rather than add a second one, and must not
+        // invent a spectator for an account that just won a seat.
+        if (this.findJoinedPlayer(user, isBot)) return;
+
+        const raced = this.findSpectator(user);
+        if (raced) {
+          this.reconnectSpectator(raced, user, omniscient);
+          return;
+        }
+
+        // No await between the check above and this insert.
         await this.sendSpectatorJoinHint(this.addSpectator(user, omniscient));
         return;
       }
@@ -739,6 +743,10 @@ module.exports = class Game {
       ) {
         const seated = await this.seatPlayer(user, isBot);
         if (seated) return;
+
+        // seatPlayer also returns null when a racing join seated this account
+        // first; adding them to spectators here lists the same account twice.
+        if (this.findJoinedPlayer(user, isBot)) return;
       }
 
       const refusal = await this.spectatorJoinRefusal(user, omniscient);
@@ -770,6 +778,29 @@ module.exports = class Game {
     }
 
     return null;
+  }
+
+  // Hand a spectator entry to the connection that now owns it. Shared by the
+  // ordinary reconnect path and the spectate-intent path, where a second
+  // connection can arrive before the first has added its spectator entry.
+  reconnectSpectator(spectator, user, omniscient) {
+    // Two join packets on one authenticated connection share a socket.
+    // Player.setUser sends "left" and terminates the socket it is handed, so
+    // calling it here would hang up the very connection it is meant to keep.
+    const sameSocket =
+      spectator.socket && user.socket && spectator.socket === user.socket;
+
+    if (!sameSocket) spectator.setUser(user);
+
+    spectator.omniscient = omniscient;
+    this.restoreSpectatorMeetings(spectator);
+    this.sendAllGameInfo(spectator);
+    // The history above is the shared spectator view, which is not a member of
+    // any meeting, so it never says this spectator can talk. Send their own
+    // Pregame / Spectator Meeting info too, or the chat box is gone.
+    spectator.sendMeetings();
+    spectator.send("loaded");
+    return spectator;
   }
 
   findSpectator(user) {
@@ -879,6 +910,14 @@ module.exports = class Game {
       ) {
         return null;
       }
+
+      // A competing packet can seat the same user while this one waited for the
+      // lock; two Player objects for one account show up as a duplicate row and
+      // corrupt the seat count. Callers must treat null as "not seated by me".
+      const alreadySeated = this.players.filter(
+        (p) => p && (p.userId || (p.user && p.user.id)) === user.id
+      );
+      if (alreadySeated.length) return null;
 
       await redis.joinGame(user.id, this.id, this.ranked, this.competitive);
 
@@ -1184,6 +1223,13 @@ module.exports = class Game {
       return;
     }
 
+    // A racing packet may already have moved this seat, in which case the
+    // socket now belongs to the seated Player: clearing it here strips the
+    // winner's listeners and they can no longer speak, ready up or spectate.
+    // Nothing awaits between this check and the removal below, so the winner
+    // cannot slip in between them.
+    if (this.spectators.indexOf(spectator) == -1) return;
+
     this.removeSpectator(spectator);
     if (spectator.socket && spectator.socket.clearListeners) {
       spectator.socket.clearListeners();
@@ -1191,8 +1237,15 @@ module.exports = class Game {
 
     const player = await this.seatPlayer(user, false);
     if (!player) {
-      const back = this.addSpectator(user, spectator.omniscient);
-      refuse(back, "No open seats.");
+      // A racing takeSeat may have seated them; re-adding the spectator entry
+      // is the other half of the duplicate (seated and spectating at once).
+      const seated = this.players.filter(
+        (p) => p && (p.userId || (p.user && p.user.id)) === user.id
+      );
+      if (!seated.length) {
+        const back = this.addSpectator(user, spectator.omniscient);
+        refuse(back, "No open seats.");
+      }
       return;
     }
 
