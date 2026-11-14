@@ -23,7 +23,11 @@ const iOSDefersCorrections = (() => {
 })();
 const UNSEEN_ROW_ESTIMATE = iOSDefersCorrections ? 150 : 60;
 
-export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScroll }) {
+// `startAtEnd` is only true for the transcript a reader is following live: the
+// current phase of a running game. A review, or an older phase someone opened to
+// read, starts at its first message — the same place the full-DOM transcript put
+// them before this component existed.
+export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScroll, startAtEnd = true }) {
   const initializing = useRef(true);
   const jumpFrame = useRef(null);
   const highlightTimer = useRef(null);
@@ -194,10 +198,11 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
   }, []);
 
   useLayoutEffect(() => {
-    virtualizer.scrollToEnd();
+    if (startAtEnd) virtualizer.scrollToEnd();
+    else virtualizer.scrollToOffset(0);
     const timer = setTimeout(recordMeasured, 200);
     return () => clearTimeout(timer);
-  }, [virtualizer, recordMeasured]);
+  }, [virtualizer, recordMeasured, startAtEnd]);
 
   // A keyboard changes the viewport without appending data. Keep an already
   // following reader pinned, but never pull someone away from older messages.
@@ -352,10 +357,6 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
   }, [checkTopEdge, onScroll, speechDisplayRef]);
 
   const items = virtualizer.getVirtualItems();
-  // Unresolved quotes can render nothing. Match the original DOM's last child,
-  // not an empty logical tail whose measured wrapper has zero height.
-  let lastRowIndex = rows.length - 1;
-  while (lastRowIndex >= 0 && virtualizer.itemSizeCache.get(keys[lastRowIndex]) === 0) lastRowIndex--;
   const firstItem = items[0];
   const windowStart = firstItem?.start ?? 0;
   const windowHeight = items.length ? items[items.length - 1].end - windowStart : 0;
@@ -395,7 +396,6 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
             key={item.key}
             className="transcript-window-row"
             data-index={item.index}
-            data-transcript-last-row={item.index === lastRowIndex ? "true" : undefined}
             ref={virtualizer.measureElement}
             style={{ position: "absolute", top: item.start - windowStart, left: 0, width: "100%", display: "flow-root", overflowAnchor: "none" }}
           >
