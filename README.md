@@ -192,3 +192,5 @@ portal). The signed payload is checked against Apple's keys, `iss`, `exp`, and
 - `account-delete`: same as above, sets `appleAccountDeleted` and logs for moderator follow-up. No data is deleted.
 
 Apple does not send password or Apple ID email changes.
+
+Restart-clock draft and its explicit recovery/deployment limits: [documentation](docs/competitive-restart-clock.md).

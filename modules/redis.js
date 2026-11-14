@@ -5,6 +5,7 @@ const sha1 = require("sha1");
 const models = require("../db/models");
 const constants = require("../data/constants");
 const competitiveSettings = require("./competitiveSettings");
+const { competitiveDayDeadline } = require("./competitiveClock");
 const Random = require("./../lib/Random");
 const utils = require("../lib/Utils");
 const dateOnly = require("../lib/dateOnly");
@@ -935,7 +936,8 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
         );
         roundInfo.nextEvent = {
           type: "complete",
-          date: endOfRoundDay,
+          date: roundInfo.round.clockBaseAt == null ? endOfRoundDay :
+            competitiveDayDeadline(roundInfo.round, Math.max(0, roundInfo.round.remainingOpenDays - 1)),
         };
       }
     } else if (!roundInfo.round.accounted) {
@@ -946,7 +948,7 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
       );
       roundInfo.nextEvent = {
         type: "account",
-        date: endOfRoundDay,
+        date: competitiveDayDeadline(roundInfo.round, roundInfo.round.remainingReviewDays),
       };
     } else {
       // there is no next event, this round is over

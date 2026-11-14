@@ -5,6 +5,8 @@ const ObjectID = mongo.ObjectID;
 const shortid = require("shortid");
 const routeUtils = require("../routes/utils");
 const competitiveSettings = require("./competitiveSettings");
+const withCompetitiveLock = require("./competitiveLock");
+const { competitiveDayDeadline } = require("./competitiveClock");
 
 // SEE: https://docs.google.com/document/d/1amLZWVBKyalKh7KalYpCDgZSmmNmBy1-BIASOj9GnFA
 // v1: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1], used in seasons 1 and 2
@@ -76,7 +78,7 @@ async function endGracePeriod(roundId, seasonNumber, roundNumber) {
   await redis.invalidateCompRoundCache(seasonNumber, roundNumber);
 }
 
-async function checkFortuneHammerAndEndOpenPhase(seasonNumber, round) {
+async function checkFortuneHammerAndEndOpenPhaseUnlocked(seasonNumber, round) {
   if (round.completed || round.openPhaseEndedAt || round.currentDay < 1) {
     return false;
   }
@@ -92,10 +94,11 @@ async function checkFortuneHammerAndEndOpenPhase(seasonNumber, round) {
   return true;
 }
 
-async function progressCompetitive() {
+async function progressCompetitiveUnlocked(seasonNumberLocked) {
   // Get the current season, if any
   const currentSeason = await models.CompetitiveSeason.findOne({
     completed: false,
+    number: seasonNumberLocked,
   })
     .sort({ number: -1 })
     .lean();
@@ -186,17 +189,13 @@ async function progressCompetitive() {
 
     if (!currentSeason.paused) {
       if (
-        await checkFortuneHammerAndEndOpenPhase(seasonNumber, currentRound)
+        await checkFortuneHammerAndEndOpenPhaseUnlocked(seasonNumber, currentRound)
       ) {
         return;
       }
     }
 
-    const startDate = new Date(currentRound.startDate);
-    let endOfRoundDay = new Date(startDate);
-
-    // Check to see if the round's current day has ended
-    endOfRoundDay.setUTCDate(startDate.getUTCDate() + currentRound.currentDay);
+    const endOfRoundDay = competitiveDayDeadline(currentRound);
     if (now > endOfRoundDay) {
       if (currentSeason.paused) {
         // Progress the day only if the round is paused
@@ -559,10 +558,11 @@ async function endSeason(seasonNumber) {
   await redis.invalidateAllCachedUsers();
 }
 
-async function accountCompetitiveRounds() {
+async function accountCompetitiveRoundsUnlocked(seasonNumberLocked) {
   // Get the current season, if any
   const currentSeason = await models.CompetitiveSeason.findOne({
     completed: false,
+    number: seasonNumberLocked,
   })
     .sort({ number: -1 })
     .lean();
@@ -591,11 +591,7 @@ async function accountCompetitiveRounds() {
 
   if (!currentSeason.paused) {
     const now = Date.now();
-    const startDate = new Date(currentRound.startDate);
-    let endOfRoundDay = new Date(startDate);
-
-    // Check to see if the round's current day has ended
-    endOfRoundDay.setUTCDate(startDate.getUTCDate() + currentRound.currentDay);
+    const endOfRoundDay = competitiveDayDeadline(currentRound);
     if (now > endOfRoundDay) {
       // Check to see if the round is still in review
       if (currentRound.remainingReviewDays > 0) {
@@ -644,6 +640,28 @@ async function accountCompetitiveRounds() {
       return;
     }
   }
+}
+
+async function withCurrentSeason(work) {
+  const season = await models.CompetitiveSeason.findOne({ completed: false })
+    .sort({ number: -1 }).lean();
+  if (!season) return;
+  return withCompetitiveLock(season.number, () => work(season.number), true, work.name);
+}
+async function progressCompetitive() {
+  return withCurrentSeason(progressCompetitiveUnlocked);
+}
+async function accountCompetitiveRounds() {
+  return withCurrentSeason(accountCompetitiveRoundsUnlocked);
+}
+async function checkFortuneHammerAndEndOpenPhase(seasonNumber, round) {
+  return withCompetitiveLock(seasonNumber, async () => {
+    const season = await models.CompetitiveSeason.findOne({ number: seasonNumber }).lean();
+    if (!season || season.completed || season.paused || season.currentRound !== round.number) return false;
+    const current = await models.CompetitiveRound.findOne({ season: seasonNumber, number: round.number }).lean();
+    if (!current) return false;
+    return checkFortuneHammerAndEndOpenPhaseUnlocked(seasonNumber, current);
+  }, true, "fortune finish");
 }
 
 module.exports = {

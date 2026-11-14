@@ -1139,6 +1139,9 @@ var schemas = {
     dailyHearts: { type: Number },
     fortuneLimit: { type: Number }, // null disables the fortune-triggered finish
     graceHours: { type: Number },
+    operationToken: { type: String },
+    operationStartedAt: { type: Number },
+    operationName: { type: String },
   }),
   CompetitiveRound: new mongoose.Schema({
     season: { type: Number },
@@ -1148,6 +1151,8 @@ var schemas = {
     accounted: { type: Boolean, default: false },
     startDate: { type: String }, // YYYY-MM-DD (inclusive)
     dateCompleted: { type: String }, // YYYY-MM-DD (inclusive)
+    clockBaseAt: { type: Number }, // alternate deadline origin after an explicit restart
+    clockRestarts: [{ requestId: String, at: Number, openDays: Number, clockBaseAt: Number }],
     remainingOpenDays: { type: Number, required: true },
     remainingReviewDays: { type: Number, required: true },
     /** UTC millis when daily hearts stopped; grace period follows before review. */

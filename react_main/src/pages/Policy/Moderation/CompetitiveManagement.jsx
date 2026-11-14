@@ -99,6 +99,31 @@ export default function CompetitiveManagement() {
     }
   };
 
+  const restartClock = async () => {
+    if (!seasonData || controlsSaving) return;
+    const key = `competitive-clock-restart:${seasonData.seasonNumber}:${seasonData.currentRound}`;
+    setControlsSaving(true);
+    try {
+      let requestId = sessionStorage.getItem(key);
+      if (!requestId) {
+        if (!window.confirm("Restart this open round's countdown using the saved open-days setting? Scores, existing hearts and history stay unchanged. No hearts are granted now. The saved fortune limit still applies.")) return;
+        requestId = crypto.randomUUID();
+        sessionStorage.setItem(key, requestId);
+      }
+      await axios.post("/api/competitive/restartClock", {
+        seasonNumber: seasonData.seasonNumber,
+        roundNumber: seasonData.currentRound,
+        requestId,
+      });
+      sessionStorage.removeItem(key);
+      siteInfo.showAlert("Open-round clock restarted. Scores, hearts and history preserved.", "success");
+    } catch (error) {
+      errorAlert(error.response?.data || "Restart not confirmed. Retrying this button reuses the same request, without extending the clock twice.");
+    } finally {
+      setControlsSaving(false);
+    }
+  };
+
   const moveSetup = (roundIndex, setupIndex, direction) => {
     if (!seasonData) return;
 
@@ -225,14 +250,17 @@ export default function CompetitiveManagement() {
             {seasonData.settings && (
               <Stack spacing={2}>
                 <Typography>Season {seasonData.paused ? "paused" : "playing"}</Typography>
+                {seasonData.operation && <Typography color="warning.main">Operation in progress: {seasonData.operation.name}, since {new Date(seasonData.operation.startedAt).toISOString()}. If this persists, an operator must reconcile it before retrying.</Typography>}
                 <Stack direction="row" spacing={1}>
                   <Button disabled={controlsSaving || !seasonData.paused} onClick={() => saveControls({ paused: false })}>Play</Button>
                   <Button disabled={controlsSaving || seasonData.paused} onClick={() => saveControls({ paused: true })}>Pause</Button>
+                  <Button disabled={controlsSaving} onClick={restartClock}>Restart open clock</Button>
                 </Stack>
                 <Typography variant="body2">
                   Open and review days apply to newly created rounds. Daily hearts apply to future allocations;
                   zero stops new allocation without removing existing hearts. The fortune limit and grace period
                   apply to the current round as well. Saving does not reset scores or heart balances.
+                  Restart uses saved open days, preserves Play/Pause, and grants no hearts immediately. It cannot reopen grace/review or completed rounds. A reached fortune limit can still end the restarted round.
                   Play permits new starts; an existing full lobby cancelled by Pause needs a player
                   to leave and rejoin to restart its ready check/countdown.
                 </Typography>
