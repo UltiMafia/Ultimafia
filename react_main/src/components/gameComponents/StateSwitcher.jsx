@@ -62,6 +62,37 @@ export default function StateSwitcher({ stateRange = null }) {
   );
   const currentStateIndex = reverseStateNums[stateViewing];
 
+  if (isPhoneDevice) {
+    const currentState = history.states[stateViewing];
+    const previousState = stateNums[currentStateIndex - 1];
+    const nextState = stateNums[currentStateIndex + 1];
+    const mobileArrow = (direction, stateNum) => (
+      <IconButton
+        aria-label={direction === "previous" ? "Previous phase" : "Next phase"}
+        disabled={stateNum === undefined}
+        onClick={() => stateNum !== undefined && handleClick({ type: "set", stateNum })}
+        sx={{
+          width: 44, height: 44, flex: "none", bgcolor: "background.paper",
+          border: 1, borderColor: "divider", boxShadow: 3,
+          "&:hover": { bgcolor: "background.paper" },
+        }}
+      >
+        <i className={`fas fa-angle-${direction === "previous" ? "left" : "right"}`} style={iconStyle} />
+      </IconButton>
+    );
+
+    return (
+      <Stack direction="row" role="group" aria-label="Game phase navigation" sx={{ alignItems: "center", justifyContent: "center", gap: 1, maxWidth: "calc(100% - 16px)", pointerEvents: "auto" }}>
+        {mobileArrow("previous", previousState)}
+        <Paper variant="outlined" sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, borderRadius: 99, px: 2, py: 0.5, minHeight: 44, minWidth: 0, boxShadow: 3 }}>
+          {currentState && <StateIcon stateName={currentState.name} winnerGroups={currentState.winners?.groups || []} size={28} />}
+          <Typography noWrap aria-live="polite" sx={{ fontSize: "0.9rem", fontWeight: 600 }}>{currentState?.name || "Unknown State"}</Typography>
+        </Paper>
+        {mobileArrow("next", nextState)}
+      </Stack>
+    );
+  }
+
   const padInvisibleLeft = Math.max(0, STATE_RANGE - currentStateIndex);
   const padInvisibleRight = Math.max(
     0,

@@ -2036,10 +2036,8 @@ export function MobileLayout({
   innerRightContent = <ActionList />,
   additionalInfoContent = <></>,
   hideInfoTab = false,
-  chatTab = false,
 }) {
   const game = useContext(GameContext);
-  const { singleState } = useContext(GameTypeContext);
   const isPhoneDevice = useIsPhoneDevice();
 
   if (!isPhoneDevice) {
@@ -2131,32 +2129,12 @@ export function MobileLayout({
               icon={<i className="fas fa-info" />}
             />
           )}
-          {chatTab ? (
-            <BottomNavigationAction
-              label="Chat"
-              value="chat"
-              icon={<i className="fas fa-comments" />}
-              data-tutorial="chat-tab"
-            />
-          ) : (
-            <Stack
-              direction="row"
-              data-tutorial="chat-tab"
-              onClick={() => setSelectedPanel("chat")}
-              sx={{
-                flex: 2,
-                minWidth: 0,
-                filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "hidden",
-              }}
-            >
-              {!singleState && <Divider orientation="vertical" flexItem />}
-              <StateSwitcher stateRange={singleState ? 0 : undefined} />
-              {!singleState && <Divider orientation="vertical" flexItem />}
-            </Stack>
-          )}
+          <BottomNavigationAction
+            label="Chat"
+            value="chat"
+            icon={<i className="fas fa-comments" />}
+            data-tutorial="chat-tab"
+          />
           <BottomNavigationAction
             {...innerRightNavigationProps}
             data-tutorial={`${innerRightNavigationProps.value}-tab`}
@@ -2724,7 +2702,21 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
         </Box>
       </Box>
 
-      <div className="speech-wrapper" data-tutorial="chat-panel">
+      <div
+        className="speech-wrapper"
+        data-tutorial="chat-panel"
+        // Keep the floating control clear of the first message without adding
+        // padding inside the virtualized scroller or changing its row geometry.
+        style={{ paddingTop: isPhoneDevice && !singleState ? 60 : undefined }}
+      >
+        {isPhoneDevice && !singleState && (
+          <Box
+            className="mobile-phase-float"
+            sx={{ position: "absolute", top: 8, left: 0, right: 0, zIndex: 2, display: "flex", justifyContent: "center", pointerEvents: "none" }}
+          >
+            <StateSwitcher />
+          </Box>
+        )}
         {windowed ? <WindowedTranscript
           key={JSON.stringify([singleState, stateViewing, selTab, filters, settings.messageLayout])}
           rows={messages}
