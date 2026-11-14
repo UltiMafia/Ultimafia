@@ -83,7 +83,7 @@ function makeState(count) {
     obituaries.End = paper("Postgame", count - 1, ["Synthetic 4"]);
   }
 
-  return {
+  const states = {
     0: {
       name: "Day 1", selTab: "village", alerts: [], obituaries,
       dead: {}, exorcised: {},
@@ -96,6 +96,13 @@ function makeState(count) {
       },
     },
   };
+  if (params.has("phases")) {
+    states[1] = { ...states[0], name: "Day 2", obituaries: {}, meetings: {
+      village: { ...states[0].meetings.village,
+        messages: Array.from({ length: count }, () => makeMessage()) },
+    } };
+  }
+  return states;
 }
 
 function ChatPerformance() {
@@ -104,6 +111,7 @@ function ChatPerformance() {
   const [pinnedMessages, setPinnedMessages] = useState({});
   const [transcriptVersion, setTranscriptVersion] = useState("");
   const [streaming, setStreaming] = useState(false);
+  const [stateViewing, setStateViewing] = useState(params.has("phases") ? 1 : 0);
   const status = useRef();
   const isPhone = useIsPhoneDevice();
 
@@ -155,7 +163,7 @@ function ChatPerformance() {
       fromState: 0, fromMeetingId: "village", messageId: message.id });
   }, [append]);
 
-  const state = history.states[0];
+  const state = history.states[stateViewing];
   const count = state?.meetings.village.messages.length || 0;
 
   // Read the renderer version from the DOM so the harness names the build it is
@@ -172,7 +180,7 @@ function ChatPerformance() {
     history, updateHistory, players, spectators, settings: params.has("partialSettings")
       ? Object.fromEntries(Object.entries(settings).filter(([key]) => key !== "virtualizeTranscript"))
       : settings, updateSettings, options,
-    stateViewing: 0, self: "test-0", socket, review: false,
+    stateViewing, self: "test-0", socket, review: false,
     isolationEnabled: false, isolatedPlayers, isSpectator: false,
     pinnedMessages, isMessagePinned, onPinMessage, onMessageQuote,
     getSetupGameSetting: noop, playAudio: noop, setup: { total: 12 },
@@ -187,6 +195,7 @@ function ChatPerformance() {
 
   useEffect(() => {
     window.chatPerf = { load, settings, updateSettings,
+      viewPhase: setStateViewing,
       append: (message) => append(message || makeMessage()), setStreaming,
       replyTo: (id) => {
         append({ ...makeMessage("quote", "test-0"), id: "perf-quote", isQuote: true,
