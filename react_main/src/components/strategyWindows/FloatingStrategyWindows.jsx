@@ -133,7 +133,7 @@ function FloatingStrategyWindow({ win, zIndex }) {
         borderColor: "divider",
         bgcolor: "background.paper",
         boxShadow:
-          "rgba(101, 119, 134, 0.28) 0px 0px 18px, rgba(101, 119, 134, 0.18) 0px 0px 4px 1px",
+          "rgba(0, 0, 0, 0.3) 0px 0px 18px, rgba(0, 0, 0, 0.2) 0px 0px 4px 1px",
       }}
     >
       <Stack
