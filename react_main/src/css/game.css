@@ -71,14 +71,12 @@
   color: var(--scheme-color-text);
 }
 
-.game .left-panel {
-  /* Desktop sizing */
-  width: 22vw;
-}
-
+.game .left-panel,
 .game .right-panel {
-  /* Desktop sizing */
-  width: 22vw;
+  /* Give compact desktop controls room without squeezing out the chat. */
+  width: clamp(14rem, 24vw, 22rem);
+  max-width: 28%;
+  min-width: 0;
 }
 
 .game .center-panel {
@@ -94,7 +92,8 @@
 }
 
 .game .title-box {
-  height: calc(1em + 4 * var(--mui-spacing));
+  min-height: calc(1em + 4 * var(--mui-spacing));
+  height: auto;
   padding: var(--mui-spacing);
   line-height: normal;
   flex: none;
@@ -1121,7 +1120,8 @@ html[data-keyboard="open"] .game .meeting-tabs {
  * Media Queries
  */
 
-@media (max-width: 900px) {
+/* Match MUI's down("md") query used by useIsPhoneDevice. */
+@media (max-width: 899.95px) {
   .game {
     padding: 0px !important;
     background-color: var(--scheme-color) !important;
@@ -1150,6 +1150,7 @@ html[data-keyboard="open"] .game .meeting-tabs {
   }
 
   .game .left-panel {
+    max-width: none;
     width: 100vw !important;
   }
 
@@ -1158,6 +1159,7 @@ html[data-keyboard="open"] .game .meeting-tabs {
   }
 
   .game .right-panel {
+    max-width: none;
     width: 100vw !important;
   }
 
