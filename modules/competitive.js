@@ -94,7 +94,7 @@ async function checkFortuneHammerAndEndOpenPhaseUnlocked(seasonNumber, round) {
   return true;
 }
 
-async function progressCompetitiveUnlocked(seasonNumberLocked) {
+async function progressCompetitiveUnlocked(seasonNumberLocked, beginMutation) {
   // Get the current season, if any
   const currentSeason = await models.CompetitiveSeason.findOne({
     completed: false,
@@ -119,6 +119,8 @@ async function progressCompetitiveUnlocked(seasonNumberLocked) {
   })
     .sort({ number: -1 })
     .lean();
+
+  await beginMutation();
 
   if (!currentRound) {
     // If this season lacks a round record for the current round, then schedule and create it
@@ -558,7 +560,7 @@ async function endSeason(seasonNumber) {
   await redis.invalidateAllCachedUsers();
 }
 
-async function accountCompetitiveRoundsUnlocked(seasonNumberLocked) {
+async function accountCompetitiveRoundsUnlocked(seasonNumberLocked, beginMutation) {
   // Get the current season, if any
   const currentSeason = await models.CompetitiveSeason.findOne({
     completed: false,
@@ -590,6 +592,7 @@ async function accountCompetitiveRoundsUnlocked(seasonNumberLocked) {
   }
 
   if (!currentSeason.paused) {
+    await beginMutation();
     const now = Date.now();
     const endOfRoundDay = competitiveDayDeadline(currentRound);
     if (now > endOfRoundDay) {
@@ -646,7 +649,7 @@ async function withCurrentSeason(work) {
   const season = await models.CompetitiveSeason.findOne({ completed: false })
     .sort({ number: -1 }).lean();
   if (!season) return;
-  return withCompetitiveLock(season.number, () => work(season.number), true, work.name);
+  return withCompetitiveLock(season.number, (beginMutation) => work(season.number, beginMutation), true, work.name);
 }
 async function progressCompetitive() {
   return withCurrentSeason(progressCompetitiveUnlocked);
@@ -655,11 +658,12 @@ async function accountCompetitiveRounds() {
   return withCurrentSeason(accountCompetitiveRoundsUnlocked);
 }
 async function checkFortuneHammerAndEndOpenPhase(seasonNumber, round) {
-  return withCompetitiveLock(seasonNumber, async () => {
+  return withCompetitiveLock(seasonNumber, async (beginMutation) => {
     const season = await models.CompetitiveSeason.findOne({ number: seasonNumber }).lean();
     if (!season || season.completed || season.paused || season.currentRound !== round.number) return false;
     const current = await models.CompetitiveRound.findOne({ season: seasonNumber, number: round.number }).lean();
     if (!current) return false;
+    await beginMutation();
     return checkFortuneHammerAndEndOpenPhaseUnlocked(seasonNumber, current);
   }, true, "fortune finish");
 }

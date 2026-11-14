@@ -1142,6 +1142,7 @@ var schemas = {
     operationToken: { type: String },
     operationStartedAt: { type: Number },
     operationName: { type: String },
+    operationPhase: { type: String },
   }),
   CompetitiveRound: new mongoose.Schema({
     season: { type: Number },

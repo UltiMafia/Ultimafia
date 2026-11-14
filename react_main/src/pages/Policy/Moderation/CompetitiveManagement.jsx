@@ -250,7 +250,7 @@ export default function CompetitiveManagement() {
             {seasonData.settings && (
               <Stack spacing={2}>
                 <Typography>Season {seasonData.paused ? "paused" : "playing"}</Typography>
-                {seasonData.operation && <Typography color="warning.main">Operation in progress: {seasonData.operation.name}, since {new Date(seasonData.operation.startedAt).toISOString()}. If this persists, an operator must reconcile it before retrying.</Typography>}
+                {seasonData.operation && <Typography color="warning.main">Operation in progress: {seasonData.operation.name} ({seasonData.operation.phase || "unknown phase"}), since {new Date(seasonData.operation.startedAt).toISOString()}. If this persists, an operator must reconcile it before retrying.</Typography>}
                 <Stack direction="row" spacing={1}>
                   <Button disabled={controlsSaving || !seasonData.paused} onClick={() => saveControls({ paused: false })}>Play</Button>
                   <Button disabled={controlsSaving || seasonData.paused} onClick={() => saveControls({ paused: true })}>Pause</Button>

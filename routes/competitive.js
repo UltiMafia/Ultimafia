@@ -132,10 +132,11 @@ router.post("/pause", async function (req, res) {
       return;
     }
 
-    const response = await withCompetitiveLock(latestSeason.number, async () => {
+    const response = await withCompetitiveLock(latestSeason.number, async (beginMutation) => {
     const current = await models.CompetitiveSeason.findOne({ number: latestSeason.number, completed: false }).lean();
     if (!current) return { status: 409, body: "Season changed. Refresh before retrying." };
     const newPauseState = !current.paused;
+    await beginMutation();
 
     await models.CompetitiveSeason.updateOne(
       { _id: ObjectID(latestSeason._id) },
@@ -172,7 +173,7 @@ router.post("/controls", async function (req, res) {
         (paused === undefined && settings === undefined)) {
       return res.status(400).send("Invalid competitive controls.");
     }
-    const response = await withCompetitiveLock(seasonNumber, async () => {
+    const response = await withCompetitiveLock(seasonNumber, async (beginMutation) => {
     const changes = {};
     if (paused !== undefined) changes.paused = paused;
     const minimums = { openDays: 1, reviewDays: 0, dailyHearts: 0, fortuneLimit: 1, graceHours: 0 };
@@ -208,6 +209,7 @@ router.post("/controls", async function (req, res) {
           { $exists: false } : currentSeason[name];
       }
     }
+    await beginMutation();
     // Return the actual previous values from the same atomic update for the audit.
     const season = await models.CompetitiveSeason.findOneAndUpdate(
       { number: seasonNumber, completed: false, ...durationSnapshot }, { $set: changes }, { new: false }
@@ -246,7 +248,7 @@ router.post("/restartClock", async function (req, res) {
         typeof requestId !== "string" || !/^[a-zA-Z0-9-]{16,80}$/.test(requestId)) {
       return res.status(400).send("Invalid restart request.");
     }
-    const response = await withCompetitiveLock(seasonNumber, async () => {
+    const response = await withCompetitiveLock(seasonNumber, async (beginMutation) => {
       const season = await models.CompetitiveSeason.findOne({ number: seasonNumber }).lean();
       const round = await models.CompetitiveRound.findOne({ season: seasonNumber, number: roundNumber }).lean();
       const previousRestart = round?.clockRestarts?.find((entry) => entry.requestId === requestId);
@@ -265,6 +267,7 @@ router.post("/restartClock", async function (req, res) {
       }
       const before = { clockBaseAt: round.clockBaseAt, remainingOpenDays: round.remainingOpenDays };
       const after = { clockBaseAt, remainingOpenDays: openDays };
+      await beginMutation();
       await models.CompetitiveRound.updateOne({ _id: round._id }, {
         $set: after, $push: { clockRestarts: { requestId, at: now, openDays, clockBaseAt } },
       });
@@ -446,7 +449,7 @@ router.post("/endRoundEarly", async function (req, res) {
       return;
     }
 
-    const response = await withCompetitiveLock(season, async () => {
+    const response = await withCompetitiveLock(season, async (beginMutation) => {
     const competitiveRound = await models.CompetitiveRound.findOne({
       season,
       number: round,
@@ -470,6 +473,7 @@ router.post("/endRoundEarly", async function (req, res) {
     }
 
     const now = new Date();
+    await beginMutation();
 
     await models.CompetitiveRound.updateOne(
       { _id: ObjectID(competitiveRound._id) },
@@ -619,7 +623,7 @@ router.get("/current", async function (req, res) {
       completed: false,
     })
       .sort({ number: -1 })
-      .select("setups setupOrder number numRounds paused currentRound openDays reviewDays dailyHearts fortuneLimit graceHours operationName operationStartedAt")
+      .select("setups setupOrder number numRounds paused currentRound openDays reviewDays dailyHearts fortuneLimit graceHours operationName operationStartedAt operationPhase")
       .populate([
         {
           path: "setups",
@@ -652,7 +656,7 @@ router.get("/current", async function (req, res) {
       paused: currentSeason.paused,
       currentRound: currentSeason.currentRound,
       settings: competitiveSettings(currentSeason),
-      operation: currentSeason.operationName ? { name: currentSeason.operationName, startedAt: currentSeason.operationStartedAt } : null,
+      operation: currentSeason.operationName ? { name: currentSeason.operationName, startedAt: currentSeason.operationStartedAt, phase: currentSeason.operationPhase } : null,
     });
   } catch (e) {
     logger.error(e);

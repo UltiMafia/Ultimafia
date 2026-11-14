@@ -1,6 +1,6 @@
 # Recoverable competitive operations: source-backed design, not implemented
 
-Status: design checkpoint only. No runtime, database migration, topology check, or acceptance performed. Do not deploy the non-expiring-lock draft as though this document implements recovery.
+Status: general replay recovery remains a design checkpoint only. A separate bounded implementation now releases ownership for a caught, fully unwound read-stage failure before any mutation attempt; this is not recovery of crashes or side effects. No runtime, database migration, topology check, or acceptance performed. Do not deploy the non-expiring-lock draft as though this document implements recovery.
 
 ## Verified basis
 
