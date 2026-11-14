@@ -39,6 +39,19 @@ export function UserProvider({
   const theme = useTheme();
   const [inGame, setInGameState] = useState(null);
   const membershipRequestRef = useRef(0);
+  const heartRequestRef = useRef(0);
+  const heartAcceptedRef = useRef({ userId: null, request: 0 });
+  const sessionRequestRef = useRef(0);
+  const heartFlightRef = useRef(null);
+  const heartLastStartedRef = useRef(0);
+  const cancelHeartRefresh = useCallback(() => {
+    const flight = heartFlightRef.current;
+    if (!flight) return;
+    flight.cancelled = true;
+    flight.pending = false;
+    flight.source.cancel("Heart refresh no longer belongs to this session");
+    heartFlightRef.current = null;
+  }, []);
   const setInGame = useCallback((value) => {
     // A lifecycle event supersedes any membership lookup already in flight.
     membershipRequestRef.current += 1;
@@ -56,7 +69,13 @@ export function UserProvider({
     itemsOwned: {},
   });
 
+  const userIdRef = useRef(user.id);
+  userIdRef.current = user.id;
+
   const clear = useCallback(() => {
+    sessionRequestRef.current += 1;
+    heartRequestRef.current += 1;
+    cancelHeartRefresh();
     setInGame(null);
     setUser({
       loggedIn: false,
@@ -65,7 +84,7 @@ export function UserProvider({
       rank: 0,
       blockedUsers: [],
     });
-  }, [setInGame]);
+  }, [setInGame, cancelHeartRefresh]);
 
   function blockUserToggle(userId) {
     var userIndex = user.blockedUsers.indexOf(userId);
@@ -127,10 +146,70 @@ export function UserProvider({
   const siteInfoRef = useRef(siteInfo);
   siteInfoRef.current = siteInfo;
 
+  // Refresh only balances: a late response must not overwrite local settings or
+  // resurrect membership while finished/left cleanup is still in progress.
+  const applyHeartInfo = useCallback((data, request, userId) => {
+    if (request !== heartRequestRef.current || !userId || data.id !== userId || userIdRef.current !== userId) return;
+    const sessionRequest = sessionRequestRef.current;
+    heartAcceptedRef.current = { userId, request };
+    setUser(current => {
+      // A later request starting is not a reason to drop this accepted snapshot.
+      // Updaters apply in order; only an account/session change invalidates it.
+      if (sessionRequest !== sessionRequestRef.current || current.id !== userId) return current;
+      return {
+        ...current,
+        redHearts: data.redHearts,
+        goldHearts: data.goldHearts,
+        redHeartRefreshTimestamp: data.redHeartRefreshTimestamp,
+        goldHeartRefreshTimestamp: data.goldHeartRefreshTimestamp,
+      };
+    });
+  }, []);
+
+  const refreshHearts = useCallback(async (followUp = true) => {
+    const userId = userIdRef.current;
+    if (!userId) return;
+    const active = heartFlightRef.current;
+    if (active && active.userId === userId) {
+      // Lifecycle events can happen after the server took its snapshot. Keep
+      // one trailing refresh, but polling/focus must not invalidate or queue it.
+      if (followUp) active.pending = true;
+      return;
+    }
+    if (!followUp && Date.now() - heartLastStartedRef.current < 30000) return;
+    cancelHeartRefresh();
+    const flight = {
+      userId,
+      pending: false,
+      cancelled: false,
+      source: axios.CancelToken.source(),
+    };
+    heartFlightRef.current = flight;
+    try {
+      do {
+        flight.pending = false;
+        const request = ++heartRequestRef.current;
+        heartLastStartedRef.current = Date.now();
+        try {
+          const { data } = await axios.get("/api/user/info", {
+            timeout: 45000,
+            cancelToken: flight.source.token,
+          });
+          if (!flight.cancelled) applyHeartInfo(data, request, userId);
+        } catch (_) {
+          // Keep the last known balance; failure does not mean zero hearts.
+        }
+      } while (flight.pending && !flight.cancelled && userIdRef.current === userId);
+    } finally {
+      if (heartFlightRef.current === flight) heartFlightRef.current = null;
+    }
+  }, [applyHeartInfo, cancelHeartRefresh]);
+
   // Query actual membership after a socket join/reconnect. Watching a game is
   // not the same as being seated in it, so do not infer this from the route.
   const refreshGameMembership = useCallback(async () => {
     const request = ++membershipRequestRef.current;
+    refreshHearts();
     try {
       const { data } = await axios.get("/api/user/info");
       if (request === membershipRequestRef.current) {
@@ -139,15 +218,18 @@ export function UserProvider({
     } catch (_) {
       // A failed lookup is not evidence that the player left their game.
     }
-  }, []);
+  }, [refreshHearts]);
 
   // Re-fetches the session and rebuilds the user. Used after signing in so the
   // document does not have to be reloaded.
   const refreshUser = useCallback(() => {
     const membershipRequest = ++membershipRequestRef.current;
+    const heartRequest = ++heartRequestRef.current;
+    const sessionRequest = ++sessionRequestRef.current;
     return axios
       .get("/api/user/info")
       .then((res) => {
+        if (sessionRequest !== sessionRequestRef.current) return;
         if (res.data.id) {
           setCaptchaVisible(false);
 
@@ -157,7 +239,22 @@ export function UserProvider({
           res.data.loggedIn = true;
           res.data.loaded = true;
           res.data.rank = Number(res.data.rank);
-          setUser(res.data);
+          setUser(current => {
+            if (sessionRequest !== sessionRequestRef.current) return current;
+            const accepted = heartAcceptedRef.current;
+            if (current.id === res.data.id && accepted.userId === res.data.id && accepted.request > heartRequest) {
+              // Preserve a newer successful snapshot, not merely a request that
+              // started later and may have failed. Its updater is already queued.
+              return {
+                ...res.data,
+                redHearts: current.redHearts,
+                goldHearts: current.goldHearts,
+                redHeartRefreshTimestamp: current.redHeartRefreshTimestamp,
+                goldHeartRefreshTimestamp: current.goldHeartRefreshTimestamp,
+              };
+            }
+            return res.data;
+          });
 
           var referrer = window.localStorage.getItem("referrer");
 
@@ -194,6 +291,7 @@ export function UserProvider({
         setUserLoading(false);
       })
       .catch((err) => {
+        if (sessionRequest !== sessionRequestRef.current) return;
         console.error("User info bootstrap failed", err);
         clear();
         setCaptchaVisible(true);
@@ -214,6 +312,7 @@ export function UserProvider({
     setInGame,
     refreshUser,
     refreshGameMembership,
+    refreshHearts,
   };
 
   useEffect(() => {
@@ -227,6 +326,25 @@ export function UserProvider({
       clearInterval(onlineInterval);
     };
   }, [refreshUser]);
+
+  useEffect(() => {
+    if (!user.id) return;
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") refreshHearts(false);
+    };
+    // Server-side refunds, scheduled refills and another tab can change the
+    // balance without a game event. Also reconcile delayed postgame persistence.
+    const interval = setInterval(refreshWhenVisible, 60000);
+    window.addEventListener("focus", refreshWhenVisible);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("focus", refreshWhenVisible);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+      heartRequestRef.current += 1;
+      cancelHeartRefresh();
+    };
+  }, [user.id, refreshHearts, cancelHeartRefresh]);
 
   const fontSize =
     (user.settings &&
