@@ -461,6 +461,16 @@ html[data-keyboard="open"] .game .meeting-tabs {
   margin: 0px 2px 0px 5px;
 }
 
+.game .message .quote-jump-header {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: inherit;
+}
+
 .game .message .quote-content {
   /*display: flex;*/
   /*flex-flow: row wrap;*/

@@ -158,6 +158,7 @@ import {
   redirectTypingToChat,
   hasSelectionIn,
   REPLY_CLICK_DELAY_MS,
+  REPLY_CLICK_MOVE_PX,
   findMessageRow,
   handleGameEscape,
   makeReplyTarget,
@@ -2304,6 +2305,49 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   const autoScrollRef = useRef(true);
   const autoScrollFrame = useRef(null);
   const hasMouse = useMediaQuery("(pointer:fine)");
+  const [quoteJump, setQuoteJump] = useState(null);
+  const quoteJumpRef = useRef(null);
+  const [quoteJumpNotice, setQuoteJumpNotice] = useState("");
+  useEffect(() => {
+    if (!quoteJumpNotice) return;
+    const timer = setTimeout(() => setQuoteJumpNotice(""), 4000);
+    return () => clearTimeout(timer);
+  }, [quoteJumpNotice]);
+  const onQuoteJump = useCallback((quote) => {
+    const sourceState = history.states[quote.fromState];
+    const sourceMeeting = sourceState?.meetings?.[quote.fromMeetingId];
+    const sourceMessage = sourceMeeting?.messages?.find(
+      (entry) => entry.id === quote.messageId
+    );
+    // Only navigate history already delivered to this viewer. Never fetch or
+    // infer a hidden meeting or an anonymous sender.
+    if (!sourceMessage) {
+      setQuoteJumpNotice("The original message is not available in your history.");
+      return;
+    }
+    const sourceTabs = getSpeechMeetings(sourceState.meetings);
+    const sourceSpectatorChat = findSpectatorChatMeeting(sourceState.meetings, isSpectator);
+    const sourceTab = sourceTabs.find((meeting) => meeting.id === quote.fromMeetingId);
+    const spectatorSource = sourceSpectatorChat?.id === quote.fromMeetingId;
+    if (!singleState && !sourceTab && !spectatorSource) {
+      setQuoteJumpNotice("The original message is not available in this chat view.");
+      return;
+    }
+    const target = {
+      state: String(quote.fromState),
+      meeting: String(quote.fromMeetingId),
+      message: String(quote.messageId),
+      tab: sourceTab?.id ?? getDefaultSpeechMeetingId(sourceTabs),
+    };
+    quoteJumpRef.current = target;
+    setQuoteJump(target);
+    setQuoteJumpNotice("");
+    setAutoScroll(false);
+    if (!singleState) {
+      updateHistory({ type: "selTab", state: quote.fromState, meetingId: target.tab });
+      game.updateStateViewing({ type: "set", stateNum: Number(quote.fromState) });
+    }
+  }, [history, isSpectator, singleState, updateHistory, game.updateStateViewing]);
 
   const speechMeetings = getSpeechMeetings(meetings);
   const spectatorChatMeeting = findSpectatorChatMeeting(meetings, isSpectator);
@@ -2351,7 +2395,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   }, [stateViewing, speechMeetings, selTab, meetings, isSpectator]);
 
   useEffect(() => {
-    if (stateViewing === history.currentState) setAutoScroll(true);
+    if (stateViewing === history.currentState && !quoteJumpRef.current) setAutoScroll(true);
     else setAutoScroll(false);
   }, [stateViewing]);
 
@@ -2509,6 +2553,8 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
               : stateViewing
           }
           meetingState={singleState ? message.fromState : stateViewing}
+          sourceState={singleState ? message.fromState : stateViewing}
+          onQuoteJump={onQuoteJump}
           key={message.id || message.messageId + message.time || i}
           onMessageQuote={game.onMessageQuote}
           onMessageReply={canSpeak && typeof game.onMessageReply === "function"
@@ -2542,6 +2588,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     isolatedPlayers,
     game.review,
     game.onMessageQuote,
+    onQuoteJump,
     game.onMessageReply,
     speechTarget.meetingId,
     canSpeak,
@@ -2550,6 +2597,33 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     game.self,
     game.isSpectator,
   ]);
+
+  useEffect(() => {
+    if (!quoteJump) return;
+    if (!singleState &&
+        (String(stateViewing) !== quoteJump.state || selTab !== quoteJump.tab)) return;
+    setAutoScroll(false);
+    const container = speechDisplayRef.current;
+    const row = container && Array.from(
+      container.querySelectorAll(".message[data-message-id]")
+    ).find((element) =>
+      element.dataset.messageId === quoteJump.message &&
+      element.dataset.messageState === quoteJump.state &&
+      element.dataset.messageMeeting === quoteJump.meeting
+    );
+    if (row) {
+      row.scrollIntoView({ block: "center", behavior: "auto" });
+      row.classList.remove("reply-jump-highlight");
+      void row.offsetWidth;
+      row.classList.add("reply-jump-highlight");
+      setTimeout(() => row.classList.remove("reply-jump-highlight"), 1600);
+      setQuoteJumpNotice("Jumped to the original message.");
+    } else {
+      setQuoteJumpNotice("The original message is not shown with the current chat filters.");
+    }
+    quoteJumpRef.current = null;
+    setQuoteJump(null);
+  }, [quoteJump, singleState, stateViewing, selTab, messages]);
 
   // Typing and unrelated game updates must not repeatedly measure the entire
   // transcript. Cancel pending work when the user scrolls away or changes tabs.
@@ -2661,6 +2735,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           {messages}
         </div>}
         <div className="speech-footer">
+          <span role="status" aria-live="polite">{quoteJumpNotice}</span>
           {newMessageCount > 0 && (
             <button
               type="button"
@@ -3030,6 +3105,55 @@ function Message(props) {
       quoteState={message.isQuote ? history.states[message.fromState] : undefined}
       history={message.obituaries || message.winners ? history : undefined}
     />
+  );
+}
+
+// Delay pointer navigation so selecting text and double-click quoting retain
+// their existing behavior. The header button also supplies keyboard activation.
+function QuoteJumpTarget({ message, onJump, children }) {
+  const timer = useRef(null);
+  const pointerDown = useRef(null);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  function onPointerDown(event) {
+    clearTimeout(timer.current);
+    pointerDown.current = {
+      x: event.clientX,
+      y: event.clientY,
+      button: event.button,
+    };
+  }
+  function onClick(event) {
+    const down = event.detail === 0 ? null : pointerDown.current;
+    pointerDown.current = null;
+    clearTimeout(timer.current);
+    // CSS can prevent a selection even when the user drags. A keyboard click
+    // has no pointer press, so it must still activate the header button.
+    if (
+      event.button !== 0 ||
+      (down && down.button !== 0) ||
+      (down && Math.hypot(event.clientX - down.x, event.clientY - down.y) >
+        REPLY_CLICK_MOVE_PX)
+    ) return;
+    if (!onJump || event.target.closest("a, input, textarea, select")) return;
+    if (String(window.getSelection() || "").trim()) return;
+    event.stopPropagation();
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      if (!String(window.getSelection() || "").trim()) onJump(message);
+    }, REPLY_CLICK_DELAY_MS);
+  }
+  return (
+    <span
+      onPointerDown={onPointerDown}
+      onPointerCancel={() => {
+        pointerDown.current = null;
+        clearTimeout(timer.current);
+      }}
+      onClick={onClick}
+      onDoubleClick={() => clearTimeout(timer.current)}
+    >
+      {children}
+    </span>
   );
 }
 
@@ -3502,6 +3626,8 @@ const MessageRow = React.memo(function MessageRow(props) {
       ref={rowRef}
       className={className}
       data-message-id={message.id ?? undefined}
+      data-message-state={props.sourceState ?? props.stateViewing}
+      data-message-meeting={message.meetingId ?? undefined}
       onPointerDown={clickToReply ? onRowPointerDown : undefined}
       onClick={clickToReply ? onRowClick : undefined}
       onKeyDown={clickToReply ? onRowKeyDown : undefined}
@@ -3637,7 +3763,7 @@ const MessageRow = React.memo(function MessageRow(props) {
             </>
           )}
           {message.isQuote && (
-            <>
+            <QuoteJumpTarget message={message} onJump={props.onQuoteJump}>
               {message.spectatorChat && (
                 <span
                   className="spectator-chat-tag"
@@ -3647,10 +3773,17 @@ const MessageRow = React.memo(function MessageRow(props) {
                 </span>
               )}
               <i className="fas fa-quote-left" />
-              <Timestamp time={quotedMessage.time} />
-              <span className="quote-info">
-                {`${quotedMessage.senderName} on ${quotedMessage.fromStateName}: `}
-              </span>
+              <button
+                type="button"
+                disabled={!props.onQuoteJump}
+                aria-label="Jump to the original quoted message"
+                className="quote-jump-header"
+              >
+                <Timestamp time={quotedMessage.time} />
+                <span className="quote-info">
+                  {`${quotedMessage.senderName} on ${quotedMessage.fromStateName}: `}
+                </span>
+              </button>
               <span className="quote-content">
                 <UserText
                   text={quotedMessage.content}
@@ -3668,7 +3801,7 @@ const MessageRow = React.memo(function MessageRow(props) {
                 />
               </span>
               <i className="fas fa-quote-right" />
-            </>
+            </QuoteJumpTarget>
           )}
         </div>
       </div>
