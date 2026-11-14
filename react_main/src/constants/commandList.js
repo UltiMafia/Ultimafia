@@ -18,7 +18,7 @@ export const commandList = {
   "/extend": {
     input: "N/A",
     description:
-      "Used during the day phase to give more time to players while deliberating on the vote.",
+      "During Day, type /extend and press Enter to vote for more time. Each extension raises the next vote requirement. At timeout, eligible players who have not voted can also count toward an extension.",
   },
   "/role": {
     input: "Role name",
