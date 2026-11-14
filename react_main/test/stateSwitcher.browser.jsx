@@ -46,6 +46,7 @@ function Fixture() {
   const [selectedPanel, setSelectedPanel] = useState("chat");
   const isPhone = useIsPhoneDevice();
   const game = {
+    transcriptWindowing: !params.has("full"),
     gameId: "state-switcher-fixture", history, stateViewing, updateStateViewing,
     updateHistory: noop, settings, updateSettings, players, spectators: {}, socket,
     selectedPanel, setSelectedPanel, review: params.has("review"), options: {},

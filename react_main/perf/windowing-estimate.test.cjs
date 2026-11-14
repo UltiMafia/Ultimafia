@@ -77,7 +77,8 @@ const server = http.createServer((req, res) => {
           return {
             native: Math.round(s.scrollTop),
             logical: Math.round(window.__probe.v.scrollOffset),
-            row0Gap: first ? Math.round(first.getBoundingClientRect().top - s.getBoundingClientRect().top) : null,
+            // The phase-control gutter is intentional; measure only extra space.
+            row0Gap: first ? Math.round(first.getBoundingClientRect().top - s.getBoundingClientRect().top - (window.__probe.v.options.paddingStart || 0)) : null,
           };
         });
         results.push({count, ...prepared, edgeLogical: edge ? Math.round(edge.logical) : null, after, errors});

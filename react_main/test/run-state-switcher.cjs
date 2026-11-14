@@ -26,13 +26,14 @@ const server = http.createServer((req, res) => {
     for (const engine of ['chromium', 'webkit']) {
       const browser = await pw[engine].launch();
       try {
-        for (const theme of ['dark', 'light']) {
+        for (const theme of ['dark', 'light']) for (const full of [false, true]) {
+          const renderer = full ? '&full' : '';
           const page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
           const errors = [];
           page.on('pageerror', e => errors.push(e.message));
           await page.route('**/*', route => route.request().url().startsWith(origin) ? route.continue() : route.abort());
           try {
-            await page.goto(origin + `?theme=${theme}`);
+            await page.goto(origin + `?theme=${theme}${renderer}`);
             await page.waitForSelector('.speech-display');
             const group = page.getByRole('group', { name: 'Game phase navigation' });
             await group.waitFor();
@@ -56,6 +57,12 @@ const server = http.createServer((req, res) => {
             assert.ok(geo.width <= geo.viewport, 'must fit phone width');
             assert.ok(geo.targets.every(r => r.width >= 44 && r.height >= 44), '44px arrow targets');
             await page.getByRole('button', { name: 'Next phase', exact: true }).isDisabled().then(value => assert.ok(value));
+            const disabledStyle = await page.getByRole('button', { name: 'Next phase', exact: true }).evaluate(el => {
+              const style = getComputedStyle(el);
+              return { background: style.backgroundColor, opacity: style.opacity };
+            });
+            assert.ok(!disabledStyle.background.startsWith('rgba(') || disabledStyle.background.endsWith(', 1)'), 'disabled arrow must retain an opaque fill');
+            assert.equal(disabledStyle.opacity, '1', 'disabled arrow must not fade');
             for (const name of ['Night 1', 'Day 1', 'Pregame']) {
               await page.getByRole('button', { name: 'Previous phase', exact: true }).click();
               await group.getByText(name, { exact: true }).waitFor();
@@ -63,6 +70,54 @@ const server = http.createServer((req, res) => {
             assert.ok(await page.getByRole('button', { name: 'Previous phase', exact: true }).isDisabled());
             await page.getByRole('button', { name: 'Next phase', exact: true }).click();
             await group.getByText('Day 1', { exact: true }).waitFor();
+            if (full) await page.locator('.speech-display').evaluate(el => { el.scrollTop = 0; });
+            await page.waitForFunction(() => {
+              const scroller = document.querySelector('.speech-display');
+              return scroller.scrollTop < 1 && !!scroller.querySelector('.message');
+            });
+            const firstMessage = await page.evaluate(() => {
+              const control = document.querySelector('[aria-label="Game phase navigation"]').getBoundingClientRect();
+              const scroller = document.querySelector('.speech-display');
+              const first = scroller.querySelector('.message').getBoundingClientRect();
+              return { top: first.top, controlBottom: control.bottom, gutter: first.top - scroller.getBoundingClientRect().top };
+            });
+            assert.ok(firstMessage.gutter >= 60, 'reserve scrollable space above the first message');
+            assert.ok(firstMessage.top >= firstMessage.controlBottom, 'first message must clear floating controls');
+            const chooser = page.getByRole('button', { name: 'Choose phase', exact: true });
+            assert.equal(await chooser.count(), 1, 'center pill must open a direct phase chooser');
+            await chooser.click();
+            const menu = page.getByRole('menu', { name: 'Game phases', exact: true });
+            await menu.waitFor();
+            if (process.env.SCREENSHOT_DIR && !full) {
+              fs.mkdirSync(process.env.SCREENSHOT_DIR, { recursive: true });
+              await page.screenshot({ path: path.join(process.env.SCREENSHOT_DIR, `state-pill-menu-${engine}-${theme}.png`) });
+            }
+            assert.deepEqual(await menu.getByRole('menuitem').allTextContents(), ['Pregame', 'Day 1', 'Night 1', 'Day 2']);
+            assert.equal(await menu.getByRole('menuitem', { name: 'Day 1', exact: true }).getAttribute('aria-current'), 'step');
+            await menu.getByRole('menuitem', { name: 'Night 1', exact: true }).click();
+            await group.getByText('Night 1', { exact: true }).waitFor();
+            await menu.waitFor({ state: 'hidden' });
+            await chooser.click();
+            await menu.getByRole('menuitem', { name: 'Day 1', exact: true }).click();
+            await group.getByText('Day 1', { exact: true }).waitFor();
+            await chooser.focus();
+            await page.keyboard.press('Enter');
+            await menu.waitFor();
+            await page.keyboard.press('ArrowDown');
+            await page.keyboard.press('Enter');
+            await group.getByText('Night 1', { exact: true }).waitFor();
+            await chooser.press('Enter');
+            await menu.waitFor();
+            await page.keyboard.press('Escape');
+            await menu.waitFor({ state: 'hidden' });
+            await chooser.click();
+            await menu.getByRole('menuitem', { name: 'Day 1', exact: true }).click();
+            assert.equal(await group.evaluate(el => getComputedStyle(el).touchAction), 'manipulation', 'phase controls must opt out of double-tap zoom');
+            for (const [direction, name] of [['Next phase', 'Night 1'], ['Next phase', 'Day 2'], ['Previous phase', 'Night 1'], ['Previous phase', 'Day 1']]) {
+              await page.getByRole('button', { name: direction, exact: true }).tap();
+              await group.getByText(name, { exact: true }).waitFor();
+            }
+            assert.equal(await page.evaluate(() => visualViewport.scale), 1, 'repeated taps must not change viewport scale in browser fixture');
             assert.equal(await page.locator('.MuiBottomNavigation-root [aria-label="Game phase navigation"]').count(), 0);
             const nav = page.locator('.MuiBottomNavigation-root');
             assert.deepEqual(await nav.locator('.MuiBottomNavigationAction-label').allTextContents(), ['Players', 'Info', 'Chat', 'Actions', 'Menu']);
@@ -72,28 +127,33 @@ const server = http.createServer((req, res) => {
             await group.waitFor({ state: 'visible' });
             if (process.env.SCREENSHOT_DIR) {
               fs.mkdirSync(process.env.SCREENSHOT_DIR, { recursive: true });
-              await page.screenshot({ path: path.join(process.env.SCREENSHOT_DIR, `state-pill-${engine}-${theme}.png`) });
+              await page.screenshot({ path: path.join(process.env.SCREENSHOT_DIR, `state-pill-${engine}-${theme}${full ? '-full' : ''}.png`) });
             }
             for (const width of [320, 375, 414]) {
               await page.setViewportSize({ width, height: 844 });
               assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${width}px fits`);
             }
-            await page.goto(origin + `?theme=${theme}&finished&review`);
+            await page.goto(origin + `?theme=${theme}${renderer}&finished&review`);
             await page.getByRole('group', { name: 'Game phase navigation' }).getByText('Postgame', { exact: true }).waitFor();
             assert.ok(await page.getByRole('button', { name: 'Next phase', exact: true }).isDisabled());
+            await chooser.click();
+            await menu.waitFor();
+            assert.deepEqual(await menu.getByRole('menuitem').allTextContents(), ['Pregame', 'Day 1', 'Night 1', 'Day 2', 'Postgame']);
+            await page.keyboard.press('Escape');
+            await menu.waitFor({ state: 'hidden' });
             await page.getByRole('button', { name: 'Previous phase', exact: true }).click();
             await page.getByRole('group', { name: 'Game phase navigation' }).getByText('Day 2', { exact: true }).waitFor();
-            await page.goto(origin + `?theme=${theme}&single`);
+            await page.goto(origin + `?theme=${theme}${renderer}&single`);
             await page.waitForSelector('.speech-display');
             assert.equal(await page.getByRole('group', { name: 'Game phase navigation' }).count(), 0);
             await page.setViewportSize({ width: 1280, height: 900 });
-            await page.goto(origin + `?theme=${theme}`);
+            await page.goto(origin + `?theme=${theme}${renderer}`);
             await page.getByTestId('desktop-state-control').waitFor();
             assert.equal(await page.getByRole('group', { name: 'Game phase navigation' }).count(), 0);
             assert.ok(await page.getByRole('button', { name: 'Go to first state', exact: true }).isVisible());
             assert.equal(await page.getByRole('tab', { name: 'Day 2', exact: true }).count(), 1);
             assert.deepEqual(errors, [], 'no browser exceptions');
-            console.log(`${engine}/${theme}: phase order, endpoints, panels, widths, desktop: PASS`);
+            console.log(`${engine}/${theme}/${full ? 'full' : 'virtual'}: phase order, endpoints, gutter, panels, widths, desktop: PASS`);
           } catch (e) { failures.push(`${engine}/${theme}: ${e.message}`);console.error(e.stack); }
           finally { await page.close(); }
         }

@@ -7,7 +7,10 @@ import React, {
 } from "react";
 import {
   Box,
+  ButtonBase,
   IconButton,
+  Menu,
+  MenuItem,
   Paper,
   Stack,
   Tab,
@@ -25,6 +28,11 @@ export default function StateSwitcher({ stateRange = null }) {
   const hideFastForward = isPhoneDevice;
 
   const { history, stateViewing, updateStateViewing } = game;
+  const [menuAnchor, setMenuAnchor] = useState(null);
+  const [menuId] = useState(() => `phase-menu-${Math.random().toString(36).slice(2)}`);
+  useEffect(() => {
+    setMenuAnchor(null);
+  }, [stateViewing, isPhoneDevice, game.selectedPanel]);
 
   const STATE_RANGE = stateRange !== null ? stateRange : isPhoneDevice ? 1 : 2;
 
@@ -68,13 +76,16 @@ export default function StateSwitcher({ stateRange = null }) {
     const nextState = stateNums[currentStateIndex + 1];
     const mobileArrow = (direction, stateNum) => (
       <IconButton
+        disableRipple
         aria-label={direction === "previous" ? "Previous phase" : "Next phase"}
         disabled={stateNum === undefined}
         onClick={() => stateNum !== undefined && handleClick({ type: "set", stateNum })}
         sx={{
-          width: 44, height: 44, flex: "none", bgcolor: "background.paper",
+          width: 44, height: 44, flex: "none", bgcolor: "background.paper", touchAction: "manipulation",
           border: 1, borderColor: "divider", boxShadow: 3,
           "&:hover": { bgcolor: "background.paper" },
+          "&.Mui-disabled": { bgcolor: "background.paper", color: "text.secondary", opacity: 1, transition: "none", pointerEvents: "auto" },
+          "&.Mui-focusVisible": { outline: "2px solid", outlineColor: "primary.main" },
         }}
       >
         <i className={`fas fa-angle-${direction === "previous" ? "left" : "right"}`} style={iconStyle} />
@@ -82,14 +93,57 @@ export default function StateSwitcher({ stateRange = null }) {
     );
 
     return (
-      <Stack direction="row" role="group" aria-label="Game phase navigation" sx={{ alignItems: "center", justifyContent: "center", gap: 1, maxWidth: "calc(100% - 16px)", pointerEvents: "auto" }}>
+      <>
+      <Stack direction="row" role="group" aria-label="Game phase navigation" sx={{ alignItems: "center", justifyContent: "center", gap: 1, maxWidth: "calc(100% - 16px)", pointerEvents: "auto", touchAction: "manipulation" }}>
         {mobileArrow("previous", previousState)}
-        <Paper variant="outlined" sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, borderRadius: 99, px: 2, py: 0.5, minHeight: 44, minWidth: 0, boxShadow: 3 }}>
+        <Paper
+          component={ButtonBase}
+          disableRipple
+          variant="outlined"
+          aria-label="Choose phase"
+          aria-haspopup="menu"
+          aria-expanded={Boolean(menuAnchor)}
+          aria-controls={menuAnchor ? menuId : undefined}
+          onClick={event => setMenuAnchor(event.currentTarget)}
+          sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, border: 1, borderColor: "divider", borderRadius: 99, px: 2, py: 0.5, minHeight: 44, minWidth: 0, boxShadow: 3, "&.Mui-focusVisible": { outline: "2px solid", outlineColor: "primary.main" } }}
+        >
           {currentState && <StateIcon stateName={currentState.name} winnerGroups={currentState.winners?.groups || []} size={28} />}
           <Typography noWrap aria-live="polite" sx={{ fontSize: "0.9rem", fontWeight: 600 }}>{currentState?.name || "Unknown State"}</Typography>
+          <i className="fas fa-angle-down" aria-hidden="true" />
         </Paper>
         {mobileArrow("next", nextState)}
       </Stack>
+      <Menu
+        id={menuId}
+        anchorEl={menuAnchor}
+        open={Boolean(menuAnchor)}
+        onClose={() => setMenuAnchor(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        transformOrigin={{ vertical: "top", horizontal: "center" }}
+        transitionDuration={0}
+        disableScrollLock
+        MenuListProps={{ "aria-label": "Game phases" }}
+        PaperProps={{ sx: { maxHeight: "min(60dvh, 360px)", minWidth: 180 } }}
+      >
+        {stateNums.map(stateNum => {
+          const state = history.states[stateNum];
+          return <MenuItem
+            key={stateNum}
+            aria-label={state.name}
+            selected={stateNum === stateViewing}
+            aria-current={stateNum === stateViewing ? "step" : undefined}
+            onClick={() => {
+              handleClick({ type: "set", stateNum });
+              setMenuAnchor(null);
+            }}
+            sx={{ gap: 1.5, minHeight: 44, touchAction: "manipulation" }}
+          >
+            <StateIcon stateName={state.name} winnerGroups={state.winners?.groups || []} size={24} />
+            {state.name}
+          </MenuItem>;
+        })}
+      </Menu>
+      </>
     );
   }
 

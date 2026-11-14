@@ -2718,9 +2718,11 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           onScroll={onSpeechScroll}
           autoScroll={autoScroll}
           startAtEnd={!game.review && (singleState || stateViewing === history.currentState)}
+          paddingStart={isPhoneDevice && !singleState ? 60 : 0}
         /> : <div
           className="speech-display"
           data-name-animation-viewport
+          style={{ paddingTop: isPhoneDevice && !singleState ? 60 : undefined }}
           onScroll={onSpeechScroll}
           ref={speechDisplayRef}
         >
