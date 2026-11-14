@@ -2702,13 +2702,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
         </Box>
       </Box>
 
-      <div
-        className="speech-wrapper"
-        data-tutorial="chat-panel"
-        // Keep the floating control clear of the first message without adding
-        // padding inside the virtualized scroller or changing its row geometry.
-        style={{ paddingTop: isPhoneDevice && !singleState ? 60 : undefined }}
-      >
+      <div className="speech-wrapper" data-tutorial="chat-panel">
         {isPhoneDevice && !singleState && (
           <Box
             className="mobile-phase-float"

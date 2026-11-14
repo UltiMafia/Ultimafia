@@ -43,13 +43,16 @@ const server = http.createServer((req, res) => {
               const wrapper = document.querySelector('.speech-wrapper');
               const transcript = document.querySelector('.speech-display');
               const r = control.getBoundingClientRect(), t = tabs.getBoundingClientRect();
-              return { inTranscript: wrapper.contains(control), top: r.top, bottom: r.bottom, transcriptTop: transcript.getBoundingClientRect().top, tabsBottom: t.bottom, position: getComputedStyle(control.parentElement).position, width: document.documentElement.scrollWidth, viewport: innerWidth,
+              return { inTranscript: wrapper.contains(control), top: r.top, transcriptTop: transcript.getBoundingClientRect().top, tabsBottom: t.bottom, position: getComputedStyle(control.parentElement).position, overlayBackground: getComputedStyle(control.parentElement).backgroundColor, overlayPointerEvents: getComputedStyle(control.parentElement).pointerEvents, gutterBlocked: !!document.elementFromPoint(4, r.top + r.height / 2)?.closest('.mobile-phase-float'), width: document.documentElement.scrollWidth, viewport: innerWidth,
                 targets: [...control.querySelectorAll('button')].map(el => ({ width: el.getBoundingClientRect().width, height: el.getBoundingClientRect().height })) };
             });
             assert.equal(geo.inTranscript, true, 'pill must float over transcript, below meeting tabs');
             assert.ok(geo.top >= geo.tabsBottom, 'pill must not cover Village/timer header');
             assert.equal(geo.position, 'absolute', 'pill must float rather than add a toolbar row');
-            assert.ok(geo.transcriptTop >= geo.bottom, 'floating controls must not obscure the first message');
+            assert.ok(Math.abs(geo.transcriptTop - geo.tabsBottom) <= 1, 'floating control must not reserve a toolbar band above chat');
+            assert.equal(geo.overlayBackground, 'rgba(0, 0, 0, 0)', 'no full-width fill behind the pill');
+            assert.equal(geo.overlayPointerEvents, 'none', 'empty space around pill must pass through to chat');
+            assert.equal(geo.gutterBlocked, false, 'chat beside pill remains touchable');
             assert.ok(geo.width <= geo.viewport, 'must fit phone width');
             assert.ok(geo.targets.every(r => r.width >= 44 && r.height >= 44), '44px arrow targets');
             await page.getByRole('button', { name: 'Next phase', exact: true }).isDisabled().then(value => assert.ok(value));
