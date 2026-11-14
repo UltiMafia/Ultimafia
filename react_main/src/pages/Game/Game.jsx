@@ -93,6 +93,7 @@ import { pregameSeatAction } from "shared/pregameSeatAction";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
 import { WindowedTranscript } from "./components/WindowedTranscript";
 import { bindMessageTouch } from "../../utils/messageTouch";
+import { mergeDepartedPregamePlayers } from "../../utils/pregameRoster";
 import {
   Accordion,
   AccordionSummary,
@@ -948,6 +949,10 @@ export default function Game(props) {
               left: data.left.indexOf(data.spectators[i]) !== -1,
             };
           }
+
+          // Players who left during pregame still have messages in the stored
+          // history; without their snapshot those messages render nameless.
+          mergeDepartedPregamePlayers(players, data.pastPregamePlayers);
 
           updatePlayers({
             type: "set",

@@ -5610,6 +5610,9 @@ module.exports = class Game {
           playerAlignmentMap: JSON.stringify(playerAlignmentMap),
           playerRoleMap: JSON.stringify(playerRoleMap),
           spectatorIdMap: JSON.stringify(spectatorIdMap),
+          // Seats that left during pregame, so review can name the messages
+          // they left behind (their pregame chat keeps the old seat id).
+          pastPregamePlayers: JSON.stringify(this.pastPregamePlayers || {}),
           history: JSON.stringify(history),
           startTime: this.startTime,
           endTime: Date.now(),
