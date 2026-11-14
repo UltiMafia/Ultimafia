@@ -1473,6 +1473,7 @@ export function InlineRoleMention({
           }}
         />
         <span
+          className="inline-role-mention"
           aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
           aria-haspopup="true"
           onClick={handlePopoverClick}

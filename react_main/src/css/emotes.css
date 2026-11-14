@@ -39,7 +39,9 @@
 .collapsed-sticker-label {
   font-style: italic;
   opacity: 0.8;
-  display: flex;
+  /* Inline-level so it can sit inside a reply's quoted line: a block-level
+     flex box breaks the line there, and the reference grows to two rows. */
+  display: inline-flex;
   align-items: center;
   margin: 0 4px;
 }

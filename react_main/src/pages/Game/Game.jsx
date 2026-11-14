@@ -3124,6 +3124,7 @@ function ReplyReference(props) {
           customEmotes={reply.customEmotes}
           customStickers={reply.customStickers}
           collapseStickers={true}
+          compactAvatars={true}
           filterProfanity
           linkify={false}
           emotify
