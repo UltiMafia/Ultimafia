@@ -177,11 +177,32 @@ router.post("/controls", async function (req, res) {
       changes[name] = value;
     }
     if (!Object.keys(changes).length) return res.status(400).send("No changes supplied.");
+    const durationNames = ["openDays", "reviewDays", "graceHours"];
+    const durationSnapshot = {};
+    if (durationNames.some((name) => Object.prototype.hasOwnProperty.call(changes, name))) {
+      // Individually valid durations can still overflow when used together.
+      const currentSeason = await models.CompetitiveSeason.findOne({
+        number: seasonNumber, completed: false,
+      }).lean();
+      if (!currentSeason) return res.status(409).send("This season is no longer active. Refresh before changing controls.");
+      const effective = competitiveSettings({ ...currentSeason, ...changes });
+      const totalMillis = (effective.openDays + effective.reviewDays) * 86400000 +
+        effective.graceHours * 3600000;
+      if (!Number.isSafeInteger(totalMillis) || totalMillis + Date.now() > 8640000000000000) {
+        return res.status(400).send("Combined competitive durations exceed the supported date range.");
+      }
+      // Compare the durations read above atomically so concurrent requests
+      // cannot combine two independently valid changes into an invalid total.
+      for (const name of durationNames) {
+        durationSnapshot[name] = currentSeason[name] === undefined ?
+          { $exists: false } : currentSeason[name];
+      }
+    }
     // Return the actual previous values from the same atomic update for the audit.
     const season = await models.CompetitiveSeason.findOneAndUpdate(
-      { number: seasonNumber, completed: false }, { $set: changes }, { new: false }
+      { number: seasonNumber, completed: false, ...durationSnapshot }, { $set: changes }, { new: false }
     ).lean();
-    if (!season) return res.status(409).send("This season is no longer active. Refresh before changing controls.");
+    if (!season) return res.status(409).send("Season or settings changed. Refresh before changing controls.");
     // A Redis failure must not prevent recording the already applied change.
     // Also attempt invalidation if audit persistence fails, so stale pause state
     // is not retained simply because the audit store is unavailable.
