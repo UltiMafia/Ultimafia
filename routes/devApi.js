@@ -8,6 +8,7 @@ const { isTestingGame } = require("../modules/devApi/policy");
 const logger = require("../modules/logging")(".");
 const errors = require("../modules/devApi/errors");
 const models = require("../db/models");
+const constants = require("../data/constants");
 const router = express.Router();
 
 function handle(fn) {
@@ -260,27 +261,80 @@ router.post(
   })
 );
 
+async function requireGameLogAccess(req, res, gameId) {
+  const userId = await routeUtils.verifyLoggedIn(req, true);
+  if (!userId) {
+    errors.unauthorized(res, "You must be logged in or use a developer token.");
+    return null;
+  }
+  const isOwner = await routeUtils.verifyPermission(userId, "giveGroup", Infinity);
+  if (!isOwner && !(await keys.isActiveDeveloper(userId))) {
+    errors.forbidden(res, "Only developers or Owners can read game logs.");
+    return null;
+  }
+
+  const first = await models.GameEventLogChunk.findOne({ gameId }).select("lobby").lean();
+  if (!first) {
+    errors.notFound(res, "No event log for this game.");
+    return null;
+  }
+  if (isOwner || first.lobby === constants.testingLobby)
+    return { mode: "full", userId };
+
+  const game = await models.Game.findOne({ id: gameId }).select("endTime").lean();
+  if (game && Number.isFinite(game.endTime) && game.endTime > 0)
+    return { mode: "full", userId };
+
+  // The server records this marker at game end, before saving the postgame record.
+  const cursor = models.GameEventLogChunk.find({ gameId }).select("lines -_id").lean().cursor();
+  try {
+    for await (const chunk of cursor) {
+      if (parseLines(chunk).some((entry) =>
+        entry.direction === "server" && entry.userId === null && entry.event === "end"
+      )) return { mode: "full", userId };
+    }
+  } finally {
+    await cursor.close();
+  }
+  // A missing end marker is not proof that a game has ended.
+  return { mode: "filtered", userId };
+}
+
 const logChunksPerPage = 20;
 
 function parseLines(chunk) {
   return chunk.lines.map((line) => JSON.parse(line));
 }
 
+async function* visibleLogChunks(gameId, access, from = 0) {
+  const cursor = models.GameEventLogChunk.find({ gameId, n: { $gte: from } })
+    .select("n lines -_id")
+    .sort("n")
+    .lean()
+    .cursor();
+  try {
+    for await (const chunk of cursor) {
+      const lines = access.mode === "full" ? chunk.lines : chunk.lines.filter((line) =>
+        JSON.parse(line).userId === access.userId
+      );
+      if (lines.length) yield { n: chunk.n, lines };
+    }
+  } finally {
+    await cursor.close();
+  }
+}
+
 router.get(
   "/games/:gameId/log",
   handle(async (req, res) => {
-    const userId = await requireDeveloper(req, res);
-    if (!userId) return;
     const gameId = String(req.params.gameId);
+    const access = await requireGameLogAccess(req, res, gameId);
+    if (!access) return;
     const from = Math.max(0, Number(req.query.fromChunk) || 0);
-    const chunks = await models.GameEventLogChunk.find({ gameId, n: { $gte: from } })
-      .select("n lines -_id")
-      .sort("n")
-      .limit(logChunksPerPage)
-      .lean();
-    if (chunks.length == 0 && from == 0) {
-      errors.notFound(res, "No event log for this game.");
-      return;
+    const chunks = [];
+    for await (const chunk of visibleLogChunks(gameId, access, from)) {
+      chunks.push(chunk);
+      if (chunks.length === logChunksPerPage) break;
     }
     res.send({
       gameId,
@@ -293,24 +347,12 @@ router.get(
 router.get(
   "/games/:gameId/log.jsonl",
   handle(async (req, res) => {
-    const userId = await requireDeveloper(req, res);
-    if (!userId) return;
     const gameId = String(req.params.gameId);
-    const first = await models.GameEventLogChunk.findOne({ gameId }).select("hostId").lean();
-    if (!first) {
-      errors.notFound(res, "No event log for this game.");
-      return;
-    }
-    const creatorId = await redis.client.getAsync(`devapi:game:${gameId}:creator`);
-    const isHost = (creatorId || first.hostId) == userId;
-    if (!isHost && !(await routeUtils.verifyPermission(userId, "giveGroup", Infinity))) {
-      errors.forbidden(res, "Only the developer who hosted this game or an Owner can download its log.");
-      return;
-    }
+    const access = await requireGameLogAccess(req, res, gameId);
+    if (!access) return;
     res.set("Content-Type", "application/x-ndjson");
     res.set("Content-Disposition", `attachment; filename="game-${gameId}.jsonl"`);
-    const cursor = models.GameEventLogChunk.find({ gameId }).select("lines -_id").sort("n").lean().cursor();
-    for await (const chunk of cursor) {
+    for await (const chunk of visibleLogChunks(gameId, access)) {
       for (const line of chunk.lines) res.write(line + "\n");
     }
     res.end();
