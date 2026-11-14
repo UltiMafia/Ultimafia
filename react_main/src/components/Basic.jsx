@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 
 import { emotify } from "./Emotes";
+import PostedExternalLink from "./PostedExternalLink";
 import { filterProfanitySegment } from "../lib/profanity";
 import { MediaEmbed } from "../pages/User/UserWidgets";
 import { slangList } from "../constants/slangList";
@@ -238,15 +239,6 @@ export function linkify(text) {
 
   const linkRegex = /http(s{0,1}):\/\/([\w.]+)\.(\w+)([^\s]*)/g;
 
-  function onLinkCLick(e) {
-    if (window.confirm("Visit external link?")) {
-      return true;
-    } else {
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  }
-
   for (let i in text) {
     let _segment = text[i];
     let segment = [];
@@ -256,15 +248,9 @@ export function linkify(text) {
     while (regexRes) {
       segment.push(_segment.slice(lastIndex, regexRes.index));
       segment.push(
-        <a
-          href={regexRes[0]}
-          target="_blank"
-          rel="noopener noreferrer nofollow"
-          key={lastIndex}
-          onClick={onLinkCLick}
-        >
+        <PostedExternalLink href={regexRes[0]} key={lastIndex}>
           {regexRes[0]}
-        </a>
+        </PostedExternalLink>
       );
 
       lastIndex = linkRegex.lastIndex;
