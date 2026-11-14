@@ -19,3 +19,5 @@ This draft is not approved for deployment. Any interrupted owned operation can s
 Deployment would require quiescing old competition writers; mixed old/new processes bypass ownership. These deployment/recovery operations have NOT been performed or authorized here. Further engineering should add durable idempotent side-effect receipts/recovery or a confirmed compatible transaction design before accepting this availability tradeoff.
 
 Verification: source review and diff inspection only. No tests, lint, build, application execution, push or PR. Existing multi-document audit/cache consistency is not claimed fixed.
+
+Concrete source-backed recovery design and unexecuted non-GPT acceptance requirements: [recovery design](competitive-operation-recovery-design.md).
