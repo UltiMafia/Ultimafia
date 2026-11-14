@@ -573,6 +573,17 @@ export default function Game(props) {
   const replyTargetRef = useRef(replyTarget);
   replyTargetRef.current = replyTarget;
 
+  const replyMeetingId = history.states[stateViewing]?.selTab;
+  useEffect(() => {
+    setReplyTarget((target) => {
+      if (!target || !target.protectMeeting) return target;
+      return target.selectedMeetingId === replyMeetingId &&
+        target.selectedState === stateViewing &&
+        target.currentState === history.currentState
+        ? target : null;
+    });
+  }, [replyMeetingId, history.currentState, stateViewing]);
+
   useEffect(() => {
     // Only the visible session reacts to Escape. A session retained while the
     // user browses another page must not capture the key.
@@ -1481,11 +1492,21 @@ export default function Game(props) {
   }
 
   const quoteMeetingId = history.states[history.currentState]?.selTab;
-  const onMessageReply = useCallback((message) => {
+  const onMessageReply = useCallback((message, deliveryMeetingId) => {
     if (!canReplyTo(message, { review, stateViewing })) return;
-    setReplyTarget(makeReplyTarget(message, stateViewing));
+    setReplyTarget({
+      ...makeReplyTarget(message, stateViewing),
+      selectedMeetingId: history.states[stateViewing]?.selTab,
+      deliveryMeetingId,
+      selectedState: stateViewing,
+      currentState: history.currentState,
+      protectMeeting: !isSpectator && gameType === "Mafia" &&
+        !["Village", "Pregame"].includes(
+          history.states[stateViewing]?.meetings[message.meetingId]?.name
+        ),
+    });
     document.getElementById("speechInput")?.focus();
-  }, [review, stateViewing]);
+  }, [review, stateViewing, history, gameType, isSpectator]);
   // Pinned rows show a stored copy while the current state is on screen, so
   // the quote has to find the state the original was sent in.
   const onMessageQuote = useCallback((message) => {
@@ -2490,7 +2511,9 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           meetingState={singleState ? message.fromState : stateViewing}
           key={message.id || message.messageId + message.time || i}
           onMessageQuote={game.onMessageQuote}
-          onMessageReply={canSpeak ? game.onMessageReply : undefined}
+          onMessageReply={canSpeak && typeof game.onMessageReply === "function"
+            ? (message) => game.onMessageReply(message, speechTarget.meetingId)
+            : undefined}
           onPinMessage={game.onPinMessage}
           isMessagePinned={game.isMessagePinned}
           settings={settings}
@@ -2520,6 +2543,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     game.review,
     game.onMessageQuote,
     game.onMessageReply,
+    speechTarget.meetingId,
     canSpeak,
     game.onPinMessage,
     game.isMessagePinned,
@@ -4049,7 +4073,15 @@ function SpeechInput(props) {
           };
         }
 
-        const reply = buildReplyPayload(replyTarget, {
+        const isCurrentReply = replyTarget &&
+          (!replyTarget.protectMeeting || (
+            replyTarget.selectedMeetingId === game.history.states[game.stateViewing]?.selTab &&
+            replyTarget.deliveryMeetingId === selTab &&
+            replyTarget.selectedState === game.stateViewing &&
+            replyTarget.currentState === game.history.currentState
+          ));
+        if (replyTarget && !isCurrentReply) setReplyTarget(null);
+        const reply = buildReplyPayload(isCurrentReply ? replyTarget : null, {
           meetingId: selTab,
           content: speechInput,
           abilityName,
