@@ -145,10 +145,10 @@ function autoVillageWin() {
 // matching Setup mongo doc. Attaching an id without seeding causes
 // adjustSkillRatings / recordSetupStats to fail and spiral into error
 // handlers that try to post to Discord, eventually OOMing.
-function mafiaSetup({ id } = {}) {
+function mafiaSetup({ id, total = 3 } = {}) {
   const setup = {
-    total: 3,
-    roles: [{ Villager: 2, Mafioso: 1 }],
+    total,
+    roles: [{ Villager: total - 1, Mafioso: 1 }],
   };
   if (id) setup.id = id;
   return setup;
@@ -452,7 +452,7 @@ describe("Stats recording", function () {
     // changes from Game.start() charging and vegPlayer → refundHeartsForIntegrityBreak.
 
     async function makeRankedishGameSeeded(gameOpts) {
-      const setup = mafiaSetup();
+      const setup = mafiaSetup({ total: gameOpts.setupTotal });
       const users = makeUsers(setup.total);
       const game = new Game({
         id: shortid.generate(),
@@ -493,6 +493,8 @@ describe("Stats recording", function () {
       const vegger = game.players.at(0);
       await game.vegPlayer(vegger);
       game.processActionQueue();
+      // Paid once the batch that broke the game is closed, not inside vegPlayer.
+      await game.endIntegrityBreakBatch();
 
       game.hadVegKill.should.equal(true);
       game.ranked.should.equal(false);
@@ -534,6 +536,7 @@ describe("Stats recording", function () {
       const vegger = game.players.at(0);
       await game.vegPlayer(vegger);
       game.processActionQueue();
+      await game.endIntegrityBreakBatch();
 
       game.hadVegKill.should.equal(true);
       game.competitive.should.equal(false);
@@ -552,6 +555,68 @@ describe("Stats recording", function () {
         const doc = await getUserDoc(player.user);
         expect(doc.stats?.Mafia).to.equal(undefined);
       }
+    });
+
+    it("several players veg in one phase: none of them is refunded", async function () {
+      const { game, users } = await makeRankedishGameSeeded({ competitive: true });
+
+      // One player is already out: they were charged at start, died and left,
+      // and took no part in the break.
+      const departed = game.players.at(2);
+      departed.kill("nightkill");
+      await game.playerLeave(departed);
+
+      // The reported game: the day vote times out and every alive player vegs
+      // in the same phase, so responsibility is not one player's.
+      const [first, second] = game.players;
+      // Meeting.finish holds the batch while it vegs every non-voter in one
+      // loop; this mirrors that instead of calling the actions independently.
+      game.beginIntegrityBreakBatch();
+      game.vegPlayer(first);
+      game.vegPlayer(second);
+      await game.endIntegrityBreakBatch();
+
+      const firstDoc = await getUserDoc(first.user);
+      const secondDoc = await getUserDoc(second.user);
+      const departedDoc = await getUserDoc(users[2]);
+
+      // Both veggers keep paying, and the one who died and left before the
+      // break is made whole.
+      firstDoc.goldHearts.should.equal(2);
+      secondDoc.goldHearts.should.equal(2);
+      departedDoc.goldHearts.should.equal(3);
+    });
+
+    it("a second leave in the same phase is refunded, the first is not", async function () {
+      // Five players so the game is still running after both leaves: a game
+      // that has already ended never reaches the leave branch again.
+      const { game, users } = await makeRankedishGameSeeded({
+        competitive: true,
+        setupTotal: 5,
+      });
+
+      const first = game.players.at(0);
+      const second = game.players.at(1);
+      const stayed = game.players.at(2);
+
+      await game.playerLeave(first);
+      // A separate action, not part of the batch that broke the game: this
+      // player is declining to play out a game that is already unranked.
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      await game.playerLeave(second);
+      await game.endIntegrityBreakBatch();
+
+      // The later leaver is not responsible for the break at all, which is what
+      // stops a much later refund from excluding them.
+      Array.from(game.integrityBreakUserIds).should.not.include(second.user.id);
+
+      const firstDoc = await getUserDoc(first.user);
+      const secondDoc = await getUserDoc(second.user);
+      const stayedDoc = await getUserDoc(stayed.user);
+
+      firstDoc.goldHearts.should.equal(2);
+      secondDoc.goldHearts.should.equal(3);
+      stayedDoc.goldHearts.should.equal(3);
     });
 
     it("unranked vegged: no charge and no refund", async function () {
