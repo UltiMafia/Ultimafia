@@ -140,15 +140,21 @@ export default function Chat({
     // tailnet, for example. Fall back to the page's own host so the same
     // build works from localhost, a LAN/tailnet address, or the real domain.
     const configuredSocketHost = import.meta.env.REACT_APP_SOCKET_URI;
-    const socketHost =
-      !configuredSocketHost || configuredSocketHost === "localhost"
-        ? window.location.hostname
-        : configuredSocketHost;
+    const usePageHost =
+      !configuredSocketHost || configuredSocketHost === "localhost";
+    const socketHost = usePageHost
+      ? window.location.hostname
+      : configuredSocketHost;
+    // Sockets routed by path share the page's port, which is not always the
+    // default one: the dev server runs on 3001.
+    const pathSocketHost = usePageHost
+      ? window.location.host
+      : configuredSocketHost;
 
     if (import.meta.env.REACT_APP_USE_PORT === "true")
       socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${socketHost}:${import.meta.env.REACT_APP_CHAT_PORT}`;
     else
-      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${socketHost}/chatSocket`;
+      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${pathSocketHost}/chatSocket`;
 
     var newSocket = new Socket(socketURL);
     newSocket.on("connected", () => setConnected((current) => current + 1));
