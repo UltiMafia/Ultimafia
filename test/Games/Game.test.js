@@ -212,3 +212,34 @@ describe("Games/Game", function () {
     });
   });
 });
+
+describe("Games/Game — no vegging setting", function () {
+  // The hosting dialog hides "No Vegging" for ranked and competitive games, but
+  // the flag still arrives in the host request (and a lobby can keep a value set
+  // before ranked was ticked). Ranked and competitive games must ignore it: it
+  // lets a player idle through a meeting without being vegged.
+  function makeGame(settings) {
+    return new Game({
+      id: "noVegSettingTest",
+      hostId: "hostId",
+      settings: {
+        setup: { id: "setupId", total: 3 },
+        stateLengths: { Day: 1000, Night: 1000 },
+        ...settings,
+      },
+      isTest: true,
+    });
+  }
+
+  it("keeps no vegging when the game is unranked", function () {
+    makeGame({ noVeg: true }).noVeg.should.equal(true);
+  });
+
+  it("ignores no vegging when the game is ranked", function () {
+    makeGame({ ranked: true, noVeg: true }).noVeg.should.equal(false);
+  });
+
+  it("ignores no vegging when the game is competitive", function () {
+    makeGame({ competitive: true, noVeg: true }).noVeg.should.equal(false);
+  });
+});

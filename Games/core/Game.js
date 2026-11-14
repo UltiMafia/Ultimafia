@@ -94,7 +94,12 @@ module.exports = class Game {
       options.settings.spectating === true ||
       options.settings.spectating === "true";
     this.readyCheck = options.settings.readyCheck;
-    this.noVeg = options.settings.noVeg;
+    // A ranked or competitive game cannot be exempt from vegging: the setting
+    // lets players idle through meetings without being removed, and the client
+    // already hides it for those modes. Enforced here as well as in the host
+    // route because a rehost replays the stored settings.
+    this.noVeg =
+      Boolean(options.settings.noVeg) && !this.ranked && !this.competitive;
     this.anonymousGame = options.settings.anonymousGame;
     this.anonymousDeck = options.settings.anonymousDeck;
     this.heartsChargedAtStart = false;

@@ -1116,6 +1116,12 @@ router.post("/host", async function (req, res) {
       }
     }
 
+    // Ranked and competitive games must not allow no-vegging. The hosting
+    // dialog hides the option, but the request can still carry it — including a
+    // value left set before the host ticked ranked, since the field is only
+    // hidden, not cleared.
+    const noVeg = Boolean(req.body.noVeg) && !req.body.ranked && !isCompetitive;
+
     var settings = settingsChecks[gameType](req.body, setup);
     settings.anonymousGame = Boolean(req.body.anonymousGame);
     settings.anonymousDeckId = String(req.body.anonymousDeckId);
@@ -1238,7 +1244,7 @@ router.post("/host", async function (req, res) {
         rehostId: rehostId,
         scheduled: scheduled,
         readyCheck: isCompetitive ? true : Boolean(req.body.readyCheck),
-        noVeg: Boolean(req.body.noVeg),
+        noVeg: noVeg,
         stateLengths: stateLengths,
         gameTypeOptions: JSON.stringify({ deckSize: req.body.deckSize || "standard" }),
         ...settings,
