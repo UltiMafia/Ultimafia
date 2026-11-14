@@ -90,7 +90,7 @@ module.exports = class BecomeBackUpRole extends Card {
           this.player.alive
         ) {
           this.player.setRole(
-            `${player.role.name}:${player.role.modifier}`,
+            player.role.toRoleData(),
             player.role.data,
             false,
             false,

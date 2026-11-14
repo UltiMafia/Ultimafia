@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
+const { roleEquals, roleName, roleModifiers } = require("../../../../../lib/roleIdentity");
 
 module.exports = class Remove1Banished extends Card {
   constructor(role) {
@@ -25,17 +26,21 @@ module.exports = class Remove1Banished extends Card {
         let playersAll = this.game.players.filter((p) => p.role);
         for (let x = 0; x < playersAll.length; x++) {
           //currentRoles.push(playersAll[x].role);
-          let tempName = playersAll[x].role.name;
-          let tempModifier = playersAll[x].role.modifier;
-          currentRoles.push(`${tempName}:${tempModifier}`);
+          currentRoles.push(playersAll[x].role.toRoleData());
         }
         for (let y = 0; y < currentRoles.length; y++) {
           roles = roles.filter(
-            (r) => r != currentRoles[y] && !currentRoles[y].includes(r)
+            (r) => !roleEquals(r, currentRoles[y])
           );
         }
-        roles = roles.filter((r) => !r.toLowerCase().includes("banished"));
-        roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
+        roles = roles.filter(
+          (r) =>
+            !roleName(r).toLowerCase().includes("banished") &&
+            !roleModifiers(r).toLowerCase().includes("banished")
+        );
+        roles = roles.filter(
+          (r) => this.game.getRoleAlignment(roleName(r)) == "Village"
+        );
 
         let newRole = Random.randArrayVal(roles);
         for (let item of shuffledPlayers[0].items) {

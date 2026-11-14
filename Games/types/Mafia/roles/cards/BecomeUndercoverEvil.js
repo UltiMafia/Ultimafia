@@ -1,6 +1,7 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
+const { roleEquals, roleName, roleModifiers, normalizeRole } = require("../../../../../lib/roleIdentity");
 
 module.exports = class BecomeUndercoverEvil extends Card {
   constructor(role) {
@@ -12,31 +13,47 @@ module.exports = class BecomeUndercoverEvil extends Card {
     let playersAll = this.game.players.filter((p) => p.role);
     for (let x = 0; x < playersAll.length; x++) {
       //currentRoles.push(playersAll[x].role);
-      let tempName = playersAll[x].role.name;
-      let tempModifier = playersAll[x].role.modifier;
-      currentRoles.push(`${tempName}:${tempModifier}`);
+      currentRoles.push(playersAll[x].role.toRoleData());
     }
-    roles = roles.filter((r) => !currentRoles.includes(r));
+    roles = roles.filter(
+      (r) => !currentRoles.some((current) => roleEquals(r, current))
+    );
 
-    roles = roles.filter((r) => !r.toLowerCase().includes("demonic"));
-    roles = roles.filter((r) => !r.toLowerCase().includes("vital"));
     roles = roles.filter(
       (r) =>
-        this.game.getRoleAlignment(r) == "Mafia" ||
-        this.game.getRoleAlignment(r) == "Cult"
+        !roleName(r).toLowerCase().includes("demonic") &&
+        !roleModifiers(r).toLowerCase().includes("demonic")
+    );
+    roles = roles.filter(
+      (r) =>
+        !roleName(r).toLowerCase().includes("vital") &&
+        !roleModifiers(r).toLowerCase().includes("vital")
+    );
+    roles = roles.filter(
+      (r) =>
+        this.game.getRoleAlignment(roleName(r)) == "Mafia" ||
+        this.game.getRoleAlignment(roleName(r)) == "Cult"
     );
     if (roles.length <= 0) {
       roles = currentRoles;
-      roles = roles.filter((r) => !r.toLowerCase().includes("demonic"));
-      roles = roles.filter((r) => !r.toLowerCase().includes("vital"));
       roles = roles.filter(
         (r) =>
-          this.game.getRoleAlignment(r) != "Village" &&
-          this.game.getRoleAlignment(r) != "Independent"
+          !roleName(r).toLowerCase().includes("demonic") &&
+          !roleModifiers(r).toLowerCase().includes("demonic")
+      );
+      roles = roles.filter(
+        (r) =>
+          !roleName(r).toLowerCase().includes("vital") &&
+          !roleModifiers(r).toLowerCase().includes("vital")
+      );
+      roles = roles.filter(
+        (r) =>
+          this.game.getRoleAlignment(roleName(r)) != "Village" &&
+          this.game.getRoleAlignment(roleName(r)) != "Independent"
       );
     }
     if (roles.length <= 0) {
-      roles = ["Mafioso"];
+      roles = [normalizeRole("Mafioso")];
     }
     role.newRole = Random.randArrayVal(roles);
 
@@ -62,7 +79,7 @@ module.exports = class BecomeUndercoverEvil extends Card {
             let evilPlayers = this.game.players.filter(
               (p) =>
                 p.role.alignment ==
-                this.game.getRoleAlignment(this.actor.role.newRole)
+                this.game.getRoleAlignment(roleName(this.actor.role.newRole))
             );
 
             for (let x = 0; x < evilPlayers.length; x++) {
@@ -73,7 +90,7 @@ module.exports = class BecomeUndercoverEvil extends Card {
             }
             this.actor.holdItem("MoleVoting");
             this.actor.queueAlert(
-              `You are the Mole, You have the abilities of a ${this.role.newRole}`
+              `You are the Mole, You have the abilities of a ${roleName(this.role.newRole)}`
             );
           },
         });
@@ -119,34 +136,48 @@ function switchRoleBefore(role) {
   let playersAll = role.game.players.filter((p) => p.role);
   for (let x = 0; x < playersAll.length; x++) {
     //currentRoles.push(playersAll[x].role);
-    let tempName = playersAll[x].role.name;
-    let tempModifier = playersAll[x].role.modifier;
-    currentRoles.push(`${tempName}:${tempModifier}`);
+    currentRoles.push(playersAll[x].role.toRoleData());
   }
   for (let y = 0; y < currentRoles.length; y++) {
     roles = roles.filter(
-      (r) => r != currentRoles[y] && !currentRoles[y].includes(r)
+      (r) => !currentRoles.some((current) => roleEquals(r, current))
     );
   }
-  roles = roles.filter((r) => !r.toLowerCase().includes("demonic"));
-  roles = roles.filter((r) => !r.toLowerCase().includes("vital"));
   roles = roles.filter(
     (r) =>
-      role.game.getRoleAlignment(r) == "Mafia" ||
-      role.game.getRoleAlignment(r) == "Cult"
+      !roleName(r).toLowerCase().includes("demonic") &&
+      !roleModifiers(r).toLowerCase().includes("demonic")
+  );
+  roles = roles.filter(
+    (r) =>
+      !roleName(r).toLowerCase().includes("vital") &&
+      !roleModifiers(r).toLowerCase().includes("vital")
+  );
+  roles = roles.filter(
+    (r) =>
+      role.game.getRoleAlignment(roleName(r)) == "Mafia" ||
+      role.game.getRoleAlignment(roleName(r)) == "Cult"
   );
   if (roles.length <= 0) {
     roles = currentRoles;
-    roles = roles.filter((r) => !r.toLowerCase().includes("demonic"));
-    roles = roles.filter((r) => !r.toLowerCase().includes("vital"));
     roles = roles.filter(
       (r) =>
-        role.game.getRoleAlignment(r) != "Village" &&
-        role.game.getRoleAlignment(r) != "Independent"
+        !roleName(r).toLowerCase().includes("demonic") &&
+        !roleModifiers(r).toLowerCase().includes("demonic")
+    );
+    roles = roles.filter(
+      (r) =>
+        !roleName(r).toLowerCase().includes("vital") &&
+        !roleModifiers(r).toLowerCase().includes("vital")
+    );
+    roles = roles.filter(
+      (r) =>
+        role.game.getRoleAlignment(roleName(r)) != "Village" &&
+        role.game.getRoleAlignment(roleName(r)) != "Independent"
     );
   }
   if (roles.length <= 0) {
-    roles = ["Mafioso"];
+    roles = [normalizeRole("Mafioso")];
   }
   role.newRole = Random.randArrayVal(roles);
 }

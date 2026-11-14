@@ -9,7 +9,8 @@
   "scripts": {
     "start": "docker-compose up; pm2 start pm2.config.js",
     "stop": "pm2 kill; docker-compose down",
-    "test": "NODE_ENV=test mocha --recursive --parallel --exit"
+    "test": "NODE_ENV=test mocha --recursive --parallel --exit",
+    "test:role-objects": "NODE_ENV=test mocha test/roleIdentity.test.js test/setupRoleObjects.test.js test/setupRoleRoutes.test.js test/setupRoleModifierMetadata.test.js test/Games/RoleObjects.test.js test/Games/RoleObjectWire.test.js test/Games/RoleObjectStats.test.js test/Games/RoleObjectPersistence.test.js test/Games/Mafia/RoleObjectConversions.test.js test/Games/Mafia/RoleObjectInformation.test.js test/Games/Mafia/RoleObjectExcessInfo.test.js test/Games/Mafia/RoleObjectDesperate.test.js test/Games/Mafia/RoleObjectsIntegration.test.js test/Games/Mafia/RoleObjectTreasureChest.test.js test/Games/RoleObjectLiveReveal.test.js test/Games/Mafia/RoleObjectRevealInfo.test.js test/Games/Mafia/RoleObjectAppearances.test.js test/Games/Mafia/RoleObjectRoleFilters.test.js --exit"
   },
   "dependencies": {
     "@octokit/core": "^7.0.3",

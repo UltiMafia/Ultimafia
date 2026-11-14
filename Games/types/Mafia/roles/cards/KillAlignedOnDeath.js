@@ -39,7 +39,7 @@ module.exports = class KillAlignedOnDeath extends Card {
             );
             if (backUpTarget.length > 0) {
               backUpTarget.setRole(
-                `${this.player.role.name}:${this.player.role.modifier}`,
+                this.player.role.toRoleData(),
                 this.player.role.data,
                 false,
                 false,

@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const { roleWith } = require("../../../../../lib/roleIdentity");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
@@ -62,7 +63,12 @@ module.exports = class KillAndCreateUndead extends Card {
                 );
 
                 this.target.setRole(
-                  `${this.target.role.name}:Transcendent`,
+                  roleWith(this.target.role, {
+                    modifiers: [
+                      ...this.target.role.toRoleData().modifiers,
+                      "Transcendent",
+                    ],
+                  }),
                   this.target.role.data
                 );
               } //End Cult check

@@ -26,6 +26,16 @@ const skillRatingModule = require("../modules/skillRating");
 const blocks = require("../modules/blocks");
 const { DEFAULT_MU, DEFAULT_SIGMA, MIN_RATED_GAMES } = skillRatingModule;
 const router = express.Router();
+const setupRoleCompatibility = require("../lib/setupRoleCompatibility");
+
+// Setups are stored as descriptor groups but every API response hands clients
+// the legacy count-map JSON, including the routes that only strip _id.
+function setupRolesForClient(setup) {
+  if (setup && setup.roles) {
+    setup.roles = setupRoleCompatibility.setupRolesForApi(setup.roles);
+  }
+  return setup;
+}
 
 /** Keep in sync with `isRetroThemeForcedByCalendar` in react_main/src/utils/holidayThemes.js */
 function isRetroThemeForcedByCalendar(date = new Date()) {
@@ -450,6 +460,8 @@ router.get("/:id/profile", async function (req, res) {
 
     user = user.toJSON();
 
+    for (let setup of user.setups || []) setupRolesForClient(setup);
+
     if (!user.skillRating) {
       user.skillRating = {
         mu: DEFAULT_MU,
@@ -587,6 +599,7 @@ router.get("/:id/profile", async function (req, res) {
       const { users, players, winners, ...rest } = game;
       return {
         ...rest,
+        setup: setupRolesForClient(rest.setup),
         won,
         description: item.description,
         status: "Finished",
@@ -789,8 +802,12 @@ router.get("/:id/profile", async function (req, res) {
       }));
     } else user.friendRequests = [];
 
-    for (let game of user.games)
+    for (let game of user.games) {
       if (game.status == null) game.status = "Finished";
+      if (game.setup && game.setup.roles) {
+        game.setup.roles = setupRoleCompatibility.setupRolesForApi(game.setup.roles);
+      }
+    }
 
     var inGame = await redis.inGame(userId);
     var game;
@@ -815,7 +832,7 @@ router.get("/:id/profile", async function (req, res) {
           useRoleGroups: game.settings.setup.useRoleGroups,
           roleGroupSizes: game.settings.setup.roleGroupSizes,
           count: game.settings.setup.count,
-          roles: game.settings.setup.roles,
+          roles: setupRoleCompatibility.setupRolesForApi(game.settings.setup.roles),
           total: game.settings.setup.total,
         },
         players: game.players.length,
@@ -1268,7 +1285,7 @@ router.get("/:id/setups", async function (req, res) {
         .filter(Boolean)
         .map((setup) => {
           const { _id, ...rest } = setup;
-          return rest;
+          return setupRolesForClient(rest);
         });
     }
 
@@ -1356,7 +1373,12 @@ router.get("/:id/games", async function (req, res) {
           }
         }
         const { users, players, winners, ...rest } = game;
-        return { ...rest, won, status: game.status || "Finished" };
+        return {
+          ...rest,
+          setup: setupRolesForClient(rest.setup),
+          won,
+          status: game.status || "Finished",
+        };
       });
     }
 

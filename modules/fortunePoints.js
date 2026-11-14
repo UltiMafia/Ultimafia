@@ -21,6 +21,7 @@
  */
 const constants = require("../data/constants");
 const roleData = require("../data/roles");
+const roleIdentity = require("../lib/roleIdentity");
 
 const FORTUNE_GAME_TYPES = new Set(["ranked", "competitive"]);
 const MAJOR_ALIGNMENTS = new Set(["Village", "Mafia", "Cult"]);
@@ -171,15 +172,12 @@ function computeFactionFortunePoints(opts) {
  */
 function getMafiaFactionsFromSetup(setupRoles) {
   if (!setupRoles) return [];
-  let groups = setupRoles;
-  if (typeof groups === "string") {
-    try {
-      groups = JSON.parse(groups);
-    } catch (e) {
-      return [];
-    }
+  let groups;
+  try {
+    groups = roleIdentity.toRoleMaps(setupRoles);
+  } catch (e) {
+    return [];
   }
-  if (!Array.isArray(groups)) return [];
 
   const factions = new Set();
   const mafiaRoles = roleData.Mafia || {};

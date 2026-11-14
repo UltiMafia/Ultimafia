@@ -2,6 +2,7 @@ const Card = require("../../Card");
 const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 const { addArticle } = require("../../../../core/Utils");
 const { attachConversionPhase } = require("../../const/ConversionPhases");
+const { roleName, appearanceKey } = require("../../../../../lib/roleIdentity");
 module.exports = class ConvertToChosenRole extends Card {
   constructor(role) {
     super(role);
@@ -30,21 +31,18 @@ module.exports = class ConvertToChosenRole extends Card {
           priority: PRIORITY_CONVERT_DEFAULT + 4,
           run: function () {
             let targetPlayer = this.role.data.targetPlayer;
+            if (!this.target || this.target === "None") return;
             if (targetPlayer) {
               let players = this.game.players.filter((p) => p.role);
               let currentRoles = [];
 
               for (let x = 0; x < players.length; x++) {
-                currentRoles.push(players[x].role);
+                currentRoles.push(players[x].role.toRoleData());
               }
               for (let y = 0; y < currentRoles.length; y++) {
-                if (
-                  this.target.split(":")[0] ==
-                  this.game.formatRoleInternal(
-                    currentRoles[y].name,
-                    currentRoles[y].modifier
-                  )
-                ) {
+                // Master compared the chosen base name with the holder's
+                // rendered "Name:Modifier" string.
+                if (roleName(this.target) === appearanceKey(currentRoles[y])) {
                   return;
                 }
               }
@@ -56,7 +54,7 @@ module.exports = class ConvertToChosenRole extends Card {
               ) {
                 if (this.dominates(targetPlayer)) {
                   targetPlayer.setRole(
-                    `${this.target}`,
+                    this.target,
                     null,
                     false,
                     false,
@@ -74,7 +72,7 @@ module.exports = class ConvertToChosenRole extends Card {
                 targetPlayer.role.alignment == "Independent"
               ) {
                 if (this.dominates(targetPlayer)) {
-                  targetPlayer.setRole(`${this.target}`);
+                  targetPlayer.setRole(this.target);
                   this.game.noteMigoNewDemon(
                     this.actor,
                     targetPlayer,

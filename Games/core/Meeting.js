@@ -7,6 +7,8 @@ const constants = require("../../data/constants");
 const Player = require("./Player");
 const roleData = require("../../data/roles");
 
+const roleIdentity = require("../../lib/roleIdentity");
+
 module.exports = class Meeting {
   constructor(game, name) {
     this.name = name;
@@ -511,7 +513,7 @@ module.exports = class Meeting {
             (m) => m[1].alignment != "Event" && !m[0].includes("Banished")
           )
           .map((r) => r[0]);
-        temp = temp.concat(allRoles);
+        temp = temp.concat(allRoles.map((role) => roleIdentity.normalizeRole(role)));
       }
       if (this.AllRolesFilters.includes("addedRoles")) {
         temp = temp.concat(this.game.AddedRoles);
@@ -519,7 +521,7 @@ module.exports = class Meeting {
       if (this.AllRolesFilters.includes("InPlayOnly")) {
         temp = [];
         for (let player of this.game.players) {
-          temp.push(`${player.role.name}:${player.role.modifier}`);
+          temp.push(player.role.toRoleData());
         }
         temp = Random.randomizeArray(temp);
       }
@@ -538,7 +540,7 @@ module.exports = class Meeting {
         switch (tag) {
           case "self":
             if (actorRole) {
-              temp = temp.filter((r) => r != actorRole.name);
+              temp = temp.filter((r) => roleIdentity.roleName(r) != actorRole.name);
             }
             break;
           case "aligned":
@@ -567,27 +569,21 @@ module.exports = class Meeting {
             break;
           case "banished":
             temp = temp.filter(
-              (r) =>
-                r.split(":")[1] &&
-                r.split(":")[1].toLowerCase().includes("banished")
+              (r) => roleIdentity.roleModifiers(r).toLowerCase().includes("banished")
             );
             break;
           case "NoDemonic":
             temp = temp.filter(
-              (r) =>
-                !(
-                  r.split(":")[1] &&
-                  r.split(":")[1].toLowerCase().includes("demonic")
-                )
+              (r) => !roleIdentity.roleModifiers(r).toLowerCase().includes("demonic")
             );
             break;
           case "blacklist":
             if (actorRole && actorRole.data.roleBlacklist) {
               temp = temp.filter(
-                (r) => !actorRole.data.roleBlacklist.includes(r.split(":")[0])
+                (r) => !actorRole.data.roleBlacklist.includes(roleIdentity.roleName(r))
               );
               temp = temp.filter(
-                (r) => !actorRole.data.roleBlacklist2.includes(r)
+                (r) => !actorRole.data.roleBlacklist2.includes(roleIdentity.roleKey(r))
               );
             }
             break;
@@ -598,8 +594,22 @@ module.exports = class Meeting {
       if ((!this.mustAct || temp.length <= 0) && !temp.includes("None")) {
         temp.push("None");
       }
-      temp = [...new Set(temp)];
-      return temp;
+      const uniqueRoles = new Map();
+      for (const role of temp) {
+        if (role === "None") {
+          if (!uniqueRoles.has(role)) uniqueRoles.set(role, role);
+          continue;
+        }
+        const identity = roleIdentity.normalizeRole(role);
+        const identityKey = roleIdentity.roleKey(identity);
+        const choice =
+          identity.modifiers.length === 0 && identity.items.length === 0
+            ? identity.name
+            : identityKey;
+        if (!uniqueRoles.has(identityKey))
+          uniqueRoles.set(identityKey, choice);
+      }
+      return [...uniqueRoles.values()];
     }
   }
 

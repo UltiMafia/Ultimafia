@@ -11,7 +11,7 @@ module.exports = class BecomeRoleInstantly extends Card {
           run: function () {
             this.actor.faction = this.target.getFaction();
             this.actor.setRole(
-              `${this.target.getRoleName()}:${this.target.role.modifier}`,
+              this.target.role.toRoleData(),
               this.target.role.data,
               true,
               true,

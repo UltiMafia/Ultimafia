@@ -21,6 +21,7 @@ const modifierData = require("../../data/modifiers");
 const commandData = require("../../data/commands");
 const axios = require("axios");
 const { isGuestPlayer, isTestBotPlayer } = require("./botPlayers");
+const roleIdentity = require("../../lib/roleIdentity");
 
 module.exports = class Player {
   // isBot: no real account (a guest or a dev test bot). isGuest: joined
@@ -1246,8 +1247,9 @@ module.exports = class Player {
   }
 
   setRole(roleName, roleData, noReveal, noAlert, noEmit, faction, items) {
-    const modifiers = roleName.split(":")[1];
-    roleName = roleName.split(":")[0];
+    const identity = roleIdentity.normalizeRole(roleName);
+    roleName = identity.name;
+    const modifiers = identity.modifiers.join("/");
 
     for (let extraRole of this.passiveExtraRoles) {
       var index = this.ExtraRoles.indexOf(extraRole);
@@ -1317,10 +1319,15 @@ module.exports = class Player {
     let oldAppearanceSelf = this.role?.appearance.self;
     this.removeRole();
     this.role = new role(this, roleData);
+    // Constructors and cards may mutate initialization arguments. The saved
+    // identity must remain a detached definition for later copies/conversions.
+    this.role.roleItems = roleIdentity.normalizeRole(identity).items;
     if (items == "NoStartingItems") {
       this.role.startItems = [];
+    } else {
+      this.role.startItems = this.role.startItems.concat(identity.items);
     }
-    this.role.init(modifiers);
+    this.role.init(modifiers, items);
 
     if (this.game.started == true && this.game.isHiddenConverts() == true) {
       noReveal = true;
@@ -1394,8 +1401,9 @@ module.exports = class Player {
   }
 
   addExtraRole(roleName, roleData, noReveal, noAlert, noEmit, items) {
-    const modifiers = roleName.split(":")[1];
-    roleName = roleName.split(":")[0];
+    const identity = roleIdentity.normalizeRole(roleName);
+    roleName = identity.name;
+    const modifiers = identity.modifiers.join("/");
 
     if (roleData) {
       roleData = JSON.parse(JSON.stringify(roleData));
@@ -1412,8 +1420,11 @@ module.exports = class Player {
 
     //this.removeRole();
     let newRole = new role(this, roleData);
+    newRole.roleItems = roleIdentity.normalizeRole(identity).items;
     if (items == "NoStartingItems") {
       newRole.startItems = [];
+    } else {
+      newRole.startItems = newRole.startItems.concat(identity.items);
     }
     newRole.isExtraRole = true;
     newRole.init(modifiers, items);
@@ -1948,6 +1959,14 @@ module.exports = class Player {
   }
 
   setTempAppearance(type, appearance) {
+    if (appearance && typeof appearance === "object") {
+      const identity = roleIdentity.normalizeRole(appearance);
+      this.tempAppearance[type] = identity.name;
+      this.tempAppearanceMods[type] = identity.modifiers.length
+        ? identity.modifiers.join("/")
+        : null;
+      return;
+    }
     if (appearance == "real") appearance = this.role.name;
     this.tempAppearanceMods[type] = appearance.split(":")[1];
     if (
@@ -2313,9 +2332,7 @@ module.exports = class Player {
 
       if (!this.role) return;
 
-      var role = `${this.role.name}${
-        this.role.modifier ? ":" + this.role.modifier : ""
-      }`;
+      const role = roleIdentity.roleStatsKey(this.role.toRoleData ? this.role.toRoleData() : this.role);
       this.updateStatsMap(stats[bucket], "byRole", role, stat, inc);
       this.updateStatsMap(
         stats[bucket],

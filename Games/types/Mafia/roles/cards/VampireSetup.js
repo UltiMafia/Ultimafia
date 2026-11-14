@@ -22,7 +22,7 @@ module.exports = class VampireSetup extends Card {
             item.drop();
           }
           shuffledPlayers[x].setRole(
-            `${this.player.role.name}:${this.player.role.modifier}`,
+            this.player.role.toRoleData(),
             this.player.role.data
           );
           shuffledPlayers[x].role.data.reroll = true;
@@ -45,7 +45,7 @@ module.exports = class VampireSetup extends Card {
             item.drop();
           }
           goodPlayers[t].setRole(
-            `${this.player.role.name}:${this.player.role.modifier}`,
+            this.player.role.toRoleData(),
             this.player.role.data,
             false,
             true,
@@ -70,7 +70,7 @@ module.exports = class VampireSetup extends Card {
               item.drop();
             }
             shuffledPlayers[x].setRole(
-              `${this.player.role.name}:${this.player.role.modifier}`,
+              this.player.role.toRoleData(),
               this.player.role.data
             );
             shuffledPlayers[x].role.data.reroll = true;
@@ -108,7 +108,7 @@ module.exports = class VampireSetup extends Card {
             item.drop();
           }
           goodPlayers[t].setRole(
-            `${this.player.role.name}:${this.player.role.modifier}`,
+            this.player.role.toRoleData(),
             this.player.role.data
           );
           goodPlayers[t].role.data.reroll = true;
