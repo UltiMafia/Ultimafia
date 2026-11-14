@@ -2575,7 +2575,7 @@ function StatsModal(props) {
   );
 }
 
-function StatsQueryView({ stats, statsBucket }) {
+export function StatsQueryView({ stats, statsBucket }) {
   const [queryType, setQueryType] = useState("bySetup");
   const [selectedKey, setSelectedKey] = useState("");
   const [setupNames, setSetupNames] = useState({});
