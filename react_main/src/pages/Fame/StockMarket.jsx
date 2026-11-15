@@ -473,15 +473,17 @@ export default function StockMarket() {
 
       {/* Market Mode Toggles for All Markets / Portfolio / Transactions tabs */}
       {(currentTabLabel === "All Markets" || currentTabLabel === "My Portfolio" || currentTabLabel === "Transactions") && (
-                  <UiSegmentedControl
-            ariaLabel="Market mode"
-            value={marketMode}
-            onChange={(value) => { setMarketMode(value); setSearchQuery(""); }}
-            options={[
-              { value: "player", label: "Player Stocks" },
-              { value: "family", label: "Family ETFs" },
-            ]}
-          />
+          <Stack spacing={2} sx={{ mb: 3 }}>
+            <UiSegmentedControl
+              ariaLabel="Market mode"
+              value={marketMode}
+              onChange={(value) => { setMarketMode(value); setSearchQuery(""); }}
+              options={[
+                { value: "player", label: "Player Stocks" },
+                { value: "family", label: "Family ETFs" },
+              ]}
+            />
+          </Stack>
       )}
 
       {/* Tab Content: All Markets */}
@@ -623,8 +625,8 @@ export default function StockMarket() {
                         )}
                       </Grid>
                       <Stack direction="row" spacing={1}>
-                        <UiAction variant="success" size="small" block disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "buy", marketMode)}>Buy</UiAction>
-                        <UiAction  variant="danger" size="small" block     disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "sell", marketMode)}>Sell</UiAction>
+                        <UiAction size="small" block disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "buy", marketMode)}>Buy</UiAction>
+                        <UiAction size="small" block disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "sell", marketMode)}>Sell</UiAction>
                       </Stack>
                   </UiCard>
                 );
@@ -738,7 +740,6 @@ export default function StockMarket() {
                         <TableCell align="center">
                           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="center">
                             <UiAction
-                              variant="success"
                               size="small"
                               disabled={!user.loggedIn}
                               onClick={() => openTradeModal(stock, "buy", marketMode)}
@@ -746,9 +747,7 @@ export default function StockMarket() {
                               Buy
                             </UiAction>
                             <UiAction
-                               variant="danger" size="small" 
-                              
-                              
+                              size="small"
                               disabled={!user.loggedIn}
                               onClick={() => openTradeModal(stock, "sell", marketMode)}
                             >
@@ -837,8 +836,8 @@ export default function StockMarket() {
                             </Grid>
                           </Grid>
                           <Stack direction="row" spacing={1}>
-                            <UiAction variant="success" size="small" block disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "buy", "player")}>Buy More</UiAction>
-                            <UiAction  variant="danger" size="small" block     disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "sell", "player")}>Sell</UiAction>
+                            <UiAction size="small" block disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "buy", "player")}>Buy More</UiAction>
+                            <UiAction size="small" block     disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "sell", "player")}>Sell</UiAction>
                           </Stack>
                       </UiCard>
                     );
@@ -897,8 +896,8 @@ export default function StockMarket() {
                             </Grid>
                           </Grid>
                           <Stack direction="row" spacing={1}>
-                            <UiAction variant="success" size="small" block disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "buy", "family")}>Buy More</UiAction>
-                            <UiAction  variant="danger" size="small" block     disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "sell", "family")}>Sell</UiAction>
+                            <UiAction size="small" block disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "buy", "family")}>Buy More</UiAction>
+                            <UiAction size="small" block     disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "sell", "family")}>Sell</UiAction>
                           </Stack>
                       </UiCard>
                     );
@@ -992,15 +991,13 @@ export default function StockMarket() {
                         <TableCell align="center">
                           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="center">
                             <UiAction
-                              variant="success"
                               size="small"
                               disabled={!user.loggedIn}
                               onClick={() => openTradeModal(matchingStock, "buy", "player")}
                             >
                               Buy More
                             </UiAction>
-                            <UiAction
-                               variant="danger" size="small" 
+                            <UiAction size="small" 
                               
                               
                               onClick={() => openTradeModal(matchingStock, "sell", "player")}
@@ -1072,14 +1069,12 @@ export default function StockMarket() {
                         <TableCell align="center">
                           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="center">
                             <UiAction
-                              variant="success"
                               size="small"
                               onClick={() => openTradeModal(matchingStock, "buy", "family")}
                             >
                               Buy More
                             </UiAction>
-                            <UiAction
-                               variant="danger" size="small" 
+                            <UiAction size="small" 
                               
                               
                               onClick={() => openTradeModal(matchingStock, "sell", "family")}

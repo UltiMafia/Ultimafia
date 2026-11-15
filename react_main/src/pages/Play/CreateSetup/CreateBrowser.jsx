@@ -633,7 +633,7 @@ export default function CreateSetup(props) {
               minHeight: "100%",
             }}
           >
-            <Stack direction="column" sx={{ width: "100%" }}>
+            <Stack direction="column" spacing={0.5} sx={{ width: "100%" }}>
               {usingRoleGroups && (
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Size:</Typography>
@@ -666,6 +666,7 @@ export default function CreateSetup(props) {
                 <Stack
                   direction="row"
                   spacing={0.5}
+                  useFlexGap
                   sx={{ width: "100%", alignItems: "center", flexWrap: "wrap" }}
                 >
                   {roles}

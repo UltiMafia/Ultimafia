@@ -7,13 +7,13 @@ import React, {
   useState,
 } from "react";
 import axios from "axios";
-import { Box, ButtonBase, Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { PageNav } from "components/Nav";
 
 import { useErrorAlert } from "components/Alerts";
 import { UserContext } from "Contexts";
 import ActivityRow from "./ActivityRow";
-import { UiIcon, UiPending, UiTabs, UiTab, UiText as Typography } from "components/ui";
+import { UiAction, UiChip, UiIcon, UiPending, UiTabs, UiTab, UiText as Typography } from "components/ui";
 
 // Three mutually-exclusive category tabs. Each owns a set of per-type sub
 // filters (shown as chips under the tab). `serverCategory` tells the backend
@@ -59,40 +59,6 @@ const CATEGORIES = [
 
 function defaultTypeSet(category) {
   return new Set(category.types.filter((t) => t.defaultOn).map((t) => t.key));
-}
-
-function FilterChip({ label, active, onClick }) {
-  return (
-    <ButtonBase
-      onClick={onClick}
-      aria-pressed={active}
-      sx={{
-        px: 1.5,
-        py: 0.5,
-        borderRadius: 999,
-        border: 1,
-        borderColor: active ? "primary.main" : "divider",
-        backgroundColor: active
-          ? (t) => `${t.palette.primary.main}22`
-          : "transparent",
-        color: active ? "primary.main" : "text.secondary",
-        fontSize: "0.72rem",
-        fontFamily: "inherit",
-        fontWeight: 700,
-        letterSpacing: "0.12em",
-        textTransform: "uppercase",
-        lineHeight: 1.4,
-        transition:
-          "background-color .18s ease, border-color .18s ease, color .18s ease",
-        "&:hover": {
-          borderColor: active ? "primary.main" : "text.secondary",
-          color: active ? "primary.main" : "text.primary",
-        },
-      }}
-    >
-      {label}
-    </ButtonBase>
-  );
 }
 
 export default function LiveFeed({ windowKey }) {
@@ -207,41 +173,20 @@ export default function LiveFeed({ windowKey }) {
         useFlexGap
       >
         {category.types.map((t) => (
-          <FilterChip
+          <UiChip
             key={t.key}
-            label={t.label}
-            active={activeTypes.has(t.key)}
+            variant="filter"
+            pressed={activeTypes.has(t.key)}
             onClick={() => toggleType(t.key)}
-          />
+          >
+            {t.label}
+          </UiChip>
         ))}
         <Box sx={{ flexGrow: 1 }} />
-        <ButtonBase
-          onClick={load}
-          disabled={loading}
-          sx={{
-            px: 1.5,
-            py: 0.5,
-            borderRadius: 999,
-            border: 1,
-            borderColor: "divider",
-            color: loading ? "text.disabled" : "primary.main",
-            fontSize: "0.72rem",
-            fontFamily: "inherit",
-            fontWeight: 700,
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 0.75,
-            transition: "border-color .18s ease, color .18s ease",
-            "&:hover": {
-              borderColor: loading ? "divider" : "primary.main",
-            },
-          }}
-        >
+        <UiAction emphasis="quiet" onClick={load} disabled={loading} aria-busy={loading}>
           <UiIcon name="refresh" size={18} />
           Refresh
-        </ButtonBase>
+        </UiAction>
       </Stack>
 
       <div className="activity-feed-rows">

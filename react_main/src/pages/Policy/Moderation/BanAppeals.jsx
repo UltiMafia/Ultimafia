@@ -8,7 +8,7 @@ import axios from "axios";
 import { Alert, Box, Chip, CircularProgress, Divider, FormControlLabel, Link, Stack } from "@mui/material";
 
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
-import { UiAction, UiPending, UiSegmentedControl, UiTable, UiRadio as Radio, UiRadioGroup as RadioGroup, UiField as TextField, UiText as Typography } from "components/ui";
+import { UiAction, UiChip, UiPending, UiSegmentedControl, UiTable, UiRadio as Radio, UiRadioGroup as RadioGroup, UiField as TextField, UiText as Typography } from "components/ui";
 
 export const BAN_APPEALS_PATH = "/policy/moderation/ban-appeals";
 
@@ -48,8 +48,13 @@ export function tallyText(tally) {
 // anywhere in the row (the name included) opens it, and it can be opened in
 // a new tab.
 
-function StatusChip({ status }) {
-  return <span className={`moderation-status moderation-status-${status || "default"}`}>{String(status || "").toUpperCase()}</span>;
+const APPEAL_STATUS_TONES = {
+  approved: "positive", accepted: "positive",
+  denied: "destructive", rejected: "destructive",
+};
+function AppealStatus({ status }) {
+  const value = String(status || "").toLowerCase();
+  return <UiChip variant="status" tone={APPEAL_STATUS_TONES[value] || "neutral"}>{value}</UiChip>;
 }
 
 function UserLink({ id, name }) {
@@ -149,7 +154,7 @@ function AppealList() {
             { key: "expires", label: "Expires", nowrap: true, render: (row) => (!row.ban ? "-" : row.ban.permanent ? "Never (permanent)" : formatDate(row.ban.expires)) },
             { key: "filed", label: "Appeal filed", nowrap: true, render: (row) => formatDate(row.filedAt) },
             { key: "tally", label: "Tally", render: (row) => <>{tallyText(row.tally)}{row.myVote && <Typography variant="caption" display="block" color="text.secondary">You voted {row.myVote}</Typography>}</> },
-            { key: "status", label: "Status", nowrap: true, render: (row) => <StatusChip status={row.status} /> },
+            { key: "status", label: "Status", nowrap: true, render: (row) => <AppealStatus status={row.status} /> },
           ]}
         />
       )}
@@ -262,7 +267,7 @@ function AppealCase({ appealId }) {
         <Typography variant="h3">
           Appeal from <UserLink id={data.userId} name={data.username} />
         </Typography>
-        <StatusChip status={data.status} />
+        <AppealStatus status={data.status} />
       </Stack>
       <Typography color="text.secondary" data-testid="case-tally">
         {tallyText(data.tally)}. Deciding does not lift the ban; an accepted

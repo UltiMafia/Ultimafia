@@ -996,7 +996,7 @@ iframe {
 }
 
 .profile-tier-summary { display: flex; align-items: center; gap: 12px; }
-.profile-rank-chip { padding: 2px 8px; border-radius: var(--ui-radius-pill); background: var(--mui-palette-primary-main); color: var(--mui-palette-primary-contrastText); font-size: var(--ui-text-caption); font-weight: 700; }
+.profile-rank-chip { padding: 2px 8px; border-radius: var(--ui-radius-control); background: var(--mui-palette-primary-main); color: var(--mui-palette-primary-contrastText); font-size: var(--ui-text-caption); font-weight: 700; }
 
 .profile .ratings .stats-query .query-stats {
   display: flex;

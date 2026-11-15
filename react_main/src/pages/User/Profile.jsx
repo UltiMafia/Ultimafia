@@ -1974,14 +1974,6 @@ export default function Profile() {
                 Recent Games
               </Typography>
               <div className="content" style={{ padding: "0px" }}>
-                {recentGamesMaxPage > 1 && (
-                  <PageNav
-                    inverted
-                    page={recentGamesPage}
-                    maxPage={recentGamesMaxPage}
-                    onNav={onRecentGamesPageNav}
-                  />
-                )}
                 {recentGamesLoading && (
                   <Typography
                     sx={{
@@ -2063,7 +2055,6 @@ export default function Profile() {
                 Friends
               </Typography>
               <div className="content">
-                <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
                 {friendRows}
                 {friends.length === 0 && (
                   <Typography
@@ -2082,14 +2073,6 @@ export default function Profile() {
                 Setups Created
               </Typography>
               <div className="content">
-                {setupsMaxPage > 1 && (
-                  <PageNav
-                    inverted
-                    page={setupsPage}
-                    maxPage={setupsMaxPage}
-                    onNav={onSetupsPageNav}
-                  />
-                )}
                 {setupsLoading && (
                   <Typography
                     sx={{

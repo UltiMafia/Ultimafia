@@ -73,9 +73,23 @@ function countLegacyUi(source, filename = "example.jsx") {
         if (["UiReferenceList", "UiReferenceEntry", "UiReferenceToolbar"].includes(node.name?.name) && ["style", "sx"].includes(attribute.name?.name)) add("surface:inline-override");
         if (attribute.name?.name === "className" && literalStrings(attribute.value).some(value => /\b(?:cell-search-grid|cell-search-item|role-cell(?:-[\w-]+)?)\b/.test(value))) add("reference:legacy");
         if (node.name?.name === "UiStatRow" && attribute.name?.name === "variant" && attributeValues(attribute.value).some(value => !["standard", "compact"].includes(value))) add("stat:unsupported-variant");
+        // Actions use tone/emphasis; the fused variant is a deprecated alias whose
+        // use may only shrink. See docs/frontend-redesign/UI_CONTROLS.md.
+        if (node.name?.name === "UiAction" && attribute.name?.name === "variant") add("action:legacy-variant");
+        if ((node.name?.name === "UiTabs" || node.name?.name === "Tabs") && attribute.name?.name === "centered") add("tabs:centered");
+        if (node.name?.name === "PageNav" && attribute.name?.name === "inverted") add("pagination:inverted");
         if (node.name?.name === "UiPage" && attribute.name?.name === "width" && attributeValues(attribute.value).some(value => !["reading", "wide", "prose", "full"].includes(value))) add("page:unsupported-width");
         if (["UiPage", "UiPageHeader"].includes(node.name?.name) && attribute.name?.name === "variant" && attributeValues(attribute.value).some(value => !["standard", "editor", "moderation", "forum", "detail", "identity"].includes(value))) add("header:unsupported-variant");
       }
+    }
+    // One implementation per control: chips, pills, badges, tables, pagination,
+    // tab strips and segmented controls belong in components/ui only.
+    const localControl = /^(?!Ui|render|use)[A-Z][A-Za-z0-9]*(?:Chip|Pill|Table|Pagination|Tabs|Segmented)$/;
+    // The competitive game workspace keeps its own controls deliberately; this
+    // rule targets site surfaces only. One declaration counts once.
+    if (!filename.startsWith("pages/Game/")) {
+      if (node.type === "FunctionDeclaration" && localControl.test(node.id?.name || "")) add("component:local-control");
+      if (node.type === "VariableDeclarator" && localControl.test(node.id?.name || "")) add("component:local-control");
     }
     if (node.type === "CallExpression" && node.callee?.type === "MemberExpression" && node.callee.object?.name === "window" && ["confirm", "alert", "prompt"].includes(node.callee.property?.name)) add(`native:${node.callee.property.name}`);
     for (const [key, value] of Object.entries(node)) {
@@ -112,6 +126,8 @@ function cssViolations(source, filename) {
     if (/\[aria-pressed(?:\s|\]|=)/.test(selector) && filename !== "css/game.css") violations.push(`${filename}: pressed-state control styling belongs in components/ui/ui.css, not ${selector}`);
     if (/\.MuiToggleButton\b/.test(selector)) violations.push(`${filename}: toggle styling belongs in components/ui/ui.css, not ${selector}`);
     if (/\.(?:ui-segmented|ui-vote)(?:\b|--)/.test(selector)) violations.push(`${filename}: shared control styling belongs in components/ui/ui.css, not ${selector}`);
+    if (/border-radius:\s*999px|var\(--ui-radius-pill\)/.test(match[0])) violations.push(`${filename}: pill radius is not part of the shape scale; use a control/card/dialog token: ${selector}`);
+    if (/::-webkit-scrollbar/.test(selector) && !/scrollbar-width|scrollbar-color/.test(source)) violations.push(`${filename}: scrollbars must be styled for both engines; pair the WebKit rules with scrollbar-width/scrollbar-color`);
   }
   return violations;
 }

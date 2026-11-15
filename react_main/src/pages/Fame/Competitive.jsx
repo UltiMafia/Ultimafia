@@ -741,8 +741,7 @@ export default function Competitive() {
       {currentRoundInfo.round && (
         <>
           <UiTabs
-            centered
-            value={tab}
+                        value={tab}
             onChange={(_, newValue) => setTab(newValue)}
             sx={{
               borderBottom: 1,

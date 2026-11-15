@@ -389,8 +389,7 @@ export default function HallOfFame() {
       </UiPageHeader>
 
       <UiTabs
-        centered
-        value={category}
+                value={category}
         onChange={handleCategoryChange}
         variant={isPhoneDevice ? "scrollable" : "standard"}
         allowScrollButtonsMobile

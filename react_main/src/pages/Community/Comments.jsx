@@ -146,12 +146,6 @@ export default function Comments(props) {
         ) : (
           <Box />
         )}
-        {maxPage > 1 && <PageNav
-          inverted
-          page={page}
-          maxPage={maxPage}
-          onNav={onCommentsPageNav}
-        />}
       </Stack>
     </Box>
   );

@@ -286,6 +286,8 @@
 /* Scrollbar */
 
 .chat-wrapper ::-webkit-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scheme-color-border) transparent;
   width: 10px;
   height: 5px;
   z-index: -1;

@@ -366,7 +366,6 @@ export default function Shop(props) {
       <UiTabs
         value={activeTab}
         onChange={(_, newValue) => setActiveTab(newValue)}
-        centered
         sx={{
           borderBottom: 1,
           borderColor: "divider",

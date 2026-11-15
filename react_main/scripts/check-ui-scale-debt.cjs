@@ -23,9 +23,10 @@ const nativeNames = new Set(["button", "input", "select", "textarea", "dialog"])
 // React host is mounted. It is infrastructure, not a call site to migrate.
 const sanctioned = new Set([
   "components/ui/confirm.jsx",
-  // The segmented control's option is a native button by design; it is the
-  // shared primitive, not a page-level raw control.
+  // The segmented control's option and the tag chip's remove control are native
+  // buttons by design; these are the shared primitives, not page-level controls.
   "components/ui/UiSegmentedControl.jsx",
+  "components/ui/UiChip.jsx",
 ]);
 
 function sourceFiles(directory) {

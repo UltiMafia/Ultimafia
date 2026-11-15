@@ -8,9 +8,9 @@ export const uiTokens = {
   lineHeight: { body: 1.5, heading: 1.3, action: 1.25 },
   // Approved scale (2026-11-13). Every rendered corner, control height and
   // text size must resolve to one of these values.
-  radius: { flush: 0, card: 6, control: 8, dialog: 12, pill: 999 },
+  radius: { flush: 0, card: 6, control: 8, dialog: 12 },
   space: { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 },
-  control: { height: 40, touchHeight: 44, iconHeight: 32, composerHeight: 64, radius: 8, raisedEdge: 3, pressedOffset: 2 },
+  control: { height: 40, touchHeight: 44, iconHeight: 32, composerHeight: 64, radius: 8, raisedEdge: 3, pressedOffset: 2, scrollbarSize: 10 },
   layout: { pageWidth: 1180, readingWidth: 820, proseWidth: "80ch", sectionGap: 24, columnGap: 32, panelPadding: 16 },
   palettes: {
     light: {
@@ -41,13 +41,13 @@ export function uiCssVariables(fontFamily = uiTokens.fontFamily) {
     "--ui-weight-strong": uiTokens.weight.strong,
     "--ui-weight-heading": uiTokens.weight.heading,
     "--ui-action-height": `${uiTokens.control.height}px`,
+    "--ui-scrollbar-size": `${uiTokens.control.scrollbarSize}px`,
     "--ui-touch-height": `${uiTokens.control.touchHeight}px`,
     "--ui-radius": `${uiTokens.control.radius}px`,
     "--ui-radius-flush": `${uiTokens.radius.flush}px`,
     "--ui-radius-card": `${uiTokens.radius.card}px`,
     "--ui-radius-control": `${uiTokens.radius.control}px`,
     "--ui-radius-dialog": `${uiTokens.radius.dialog}px`,
-    "--ui-radius-pill": `${uiTokens.radius.pill}px`,
     "--ui-icon-height": `${uiTokens.control.iconHeight}px`,
     "--ui-composer-height": `${uiTokens.control.composerHeight}px`,
     "--ui-space-xs": `${uiTokens.space.xs}px`,

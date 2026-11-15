@@ -15,7 +15,7 @@ const { chromium } = require(playwrightPath);
   const results = [];
   const button = (p, name) => p.getByRole("button", { name, exact: true });
   const pageNav = async (p, n) => {
-    await p.locator(".page-nav").first().getByRole("button", { name: String(n), exact: true }).click();
+    await p.locator(".page-nav").first().getByRole("button", { name: "Next page", exact: true }).click();
   };
   const open = async p => { await button(p, "Reply").click(); await p.locator(".reply-form textarea").fill("retained draft"); };
   const snapshot = p => p.evaluate(() => ({

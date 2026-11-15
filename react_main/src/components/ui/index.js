@@ -1,4 +1,6 @@
 export { default as UiAction } from "./UiAction";
+export { default as UiChip } from "./UiChip";
+export { default as UiPagination } from "./UiPagination";
 export { default as UiDialog } from "./UiDialog";
 export { default as UiPending } from "./UiPending";
 export { default as UiProductCard } from "./UiProductCard";

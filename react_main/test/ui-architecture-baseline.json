@@ -1,39 +1,48 @@
 {
   "Main.jsx": {
     "mui:Button": 1,
-    "mui:Paper": 1
+    "mui:Paper": 1,
+    "action:legacy-variant": 1
   },
   "components/Auth.jsx": {
     "mui:LinearProgress": 1,
     "mui:Dialog": 1,
     "mui:DialogContent": 1,
-    "native:input": 2
+    "native:input": 2,
+    "action:legacy-variant": 8
   },
   "components/AvatarUpload.jsx": {
-    "native:input": 1
+    "native:input": 1,
+    "action:legacy-variant": 2
   },
   "components/BannerUpload.jsx": {
-    "native:input": 1
+    "native:input": 1,
+    "action:legacy-variant": 7
   },
   "components/Basic.jsx": {
     "native:confirm": 1
   },
   "components/DeathSoundUpload.jsx": {
-    "native:input": 1
+    "native:input": 1,
+    "action:legacy-variant": 5
   },
   "components/Dropdown.jsx": {
-    "mui:Menu": 1
+    "mui:Menu": 1,
+    "action:legacy-variant": 1
   },
   "components/EmotePicker.jsx": {
-    "mui:Button": 1
+    "mui:Button": 1,
+    "action:legacy-variant": 1
   },
   "components/FanartPanel.jsx": {
     "mui:IconButton": 1,
-    "native:input": 1
+    "native:input": 1,
+    "action:legacy-variant": 3
   },
   "components/Form.jsx": {
     "native:input": 3,
-    "mui:Paper": 1
+    "mui:Paper": 1,
+    "action:legacy-variant": 13
   },
   "components/ImageViewer.jsx": {
     "mui:IconButton": 1
@@ -42,19 +51,24 @@
     "mui:IconButton": 1
   },
   "components/NavDropdown.jsx": {
-    "mui:Menu": 1
+    "mui:Menu": 1,
+    "action:legacy-variant": 2
   },
   "components/Poll.jsx": {
-    "mui:LinearProgress": 1
+    "mui:LinearProgress": 1,
+    "action:legacy-variant": 1
   },
   "components/ProviderButton.jsx": {
     "mui:Button": 1
   },
   "components/Scrapbook.jsx": {
-    "native:button": 2
+    "native:button": 2,
+    "pagination:inverted": 1,
+    "action:legacy-variant": 4
   },
   "components/Setup.jsx": {
-    "native:button": 2
+    "native:button": 2,
+    "action:legacy-variant": 6
   },
   "components/SignInWithAppleButton.jsx": {
     "mui:Button": 1
@@ -63,25 +77,31 @@
     "mui:Skeleton": 1
   },
   "components/Strategies.jsx": {
-    "mui:Dialog": 1
+    "mui:Dialog": 1,
+    "action:legacy-variant": 10
   },
   "components/TradeDialog.jsx": {
-    "mui:Paper": 1
+    "mui:Paper": 1,
+    "action:legacy-variant": 1
   },
   "components/TutorialOverlay.jsx": {
     "mui:IconButton": 1,
-    "mui:Paper": 1
+    "mui:Paper": 1,
+    "action:legacy-variant": 5
   },
   "components/alerts/Announcement.jsx": {
-    "native:button": 1
+    "native:button": 1,
+    "action:legacy-variant": 5
   },
   "components/dms/DmPanel.jsx": {
     "mui:CircularProgress": 1,
     "mui:Menu": 1,
-    "alternate:@mui/icons-material/DeleteOutline": 1
+    "alternate:@mui/icons-material/DeleteOutline": 1,
+    "action:legacy-variant": 4
   },
   "components/dms/FloatingDmWindow.jsx": {
-    "mui:Paper": 1
+    "mui:Paper": 1,
+    "action:legacy-variant": 2
   },
   "components/gameComponents/ChangeSetupDialog.jsx": {
     "mui:Dialog": 1,
@@ -102,34 +122,44 @@
   },
   "components/gameComponents/StateSwitcher.jsx": {
     "native:select": 2,
-    "native:button": 2
+    "native:button": 2,
+    "action:legacy-variant": 2
   },
   "components/strategyWindows/FloatingStrategyWindows.jsx": {
-    "mui:Paper": 1
+    "mui:Paper": 1,
+    "action:legacy-variant": 2
   },
   "pages/Banned/Banned.jsx": {
-    "mui:CircularProgress": 1
+    "mui:CircularProgress": 1,
+    "action:legacy-variant": 3
   },
   "pages/Chat/Chat.jsx": {
     "mui:Menu": 1,
     "alternate:@mui/icons-material/DeleteOutline": 1,
-    "mui:Paper": 1
+    "mui:Paper": 1,
+    "action:legacy-variant": 3
   },
   "pages/Community/Forums/Thread.jsx": {
-    "native:input": 1
+    "native:input": 1,
+    "title:h1": 1,
+    "action:legacy-variant": 16,
+    "pagination:inverted": 2
   },
   "pages/Fame/Competitive.jsx": {
-    "mui:CircularProgress": 1
+    "mui:CircularProgress": 1,
+    "action:legacy-variant": 2
   },
   "pages/Fame/StockMarket.jsx": {
-    "mui:Paper": 1
+    "mui:Paper": 1,
+    "action:legacy-variant": 3
   },
   "pages/Game/BattleshipGame.jsx": {
     "mui:Button": 1,
     "native:button": 1
   },
   "pages/Game/CheatGame.jsx": {
-    "native:button": 1
+    "native:button": 1,
+    "action:legacy-variant": 1
   },
   "pages/Game/DiceWarsGame.jsx": {
     "native:button": 2
@@ -151,14 +181,16 @@
     "native:input": 4,
     "native:textarea": 2,
     "native:confirm": 1,
-    "mui:Paper": 1
+    "mui:Paper": 1,
+    "action:legacy-variant": 8
   },
   "pages/Game/JottoGame.jsx": {
     "mui:Button": 1
   },
   "pages/Game/LiarsDiceGame.jsx": {
     "mui:Button": 1,
-    "native:button": 2
+    "native:button": 2,
+    "action:legacy-variant": 1
   },
   "pages/Game/MafiaGame.jsx": {
     "mui:Button": 1
@@ -167,10 +199,12 @@
     "native:button": 3
   },
   "pages/Game/SDPlayerCircle.jsx": {
-    "native:button": 2
+    "native:button": 2,
+    "action:legacy-variant": 1
   },
   "pages/Game/SDPolicyAction.jsx": {
-    "native:button": 1
+    "native:button": 1,
+    "action:legacy-variant": 1
   },
   "pages/Game/SecretDictatorGame.jsx": {
     "native:button": 1
@@ -188,7 +222,8 @@
     "native:button": 1
   },
   "pages/Game/components/DrawTools.jsx": {
-    "native:button": 3
+    "native:button": 3,
+    "action:legacy-variant": 1
   },
   "pages/Game/components/Kudos.jsx": {
     "mui:Button": 1,
@@ -200,46 +235,212 @@
     "alternate:@mui/icons-material/Close": 1,
     "alternate:@mui/icons-material/NotificationsActive": 1
   },
-  "pages/Game/components/ReadyCheck.jsx": {
-    "mui:Button": 1,
-    "mui:Dialog": 1,
-    "mui:DialogActions": 1,
-    "mui:DialogContent": 1,
-    "mui:DialogTitle": 1
-  },
   "pages/Play/Decks/CreateDeck.jsx": {
     "native:button": 1,
-    "native:input": 3
+    "native:input": 3,
+    "action:legacy-variant": 3
   },
   "pages/Play/WordDecks/CreateWordDeck.jsx": {
     "native:button": 1,
-    "native:input": 1
+    "native:input": 1,
+    "action:legacy-variant": 2
   },
   "pages/Policy/Moderation/BanAppeals.jsx": {
-    "mui:CircularProgress": 1
+    "mui:CircularProgress": 1,
+    "action:legacy-variant": 1
   },
   "pages/User/Family.jsx": {
-    "mui:LinearProgress": 1
+    "mui:LinearProgress": 1,
+    "action:legacy-variant": 5
   },
   "pages/User/FamilyExtras.jsx": {
-    "mui:LinearProgress": 1
+    "mui:LinearProgress": 1,
+    "action:legacy-variant": 7,
+    "pagination:inverted": 1
   },
   "pages/User/Profile.jsx": {
-    "native:button": 1
+    "native:button": 1,
+    "action:legacy-variant": 14,
+    "pagination:inverted": 3
   },
   "pages/User/Settings.jsx": {
-    "mui:LinearProgress": 1
+    "mui:LinearProgress": 1,
+    "action:legacy-variant": 19
   },
   "pages/User/UserWidgets.jsx": {
     "alternate:@mui/icons-material/ExpandMore": 1,
     "alternate:@mui/icons-material/ExpandLess": 1,
     "alternate:@mui/icons-material/MusicNote": 1,
-    "native:button": 1
+    "native:button": 1,
+    "action:legacy-variant": 3
   },
   "utilsFolder/autoContrast.jsx": {
     "mui:Paper": 1
   },
   "components/MobileNav.jsx": {
     "mui:Paper": 1
+  },
+  "components/AcknowledgementDirectory.jsx": {
+    "action:legacy-variant": 3
+  },
+  "components/AppealDialog.jsx": {
+    "action:legacy-variant": 2
+  },
+  "components/CellSearch.jsx": {
+    "action:legacy-variant": 1
+  },
+  "components/CookieBanner.jsx": {
+    "action:legacy-variant": 5
+  },
+  "components/Deck.jsx": {
+    "action:legacy-variant": 1
+  },
+  "components/GuestAuthButtons.jsx": {
+    "action:legacy-variant": 2
+  },
+  "components/HostGameDialogue.jsx": {
+    "action:legacy-variant": 1
+  },
+  "components/LeaveGameDialog.jsx": {
+    "action:legacy-variant": 1
+  },
+  "components/Miniprofile.jsx": {
+    "action:legacy-variant": 1
+  },
+  "components/PendingTradeConfirmations.jsx": {
+    "action:legacy-variant": 5
+  },
+  "components/RapSheet.jsx": {
+    "action:legacy-variant": 2
+  },
+  "components/RecentTradesFeed.jsx": {
+    "action:legacy-variant": 1
+  },
+  "components/ReportDetail.jsx": {
+    "action:legacy-variant": 11
+  },
+  "components/SportsmanshipJoinModal.jsx": {
+    "action:legacy-variant": 2
+  },
+  "components/StampTradeModal.jsx": {
+    "action:legacy-variant": 4
+  },
+  "components/TutorialPrompt.jsx": {
+    "action:legacy-variant": 4
+  },
+  "components/VoteWidget.jsx": {
+    "action:legacy-variant": 3
+  },
+  "components/dms/DmButton.jsx": {
+    "action:legacy-variant": 1
+  },
+  "pages/Community/Comment.jsx": {
+    "action:legacy-variant": 2
+  },
+  "pages/Community/Comments.jsx": {
+    "action:legacy-variant": 3,
+    "pagination:inverted": 1
+  },
+  "pages/Community/Feedback.jsx": {
+    "action:legacy-variant": 1
+  },
+  "pages/Community/Forums/Board.jsx": {
+    "action:legacy-variant": 2,
+    "pagination:inverted": 1
+  },
+  "pages/Community/Forums/ForumSearch.jsx": {
+    "action:legacy-variant": 2
+  },
+  "pages/Community/Forums/Forums.jsx": {
+    "action:legacy-variant": 1
+  },
+  "pages/Community/UserSearch.jsx": {
+    "pagination:inverted": 1
+  },
+  "pages/Fame/HallOfFame.jsx": {
+    "action:legacy-variant": 2,
+    "component:local-control": 1
+  },
+  "pages/Game/PokerActions.jsx": {
+    "action:legacy-variant": 3
+  },
+  "pages/Game/RatscrewGame.jsx": {
+    "action:legacy-variant": 1
+  },
+  "pages/Learn/Setup/SetupPage.jsx": {
+    "action:legacy-variant": 3
+  },
+  "pages/Learn/role/RolePage.jsx": {
+    "action:legacy-variant": 1
+  },
+  "pages/Play/CreateSetup/CreateBrowser.jsx": {
+    "action:legacy-variant": 4
+  },
+  "pages/Play/CreateSetup/CreateSetup.jsx": {
+    "action:legacy-variant": 1
+  },
+  "pages/Play/Decks/DeckLibrary.jsx": {
+    "action:legacy-variant": 3
+  },
+  "pages/Play/Host/HostBrowser.jsx": {
+    "action:legacy-variant": 2
+  },
+  "pages/Play/LobbyBrowser/FeaturedSetup.jsx": {
+    "action:legacy-variant": 1
+  },
+  "pages/Play/LobbyBrowser/GameRow.jsx": {
+    "action:legacy-variant": 4
+  },
+  "pages/Play/LobbyBrowser/LobbyBrowser.jsx": {
+    "action:legacy-variant": 1
+  },
+  "pages/Policy/Invoices.jsx": {
+    "action:legacy-variant": 3
+  },
+  "pages/Policy/Moderation/BlockRequests.jsx": {
+    "action:legacy-variant": 1
+  },
+  "pages/Policy/Moderation/CompetitiveManagement.jsx": {
+    "action:legacy-variant": 6
+  },
+  "pages/Policy/Moderation/FlaggedIntake.jsx": {
+    "action:legacy-variant": 2,
+    "pagination:inverted": 2
+  },
+  "pages/Policy/Moderation/GithubLinks.jsx": {
+    "action:legacy-variant": 3
+  },
+  "pages/Policy/Moderation/GroupPanels.jsx": {
+    "action:legacy-variant": 4
+  },
+  "pages/Policy/Moderation/ModCommands.jsx": {
+    "action:legacy-variant": 2
+  },
+  "pages/Policy/Moderation/Volunteer.jsx": {
+    "action:legacy-variant": 1
+  },
+  "pages/User/AccountCredentials.jsx": {
+    "action:legacy-variant": 5
+  },
+  "pages/User/AdminVisuals.jsx": {
+    "action:legacy-variant": 4
+  },
+  "pages/User/CryptoDonate.jsx": {
+    "action:legacy-variant": 4
+  },
+  "pages/User/DeveloperApi.jsx": {
+    "action:legacy-variant": 3
+  },
+  "pages/User/Inbox.jsx": {
+    "action:legacy-variant": 2
+  },
+  "pages/User/ProfileReputation.jsx": {
+    "action:legacy-variant": 2
+  },
+  "pages/User/Shop.jsx": {
+    "action:legacy-variant": 5
+  },
+  "pages/Policy/Rules.jsx": {
+    "component:local-control": 1
   }
 }

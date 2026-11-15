@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { UiSection, UiAction, UiField, UiStatRow, UiStat, UiPageHeader, UiTabs, UiTab, UiTable, UiSegmentedControl, UiVoteControl, UiCard, confirmAction, UiMenuItem as MenuItem, UiSelect as Select, UiText as Typography } from "components/ui";
+import { UiSection, UiAction, UiField, UiStatRow, UiStat, UiPageHeader, UiTabs, UiTab, UiTable, UiSegmentedControl, UiVoteControl, UiCard, UiChip, confirmAction, UiMenuItem as MenuItem, UiSelect as Select, UiText as Typography } from "components/ui";
 import {
   Link as RouterLink,
   Route,
@@ -570,19 +570,17 @@ export function SetupPage() {
         </div>
         <div className="setup-meta-row">
           <span className="setup-status">{rolesVisibilityLabel}</span>
-          <StatusPill
+          <SetupStatus
             active={setup.ranked}
             canToggle={canToggleRanked}
             onClick={onToggleRanked}
             label="Ranked"
-            color="#e45050"
           />
-          <StatusPill
+          <SetupStatus
             active={setup.competitive}
             canToggle={canToggleComp}
             onClick={onToggleComp}
             label="Competitive"
-            color="#ebd722"
           />
           {setup.creator && (
             <span className="setup-creator-byline">
@@ -945,23 +943,21 @@ export function SetupPage() {
   );
 }
 
-function StatusPill({ active, canToggle, onClick, label, color }) {
+function SetupStatus({ active, canToggle, onClick, label }) {
   if (!active && !canToggle) return null;
-  const statusStyle = active && color ? { borderColor: color, color } : undefined;
   if (canToggle) {
     return (
-      <UiAction
-        variant="ghost"
-        className={`setup-status-action ${active ? "is-active" : "is-off"}`}
-        style={statusStyle}
+      <UiChip
+        variant="filter"
+        pressed={active}
         onClick={onClick}
-        aria-pressed={!!active}
+        className={`setup-status-chip ${active ? "is-active" : "is-off"}`}
       >
         {label}: {active ? "on" : "off"}
-      </UiAction>
+      </UiChip>
     );
   }
-  return <span className="setup-status" style={statusStyle}>{label}</span>;
+  return <UiChip variant="status">{label}</UiChip>;
 }
 
 // Before the backend manifest generator was fixed, the game-settings block

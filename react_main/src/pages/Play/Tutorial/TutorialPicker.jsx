@@ -118,7 +118,6 @@ export default function TutorialPicker() {
               </div>
               <Box sx={{ mt: 2 }}>
                 <UiAction
-                  variant="primary"
                   className="ui-action--block"
                   disabled={!user.loggedIn || !s.available || Boolean(starting)}
                   onClick={() => start(s.id)}

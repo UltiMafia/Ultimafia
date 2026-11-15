@@ -1,6 +1,7 @@
 import React from "react";
 import UiAction from "./ui/UiAction";
 import UiIcon from "./ui/UiIcon";
+import UiPagination from "./ui/UiPagination";
 import { NavLink, useLocation } from "react-router-dom";
 
 import Dropdown from "./Dropdown";
@@ -49,58 +50,19 @@ export function SubNav(props) {
 }
 
 export function PageNav(props) {
-  const page = props.page;
-  const maxPage = props.maxPage;
-  const range = props.range || 5;
-  const onNav = props.onNav;
-  const inverted = props.inverted;
-  const noRange = maxPage == null;
-
-  const count = noRange ? 1 : Math.max(0, Math.min(range, maxPage));
-  const start = noRange ? page : Math.max(1, Math.min(page - Math.floor(count / 2), maxPage - count + 1));
-  const pages = Array.from({ length: count }, (_, index) => start + index);
-
-  function onClick(page) {
-    if (!props.disabled && page >= 1 && (noRange || page <= maxPage)) onNav(page);
-  }
-
-  const pageNums = pages.map((page) => {
-    return (
-      <UiAction iconOnly variant="ghost" key={page} className="page-nav-number"
-        aria-label={`Page ${page}`} aria-current={props.page === page ? "page" : undefined}
-        data-distant={Math.abs(props.page - page) > 1} disabled={props.disabled}
-        onClick={() => onClick(page)}
-      >
-        {page}
-      </UiAction>
-    );
-  });
-
-  return (
-    <Box component="nav" aria-label={props.label || "Pagination"} className={`page-nav ${inverted ? "inverted" : ""}`}>
-      <UiAction iconOnly variant="ghost" className="page-nav-boundary" aria-label="First page" disabled={props.disabled || page <= 1} onClick={() => onClick(1)}>
-        <UiIcon name="first" />
-      </UiAction>
-      <UiAction iconOnly variant="ghost" aria-label="Previous page" disabled={props.disabled || page <= 1}
-        onClick={() => onClick(page - 1)}
-      >
-        <UiIcon name="previous" />
-      </UiAction>
-      {pageNums}
-      <UiAction iconOnly variant="ghost" aria-label="Next page" disabled={props.disabled || (!noRange && page >= maxPage)}
-        onClick={() => onClick(page + 1)}
-      >
-        <UiIcon name="next" />
-      </UiAction>
-      {!noRange && (
-        <UiAction iconOnly variant="ghost" className="page-nav-boundary" aria-label="Last page" disabled={props.disabled || page >= maxPage}
-          onClick={() => onClick(maxPage)}
-        >
-          <UiIcon name="last" />
-        </UiAction>
-      )}
-    </Box>
-  );
+  // One pagination widget for every list. `inverted` is accepted during
+  // migration and ignored; the architecture guard counts it so it can only
+  // shrink. See docs/frontend-redesign/UI_CONTROLS.md.
+  if (props.maxPage == null && props.page == null) return null;
+  // Unknown totals stay unknown: UiPagination renders cursor arrows instead of
+  // inventing a single page, which would disable "next".
+  return <UiPagination
+    page={props.page || 1}
+    count={props.maxPage}
+    label={props.label || "Pagination"}
+    disabled={Boolean(props.disabled)}
+    onChange={value => props.onNav?.(value)}
+  />;
 }
 
 export function getPageNavFilterArg(newPage, oldPage, pageItems, sortField) {

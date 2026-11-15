@@ -1102,6 +1102,8 @@ html[data-keyboard="open"] .game .meeting-tabs {
   }
 
   .game .main::-webkit-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scheme-color-border) transparent;
     display: none;
   }
 

@@ -1,5 +1,10 @@
 # Client UI architecture
 
+The rules for which control to use — actions, chips, tabs, pagination, page
+width, shape, scrollbars — are in [`UI_CONTROLS.md`](UI_CONTROLS.md). That file
+is normative: a treatment not covered there and not implemented in
+`components/ui` is an unprecedented choice that must not ship.
+
 ## Supported composition
 
 Use `react_main/src/components/ui` for presentation primitives. A page composes
@@ -53,7 +58,11 @@ read-only information is not an action. Shared surfaces reject page-specific
 inline `style`/`sx` overrides.
 
 Controls use `UiField` and `UiAction` with named variants rather than raw native
-or direct MUI equivalents. Dialogs use `UiDialog`, explicit cancellation and
+or direct MUI equivalents. `UiAction` takes `tone` (neutral/brand/positive/
+destructive) and `emphasis` (default/primary/quiet) plus an explicit `raised`
+override; the fused `variant` prop is a deprecated alias whose count may only
+shrink. Chips are `UiChip` (`status`/`filter`/`tag`); there is no page-local pill.
+Pagination is `UiPagination`, wrapping MUI's `Pagination`, once below the list. Dialogs use `UiDialog`, explicit cancellation and
 pending guards. Utility icons use `UiIcon` (HackerNoon Solid, native 24px slot);
 currency uses `CoinIcon`. Existing role icons and seasonal wordmarks stay intact.
 

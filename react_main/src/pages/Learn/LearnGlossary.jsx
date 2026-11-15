@@ -66,6 +66,7 @@ export default function LearnGlossary(props) {
         value={query}
         onChange={event => setQuery(event.target.value)}
         size="small"
+        sx={{ mb: 1.5 }}
       />
       <UiTabs value={tab} onChange={(_, v) => setTab(v)} aria-label="Terminology sections">
         <UiTab label="Slang" id="term-tab-0" aria-controls="term-panel-0" />

@@ -271,6 +271,26 @@ function measureUi() {
       break;
     }
   }
+  // Adjacent interactive controls, not only form fields. A control directly under
+  // another in the same column with less than 4px between them reads as one block
+  // and is hard to hit; same-row controls are separated horizontally and skipped.
+  // This generalises the form-field rule that missed a segmented control touching
+  // a search field.
+  const interactiveSelector = 'button, input, select, textarea, [role="button"], [role="combobox"], [role="tab"], .ui-chip';
+  const interactive = [...document.querySelectorAll(interactiveSelector)]
+    .filter(visible)
+    .filter(element => !element.disabled && !element.closest('[aria-hidden="true"]'));
+  for (let index = 1; index < interactive.length; index += 1) {
+    const previous = interactive[index - 1], current = interactive[index];
+    if (previous.contains(current) || current.contains(previous)) continue;
+    const a = rect(previous), b = rect(current);
+    if (b.top < a.bottom - 1) continue;
+    const overlap = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+    if (overlap < Math.min(48, Math.max(a.width, b.width) * 0.5)) continue;
+    const gap = Math.round((b.top - a.bottom) * 100) / 100;
+    if (gap < 4) controlProblems.push({ property: 'touchingControls', observed: gap, severity: 'high',
+      selector: selector(current), previous: selector(previous) });
+  }
   const fixedBars = [...document.querySelectorAll('body *')].filter(element => {
     if (!visible(element)) return false;
     const style = getComputedStyle(element), box = rect(element);

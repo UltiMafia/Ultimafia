@@ -6,7 +6,10 @@ import { selectedTabScrollDelta } from "./tabGeometry";
 // callbacks. The browser clamps the scroll offset to that wider strip; when the
 // arrows return, MUI doesn't revisit a selected tab whose indicator didn't move.
 // Recheck selection after strip resizing without intercepting arrow scrolling.
-const UiTabs = forwardRef(function UiTabs({ value, orientation = "horizontal", ...props }, ref) {
+const UiTabs = forwardRef(function UiTabs({ value, orientation = "horizontal", centered, ...props }, ref) {
+  // Tabs are left-aligned on every page; centering is a second alignment system.
+  // See docs/frontend-redesign/UI_CONTROLS.md.
+  if (centered) throw new TypeError("UiTabs: centered tabs are not supported; tab strips are left-aligned");
   const root = useRef(null);
   useImperativeHandle(ref, () => root.current);
   useLayoutEffect(() => {

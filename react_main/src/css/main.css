@@ -738,28 +738,31 @@ input:focus:not(:focus-visible) {
 }
 
 @media only screen and (min-width: 700px) {
-  /* For Webkit browsers like Chrome, Safari, and new Edge */
+  /* One scrollbar style for every engine. WebKit variants cover Chrome/Safari;
+     the standard properties cover Firefox and future engines. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scheme-color-border) var(--scheme-color-background);
+  }
+
   *::-webkit-scrollbar {
-    width: 8px;
+    width: var(--ui-scrollbar-size);
+    height: var(--ui-scrollbar-size);
   }
 
   *::-webkit-scrollbar-track {
-    background: #888;
+    background: var(--scheme-color-background);
   }
 
   *::-webkit-scrollbar-thumb {
-    background: #555;
+    background: var(--scheme-color-border);
+    border: 2px solid var(--scheme-color-background);
+    border-radius: var(--ui-radius-control);
   }
 
   *::-webkit-scrollbar-thumb:hover {
-    background: #444;
+    background: var(--um-muted);
   }
-
-  /*!* Standard CSS scrollbar styling *!*/
-  /** {*/
-  /*    scrollbar-width: thin;*/
-  /*    scrollbar-color: #555 #888;*/
-  /*}*/
 }
 
 .MuiDialogTitle-root,

@@ -19,25 +19,54 @@
 .ui-action--small { min-height: 32px; padding: 0 10px; font-size: var(--ui-text-small); }
 .ui-action--icon.ui-action--small { flex-basis: var(--ui-icon-height); width: var(--ui-icon-height); height: var(--ui-icon-height); min-width: var(--ui-icon-height); padding: 0; }
 .ui-action--compact { height: auto; min-height: 0; padding: 0; font-size: var(--ui-text-caption); }
-.ui-action--primary { background: var(--mui-palette-primary-main); border-color: transparent; color: var(--mui-palette-primary-contrastText); box-shadow: var(--ui-primary-shadow); }
-.ui-action--primary:hover:not(:disabled) { background: var(--mui-palette-primary-dark); }
-.ui-action--primary:active:not(:disabled) { transform: translateY(var(--ui-primary-pressed-offset)); box-shadow: var(--ui-primary-pressed-shadow); }
-.ui-action--ghost { background: transparent; border-color: transparent; color: var(--um-muted); }
-.ui-action--ghost:hover:not(:disabled) { color: var(--scheme-color-text); }
-.ui-action--ghost:not(:disabled):not([aria-pressed="true"]) > .ui-icon,
+/* Tone decides colour, emphasis decides fill, raised is its own property.
+   Legacy .ui-action--* classes are emitted for audit continuity only. */
+.ui-action[data-tone="brand"] { background: var(--mui-palette-primary-main); border-color: transparent; color: var(--mui-palette-primary-contrastText); }
+.ui-action[data-tone="brand"]:hover:not(:disabled) { background: var(--mui-palette-primary-dark); }
+.ui-action[data-tone="positive"] { background: var(--mui-palette-success-main); border-color: transparent; color: var(--mui-palette-success-contrastText); }
+.ui-action[data-tone="positive"]:hover:not(:disabled) { background: var(--mui-palette-success-dark); }
+.ui-action[data-tone="destructive"][data-emphasis="default"] { background: var(--ui-danger-solid); border-color: transparent; color: var(--mui-palette-error-contrastText); }
+.ui-action[data-tone="destructive"][data-emphasis="default"]:hover:not(:disabled) { background: var(--mui-palette-error-dark); }
+.ui-action[data-tone="destructive"][data-emphasis="quiet"] { background: transparent; border-color: transparent; color: var(--ui-danger-text); }
+.ui-action[data-tone="destructive"][data-emphasis="quiet"]:hover:not(:disabled) { background: color-mix(in srgb, var(--ui-danger-text) 12%, transparent); }
+.ui-action[data-emphasis="quiet"] { background: transparent; border-color: transparent; color: var(--um-muted); }
+.ui-action[data-emphasis="quiet"]:hover:not(:disabled) { color: var(--scheme-color-text); }
+.ui-action[data-emphasis="quiet"]:not(:disabled):not([aria-pressed="true"]) > .ui-icon,
 .utility-button:not(:disabled):not([aria-expanded="true"]) > .ui-icon { color: var(--scheme-color-text); }
-.ui-action[aria-pressed="true"]:not(.ui-action--primary):not(.ui-action--danger) { color: var(--um-accent); border-color: var(--um-accent); }
-.ui-action--success { background: var(--mui-palette-success-main); border-color: transparent; color: var(--mui-palette-success-contrastText); }
-.ui-action--success:hover:not(:disabled) { background: var(--mui-palette-success-dark); }
-.ui-action--success:active:not(:disabled) { transform: translateY(var(--ui-primary-pressed-offset)); }
-.ui-action--danger { background: var(--ui-danger-solid); border-color: transparent; color: var(--mui-palette-error-contrastText); }
-.ui-action--danger:hover:not(:disabled) { background: var(--mui-palette-error-dark); }
-.ui-action--danger-quiet { background: transparent; border-color: transparent; color: var(--ui-danger-text); }
-.ui-action--danger-quiet:hover:not(:disabled) { background: color-mix(in srgb, var(--ui-danger-text) 12%, transparent); }
+.ui-action[aria-pressed="true"]:not([data-tone="brand"]):not([data-tone="destructive"]) { color: var(--um-accent); border-color: var(--um-accent); }
+/* Raised: one hard bottom edge and a 2px press. Only primary emphasis is raised. */
+.ui-action[data-raised="true"] { --ui-raised-edge: rgb(0 0 0 / 35%); box-shadow: 0 var(--ui-raised-edge-height, 3px) 0 var(--ui-raised-edge); }
+.ui-action[data-tone="brand"][data-raised="true"] { --ui-raised-edge: var(--ui-primary-edge-color); }
+.ui-action[data-raised="true"]:active:not(:disabled) { transform: translateY(var(--ui-primary-pressed-offset)); box-shadow: 0 var(--ui-raised-edge-pressed, 1px) 0 var(--ui-raised-edge); }
+.ui-action[data-tone="positive"]:active:not(:disabled), .ui-action[data-tone="destructive"][data-emphasis="default"]:active:not(:disabled) { transform: translateY(var(--ui-primary-pressed-offset)); }
 .ui-action--icon { flex: 0 0 var(--ui-icon-height); width: var(--ui-icon-height); height: var(--ui-icon-height); min-width: var(--ui-icon-height); min-height: var(--ui-icon-height); padding: 0; }
 .ui-action:disabled, .ui-action.is-disabled, .ui-action[aria-disabled="true"] { background: var(--mui-palette-action-disabledBackground); border-color: transparent; color: var(--mui-palette-text-disabled); cursor: default; box-shadow: none; transform: none; pointer-events: none; }
-.ui-action--ghost:disabled, .ui-action--danger-quiet:disabled,
-.ui-action--ghost.is-disabled, .ui-action--danger-quiet.is-disabled { background: transparent; }
+.ui-action[data-emphasis="quiet"]:disabled,
+.ui-action[data-emphasis="quiet"].is-disabled { background: transparent; }
+/* Chips: status, filter, tag. Radius follows control (8px); no pills. */
+.ui-chip { display: inline-flex; align-items: center; gap: 6px; box-sizing: border-box; min-height: 28px; padding: 0 10px; border: 1px solid var(--scheme-color-border); border-radius: var(--ui-radius-control); background: var(--scheme-color-sec); color: var(--scheme-color-text); font-family: var(--ui-font-body); font-size: var(--ui-text-small); font-weight: var(--ui-weight-strong); line-height: 1.4; white-space: nowrap; }
+.ui-chip[data-ui-chip="filter"] { cursor: pointer; }
+.ui-chip[data-ui-chip="filter"]:hover { border-color: var(--scheme-color-text); }
+.ui-chip[data-ui-chip="filter"][data-pressed="true"] { border-color: var(--um-accent); color: var(--um-accent); background: color-mix(in srgb, var(--um-accent) 12%, transparent); }
+.ui-chip[data-tone="brand"] { color: var(--um-accent); border-color: color-mix(in srgb, var(--um-accent) 55%, transparent); }
+.ui-chip[data-tone="positive"] { color: var(--mui-palette-success-main); border-color: color-mix(in srgb, var(--mui-palette-success-main) 55%, transparent); }
+.ui-chip[data-tone="destructive"] { color: var(--ui-danger-text); border-color: color-mix(in srgb, var(--ui-danger-text) 55%, transparent); }
+.ui-chip-remove { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; padding: 0; border: 0; border-radius: var(--ui-radius-control); background: transparent; color: inherit; font: inherit; line-height: 1; cursor: pointer; }
+.ui-chip-remove:hover { background: color-mix(in srgb, currentColor 18%, transparent); }
+@media (max-width: 900px), (pointer: coarse) {
+  .ui-chip[data-ui-chip="filter"] { min-height: var(--ui-touch-height); }
+  .ui-chip-remove { width: 24px; height: 24px; }
+}
+/* Pagination: one MUI widget, below the list, shared sizing. */
+.ui-pagination { display: flex; justify-content: center; gap: 4px; padding: 8px 0; }
+.ui-pagination .MuiPagination-ul { flex-wrap: wrap; justify-content: center; }
+/* The theme owns the item colours and selected treatment, matching the stock
+   market's existing widget. Only the phone touch size is raised; the ellipsis
+   is left alone so it renders as MUI's own text, not a fixed-size tile. */
+@media (max-width: 900px), (pointer: coarse) {
+  .ui-pagination .MuiPaginationItem-page,
+  .ui-pagination .MuiPaginationItem-previousNext { min-width: var(--ui-touch-height); height: var(--ui-touch-height); }
+}
 .ui-progress { width: 16px; height: 16px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: ui-progress .8s linear infinite; }
 @keyframes ui-progress { to { transform: rotate(360deg); } }
 .message-composer { width: 100%; min-width: 0; }
@@ -319,7 +348,7 @@
   right: 1px;
   bottom: 1px;
   width: 28px;
-  border-radius: 0 var(--ui-radius-pill) var(--ui-radius-pill) 0;
+  border-radius: 0 var(--ui-radius-control) var(--ui-radius-control) 0;
   background: linear-gradient(to right, transparent, var(--scheme-color-sec) 72%);
   pointer-events: none;
   opacity: 0;
@@ -337,9 +366,10 @@
   overflow-x: auto;
   overflow-y: hidden;
   border: 1px solid var(--scheme-color-border);
-  border-radius: var(--ui-radius-pill);
+  border-radius: var(--ui-radius-control);
   background: var(--scheme-color-sec);
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scheme-color-border) transparent;
 }
 .ui-segmented::-webkit-scrollbar { display: none; }
 .ui-segmented-option {
@@ -347,7 +377,7 @@
   min-height: 32px;
   padding: 0 12px;
   border: 0;
-  border-radius: var(--ui-radius-pill);
+  border-radius: var(--ui-radius-control);
   background: transparent;
   color: var(--um-muted);
   font: inherit;
@@ -373,7 +403,7 @@
   min-height: var(--ui-action-height);
   padding: 0 4px;
   border: 1px solid var(--scheme-color-border);
-  border-radius: var(--ui-radius-pill);
+  border-radius: var(--ui-radius-control);
   background: var(--scheme-color-sec);
 }
 .ui-vote .ui-action {

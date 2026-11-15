@@ -115,7 +115,7 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
     <UiDialog open={open} title="Report user" onClose={onClose} dismissible={!submitting}
       actions={<>
         <UiAction onClick={onClose} disabled={submitting}>Cancel</UiAction>
-        <UiAction type="submit" form={formId} variant="primary" busy={submitting}
+        <UiAction type="submit" form={formId} tone="brand" busy={submitting}
           disabled={!user.loggedIn || !rulesAvailable}>Submit Report</UiAction>
       </>}>
         {user.loggedIn ? (

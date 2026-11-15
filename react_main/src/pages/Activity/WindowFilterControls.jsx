@@ -29,8 +29,6 @@ export function ActivityHeaderMeta({ snapshotAt }) {
       <Typography
         variant="caption"
         sx={{
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
           color: "text.secondary",
           fontVariantNumeric: "tabular-nums",
         }}
@@ -46,11 +44,7 @@ export function ActivityHeaderMeta({ snapshotAt }) {
       <Box sx={{ opacity: 0.3 }}>/</Box>
       <Typography
         variant="caption"
-        sx={{
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
-          color: "text.secondary",
-        }}
+        sx={{ color: "text.secondary" }}
       >
         Fetched on load
       </Typography>
