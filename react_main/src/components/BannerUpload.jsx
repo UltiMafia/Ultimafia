@@ -356,8 +356,11 @@ export default function BannerUpload(props) {
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 2, px: 1 }}>
               <UiAction
-                 variant="ghost" size="small" onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
-                
+                iconOnly
+                variant="ghost"
+                size="small"
+                aria-label="Zoom out"
+                onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
               >
                 -
               </UiAction>
@@ -370,8 +373,11 @@ export default function BannerUpload(props) {
                 sx={{ flex: 1 }}
               />
               <UiAction
-                 variant="ghost" size="small" onClick={() => setZoom(Math.min(3, zoom + 0.1))}
-                
+                iconOnly
+                variant="ghost"
+                size="small"
+                aria-label="Zoom in"
+                onClick={() => setZoom(Math.min(3, zoom + 0.1))}
               >
                 +
               </UiAction>

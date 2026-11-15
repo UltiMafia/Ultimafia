@@ -34,7 +34,7 @@
 .ui-action--danger:hover:not(:disabled) { background: var(--mui-palette-error-dark); }
 .ui-action--danger-quiet { background: transparent; border-color: transparent; color: var(--ui-danger-text); }
 .ui-action--danger-quiet:hover:not(:disabled) { background: color-mix(in srgb, var(--ui-danger-text) 12%, transparent); }
-.ui-action--icon { flex: 0 0 var(--ui-icon-height); width: var(--ui-icon-height); height: var(--ui-icon-height); min-width: var(--ui-icon-height); padding: 0; }
+.ui-action--icon { flex: 0 0 var(--ui-icon-height); width: var(--ui-icon-height); height: var(--ui-icon-height); min-width: var(--ui-icon-height); min-height: var(--ui-icon-height); padding: 0; }
 .ui-action:disabled, .ui-action.is-disabled, .ui-action[aria-disabled="true"] { background: var(--mui-palette-action-disabledBackground); border-color: transparent; color: var(--mui-palette-text-disabled); cursor: default; box-shadow: none; transform: none; pointer-events: none; }
 .ui-action--ghost:disabled, .ui-action--danger-quiet:disabled,
 .ui-action--ghost.is-disabled, .ui-action--danger-quiet.is-disabled { background: transparent; }

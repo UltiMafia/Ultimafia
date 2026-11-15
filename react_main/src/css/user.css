@@ -1268,3 +1268,26 @@ iframe {
 }
 
 .profile-trade-action { margin-top: var(--ui-space-sm); }
+
+/* Touch screens have no hover, so the banner edit/remove controls must stay
+   reachable as a compact surface at the banner's top-right. */
+@media (hover: none), (max-width: 900px) {
+  .profile .banner:not(.no-banner) .banner-edit-overlay {
+    display: flex;
+    inset: 8px 8px auto auto;
+    width: auto;
+    height: auto;
+    padding: 2px;
+    gap: 2px;
+    background: var(--scheme-color);
+    border: 1px solid var(--scheme-color-border);
+    border-radius: var(--ui-radius-control);
+    opacity: 1;
+  }
+  .profile .banner:not(.no-banner) .banner-edit-action {
+    width: var(--ui-touch-height);
+    height: var(--ui-touch-height);
+    background: transparent;
+    color: var(--scheme-color-text);
+  }
+}
