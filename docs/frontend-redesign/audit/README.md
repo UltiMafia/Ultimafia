@@ -159,6 +159,33 @@ empty reference baselines: the bootstrap must use the same public source
 records, not hard-coded empty achievement/item lists. Source-contract and browser
 population assertions guard this explicitly.
 
+## Dialogs, menus and overlays
+
+These are **not** part of the route matrix above. They have their own runner:
+
+```sh
+cd react_main
+PLAYWRIGHT_MODULE=/path/to/isolated/playwright npm run ui:dialogs
+```
+
+`test/run-ui-dialogs.cjs` builds the production-component fixture itself, walks
+the source to inventory every dialog/menu/popover usage (the inventory is the
+denominator, not the pages it happens to open), then probes each route's
+triggers, opens what it can and measures the overlay frame, actions and content.
+Its report is `docs/frontend-redesign/dialogs/report.md` with machine data in
+`dialogs.json`. Overlays it cannot reach are reported as **not reached**, never
+as clean.
+
+Do not rebuild this capability from scratch: extend the trigger map and the
+inventory. The last full run (2026-11-14, 1440/390, dark) inventoried **89
+overlay usages across 73 files**, opened 144 overlays and left **12 findings
+open** (2 high: overflow in the moderation Unban dialog; 10 medium: dialog body
+text at 12-14px against 16, mixed action heights in Create Thread, Trade Shares
+at 444px against the 600px frame). Those findings are current, not historical.
+
+Game-only overlays (the ready check, in-game dialogs) are not reachable from a
+site route and need explicit fixture states before this runner can see them.
+
 ## Current limits — not completion
 
 The inventory derives from the existing route registry plus its explicit
