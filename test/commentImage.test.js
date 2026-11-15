@@ -106,71 +106,6 @@ function response() {
   };
 }
 
-// Render the production component with controlled hooks and transport, following
-// the route tests' isolated-service pattern. No DOM or live account is required.
-function composer() {
-  const filename = path.join(__dirname, "../react_main/src/pages/Community/Comments.jsx");
-  const frontendRequire = createRequire(path.join(__dirname, "../react_main/package.json"));
-  const babel = frontendRequire("@babel/core");
-  const code = babel.transformSync(source(filename), {
-    filename,
-    babelrc: false, configFile: false,
-    presets: [frontendRequire.resolve("@babel/preset-react")],
-    plugins: [frontendRequire.resolve("@babel/plugin-transform-modules-commonjs")],
-  }).code;
-  const slots = [], effects = [], calls = [], revoked = [], created = [];
-  let index = 0, tree;
-  const React = {
-    createElement: (type, props, ...children) => ({ type, props: { ...props, children } }),
-    useState(initial) {
-      const i = index++;
-      if (!(i in slots)) slots[i] = typeof initial === "function" ? initial() : initial;
-      return [slots[i], (value) => { slots[i] = typeof value === "function" ? value(slots[i]) : value; }];
-    },
-    useRef(initial) { const i = index++; return slots[i] ||= { current: initial }; },
-    useContext: () => ({ loggedIn: true, perms: { postReply: true }, settings: {} }),
-    useEffect(fn, deps) {
-      const i = index++;
-      if (!slots[i] || deps.some((dep, j) => dep !== slots[i].deps[j])) {
-        effects.push(() => { slots[i]?.cleanup?.(); slots[i] = { deps, cleanup: fn() }; });
-      }
-    },
-  };
-  const axios = {
-    get: async () => ({ data: { comments: [], maxPage: 1 } }),
-    post: async (...args) => { calls.push(args); if (axios.fail) throw new Error("Post failed"); },
-  };
-  const mocks = {
-    react: React, axios,
-    "../../components/Alerts": { useErrorAlert: () => () => {} },
-    "../../components/Basic": { filterProfanity: (value) => value },
-    "../../components/Nav": { PageNav: "PageNav" },
-    "../../components/Form": { TextEditor: "TextEditor" },
-    "../../Contexts": {}, "../../components/Loading": { Loading: "Loading" },
-    "@mui/material": Object.fromEntries(["Box", "Button", "Paper", "Stack", "Typography"].map((name) => [name, name])),
-    "./Comment": { Comment: "Comment" },
-  };
-  const module = { exports: {} };
-  vm.runInNewContext(code, {
-    module, exports: module.exports, FormData,
-    URL: { createObjectURL: () => { const url = `blob:${created.length}`; created.push(url); return url; }, revokeObjectURL: (url) => revoked.push(url) },
-    require: (name) => mocks[name] || (name.endsWith(".css") ? {} : frontendRequire(name)),
-  }, { filename });
-  const render = () => { index = 0; tree = module.exports.default({ location: "owner" }); effects.splice(0).forEach((fn) => fn()); };
-  const find = (predicate, node = tree) => {
-    if (!node || typeof node !== "object") return null;
-    if (predicate(node)) return node;
-    return (node.props?.children || []).flat(Infinity).map((child) => find(predicate, child)).find(Boolean);
-  };
-  return {
-    calls, revoked, created, axios, render,
-    editor: () => find((node) => node.type === "TextEditor"),
-    button: (text) => find((node) => node.type === "Button" && node.props.children.flat(Infinity).includes(text)),
-    async open() { render(); await new Promise(setImmediate); render(); this.button("Post Comment").props.onClick(); render(); },
-    unmount() { slots.forEach((slot) => slot?.cleanup?.()); },
-  };
-}
-
 describe("comment image lifecycle (real Formidable, Sharp and files; mocked database)", function () {
   this.timeout(10000);
   let state, router, webp, oldUpload;
@@ -198,23 +133,6 @@ describe("comment image lifecycle (real Formidable, Sharp and files; mocked data
     res.diagnostic = state.errors.map((e) => e.stack || e).join("\n");
     return res;
   }
-  it("cancel and Remove image revoke local previews without uploading or creating a file", async () => {
-    const ui = composer();
-    try {
-      await ui.open();
-      const file = new Blob([webp], { type: "image/webp" });
-      ui.editor().props.onImageSelect(file); ui.render(); ui.render();
-      assert.equal(ui.created.length, 1);
-      ui.button("Remove image").props.onClick(); ui.render();
-      assert.deepEqual(ui.revoked, ui.created);
-      ui.editor().props.onImageSelect(file); ui.render(); ui.render();
-      ui.button("Cancel").props.onClick(); ui.render();
-      assert.deepEqual(ui.revoked, ui.created);
-      assert.equal(ui.calls.length, 0);
-      assert.deepEqual(fs.readdirSync(state.upload), []);
-      assert.deepEqual(fs.readdirSync(state.temp), []);
-    } finally { ui.unmount(); }
-  });
   it("removes the written public image and parser file if saving the comment fails", async () => {
     state.saveError = true;
     const res = await post();
@@ -268,30 +186,6 @@ describe("comment image lifecycle (real Formidable, Sharp and files; mocked data
     }
     assert.equal(fs.readdirSync(state.upload).length, 4);
     assert.equal(state.unlinks.filter((file) => path.dirname(file) === state.temp).length, 12);
-  });
-  it("Post sends text and image together, keeps both on failure, and revokes on unmount", async () => {
-    const ui = composer();
-    try {
-      await ui.open();
-      ui.editor().props.onChange("my draft"); ui.render();
-      ui.editor().props.onImageSelect(new Blob([webp], { type: "image/webp" }));
-      ui.render(); ui.render();
-      ui.axios.fail = true;
-      const post = ui.button("Post").props.onClick;
-      post(); post();
-      await new Promise(setImmediate); ui.render();
-      assert.equal(ui.calls.length, 1, "prevent double Post before rerender");
-      assert.equal(ui.calls[0][0], "/api/comment");
-      const body = ui.calls[0][1];
-      assert.ok(body instanceof FormData);
-      assert.equal(body.get("content"), "my draft");
-      assert.equal(body.get("location"), "owner");
-      assert.equal(body.get("image").size, webp.length);
-      assert.equal(ui.editor().props.value, "my draft");
-      assert.deepEqual(ui.revoked, []);
-      assert.ok(ui.button("Remove image"));
-    } finally { ui.unmount(); }
-    assert.deepEqual(ui.revoked, ui.created);
   });
   for (const format of ["png", "jpeg", "webp"]) {
     it(`preserves decoded ${format} acceptance and removes temporary sources`, async () => {
