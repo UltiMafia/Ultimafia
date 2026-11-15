@@ -146,7 +146,8 @@ primitive, delete the old CSS/component, then prove the render.
 - Control/heading audit: **0 findings** across 10 routes and 18 renders. Two
   role-detail captures failed only because the fixture copy no longer matches.
 - Browser suites: mobile header **25/25** at 320/360/375/390; DM panel **9/9**;
-  Banned **19/19**; Mod commands **8/8**.
+  Banned **19/19**; Mod commands **8/8**; Ban appeals **36/36** after pointing
+  the suite at the shared table rows.
 - Dark and light screenshots were inspected for profile, family, shop, stock
   market, competitive, lobby, forum thread, setup editor, auth and activity.
 - Scale debt is **96**; the architecture baseline has been reduced after each
@@ -159,14 +160,12 @@ primitive, delete the old CSS/component, then prove the render.
 - The strategy-windows browser suite passes desktop. Its mobile half fails on
   a pre-existing fixture layout/crash (the fixture's game object lacks the
   current setup/player shape); this is not a control regression.
-- The ban-appeals browser suite times out waiting for its fixture row.
 - The full final comparative matrix has not been rerun; do not call the site
   visually accepted until it is.
 
 ## Next queue
 
-1. Repair or explicitly retire the stale strategy-mobile and ban-appeals
-   browser fixtures.
+1. Repair or explicitly retire the stale strategy-mobile browser fixture.
 2. Run the single full audit matrix at the actual completion state.
 3. Review the remaining intentional exceptions: branded auth buttons, MUI
    progress/menus, game workspace controls, media/upload overlays, the Auth
