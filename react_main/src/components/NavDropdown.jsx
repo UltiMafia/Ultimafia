@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
-import { Menu, ListSubheader, Box, Divider, IconButton, Button } from "@mui/material";
+import { Menu, ListSubheader, Box, Divider } from "@mui/material";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 import { InGameContext } from "Contexts";
 import UiIcon from "./ui/UiIcon";
-import { UiMenuItem as MenuItem, UiText as Typography, UiAction } from "components/ui";
+import { UiMenuItem as MenuItem, UiAction } from "components/ui";
 
 export default function NavDropdown({
   label,
@@ -12,7 +12,6 @@ export default function NavDropdown({
   customTrigger,
   onMenuItemClick: customOnMenuItemClick,
   groups,
-  isMobileMenu = false,
   triggerAriaLabel,
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -30,14 +29,6 @@ export default function NavDropdown({
         return acc.concat(group.items);
       }, [])
     : items;
-
-  const isActive = allItems.some((item) => {
-    if (item.hide || item.divider) return false;
-    return (
-      location.pathname === item.path ||
-      location.pathname.startsWith(item.path)
-    );
-  });
 
   const handleClick = (event) => {
     event.preventDefault();
@@ -78,36 +69,19 @@ export default function NavDropdown({
   };
 
   const triggerContent = customTrigger ? (
-    <IconButton
+    <UiAction
+      iconOnly
+      size="small"
+      variant="ghost"
       {...menuTriggerProps}
       aria-label={triggerAriaLabel || "User menu"}
-      sx={{ p: 0 }}
     >
       {customTrigger}
-    </IconButton>
-  ) : isMobileMenu ? (
+    </UiAction>
+  ) : (
     <UiAction iconOnly variant="ghost" {...menuTriggerProps} aria-label="Menu">
       <UiIcon name="menu" />
     </UiAction>
-  ) : (
-    <Button
-      className={`site-nav-trigger ${isActive ? "is-current" : ""}`}
-      variant="text"
-      {...menuTriggerProps}
-      sx={{
-        px: 1,
-        cursor: "pointer",
-        textTransform: "uppercase",
-        color: "inherit",
-        backgroundColor:
-          !isMobileMenu && isActive
-            ? "rgba(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-selectedOpacity));"
-            : undefined,
-      }}
-      endIcon={<UiIcon name="down" size={16} />}
-    >
-      <Typography variant="h3">{label}</Typography>
-    </Button>
   );
 
   return (

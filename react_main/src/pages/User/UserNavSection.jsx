@@ -5,7 +5,7 @@ import { NameWithAvatar, Avatar } from "./UserWidgets";
 import { FamilyAvatarImage } from "utils/avatarUrl";
 import { useNow } from "../../hooks/useNow";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
-import { Divider, Stack, Tooltip, IconButton, Badge, Box } from "@mui/material";
+import { Divider, Stack, Tooltip, Badge, Box } from "@mui/material";
 import NavDropdown from "../../components/NavDropdown";
 import CountBadge from "../../components/CountBadge";
 import { SiteInfoContext } from "../../Contexts";

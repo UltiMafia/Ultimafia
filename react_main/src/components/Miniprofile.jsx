@@ -1,7 +1,7 @@
 import React, { useState, useContext, useRef, useEffect, useMemo } from "react";
 import axios from "axios";
 
-import { Box, Button, IconButton, Stack, Tooltip } from "@mui/material";
+import { Box, Stack, Tooltip } from "@mui/material";
 import { Link } from "react-router-dom";
 
 import { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "pages/User/profileIcons";
@@ -17,7 +17,7 @@ import {
   getLosses,
   getAbandons,
 } from "utils/mafiaStats";
-import { confirmAction, UiText as Typography } from "components/ui";
+import { confirmAction, UiAction, UiIcon, UiText as Typography } from "components/ui";
 
 function Miniprofile(props) {
   const user = props.user;
@@ -148,23 +148,20 @@ function Miniprofile(props) {
           {!isSelf && currentUser.loggedIn && (
             <Stack direction="row" spacing={0.5}>
               <Tooltip title={isFriend ? "Unfriend" : isFriendRequested ? "Cancel Friend Request" : "Send Friend Request"}>
-                <IconButton
+                <UiAction
+                  iconOnly
                   size="small"
+                  variant="ghost"
+                  aria-label={isFriend ? "Unfriend" : isFriendRequested ? "Cancel friend request" : "Send friend request"}
+                  aria-pressed={isFriend || isFriendRequested}
                   onClick={onFriendUserClick}
-                  sx={{
-                    color: (isFriend || isFriendRequested) ? "primary.main" : "text.secondary",
-                  }}
                 >
                   <i className={`fas fa-user-plus ${(isFriend || isFriendRequested) ? "sel" : ""}`} />
-                </IconButton>
+                </UiAction>
               </Tooltip>
-              <Button
-                endIcon={<i className="fas fa-flag" />}
-                size="small"
-                onClick={onReportClick}
-              >
-                  Report
-              </Button>
+              <UiAction size="small" onClick={onReportClick}>
+                <UiIcon name="flag" size={16} /> Report
+              </UiAction>
             </Stack>
           )}
         </Stack>

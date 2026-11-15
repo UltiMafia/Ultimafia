@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import { Alert, Button } from "@mui/material";
+import { Alert } from "@mui/material";
 
 import { UserContext } from "../Contexts";
 import { UiText as Typography, UiAction, UiDialog } from "components/ui";
@@ -31,9 +31,9 @@ export function TutorialLobbyBanner() {
       data-testid="tutorial-banner"
       action={
         <>
-          <Button component={Link} to="/play/tutorial" size="small" variant="contained">
+          <UiAction component={Link} to="/play/tutorial" size="small" variant="primary">
             Play tutorial
-          </Button>
+          </UiAction>
           <UiAction
              variant="ghost" size="small" 
             
@@ -79,9 +79,9 @@ export function useRankedTutorialGate(onProceed) {
         >
           Skip, join ranked
         </UiAction>
-        <Button component={Link} to="/play/tutorial" variant="contained" onClick={() => setOpen(false)}>
+        <UiAction component={Link} to="/play/tutorial" variant="primary" onClick={() => setOpen(false)}>
           Play tutorial
-        </Button>
+        </UiAction>
       </>}
     >
         <Typography variant="body2">

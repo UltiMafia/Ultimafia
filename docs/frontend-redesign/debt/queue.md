@@ -1,9 +1,9 @@
 # UI scale debt queue
 
-Generated 2026-11-15T04:30:15.737Z. **111** sites across **50** files.
+Generated 2026-11-15T04:53:54.026Z. **102** sites across **46** files.
 
-- `mui-inline-scale`: 39
 - `native-widget`: 31
+- `mui-inline-scale`: 30
 - `native-form`: 27
 - `native-file`: 10
 - `native-hidden`: 2
@@ -20,11 +20,11 @@ Generated 2026-11-15T04:30:15.737Z. **111** sites across **50** files.
 | `components/gameComponents/StateSwitcher.jsx` | 4 |
 | `pages/Play/Decks/CreateDeck.jsx` | 4 |
 | `pages/User/Profile.jsx` | 4 |
-| `pages/User/Shop.jsx` | 4 |
 | `components/Auth.jsx` | 3 |
 | `components/Form.jsx` | 3 |
 | `components/VoteWidget.jsx` | 3 |
 | `pages/Game/JottoGame.jsx` | 3 |
+| `pages/Game/PokerHandHistory.jsx` | 3 |
 
 ## Sites
 
@@ -36,9 +36,6 @@ Generated 2026-11-15T04:30:15.737Z. **111** sites across **50** files.
 - `components/BannerUpload.jsx:284` — native-file `input` — `<input ref={fileInputRef} type="file" accept="image/*" onChange={handleF`
 - `components/Basic.jsx:228` — native-confirm `window.confirm` — `window.confirm("Visit external link?")`
 - `components/DeathSoundUpload.jsx:700` — native-file `input` — `<input ref={fileInputRef} type="file" accept="audio/mpeg,audio/mp3,audio/ogg,audio/wav,aud`
-- `components/dms/DmButton.jsx:19` — mui-inline-scale `IconButton` — `<IconButton size="small" aria-label="Direct messages" data-testid="dm-button" di`
-- `components/dms/DmPanel.jsx:257` — mui-inline-scale `Button` — `<Button variant="contained" size="small" onClick={onNew} sx={{ borderRadius: 99 }}>`
-- `components/dms/DmPanel.jsx:725` — mui-inline-scale `Button` — `<Button fullWidth variant="contained" data-testid="dm-start" disabled={!selected`
 - `components/dms/FloatingDmWindow.jsx:163` — mui-inline-scale `Paper` — `<Paper ref={boxRef} elevation={10} data-testid="dm-window" data-collapsed={dm.collapsed ? "true"`
 - `components/EmotePicker.jsx:49` — mui-inline-scale `Button` — `<Button key={sticker.id || sticker.shortcode} onClick={() => onSelect(sticker.shortcode)} `
 - `components/FanartPanel.jsx:181` — mui-inline-scale `IconButton` — `<IconButton size="small" onClick={goPrev} aria-label="Previous fan`
@@ -71,8 +68,6 @@ Generated 2026-11-15T04:30:15.737Z. **111** sites across **50** files.
 - `Main.jsx:89` — mui-inline-scale `Paper` — `<Paper sx={{ mx: "auto", my: "10%", p: 1, width: "320px", }} >`
 - `pages/Chat/Chat.jsx:671` — mui-inline-scale `Paper` — `<Paper className="site-chat" elevation={embedded ? 0 : 4} data-testid={directsOnly ? "dm-chat" : undef`
 - `pages/Community/Forums/Thread.jsx:961` — native-form `input` — `<input className="roster-color-input" type="color" `
-- `pages/Fame/StockMarket.jsx:1134` — mui-inline-scale `Button` — `<Button variant="contained" color="warning" size="larg`
-- `pages/Fame/StockMarket.jsx:1202` — mui-inline-scale `Button` — `<Button variant="contained" color="info" size="large" `
 - `pages/Game/BattleshipGame.jsx:380` — native-widget `button` — `<button key={type} type="button" className={'battleship-ship-chip${ `
 - `pages/Game/CheatGame.jsx:531` — native-widget `button` — `<button key={card} type="button" className={'ch-hand-card${isSelected ? " ch-h`
 - `pages/Game/components/DrawGuessedList.jsx:39` — native-widget `button` — `<button type="button" className="draw-guessed-list-toggle" onClick={() => setCollapsed(!collapse`
@@ -134,8 +129,4 @@ Generated 2026-11-15T04:30:15.737Z. **111** sites across **50** files.
 - `pages/User/Profile.jsx:1871` — mui-inline-scale `Paper` — `<Paper variant="outlined" sx={{ p:`
 - `pages/User/Profile.jsx:1898` — mui-inline-scale `Paper` — `<Paper sx={{ px: 1, `
 - `pages/User/Profile.jsx:2376` — native-form `select` — `<select className="query-select" value={selectedKey} onChange={(e) => setSelectedKey`
-- `pages/User/Shop.jsx:421` — mui-inline-scale `Paper` — `<Paper sx={{ p: 2, height: "100%" }}>`
-- `pages/User/Shop.jsx:478` — mui-inline-scale `Paper` — `<Paper sx={{ p: 2, height: "100%" }}>`
-- `pages/User/Shop.jsx:492` — mui-inline-scale `Paper` — `<Paper sx={{ p: 2, height: "100%" }}>`
-- `pages/User/Shop.jsx:616` — mui-inline-scale `Paper` — `<Paper sx={{ position: "absolute", zIndex: 1301, left: 0, `
 - `pages/User/UserWidgets.jsx:562` — native-widget `button` — `<button type="button" className="avatar-edit-action avatar-remove" title="Remo`

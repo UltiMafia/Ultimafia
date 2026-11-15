@@ -85,3 +85,6 @@
 }
 
 .staff-handbook { max-width: var(--ui-reading-width); }
+
+.report-log-entry { padding: 12px 0; border-top: 1px solid var(--scheme-color-border); }
+.report-log-entry:first-child { padding-top: 0; border-top: 0; }

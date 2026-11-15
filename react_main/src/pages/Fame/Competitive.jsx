@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { CircularProgress, Stack, Grid2, Divider, Box, Tooltip, FormControl, InputLabel, IconButton, Button } from "@mui/material";
+import { CircularProgress, Stack, Grid2, Divider, Box, Tooltip, FormControl, InputLabel } from "@mui/material";
 import { NameWithAvatar, Avatar } from "../User/UserWidgets";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import Setup from "components/Setup";
@@ -11,7 +11,7 @@ import { UserContext, SiteInfoContext } from "Contexts";
 import { PageNav, SearchBar } from "components/Nav";
 import { useErrorAlert } from "components/Alerts";
 import { formatUTCDateOnly, formatUTCDateTime } from "utils";
-import { UiPageHeader, UiCard, UiField, UiTabs, UiTab, UiText as Typography, UiTabs as Tabs, UiSelect as Select, UiMenuItem as MenuItem, UiField as TextField } from "components/ui";
+import { UiAction, UiIcon, UiPageHeader, UiCard, UiField, UiTabs, UiTab, UiText as Typography, UiTabs as Tabs, UiSelect as Select, UiMenuItem as MenuItem, UiField as TextField } from "components/ui";
 import "css/fame.css";
 
 export const QUERY_PARAM_SEASON = "season";
@@ -730,9 +730,9 @@ export default function Competitive() {
                   marginLeft: "auto !important",
                 }}
               >
-                <IconButton component={Link} to="faq" aria-label="faq">
-                  <i className="fas fa-question-circle" />
-                </IconButton>
+                <UiAction iconOnly variant="ghost" component={Link} to="faq" aria-label="Competitive FAQ">
+                  <UiIcon name="help" />
+                </UiAction>
               </Box>
             </Stack>
           </Grid2>
@@ -891,15 +891,13 @@ function PointsAdjustmentForm({ gameCompletion, roundInfo, reloadRoundInfo }) {
           onChange={(e) => setPoints(e.target.value)}
           sx={{ width: 100 }}
         />
-        <Button
-          variant="contained"
-          color="primary"
+        <UiAction
+          variant="primary"
           onClick={onSubmit}
-          disabled={submitting}
-          sx={{ whiteSpace: "nowrap" }}
+          busy={submitting}
         >
-          {submitting ? "Updating..." : "Apply"}
-        </Button>
+          Apply
+        </UiAction>
       </Stack>
     </Box>
   );

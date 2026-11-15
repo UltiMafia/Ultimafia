@@ -5,7 +5,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Link as RouterLink, useParams } from "react-router-dom";
 import axios from "axios";
-import { Alert, Box, Chip, CircularProgress, Divider, FormControlLabel, Link, Paper, Stack } from "@mui/material";
+import { Alert, Box, Chip, CircularProgress, Divider, FormControlLabel, Link, Stack } from "@mui/material";
 
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import { UiAction, UiPending, UiSegmentedControl, UiTable, UiRadio as Radio, UiRadioGroup as RadioGroup, UiField as TextField, UiText as Typography } from "components/ui";

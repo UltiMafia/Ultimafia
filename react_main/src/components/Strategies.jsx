@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 
-import { Accordion, AccordionDetails, AccordionSummary, Collapse, Box, Button, Dialog, IconButton, Stack, Tooltip } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Collapse, Box, Dialog, Stack, Tooltip } from "@mui/material";
 
 import { useTheme } from "@mui/material/styles";
 
@@ -205,20 +205,22 @@ function StrategiesBase({
     <>
         {canPopout && (
           <Tooltip title="Open guides in a floating window">
-            <IconButton
+            <UiAction
+              iconOnly
               size="small"
+              variant="ghost"
               data-testid="strategy-popout"
               aria-label="Open guides in a floating window"
               onClick={() => strategyWindows.openStrategyWindow(setupId, { title })}
             >
               <UiIcon name="external" />
-            </IconButton>
+            </UiAction>
           </Tooltip>
         )}
         {canCreate && (
-          <IconButton size="small" onClick={openCreateDialog}>
+          <UiAction iconOnly size="small" variant="ghost" aria-label="New strategy" onClick={openCreateDialog}>
             <UiIcon name="add" />
-          </IconButton>
+          </UiAction>
         )}
     </>
   );
@@ -384,8 +386,10 @@ function StrategiesBase({
             <UiIcon name={isExpanded ? "up" : "down"} size={18} />
             </UiAction>
             {canShowEdit && (
-              <IconButton
+              <UiAction
+                iconOnly
                 size="small"
+                variant="ghost"
                 aria-label="Edit strategy"
                 onClick={(event) => {
                   event.stopPropagation();
@@ -393,12 +397,14 @@ function StrategiesBase({
                 }}
               >
                 <UiIcon name="edit" size={18} />
-              </IconButton>
+              </UiAction>
             )}
             {canShowDelete && !strategy.deleted && (
               <Tooltip title="Delete strategy">
-                <IconButton
+                <UiAction
+                  iconOnly
                   size="small"
+                  variant="danger-quiet"
                   aria-label="Delete strategy"
                   onClick={(event) => {
                     event.stopPropagation();
@@ -406,13 +412,15 @@ function StrategiesBase({
                   }}
                 >
                   <UiIcon name="delete" size={18} />
-                </IconButton>
+                </UiAction>
               </Tooltip>
             )}
             {canShowRestore && (
               <Tooltip title="Restore strategy">
-                <IconButton
+                <UiAction
+                  iconOnly
                   size="small"
+                  variant="ghost"
                   aria-label="Restore strategy"
                   onClick={(event) => {
                     event.stopPropagation();
@@ -420,7 +428,7 @@ function StrategiesBase({
                   }}
                 >
                   <UiIcon name="refresh" size={18} />
-                </IconButton>
+                </UiAction>
               </Tooltip>
             )}
           </Stack>
@@ -428,16 +436,14 @@ function StrategiesBase({
         <Box id={`strategy-content-${strategy.id}`} sx={{ px: 2, pb: 2 }}>
           <Stack spacing={1}>
             {readerMode && (
-              <Button
+              <UiAction
                 size="small"
-                variant="outlined"
                 aria-label="Read full screen"
-                startIcon={<UiIcon name="external" />}
                 onClick={() => setReaderId(strategy.id)}
-                sx={{ alignSelf: "flex-start" }}
+                className="strategy-reader-action"
               >
-                Read full screen
-              </Button>
+                <UiIcon name="external" /> Read full screen
+              </UiAction>
             )}
             <Box
               className="md-content"
@@ -485,10 +491,12 @@ function StrategiesBase({
       title={editingStrategy ? "Edit Strategy" : "New Strategy"}
       size="md"
       actions={<>
-        <Button onClick={handleDialogClose} disabled={submitting}>
+        <UiAction onClick={handleDialogClose} disabled={submitting}>
           Cancel
-        </Button>
-        <Button
+        </UiAction>
+        <UiAction
+          variant="primary"
+          busy={submitting}
           onClick={onDialogSubmit}
           disabled={
             submitting ||
@@ -499,7 +507,7 @@ function StrategiesBase({
           }
         >
           {editingStrategy ? "Save" : "Post"}
-        </Button>
+        </UiAction>
       </>}
     >
         <Stack spacing={2}>
@@ -545,14 +553,16 @@ function StrategiesBase({
             borderColor: "divider",
           }}
         >
-          <IconButton
+          <UiAction
+            iconOnly
             size="small"
+            variant="ghost"
             data-testid="strategy-reader-close"
             aria-label="Close full-screen guide"
             onClick={() => setReaderId(null)}
           >
             <UiIcon name="close" />
-          </IconButton>
+          </UiAction>
           <Typography
             variant="subtitle1"
             id="strategy-reader-title"
@@ -562,8 +572,10 @@ function StrategiesBase({
             {readerStrategy.title}
           </Typography>
           {readerStrategy.canEdit && !readerStrategy.deleted && (
-            <IconButton
+            <UiAction
+              iconOnly
               size="small"
+              variant="ghost"
               aria-label="Edit guide"
               onClick={() => {
                 const strategy = readerStrategy;
@@ -572,16 +584,18 @@ function StrategiesBase({
               }}
             >
               <UiIcon name="edit" />
-            </IconButton>
+            </UiAction>
           )}
           {readerStrategy.canDelete && !readerStrategy.deleted && (
-            <IconButton
+            <UiAction
+              iconOnly
               size="small"
+              variant="danger-quiet"
               aria-label="Delete guide"
               onClick={() => handleDeleteToggle(readerStrategy, true)}
             >
               <UiIcon name="delete" />
-            </IconButton>
+            </UiAction>
           )}
         </Stack>
         <Box

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { UiPageHeader, UiField as TextField, UiText as Typography, UiAction, UiCard } from "components/ui";
 import axios from "axios";
 import { getAuth, signOut } from "firebase/auth";
-import { Alert, Box, Button, Chip, CircularProgress, Divider, Stack } from "@mui/material";
+import { Alert, Box, Chip, CircularProgress, Divider, Stack } from "@mui/material";
 
 import jailer from "images/roles/village/jailer-vivid.png";
 
@@ -120,9 +120,9 @@ export default function Banned() {
             ? "Your site ban has ended. Sign in again to use the site."
             : "You are not signed in to a banned account."}
         </Typography>
-        <Button variant="contained" href="/welcome">
+        <UiAction variant="primary" component="a" href="/welcome">
           Go to the login page
-        </Button>
+        </UiAction>
       </Stack>
     );
   } else {

@@ -38,36 +38,20 @@
   "components/ImageViewer.jsx": {
     "mui:IconButton": 1
   },
-  "components/Miniprofile.jsx": {
-    "mui:Button": 1,
+  "components/ModerationSideDrawer.jsx": {
     "mui:IconButton": 1
   },
-  "components/ModerationSideDrawer.jsx": {
-    "mui:Button": 1,
-    "mui:IconButton": 1,
-    "mui:Paper": 1
-  },
   "components/NavDropdown.jsx": {
-    "mui:Menu": 1,
-    "mui:IconButton": 1,
-    "mui:Button": 1
+    "mui:Menu": 1
   },
   "components/PendingTradeConfirmations.jsx": {
     "mui:IconButton": 1
   },
   "components/Poll.jsx": {
-    "mui:Button": 1,
     "mui:LinearProgress": 1
   },
   "components/ProviderButton.jsx": {
     "mui:Button": 1
-  },
-  "components/RecentForumReplies.jsx": {
-    "mui:Paper": 1
-  },
-  "components/ReportDetail.jsx": {
-    "mui:Button": 1,
-    "mui:Paper": 1
   },
   "components/Scrapbook.jsx": {
     "native:button": 2
@@ -82,20 +66,14 @@
     "mui:Skeleton": 1
   },
   "components/Strategies.jsx": {
-    "mui:Button": 1,
-    "mui:Dialog": 1,
-    "mui:IconButton": 1
+    "mui:Dialog": 1
   },
   "components/TradeDialog.jsx": {
     "mui:Paper": 1
   },
   "components/TutorialOverlay.jsx": {
-    "mui:Button": 1,
     "mui:IconButton": 1,
     "mui:Paper": 1
-  },
-  "components/TutorialPrompt.jsx": {
-    "mui:Button": 1
   },
   "components/VoteWidget.jsx": {
     "mui:IconButton": 1
@@ -103,13 +81,8 @@
   "components/alerts/Announcement.jsx": {
     "native:button": 1
   },
-  "components/dms/DmButton.jsx": {
-    "mui:IconButton": 1
-  },
   "components/dms/DmPanel.jsx": {
-    "mui:Button": 1,
     "mui:CircularProgress": 1,
-    "mui:IconButton": 1,
     "mui:Menu": 1,
     "alternate:@mui/icons-material/DeleteOutline": 1
   },
@@ -141,7 +114,6 @@
     "mui:Paper": 1
   },
   "pages/Banned/Banned.jsx": {
-    "mui:Button": 1,
     "mui:CircularProgress": 1
   },
   "pages/Chat/Chat.jsx": {
@@ -153,16 +125,9 @@
     "native:input": 1
   },
   "pages/Fame/Competitive.jsx": {
-    "mui:CircularProgress": 1,
-    "mui:IconButton": 1,
-    "mui:Button": 1
+    "mui:CircularProgress": 1
   },
   "pages/Fame/StockMarket.jsx": {
-    "mui:Button": 1,
-    "mui:Dialog": 1,
-    "mui:DialogTitle": 1,
-    "mui:DialogContent": 1,
-    "mui:DialogActions": 1,
     "mui:Paper": 1
   },
   "pages/Game/BattleshipGame.jsx": {
@@ -248,9 +213,6 @@
     "mui:DialogContent": 1,
     "mui:DialogTitle": 1
   },
-  "pages/Learn/Setup/SetupPage.jsx": {
-    "mui:Button": 1
-  },
   "pages/Play/Decks/CreateDeck.jsx": {
     "native:button": 1,
     "native:input": 3
@@ -260,13 +222,7 @@
     "native:input": 1
   },
   "pages/Policy/Moderation/BanAppeals.jsx": {
-    "mui:CircularProgress": 1,
-    "mui:Paper": 1
-  },
-  "pages/Policy/Moderation/ModCommands.jsx": {
-    "mui:Dialog": 1,
-    "mui:DialogContent": 1,
-    "mui:Button": 1
+    "mui:CircularProgress": 1
   },
   "pages/User/Family.jsx": {
     "mui:LinearProgress": 1
@@ -281,12 +237,6 @@
   },
   "pages/User/Settings.jsx": {
     "mui:LinearProgress": 1
-  },
-  "pages/User/Shop.jsx": {
-    "mui:Paper": 1
-  },
-  "pages/User/UserNavSection.jsx": {
-    "mui:IconButton": 1
   },
   "pages/User/UserWidgets.jsx": {
     "alternate:@mui/icons-material/ExpandMore": 1,

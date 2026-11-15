@@ -778,3 +778,10 @@ input:focus:not(:focus-visible) {
 
 .banned-page-card { width: 100%; max-width: var(--ui-prose-width); padding: var(--ui-space-lg); }
 @media (min-width: 600px) { .banned-page-card { padding: var(--ui-space-xl); } }
+
+.poll-option.ui-action { justify-content: flex-start; text-align: left; white-space: normal; margin-bottom: 8px; }
+
+.shop-panel { height: 100%; }
+.stamp-suggestions { position: absolute; z-index: 1301; left: 0; right: 0; max-height: 200px; overflow-y: auto; padding: 0; }
+
+.strategy-reader-action { align-self: flex-start; }

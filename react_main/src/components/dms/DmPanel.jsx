@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Box, Button, Chip, CircularProgress, IconButton, InputBase, ListItemIcon, ListItemText, Menu, Stack } from "@mui/material";
+import { Box, Chip, CircularProgress, InputBase, ListItemIcon, ListItemText, Menu, Stack } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { alpha, useTheme } from "@mui/material/styles";
 
@@ -156,16 +156,17 @@ export default function DmPanel(props) {
 
 function BackButton({ onClick }) {
   return (
-    <IconButton
+    <UiAction
+      iconOnly
       size="small"
+      variant="ghost"
       data-testid="dm-back"
       aria-label="Back"
       title="Back"
       onClick={onClick}
-      sx={{ ml: -0.5 }}
     >
       <UiIcon name="back" size={20} />
-    </IconButton>
+    </UiAction>
   );
 }
 
@@ -254,9 +255,9 @@ function ConversationList({ loading, directs, notifsByChannel, selfId, onOpen, o
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           Message someone, or pick a few people for a group chat.
         </Typography>
-        <Button variant="contained" size="small" onClick={onNew} sx={{ borderRadius: 99 }}>
+        <UiAction variant="primary" size="small" onClick={onNew}>
           New message
-        </Button>
+        </UiAction>
       </Box>
     );
 
@@ -722,18 +723,17 @@ function NewConversationView(props) {
         })}
       </Box>
       <Box sx={{ px: 2, py: 1.25, borderTop: `1px solid ${theme.palette.divider}` }}>
-        <Button
-          fullWidth
-          variant="contained"
+        <UiAction
+          variant="primary"
+          block
           data-testid="dm-start"
           disabled={!selected.length}
           onClick={() => onStart(selectedIds)}
-          sx={{ borderRadius: 99, fontWeight: 700, textTransform: "none" }}
         >
           {selected.length > 1
             ? `Start group chat (${selected.length + 1} people)`
             : "Start conversation"}
-        </Button>
+        </UiAction>
       </Box>
     </>
   );

@@ -1,18 +1,18 @@
 {
-  "generatedAt": "2026-11-15T04:30:15.736Z",
-  "count": 111,
+  "generatedAt": "2026-11-15T04:53:54.025Z",
+  "count": 102,
   "byKind": {
-    "mui-inline-scale": 39,
+    "mui-inline-scale": 30,
     "native-hidden": 2,
     "native-file": 10,
     "native-confirm": 2,
     "native-widget": 31,
     "native-form": 27
   },
-  "actionable": 53,
+  "actionable": 44,
   "sanctioned": 12,
   "game": 46,
-  "files": 50,
+  "files": 46,
   "topFiles": [
     [
       "pages/Game/Game.jsx",
@@ -43,10 +43,6 @@
       4
     ],
     [
-      "pages/User/Shop.jsx",
-      4
-    ],
-    [
       "components/Auth.jsx",
       3
     ],
@@ -60,6 +56,10 @@
     ],
     [
       "pages/Game/JottoGame.jsx",
+      3
+    ],
+    [
+      "pages/Game/PokerHandHistory.jsx",
       3
     ]
   ],
@@ -289,27 +289,6 @@
       "snippet": "<button className=\"announcement-summary\" type=\"button\" onClick={openDialog} aria-haspopup=\"dialog\" aria-label=\"Read anno"
     },
     {
-      "file": "components/dms/DmButton.jsx",
-      "line": 19,
-      "kind": "mui-inline-scale",
-      "name": "IconButton",
-      "snippet": "<IconButton size=\"small\" aria-label=\"Direct messages\" data-testid=\"dm-button\" di"
-    },
-    {
-      "file": "components/dms/DmPanel.jsx",
-      "line": 257,
-      "kind": "mui-inline-scale",
-      "name": "Button",
-      "snippet": "<Button variant=\"contained\" size=\"small\" onClick={onNew} sx={{ borderRadius: 99 }}>"
-    },
-    {
-      "file": "components/dms/DmPanel.jsx",
-      "line": 725,
-      "kind": "mui-inline-scale",
-      "name": "Button",
-      "snippet": "<Button fullWidth variant=\"contained\" data-testid=\"dm-start\" disabled={!selected"
-    },
-    {
       "file": "components/dms/FloatingDmWindow.jsx",
       "line": 163,
       "kind": "mui-inline-scale",
@@ -383,20 +362,6 @@
       "scope": "site",
       "name": "input",
       "snippet": "<input className=\"roster-color-input\" type=\"color\" "
-    },
-    {
-      "file": "pages/Fame/StockMarket.jsx",
-      "line": 1134,
-      "kind": "mui-inline-scale",
-      "name": "Button",
-      "snippet": "<Button variant=\"contained\" color=\"warning\" size=\"larg"
-    },
-    {
-      "file": "pages/Fame/StockMarket.jsx",
-      "line": 1202,
-      "kind": "mui-inline-scale",
-      "name": "Button",
-      "snippet": "<Button variant=\"contained\" color=\"info\" size=\"large\" "
     },
     {
       "file": "pages/Game/BattleshipGame.jsx",
@@ -874,34 +839,6 @@
       "scope": "site",
       "name": "select",
       "snippet": "<select className=\"query-select\" value={selectedKey} onChange={(e) => setSelectedKey"
-    },
-    {
-      "file": "pages/User/Shop.jsx",
-      "line": 421,
-      "kind": "mui-inline-scale",
-      "name": "Paper",
-      "snippet": "<Paper sx={{ p: 2, height: \"100%\" }}>"
-    },
-    {
-      "file": "pages/User/Shop.jsx",
-      "line": 478,
-      "kind": "mui-inline-scale",
-      "name": "Paper",
-      "snippet": "<Paper sx={{ p: 2, height: \"100%\" }}>"
-    },
-    {
-      "file": "pages/User/Shop.jsx",
-      "line": 492,
-      "kind": "mui-inline-scale",
-      "name": "Paper",
-      "snippet": "<Paper sx={{ p: 2, height: \"100%\" }}>"
-    },
-    {
-      "file": "pages/User/Shop.jsx",
-      "line": 616,
-      "kind": "mui-inline-scale",
-      "name": "Paper",
-      "snippet": "<Paper sx={{ position: \"absolute\", zIndex: 1301, left: 0, "
     },
     {
       "file": "pages/User/UserWidgets.jsx",

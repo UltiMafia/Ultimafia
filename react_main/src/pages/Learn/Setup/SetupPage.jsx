@@ -9,7 +9,7 @@ import {
 import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 
-import { Box, Button, Grid, Link, Stack, Tooltip, useMediaQuery } from "@mui/material";
+import { Box, Grid, Link, Stack, Tooltip, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 import ModerationSideDrawer from "components/ModerationSideDrawer";

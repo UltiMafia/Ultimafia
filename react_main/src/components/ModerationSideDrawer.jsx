@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 
 import axios from "axios";
-import { Alert, Box, Button, Divider, IconButton, Paper, Stack, SwipeableDrawer, useTheme } from "@mui/material";
+import { Alert, Box, Divider, IconButton, Stack, SwipeableDrawer, useTheme } from "@mui/material";
 import { UserContext, InGameContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 

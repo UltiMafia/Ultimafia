@@ -27,6 +27,9 @@
 .ui-action--ghost:not(:disabled):not([aria-pressed="true"]) > .ui-icon,
 .utility-button:not(:disabled):not([aria-expanded="true"]) > .ui-icon { color: var(--scheme-color-text); }
 .ui-action[aria-pressed="true"]:not(.ui-action--primary):not(.ui-action--danger) { color: var(--um-accent); border-color: var(--um-accent); }
+.ui-action--success { background: var(--mui-palette-success-main); border-color: transparent; color: var(--mui-palette-success-contrastText); }
+.ui-action--success:hover:not(:disabled) { background: var(--mui-palette-success-dark); }
+.ui-action--success:active:not(:disabled) { transform: translateY(var(--ui-primary-pressed-offset)); }
 .ui-action--danger { background: var(--ui-danger-solid); border-color: transparent; color: var(--mui-palette-error-contrastText); }
 .ui-action--danger:hover:not(:disabled) { background: var(--mui-palette-error-dark); }
 .ui-action--danger-quiet { background: transparent; border-color: transparent; color: var(--ui-danger-text); }
@@ -244,7 +247,7 @@
   .ui-action { min-height: var(--ui-touch-height); }
   /* A field beside an action must be the same height as it. */
   .MuiInputBase-root.MuiInputBase-root:not(.MuiInputBase-multiline) { height: var(--ui-touch-height); }
-  .ui-action--icon { flex-basis: 44px; width: 44px; height: 44px; min-width: 44px; }
+  .ui-action.ui-action--icon, .ui-action.ui-action--icon.ui-action--small { flex-basis: var(--ui-touch-height); width: var(--ui-touch-height); height: var(--ui-touch-height); min-width: var(--ui-touch-height); }
   .composer-editor { font-size: 1rem; line-height: 1.5em; padding: 10px; }
   .composer-context .ui-action, .composer-preview .ui-action { flex-basis: var(--ui-touch-height); width: var(--ui-touch-height); height: var(--ui-touch-height); min-width: var(--ui-touch-height); min-height: var(--ui-touch-height); }
 }

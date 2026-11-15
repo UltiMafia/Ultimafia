@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef, useMemo } from "react";
-import { UiPage, UiSection, UiProductCard, UiTabs, UiTab, confirmAction, UiText as Typography, UiField as TextField, UiTabs as Tabs, UiAction, UiDialog } from "components/ui";
+import { UiPage, UiSection, UiProductCard, UiTabs, UiTab, confirmAction, UiText as Typography, UiField as TextField, UiTabs as Tabs, UiAction, UiCard, UiDialog } from "components/ui";
 import { useLocation } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import axios from "axios";
@@ -8,7 +8,7 @@ import update from "immutability-helper";
 import { useErrorAlert } from "../../components/Alerts";
 import { UserContext, SiteInfoContext } from "../../Contexts";
 
-import { Box, Stack, Paper, Grid2, Divider, InputAdornment } from "@mui/material";
+import { Box, Stack, Grid2, Divider, InputAdornment } from "@mui/material";
 
 import { PageSkeleton } from "../../components/Skeletons";
 
@@ -395,7 +395,7 @@ export default function Shop(props) {
 
       {activeTab === "manage" && (
         <Stack spacing={2} sx={{ pt: 1 }}>
-          <Paper sx={{ p: 2 }}>
+          <UiCard>
             <Stack spacing={1}>
               <Typography variant="body2">
                 All funds are used for running UM. No salaries are paid, and no
@@ -410,7 +410,7 @@ export default function Shop(props) {
                 these methods, reach out to @golbolco on Discord.
               </Typography>
             </Stack>
-          </Paper>
+          </UiCard>
           <Grid2 container spacing={1}>
           <Grid2
             size={{
@@ -418,7 +418,7 @@ export default function Shop(props) {
               md: 6,
             }}
           >
-            <Paper sx={{ p: 2, height: "100%" }}>
+            <UiCard className="shop-panel">
               <Stack spacing={1}>
                 <Typography variant="h3">Cash</Typography>
                 <Typography variant="body2">1 USD = 5 coins.</Typography>
@@ -467,7 +467,7 @@ export default function Shop(props) {
                   </Typography>
                 )}
               </Stack>
-            </Paper>
+            </UiCard>
           </Grid2>
           <Grid2
             size={{
@@ -475,12 +475,12 @@ export default function Shop(props) {
               md: 6,
             }}
           >
-            <Paper sx={{ p: 2, height: "100%" }}>
+            <UiCard className="shop-panel">
               <Stack spacing={1}>
                 <Typography variant="h3">Crypto</Typography>
                 <CryptoDonate />
               </Stack>
-            </Paper>
+            </UiCard>
           </Grid2>
           </Grid2>
         </Stack>
@@ -489,7 +489,7 @@ export default function Shop(props) {
       {activeTab === "transfer" && (
         <Grid2 container spacing={1} sx={{ pt: 1 }}>
           <Grid2 size={{ xs: 12, md: 6 }}>
-            <Paper sx={{ p: 2, height: "100%" }}>
+            <UiCard className="shop-panel">
               <Stack spacing={1}>
                 <Typography variant="h3">Transfer coins</Typography>
                 <TextField
@@ -503,9 +503,9 @@ export default function Shop(props) {
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                 />
-                <UiAction  variant="ghost" onClick={handleTransferCoins}>Transfer</UiAction>
+                <UiAction variant="primary" block onClick={handleTransferCoins}>Transfer</UiAction>
               </Stack>
-            </Paper>
+            </UiCard>
           </Grid2>
         </Grid2>
       )}
@@ -613,16 +613,7 @@ export default function Shop(props) {
             } : undefined}
           />
           {showSuggestions && stampSuggestions.length > 0 && (
-            <Paper
-              sx={{
-                position: "absolute",
-                zIndex: 1301,
-                left: 0,
-                right: 0,
-                maxHeight: 200,
-                overflowY: "auto",
-              }}
-            >
+            <UiCard className="stamp-suggestions">
               {stampSuggestions.map((s) => (
                 <Box
                   key={s.gameId}
@@ -644,7 +635,7 @@ export default function Shop(props) {
                   </Typography>
                 </Box>
               ))}
-            </Paper>
+            </UiCard>
           )}
         </Box>
         {selectedSuggestion && (

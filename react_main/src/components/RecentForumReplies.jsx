@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-import { Paper, Stack, Box } from "@mui/material";
+import { Stack, Box } from "@mui/material";
 import { Avatar } from "pages/User/UserWidgets";
 import { Time } from "components/Basic";
 import LobbySidebarPanel from "pages/Play/LobbyBrowser/LobbySidebarPanel";

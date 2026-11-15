@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { Box, Button, Chip, FormControl, FormHelperText, Grid, InputLabel, Stack, Divider, Paper } from "@mui/material";
+import { Box, Chip, FormControl, FormHelperText, Grid, InputLabel, Stack, Divider } from "@mui/material";
 import { useErrorAlert } from "./Alerts";
 import { UserSearchSelect } from "./Form";
 import { Time } from "./Basic";
@@ -273,7 +273,7 @@ export default function ReportDetail({
                 {report.reporterInfo?.length > 0 ? (
                   <Stack spacing={1.5}>
                     {report.reporterInfo.map((r) => (
-                      <Paper key={r.id} variant="outlined" sx={{ p: 1.5 }}>
+                      <div key={r.id} className="report-log-entry">
                         <NameWithAvatar
                           id={r.id}
                           name={r.name || r.id}
@@ -308,7 +308,7 @@ export default function ReportDetail({
                             )}
                           </Box>
                         )}
-                      </Paper>
+                      </div>
                     ))}
                   </Stack>
                 ) : (
@@ -485,7 +485,7 @@ export default function ReportDetail({
                   .slice()
                   .reverse()
                   .map((entry, idx) => (
-                    <Paper key={idx} sx={{ p: 1 }}>
+                    <div key={idx} className="report-log-entry">
                       <Stack direction="row" spacing={1} alignItems="center">
                         <Chip
                           label={entry.status}
@@ -512,7 +512,7 @@ export default function ReportDetail({
                           </Typography>
                         )}
                       </Stack>
-                    </Paper>
+                    </div>
                   ))}
             </Stack>
           </UiCard>
@@ -550,9 +550,9 @@ export default function ReportDetail({
                       rows={2}
                       placeholder="Add notes about your decision..."
                     />
-                    <Button
-                      variant="contained"
-                      color="success"
+                    <UiAction
+                      variant="success"
+                      busy={handlingAppeal}
                       onClick={async () => {
                         try {
                           setHandlingAppeal(true);
@@ -577,10 +577,9 @@ export default function ReportDetail({
                           setHandlingAppeal(false);
                         }
                       }}
-                      disabled={handlingAppeal}
                     >
-                      {handlingAppeal ? "Approving..." : "Approve Appeal"}
-                    </Button>
+                      Approve Appeal
+                    </UiAction>
                     <UiAction
                        variant="danger" 
                       

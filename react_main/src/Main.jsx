@@ -339,7 +339,6 @@ export function Header({ setShowAnnouncementTemporarily }) {
         }}>
           {/* Unified mobile menu */}
           <NavDropdown
-            isMobileMenu={true}
             groups={[
               {
                 label: "Play",
