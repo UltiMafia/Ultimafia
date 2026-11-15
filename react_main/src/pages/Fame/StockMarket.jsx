@@ -467,7 +467,7 @@ export default function StockMarket() {
         }}
       >
         {tabs.map((t) => (
-          <UiTab key={t.label} icon={isMobile ? undefined : <UiIcon name={t.icon} size={18} />} iconPosition="start" label={isMobile ? (t.shortLabel || t.label) : t.label} />
+          <UiTab key={t.label} icon={isMobile ? undefined : <UiIcon name={t.icon} size={18} />} iconPosition="start" label={isMobile ? (t.shortLabel || t.label) : t.label} data-ui-variant={isMobile ? "compact" : undefined} />
         ))}
       </UiTabs>
 

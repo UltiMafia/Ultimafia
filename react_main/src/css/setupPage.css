@@ -178,7 +178,7 @@
 .role-info > h2 { margin: 0; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); }
 .role-description { max-width: var(--ui-reading-width); }
 .role-description p { margin: 0 0 10px; line-height: 1.6; }
-.role-info-section h3 { margin: 0 0 10px; font-size: var(--ui-text-section); line-height: var(--ui-line-heading); }
+.role-info-section .ui-section-heading > h3 { margin: 0 0 10px; font-size: var(--ui-text-body); line-height: var(--ui-line-body); }
 .role-examples { margin: 0; padding-left: 22px; max-width: var(--ui-reading-width); display: flex; flex-direction: column; gap: 10px; line-height: 1.55; }
 .role-interactions { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .role-interactions li { display: flex; align-items: flex-start; gap: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--scheme-color-border); }
