@@ -47,6 +47,40 @@ describe("Mafia Fuzzer Test Suite", function () {
       expect(verifyRole("Doctor:Bulletproof/Caffeinated", "Mafia")).to.be.true;
     });
 
+    it("enforces role-specific Binary and Desperate modifiers", function () {
+      for (const role of ["Tracker", "Scout", "Shadow"])
+        expect(verifyRole(`${role}:Binary`, "Mafia"), role).to.be.true;
+      for (const role of ["Manhunter", "Bondsman", "Seeker", "Hider", "Invader", "Sculptor"])
+        expect(verifyRole(`${role}:Desperate`, "Mafia"), role).to.be.true;
+      for (const role of ["Butler:Binary/Humble/Verrucose", "Missionary:Desperate",
+        "Old Maid:Binary/Leading/Naive", "Tailor:Desperate"])
+        expect(verifyRole(role, "Mafia"), role).to.be.false;
+    });
+
+    it("matches the actual API validator for generated setups", function () {
+      const vm = require("vm");
+      const route = fs.readFileSync(path.join(__dirname, "../routes/setup.js"), "utf8");
+      const start = route.indexOf("function areModifiersCompatible(");
+      const end = route.indexOf("function sortRoles(", start);
+      expect(start).to.be.at.least(0);
+      expect(end).to.be.greaterThan(start);
+      // Evaluate the route's own declarations, not another copy of its rules.
+      const api = {
+        roleData: require("../data/roles"),
+        modifierData: require("../data/modifiers"),
+        constants: require("../data/constants"),
+        isRoleDisabled: require("../modules/roleAvailability").isRoleDisabled,
+      };
+      vm.createContext(api);
+      vm.runInContext(route.slice(start, end), api);
+      for (let seed = 1; seed <= 1000; seed++) {
+        for (const role of Object.keys(generate(seed).roles[0])) {
+          expect(api.verifyRole(role, "Mafia"), `seed ${seed}: ${role}`).to.be.true;
+          expect(verifyRole(role, "Mafia")).to.equal(api.verifyRole(role, "Mafia"));
+        }
+      }
+    });
+
     it("rejects unknown modifiers", function () {
       expect(verifyRole("Doctor:NonExistentModXYZ", "Mafia")).to.be.false;
       expect(verifyRole("Villager:Bulletproof/FakeModifier", "Mafia")).to.be.false;
@@ -141,6 +175,50 @@ describe("Mafia Fuzzer Test Suite", function () {
   });
 
   describe("3. Crash capture", function () {
+    it("keeps the first real worker failure despite cascading errors and completion", async function () {
+      const vm = require("vm");
+      const worker = path.join(__dirname, "../scripts/mafia-fuzz/worker.js");
+      const realRequire = require("module").createRequire(worker);
+      const handlers = {};
+      const messages = [];
+      const rootCause = new Error("Original engine failure");
+      class Game {
+        constructor() { this.started = true; this.finished = true; }
+        async init() {
+          this.handleError(rootCause);
+          this.handleError(new Error("Secondary engine failure"));
+        }
+        clearTimers() {}
+      }
+      function isolatedRequire(id) {
+        if (id === "mongoose") return { set() {} };
+        if (id === "../../Games/types/Mafia/Game") return Game;
+        if (id === "../../Games/core/Timer") return class Timer {};
+        if (id === "../../lib/Random") return {};
+        if (id === "shortid") return {};
+        if (id === "../../Games/core/User") return class User {};
+        if (id === "../../lib/sockets") return { TestSocket: class Socket {} };
+        return realRequire(id);
+      }
+      isolatedRequire.resolve = realRequire.resolve;
+      isolatedRequire.cache = {};
+      const context = {
+        __dirname: path.dirname(worker), require: isolatedRequire, setImmediate,
+        process: {
+          env: {}, on(name, callback) { handlers[name] = callback; },
+          // Hold send callbacks to exercise the interval before process.exit.
+          send(report) { messages.push(structuredClone(report)); },
+          exit() { throw new Error("Unexpected synchronous exit"); },
+        },
+      };
+      vm.runInNewContext(fs.readFileSync(worker, "utf8"), context);
+      const input = { version: 1, seed: 69, setup: { total: 0 }, maxSteps: 1 };
+      await handlers.message(input);
+      handlers.unhandledRejection(new Error("Late rejection"));
+      expect(messages.map((message) => message.status)).to.deep.equal(["running", "failure"]);
+      expect(messages[1].error).to.equal(rootCause.stack);
+    });
+
     it("captures thrown worker errors and returns failure status", async function () {
       // Create a mock worker with error reporting matching worker.js contract
       const mockWorkerPath = path.join(__dirname, "mockCrashWorker.js");
@@ -200,7 +278,8 @@ describe("Mafia Fuzzer Test Suite", function () {
       const run1 = await runCase(input, 15000);
       const run2 = await runCase(input, 15000);
 
-      expect(run1.status).to.equal(run2.status);
+      expect(run1.status, run1.error).to.equal("bounded");
+      expect(run2.status, run2.error).to.equal("bounded");
       expect(run1.states).to.deep.equal(run2.states);
       expect(run1.trace).to.deep.equal(run2.trace);
       expect(run1.states.length).to.be.at.least(1);
