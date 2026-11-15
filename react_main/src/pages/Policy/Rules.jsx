@@ -321,7 +321,7 @@ function highlightAssociatedViolation(text) {
   return text;
 }
 
-function OffenseLengthsTable({ offenses, label }) {
+function OffenseLengths({ offenses, label }) {
   const penalties = [
     ...offenses,
     ...Array(Math.max(0, 6 - offenses.length)).fill("-"),
@@ -419,7 +419,7 @@ function RulesContent({ violationMap }) {
               </Typography>
             ))}
             {violation?.offenses && (
-              <OffenseLengthsTable offenses={violation.offenses} label={section.title} />
+              <OffenseLengths offenses={violation.offenses} label={section.title} />
             )}
           </Box>
         );

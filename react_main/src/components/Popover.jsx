@@ -42,7 +42,7 @@ export function PopoverContent({ title, content, page = null, icon = <></>, subT
       <Stack direction="column" sx={{
         justifyContent: "end",
       }}>
-        <Typography variant="h2">
+        <Typography variant="h3">
           {title}
         </Typography>
         {subTitle}

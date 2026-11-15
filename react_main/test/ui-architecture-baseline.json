@@ -143,7 +143,7 @@
     "native:input": 1,
     "title:h1": 1,
     "action:legacy-variant": 16,
-    "pagination:inverted": 2
+    "pagination:inverted": 1
   },
   "pages/Fame/Competitive.jsx": {
     "mui:CircularProgress": 1,
@@ -326,7 +326,7 @@
     "action:legacy-variant": 4
   },
   "components/TutorialPrompt.jsx": {
-    "action:legacy-variant": 4
+    "action:legacy-variant": 2
   },
   "components/VoteWidget.jsx": {
     "action:legacy-variant": 3
@@ -439,8 +439,5 @@
   },
   "pages/User/Shop.jsx": {
     "action:legacy-variant": 5
-  },
-  "pages/Policy/Rules.jsx": {
-    "component:local-control": 1
   }
 }

@@ -493,11 +493,19 @@
 }
 
 .thread-wrapper {
+  position: relative;
   display: flex;
   flex-flow: column;
   align-items: stretch;
   justify-content: flex-start;
   gap: 16px;
+  /* The sidebar occupies its own column without stretching the post row, which
+     used to leave a tall gap between the post footer and the first reply. */
+  padding-right: 296px;
+}
+
+@media (max-width: 900px) {
+  .thread-wrapper { padding-right: 0; }
 }
 
 .thread-wrapper .post {
@@ -803,10 +811,7 @@
 }
 
 .thread-wrapper .thread-main-row {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: stretch;
-  gap: var(--mui-spacing);
+  display: block;
   margin-top: var(--mui-spacing);
 }
 
@@ -822,7 +827,7 @@
 
 .thread-wrapper .thread-post-col .post {
   margin-top: 0;
-  flex: 1;
+  flex: 0 0 auto;
 }
 
 .thread-wrapper .thread-post-col .post .main-wrapper {
@@ -830,16 +835,22 @@
 }
 
 .thread-wrapper .thread-post-col .post .md-content {
-  flex: 1;
+  flex: 0 0 auto;
 }
 
 .thread-wrapper .thread-sidebar-col {
-  flex: 0 0 280px;
+  position: absolute;
+  top: 0;
+  right: 0;
   width: 280px;
   display: flex;
   flex-flow: column;
   gap: var(--mui-spacing);
   min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .thread-wrapper .thread-sidebar-col { position: static; width: 100%; }
 }
 
 .thread-wrapper .restricted-panel {

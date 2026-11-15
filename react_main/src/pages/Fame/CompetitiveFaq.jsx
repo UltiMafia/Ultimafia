@@ -151,7 +151,7 @@ export default function CompetitiveFaq() {
         points receives a gold trophy, the second highest receives a silver
         trophy, and the third highest receives a bronze trophy.
       </Typography>
-      <Typography variant="h2" gutterBottom sx={{ lineHeight: "var(--ui-line-heading)" }}>
+      <Typography variant="h3" gutterBottom sx={{ lineHeight: "var(--ui-line-heading)" }}>
         Miscellaneous FAQ
       </Typography>
       <Typography variant="h3" gutterBottom>

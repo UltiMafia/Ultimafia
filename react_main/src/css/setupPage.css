@@ -56,7 +56,7 @@
 .setup-description > .ui-section + .ui-section { margin-top: 16px; }
 .setup-secondary > .ui-section + .ui-section { margin-top: 16px; }
 .setup-roster fieldset > .MuiStack-root { flex-wrap: wrap; gap: 8px 16px; align-content: flex-start; max-height: min(50vh, 520px); overflow-y: auto; padding-right: 4px; }
-.setup-role-entry { display: flex; flex: 1 1 200px; align-items: center; gap: 12px; min-width: 0; }
+.setup-role-entry { display: flex; flex: 0 0 auto; align-items: center; gap: 12px; min-width: 0; }
 .setup-role-name { font-weight: var(--ui-weight-strong); overflow-wrap: anywhere; }
 .setup-role-name small { display: block; font-weight: 400; color: var(--um-muted); }
 .setup-overview { display: grid; grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr); gap: 32px; align-items: start; }

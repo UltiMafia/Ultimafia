@@ -729,7 +729,8 @@ function RoleBox({ children, color, legend = null }) {
       )}
       <Stack
         direction="row"
-        spacing={0}
+        spacing={1}
+        useFlexGap
         sx={{
           flexWrap: "wrap",
           alignContent: "flex-start",

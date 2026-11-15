@@ -58,7 +58,7 @@ function AchievementCount({ item }) {
           <div className="mui-popover-title">
             <Stack direction="row" spacing={1} sx={{ p: 1, alignItems: "center" }}>
               <span className={`achievement-icon ${internal}`} />
-              <Typography variant="h2" sx={{ fontWeight: "bold", textDecoration: "underline" }}>
+              <Typography variant="h3" sx={{ fontWeight: "bold", textDecoration: "underline" }}>
                 {item.name}
               </Typography>
             </Stack>

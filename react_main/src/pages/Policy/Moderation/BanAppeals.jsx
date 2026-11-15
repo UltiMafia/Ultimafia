@@ -153,7 +153,7 @@ function AppealList() {
             { key: "issued", label: "Banned on", nowrap: true, render: (row) => formatDate(row.ban?.issuedAt) },
             { key: "expires", label: "Expires", nowrap: true, render: (row) => (!row.ban ? "-" : row.ban.permanent ? "Never (permanent)" : formatDate(row.ban.expires)) },
             { key: "filed", label: "Appeal filed", nowrap: true, render: (row) => formatDate(row.filedAt) },
-            { key: "tally", label: "Tally", render: (row) => <>{tallyText(row.tally)}{row.myVote && <Typography variant="caption" display="block" color="text.secondary">You voted {row.myVote}</Typography>}</> },
+            { key: "tally", label: "Tally", nowrap: true, render: (row) => <>{tallyText(row.tally)}{row.myVote && <Typography variant="caption" display="block" color="text.secondary">You voted {row.myVote}</Typography>}</> },
             { key: "status", label: "Status", nowrap: true, render: (row) => <AppealStatus status={row.status} /> },
           ]}
         />
