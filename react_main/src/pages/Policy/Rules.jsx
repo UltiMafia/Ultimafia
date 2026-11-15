@@ -464,7 +464,7 @@ export default function Rules() {
       <UiPageHeader title="UltiMafia Rules of Conduct" description="Last Updated: August 22, 2026" />
       {loading && <UiPending label="Loading penalty lengths" />}
       {error && <div role="alert">Could not load penalty lengths. The rules remain available. <UiAction onClick={reload}>Retry</UiAction></div>}
-      {!loading && !error && !violationDefinitions.length && <Typography role="status">Penalty lengths are not available.</Typography>}
+      {!loading && !error && !violationDefinitions.length && <Typography role="status" variant="body2" color="text.secondary">Penalty lengths are not available.</Typography>}
 
       <Tabs aria-label="Policy sections" value={selectedTab} onChange={handleTabChange}>
         <Tab label="Rules" id="rules-tab-0" aria-controls="rules-tabpanel-0" />

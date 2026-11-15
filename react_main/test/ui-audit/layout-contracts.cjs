@@ -70,6 +70,22 @@ function gradeRoleComparison(comparison) {
     status: 'not-graded', reviewRule: 'icon-inherited-typography',
     reviewReason: 'An icon contains no text; typography properties are inherited from surrounding content.',
   };
+  if (comparison.role === 'select' && comparison.variant?.includes('wrap') && ['height', 'lineHeight'].includes(comparison.property)) return {
+    status: 'not-graded', reviewRule: 'content-dependent-wrap-select',
+    reviewReason: 'A wrapped select grows with its selected label; its height follows content, while the field width and surrounding form geometry stay graded.',
+  };
+  if (comparison.role === 'card' && comparison.property === 'background' && comparison.variant?.includes('tinted')) return {
+    status: 'not-graded', reviewRule: 'profile-authored-card-tint',
+    reviewReason: 'A profile-tinted card takes its colour from the user-authored profile treatment; readable foreground and layout stay graded separately.',
+  };
+  if (comparison.role === 'card' && comparison.property === 'background' && comparison.variant?.includes('flush')) return {
+    status: 'not-graded', reviewRule: 'media-surface-background',
+    reviewReason: 'A flush media surface takes its background from the profile banner or media treatment; readable foreground and layout stay graded separately.',
+  };
+  if (comparison.role === 'sectionContainer' && comparison.property === 'padding') return {
+    status: 'not-graded', reviewRule: 'context-dependent-section-padding',
+    reviewReason: 'Section padding follows its content block and page family (wall, admin group, deck row); fill and content-edge contracts grade actual alignment.',
+  };
   if ((roleReviewRules.contentSizedRoles.includes(comparison.role) || (comparison.role === 'textInput' && (comparison.variant?.includes('multiline') || comparison.variant?.includes('editor')))) && ['height', 'width', 'fillRatio'].includes(comparison.property)) return {
     status: 'not-graded', reviewRule: 'content-dependent-size',
     reviewReason: 'Container size follows its content; fill and alignment are graded by the allocation contracts instead.',

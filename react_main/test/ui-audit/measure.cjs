@@ -173,6 +173,19 @@ function measureUi() {
     const commentPosition = element && sample.role === 'comment'
       ? (element.matches(':first-of-type') ? 'first'
         : element.matches(':last-of-type') ? 'last' : 'middle') : '';
+    // Authored profile tinting is a named cosmetic treatment, not a generic card.
+    const cardKind = element && sample.role === 'card' && element.classList.contains('profile-tinted') ? 'tinted' : '';
+    // A disclosure label or a panel title is not a page section heading.
+    const headingKind = element && sample.role === 'sectionHeading'
+      ? (element.closest('details') ? 'details'
+        : element.closest('.ui-product-card, .activity-chart') ? 'panel'
+        : element.closest('.ui-card') ? 'card' : 'section') : '';
+    // Structural sections inside cards, asides, forms and row grids follow their
+    // host layout; compare them with the same nested context, not page sections.
+    const sectionKind = element && sample.role === 'sectionContainer'
+      ? (element.closest('.ui-card, aside, form, table, .deck-grid-row, [role="dialog"]') ? 'nested' : 'page') : '';
+    const statKind = element && sample.role === 'stat'
+      ? (element.closest('.ui-stat-row--compact') ? 'compact' : 'standard') : '';
     // An icon tab is laid out differently by MUI (smaller vertical padding);
     // compare it only with other icon tabs.
     const tabKind = element && (sample.role === 'tab' || element.matches('[role="tab"]')) ? (element.querySelector('svg, img, .ui-icon') ? 'icon' : 'text') : '';
@@ -217,7 +230,7 @@ function measureUi() {
       // A level-3 heading is a sub-heading; compare it with other h3s, not with h2.
       sample.role === 'sectionHeading' ? `level:${element ? element.tagName.toLowerCase() : 'none'}` : '',
       sample.role === 'sectionHeading' && element?.closest('[role="dialog"]') ? 'dialog' : '',
-      inputKind, tabKind, surfaceKind, actionKind, actionContext, actionSize, navKind, statusKind, currencySize, headerKind, commentPosition].filter(Boolean).join(':');
+      inputKind, tabKind, surfaceKind, actionKind, actionContext, actionSize, navKind, statusKind, currencySize, headerKind, commentPosition, cardKind, headingKind, sectionKind, statKind].filter(Boolean).join(':');
   }
   // A menu's icons are one optical family: same size, same colour, same element
   // kind. A gold 16px currency sprite among 24px monochrome glyphs is the kind of

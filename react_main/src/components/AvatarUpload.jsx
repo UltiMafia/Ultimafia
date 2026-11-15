@@ -211,7 +211,7 @@ export default function AvatarUpload(props) {
 
   return (
     <>
-      <UiAction className={props.className} aria-label="Upload avatar" onClick={handleOpenUpload}>
+      <UiAction className={props.className} data-ui-variant="media-overlay" aria-label="Upload avatar" onClick={handleOpenUpload}>
         {props.children}
       </UiAction>
 
