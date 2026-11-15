@@ -150,6 +150,7 @@ import ChangeSetupDialog from "components/gameComponents/ChangeSetupDialog";
 import UrgencyOverlay from "./components/UrgencyOverlay";
 import ReadyCheckDialog from "./components/ReadyCheck";
 import PushNotificationPrompt from "./components/PushNotificationPrompt";
+import { pushDeepLinkPanel, pushDeepLinkPanelFromMessage } from "./pushDeepLink";
 import { releaseSubscription } from "utils/pushNotifications";
 import {
   buildReplyPayload,
@@ -426,6 +427,38 @@ export default function Game(props) {
   const [selectedPanel, setSelectedPanel] = useState("chat");
   const isPhoneDeviceRef = useRef(false);
   isPhoneDeviceRef.current = isPhoneDevice;
+
+  // A push notification's click asks for a panel as well as a game: a kicks
+  // reminder that landed on chat would hide the action forms it is about.
+  // Applied once per game, so switching panels afterwards still sticks.
+  const deepLinkPanelGameRef = useRef(null);
+  useEffect(() => {
+    if (deepLinkPanelGameRef.current === gameId) return;
+
+    const panel = pushDeepLinkPanel(props.joinSearch ?? window.location.search);
+    if (!panel) return;
+
+    deepLinkPanelGameRef.current = gameId;
+    setSelectedPanel(panel);
+  }, [gameId, props.joinSearch]);
+
+  // Clicking a notification while this game is already open focuses the tab
+  // instead of reloading it, so the worker sends the panel as a message.
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !navigator.serviceWorker) return;
+
+    function onServiceWorkerMessage(event) {
+      const panel = pushDeepLinkPanelFromMessage(event.data, gameId);
+      if (panel) setSelectedPanel(panel);
+    }
+
+    navigator.serviceWorker.addEventListener("message", onServiceWorkerMessage);
+    return () =>
+      navigator.serviceWorker.removeEventListener(
+        "message",
+        onServiceWorkerMessage
+      );
+  }, [gameId]);
 
   const isParticipant = !isSpectator && !review;
   const currentStateObject = history.states[history.currentState];
