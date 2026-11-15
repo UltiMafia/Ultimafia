@@ -168,6 +168,16 @@ html[data-keyboard="open"] .game .meeting-tabs {
   color: var(--scheme-color-text);
 }
 
+/* Let long message text shrink inside the row without pushing out the pin. */
+.game .message .message-inner-rightaligned,
+.game .message .message-inner-nameplated,
+.game .message .message-inner-onelined,
+.game .message .message-inner-inline,
+.game .message .message-inner-aligned {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .game .message .message-inner-rightaligned {
   display: flex;
   flex-flow: row-reverse nowrap;
@@ -193,6 +203,22 @@ html[data-keyboard="open"] .game .meeting-tabs {
 
 .game .message .message-inner-inline {
   display: block;
+}
+
+.game .message .message-inner-aligned {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  flex-grow: 1;
+}
+
+/* A reply preview stays above both columns, not beside the nameplate. */
+.game .message .message-inner-aligned > .reply-reference {
+  grid-column: 1 / -1;
+}
+
+.game .message .message-inner-aligned > .content {
+  grid-column: 2;
 }
 
 .game .message .nameplate {
@@ -305,7 +331,9 @@ html[data-keyboard="open"] .game .meeting-tabs {
 
 .game .message .content {
   display: inline;
+  min-width: 0;
 
+  overflow-wrap: anywhere;
   word-break: break-word;
   white-space: pre-wrap;
 }
