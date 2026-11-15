@@ -6,8 +6,11 @@ function stub(file, exports) {
   require.cache[id] = { id, filename: id, loaded: true, exports };
 }
 let report = { trace: [], states: [], status: "initializing" };
-function checkpoint() { if (process.send) process.send(report); }
+let failed = false;
+function checkpoint() { if (!failed && process.send) process.send(report); }
 function fail(error) {
+  if (failed) return;
+  failed = true;
   report.status = "failure";
   report.error = error?.stack || String(error);
   if (process.send) process.send(report, () => process.exit(1));
@@ -33,6 +36,7 @@ stub("modules/logging.js", () => ({
 require("mongoose").set("bufferCommands", false);
 const { random, selections } = require("./generator");
 process.on("message", async (input) => {
+  if (failed) return;
   report = { ...input, status: "running", trace: [], states: [] };
   delete report.error;
   checkpoint();
@@ -86,8 +90,10 @@ process.on("message", async (input) => {
     if (!game.finished && game.currentState === state)
       throw new Error("Game did not advance after its deadline");
   }
+  if (failed) return;
   // A long, valid game is a budget exhaustion, not evidence of a crash.
   report.status = game.finished ? "finished" : "bounded";
   game.clearTimers();
+  if (failed) return;
   process.send(report, () => process.exit(0));
 });

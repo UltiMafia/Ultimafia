@@ -44,9 +44,9 @@ The fuzzer is structured into four core components:
    - Collects results (`finished`, `bounded`, or `failure`).
    - On failure, saves a detailed JSON report with the setup, action trace, state sequence, and error stack.
 
-4. **Shared Validation (`modules/setupRoleValidation.js`)**
-   - Extracted shared logic for verifying base roles, modifier compatibility, duplicate allowances, and role alignments.
-   - Shared between `routes/setup.js` (API endpoints) and the generator.
+4. **Setup Validation (`modules/setupRoleValidation.js`)**
+   - Mirrors the setup API rules for base roles, role-specific modifier restrictions, compatibility, duplicate allowances, and alignments.
+   - Used by the generator; `routes/setup.js` still owns its validation functions. Tests compare generated setups against those actual API functions to detect drift.
 
 ---
 
@@ -98,7 +98,7 @@ Because player IDs, socket IDs, and random choices are seeded, replaying the cas
 
 The fuzzer is accompanied by unit and integration tests under `test/mafiaFuzz.test.js`:
 ```bash
-npx mocha --exit test/mafiaFuzz.test.js
+NODE_ENV=test npx mocha --exit test/mafiaFuzz.test.js
 ```
 The test suite validates:
 - Role & modifier compatibility, alignment rules, and duplicate limits.
@@ -120,3 +120,5 @@ The test suite validates:
    - The harness targets `Games/types/Mafia/Game.js`. Other game engines in the repository (such as `Cheat`, `TexasHoldEm`, `LiarsDice`, `DiceWars`) have differing game loops and state machines not covered by this runner.
 4. **Action Heuristics**:
    - The fuzzer selects random legal targets and inputs; it does not model adversarial or optimal human strategies, but focuses on broad state-space coverage and boundary edge-cases.
+5. **Timer Coverage**:
+   - Only main phase deadlines are advanced explicitly. Raw wall-clock `setTimeout` callbacks (such as delayed item effects) are not simulated by a virtual clock and may not fire before a case exits.
