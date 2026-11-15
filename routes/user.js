@@ -2638,13 +2638,23 @@ router.post("/settings/update", async function (req, res) {
     var itemsOwned = await redis.getUserItemsOwned(userId);
 
     if (
-      (prop == "backgroundColor" || prop == "bannerFormat") &&
+      (prop == "backgroundColor" ||
+        prop == "bannerFormat" ||
+        prop == "profilePanelOpacity") &&
       !itemsOwned.customProfile
     ) {
       errors.forbidden(
         res,
         "You must purchase profile customization with coins from the Shop."
       );
+      return;
+    }
+
+    if (
+      prop === "profilePanelOpacity" &&
+      !["100", "90", "75", "50", "25", "0"].includes(value)
+    ) {
+      errors.badRequest(res, "Choose a listed profile panel opacity.");
       return;
     }
 
