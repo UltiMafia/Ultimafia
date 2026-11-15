@@ -5,7 +5,7 @@ import { Box, Stack, InputAdornment, Chip, Paper, Table, TableBody, TableCell, T
 import { PageNav } from "components/Nav";
 import "css/fame.css";
 import CoinIcon from "components/CoinIcon";
-import { UiAction, UiCard, UiIcon, UiPageHeader, UiSegmentedControl, UiStat, UiStatRow, UiTabs, UiTab, UiText as Typography, UiField as TextField, UiTabs as Tabs, UiSelect as Select, UiMenuItem as MenuItem } from "components/ui";
+import { UiAction, UiCard, UiChip, UiIcon, UiPageHeader, UiSegmentedControl, UiStat, UiStatRow, UiTable, UiTabs, UiTab, UiText as Typography, UiField as TextField, UiTabs as Tabs, UiSelect as Select, UiMenuItem as MenuItem } from "components/ui";
 import { useErrorAlert } from "../../components/Alerts";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { UserContext, SiteInfoContext } from "../../Contexts";
@@ -390,44 +390,70 @@ export default function StockMarket() {
     setTradeModalOpen(true);
   };
 
-  const renderSortableHeader = (label, fieldKey, align = "left", extraSx = {}) => {
-    const isActive = sortBy === fieldKey;
-    const isAsc = sortDirection === "asc";
-    
-    const handleSort = () => {
-      if (isActive) {
-        setSortDirection(isAsc ? "desc" : "asc");
-      } else {
-        setSortBy(fieldKey);
-        setSortDirection(fieldKey === "name" ? "asc" : "desc");
-      }
-    };
-
-    return (
-      <TableCell
-        align={align}
-        sx={{
-          cursor: "pointer",
-          fontWeight: "bold",
-          userSelect: "none",
-          whiteSpace: "nowrap",
-          "&:hover": {
-            backgroundColor: "action.hover",
-          },
-          ...extraSx
-        }}
-      >
-        <Stack
-          direction="row"
-          spacing={0.5}
-          alignItems="center"
-          justifyContent={align === "right" ? "flex-end" : align === "center" ? "center" : "flex-start"}
-        >
-          <UiAction variant="ghost" className="stock-sort-header" onClick={handleSort} aria-label={`Sort by ${label}`}><span>{label}</span><UiIcon name={isActive && isAsc ? "up" : "down"} size={16} /></UiAction>
+  const stockTableColumns = [
+    {
+      key: "name", label: marketMode === "player" ? "Player" : "Family Name", sortable: true, nowrap: true,
+      render: (stock) => {
+        const key = marketMode === "player" ? stock.userId : stock.familyId;
+        const name = marketMode === "player" ? stock.username : stock.familyName;
+        const isSelf = user.loggedIn && marketMode === "player" && user.id === stock.userId;
+        return (
+          <Stack direction="row" spacing={1.5} alignItems="center">
+            <StockAvatar targetType={marketMode} id={key} name={name} avatar={stock.avatar} siteInfo={siteInfo} />
+            <Typography
+              component="a"
+              href={marketMode === "player" ? (stock.vanityUrl ? `/user/${stock.vanityUrl}` : `/user/${stock.userId}`) : `/user/family/${stock.familyId}`}
+              sx={{
+                color: marketMode === "player"
+                  ? resolveDisplayNameColor({
+                      accessibleNameColors: user.settings?.accessibleNameColors,
+                      rawNameColor: stock.nameColor,
+                      autoContrastColor: user.autoContrastColor ? user.autoContrastColor.bind(user) : (c) => c,
+                      theme,
+                    }) || "text.primary"
+                  : "text.primary",
+                textDecoration: "none",
+                fontWeight: "bold",
+                whiteSpace: "nowrap",
+                "&:hover": { textDecoration: "underline" },
+              }}
+            >
+              {name}
+            </Typography>
+            {isSelf && <UiChip variant="status" tone="brand">You</UiChip>}
+          </Stack>
+        );
+      },
+    },
+    { key: "supply", label: "Supply", align: "right", sortable: true, hideOnPhone: true, render: (stock) => stock.shareSupply },
+    ...(marketMode === "family" ? [{
+      key: "treasury", label: "Treasury Coins", align: "right", sortable: true, hideOnPhone: true, nowrap: true,
+      render: (stock) => <>{stock.treasuryCoins.toFixed(2)} <CoinIcon size={12} /></>,
+    }] : []),
+    { key: "marketCap", label: "Market Cap", align: "right", sortable: true, hideOnPhone: true, nowrap: true,
+      render: (stock) => <>{stock.marketCap.toFixed(2)} <CoinIcon size={12} /></> },
+    { key: "buyPrice", label: "Buy Price", align: "right", sortable: true, nowrap: true,
+      render: (stock) => <span className="stock-buy-price">{stock.buyPrice.toFixed(2)} <CoinIcon size={12} /></span> },
+    { key: "sellPrice", label: "Sell Price", align: "right", sortable: true, hideOnPhone: true, nowrap: true,
+      render: (stock) => <span className="stock-sell-price">{stock.sellPrice.toFixed(2)} <CoinIcon size={12} /></span> },
+    { key: "dividends", label: "Dividends", align: "right", sortable: true, hideOnPhone: true, nowrap: true,
+      render: (stock) => <span className="stock-dividends">{stock.dividendsPaidOut.toFixed(2)} <CoinIcon size={12} /></span> },
+    {
+      key: "actions", label: "Actions", align: "center", actions: true,
+      render: (stock) => (
+        <Stack direction="row" spacing={1} justifyContent="center">
+          <UiAction size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "buy", marketMode)}>Buy</UiAction>
+          <UiAction size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "sell", marketMode)}>Sell</UiAction>
         </Stack>
-      </TableCell>
-    );
+      ),
+    },
+  ];
+
+  const sortStockTable = (key) => {
+    if (key === sortBy) setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    else { setSortBy(key); setSortDirection(key === "name" ? "asc" : "desc"); }
   };
+
 
   const totalStockValue = useMemo(() => {
     const playerStocksValue = portfolio.reduce((acc, h) => acc + (h.liquidValue || 0), 0);
@@ -634,134 +660,15 @@ export default function StockMarket() {
               {filteredStocks.length === 0 && <Typography color="text.secondary" align="center">No markets found.</Typography>}
             </Stack>
           ) : (
-          <TableContainer
-            component={Paper}
-            variant="outlined"
-            sx={{
-              width: '100%',
-              overflowX: 'auto',
-              backgroundColor: "background.paper",
-            }}
-          >
-            <Table size="small" sx={{ "& .MuiTableCell-root": { px: 1, py: 1.5, fontSize: "var(--ui-text-body)" }, "& .MuiTableCell-head": { fontWeight: "var(--ui-weight-strong)", background: "transparent", color: "var(--um-muted)", lineHeight: "var(--ui-line-body)" } }}>
-              <TableHead>
-                <TableRow>
-                  {renderSortableHeader(marketMode === "player" ? "Player" : "Family Name", "name")}
-                  {renderSortableHeader("Supply", "supply", "right", { display: { xs: 'none', md: 'table-cell' } })}
-                  {marketMode === "family" && renderSortableHeader("Treasury Coins", "treasury", "right", { display: { xs: 'none', md: 'table-cell' } })}
-                  {renderSortableHeader("Market Cap", "marketCap", "right", { display: { xs: 'none', md: 'table-cell' } })}
-                  {renderSortableHeader("Buy Price", "buyPrice", "right")}
-                  {renderSortableHeader("Sell Price", "sellPrice", "right", { display: { xs: 'none', sm: 'table-cell' } })}
-                  {renderSortableHeader("Dividends", "dividends", "right", { display: { xs: 'none', sm: 'table-cell' } })}
-                  <TableCell align="center" sx={{ fontWeight: "bold" }}>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredStocks.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={marketMode === "family" ? 8 : 7} align="center">
-                      <Typography color="text.secondary" sx={{ py: 3 }}>
-                        No records match your search query.
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  paginatedStocks.map((stock) => {
-                    const isSelf = user.loggedIn && marketMode === "player" && user.id === stock.userId;
-                    const name = marketMode === "player" ? stock.username : stock.familyName;
-                    const key = marketMode === "player" ? stock.userId : stock.familyId;
-                    
-                    return (
-                      <TableRow key={key} hover>
-                        <TableCell align="left" sx={{ whiteSpace: "nowrap" }}>
-                          <Stack direction="row" spacing={1.5} alignItems="center">
-                            <StockAvatar
-                              targetType={marketMode}
-                              id={key}
-                              name={name}
-                              avatar={stock.avatar}
-                              siteInfo={siteInfo}
-                            />
-                            {marketMode === "player" ? (
-                              <Typography
-                                component="a"
-                                href={stock.vanityUrl ? `/user/${stock.vanityUrl}` : `/user/${stock.userId}`}
-                                sx={{
-                                  color: resolveDisplayNameColor({
-                                    accessibleNameColors: user.settings?.accessibleNameColors,
-                                    rawNameColor: stock.nameColor,
-                                    autoContrastColor: user.autoContrastColor ? user.autoContrastColor.bind(user) : (c => c),
-                                    theme
-                                  }) || "text.primary",
-                                  textDecoration: "none",
-                                  fontWeight: "bold",
-                                  whiteSpace: "nowrap",
-                                  "&:hover": { textDecoration: "underline" },
-                                }}
-                              >
-                                {name}
-                              </Typography>
-                            ) : (
-                              <Typography
-                                component="a"
-                                href={`/user/family/${stock.familyId}`}
-                                sx={{
-                                  color: "text.primary",
-                                  textDecoration: "none",
-                                  fontWeight: "bold",
-                                  whiteSpace: "nowrap",
-                                  "&:hover": { textDecoration: "underline" },
-                                }}
-                              >
-                                {name}
-                              </Typography>
-                            )}
-                            {isSelf && <Chip size="small" label="You" color="primary" variant="outlined" />}
-                          </Stack>
-                        </TableCell>
-                        <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>{stock.shareSupply}</TableCell>
-                        {marketMode === "family" && (
-                          <TableCell align="right" sx={{ fontWeight: "bold", color: goldColor, display: { xs: 'none', md: 'table-cell' } }}>
-                            {stock.treasuryCoins.toFixed(2)} <CoinIcon size={12} />
-                          </TableCell>
-                        )}
-                        <TableCell align="right" sx={{ fontWeight: "bold", whiteSpace: "nowrap", display: { xs: 'none', md: 'table-cell' } }}>
-                          {(stock.marketCap).toFixed(2)} <CoinIcon size={12} />
-                        </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: "success.main", whiteSpace: "nowrap" }}>
-                          {stock.buyPrice.toFixed(2)} <CoinIcon size={12} />
-                        </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: "error.main", whiteSpace: "nowrap", display: { xs: 'none', sm: 'table-cell' } }}>
-                          {stock.sellPrice.toFixed(2)} <CoinIcon size={12} />
-                        </TableCell>
-                        <TableCell align="right" sx={{ color: goldColor, whiteSpace: "nowrap", display: { xs: 'none', sm: 'table-cell' } }}>
-                          {stock.dividendsPaidOut.toFixed(2)} <CoinIcon size={12} />
-                        </TableCell>
-                        <TableCell align="center">
-                          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="center">
-                            <UiAction
-                              size="small"
-                              disabled={!user.loggedIn}
-                              onClick={() => openTradeModal(stock, "buy", marketMode)}
-                            >
-                              Buy
-                            </UiAction>
-                            <UiAction
-                              size="small"
-                              disabled={!user.loggedIn}
-                              onClick={() => openTradeModal(stock, "sell", marketMode)}
-                            >
-                              Sell
-                            </UiAction>
-                          </Stack>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <UiTable
+            label={marketMode === "player" ? "Player stock market" : "Family ETF market"}
+            columns={stockTableColumns}
+            rows={paginatedStocks}
+            rowKey={marketMode === "player" ? "userId" : "familyId"}
+            emptyMessage="No records match your search query."
+            sort={{ key: sortBy, direction: sortDirection }}
+            onSort={sortStockTable}
+          />
           )}
           {filteredStocks.length > 0 && Math.ceil(filteredStocks.length / rowsPerPage) > 1 && (
             <Box display="flex" justifyContent="center" mt={2}>

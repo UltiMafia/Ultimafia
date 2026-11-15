@@ -27,6 +27,7 @@ const sanctioned = new Set([
   // buttons by design; these are the shared primitives, not page-level controls.
   "components/ui/UiSegmentedControl.jsx",
   "components/ui/UiChip.jsx",
+  "components/ui/UiTable.jsx",
 ]);
 
 function sourceFiles(directory) {

@@ -144,7 +144,7 @@ export default function Inbox() {
   }
 
   return (
-    <UiPage title="Notifications" className="inbox" width="reading">
+    <UiPage title="Notifications" className="inbox" width="wide">
       <Stack direction="column" spacing={2}>
         <Stack direction="row" spacing={2}>
           <Chip label={`Total: ${totalNotifications}`} variant="outlined" />

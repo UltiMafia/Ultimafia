@@ -96,9 +96,9 @@ enforced: "at most one per list region" as a rendered assertion.
 
 | Width | Use |
 |---|---|
-| `wide` | Lists, boards, tables, profiles, families, settings, moderation |
-| `reading` | Policy, rules, terms, long-form prose |
-| `prose` | Documentation and reference articles |
+| `wide` | Lobby-adjacent lists, boards, tables, profiles, families, settings, moderation, notifications, tutorial |
+| `reading` | Short-form policy pages that read as a single column |
+| `prose` | Rules, terms and privacy text |
 | `full` | The lobby only, where the desktop right column needs the width |
 
 The choice follows the page family, not author preference.

@@ -45,8 +45,8 @@ judge taste; open the images.
   48.5px.
 - Detail-page section headings are 24px where the scale says 21px.
 - "Coins" labels vary in size and weight across family/shop widgets.
-- Hall of Fame renders a CSS grid, not a table; Rules' penalties table is a
-  local implementation.
+- Hall of Fame still renders a CSS grid rather than a table; Stock Market's
+  portfolio and transaction tables are still hand-rolled.
 - The Games list paginates by cursor, so it can show only the current page and
   cannot disable "next" at the end. Numbered pages need a total from the API.
 - Dialog and overlay findings from `npm run ui:dialogs` (12 open).

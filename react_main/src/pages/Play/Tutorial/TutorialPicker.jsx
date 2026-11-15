@@ -58,7 +58,7 @@ export default function TutorialPicker() {
   if (!storylines) return <section><UiPageHeader title="Tutorial" /><UiPending label="Loading tutorial roles" /></section>;
 
   return (
-    <Stack spacing={2} sx={{ maxWidth: 900, mx: "auto" }}>
+    <Stack spacing={2}>
       <Box>
         <UiPageHeader title="Tutorial" />
         <Typography variant="body1" sx={{ mt: 1, lineHeight: 1.55 }}>
@@ -84,7 +84,7 @@ export default function TutorialPicker() {
           ))}
         </Stack>
       </Box>
-      <Typography variant="h2" sx={{ fontSize: "var(--ui-text-heading)", lineHeight: "var(--ui-line-heading)" }}>
+      <Typography variant="h2">
         Choose your role
       </Typography>
       {error && <div role="alert"><p>{error}</p><UiAction onClick={() => setRetry(value => value + 1)}>Retry</UiAction></div>}
