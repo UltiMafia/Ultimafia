@@ -265,6 +265,10 @@ export function readFixture(url, user) {
   if (p.startsWith("/api/forums/board/")) return { id: "fixture-board", name: "Mafia discussion", threads, pinnedThreads: [{ ...threads[1], pinned: true }], icon: "comments" };
   if (p.startsWith("/api/forums/thread/")) return threads[0];
   if (p.startsWith("/api/poll/thread/")) return null;
+  if (p === "/api/shop/stampSuggestions") return [
+    { gameId: "fixture-game-abc123", role: "Cop" },
+    { gameId: "fixture-game-def456", role: "Doctor" },
+  ];
   if (p === "/api/shop/info") return { balance: 48.5, shopItems: [
     { key: "textColors", name: "Name and Text Colors", desc: "Set the colors of your name and text in games and chat.", price: 20, limit: 1, category: "game" },
     { key: "customNameFont", name: "Custom Name Font", desc: "Choose a custom font for your name in games.", price: 100, limit: 1, category: "game" },

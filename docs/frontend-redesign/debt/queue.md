@@ -1,6 +1,6 @@
 # UI scale debt queue
 
-Generated 2026-11-15T05:01:24.050Z. **96** sites across **45** files.
+Generated 2026-11-15T05:22:36.159Z. **96** sites across **45** files.
 
 - `native-widget`: 31
 - `native-form`: 26

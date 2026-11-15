@@ -88,7 +88,7 @@
 .ui-dialog-title > span { min-width: 0; overflow-wrap: anywhere; }
 .ui-dialog-content { font-family: var(--ui-font-body); font-size: var(--ui-text-body); line-height: var(--ui-line-body); }
 .ui-dialog-content { padding: 8px 24px 16px; }
-.ui-dialog-content--visible { overflow: visible; }
+.ui-dialog-content.ui-dialog-content--visible { overflow: visible; }
 .ui-dialog-content > :first-child { margin-top: 0; }
 .ui-dialog-content > :last-child { margin-bottom: 0; }
 .ui-dialog-description { margin: 0 0 16px; color: var(--um-muted); }

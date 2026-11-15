@@ -615,25 +615,19 @@ export default function Shop(props) {
           {showSuggestions && stampSuggestions.length > 0 && (
             <UiCard className="stamp-suggestions">
               {stampSuggestions.map((s) => (
-                <Box
+                <UiAction
                   key={s.gameId}
-                  sx={{
-                    px: 2,
-                    py: 1,
-                    cursor: "pointer",
-                    "&:hover": { bgcolor: "action.hover" },
-                  }}
-                  onMouseDown={(e) => {
-                    e.preventDefault();
+                  variant="ghost"
+                  block
+                  className="stamp-suggestion"
+                  onClick={() => {
                     setStampGameUrl(s.gameId);
                     setSelectedSuggestion(s);
                     setShowSuggestions(false);
                   }}
                 >
-                  <Typography variant="body2">
-                    {s.gameId} — {s.role}
-                  </Typography>
-                </Box>
+                  {s.gameId} — {s.role}
+                </UiAction>
               ))}
             </UiCard>
           )}

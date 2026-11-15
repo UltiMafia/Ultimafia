@@ -782,6 +782,10 @@ input:focus:not(:focus-visible) {
 .poll-option.ui-action { justify-content: flex-start; text-align: left; white-space: normal; margin-bottom: 8px; }
 
 .shop-panel { height: 100%; }
-.stamp-suggestions { position: absolute; z-index: 1301; left: 0; right: 0; max-height: 200px; overflow-y: auto; padding: 0; }
+.stamp-suggestions { max-height: 200px; overflow-y: auto; padding: 0; margin-top: 4px; }
+.stamp-suggestion.ui-action { justify-content: flex-start; text-align: left; white-space: normal; padding: 8px 16px; min-height: var(--ui-action-height); }
+.stamp-suggestion.ui-action + .stamp-suggestion.ui-action { border-top: 1px solid var(--scheme-color-border); }
 
 .strategy-reader-action { align-self: flex-start; }
+
+@media (max-width: 900px), (pointer: coarse) { .stamp-suggestion.ui-action { min-height: var(--ui-touch-height); } }
