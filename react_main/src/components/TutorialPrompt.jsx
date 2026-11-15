@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import { Alert } from "@mui/material";
+import { Alert, Box } from "@mui/material";
 
 import { UserContext } from "../Contexts";
 import { UiText as Typography, UiAction, UiDialog } from "components/ui";
@@ -30,13 +30,13 @@ export function TutorialLobbyBanner() {
       icon={<span>📘</span>}
       data-testid="tutorial-banner"
       action={
-        <>
-          <UiAction component={Link} to="/play/tutorial" size="small" variant="primary">
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "nowrap", justifyContent: "flex-end" }}>
+          <UiAction component={Link} to="/play/tutorial" size="small" tone="brand" sx={{ whiteSpace: "nowrap" }}>
             Play tutorial
           </UiAction>
           <UiAction
-             variant="ghost" size="small" 
-            
+            size="small"
+            sx={{ whiteSpace: "nowrap" }}
             onClick={() => {
               localStorage.setItem(BANNER_KEY, "1");
               setDismissed(true);
@@ -44,7 +44,7 @@ export function TutorialLobbyBanner() {
           >
             Skip
           </UiAction>
-        </>
+        </Box>
       }
     >
       New here? Play a quick guided game against bots before jumping into ranked.

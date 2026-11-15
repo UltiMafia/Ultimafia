@@ -930,7 +930,7 @@
 }
 
 .thread-wrapper .petition-no-signers {
-  font-size: 12px;
+  font-size: 0.75rem;
   opacity: 0.6;
   font-style: italic;
 }

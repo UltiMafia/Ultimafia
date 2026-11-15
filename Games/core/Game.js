@@ -16,6 +16,7 @@ const ArrayHash = require("./ArrayHash");
 const Action = require("./Action");
 const Winners = require("./Winners");
 const { games, deprecationCheck } = require("../games");
+const { refundTargets, accountIdOf } = require("../../modules/heartRefund");
 const events = require("events");
 const models = require("../../db/models");
 const redis = require("../../modules/redis");
@@ -93,7 +94,12 @@ module.exports = class Game {
       options.settings.spectating === true ||
       options.settings.spectating === "true";
     this.readyCheck = options.settings.readyCheck;
-    this.noVeg = options.settings.noVeg;
+    // A ranked or competitive game cannot be exempt from vegging: the setting
+    // lets players idle through meetings without being removed, and the client
+    // already hides it for those modes. Enforced here as well as in the host
+    // route because a rehost replays the stored settings.
+    this.noVeg =
+      Boolean(options.settings.noVeg) && !this.ranked && !this.competitive;
     this.anonymousGame = options.settings.anonymousGame;
     this.anonymousDeck = options.settings.anonymousDeck;
     this.heartsChargedAtStart = false;
@@ -101,6 +107,17 @@ module.exports = class Game {
     // Who was charged at start, and who has had that heart given back.
     this.heartsCharged = null; // { userIds, red, gold }
     this.heartsRefundedUserIds = new Set();
+    // Accounts that broke the integrity of the game and therefore keep paying.
+    this.integrityBreakUserIds = new Set();
+    // A refund owed but not paid yet: the batch that broke the game can still
+    // produce more responsible players.
+    this.integrityRefundPending = null;
+    // True only while the actions that broke the game are still being
+    // processed (the vote timeout that vegs every non-voter runs as one loop).
+    this.integrityBreakOpen = false;
+    // Held by a caller that runs several actions as one batch, so the batch is
+    // not closed between them.
+    this.integrityBatchHeld = 0;
     this.readyCountdownLength =
       options.settings.readyCountdownLength != null
         ? options.settings.readyCountdownLength
@@ -670,16 +687,7 @@ module.exports = class Game {
       // Reconnect if already a spectator. Do this before seating so a refresh
       // during pregame cannot take an open seat.
       if (spectator) {
-        spectator.setUser(user);
-        spectator.omniscient = omniscient;
-        this.restoreSpectatorMeetings(spectator);
-        this.sendAllGameInfo(spectator);
-        // The history above is the shared spectator view, which is not a
-        // member of any meeting, so it never says this spectator can talk.
-        // Send their own Pregame / Spectator Meeting info too, or the chat
-        // box is gone after a refresh.
-        spectator.sendMeetings();
-        spectator.send("loaded");
+        this.reconnectSpectator(spectator, user, omniscient);
         return;
       }
 
@@ -715,6 +723,19 @@ module.exports = class Game {
           await redis.leaveGame(user.id);
         }
 
+        // Two connections can reach here at once (two tabs opening the game
+        // with ?spectate=true). Whoever wins adds the spectator; the other must
+        // take over that entry rather than add a second one, and must not
+        // invent a spectator for an account that just won a seat.
+        if (this.findJoinedPlayer(user, isBot)) return;
+
+        const raced = this.findSpectator(user);
+        if (raced) {
+          this.reconnectSpectator(raced, user, omniscient);
+          return;
+        }
+
+        // No await between the check above and this insert.
         await this.sendSpectatorJoinHint(this.addSpectator(user, omniscient));
         return;
       }
@@ -727,6 +748,10 @@ module.exports = class Game {
       ) {
         const seated = await this.seatPlayer(user, isBot);
         if (seated) return;
+
+        // seatPlayer also returns null when a racing join seated this account
+        // first; adding them to spectators here lists the same account twice.
+        if (this.findJoinedPlayer(user, isBot)) return;
       }
 
       const refusal = await this.spectatorJoinRefusal(user, omniscient);
@@ -758,6 +783,29 @@ module.exports = class Game {
     }
 
     return null;
+  }
+
+  // Hand a spectator entry to the connection that now owns it. Shared by the
+  // ordinary reconnect path and the spectate-intent path, where a second
+  // connection can arrive before the first has added its spectator entry.
+  reconnectSpectator(spectator, user, omniscient) {
+    // Two join packets on one authenticated connection share a socket.
+    // Player.setUser sends "left" and terminates the socket it is handed, so
+    // calling it here would hang up the very connection it is meant to keep.
+    const sameSocket =
+      spectator.socket && user.socket && spectator.socket === user.socket;
+
+    if (!sameSocket) spectator.setUser(user);
+
+    spectator.omniscient = omniscient;
+    this.restoreSpectatorMeetings(spectator);
+    this.sendAllGameInfo(spectator);
+    // The history above is the shared spectator view, which is not a member of
+    // any meeting, so it never says this spectator can talk. Send their own
+    // Pregame / Spectator Meeting info too, or the chat box is gone.
+    spectator.sendMeetings();
+    spectator.send("loaded");
+    return spectator;
   }
 
   findSpectator(user) {
@@ -867,6 +915,14 @@ module.exports = class Game {
       ) {
         return null;
       }
+
+      // A competing packet can seat the same user while this one waited for the
+      // lock; two Player objects for one account show up as a duplicate row and
+      // corrupt the seat count. Callers must treat null as "not seated by me".
+      const alreadySeated = this.players.filter(
+        (p) => p && (p.userId || (p.user && p.user.id)) === user.id
+      );
+      if (alreadySeated.length) return null;
 
       await redis.joinGame(user.id, this.id, this.ranked, this.competitive);
 
@@ -1172,6 +1228,13 @@ module.exports = class Game {
       return;
     }
 
+    // A racing packet may already have moved this seat, in which case the
+    // socket now belongs to the seated Player: clearing it here strips the
+    // winner's listeners and they can no longer speak, ready up or spectate.
+    // Nothing awaits between this check and the removal below, so the winner
+    // cannot slip in between them.
+    if (this.spectators.indexOf(spectator) == -1) return;
+
     this.removeSpectator(spectator);
     if (spectator.socket && spectator.socket.clearListeners) {
       spectator.socket.clearListeners();
@@ -1179,8 +1242,15 @@ module.exports = class Game {
 
     const player = await this.seatPlayer(user, false);
     if (!player) {
-      const back = this.addSpectator(user, spectator.omniscient);
-      refuse(back, "No open seats.");
+      // A racing takeSeat may have seated them; re-adding the spectator entry
+      // is the other half of the duplicate (seated and spectating at once).
+      const seated = this.players.filter(
+        (p) => p && (p.userId || (p.user && p.user.id)) === user.id
+      );
+      if (!seated.length) {
+        const back = this.addSpectator(user, spectator.omniscient);
+        refuse(back, "No open seats.");
+      }
       return;
     }
 
@@ -1379,17 +1449,17 @@ module.exports = class Game {
         this.makeUnranked();
         this.makeUncompetitive();
 
-        if (this.breakIntegrity()) {
-          await this.refundHeartsForIntegrityBreak(
-            player,
-            wasRanked,
-            wasCompetitive
-          );
+        if (this.breakIntegrity(player)) {
+          this.queueIntegrityRefund(wasRanked, wasCompetitive);
           if (!player.isBot) {
             const userId = player.userId || player.user.id;
             this.penalizePlayerForLeaving(userId);
           }
+        } else {
+          this.noteIntegrityResponsible(player);
         }
+
+        await this.settleIntegrityBreak();
       }
 
       if (!this.postgameOver && this.players[player.id]) {
@@ -1439,13 +1509,19 @@ module.exports = class Game {
     player.kill("veg", player);
     this.exorcisePlayer(player);
 
-    if (this.breakIntegrity()) {
-      await this.refundHeartsForIntegrityBreak(player, wasRanked, wasCompetitive);
+    if (this.breakIntegrity(player)) {
+      this.queueIntegrityRefund(wasRanked, wasCompetitive);
       if (!player.isBot) {
         const userId = player.userId || player.user.id;
         this.penalizePlayerForLeaving(userId);
       }
+    } else {
+      // Vegging in the same batch that broke the game: still responsible, so
+      // still not refunded.
+      this.noteIntegrityResponsible(player);
     }
+
+    await this.settleIntegrityBreak();
   }
 
   exorcisePlayer(player) {
@@ -1471,33 +1547,112 @@ module.exports = class Game {
   }
 
   // Returns if the integrity of the game was broken for the first time or not
-  breakIntegrity() {
+  breakIntegrity(player) {
     const hadIntegrity = this.hasIntegrity;
     this.hasIntegrity = false;
 
     if (hadIntegrity) {
       this.queueAlert("The game is now safe to leave without penalty.");
+
+      // Responsibility lasts for this batch of actions only. When a vote times
+      // out without a majority, Meeting.finish() vegs every non-voter in one
+      // synchronous loop: those players broke the game together. Anything
+      // afterwards — a leave later in the same phase as much as in a later one
+      // — is someone declining to play out an unranked game, and is refunded.
+      this.integrityBreakOpen = true;
     }
+
+    this.noteIntegrityResponsible(player);
 
     return hadIntegrity;
   }
 
-  async refundHeartsForIntegrityBreak(excludedPlayer, wasRanked, wasCompetitive) {
+  // Records an account that took part in breaking the game's integrity. Only
+  // the players acting in the batch that broke it are responsible; a later veg
+  // or leave, even in the same phase, leaves the heart with the player.
+  noteIntegrityResponsible(player) {
+    if (!this.integrityBreakOpen) return;
+    if (this.heartsRefundedOnIntegrityBreak) return;
+
+    const userId = accountIdOf(player);
+    if (userId) this.integrityBreakUserIds.add(userId);
+  }
+
+  // The refund is owed as soon as integrity breaks, but it is paid when the
+  // phase ends: paying immediately refunded the rest of a mass veg.
+  queueIntegrityRefund(wasRanked, wasCompetitive) {
+    if (!this.heartsChargedAtStart) return;
+    if (!wasRanked && !wasCompetitive) return;
+    if (this.integrityRefundPending || this.heartsRefundedOnIntegrityBreak)
+      return;
+
+    this.integrityRefundPending = { wasRanked, wasCompetitive };
+  }
+
+  // A caller that runs several actions as one batch holds responsibility open
+  // across them: Meeting.finish() vegs every non-voter in one loop.
+  beginIntegrityBreakBatch() {
+    this.integrityBatchHeld++;
+  }
+
+  // Releases the batch. The last release ends responsibility and pays.
+  endIntegrityBreakBatch() {
+    if (this.integrityBatchHeld > 0) this.integrityBatchHeld--;
+
+    if (this.integrityBatchHeld > 0) return Promise.resolve();
+    if (!this.integrityBreakOpen && !this.integrityRefundPending)
+      return Promise.resolve();
+
+    this.integrityBreakOpen = false;
+
+    return this.flushIntegrityRefund().catch((e) =>
+      logger.warn(`flushIntegrityRefund failed for game ${this.id}: ${e.message}`)
+    );
+  }
+
+  // Called at the end of a single action: closes the batch unless a caller is
+  // holding it open, so a lone veg or leave pays straight away and a later
+  // action in the same phase can never join it.
+  settleIntegrityBreak() {
+    if (!this.integrityBreakOpen || this.integrityBatchHeld > 0)
+      return Promise.resolve();
+
+    return this.endIntegrityBreakBatch();
+  }
+
+  // Paying twice would be a money bug, so an in-flight payment is shared rather
+  // than started again — callers can await it and see the writes settle.
+  flushIntegrityRefund() {
+    if (!this.integrityRefundPromise) {
+      const pending = this.integrityRefundPending;
+      if (!pending) return Promise.resolve();
+
+      this.integrityRefundPending = null;
+      this.integrityRefundPromise = this.refundHeartsForIntegrityBreak(pending);
+    }
+
+    return this.integrityRefundPromise;
+  }
+
+  async refundHeartsForIntegrityBreak({ wasRanked, wasCompetitive } = {}) {
     if (!this.heartsChargedAtStart) return;
     if (this.heartsRefundedOnIntegrityBreak) return;
     if (!wasRanked && !wasCompetitive) return;
 
     this.heartsRefundedOnIntegrityBreak = true;
 
-    for (let player of this.players) {
-      if (!player || player.left || player.isBot) continue;
-      if (excludedPlayer && player.id === excludedPlayer.id) continue;
+    // Pay back everyone who was charged at start. Walking the seats instead
+    // skipped players who had died and left before the break: they paid in full
+    // and are no longer seated, so they were left a heart short silently.
 
-      const userId = player.userId || player.user.id;
-      if (this.heartsRefundedUserIds) {
-        if (this.heartsRefundedUserIds.has(userId)) continue;
-        this.heartsRefundedUserIds.add(userId);
-      }
+    if (!this.heartsRefundedUserIds) this.heartsRefundedUserIds = new Set();
+
+    for (const userId of refundTargets({
+      charged: this.heartsCharged,
+      excludedUserIds: this.integrityBreakUserIds,
+      refunded: this.heartsRefundedUserIds,
+    })) {
+      this.heartsRefundedUserIds.add(userId);
       await models.User.updateOne(
         { id: userId },
         {
@@ -3467,6 +3622,12 @@ module.exports = class Game {
   }
 
   incrementState(index, skipped) {
+    // Safety net: the refund is paid on the tick after the break, so this is
+    // normally a no-op.
+    this.flushIntegrityRefund().catch((e) =>
+      logger.warn(`flushIntegrityRefund failed for game ${this.id}: ${e.message}`)
+    );
+
     this.currentState++;
 
     if (index === undefined || skipped === undefined) {
@@ -4719,6 +4880,12 @@ module.exports = class Game {
       this.finished = true;
       this.clearTimers();
 
+      await this.flushIntegrityRefund().catch((e) =>
+        logger.warn(
+          `flushIntegrityRefund failed for game ${this.id}: ${e.message}`
+        )
+      );
+
       this.winners = winners;
       this.currentState = -2;
 
@@ -5501,6 +5668,9 @@ module.exports = class Game {
           playerAlignmentMap: JSON.stringify(playerAlignmentMap),
           playerRoleMap: JSON.stringify(playerRoleMap),
           spectatorIdMap: JSON.stringify(spectatorIdMap),
+          // Seats that left during pregame, so review can name the messages
+          // they left behind (their pregame chat keeps the old seat id).
+          pastPregamePlayers: JSON.stringify(this.pastPregamePlayers || {}),
           history: JSON.stringify(history),
           startTime: this.startTime,
           endTime: Date.now(),

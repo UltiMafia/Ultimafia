@@ -60,7 +60,6 @@ function Polls({
 
   return (
     <Stack spacing={2}>
-      {!isThreadPoll && <PageNav page={pollPage} onNav={onPollPageNav} />}
       {allPolls.map((poll) => {
         const isActive = !poll.completed;
         const completedDate =

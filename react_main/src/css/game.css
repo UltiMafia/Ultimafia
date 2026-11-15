@@ -74,12 +74,16 @@
 
 .game .left-panel {
   /* Desktop sizing */
-  width: var(--game-left-panel-width, 22vw);
+  width: var(--ui-game-left-panel-width);
+  max-width: var(--ui-game-panel-max);
+  min-width: 0;
 }
 
 .game .right-panel {
   /* Desktop sizing */
-  width: var(--game-right-panel-width, 22vw);
+  width: var(--ui-game-right-panel-width);
+  max-width: var(--ui-game-panel-max);
+  min-width: 0;
 }
 
 .game .center-panel {
@@ -95,7 +99,8 @@
 }
 
 .game .title-box {
-  height: calc(1em + 4 * var(--mui-spacing));
+  min-height: calc(1em + 4 * var(--mui-spacing));
+  height: auto;
   padding: var(--mui-spacing);
   line-height: normal;
   flex: none;
@@ -489,6 +494,20 @@ html[data-keyboard="open"] .game .meeting-tabs {
 
 /* The mark that closes a quote is the opening glyph, mirrored - the icon set
    has one quote icon, not a left and a right one. */
+.game .message .quote-jump-header {
+  display: inline;
+  min-height: 0;
+  height: auto;
+  gap: 0;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: inherit;
+}
+
 .game .message .quote-mark-end {
   transform: scaleX(-1);
 }
@@ -1085,7 +1104,8 @@ html[data-keyboard="open"] .game .meeting-tabs {
  * Media Queries
  */
 
-@media (max-width: 900px) {
+/* Match MUI's down("md") query used by useIsPhoneDevice. */
+@media (max-width: 899.95px) {
   .game {
     padding: 0px !important;
     background-color: var(--scheme-color) !important;
@@ -1116,6 +1136,7 @@ html[data-keyboard="open"] .game .meeting-tabs {
   }
 
   .game .left-panel {
+    max-width: none;
     width: 100vw !important;
   }
 
@@ -1124,6 +1145,7 @@ html[data-keyboard="open"] .game .meeting-tabs {
   }
 
   .game .right-panel {
+    max-width: none;
     width: 100vw !important;
   }
 
@@ -1319,8 +1341,11 @@ html[data-keyboard="open"] .game .meeting-tabs {
   flex: 1 1 auto;
   min-width: 0;
 
-  display: flex;
-  align-items: center;
+  /* Not a flex container. A role mention is an inline-flex span inside this
+     text, and flex turns each run of words between mentions into its own
+     anonymous flex item, which drops the spaces next to it: "Copwith an inno".
+     Normal inline flow keeps the text-join as the line's own row does. */
+  display: block;
 
   overflow: hidden;
   white-space: nowrap;
@@ -1330,6 +1355,23 @@ html[data-keyboard="open"] .game .meeting-tabs {
 
 .game .message .reply-reference .reply-reference-text * {
   white-space: nowrap;
+}
+
+/* Decorations in the quoted line — role mentions, emotes, the collapsed sticker
+   label — are inline-level boxes with a baseline of their own. Baseline
+   alignment hangs that baseline on the icon or the box edge, which lifts their
+   text clear of the line ("Click to see sticker" sat 10px high). Centre them
+   against the text instead, and keep the emote inside the 18px line. */
+.game .message .reply-reference .reply-reference-text .emote,
+.game .message .reply-reference .reply-reference-text .sticker,
+.game .message .reply-reference .reply-reference-text .collapsed-sticker-label,
+.game .message .reply-reference .reply-reference-text .inline-role-mention {
+  vertical-align: middle;
+}
+
+.game .message .reply-reference .reply-reference-text .emote {
+  width: 16px;
+  height: 16px;
 }
 
 .game .message .reply-reference .reply-reference-text br {

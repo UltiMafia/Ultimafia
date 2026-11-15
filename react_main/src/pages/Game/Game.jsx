@@ -8,7 +8,7 @@ import React, {
   useCallback,
   createContext,
 } from "react";
-import { useParams, Navigate, Link, useNavigate } from "react-router-dom";
+import { useParams, Navigate, Link, useLocation, useNavigate } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
 
@@ -33,6 +33,8 @@ import Newspaper, {
 } from "../../components/gameComponents/Newspaper";
 import { newspaperPlayer } from "../../utils/newspaperPlayers";
 import { legacyObituaryMessages } from "../../utils/legacyObituaries";
+import { gameUrlTarget } from "../../utils/gameUrlSync";
+import { gameIdAt } from "../../hooks/useHostedGameSession";
 import { pingSenderName } from "../../utils/pingSender";
 import MafiaGame from "./MafiaGame";
 import GameView, { preloadGameView } from "./GameViews";
@@ -83,7 +85,35 @@ import { WindowedTranscript } from "./components/WindowedTranscript";
 import { warmNameFonts } from "../../utils/fontWarmup";
 import { dedupeMessages } from "../../shared/dedupeMessages";
 import { bindMessageTouch } from "../../utils/messageTouch";
-import { Accordion, AccordionSummary, AccordionDetails, Badge, Box, Button, ButtonGroup, Chip, Divider, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, Tab, Tabs, Tooltip, useTheme, BottomNavigation, BottomNavigationAction, Paper, Popover, useMediaQuery, Alert } from "@mui/material";
+
+import { mergeDepartedPregamePlayers } from "../../utils/pregameRoster";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Badge,
+  Box,
+  Button,
+  ButtonGroup,
+  Chip,
+  Divider,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Stack,
+  Tab,
+  Tabs,
+  Tooltip,
+  useTheme,
+  BottomNavigation,
+  BottomNavigationAction,
+  Paper,
+  Popover,
+  useMediaQuery,
+  Alert,
+} from "@mui/material";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import {
   resolveDisplayNameColor,
@@ -114,6 +144,7 @@ import {
   redirectTypingToChat,
   hasSelectionIn,
   REPLY_CLICK_DELAY_MS,
+  REPLY_CLICK_MOVE_PX,
   findMessageRow,
   handleGameEscape,
   makeReplyTarget,
@@ -338,6 +369,11 @@ export default function Game(props) {
     if (!active) stopDeathSounds();
   }, [active, stopDeathSounds]);
   const navigate = useNavigate();
+  const location = useLocation();
+  // The game named by the URL, which is the one being opened. `routeGameId`
+  // above is the route param and is empty when the hosted session renders
+  // outside the route table.
+  const locationGameId = gameIdAt(location.pathname);
 
   // Keep the URL equal to the role the server confirmed. Otherwise a stale
   // ?spectate=true would move a newly seated player back to spectators on
@@ -346,7 +382,10 @@ export default function Game(props) {
   // no URL state.
   useEffect(() => {
     if (!active || !loaded || leave || joinOptionsRef.current.isBot) return;
-    const target = `/game/${gameId}${isSpectator ? "?spectate=true" : ""}`;
+    // Null when the URL already names a different game, which is the moment a
+    // new session is taking over: do not rewrite it back to this one.
+    const target = gameUrlTarget({ routeGameId: locationGameId, gameId, isSpectator });
+    if (!target) return;
     const current = window.location.pathname + window.location.search;
     if (current !== target) {
       navigate(target, {
@@ -354,7 +393,7 @@ export default function Game(props) {
         state: { membershipUpdate: true },
       });
     }
-  }, [active, loaded, leave, isSpectator, gameId, navigate]);
+  }, [active, loaded, leave, isSpectator, gameId, navigate, locationGameId]);
 
   // A lobby Join/Spectate click for the game already hosted asks for the other
   // role. Send that over the existing socket instead of replacing the session
@@ -521,6 +560,17 @@ export default function Game(props) {
   const [replyTarget, setReplyTarget] = useState(null);
   const replyTargetRef = useRef(replyTarget);
   replyTargetRef.current = replyTarget;
+
+  const replyMeetingId = history.states[stateViewing]?.selTab;
+  useEffect(() => {
+    setReplyTarget((target) => {
+      if (!target || !target.protectMeeting) return target;
+      return target.selectedMeetingId === replyMeetingId &&
+        target.selectedState === stateViewing &&
+        target.currentState === history.currentState
+        ? target : null;
+    });
+  }, [replyMeetingId, history.currentState, stateViewing]);
 
   useEffect(() => {
     // Only the visible session reacts to Escape. A session retained while the
@@ -887,6 +937,10 @@ export default function Game(props) {
               left: data.left.indexOf(data.spectators[i]) !== -1,
             };
           }
+
+          // Players who left during pregame still have messages in the stored
+          // history; without their snapshot those messages render nameless.
+          mergeDepartedPregamePlayers(players, data.pastPregamePlayers);
 
           updatePlayers({
             type: "set",
@@ -1433,11 +1487,21 @@ export default function Game(props) {
   }
 
   const quoteMeetingId = history.states[history.currentState]?.selTab;
-  const onMessageReply = useCallback((message) => {
+  const onMessageReply = useCallback((message, deliveryMeetingId) => {
     if (!canReplyTo(message, { review, stateViewing })) return;
-    setReplyTarget(makeReplyTarget(message, stateViewing));
+    setReplyTarget({
+      ...makeReplyTarget(message, stateViewing),
+      selectedMeetingId: history.states[stateViewing]?.selTab,
+      deliveryMeetingId,
+      selectedState: stateViewing,
+      currentState: history.currentState,
+      protectMeeting: !isSpectator && gameType === "Mafia" &&
+        !["Village", "Pregame"].includes(
+          history.states[stateViewing]?.meetings[message.meetingId]?.name
+        ),
+    });
     document.getElementById("speechInput")?.focus();
-  }, [review, stateViewing]);
+  }, [review, stateViewing, history, gameType, isSpectator]);
   // Pinned rows show a stored copy while the current state is on screen, so
   // the quote has to find the state the original was sent in.
   const onMessageQuote = useCallback((message) => {
@@ -1762,7 +1826,7 @@ export function TopBar({ forceShow = false } = {}) {
 
   const logo = (
     <Stack direction="row" sx={{
-      flex: "1",
+      flex: isPhoneDevice ? "1" : "1 1 14rem",
       alignItems: "center",
     }}>
       <SiteLogo flexible />
@@ -2148,13 +2212,72 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   const selTab = stateInfo && stateInfo.selTab;
 
   const [speechInput, setSpeechInput] = useState("");
-  const [autoScroll, setAutoScroll] = useState(true);
+  const [autoScroll, setAutoScrollState] = useState(true);
   const [mouseMoved, setMouseMoved] = useState(false);
   const speechDisplayRef = useRef();
+  const lastSpeechScrollTop = useRef(0);
+  const autoScrollRef = useRef(true);
+  const autoScrollFrame = useRef(null);
   const hasMouse = useMediaQuery("(pointer:fine)");
+  const [quoteJump, setQuoteJump] = useState(null);
+  const quoteJumpRef = useRef(null);
+  const [quoteJumpNotice, setQuoteJumpNotice] = useState("");
+  useEffect(() => {
+    if (!quoteJumpNotice) return;
+    const timer = setTimeout(() => setQuoteJumpNotice(""), 4000);
+    return () => clearTimeout(timer);
+  }, [quoteJumpNotice]);
+  const onQuoteJump = useCallback((quote) => {
+    const sourceState = history.states[quote.fromState];
+    const sourceMeeting = sourceState?.meetings?.[quote.fromMeetingId];
+    const sourceMessage = sourceMeeting?.messages?.find(
+      (entry) => entry.id === quote.messageId
+    );
+    // Only navigate history already delivered to this viewer. Never fetch or
+    // infer a hidden meeting or an anonymous sender.
+    if (!sourceMessage) {
+      setQuoteJumpNotice("The original message is not available in your history.");
+      return;
+    }
+    const sourceTabs = getSpeechMeetings(sourceState.meetings);
+    const sourceSpectatorChat = findSpectatorChatMeeting(sourceState.meetings, isSpectator);
+    const sourceTab = sourceTabs.find((meeting) => meeting.id === quote.fromMeetingId);
+    const spectatorSource = sourceSpectatorChat?.id === quote.fromMeetingId;
+    if (!singleState && !sourceTab && !spectatorSource) {
+      setQuoteJumpNotice("The original message is not available in this chat view.");
+      return;
+    }
+    const target = {
+      state: String(quote.fromState),
+      meeting: String(quote.fromMeetingId),
+      message: String(quote.messageId),
+      tab: sourceTab?.id ?? getDefaultSpeechMeetingId(sourceTabs),
+    };
+    quoteJumpRef.current = target;
+    setQuoteJump(target);
+    setQuoteJumpNotice("");
+    setAutoScroll(false);
+    if (!singleState) {
+      updateHistory({ type: "selTab", state: quote.fromState, meetingId: target.tab });
+      game.updateStateViewing({ type: "set", stateNum: Number(quote.fromState) });
+    }
+  }, [history, isSpectator, singleState, updateHistory, game.updateStateViewing]);
 
   const speechMeetings = getSpeechMeetings(meetings);
   const spectatorChatMeeting = findSpectatorChatMeeting(meetings, isSpectator);
+
+  function setAutoScroll(enabled) {
+    autoScrollRef.current = enabled;
+    if (enabled) {
+      lastSpeechScrollTop.current = Math.round(
+        speechDisplayRef.current?.scrollTop || 0
+      );
+    } else {
+      cancelAnimationFrame(autoScrollFrame.current);
+      autoScrollFrame.current = null;
+    }
+    setAutoScrollState(enabled);
+  }
 
   function onTabChange(event, newValue) {
     updateHistory({
@@ -2186,7 +2309,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   }, [stateViewing, speechMeetings, selTab, meetings, isSpectator]);
 
   useEffect(() => {
-    if (stateViewing === history.currentState) setAutoScroll(true);
+    if (stateViewing === history.currentState && !quoteJumpRef.current) setAutoScroll(true);
     else setAutoScroll(false);
   }, [stateViewing]);
 
@@ -2203,9 +2326,11 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
 
   function doAutoScroll() {
     const container = speechDisplayRef.current;
-    if (autoScroll && container) {
-      requestAnimationFrame(() => {
-        container.scrollTo(0, container.scrollHeight);
+    if (autoScrollRef.current && container) {
+      cancelAnimationFrame(autoScrollFrame.current);
+      autoScrollFrame.current = requestAnimationFrame(() => {
+        autoScrollFrame.current = null;
+        if (autoScrollRef.current) container.scrollTo(0, container.scrollHeight);
       });
     }
   }
@@ -2221,19 +2346,25 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   }
 
   function onSpeechScroll() {
+    var speech = speechDisplayRef.current;
+    const scrollTop = Math.round(speech.scrollTop);
+    const scrolledUp = scrollTop < lastSpeechScrollTop.current;
+    lastSpeechScrollTop.current = scrollTop;
+
     if (hasMouse && !mouseMoved) {
       doAutoScroll();
       return;
     }
-
-    var speech = speechDisplayRef.current;
 
     if (
       Math.round(speech.scrollTop + speech.clientHeight) >=
       Math.round(speech.scrollHeight - 10)
     )
       setAutoScroll(true);
-    else setAutoScroll(false);
+    // Use decreasing scrollTop as the signal to stop following. New rows or
+    // growing content can land between a scroll to the bottom and its event.
+    else if (scrolledUp) setAutoScroll(false);
+    else doAutoScroll();
   }
 
   const tabs = speechMeetings.map((meeting) => {
@@ -2341,9 +2472,13 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
               : stateViewing
           }
           meetingState={singleState ? message.fromState : stateViewing}
+          sourceState={singleState ? message.fromState : stateViewing}
+          onQuoteJump={onQuoteJump}
           key={message.id || message.messageId + message.time || i}
           onMessageQuote={game.onMessageQuote}
-          onMessageReply={canSpeak ? game.onMessageReply : undefined}
+          onMessageReply={canSpeak && typeof game.onMessageReply === "function"
+            ? (message) => game.onMessageReply(message, speechTarget.meetingId)
+            : undefined}
           onPinMessage={game.onPinMessage}
           isMessagePinned={game.isMessagePinned}
           settings={settings}
@@ -2372,7 +2507,9 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     isolatedPlayers,
     game.review,
     game.onMessageQuote,
+    onQuoteJump,
     game.onMessageReply,
+    speechTarget.meetingId,
     canSpeak,
     game.onPinMessage,
     game.isMessagePinned,
@@ -2380,15 +2517,41 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     game.isSpectator,
   ]);
 
+  useEffect(() => {
+    if (!quoteJump) return;
+    if (!singleState &&
+        (String(stateViewing) !== quoteJump.state || selTab !== quoteJump.tab)) return;
+    setAutoScroll(false);
+    const container = speechDisplayRef.current;
+    const row = container && Array.from(
+      container.querySelectorAll(".message[data-message-id]")
+    ).find((element) =>
+      element.dataset.messageId === quoteJump.message &&
+      element.dataset.messageState === quoteJump.state &&
+      element.dataset.messageMeeting === quoteJump.meeting
+    );
+    if (row) {
+      row.scrollIntoView({ block: "center", behavior: "auto" });
+      row.classList.remove("reply-jump-highlight");
+      void row.offsetWidth;
+      row.classList.add("reply-jump-highlight");
+      setTimeout(() => row.classList.remove("reply-jump-highlight"), 1600);
+      setQuoteJumpNotice("Jumped to the original message.");
+    } else {
+      setQuoteJumpNotice("The original message is not shown with the current chat filters.");
+    }
+    quoteJumpRef.current = null;
+    setQuoteJump(null);
+  }, [quoteJump, singleState, stateViewing, selTab, messages]);
+
   // Typing and unrelated game updates must not repeatedly measure the entire
   // transcript. Cancel pending work when the user scrolls away or changes tabs.
   useEffect(() => {
-    const container = speechDisplayRef.current;
-    if (windowed || !autoScroll || !container) return;
-    const frame = requestAnimationFrame(() => {
-      container.scrollTo(0, container.scrollHeight);
-    });
-    return () => cancelAnimationFrame(frame);
+    if (!windowed) doAutoScroll();
+    return () => {
+      cancelAnimationFrame(autoScrollFrame.current);
+      autoScrollFrame.current = null;
+    };
   }, [messages, autoScroll, windowed]);
 
   // Keep the newest message in view when the transcript is resized, e.g. when
@@ -2399,7 +2562,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     const container = speechDisplayRef.current;
     if (windowed || !container || typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(() => {
-      if (autoScroll) container.scrollTo(0, container.scrollHeight);
+      if (autoScrollRef.current) container.scrollTo(0, container.scrollHeight);
     });
     observer.observe(container);
     return () => observer.disconnect();
@@ -2494,6 +2657,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           {messages}
         </div>}
         <div className="speech-footer">
+          <span role="status" aria-live="polite">{quoteJumpNotice}</span>
           {newMessageCount > 0 && (
             <button
               type="button"
@@ -2830,6 +2994,17 @@ function Message(props) {
         : null,
     [replyQuote, replyQuoteState, props.players, props.spectators]
   );
+  // A reply addresses the original sender, not the player who posted its
+  // quote. Reuse the visible preview: anonymous or unavailable sources do
+  // not identify anyone, and mention highlighting keeps its existing switch.
+  if (
+    props.settings.highlightMentions &&
+    props.self != null &&
+    message.senderId !== props.self &&
+    replyPreview?.sender?.id === props.self
+  ) {
+    iWasPinged = true;
+  }
   if (message.obituaries && props.settings.legacyObituaries) {
     return legacyObituaryMessages(message).map((alert) => (
       <Message
@@ -2855,6 +3030,55 @@ function Message(props) {
       quoteState={message.isQuote ? history.states[message.fromState] : undefined}
       history={message.obituaries || message.winners ? history : undefined}
     />
+  );
+}
+
+// Delay pointer navigation so selecting text and double-click quoting retain
+// their existing behavior. The header button also supplies keyboard activation.
+function QuoteJumpTarget({ message, onJump, children }) {
+  const timer = useRef(null);
+  const pointerDown = useRef(null);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  function onPointerDown(event) {
+    clearTimeout(timer.current);
+    pointerDown.current = {
+      x: event.clientX,
+      y: event.clientY,
+      button: event.button,
+    };
+  }
+  function onClick(event) {
+    const down = event.detail === 0 ? null : pointerDown.current;
+    pointerDown.current = null;
+    clearTimeout(timer.current);
+    // CSS can prevent a selection even when the user drags. A keyboard click
+    // has no pointer press, so it must still activate the header button.
+    if (
+      event.button !== 0 ||
+      (down && down.button !== 0) ||
+      (down && Math.hypot(event.clientX - down.x, event.clientY - down.y) >
+        REPLY_CLICK_MOVE_PX)
+    ) return;
+    if (!onJump || event.target.closest("a, input, textarea, select")) return;
+    if (String(window.getSelection() || "").trim()) return;
+    event.stopPropagation();
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      if (!String(window.getSelection() || "").trim()) onJump(message);
+    }, REPLY_CLICK_DELAY_MS);
+  }
+  return (
+    <span
+      onPointerDown={onPointerDown}
+      onPointerCancel={() => {
+        pointerDown.current = null;
+        clearTimeout(timer.current);
+      }}
+      onClick={onClick}
+      onDoubleClick={() => clearTimeout(timer.current)}
+    >
+      {children}
+    </span>
   );
 }
 
@@ -2960,6 +3184,7 @@ function ReplyReference(props) {
           customEmotes={reply.customEmotes}
           customStickers={reply.customStickers}
           collapseStickers={true}
+          compactAvatars={true}
           filterProfanity
           linkify={false}
           emotify
@@ -3266,7 +3491,7 @@ const MessageRow = React.memo(function MessageRow(props) {
 
   let className = "message";
   if (message.spectatorChat) className += " spectator-chat";
-  else if (props.iWasPinged) className += " mention";
+  if (props.iWasPinged) className += " mention";
   // A reply shows what it answers above its header (see ReplyReference). One
   // whose quote cannot be found keeps the indented look.
   if (message.replyTo && !message.isQuote && !props.replyPreview)
@@ -3322,6 +3547,8 @@ const MessageRow = React.memo(function MessageRow(props) {
       ref={rowRef}
       className={className}
       data-message-id={message.id ?? undefined}
+      data-message-state={props.sourceState ?? props.stateViewing}
+      data-message-meeting={message.meetingId ?? undefined}
       onPointerDown={clickToReply ? onRowPointerDown : undefined}
       onClick={clickToReply ? onRowClick : undefined}
       onKeyDown={clickToReply ? onRowKeyDown : undefined}
@@ -3456,7 +3683,7 @@ const MessageRow = React.memo(function MessageRow(props) {
             </>
           )}
           {message.isQuote && (
-            <>
+            <QuoteJumpTarget message={message} onJump={props.onQuoteJump}>
               {message.spectatorChat && (
                 <span
                   className="spectator-chat-tag"
@@ -3466,10 +3693,17 @@ const MessageRow = React.memo(function MessageRow(props) {
                 </span>
               )}
               <UiIcon name="quote" size={16} />
-              <Timestamp time={quotedMessage.time} />
-              <span className="quote-info">
-                {`${quotedMessage.senderName} on ${quotedMessage.fromStateName}: `}
-              </span>
+              <UiAction
+                emphasis="quiet"
+                disabled={!props.onQuoteJump}
+                aria-label="Jump to the original quoted message"
+                className="quote-jump-header"
+              >
+                <Timestamp time={quotedMessage.time} />
+                <span className="quote-info">
+                  {`${quotedMessage.senderName} on ${quotedMessage.fromStateName}: `}
+                </span>
+              </UiAction>
               <span className="quote-content">
                 <UserText
                   text={quotedMessage.content}
@@ -3487,7 +3721,7 @@ const MessageRow = React.memo(function MessageRow(props) {
                 />
               </span>
               <UiIcon name="quote" size={16} className="quote-mark-end" />
-            </>
+            </QuoteJumpTarget>
           )}
         </div>
       </div>
@@ -3958,7 +4192,15 @@ function SpeechInput(props) {
           };
         }
 
-        const reply = buildReplyPayload(replyTarget, {
+        const isCurrentReply = replyTarget &&
+          (!replyTarget.protectMeeting || (
+            replyTarget.selectedMeetingId === game.history.states[game.stateViewing]?.selTab &&
+            replyTarget.deliveryMeetingId === selTab &&
+            replyTarget.selectedState === game.stateViewing &&
+            replyTarget.currentState === game.history.currentState
+          ));
+        if (replyTarget && !isCurrentReply) setReplyTarget(null);
+        const reply = buildReplyPayload(isCurrentReply ? replyTarget : null, {
           meetingId: selTab,
           content,
           abilityName,
@@ -4450,8 +4692,10 @@ export function PlayerList(props) {
     <Stack
       direction="row"
       spacing={1}
+      useFlexGap
       sx={{
         width: "100%",
+        flexWrap: "wrap",
         alignItems: "center",
       }}
     >

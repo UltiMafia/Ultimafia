@@ -65,7 +65,11 @@ export function emotify(text, customEmotes, customStickers, options) {
 
     if (typeof segment != "string") continue;
 
-    const words = segment.split(" ");
+    // Split on runs of whitespace, so no empty tokens are produced for the
+    // spaces themselves: an empty token used to be rendered *and* carry the
+    // separator, which doubled the gap around any inline element. The single
+    // separator is added back below, for every kind of word.
+    const words = segment.split(/\s+/).filter((w) => w !== "");
 
     for (let j in words) {
       let word = words[j].toLowerCase();
@@ -92,14 +96,22 @@ export function emotify(text, customEmotes, customStickers, options) {
         words[j] = <CustomEmote emote={emotes[word]} />;
         stickerOnlyText = false;
       } else {
-        if (word !== "") {
-          emoteOnlyText = false;
-          stickerOnlyText = false;
-        }
-        if (j < words.length - 1) {
-          // do NOT append an extra ' ' space in the last word (which wasn't there in the first place)
-          words[j] += " ";
-        }
+        emoteOnlyText = false;
+        stickerOnlyText = false;
+      }
+
+      // The separator between words lives on the word before it, so an emote,
+      // sticker or custom emote needs one too; only plain words used to get it,
+      // which glued the next word to the right side of every inline element.
+      if (j < words.length - 1) {
+        if (typeof words[j] === "string") words[j] += " ";
+        else
+          words[j] = (
+            <React.Fragment key={`${i}-${j}`}>
+              {words[j]}
+              {" "}
+            </React.Fragment>
+          );
       }
     }
 

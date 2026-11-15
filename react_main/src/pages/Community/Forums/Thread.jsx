@@ -1107,12 +1107,6 @@ function onAddTag(targetUserId) {
       </div>
       <ThreadPoll threadId={threadId} locked={threadInfo.locked} />
       <div className="replies-wrapper">
-        <PageNav
-          inverted
-          page={page}
-          maxPage={threadInfo.pageCount}
-          onNav={onThreadPageNav}
-        />
         <div className="replies">
           {replies.length === 0 && "No replies yet"}
           {replies}

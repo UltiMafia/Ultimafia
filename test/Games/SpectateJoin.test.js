@@ -264,6 +264,82 @@ describe("Games/SpectateJoin", function () {
     expect(await redis.inGame(game.hostId)).to.equal(false);
   });
 
+  it("seats one player when userJoin calls race", async function () {
+    const game = await openGame.call(this, { total: 3 });
+    const specUser = makeUser(null, "spec");
+
+    await Promise.all([game.userJoin(specUser), game.userJoin(specUser)]);
+
+    const seated = game.players
+      .array()
+      .filter((p) => (p.userId || p.user.id) === specUser.id);
+    seated.should.have.lengthOf(1);
+    const spectating = game.spectators.filter(
+      (sp) => sp.user && sp.user.id === specUser.id
+    );
+    spectating.should.have.lengthOf(0);
+  });
+
+  it("keeps the connection open when two spectate joins race on it", async function () {
+    const game = await openGame.call(this, { total: 3 });
+    const specUser = makeUser(null, "spec");
+    // TestSocket has no terminate(); record it per instance so a handoff that
+    // hangs up the socket it is meant to keep is visible here.
+    specUser.socket.terminate = function () {
+      this.terminated = true;
+    };
+
+    await Promise.all([
+      game.userJoin(specUser, { spectate: true }),
+      game.userJoin(specUser, { spectate: true }),
+    ]);
+
+    const spectating = game.spectators.filter(
+      (sp) => sp.user && sp.user.id === specUser.id
+    );
+    spectating.should.have.lengthOf(1);
+    expect(specUser.socket.terminated).to.equal(undefined);
+    Object.keys(specUser.socket.listeners).length.should.be.above(0);
+  });
+
+  it("adds one spectator when two spectate joins race", async function () {
+    const game = await openGame.call(this, { total: 3 });
+    const specUser = makeUser(null, "spec");
+
+    // Two tabs opening ?spectate=true at the same moment.
+    await Promise.all([
+      game.userJoin(specUser, { spectate: true }),
+      game.userJoin(specUser, { spectate: true }),
+    ]);
+
+    const spectating = game.spectators.filter(
+      (sp) => sp.user && sp.user.id === specUser.id
+    );
+    spectating.should.have.lengthOf(1);
+    game.players.should.have.lengthOf(0);
+  });
+
+  it("seats one player when takeSeat packets race", async function () {
+    const game = await openGame.call(this, { total: 3 });
+    const specUser = makeUser(null, "spec");
+    await game.userJoin(specUser, { spectate: true });
+    const spectator = game.spectators[0];
+
+    // Holding the toggle down sends these faster than the awaits resolve.
+    await Promise.all([
+      game.takeSeat(spectator),
+      game.takeSeat(spectator),
+      game.takeSeat(spectator),
+    ]);
+
+    const seated = game.players
+      .array()
+      .filter((p) => (p.userId || p.user.id) === specUser.id);
+    seated.should.have.lengthOf(1);
+    game.players.should.have.lengthOf(1);
+    game.spectators.should.have.lengthOf(0);
+  });
+
   it("takeSeat uses the normal join path", async function () {
     const game = await openGame.call(this, { total: 2 });
     const spectatorUser = makeUser(null, "spec");

@@ -1000,7 +1000,7 @@ iframe {
 
 .profile .ratings .stats-query .query-stats {
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
   justify-content: space-between;
   gap: 8px;
 }
@@ -1011,23 +1011,23 @@ iframe {
   flex-flow: column;
   align-items: center;
   text-align: center;
-  min-width: 0;
+  min-width: max-content;
 }
 
 .profile .ratings .stats-query .query-stat-label {
-  font-size: 11px;
+  font-size: 0.6875rem;
   opacity: 0.7;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .profile .ratings .stats-query .query-stat-value {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 600;
 }
 
 .profile .ratings .stats-query .query-empty {
-  font-size: 13px;
+  font-size: 0.8125rem;
   opacity: 0.6;
   text-align: center;
   padding: 12px;

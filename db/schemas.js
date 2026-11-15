@@ -438,6 +438,8 @@ var schemas = {
     playerAlignmentMap: { type: String, default: "{}" },
     playerRoleMap: { type: String, default: "{}" },
     spectatorIdMap: { type: String, default: "{}" },
+    // Seats that left during pregame: { seatId: {name, avatar, colors} }.
+    pastPregamePlayers: { type: String, default: "{}" },
     history: String,
     startTime: Number,
     endTime: { type: Number, index: true },

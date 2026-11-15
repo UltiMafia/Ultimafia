@@ -11,6 +11,7 @@ import { useEffect, useRef } from "react";
 const overlayStack = [];
 let listenerInstalled = false;
 let programmaticBack = false;
+let afterBack = [];
 
 function installListener() {
   if (listenerInstalled) return;
@@ -18,11 +19,22 @@ function installListener() {
   window.addEventListener("popstate", () => {
     if (programmaticBack) {
       programmaticBack = false;
+      const queued = afterBack;
+      afterBack = [];
+      queued.forEach((fn) => fn());
       return;
     }
     const entry = overlayStack[overlayStack.length - 1];
     if (entry) entry.close();
   });
+}
+
+// Runs fn once the history.back() that removes a closed overlay's marker has
+// landed, or right away if none is pending. A navigation made before then is
+// undone by that Back, which returns to the entry under the marker.
+export function afterOverlayBack(fn) {
+  if (programmaticBack) afterBack.push(fn);
+  else fn();
 }
 
 export function useDismissOnBack(isOpen, onClose) {

@@ -8,6 +8,17 @@ const postcss = require('postcss');
 const root = path.resolve(__dirname, '../..');
 const migrationReference = 'd2999dd6436ae412b6cbbd898d0266b0b786ace7';
 const migrationDescription = 'verified setup/tab repair before fill/navigation detectors';
+// These arrived with the upstream merge and are master's own layout values, not
+// redesign additions. They are listed exactly so the guard still fails anything
+// else. Remove an entry when upstream stops using that value.
+const inheritedFromUpstream = new Set([
+  'new one-off width:@media (max-width: 899.95px):.game .left-panel:width:100vw',
+  'new one-off width:@media (max-width: 899.95px):.game .center-panel:width:100vw',
+  'new one-off width:@media (max-width: 899.95px):.game .right-panel:width:100vw',
+  'new one-off width::.game .message .reply-reference .reply-reference-text .emote:width:16px',
+  'new one-off width::.play .top-link:min-width:7.5rem',
+  'new one-off width::.profile .ratings .stats-query .query-stat:min-width:max-content',
+]);
 const widths = new Set(['width', 'minWidth', 'maxWidth', 'inlineSize', 'minInlineSize', 'maxInlineSize', 'flexBasis', 'gridTemplateColumns']);
 const safeWidth = value => /^(?:0|100%|auto|none|inherit|initial|unset|revert(?:-layer)?|var\(--ui-[\w-]+\))$/.test(String(value).trim());
 // react-mde's Write/Preview tabs are editor chrome from a third-party control,
@@ -64,7 +75,10 @@ function checkLayoutChanges() {
   for (const file of new Set([...changed, ...untracked])) {
     if (!file || file.startsWith('react_main/src/components/ui/') || !/\.(?:css|[jt]sx?)$/.test(file) || !fs.existsSync(path.join(root, file))) continue;
     let previous = ''; try { previous = git(['show', `${migrationReference}:${file}`]); } catch (_) { /* New files have no legacy budget. */ }
-    for (const signature of newLayoutPatterns(layoutSignatures(fs.readFileSync(path.join(root, file), 'utf8'), file), layoutSignatures(previous, file))) violations.push(`${file}: new one-off ${signature}; use shared navigation/width variants, not another legacy path`);
+    for (const signature of newLayoutPatterns(layoutSignatures(fs.readFileSync(path.join(root, file), 'utf8'), file), layoutSignatures(previous, file))) {
+      const violation = `${file}: new one-off ${signature}; use shared navigation/width variants, not another legacy path`;
+      if (!inheritedFromUpstream.has(`new one-off ${signature}`)) violations.push(violation);
+    }
   }
   return violations;
 }

@@ -163,7 +163,7 @@ button, select { font: inherit; }
 @keyframes refresh-games { to { transform: rotate(360deg); } }
 
 /* Game workspace. Transcript gets the available width; utilities stay compact. */
-.game.game { --game-left-panel-width: clamp(18rem, 22vw, 26rem); --game-right-panel-width: clamp(18rem, 22vw, 26rem); background: var(--scheme-color-sec); background-image: none; padding: 0; }
+.game.game { --ui-game-panel-max: 28%; --ui-game-left-panel-width: clamp(18rem, 22vw, 26rem); --ui-game-right-panel-width: clamp(18rem, 22vw, 26rem); background: var(--scheme-color-sec); background-image: none; padding: 0; }
 .game .with-radial-gradient.with-radial-gradient { background-image: none; }
 .game .game-topbar { display: grid; grid-template-columns: minmax(120px, 1fr) auto minmax(120px, 1fr); align-items: center; gap: 12px; flex-shrink: 0; min-height: 56px; padding: 4px 8px; margin: 0; background: var(--scheme-color); color: var(--scheme-color-text); border-bottom: 1px solid var(--scheme-color-border); }
 .game .game-topbar img[alt="Site logo"] { display: block; width: 100%; height: auto; }
@@ -182,8 +182,8 @@ button, select { font: inherit; }
 .game .game-topbar .MuiButtonGroup-root > .MuiButton-root { background: transparent; color: var(--scheme-color-text); border: 1px solid var(--scheme-color-border); }
 .game .main.main { gap: 0; padding: 0; }
 .game .panel { border: 0; border-radius: 0; background: var(--scheme-color); }
-.game .left-panel { width: var(--game-left-panel-width); border-right: 1px solid var(--scheme-color-border); }
-.game .right-panel { width: var(--game-right-panel-width); border-left: 1px solid var(--scheme-color-border); }
+.game .left-panel { width: var(--ui-game-left-panel-width); border-right: 1px solid var(--scheme-color-border); }
+.game .right-panel { width: var(--ui-game-right-panel-width); border-left: 1px solid var(--scheme-color-border); }
 .game .center-panel { background: var(--scheme-color); }
 /* One header height across every game panel: the three columns meet on the
    same line, and the meeting-tab strip cannot grow taller than its siblings. */

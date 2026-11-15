@@ -1055,8 +1055,13 @@ module.exports = class Meeting {
 
     this.finalTarget = finalTarget;
 
-    // Veg players who didn't vote
+    // Veg players who didn't vote. They veg in one batch, so the ones who lose
+    // the game's integrity are all of them, not just the first in the loop.
     if (!this.noVeg) {
+      if (typeof this.game.beginIntegrityBreakBatch === "function") {
+        this.game.beginIntegrityBreakBatch();
+      }
+
       for (let member of this.members) {
         if (!member.canVote || !member.canUpdateVote) continue;
 
@@ -1073,6 +1078,12 @@ module.exports = class Meeting {
             this.game.vegPlayer(member.player);
           }
         }
+      }
+
+      // Every veg above happened in this one loop, so they broke the game
+      // together: close the batch (and pay the refund) once they are all in.
+      if (typeof this.game.endIntegrityBreakBatch === "function") {
+        this.game.endIntegrityBreakBatch();
       }
     }
     this.events.emit("meetingFinish", this);

@@ -50,7 +50,11 @@ describe("DrawIt Game class basics", () => {
 
   it("checkWinConditions returns [false] when rounds incomplete", () => {
     const game = makeBareGame();
-    game.players = [];
+    game.players = ["A", "B", "C"].map((name) => ({
+      name,
+      getScore: () => 0,
+    }));
+    game.turnOrder = [...game.players];
     const [done] = game.checkWinConditions();
     expect(done).to.equal(false);
   });
