@@ -32,8 +32,6 @@
     "native:input": 1
   },
   "components/Form.jsx": {
-    "mui:Button": 1,
-    "mui:IconButton": 1,
     "native:input": 3,
     "mui:Paper": 1
   },
@@ -75,7 +73,6 @@
     "native:button": 2
   },
   "components/Setup.jsx": {
-    "mui:IconButton": 1,
     "native:button": 2
   },
   "components/SignInWithAppleButton.jsx": {

@@ -1,9 +1,9 @@
 # UI scale debt queue
 
-Generated 2026-11-15T03:32:39.471Z. **136** sites across **51** files.
+Generated 2026-11-15T03:55:03.163Z. **134** sites across **51** files.
 
 - `native-form`: 47
-- `mui-inline-scale`: 41
+- `mui-inline-scale`: 39
 - `native-widget`: 34
 - `native-file`: 10
 - `native-hidden`: 2
@@ -22,9 +22,9 @@ Generated 2026-11-15T03:32:39.471Z. **136** sites across **51** files.
 | `pages/Game/DrawItGame.jsx` | 5 |
 | `pages/Play/WordDecks/CreateWordDeck.jsx` | 5 |
 | `components/FanartPanel.jsx` | 4 |
-| `components/Setup.jsx` | 4 |
 | `components/gameComponents/StateSwitcher.jsx` | 4 |
 | `pages/User/Shop.jsx` | 4 |
+| `components/Auth.jsx` | 3 |
 
 ## Sites
 
@@ -46,9 +46,9 @@ Generated 2026-11-15T03:32:39.471Z. **136** sites across **51** files.
 - `components/FanartPanel.jsx:246` — mui-inline-scale `IconButton` — `<IconButton size="small" onClick={(e) => { e.stopPro`
 - `components/FanartPanel.jsx:276` — mui-inline-scale `IconButton` — `<IconButton size="small" onClick={goNext} aria-label="Next fanart"`
 - `components/FanartPanel.jsx:379` — native-file `input` — `<input type="file" accept="image/*" onChange={onFileChange} styl`
-- `components/Form.jsx:892` — native-file `input` — `<input className="hidden-upload" ref={inputRef} type="file" onChange={(e) => props.onFil`
-- `components/Form.jsx:1031` — native-file `input` — `<input id={this.state.id} style={{ visibility: "hidden", height: "0" }} type="`
-- `components/Form.jsx:1177` — native-file `input` — `<input id={this.state.id} style={{ visibility: "hidden", height: "0" }} type="`
+- `components/Form.jsx:891` — native-file `input` — `<input className="hidden-upload" ref={inputRef} type="file" onChange={(e) => props.onFil`
+- `components/Form.jsx:1030` — native-file `input` — `<input id={this.state.id} style={{ visibility: "hidden", height: "0" }} type="`
+- `components/Form.jsx:1176` — native-file `input` — `<input id={this.state.id} style={{ visibility: "hidden", height: "0" }} type="`
 - `components/gameComponents/ChangeSetupDialog.jsx:134` — mui-inline-scale `DialogTitle` — `<DialogTitle sx={{ p: 0, flex: 1, fontSize: "1.25rem", lineHei`
 - `components/gameComponents/RoleRevealModal.jsx:87` — mui-inline-scale `DialogTitle` — `<DialogTitle sx={{ p: 0, width: "100%", fontSize: "1.25rem", `
 - `components/gameComponents/StateSwitcher.jsx:27` — native-form `select` — `<select aria-label="View phase" value={stateViewing} onChange={event => goTo(Number(event.target.value))}>`
@@ -60,10 +60,8 @@ Generated 2026-11-15T03:32:39.471Z. **136** sites across **51** files.
 - `components/ProviderButton.jsx:48` — mui-inline-scale `Button` — `<Button fullWidth onClick={onClick} disabled={disabled} data-provider={provider} data-ui-v`
 - `components/Scrapbook.jsx:162` — native-widget `button` — `<button className="scrapbook-flip-arrow scrapbook-flip-arrow--left" onClick={() => handleFlip("prev")} `
 - `components/Scrapbook.jsx:208` — native-widget `button` — `<button className="scrapbook-flip-arrow scrapbook-flip-arrow--right" onClick={() => handleFlip("next")} `
-- `components/Setup.jsx:252` — mui-inline-scale `IconButton` — `<IconButton key="multi" aria-label="Cycle role sets" onClick={cycleSetups} size="small" `
-- `components/Setup.jsx:271` — mui-inline-scale `IconButton` — `<IconButton key="ellipses" aria-label="Show all roles" onClick={handleClick} size="small`
-- `components/Setup.jsx:290` — native-widget `button` — `<button type="button" className="setup-name-trigger" onClick={handleClick} aria-haspopup="true" aria-expanded=`
-- `components/Setup.jsx:296` — native-widget `button` — `<button className="setup-more-roles" type="button" onClick={() => setSummaryExpanded(value => !value)} aria-expanded={su`
+- `components/Setup.jsx:294` — native-widget `button` — `<button type="button" className="setup-name-trigger" onClick={handleClick} aria-haspopup="true" aria-expanded=`
+- `components/Setup.jsx:300` — native-widget `button` — `<button className="setup-more-roles" type="button" onClick={() => setSummaryExpanded(value => !value)} aria-expanded={su`
 - `components/SignInWithAppleButton.jsx:39` — mui-inline-scale `Button` — `<Button fullWidth onClick={onClick} disabled={disabled} aria-label={label} data-ui-variant`
 - `components/strategyWindows/FloatingStrategyWindows.jsx:116` — mui-inline-scale `Paper` — `<Paper ref={boxRef} elevation={12} data-testid="strategy-window" data-setup-id={win.setupId} `
 - `components/TutorialOverlay.jsx:198` — mui-inline-scale `Paper` — `<Paper ref={boxRef} elevation={8} data-testid="tutorial-overlay" sx={{ position: "fixed"`

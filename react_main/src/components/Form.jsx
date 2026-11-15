@@ -21,7 +21,7 @@ import "css/form.css";
 import "css/markdown.css";
 import "css/emotes.css";
 import { dateToHTMLString, formatBirthdayForInput } from "../utils";
-import { Button, IconButton, Stack, FormControlLabel, Box, FormControl, InputLabel, FormHelperText, Paper, Tooltip, Popover } from "@mui/material";
+import { Stack, FormControlLabel, Box, FormControl, InputLabel, FormHelperText, Paper, Tooltip, Popover } from "@mui/material";
 import { MuiColorInput } from 'mui-color-input'
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { LatestRequest } from "../lib/latestRequest";
@@ -50,9 +50,9 @@ function FormField({
   const isUnsaved = deps !== undefined && deps[field.saveBtnDiffer] !== field.value;
   const tooltipIcon = field.infoTooltip ? (
     <Tooltip title={field.infoTooltip}>
-      <IconButton size="small" aria-label={`About ${field.label}`} sx={{ p: 0.25 }}>
+      <UiAction iconOnly size="small" variant="ghost" aria-label={`About ${field.label}`}>
         <UiIcon name="info" size={18} />
-      </IconButton>
+      </UiAction>
     </Tooltip>
   ) : null;
 
@@ -72,14 +72,14 @@ function FormField({
   const buttons = (
     <>
       {field.saveBtn && isUnsaved && (
-        <Button variant="text" onClick={saveBtnOnClick}>
+        <UiAction variant="ghost" size="small" onClick={saveBtnOnClick}>
           {field.saveBtn}
-        </Button>
+        </UiAction>
       )}
       {field.clearBtn && field.value && (
-        <Button variant="text" onClick={clearBtnOnClick}>
+        <UiAction variant="ghost" size="small" onClick={clearBtnOnClick}>
           {field.clearBtn}
-        </Button>
+        </UiAction>
       )}
       {additionalButtons}
     </>
@@ -333,11 +333,11 @@ export default function Form({
                   }}
                 />
                 <Typography sx={{ flex: "1" }}>{key}</Typography>
-                <IconButton
+                <UiAction iconOnly variant="danger-quiet" aria-label="Delete custom emote"
                   onClick={() => field.onCustomEmoteDelete(value[key].id, deps)}
                 >
                   <i className="fas fa-trash" />
-                </IconButton>
+                </UiAction>
               </Stack>
             </Paper>
           ));
@@ -385,13 +385,11 @@ export default function Form({
                   }}
                 />
                 <Typography sx={{ flex: "1" }}>{key}</Typography>
-                <IconButton
-                  onClick={() =>
-                    field.onCustomStickerDelete(value[key].id, deps)
-                  }
+                <UiAction iconOnly variant="danger-quiet" aria-label="Delete custom sticker"
+                  onClick={() => field.onCustomStickerDelete(value[key].id, deps)}
                 >
                   <i className="fas fa-trash" />
-                </IconButton>
+                </UiAction>
               </Stack>
             </Paper>
           ));
@@ -495,7 +493,7 @@ export default function Form({
                   />
                 }
               />
-              {field.infoTooltip && <Tooltip title={field.infoTooltip}><IconButton aria-label={`About ${field.label}`}><UiIcon name="info" size={18} /></IconButton></Tooltip>}
+              {field.infoTooltip && <Tooltip title={field.infoTooltip}><UiAction iconOnly size="small" variant="ghost" aria-label={`About ${field.label}`}><UiIcon name="info" size={18} /></UiAction></Tooltip>}
               </Stack>
             </FormField>
           );
@@ -637,14 +635,15 @@ export default function Form({
               additionalButtons={
                 <>
                   {!field.noReset && hasCustomColor && (
-                    <Button
-                      variant="text"
+                    <UiAction
+                      variant="ghost"
+                      size="small"
                       onClick={() =>
                         onFieldChange({ target: { value: resetValue } }, field)
                       }
                     >
                       Reset
-                    </Button>
+                    </UiAction>
                   )}
                 </>
               }

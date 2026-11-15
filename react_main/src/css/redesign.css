@@ -355,3 +355,6 @@ button, select { font: inherit; }
 @media (prefers-reduced-motion: reduce) {
   .refresh-spinning { animation: none; }
 }
+
+.setup-role-control.ui-action { font-size: 20px; }
+.setup-role-control--spaced { margin-left: var(--ui-space-xs); }

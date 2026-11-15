@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-11-15T03:32:39.470Z",
-  "count": 136,
+  "generatedAt": "2026-11-15T03:55:03.162Z",
+  "count": 134,
   "byKind": {
-    "mui-inline-scale": 41,
+    "mui-inline-scale": 39,
     "native-hidden": 2,
     "native-file": 10,
     "native-confirm": 2,
     "native-widget": 34,
     "native-form": 47
   },
-  "actionable": 78,
+  "actionable": 76,
   "sanctioned": 12,
   "game": 46,
   "files": 51,
@@ -51,16 +51,16 @@
       4
     ],
     [
-      "components/Setup.jsx",
-      4
-    ],
-    [
       "components/gameComponents/StateSwitcher.jsx",
       4
     ],
     [
       "pages/User/Shop.jsx",
       4
+    ],
+    [
+      "components/Auth.jsx",
+      3
     ]
   ],
   "entries": [
@@ -163,7 +163,7 @@
     },
     {
       "file": "components/Form.jsx",
-      "line": 892,
+      "line": 891,
       "kind": "native-file",
       "scope": "site",
       "name": "input",
@@ -171,7 +171,7 @@
     },
     {
       "file": "components/Form.jsx",
-      "line": 1031,
+      "line": 1030,
       "kind": "native-file",
       "scope": "site",
       "name": "input",
@@ -179,7 +179,7 @@
     },
     {
       "file": "components/Form.jsx",
-      "line": 1177,
+      "line": 1176,
       "kind": "native-file",
       "scope": "site",
       "name": "input",
@@ -224,21 +224,7 @@
     },
     {
       "file": "components/Setup.jsx",
-      "line": 252,
-      "kind": "mui-inline-scale",
-      "name": "IconButton",
-      "snippet": "<IconButton key=\"multi\" aria-label=\"Cycle role sets\" onClick={cycleSetups} size=\"small\" "
-    },
-    {
-      "file": "components/Setup.jsx",
-      "line": 271,
-      "kind": "mui-inline-scale",
-      "name": "IconButton",
-      "snippet": "<IconButton key=\"ellipses\" aria-label=\"Show all roles\" onClick={handleClick} size=\"small"
-    },
-    {
-      "file": "components/Setup.jsx",
-      "line": 290,
+      "line": 294,
       "kind": "native-widget",
       "scope": "site",
       "name": "button",
@@ -246,7 +232,7 @@
     },
     {
       "file": "components/Setup.jsx",
-      "line": 296,
+      "line": 300,
       "kind": "native-widget",
       "scope": "site",
       "name": "button",

@@ -9,7 +9,7 @@ import { SearchBar } from "components/Nav";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { hyphenDelimit } from "utils";
 
-import { Box, Divider, Grid, IconButton, Stack, useMediaQuery, Popover, Tooltip } from "@mui/material";
+import { Box, Divider, Grid, Stack, useMediaQuery, Popover, Tooltip } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 import "css/setup.css";
@@ -249,15 +249,17 @@ export default function Setup(props) {
 
   if (multi) {
     roleCounts.unshift(
-      <IconButton
+      <UiAction
         key="multi"
+        iconOnly
+        size="small"
+        variant="ghost"
+        className="setup-role-control"
         aria-label="Cycle role sets"
         onClick={cycleSetups}
-        size="small"
-        sx={{ fontSize: "1.5rem" }}
       >
         <i className="fas fa-list-alt" />
-      </IconButton>
+      </UiAction>
     );
   }
 
@@ -268,15 +270,17 @@ export default function Setup(props) {
 
   if (overSize) {
     roleCounts[maxIconsTotal - 1] = (
-      <IconButton
+      <UiAction
         key="ellipses"
+        iconOnly
+        size="small"
+        variant="ghost"
+        className="setup-role-control setup-role-control--spaced"
         aria-label="Show all roles"
         onClick={handleClick}
-        size="small"
-        sx={{ fontSize: "1.5rem", marginLeft: "4px" }}
       >
         <i className="fas fa-ellipsis-h" />
-      </IconButton>
+      </UiAction>
     );
   }
 
