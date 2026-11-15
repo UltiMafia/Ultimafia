@@ -103,7 +103,7 @@ export default function TutorialPicker() {
                   </Box>
                   <Typography
                     variant="h3"
-                    sx={{ minWidth: 0, flex: 1, lineHeight: 1.25, overflowWrap: "anywhere", fontSize: { xs: "1.125rem", sm: "1.25rem" } }}
+                    sx={{ minWidth: 0, flex: 1, overflowWrap: "anywhere", fontSize: "var(--ui-text-section)" }}
                   >
                     {s.title}
                   </Typography>

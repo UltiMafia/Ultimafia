@@ -773,8 +773,7 @@ input:focus:not(:focus-visible) {
 
 .cookie-customize { margin-top: var(--ui-space-sm); align-self: flex-start; }
 
-.welcome-auth-card { padding: var(--ui-space-lg); }
-@media (min-width: 600px) { .welcome-auth-card { padding: var(--ui-space-xl); } }
+.welcome-auth-card { padding: var(--ui-panel-padding); }
 
 .banned-page-card { width: 100%; max-width: var(--ui-prose-width); padding: var(--ui-space-lg); }
 @media (min-width: 600px) { .banned-page-card { padding: var(--ui-space-xl); } }

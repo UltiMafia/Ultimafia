@@ -164,7 +164,7 @@ function measureUi() {
     // Dialog action rows use the canonical 40px frame; page-level actions are
     // compared with their own inline/row context rather than the dialog frame.
     const actionContext = element && ['primaryAction', 'secondaryAction'].includes(sample.role)
-      ? (element.closest('[role="dialog"]') ? 'dialog' : 'page') : '';
+      ? (element.closest('.ui-table-value') ? 'table' : element.closest('[role="dialog"]') ? 'dialog' : 'page') : '';
     // A named small action is a different control from the default 40px action.
     const actionSize = element && ['primaryAction', 'secondaryAction'].includes(sample.role)
       ? (element.matches('.ui-action--small, .MuiButton-sizeSmall') ? 'small' : 'default') : '';
