@@ -144,17 +144,18 @@ async function main() {
     });
 
     await page.goto(`${origin}/policy/moderation/ban-appeals`);
-    await page.getByTestId("ban-appeal-row").first().waitFor({ timeout: 8000 });
-    let rows = await page.getByTestId("ban-appeal-row").allInnerTexts();
+    const appealRows = page.locator('[data-testid="ban-appeals-list"] tbody tr');
+    await appealRows.first().waitFor({ timeout: 8000 });
+    let rows = await appealRows.allInnerTexts();
     check(rows.length === 1 && rows[0].includes("BadPlayer") && rows[0].includes("Site ban"), "pending list shows the pending appeal", rows);
     check(rows[0].includes("3 admins: accept 1 of 2 needed, deny 0 of 2 needed") && rows[0].includes("PENDING"), "row shows the tally and status", rows);
     if (shots) await page.screenshot({ path: path.join(shots, "LOCAL-ban-appeals-list.png"), fullPage: true });
     await page.getByRole("button", { name: "All" }).click();
-    await page.waitForFunction(() => document.querySelectorAll('[data-testid="ban-appeal-row"]').length === 2);
-    rows = await page.getByTestId("ban-appeal-row").allInnerTexts();
+    await page.waitForFunction(() => document.querySelectorAll('[data-testid="ban-appeals-list"] tbody tr').length === 2);
+    rows = await appealRows.allInnerTexts();
     check(rows[0].includes("PENDING") && rows[1].includes("DENIED"), "All lists pending first, then resolved", rows);
     await page.getByRole("button", { name: "Resolved" }).click();
-    await page.waitForFunction(() => document.querySelectorAll('[data-testid="ban-appeal-row"]').length === 1 && document.body.innerText.includes("OldTimer"));
+    await page.waitForFunction(() => document.querySelectorAll('[data-testid="ban-appeals-list"] tbody tr').length === 1 && document.body.innerText.includes("OldTimer"));
     check(true, "Resolved filter shows only resolved appeals");
     await page.getByRole("button", { name: "Pending" }).click();
     await page.waitForFunction(() => document.body.innerText.includes("BadPlayer"));
@@ -162,7 +163,7 @@ async function main() {
     // Every part of the row opens the case: the name, the tally, the status
     // chip, and the row's padding.
     const listUrl = page.url();
-    const firstRow = page.getByTestId("ban-appeal-row").first();
+    const firstRow = appealRows.first();
     const targets = [
       ["the username", () => firstRow.getByText("BadPlayer", { exact: true }).click()],
       ["the tally", () => firstRow.getByText("3 admins: accept 1 of 2 needed", { exact: false }).click()],
@@ -175,7 +176,7 @@ async function main() {
       await page.getByTestId("ban-appeal-case").waitFor({ timeout: 8000 });
       check(page.url().endsWith("/policy/moderation/ban-appeals/case1"), `clicking ${name} opens the case`, page.url());
       await page.goBack();
-      await page.getByTestId("ban-appeal-row").first().waitFor({ timeout: 8000 });
+      await appealRows.first().waitFor({ timeout: 8000 });
       check(page.url() === listUrl, `back returns to the queue after ${name}`, page.url());
     }
     const cellHref = await firstRow.locator("a").first().getAttribute("href");
