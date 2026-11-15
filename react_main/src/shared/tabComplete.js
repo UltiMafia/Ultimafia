@@ -34,12 +34,7 @@ function tabCompleteNames({ players, spectators, isPregame, isSpectator }) {
   return names;
 }
 
-// Completes the last word of the chat box against `names`.
-// Returns undefined when the word has no name characters to complete (the
-// caller does nothing), null when no name matches (the caller may try
-// @everyone), else the completed word: the full name for one match, or the
-// longest common prefix of several.
-function completePlayerName(word, names) {
+function playerNameMatches(word, names) {
   word = String(word || "");
   // Removing non-word characters before the string.
   const seedString = word.match(/[^\w-]?([\w-]*)$/)[1].toLowerCase();
@@ -56,6 +51,29 @@ function completePlayerName(word, names) {
       )
     ),
   ];
+  return { prefix, matched };
+}
+
+// Cycle full names using the original word and the last completion.
+// Recheck the supplied eligible names on every Tab, including roster changes.
+function cyclePlayerName(word, names, previous) {
+  const matches = playerNameMatches(word, names);
+  if (!matches) return undefined;
+  const { prefix, matched } = matches;
+  if (!matched.length) return null;
+  const completed = matched.map((name) => prefix + name);
+  return completed[(completed.indexOf(previous) + 1) % completed.length];
+}
+
+// Completes the last word of the chat box against `names`.
+// Returns undefined when the word has no name characters to complete (the
+// caller does nothing), null when no name matches (the caller may try
+// @everyone), else the completed word: the full name for one match, or the
+// longest common prefix of several.
+function completePlayerName(word, names) {
+  const matches = playerNameMatches(word, names);
+  if (!matches) return undefined;
+  const { prefix, matched } = matches;
   if (!matched.length) return null;
   if (matched.length === 1) return prefix + matched[0];
 
@@ -67,4 +85,4 @@ function completePlayerName(word, names) {
   return prefix + matched[0].substring(0, i);
 }
 
-module.exports = { tabCompleteNames, completePlayerName };
+module.exports = { tabCompleteNames, completePlayerName, cyclePlayerName };
