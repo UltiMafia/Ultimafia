@@ -453,6 +453,19 @@ iframe {
   );
 }
 
+/*
+ * The sweep is the expensive part, not the gradient. Animating background-position
+ * on mask-clipped text makes WebKit re-rasterize the name every frame, and a long
+ * transcript pays that on every newly exposed row. The transcript flags itself
+ * once it is long enough to matter (NAME_SWEEP_MAX_ROWS) and this stops the
+ * animation while leaving the gradient colours untouched. The attribute is only
+ * ever set on iOS (see SWEEP_SUSPENDED), so Android and desktop never see it.
+ */
+.speech-display[data-name-sweep="off"] .user-name-text {
+  animation: none !important;
+  will-change: auto !important;
+}
+
 @keyframes name-color-pulse {
   0%,
   100% {

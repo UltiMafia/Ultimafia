@@ -141,3 +141,44 @@ allows only localhost/127.0.0.1 and does not launch or stop the fixture server.
 
 Run `node perf/name-glow-style.test.cjs` from `react_main` for the browser-free
 color parsing and inline-style cleanup/priority regression.
+
+## Name-colour sweep on iOS
+
+The animated name colours (`rainbow`, `patriotic`, `gradient`, `tricolor`) animate
+`background-position` on mask-clipped text. WebKit re-rasterizes the masked text
+on every frame, and a long transcript pays that on every newly exposed row as it
+scrolls, which makes a large game's chat unusable on an iPhone. Android (Blink)
+and desktop do not reproduce it.
+
+Past `NAME_SWEEP_MAX_ROWS` (300) rows the transcript sets
+`data-name-sweep="off"` on `.speech-display`, and `user.css` stops the animation
+while leaving the gradient in place — the names keep their colours and lose only
+the sweep. Short games are unaffected, and the attribute is only set when
+`isIos()` (`utils/platform.js`) is true.
+
+Measured on an iPhone, 2,214 rows / 1,717 nameplates, scrolled from the top:
+
+| configuration | fps |
+| --- | --- |
+| sweep running | 17.0 |
+| sweep suspended, gradient kept | 58.9 |
+| nameplates removed entirely | 58.2 |
+
+The last row is the bound: suspending the sweep recovers everything that removing
+the nameplates would, without removing them.
+
+To reproduce in WebKit:
+
+```bash
+cd react_main
+npx rsbuild build --config rsbuild.chat-perf.config.ts
+PLAYWRIGHT_MODULE=/path/to/playwright \
+PLAYWRIGHT_BROWSERS_PATH=/path/to/browsers \
+node perf/webkit-sweep.cjs build-chat-perf
+```
+
+Chromium is not a valid measurement for this: the same transcript scrolls at
+55–60 fps at both ends there regardless of the sweep. Use WebKit or a device, and
+say which. Measure one configuration per page load — several on one load report
+mostly cache warming, because the same region scrolled repeatedly climbs from
+8 fps to 60 as WebKit paints it.
